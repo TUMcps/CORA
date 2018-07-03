@@ -25,19 +25,19 @@
         <!-- article 1 -->
         <article>
           <h1 style="color:black;">Toolbox Description</h1>
-          <p style="color:black;"> The COntinuous Reachability Analyzer (CORA) is a collection of MATLAB classes for the formal verification of cyber-physical systems using reachability analysis. CORA integrates various vector and matrix set representations and operations on them as well as reachability algorithms of various dynamic system classes. The software is designed such that set representations can be exchanged without having to modify the code for reachability analysis. CORA is designed using the object oriented paradigm, such that users can safely use methods without concerning themselves with detailed information hidden inside the object. Since the toolbox is written in MATLAB, the installation and use is platform independent. From Release 2018 on, CORA also supports the automatic conversion of system models in SpaceEX format. The followign points summerize the main capabilities of the CORA toolbox:</p>
+          <p style="color:black;"> The COntinuous Reachability Analyzer (CORA) is a collection of MATLAB classes for the formal verification of cyber-physical systems using reachability analysis. CORA integrates various vector and matrix set representations and operations on them as well as reachability algorithms of various dynamic system classes. The software is designed such that set representations can be exchanged without having to modify the code for reachability analysis. CORA is designed using the object oriented paradigm, such that users can safely use methods without concerning themselves with detailed information hidden inside the object. Since the toolbox is written in MATLAB, the installation and use is platform independent. From Release 2018 on, the direct import of SpaceEx models into CORA is also supported. The following points summerize the main capabilities of the CORA toolbox:</p>
         </article>
         <!-- / articles -->
       </section>
       <!-- section 2 -->
-      <section id="latest" class="last">
+      <section id="latest">
         <ul>
           <li>
             <article class="clear">
               <figure><img src="images/ContinuousSystem.png" alt="">
                 <figcaption>
                   <h2 style="color:black;">Reachability Analysis for Continious Systems</h2>
-                  <p style="color:black;">CORA can be used to calculate the reachable sets for linear systems, nonlinear systems as well as for systems with constraints. Uncertainty in the system inputs as well as uncertainty in the model parameters can be explicitely considered. In addition, CORA also provides capabilities for the simulation of dynamical models.</p>
+                  <p style="color:black;">CORA computes reachable sets for linear systems, nonlinear systems as well as for systems with constraints. Continious as well as discrete time models are supported. Uncertainty in the system inputs as well as uncertainty in the model parameters can be explicitely considered. In addition, CORA also provides capabilities for the simulation of dynamical models.</p>
                 </figcaption>
               </figure>
             </article>
@@ -47,7 +47,7 @@
               <figure><img src="images/HybridSystem.png" alt="">
                 <figcaption>
                   <h2 style="color:black;">Reachability Analysis for Hybrid Systems</h2>
-                  <p style="color:black;">The toolbox is also capable to calculate the reachable sets for hybrid systems. All implemented dynamic system classes can be used to describe the different continious flows for the discrete system states. Further, multiple different methods for the calculation of the intersections with the guard sets are implemented in CORA.</p>
+                  <p style="color:black;">The toolbox is also capable to calculate the reachable sets for hybrid systems. All implemented dynamic system classes can be used to describe the different continious flows for the discrete system states. Further, multiple different methods for the calculation of the intersections with guard sets are implemented in CORA.</p>
                 </figcaption>
               </figure>
             </article>
@@ -57,12 +57,46 @@
               <figure><img src="images/SetRepresentations.png" alt="">
                 <figcaption>
                   <h2 style="color:black;">Geometric Sets</h2>
-                  <p style="color:black;">CORA has a modular design, making it possible to use the capabilities of the various set representations for other purposes besides reachability analysis. The toolbox implements vector set representation like i.e zonotopes, taylor mdoels and intervals, as well as matrix set representations like i.e. matrix zonotope and interval matrices.</p>
+                  <p style="color:black;">CORA has a modular design, making it possible to use the capabilities of the various set representations for other purposes besides reachability analysis. The toolbox implements vector set representation, e.g. zonotopes, Taylor models and intervals, as well as matrix set representations such as matrix zonotope and interval matrices.</p>
                 </figcaption>
               </figure>
             </article>
           </li>	
         </ul>
+      </section>
+      <!-- publications -->
+      <section id="latest" class="last">
+	<p style="color:white;">PLACEHOLDER</p>
+	<h1 style="color:black;">Publications</h1>
+	<p style="color:white;"></p>
+ 	<table style="width:100%">
+	  <tr valign="top">
+	    <td align="middle" style="color:black;" width="5%">
+		[<a name="AlthoffGrebenyuk16" style="color:black;">1</a>]
+	    </td>
+	    <td style="color:black;">
+	     	M.&nbsp;Althoff and D.&nbsp;Grebenyuk.
+ 		Implementation of interval arithmetic in CORA 2016.
+ 		In <em>Proc. of the 3rd International Workshop on Applied
+  		Verification for Continuous and Hybrid Systems</em>, pages 91-105, 2016.
+		[&nbsp;<a href="http://bibtexknoll.informatik.tu-muenchen.de/bibtex.php?id=1609" style="color:orange;">.bib</a>&nbsp;| 
+		<a href="http://www.i6.in.tum.de/Main/Publications/Althoff2016a.pdf" style="color:orange;" target="_blank">.pdf</a>&nbsp;]
+	    </td>
+	  </tr>
+	  <tr valign="top">
+	    <td align="middle" style="color:black;">
+		[<a name="Althoff15" style="color:black;">2</a>]
+	    </td>
+	    <td style="color:black;">
+		M.&nbsp;Althoff.
+ 		An introduction to CORA 2015.
+ 		In <em>Proc. of the Workshop on Applied Verification for Continuous
+  		and Hybrid Systems</em>, pages 120-151, 2015.
+		[&nbsp;<a href="http://bibtexknoll.informatik.tu-muenchen.de/bibtex.php?id=1323" style="color:orange;">.bib</a>&nbsp;| 
+		<a href="http://www.i6.in.tum.de/Main/Publications/Althoff2015a.pdf" style="color:orange;" target="_blank">.pdf</a>&nbsp;]
+	    </td>
+	  </tr>
+	</table>
       </section>
     </div>
     <!-- right column -->
@@ -80,11 +114,13 @@
       <h2 class="title" style="color:black;">Archive</h2>
       <nav>
         <ul>
-	  <li><a href="https://tumcps.github.io/CORA/data/CORA_2012.zip">CORA Toolbox (Release 2012)</a></li>
-          <li><a href="https://tumcps.github.io/CORA/data/CORA_2015.zip">CORA Toolbox (Release 2015)</a></li>
-          <li><a href="https://tumcps.github.io/CORA/data/Cora2015Manual.pdf" target="_blank">CORA Manual (Release 2015)</a></li>
 	  <li><a href="https://tumcps.github.io/CORA/data/CORA_2016.zip">CORA Toolbox (Release 2016)</a></li>
           <li><a href="https://tumcps.github.io/CORA/data/Cora2016Manual.pdf" target="_blank">CORA Manual (Release 2016)</a></li>
+	  <li style="color:white;">PLACEHOLDER</li>
+	  <li><a href="https://tumcps.github.io/CORA/data/CORA_2015.zip">CORA Toolbox (Release 2015)</a></li>
+          <li><a href="https://tumcps.github.io/CORA/data/Cora2015Manual.pdf" target="_blank">CORA Manual (Release 2015)</a></li>
+	  <li style="color:white;">PLACEHOLDER</li>
+	  <li><a href="https://tumcps.github.io/CORA/data/CORA_2012.zip">CORA Toolbox (Release 2012)</a></li>
         </ul>
       </nav>
       <!-- /nav -->
