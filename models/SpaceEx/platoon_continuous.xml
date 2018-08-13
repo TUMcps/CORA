@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="platoon11">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x3" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x4" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x5" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x6" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x7" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x8" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x9" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="u" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <location id="1" name="new" x="552.0" y="364.0" width="704.0" height="576.0">
+      <invariant>-9 &lt;= u &lt;= 1</invariant>
+      <flow>x1' == x2 &amp;
+x2' == -x3 + u&amp;
+x3' == 1.605*x1 + 4.868*x2 -3.5754*x3 -0.8198*x4 + 0.427*x5 - 0.045*x6 -0.1942*x7 + 0.3626*x8 - 0.0946*x9 &amp;
+x4' == x5 &amp;
+x5' == x3 - x6&amp;
+x6' == 0.8718*x1 + 3.814*x2 -0.0754*x3 + 1.1936*x4 + 3.6258*x5  -3.2396*x6 -0.595*x7+ 0.1294*x8 -0.0796*x9 &amp;
+x7' == x8 &amp;
+x8' == x6 - x9 &amp;
+x9' == 0.7132*x1 + 3.573*x2 - 0.0964*x3 + 0.8472*x4 + 3.2568*x5 - 0.0876*x6 + 1.2726*x7 + 3.072*x8 - 3.1356*x9</flow>
+    </location>
+  </component>
+</sspaceex>
+

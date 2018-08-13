@@ -1,0 +1,5 @@
+27 Feb 2015 (MA):
+
+- removed: abs.m,  box.m, center.m, deleteZeros.m, dim.m, enclose.m, expmDist.m, halfspace.m, in.m, intervalhull.m, parallelotope.m, plot.m, polytope.m, randPoint.m, randPointExtreme.m, rotate.m, split.m, sup.m, twoDimHalfspace.m
+
+

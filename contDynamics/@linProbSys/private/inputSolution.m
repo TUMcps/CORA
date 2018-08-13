@@ -1,0 +1,113 @@
+function [obj] = inputSolution(obj,options)
+% inputSolution - computes the bloating due to the input 
+%
+% Syntax:  
+%    [obj] = inputSolution(obj,options)
+%
+% Inputs:
+%    obj - linear interval system object
+%    options - options struct
+%
+% Outputs:
+%    obj - linear interval system object
+%
+% Example: 
+%    Text for example...
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: expm, tie
+
+% Author:       Matthias Althoff
+% Written:      13-February-2007 
+% Last update:  26-February-2008
+%               08-September-2009
+% Last revision:---
+
+%------------- BEGIN CODE --------------
+
+%set of possible inputs
+V=obj.B*options.U;
+
+%compute vTrans if possible
+try
+    vTrans=obj.B*options.uTrans;
+catch
+    vTrans=[];
+end
+
+%load data from object/options structure
+A=obj.A;
+Apower=obj.taylor.powers;
+E=obj.taylor.error;
+taylorTerms=options.taylorTerms;
+r=options.timeStep;
+dim=dimension(obj);
+I=eye(dim);
+F=obj.taylor.F; 
+
+%non-probabilistic solution--------------------------------
+%init Vsum
+Vsum=r*V;
+%compute higher order terms
+for i=1:taylorTerms
+    %compute factor
+    factor=1/factorial(i+1);    
+
+    %compute sums
+    Vsum=Vsum+Apower{i}*factor*r^(i+1)*V;
+end
+
+%compute overall solution
+inputSolV=Vsum+E*r*V;
+
+%compute solution due to constant input
+inputSolVtrans=inv(A)*(expm(A*r)-I)*vTrans;
+
+%compute additional uncertainty if origin is not contained in input set
+if options.originContained
+    inputCorr=zeros(dim,1);
+else
+    inputCorr=inv(A)*F*vTrans;
+end
+
+%write to object structure
+obj.taylor.V=V;
+uncertainMean=get(inputSolV+inputSolVtrans,'Z');
+obj.taylor.Rinput=probZonotope(uncertainMean,zeros(dim,1),options.gamma);
+obj.taylor.Rtrans=inputSolVtrans;
+obj.taylor.inputCorr=inputCorr;
+%----------------------------------------------------------
+
+%probabilistic solution------------------------------------
+%obtain covariance matrix after one time step
+[V,W]=eig(A);
+lambda=diag(W); %eigenvalues
+
+C=inv(V)*obj.C;
+D=C*C.';
+
+%compute Sigma in transformed coordinates
+for i=1:length(lambda)
+    for j=1:length(lambda)
+        lambdaSum=lambda(i)+lambda(j);
+        Sigma_old(i,j)=D(i,j)/-lambdaSum*exp(lambdaSum*r);
+        Sigma(i,j)=D(i,j)/lambdaSum*(1-exp(-lambdaSum*r));
+    end
+end
+%Sigma in original coordinates
+Sigma_old=V*Sigma_old*V.';
+Sigma=V*Sigma*V.';
+G=generators(Sigma);
+
+%instantiate probabilistic zonotope
+ProbInputSol=probZonotope(zeros(dim,1),G,options.gamma);
+
+%write to object structure
+obj.taylor.pRinput=ProbInputSol;
+%----------------------------------------------------------
+
+
+%------------- END OF CODE --------------

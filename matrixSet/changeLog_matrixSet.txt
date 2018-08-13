@@ -1,0 +1,3 @@
+27 Feb 2015 (MA):
+
+- remove: Hausdorff.m, @intervalMatrix_old

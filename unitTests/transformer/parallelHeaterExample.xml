@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="heatedRoom">
+    <param name="T1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="T2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="Text" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="P" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="a" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="C" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="Ton" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="Toff" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <location id="1" name="loc1" x="359.0" y="222.0" width="306.0" height="188.0">
+      <invariant>T1 &lt;=30 &amp;
+T1&gt;=10</invariant>
+      <flow>T1' == -2*a*T1 + a*T2 + a*Text + P / C</flow>
+    </location>
+    <location id="2" name="loc2" x="909.0" y="223.0" width="310.0" height="186.0">
+      <invariant>T1 &lt;=30 &amp;
+T1&gt;=10</invariant>
+      <flow>T1' == -2*a*T1 + a*T2 + a*Text</flow>
+    </location>
+    <transition source="1" target="2">
+      <guard>T1&gt;=Toff</guard>
+      <labelposition x="-73.0" y="-101.0" width="158.0" height="82.0" />
+      <middlepoint x="637.0" y="137.5" />
+    </transition>
+    <transition source="2" target="1">
+      <guard>T1 &lt;= Ton</guard>
+      <labelposition x="-79.0" y="30.0" width="154.0" height="74.0" />
+      <middlepoint x="636.0" y="307.5" />
+    </transition>
+  </component>
+  <component id="system">
+    <param name="T1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="T2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <bind component="heatedRoom" as="heatedRoom_1" x="356.0" y="134.0">
+      <map key="T1">T1</map>
+      <map key="T2">T2</map>
+      <map key="Text">0</map>
+      <map key="P">210000</map>
+      <map key="a">0.000079</map>
+      <map key="C">76000000</map>
+      <map key="Ton">18</map>
+      <map key="Toff">22</map>
+    </bind>
+    <bind component="heatedRoom" as="heatedRoom_2" x="358.0" y="316.0">
+      <map key="T1">T2</map>
+      <map key="T2">T1</map>
+      <map key="Text">0</map>
+      <map key="P">160000</map>
+      <map key="a">0.000079</map>
+      <map key="C">76000000</map>
+      <map key="Ton">14</map>
+      <map key="Toff">18</map>
+    </bind>
+  </component>
+</sspaceex>
+

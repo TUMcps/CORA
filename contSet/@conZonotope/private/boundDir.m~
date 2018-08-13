@@ -1,0 +1,54 @@
+function val = boundDir(obj,dir,type)
+% interval - over-approximate a constrained zonotope object with an
+%            axis-aligned interval (bounding box)
+%
+% Syntax:  
+%    val = boundDir(obj,dir,type)
+%
+% Inputs:
+%    obj - c-zonotope object
+%    dir - direction for which the bounds are calculated (vector of size
+%          (n,1) )
+%    type - upper or lower bound ('lower' or 'upper')
+%
+% Outputs:
+%    res - interval object
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
+
+% Author:       Niklas Kochdumper
+% Written:      13-May-2018
+% Last update:  ---
+% Last revision:---
+
+%------------- BEGIN CODE --------------
+    
+    % object properties  
+    n = size(obj.A, 2);
+    A = obj.A;
+    b = obj.b;
+
+    % ksi in [-1, 1]
+    lb = -ones(n,1);
+    ub = ones(n,1);
+    
+    % project the zonotope onto the direction
+    f = dir' * obj.Z(:,2:end);
+    
+    % linear program options
+    options = optimoptions('linprog','Algorithm','dual-simplex', 'display','off');
+
+    % determine lower bound along the specified direction
+    if strcmp(type,'lower')
+        [x, fval, flag_min] = linprog(f',[],[],A,b,lb,ub,options);
+    else
+        [x, fval, flag_min] = linprog(-f',[],[],A,b,lb,ub,options);
+        fval = -fval;
+    end
+    val = dir' * obj.Z(:,1) + fval;
+
+end

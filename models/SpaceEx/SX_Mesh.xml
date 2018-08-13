@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="Clock">
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" placement="east" />
+    <location id="1" name="loc01" x="210.0" y="109.0" width="108.0" height="82.0">
+      <invariant>t&lt;=0.5</invariant>
+      <flow>t' == 1</flow>
+    </location>
+  </component>
+  <component id="Stateflow">
+    <note>vx==vx0 &amp;
+vy==vy0 &amp;
+px==px0 &amp;
+py==py0 &amp;
+I==I0</note>
+    <param name="zeta" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="ms" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="mg2" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Jg2" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Rs" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="theta" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="deltap" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Fs" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Tf" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="vx" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="vy" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="px" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="py" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="I" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="transition1" type="label" local="true" />
+    <param name="transition2" type="label" local="true" />
+    <param name="transition31" type="label" local="true" />
+    <param name="transition32" type="label" local="true" />
+    <param name="transition33" type="label" local="true" />
+    <param name="transition34" type="label" local="true" />
+    <location id="3" name="move_free" x="360.0" y="329.0" width="170.0" height="126.0">
+      <note>px&lt;=deltap &amp;
+py&lt;=-px*0.726542528005361 &amp;&amp; 
+vx*0.587785252292473+vy*0.809016994374947&lt;=0 &amp; py&gt;=px*0.726542528005361 &amp;&amp; 
+vx*0.587785252292473-vy*0.809016994374947&lt;=0</note>
+      <invariant>px&lt;=deltap &amp;
+py&lt;=-px*0.726542528005361 &amp; py&gt;=px*0.726542528005361</invariant>
+      <flow>vx'==Fs/ms &amp;
+vy'==-Rs*Tf/Jg2 &amp;
+px'==vx &amp;
+py'==vy &amp;
+I'==0</flow>
+    </location>
+    <location id="4" name="meshed" x="712.0" y="330.0" width="176.0" height="122.0">
+      <flow>false</flow>
+    </location>
+    <transition source="3" target="3">
+      <note>I:=I+(vx*0.587785252292473+vy*0.809016994374947)*(zeta+1)*ms*mg2/(ms*(0.809016994374947^2)+mg2*(0.587785252292473^2)) &amp;
+vx:=(vx*(ms*0.809016994374947^2-mg2*zeta*0.587785252292473^2)+vy*(-(zeta+1)*mg2*0.587785252292473*0.809016994374947))/(ms*(0.809016994374947^2)+mg2*(0.587785252292473^2)) &amp;
+vy:=(vx*(-(zeta+1)*ms*0.587785252292473*0.809016994374947)+vy*(mg2*0.587785252292473^2-ms*zeta*0.809016994374947^2))/(ms*(0.809016994374947^2)+mg2*(0.587785252292473^2))</note>
+      <label>transition1</label>
+      <guard>py&gt;=-px*0.726542528005361 &amp;&amp; 
+vx*0.587785252292473+vy*0.809016994374947&gt;0</guard>
+      <assignment>I:=I+(vx*0.587785252292473+vy*0.809016994374947)*(zeta+1)*ms*mg2/(ms*(0.809016994374947*0.809016994374947)+mg2*(0.587785252292473*0.587785252292473)) &amp;
+vx:=(vx*(ms*0.809016994374947*0.809016994374947-mg2*zeta*0.587785252292473*0.587785252292473)+vy*(-(zeta+1)*mg2*0.587785252292473*0.809016994374947))/(ms*(0.809016994374947*0.809016994374947)+mg2*(0.587785252292473*0.587785252292473)) &amp;
+vy:=(vx*(-(zeta+1)*ms*0.587785252292473*0.809016994374947)+vy*(mg2*0.587785252292473*0.587785252292473-ms*zeta*0.809016994374947*0.809016994374947))/(ms*(0.809016994374947*0.809016994374947)+mg2*(0.587785252292473*0.587785252292473))</assignment>
+      <labelposition x="-236.0" y="-143.0" width="152.0" height="180.0" />
+      <middlepoint x="15.0" y="-94.0" />
+    </transition>
+    <transition source="3" target="3">
+      <label>transition2</label>
+      <guard>py&lt;=px*0.726542528005361 &amp;&amp; 
+vx*0.587785252292473-vy*0.809016994374947&gt;0</guard>
+      <assignment>I:=I+(vx*0.587785252292473-vy*0.809016994374947)*(zeta+1)*ms*mg2/(ms*(0.809016994374947*0.809016994374947)+mg2*(0.587785252292473*0.587785252292473)) &amp;
+vx:=(vx*(ms*0.809016994374947*0.809016994374947-mg2*zeta*0.587785252292473*0.587785252292473)+vy*((zeta+1)*mg2*0.587785252292473*0.809016994374947))/(ms*(0.809016994374947*0.809016994374947)+mg2*(0.587785252292473*0.587785252292473)) &amp;
+vy:=(vx*((zeta+1)*ms*0.587785252292473*0.809016994374947)+vy*(mg2*0.587785252292473*0.587785252292473-ms*zeta*0.809016994374947*0.809016994374947))/(ms*(0.809016994374947*0.809016994374947)+mg2*(0.587785252292473*0.587785252292473))</assignment>
+      <labelposition x="-218.0" y="0.0" width="210.0" height="176.0" />
+      <middlepoint x="12.0" y="98.0" />
+    </transition>
+    <transition source="3" target="4">
+      <label>transition31</label>
+      <guard>px&gt;=deltap &amp; vx&gt;=0 &amp; vy&gt;=0</guard>
+      <assignment>I:=I+ms*vx+ms*vy &amp;
+vx:=0 &amp;
+vy:=0</assignment>
+      <labelposition x="-119.0" y="-56.0" width="162.0" height="50.0" />
+      <middlepoint x="577.5" y="202.0" />
+      <waypoints>
+        <beforemiddle>498.0,203.0</beforemiddle>
+      </waypoints>
+    </transition>
+    <transition source="3" target="4">
+      <label>transition32</label>
+      <guard>px&gt;=deltap &amp; vx&gt;=0 &amp; vy&lt;=0</guard>
+      <assignment>I:=I+ms*vx-ms*vy &amp;
+vx:=0 &amp;
+vy:=0</assignment>
+      <labelposition x="-77.0" y="-49.0" width="126.0" height="50.0" />
+      <middlepoint x="564.0" y="280.0" />
+      <waypoints>
+        <beforemiddle>501.0,281.0</beforemiddle>
+      </waypoints>
+    </transition>
+    <transition source="3" target="4">
+      <label>transition33</label>
+      <guard>px&gt;=deltap &amp; vx&lt;=0 &amp; vy&gt;=0</guard>
+      <assignment>I:=I-ms*vx+ms*vy &amp;
+vx:=0 &amp;
+vy:=0</assignment>
+      <labelposition x="-56.0" y="6.0" width="128.0" height="50.0" />
+    </transition>
+    <transition source="3" target="4">
+      <label>transition34</label>
+      <guard>px&gt;=deltap &amp; vx&lt;=0 &amp; vy&lt;=0</guard>
+      <assignment>I:=I-ms*vx-ms*vy &amp;
+vx:=0 &amp;
+vy:=0</assignment>
+      <labelposition x="-25.0" y="2.0" width="124.0" height="50.0" />
+      <middlepoint x="496.0" y="424.0" />
+      <waypoints>
+        <aftermiddle>565.0,423.0</aftermiddle>
+      </waypoints>
+    </transition>
+  </component>
+  <component id="Stateflow_trans1">
+    <note>vx==vx0 &amp;
+vy==vy0 &amp;
+px==px0 &amp;
+py==py0 &amp;
+I==I0</note>
+    <param name="zeta" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="ms" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="mg2" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Jg2" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Rs" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="theta" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="deltap" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Fs" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Tf" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="vx" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="vy" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="px" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="py" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="I" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="transition1" type="label" local="true" />
+    <param name="transition2" type="label" local="true" />
+    <param name="transition31" type="label" local="true" />
+    <param name="transition32" type="label" local="true" />
+    <param name="transition33" type="label" local="true" />
+    <param name="transition34" type="label" local="true" />
+    <location id="3" name="move_free" x="360.0" y="330.0" width="170.0" height="126.0">
+      <note>px&lt;=deltap &amp;
+py&lt;=-px*0.726542528005361 &amp;&amp; 
+vx*0.587785252292473+vy*0.809016994374947&lt;0</note>
+      <invariant>px&lt;=deltap</invariant>
+      <flow>vx'==Fs/ms &amp;
+vy'==-Rs*Tf/Jg2 &amp;
+px'==vx &amp;
+py'==vy &amp;
+I'==0</flow>
+    </location>
+    <location id="4" name="meshed" x="713.0" y="330.0" width="178.0" height="124.0">
+      <invariant>px&gt;=deltap</invariant>
+      <flow>vx'==0 &amp;
+vy'==0 &amp;
+px'==0 &amp;
+py'==0 &amp;
+I'==0</flow>
+    </location>
+    <transition source="3" target="3">
+      <label>transition1</label>
+      <guard>py&gt;=-px*0.726542528005361 &amp;&amp; 
+vx*0.587785252292473+vy*0.809016994374947&gt;0</guard>
+      <assignment>I:=I+(vx*0.587785252292473+vy*0.809016994374947)*(zeta+1)*ms*mg2/(ms*(0.809016994374947^2)+mg2*(0.587785252292473^2)) &amp;
+vx:=(vx*(ms*0.809016994374947^2-mg2*zeta*0.587785252292473^2)+vy*(-(zeta+1)*mg2*0.587785252292473*0.809016994374947))/(ms*(0.809016994374947^2)+mg2*(0.587785252292473^2)) &amp;
+vy:=(vx*(-(zeta+1)*ms*0.587785252292473*0.809016994374947)+vy*(mg2*0.587785252292473^2-ms*zeta*0.809016994374947^2))/(ms*(0.809016994374947^2)+mg2*(0.587785252292473^2))</assignment>
+      <labelposition x="-208.0" y="-159.0" width="152.0" height="180.0" />
+      <middlepoint x="15.0" y="-94.0" />
+    </transition>
+    <transition source="3" target="4">
+      <label>transition31</label>
+      <guard>px&gt;=deltap &amp; vx&gt;=0 &amp; vy&gt;=0</guard>
+      <assignment>I:=I+ms*vx+ms*vy &amp;
+vx:=0 &amp;
+vy:=0</assignment>
+      <labelposition x="-119.0" y="-55.0" width="162.0" height="50.0" />
+      <middlepoint x="577.5" y="202.0" />
+      <waypoints>
+        <beforemiddle>498.0,203.0</beforemiddle>
+      </waypoints>
+    </transition>
+    <transition source="3" target="4">
+      <label>transition32</label>
+      <guard>px&gt;=deltap &amp; vx&gt;=0 &amp; vy&lt;=0</guard>
+      <assignment>I:=I+ms*vx-ms*vy &amp;
+vx:=0 &amp;
+vy:=0</assignment>
+      <labelposition x="-77.0" y="-49.0" width="126.0" height="50.0" />
+      <middlepoint x="564.0" y="280.0" />
+      <waypoints>
+        <beforemiddle>501.0,281.0</beforemiddle>
+      </waypoints>
+    </transition>
+    <transition source="3" target="4">
+      <label>transition33</label>
+      <guard>px&gt;=deltap &amp; vx&lt;=0 &amp; vy&gt;=0</guard>
+      <assignment>I:=I-ms*vx+ms*vy &amp;
+vx:=0 &amp;
+vy:=0</assignment>
+      <labelposition x="-56.0" y="6.0" width="128.0" height="50.0" />
+    </transition>
+    <transition source="3" target="4">
+      <label>transition34</label>
+      <guard>px&gt;=deltap &amp; vx&lt;=0 &amp; vy&lt;=0</guard>
+      <assignment>I:=I-ms*vx-ms*vy &amp;
+vx:=0 &amp;
+vy:=0</assignment>
+      <labelposition x="-25.0" y="2.0" width="124.0" height="50.0" />
+      <middlepoint x="496.0" y="424.0" />
+      <waypoints>
+        <aftermiddle>565.0,423.0</aftermiddle>
+      </waypoints>
+    </transition>
+  </component>
+  <component id="Stateflow_trans1_only">
+    <note>vx==vx0 &amp;
+vy==vy0 &amp;
+px==px0 &amp;
+py==py0 &amp;
+I==I0</note>
+    <param name="zeta" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="ms" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="mg2" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Jg2" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Rs" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="theta" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="deltap" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Fs" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Tf" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="vx" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="vy" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="px" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="py" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="I" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <location id="3" name="move_free" x="355.0" y="258.0" width="328.0" height="186.0">
+      <note>px&lt;=deltap &amp;
+py&lt;=-px*0.726542528005361 &amp;&amp; 
+vx*0.587785252292473+vy*0.809016994374947&lt;0</note>
+      <invariant>px&lt;=deltap &amp; py&lt;=-px*0.726542528005361 &amp;
+vx*0.587785252292473+vy*0.809016994374947&lt;=0</invariant>
+      <flow>vx'==Fs/ms &amp;
+vy'==-Rs*Tf/Jg2 &amp;
+px'==vx &amp;
+py'==vy &amp;
+I'==0</flow>
+    </location>
+  </component>
+  <component id="Stateflowcopy">
+    <note>vx==vx0 &amp;
+vy==vy0 &amp;
+px==px0 &amp;
+py==py0 &amp;
+I==I0</note>
+    <param name="zeta" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="ms" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="mg2" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Jg2" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Rs" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="theta" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="deltap" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Fs" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="Tf" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="false" placement="west" />
+    <param name="vx" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="vy" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="px" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="py" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="I" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="transition1" type="label" local="true" />
+    <param name="transition2" type="label" local="true" />
+    <param name="transition31" type="label" local="true" />
+    <param name="transition32" type="label" local="true" />
+    <param name="transition33" type="label" local="true" />
+    <param name="transition34" type="label" local="true" />
+    <location id="3" name="move_free" x="360.0" y="330.0" width="188.0" height="280.0">
+      <flow>vx'==Fs/ms &amp;
+vy'==-Rs*Tf/Jg2 &amp;
+px'==vx &amp;
+py'==vy &amp;
+I'==0</flow>
+    </location>
+    <location id="4" name="meshed" x="803.0" y="275.0" width="178.0" height="282.0">
+      <flow>vx'==0 &amp;
+vy'==0 &amp;
+px'==vx &amp;
+py'==vy &amp;
+I'==0</flow>
+    </location>
+    <transition source="3" target="3">
+      <label>transition1</label>
+      <guard>py&gt;=-px*0.726542528005361 &amp;&amp; 
+vx*0.587785252292473+vy*0.809016994374947&gt;0</guard>
+      <assignment>I:=I+(vx*0.587785252292473+vy*0.809016994374947)*(zeta+1)*ms*mg2/(ms*(0.809016994374947^2)+mg2*(0.587785252292473^2)) &amp;
+vx:=(vx*(ms*0.809016994374947^2-mg2*zeta*0.587785252292473^2)+vy*(-(zeta+1)*mg2*0.587785252292473*0.809016994374947))/(ms*(0.809016994374947^2)+mg2*(0.587785252292473^2)) &amp;
+vy:=(vx*(-(zeta+1)*ms*0.587785252292473*0.809016994374947)+vy*(mg2*0.587785252292473^2-ms*zeta*0.809016994374947^2))/(ms*(0.809016994374947^2)+mg2*(0.587785252292473^2))</assignment>
+      <labelposition x="-236.0" y="-143.0" width="152.0" height="180.0" />
+      <middlepoint x="27.0" y="-171.0" />
+    </transition>
+    <transition source="3" target="3">
+      <label>transition2</label>
+      <guard>py&lt;=px*0.726542528005361 &amp;&amp; 
+vx*0.587785252292473-vy*0.809016994374947&gt;0</guard>
+      <assignment>I:=I+(vx*0.587785252292473-vy*0.809016994374947)*(zeta+1)*ms*mg2/(ms*(0.809016994374947^2)+mg2*(0.587785252292473^2)) &amp;
+vx:=(vx*(ms*0.809016994374947^2-mg2*zeta*0.587785252292473^2)+vy*((zeta+1)*mg2*0.587785252292473*0.809016994374947))/(ms*(0.809016994374947^2)+mg2*(0.587785252292473^2)) &amp;
+vy:=(vx*((zeta+1)*ms*0.587785252292473*0.809016994374947)+vy*(mg2*0.587785252292473^2-ms*zeta*0.809016994374947^2))/(ms*(0.809016994374947^2)+mg2*(0.587785252292473^2))</assignment>
+      <labelposition x="-219.0" y="1.0" width="210.0" height="176.0" />
+      <middlepoint x="21.0" y="175.0" />
+    </transition>
+    <transition source="3" target="4">
+      <label>transition31</label>
+      <guard>px&gt;=deltap &amp; vx&gt;=0 &amp; vy&gt;=0</guard>
+      <assignment>I:=I+ms*vx+ms*vy &amp;
+vx:=0 &amp;
+vy:=0</assignment>
+      <labelposition x="-146.0" y="-61.0" width="158.0" height="52.0" />
+      <middlepoint x="644.5" y="202.0" />
+      <waypoints>
+        <beforemiddle>498.0,203.0</beforemiddle>
+      </waypoints>
+    </transition>
+    <transition source="3" target="4">
+      <label>transition32</label>
+      <guard>px&gt;=deltap &amp; vx&gt;=0 &amp; vy&lt;=0</guard>
+      <assignment>I:=I+ms*vx-ms*vy &amp;
+vx:=0 &amp;
+vy:=0</assignment>
+      <labelposition x="-58.0" y="-48.0" width="114.0" height="50.0" />
+    </transition>
+    <transition source="3" target="4">
+      <label>transition33</label>
+      <guard>px&gt;=deltap &amp; vx&lt;=0 &amp; vy&gt;=0</guard>
+      <assignment>I:=I-ms*vx+ms*vy &amp;
+vx:=0 &amp;
+vy:=0</assignment>
+      <labelposition x="-21.0" y="0.0" width="144.0" height="50.0" />
+      <middlepoint x="534.5" y="359.0" />
+      <waypoints>
+        <aftermiddle>634.0,357.0</aftermiddle>
+      </waypoints>
+    </transition>
+    <transition source="3" target="4">
+      <label>transition34</label>
+      <guard>px&gt;=deltap &amp; vx&lt;=0 &amp; vy&lt;=0</guard>
+      <assignment>I:=I-ms*vx-ms*vy &amp;
+vx:=0 &amp;
+vy:=0</assignment>
+      <labelposition x="-27.0" y="11.0" width="168.0" height="50.0" />
+      <middlepoint x="523.5" y="431.0" />
+      <waypoints>
+        <aftermiddle>643.0,428.0</aftermiddle>
+      </waypoints>
+    </transition>
+  </component>
+  <component id="mesh">
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="vx" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="841.0" y="128.0" />
+    <param name="vy" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="847.0" y="178.0" />
+    <param name="px" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="863.0" y="231.0" />
+    <param name="py" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="856.0" y="272.0" />
+    <param name="I" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="865.0" y="315.0" />
+    <bind component="Clock" as="Clock_1" x="439.0" y="449.0">
+      <map key="t">t</map>
+    </bind>
+    <bind component="Stateflow" as="Stateflow_2" x="557.0" y="225.0" width="170.0" height="232.0">
+      <map key="zeta">0.9</map>
+      <map key="ms">3.2</map>
+      <map key="mg2">18.1</map>
+      <map key="Jg2">0.7</map>
+      <map key="Rs">0.08</map>
+      <map key="theta">0.628318530717959</map>
+      <map key="deltap">-0.003</map>
+      <map key="Fs">70</map>
+      <map key="Tf">1</map>
+      <map key="vx">vx</map>
+      <map key="vy">vy</map>
+      <map key="px">px</map>
+      <map key="py">py</map>
+      <map key="I">I</map>
+    </bind>
+  </component>
+  <component id="mesh_2">
+    <param name="zeta" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="true" />
+    <param name="ms" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="true" />
+    <param name="mg2" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="true" />
+    <param name="Jg2" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="true" />
+    <param name="Rs" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="true" />
+    <param name="theta" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="true" />
+    <param name="deltap" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="true" />
+    <param name="Fs" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="true" />
+    <param name="Tf" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="true" />
+    <param name="vx" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="446.0" y="117.0" />
+    <param name="vy" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="444.0" y="147.0" />
+    <param name="px" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="444.0" y="181.0" />
+    <param name="py" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="445.0" y="207.0" />
+    <param name="I" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="445.0" y="240.0" />
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <bind component="Stateflow_trans1" as="Stateflow_trans1_1" x="326.0" y="180.0" width="100.0" height="150.0">
+      <map key="zeta">0.9</map>
+      <map key="ms">3.2</map>
+      <map key="mg2">18.1</map>
+      <map key="Jg2">0.7</map>
+      <map key="Rs">0.08</map>
+      <map key="theta">0.628318530717959</map>
+      <map key="deltap">-0.003</map>
+      <map key="Fs">70</map>
+      <map key="Tf">1</map>
+      <map key="vx">vx</map>
+      <map key="vy">vy</map>
+      <map key="px">px</map>
+      <map key="py">py</map>
+      <map key="I">I</map>
+    </bind>
+    <bind component="Clock" as="Clock_1" x="565.0" y="396.0">
+      <map key="t">t</map>
+    </bind>
+  </component>
+  <component id="mesh_3">
+    <param name="vx" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="446.0" y="117.0" />
+    <param name="vy" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="444.0" y="147.0" />
+    <param name="px" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="444.0" y="181.0" />
+    <param name="py" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="445.0" y="207.0" />
+    <param name="I" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="445.0" y="240.0" />
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <bind component="Clock" as="Clock_1" x="565.0" y="396.0">
+      <map key="t">t</map>
+    </bind>
+    <bind component="Stateflow_trans1_only" as="Stateflow_trans1_only_1" x="565.0" y="182.0" width="82.0" height="156.0">
+      <map key="zeta">0.9</map>
+      <map key="ms">3.2</map>
+      <map key="mg2">18.1</map>
+      <map key="Jg2">0.7</map>
+      <map key="Rs">0.08</map>
+      <map key="theta">0.628318530717959</map>
+      <map key="deltap">-0.003</map>
+      <map key="Fs">70</map>
+      <map key="Tf">1</map>
+      <map key="vx">vx</map>
+      <map key="vy">vy</map>
+      <map key="px">px</map>
+      <map key="py">py</map>
+      <map key="I">I</map>
+    </bind>
+  </component>
+</sspaceex>
+
