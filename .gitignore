@@ -1,0 +1,26 @@
+# exclude autosave files
+
+*.asv
+
+*.m~
+
+*.txt~
+
+
+#exclude generated files
+generated_*
+
+
+
+/.project
+
+#exclude latex generated files
+manual/*.aux
+manual/*.bbl
+manual/*.blg
+manual/*.dvi
+manual/*.log
+manual/*.out
+manual/*.pdf
+manual/*.ps
+manual/*.toc

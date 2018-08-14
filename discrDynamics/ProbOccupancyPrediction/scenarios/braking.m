@@ -31,7 +31,7 @@ clc
 profile on
 
 %initial set
-initCarA=interval([98; 6], [112; 8]);    %interval for position and speed 
+initCarA=interval([117; 2], [123; 4]);    %interval for position and speed 
 
 %generate autonomous car trajectory
 autonomousCarTrajectory.velocity=3*ones(1,40);
@@ -57,7 +57,6 @@ simOptionsA.GammaFull=GammaFull;
 simOptionsA.mode='autonomousDriving';
 simOptionsA.gamma=0.2;
 simOptionsA.freeDrivingProb=[0.01 0.04 0.1 0.4 0.4 0.05];
-%simOptionsA.initialInputProb=[0 0 0.5 0.5 0 0];
 simOptionsA.initialInputProb=[0 0 0 1 0 0];
 simOptionsA.autonomousCarTrajectory=autonomousCarTrajectory;
 simOptionsA.frontProbVector=[];
@@ -246,6 +245,7 @@ for iStep=1:4
     %plot crossing
     plotCrossing(Rstraight,[36,41]);
     xlabel('car A');   
+    axis([0,4,0,170]);
 
     %plot pB
     subplot(1,3,2);
@@ -253,7 +253,8 @@ for iStep=1:4
     %plot crossing
     plotCrossing(Rstraight,[36,41]);
     xlabel('car B');
-    set(gca,'ytick',[]);    
+    set(gca,'ytick',[]); 
+    axis([0,4,0,170]);
     
     %plot pC
     subplot(1,3,3);
@@ -261,7 +262,8 @@ for iStep=1:4
     %plot crossing
     plotCrossing(Rstraight,[36,41]);  
     xlabel('car C');
-    set(gca,'ytick',[]);    
+    set(gca,'ytick',[]);  
+    axis([0,4,0,170]);
 end
 
 

@@ -17,6 +17,7 @@ options.polytopeOrder=6; %polytope order
 options.projectedDimensions=[1 2];
 options.reductionInterval=1e3;
 options.target='vehicleDynamics';
+options.guardIntersect='polytope';
 %--------------------------------------------------------------------------
 
 %specify continuous dynamics-----------------------------------------------

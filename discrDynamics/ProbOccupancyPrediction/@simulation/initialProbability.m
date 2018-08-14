@@ -27,6 +27,6 @@ function p0=initialProbability(obj)
 
 %------------- BEGIN CODE --------------
 
-[~, p0] = exactIntersectingSegments(obj.simOptions.stateField, obj.simOptions.initialStateSet);
+[~, p0] = exactIntersectingCells(obj.simOptions.stateField, obj.simOptions.initialStateSet);
     
 %------------- END OF CODE --------------

@@ -23,10 +23,10 @@ function [pX]=xIntegration(pos,xSegment,intInterval)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 19-November-2007 
-% Last update: 18-June-2008
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      19-November-2007 
+% Last update:  18-June-2008
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

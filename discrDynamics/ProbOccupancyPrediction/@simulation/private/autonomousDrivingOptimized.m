@@ -68,9 +68,9 @@ for iStep=1:simOptions.runs
     
     %convert intervals to probabilities
     %time point
-    [~, pTP] = exactIntersectingSegments(field,IHtp);
+    [~, pTP] = exactIntersectingCells(field,IHtp);
     %time interval
-    [~, pTI] = exactIntersectingSegments(field,IHti);
+    [~, pTI] = exactIntersectingCells(field,IHti);
     
     %total probability = partial probability
     pTotal.T{iStep}=pTP;

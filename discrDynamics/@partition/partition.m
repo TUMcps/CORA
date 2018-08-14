@@ -98,7 +98,7 @@ classdef partition
         intervals = cellIntervals(obj,varargin)
         polytopes = cellPolytopes(obj,varargin)
         zonotopes = cellZonotopes(obj,varargin)
-        [intersectingCells, intersectingProportion]=exactIntersectingSegments(Obj,contSet)
+        [intersectingCells, intersectingProportion]=exactIntersectingCells(Obj,contSet)
         n = nrOfCells(obj)
         [c]=centerSegment(Obj)
         [normalizedVector]=normalize(Obj,vector)

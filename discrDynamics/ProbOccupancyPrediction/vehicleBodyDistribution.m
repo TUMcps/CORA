@@ -53,7 +53,7 @@ for i=1:length(cellInd)
     IH=IH+IHadd;
     
     %intersect interval with new partition
-    [~, iProp] = exactIntersectingSegments(newPartition,IH);
+    [~, iProp] = exactIntersectingCells(newPartition,IH);
     tpTmp=probVec(cellInd(i))*iProp;
     
     %sum up to total probability

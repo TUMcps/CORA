@@ -30,6 +30,7 @@ function [p]=intersection(R1,R2,p1,p2,devProb1,devProb2,fArray,type)
 %               22-April-2008
 %               17-June-2009
 %               18-August-2016
+%               14-August-2018
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -75,7 +76,7 @@ potPairs=[];
 
 
 %obtain potential segment intersection pairs
-if (~isempty(c1) & ~isempty(c2))
+if (~isempty(c1) && ~isempty(c2))
     for i=1:length(c1(:,1))
         for j=1:length(c2(:,1))
             dist=norm(c1(i,:)-c2(j,:));
@@ -106,7 +107,7 @@ if ~isempty(potPairs)
                 [pos2,angle2]=segData(R2,potPairs(iPair,2),potDevPairs(k,2));
 
                 %obtain intersection probability
-                intersected = intersection_database(intDatabase,pos1,angle1,pos2,angle2);     
+                intersected = intersection_database(R1,fArray,intDatabase,pos1,angle1,pos2,angle2);     
 
                 if intersected>0
                     %compute partial probabilities

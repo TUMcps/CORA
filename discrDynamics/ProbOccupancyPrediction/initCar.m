@@ -46,6 +46,7 @@ options.isHyperplaneMap = 0;
 options.originContained = 0;
 options.enclosureEnables = [3, 5];
 options.target = 'vehicleDynamics';
+options.guardIntersect='polytope';
 %--------------------------------------------------------------------------
 
 %specify continuous dynamics-----------------------------------------------

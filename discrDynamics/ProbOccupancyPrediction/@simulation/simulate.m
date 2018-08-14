@@ -29,7 +29,7 @@ function [obj]=simulate(obj)
 %compute initial probability
 stateField = obj.simOptions.stateField;
 initialStateSet = obj.simOptions.initialStateSet;
-[~, obj.simOptions.initialProbability] = exactIntersectingSegments(stateField, initialStateSet);
+[~, obj.simOptions.initialProbability] = exactIntersectingCells(stateField, initialStateSet);
 %compute Gamma matrices
 obj.simOptions.Gamma=gammaMatrix(obj.markovChainSpec,obj.simOptions);
 %compute speed restriction

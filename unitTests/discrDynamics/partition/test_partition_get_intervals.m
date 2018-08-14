@@ -66,8 +66,8 @@ res = res1&&res2&&res3;
 % segmentZonotope(threeDimField)
 % P = mptPolytope([2 0 0.3;4 2 0.6;1 1 0.5; 1 1 0.1]);
 % intersectingSegments(threeDimField,P)
-% [iS,percentages] = exactIntersectingSegments(threeDimField,P)
-% plot(threeDimField,exactIntersectingSegments(threeDimField,P))
+% [iS,percentages] = exactIntersectingCells(threeDimField,P)
+% plot(threeDimField,exactIntersectingCells(threeDimField,P))
 % hold on
 % plot(P)
 % 

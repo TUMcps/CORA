@@ -1,4 +1,4 @@
-function tp =transitionProbability(finalStateMat,field)
+function tp = transitionProbability(finalStateMat,field)
 % transitionProbability - Calculate the transition probability from the 
 % actual cell to the reachable cells.
 %
@@ -26,6 +26,7 @@ function tp =transitionProbability(finalStateMat,field)
 % Last update:  09-October-2006
 %               26-March-2008
 %               16-June-2009
+%               14-August-2018
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -41,8 +42,10 @@ nrOfFinalStates=length(finalStateMat(:,1));
 %------------------------------------------------------------------
 
 %get cell indices of final states----------------------------------
+finalCell = zeros(1,nrOfFinalStates);
 for iPoint=1:nrOfFinalStates
-    finalCell(iPoint)=intersectingCells(field,finalStateMat(iPoint,:));
+    aux=intersectingCells(field,finalStateMat(iPoint,:));
+    finalCell(iPoint)=aux(1); %if at border of cells, choose first cell
 end
 %------------------------------------------------------------------
 

@@ -25,15 +25,13 @@ function [p,pTotal]=roadCrossingOptimized(simOptions,markovChainSpec)
 
 % Author:       Matthias Althoff
 % Written:      14-October-2009
-% Last update:  ---
+% Last update:  13-August-2018
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 %load data
-qFree=simOptions.freeDrivingProb;
 ThetaC=simOptions.interactionMatrix;
-T=simOptions.transitionMatrix;
 pFront=simOptions.frontProbVector;
 xSegment=simOptions.xSegment;
 field=simOptions.stateField;
@@ -65,7 +63,8 @@ simOptions.tranFilter=sparse(tranFilter);
 %---------------------------------------
 
 %time step loop
-for iStep=1:(simOptions.runs-1)
+%for iStep=1:(simOptions.runs-1)
+for iStep=1:(simOptions.runs)
     
     %compute m vector for virtual car
     mVirt=ThetaC*pVirtual;
@@ -88,12 +87,12 @@ end
 simOptions.pTrans=[];
 simOptions.selectionVector=mAppr;
 
-%execute Markov-Chains
+%execute Markov-Chains for approaching phase
 [pAppr,pApprTotal,pTrans]=drivingOptimized(simOptions,markovChainSpec);  
 
 %change input distribution of pTrans in crossing mode
 selMode=floor(nrOfModes/2)+1;
-for iStep=1:(simOptions.runs-1)
+for iStep=1:(simOptions.runs)
     pTransTotal=simOptions.projMat*pTrans{iStep+1};
     for iMode=1:markovChainSpec.nrOfInputs
         if iMode==selMode
@@ -102,13 +101,13 @@ for iStep=1:(simOptions.runs-1)
             pTransTmp(:,iMode)=0*pTransTotal;
         end
     end
-    %bring to new form
+    %bring transition probabilities to new form
     pTmp=reshape(pTransTmp',prod(size(pTransTmp)),1);
     pTrans{iStep+1}=[];
     pTrans{iStep+1}=pTmp;
 end
         
-%change options   
+%change options for crossing phase
 simOptions.initialProbability=zeros(nrOfCells,1);
 simOptions.selectionVector=mCross;
 simOptions.pTrans=pTrans;
@@ -118,7 +117,7 @@ simOptions.tranProb=[];
 [pCross,pCrossTotal]=drivingOptimized(simOptions,markovChainSpec);   
     
 %combine probabilities
-for iStep=1:(simOptions.runs-1)
+for iStep=1:(simOptions.runs)
     %total probabilities
     pTotal.T{iStep}=pApprTotal.T{iStep}+pCrossTotal.T{iStep};
     pTotal.OT{iStep}=pApprTotal.OT{iStep}+pCrossTotal.OT{iStep};

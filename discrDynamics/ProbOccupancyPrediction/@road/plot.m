@@ -1,9 +1,10 @@
-function [cx,cy]=plot(varargin);
+function plot(varargin)
 % Purpose:  plot road object
 % Pre:      road object
 % Post:     ---
 % Built:    04.12.06,MA
 % Modified: 21.11.07,MA
+% Modified: 13.08.18,MA
 
 
 %no color specified
@@ -13,8 +14,8 @@ if nargin==2
     devProb=[1,2,3,3.5,3,2,1]/sum([1,2,3,3.5,3,2,1]); %deviation probability  
     color='b'; %b=blue
     %get maximum probability for normalization
-    pMax=max(p)*1.1*max(devProb);
-    normVal=sum(p)/pMax;     
+    pMax=max(p)*1.02*max(devProb);
+    normVal=1/pMax;     
     segment=[];
     
 %deviation probability specified
@@ -24,8 +25,8 @@ elseif nargin==3
     devProb=varargin{3};
     color='b'; %b=blue
     %get maximum probability for normalization
-    pMax=max(p)*1.1*max(devProb);
-    normVal=sum(p)/pMax;     
+    pMax=max(p)*1.02*max(devProb);
+    normVal=1/pMax;     
     segment=[];    
     
 %color specified
@@ -35,8 +36,8 @@ elseif nargin==4
     devProb=varargin{3};
     color=varargin{4};
     %get maximum probability for normalization
-    pMax=max(p)*1.1*max(devProb);
-    normVal=sum(p)/pMax;    
+    pMax=max(p)*1.02*max(devProb);
+    normVal=1/pMax;    
     segment=[];
     
 %color, normVal specified
@@ -84,54 +85,37 @@ for iInd=1:length(ind)
             [P]=segPolytope(obj,iSeg,iDev);
                         
             if strcmp(color,'trans')
-                %options.color=color;
-                options.color='k';
-                options.linestyle='none';
-                options.shade=p(iSeg)*normVal*devProb(iDev);
-                if options.shade<1e-6
-                    options.shade=1e-6;
-                end;
-                plot(P,options);
-                
+                options.color='k';               
             elseif strcmp(color,'transB')
-                %options.color=color;
                 options.color='b';
-                options.linestyle='none';
-                options.shade=p(iSeg)*normVal*devProb(iDev);
-                if options.shade<1e-6
-                    options.shade=1e-6;
-                end;
-                plot(P,options);     
-                
             elseif strcmp(color,'transG')
-                %options.color=color;
                 options.color='g';
-                options.linestyle='none';
-                options.shade=p(iSeg)*normVal*devProb(iDev);
-                if options.shade<1e-6
-                    options.shade=1e-6;
-                end;
-                plot(P,options);    
-                
             elseif strcmp(color,'transR')
-                %options.color=color;
-                options.color='r';
-                options.linestyle='none';
-                options.shade=p(iSeg)*normVal*devProb(iDev);
-                if options.shade<1e-6
-                    options.shade=1e-6;
-                end;
-                plot(P,options);                   
-                
-            elseif strcmp(color,'grid')
-               %plot using own methods
-                V=vertices(extreme(P)');
-                plot(V,'grayEdge');        
-
+                options.color='r'; 
             else
-                %plot using own methods
-                V=vertices(extreme(P)');
-                plot(V,'grayTones',p(iSeg)*devProb(iDev));
+                options.color=color;  
+            end
+            
+            % no borders
+            options.linestyle='none';
+            
+            % obtain transparency
+            options.shade=p(iSeg)*normVal*devProb(iDev);
+            
+            % make small probabilities visible
+            if options.shade<1e-6
+                options.shade=1e-6;
+            end
+            
+            % plot polytope
+            try %MPT2
+                plot(P,options);
+            catch %MPT3
+                try
+                plot(P,'Color',options.color,'LineStyle',options.linestyle,'Alpha',options.shade);
+                catch
+                    disp('display error')
+                end
             end
 
             hold on

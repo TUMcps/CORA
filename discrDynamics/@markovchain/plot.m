@@ -46,32 +46,26 @@ set(gcf,'Units','normalized');
 set(h,'position',[0.1,0.1,0.9,0.3]);
 hold on
 
-% start subplots
-figure
+% plot sample trajectories
 subplot(1,3,1);
 plot(Obj.field);
-hold on
 traj_plot(trajectories,options);
-
-
-%plot reachable cells for the time point and time interval
-field=Obj.field;
 
 %choose input that has been devoloped in the end
 iInput=length(Obj.T.T);
 
+% plot distribution for points in time
 T=Obj.T.T{iInput}; 
 subplot(1,3,2);
-%figure
-plotP(field,T(:,actualSegmentNr+1),'k');
+plotP(Obj,T(:,actualSegmentNr+1),'k');
 plot(Obj.field);
 xlabel('x_1');
 ylabel('x_2');
 
+% plot distribution for time intervals
 T=Obj.T.OT{iInput};
 subplot(1,3,3);
-%figure
-plotP(field,T(:,actualSegmentNr+1),'k');
+plotP(Obj,T(:,actualSegmentNr+1),'k');
 plot(Obj.field);
 xlabel('x_1');
 ylabel('x_2');

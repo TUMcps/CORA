@@ -1,6 +1,6 @@
 function res = test_partition_exactIntersection()
 % test_partition_exactIntersection - unit test for the function 
-% exactIntersectingSegments
+% exactIntersectingCells
 %
 % Syntax:  
 %    res = test_partition_exactIntersection()
@@ -27,35 +27,35 @@ threeDimField=partition([0,10; -3,3; 0,1],[5;10;3]);
 threeDimField_div=partition({[0 2 3 4 8 10],[-3 -1.5 -1 -0.9 0 0.1 0.2 0.3 1 2 3],[0,0.3,0.6,1]});
 
 P2 = mptPolytope([2 0;4 2;1 1]);
-[iS1,percentages1] = exactIntersectingSegments(twoDimField,P2);
+[iS1,percentages1] = exactIntersectingCells(twoDimField,P2);
 % figure;
 % plot(twoDimField,iS1(2:end)');
 % hold on
 % plot(P2);
 
 P2 = mptPolytope([2 0;4 2;-1 1]);
-[iS2,percentages2] = exactIntersectingSegments(twoDimField,P2);
+[iS2,percentages2] = exactIntersectingCells(twoDimField,P2);
 % figure;
 % plot(twoDimField,iS2(2:end)');
 % hold on
 % plot(P2);
 
 P = mptPolytope([2 0 0.3;4 2 0.6;1 1 0.5; 1 1 0.1]);
-[iS3,percentages3] = exactIntersectingSegments(threeDimField,P);
+[iS3,percentages3] = exactIntersectingCells(threeDimField,P);
 % figure;
 % plot(threeDimField,iS3(2:end)');
 % hold on
 % plot(P);
 
 P = mptPolytope([2 0 0.3;4 2 0.6;1 1 0.5; 1 1 -0.1]);
-[iS4,percentages4] = exactIntersectingSegments(threeDimField,P);
+[iS4,percentages4] = exactIntersectingCells(threeDimField,P);
 % figure;
 % plot(threeDimField,iS4(2:end)');
 % hold on
 % plot(P);
 
 P = mptPolytope([2 0 0.3;4 2 0.6;1 1 0.5; 1 1 0.1]);
-[iS5,percentages5] = exactIntersectingSegments(threeDimField_div,P);
+[iS5,percentages5] = exactIntersectingCells(threeDimField_div,P);
 % figure;
 % plot(threeDimField_div,iS5(2:end)');
 % hold on
@@ -63,7 +63,7 @@ P = mptPolytope([2 0 0.3;4 2 0.6;1 1 0.5; 1 1 0.1]);
 
 
 P = mptPolytope([2 0 0.3;4 2 0.6;1 1 0.5; 1 1 -0.1]);
-[iS6,percentages6] = exactIntersectingSegments(threeDimField_div,P);
+[iS6,percentages6] = exactIntersectingCells(threeDimField_div,P);
 % figure;
 % plot(threeDimField_div,iS6(2:end)');
 % hold on

@@ -39,7 +39,7 @@ fArray=file.fArray;
 gamma = 0.2;
 
 %set final time and time steps
-finalTime=0.1;
+finalTime=options.tFinal;
  
 %Initialize Markov Chain
 MC=markovchain(stateField);

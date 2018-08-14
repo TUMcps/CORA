@@ -43,7 +43,7 @@ end
 subscripts=i2s(obj,cellNrs);
 
 % init intervals
-intervals = cell(size(subscripts,1));
+intervals = cell(size(subscripts,1),1);
 
 % assign values to intervals
 for i = 1:size(subscripts,1)

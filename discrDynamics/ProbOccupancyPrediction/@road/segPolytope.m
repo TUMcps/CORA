@@ -67,7 +67,8 @@ Prt=[x2; y2]+(devNumber-0.5*nrOfDev)*transLat2;
 V=[Plb,Prb,Plt,Prt];
 
 %Generate polytope
-P=polytope(V.');
+%P=polytope(V.');
+P=Polyhedron(V.');
     
 
 %------------- END OF CODE --------------

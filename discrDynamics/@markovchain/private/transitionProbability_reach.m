@@ -48,18 +48,24 @@ for k=1:length(niP)
                 niP{k}{i}=polytope(niP{k}{i});
             end
             % intersection probabilities
-            [~, iP] = exactIntersectingSegments(field,niP{k}{i});
+            [~, iP] = exactIntersectingCells(field,niP{k}{i});
             % add partial transition probbailities from the considered time
             % interval
             tp=tp+tranFrac{k}/length(niP{k})*iP;
         else
             for j=1:length(niP{k}{i})
                 %polytope conversion if niP{k}{i} is a zonotope
-                if isa(niP{k}{i}{j}.set,'zonotope')
+                if isa(niP{k}{i}{j},'zonotope') || isa(niP{k}{i}{j},'zonotopeBundle')
+                    niP{k}{i}{j}=polytope(niP{k}{i}{j});
+                    %intersection
+                    [~, iP] = exactIntersectingCells(field,niP{k}{i}{j});
+                elseif isa(niP{k}{i}{j}.set,'zonotope') || isa(niP{k}{i}{j}.set,'zonotopeBundle')
                     niP{k}{i}{j}.set=polytope(niP{k}{i}{j}.set);
+                    %intersection
+                    [~, iP] = exactIntersectingCells(field,niP{k}{i}{j}.set);
                 end
-                %intersection
-                [~, iP] = exactIntersectingSegments(field,niP{k}{i}{j}.set);
+
+                % add transition probabilities
                 tp=tp+tranFrac{k}/length(niP{k})*iP;
             end
         end

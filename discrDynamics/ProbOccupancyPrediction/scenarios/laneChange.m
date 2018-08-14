@@ -29,7 +29,7 @@ clc
 
 %initial set
 initCarA=interval([5;14], [15;16]); %interval for position and velocity
-initCarB=interval([72;14], [84,16]);... %interval for position and velocity
+initCarB=interval([72;14], [84;16]);... %interval for position and velocity
 initCarC=interval([72;4], [84;8]); %interval for position and velocity 
 initCarD=interval([30;14], [40;16]); %interval for position and velocity
                    

@@ -23,18 +23,15 @@ function start_carReach(~)
 
 
 %load fArray to determine segment length of road 
-[fileName,pathName] = uigetfile();
+[fileName,pathName] = uigetfile('','Load fArray');
 
 % set model initialization
 modelInitialization = @initCar;
 
 % generate probabilistic model
-%probModel = carReach(fileName,pathName,modelInitialization);
+probModel = carReach(fileName,pathName,modelInitialization);
 
-save probModel
-load ProbModel
-
-% obtain interaction with other cars
+% obtain interaction with other car
 ThetaC = interaction(fileName,pathName,modelInitialization);
 
 %save results to file

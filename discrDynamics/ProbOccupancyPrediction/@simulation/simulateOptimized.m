@@ -29,7 +29,7 @@ function [obj]=simulateOptimized(obj)
 %compute initial probability
 stateField = obj.simOptions.stateField;
 initialStateSet = obj.simOptions.initialStateSet;
-[~, obj.simOptions.initialProbability] = exactIntersectingSegments(stateField, initialStateSet);
+[~, obj.simOptions.initialProbability] = exactIntersectingCells(stateField, initialStateSet);
 
 %compute speed restriction
 if isfield(obj.simOptions,'speedRes') && numel(obj.simOptions.speedRes)>0
@@ -70,7 +70,10 @@ if strcmp(obj.simOptions.mode,'laneChanging')
     avgVel.left=avgVelocityOnPath(pTotal.left.OT,obj.simOptions.stateField);
     avgVel.right=avgVelocityOnPath(pTotal.right.OT,obj.simOptions.stateField);
     %store ratio of lane change/lane keeping
-    obj.result.lcEvolProb=lcEvolProb;   
+    obj.result.lcEvolProb=lcEvolProb; 
+    %dummy for posProb_T, velProb_T
+    posProb_T = [];
+    velProb_T = [];
 elseif strcmp(obj.simOptions.mode,'autonomousDrivingPosOnly')
     p=[]; pTotal=[]; velProb=[]; velProb_T=[]; inputProb=[]; avgVel=[];
     posProb=pProb.OT; posProb_T=pProb.T;

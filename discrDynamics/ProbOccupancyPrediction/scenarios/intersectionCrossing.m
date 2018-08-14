@@ -38,7 +38,8 @@ initCarD=interval([5; 8], [17;10]); %interval for position and velocity
 
 %set simOptions for braking car
 simOptionsA.type='car'; %set as default for simplicity
-simOptionsA.runs=22;
+%simOptionsA.runs=22;
+simOptionsA.runs=18;
 simOptionsA.initialStateSet=initCarA;
 simOptionsA.stateField=stateField;
 simOptionsA.inputField=inputField;
@@ -129,55 +130,56 @@ inputD=get(carD,'inputProb');
 avgVelD=get(carD,'avgVel');
 
 
-nrOfSegments=get(stateField,'nrOfSegments');
-intervals=get(stateField,'intervals');
+nrOfSegments=stateField.nrOfSegments;
+intervals=stateField.intervals;
 
-% %plot position distribution
-% posField=partition(intervals(1,:),nrOfSegments(1));
-% for i=[8,15,21]
-%     figure
-%     hold on
-%     plotHisto(posField,posA{i});
-%     plotHisto(posField,posB{i});
-%     plotHisto(posField,posC{i});
-%     plotHisto(posField,posD{i});
-%     xlabel('s [m]');
-%     ylabel('probability');
-% end
-% 
-% %plot velocity distribution
-% velField=partition(intervals(2,:),nrOfSegments(2));
-% for i=[8,15,21]
-%     figure
-%     hold on
-%     plotHisto(velField,velA{i});
-%     plotHisto(velField,velB{i});
-%     plotHisto(velField,velC{i});
-%     plotHisto(velField,velD{i});
-%     xlabel('v [m/s]');
-%     ylabel('probability');    
-% end
-% 
-% %plot input distribution
-% for i=[8,15,21]
-%     figure
-%     hold on
-%     plotHisto(inputField,inputA{i});
-%     plotHisto(inputField,inputB{i});
-%     plotHisto(inputField,inputC{i});
-%     plotHisto(inputField,inputD{i});
-%     xlabel('u \in [-1,1]');
-%     ylabel('probability');    
-% end
+%plot position distribution
+posField=partition(intervals(1,:),nrOfSegments(1));
+for i=[8,15,simOptionsA.runs]
+    figure
+    hold on
+    plotHisto(posField,posA{i});
+    plotHisto(posField,posB{i});
+    plotHisto(posField,posC{i});
+    plotHisto(posField,posD{i});
+    xlabel('s [m]');
+    ylabel('probability');
+end
+
+%plot velocity distribution
+velField=partition(intervals(2,:),nrOfSegments(2));
+for i=[8,15,simOptionsA.runs]
+    figure
+    hold on
+    plotHisto(velField,velA{i});
+    plotHisto(velField,velB{i});
+    plotHisto(velField,velC{i});
+    plotHisto(velField,velD{i});
+    xlabel('v [m/s]');
+    ylabel('probability');    
+end
+
+%plot input distribution
+for i=[8,15,simOptionsA.runs]
+    figure
+    hold on
+    plotHisto(inputField,inputA{i});
+    plotHisto(inputField,inputB{i});
+    plotHisto(inputField,inputC{i});
+    plotHisto(inputField,inputD{i});
+    xlabel('u \in [-1,1]');
+    ylabel('probability');    
+end
 
 
 %plot cross probability
-t=0.5:0.5:11;
-plot(t(1:end-1),1-crossProb); %<-- !!!
+t=0.5:markovChainSpec.timeStep:simOptionsA.runs*markovChainSpec.timeStep;
+figure
+plot(t(1:end),1-crossProb); %<-- !!!
 
 
 %compute average position probabilities
-stepsCombined=5;
+stepsCombined=4;
 for iFinal=1:4
     %initialize average position probabilities
     posAvgA{iFinal}=0*posA{1};
@@ -216,52 +218,53 @@ stretch=2; %[m]
     stretch,devProbCar);
 
 %create path
-Rstraight=createPath(dispR,[pi/2,0,5],[0],[40]);
+Rstraight=createPath(dispR,[pi/2,0,5],0,40);
 Rcurved=createPath(dispR,[3*pi/2,30,190],[0,-0.1,0.1,0],[12;12;12;4]);
 RcurvedLong=createPath(dispR,[3*pi/2,30,190],[0,-0.1,0.1,0],[12;12;12;8]);
 
 
     
 
-% for iStep=1:4
-%     figure   
-%     
-%     k=7*(iStep-1)+1;
-%     
-%     %plot pA and pB
-%     %plot(Rcurved,posAvgA{iStep},dispDevProbCar,'trans');
-%     %plot(Rcurved,posAvgB{iStep},dispDevProbCar,'trans');
-%     if iStep==1
-%         plot(RcurvedLong,posA{k},dispDevProbCar,'trans');
-%         plot(RcurvedLong,posB{k},dispDevProbCar,'trans');         
-%     else
-%         plot(Rcurved,posA{k},dispDevProbCar,'trans');
-%         plot(Rcurved,posB{k},dispDevProbCar,'trans');    
-%     end
-%     %plot crossing
-%     plotCrossing(Rcurved,[24,27]); 
-%     
-%     %plot pC and pD
-%     %plot(Rstraight,posAvgC{iStep},dispDevProbCar,'trans');
-%     %plot(Rstraight,posAvgD{iStep},dispDevProbCar,'trans');
-%     plot(Rstraight,posC{k},dispDevProbCar,'trans');
-%     plot(Rstraight,posD{k},dispDevProbCar,'trans');    
-%     %plot crossing 
-%     plotCrossing(Rstraight,[14,17]); 
-%     
-%     %plot remaining lines
-%     plot([-9.12,-7,-6],[70.36,71,70],'k-');
-%     plot([-14.09,-10,-6.5,-6],[76.63,80,85,90],'k-');
-%     plot([4.02,2.2,2],[85.89,85,90],'k-');
-%     plot([7.65,3,2.2,2],[78.76,75,73,70],'k-');
-% end
+for iStep=1:4
+    figure   
+    
+    %k=7*(iStep-1)+1;
+    k=5*(iStep-1)+1;
+    
+    %plot pA and pB
+    %plot(Rcurved,posAvgA{iStep},dispDevProbCar,'trans');
+    %plot(Rcurved,posAvgB{iStep},dispDevProbCar,'trans');
+    if iStep==1
+        plot(RcurvedLong,posA{k},dispDevProbCar,'trans');
+        plot(RcurvedLong,posB{k},dispDevProbCar,'trans');         
+    else
+        plot(Rcurved,posA{k},dispDevProbCar,'trans');
+        plot(Rcurved,posB{k},dispDevProbCar,'trans');    
+    end
+    %plot crossing
+    plotCrossing(Rcurved,[24,27]); 
+    
+    %plot pC and pD
+    %plot(Rstraight,posAvgC{iStep},dispDevProbCar,'trans');
+    %plot(Rstraight,posAvgD{iStep},dispDevProbCar,'trans');
+    plot(Rstraight,posC{k},dispDevProbCar,'trans');
+    plot(Rstraight,posD{k},dispDevProbCar,'trans');    
+    %plot crossing 
+    plotCrossing(Rstraight,[14,17]); 
+    
+    %plot remaining lines
+    plot([-9.12,-7,-6],[70.36,71,70],'k-');
+    plot([-14.09,-10,-6.5,-6],[76.63,80,85,90],'k-');
+    plot([4.02,2.2,2],[85.89,85,90],'k-');
+    plot([7.65,3,2.2,2],[78.76,75,73,70],'k-');
+end
 
 
 %create road
 R=road(4,5,1);
 
 %create path
-Rstraight=createPath(R,[pi/2,0,5],[0],[40]);
+Rstraight=createPath(R,[pi/2,0,5],0,40);
 Rcurved=createPath(R,[3*pi/2,30,190],[0,-0.1,0.1,0],[12;12;12;4]);
 
 %figure;

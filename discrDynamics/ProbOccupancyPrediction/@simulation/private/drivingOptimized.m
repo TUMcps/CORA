@@ -26,6 +26,7 @@ function [p,pTotal,pTrans]=drivingOptimized(simOptions,markovChainSpec)
 % Author:       Matthias Althoff
 % Written:      15-June-2009
 % Last update:  01-August-2016
+%               14-August-2018
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -83,7 +84,6 @@ for iStep=1:(simOptions.runs)
     %ind=find(p.T{iStep+1}>3/nrOfCombinedStates);
     pTmp=sparse(nrOfCombinedStates,1);    
     pTmp(ind)=p.T{iStep+1}(ind);
-    pTmp=pTmp/sum(pTmp);
     p.T{iStep+1}=pTmp;
     
     %get nonzero indices of the reachable set
@@ -96,6 +96,7 @@ for iStep=1:(simOptions.runs)
   
         %combine m with speed restriction
         mPartial=min(mFull{iStep}(nonZeroIndTotal),speedRes(nonZeroIndTotal));   
+
         %combine with free driving probability
         mPartial=combineOptimized(mPartial,freeDriving(nonZeroIndTotal),nrOfInputs); 
 
@@ -119,7 +120,6 @@ for iStep=1:(simOptions.runs)
     if ~isempty(pAdd)
         p.T{iStep+1}=p.T{iStep+1}+pAdd{iStep+1};
     end
-    
 end    
 
 %------------- END OF CODE --------------

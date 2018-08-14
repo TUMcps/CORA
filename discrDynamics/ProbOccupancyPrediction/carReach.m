@@ -39,18 +39,16 @@ fArray=file.fArray;
 gamma = 0.2;
 
 %set final time and time steps
-finalTime=0.1;
+finalTime=options.tFinal;
 timeSteps=5;
 
 %Initialize Markov Chain
 MC=markovchain(stateField);
 
 %obtain number of segments of the state discretization
-%nrOfSegments=get(stateField,'nrOfSegments'); <-- AP
 nrOfSegments = stateField.nrOfSegments;
 
 %total number of discrete inputs, states, positions and velocities
-% totalNrOfInputs=prod(get(inputField,'nrOfSegments')); <--AP
 totalNrOfInputs = nrOfCells(inputField);
 totalNrOfPositions=nrOfSegments(1);
 totalNrOfVelocities=nrOfSegments(2);
@@ -62,33 +60,27 @@ end
 
 
 %for all input combinations
-for iInput=1:totalNrOfInputs
-    
-    %initialize waitbar  
-    %h = waitbar(0,['iInput:',num2str(iInput)]);    
+for iInput=1:totalNrOfInputs   
     
     %generate input intervals
-    uZ=cellZonotopes(inputField,iInput);
+    aux=cellZonotopes(inputField,iInput);
+    uZ=aux{1};
     
     %for all velocities
     for iVel=1:totalNrOfVelocities
             
         %obain current discrete state 
         iState=(iVel-1)*totalNrOfPositions+1;
-        %update discretized state space
-        %stateField=set(stateField,'actualSegmentNr',iState); %<-- AP: doesn't exist any more!
-        
-        MC=set(MC,'field',stateField);
         
         %display iInput and iState
         iInput
         iState     
         
-        %simulate hybrid automaton
-        options.R0=cellZonotopes(stateField,iState);
-        
-        initialStates=gridPoints(interval(options.R0{1}),5);
-        sampleInputs=gridPoints(interval(uZ{1}),5);
+        %obtain intial set, sate samples, and inputv samples
+        aux=cellZonotopes(stateField,iState);
+        options.R0=aux{1};
+        initialStates=gridPoints(interval(options.R0),5);
+        sampleInputs=gridPoints(interval(uZ),5);
         
         %init finalStateMat
         finalStateMat.T=[];
@@ -99,7 +91,7 @@ for iInput=1:totalNrOfInputs
             options.x0=initialStates(:,initIndx);
             for inputIndx=1:length(sampleInputs(1,:))
                 %set input value
-                for i=1:5
+                for i=1:timeSteps
                     options.uLocTrans{i}=sampleInputs(:,inputIndx);
                     options.Uloc{i}=zonotope(0);
                 end
@@ -134,16 +126,11 @@ for iInput=1:totalNrOfInputs
         %Update Markov Chain
         MC=build4road(MC,finalStateMat,iInput,iState);
           %if mod(iState,19)==0
-           if iState>0
-                %plot(MC,trajectories,options,iState);
-           end
-        
-        %update waitbar
-        %waitbar(iState/totalNrOfStates,h); 
+%            if iState>0
+%                 plot(MC,trajectories,options,iState);
+%            end
     end
 end
-%close waitbar
-%close(h);
 
 %optimize structure of Markov chain
 [T, projMat, GammaFull] = convertTransitionMatrix(MC, gamma);

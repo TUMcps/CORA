@@ -80,7 +80,7 @@ else
                      8);                  
     
     %generate interval hulls for deviation intervals
-    [IH]=allSegmentIntervalHulls(devField2);
+    [IH]=cellIntervals(devField2);
     
 
     for iStep=1:length(y)
@@ -93,7 +93,7 @@ else
         %intersect translated interval hulls with the cells and weight them
         %by the probabilities
         for j=1:length(IH)
-            prob=cellIntersection3(devField,deltaIH{j});
+            [~,prob]=exactIntersectingCells(devField,deltaIH{j});
             prob=prob*devProbCarStd(j);
             totalProb{iStep}=totalProb{iStep}+prob;
         end        

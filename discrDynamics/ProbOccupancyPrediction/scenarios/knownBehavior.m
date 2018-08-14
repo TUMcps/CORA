@@ -53,9 +53,9 @@ IHti=interval([minPos-uncertainPos; minVel-uncertainVel],...
 
 %convert intervals to probabilities
 %time point
-[~, pTP] = exactIntersectingSegments(field,IHtp);
+[~, pTP] = exactIntersectingCells(field,IHtp);
 %time interval
-[~, pTI] = exactIntersectingSegments(field,IHti);
+[~, pTI] = exactIntersectingCells(field,IHti);
 
 
 %plots---------------------------------------------------------------------
