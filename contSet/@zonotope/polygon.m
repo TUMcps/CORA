@@ -56,7 +56,7 @@ angles(angles<0) = angles(angles<0) +2*pi;%handle numerical imprecision/deficien
 % assert(~any(angles>pi));
 
 %sort all generators by their angle
-[tmp,IX] = sort(angles,'ascend');
+[~,IX] = sort(angles,'ascend');
 
 %cumsum the generators in order of angle
 p = zeros(2,n+1);
@@ -68,8 +68,8 @@ p(1,:) = p(1,:) + xmax - max(p(1,:));
 p(2,:) = p(2,:) - ymax;
 
 %flip/mirror upper half to get lower half of zonotope (point symmetry)            
-p = [p(1,:),p(1,end)+p(1,1)-p(1,:);...
-    p(2,:),p(2,end)+p(2,1)-p(2,:)];
+p = [p(1,:),p(1,end)+p(1,1)-p(1,2:end);...
+    p(2,:),p(2,end)+p(2,1)-p(2,2:end)];
 
 %consider center
 p(1,:) = c(1) + p(1,:);
