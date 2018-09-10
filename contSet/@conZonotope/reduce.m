@@ -14,7 +14,7 @@ function res = reduce(obj,method,orderG,orderC,varargin)
 %             elimination does not result in an over-approximation are
 %             removed
 %    orderG - desired degree-of-freedom order
-%    orderC - desired number of generators
+%    orderC - desired number of constraints
 %    redOptions - additional settings for the zonotope reduction method 
 %                 (i.e. filterLength, alg, etc.)
 %
@@ -61,7 +61,9 @@ if nargin >= 5
 end
 
 % rescale the constrained zonotope
-obj = rescale(obj,'iter');
+if ~isempty(obj.A)
+    obj = rescale(obj,'iter');
+end
 
 % remove the trivial constraints [0 0 ... 0]*ksi = 0
 obj = removeZeroConstraints(obj);
@@ -221,7 +223,7 @@ function H = hausdorffError(A,G,r)
         C = [I, iQ(:,i); I(i,:), 0];
         d = [zeros(n+m,1); r(i)];
         x = linsolve(C, d);
-        H(i) = sum(G * x(1:n).^2) + sum(x(1:n).^2);     % equation (A.6)
+        H(i) = sum((G * x(1:n)).^2) + sum(x(1:n).^2);
     end
 end
 
