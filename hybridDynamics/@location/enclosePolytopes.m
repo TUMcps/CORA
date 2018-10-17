@@ -70,16 +70,15 @@ end
     
 V=vertices(V);
 
-%obtain direction of the vector field
-x0=mid(interval(V));
-fcnHandle=getfcn(obj.contDynamics,options);
-direction=fcnHandle(0,x0); 
-
 nrOfEncl=length(options.enclosureEnables);
 for i=1:nrOfEncl
     %perform different enclosures
     switch options.enclosureEnables(i)
         case 1
+            %obtain direction of the vector field
+            x0=mid(interval(V));
+            fcnHandle=getfcn(obj.contDynamics,options);
+            direction=fcnHandle(0,x0); 
             %new direction
             Ztmp = dirPolytopeNew(V,direction);
         case 2
