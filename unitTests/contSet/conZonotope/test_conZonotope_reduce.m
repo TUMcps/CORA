@@ -140,14 +140,37 @@ for j = 1:length(methods)
         % check if all vertices are located inside the set
         temp = P.A*V-P.b*ones(1,size(V,2));
         if any(any(temp > 1e-10))
-            error('Test 1 (test case %i) failed!',i); 
+            error('Test 2 (test case %i) failed!',i); 
         end
     end
 end
 
 
+% Test 3: Redundant Constraints (analytical test) -------------------------
+
+load('conZonotope_reduce.mat');
+
+% remove all redundant constraints
+cZred = reduce(cZ,'redConstr');
+
+% calculate vertices
+temp = vertices(cZred);
+V_ = get(temp,'V');
+V_ = V_';
+
+% calculate vertices of the equivalent polytope
+poly = mptPolytope(cZ);
+temp = vertices(poly);
+V = get(temp,'V');
+V = V';
+
+% compare with the real vertices
+for i = 1:size(V_,2)
+   if ~ismembertol(V_(i,:),V,'ByRows',true)
+       error('Test 3 (remove redundant constraints)') 
+   end
+end
 
 res = 1;
-
 
 %------------- END OF CODE --------------

@@ -30,7 +30,7 @@ function res = reduce(obj,method,orderG,orderC,varargin)
 %
 %    hold on
 %    plotZono(cZono)
-%    plot(redZono,[1,2],'g','LineWidth',2);
+%    plot(redZono,[1,2],'g');
 %    
 %
 % Other m-files required: none
@@ -127,87 +127,99 @@ end
 function res = conRed(obj,order)
 % Reduce the number of costrains A*ksi = b.
 
-    % extract object properties
-    A = obj.A;
-    b = obj.b;
-    c = obj.Z(:,1);
-    G = obj.Z(:,2:end);
-
     % remove all constraints for which the elimination does not result in an
-    % overapproximation
-    r = max(0, max(abs(obj.R),[],2) - 1 );
-    ind = find(r == 0);
-    suc = zeros(size(ind));
+    % over-approximation
+    obj = redConRed(obj);
 
-    for i = 1:length(ind)
-        ind_ = ind(i) - (i-1);
-        [G,c,A,b,suc(i)] = eliminateConstraint(G,c,A,b,ind_);   
-    end
-
-    temp = find(suc == 1);
-    r(ind(temp)) = [];
 
     % remove constraints until the desired number of constraints is reached
-    while size(A,1) > order
+    while size(obj.A,1) > order
 
+        % extract object properties
+        A = obj.A;
+        b = obj.b;
+        c = obj.Z(:,1);
+        G = obj.Z(:,2:end);
+        
+        % get measure for the over-approximation due to removal of factors
+        r = max(0, max(abs(obj.R),[],2) - 1 );
+        
         % find the minimal Hausdorff error
         H = hausdorffError(A,G,r);
-        [~, ind] = min(H);
+        [~,ind] = sort(H,'ascend');            
+           
+        % try to eliminate one constraint 
+        found = 0;
 
-        % try to remove constraint
-        [G,c,A,b,suc] = eliminateConstraint(G,c,A,b,ind); 
-        
-        if ~suc     % selected ksi did not appear in any constraints
-             
-           [~,ind] = sort(H,'ascend');
-           found = 0;
-           
-           % try to eliminate the constraint with all other factors ksi
-           for i = 2:length(H)
-               [G,c,A,b,suc] = eliminateConstraint(G,c,A,b,ind(i)); 
-               if suc
-                  r(ind(i)) = [];
-                  found = 1;
-                  break;
-               end
+        for i = 1:length(ind)
+
+           suc = 0;
+
+           if ~isinf(r(ind(i)))
+              [G,c,A,b,suc] = eliminateConstraint(G,c,A,b,ind(i)); 
            end
-           
-           % constraint matrix A all 0 -> only trivial constraint 0*ksi = 0
-           if ~found
-              A = []; b = [];  
+
+           if suc
+              found = 1;
+              break;
            end
-           
-        else        % elimination successfull
-            r(ind) = [];
         end
 
+        % construct new conZonotope object
+        obj = conZonotope([c,G],A,b);
+        
+        % No constraint could be removed -> cancel reduction
+        if ~found || isempty(A)
+            break;
+        else
+            % rescale to update measure for over-approximation after removal
+            obj = rescale(obj,'iter');
+        end
     end
+    
+    % remove the trivial constraints [0 0 ... 0]*ksi = 0
+    obj = removeZeroConstraints(obj);
 
     % construct the reduced constrained zonotope object
-    res = conZonotope([c,G],A,b);
+    res = obj;
 end
 
 function res = redConRed(obj)
 % Remove all constraints for which the elimination does not result in an
 % overapproximation
 
-    % extract object properties
-    A = obj.A;
-    b = obj.b;
-    c = obj.Z(:,1);
-    G = obj.Z(:,2:end);
-
-    % remove all constraints
+    % find constraints whos removal does not result in a over-approximation
     r = max(0, max(abs(obj.R),[],2) - 1 );
     ind = find(r == 0);
 
-    for i = 1:length(ind)
-        ind_ = ind(i) - (i-1);
-        [G,c,A,b] = eliminateConstraint(G,c,A,b,ind_);   
+    % recursively repeat the removal
+    while ~isempty(ind)
+       
+        % extract object properties
+        A = obj.A;
+        b = obj.b;
+        c = obj.Z(:,1);
+        G = obj.Z(:,2:end);
+        
+        % remove constraint
+        [G,c,A,b] = eliminateConstraint(G,c,A,b,ind(1)); 
+        
+        % rescale to find the constraints whos removal does not result in
+        % an over-approximation
+        obj = conZonotope([c,G],A,b);
+        
+        if ~isempty(A)
+            obj = rescale(obj,'iter');
+        else
+            break; 
+        end
+        
+        r = max(0, max(abs(obj.R),[],2) - 1 );
+        ind = find(r == 0);       
     end
     
     % construct the reduced constrained zonotope object
-    res = conZonotope([c,G],A,b);
+    res = obj;
 end
 
 function H = hausdorffError(A,G,r)
@@ -216,13 +228,23 @@ function H = hausdorffError(A,G,r)
 
     [m,n] = size(A);
     Q = [G' * G + eye(n) , A'; A, zeros(m,m)];
-    iQ = inv(Q);
     I = eye(n+m);
     H = zeros(n,1);
+    
+    % LU-decomposition
+    [L,U] = lu(Q); 
+    
+     % loop over all factors 
     for i = 1:n
-        C = [I, iQ(:,i); I(i,:), 0];
+        
+        % solve linear equation system (A.8)
+        e = zeros(size(Q,1),1);
+        e(i) = 1;
+        C = [I, U\(L\e); I(i,:), 0];
         d = [zeros(n+m,1); r(i)];
         x = linsolve(C, d);
+        
+        % approximation of the Hausdorff distance
         H(i) = sum((G * x(1:n)).^2) + sum(x(1:n).^2);
     end
 end
