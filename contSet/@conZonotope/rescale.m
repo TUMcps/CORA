@@ -50,7 +50,9 @@ function res = rescale(obj,varargin)
 
     % determine the new domain for each factor ksi
     if isempty(obj.A)
-        error('No constrains left')
+        error('No constrains left!');
+    elseif isempty(obj)
+        error('Set is empty!');
     elseif isempty(obj.ksi)
         if strcmp(method,'iter')
             obj = preconditioning(obj);
