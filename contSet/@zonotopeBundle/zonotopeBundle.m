@@ -74,7 +74,7 @@ methods
     [Zbundle] = quadraticMultiplication_zono(Zbundle,Q)
         
     %display functions
-    plot(varargin)
+    handle = plot(varargin)
     display(obj)
 
 end
