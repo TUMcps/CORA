@@ -201,14 +201,28 @@ function res = redConRed(obj)
         c = obj.Z(:,1);
         G = obj.Z(:,2:end);
         
-        % remove constraint
-        [G,c,A,b] = eliminateConstraint(G,c,A,b,ind(1)); 
+        % try to remove constraint
+        found = 0;
+
+        for i = 1:length(ind)
+
+           suc = 0;
+
+           if ~isinf(r(ind(i)))
+              [G,c,A,b,suc] = eliminateConstraint(G,c,A,b,ind(i)); 
+           end
+
+           if suc
+              found = 1;
+              break;
+           end
+        end
         
         % rescale to find the constraints whos removal does not result in
         % an over-approximation
         obj = conZonotope([c,G],A,b);
         
-        if ~isempty(A)
+        if ~isempty(A) && found
             obj = rescale(obj,'iter');
         else
             break; 
