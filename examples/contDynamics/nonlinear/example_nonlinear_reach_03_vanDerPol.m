@@ -4,7 +4,7 @@ function completed = example_nonlinear_reach_03_vanDerPol()
 %
 % This example can be found in Sec. 3.4.5 of
 % M. Althoff, “Reachability analysis and its application to the safety 
-% assessment of autonomous cars”, Dissertation, Technische Universität 
+% assessment of autonomous cars�?, Dissertation, Technische Universität 
 % München, 2010, 
 % http://nbn-resolving.de/urn/resolver.pl?urn:nbn:de:bvb:91-diss-20100715-963752-1-4
 % 
@@ -56,10 +56,12 @@ options.R0 = zonotopeBundle(Z0);
 options.timeStep=0.02; %time step size for reachable set computation
 options.taylorTerms=4; %number of taylor terms for reachable sets
 options.zonotopeOrder=10; %zonotope order
+options.intermediateOrder = 10;
+options.errorOrder = 5;
 options.polytopeOrder=1.5; %polytope order
 
-options.advancedLinErrorComp = 0;
-options.tensorOrder=1;
+options.advancedLinErrorComp = 1;
+options.tensorOrder=2;
 options.reductionTechnique='girard';
 options.filterLength = [10, 5];
 options.maxError=0.05*[1; 1];

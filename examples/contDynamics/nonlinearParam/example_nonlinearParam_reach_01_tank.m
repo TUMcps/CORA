@@ -42,14 +42,14 @@ options.tStart=0; %start time
 options.tFinal=400; %final time
 options.x0=[2; 4; 4; 2; 10; 4]; %initial state for simulation
 options.R0=zonotope([options.x0,0.2*eye(dim)]); %initial state for reachability analysis
-options.timeStep=4;
+options.timeStep=1;
 options.taylorTerms=4; %number of taylor terms for reachable sets
 options.intermediateOrder = options.taylorTerms;
 options.zonotopeOrder=10; %zonotope order
 options.reductionTechnique='girard';
 options.maxError = 1*ones(dim,1);
 options.reductionInterval=1e3;
-options.tensorOrder = 1;
+options.tensorOrder = 2;
 
 options.advancedLinErrorComp = 0;
 

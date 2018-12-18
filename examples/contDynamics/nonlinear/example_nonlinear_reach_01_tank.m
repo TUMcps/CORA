@@ -43,7 +43,7 @@ options.tFinal=400; %final time
 options.x0=[2; 4; 4; 2; 10; 4]; %initial state for simulation
 options.R0=zonotope([options.x0,0.2*eye(dim)]); %initial state for reachability analysis
 
-options.timeStep=4; %time step size for reachable set computation
+options.timeStep=1; %time step size for reachable set computation
 options.taylorTerms=4; %number of taylor terms for reachable sets
 options.zonotopeOrder=50; %zonotope order
 options.intermediateOrder=5;
@@ -102,9 +102,7 @@ for plotRun=1:3
     %plot reachable sets
     for i=1:length(Rcont)
         for j=1:length(Rcont{i})
-            Zproj = project(Rcont{i}{j},projectedDimensions);
-            Zproj = reduce(Zproj,'girard',3);
-            plotFilled(Zproj,[1 2],[.8 .8 .8],'EdgeColor','none');
+            plotFilled(Rcont{i}{j},projectedDimensions,[.8 .8 .8],'EdgeColor','none');
         end
     end
     

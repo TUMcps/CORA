@@ -47,7 +47,11 @@ for i=1:taylorTerms
 end
 
 %get error due to finite Taylor series
-F=E*V*r;
+if isa(V,'zonotopeBundle')
+    F=E*V.Z{1}*r;
+else
+    F=E*V*r;
+end
 
 %Compute error solution
 Rerror=Asum+F;

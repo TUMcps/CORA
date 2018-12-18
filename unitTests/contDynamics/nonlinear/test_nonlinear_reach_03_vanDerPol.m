@@ -39,13 +39,15 @@ Z0{1}=zonotope([1.4 0.05 0; 2.3 0 0.05]); %initial state for reachability analys
 %options.R0=zonotope([1.4 0.6 0; 2.3 0 0.05]); %initial state for reachability analysis
 options.R0 = zonotopeBundle(Z0);
 
-options.timeStep=0.02; %time step size for reachable set computation
+options.timeStep=0.01; %time step size for reachable set computation
 options.taylorTerms=4; %number of taylor terms for reachable sets
 options.zonotopeOrder=10; %zonotope order
+options.intermediateOrder = 10;
+options.errorOrder = 5;
 options.polytopeOrder=1.5; %polytope order
 
-options.advancedLinErrorComp = 0;
-options.tensorOrder=1;
+options.advancedLinErrorComp = 1;
+options.tensorOrder=2;
 options.reductionTechnique='girard';
 options.filterLength = [10, 5];
 options.maxError=0.05*[1; 1];
@@ -81,9 +83,18 @@ for i=1:length(Rcont{end})
     end
 end
 
+% % Visualization
+% hold on
+% for i = 1:20
+%    for j = 1:length(Rcont{i})
+%        plotFilled(Rcont{i}{j},[1,2],[.6 .6 .6],'EdgeColor','none');
+%    end
+% end
+% plot(Premain,[1,2],'r');
+
 %remove previous reachable sets
 iStep = 1;
-while ~isempty(Premain) && (iStep<=10)
+while ~isempty(Premain) && (iStep<=20)
     for iSet=1:length(Rcont{iStep})
         Preach = polytope(Rcont{iStep}{iSet});
         Premain = Premain\Preach;
@@ -113,7 +124,7 @@ end
 
 
 % %simulate
-% stepsizeOptions = odeset('MaxStep',0.2*(options.tStart-options.tFinal));
+% stepsizeOptions = odeset('MaxStep',0.2*(options.tFinal-options.tStart));
 % %generate overall options
 % opt = odeset(stepsizeOptions);
 % 

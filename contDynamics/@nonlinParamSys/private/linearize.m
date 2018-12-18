@@ -57,7 +57,7 @@ p.x=center(R)+f0prev*0.5*options.timeStep;
 if isa(options.paramInt,'interval')
 
     % obtain cell of possible derivatives
-    f0cell=parametricDynamicFile(p.x,p.u);
+    f0cell=obj.parametricDynamicFile(p.x,p.u);
 
     %normalize cells
     for i=2:length(f0cell)

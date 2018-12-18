@@ -35,7 +35,7 @@ options.tStart=0; %start time
 options.tFinal=400; %final time
 options.x0=[2; 4; 4; 2; 10; 4]; %initial state for simulation
 options.R0=zonotope([options.x0,0.2*eye(dim)]); %initial state for reachability analysis
-options.timeStep=4;
+options.timeStep=1;
 options.taylorTerms=4; %number of taylor terms for reachable sets
 options.intermediateOrder = options.taylorTerms;
 options.zonotopeOrder=10; %zonotope order
@@ -69,8 +69,8 @@ IH = interval(Rcont{end}{1});
 
 %saved result
 IH_saved = interval( ...
-    [2.4879275479717178; 2.3856881541219952; 2.2316948412393662; 2.0715117891853185; 1.9199746996247509; 1.8247637787978590], ...
-    [3.6970023964496770; 3.4992505989985103; 3.2474182101676945; 2.9917630628716139; 2.8080177391124801; 2.7542133434920073]);
+    [2.2951563475236298; 2.1634660130913415; 2.0001713162063837; 1.8382964545932126; 1.6357089163639560; 1.3070344587514788], ...
+    [3.8928903890554940; 3.7300482565925814; 3.4909185224659325; 3.2377181952313689; 3.1029347886879859; 3.2768262662390524]);
 
 %check if slightly bloated versions enclose each other
 res_1 = (IH <= enlarge(IH_saved,1+1e-8));

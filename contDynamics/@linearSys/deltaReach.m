@@ -49,6 +49,9 @@ if isa(Rinit,'mptPolytope')
 elseif isa(Rinit,'quadZonotope')
     O = quadZonotope(zeros(dim,1));
     Rhom=enclose(O,Rhom_tp_delta)+F*zonotope(Rinit)+inputCorr;
+elseif isa(Rinit,'zonotopeBundle')
+    O = zonotopeBundle({zonotope(zeros(dim,1))});
+    Rhom=enclose(O,Rhom_tp_delta)+F*Rinit.Z{1}+inputCorr;
 else
     %original computation
     O = zonotope(zeros(dim,1));

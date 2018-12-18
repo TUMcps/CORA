@@ -29,7 +29,6 @@ classdef nonlinearSysDT < contDynamics
 
 properties (SetAccess = private, GetAccess = public)
     mFile = [];
-    lagrangeRemainder = [];
     jacobian = [];
     hessian = [];
     thirdOrderTensor = [];
@@ -54,9 +53,6 @@ methods
         %5 inputs
         if nargin==4
             obj.mFile = varargin{3};
-            % link Lagrange remainder
-            str = ['obj.lagrangeRemainder = @lagrangeRemainder_',func_name,';'];
-            eval(str);
             % link jacobian, hessian, and third order tensor files
             str = ['obj.jacobian = @jacobian_',func_name,';'];
             eval(str);

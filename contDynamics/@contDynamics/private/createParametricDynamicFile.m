@@ -1,4 +1,4 @@
-function createParametricDynamicFile(obj,path)
+function createParametricDynamicFile(obj,path,name)
 % createParametricDynamicFile - generates an mFile of the dynamic equations
 % sorted by parameter influences
 %
@@ -8,6 +8,7 @@ function createParametricDynamicFile(obj,path)
 % Inputs:
 %    obj - nonlinear system object
 %    path - file-path to the folder containing the model files
+%    name - name of the nonlinear system from which the file is generated
 %
 % Outputs:
 %
@@ -44,7 +45,7 @@ for i=1:obj.nrOfParam
 end
 
 
-fid = fopen([path,'/parametricDynamicFile.m'],'w');
+fid = fopen([path,'/parametricDynamicFile_',name,'.m'],'w');
 fprintf(fid, '%s\n\n', 'function f=parametricDynamicFile(x,u)');
 for k=1:length(fcell)
     for i=1:obj.dim

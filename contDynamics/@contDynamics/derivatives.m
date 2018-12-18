@@ -37,6 +37,7 @@ function derivatives(varargin)
 %               12-November-2017 (MA)
 %               03-December-2017 (MA)
 %               14-January-2018 (MA)
+%               12-November-2018 (NK, removed lagrange remainder files)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -125,7 +126,7 @@ if generateFiles
     disp('create hessians');
     
     % compute hessians
-    [J2dyn, J2con, Jpxu] = hessians(fdyn,fcon,vars,obj,options);
+    [J2dyn, J2con] = hessians(fdyn,fcon,vars,obj,options);
 
     if options.tensorOrder>2
 
@@ -139,14 +140,11 @@ if generateFiles
 
     %generate mFile that computes the Lagrange remainder and the jacobian
     createJacobianFile(Jdyn,Jcon,Jp,path,obj.name,vars);
-    if isempty(vars.p)
-        createRemainderFile(obj,J2dyn,J2con,path,obj.name,options);
-    else
+    if ~isempty(vars.p)
         if ~isempty(Jp)
-            createParametricDynamicFile(obj,path);
+            createParametricDynamicFile(obj,path,obj.name);
         end
         createJacobianFile_freeParam(Jdyn,path,obj.name);
-        createRemainderFile(obj,Jpxu,J2con,path,obj.name,options);
     end
     
     if options.tensorOrder>2
@@ -378,12 +376,11 @@ end
 end
 
 % compute hessians
-function [J2dyn, J2con, Jpxu] = hessians(fdyn,fcon,vars,obj,options)
+function [J2dyn, J2con] = hessians(fdyn,fcon,vars,obj,options)
 
 % init
 J2dyn = sym([]);
 J2con = sym([]);
-Jpxu = sym([]);
 
 %compute second order jacobians using 'LR' variables
 if isempty(fcon) % no constraint equations
@@ -427,22 +424,6 @@ if isfield(options,'simplify')
     elseif ~strcmp(options.simplify,'none')
         error('Wrong value for options.simplify!. Only values ''simplify'', ''collect'' and ''none'' are valid!')
     end
-end
-
-% uncertain parameters exist
-if ~isempty(vars.p)
-    %group expressions by parameters
-    %init
-    Jpxu=cell(1,obj.nrOfParam+1);
-    JxuAll=J2dyn;
-    %part without parameters
-    Jpxu{1} = subs(JxuAll,vars.p,zeros(obj.nrOfParam,1));
-    %part with parameters
-    I = eye(obj.nrOfParam); %identity matrix
-    for i=1:obj.nrOfParam
-        Jpxu{i+1} = subs(JxuAll,vars.p,I(:,i)) - Jpxu{1};
-    end
-    %obj.derivative.secondOrderParam=Jpxu;
 end
 end
 

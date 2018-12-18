@@ -34,11 +34,11 @@ classdef nonlinParamSys < contDynamics
 properties (SetAccess = private, GetAccess = public)
     nrOfParam = 1;
     mFile = [];
-    lagrangeRemainder = [];
     jacobian = [];
     jacobian_freeParam = [];
     hessian = [];
     thirdOrderTensor = [];
+    parametricDynamicFile = [];
     constParam = 1; %flag if parameters are constant or time-varying 
     derivative = [];
     linError = [];
@@ -63,9 +63,6 @@ methods
         if nargin==5
             obj.nrOfParam = varargin{3};
             obj.mFile = varargin{4};
-            % link Lagrange remainder
-            str = ['obj.lagrangeRemainder = @lagrangeRemainder_',func_name,';'];
-            eval(str);
             % link jacobian, hessian, and third order tensor files
             str = ['obj.jacobian = @jacobian_',func_name,';'];
             eval(str);
@@ -74,6 +71,8 @@ methods
             str = ['obj.hessian = @hessianTensor_',func_name,';'];
             eval(str);
             str = ['obj.thirdOrderTensor = @thirdOrderTensor_',func_name,';'];
+            eval(str);
+            str = ['obj.parametricDynamicFile = @parametricDynamicFile_',func_name,';'];
             eval(str);
             %symbolic computation of the jacobians of the nonlinear system 
             %obj = symbolicDerivation(obj,varargin{5});

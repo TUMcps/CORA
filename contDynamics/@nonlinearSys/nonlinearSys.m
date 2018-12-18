@@ -31,7 +31,6 @@ classdef nonlinearSys < contDynamics
 
 properties (SetAccess = private, GetAccess = public)
     mFile = [];
-    lagrangeRemainder = [];
     jacobian = [];
     hessian = [];
     thirdOrderTensor = [];
@@ -58,9 +57,6 @@ methods
         if nargin==4
             obj.mFile = varargin{3};
             options = varargin{4};
-            % link Lagrange remainder
-            str = ['obj.lagrangeRemainder = @lagrangeRemainder_',func_name,';'];
-            eval(str);
             % link jacobian, hessian, and third order tensor files
             str = ['obj.jacobian = @jacobian_',func_name,';'];
             eval(str);
@@ -84,7 +80,6 @@ methods(Access = protected)
     function cp = copyElement(obj)
         cp = nonlinearSys(length(obj.stateIDs), length(obj.inputIDs), str2func(obj.name));
         cp.mFile = obj.mFile;
-        cp.lagrangeRemainder = obj.lagrangeRemainder;
         cp.jacobian = obj.jacobian;
         cp.linError = obj.linError;
     end
