@@ -1,8 +1,11 @@
-function result = containsPoint(Z1,p)
-% containsPoint - determines if the point p is inside the zonotope Z1
+function isContained = containsPoint(zonotope, p)
+% containsPoint - determines if the point p is inside the zonotope
+%
+% As an optimization results is used, boundary points might not be
+% recognized correctly.
 %
 % Syntax:  
-%    result = containsPoint(Z1,p)
+%    result = containsPoint(zonotope, p)
 %
 % Inputs:
 %    Z1 - zonotope object
@@ -20,21 +23,6 @@ function result = containsPoint(Z1,p)
 %
 % See also: ---
 
-% Author:       Niklas Kochdumper
-% Written:      30-January-2018 
-% Last update:  ---
-% Last revision:---
+robustness = containsPointWithRobustness(zonotope, p, 0);
+isContained = robustness >= 0;
 
-%------------- BEGIN CODE --------------
-
-% generate halfspace representation if empty
-if isempty(Z1.halfspace)
-    Z1 = halfspace(Z1);
-end
-
-%simple test: Is point inside the zonotope?
-inequality = (Z1.halfspace.H*p<=Z1.halfspace.K);
-
-result = (all(inequality));
-
-%------------- END OF CODE --------------
