@@ -74,7 +74,7 @@ function str = displayPoly(obj)
     end
     
     % adapt exponent matrix to the sorted variable names
-    degs(:,ind) = degs;
+    degs = degs(:,ind);
     
     % sort the exponet matrix according to the polynomial order of the
     % terms
