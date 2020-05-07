@@ -55,8 +55,21 @@ if isa(summand, 'conZonotope')
     % Calculate minkowski sum (Equation (12) in reference paper [1])
     Z.Z(:,1)=Z.Z(:,1)+summand.Z(:,1);
     Z.Z(:,(end+1):(end+length(summand.Z(1,2:end)))) = summand.Z(:,2:end);
-    Z.A = blkdiag(Z.A, summand.A);
-    Z.b = [Z.b; summand.b];
+    
+    if isempty(Z.A)
+        if ~isempty(summand.A)
+            Z.A = [zeros(size(summand.A,1), ...
+                   size(Z.Z,2)-1-size(summand.A,2)),summand.A]; 
+            Z.b = summand.b;
+        end
+    else
+        if isempty(summand.A)
+            Z.A = [Z.A,zeros(size(Z.A,1),size(summand.Z,2)-1)];
+        else
+            Z.A = blkdiag(Z.A, summand.A);
+            Z.b = [Z.b; summand.b];
+        end
+    end
     
     Z.ksi = [];
     Z.R = [];
