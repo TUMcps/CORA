@@ -1,4 +1,4 @@
-function error = linError_thirdOrder(obj, options, R)
+function errorZon = linError_thirdOrder(obj, options, R)
 % linError_thirdOrder - computes the linearization error
 %
 % Syntax:  
@@ -10,7 +10,7 @@ function error = linError_thirdOrder(obj, options, R)
 %    R - actual reachable set
 %
 % Outputs:
-%    error - zonotope overapproximating the linearization error
+%    errorZon - zonotope overapproximating the linearization error
 %
 % Example: 
 %
@@ -40,14 +40,14 @@ totalInt_x = dx + obj.linError.p.x;
 totalInt_u = du + obj.linError.p.u;
 
 %compute zonotope of state and input
-Rred = reduce(R,'girard',options.errorOrder);
-Z=cartesianProduct(Rred,options.U);
+Rred = reduce(R,options.reductionTechnique,options.errorOrder);
+Z=cartProd(Rred,options.U);
 
 %obtain absolute values
 dz_abs = max(abs(infimum(dz)), abs(supremum(dz)));
 
 % calculate hessian tensor
-H = obj.hessian(obj.linError.p.x, obj.linError.p.u,options.timeStep);
+H = obj.hessian(obj.linError.p.x, obj.linError.p.u);
 
 % evaluate third-order tensor
 if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ...
@@ -57,60 +57,59 @@ if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ..
     [objX,objU] = initRangeBoundingObjects(totalInt_x,totalInt_u,options);
 
     % evaluate third order tensor 
-    T = obj.thirdOrderTensor(objX, objU, options.timeStep);
+    [T, ind] = obj.thirdOrderTensor(objX, objU);
 
 else
-    T = obj.thirdOrderTensor(totalInt_x, totalInt_u, options.timeStep);
+    [T, ind] = obj.thirdOrderTensor(totalInt_x, totalInt_u);
 end
 
 %second order error
-error_secondOrder = 0.5*quadraticMultiplication(Z, H);
+error_secondOrder = 0.5*quadMap(Z, H);
 
 %interval evaluation
 % for i=1:length(T(:,1))
 %     error_sum = interval(0,0);
 %     for j=1:length(T(1,:))
-%         error_tmp(i,j) = dz'*T{i,j}*dz;
-%         error_sum = error_sum + error_tmp(i,j) * dz(j);
+%         error_tmp = dz'*T{i,j}*dz;
+%         error_sum = error_sum + error_tmp * dz(j);
 %     end
 %     error_thirdOrder_old(i,1) = 1/6*error_sum;
 % end
 % 
 % error_thirdOrder_old_zono = zonotope(error_thirdOrder_old);
 
-%alternative
-%separate evaluation
+%alternative: separate evaluation without interval arithmetic
 for i=1:length(T(:,1))
     for j=1:length(T(1,:))
-        T_mid{i,j} = sparse(mid(T{i,j}));
+        T_mid{i,j} = sparse(center(T{i,j}));
         T_rad{i,j} = sparse(rad(T{i,j}));
     end
 end
 
-error_mid = 1/6*cubicMultiplication_simple(Z, T_mid);
+error_mid = 1/6*cubMap(Z, T_mid);
 
 %interval evaluation
-for i=1:length(T(:,1))
-    error_sum2 = 0;
-    for j=1:length(T(1,:))
-        error_tmp2(i,j) = dz_abs'*T_rad{i,j}*dz_abs;
-        error_sum2 = error_sum2 + error_tmp2(i,j) * dz_abs(j);
+if isempty(cell2mat(ind))
+    % empty zonotope if all entries in T are empty
+    error_rad_zono = zonotope(zeros(obj.dim,1));
+else
+    error_rad = zeros(obj.dim,1);
+    for i=1:length(ind)
+        error_sum2 = 0;
+        for j=1:length(ind{i})
+            error_tmp2 = dz_abs'*T_rad{i,j}*dz_abs;
+            error_sum2 = error_sum2 + error_tmp2 * dz_abs(j);
+        end
+        error_rad(i,1) = 1/6*error_sum2;
     end
-    error_rad(i,1) = 1/6*error_sum2;
+    error_rad_zono = zonotope(interval(-error_rad, error_rad));
 end
 
-
 %combine results
-error_rad_zono = zonotope(interval(-error_rad, error_rad));
 error_thirdOrder = error_mid + error_rad_zono;
+errorZon = error_secondOrder + error_thirdOrder;
 
-error_thirdOrder = reduce(error_thirdOrder,'girard',options.zonotopeOrder);
-
-
-%combine results
-error = error_secondOrder + error_thirdOrder;
-
-error = reduce(error,'girard',options.zonotopeOrder);
+errorZon = reduce(errorZon,options.reductionTechnique,options.zonotopeOrder);
 
 
 %------------- END OF CODE --------------

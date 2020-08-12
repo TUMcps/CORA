@@ -1,111 +1,119 @@
-function [TP,R,nextLoc,blockedLoc,Rjump,Rcont] = reach(obj,tStart,R0,blockedLoc,options)
-% reach - computes the reachable set of the system within a location, 
-% detects the guard set that is hit and computes the reset
+function [R,Rjump_,res] = reach(obj,R0,tStart,options)
+% reach - computes the reachable set of the system within a location and
+%         determines the intersections with the guard sets
 %
 % Syntax:  
-%    [TP,R,nextLoc,Rjump,Rcont] = reach(obj,tStart,R0,options)
+%    [R,Rjump] = reach(obj,R0,tStart,options)
 %
 % Inputs:
 %    obj - location object
-%    tStart - start time
 %    R0 - initial reachable set
-%    options - options struct
+%    tStart - start time
+%    options - struct containing the algorithm settings
 %
 % Outputs:
-%    TP - time point struct; e.g. contains time vector of minimum times for reaching guard sets
-%    R - cell array of reachable sets
-%    nextLoc - next location
-%    Rjump - reachable set after jump according to the reset map
-%    Rcont - reachable set due to continuous evolution
+%    R - reachable set due to continuous evolution
+%    Rjump - list of guard set intersections with the corresponding sets
 %
-% Example: 
-%
-% Other m-files required: initReach, reach, potOut, potInt, guardIntersect,
-% reset
-% Subfunctions: none
-% MAT-files required: none
-%
-% See also: none
+% See also: hybridAutomaton/reach
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      07-May-2007 
 % Last update:  17-August-2007
-%               26-March-2008
-%               21-April-2009
-%               06-July-2009
-%               24-July-2009
-%               31-July-2009
-%               11-August-2010
-%               22-October-2010
-%               25-October-2010
-%               08-August-2011
-%               11-September-2013
 %               31-July-2016
 %               19-August-2016
+%               09-December-2019 (NK, integrated singleSetReach)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
+    res = 1;
+    Rjump = {};
 
-%set up TPtmp
-TP.tMin = [];
-TP.tMax = [];
+    % adapt options
+    [params,options_] = adaptOptions(obj,options);
+    
+    params.tStart = infimum(tStart);
+    params.R0 = R0;
+    
+    % adapt specifications
+    spec = specification(obj.invariant,'invariant');
+    
+    if ~isempty(options.specification)
+        spec = add(options.specification,spec);
+    end
+    
+    % compute reachable set for the continuous dynamics until the reachable
+    % set is fully located outside the invariant set
+    R = reach(obj.contDynamics,params,options_,spec);
+    
+    % loop over all reachable sets
+    for i = 1:size(R,1)
 
-%set up variables
-nextLoc = [];
-Rjump = [];
-Rguard_noInt = [];
+        % determine all guard sets which the reachable set intersects
+        [guards,setIndices] = potInt(obj,R(i).timeInterval.set,options);
 
-if options.isHyperplaneMap
-    % get results from hyperplane mapping
-    %[TP,R,activeGuards,Rguard,Rguard_noInt,Rcont] = hyperplaneMap(obj,tStart,R0,blockedLoc,options);
-    [TP,R,activeGuards,Rguard,Rguard_noInt,Rcont] = hyperplaneMap_noInv(obj,tStart,R0,blockedLoc,options);
-    Rguard = Rguard(activeGuards);
-    Rguard_noInt = Rguard_noInt(activeGuards);
-    TP.tMin = TP.tMin(activeGuards);
-else
+        % compute intersections with the guard sets
+        [Rguard,actGuards,minInd,maxInd] = ....
+                        guardIntersect(obj,guards,setIndices,R(i),options);
 
-    %get results from reachability analysis
-    [TP,R,activeGuards,Rguard,Rcont] = singleSetReach(obj,tStart,R0,options);
+        % compute reset and get target location
+        Rjump_ = cell(length(Rguard),1);
 
-end
+        for j = 1:length(Rguard)
+            
+            iGuard = actGuards(j);
+            
+            % compute reset
+            Rjump_{j,1}.set = reset(obj.transition{iGuard},Rguard{j});  
+            
+            % target location and parent reachable set
+            Rjump_{j,1}.loc = obj.transition{iGuard}.target;
+            Rjump_{j,1}.parent = R(i).parent + 1;
+            
+            % time interval for the guard intersection
+            tMin = infimum(R.timeInterval.time{minInd(j)});
+            tMax = supremum(R.timeInterval.time{maxInd(j)}) + 2*rad(tStart);
+            
+            Rjump_{j,1}.time = interval(tMin,tMax);
+        end
+        
+        Rjump = [Rjump;Rjump_];
 
-%compute jumps, next locations
-counter = 1;
-TPsaved = TP;
-blockedLoc = [];
-
-for i=1:length(activeGuards)
-
-    %obtain guard number
-    iGuard = activeGuards(i);
-
-    %does no intersection set exist?
-    if ~isempty(Rguard_noInt)
-        for iSet = 1:length(Rguard_noInt{i})
-            if ~isempty(Rguard_noInt{i}{iSet})
-                Rjump{counter} = reset(obj.transition{iGuard},Rguard_noInt{i}{iSet});  
-                nextLoc{counter,1} = obj.id;
-                blockedLoc{counter,1} = get(obj.transition{iGuard},'target');
-                TP.tMin(counter) = TPsaved.tMin(i);
-
-                %update counter
-                counter = counter + 1;
-            end
+        % remove the parts of the reachable sets outside the invariant
+        if isfield(options,'intersectInvariant') && options.intersectInvariant
+            R(i) = potOut(obj,R(i),minInd,maxInd,options);
+        end
+        
+        % update times of the reach. set due to uncertain initial time
+        R(i) = updateTime(R(i),tStart);
+        
+        % check if specifications are violated
+        if ~isempty(options.specification)
+           res = check(options.specification,R(i).timeInterval.set{end}); 
+           if ~res
+              return; 
+           end
         end
     end
-
-    %compute reset and new locations of active guards
-    for iSet = 1:length(Rguard{i})
-        Rjump{counter} = reset(obj.transition{iGuard},Rguard{i}{iSet});  
-        nextLoc{counter,1}=get(obj.transition{iGuard},'target');
-        blockedLoc{counter,1} = 0;
-        TP.tMin(counter) = TPsaved.tMin(i);
-
-        %update counter
-        counter = counter + 1;
-    end
 end
 
+
+% Auxiliary Functions -----------------------------------------------------
+
+function R = updateTime(R,time)
+% update the times of the reachable set due to the uncertain initial time
+
+    deltaT = time - infimum(time);
+    timePoint = R.timePoint;
+    timeInt = R.timeInterval;
+    
+    for i = 1:length(timePoint.time)
+       timePoint.time{i} = timePoint.time{i} + deltaT; 
+       timeInt.time{i} = timeInt.time{i} + deltaT; 
+    end
+    
+    R = reachSet(timePoint,timeInt,R.parent);
+end
 
 %------------- END OF CODE --------------

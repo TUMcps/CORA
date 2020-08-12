@@ -1,17 +1,17 @@
-function [newpZ] = guardBloat(pZ,Z)
+function newprobZ = guardBloat(probZ,Z)
 % guardBloat - Enlarges a probabilistic zonotope such that its mSigma bound
-% covers the intersection of the deterministic reachable set with the guard
-% set
+%    covers the intersection of the deterministic reachable set
+%    with the guard set
 %
 % Syntax:  
-%    [newpZ] = guardBloat(pZ,Z)
+%    newprobZ = guardBloat(probZ,Z)
 %
 % Inputs:
-%    pZ - probabilistic zonotope object
-%    Z  - zonotope object
+%    probZ - probabilistic zonotope object
+%    Z - zonotope object
 %
 % Outputs:
-%    newpZ - enlarged probabilistic zonotope object
+%    newprobZ - enlarged probabilistic zonotope object
 %
 % Example: 
 %
@@ -22,23 +22,22 @@ function [newpZ] = guardBloat(pZ,Z)
 %
 % See also: ---
 
-% Author: Matthias Althoff
-% Written: 01-October-2007
-% Last update: ---
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      01-October-2007
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
 %get center of probabilistic zonotope
-c=center(pZ);
+c=center(probZ);
 %reduce probabilistic zonotope
-pZ=reduce(pZ,'best3',NaN);
+probZ=reduce(probZ,'best3',NaN);
 %compute mSigma bound
-pZsigma=zonotope(pZ);
+pZsigma=zonotope(probZ);
 %check set difference of probabilistic with deterministic part
-V.d=get(vertices(Z),'V')';
-V.ms=get(vertices(pZsigma),'V')';
+V.d=vertices(Z);
+V.ms=vertices(pZsigma);
 %generate polytopes
 P.d=polytope(V.d);
 P.ms=polytope(V.ms);
@@ -63,12 +62,12 @@ if RCheb~=-Inf
     
     %different methods depending on the number of resulting polytopes
     IH=interval(-1.1*maxLength,1.1*maxLength);
-    newpZ=pZ+zonotope(IH);
+    newprobZ=probZ+zonotope(IH);
     %recursive call
-    newpZ=guardBloat(newpZ,Z);
+    newprobZ=guardBloat(newprobZ,Z);
     
 else
-    newpZ=pZ;
+    newprobZ=probZ;
 end
 
 

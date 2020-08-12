@@ -75,7 +75,7 @@ ylabel('x_2');
 function traj_plot(trajectories,options)
 
 %plot initial set
-plotFilled(options.R0,[1 2],'w','EdgeColor','k'); 
+plot(options.R0,[1 2],'w','EdgeColor','k','Filled',true); 
 
 hold on
 

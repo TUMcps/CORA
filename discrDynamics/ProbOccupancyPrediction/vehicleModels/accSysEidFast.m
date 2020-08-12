@@ -1,4 +1,4 @@
-function [dx]=accSysEidFast(t,x,u)
+function dx =accSysEidFast(x,u)
 
 aMax=7;
 c1=7.32;

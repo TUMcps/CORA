@@ -19,10 +19,11 @@ function [Gfinal]=volumeFilter(varargin)
 %
 % See also: 
 
-% Author: Matthias Althoff
-% Written: 12-September-2008
-% Last update: 15-September-2008
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      12-September-2008
+% Last update:  15-September-2008
+%               14-March-2019 (sort removed)
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -38,7 +39,9 @@ elseif nargin==3
 end
 
 %obtain dimension
-dim=length(G{1}(:,1));
+d=length(G{1}(:,1));
+% init volume
+vol = zeros(length(G),1);
 
 %determine generators by exact volume minimization:
 for i=1:length(G)
@@ -47,7 +50,7 @@ for i=1:length(G)
     P=G{i};
 
     %check rank of P
-    if rank(P)<dim
+    if rank(P)<d
         vol(i)=inf;
     else    
   
@@ -61,15 +64,10 @@ for i=1:length(G)
     end
 end
 
+% obtain indices corresponding to the smallest values
+[~,index]=mink(vol, nrOfPicks);
 
-[val,index]=sort(vol);
-
-
-%check if there are less options than requested
-if nrOfPicks>length(val)
-    nrOfPicks=length(val);
-end
-
+Gfinal = cell(nrOfPicks,1);
 for i=1:nrOfPicks
     Gfinal{i}=G{index(i)};
 end

@@ -2,7 +2,7 @@ function [allErr] = allowedError(obj,linSys,options)
 % allowedError - computes the allowed linearization error
 %
 % Syntax:  
-%    [obj] = linError(obj,options)
+%    [allErr] = allowedError(obj,linSys,options)
 %
 % Inputs:
 %    obj - nonlinear system object
@@ -20,9 +20,9 @@ function [allErr] = allowedError(obj,linSys,options)
 %
 % See also: 
 
-% Author: Matthias Althoff
-% Written: 29-October-2007 
-% Last update: 22-January-2008
+% Author:        Matthias Althoff
+% Written:       29-October-2007 
+% Last update:   22-January-2008
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -32,7 +32,7 @@ f0=obj.linError.f0;
 deltaT=options.timeStep;
 expFactor=obj.expFactor;
 
-A=get(linSys,'A');
+A=linSys.A;
 eAt=expm(A*deltaT);
 dim=length(f0);
 I=eye(dim);

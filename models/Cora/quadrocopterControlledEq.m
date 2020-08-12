@@ -1,9 +1,27 @@
-function [dx] = quadrocopterControlledEq(t,x,u)
+function dx = quadrocopterControlledEq(x,u)
+% quadrocopterControlledEq - dynamic equations for the quadrocopter 
+%                            benchmark (see Eq (16) - (19) in [1])
+%
+% Syntax:  
+%    dx = quadrocopterControlledEq(x,u)
+%
+% Inputs:
+%    x - state vector
+%    u - input vector
+%
+% Outputs:
+%    dx - time-derivate of the system state
+% 
+% References:
+%   [1] R. Beard, "Quadrotor Dynamics and Control", Tech Report Bringham
+%       Young University
 
-% the quadrotor dynamics is taken from Eq. (16) - (19) of 
-% Randal Beard: Quadrotor Dynamics and Control Rev 0.1, Tech Report Brigham 
-% Young University"
+% Author:        Ahmed El-Guindy, Matthias Althoff, Mark Wetzlinger
+% Written:       22-May-2020
+% Last update:   ---
+% Last revision: ---
 
+%------------- BEGIN CODE --------------
 
 % x_1 = p_n
 % x_2 = p_e
@@ -65,3 +83,5 @@ dx(9,1) = sin(x(7))/cos(x(8))*x(11) + cos(x(7))/cos(x(8))*x(12);
 dx(10,1) = (J_y - J_z)/J_x*x(11)*x(12) + 1/J_x*tau_phi;
 dx(11,1) = (J_z - J_x)/J_y*x(10)*x(12) + 1/J_y*tau_theta;
 dx(12,1) = (J_x - J_y)/J_z*x(10)*x(11) + 1/J_z*tau_psi;
+
+%------------- END OF CODE --------------

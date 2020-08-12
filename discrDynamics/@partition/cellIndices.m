@@ -21,11 +21,11 @@ function cellIndices = cellIndices(obj,segmentIndices)
 
 % Author:       Matthias Althoff
 % Written:      17-August-2007
-% Last update:  ---
+% Last update:  10-August-2020
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-[cellIndices]=s2i(obj,segmentIndices);
+[cellIndices]=s2i(obj.nrOfSegments',segmentIndices);
 
 %------------- END OF CODE --------------

@@ -26,10 +26,9 @@ function matV = vertices(matI)
 %------------- BEGIN CODE --------------
 
 %conversion to an interval
-IH = interval(matI);
+V = vertices(interval(matI));
 
 %compute vertices
-V = get(vertices(IH),'V');
 V = unique(V', 'rows')'; %eliminate vectors that occur multiple times
 
 %convert vertices to matrix vertices

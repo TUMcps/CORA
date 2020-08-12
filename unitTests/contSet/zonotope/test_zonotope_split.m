@@ -48,23 +48,23 @@ Zsplit_4 = split(Z1,h);
 % obtain zonotope matrix -- split 1
 for i=1:length(Zsplit_1)
     for j=1:length(Zsplit_1{1})
-        Zmat_1{i}{j} = get(Zsplit_1{i}{j},'Z');
+        Zmat_1{i}{j} = Zsplit_1{i}{j}.Z;
     end
 end
 
 % obtain zonotope matrix -- split 2
 for i=1:length(Zsplit_2)
-    Zmat_2{i} = get(Zsplit_2{i},'Z');
+    Zmat_2{i} = Zsplit_2{i}.Z;
 end
 
 % obtain zonotope matrix -- split 3
 for i=1:length(Zsplit_3)
-    Zmat_3{i} = get(Zsplit_3{i},'Z');
+    Zmat_3{i} = Zsplit_3{i}.Z;
 end
 
 % obtain zonotope matrix -- split 4
 for i=1:length(Zsplit_4)
-    Zmat_4{i} = get(Zsplit_4{i},'Z');
+    Zmat_4{i} = Zsplit_4{i}.Z;
 end
 
 % true result -- split 1
@@ -126,9 +126,9 @@ res = res_1 & res_2 & res_3 & res_4;
 
 
 if res
-    disp('test_zonotope_reduce successful');
+    disp('test_zonotope_split successful');
 else
-    disp('test_zonotope_reduce failed');
+    disp('test_zonotope_split failed');
 end
 
 %------------- END OF CODE --------------

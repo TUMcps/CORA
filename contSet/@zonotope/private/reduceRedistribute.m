@@ -20,7 +20,8 @@ function [Zred]=reduceRedistribute(Z,order)
 
 % Author:       Matthias Althoff
 % Written:      07-September-2012 
-% Last update:  ---
+% Last update:  16-March-2019 (vnorm replaced, sort removed)
+%               27-Aug-2019
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -28,50 +29,50 @@ function [Zred]=reduceRedistribute(Z,order)
 %initialize Z_red
 Zred=Z;
 
-%get Z-matrix from zonotope Z
-Zmatrix=get(Z,'Z');
+%extract center and generator matrix
+c = center(Z);
+G = generators(Z);
 
-%extract generator matrix
-G=Zmatrix(:,2:end);
+%dimension and number of generators
+[d, nrOfGens] = size(G);
 
 if ~isempty(G)
 
-    %determine dimension of zonotope
-    dim=length(G(:,1));
-
     %only reduce if zonotope order is greater than the desired order
-    if length(G(1,:))>dim*order
+    if nrOfGens>d*order
 
         %compute metric of generators (shortest generators)
-        h=vnorm(G,1,2);
+        h=vecnorm(G);
         
         %remove elements of length less than 1e-10
-        [fElem, fInd] = find(h<max(max(G))*1e-6);
+        [~, fInd] = find(h<max(max(G))*1e-6);
         G(:,fInd) = [];
         
         %only reduce if zonotope order is greater than the desired order
-        if length(G(1,:))>dim*order
+        if length(G(1,:))>d*order
             
             %compute metric of generators (shortest generators)
-            h=vnorm(G,1,2);
-            [elements,indices]=sort(h);
+            h=vecnorm(G);
 
             %number of generators that are not reduced
-            nUnreduced=floor(dim*(order));
+            nUnreduced=floor(d*order);
             %number of generators that are reduced
             nReduced=length(G(1,:))-nUnreduced;
-            
-            %unreduced generators
-            Gunred=G(:,indices((nReduced+1):end));
 
             %pick generators that are reduced
-            pickedGenerators=G(:,indices(1:nReduced));
+            [~,ind] = mink(h,nReduced);
+            pickedGens=G(:,ind);
+            
+            %unreduced generators
+            indRemain = setdiff(1:nrOfGens, ind);
+            Gunred=G(:,indRemain);
+            
             %scale generators in G for compensation
-            Gnew = generatorScaling(Gunred, pickedGenerators);
-            %Gold = generatorScaling_old(Gunred, pickedGenerators);
+            Gnew = generatorScaling(Gunred, pickedGens);
+            %Gold = generatorScaling_old(Gunred, pickedGens);
 
             %build reduced zonotope
-            Zred.Z=[Zmatrix(:,1),Gnew];
+            Zred.Z=[c,Gnew];
         end
 
     end
@@ -81,11 +82,11 @@ end
 function Gnew = generatorScaling(Grem, Gdel)
 
 %dim 
-dim = length(Grem(:,1));
+d = length(Grem(:,1));
 
 %remove too small generators
-scaleFactor = vnorm(Grem,1,2);
-[val,ind] = find(scaleFactor>0);
+scaleFactor = vecnorm(Grem);
+[~,ind] = find(scaleFactor>0);
 
 %normalize remaining generators
 for i=1:length(Grem(:,1))
@@ -96,18 +97,17 @@ end
 scale = ones(length(Grem(1,:)),1);
 
 %get frame out of most and least aligned generators
-perpendicularInd_pre = pickPerpendicular(Gnorm,dim);
+perpendicularInd_pre = pickPerpendicular(Gnorm,d);
 
 
 for i=1:length(Gdel(1,:))
     prod = abs(Gdel(:,i)'*Gnorm);
-    [~,indices]=sort(prod);
     
     %get frame out of most and least aligned generators
-    %remove picked Ind
-    pickedInd = indices(end);
+    %remove largest value
+    [~,pickedInd]=max(prod);
     perpendicularInd = setdiff(perpendicularInd_pre,pickedInd);
-    if length(perpendicularInd) == dim
+    if length(perpendicularInd) == d
         [~,ind]=max(abs(Gnorm(:,pickedInd)'*Gnorm(:,perpendicularInd)));
         perpendicularInd(ind) = [];
     end
@@ -145,7 +145,7 @@ alignmentMat = alignmentMat - diag(diag(alignmentMat));
 %least maximum entry?
 finalInd = 1:length(alignmentMat);
 [elements,indices] = max(alignmentMat);
-[maxElem,maxInd] = max(elements);
+[~,maxInd] = max(elements);
 remInd1 = indices(maxInd);
 remInd2 = finalInd(remInd1);
 
@@ -158,7 +158,7 @@ while length(finalInd)>dim
     
     %new check
     [elements,indices] = max(alignmentMat);
-    [maxElem,maxInd] = max(elements);
+    [~,maxInd] = max(elements);
     remInd1 = indices(maxInd);
     remInd2 = finalInd(remInd1);
 end
@@ -189,11 +189,11 @@ perpendicularInd = finalInd;
 function Gnew = generatorScaling_old(Grem, Gdel)
 
 %dim 
-dim = length(Grem(:,1));
+d = length(Grem(:,1));
 
 %remove too small generators
-scaleFactor = vnorm(Grem,1,2);
-[val,ind] = find(scaleFactor>0);
+scaleFactor = vecnorm(Grem);
+[~,ind] = find(scaleFactor>0);
 
 %normalize remaining generators
 for i=1:length(Grem(:,1))
@@ -204,10 +204,10 @@ end
 scale = ones(length(Grem(1,:)),1);
 for i=1:length(Gdel(1,:))
     prod = abs(Gdel(:,i)'*Gnorm);
-    [elements,indices]=sort(prod);
+    [~,indices]=sort(prod);
     
     %get frame out of most and least aligned generators
-    chosenInd = [indices(1:dim-1),indices(end)];
+    chosenInd = [indices(1:d-1),indices(end)];
     frame = Grem(:,chosenInd);
     
     %add to scaling

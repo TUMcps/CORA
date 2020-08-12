@@ -39,23 +39,21 @@ Zred=Z;
 [center, Gunred, Gred] = pickedGenerators(Z,order);
 
 %dimension
-dim = length(center);
+n = length(center);
 
 
 if ~isempty(Gred)
-    %Delete zero-generators
-    G=nonzeroFilter(Gred);
     
     % box generators
     W=diag(sum(abs([Gunred, Gred]),2));
     Winv = pinv(W);
 
     %normalize generators
-    G_norm = Winv*G;
+    G_norm = Winv*Gred;
 
     %set default filter length
     if isempty(filterLength)
-        filterLength = [dim+8, dim+3];
+        filterLength = [n+8, n+3];
     end
 
     %determine filter length

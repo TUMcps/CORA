@@ -1,10 +1,10 @@
-function [Z] = exactPlus(Z1,Z2,varargin)
+function Z = exactPlus(Z1,Z2,varargin)
 % exactPlus - Adds two quadZonotopes by adding all generators of common
-% generator factors. It has to be ensured from outside % that the generator 
-% factors match
+%    generator factors. It has to be ensured from outside that the
+%    generator factors match
 %
 % Syntax:  
-%    [Z] = exactPlus(Z1,Z2)
+%    Z = exactPlus(Z1,Z2)
 %
 % Inputs:
 %    Z1 - zonotope object
@@ -15,7 +15,16 @@ function [Z] = exactPlus(Z1,Z2,varargin)
 %    Z - final zonotope
 %
 % Example: 
-%    ---
+%    Z1 = zonotope([0;0],[1 2 -1; 1 -1 3]);
+%    Z2 = zonotope([0;0],[2 4 -1; 2 -2 3]);
+%    nrOfGens = 2;
+%    Zexact = exactPlus(Z1,Z2);
+%    Z = Z1 + Z2;
+% 
+%    plot(Z1); hold on;
+%    plot(Z2);
+%    plot(Zexact,[1,2],'g');
+%    plot(Z,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,9 +39,9 @@ function [Z] = exactPlus(Z1,Z2,varargin)
 
 %------------- BEGIN CODE --------------
 
-%obtain matrice
-Zmat1 = get(Z1,'Z');
-Zmat2 = get(Z2,'Z');
+%obtain matrix
+Zmat1 = Z1.Z;
+Zmat2 = Z2.Z;
 
 %number of vectors
 nrOfVecs1 = length(Zmat1(1,:));

@@ -1,18 +1,30 @@
 classdef linParamSys < contDynamics
-% linParamSys class (linear parametric system; parameters are constant over time)
+% linParamSys class (linear parametric system)
 %
 % Syntax:  
-%    object constructor: Obj = linParamSys(varargin)
-%    copy constructor: Obj = otherObj
+%    obj = linParamSys(A,B)
+%    obj = linParamSys(A,B,type)
+%    obj = linParamSys(name,A,B)
+%    obj = linParamSys(name,A,B,type)
 %
 % Inputs:
 %    A - system matrix
 %    B - input matrix
-%    stepSize - time increment
-%    taylorTerms - number of considered Taylor terms
+%    name - name of the system
+%    type - 'constParam' (constant parameter, default) or 'varParam' (time
+%            varying parameter)
 %
 % Outputs:
-%    Obj - Generated Object
+%    obj - Generated Object
+%
+% Example:
+%    Ac = [-2 0; 1.5 -3];
+%    Aw = [0 0; 0.5 0];
+%    A = intervalMatrix(Ac,Aw);
+%
+%    B = [1; 1];
+%
+%    sys = linParamSys(A,B,'varParam')
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -48,56 +60,55 @@ properties (SetAccess = private, GetAccess = public)
 end
     
 methods
-    %class constructor
-    function obj = linParamSys(A,B,stepSize,taylorTerms,paramType)
-        obj@contDynamics('linParamSysDefault',ones(A.dim,1),1,1); %instantiate parent class
-        %one input
-        if nargin==1
-            obj.A = A;
-        %two inputs
-        elseif nargin==2
-            obj.A = A;
-            obj.B = B;
-        %three inputs
-        elseif nargin==3
-            obj.A = A;
-            obj.B = B;
-            obj.stepSize = stepSize;
-        %four inputs
-        elseif nargin==4
-            obj.A = A;
-            obj.B = B;
-            obj.stepSize = stepSize;
-            obj.taylorTerms = taylorTerms;
-        %five inputs
-        elseif nargin==5
-            obj.A = A;
-            obj.B = B;
-            obj.stepSize = stepSize;
-            obj.taylorTerms = taylorTerms;
-            if strcmp(paramType,'varParam')
-                obj.constParam = 0;
-            elseif strcmp(paramType,'constParam')
-                obj.constParam = 1;
+    
+    % class constructor
+    function obj = linParamSys(varargin)
+        
+        % default values
+        name = 'linParamSys';
+        type = 'constParam';
+        
+        % parse input arguments
+        if ischar(varargin{1})
+            name = varargin{1};
+            A = varargin{2};
+            B = varargin{3};
+            if nargin > 3
+               type = varargin{4}; 
+            end
+        else
+            A = varargin{1};
+            B = varargin{2};
+            if nargin > 2
+                type = varargin{3};
             end
         end
         
-        tmp = randomSampling(obj.A,1);
-        obj.sampleMatrix.A = tmp{1};
+        % check input arguments
+        if ~ischar(type) || ~ismember(type,{'constParam','varParam'})
+           error('Wrong value for input argument "type"!'); 
+        end
+        
+        % number of states and inputs
+        states = A.dim;
+        if ~isnumeric(B)
+            temp = randomSampling(B,1);
+            inputs = size(temp,2);
+        else
+            inputs = size(B,2);
+        end
+        
+         % instantiate parent class
+        obj@contDynamics(name,states,inputs,1);
+        
+        % assign object properties
+        obj.A = A;
+        obj.B = B;
+        
+        if strcmp(type,'varParam')
+           obj.constParam = 0; 
+        end
     end
-         
-    %methods in seperate files 
-    [obj,Rfirst,options] = initReach(obj, Rinit, options)
-    [Rnext,options] = post(obj,R,options)
-    [obj] = preReach(obj,options)
-    [Rfirst] = coreReach(obj,Rinit,options)
-    [Rnext,IH] = postReach(obj,Rinit,R_tp,c)
-    [obj,t,x,index] = simulate(obj,opt,tstart,tfinal,x0,options)
-    handle = getfcn(obj,options)
-    
-    %display functions
-    plot(varargin)
-    display(obj)
 end
 end
 

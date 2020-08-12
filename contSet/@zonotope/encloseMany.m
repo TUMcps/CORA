@@ -1,11 +1,10 @@
-function [Zenclose,rotMatrixInv] = encloseMany(Zdummy,Z,direction)
+function [Zenclose,rotMatrixInv] = encloseMany(Z,direction)
 % encloseMany - function for the enclosure of many zonotopes
 %
 % Syntax:  
-%    [Zenclose,orientMatrix] = encloseMany(Zdummy,Z,direction)
+%    [Zenclose,rotMatrixInv] = encloseMany(Z,direction)
 %
 % Inputs:
-%    Zdummy - zonotope object for accessing the function
 %    Z - cell array of zonotopes to be enclosed
 %    direction - mean direction, in which the zonotopes to be enclosed are
 %    heading to
@@ -22,10 +21,10 @@ function [Zenclose,rotMatrixInv] = encloseMany(Zdummy,Z,direction)
 %
 % See also: dirPolytope
 
-% Author: Matthias Althoff
-% Written: 15-January-2008
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      15-January-2008
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -41,7 +40,7 @@ for iGen=1:length(orient(1,:))
      h(iGen)=abs(newGen'*orient(:,iGen)/norm(orient(:,iGen)));
 end
 
-[val,ind]=sort(h);
+[~,ind]=sort(h);
 pickedIndices=ind(1:(end-1));
 
 rotMatrix=[newGen,orient(:,pickedIndices)];
@@ -50,17 +49,17 @@ rotMatrix=[newGen,orient(:,pickedIndices)];
 Vsum=[];
 for i=1:length(Z)
     Zred=reduce(Z{i},'parallelpiped');
-    Vnew=get(vertices(Zred),'V');
+    Vnew=vertices(Zred);
     Vsum=[Vsum,Vnew];
 end
 
 %rotate vertices
 rotMatrixInv=inv(rotMatrix);
 Vtrans=rotMatrixInv*Vsum;
-%compute enclosing intervalhull
-IHtrans=interval(vertices(Vtrans));
+%compute enclosing interval
+Itrans=interval.enclosePoints(vertices(Vtrans));
 %generate zonotope
-Ztrans=zonotope(IHtrans);
+Ztrans=zonotope(Itrans);
 %rotate zonotope back
 Zenclose=rotMatrix*Ztrans;
     

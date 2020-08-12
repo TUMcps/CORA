@@ -1,7 +1,6 @@
 function res = test_conZonotope_enclose
-% test_conZonotope_enclose - unit test function for the caclulation of the
-%                            convex hull of two constrained zonotope 
-%                            objects
+% test_conZonotope_enclose - unit test function for the calculation of the
+%   convex hull of two constrained zonotope objects
 %
 % Syntax:  
 %    res = test_conZonotope_enclose
@@ -26,12 +25,13 @@ function res = test_conZonotope_enclose
 
 % Author:       Niklas Kochdumper
 % Written:      28-June-2018
+%               28-April-2019 (MA), code shortened
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-res = 0;
+res = false;
 
 
 % TEST 1: Random Test (linear transformation 2D) --------------------------
@@ -58,8 +58,7 @@ for h = 1:5
     cZonoRes = enclose(cZono,cZono2);
 
     % calculate points that have to be located inside the resuling conZonotope
-    temp = vertices(cZono2);
-    V2 = get(temp,'V');
+    V2 = vertices(cZono2);
 
     N = size(V,2) * size(V2,2) * 10;
     points = zeros(2,N);
@@ -96,7 +95,14 @@ for h = 1:5
 
     for i = 1:size(points,2)
        if any(A*points(:,i) - b > Tol)
-           error('Test 1 failed!');
+          file_name = strcat('test_conZonotope_enclose_1_', ...
+                      datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+          file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+                               file_name);
+                           
+          save(file_path, 'cZonoRes')
+          error('Test 1 failed!');
        end
     end
 end
@@ -132,8 +138,7 @@ for h = 1:5
     cZonoRes = enclose(cZono,cZono2);
 
     % calculate points that have to be located inside the resuling conZonotope
-    temp = vertices(cZono2);
-    V2 = get(temp,'V');
+    V2 = vertices(cZono2);
 
     N = size(V,2) * size(V2,2) * 10;
     points = zeros(2,N);
@@ -170,10 +175,19 @@ for h = 1:5
 
     for i = 1:size(points,2)
        if any(A*points(:,i) - b > Tol)
-           error('Test 1 failed!');
+          file_name = strcat('test_conZonotope_enclose_2_', ...
+                             datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+          file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+                               file_name);
+                           
+          save(file_path, 'cZonoRes')
+          error('Test 1 failed!');
        end
     end
 end
 
-res = 1;
+res = true;
 
+
+%------------- END OF CODE --------------

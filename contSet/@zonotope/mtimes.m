@@ -1,9 +1,9 @@
-function [Z] = mtimes(factor1,factor2)
+function Z = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix or an
 % interval matrix with a zonotope
 %
 % Syntax:  
-%    [Z] = mtimes(matrix,Z)
+%    Z = mtimes(matrix,Z)
 %
 % Inputs:
 %    matrix - numerical or interval matrix
@@ -19,6 +19,12 @@ function [Z] = mtimes(factor1,factor2)
 %    hold on
 %    Z=matrix*Z;
 %    plot(Z);
+%
+% References:
+%    [1] M. Althoff. "Reachability analysis and its application to the 
+%        safety assessment of autonomous cars", Dissertation, TUM 2010
+%    [2] M. Althoff et al. "Modeling, Design, and Simulation of Systems 
+%        with Uncertainties". 2011
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -56,12 +62,10 @@ end
 %numeric matrix
 if isnumeric(matrix)
     Z.Z=matrix*Z.Z;
-    %update orientation
-    Z = updateOrientation(Z,matrix);
     
     
-%interval matrix
-elseif strcmp('interval',class(matrix))
+% interval (see Theorem 3.3 in [1])
+elseif isa(matrix,'interval')
     %get minimum and maximum
     M_min=infimum(matrix);
     M_max=supremum(matrix);
@@ -72,12 +76,10 @@ elseif strcmp('interval',class(matrix))
     Zabssum=sum(abs(Z.Z),2);
     %compute new zonotope
     Z.Z=[T*Z.Z,diag(S*Zabssum)]; 
-    %update orientation
-    Z = updateOrientation(Z,T);
 
     
-%interval matrix 
-elseif strcmp('intervalMatrix',class(matrix))
+% interval matrix (see Theorem 3.3 in [1])
+elseif isa(matrix,'intervalMatrix')
     %get minimum and maximum
     M_min=infimum(matrix.int);
     M_max=supremum(matrix.int); 
@@ -88,12 +90,10 @@ elseif strcmp('intervalMatrix',class(matrix))
     Zabssum=sum(abs(Z.Z),2);
     %compute new zonotope
     Z.Z=[T*Z.Z,diag(S*Zabssum)]; 
-    %update orientation
-    Z = updateOrientation(Z,T);
 
     
-%matrix zonotope 
-elseif strcmp('matZonotope',class(matrix))
+% matrix zonotope (see Sec. 4.4.1 in [2])
+elseif isa(matrix,'matZonotope')
     %obtain first zonotope
     Znew=matrix.center*Z.Z;
     %compute further zonotopes and add them up
@@ -103,40 +103,7 @@ elseif strcmp('matZonotope',class(matrix))
     end
     %write to Z.Z
     Z.Z=Znew;
-%     %update orientation
-%     Z = updateOrientation(Z,matrix.center);
 end    
-% %matrix zonotope 
-% elseif strcmp('matZonotope',class(matrix))
-%     %preallocate
-%     rows = length(matrix.center(:,1));
-%     cols_add = length(Z.Z(1,:));
-%     cols = (matrix.gens+1)*cols_add;
-%     Znew = zeros(rows,cols);
-%     %obtain first zonotope
-%     Znew(:,1:cols_add)=matrix.center*Z.Z;
-%     %compute further zonotopes and add them up
-%     for i=1:matrix.gens
-%         Znew(:,(i*cols_add+1):((i+1)*cols_add))=matrix.generator{i}*Z.Z;
-%     end
-%     %write to Z.Z
-%     Z.Z=Znew;
-%     %update orientation
-%     %Z = updateOrientation(Z,matrix.center);
-% end
-
-
-function Z = updateOrientation(Z,M)
-
-if ~isempty(Z.O)
-    %linear map
-    Z.O = M*Z.O;
-
-    %normalization
-    for i=1:length(M)
-        Z.O(:,i) = Z.O(:,i)/norm(Z.O(:,i));
-    end
-end
 
 
 

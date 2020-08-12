@@ -48,7 +48,7 @@ end
 
 %obtain dim, minimum and difference matrix
 dim = intA.dim;
-midA = mid(intA.int);
+midA = center(intA.int);
 minA = infimum(intA.int);
 diffA = supremum(intA.int)-infimum(intA.int);
 

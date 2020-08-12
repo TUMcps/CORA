@@ -22,9 +22,9 @@ function [indices,minPos,maxPos]=reachableSet(simOptions,markovChainSpec)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 08-July-2008
-% Last update: 28-August-2008
+% Author:        Matthias Althoff
+% Written:       08-July-2008
+% Last update:   28-August-2008
 % Last revision: ---
 
 %------------- BEGIN CODE --------------

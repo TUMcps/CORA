@@ -13,7 +13,7 @@ function obj = enlarge(obj,factor)
 %
 % Example: 
 %    I = interval([1 2; -1 1]);
-%    I = enlatge(I,2);
+%    I = enlarge(I,2);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,14 +23,14 @@ function obj = enlarge(obj,factor)
 
 % Author:       Matthias Althoff
 % Written:      22-July-2016 
-% Last update:  ---
+% Last update:  28-Aug-2019
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 %get center and radius
-c = 0.5*(obj.inf + obj.sup);
-r = 0.5*(obj.sup - obj.inf);
+c = center(obj);
+r = rad(obj);
 
 %enlarged intervals
 obj.inf = c-r.*factor; 

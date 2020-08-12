@@ -30,7 +30,7 @@ function res = test_conZonotope_vertices
 
 %------------- BEGIN CODE --------------
 
-res = 0;
+res = false;
 
 % TEST 1: Figure 1 in [1] -------------------------------------------------
 
@@ -41,8 +41,7 @@ b = 1;
 cZono = conZonotope(Z,A,b);
 
 % calculate vertices
-v = vertices(cZono);
-V = get(v,'V');
+V = vertices(cZono);
 
 % plot the result
 % plotZono(cZono);
@@ -67,8 +66,7 @@ b = 2;
 cZono = conZonotope(Z,A,b);
 
 % calculate vertices
-v = vertices(cZono);
-V = get(v,'V');
+V = vertices(cZono);
 
 % plot the result
 % plotZono(cZono);
@@ -93,8 +91,7 @@ b = 0.5;
 cZono = conZonotope(Z,A,b);
 
 % calculate vertices
-v = vertices(cZono);
-V = get(v,'V');
+V = vertices(cZono);
 
 % plot the result
 % plotZono(cZono);
@@ -118,8 +115,7 @@ b = 1;
 cZono = conZonotope(Z,A,b);
 
 % calculate vertices
-v = vertices(cZono);
-V = get(v,'V');
+V = vertices(cZono);
 
 % plot the result
 % plotZono(cZono);
@@ -135,7 +131,7 @@ end
 
 
 
-res = 1;
+res = true;
 
 
 %------------- END OF CODE --------------

@@ -18,9 +18,9 @@ function res = test_zonotope_volume
 %
 % See also: -
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      26-July-2016
-% Last update:  ---
+% Last update:  01-May-2020 (MW, add second case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -33,10 +33,21 @@ vol = volume(Z1);
 
 % true result 1
 true_vol = 80;
-        
+
+res_true = vol == true_vol;
+
+% compare to interval
+I1 = interval(Z1);
+volInt = volume(I1);
+% convert back to zonotope
+IZ1 = zonotope(I1);
+volIntZon = volume(IZ1); % has to be equal to interval volume
+
+res_int1 = vol < volInt;
+res_int2 = volIntZon == volInt;
 
 % check results
-res = (vol == true_vol);
+res = res_true && res_int1 && res_int2;
 
 
 if res

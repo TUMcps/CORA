@@ -1,27 +1,27 @@
-function [P] = enclosingPolytope(varargin)
+function P = enclosingPolytope(Z,varargin)
 % enclosingPolytope - Converts a zonotope to a polytope representation
 %
 % Syntax:  
-%    [P] = enclosingPolytope(Z)
+%    P = enclosingPolytope(Z,varargin)
 %
 % Inputs:
 %    Z - zonotope object
+%    options - options containing method of enclosure
 %
 % Outputs:
 %    P - polytope object
 %
 % Example: 
-%    Z=zonotope(rand(2,5));
-%    P=polytope(Z);
-%    plot(P);
-%    hold on
-%    plot(Z);
+%    Z = zonotope([0;0],rand(2,5));
+%    P = enclosingPolytope(Z);
+%    plot(Z); hold on;
+%    plot(P,[1,2],'r');
 %
 % Other m-files required: vertices, polytope
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: intervalhull,  vertices
+% See also: interval,  vertices
 
 % Author:       Matthias Althoff
 % Written:      18-September-2007
@@ -35,18 +35,16 @@ function [P] = enclosingPolytope(varargin)
 %------------- BEGIN CODE --------------
 
 if nargin==1
-     Z=varargin{1};
      %filterLength=[];
      tightConversion=1;
      options.polytopeType = 'mpt';
 elseif nargin==2
-     Z=varargin{1};
-     options=varargin{2};
+     options=varargin{1};
      
      
 %      %filter length
 %      if isfield(options,'filterLength')
-%         filterLength=options.filterLength;
+%          filterLength=options.filterLength;
 %      else
 %          dim=length(Z.Z(:,1));
 %          filterLength(1)=dim+2;
@@ -55,9 +53,9 @@ elseif nargin==2
      
      %flag for tight conversion
      if isfield(options,'tightPolytopeConversion')
-        tightConversion=options.tightPolytopeConversion;
-     else
-         tightConversion=1;
+         tightConversion = options.tightPolytopeConversion;
+     else 
+         tightConversion = true;
      end
 end
 
@@ -111,10 +109,10 @@ index = find(len==0);
 if ~isempty(index)
     %construct zonotope to be added
     origLen = 2*rad(interval(Zorig));
-    origCenter = mid(interval(Zorig));
+    origCenter = center(interval(Zorig));
     
     %get Zmatrix
-    Zmat = get(Z,'Z');
+    Zmat = Z.Z;
     
     for i=1:length(index)
         

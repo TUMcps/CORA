@@ -1,23 +1,33 @@
-function [result] = max(pZ,m)
-% max - Computes an overaproximation of the maximum on the m-sigma bound
+function res = max(probZ,m)
+% max - Computes an overapproximation of the maximum on the m-sigma bound
+%       according to Eq. (3) in [1]
 %
 % Syntax:  
-%    [result] = max(pZ,m)
+%    res = max(probZ,m)
 %
 % Inputs:
-%    pZ - probabilistic zonotope object
+%    probZ - probabilistic zonotope object
 %    m - m of the m-sigma bound
 %
 % Outputs:
-%    result - overapproximated maximum value
+%    res - overapproximated maximum value
 %
-% Example: 
+% Example:
+%    Z1 = [10 1 -2; 0 1 1];
+%    Z2 = [0.6 1.2; 0.6 -1.2];
+%    probZ = probZonotope(Z1,Z2,2);
+%    m = 2;
+%    res = max(probZ,2);
+%
+% References:
+%    [1] M. Althoff et al. "Safety assessment for stochastic linear systems 
+%        using enclosing hulls of probability density functions", ECC 2009
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: probZonotope
 
 % Author:       Matthias Althoff
 % Written:      22-August-2007
@@ -27,12 +37,12 @@ function [result] = max(pZ,m)
 %------------- BEGIN CODE --------------
 
 %obtain covariance matrix
-Sigma=sigma(pZ);
+Sigma=sigma(probZ);
 
 %get dimension
-dim=length(pZ.g(:,1));
+d=dim(probZ);
 
 %compute maximum value
-result=1/((2*pi)^(dim/2)*det(Sigma)^(1/2))*exp(-0.5*m^2);
+res=1/((2*pi)^(d/2)*det(Sigma)^(1/2))*exp(-0.5*m^2);
 
 %------------- END OF CODE --------------

@@ -20,9 +20,9 @@ function display(obj)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 02-May-2007
-% Last update: ---
+% Author:        Matthias Althoff
+% Written:       02-May-2007
+% Last update:   ---
 % Last revision: ---
 
 %------------- BEGIN CODE --------------

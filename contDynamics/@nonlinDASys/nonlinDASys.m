@@ -2,18 +2,27 @@ classdef nonlinDASys < contDynamics
 % nonlinDASys class (nonlinear differential algebraic system)
 %
 % Syntax:  
-%    object constructor: Obj = nonlinDASys(varargin)
-%    copy constructor: Obj = otherObj
+%    obj = nonlinDASys(dynFun,conFun)
+%    obj = nonlinDASys(name,dynFun,conFun)
+%    obj = nonlinDASys(dynFun,conFun,states,inputs,constraints)
+%    obj = nonlinDASys(name,dynFun,conFun,states,inputs,constraints)
 %
 % Inputs:
-%    dim - system dimension
-%    nrOfConstraints - number of constraints
-%    nrOfInputs - number of inputs
-%    dynFile - handle of the dynamics file
-%    conFile - handle of the constraint file
+%    dynFun - function handle to dynamic equation
+%    conFun - function handle to constraint equation
+%    name - name of the system
+%    states - number of states
+%    inputs - number of inputs
+%    constraints - number of constraints
 %
 % Outputs:
-%    Obj - Generated Object
+%    obj - Generated Object
+%
+% Example:
+%    f = @(x,y,u) x + 1 + u;
+%    g = @(x,y,u) (x+1)*y + 2;
+%
+%    sys = nonlinDASys(f,g)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,66 +39,93 @@ classdef nonlinDASys < contDynamics
   
 
 properties (SetAccess = private, GetAccess = public)
-    nrOfConstraints = 0;
-    dynFile = [];
-    conFile = [];
-    jacobian = [];
-    hessian = [];
-    hessianAbs = [];
-    thirdOrderTensor = [];
+    nrOfConstraints = 0;        % number of constraints
+    dynFile = [];               % function handle to dynamic file
+    conFile = [];               % function handle to constraint file
+    jacobian = [];              % function handle to jacobian matrix
+    hessian = [];               % function handle to hessian tensor
+    hessianAbs = [];            
+    thirdOrderTensor = [];      % function handle to third-order tensor
     linError = [];
     other = [];
 end
     
 methods
-    %class constructor
-    function obj = nonlinDASys(dim,nrOfConstraints,nrOfInputs,dynFile,conFile,options)
-        obj@contDynamics(func2str(dynFile),ones(dim,1),ones(nrOfInputs,1),1); %instantiate parent class
-        %six inputs
-        if nargin==6
-            obj.nrOfConstraints=nrOfConstraints;
-            obj.dynFile=dynFile;
-            obj.conFile=conFile;
-            
-            %link jacobian and hessian files
-            str = ['obj.jacobian = @jacobian_',func2str(obj.dynFile),';'];
-            eval(str); 
-            str = ['obj.hessian = @hessianTensor_',func2str(obj.dynFile),';'];
-            eval(str);
-            str = ['obj.hessianAbs = @hessianTensor_abs_',func2str(obj.dynFile),';'];
-            eval(str);
-            str = ['obj.thirdOrderTensor = @thirdOrderTensor_',func2str(obj.dynFile),';'];
-            eval(str);
-            
-            %compute derivatives
-            %symbolicDerivation(obj,options);
-            derivatives(obj,options);
-            try 
-                if strcmp(options.category,'powerSystem')
-                    obj.other.outputBuses = options.outputBuses;
-                    obj.other.inputBuses = options.inputBuses;
-                    obj.other.buses = options.buses;
-                    obj.other.generatorBuses = options.generatorBuses;
-                    obj.other.faultBus = options.faultBus;
-                    obj.other.slackBusFlag = options.slackBusFlag;
-                    obj.other.Vgen = options.Vgen;
-                end
-            catch
+    
+    % class constructor
+    function obj = nonlinDASys(varargin)
+        
+        name = []; states = []; inputs = []; constraints = [];
+        
+        % parse input arguments
+        if nargin == 2
+            dynFun = varargin{1};
+            conFun = varargin{2};
+        elseif nargin == 3
+            name = varargin{1};
+            dynFun = varargin{2};
+            conFun = varargin{3};
+        elseif nargin == 5
+            dynFun = varargin{1};
+            conFun = varargin{2};
+            states = varargin{3};
+            inputs = varargin{4};
+            constraints = varargin{5};
+        elseif nargin == 6
+            name = varargin{1};
+            dynFun = varargin{2};
+            conFun = varargin{3};
+            states = varargin{4};
+            inputs = varargin{5};
+            constraints = varargin{6};
+        else
+            error('Wrong number of input arguments!');
+        end
+        
+        % get name from function handle
+        if isempty(name)    
+            name = func2str(dynFun);
+            name = strrep(name,'@',''); 
+            name = strrep(name,'(',''); 
+            name = strrep(name,')',''); 
+            name = strrep(name,',','');
+            if ~isvarname(name)
+                name = 'nonlinDASys';
             end
         end
         
+        % get number of states, inputs, and constraints 
+        if isempty(states) || isempty(inputs) || isempty(constraints)
+            try
+                [temp1,states] = numberOfInputs(dynFun,3);
+                temp2 = numberOfInputs(conFun,3);
+                constraints = max(temp1(2),temp2(2));
+                inputs = max(1,max(temp1(3),temp2(3)));
+            catch
+                error(['Failed to determine number of states and ' ...
+                       'inputs auotmatically! Please provide number of ' ...
+                       'states and inputs as additional input arguments!']); 
+            end
+        end
+        
+        % generate parent object
+        obj@contDynamics(name,states,inputs,1);
+        
+        % assign object properties
+        obj.nrOfConstraints = constraints;
+        obj.dynFile = dynFun;
+        obj.conFile = conFun;
+
+        % link jacobian and hessian files
+        str = ['obj.jacobian = @jacobian_',name,';'];
+        eval(str); 
+        str = ['obj.hessian = @hessianTensor_',name,';'];
+        eval(str);
+        str = ['obj.hessianAbs = @hessianTensor_abs_',name,';'];
+        eval(str);
+        str = ['obj.thirdOrderTensor = @thirdOrderTensor_',name,';'];
+        eval(str);       
     end
-         
-    %methods in seperate files 
-    [obj, Rfirst, Rfirst_y, options] = initReach(obj, Rinit, Rinit_y, options)
-    [Rnext, options] = post(obj, R, options)
-    [obj, t, x, index] = simulate(obj, opt, tstart, tfinal, x0, y0, options)
-    [X_full,xTraj] = simulate_rrt(obj,options)
-    [X_full,xTraj] = simulate_rrt_det(obj,options)
-    handle = getfcn(obj, options)
-    
-    %display functions
-    display(obj)
 end
 end
 

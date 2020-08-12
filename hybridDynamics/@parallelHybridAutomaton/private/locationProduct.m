@@ -32,39 +32,32 @@ function res = locationProduct(obj, loc)
     locList = cell(1,numComp);
 
     for i = 1:numComp
-        locList{i} = getLocation(obj.components{i},loc{i});
+        locList{i} = obj.components{i}.location{loc(i)};
     end
 
-
     % preallocate arrays
-    locNames = cell(1,numComp);
-    invList = cell(1,numComp);
+    invList = cell(1,numComp); 
     flowList = cell(1,numComp);
     transList = cell(1,numComp);
 
     % get properties from all active components
     for iLocation = 1:numComp
-        locNames{iLocation} = get(locList{iLocation},'name');   
-        invList{iLocation} = get(locList{iLocation},'invariant');
-        flowList{iLocation} = get(locList{iLocation},'contDynamics');
-        transList{iLocation} = get(locList{iLocation},'transition');
+        invList{iLocation} = locList{iLocation}.invariant;
+        flowList{iLocation} = locList{iLocation}.contDynamics;
+        transList{iLocation} = locList{iLocation}.transition;
     end
 
-    % create merged name in tuple notation: '(s1,s2,s3)'
-    joinedName = join(locNames,',');
-    mergedLocName = ['(' joinedName{1} ')'];
-
     % merge invariants
-    mergedInvSet = mergeInvariant(obj, invList);
+    mergedInvSet = mergeInvariant(obj,invList);
 
-    % merge flows (= continious dynamics)
-    mergedFlow = mergeFlows(obj, flowList);
+    % merge flows (= continuous dynamics)
+    mergedFlow = mergeFlows(obj,flowList);
 
     % merge transitions
-    mergedTransSets = mergeTransitionSets(obj, transList, loc, mergedInvSet);
+    mergedTransSets = mergeTransitionSets(obj,transList,loc);
 
     % construct resulting location object
-    res = location(mergedLocName,loc,mergedInvSet,mergedTransSets,mergedFlow);
+    res = location(mergedInvSet,mergedTransSets,mergedFlow);
 
 end
 

@@ -26,7 +26,7 @@ function res = test_taylm_reexpand(~)
 
 %------------- BEGIN CODE --------------
 
-res = 0;
+res = false;
 
 
 % Test 1: 1D-function -----------------------------------------------------
@@ -52,7 +52,13 @@ for i = 1:length(x)
 end
 
 if any(abs(y-y_) > 1e-10)
-    error('Test 1 failed');
+    file_name = strcat('test_taylm_reexpand_1_', ...
+                      datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+   file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
+   save(file_path, 'T')
+   error('Test 1 failed')
+
 end
 
 % % plot the function
@@ -158,12 +164,17 @@ for i = 1:size(X1,1)
 end
 
 if diffMax > 1e-8
+    file_name = strcat('test_taylm_reexpand_2_', ...
+                       datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+    file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
+    save(file_path, 'T')
     error('Test 3 failed');
 end
 
 % If this code is reached, then there was no error and the test is
 % considered successful
-res = 1;
+res = true;
 
 end
 

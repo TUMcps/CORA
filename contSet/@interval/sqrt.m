@@ -1,8 +1,14 @@
 function res = sqrt(intVal)
 % sqrt - Overloaded sqrt function for intervals 
 %
+% x_ is x infimum, x-- is x supremum
+%
+% [NaN, NaN] if (x-- < 0),
+% [NaN, sqrt(x--)] if (x_ < 0) and (x-- >= 0),
+% [sqrt(x_), sqrt(x--)] if (x_ >= 0).
+%
 % Syntax:  
-%    res =sqrt(intVal)
+%    res = sqrt(intVal)
 %
 % Inputs:
 %    intVal - argument of which square root should be obtained
@@ -20,41 +26,29 @@ function res = sqrt(intVal)
 
 % Author:       Matthias Althoff
 % Written:      20-January-2016
-%               21-February-2016 the matrix case is rewritten  (Dmitry Grebenyuk)
+%               21-February-2016 (DG, the matrix case is rewritten)
+%               05-May-2020 (MW, standardized error message)
 % Last revision:---
-
-% x_ is x infimum, x-- is x supremum
-
-% [NaN, NaN] if (x-- < 0),
-% [NaN, sqrt(x--)] if (x_ < 0) and (x-- >= 0),
-% [sqrt(x_), sqrt(x--)] if (x_ >= 0).
 
 %------------- BEGIN CODE --------------
 
 % scalar case
 if isnumeric(intVal)
 
-        res = interval();
+    res = interval();
 
-        if intVal.inf >= 0 
-            res.inf = sqrt(intVal.inf);
-            res.sup = sqrt(intVal.sup);
-        elseif intVal.inf < 0 &&  intVal.sup >= 0
-            res.inf = NaN;
-            res.sup = sqrt(intVal.sup);
-        else
-            res.inf = NaN;
-            res.sup = NaN;
-        end
+    if intVal.inf >= 0 
+        res.inf = sqrt(intVal.inf);
+        res.sup = sqrt(intVal.sup);
+    elseif intVal.inf < 0 &&  intVal.sup >= 0
+        res.inf = NaN;
+        res.sup = sqrt(intVal.sup);
+    else
+        res.inf = NaN;
+        res.sup = NaN;
+    end
 
 else
-
-% matrix case
-% rand(100, 100)
-%time_CORA =
-%   0.001706107558749
-%time_INTLAB =
-%   0.060109640561639
 
     % to preserve the shape    
     res = intVal;
@@ -73,6 +67,11 @@ else
     res.inf(ind3) = NaN;
     res.sup(ind3) = NaN;      
 
+end
+
+% return error if NaN occures
+if any(any(isnan(res.inf))) || any(any(isnan(res.sup)))
+	error(resIntNaNInf()); 
 end
 
 %------------- END OF CODE --------------

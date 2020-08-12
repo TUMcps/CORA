@@ -75,7 +75,7 @@ if length(nonZeroIndTmp)>0
     mPartial=combineOptimized(mPartial,freeDriving(nonZeroIndTotal),nrOfInputs); 
 
     %compute Gamma matrix
-    Gpartial=sparseDiag(mPartial)*GammaFull(nonZeroIndTotal,nonZeroIndTotal);
+    Gpartial=sparse(diag(mPartial))*GammaFull(nonZeroIndTotal,nonZeroIndTotal);
     Gpartial=normalizeMatrix(Gpartial);
 
     %execute Gamma matrix

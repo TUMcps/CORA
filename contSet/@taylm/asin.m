@@ -50,7 +50,7 @@ function res = s_asin( obj )
     end
     
     % producing T_tilda from the manual
-    if isempty(c_f)
+    if isempty(c_f) || c_f == 0
         T = obj;
         c_f = 0;
     else    

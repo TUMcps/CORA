@@ -1,14 +1,21 @@
-function [Zred]=deleteAligned(Z)
+function Z = deleteAligned(Z)
 % deleteAligned - combines aligned generators
 %
 % Syntax:  
-%    [Zred]=deleteAligned(Z)
+%    Z = deleteAligned(Z)
 %
 % Inputs:
 %    Z - zonotope object
 %
 % Outputs:
-%    Zred - reduced zonotope object
+%    Z - reduced zonotope object
+%
+% Example:
+%    Z1 = zonotope([1;0],[1 0 1 1 -2 0; 0 1 0 1 -2 -3]);
+%    Z2 = deleteAligned(Z1);
+% 
+%    plot(Z1); hold on;
+%    plot(Z2,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -16,27 +23,22 @@ function [Zred]=deleteAligned(Z)
 %
 % See also: 
 
-% Author: Matthias Althoff
-% Written: 15-January-2009
-% Last update: ---
+% Author:        Matthias Althoff
+% Written:       15-January-2009
+% Last update:   27-Aug-2019
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-%get Z-matrix from zonotope Z
-Zmatrix=get(Z,'Z');
-
-%extract generator matrix
-c=Zmatrix(:,1);
-G=Zmatrix(:,2:end);
+%extract center and generator matrix
+c=center(Z);
+G=generators(Z);
 
 %Delete zero-generators
 G=nonzeroFilter(G);
 
 %normalize generators
-for i=1:length(G(1,:))
-    G_norm(:,i) = G(:,i)/norm(G(:,i));
-end
+G_norm = G./vecnorm(G);
 
 %find equal generators
 i = 1;
@@ -61,6 +63,6 @@ while i < length(G(1,:))
     i = i + 1;
 end
 
-Zred=zonotope([c,G]);
+Z.Z = [c,G];
 
 %------------- END OF CODE --------------

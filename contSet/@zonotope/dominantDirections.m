@@ -1,9 +1,9 @@
-function S=dominantDirections(varargin)
+function S=dominantDirections(Z,varargin)
 % dominantDirections - computes the directions that span a parallelotope
-% which tightly encloses a zonotope Z
+%    which tightly encloses a zonotope Z
 %
 % Syntax:  
-%    S=dominantDirections(varargin)
+%    S = dominantDirections(Z,varargin)
 %
 % Inputs:
 %    Z - zonotope object
@@ -12,6 +12,10 @@ function S=dominantDirections(varargin)
 %
 % Outputs:
 %    S - matrix containing the dominant directions as column vectors
+%
+% Example:
+%    Z = zonotope([0;0],-1+2*rand(2,20));
+%    S = dominantDirections(Z);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,32 +30,31 @@ function S=dominantDirections(varargin)
 
 %------------- BEGIN CODE --------------
 
-%get Z-matrix from zonotope Z
-Z = varargin{1};
-Zmatrix=get(Z,'Z');
-dim=length(Zmatrix(:,1));
-
 %extract generator matrix
-G=Zmatrix(:,2:end);
+d = dim(Z);
+G=generators(Z);
 
 %Delete zero-generators
 G=nonzeroFilter(G);
 
+% number of generators
+nrOfGens = size(G,2);
+
 if nargin==1
-    filterLength1 = dim+5;
-    filterLength2 = dim+3;
+    filterLength1 = d+5;
+    filterLength2 = d+3;
 elseif nargin==3
-    filterLength1 = varargin{2};
-    filterLength2 = varargin{3};
+    filterLength1 = varargin{1};
+    filterLength2 = varargin{2};
 end
 
 %correct filter length if necessary
-if filterLength1>length(G(1,:))
-    filterLength1=length(G(1,:));
+if filterLength1 > nrOfGens
+    filterLength1 = nrOfGens;
 end
 
-if filterLength2>length(G(1,:))
-    filterLength2=length(G(1,:));
+if filterLength2 > nrOfGens
+    filterLength2 = nrOfGens;
 end
 
 %length filter
@@ -65,8 +68,7 @@ Gtemp=volumeFilter(Gcells,Z);
 Gpicked=Gtemp{1};
 
 %Select dominant directions S
-S(:,1:dim)=Gpicked(:,1:dim);
-
+S(:,1:d)=Gpicked(:,1:d);
 
 
 %------------- END OF CODE --------------

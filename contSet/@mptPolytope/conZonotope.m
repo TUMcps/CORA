@@ -9,7 +9,7 @@ function res = conZonotope(obj)
 %    obj - mptPolytope object
 %
 % Outputs:
-%    res - c-zonotope object
+%    res - conZonotope object
 %
 % Example: 
 %    A = [-1 0;0 -1;1 1];
@@ -18,7 +18,7 @@ function res = conZonotope(obj)
 %    cZono = conZonotope(poly);
 %
 %    hold on
-%    plotFilled(cZono,[1,2],'r','EdgeColor','none')
+%    plot(cZono,[1,2],'r','Filled',true,'EdgeColor','none')
 %    plot(poly,[1,2],'g');
 %
 % Other m-files required: none
@@ -33,6 +33,7 @@ function res = conZonotope(obj)
 
 % Author:       Niklas Kochdumper
 % Written:      13-May-2018
+%               28-April-2019 (MA) code shortened
 % Last update:  ---
 % Last revision:---
 
@@ -45,17 +46,15 @@ A = obj.P.A;
 b = obj.P.b;
 
 % calculate the vertices of the polytope
-v = vertices(obj);
-V = get(v,'V');
+V = vertices(obj);
 
 % calculate a bounding box for the constrained zonotope and convert it to a
 % zonotope
 bb = interval(min(V,[],2),max(V,[],2));
 zono = zonotope(bb);
 
-Z = get(zono,'Z');
-c = Z(:,1);
-G = Z(:,2:end);
+c = center(zono);
+G = generators(zono);
 
 % Calculate the lower bound sigma for A*x \in [sigma,b] (Theorem 1 in [1])
 sigma = min(A*V,[],2);

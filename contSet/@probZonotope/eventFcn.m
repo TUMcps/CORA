@@ -1,13 +1,13 @@
-function [handle] = eventFcn(obj,x,direction)
+function [handle] = eventFcn(probZ,x,direction)
 % eventFcn - Returns the results of an event function that detects if a 
-% trajectory enters or leaves a zonotope;
-% this event function is needed, e.g. for matlab ode-solvers
+%    trajectory enters or leaves a zonotope;
+%    this event function is needed, e.g. for matlab ode-solvers
 %
 % Syntax:  
-%    [value,isterminal,direction] = eventFcn(obj,x,direction)
+%    [value,isterminal,direction] = eventFcn(probZ,x,direction)
 %
 % Inputs:
-%    obj - zonotope object
+%    probZ - probabilistic zonotope object
 %    x - system state
 %    direction - event if the state enters or leaves the interval hull?
 %
@@ -15,7 +15,7 @@ function [handle] = eventFcn(obj,x,direction)
 %    value - value of the event function
 %    isterminal - specifies if the simulation stops if an event turns zero
 %    direction - specifies if the value of the event function has to 
-%    turn from negative to positive or the other way round
+%                turn from negative to positive or the other way round
 %
 % Example: 
 %    ---
@@ -26,17 +26,17 @@ function [handle] = eventFcn(obj,x,direction)
 %
 % See also: ---
 
-% Author: Matthias Althoff
-% Written: 07-May-2007 
-% Last update: ---
+% Author:        Matthias Althoff
+% Written:       07-May-2007 
+% Last update:   ---
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-value=obj.halfspace.H*x-obj.halfspace.K;
+value = probZ.halfspace.H*x-probZ.halfspace.K;
 % Always stop the integration when event detected
-isterminal = ones(length(obj.halfspace.K),1);   
+isterminal = ones(length(probZ.halfspace.K),1);   
 % Vectorize direction
-direction = ones(length(obj.halfspace.K),1)*direction;  
+direction = ones(length(probZ.halfspace.K),1)*direction;  
 
 %------------- END OF CODE --------------

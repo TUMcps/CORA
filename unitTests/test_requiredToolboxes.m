@@ -21,19 +21,38 @@ function res = test_requiredToolboxes
 
 %------------- BEGIN CODE --------------
 
-%check if symbolic toolbox is available
-res_partial(1) = license('test','Symbolic_Toolbox');
-if (res_partial(1)==0)
-    disp('(symbolic toolbox missing)');
-end
+    % check if symbolic math toolbox is available
+    res_partial(1) = license('test','Symbolic_Toolbox');
+    if (res_partial(1)==0)
+        disp('symbolic toolbox missing!');
+    end
 
-%check if CORA and MPT are in the MATLAB path
-p = path;
-res_partial(2) = ~isempty(strfind(p,'contDynamics')); %one of the folders in CORA
-res_partial(3) = ~isempty(strfind(p,'contSet')); %one of the folders in CORA
-res_partial(4) = ~isempty(strfind(p,'hybridDynamics')); %one of the folders in CORA
-res_partial(5) = ~isempty(strfind(p,'mpt')); %should be found if MPT toolbox is installed
+    % check if optimization toolbox is available
+    res_partial(2) = license('test','Optimization_Toolbox');
+    if (res_partial(2)==0)
+        disp('optimization toolbox missing!');
+    end
 
-res = all(res_partial);
+    p = path;
+
+    % check if MPT toolbox is available
+    res_partial(3) = contains(p,'mpt');
+    if (res_partial(3)==0)
+        disp('MPT toolbox missing!');
+    end
+
+    % check if YALMIP toolbox is available
+    res_partial(4) = contains(p,'yalmip');
+    if (res_partial(4)==0)
+        disp('YALMIP toolbox missing!');
+    end
+
+    % check if CORA is on the path
+    p = path;
+    res_partial(5) = contains(p,'contDynamics'); 
+    res_partial(6) = contains(p,'contSet'); 
+    res_partial(7) = contains(p,'hybridDynamics');
+
+    res = all(res_partial);
 
 %------------- END OF CODE --------------

@@ -1,6 +1,6 @@
 function res = test_intervalMatrix_norm
 % test_intervalMatrix_norm - unit test function of norm; the result is
-% compared to the norm of some vertices
+%    compared to the norm of some vertices
 % 
 % Syntax:  
 %    res = test_matZonotope_norm
@@ -72,15 +72,22 @@ end
 
 % obtain results
 n_1 = norm(M_int, 1);
-n_2 = norm(M_int, 2);
 n_inf = norm(M_int, inf);
 
 %check if slightly bloated results enclose others
 res_1 = all(n_1_sample <= n_1*1+1e-8);
-res_2 = all(n_2_sample <= n_2*1+1e-8);
-res_3 = all(n_inf_sample <= n_inf*1+1e-8);
+res_2 = all(n_inf_sample <= n_inf*1+1e-8);
 
 %result of different computation techniques
-res = res_1*res_2*res_3;
+res = res_1 && res_2;
+
+% save result if random test failed
+if res == 0
+     file_name = strcat('test_intervalMatrix_norm_', ...
+                             datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+     file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
+     save(file_path, 'V');
+end
 
 %------------- END OF CODE --------------

@@ -121,7 +121,7 @@ end
 
 %%--------
 
-disp('test_mid successful');
+disp('test_rad successful');
 return;
 
 %------------- END OF CODE --------------

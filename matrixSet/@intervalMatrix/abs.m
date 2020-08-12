@@ -16,7 +16,7 @@ function M = abs(intMat)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: OTHER_FUNCTION_NAME1,  OTHER_FUNCTION_NAME2
+% See also:
 
 % Author:       Matthias Althoff
 % Written:      21-July-2010

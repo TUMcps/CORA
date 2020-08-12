@@ -2,16 +2,22 @@ function [eI,eI2,iPow,iPow2,E] = expmMixed(matI,r,intermediateOrder,maxOrder)
 % expmIndMixed - dummy function for interval matrices.
 %
 % Syntax:  
-%    eZ = expmInd(matZ,maxOrder)
+%    [eI,eI2,iPow,iPow2,E] = expmMixed(matI,r,intermediateOrder,maxOrder)
 %
 % Inputs:
-%    matZ - matrix zonotope
-%    maxOrder - Taylor series order until computation with interval arith.
-%    maxOrder - maximum Taylor series order until remainder is computed
+%    matI - interval matrix object
+%    r - time-step size
+%    intermediateOrder - max taylor order for the first part of evaluation
+%    maxOrder - max taylor order for the second part of evaluation
 %
 % Outputs:
-%    eZ - matrix zonotope exponential part
-%    eI - interval matrix exponential part
+%    eI - interval matrix for the first part of evaluation
+%    eI2 - interval matrix for the second part of evaluation
+%    iPow - cell array storing the powers of the matrix:
+%           A,A^2,...,A^(intermediateOrder)
+%    iPow2 - cell array storing the powers of the matrix:
+%            A^(intermediateOrder+1),...,A^(maxOrder)
+%    E - interval matrix for the remainder
 %
 % Example: 
 %
@@ -48,7 +54,8 @@ if (intermediateOrder>=2)
     end
 
     %compute interval part
-    [eI2,iPow2,E] = expm(matI, r, maxOrder, intermediateOrder+1, matI*iPow{intermediateOrder});
+    [eI2,iPow2,E] = expm(matI, r, ...
+        maxOrder, intermediateOrder+1, matI*iPow{intermediateOrder});
 
 else
     disp('intermediate order too low');

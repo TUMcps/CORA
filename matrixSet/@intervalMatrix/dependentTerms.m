@@ -1,21 +1,21 @@
 function [intSq,intH] = dependentTerms(obj,r)
-% dependentTerms - computes exact Taylor terms of an interval matrix square and
-% an interval matrix exponential
+% dependentTerms - computes exact Taylor terms of an interval matrix square
+%    and an interval matrix exponential
 %
 % These different tasks are computed in one m-file to save computation
 % time: the for loop has to be executed only once and help functions do not
 % have to be called so often
 %
 % Syntax:  
-%    [obj] = dependentTerms(obj,options)
+%    [intSq,intH] = dependentTerms(obj,r)
 %
 % Inputs:
 %    obj - linear interval system (linIntSys) object
 %    r - time step increment
 %
 % Outputs:
-%    sq - exact square matrix
-%    H - exact Taylor terms up to second order
+%    intSq - exact square matrix
+%    intH - exact Taylor terms up to second order
 %
 % Example: 
 %
@@ -23,7 +23,7 @@ function [intSq,intH] = dependentTerms(obj,r)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: OTHER_FUNCTION_NAME1,  OTHER_FUNCTION_NAME2
+% See also:
 
 % Author:       Matthias Althoff
 % Written:      20-February-2007 
@@ -70,44 +70,52 @@ for i=1:dim
     a_inf=infimum(A(i,i));
     a_sup=supremum(A(i,i));
     %compute diagonal elements for H
-    kappa=max(a_inf*r+0.5*a_inf^2*r^2,a_sup*r+0.5*a_sup^2*r^2);
+    kappa=max(a_inf*r+0.5*a_inf^2*r^2, a_sup*r+0.5*a_sup^2*r^2);
     H(i,i)=H(i,i)+interval(g(A(i,i),r),kappa);         
     %--------------------------------------------------------------
 end
 
 %write as interval matrices
-intSq=intervalMatrix(r^2*mid(sq),r^2*rad(sq));
-intH=intervalMatrix(mid(H)+I,rad(H));
+intSq=intervalMatrix(r^2*center(sq),r^2*rad(sq));
+intH=intervalMatrix(center(H)+I,rad(H));
 
-%auxiliary function g()
+end
+
+
+% AUXILIARY FUNCTIONS
+
 function [res]=g(a,r)
     if isIntersecting(interval(-1/r,-1/r),a)
         res=-0.5;
     else
         a_inf=infimum(a);
         a_sup=supremum(a);
-        res=min(a_inf*r+0.5*a_inf^2*r^2,a_sup*r+0.5*a_sup^2*r^2);
+        res=min(a_inf*r+0.5*a_inf^2*r^2, a_sup*r+0.5*a_sup^2*r^2);
     end
-    
-%auxiliary function gu()
+end
+
+
 function [res]=gu(a,r)
     if in(interval(-3/(2*r)),a)
         res=-9/24*r;
     else
         a_inf=infimum(a);
         a_sup=supremum(a);
-        res=min(0.5*a_inf*r^2+1/6*a_inf^2*r^3,0.5*a_sup*r^2+1/6*a_sup^2*r^3);
+        res=min(0.5*a_inf*r^2+1/6*a_inf^2*r^3,...
+            0.5*a_sup*r^2+1/6*a_sup^2*r^3);
     end    
+end
 
+    
+function s=sum(A,i)
 %sum function:
 %s=0.5 \sum_{k:k\neq i,k\neq j} a_{ik}a_{kj}t^2
-function s=sum(A,i)
+    n=length(A);
+    k=0:n;
+    ind=k*n+1:n+1:n^2;
+    A(ind)=zeros(n,1);
 
-n=length(A);
-k=0:n;
-ind=k*n+1:n+1:n^2;
-A(ind)=zeros(n,1);
-
-s=A(i,:)*A;
+    s=A(i,:)*A;
+end
 
 %------------- END OF CODE --------------

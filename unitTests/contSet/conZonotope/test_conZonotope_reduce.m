@@ -30,7 +30,7 @@ function res = test_conZonotope_reduce
 
 %------------- BEGIN CODE --------------
 
-res = 0;
+res = false;
 
 % TEST 1: 2D --------------------------------------------------------------
 
@@ -50,8 +50,7 @@ for j = 1:length(methods)
     cZono = conZonotope(poly);
 
     % Calculate vertices
-    v = vertices(cZono);
-    V = get(v,'V');
+    V = vertices(cZono);
     
     % Reduce all constraints for which the elimination does not result in
     % an over-approximation
@@ -85,6 +84,13 @@ for j = 1:length(methods)
         % check if all vertices are located inside the set
         temp = P.A*V-P.b*ones(1,size(V,2));
         if any(any(temp > 1e-10))
+            file_name = strcat('test_conZonotope_reduce_1_', ...
+                               datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+            file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+                                 file_name);
+                           
+            save(file_path, 'cZono')
             error('Test 1 (test case %i) failed!',i); 
         end
     end
@@ -110,8 +116,7 @@ for j = 1:length(methods)
     cZono = conZonotope(poly);
 
     % Calculate vertices
-    v = vertices(cZono);
-    V = get(v,'V');
+    V = vertices(cZono);
     
     % Reduce all constraints for which the elimination does not result in
     % an over-approximation
@@ -140,7 +145,14 @@ for j = 1:length(methods)
         % check if all vertices are located inside the set
         temp = P.A*V-P.b*ones(1,size(V,2));
         if any(any(temp > 1e-10))
-            error('Test 2 (test case %i) failed!',i); 
+            file_name = strcat('test_conZonotope_reduce_2_', ...
+                               datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+            file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+                                 file_name);
+                           
+            save(file_path, 'cZono')
+            error('Test 2 (test case %i) failed!',i);
         end
     end
 end
@@ -154,15 +166,11 @@ load('conZonotope_reduce.mat');
 cZred = reduce(cZ,'redConstr');
 
 % calculate vertices
-temp = vertices(cZred);
-V_ = get(temp,'V');
-V_ = V_';
+V_ = vertices(cZred)';
 
 % calculate vertices of the equivalent polytope
 poly = mptPolytope(cZ);
-temp = vertices(poly);
-V = get(temp,'V');
-V = V';
+V = vertices(poly)';
 
 % compare with the real vertices
 for i = 1:size(V_,2)
@@ -171,6 +179,6 @@ for i = 1:size(V_,2)
    end
 end
 
-res = 1;
+res = true;
 
 %------------- END OF CODE --------------

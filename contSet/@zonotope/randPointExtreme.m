@@ -1,44 +1,42 @@
-function [p] = randPointExtreme(obj)
-% randPointExtreme - generates a random extreme points of a zonotope
+function p = randPointExtreme(Z)
+% randPointExtreme - generates a random extreme point of a zonotope
 %
 % Syntax:  
-%    [p] = randPointExtreme(obj)
+%    p = randPointExtreme(Z)
 %
 % Inputs:
-%    obj - zonotope object
+%    Z - zonotope object
 %
 % Outputs:
 %    p - random point in R^n
 %
 % Example: 
-%    ---
+%    zono = zonotope.generateRandom(2,[],3);
+%    p = randPointExtreme(zono);
+%
+%    figure
+%    hold on
+%    plot(zono,[1,2],'r');
+%    plot(p(1),p(2),'.k','MarkerSize',20);
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: randPoint
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      14-May-2009
-% Last update:  ---
+% Last update:  09-June-2020 (MW, remove loop)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 %obtain number of generators
-nrOfGenerators=length(obj.Z(1,:))-1;
+G = generators(Z);
 
-%initialize the random point
-p=obj.Z(:,1);
-
-%add generators randomly
-for i=1:nrOfGenerators
-    val=sign(2*rand(1)-1);
-    p=p+val*obj.Z(:,i+1);
-end
-
-
-
+% add generators with random factors -1 or 1
+factors = sign(-1 + 2*rand(1,size(G,2)));
+p = center(Z) + sum(factors .* G, 2);
 
 %------------- END OF CODE --------------

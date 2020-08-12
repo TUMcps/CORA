@@ -1,4 +1,4 @@
-function Obj = contSet(varargin)
+classdef contSet
 % contSet - Object and Copy Constructor 
 %
 % Syntax:  
@@ -17,39 +17,48 @@ function Obj = contSet(varargin)
 %
 % See also: ---
 
-% Author: Matthias Althoff
-% Written: 02-May-2007 
-% Last update: ---
+% Author:        Matthias Althoff, Mark Wetzlinger
+% Written:       02-May-2007 
+% Last update:   04-May-2020 (MW, transition to classdef)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-% If no argument is passed (default constructor)
-if nargin == 0
-    disp('ContSet needs more input values');
-    Obj.id=0;
-    Obj.dimension=0;
-    % Register the variable as an object
-    Obj = class(Obj, 'contSet');    
-    
-% If 1 argument is passed
-elseif nargin == 1
-    %List elements of the class
-    %Obj.id=nextID('contSet');  
-    Obj.id=0;
-    Obj.dimension=varargin{1};
+properties (SetAccess = protected, GetAccess = public)
+    id (1,1) {mustBeInteger} = 0;
+    dimension (1,1) {mustBeInteger} = 0;
+end
 
-    % Register the variable as an object
-    Obj = class(Obj, 'contSet');
+methods
+
+    function Obj = contSet(varargin)
         
-% Else if the parameter is an identical object, copy object    
-elseif isa(varargin{1}, 'contSet')
-    Obj = varargin{1};
+        % (default constructor)
+        if nargin == 0
+            % values in properties already initialized
+            
+        % If 1 argument is passed
+        elseif nargin == 1
+            % (copy constructor)
+            if isa(varargin{1}, 'contSet')
+                Obj = varargin{1};
+
+            else
+                %List elements of the class
+                Obj.dimension = varargin{1};
+
+            end
+
+        % Else if not enough or too many inputs are passed    
+        else
+            disp('This class takes at max. 2 inputs.');
+        end
+        
+    end
     
-% Else if not enough or too many inputs are passed    
-else
-    disp('This class needs more/less input values');
-    Obj=[];
+end
+
+
 end
 
 %------------- END OF CODE --------------

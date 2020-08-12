@@ -32,8 +32,8 @@ function dxdt = f(t, z)
     y = z((obj.dim+1):(obj.dim+obj.nrOfConstraints));
     
     %return derivatives
-    dxdt(1:obj.dim,1) = obj.dynFile(t, x, y, options.u);
-    dxdt((obj.dim+1):(obj.dim+obj.nrOfConstraints),1) = obj.conFile(t, x, y, options.u);
+    dxdt(1:obj.dim,1) = obj.dynFile(x, y, options.u);
+    dxdt((obj.dim+1):(obj.dim+obj.nrOfConstraints),1) = obj.conFile(x, y, options.u);
 end
 
 handle = @f;

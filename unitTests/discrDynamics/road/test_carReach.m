@@ -38,7 +38,7 @@ probModel = carReach(fileName,pathName,modelInitialization);
 T = probModel.T;
 projMat = probModel.projMat;
 GammaFull = probModel.GammaFull;
-finalTime = probModel.timeStep;
+finalTime = probModel.timeStep;options.isHyperplaneMap = 0;
 stateField = probModel.stateField;
 inputField = probModel.inputField;
 %--------------------------------------------------------------------------

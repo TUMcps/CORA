@@ -5,7 +5,7 @@ function res = minus(factor1, factor2)
 %    res = minus(factor1, factor2)
 %
 % Inputs:
-%    factor1 and factor2 - a zoo objects
+%    factor1 and factor2 - zoo objects
 %
 % Outputs:
 %    res - a zoo object

@@ -30,5 +30,4 @@ function res = isscalar(intVal)
 %obtain result; only infimum is checked for efficiency reasons
 res = isscalar(intVal.inf);
 
-
 %------------- END OF CODE --------------

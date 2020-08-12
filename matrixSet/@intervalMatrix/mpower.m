@@ -44,8 +44,7 @@ if exponent>=0
     end
     
 else
-    intMatPower=[];
-    disp('no negative powers supported')
+    error('no negative powers supported')
 end
 
 %------------- END OF CODE --------------

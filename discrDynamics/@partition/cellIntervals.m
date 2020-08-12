@@ -40,7 +40,7 @@ else
 end
 
 % Get subscripts out of the segment number 
-subscripts=i2s(obj,cellNrs);
+subscripts=i2s(obj.nrOfSegments',cellNrs);
 
 % init intervals
 intervals = cell(size(subscripts,1),1);

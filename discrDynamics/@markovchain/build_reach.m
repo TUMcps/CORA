@@ -1,13 +1,13 @@
-function [Obj,tp]=build_reach(Obj,HA,iInput,iState,tranFrac)
+function [Obj,tp]=build_reach(Obj,R,iInput,iState,tranFrac)
 % build - Builds the transition matrices of the Markov chains using 
 % reachability analysis.
 %
 % Syntax:  
-%    [Obj,tp] = build(Obj,HA,iInput,iState,tranFrac)
+%    [Obj,tp] = build(Obj,R,iInput,iState,tranFrac)
 %
 % Inputs:
 %    Obj - Markov chain object
-%    HA - hybrid automaton object
+%    R - reachSet object
 %    iInput - discrete input
 %    iState - initial discrete state
 %    tranFrac - 
@@ -19,7 +19,7 @@ function [Obj,tp]=build_reach(Obj,HA,iInput,iState,tranFrac)
 % Example: 
 %    -
 %
-% Other m-files required: intervalhull(constructor)
+% Other m-files required: interval (constructor)
 % Subfunctions: none
 % MAT-files required: none
 %
@@ -31,20 +31,16 @@ function [Obj,tp]=build_reach(Obj,HA,iInput,iState,tranFrac)
 %               16-August-2007
 %               23-November-2007
 %               21-April-2009
+%               24-July-2020
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-%get results saved in the hybrid automaton
-R=get(HA,'reachableSet');
-
 %get probabilities from actual segment to all segments
-[tp.T]=transitionProbability_reach(R.T,tranFrac.TP,Obj.field);
-[tp.OT]=transitionProbability_reach(R.OT,tranFrac.TI,Obj.field);
+tp = transitionProbability_reach(R,tranFrac.TP,Obj.field);
 
 %load transition probability from actual segment to reachable segments in
 %Transition Matrix T
-%actualSegmentNr=get(Obj.field,'actualSegmentNr'); %<-- removed AP
 actualSegmentNr = iState;
 Obj.T.T{iInput}(:,actualSegmentNr+1)=sparse(tp.T);
 Obj.T.OT{iInput}(:,actualSegmentNr+1)=sparse(tp.OT);

@@ -18,7 +18,7 @@ function [Obj,tp] = build(Obj,finalStateMat,iInput,stateField)
 % Example: 
 %    -
 %
-% Other m-files required: intervalhull(constructor)
+% Other m-files required: interval (constructor)
 % Subfunctions: none
 % MAT-files required: none
 %

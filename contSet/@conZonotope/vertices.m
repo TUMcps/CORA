@@ -8,7 +8,7 @@ function V = vertices(obj)
 %    obj - c-zonotope object
 %
 % Outputs:
-%    V - vertices object
+%    V - matrix storing the vertices (dimension: [n,p], with p vertices)
 %
 % Example: 
 %    Z = [0 3 0 1;0 0 2 1];
@@ -17,8 +17,7 @@ function V = vertices(obj)
 %    cZono = conZonotope(Z,A,b);
 %
 %    % calculate vertices
-%    v = vertices(cZono);
-%    V = get(v,'V');
+%    V = vertices(cZono);
 %
 %    % plot the result
 %    hold on
@@ -42,25 +41,22 @@ if ~isempty(obj.A)
     
     % Calculate potential vertices of the constrained zonotope (vertices + 
     % points inside the set)
-    z = potVertices(obj);
+    V = potVertices(obj);
 
     % Compute the convex hull to eliminate points located in the interior of
     % the constrained zonotope
-    dim = size(z,1);
+    n = size(V,1);
 
-    if size(z,2) > dim+1    % set is full-dimensional
-        ind = convhulln(z');
+    if size(V,2) > n+1    % set is full-dimensional
+        ind = convhulln(V');
         ind = unique(ind,'stable');
-        z = z(:,ind);
+        V = V(:,ind);
     end
-
-    % Construct vertices object
-    V = vertices(z);
     
 else
     
    % no constraints -> call zonotope/vertices
-   V = vertices@zonotope(obj);
+   V = vertices(zonotope(obj.Z));
 end
 
 

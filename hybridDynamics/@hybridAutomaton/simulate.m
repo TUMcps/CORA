@@ -1,17 +1,18 @@
-function [obj] = simulate(obj,options)
+function [t,x,loc] = simulate(obj,params)
 % simulate - simulates a hybrid automaton
 %
 % Syntax:  
-%    [obj] = simulate(obj,tstart,tfinal,startlocation,y0)
+%    obj = simulate(obj,params)
 %
 % Inputs:
 %    obj - hybrid automaton object
+%    params - system parameters
 %    options - simulation options
 %
 % Outputs:
-%    obj - hybrid automaton object
-%
-% Example: 
+%    t - cell-array storing the time vectors
+%    x - cell-array storing the state trajectories
+%    loc - cell-array storing the visited locations
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -19,52 +20,40 @@ function [obj] = simulate(obj,options)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 03-May-2007 
-% Last update: ---
+% Author:        Matthias Althoff
+% Written:       03-May-2007 
+% Last update:   08-May-2020 (MW, update interface)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-%load data from options
-tFinal=options.tFinal; %final time
-finalLoc=options.finalLoc; %final location
+params = checkOptionsSimulate(obj,params);
 
-%initialize variables, intermediate state, 
-tInter=options.tStart; %intermediate time at transitions
-loc=options.startLoc; %actual location
-xInter=options.x0; %intermediate state at transitions
-t=[]; %time vector
-x=[]; %state vector
-count=1; %transition counter
+% initialization
+tInter = params.tStart;         % intermediate time at transitions
+locCurr = params.startLoc;      % current location
+xInter = params.x0;             % intermediate state at transitions
 
-%while final time not reached
-while (tInter<tFinal) && (~isempty(loc)) && ~isFinalLocation(loc,finalLoc) || (count==1)
-    %store locations
-    location(count)=loc;
-    %choose input
-    %options.u=options.uLoc{loc}; %<--change here!!
-    %options.u=randPoint(options.Uloc{loc})+options.uLocTrans{loc}; %<--change here!!
-    options.u=randPointExtreme(options.Uloc{loc})+options.uLocTrans{loc}; %<--change here!!
-    %options.U=options.Uloc{loc}; %<-pi-change here!!
-    %simulate within the actual location
-    [tNew,xNew,loc,xInter]=simulate(obj.location{loc},options,tInter,tFinal,xInter);
-    %new intermediate time is last simulation time
-    tInter=tNew(end);
-    
-    %store results
-    t{count}=tNew;
-    x{count}=xNew;
-    
-    %increase counter for transitions
-    count=count+1;
+loc = {}; t = {}; x = {};
+
+% iteratively simulate for each location seperately
+while (tInter < params.tFinal) && ...
+      (~isempty(locCurr)) && ~isFinalLocation(locCurr,params.finalLoc)
+
+    % choose input
+    params.u = params.uLoc{locCurr};
+
+    % simulate within the current location
+    params.tStart = tInter;
+    params.x0 = xInter;
+    params.loc = locCurr;
+    [tNew,xNew,locCurr,xInter] = simulate(obj.location{locCurr},params);
+
+    % update time
+    tInter = tNew(end);
+
+    % store results
+    t{end+1,1} = tNew; x{end+1,1} = xNew; loc{end+1,1} = params.loc;
 end
-
-
-%save results to object structure
-obj.result.simulation.t=t;
-obj.result.simulation.x=x;
-obj.result.simulation.location=location;
-
 
 %------------- END OF CODE --------------

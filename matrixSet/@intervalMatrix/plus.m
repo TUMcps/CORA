@@ -29,13 +29,13 @@ function intMat = plus(summand1,summand2)
 
 %Find a matrix zonotope object
 %Is summand1 a matrix zonotope?
-if strcmp('intervalMatrix',class(summand1))
+if isa(summand1,'intervalMatrix')
     %initialize resulting zonotope
     intMat=summand1;
     %initialize other summand
     summand=summand2;
 %Is summand2 a matrix zonotope?    
-elseif strcmp('intervalMatrix',class(summand2))
+elseif isa(summand2,'intervalMatrix')
     %initialize resulting zonotope
     intMat=summand2;
     %initialize other summand
@@ -43,7 +43,7 @@ elseif strcmp('intervalMatrix',class(summand2))
 end
 
 %Is summand an interval matrix?
-if strcmp('intervalMatrix',class(summand))
+if isa(summand,'intervalMatrix')
     %Calculate minkowski sum
     intMat.int = intMat.int + summand.int;
 

@@ -27,7 +27,7 @@ function start_intersectionDatabase(~)
 %------------- BEGIN CODE --------------
 
 
-% obtain uncertain center intervalhull
+% obtain uncertain center interval
 % other traffic participants
 parameters.segLength=4; %[m] 
 parameters.centerWidth=3.5; %[m]

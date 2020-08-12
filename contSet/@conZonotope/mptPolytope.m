@@ -18,7 +18,7 @@ function res = mptPolytope(obj)
 %    poly = mptPolytope(cZono);
 %
 %    hold on
-%    plotFilled(cZono,[1,2],'r','EdgeColor','none')
+%    plot(cZono,[1,2],'r','Filled',true,'EdgeColor','none')
 %    plot(poly,[1,2],'g');
 %
 % Other m-files required: none
@@ -29,14 +29,13 @@ function res = mptPolytope(obj)
 
 % Author:       Niklas Kochdumper
 % Written:      13-May-2018
-% Last update:  ---
+% Last update:  28-April-2019 (MA, code shortened)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
     
 % extract vertices of the constrained zonotope
-v = vertices(obj);
-V = get(v,'V');
+V = vertices(obj);
 
 % construct MPTpolytope
 res = mptPolytope(V');

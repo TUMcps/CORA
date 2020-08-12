@@ -32,4 +32,3 @@ intVal.inf = intVal.inf.';
 intVal.sup = intVal.sup.';
 
 %------------- END OF CODE --------------
-end

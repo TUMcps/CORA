@@ -1,16 +1,18 @@
-function [genLen] = generatorLength(Z)
+function Glength = generatorLength(Z)
 % generatorLength - Returns the lengths of the generators
 %
 % Syntax:  
-%    [genLen] = generatorLength(Z)
+%    Glength = generatorLength(Z)
 %
 % Inputs:
 %    Z - zonotope object
 %
 % Outputs:
-%    genLen - vector of generator length
+%    Glength - vector of generator length
 %
-% Example: ---
+% Example:
+%    Z = zonotope([0;0],rand(2,10));
+%    Glength = generatorLength(Z);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -20,11 +22,11 @@ function [genLen] = generatorLength(Z)
 
 % Author:       Matthias Althoff
 % Written:      19-July-2010
-% Last update:  ---
+% Last update:  14-March-2019
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-genLen=vnorm(Z.Z(:,2:end),1);
+Glength = vecnorm(Z.Z(:,2:end));
 
 %------------- END OF CODE --------------

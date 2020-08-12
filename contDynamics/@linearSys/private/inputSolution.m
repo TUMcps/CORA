@@ -50,6 +50,7 @@ E = obj.taylor.error;
 taylorTerms = options.taylorTerms;
 r = options.timeStep;
 dim = length(A);
+factors = options.factor;
 
 
 %init Vsum
@@ -58,8 +59,8 @@ Asum = r*eye(dim);
 %compute higher order terms
 for i = 1:taylorTerms
     %compute sums
-    Vsum = Vsum+Apower{i}*r^(i+1)/factorial(i+1)*V;
-    Asum = Asum+Apower{i}*r^(i+1)/factorial(i+1);
+    Vsum = Vsum+Apower{i}*factors(i+1)*V;
+    Asum = Asum+Apower{i}*factors(i+1);
 end
 
 %compute overall solution
@@ -82,8 +83,16 @@ end
 
 %write to object structure
 obj.taylor.V = V;
-obj.taylor.RV = inputSolV;
-obj.taylor.Rtrans = inputSolVtrans;
+if any(any(inputSolV.Z))
+    obj.taylor.RV = inputSolV;
+else
+    obj.taylor.RV = zonotope(zeros(obj.dim,1));
+end
+if any(any(inputSolVtrans.Z))
+    obj.taylor.Rtrans = inputSolVtrans;
+else
+    obj.taylor.Rtrans = zonotope(zeros(obj.dim,1));
+end
 obj.taylor.inputCorr = inputCorr;
 obj.taylor.eAtInt = eAtInt;
 

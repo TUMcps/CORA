@@ -24,8 +24,7 @@ function res = mpower(base,exponent)
 % Last update:  01-July-2015
 %               10-February-2016
 %               03-October-2017 (DG) A^0 = I is added
-%
-% Last revision:    03-October-2017
+% Last revision:03-October-2017
 
 %------------- BEGIN CODE --------------
 
@@ -38,7 +37,7 @@ if isscalar(base)
         
         %see Appendix B of Introduction to Interval Analysis book
         %check whether exponent is an integer
-        %if (abs(round(exponent) - exponent)) <= eps('double')
+        %if (abs(round(exponent) - exponent)) <= eps
         %    if exponent < 0
         %        res = 1/base^(-exponent);
         %    else

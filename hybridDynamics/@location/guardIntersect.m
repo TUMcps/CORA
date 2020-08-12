@@ -1,197 +1,158 @@
-function [Rguard,activeGuards,minIndex,maxIndex] = guardIntersect(obj,guards,setIndices,R,options)
-% detGuardIntersect - intersects the reachable sets with potential guard sets
-% and returns enclosing zonotopes for each guard set for the deterministic
-% case
+function [Rguard,actGuards,minInd,maxInd] = guardIntersect(obj,guards,setInd,Rcont,options)
+% guardIntersect - computes and enclosure of the intersection between the
+%                  reachable set and the guard sets
 %
 % Syntax:  
-%    ---
+%    [Rguard,actGuards,minInd,maxInd] = 
+%                           guardIntersect(obj,guards,setInd,Rcont,options)
 %
 % Inputs:
 %    obj - location object
-%    R - cell array of reachable sets
+%    guards - cell array containing the guard sets that have been hit
+%    setInd - cell array containing the indices of intersecting sets
+%    Rcont - reachSet object storing the reachable set
+%    options - struct with settings for reachability analysis
 %
 % Outputs:
-%    Z - cell array of enclosing zonotopes for each transition
+%    Rguard - cell array containing the intersection with the guards
+%    actGuards - cell array with indices of the active guards
+%    minInd - minimum index of set intersecting guard 
+%    maxInd - maximum index of set interescting guard
 %
-% Example: 
+% References: 
+%   [1] M. Althoff et al. "Computing Reachable Sets of Hybrid Systems Using 
+%       a Combination of Zonotopes and Polytopes", 2009
+%   [2] A. Girard et al. "Zonotope/Hyperplane Intersection for Hybrid 
+%       Systems Reachablity Analysis"
+%   [3] M. Althoff et al. "Avoiding Geometic Intersection Operations in 
+%       Reachability Analysis of Hybrid Systems"
+%   [4] S. Bak et al. "Time-Triggered Conversion of Guards for Reachability
+%       Analysis of Hybrid Automata"
+%   [5] N. Kochdumper et al. "Reachability Analysis for Hybrid Systems with 
+%       Nonlinear Guard Sets", HSCC 2020
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: location/reach
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      08-May-2007 
 % Last update:  21-September-2007
-%               26-March-2008
-%               11-October-2008
-%               24-July-2009
-%               20-October-2010
 %               30-July-2016
 %               23-November-2017
 %               20-April-2018 (intersect guard sets with invariant)
+%               23-December-2019 (restructured the code)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-%initialize values
-Rguard=[]; activeGuards=[]; minIndex=[]; maxIndex=[];
-relevantIndex=unique(setIndices);
+    % check if the there exist guard intersections
+    relIndex = unique(setInd);
 
-%check if guard sets exist
-if ~isempty(obj.transition) && ~isempty(relevantIndex)
-    
-    %initialize intersections
-    N = length(obj.transition);
-    
-    % determine guards that got hit
+    if isempty(relIndex)
+        Rguard=[]; actGuards=[]; minInd=[]; maxInd=[];
+        return;
+    end
+
+    % extract the guard sets that got hit
     guardInd = unique(guards);
-    
-    % extract guard sets
-    Pguard = cell(N,1);
+    Pguard = cell(length(obj.transition),1);
 
     for i=1:length(guardInd)
-        Pguard{guardInd(i)} = get(obj.transition{guardInd(i)},'guard');
+        Pguard{guardInd(i)} = obj.transition{guardInd(i)}.guard;
     end
-    
-    
-    
-    % selected method for the calculation of the intersection
-    if strcmp(options.guardIntersect,'polytope')
 
-        %build polytopes of reachable sets    
-        for iSet=1:length(relevantIndex)
-            if ~iscell(R{iSet}) % no split sets
-                [Pset{relevantIndex(iSet)}]=enclosingPolytope(R{relevantIndex(iSet)},options);
-            else % sets are split
-                for iSubSet=1:length(R{iSet})
-                    [Pset{relevantIndex(iSet)}{iSubSet}]=enclosingPolytope(R{relevantIndex(iSet)}{iSubSet},options);
-                end
+    % extract time interval and time point reachable set
+    R = Rcont.timeInterval.set;
+    Rtp = Rcont.timePoint.set;
+
+    % group the reachable sets which intersect guards
+    [minInd,maxInd,P,actGuards] = groupSets(R,guards,setInd);
+    
+
+    % loop over all guard intersections
+    Rguard = cell(length(minInd),1);
+
+    for i = 1:length(minInd)
+
+        % get current guard set
+        guard = Pguard{actGuards(i)};
+        
+        % remove all intersections where the flow does not point in the
+        % direction of the guard set
+        if isa(guard,'conHyperplane')
+            [res,P{i}] = checkFlow(obj,guard,P{i},options);
+            if ~res
+                continue;
             end
         end
-        
-        % intersection of candidates
-        funcAnd = @(x,y) x & y;
-        funcIsempty = @(x) isempty(x);
-        [minIndex,maxIndex,Pint,activeGuards] = calcIntersection(Pset,Pguard,guards,setIndices,funcAnd,funcIsempty);
-        
-        % compute enclosing zonotopes
-        Rguard = cell(length(Pint),1);
-        
-        for i=1:length(activeGuards)
-            Rguard{i}{1} = enclosePolytopes(obj,Pint{i}, options);
-        end 
 
+        % selected method for the calculation of the intersection
+        switch options.guardIntersect
+             
+            % compute intersection with the method in [1]
+            case 'polytope'
 
-        
-        
-    elseif strcmp(options.guardIntersect,'zonoGirard')
-        
-        % group the reachable sets which intersect guards
-        [minIndex,maxIndex,P,activeGuards] = groupSets(R,guards,setIndices);
-        
-        % determine multiple suitable orthogonal basis for each group
-        D = cell(length(activeGuards),1);
+                Rguard{i} = guardIntersect_polytope(obj,P{i},guard,options);
 
-        for i = 1:length(activeGuards)
-            D{i} = calcBasis(obj,P{i},Pguard{activeGuards(i)},options);
+            % compute intersection using constrained zonotopes
+            case 'conZonotope'
+
+                Rguard{i} = guardIntersect_conZonotope(obj,P{i},guard,options);
+               
+            % compute intersection with the method in [2]
+            case 'zonoGirard'
+                
+                Rguard{i} = guardIntersect_zonoGirard(obj,P{i},guard,options);
+                
+            % compute intersection with the method in [3]
+            case 'hyperplaneMap'
+                
+                R0 = getInitialSet(Rtp,minInd(i));
+                Rguard{i} = guardIntersect_hyperplaneMap(obj,guard,R0,options);   
+
+            % compute intersection with the method in [4]
+            case 'pancake'
+                
+                R0 = getInitialSet(Rtp,minInd(i));
+                Rguard{i} = guardIntersect_pancake(obj,R0,guard,actGuards(i),options);
+                
+            % compute intersection with method for nondeterministic guards
+            case 'nondetGuard'
+                
+                Rguard{i} = guardIntersect_nondetGuard(obj,P{i},guard,options);
+                
+            % compute intersection with the metohd in [5]    
+            case 'levelSet'
+                
+                Rguard{i} = guardIntersect_levelSet(obj,P{i},guard);
+                
+            otherwise
+                error('Wrong value for "options.guardIntersect"!');
+
         end
-        
-        % calculate the intersection
-        Pint = cell(size(P));
-        
-        for i = 1:length(P)
-           
-           Pint{i} = cell(length(P{i}),1);
-            
-           for j = 1:length(P{i})
-              if ~iscell(P{i}{j})       % no split sets
-                  Pint{i}{j} = intersectHyperplaneGirard(P{i}{j},Pguard{activeGuards(i)},D{i});
-              else                      % sets are split
-                  for k = 1:length(P{i}{j})              
-                      Pint{i}{j}{k} = intersectHyperplaneGirard(P{i}{j}{k},Pguard{activeGuards(i)},D{i});
-                  end
-                  
-                  Pint{i}{j} = Pint{i}{j}(~cellfun('isempty',Pint{i}{j})); 
-              end
-           end 
-        end
-        
-        % remove all empty intersections
-        [Pint,D,minIndex,maxIndex,activeGuards] = removeEmptySets(Pint,D,minIndex,maxIndex,activeGuards);
-        
-        % compute enclosing zonotopes
-        Rguard = cell(length(Pint),1);
-        
-        for i=1:length(activeGuards)
-            Rguard{i}{1} = encloseAlignedIntervals(Pint{i},D{i},Pguard{activeGuards(i)});
-        end 
-    else
-        error('Wrong value for setting options.guardIntersect!');  
     end
-end
+    
+    % remove all empty intersections
+    [Rguard,minInd,maxInd,actGuards] = removeEmptySets(Rguard,minInd, ...
+                                                       maxInd,actGuards);
+                                                   
+    % convert sets back to polynomial zonotopes
+    if isa(options.R0,'polyZonotope')
+       for i = 1:length(Rguard)
+          if isa(Rguard{i},'zonotope')
+             Rguard{i} = polyZonotope(Rguard{i}); 
+          end
+       end
+    end
+    
 end
 
 
 
 % Auxiliary Functions -----------------------------------------------------
-
-function [minInd,maxInd,Pint,guards] = calcIntersection(Pset,Pguard,guards,setIndices,funcAnd,funcIsempty)
-% calculate the intersections between guard sets and reachable sets
-
-    setIndicesGuards = cell(max(guards),1);
-    Pint = cell(max(guards),1);
-    
-    % loop over all sets which hitted a guard set
-    for i=1:length(guards)
-        
-        %intersect polytopes
-        if ~iscell(Pset{setIndices(i)}) % no split sets
-            intersection = funcAnd(Pset{setIndices(i)},Pguard{guards(i)});
-            %intersection empty?
-            if ~funcIsempty(intersection)
-                setIndicesGuards{guards(i)} = [setIndicesGuards{guards(i)};setIndices(i)];
-                Pint{guards(i)}{end+1}=intersection;           
-            end
-        else % sets are split
-            for iSubSet=1:length(Pset{setIndices(i)})
-                intersection{iSubSet} = funcAnd(Pset{setIndices(i)}{iSubSet},Pguard{guards(i)});
-                %intersection empty?
-                if ~funcIsempty(intersection{iSubSet})
-                    notEmpty(iSubSet) = 1;
-                else
-                    notEmpty(iSubSet) = 0;
-                end
-            end
-            % one intersection was not empty
-            if any(notEmpty)
-                setIndicesGuards{guards(i)} = [setIndicesGuards{guards(i)},setIndices(i)];
-                Pint{guards(i)}{end+1}=[];
-                for iSubSet=1:length(Pset{setIndices(i)})
-                    Pint{guards(i)}{end}{iSubSet}=intersection{iSubSet}; 
-                end            
-            end
-        end
-    end
-    
-    % remove empty entries (guard sets that have not been hit)
-    guards = unique(guards);
-    setIndicesGuards = setIndicesGuards(guards);
-    Pint = Pint(guards);
-    
-    % remove all empty guard instersections (approximate collision test 
-    % reported intersection, but exact collision test showed that no
-    % intersection occurs)
-    ind = find(~cellfun(@isempty,setIndicesGuards));
-    setIndicesGuards = setIndicesGuards(ind);
-    guards = guards(ind);
-    Pint = Pint(ind);
-    
-    % Remove gaps in the set-index vector of each intersection
-    [minInd,maxInd,Pint,guards] = removeGaps(setIndicesGuards,guards,Pint);
-    
-end
 
 function [minInd,maxInd,P,guards] = groupSets(Pset,guards,setIndices)
 % group the reachable sets which intersect guard sets. The sets in one
@@ -255,54 +216,43 @@ function [minInd,maxInd,Pint,guards] = removeGaps(setIndicesGuards,guards,Pint)
     
 end
 
-function [Pint,D,minIndex,maxIndex,activeGuards] = removeEmptySets(Pint,D,minIndex,maxIndex,activeGuards)
+function [R,minInd,maxInd,actGuards] = removeEmptySets(R,minInd,maxInd,actGuards)
 % remove all sets for which the intersection with the guard set turned out
 % to be empty
 
+    % get the indices of the non-emtpy sets
+    ind = ones(length(R));
     counter = 1;
     
-    % loop over all groups of intersecting sets
-    while counter <= length(Pint)
-    
-        % loop over all single sets that belong to the group
-        for i = 1:length(Pint{counter})
-            if isempty(Pint{counter}{i})
-                
-                % split groups if there are further sets in the group
-                if i < length(Pint{counter})
-                    D{end+1} = D{counter};
-                    activeGuards = [activeGuards;activeGuards(counter)];
-                    Pint{end+1} = Pint{counter}(i+1:end);
-                    minIndex = [minIndex;minIndex(counter)+i];
-                    maxIndex = [maxIndex;maxIndex(counter)];
-                end
-                
-                % create a new group from the previous sets if the removed
-                % set is not the first one
-                if i ~= 1
-                   Pint{counter} = Pint{counter}(1:i-1);
-                   maxIndex(counter) = minIndex(counter) + i -2;                
-                else
-                   Pint{counter} = [];
-                end
-                
-                break;
-            end
-        end
-        
-        counter = counter + 1;      
+    for i = 1:length(R)
+       if isa(R{i},'zonoBundle')
+           if any(cellfun(@isempty,R{i}.Z))
+               continue;
+           end
+       elseif isempty(R{i})
+           continue;
+       end
+       ind(counter) = i;
+       counter = counter + 1;
     end
     
-    % remove all empty sets
-    ind = ~cellfun('isempty',Pint);
+    ind = ind(1:counter-1);
     
-    Pint = Pint(ind);
-    D = D(ind);
-    minIndex = minIndex(ind);
-    maxIndex = maxIndex(ind);
-    activeGuards = activeGuards(ind);
-    
+    % update variables
+    R = R(ind);
+    minInd = minInd(ind);
+    maxInd = maxInd(ind);
+    actGuards = actGuards(ind);
 end
 
+function R0 = getInitialSet(Rtp,minInd)
+% get the initial set
+
+    if minInd == 1
+       error('The initial set already intersects the guard set!'); 
+    else
+       R0 = Rtp{minInd-1};
+    end
+end
 
 %------------- END OF CODE --------------

@@ -44,17 +44,17 @@ function [Zsplit] = split(Z,varargin)
 if nargin == 1
     %split all dimensions
     Z=zonotope(interval(Z));
-    for dim=1:length(center(Z))
+    for N=1:length(center(Z))
         %split one dimension
-        Zsplit{dim}=splitOneDim(Z,dim); 
+        Zsplit{N}=splitOneDim(Z,N); 
     end
 elseif nargin==2
     %no splitting halfspace is passed 
     if isnumeric(varargin{1})
         if isscalar(varargin{1})
-            dim=varargin{1};
+            N=varargin{1};
             Z=zonotope(interval(Z));
-            Zsplit=splitOneDim(Z,dim);
+            Zsplit=splitOneDim(Z,N);
         else
             %split halfway in a direction
             dir = varargin{1};
@@ -72,11 +72,11 @@ elseif nargin==3
         dir = varargin{1};
         Zsplit = directionSplitBundle(Z,dir);
     elseif isscalar(varargin{1})
-        dim = varargin{1};
+        N = varargin{1};
         maxOrder = varargin{2}; 
         %Zpp=pinv(options.W)*reduce(options.W*Z,'methD',maxOrder);
         Z=reduceGirard(Z,maxOrder); %<-- changed
-        Zsplit=splitOneDim(Z,dim);
+        Zsplit=splitOneDim(Z,N);
     else
         %compute split in perpendicular direction
         origDir = varargin{1};
@@ -97,8 +97,8 @@ end
 function Zsplit = splitOneDim(Z,dim)
 
 %center and generator matrix
-c=Z.Z(:,1);
-G=Z.Z(:,2:end);
+c=center(Z);
+G=generators(Z);
 
 %compute centers of splitted parallelpiped
 c1=c-G(:,dim)/2;
@@ -117,8 +117,8 @@ function Zsplit = directionSplit(Z,dir)
 
 
 %center and generator matrix
-c = Z.Z(:,1);
-G = Z.Z(:,2:end);
+c = center(Z);
+G = generators(Z);
 
 %aligned generator
 alignedVal = 0;
@@ -161,10 +161,10 @@ end
 function Zsplit = directionSplitBundle(Z,dir)
 
 %obtain dimension
-dim = length(dir);
+N = length(dir);
 
 %obtain rotation matrix
-newDir = [1; zeros(dim-1,1)];
+newDir = [1; zeros(N-1,1)];
 rotMat = rotationMatrix(dir, newDir);
 
 %obtain enclosing interval
@@ -185,8 +185,8 @@ Z2{1} = Z;
 Z2{2} = rotMat.'*zonotope(IH2);
 
 %instantiate zonotope bundles
-Zsplit{1} = zonotopeBundle(Z1);
-Zsplit{2} = zonotopeBundle(Z2);
+Zsplit{1} = zonoBundle(Z1);
+Zsplit{2} = zonoBundle(Z2);
 
 
 function Zsplit = halfspaceSplit(Z,h)
@@ -196,8 +196,8 @@ dir = h.c;
 d = h.d;
 
 %center and generator matrix
-c = Z.Z(:,1);
-G = Z.Z(:,2:end);
+c = center(Z);
+G = generators(Z);
 
 %aligned generator
 alignedVal = 0;
@@ -240,7 +240,7 @@ end
 function rotMat = rotationMatrix(dir, newDir)
 
 %get dimension
-dim = length(dir);
+N = length(dir);
 
 if abs(dir.'*newDir) ~= 1
 
@@ -253,14 +253,14 @@ if abs(dir.'*newDir) ~= 1
     indVec = newDir - (newDir.'*n)*n;
     B(:,2) = indVec/norm(indVec);
     %complete mapping matrix B
-    if dim>2
-        B(:,3:dim) = null(B(:,1:2).'); 
+    if N>2
+        B(:,3:N) = null(B(:,1:2).'); 
     end
     
     %compute angle between uVec and n
     angle = acos(newDir.'*n);
     %rotation matrix
-    R = eye(dim);
+    R = eye(N);
     R(1,1) = cos(angle);
     R(1,2) = -sin(angle);
     R(2,1) = sin(angle);
@@ -270,9 +270,9 @@ if abs(dir.'*newDir) ~= 1
     
 else
     if dir.'*newDir == 1
-        rotMat = eye(dim);
+        rotMat = eye(N);
     else
-        rotMat = -eye(dim);
+        rotMat = -eye(N);
     end
 end
 

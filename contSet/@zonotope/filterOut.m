@@ -1,9 +1,8 @@
-function [Zrem] = filterOut(Zdummy,Z)
-% filterOut - Deletes parallelotopes that are covered by other
-% parallelotopes
+function Zrem = filterOut(Z)
+% filterOut - Deletes parallelotopes that are covered by other parallelotopes
 %
 % Syntax:  
-%    [Zrem] = filterOut(Z)
+%    Zrem = filterOut(Z)
 %
 % Inputs:
 %    Z - cell array of zonotope objects
@@ -19,9 +18,9 @@ function [Zrem] = filterOut(Zdummy,Z)
 %
 % See also: ---
 
-% Author: Matthias Althoff
-% Written: 09-October-2008
-% Last update: ---
+% Author:        Matthias Althoff
+% Written:       09-October-2008
+% Last update:   ---
 % Last revision: ---
 
 %------------- BEGIN CODE --------------

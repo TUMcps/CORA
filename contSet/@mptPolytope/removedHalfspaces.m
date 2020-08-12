@@ -11,7 +11,7 @@ function removedInd = removedHalfspaces(obj,Horig,Korig)
 %    
 %
 % Outputs:
-%   removedInd - vector of constraints that have been removed
+%    removedInd - vector of constraints that have been removed
 %
 % Example: 
 %    ---

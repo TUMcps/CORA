@@ -29,7 +29,10 @@ function [obj,Rfirst,options] = initReach_inputDependence(obj, Rinit, options)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
+ 
+% store taylor terms and time step as object properties
+obj.stepSize = options.timeStep;
+obj.taylorTerms = options.taylorTerms;
 
 % compute mapping matrix
 obj = mappingMatrix(obj,options);
@@ -39,8 +42,6 @@ obj = highOrderMappingMatrix(obj,options.intermediateOrder);
 obj = tie(obj);
 % compute reachable set due to input
 obj = inputSolution(obj,options);
-%change the time step size
-obj.stepSize=options.timeStep;
 
 %compute reachable set of first time interval
 %first time step homogeneous solution
@@ -55,8 +56,8 @@ Rtotal = Rhom + obj.RV;
 Rtotal_tp = Rhom_tp + obj.RV;
 
 %write results to reachable set struct Rfirst
-Rfirst.tp = reduce(Rtotal_tp,'girard',options.zonotopeOrder);
-Rfirst.ti = reduce(Rtotal,'girard',options.zonotopeOrder);
+Rfirst.tp = reduce(Rtotal_tp,options.reductionTechnique,options.zonotopeOrder);
+Rfirst.ti = reduce(Rtotal,options.reductionTechnique,options.zonotopeOrder);
 
 
 %------------- END OF CODE --------------

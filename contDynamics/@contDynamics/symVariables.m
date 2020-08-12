@@ -141,15 +141,7 @@ else
         end   
     else
         p = [];
-    end
-    
-end
-
-% generate symbolic sample time
-if isa(obj,'nonlinearSysDT')
-   T = sym('T');
-else
-   T = [];
+    end  
 end
 
 % combine variables
@@ -157,7 +149,6 @@ vars.x = x;
 vars.u = u;
 vars.y = y;
 vars.p = p;
-vars.T = T;
 
 vars_der.x = dx;
 vars_der.u = du;

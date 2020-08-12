@@ -34,8 +34,8 @@ function Zred = reduceScott(Z,order)
     % Appendix of [1]
     
     % extract center and generators
-    c = Z.Z(:,1);
-    G = Z.Z(:,2:end);
+    c = center(Z);
+    G = generators(Z);
     
     % determine the number of zonotope generators that get reduced
     n = size(G,1);
@@ -46,10 +46,10 @@ function Zred = reduceScott(Z,order)
     
         % compute low echelon form of the generator matrix using 
         % Gauss-Jordan elimination
-        [A,jb] = rrefInfty(G);
+        [A,indPer,fullRank] = rrefInfty(G);
 
         % check matrix rank
-        if jb ~= size(G,1)         % matrix has rank defincit
+        if ~fullRank        % matrix has rank defincit
 
            % reduce with combastel as a back-up strategy
            Zred = reduce(Z,'combastel',order);
@@ -59,10 +59,10 @@ function Zred = reduceScott(Z,order)
 
             % reorder columns of generator matrix to the form [T V] 
             % according to the low echelon form [I R]
-            T = G(:,jb);
+            T = G(:,indPer(1:n));
 
             R = A;
-            R(:,jb) = [];
+            R(:,1:n) = [];
 
             % loop over all generators that get removed
             for i = 1:N
@@ -102,52 +102,62 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
     
-function [A,jb] = rrefInfty(A)
-% Transform a matrix to Reduced Echelon Form using Gauss-Jordan
-% elimination. The row elements with the largest absolute values are chosen
-% as the pivot elements.
+function [A,indPer,fullRank] = rrefInfty(A)
+% Transform the matrix to Reduced Echelon Form using Gauss-Jordan
+% elimination with full pivoting. The row elements with the largest 
+% absolute values relative to the inifinity norm of their row are chosen as 
+% the pivot elements.
 
     [m,n] = size(A);
+    fullRank = 1;
     
     % compute the default tolerance
     tol = max(m,n)*eps(class(A))*norm(A,'inf');
-    
-    % divide each row by it's inifinity norm
-    normInf = sum(abs(A),2);
-    A = diag(normInf) * A;
 
     % loop over the entire matrix
-    i = 1;
-    j = 1;
-    jb = [];
+    indPer = 1:n-1;
 
-    while (i <= m) && (j <= n)
+    for i = 1:m
+        
+       % unreduced submatrix
+       Atemp = A(i:m,i:n);
+        
+       % divide each row by it's inifinity norm
+       normInf = sum(abs(Atemp),2);
+       Atemp = diag(1./normInf) * Atemp;
         
        % find value and index of largest element in the remainder of column j
-       [p,k] = max(abs(A(i:m,j))); k = k+i-1;
-       
-       if (p <= tol)
-           
-          % the column is negligible, zero it out
-          A(i:m,j) = 0; 
-          j = j + 1;
-          
+       if size(Atemp,1) > 1
+           [valTemp,indTemp] = max(abs(Atemp));
+           [p,indC] = max(valTemp);
+           indR = indTemp(indC) + i - 1;
+           indC = indC + i - 1;
        else
-           
-          % remember column index
-          jb = [jb j];
+          [p,indC] = max(abs(Atemp));
+          indC = indC + i - 1;
+          indR = i;
+       end
+       
+       if (p > tol)
           
-          % swap i-th and k-th rows
-          A([i k],j:n) = A([k i],j:n);
+          % bring the row with the pivot element up
+          A([i indR],:) = A([indR i],:);
+          
+          % bring the column with the pivot element to the front
+          A(:,[i indC]) = A(:,[indC i]);
+          temp = indPer(i);
+          indPer(i) = indPer(indC);
+          indPer(indC) = temp;
           
           % divide the pivot row by the pivot element
-          Ai = A(i,j:n)/A(i,j);  
+          Ai = A(i,:)/A(i,i);  
           
           % subtract multiples of the pivot row from all the other rows
-          A(:,j:n) = A(:,j:n) - A(:,j)*Ai;
-          A(i,j:n) = Ai;
-          i = i + 1;
-          j = j + 1;
+          A(:,i:n) = A(:,i:n) - A(:,i)*Ai(:,i:n);
+          A(i,i:n) = Ai(i:n);
+          
+       else
+          fullRank = 0;
        end
     end
 end

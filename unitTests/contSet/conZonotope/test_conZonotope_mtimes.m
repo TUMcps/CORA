@@ -31,7 +31,7 @@ function res = test_conZonotope_mtimes
 
 %------------- BEGIN CODE --------------
 
-res = 0;
+res = false;
 
 
 % TEST 1: Random Test (numerical matrix, zonotope) ------------------------
@@ -44,7 +44,7 @@ for k = 1:5
     % generate a random zonotope object
     G = rand(2,10) - 0.5 * ones(2,10);
     zono = zonotope(G);
-    cZono = conZonotope(G,[],[]);
+    cZono = conZonotope(G);
     
     % generate a random numerical matrix
     mat = rand(2);
@@ -56,14 +56,21 @@ for k = 1:5
     % check if the results are equal
     
     if max(max(abs(zonoRes.Z - cZonoRes.Z))) > 1e-18
-       error('Test 1 failed!');
+      file_name = strcat('test_conZonotope_mtimes_1_', ...
+                         datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+      file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+                           file_name);
+                           
+      save(file_path, 'zonoRes', 'cZonoRes')
+      error('Test 1 failed!');
     end   
 end
 
 
 
 
-% TEST 1: Random Test (interval matrix, zonotope) -------------------------
+% TEST 2: Random Test (interval matrix, zonotope) -------------------------
 
 % express a zonotope as a constrained zontope and compare the results of
 % the mtimes operation for linear zonotopes and constrained zonotopes
@@ -73,7 +80,7 @@ for k = 1:5
     % generate a random zonotope object
     G = rand(2,10) - 0.5 * ones(2,10);
     zono = zonotope(G);
-    cZono = conZonotope(G,[],[]);
+    cZono = conZonotope(G);
     
     % generate a random interval matrix
     m = rand(2) - 0.5*ones(2);
@@ -87,6 +94,13 @@ for k = 1:5
     % check if the results are equal
     
     if max(max(abs(zonoRes.Z - cZonoRes.Z))) > 1e-18
+       file_name = strcat('test_conZonotope_mtimes_2_', ...
+                          datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+       file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+                            file_name);
+                           
+       save(file_path, 'zonoRes', 'cZonoRes')
        error('Test 2 failed!');
     end   
 end
@@ -167,10 +181,20 @@ for k = 1:5
 
     for i = 1:size(points,2)
        if any(A*points(:,i) - b > Tol)
-           error('Test 3 failed!');
+          file_name = strcat('test_conZonotope_mtimes_3_', ...
+                             datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+          file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+                               file_name);
+                           
+          save(file_path, 'cZonoRes')
+          error('Test 3 failed!');
        end
     end
 end
 
 
-res = 1;
+res = true;
+
+
+%------------- END OF CODE --------------

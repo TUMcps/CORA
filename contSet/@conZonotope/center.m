@@ -10,14 +10,14 @@ function res = center(obj)
 %    obj - conZonotope object
 %
 % Outputs:
-%   res - point inside the constrained zonotope
+%    res - point inside the constrained zonotope
 %
 % Example: 
 %    Z = [0 1 0 1;0 1 2 -1];
 %    A = [-2 1 -1];
 %    b = 2;
 %    cZono = conZonotope(Z,A,b);
-%
+% 
 %    c = center(cZono);
 %
 %    hold on

@@ -55,7 +55,11 @@ function  res = mergeFlows(obj, flowList)
 
        A = flow.A;
        B = flow.B;
-       c = flow.c;
+       if isempty(flow.c)
+           c = zeros(size(A,1),1);
+       else
+           c = flow.c;
+       end
 
        % constant input vector c
        cMerged(stateBinds) = cMerged(stateBinds) + c;
@@ -109,18 +113,10 @@ function  res = mergeFlows(obj, flowList)
               end
           end
        end
-
-       % merge names with ampersands
-       name = flow.name;
-       if i == 1
-           nameMerged = name;
-       else
-           nameMerged = [nameMerged,' & ',name];
-       end
     end
 
     % construct resulting continious dynamics object
-    res = linearSys(nameMerged,Amerged,Bmerged,cMerged);
+    res = linearSys(Amerged,Bmerged,cMerged);
 
 end
 

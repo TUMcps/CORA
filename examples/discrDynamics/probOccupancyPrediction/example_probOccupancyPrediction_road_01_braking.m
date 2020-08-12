@@ -1,13 +1,8 @@
 function completed = example_probOccupancyPrediction_road_01_braking()
 % example_probOccupancyPrediction_road_01_braking - example of
-% probabilistic occupancy prediction for road traffic when a chain of
-% vehicle is predicted and the first one brakes
-%
-% This example can be found in Sec. 5.5.3 of
-% M. Althoff, “Reachability analysis and its application to the safety 
-% assessment of autonomous cars”, Dissertation, Technische Universität 
-% München, 2010, 
-% http://nbn-resolving.de/urn/resolver.pl?urn:nbn:de:bvb:91-diss-20100715-963752-1-4
+%    probabilistic occupancy prediction for road traffic when a chain of
+%    vehicle is predicted and the first one brakes.
+%    This example can be found in [1, Sec. 5.5.3].
 %
 % Syntax:  
 %    example_probOccupancyPrediction_road_01_braking
@@ -20,12 +15,14 @@ function completed = example_probOccupancyPrediction_road_01_braking()
 %
 % Example: 
 %
+% References:
+%    [1] M. Althoff, "Reachability analysis and its application to the
+%        safety assessment of autonomous cars", Dissertation, TUM 2010.
 % 
 % Author:       Matthias Althoff
 % Written:      14-October-2009
 % Last update:  01-August-2016
 % Last revision:---
-
 
 %------------- BEGIN CODE --------------
 
@@ -34,6 +31,7 @@ function completed = example_probOccupancyPrediction_road_01_braking()
 global filePath
 filePath = [coraroot '/contDynamics/stateSpaceModels'];
 dataPath = [coraroot '/examples/discrDynamics/probOccupancyPrediction/data'];
+curPath = pwd;
 
 %load Markov chain of car
 cd(dataPath);
@@ -190,7 +188,7 @@ Rstraight=createPath(R,[pi/2,2,0],[0],[40]);
 
 figure;
 
-subplot(1,4,1);
+subplot(1,3,1);
 normalizePlot();
 %plot velocity distribution
 plot(Rstraight,avgVelA,1);
@@ -198,7 +196,7 @@ plotCrossing(Rstraight,[36,41]);
 axis([-5, 5, 0, 160]);
 xlabel('car A');
 
-subplot(1,4,2);
+subplot(1,3,2);
 normalizePlot();
 %plot velocity distribution
 plot(Rstraight,avgVelB,1);
@@ -207,7 +205,7 @@ axis([-5, 5, 0, 160]);
 xlabel('car B');
 set(gca,'ytick',[]);
 
-subplot(1,4,3)
+subplot(1,3,3)
 normalizePlot();
 %plot velocity distribution
 plot(Rstraight,avgVelC,1);
@@ -215,9 +213,6 @@ plotCrossing(Rstraight,[36,41]);
 axis([-5, 5, 0, 160]);
 xlabel('car C');
 set(gca,'ytick',[]);
-
-subplot(1,4,4)
-normalizePlot();
 
 
 
@@ -269,6 +264,8 @@ for iStep=1:4
     %plot crossing
     plotCrossing(Rstraight,[36,41]);
     xlabel('car A');   
+    xlim([-5,5]);
+    ylim([0,160]);
 
     %plot pB
     subplot(1,3,2);
@@ -276,7 +273,9 @@ for iStep=1:4
     %plot crossing
     plotCrossing(Rstraight,[36,41]);
     xlabel('car B');
-    set(gca,'ytick',[]);    
+    set(gca,'ytick',[]);   
+    xlim([-5,5]);
+    ylim([0,160]);
     
     %plot pC
     subplot(1,3,3);
@@ -285,9 +284,12 @@ for iStep=1:4
     plotCrossing(Rstraight,[36,41]);  
     xlabel('car C');
     set(gca,'ytick',[]);    
+    xlim([-5,5]);
+    ylim([0,160]);
 end
 
 %example completed
+cd(curPath);
 completed = 1;
 
 
@@ -296,9 +298,9 @@ function normalizePlot()
 
 %plot lowest and highest value for average probability
 %plot using own methods
-IH=[0.1 0.2; 0.1 0.2];
-V=vertices(IH);
-plot(V,'grayTones',0);
-plot(V,'grayTones',18);
+V=[0.1 0.2; 0.1 0.2];
+plotPolygon(V,'k','Filled',true);
+h = plotPolygon(V,'k','Filled',true);
+set(h,'FaceColor',[.5 .5 .5]);
 
 %------------- END OF CODE --------------

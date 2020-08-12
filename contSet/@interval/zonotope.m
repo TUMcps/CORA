@@ -27,13 +27,13 @@ function Z = zonotope(obj)
 
 %------------- BEGIN CODE --------------
 
-%obtain center
-c = mid(obj);
+    % obtain center
+    c = center(obj);
 
-%construct generator matrrix G
-G = diag(rad(obj));
+    % construct generator matrix G
+    G = diag(rad(obj));
 
-%instantiate zonotope
-Z = zonotope([c,G]);
+    % instantiate zonotope
+    Z = zonotope([c,G]);
 
 %------------- END OF CODE --------------

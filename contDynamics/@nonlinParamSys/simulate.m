@@ -1,21 +1,21 @@
-function [obj,t,x,index] = simulate(obj,opt,tstart,tfinal,x0,options)
+function [t,x,ind] = simulate(obj,params,options)
 % simulate - simulates the system within a location
 %
 % Syntax:  
-%    [t,x,index] = simulate(obj,tstart,tfinal,x0,options)
+%    [t,x,ind] = simulate(obj,params,options)
 %
 % Inputs:
-%    obj - linearSysInt object
-%    tstart - start time
-%    tfinal - final time
-%    x0 - initial state 
-%    options - contains, e.g. the events when a guard is hit
+%    obj - nonlinParamSys object
+%    params - struct containing the parameters for the simulation
+%       .tStart: initial time
+%       .tFinal: final time
+%       .x0: initial point
+%    options - ODE45 options (for hybrid systems)
 %
 % Outputs:
-%    obj - linearSys object
 %    t - time vector
 %    x - state vector
-%    index - returns the event which has been detected
+%    ind - returns the event which has been detected
 %
 % Example: 
 %
@@ -27,15 +27,18 @@ function [obj,t,x,index] = simulate(obj,opt,tstart,tfinal,x0,options)
 
 % Author:       Matthias Althoff
 % Written:      26-May-2011 
-% Last update:  ---
+% Last update:  08-May-2020 (MW, update interface)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 if isempty(options.Events)
-    [t,x] = ode45(getfcn(obj,opt),[tstart, tfinal],x0,options);
+    [t,x] = ode45(getfcn(obj,params),...
+        [params.tStart,params.tFinal],params.x0,options);
+    ind = [];
 else
-    [t,x,te,xe,index] = ode45(getfcn(obj,opt),[tstart, tfinal],x0,options);
+    [t,x,te,xe,ind] = ode45(getfcn(obj,params),...
+        [params.tStart,params.tFinal],params.x0,options);
 end
 
 %------------- END OF CODE --------------

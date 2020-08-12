@@ -1,23 +1,25 @@
-function R = reach(obj,options)
+function R = reach(obj,params,options,varargin)
 % reach - computes the reachable sets of the discrete time system
 %
 % Syntax:  
-%    R = reach(obj,options)
+%    R = reach(obj,params,options)
+%    [R,res] = reach(obj,params,options,spec)
 %
 % Inputs:
 %    obj - nonlinearSysDT object
+%    params - parameter defining the reachability problem
 %    options - options for the computation of the reachable set
+%    spec - object of class specification 
 %
 % Outputs:
-%    R - cell array containing the reachable sets
-%
-% Example: 
+%    R - object of class reachSet storing the reachable set
+%    res  - 1 if specifications are satisfied, 0 if not
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: nonlinearSysDT
 
 % Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      21-August-2012
@@ -26,33 +28,56 @@ function R = reach(obj,options)
 
 %------------- BEGIN CODE --------------
 
-
-% initialize cell array that stores the reachable sets
-steps = (options.tFinal-options.tStart)/options.timeStep;
-R = cell(steps+1,1);
-R{1} = options.R0;
-
-t=options.tStart;
-iSet=1;
-
-while t<options.tFinal
+    % options preprocessing
+    options = params2options(params,options);
+    options = checkOptionsReach(obj,options,0);
     
-    % if a trajectory should be tracked
-    if isfield(options,'uTransVec')
-        options.uTrans = options.uTransVec(:,iSet);
-    end  
-    
-    % compute next reachable set
-    R{iSet+1} = linReach(obj,R{iSet},options);
-    
-    % increment time and set counter
-    t = t+options.timeStep;
-    iSet = iSet+1; 
-    options.t=t;
-    if isfield(options,'verbose') && options.verbose 
-        disp(t); %plot time
+    spec = [];
+    if nargin >= 4
+       spec = varargin{1}; 
     end
-end
 
+    % compute symbolic derivatives
+    derivatives(obj,options);
+
+    % initialize cell array that stores the reachable sets
+    t = options.tStart:obj.dt:options.tFinal;
+
+    steps = length(t)-1;
+    R = cell(steps+1,1);
+    R{1} = params.R0;
+
+    % loop over all reachablity steps
+    for i = 1:steps
+
+        % if a trajectory should be tracked
+        if isfield(options,'uTransVec')
+            options.uTrans = options.uTransVec(:,i);
+        end  
+
+        % compute next reachable set
+        R{i+1} = linReach(obj,R{i},options);
+
+        if isfield(options,'verbose') && options.verbose 
+            disp(t(i));
+        end
+        
+        % check specification
+        if ~isempty(spec)
+           if ~check(spec,R{i+1})
+               timePoint.set = R(2:i+1);
+               timePoint.time = num2cell(t(2:i+1)');
+               R = reachSet(timePoint);
+               return;
+           end
+        end
+    end
+
+    % create reachable set object
+    timePoint.set = R(2:end);
+    timePoint.time = num2cell(t(2:end)');
+    
+    R = reachSet(timePoint);
+end
 
 %------------- END OF CODE --------------

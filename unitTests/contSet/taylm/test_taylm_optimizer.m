@@ -28,7 +28,7 @@ function res = test_taylm_optimizer(~)
 %------------- BEGIN CODE --------------
 
 
-res = 0;
+res = false;
 
 
 % Test 1: 1D-Function -----------------------------------------------------
@@ -201,7 +201,7 @@ checkDiffToOpt(intReal,intLinQuad,t1.eps);
 
 
 
-res = 1;
+res = true;
 
 
 end

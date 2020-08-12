@@ -12,7 +12,7 @@ function int = optLinQuad(obj)
 %    res - interval
 %
 % Example:
-%   f= @(x) 1 + x.^5 - x.^4;
+%   f = @(x) 1 + x.^5 - x.^4;
 %   x = interval(0,1);
 %   t = taylm(x,10,'x');
 %   T = f(t);
@@ -147,7 +147,7 @@ function minVal = globalMinimizer(obj,dom)
 
                 % add the subdomain that contains the minimum of the linear
                 % part at position 1 in the priority queue
-                if isIntersecting(dom1,xMin)
+                if containsPoint(dom1,xMin)
                    domMin{1} = dom1;
                    tayMin{1} = t1;
                    domMin{end+1} = dom2;
@@ -212,12 +212,12 @@ function [D,x] = calcRedDomain(objLin,intHo,type,Dorig)
     Dunit = interval(min(b1,b2),max(b1,b2));
     
     % map the reduced search domain back to the original domain
-    i = mid(Dorig) + rad(Dorig) .*infimum(Dunit);
-    s = mid(Dorig) + rad(Dorig) .*supremum(Dunit);
+    i = center(Dorig) + rad(Dorig) .*infimum(Dunit);
+    s = center(Dorig) + rad(Dorig) .*supremum(Dunit);
     D = interval(i,s);
     
     % map the extreme point back to the original domain
-    x = mid(Dorig) + rad(Dorig) .* b1;
+    x = center(Dorig) + rad(Dorig) .* b1;
     
 end
 
@@ -309,7 +309,7 @@ function x = gradientDescend(obj,dom)
     end
     
     % constraint gradient descend
-    x = mid(dom);
+    x = center(dom);
     dx = 0.1;
     
     while true

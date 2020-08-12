@@ -47,7 +47,7 @@ obj = varargin{1};
 options = varargin{2};
 
 % set standard path
-path = [coraroot '/models/Cora/',obj.name];
+path = [coraroot '/models/auxiliary/',obj.name];
 if ~exist(path,'dir')
    mkdir(path); 
 end
@@ -57,28 +57,14 @@ addpath(path);
 [vars,varsDer] = symVariables(obj,'LRbrackets');
 
 % insert symbolic variables into the system equations
-t = 0;
 fcon = []; %constraint equations (only for differential algebraic equations)
 if isempty(vars.y) && isempty(vars.p)
-    if isempty(vars.T)
-        fdyn = obj.mFile(t,vars.x,vars.u);
-    else        
-        fdyn = obj.mFile(t,vars.x,vars.u,vars.T);
-    end
+    fdyn = obj.mFile(vars.x,vars.u);
 elseif isempty(vars.y) && ~isempty(vars.p)
-    if isempty(vars.T)
-        fdyn = obj.mFile(t,vars.x,vars.u,vars.p);
-    else
-        fdyn = obj.mFile(t,vars.x,vars.u,vars.p,vars.T);
-    end
+    fdyn = obj.mFile(vars.x,vars.u,vars.p);
 elseif ~isempty(vars.y)
-    if isempty(vars.T)
-        fdyn = obj.dynFile(t,vars.x,vars.y,vars.u);
-        fcon = obj.conFile(t,vars.x,vars.y,vars.u);
-    else
-        fdyn = obj.dynFile(t,vars.x,vars.y,vars.u,vars.T);
-        fcon = obj.conFile(t,vars.x,vars.y,vars.u,vars.T);
-    end
+    fdyn = obj.dynFile(vars.x,vars.y,vars.u);
+    fcon = obj.conFile(vars.x,vars.y,vars.u);
 end
     
 % check if old derivations can be used
@@ -87,58 +73,65 @@ end
 % create files
 if generateFiles
     
-    % store the actual dynamics (given in symbolic variables) and the value 
-    % for options.simplify in the /StateSpaceModel-directory inside cora
+    % store the actual dynamics (given in symbolic variables) and the 
+    % values for all other lagrange remainder options in the 
+    % /StateSpaceModel-directory inside cora
     storedData.fdyn = fdyn;
     storedData.fcon = fcon;
 
     storedData.tensorOrder = options.tensorOrder;
-    storedData.simplify = 'none';
-    storedData.replacements = 'none';
-    storedData.tensorParallel = 0;
+
     if isfield(storedData,'lagrangeRem')
         storedData = rmfield(storedData,'lagrangeRem');
     end
     
-    if isfield(options,'simplify')
-        storedData.simplify = options.simplify;
-    end
-    if isfield(options,'replacements')
-        if ~isempty(vars.p)
-            storedData.replacements = options.replacements(vars.x,vars.u,vars.p); 
-        else
-            storedData.replacements = options.replacements(vars.x,vars.u);
+    if isfield(options,'lagrangeRem')
+        if isfield(options.lagrangeRem,'simplify')
+            storedData.lagrangeRem.simplify = options.lagrangeRem.simplify;
+        end
+        if isfield(options.lagrangeRem,'replacements')
+            if ~isempty(vars.p)
+                storedData.lagrangeRem.replacements = ...
+                    options.lagrangeRem.replacements(vars.x,vars.u,vars.p); 
+            else
+                storedData.lagrangeRem.replacements = ...
+                           options.lagrangeRem.replacements(vars.x,vars.u);
+            end
+        end
+        if isfield(options.lagrangeRem,'tensorParallel')
+            storedData.lagrangeRem.tensorParallel = ...
+                                        options.lagrangeRem.tensorParallel;
+        end
+        if isfield(options.lagrangeRem,'method')
+            storedData.lagrangeRem.method = options.lagrangeRem.method;
         end
     end
-    if isfield(options,'tensorParallel')
-        storedData.tensorParallel = options.tensorParallel;
-    end
-    if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ...
-       ~strcmp(options.lagrangeRem.method,'interval')
-        storedData.lagrangeRem = 1;
-    end
     
-    disp('create Jacobians');
+    % get value for setting 'simplify'
+    simplify = 'none';
+    if isfield(options,'lagrangeRem')
+       if isfield(options.lagrangeRem,'simplify')
+          simplify = options.lagrangeRem.simplify; 
+       end
+    end   
     
     % compute jacobians
-    [Jdyn,Jcon,Jp] = jacobians(fdyn,fcon,vars,obj,options);
+    disp('create Jacobians');
+    [Jdyn,Jcon,Jp] = jacobians(fdyn,fcon,vars,obj,options,simplify);
 
-    disp('create hessians');
-    
     % compute hessians
-    [J2dyn, J2con] = hessians(fdyn,fcon,vars,obj,options);
+    disp('create hessians');
+    [J2dyn, J2con] = hessians(fdyn,fcon,vars,obj,simplify);
 
+    % compute third order derivatives
     if options.tensorOrder>2
-
-        disp('create 3rd order derivatives');
-        
-        % compute third order derivatives
-        [J3dyn, J3con] = thirdOrderDerivatives(J2dyn,J2con,vars,options);     
+        disp('create 3rd order derivatives'); 
+        [J3dyn, J3con] = thirdOrderDerivatives(J2dyn,J2con,vars,simplify);     
     end
-
+    
+    % generate mFile that computes the Lagrange remainder and the jacobian
     disp('create mFiles')
 
-    %generate mFile that computes the Lagrange remainder and the jacobian
     createJacobianFile(Jdyn,Jcon,Jp,path,obj.name,vars);
     if ~isempty(vars.p)
         if ~isempty(Jp)
@@ -171,7 +164,7 @@ end
 function [generateFiles, storedData, filepathOld] = checkForNewComputation(obj,fdyn,fcon,vars,options)
 
 % set standard path
-path = [coraroot '/models/Cora/' obj.name];
+path = [coraroot '/models/auxiliary/' obj.name];
 
 % check if dynamics files already exists
 filepathOld = [path filesep obj.name '_lastVersion.mat'];
@@ -192,67 +185,127 @@ if exist(filepathOld,'file')
         
         % check if equations and tensor order match
         if equalDynEquations && equalConEquations && equalTensorOrder
-            equalSimplify = 0;
-            equalTensorParallel = 0;
-            equalReplacements = 0;
-            equalLagrangeRem = 0;
             
-            if isfield(storedData,'simplify')
-                if isfield(options,'simplify')
-                    if strcmp(options.simplify,storedData.simplify)
-                        equalSimplify = 1;
-                    end
-                else
-                    if strcmp(storedData.simplify,'none')
-                        equalSimplify = 1; 
-                    end
-                end
-            end
-            
-            if isfield(storedData,'tensorParallel')
-                if isfield(options,'tensorParallel')
-                    if options.tensorParallel == storedData.tensorParallel
-                        equalTensorParallel = 1;
-                    end
-                else
-                    if ~storedData.tensorParallel
-                        equalTensorParallel = 1;
-                    end
-                end
-            end
-            
-            if isfield(storedData,'replacements')
-                if isfield(options,'replacements')
-                    if ~isempty(vars.p)
-                        if isequal(options.replacements(vars.x,vars.u,vars.p),storedData.replacements)
-                            equalReplacements = 1;
-                        end
-                    else
-                        if isequal(options.replacements(vars.x,vars.u),storedData.replacements)
-                            equalReplacements = 1;
-                        end
-                    end
-                else
-                    if strcmp(storedData.replacements,'none')
-                        equalReplacements = 1;
-                    end
-                end
-            end
+            generateFiles = 0;
             
             if isfield(storedData,'lagrangeRem')
-               if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ...
-                  ~strcmp(options.lagrangeRem.method,'interval')
-                  equalLagrangeRem = 1; 
-               end
+                
+                if isfield(options,'lagrangeRem')
+                   
+                    temp1 = options.lagrangeRem;
+                    temp2 = storedData.lagrangeRem;
+                    
+                    % check setting 'simplify'
+                    if isfield(temp1,'simplify')
+                        if isfield(temp2,'simplify')
+                            if ~strcmp(temp1.simplify,temp2.simplify)
+                                generateFiles = 1;
+                                return;
+                            end
+                        else
+                            if ~strcmp(temp1.simplify,'none')
+                                generateFiles = 1;
+                                return; 
+                            end
+                        end
+                    else
+                        if isfield(temp2,'simplify') && ~strcmp(temp2.simplify,'none')
+                            generateFiles = 1;
+                            return;
+                        end
+                    end
+                    
+                    % check setting 'tensorParallel'
+                    if isfield(temp1,'tensorParallel')
+                        if isfield(temp2,'tensorParallel')
+                            if temp1.tensorParallel ~= temp2.tensorParallel
+                                generateFiles = 1;
+                                return; 
+                            end
+                        else
+                            if temp1.tensorParallel ~= 0
+                                generateFiles = 1;
+                                return; 
+                            end
+                        end
+                    else
+                        if isfield(temp2,'tensorParallel') && temp2.tensorParallel ~= 0
+                            generateFiles = 1;
+                            return;
+                        end
+                    end
+                    
+                    % check setting 'method'
+                    if isfield(temp1,'method')
+                        if isfield(temp2,'method')
+                            if ~strcmp(temp1.method,temp2.method)
+                                generateFiles = 1;
+                                return;
+                            end
+                        else
+                            if ~strcmp(temp1.method,'interval')
+                                generateFiles = 1;
+                                return; 
+                            end
+                        end
+                    else
+                        if isfield(temp2,'method') && ~strcmp(temp2.method,'interval')
+                            generateFiles = 1;
+                            return;
+                        end
+                    end
+                    
+                    % check setting 'replacements'
+                    if isfield(temp1,'replacements')
+                        if isfield(temp2,'replacements')
+                            if ~isempty(vars.p)
+                                if ~isequal(temp1.replacements(vars.x,vars.u,vars.p),temp2.replacements)
+                                    generateFiles = 1;
+                                    return;
+                                end
+                            else
+                                if ~isequal(temp1.replacements(vars.x,vars.u),temp2.replacements)
+                                    generateFiles = 1;
+                                    return;
+                                end
+                            end
+                        else
+                            generateFiles = 1;
+                            return;
+                        end
+                    else
+                        if isfield(temp2,'replacements')
+                            generateFiles = 1;
+                            return;
+                        end
+                    end
+                   
+                else
+                    
+                    % check if options differ from the default values
+                    temp = storedData.lagrangeRem;
+                    
+                    if (isfield(temp,'simplify') && ~strcmp(temp.simplify,'none')) || ...
+                       (isfield(temp,'tensorParallel') && ~(temp.tensorParallel == 1)) || ...
+                       (isfield(temp,'method') && ~strcmp(temp.method,'interval')) || ...
+                       isfield(temp,'replacements')
+                        generateFiles = 1;
+                    end
+                end 
+                
             else
-               if ~isfield(options,'lagrangeRem') || ~isfield(options.lagrangeRem,'method') || ...
-                  strcmp(options.lagrangeRem.method,'interval')
-                  equalLagrangeRem = 1; 
-               end
-            end
-            
-            if equalReplacements && equalTensorParallel && equalSimplify && equalLagrangeRem
-                generateFiles = 0;
+                if isfield(options,'lagrangeRem')
+                    
+                    % check if options differ from the default values
+                    temp = options.lagrangeRem;
+                    
+                    if (isfield(temp,'simplify') && ~strcmp(temp.simplify,'none')) || ...
+                       (isfield(temp,'tensorParallel') && ~(temp.tensorParallel == 1)) || ...
+                       (isfield(temp,'method') && ~strcmp(temp.method,'interval')) || ...
+                       isfield(temp,'replacements')
+                        generateFiles = 1;
+                    end
+                end 
             end
         end
     end
@@ -261,7 +314,7 @@ end
 
 
 % compute jacobians
-function [Jdyn,Jcon,Jp] = jacobians(fdyn,fcon,vars,obj,options)
+function [Jdyn,Jcon,Jp] = jacobians(fdyn,fcon,vars,obj,options,simplify)
 
 % init
 Jdyn = [];
@@ -300,31 +353,26 @@ if ~isempty(fcon)
     Jcon.y = jacobian(fcon,vars.y);
 end
 
-%perform simplification
-if isfield(options,'simplify')              %potentially simplify expression
-    if strcmp(options.simplify,'simplify') 
-        Jdyn.x = simplify(Jdyn.x);
-        Jdyn.u = simplify(Jdyn.u);
-        if ~isempty(fcon)
-            Jcon.x = simplify(Jcon.x);
-            Jdyn.y = simplify(Jdyn.y);
-            Jcon.y = simplify(Jcon.y);
-            Jcon.u = simplify(Jcon.u);
-        end
-    elseif strcmp(options.simplify,'collect')
-        Jdyn.x = collect(Jdyn.x,vars.x);
-        Jdyn.u = collect(Jdyn.u,vars.x);
-        if ~isempty(fcon)
-            Jcon.x = collect(Jcon.x);
-            Jdyn.y = collect(Jdyn.y);
-            Jcon.y = collect(Jcon.y);
-            Jcon.u = collect(Jcon.u);
-        end
-    elseif ~strcmp(options.simplify,'none')
-        error('Wrong value for options.simplify!. Only values ''simplify'', ''collect'' and ''none'' are valid!')
+% perform simplification
+if strcmp(simplify,'simplify') 
+    Jdyn.x = simplify(Jdyn.x);
+    Jdyn.u = simplify(Jdyn.u);
+    if ~isempty(fcon)
+        Jcon.x = simplify(Jcon.x);
+        Jdyn.y = simplify(Jdyn.y);
+        Jcon.y = simplify(Jcon.y);
+        Jcon.u = simplify(Jcon.u);
+    end
+elseif strcmp(simplify,'collect')
+    Jdyn.x = collect(Jdyn.x,vars.x);
+    Jdyn.u = collect(Jdyn.u,vars.x);
+    if ~isempty(fcon)
+        Jcon.x = collect(Jcon.x);
+        Jdyn.y = collect(Jdyn.y);
+        Jcon.y = collect(Jcon.y);
+        Jcon.u = collect(Jcon.u);
     end
 end
-
 
 % special derivatives for nonlinear systems with parameters linearly
 % influencing the derivative
@@ -337,7 +385,7 @@ if ~isempty(vars.p)
 
 
     %part without parameters
-    %try
+    try
         Jp.x{1} = subs(Jdyn.x,vars.p,zeros(obj.nrOfParam,1));
         Jp.u{1} = subs(Jdyn.u,vars.p,zeros(obj.nrOfParam,1));
         %part with parameters
@@ -350,7 +398,7 @@ if ~isempty(vars.p)
         % if parameters are uncertain within an interval
         if isa(options.paramInt,'interval')
             %normalize
-            pCenter = mid(options.paramInt);
+            pCenter = center(options.paramInt);
             pDelta = rad(options.paramInt);
 
             for i=1:obj.nrOfParam
@@ -368,106 +416,100 @@ if ~isempty(vars.p)
                 Jp.u{1} = Jp.u{1} + options.paramInt(i)*Jp.u{i+1};
             end
         end
-%     catch
-%         Jp = [];
-%         disp('parameters are not linearally influencing the system');
-%     end
+    catch
+        Jp = [];
+        disp('parameters are not linearly influencing the system');
+    end
 end
 end
 
 % compute hessians
-function [J2dyn, J2con] = hessians(fdyn,fcon,vars,obj,options)
+function [J2dyn, J2con] = hessians(fdyn,fcon,vars,obj,simplify)
 
-% init
-J2dyn = sym([]);
-J2con = sym([]);
+    % init
+    J2dyn = sym([]);
+    J2con = sym([]);
 
-%compute second order jacobians using 'LR' variables
-if isempty(fcon) % no constraint equations
-    vars.z = [vars.x;vars.u];
-else % with constraint equations
-    vars.z = [vars.x;vars.y;vars.u];
-end
-
-%dynamic jacobians
-Jdyn_comb = jacobian(fdyn,vars.z);
-for k=1:length(Jdyn_comb(:,1))
-    %Calculate 2nd order Jacobians
-    J2dyn(k,:,:)=jacobian(Jdyn_comb(k,:),vars.z);
-end
-
-%constraint jacobians
-if ~isempty(fcon)
-    Jcon_comb = jacobian(fcon,vars.z);
-    for k=1:length(Jcon_comb(:,1))
-        %Calculate 2nd order Jacobians
-        J2con(k,:,:)=jacobian(Jcon_comb(k,:),vars.z);
+    %compute second order jacobians using 'LR' variables
+    if isempty(fcon) % no constraint equations
+        vars.z = [vars.x;vars.u];
+    else % with constraint equations
+        vars.z = [vars.x;vars.y;vars.u];
     end
-end
 
-%potentially simplify expression
-if isfield(options,'simplify')             
-    if strcmp(options.simplify,'simplify') 
+    %dynamic jacobians
+    Jdyn_comb = jacobian(fdyn,vars.z);
+    for k=1:length(Jdyn_comb(:,1))
+        %Calculate 2nd order Jacobians
+        J2dyn(k,:,:)=jacobian(Jdyn_comb(k,:),vars.z);
+    end
+
+    %constraint jacobians
+    if ~isempty(fcon)
+        Jcon_comb = jacobian(fcon,vars.z);
+        for k=1:length(Jcon_comb(:,1))
+            %Calculate 2nd order Jacobians
+            J2con(k,:,:)=jacobian(Jcon_comb(k,:),vars.z);
+        end
+    end
+
+    %potentially simplify expression         
+    if strcmp(simplify,'simplify') 
         for k=1:length(Jdyn_comb(:,1))
             J2dyn(k,:,:) = simplify(J2dyn(k,:,:));
             if ~isempty(J2con)
                 J2con(k,:,:) = simplify(J2con(k,:,:));
             end
         end
-    elseif strcmp(options.simplify,'collect')
+    elseif strcmp(simplify,'collect')
         for k=1:length(Jdyn_comb(:,1))
             J2dyn(k,:,:) = collect(J2dyn(k,:,:),vars.x);
             if ~isempty(J2con)
                 J2con(k,:,:) = collect(J2con(k,:,:),vars.x);
             end
         end
-    elseif ~strcmp(options.simplify,'none')
-        error('Wrong value for options.simplify!. Only values ''simplify'', ''collect'' and ''none'' are valid!')
     end
-end
 end
 
 % compute third order derivatives
-function [J3dyn, J3con] = thirdOrderDerivatives(J2dyn,J2con,vars,options)
+function [J3dyn, J3con] = thirdOrderDerivatives(J2dyn,J2con,vars,simplify)
 
+    dim = length(J2dyn(:,1,1));
+    nrOfVars = length(J2dyn(1,:,1));
+    J3dyn = sym(zeros(dim,nrOfVars,nrOfVars,nrOfVars));
+    J3con = sym(zeros(dim,nrOfVars,nrOfVars,nrOfVars));
 
-dim = length(J2dyn(:,1,1));
-nrOfVars = length(J2dyn(1,:,1));
-J3dyn = sym(zeros(dim,nrOfVars,nrOfVars,nrOfVars));
-J3con = sym(zeros(dim,nrOfVars,nrOfVars,nrOfVars));
-
-% construct vector for which derivative is computed
-if isempty(vars.y) % no constraint equations
-    vars.z = [vars.x;vars.u];
-else % with constraint equations
-    vars.z = [vars.x;vars.y;vars.u];
-end
-
-%compute third order jacobians using 'LR' variables
-% dynamic part
-for k=1:length(J2dyn(:,1,1))
-    for l=1:length(J2dyn(1,:,1))
-        %Calculate 3rd order Jacobians
-        if ~isempty(find(J2dyn(k,l,:), 1))
-            J3dyn(k,l,:,:)=jacobian(reshape(J2dyn(k,l,:),[nrOfVars,1]),vars.z);
-        end
+    % construct vector for which derivative is computed
+    if isempty(vars.y) % no constraint equations
+        vars.z = [vars.x;vars.u];
+    else % with constraint equations
+        vars.z = [vars.x;vars.y;vars.u];
     end
-end
-%constraint part
-if ~isempty(J2con)
-    for k=1:length(J2con(:,1,1))
-        for l=1:length(J2con(1,:,1))
+
+    %compute third order jacobians using 'LR' variables
+    % dynamic part
+    for k=1:length(J2dyn(:,1,1))
+        for l=1:length(J2dyn(1,:,1))
             %Calculate 3rd order Jacobians
-            if ~isempty(find(J2con(k,l,:), 1))
-                J3con(k,l,:,:)=jacobian(reshape(J2con(k,l,:),[nrOfVars,1]),vars.z);
+            if ~isempty(find(J2dyn(k,l,:), 1))
+                J3dyn(k,l,:,:)=jacobian(reshape(J2dyn(k,l,:),[nrOfVars,1]),vars.z);
             end
         end
     end
-end
+    %constraint part
+    if ~isempty(J2con)
+        for k=1:length(J2con(:,1,1))
+            for l=1:length(J2con(1,:,1))
+                %Calculate 3rd order Jacobians
+                if ~isempty(find(J2con(k,l,:), 1))
+                    J3con(k,l,:,:)=jacobian(reshape(J2con(k,l,:),[nrOfVars,1]),vars.z);
+                end
+            end
+        end
+    end
 
-%potentially simplify expression
-if isfield(options,'simplify')              
-    if strcmp(options.simplify,'simplify') 
+    % potentially simplify expression            
+    if strcmp(simplify,'simplify') 
         for k=1:length(J2dyn(:,1,1))
             for l=1:length(J2dyn(1,:,1))
                 if ~isempty(find(J2dyn(k,l,:), 1))
@@ -478,7 +520,7 @@ if isfield(options,'simplify')
                 end
             end
         end
-    elseif strcmp(options.simplify,'collect')
+    elseif strcmp(simplify,'collect')
         for k=1:length(J2dyn(:,1,1))
             for l=1:length(J2dyn(1,:,1))
                 if ~isempty(find(J2dyn(k,l,:), 1))
@@ -489,10 +531,7 @@ if isfield(options,'simplify')
                 end
             end
         end
-    elseif ~strcmp(options.simplify,'none')
-        error('Wrong value for options.simplify!. Only values ''simplify'', ''collect'' and ''none'' are valid!')
     end
-end
 end
 
 %------------- END OF CODE --------------

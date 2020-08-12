@@ -28,12 +28,12 @@ function Zres = tensorMultiplication(Z,M,options)
 
 %------------- BEGIN CODE --------------
 
-%retrieve dimension and number of generators
-dim = length(Z.Z(:,1));
+% retrieve dimension
+n = dim(Z);
 
 %get center and generators
-c = Z.Z(:,1);
-G = Z.Z(:,2:end);
+c = center(Z);
+G = generators(Z);
 
 %get order of tensor for one dimension
 tensorOrder = length(size(M{1}));
@@ -47,7 +47,7 @@ if norm(c)==0
     combList = options.list.comb;
     
     %initialize generator list
-    H = zeros(dim,length(combList(:,1)));
+    H = zeros(n,length(combList(:,1)));
     
     %go through all permutations
     for iPerm = 1:length(permList(:,1))
@@ -74,19 +74,19 @@ if norm(c)==0
 end
 
 %generate zonotope
-Zres = zonotope([zeros(dim,1), H]);
+Zres = zonotope(zeros(n,1), H);
 
 
 function res = generatorMultiplication_2d(M,genComb)
 
 %obtain data
-dim = length(M);
+n = length(M);
 
 %initialize result
-res = zeros(dim,1);
-for iDim = 1:dim
-    for ind1 = 1:dim
-        for ind2 = 1:dim
+res = zeros(n,1);
+for iDim = 1:n
+    for ind1 = 1:n
+        for ind2 = 1:n
             res = res + M(iDim,ind1,ind2)*genComb(ind1,1)*genComb(ind2,2);
         end
     end
@@ -96,15 +96,16 @@ end
 function res = generatorMultiplication_3d(M,genComb)
 
 %obtain data
-dim = length(M);
+n = length(M);
 
 %initialize result
-res = zeros(dim,1);
-for iDim = 1:dim
-    for ind1 = 1:dim
-        for ind2 = 1:dim
-            for ind3 = 1:dim
-                res(iDim) = res(iDim) + M{iDim}(ind1,ind2,ind3)*genComb(ind1,1)*genComb(ind2,2)*genComb(ind3,3);
+res = zeros(n,1);
+for iDim = 1:n
+    for ind1 = 1:n
+        for ind2 = 1:n
+            for ind3 = 1:n
+                res(iDim) = res(iDim) + ...
+                    M{iDim}(ind1,ind2,ind3)*genComb(ind1,1)*genComb(ind2,2)*genComb(ind3,3);
             end
         end
     end

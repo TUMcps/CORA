@@ -29,7 +29,7 @@ function res = rescale(obj,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: reduce
 %
 % References: 
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
@@ -49,23 +49,31 @@ function res = rescale(obj,varargin)
     end
 
     % determine the new domain for each factor ksi
-    if isempty(obj.A)
-        error('No constrains left!');
-    elseif isempty(obj)
-        error('Set is empty!');
-    elseif isempty(obj.ksi)
-        if strcmp(method,'iter')
-            obj = preconditioning(obj);
-            [domKsi, R] = ksi_iterative( obj );
-        else
-            domKsi = ksi_optimizer( obj );
-        end
+    try
+        if isempty(obj.A)
+            error('No constrains left!');
+        elseif isempty(obj.ksi)
+            if strcmp(method,'iter')
+                obj = preconditioning(obj);
+                [domKsi, R] = ksi_iterative( obj );
+            else
+                domKsi = ksi_optimizer( obj );
+            end
 
-        ksi_l = infimum(domKsi);
-        ksi_u = supremum(domKsi);
-    else
-        ksi_l = min(obj.ksi,[],2);
-        ksi_u = max(obj.ksi,[],2);
+            ksi_l = infimum(domKsi);
+            ksi_u = supremum(domKsi);
+        else
+            ksi_l = min(obj.ksi,[],2);
+            ksi_u = max(obj.ksi,[],2);
+        end
+        
+    catch ex
+        % provide meaningful error message for the user
+        if isempty(obj)
+            error('Set is empty!');
+        else
+            error(ex.message);
+        end
     end
 
     % new basis

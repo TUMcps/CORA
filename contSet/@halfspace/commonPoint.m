@@ -27,10 +27,10 @@ function res = commonPoint(obj, h_other)
 %------------- BEGIN CODE --------------
 
 %dimension
-dim = length(obj.c);
+n = length(obj.c);
 
 %unit vector as initial point
-x_0 = [1; zeros(dim-1,1)];
+x_0 = [1; zeros(n-1,1)];
 
 %first direction multiplier alpha_1
 alpha_1 = obj.d - obj.c.'*x_0/(obj.c.'*obj.c);

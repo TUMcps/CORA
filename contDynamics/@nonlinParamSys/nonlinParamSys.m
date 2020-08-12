@@ -3,29 +3,48 @@ classdef nonlinParamSys < contDynamics
 % constant or vary over time)
 %
 % Syntax:  
-%    object constructor: Obj = nonlinParamSys(varargin)
-%    copy constructor: Obj = otherObj
+%    obj = nonlinParamSys(fun)
+%    obj = nonlinParamSys(fun,type)
+%    obj = nonlinParamSys(name,fun)
+%    obj = nonlinParamSys(name,fun,type)
+%    obj = nonlinParamSys(fun,states,inputs,params)
+%    obj = nonlinParamSys(fun,states,iputs,params,type)
+%    obj = nonlinParamSys(name,fun,states,inputs,params)
+%    obj = nonlinParamSys(name,fun,states,inputs,params,type)
 %
 % Inputs:
-%    A - system matrix
-%    B - input matrix
-%    stepSize - time increment
-%    taylorTerms - number of considered Taylor terms
+%    fun - function handle to the dynamic equation
+%    name - name of dynamics
+%    type - 'constParam' (constant parameter, default) or 'varParam' (time
+%            varying parameter)
+%    states - number of states
+%    inputs - number of inputs
+%    params - number of parameter
 %
 % Outputs:
-%    Obj - Generated Object
+%    obj - Generated Object
+%
+% Example:
+%    f = @(x,u,p) [x(2); ...
+%                  p(1)*(1-x(1)^2)*x(2)-x(1)];
+%
+%    sys = nonlinParamSys('vanDerPol',f)
+%
+% Outputs:
+%    obj - Generated Object
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: nonlinearSys
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      23-September-2010
 % Last update:  27-October-2011
 %               16-August-2016
 %               02-June-2017
+%               18-May-2020 (NK, changed constructor syntax)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -39,54 +58,121 @@ properties (SetAccess = private, GetAccess = public)
     hessian = [];
     thirdOrderTensor = [];
     parametricDynamicFile = [];
-    constParam = 1; %flag if parameters are constant or time-varying 
     derivative = [];
     linError = [];
+    constParam = 1;
 end
     
 methods
-    %class constructor
-    function obj = nonlinParamSys(varargin)%(dim,nrOfInputs,nrOfParam,mFile,allowedError,options)
-        % obtain function name
-        if nargin>=3
-            func_name = func2str(varargin{4});
-            func_name = strrep(func_name,'@',''); %remove @
-            func_name = strrep(func_name,'(',''); %remove (
-            func_name = strrep(func_name,')',''); %remove )
-            func_name = strrep(func_name,',',''); %remove ,
-        else
-            func_name = 'nonlinearParamSys';
-        end
-        %generate parent object
-        obj@contDynamics(func_name,ones(varargin{1},1),ones(varargin{2},1),1); %instantiate parent class
-        %5 inputs
-        if nargin==5
-            obj.nrOfParam = varargin{3};
-            obj.mFile = varargin{4};
-            % link jacobian, hessian, and third order tensor files
-            str = ['obj.jacobian = @jacobian_',func_name,';'];
-            eval(str);
-            str = ['obj.jacobian_freeParam = @jacobian_freeParam_',func_name,';'];
-            eval(str);
-            str = ['obj.hessian = @hessianTensor_',func_name,';'];
-            eval(str);
-            str = ['obj.thirdOrderTensor = @thirdOrderTensor_',func_name,';'];
-            eval(str);
-            str = ['obj.parametricDynamicFile = @parametricDynamicFile_',func_name,';'];
-            eval(str);
-            %symbolic computation of the jacobians of the nonlinear system 
-            %obj = symbolicDerivation(obj,varargin{5});
-            derivatives(obj,varargin{5});
-        end
-    end
-         
-    %methods in seperate files 
-    [obj,Rfirst,options] = initReach(obj, Rinit, options)
-    [obj,t,x,index] = simulate(obj,opt,tstart,tfinal,x0,options)
-    handle = getfcn(obj,options)
     
-    %display functions
-    display(obj)
+    % class constructor
+    function obj = nonlinParamSys(varargin)
+        
+        name = []; states = []; inputs = []; params = []; 
+        type = 'constParam';
+        
+        % parse input arguments
+        if nargin == 1
+            fun = varargin{1};
+        elseif nargin == 2
+            if ischar(varargin{1})
+                name = varargin{1};
+                fun = varargin{2};
+            else
+                fun = varargin{1};
+                type = varargin{2};
+            end
+        elseif nargin == 3
+            name = varargin{1};
+            fun = varargin{2};
+            type = varargin{3};
+        elseif nargin == 4
+            fun = varargin{1};
+            states = varargin{2};
+            inputs = varargin{3};
+            params = varargin{4};
+        elseif nargin == 5
+            if ischar(varargin{1})
+                name = varargin{1};
+                fun = varargin{2};
+                states = varargin{3};
+                inputs = varargin{4};
+                params = varargin{5};
+            else
+                fun = varargin{1};
+                states = varargin{2};
+                inputs = varargin{3};
+                params = varargin{4};
+                type = varargin{5};
+            end
+        elseif nargin == 6
+                name = varargin{1};
+                fun = varargin{2};
+                states = varargin{3};
+                inputs = varargin{4};
+                params = varargin{5};
+                type = varargin{6};
+        else
+            error('Wrong number of input arguments!');
+        end
+
+        % check input arguments
+        if ~ischar(type) || ~ismember(type,{'constParam','varParam'})
+           error('Wrong value for input argument "type"!'); 
+        end
+        
+        % get name from function handle
+        if isempty(name)    
+            name = func2str(fun);
+            name = strrep(name,'@',''); 
+            name = strrep(name,'(',''); 
+            name = strrep(name,')',''); 
+            name = strrep(name,',','');
+            if ~isvarname(name)
+                name = 'nonlinParamSys';
+            end
+        end
+        
+        % get number of states and number of inputs 
+        if isempty(states) || isempty(inputs) || isempty(params)
+            try
+                [temp,states] = numberOfInputs(fun,3);
+                inputs = max(1,temp(2));
+                params = max(1,temp(3));
+            catch
+                error(['Failed to determine number of states and ' ...
+                       'inputs auotmatically! Please provide number of ' ...
+                       'states, inputs, and parameter as additional ', ...
+                       'input arguments!']); 
+            end
+        end
+        
+        % generate parent object
+        obj@contDynamics(name,states,inputs,1);
+        
+        % assign object properties
+        obj.nrOfParam = params;
+        obj.mFile = fun;
+        
+        if strcmp(type,'varParam')
+           obj.constParam = 0; 
+        end
+
+        str = ['obj.jacobian = @jacobian_',name,';'];
+        eval(str);
+        
+        str = ['obj.jacobian_freeParam = @jacobian_freeParam_',name,';'];
+        eval(str);
+        
+        str = ['obj.hessian = @hessianTensor_',name,';'];
+        eval(str);
+        
+        str = ['obj.thirdOrderTensor = @thirdOrderTensor_',name,';'];
+        eval(str);
+        
+        str = ['obj.parametricDynamicFile = @parametricDynamicFile_',name,';'];
+        eval(str);
+    end
 end
 end
 

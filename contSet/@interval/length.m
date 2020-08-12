@@ -1,6 +1,6 @@
 function L = length(obj)
-% length - Overloads the opertor that returns the length of the longest 
-% array dimension
+% length - Overloads the operator that returns the length
+%    of the longest array dimension
 %
 % Syntax:  
 %    L = length(obj)

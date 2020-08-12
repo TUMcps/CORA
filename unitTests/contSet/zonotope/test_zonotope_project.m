@@ -18,28 +18,63 @@ function res = test_zonotope_project
 %
 % See also: -
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      26-July-2016
-% Last update:  ---
+% Last update:  09-August-2020 (MW, enhance randomness)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
+% 1. Analytical Test ------------------------------------------------------
+
 % create zonotope
-Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4; 5, 5, 5, 5]);
+Z = zonotope([-4, -3, -2, -1; 1, 2, 3, 4; 5, 5, 5, 5]);
 
 % obtain result
-Z2 = project(Z1,[1 3]);
+Zres = project(Z,[1 3]);
 
 % obtain zonotope matrix
-Zmat = get(Z2,'Z');
+Zmat = Zres.Z;
 
 % true result
 true_mat = [-4, -3, -2, -1; ...
             5, 5, 5, 5];
 
 % check result
-res = all(all(Zmat == true_mat));
+res_val = all(all(Zmat == true_mat));
+
+% 2. Random Tests ---------------------------------------------------------
+
+dims = 5:5:100;
+testsPerDim = 1000;
+
+% box has to be the same as conversion to interval
+for d=1:length(dims)
+    for test=1:testsPerDim
+        % create a random zonotope
+        nrOfGens = randi([10,25],1,1);
+        c = -1+2*rand(dims(d),1);
+        G = -1+2*rand(dims(d),nrOfGens);
+        Z = zonotope(c,G);
+
+        % choose random subspace
+        projDims = randi([1,dims(d)],1,2);
+
+        % project original center and generator matrix
+        cproj = c(projDims);
+        Gproj = G(projDims,:);
+        
+        % project zonotope
+        Zproj = project(Z,projDims);
+        
+        % check projections return the same result
+        res_rand(d,test) = all(~any(abs(Zproj.Z - [cproj,Gproj])));
+    end
+end
+
+
+% add results
+res = res_val && all(all(res_rand));
 
 if res
     disp('test_zonotope_project successful');

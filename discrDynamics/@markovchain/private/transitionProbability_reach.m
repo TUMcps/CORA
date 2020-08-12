@@ -1,4 +1,4 @@
-function tp = transitionProbability_reach(niP,tranFrac,field)
+function tp = transitionProbability_reach(R,tranFrac,field)
 % transitionProbability_reach - Calculate the transition probability from 
 % the actual cell to the reachable cells using reachability analysis.
 %
@@ -29,46 +29,46 @@ function tp = transitionProbability_reach(niP,tranFrac,field)
 %               26-March-2008
 %               29-September-2009
 %               31-July-2017
+%               24-July-2020
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 %initialize--------------------------------------------------------
 nrOfStates = nrOfCells(field);
-tp(1:(nrOfStates+1),1)=0; %tp: transition probability
+tp.T(1:(nrOfStates+1),1)=0; %tp: transition probability
+tp.OT(1:(nrOfStates+1),1)=0; %tp: transition probability
 %------------------------------------------------------------------
 
 
 %get cells that might intersect with the reachable set-------------
-for k=1:length(niP)
-    for i=1:length(niP{k})
-        if ~iscell(niP{k}{i})
-            %polytope conversion if niP{k}{i} is a zonotope
-            if isa(niP{k}{i},'zonotope')
-                niP{k}{i}=polytope(niP{k}{i});
-            end
-            % intersection probabilities
-            [~, iP] = exactIntersectingCells(field,niP{k}{i});
-            % add partial transition probbailities from the considered time
-            % interval
-            tp=tp+tranFrac{k}/length(niP{k})*iP;
-        else
-            for j=1:length(niP{k}{i})
-                %polytope conversion if niP{k}{i} is a zonotope
-                if isa(niP{k}{i}{j},'zonotope') || isa(niP{k}{i}{j},'zonotopeBundle')
-                    niP{k}{i}{j}=polytope(niP{k}{i}{j});
-                    %intersection
-                    [~, iP] = exactIntersectingCells(field,niP{k}{i}{j});
-                elseif isa(niP{k}{i}{j}.set,'zonotope') || isa(niP{k}{i}{j}.set,'zonotopeBundle')
-                    niP{k}{i}{j}.set=polytope(niP{k}{i}{j}.set);
-                    %intersection
-                    [~, iP] = exactIntersectingCells(field,niP{k}{i}{j}.set);
-                end
-
-                % add transition probabilities
-                tp=tp+tranFrac{k}/length(niP{k})*iP;
-            end
+for k=1:length(R)
+    % solution for time point
+    %polytope conversion if niP{k} is a zonotope
+    niP_tp = R(k).timePoint.set{end};
+    if isa(niP_tp,'zonotope')
+        niP_tp = polytope(niP_tp);
+    end
+    % intersection probabilities
+    [~, iP_tp] = exactIntersectingCells(field, niP_tp);
+    % add partial transition probbailities from the considered time
+    % interval
+    tp.T = tp.T + tranFrac{k}*iP_tp;
+    
+    % solution for time interval
+    % number of sets in one location
+    nrOfSets = length(R(k).timePoint.set);
+    for i=1:nrOfSets
+        %polytope conversion if niP{k} is a zonotope
+        niP_ti = R(k).timeInterval.set{i};
+        if isa(niP_ti,'zonotope')
+            niP_ti = polytope(niP_ti);
         end
+        % intersection probabilities
+        [~, iP_ti] = exactIntersectingCells(field, niP_ti);
+        % add partial transition probbailities from the considered time
+        % interval
+        tp.OT = tp.OT + tranFrac{k}/nrOfSets*iP_ti;
     end
 end
 

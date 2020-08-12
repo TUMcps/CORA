@@ -4,8 +4,15 @@ function val = get(obj, propName)
 % Syntax:  
 %    val = get(obj, propName)
 %
+% Inputs:
+%    obj      - mptPolytope object
+%    propName - name of property
+%
+% Outputs:
+%    val - value of property
+%
 % Properties:
-%    intervals - intervals of interval hull object
+%    intervals - intervals of interval object
 
 % Author:       Matthias Althoff
 % Written:      12-February-2012
@@ -17,13 +24,6 @@ function val = get(obj, propName)
 %------------- BEGIN CODE --------------
 
 switch propName 
-    case 'equations'
-        try %MPT V3
-            K = obj.P.b;
-        catch %MPT V2
-            [H,K] = double(obj.P);
-        end
-        val = length(K);
     case 'P'
         val = obj.P;
     case {'H','A'}

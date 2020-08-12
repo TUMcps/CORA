@@ -1,16 +1,16 @@
-function [Z] = plus(summand1,summand2)
+function cZ = plus(summand1,summand2)
 % plus - Overloaded '+' operator for the Minkowski addition of a
 %        constrained zonotope with other set representations
 %
 % Syntax:  
-%    [Z] = plus(summand1,summand2)
+%    cZ = plus(summand1,summand2)
 %
 % Inputs:
 %    summand1 - conZonotope object or numerical vector
 %    summand2 - conZonotope object or numerical vector
 %
 % Outputs:
-%    Z - constrained Zonotope after Minkowsi addition
+%    cZ - constrained Zonotope after Minkowski addition
 %
 % Example: 
 %    Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
@@ -20,8 +20,8 @@ function [Z] = plus(summand1,summand2)
 %    cPlus = cZono + [5;4];
 %
 %    hold on
-%    plotFilled(cZono,[1,2],'r','EdgeColor','none');
-%    plotFilled(cPlus,[1,2],'b','EdgeColor','none');
+%    plot(cZono,[1,2],'r','Filled',true,'EdgeColor','none');
+%    plot(cPlus,[1,2],'b','Filled',true,'EdgeColor','none');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -36,66 +36,61 @@ function [Z] = plus(summand1,summand2)
 % Author:       Dmitry Grebenyuk, Niklas Kochdumper
 % Written:      05-December-2017 
 % Last update:  15-May-2018
+%               05-May-2020 (MW, standardized error message)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% Find a conZonotope object
+% find a conZonotope object
 if isa(summand1, 'conZonotope')
-    Z=summand1;
+    cZ=summand1;
     summand=summand2;
 elseif isa(summand2, 'conZonotope')
-    Z=summand2;
+    cZ=summand2;
     summand=summand1;  
 end
 
-% Handle different classes of the second summand
+% handle different classes of the second summand
 if isa(summand, 'conZonotope')
     
     % Calculate minkowski sum (Equation (12) in reference paper [1])
-    Z.Z(:,1)=Z.Z(:,1)+summand.Z(:,1);
-    Z.Z(:,(end+1):(end+length(summand.Z(1,2:end)))) = summand.Z(:,2:end);
+    cZ.Z(:,1)=cZ.Z(:,1)+summand.Z(:,1);
+    cZ.Z(:,(end+1):(end+length(summand.Z(1,2:end)))) = summand.Z(:,2:end);
     
-    if isempty(Z.A)
+    if isempty(cZ.A)
         if ~isempty(summand.A)
-            Z.A = [zeros(size(summand.A,1), ...
-                   size(Z.Z,2)-1-size(summand.A,2)),summand.A]; 
-            Z.b = summand.b;
+            cZ.A = [zeros(size(summand.A,1), ...
+                   size(cZ.Z,2)-1-size(summand.A,2)),summand.A]; 
+            cZ.b = summand.b;
         end
     else
         if isempty(summand.A)
-            Z.A = [Z.A,zeros(size(Z.A,1),size(summand.Z,2)-1)];
+            cZ.A = [cZ.A,zeros(size(cZ.A,1),size(summand.Z,2)-1)];
         else
-            Z.A = blkdiag(Z.A, summand.A);
-            Z.b = [Z.b; summand.b];
+            cZ.A = blkdiag(cZ.A, summand.A);
+            cZ.b = [cZ.b; summand.b];
         end
     end
     
-    Z.ksi = [];
-    Z.R = [];
+    cZ.ksi = [];
+    cZ.R = [];
     
-elseif isa(summand, 'zonotope')
+elseif isnumeric(summand) 
     
-    % Calculate minkowski sum (Equation (12) in reference paper [1])
-    Z.Z(:,1)=Z.Z(:,1)+summand.Z(:,1);
-    Z.Z(:,(end+1):(end+length(summand.Z(1,2:end)))) = summand.Z(:,2:end);
-    Z.A = [Z.A, zeros(size(Z.A,1),size(summand.Z,2)-1)];
-
-    Z.ksi = [];
-    Z.R = [];
+    cZ.Z(:,1) = cZ.Z(:,1) + summand;
     
-elseif isa(summand, 'interval')
+elseif isa(summand,'zonotope') || isa(summand,'interval') || ...
+       isa(summand,'mptPolytope') || isa(summand,'zonoBundle')
     
-    % Convert interval to zontope 
-    Z = Z + zonotope(summand);
+    cZ = cZ + conZonotope(summand);
     
-elseif isnumeric(summand)       % summand is a vector
+elseif isa(summand,'polyZonotope')
     
-    %Calculate minkowski sum
-    Z.Z(:,1)=Z.Z(:,1)+summand;
+    cZ = polyZonotope(cZ) + summand;
      
 else
-    error('This operation is not implemented');
+    % throw error for given arguments
+    error(noops(summand1,summand2));
 end
 
 %------------- END OF CODE --------------

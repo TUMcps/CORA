@@ -1,18 +1,18 @@
-function [probTotal] = pyramid(pZ,mArray,P)
-% pyramid - Encloses a probabilistic zonotope pZ by a pyramid with step
-% sizes defined by an array of mSigma bounds and determines the probability
-% of intersection with a polytope P
+function probTotal = pyramid(probZ,mArray,P)
+% pyramid - Encloses a probabilistic zonotope pZ by a pyramid with
+%    step sizes defined by an array of mSigma bounds and determines
+%    the probability of intersection with a polytope P
 %
 % Syntax:  
-%    [pZ] = pyramid(pZ,mArray)
+%    probTotal = pyramid(pZ,mArray,P)
 %
 % Inputs:
-%    pZ - probabilistic zonotope object
+%    probZ - probabilistic zonotope object
 %    mArray - array of m-values for mSigma bounds
 %    P - polytope object
 %
 % Outputs:
-%    pZ - probabilistic zonotope object
+%    probTotal - probabilistic zonotope object
 %
 % Example: 
 %
@@ -22,27 +22,26 @@ function [probTotal] = pyramid(pZ,mArray,P)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 06-October-2007
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      06-October-2007
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
-%get Sigma, dim
-Sigma=sigma(pZ);
-dim=length(Sigma);
-
+% get Sigma, dimension
+Sigma=sigma(probZ);
+d = dim(probZ);
 
 %obtain array of max-values on mSigma bounds
 for i=1:length(mArray)
-    maxVal(i)=(2*pi)^(-0.5*dim)*det(Sigma)^(-0.5)*exp(-0.5*mArray(i)^2);
+    maxVal(i)=(2*pi)^(-0.5*d)*det(Sigma)^(-0.5)*exp(-0.5*mArray(i)^2);
 end
-maxVal(end+1)=(2*pi)^(-0.5*dim)*det(Sigma)^(-0.5);
+maxVal(end+1)=(2*pi)^(-0.5*d)*det(Sigma)^(-0.5);
 
 %obtain mSigma zonotopes
 for i=1:length(mArray)
-    msZ{i}=zonotope(pZ,mArray(i));
+    msZ{i}=zonotope(probZ,mArray(i));
 end
 
 %compute intersection probabilities
@@ -71,12 +70,12 @@ end
 % hold on
 % %plot pyramid
 % for i=1:length(mArray)
-%     Znew=get(msZ{i},'Z');
+%     Znew=msZ{i}.Z;
 %     Znew(3,1)=0.5*(maxVal(i+1)+maxVal(i));
 %     Znew(3,end+1)=0.5*(maxVal(i+1)-maxVal(i));
 %     Znew=zonotope(Znew);
 %     V=vertices(Znew);
-%     pP=polytope(get(V,'V')');
+%     pP=polytope(V.V)');
 %     plot(pP)
 %     %plot3d(V);
 %     hold on
@@ -87,15 +86,15 @@ end
 % hold on
 % %plot remaining pyramid: only for the special case of the HSCC08 paper
 % %example
-% IH=intervalhull([-10,10;-5,-3;-10,100]);
-% P=polytope(IH);
+% I=interval([-10,10;-5,-3;-10,100]);
+% P=polytope(I);
 % for i=1:length(mArray)
-%     Znew=get(msZ{i},'Z');
+%     Znew=msZ{i}.Z;
 %     Znew(3,1)=0.5*(maxVal(i+1)+maxVal(i));
 %     Znew(3,end+1)=0.5*(maxVal(i+1)-maxVal(i));
 %     Znew=zonotope(Znew);
 %     V=vertices(Znew);
-%     pP=polytope(get(V,'V')');
+%     pP=polytope(V.V');
 %     Pint=pP&P;
 %     plot(Pint)
 %     %plot3d(V);

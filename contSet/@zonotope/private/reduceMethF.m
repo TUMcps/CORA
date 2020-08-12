@@ -19,41 +19,37 @@ function [Zred]=reduceMethF(Z)
 
 % Author:       Matthias Althoff
 % Written:      08-February-2011
-% Last update:  ---
+% Last update:  16-March-2019 (vnorm replaced, sort removed)
+%               27-Aug-2019
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-
-
-%get Z-matrix from zonotope Z
-Zmatrix=get(Z,'Z');
-dim=length(Zmatrix(:,1));
-
 %extract generator matrix
-G=Zmatrix(:,2:end);
+G=generators(Z);
+G=nonzeroFilter(G);
+[dim, nrOfGens] = size(G);
 
-while length(G(1,:))>dim
+while nrOfGens>dim
 
     %sort by length
-    h=vnorm(G,1,2);
-    [elements,indices]=sort(h);
+    h=vecnorm(G);
 
-    %pick smallest generator and remove it from G
-    gen = G(:,indices(1));
-    G(:,indices(1)) = [];
+    %pick smallest generator 'gen' and remove it from G
+    [~,ind] = min(h);
+    gen = G(:,ind);
+    G(:,ind) = [];
+    
+    % update number of generators
+    nrOfGens = length(G(1,:));
 
     %compute correlation
     genNorm = gen'/norm(gen);
-    corr = [];
-    for i=1:length(G(1,:))
-        corr(i) = genNorm*G(:,i)/norm(G(:,i));
-    end
+    corr = genNorm*G./vecnorm(G);
 
-    [elem,ind]=sort(abs(corr));
-
-    %add generator to correlating generator
-    G(:,ind(end)) = G(:,ind(end)) + sign(corr(ind(end)))*gen;
+    %add generator to most correlating generator
+    [~,ind] = max(abs(corr));
+    G(:,ind(end)) = G(:,ind) + sign(corr(ind))*gen;
 end
 
 

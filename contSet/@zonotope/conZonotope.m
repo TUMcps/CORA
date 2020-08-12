@@ -11,6 +11,9 @@ function res = conZonotope(obj)
 % Outputs:
 %    res - c-zonotope object
 %
+% Example:
+%    Z = zonotope([1;0],[1 0; 0 1]);
+%    cZ = conZonotope(Z);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,6 +28,6 @@ function res = conZonotope(obj)
 
 %------------- BEGIN CODE --------------
     
-res = conZonotope(obj.Z,[],[]);
+res = conZonotope(obj.Z);
 
 %------------- END OF CODE --------------

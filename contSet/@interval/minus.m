@@ -42,6 +42,7 @@ if isa(minuend,'interval')
         res.inf = minuend.inf - subtrahend;
         res.sup = minuend.sup - subtrahend;       
     end
+    
 else
     %minuend must be a particular value
     %Calculate infimum and supremum

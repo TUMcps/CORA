@@ -6,9 +6,9 @@ function res = times(factor1,factor2)
 %
 % Inputs:
 %    factor1 - interval (for computational efficiency, no single value
-%    considered; does not require type checking)
+%              considered; does not require type checking)
 %    factor2 - interval (for computational efficiency, no single value
-%    considered; does not require type checking)
+%              considered; does not require type checking)
 %
 % Outputs:
 %    res - interval

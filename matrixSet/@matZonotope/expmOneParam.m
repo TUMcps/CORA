@@ -4,19 +4,24 @@ function [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,varargin
 % via interval arithmetic.
 %
 % Syntax:  
-%    [eZ,eI,zPow,iPow,E] = expmMixed(matZ,r,intermediateOrder,maxOrder)
+%    [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,varargin)
 %
 % Inputs:
 %    matZ - matrix zonotope
 %    r - time increment
 %    intermediate Order - Taylor series order until computation is 
-%    performed with matrix zonotopes
+%                           performed with matrix zonotopes
 %    maxOrder - maximum Taylor series order until remainder is computed
 %    options - options struct
 %
 % Outputs:
 %    eZ - matrix zonotope exponential part
 %    eI - interval matrix exponential part
+%    zPow - #nodef
+%    iPow - cell array storing the powers of the matrix:
+%           A,A^2,...,A^(intermediateOrder)
+%    E - interval matrix for the remainder
+%    RconstInput - #nodef
 %
 % Example: 
 %
@@ -35,9 +40,13 @@ function [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,varargin
 
 %cannot directly use u as input since zonotope has preference over
 %matZonotopes
-if nargin == 1
+if length(varargin) == 1
     options = varargin{1};
-    u = options.uTrans;
+    if ~isa(options.uTrans,'zonotope')
+        u = zonotope([options.uTrans,zeros(size(options.uTrans))]);
+    else
+        u = zonotope(options.uTrans);
+    end
 else
     u = zonotope([0,0]);
 end
@@ -47,7 +56,7 @@ C = matZ.center;
 G = matZ.generator{1};
 
 %obtain center and generator of input uTrans
-u_mat = get(u,'Z');
+u_mat = u.Z;
 c_u = u_mat(:,1);
 g_u = u_mat(:,2);
 
@@ -122,7 +131,8 @@ eZ = matZonotope(D_sum, E_sum);
 eI = E;
 
 %obtain constant input zonotope
-RconstInput = zonotope(D_u_sum, E_u_sum);
+RconstInput = zonotope(matZonotope(D_u_sum, E_u_sum));
+%RconstInput = zonotope(D_u_sum, E_u_sum);
 
    
 iPow = []; %no powers based on interval matrix

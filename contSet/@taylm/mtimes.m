@@ -24,11 +24,11 @@ function res = mtimes(factor1, factor2)
 % Last revision:---
 
 %------------- BEGIN CODE -------------
+
 [m1,n1] = size(factor1);
 [m2,n2] = size(factor2);
+
 if n1 == m2
-    res = taylm();
-    res(m1,n2) = taylm();
     T = 0;
 
     for i = 1:m1
@@ -46,4 +46,5 @@ elseif (isa(factor1, 'double') || isa(factor2, 'double')) && (isscalar(factor1) 
 else
     error('Matrix dimensions do not agree!');
 end
+
 %------------- END OF CODE --------------

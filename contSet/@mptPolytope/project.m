@@ -9,7 +9,7 @@ function obj = project(obj,dims)
 %    dims - vector of dimensions
 %
 % Outputs:
-%   res - projected mptPolytope object
+%    res - projected mptPolytope object
 %
 % Example: 
 %    ---

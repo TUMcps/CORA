@@ -147,7 +147,7 @@ function res = s_times_ti(factor1, factor2)
 
     % interpret intervals like [2,2] as a number
     if abs( supremum(factor2) - infimum(factor2) ) <= tolerance
-        res = factor1 .* mid(factor2);
+        res = factor1 .* center(factor2);
 
     else
 

@@ -1,19 +1,18 @@
-function [guards,setIndices,box] = potInt(obj,R)
+function [guards,setIndices] = potInt(obj,R,options)
 % potInt - determines which reachable sets potentially intersect with guard
-% sets of a location
+%          sets
 %
 % Syntax:  
-%    [guards] = potInt(obj,R)
+%    [guards,setIndices] = potInt(obj,R,options)
 %
 % Inputs:
 %    obj - location object
-%    R - cell array of reachable sets
+%    R - cell-array of reachable sets
 %
 % Outputs:
 %    guards - guards that are potentially intersected
-%    sets - reachable sets that are potentially intersected
-%
-% Example: 
+%    setIndices - indices of the reachable sets that intersect the guards
+%    options - struct containing the algorithm settings
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -21,55 +20,50 @@ function [guards,setIndices,box] = potInt(obj,R)
 %
 % See also: none
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      08-May-2007 
 % Last update:  26-October-2007
 %               20-October-2010
 %               27-July-2016
 %               23-November-2017
+%               03-December-2019 (NK, use approximate intersection test)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-%Initialize guards and setIndices
-guards=[]; setIndices=[];
+    % initialization
+    N = length(R);
+    M = length(obj.transition);
 
-%check if guard sets exist
-if ~isempty(obj.transition)
+    guards = zeros(M*N,1);
+    setIndices = zeros(M*N,1);
     
-    % generate enclosing boxes of the guard sets
-    for iTransition=1:length(obj.transition)
-        guardTemp=get(obj.transition{iTransition},'guard');
-        if isa(guardTemp,'halfspace') || isa(guardTemp,'constrainedHyperplane')
-            guardSet{iTransition}=guardTemp;
-        else
-            guardSet{iTransition}=interval(guardTemp);
-        end
-    end
+    counter = 1;
+    
+    % loop over all transitions
+    for i = 1:M
+       
+        guardSet = obj.transition{i}.guard;
+        target = obj.transition{i}.target;
+        
+        % check if terminal location is reached
+        if ~all(target == options.finalLoc)
+        
+            % loop over all reachable sets
+            for j = 1:N
 
-    % do the reachable sets potentially intersect one of the
-    % overapproximated guards?
-    
-    % init potential intersection matrix
-    int = zeros(length(obj.transition), length(R));
-    
-    for iSet=1:length(R)
-        if ~iscell(R{iSet}) % no split sets
-            for iTransition=1:length(obj.transition)
-                int(iTransition,iSet)=isIntersectingApprox(guardSet{iTransition},R{iSet});
-            end
-        else % sets are split
-            for iSubSet=1:length(R{iSet})
-                for iTransition=1:length(obj.transition)
-                    int(iTransition,iSet)=int(iTransition,iSet) || isIntersectingApprox(guardSet{iTransition},R{iSet}{iSubSet});
+                % check if reachable set intersects the guard set
+                if isIntersecting(guardSet,R{j},'approx')
+                    guards(counter) = i;
+                    setIndices(counter) = j;
+                    counter = counter + 1;
                 end
             end
-        end 
+        end
     end
-
-    %extract intersections
-    [guards,setIndices]=find(int);
-
-end
+    
+    % truncate the resuling lists
+    guards = guards(1:counter-1);
+    setIndices = setIndices(1:counter-1);
 
 %------------- END OF CODE --------------

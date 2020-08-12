@@ -1,8 +1,8 @@
-function [c] = center(Z)
+function c = center(Z)
 % center - Returns the center of a zonotope
 %
 % Syntax:  
-%    [c] = center(Z)
+%    c = center(Z)
 %
 % Inputs:
 %    Z - zonotope object
@@ -10,9 +10,9 @@ function [c] = center(Z)
 % Outputs:
 %    c - center of the zonotope Z
 %
-% Example: 
-%    Z=zonotope([1 1 0; 0 0 1]);
-%    c=center(Z)-->c=[1;0]
+% Example:
+%    Z = zonotope([1;0],[1 0; 0 1]);
+%    c = center(Z)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,6 +27,6 @@ function [c] = center(Z)
 
 %------------- BEGIN CODE --------------
 
-c=Z.Z(:,1);
+c = Z.Z(:,1);
 
 %------------- END OF CODE --------------

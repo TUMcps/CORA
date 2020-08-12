@@ -31,11 +31,9 @@ Zred=Z;
 [center, Gunred, Gred] = pickedGenerators(Z,order);
 
 if ~isempty(Gred)
-    %Delete zero-generators
-    G=nonzeroFilter(Gred);
 
     %reorder generators
-    Gcells=reorderingFilter(G);
+    Gcells=reorderingFilter(Gred);
 
     %pick generator with the best volume
     Gtemp=volumeFilter(Gcells,Z);

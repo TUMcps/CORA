@@ -1,13 +1,14 @@
-function [Rerror] = errorSolution(obj,V,options)
+function Rerror = errorSolution(obj,options,Vdyn,Vstat)
 % errorSolution - computes the solution due to the linearization error
 %
 % Syntax:  
-%    [Rerror] = errorSolution(linSys,options)
+%    Rerror = errorSolution(obj,options,Vdyn,Vstat)
 %
 % Inputs:
-%    obj - linear system object
-%    nonlinSys - nonlinear system object
-%    options - options struct
+%    obj - linearized system
+%    options - options struct (for nonlinear system)
+%    Vdyn - set of admissible errors (dynamic)
+%    Vstat - set of admissible errors (static) (optional)
 %
 % Outputs:
 %    Rerror - reachable set due to the linearization error
@@ -25,40 +26,44 @@ function [Rerror] = errorSolution(obj,V,options)
 % Last update:  22-January-2008
 %               18-May-2011
 %               25-July-2016 (intervalhull replaced by interval)
+%               04-May-2020 (MW, unification with errorSolutionQuad)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+if nargin < 4 || isempty(Vstat)
+    errorStat = 0;
+else
+    % including static error
+    errorStat = obj.taylor.eAtInt * Vstat;
+end
 
 %load data from object/options structure
 Apower=obj.taylor.powers;
 E=obj.taylor.error;
 taylorTerms=options.taylorTerms;
 r=options.timeStep;
-dim=dimension(obj);
+factors = options.factor;
 
 %initialize Asum
-Asum=eye(dim)*r*V;
+Asum=r*Vdyn;
 
 for i=1:taylorTerms
     %compute powers
-    ApowerV{i}=r^(i+1)/factorial(i+1)*Apower{i}*V;   
+    ApowerV=factors(i+1)*Apower{i}*Vdyn;
     %compute sums
-    Asum=Asum+ApowerV{i};
+    Asum=Asum+ApowerV;
 end
 
 %get error due to finite Taylor series
-if isa(V,'zonotopeBundle')
-    F=E*V.Z{1}*r;
+if isa(Vdyn,'zonoBundle')
+    F=E*Vdyn.Z{1}*r;
 else
-    F=E*V*r;
+    F=E*Vdyn*r;
 end
 
-%Compute error solution
-Rerror=Asum+F;
+%Compute error solution (dyn. + stat.)
+Rerror = Asum+F + errorStat;
 
-%Convert to zonotope if inputSol is an interval hull
-if strcmp('interval',class(Rerror))
-    Rerror=zonotope(interval(infimum(Rerror),supremum(Rerror)));
-end
 
 %------------- END OF CODE --------------

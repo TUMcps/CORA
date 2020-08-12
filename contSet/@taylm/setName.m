@@ -5,8 +5,8 @@ function tm = setName( tm, name )
 %    tm = setName( tm, name )
 %
 % Inputs:
-%    tm     - a taylm
-%    name   - a string
+%    tm   - a taylm
+%    name - a string
 %
 % Outputs:
 %    tm - a taylm
@@ -27,7 +27,7 @@ function tm = setName( tm, name )
 
 %------------- BEGIN CODE --------------
 
-    tm.names_of_var = {name};
+tm.names_of_var = {name};
 
 end
 

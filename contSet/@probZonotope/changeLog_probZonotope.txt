@@ -1,3 +1,0 @@
-13 Mar 2015 (MA):
-
-- replace: enclosingProbability.m by enclosingProbability2.m (files renomaed and replaced file deleted)

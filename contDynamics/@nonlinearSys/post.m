@@ -31,6 +31,25 @@ function [Rnext,options] = post(obj,R,options)
 
 %------------- BEGIN CODE --------------
 
+% potentially restructure the polynomial zonotope
+if strcmp(options.alg,'poly') && isa(R.tp{1}.set,'polyZonotope') && ...
+   isfield(options,'polyZono') && ~isinf(options.polyZono.maxPolyZonoRatio)
+
+    temp = options.polyZono;
+
+    for i = 1:length(R.tp)
+        
+        % compute ratio of dependent to independent part 
+        ratio = approxVolumeRatio(R.tp{i}.set,temp.volApproxMethod);
+
+        % restructure the polynomial zonotope
+        if ratio > temp.maxPolyZonoRatio
+           R.tp{i}.set = restructure(R.tp{i}.set, ...
+                      temp.restructureTechnique,temp.maxDepGenOrder);
+        end
+    end
+end
+
 %In contrast to the linear system: the nonlinear system has to be constantly
 %initialized due to the linearization procedure
 [Rnext,options] = initReach(obj,R.tp,options);

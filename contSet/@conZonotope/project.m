@@ -9,6 +9,7 @@ function obj = project(obj,dim)
 %    dim - dimensions of the projection
 %
 % Outputs:
+%    obj - contrained zonotope object
 %
 % Example: 
 %    Z = [0 1 0 1 0;0 1 2 -1 0;0 0 0 0 1];

@@ -1,9 +1,9 @@
-function [cZ] = mtimes(factor1,factor2)
+function cZ = mtimes(factor1,factor2)
 % mtimes - Overloaded '.*' operator for the multiplication of a matrix or an
 %          interval matrix with a constrained zonotope
 %
 % Syntax:  
-%    [cZ] = times(matrix,cZ)
+%    cZ = times(matrix,cZ)
 %
 % Inputs:
 %    matrix - numerical or interval matrix

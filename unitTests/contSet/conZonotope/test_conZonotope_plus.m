@@ -1,7 +1,6 @@
 function res = test_conZonotope_plus
-% test_conZonotope_plus - unit test function for the caclulation of the
-%                         minkowski sum of a constrained zonotope object
-%                         with another set
+% test_conZonotope_plus - unit test function for the calculation of the
+%  Minkowski sum of a constrained zonotope object with another set
 %
 % Syntax:  
 %    res = test_conZonotope_plus
@@ -31,7 +30,7 @@ function res = test_conZonotope_plus
 
 %------------- BEGIN CODE --------------
 
-res = 0;
+res = false;
 
 
 % TEST 1: Random Test (zonotope 2D) ---------------------------------------
@@ -52,8 +51,7 @@ zono = zonotope(rand(2,5)-0.5*ones(2,5));
 cZonoRes = cZono + zono;
 
 % calculate points that have to be located inside the resuling conZonotope
-temp = vertices(zono);
-Vzono = get(temp,'V');
+Vzono = vertices(zono);
 
 N = size(V,2) * size(Vzono,2);
 points = zeros(2,N);
@@ -86,6 +84,13 @@ Tol = 1e-14;
 
 for i = 1:size(points,2)
    if any(A*points(:,i) - b > Tol)
+       file_name = strcat('test_conZonotope_plus_1_', ...
+                          datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+       file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+                            file_name);
+                           
+       save(file_path, 'cZonoRes')
        error('Test 1 failed!');
    end
 end
@@ -114,8 +119,7 @@ inter = interval(min(temp1,temp2),max(temp1,temp2));
 cZonoRes = cZono + inter;
 
 % calculate points that have to be located inside the resuling conZonotope
-temp = vertices(inter);
-Vinter = get(temp,'V');
+Vinter = vertices(inter);
 
 N = size(V,2) * size(Vinter,2);
 points = zeros(2,N);
@@ -148,6 +152,13 @@ Tol = 1e-14;
 
 for i = 1:size(points,2)
    if any(A*points(:,i) - b > Tol)
+       file_name = strcat('test_conZonotope_plus_2_', ...
+                          datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+       file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+                            file_name);
+                           
+       save(file_path, 'cZonoRes')
        error('Test 2 failed!');
    end
 end
@@ -211,6 +222,13 @@ Tol = 1e-14;
 
 for i = 1:size(points,2)
    if any(A*points(:,i) - b > Tol)
+       file_name = strcat('test_conZonotope_plus_3_', ...
+                          datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+       file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+                            file_name);
+                           
+       save(file_path, 'cZonoRes')
        error('Test 3 failed!');
    end
 end
@@ -263,4 +281,6 @@ for i = 1:size(points,2)
    end
 end
 
-res = 1;
+res = true;
+
+%------------- END OF CODE --------------

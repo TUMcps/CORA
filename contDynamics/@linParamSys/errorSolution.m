@@ -1,13 +1,13 @@
-function inputSet = errorSolution(obj,V,options)
+function inputSet = errorSolution(obj,options,V)
 % errorSolution - computes the solution due to the linearization error
 %
 % Syntax:  
-%    inputSet = errorSolution(obj,V,options)
+%    inputSet = errorSolution(obj,options,V)
 %
 % Inputs:
 %    obj - linear system object
-%    V - set of linearization errors
 %    options - options struct
+%    V - set of linearization errors
 %
 % Outputs:
 %    inputSet - reachable set due to the linearization error
@@ -24,7 +24,8 @@ function inputSet = errorSolution(obj,V,options)
 % Written:      18-January-2008 
 % Last update:  27-May-2011
 %               25-July-2016 (intervalhull replaced by interval)
-%		01-Noveber-2017 (deletion of zero generatiors added)
+%               01-November-2017 (deletion of zero generators added)
+%               04-May-2020 (reordering of input arguments)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -50,7 +51,7 @@ Vabs=zonotope(interval(-1,1)*supremum(abs(interval(V))));
 inputSet = inputSet + obj.E*r*Vabs;
 
 %delete zero generators in zonotope representation
-inputSet=deleteZeros(inputSet);
+inputSet = deleteZeros(inputSet);
 
 
 %------------- END OF CODE --------------

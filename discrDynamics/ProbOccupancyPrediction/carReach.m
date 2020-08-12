@@ -33,13 +33,13 @@ file=load(fileName);
 fArray=file.fArray;
 
 %load car model
-[HA,options,stateField,inputField,changeSpeed] = modelInitialization(fArray.segLengthOther);
+[HA,options,params,stateField,inputField,changeSpeed] = modelInitialization(fArray.segLengthOther);
 
 %set gamma value (how often inputs change)
 gamma = 0.2;
 
 %set final time and time steps
-finalTime=options.tFinal;
+finalTime=params.tFinal;
 timeSteps=5;
 
 %Initialize Markov Chain
@@ -78,8 +78,8 @@ for iInput=1:totalNrOfInputs
         
         %obtain intial set, sate samples, and inputv samples
         aux=cellZonotopes(stateField,iState);
-        options.R0=aux{1};
-        initialStates=gridPoints(interval(options.R0),5);
+        params.R0=aux{1};
+        initialStates=gridPoints(interval(params.R0),5);
         sampleInputs=gridPoints(interval(uZ),5);
         
         %init finalStateMat
@@ -88,38 +88,43 @@ for iInput=1:totalNrOfInputs
         
         for initIndx=1:length(initialStates(1,:))
             %set initial state for simulation
-            options.x0=initialStates(:,initIndx);
+            params.x0=initialStates(:,initIndx);
             for inputIndx=1:length(sampleInputs(1,:))
                 %set input value
                 for i=1:timeSteps
-                    options.uLocTrans{i}=sampleInputs(:,inputIndx);
-                    options.Uloc{i}=zonotope(0);
+                    params.uLocTrans{i}=sampleInputs(:,inputIndx);
+                    params.Uloc{i}=zonotope(0);
                 end
                 
                 %determine initial location
-                if (sampleInputs(:,inputIndx)>0) && (options.x0(2)<changeSpeed)
-                    options.startLoc=1; %acceleration at slow speed
-                elseif (sampleInputs(:,inputIndx)>0) && (options.x0(2)>=changeSpeed)
-                    options.startLoc=2; %acceleration at high speed                 
+                if (sampleInputs(:,inputIndx)>0) && (params.x0(2)<changeSpeed)
+                    params.startLoc=1; %acceleration at slow speed
+                elseif (sampleInputs(:,inputIndx)>0) && (params.x0(2)>=changeSpeed)
+                    params.startLoc=2; %acceleration at high speed                 
                 else
-                    options.startLoc=4; %deceleartion
+                    params.startLoc=4; %deceleartion
                 end                  
+                
+                traj.t = {}; traj.x = {}; traj.loc = {};
                 
                 %set time steps
                 for iTime=1:timeSteps
                     %set final time
-                    options.tFinal=iTime*finalTime/timeSteps;
+                    params.tFinal=iTime*finalTime/timeSteps;
                     %simulate HA
-                    HA=simulate(HA,options); 
+                    [t,x,loc] = simulate(HA,params); 
+                    traj.t = [traj.t;t];
+                    traj.x = [traj.x;x];
+                    traj.loc = [traj.loc;loc];
                     %get final state
-                    finalState=get(HA,'finalState');
+                    finalState = x{end}(end,:)';
                     %store result for time intervals
-                    finalStateMat.OT(end+1,:)=finalState.x;
+                    finalStateMat.OT(end+1,:)=finalState;
                 end
                 %store result for time points
-                finalStateMat.T(end+1,:)=finalState.x;
+                finalStateMat.T(end+1,:)=finalState;
                 %get trajectory
-                trajectories{initIndx,inputIndx}=get(HA,'trajectory');
+                trajectories{initIndx,inputIndx} = traj;
             end
         end
         

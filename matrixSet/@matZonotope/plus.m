@@ -29,13 +29,13 @@ function matZ = plus(summand1,summand2)
 
 %Find a matrix zonotope object
 %Is summand1 a matrix zonotope?
-if strcmp('matZonotope',class(summand1))
+if isa(summand1,'matZonotope')
     %initialize resulting zonotope
     matZ=summand1;
     %initialize other summand
     summand=summand2;
 %Is summand2 a matrix zonotope?    
-elseif strcmp('matZonotope',class(summand2))
+elseif isa(summand2,'matZonotope')
     %initialize resulting zonotope
     matZ=summand2;
     %initialize other summand
@@ -43,7 +43,7 @@ elseif strcmp('matZonotope',class(summand2))
 end
 
 %Is summand a zonotope?
-if strcmp('matZonotope',class(summand))
+if isa(summand,'matZonotope')
     %Calculate minkowski sum
     matZ.center = matZ.center + summand.center;
     

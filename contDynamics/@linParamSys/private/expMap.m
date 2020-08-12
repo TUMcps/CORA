@@ -39,7 +39,7 @@ dim=length(A{1});
 %load data from object structure
 N=linIntSys.taylor.N;
 %compute middle and delta values
-midN=mid(N);
+midN=center(N);
 deltaN=N-midN;
 
 %generate identity matrix

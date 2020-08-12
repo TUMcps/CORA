@@ -39,10 +39,10 @@ p.x = x0;
 
 %substitute p into the system equation in order to obtain the constant
 %input
-f0 = obj.mFile(0, p.x, p.u, options.timeStep);
+f0 = obj.mFile(p.x, p.u);
 
 %get jacobian matrices
-[A_lin,B_lin] = obj.jacobian(p.x, p.u,options.timeStep);
+[A_lin,B_lin] = obj.jacobian(p.x, p.u);
 
 
 uTrans = f0; %B*Ucenter from linOptions.U not added as the system is linearized around center(U)

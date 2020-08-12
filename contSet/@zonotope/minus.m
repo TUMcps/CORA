@@ -89,8 +89,8 @@ if isa(subtrahend,'zonotope')
                 indices = indices + addIndices;
             end
             % find generators to be removed
-            dim = length(minuend.Z(:,1));
-            requiredRemovals = factorial(gens-1)/(factorial(dim-2)*factorial(gens-dim+1));  %binom(gens-1,dim-2);
+            n = length(minuend.Z(:,1));
+            requiredRemovals = factorial(gens-1)/(factorial(n-2)*factorial(gens-n+1));  %binom(gens-1,dim-2);
             indRemove = (indices == requiredRemovals);
 
             %obtain reduced minuend

@@ -1,59 +1,63 @@
-function plot(varargin)
+function han = plot(obj,varargin)
 % plot - Plots 2-dimensional projection of a halfspace
 %
 % Syntax:  
-%    plot(obj,dimensions,type)
+%    han = plot(obj)
+%    han = plot(obj,dims,type)
 %
 % Inputs:
 %    obj - halfspace object
-%    dimensions - dimensions that should be projected (optional); assume
-%    that other entries of the normal vector are zeros
-%    type - plot type
-%    
+%    dims - (optional) dimensions that should be projected (optional);
+%          assume that other entries of the normal vector are zeros
+%    type - (optional) plot settings (LineSpec and name-value pairs)
 %
 % Outputs:
-%    none
+%    han - handle to the graphics object
 %
 % Example: 
-%    ---
+%    hs = halfspace([1;1],0);
+% 
+%    xlim([-4,4]);
+%    ylim([-4,4]);
+%    plot(hs,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: conHyperplane/plot
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      23-August-2013
-% Last update:  ---
+% Last update:  19-November-2019 (NK, plot area instead of line)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-%If only one argument is passed
-if nargin==1
-    obj=varargin{1};
-    dimensions=[1,2];
-    type='frame';
-    
-%If two arguments are passed    
-elseif nargin==2
-    obj=varargin{1};
-    dimensions=varargin{2};
-    type='frame';
-    
-%If too many arguments are passed
-elseif nargin==3
-    obj=varargin{1};
-    dimensions=varargin{2};   
-    type=varargin{3};
-end
+    % parse input arguments
+    dims = [1,2];
+    type{1} = 'b';
 
-% compute slope
-m = -obj.c(dimensions(1))/obj.c(dimensions(2));
-b = obj.d/obj.c(dimensions(2));
+    if nargin >= 2 && ~isempty(varargin{1})
+        dims = varargin{1};
+    end
 
-%plot reference line
-refline(m,b);
+    if nargin >= 3 && ~isempty(varargin{2})
+        type = varargin(2:end); 
+    end
+    type = [type,'Filled',true];
+
+    % get size of current plot
+    xLim = get(gca,'Xlim');
+    yLim = get(gca,'Ylim');
+
+    % convert to mptPolytope
+    C = [obj.c(dims)';eye(2);-eye(2)];
+    d = [obj.d;xLim(2);yLim(2);-xLim(1);-yLim(1)];
+
+    poly = mptPolytope(C,d);
+
+    % plot mptPolytope
+    han = plot(poly,dims,type{:});
 
 %------------- END OF CODE --------------

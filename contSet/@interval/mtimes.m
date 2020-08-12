@@ -6,9 +6,9 @@ function res = mtimes(factor1,factor2)
 %
 % Inputs:
 %    factor1 - interval (for computational efficiency, no single value
-%    considered; does not require type checking)
+%              considered; does not require type checking)
 %    factor2 - interval (for computational efficiency, no single value
-%    considered; does not require type checking)
+%              considered; does not require type checking)
 %
 % Outputs:
 %    res - interval
@@ -25,13 +25,13 @@ function res = mtimes(factor1,factor2)
 % Written:      19-June-2015
 % Last update:  25-June-2015
 %               18-November-2015
-%               01-February-2016, Dmitry Grebenyuk. Fixed a matrix case.
-%               27-February-2016 New matrix case (Dmitry Grebenyuk)
-%               21-July-2016 case that factor1 is a scalar interval and
-%               factor 2 is numeric added (Matthias Althoff)
-%               22-July-2016 case that factor1 is numeric has been added (Matthias Althoff)
-%               26-July-2016 multiplication with zonotope added
-%               05-August-2016 simplified some cases; matrix case corrected
+%               01-February-2016 (DG, Fixed a matrix case)
+%               27-February-2016(DG, New matrix case)
+%               21-July-2016 (MA, case that factor1 is a scalar interval
+%                                 and factor 2 is numeric added)
+%               22-July-2016 (MA, case that factor1 is numeric has been added)
+%               26-July-2016 (multiplication with zonotope added)
+%               05-August-2016 (simplified some cases; matrix case corrected)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -40,6 +40,10 @@ function res = mtimes(factor1,factor2)
 if isa(factor1,'interval') && ~isa(factor2,'interval')
     if isa(factor2,'zonotope')
        res = intervalMultiplication(factor2,factor1);
+       return;
+    elseif isa(factor2,'polyZonotope') || isa(factor2,'zonoBundle')
+       factor1 = intervalMatrix(center(factor1),rad(factor1));
+       res = mtimes(factor1,factor2);
        return;
     end
 end
@@ -56,7 +60,8 @@ if isscalar(factor1) && isscalar(factor2)
         possibleValues = [factor1.inf*factor2, factor1.sup*factor2];
     else
         res = factor1;
-        possibleValues = [factor1.inf*factor2.inf, factor1.inf*factor2.sup, factor1.sup*factor2.inf, factor1.sup*factor2.sup];
+        possibleValues = [factor1.inf*factor2.inf, factor1.inf*factor2.sup, ...
+            factor1.sup*factor2.inf, factor1.sup*factor2.sup];
     end
     
     %infimum
@@ -129,60 +134,47 @@ elseif isa(factor1, 'interval') && ~isa(factor2, 'interval')
 
 elseif ~isa(factor1, 'interval') && isa(factor2, 'interval')
     I1 = factor2.inf;
-     S1 = factor2.sup;
- 
-     [m1, n1] = size(I1);
-     [m, n] = size(factor1);
-     A = interval();
- 
-     for i = 1:m
-         %A.inf = repmat(I1(i, :),n1, 1);
-         %A.sup = repmat(S1(i, :),n1, 1);
-         factor1_1 = repmat(factor1(i, :), n1, 1)';
-         
-         B = factor1_1 .* factor2;
-         Binf(i, :) = sum(B.inf, 1);
-         Bsup(i, :) = sum(B.sup, 1);
-     end
-     B.inf = Binf;
-     B.sup = Bsup;
- 
-     res = B;
+    S1 = factor2.sup;
+
+    [m1, n1] = size(I1);
+    [m, n] = size(factor1);
+    A = interval();
+
+    for i = 1:m
+%         A.inf = repmat(I1(i, :),n1, 1);
+%         A.sup = repmat(S1(i, :),n1, 1);
+        factor1_1 = repmat(factor1(i, :), n1, 1)';
+
+        B = factor1_1 .* factor2;
+        Binf(i, :) = sum(B.inf, 1);
+        Bsup(i, :) = sum(B.sup, 1);
+    end
+    B.inf = Binf;
+    B.sup = Bsup;
+
+    res = B;
 
 % matrix case [int] * [int]
 else
-
-    % rand(100, 100)
-    % Old time
-    %time_CORA =
-    %   0.301814324889010
-    %time_INTLAB =
-    %    6.311827986700556e-004
-    % New time
-    %time_CORA =
-    %   0.064974225715548
-    %time_INTLAB =
-    %   0.040096974783083
     
+    I1 = factor1.inf;
+    S1 = factor1.sup;
 
-     I1 = factor1.inf;
-     S1 = factor1.sup;
- 
-     [m, n] = size(I1);
-     [m1, n1] = size(factor2.inf);
-     A = interval();
- 
-     for i = 1:m
-         A.inf = repmat(I1(i, :),n1, 1)';
-         A.sup = repmat(S1(i, :),n1, 1)';
-         B = A .* factor2;
-         Binf(i, :) = sum(B.inf, 1);
-         Bsup(i, :) = sum(B.sup, 1);
-     end
-     B.inf = Binf;
-     B.sup = Bsup;
- 
-     res = B;
+    [m, n] = size(I1);
+    [m1, n1] = size(factor2.inf);
+    A = interval();
+
+    for i = 1:m
+        A.inf = repmat(I1(i, :),n1, 1)';
+        A.sup = repmat(S1(i, :),n1, 1)';
+        B = A .* factor2;
+        Binf(i, :) = sum(B.inf, 1);
+        Bsup(i, :) = sum(B.sup, 1);
+    end
+    B.inf = Binf;
+    B.sup = Bsup;
+
+    res = B;
 
 end
 

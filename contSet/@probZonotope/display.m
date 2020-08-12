@@ -1,11 +1,11 @@
-function display(obj)
-% display - Displays the center and generators of a zonotope
+function display(probZ)
+% display - Displays information about a probabilistic zonotope
 %
 % Syntax:  
-%    display(obj)
+%    display(probZ)
 %
 % Inputs:
-%    obj - probabilistic zonotope object
+%    probZ - probabilistic zonotope object
 %
 % Outputs:
 %    ---
@@ -18,31 +18,36 @@ function display(obj)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 03-August-2007 
-% Last update: 26-February-2008
+% Author:        Matthias Althoff
+% Written:       03-August-2007 
+% Last update:   26-February-2008
+%                09-June-2020 (MW, update formatting of output)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
+
 %display id, dimension
-display(obj.contSet);
+display(probZ.contSet);
+fprintf(newline);
 
 %display center
-disp('c: ');
-disp(obj.Z(:,1));
+disp('center: ');
+disp(center(probZ));
+
+maxGens = 10;
 
 %display interval generators
-disp('interval g_i: ');
-disp(obj.Z(:,2:end)); 
+displayGenerators(probZ.Z(:,2:end),maxGens,'interval generators');
 
 %display probabilistic generators
-disp('probabilistic g_i: ');
-disp(obj.g); 
-
+displayGenerators(probZ.g,maxGens,'probabilistic generators');
 
 %display covariance matrix:
 disp('covariance matrix: ');
-disp(obj.cov);
+disp(probZ.cov);
 
 %------------- END OF CODE --------------

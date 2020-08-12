@@ -1,6 +1,10 @@
 function res = atan(intVal)
 % atan - Overloaded 'atan()' operator for intervals
 %
+% x_ is x infimum, x-- is x supremum
+%
+% [atan(x_), atan(x--)].
+%
 % Syntax:  
 %    res = atan(intVal)
 %
@@ -20,12 +24,8 @@ function res = atan(intVal)
 
 % Author:       Matthias Althoff
 % Written:      05-February-2016
-% Last update:  21-February-2016 the matrix case is rewritten  (Dmitry Grebenyuk)
+% Last update:  21-February-2016 (DG, the matrix case is rewritten)
 % Last revision:---
-
-% x_ is x infimum, x-- is x supremum
-
-% [atan(x_), atan(x--)].
 
 %------------- BEGIN CODE --------------
 
@@ -33,12 +33,5 @@ res = interval();
 
 res.inf = atan(intVal.inf);
 res.sup = atan(intVal.sup);
-
-% matrix case
-% rand(100, 100)
-%time_CORA =
-%    3.998627914054368e-004
-%time_INTLAB =
-%   0.004031745868841
 
 %------------- END OF CODE --------------

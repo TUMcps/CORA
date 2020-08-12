@@ -1,18 +1,25 @@
-function [eP] = enclosingProbability(pZ,m,dimensions)
+function eP = enclosingProbability(probZ,m,dimensions)
 % enclosingProbability - Computes the enclosing probability of a 
-% probabilistic zonotope
+%    probabilistic zonotope
 %
 % Syntax:  
-%    [eP] = enclosingProbability(pZ,m)
+%    eP = enclosingProbability(probZ,m)
 %
 % Inputs:
-%    pZ - probabilistic zonotope object
-%    m  - m of the mSigma operator
+%    probZ - probabilistic zonotope object
+%    m - m of the mSigma operator
+%    dimensions - dimensions on which probability is computed
 %
 % Outputs:
 %    eP - enclosing probability
 %
-% Example: 
+% Example:
+%    Z1 = [10 1 -2; 0 1 1];
+%    Z2 = [0.6 1.2; 0.6 -1.2];
+%    probZ = probZonotope(Z1,Z2,2);
+%    m = 2;
+%    dimensions = [1,2];
+%    eP = enclosingProbability(probZ,m,dimensions)
 %
 % Other m-files required: vertices, polytope
 % Subfunctions: none
@@ -33,7 +40,7 @@ function [eP] = enclosingProbability(pZ,m,dimensions)
 gridpoints=20;
 
 %get Sigma 
-origSigma=sigma(pZ);
+origSigma=sigma(probZ);
 %project sigma
 Sigma(1,1)=origSigma(dimensions(1),dimensions(1));
 Sigma(1,2)=origSigma(dimensions(1),dimensions(2));
@@ -41,10 +48,10 @@ Sigma(2,1)=origSigma(dimensions(2),dimensions(1));
 Sigma(2,2)=origSigma(dimensions(2),dimensions(2));
 
 %determine mesh size by n-sigma hyperbox
-Z=zonotope(pZ,m);
-IH=interval(Z);
-inf=infimum(IH);
-sup=supremum(IH);
+Z=zonotope(probZ,m);
+Int=interval(Z);
+inf=infimum(Int);
+sup=supremum(Int);
 x=linspace(inf(dimensions(1)),sup(dimensions(1)),gridpoints);
 y=linspace(inf(dimensions(2)),sup(dimensions(2)),gridpoints);
 
@@ -55,13 +62,13 @@ yVector=y(ind(:,2));
 prob=0*xVector;
 
 %check if center of probabilistic zonotope is uncertain
-c=pZ.Z(:,1);
-G=pZ.Z(:,2:end);
+c=center(probZ);
+G=probZ.Z(:,2:end);
 if isempty(G)
     prob=gaussian([xVector-c(1);yVector-c(2)],Sigma); 
 else
     %get uncertain mean
-    Z=zonotope(pZ.Z);
+    Z=zonotope(probZ.Z);
     %Compute potential vertices
     V=vertices(Z);
     %Extract projected dimensions

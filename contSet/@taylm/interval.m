@@ -13,6 +13,7 @@ function int = interval(obj,varargin)
 %             'bnbAdv': branch and bound with re-expansion of taylor models
 %             'linQuad': optimization with Linear Dominated Bounder (LDB)
 %                        and Quadratic Fast Bounder (QFB) 
+%             'bernstein': conversion to a bernstein polynomial
 %
 % Outputs:
 %    int - interval overapproximating the taylm (class interval)
@@ -54,6 +55,8 @@ function int = interval(obj,varargin)
     % calculate the bounding interval
     if strcmp(option, 'int')
         int = arrayfun(@(a) s_tayl2int(a), obj, 'UniformOutput', 0);
+    elseif strcmp(option, 'bernstein')
+        int = arrayfun(@(a) optBernstein(a), obj, 'UniformOutput', 0);
     elseif strcmp(option, 'bnb')
         int = arrayfun(@(a) optBnb(a), obj, 'UniformOutput', 0);
     elseif strcmp(option, 'bnbAdv')
@@ -83,7 +86,6 @@ function int = s_tayl2int(obj)
         end
         int = int + evalInt(temp) * obj.coefficients(i);
     end
-
 end
 
 function int = intPower(exponent)
@@ -95,7 +97,6 @@ function int = intPower(exponent)
     else
         int = 3;            % interval(-1,1)
     end
-    
 end
 
 function int = intMul(factor1,factor2)
@@ -111,7 +112,6 @@ function int = intMul(factor1,factor2)
     else
         int = 3;      % [-1,1] * [0,1] = [-1,1]
     end
-    
 end
 
 function int = evalInt(obj)
@@ -123,7 +123,6 @@ function int = evalInt(obj)
     else
         int = interval(-1,1);
     end
-
 end
 
 %------------ END OF CODE ------------ 

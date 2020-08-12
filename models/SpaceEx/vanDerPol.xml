@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="core_component">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="u1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="mu" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <location id="1" name="Model" x="422.0" y="138.0" width="366.0" height="112.0">
+      <flow>x1' == x2 &amp; x2' == mu*(1-x1^2)*x2-x1+u1</flow>
+    </location>
+  </component>
+  <component id="sys">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="u1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <bind component="core_component" as="model" x="375.0" y="203.0">
+      <map key="x1">x1</map>
+      <map key="x2">x2</map>
+      <map key="mu">1</map>
+      <map key="u1">u1</map>
+    </bind>
+  </component>
+</sspaceex>
+

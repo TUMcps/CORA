@@ -1,6 +1,7 @@
 function coordinateMat = gridPoints(obj,segments)
-% gridPoints - Computes grid points of an interval; the points are
-% generated in a way, such that a continuous space is uniformly partitioned.
+% gridPoints - Computes grid points of an interval;
+%    the points are generated in a way,
+%    such that a continuous space is uniformly partitioned.
 %
 % Syntax:  
 %    coordinateMat = gridPoints(obj,segments)
@@ -37,9 +38,9 @@ startingPoint = obj.inf(:,1) + 0.5*segLengthVec;
 coordinateMat = startingPoint;
 
 %obtain segment combinations
-dim = length(obj.inf(:,1));
+n = length(obj.inf(:,1));
 if isscalar(segments)
-    comb = full_fact_mod(ones(dim,1)*segments);
+    comb = full_fact_mod(ones(n,1)*segments);
 else
     comb = full_fact_mod(segments);
 end

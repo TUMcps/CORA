@@ -31,29 +31,27 @@ function [Zred]=reduceMethB(Z,order,filterLength)
 Zred=Z;
 
 % pick generators to reduce
-[center, Gunred, Gred] = pickedGenerators(Z,order);
+[c, Gunred, Gred] = pickedGenerators(Z,order);
 
 if ~isempty(Gred)
-    %Delete zero-generators
-    G=nonzeroFilter(Gred);
 
     %determine filter length
-    if filterLength(1)>length(G(1,:))
-        filterLength(1)=length(G(1,:));
+    if filterLength(1)>length(Gred(1,:))
+        filterLength(1)=length(Gred(1,:));
     end
 
     %length filter
-    G=lengthFilter(G,filterLength(1));
+    Gfiltered=lengthFilter(Gred,filterLength(1));
 
     %reorder generators
-    Gcells=reorderingFilter(G);
+    Gcells=reorderingFilter(Gfiltered);
 
     %pick generator with the best volume
     Gtemp=volumeFilter(Gcells,Z);
     Gpicked=Gtemp{1};
 
     %Build transformation matrix P
-    for i=1:length(center)
+    for i=1:length(c)
         P(:,i)=Gpicked(:,i);
     end
     
@@ -68,7 +66,7 @@ if ~isempty(Gred)
 end
 
 %build reduced zonotope
-Zred.Z=[center,Gunred,Gred];
+Zred.Z=[c,Gunred,Gred];
 
 
 %------------- END OF CODE --------------

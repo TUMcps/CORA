@@ -1,4 +1,4 @@
-function [HA,options,stateField,inputField,changeSpeed]=initCar_unitTest(segLength)
+function [HA,options,params,stateField,inputField,changeSpeed]=initCar_unitTest(segLength)
 % initCar - initializes a car model for the abstraction to a Markov chain
 %
 % Syntax:  
@@ -10,6 +10,7 @@ function [HA,options,stateField,inputField,changeSpeed]=initCar_unitTest(segLeng
 % Outputs:
 %    HA - hybrid automaton object of the car
 %    options - options structure for the simulation of the car
+%    params - parameter structure for the simulation of the car
 %    stateField - partition object of the state space
 %    inputField - partition object of the input space
 %    changeSpeed - speed from which the acceleration is bounded by engine
@@ -29,33 +30,31 @@ function [HA,options,stateField,inputField,changeSpeed]=initCar_unitTest(segLeng
 
 
 %set options---------------------------------------------------------------
-options.tStart = 0; %start time
-options.tFinal = 0.5; %final time
-options.startLoc = 1; %initial location
-options.finalLoc = 0; %final location
+%options.tStart = 0; %start time
+params.tFinal = 0.5; %final time
+params.startLoc = 1; %initial location
+%options.finalLoc = 0; %final location
 options.timeStep = 0.05; %time step size for reachable set computation
 options.taylorTerms = 4; %number of taylor terms for reachable sets
 options.zonotopeOrder = 10; %zonotope order
-options.polytopeOrder = 6; %polytope order
+%options.polytopeOrder = 6; %polytope order
 options.tensorOrder = 2;
-options.projectedDimensions = [1 2];
-options.reductionInterval = 1e3;
+%options.projectedDimensions = [1 2];
+%options.reductionInterval = 1e3;
 options.reductionTechnique = 'girard';
-options.advancedLinErrorComp = 0;
-options.maxError = [1;1];
-options.isHyperplaneMap = 0;
-options.originContained = 0;
-options.enclosureEnables = [3, 5];
+options.alg = 'lin';
+%options.maxError = [1;1];
+options.enclose = {'box','pca'};
 options.target = 'vehicleDynamics';
 options.guardIntersect = 'polytope';
 %--------------------------------------------------------------------------
 
 %specify continuous dynamics-----------------------------------------------
 accSlow=linearSys('accEidSlow',[0 1;0 0],[0;7]); %acceleration
-accFast=nonlinearSys(2,1,@accSysEidFast,options); %acceleration
+accFast=nonlinearSys(@accSysEidFast); %acceleration
 dec=linearSys('decEid',[0 1;0 0],[0;7]); %deceleration
 sL=linearSys('sL',[0 1;0 0],[0;0]); %speed limit
-sS=zeroDynSys('sS',2); %standstill
+sS=linearSys('sS',[0 0;0 0],[0;0]); %standstill
 %--------------------------------------------------------------------------
 
 %specify transitions-------------------------------------------------------
@@ -79,20 +78,20 @@ ImaxSpeed = interval([0; maxSpeed-eps], [dist; maxSpeed]);
 IaccChange = interval([0; changeSpeed], [dist; changeSpeed+eps]); 
 
 %specify transitions
-tran1{1}=transition(IaccChange,reset,2,'a','b'); 
-tran2{1}=transition(ImaxSpeed,reset,3,'a','b'); 
+tran1{1}=transition(IaccChange,reset,2); 
+tran2{1}=transition(ImaxSpeed,reset,3); 
 tran3=[]; 
-tran4{1}=transition(Istop,reset,5,'a','b');
+tran4{1}=transition(Istop,reset,5);
 tran5=[];
 
 %--------------------------------------------------------------------------
 
 %specify locations              
-loc{1}=location('accSlow',1,inv,tran1,accSlow);
-loc{2}=location('accFast',2,inv,tran2,accFast);
-loc{3}=location('sL',3,inv,tran3,sL);
-loc{4}=location('dec',4,inv,tran4,dec);
-loc{5}=location('sS',5,inv,tran5,sS);
+loc{1}=location('accSlow',inv,tran1,accSlow);
+loc{2}=location('accFast',inv,tran2,accFast);
+loc{3}=location('sL',inv,tran3,sL);
+loc{4}=location('dec',inv,tran4,dec);
+loc{5}=location('sS',inv,tran5,sS);
 
 
 %specify hybrid automaton

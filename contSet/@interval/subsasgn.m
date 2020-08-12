@@ -1,6 +1,6 @@
 function obj = subsasgn(obj, S, value)
 % subsasgn - Overloads the opertor that writes elements, e.g. I(1,2)=value,
-% where the element of the first row and second column is referred to.
+%    where the element of the first row and second column is referred to.
 %
 % Syntax:  
 %    obj = subsasgn(obj, S, value)

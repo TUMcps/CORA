@@ -1,21 +1,26 @@
-function [obj,t,z,index] = simulate(obj,opt,tstart,tfinal,x0,options)
+function [t,z,ind] = simulate(obj,params,varargin)
 % simulate - simulates the system within a location
 %
 % Syntax:  
-%    [t,x,index] = simulate(obj,tstart,tfinal,x0,options)
+%    [t,z] = simulate(obj,params)
+%    [t,z,ind] = simulate(obj,params,options)
 %
 % Inputs:
-%    obj - linearSys object
-%    tstart - start time
-%    tfinal - final time
-%    z0 - initial state of dynamic and algebraic state variables
-%    options - contains, e.g. the events when a guard is hit
+%    obj - nonlinDASys object
+%    params - struct containing the parameters for the simulation
+%       .tStart: initial time
+%       .tFinal: final time
+%       .x0: initial point
+%       .y0guess: 
+%       .u: piecewise constant input signal u(t) specified as a matrix
+%           for which the number of rows is identical to the number of
+%           system input
+%    options - ODE45 options (for hybrid systems)
 %
 % Outputs:
-%    obj - linearSys object
 %    t - time vector
-%    x - state vector
-%    index - returns the event which has been detected
+%    z - state vector (dynamic and algebraic state variables)
+%    ind - returns the event which has been detected
 %
 % Example: 
 %
@@ -29,35 +34,44 @@ function [obj,t,z,index] = simulate(obj,opt,tstart,tfinal,x0,options)
 % Written:      03-May-2007 
 % Last update:  12-March-2008
 %               19-August-2016
+%               08-May-2020 (MW, update interface)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-%specify mass matrix
+% specify mass matrix
 M = diag([ones(1,obj.dim),zeros(1,obj.nrOfConstraints)]);
 
-%add mass matrix to the options struct
-options = odeset(options, 'Mass', M, 'MStateDependence', 'none');
+% add mass matrix to the options struct
+if nargin > 2
+   options = varargin{1}; 
+   options = odeset(options, 'Mass', M, 'MStateDependence', 'none');
+else
+   options = odeset('Mass', M, 'MStateDependence', 'none');
+end
 options = odeset(options,'RelTol',1e-7,'AbsTol',1e-10,'NormControl','on');
 
-if length(x0) == (obj.dim + obj.nrOfConstraints) % initial state is combination of dynamic and algebraic state variables
-    z0 = x0;
+% initial state is combination of dynamic and algebraic state variables
+if length(params.x0) == (obj.dim + obj.nrOfConstraints)
+    z0 = params.x0;
 else
     %extract dynamic and algebraic initial state, as well as the input
-    y0 = opt.y0guess;
-    %ensure consisten initial state
-    y0 = consistentInitialState(obj, x0, y0, opt.u);
+    y0 = params.y0guess;
+    %ensure consistent initial state
+    y0 = consistentInitialState(obj, params.x0, y0, params.u);
     %update combined initial state
-    z0 = [x0;y0];
+    z0 = [params.x0;y0];
 end
 
 try
-    [t,z,te,xe,index] = ode15s(getfcn(obj,opt),[tstart, tfinal],z0,options);
-    %[t,z,te,xe,index] = ode23tb(getfcn(obj,opt),[tstart, tfinal],z0,options);
+    [t,z,~,~,ind] = ode15s(getfcn(obj,params),...
+        [params.tStart,params.tFinal],z0,options);
+    %[t,z,te,xe,index] = ode23tb(getfcn(obj,params),...
+    %   [params.tStart,params.tFinal],z0,options);
 catch
-    [t,z] = ode15s(getfcn(obj,opt),[tstart, tfinal],z0,options);
-    %[t,z] = ode23tb(getfcn(obj,opt),[tstart, tfinal],z0,options);
-    index=[];
+    [t,z] = ode15s(getfcn(obj,params),[params.tStart,params.tFinal],z0,options);
+    %[t,z] = ode23tb(getfcn(obj,params),[params.tStart,params.tFinal],z0,options);
+    ind=[];
 end
 
 %------------- END OF CODE --------------

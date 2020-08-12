@@ -34,25 +34,27 @@ function [Zred]=reduceConstOpt(Z,order, method, alg)
 Zred=Z;
 
 % pick generators to reduce
-[center, Gunred, Gred] = pickedGenerators(Z,order);
+[cen, Gunred, Gred] = pickedGenerators(Z,order);
 
 if ~isempty(Gred)
 
-    % get Z-matrix, center cen, generator matrix G, dimension dim from zonotope
+    % obtain center cen, generator matrix G, dimension dim from zonotope
     % Z, number of generators nrG, desNrGen = desired number of generators
-    Zmatrix=get(Z,'Z');
-    cen=Zmatrix(:,1);
-    G=Zmatrix(:,2:end);
+    cen=center(Z);
+    G=generators(Z);
     dim=length(cen);
 
     % Initialize the transformation matrix C0 (overapproximation using PCA)
     Zred = reducePCA(Z,1);
     C0 = generators(Zred);
     %C0=pcaInit(G);
-    C = C0;
+%     C = C0;
 
     % Nonlinear constraints, fmincon with more iterations 
-    options = optimoptions(@fmincon,'Algorithm', alg, 'MaxIterations',5000, 'MaxFunctionEvaluations', 100000, 'Display', 'off');
+    options = optimoptions(@fmincon,'Algorithm', alg,...
+        'MaxIterations',5000,...
+        'MaxFunctionEvaluations',100000,...
+        'Display','off');
 
 
     if strcmp(method, 'det')
@@ -80,30 +82,30 @@ if ~isempty(Gred)
 end
 
 %build reduced zonotope
-Zred.Z=[center,Gunred,Gred];
+Zred.Z=[cen,Gunred,Gred];
 
 
 
 function vol=svdLogVol(X, G)
 
-dim = size(G,1);
-Y = reshape(X, dim, 3*dim);
-S = Y(:,(dim+1):2*dim);
+n = size(G,1);
+Y = reshape(X, n, 3*n);
+S = Y(:,(n+1):2*n);
 
 vol = sum(log(diag(abs(S)))); % log(diag(abs(S))) can be < 0
 
 
 function [c, ceq]=zonoSVDConst(X, G)
 
-dim = size(G,1);
-Y = reshape(X, dim, 3*dim);
-U = Y(:,1:dim);
-S = Y(:,(dim+1):2*dim);
-V = Y(:,(2*dim+1):3*dim);
+n = size(G,1);
+Y = reshape(X, n, 3*n);
+U = Y(:,1:n);
+S = Y(:,(n+1):2*n);
+V = Y(:,(2*n+1):3*n);
 
 
 C_inv = V * diag(diag(1 ./S)) * U'; 
-c = sum(abs(C_inv * G), 2) - ones(dim,1);
-ceq = [U*U' - diag(ones(1,dim)); V*V' - diag(ones(1,dim))];
+c = sum(abs(C_inv * G), 2) - ones(n,1);
+ceq = [U*U' - diag(ones(1,n)); V*V' - diag(ones(1,n))];
 
 %-------------------- END CODE --------------------

@@ -3,16 +3,27 @@ function [eI, iPow, E] = expm(varargin)
 % interval matrix, evaluated dependently
 %
 % Syntax:  
-%    eI = expmInd(intMat,maxOrder)
+%    eI = expm(intMat)
+%    eI = expm(intMat,maxOrder)
+%    [eI, iPow, E] = expm(intMat,r,maxOrder)
 %
 % Inputs:
 %    intMat - interval matrix
 %    maxOrder - maximum Taylor series order until remainder is computed
+%    r - time step size
 %
 % Outputs:
 %    eI - interval matrix exponential
+%    iPow - cell array storing the powers of the matrix:
+%           A,A^2,...,A^(intermediateOrder)
+%    E - interval matrix for the remainder
 %
 % Example: 
+%    C = [0 1;0 -2.5];
+%    D = [0 0;0 0.5];
+%    intMat = intervalMatrix(C,D);
+%
+%    eI = expm(intMat)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,7 +39,36 @@ function [eI, iPow, E] = expm(varargin)
 
 %------------- BEGIN CODE --------------
 
-if nargin==3
+if nargin == 1
+    
+    intMat = varargin{1};
+    maxOrder = 10;
+    
+    %compute exact terms
+    [sq,H] = dependentTerms(intMat,1);
+    
+    initialOrder = 2;
+    initialPower = sq;
+    
+    %init eI
+    eI = H;
+
+elseif nargin == 2
+    
+    intMat = varargin{1};
+    maxOrder = varargin{2};
+    
+    %compute exact terms
+    [sq,H] = dependentTerms(intMat,1);
+    
+    initialOrder = 2;
+    initialPower = sq;
+    
+    %init eI
+    eI = H;
+    
+
+elseif nargin==3
     intMat = varargin{1};
     r = varargin{2};
     maxOrder = varargin{3};

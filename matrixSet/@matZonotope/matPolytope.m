@@ -26,11 +26,10 @@ function matP = matPolytope(matZ)
 
 %------------- BEGIN CODE --------------
 
-%convert matrix zonotope to a zonotope
-Z=zonotope(matZ);
+% obtain vertices
+V=vertices(zonotope(matZ));
 
 %obtain vertices
-V=get(vertices(Z),'V');
 for i=1:length(V(1,:))
     matrixVertex{i}=vec2mat(V(:,i));
 end

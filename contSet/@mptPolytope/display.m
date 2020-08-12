@@ -21,12 +21,17 @@ function display(obj)
 
 % Author:       Matthias Althoff
 % Written:      01-February-2011
-% Last update:  ---
+% Last update:  09-June-2020 (MW, add variable name)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
+
 %display mpt polytope
 display(obj.P); 
+fprintf(newline);
 
 %------------- END OF CODE --------------

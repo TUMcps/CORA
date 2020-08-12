@@ -1,5 +1,5 @@
 function res = subsref(obj, S)
-% subsref - Overloads the opertor that selects elements, e.g. T(1,2),
+% subsref - Overloads the operator that selects elements, e.g. T(1,2),
 % where the element of the first row and second column is referred to.
 %
 % Syntax:  

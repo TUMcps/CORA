@@ -1,15 +1,19 @@
-function obj = enclose(obj,P)
-% enclose - computes the convex hull of two mptPolytopes
+function obj = enclose(varargin)
+% enclose - Generates a polytope that encloses a polytope and its linear 
+%           transformation
 %
 % Syntax:  
-%    obj = enclose(obj,P)
+%    P = enclose(P1,P2)
+%    P = enclose(P1,M,Pplus)
 %
 % Inputs:
-%    obj - mptPolytope object
-%    P - mptPolytope object
+%    P1 - first polytope object
+%    P2 - second polytope object, satisfying P2 = (M * P1) + Pplus
+%    M - matrix for the linear transformation
+%    Pplus - polytope object added to the linear transformation
 %
 % Outputs:
-%   obj - mptPolytope object
+%    obj - polytope that encloses P1 and P2
 %
 % Example: 
 %    ---
@@ -18,7 +22,7 @@ function obj = enclose(obj,P)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: zonotope/enclose
 
 % Author:       Matthias Althoff
 % Written:      02-February-2011
@@ -27,6 +31,19 @@ function obj = enclose(obj,P)
 
 %------------- BEGIN CODE --------------
 
+% parse input arguments
+if nargin == 2
+    obj = varargin{1};
+    P = varargin{2};
+else
+    obj = varargin{1};
+    M = varargin{2};
+    Pplus = varargin{3};
+    
+    P = (M*obj) + Pplus;
+end
+
+% call MPT-toolbox method to over-approximate with convex hull
 try %MPT3
     obj.P = convexHull(obj.P, P.P);
 catch %MPT2

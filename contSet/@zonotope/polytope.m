@@ -1,11 +1,6 @@
 function [P,comb,isDeg] = polytope(Z, varargin)
 % polytope - Converts a zonotope from a G- to a H-representation
-%
-% This function is implemented based on Theorem 7 of
-%
-% Althoff, M.; Stursberg, O. & Buss, M. Computing Reachable Sets of Hybrid 
-% Systems Using a Combination of Zonotopes and Polytopes Nonlinear 
-% Analysis: Hybrid Systems, 2010, 4, 233-249
+%    This function is implemented based on Theorem 7 of [1].
 %
 % Syntax:  
 %    [P,comb,isDeg] = polytope(Z)
@@ -32,6 +27,11 @@ function [P,comb,isDeg] = polytope(Z, varargin)
 %    hold on
 %    plot(zono,[1,2],'b');
 %
+% References:
+%   [1] Althoff, M.; Stursberg, O. & Buss, M. Computing Reachable Sets
+%       of Hybrid  Systems Using a Combination of Zonotopes and Polytopes
+%       Nonlinear Analysis: Hybrid Systems, 2010, 4, 233-249
+% 
 % Other m-files required: vertices, polytope
 % Subfunctions: none
 % MAT-files required: none
@@ -70,15 +70,15 @@ end
 Z = deleteZeros(Z);
 c = center(Z);
 G = generators(Z);
-[dim,nrGen] = size(G);
+[n,nrGen] = size(G);
 
 isDeg = 0;
 
-if nrGen >= dim
+if nrGen >= n
     
-    if dim > 1
+    if n > 1
         % get number of possible facets
-        comb = combinator(nrGen,dim-1,'c');
+        comb = combinator(nrGen,n-1,'c');
 
         % build C matrices for inequality constraint C*x < d
         C=[];
@@ -115,7 +115,8 @@ if nrGen >= dim
     % catch the case where the zonotope is not full-dimensional
     temp = min([sum(abs(C - C(1,:)),2),sum(abs(C + C(1,:)),2)],[],2);
     
-    if isempty(C) || all(all(isnan(C))) || all(temp < 1e-12) || any(max(abs(C),[],1) < 1e-12)
+    if n > 1 && (isempty(C) || all(all(isnan(C))) || ...
+                   all(temp < 1e-12) || any(max(abs(C),[],1) < 1e-12))
         
         % singluar value decomposition
         [S,V,~] = svd(G);
@@ -148,7 +149,7 @@ if nrGen >= dim
 elseif nrGen == 0
     
     % generate equality constraint for the center vector
-    E = eye(dim);
+    E = eye(n);
     d_ = E * c;
     C = [E;-E];
     d = [d_;-d_];    
@@ -159,7 +160,7 @@ else
     
     % singluar value decomposition
     [S,V,~] = svd(G);
-    V = [V,zeros(dim,dim-nrGen)];
+    V = [V,zeros(n,n-nrGen)];
 
     % state space transformation
     Z_ = S'*[c,G];
@@ -185,14 +186,12 @@ else
     end
 end
 
-
-
-
 % convert to mpt or ppl Polytope
 if isfield(options,'polytopeType') && strcmp(options.polytopeType,'ppl')
     P = pplPolytope(C,d);
 else
     P = mptPolytope(C,d);
+    P = removeRedundancies(P,'aligned');
 end
 
 

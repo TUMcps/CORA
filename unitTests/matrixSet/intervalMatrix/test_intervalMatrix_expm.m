@@ -1,6 +1,6 @@
 function res = test_intervalMatrix_expm
 % test_intervalMatrix_expm - unit test function of computing the
-% exponential matrix
+%    exponential matrix
 % 
 % Syntax:  
 %    res = test_intervalMatrix_expm
@@ -75,5 +75,14 @@ end
 
 %result of all enclosure checks
 res = all(res);
+
+% save results if test failed
+if res == 0
+     file_name = strcat('test_intervalMatrix_expm_', ...
+                             datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+     file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
+     save(file_path, 'eM');
+end
 
 %------------- END OF CODE --------------

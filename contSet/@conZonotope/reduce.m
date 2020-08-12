@@ -1,8 +1,9 @@
-function res = reduce(obj,method,orderG,orderC,varargin)
+function res = reduce(obj,method,orderG,varargin)
 % reduce - reduce the number of constraints and the number of generators of
 %          a constrained zonotope object
 %
 % Syntax:  
+%    res = reduce(obj.method,orderG)
 %    res = reduce(obj,method,orderG,orderC)
 %    res = reduce(obj,method,orderG,orderC,redOptions)
 %    res = reduce(obj,'redConstr')
@@ -55,13 +56,18 @@ function res = reduce(obj,method,orderG,orderC,varargin)
 % reference paper [1]
 
 % parse input arguments
+orderC = [];
+if nargin >= 4
+   orderC = varargin{1}; 
+end
+
 redOptions = {[]};
 if nargin >= 5
-   redOptions = varargin;
+   redOptions = varargin(2:end);
 end
 
 % rescale the constrained zonotope
-if ~isempty(obj.A)
+if ~isempty(obj.A) && ~isempty(orderC)
     obj = rescale(obj,'iter');
 end
 
@@ -73,7 +79,9 @@ if strcmp(method,'redConstr')
     res = redConRed(obj);
 else
     % reduce the number of constraints
-    obj = conRed(obj,orderC);
+    if ~isempty(orderC)
+        obj = conRed(obj,orderC);
+    end
 
     % reduce the number of generators
     res = genRed(obj,method,orderG,redOptions);
@@ -117,7 +125,7 @@ function res = genRed(obj,method,order,redOptions)
 
         % reduce the lift-up zonotope with convential zonotope reduction technique
         zRed = reduce(zonotope(obj.Z),method,order,redOptions{:});
-        obj.Z = get(zRed,'Z');   
+        obj.Z = zRed.Z;   
     end
 
     % output

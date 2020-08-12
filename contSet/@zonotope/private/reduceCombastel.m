@@ -20,8 +20,8 @@ function [Zred]=reduceCombastel(Z,order)
 
 % Author:       Matthias Althoff
 % Written:      13-May-2009
-% Last update:  ---
-%               ---
+% Last update:  16-March-2019 (vnorm replaced, sort removed)
+%               27-Aug-2019
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -29,23 +29,21 @@ function [Zred]=reduceCombastel(Z,order)
 %initialize Z_red
 Zred=Z;
 
-%get Z-matrix from zonotope Z
-Zmatrix=get(Z,'Z');
+%extract center and generator matrix
+c = center(Z);
+G = generators(Z);
 
-%extract generator matrix
-G=Zmatrix(:,2:end);
+% delete zero generators
+G = nonzeroFilter(G);
 
-%determine dimension of zonotope
-dim=length(G(:,1));
-
+% dimension and number of generators
+[dim, nrOfGens] = size(G);
 
 %only reduce if zonotope order is greater than the desired order
 if length(G(1,:))>dim*order
 
     %compute metric of generators
-    h=vnorm(G,1,2);
-
-    [~,indices]=sort(h);
+    h=vecnorm(G);
 
     %number of generators that are not reduced
     nUnreduced=floor(dim*(order-1));
@@ -53,17 +51,19 @@ if length(G(1,:))>dim*order
     nReduced=length(G(1,:))-nUnreduced;
     
     %pick generators that are reduced
-    pickedGenerators=G(:,indices(1:nReduced));
+    [~,ind] = mink(h,nReduced);
+    pickedGens=G(:,ind);
     %compute interval hull vector d of reduced generators
-    d=sum(abs(pickedGenerators),2);
+    d=sum(abs(pickedGens),2);
     %build box Gbox from interval hull vector d
     Gbox=diag(d);
     
     %unreduced generators
-    Gunred=G(:,indices((nReduced+1):end));
+    indRemain = setdiff(1:nrOfGens, ind);
+    Gunred=G(:,indRemain);
 
     %build reduced zonotope
-    Zred.Z=[Zmatrix(:,1),Gunred,Gbox];
+    Zred.Z=[c,Gunred,Gbox];
     
 end
 

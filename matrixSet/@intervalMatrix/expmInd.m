@@ -11,6 +11,9 @@ function [eI, iPow, E] = expmInd(varargin)
 %
 % Outputs:
 %    eI - interval matrix exponential
+%    iPow - cell array storing the powers of the matrix:
+%           A,A^2,...,A^(intermediateOrder)
+%    E - interval matrix for the remainder
 %
 % Example: 
 %

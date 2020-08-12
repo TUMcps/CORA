@@ -1,89 +1,80 @@
-function [obj] = simulate(obj,options)
-% simulate - simulates a hybrid automaton
+function [t,x,loc] = simulate(obj,params)
+% simulate - simulates a parallel hybrid automaton
 %
 % Syntax:  
-%    [obj] = simulate(obj, options)
+%    [t,x,loc] = simulate(obj, options)
 %
 % Inputs:
-%    obj - hybrid automaton object
+%    obj - parallel hybrid automaton object
+%    params - system parameters
 %    options - simulation options
 %
 % Outputs:
-%    obj - hybrid automaton object with stored simulation results
-%
-% Example: 
+%    t - cell-array storing the time vectors
+%    x - cell-array storing the state trajectories
+%    loc - cell-array storing the visited locations
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: simulateRandom
 
-% Author: Victor Charlent, Johann Schöpfer, Niklas Kochdumper
-% Written: 24-May-2016  
-% Last update: 04-July-2018
+% Author:        Victor Charlent, Johann Schöpfer, Niklas Kochdumper
+% Written:       24-May-2016  
+% Last update:   04-July-2018
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
+    options = params;
+    options = checkOptionsSimulate(obj,options);
 
-% load data from options
-tFinal = options.tFinal;                    % final time
-finalLoc = cell2mat(options.finalLoc);      % final location
+    % initialization
+    tInter = options.tStart;         % intermediate time at transitions
+    locCurr = options.startLoc;      % current location
+    xInter = options.x0;             % intermediate state at transitions
 
-% initialize variables
-tInter = options.tStart;    % intermediate time at transitions
-loc = options.startLoc;     % actual location
-locMat = cell2mat(loc);     % actual location as vector
-xInter = options.x0;        % intermediate state at transitions
-t = [];         % time vector
-x = [];         % state vector
-count = 1;      % transition counter
+    loc = {}; t = {}; x = {};
 
+    % loop over the different locations 
+    while tInter < options.tFinal && ~isempty(locCurr) && ...
+           ~all(options.finalLoc == locCurr)
 
-% determine which inputs are specified locally and which globally
-inputMap = parseInputMap(obj,options);
+        % construct new location with local Automaton Product
+        currentLocation = locationProduct(obj,locCurr);
 
+        % construct system input for this location
+        params.u = mergeInputVector(locCurr,options);
 
-% loop over the different locations 
-while (tInter<tFinal) && (~isempty(loc)) && ~all(finalLoc == locMat) ... 
-        || (count==1)
+        % simulate within the current location
+        params.tStart = tInter;
+        params.x0 = xInter;
+        params.loc = locCurr;
 
-    % construct new location with local Automaton Product
-    currentLocation = locationProduct(obj,loc);
+        [tNew,xNew,locCurr,xInter] = simulate(currentLocation,params);
 
-    % construct system input for this location
-    options.u = mergeInputVector(obj,inputMap,loc,options.uGlob,options.uCompLoc);
-    
-    % simulate within the actual location
-    [tNew,xNew,locNew,xInter] = simulate(currentLocation,options,tInter,tFinal,xInter);
+        % update time
+        tInter = tNew(end);
 
-    % new intermediate time is last simulation time
-    tInter = tNew(end);
-    
-    % store results
-    t{count} = tNew;
-    x{count} = xNew;
-    locList{count} = loc;
-    
-    % increase counter for transitions
-    count = count + 1;
-    loc = locNew;
-    locMat = cell2mat(loc);
+        % store results
+        t{end+1,1} = tNew; x{end+1,1} = xNew; loc{end+1,1} = params.loc;
+    end
 end
 
 
-% save results to object structure
-if isempty(obj.result) || ~isfield(obj.result,'simulation')
-    obj.result.simulation{1}.t = t;
-    obj.result.simulation{1}.x = x;
-    obj.result.simulation{1}.location = locList;
-else
-    obj.result.simulation{end+1}.t = t;
-    obj.result.simulation{end}.x = x;
-    obj.result.simulation{end}.location = locList;
-end
+% Auxiliary Functions -----------------------------------------------------
 
+function res = mergeInputVector(loc,options)
+% construct the input vector for the current location from the inputs for 
+% the subcomponents
+
+    res = zeros(size(options.inputCompMap,1),1);
+    temp = unique(options.inputCompMap);
+    
+    for i = 1:length(temp)
+       res(options.inputCompMap == temp(i)) = options.uLoc{temp(i)}{loc(temp(i))}; 
+    end
+end
 
 %------------- END OF CODE --------------
-

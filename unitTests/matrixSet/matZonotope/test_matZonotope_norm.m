@@ -87,26 +87,22 @@ V = vertices(M_zono);
 
 %loop through vertices
 n_1_sample = zeros(length(V),1);
-n_2_sample = n_1_sample;
 n_inf_sample = n_1_sample;
 for i=1:length(V)
     n_1_sample(i) = norm(V{i}, 1);
-    n_2_sample(i) = norm(V{i}, 2);
     n_inf_sample(i) = norm(V{i}, inf);
 end
 %-------------------------------------------------------
 
 % obtain results
 n_1 = norm(M_zono, 1);
-n_2 = norm(M_zono, 2);
 n_inf = norm(M_zono, inf);
 
 %check if slightly bloated results enclose others
 res_1 = all(n_1_sample <= n_1*1+1e-8);
-res_2 = all(n_2_sample <= n_2*1+1e-8);
-res_3 = all(n_inf_sample <= n_inf*1+1e-8);
+res_2 = all(n_inf_sample <= n_inf*1+1e-8);
 
 %result of different computation techniques
-res = res_1*res_2*res_3;
+res = res_1 && res_2;
 
 %------------- END OF CODE --------------

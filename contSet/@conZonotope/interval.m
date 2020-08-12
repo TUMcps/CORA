@@ -19,7 +19,7 @@ function res = interval(obj)
 %    int = interval(cZono);
 %
 %    hold on
-%    plotFilled(cZono,[1,2],'r','EdgeColor','none')
+%    plot(cZono,[1,2],'r','Filled',true,'EdgeColor','none')
 %    plot(int,[1,2],'g');
 %
 % Other m-files required: none
@@ -53,8 +53,8 @@ else                    % constraints
         temp(i) = 1;
 
         % calculate exact bounds by solving a linear program
-        lb = boundDir(obj,temp,'lower');
-        ub = boundDir(obj,temp,'upper');
+        lb = supportFunc(obj,temp,'lower');
+        ub = supportFunc(obj,temp,'upper');
 
         res(i) = interval(lb,ub);
     end

@@ -50,7 +50,7 @@ else
 end
 
 %save results
-eImid=mid(eI.int);
+eImid=center(eI.int);
 %mapping matrices
 obj.mappingMatrixSet.zono = eZ + eImid;
 obj.mappingMatrixSet.int = eI + (-eImid);

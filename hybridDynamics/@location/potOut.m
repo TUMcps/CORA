@@ -1,14 +1,14 @@
-function [R] = potOut(obj,R,minInd,maxInd,options)
+function R = potOut(obj,R,minInd,maxInd,options)
 % potOut - determines the reachable sets after intersection with the
 % invariant and obtains the fraction of the reachable set that must have
 % transitioned; the resulting reachable sets are all converted to polytopes
 %
 % Syntax:  
-%    [R,endInd] = potOut(obj,R)
+%    R = potOut(obj,R,minInd,maxInd,options)
 %
 % Inputs:
 %    obj - location object
-%    R - cell array of reachable sets
+%    R - reachSet object storing the reachable set
 %    minInd - vector containting the indices of the set which first
 %             intersected the guard set for each guard set 
 %    maxInd - vector containting the indices of the set which last
@@ -29,16 +29,16 @@ function [R] = potOut(obj,R,minInd,maxInd,options)
 % Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      11-May-2007 
 % Last update:  18-September-2007
-%               26-March-2008
-%               02-October-2008
-%               21-April-2009
-%               24-July-2009
 %               21-October-2010
 %               30-July-2016
 %               17-May-2018 (NK, only change sets that intersect guards)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+timeInt = R.timeInterval;
+timePoint = R.timePoint;
+
 
 % determine all sets that intersected the guard sets -> sets that are
 % partially located outside the invariant
@@ -50,30 +50,29 @@ for i = 1:length(minInd)
 end
 ind = unique(ind);
 
-%parfor (iSet=1:length(R))
-for i=1:length(ind)
+% loop over all sets that intersect the guard sets
+for i = 1:length(ind)
     
     iSet = ind(i);
-    
-    if ~iscell(R{iSet})
         
-        % overapproximate reachable set by a halfspace representation
-        R{iSet} = enclosingPolytope(R{iSet},options);
+    % overapproximate reachable set by a halfspace representation
+    timeInt.set{iSet} = enclosingPolytope(timeInt.set{iSet},options);
+    timePoint.set{iSet} = enclosingPolytope(timePoint.set{iSet},options);
         
-        % intersect with invariant set
-        R{iSet} = obj.invariant & R{iSet};      
-        
-    else
-       
-        for j = 1:length(R{iSet})
-            % overapproximate reachable set by a halfspace representation
-            R{iSet}{j} = enclosingPolytope(R{iSet}{j},options);
-        
-            % intersect with invariant set
-            R{iSet}{j} = obj.invariant & R{iSet}{j}; 
-        end
-    end
+    % intersect with invariant set
+    timeInt.set{iSet} = obj.invariant & timeInt.set{iSet};  
+    timePoint.set{iSet} = obj.invariant & timePoint.set{iSet};     
 end
 
+% remove last set if it is located outside the invariant
+if ~isIntersecting(obj.invariant,timeInt.set{end})
+   timeInt.set = timeInt.set(1:end-1); 
+   timeInt.time = timeInt.time(1:end-1); 
+   timePoint.set = timePoint.set(1:end-1); 
+   timePoint.time = timePoint.time(1:end-1); 
+end
+
+% construct modified reachSet object
+R = reachSet(timeInt,timePoint,R.parent);
 
 %------------- END OF CODE --------------

@@ -23,29 +23,24 @@ function probModel = carReach_reach(fileName,pathName,modelInitialization)
 
 %------------- BEGIN CODE --------------
 
-%set path
-global filePath
-filePath = [coraroot '/contDynamics/stateSpaceModels'];
-
 %load fArray to determine segment length of road 
-cd(pathName);
+cd(coraroot);
 file=load(fileName);
 fArray=file.fArray;
 
 %load car model
-[HA,options,stateField,inputField] = modelInitialization(fArray.segLengthOther);
+[HA,options,params,stateField,inputField] = modelInitialization(fArray.segLengthOther);
 
 %set gamma value (how often inputs change)
 gamma = 0.2;
 
 %set final time and time steps
-finalTime=options.tFinal;
+finalTime=params.tFinal;
  
 %Initialize Markov Chain
 MC=markovchain(stateField);
 
 %obtain number of segments of the state discretization
-%nrOfSegments=get(stateField,'nrOfSegments'); %<--AP
 nrOfSegments = stateField.nrOfSegments;
 
 %total number of discrete inputs, states, positions and velocities
@@ -60,21 +55,12 @@ end
 
 
 %for all input combinations
-for iInput=1:totalNrOfInputs
-    
-    %initialize waitbar  
-    %h = waitbar(0,['iInput:',num2str(iInput)]);    
+for iInput=1:totalNrOfInputs  
     
     %generate input intervals
     uZCell=cellZonotopes(inputField,iInput);
-    uZ = uZCell{1}
-    for i=1:length(get(HA,'location'))
-        options.uLocTrans{i} = center(uZ);
-        options.Uloc{i} = uZ + (-options.uLocTrans{i});
-        options.uLoc{i} = center(uZ);
-        options.timeStepLoc{i} = options.timeStep;
-    end
-    
+    uZ = uZCell{1};
+    params.U = uZ;
     
     %for all velocities
     for iVel=1:totalNrOfVelocities
@@ -89,31 +75,27 @@ for iInput=1:totalNrOfInputs
         iState
         
         R0Cell=cellZonotopes(stateField,iState);
-        options.R0 = R0Cell{1};
+        params.R0 = R0Cell{1};
         
         %determine initial location
         if iInput>(totalNrOfInputs/2)
-            options.startLoc=1; %acceleration
+            params.startLoc=1; %acceleration
         else
-            options.startLoc=3; %deceleartion
+            params.startLoc=3; %deceleartion
         end           
         
         %compute reachable set
-        HA=reach(HA,options);     
+        R = reach(HA,params,options);     
    
         %Update Markov Chain
-        MC=build4road_reach(MC,HA,iInput,iState);
-          %if mod(iState,19)==0
-          %if iState>3000
-                %plot_reach(MC,HA,options,iState);
-          %end
+        MC=build4road_reach(MC,R,iInput,iState);
+%           if mod(iState,19)==0
+%           if iState>3000
+%                 plot_reach(MC,HA,R,params,iState);
+%           end
         
-        %update waitbar
-        %waitbar(iState/totalNrOfStates,h); 
     end
 end
-%close waitbar
-%close(h);
 
 %optimize structure of Markov chain
 [T, projMat, GammaFull] = convertTransitionMatrix(MC, gamma);

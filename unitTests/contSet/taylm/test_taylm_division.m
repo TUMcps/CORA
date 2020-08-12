@@ -106,6 +106,11 @@ res = true;
             
             if infimum(intReal) - infimum(int) < -tol || supremum(int) - supremum(intReal) < -tol
                 res = 0;
+                file_name = strcat('test_taylm_division_5_', ...
+                                   datestr(now,'mm-dd-yyyy_HH-MM'));
+                  
+                file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
+                save(file_path, 'poly')
                 error('test 5 is failed');
             end          
         end

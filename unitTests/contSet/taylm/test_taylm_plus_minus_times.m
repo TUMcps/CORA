@@ -1,6 +1,6 @@
 function res = test_taylm_plus_minus_times(~)
 % test_taylm_plus_minus_times - unit-tests for Taylor models consisting of 
-%                             plus, munus, and times operations
+%                             plus, minus, and times operations
 %
 % Syntax:  
 %    res = test_taylm_plus_minus_times(~)

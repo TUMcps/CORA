@@ -28,7 +28,7 @@ function y0 = consistentInitialState(obj, x0, y0, u0)
 converged = 0;
 
 while ~converged
-    l = obj.conFile(0, x0, y0, u0);
+    l = obj.conFile(x0, y0, u0);
     [~,~,~,~,~,F] = obj.jacobian(x0, y0, u0);
 
     %evaluate jacobian

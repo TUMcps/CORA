@@ -30,7 +30,7 @@ center=mat2vec(matZ.center);
 
 %convert generators
 for i=1:matZ.gens
-    generatorMatrix(:,i)=mat2vec(matZ.generator{i});
+    generatorMatrix(:,i) = mat2vec(matZ.generator{i});
 end
     
 %instantiate zonotope

@@ -35,17 +35,16 @@ function [obj,linSys,linOptions] = linearize(obj,options,R)
 
 %------------- BEGIN CODE --------------
 
-%linearization point p.u of the input is the center of the input u
-p.u=center(options.U)+options.uTrans;
+%linearization point p.u of the input is the center of the input set
+p.u = options.uTrans;
 
 %obtain linearization point
 if isfield(options,'linearizationPoint')
     p.x = options.linearizationPoint;
 else
-    %linearization point p.x of the state is the center of the last reachable 
-    %set R translated by 0.5*f0*delta_t
-    t=0; %time invariant system
-    f0prev=obj.mFile(t,center(R),p.u);
+    %linearization point p.x of the state is the center of the last
+    %reachable set R translated by 0.5*delta_t*f0
+    f0prev=obj.mFile(center(R),p.u);
     try %if time step not yet created
         p.x=center(R)+f0prev*0.5*options.timeStep;
     catch
@@ -54,24 +53,36 @@ else
     end
 end
 
-%substitute p into the system equation in order to obtain the constant
-%input
-t=0; %time invariant system
-f0=obj.mFile(t,p.x,p.u);
+%substitute p into the system equation to obtain the constant input
+f0=obj.mFile(p.x,p.u);
 
 %substitute p into the Jacobian with respect to x and u to obtain the
 %system matrix A and the input matrix B
 [A,B]=obj.jacobian(p.x,p.u);
-
-%set up otions for linearized system
+A_lin = A;
+B_lin = B;
 linOptions=options;
+if strcmp(options.alg,'linRem')
+    %in order to compute dA,dB, we use the reachability set computed
+    %for one step in initReach
+    [dA,dB] = lin_error2dAB(options.Ronestep,options.U,obj.hessian,p);
+    A = matZonotope(A,{dA});
+    B = matZonotope(B,{dB});
+    linSys = linParamSys(A,1,'constParam');
+    linOptions.compTimePoint = 1;
+else
+    %set up linearized system
+    linSys = linearSys('linSys',A,1); %B=1 as input matrix encountered in uncertain inputs
+end
 
-linOptions.uTrans=f0; %B*Ucenter from linOptions.U not added as the system is linearized around center(U)
-linOptions.U=B*(options.U+(-center(options.U)));
-linOptions.originContained=0;
+%set up options for linearized system
+linOptions.U = B*(options.U+options.uTrans-p.u);
+Ucenter = center(linOptions.U);
+linOptions.U = linOptions.U - Ucenter;
+linOptions.uTrans = zonotope([f0 + Ucenter,zeros(size(f0,1),1)]);
+%linOptions.uTrans = zonotope(f0 + Ucenter);
+linOptions.originContained = 0;
 
-%set up linearized system
-linSys = linearSys('linSys',A,1); %B=1 as input matrix encountered in uncertain inputs
 
 %save constant input
 obj.linError.f0=f0;

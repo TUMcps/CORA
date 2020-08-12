@@ -1,18 +1,18 @@
 function [res]=isempty(obj)
-% isempty - returns 1 if the interval hull is empty and 0 otherwise
+% isempty - returns 1 if the interval is empty and 0 otherwise
 %
 % Syntax:  
 %    [res]=isempty(obj)
 %
 % Inputs:
-%    obj - interval hull object
+%    obj - interval object
 %
 % Outputs:
 %    res - bool
 %
 % Example: 
-%    IH=intervalhull([1 2; -1 1]);
-%    res=isempty(IH)
+%    I=interval([1 2; -1 1]);
+%    res=isempty(I)
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -34,8 +34,6 @@ display@contDynamics(obj);
 disp('type: Nonlinear time continuous system');
 
 %display state space equations
-%t: symbolic variable for time
-syms t 
 %generate symbolic states
 for i=1:obj.dim
     command=['syms x',num2str(i)];
@@ -51,7 +49,7 @@ for i=1:obj.nrOfInputs
     eval(command);
 end
 
-%dx=obj.mFile(t,x,u)
+dx=obj.mFile(x,u)
 
 disp('-----------------------------------');
 

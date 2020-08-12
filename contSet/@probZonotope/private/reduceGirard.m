@@ -1,9 +1,9 @@
-function [Zred]=reduceGirard(Z,order)
+function Zred = reduceGirard(Z,order)
 % reduceGirard - Reduce zonotope so that its order stays below a specified
 % limit 
 %
 % Syntax:  
-%    [Zred]=reduceGirard(Z,order)
+%    Zred = reduceGirard(Z,order)
 %
 % Inputs:
 %    Z - zonotope object
@@ -16,11 +16,13 @@ function [Zred]=reduceGirard(Z,order)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: OTHER_FUNCTION_NAME1,  OTHER_FUNCTION_NAME2
+% See also: ---
 
-% Author: Matthias Althoff
-% Written: 24-January-2007 
-% Last update: 22-March-2007
+% Author:       Matthias Althoff
+% Written:      24-January-2007 
+% Last update:  22-March-2007
+%               27-Aug-2019
+%               10-June-2020 (MW, remove sort)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -29,52 +31,41 @@ function [Zred]=reduceGirard(Z,order)
 %initialize Z_red
 Zred=Z;
 
-%get Z-matrix from zonotope Z
-Zmatrix=get(Z,'Z');
-
-%extract generator matrix
-G=Zmatrix(:,2:end);
-
-%determine dimension of zonotope
-dim=length(G(:,1));
+%extract center and generator matrix
+c=center(Z);
+G=generators(Z);
 
 %Delete zero-generators
-i=1;
-while i<=length(G(1,:))
-    if G(:,i)==0*G(:,i)
-        G(:,i)=[];
-    else
-        i=i+1;
-    end
-end
+G = nonzeroFilter(G);
+
+%determine dimension of zonotope
+[dim, nrOfGens] = size(G);
 
 %only reduce if zonotope order is greater than the desired order
-if length(G(1,:))>dim*order
+if nrOfGens>dim*order
 
     %compute metric of generators
-    for i=1:length(G(1,:))
-        h(i)=norm(G(:,i),1)-norm(G(:,1),inf);
-    end
+    h = vecnorm(G,1) - vecnorm(G,inf);
 
-    [elements,indices]=sort(h);
+    % sort indices by ascending h value
+    [~,ind]=mink(h,nrOfGens);
 
     %number of generators that are not reduced
     nUnreduced=floor(dim*(order-1));
     %number of generators that are reduced
-    nReduced=length(G(1,:))-nUnreduced;
+    nReduced=nrOfGens-nUnreduced;
     
     %pick generators that are reduced
-    pickedGenerators=G(:,indices(1:nReduced));
-    %compute interval hull vector d of reduced generators
-    d=sum(abs(pickedGenerators),2);
-    %build box Gbox from interval hull vector d
-    Gbox=diag(d);
+    pickedGenerators=G(:,ind(1:nReduced));
+    %build box Gbox from interval hull vector of reduced generators
+    Gbox=diag(sum(abs(pickedGenerators),2));
     
     %unreduced generators
-    Gunred=G(:,indices((nReduced+1):end));
+    Gunred=G(:,ind((nReduced+1):end));
 
     %build reduced zonotope
-    Zred.Z=[Zmatrix(:,1),Gunred,Gbox];
+    Zred.Z=[c,Gunred,Gbox];
+    
 end
 
 %------------- END OF CODE --------------

@@ -32,13 +32,13 @@ function [P] = mtimes(factor1,factor2)
 
 %Find a zonotope object
 %Is factor1 a mptPolytope?
-if strcmp('mptPolytope',class(factor1))
+if isa(factor1,'mptPolytope')
     %initialize resulting polytope
     P=factor1;
     %initialize other summand
     matrix=factor2;
 %Is factor2 a mptPolytope?    
-elseif strcmp('mptPolytope',class(factor2))
+elseif isa(factor2,'mptPolytope')
     %initialize resulting zonotope
     P=factor2;
     %initialize other summand
@@ -46,16 +46,16 @@ elseif strcmp('mptPolytope',class(factor2))
 end
 
 %get dimension
-dim = dimension(P);
+n = dim(P);
 
 %define vector of zeros
-z = zeros(dim,1);
+z = zeros(n,1);
 
 %numeric matrix
 if isnumeric(matrix)
     %convert scalar to matrix if necessary
     if length(matrix)==1
-        matrix = matrix*eye(dim);
+        matrix = matrix*eye(n);
     end
     try
         try %MPT3
@@ -73,11 +73,11 @@ if isnumeric(matrix)
     
 else
     %interval matrix 
-    if strcmp('interval',class(matrix))
+    if isa(matrix,'interval')
         %get minimum and maximum
         M_min=infimum(matrix);
         M_max=supremum(matrix);
-    elseif strcmp('intervalMatrix',class(matrix))
+    elseif isa(matrix,'intervalMatrix')
         %get minimum and maximum
         M_min=infimum(matrix.int);
         M_max=supremum(matrix.int);

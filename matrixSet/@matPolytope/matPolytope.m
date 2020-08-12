@@ -2,20 +2,25 @@ classdef matPolytope
 % matPolytope class 
 %
 % Syntax:  
-%    object constructor: Obj = zonotope(varargin)
-%    copy constructor: Obj = otherObj
+%    obj = matPolytope(vert)
 %
 % Inputs:
-%    input1 - zonotope matrix
+%    vert - cell-array storing the vertices
 %
 % Outputs:
-%    Obj - Generated Object
+%    obj - generated object
+%
+% Example:
+%    V{1} = [1 2; 0 1];
+%    V{2} = [1 3; -1 2];
+%
+%    mp = matPolytope(V);
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: intervalhull,  polytope
+% See also: intervalMatrix
 
 % Author:       Matthias Althoff
 % Written:      21-June-2010
@@ -26,12 +31,13 @@ classdef matPolytope
 
 properties (SetAccess = private, GetAccess = public)
     dim = 1;
-    verts = 0; %number of vertices
+    verts = 0; % number of vertices
     vertex = [];
 end
     
 methods
-    %class constructor
+    
+    % class constructor
     function obj = matPolytope(input)
         if nargin==1
             if isa(input, 'polytope')

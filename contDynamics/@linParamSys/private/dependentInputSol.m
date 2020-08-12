@@ -34,7 +34,7 @@ c = center(Rinit);
 r = obj.stepSize;
 dim = obj.dim;
 params = obj.A.gens;
-Umat = get(Uconst,'Z');
+Umat = Uconst.Z;
 
 %SECOND ORDER DEPENDENT SOLUTION
 %zero parametric order

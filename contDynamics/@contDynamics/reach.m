@@ -1,20 +1,20 @@
-function [Rcont,Rcont_tp,Rcont_y,Rout,Rout_tp] = reach(obj,options)
+function [R,res] = reach(obj,params,options,varargin)
 % reach - computes the reachable continuous set for the entire time horizon
-% of a continuous system
+%         of a continuous system
 %
 % Syntax:  
-%    [Rcont,Rcont_tp] = reach(obj,options)
+%    R = reach(obj,params,options)
+%    [R,res] = reach(obj,params,options,spec)
 %
 % Inputs:
 %    obj - continuous system object
+%    params - parameter defining the reachability problem
 %    options - options for the computation of reachable sets
+%    spec - object of class specification 
 %
 % Outputs:
-%    Rcont - reachable set of time intervals for the continuous dynamics 
-%    Rcont_tp - reachable set of points in time for the continuous dynamics
-%    Rcont_y - constraint set for DAE systems
-%    Rout - output set of time intervals
-%    Rout_tp - output set of points in time
+%    R - object of class reachSet storing the computed reachable set
+%    res  - 1 if specifications are satisfied, 0 if not
 %
 % Example: 
 %
@@ -31,165 +31,229 @@ function [Rcont,Rcont_tp,Rcont_y,Rout,Rout_tp] = reach(obj,options)
 %                            variables lines 64-68
 %                            Additional output Rcont_y is now included
 %               20-March-2018 (NK, output sets as additional output)
+%               19-May-2020 (MW, error handling for exploding sets)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% check if the output set needs to be created
-compOutputSet = 0;
+    res = 1;
 
-if nargout > 3
-   compOutputSet = 1; 
-end
-
-%obtain factors for initial state and input solution
-for i=1:(options.taylorTerms+1)
-    %time step
-    r = options.timeStep;
-    %compute initial state factor
-    options.factor(i)= r^(i)/factorial(i);    
-end
-%possibility for updating time step
-%options.timeStep = options.timeFactor*norm(A^2,inf)^(-0.5); 
-
-
-%if a trajectory should be tracked
-if isfield(options,'uTransVec')
-    options.uTrans = options.uTransVec(:,1);
-end
-
-%initialize reachable set computations
-[Rnext, options] = initReach(obj, options.R0, options);
-
-%time period
-tVec = options.tStart:options.timeStep:options.tFinal;
-
-% initialize parameter for the output equation
-if compOutputSet
-    [C,D,k] = initOutputEquation(obj,options);
-    Rout = cell(length(tVec)-1,1);
-    Rout_tp = cell(length(tVec)-1,1);
-end
-
-% initialize output arguemnts
-Rcont = cell(length(tVec)-1,1);
-Rcont_tp = cell(length(tVec)-1,1);
-Rcont_y = cell(length(tVec)-1,1);
-
-
-
-% loop over all reachability steps
-for i = 2:length(tVec)-1
+    % options preprocessing
+    options = params2options(params,options);
+    options = checkOptionsReach(obj,options);
     
-    % save reachable set in cell structure
-    if isfield(options,'saveOrder')
-        Rcont{i-1} = reduce(Rnext.ti,options.reductionTechnique,options.saveOrder); 
-        Rcont_tp{i-1} = reduce(Rnext.tp,options.reductionTechnique,options.saveOrder); 
-    else
-        Rcont{i-1} = Rnext.ti; 
-        Rcont_tp{i-1} = Rnext.tp; 
+    spec = [];
+    if nargin >= 4
+       spec = varargin{1}; 
     end
+
+    % compute symbolic derivatives
+    if isa(obj,'nonlinearSys') || isa(obj,'nonlinDASys') || isa(obj,'nonlinParamSys')
+       derivatives(obj,options); 
+    end
+
+    % obtain factors for initial state and input solution time step
+    r = options.timeStep;
+    for i = 1:(options.taylorTerms+1)  
+        options.factor(i) = r^(i)/factorial(i);    
+    end
+
+    % if a trajectory should be tracked
+    if isfield(options,'uTransVec')
+        options.uTrans = options.uTransVec(:,1);
+    end
+    options.t = options.tStart;
     
-    % calculate the set of system outputs
-    if compOutputSet
-        Z = get(Rnext.tp,'Z');
-        Rout_tp{i-1} = zonotope(C*Z) + D * (options.uTrans + options.U) + k;
+    % time period
+    tVec = options.tStart:options.timeStep:options.tFinal;
+
+    % initialize cell-arrays that store the reachable set
+    timeInt.set = cell(length(tVec)-1,1);
+    timeInt.time = cell(length(tVec)-1,1);
+    timePoint.set = cell(length(tVec)-1,1);
+    timePoint.time = cell(length(tVec)-1,1);
+    if isa(obj,'nonlinDASys')
+        timeInt.algebraic = cell(length(tVec)-1,1);
+    end
+
+    % initialize reachable set computations
+    try
+        [Rnext, options] = initReach(obj, options.R0, options);
+    catch ME
+        % if error from set explosion, return corresponding information
+        R = [];
+        reportReachError(ME,options.tStart,1);
+        return
+    end
+
+    % loop over all reachability steps
+    for i = 2:length(tVec)-1
         
-        Z = get(Rnext.ti,'Z');
-        Rout{i-1} = zonotope(C*Z) + D * (options.uTrans + options.U) + k;
+        % save reachable set in cell structure
+        timeInt.set{i-1} = Rnext.ti; 
+        timeInt.time{i-1} = interval(tVec(i-1),tVec(i));
+        timePoint.set{i-1} = Rnext.tp;
+        timePoint.time{i-1} = tVec(i);
         
-        if isfield(options,'outputOrder')
-            Rout_tp{i-1} = reduce(Rout_tp{i-1},options.reductionTechnique,options.outputOrder);
-            Rout{i-1} = reduce(Rout{i-1},options.reductionTechnique,options.outputOrder);
+        if isa(obj,'nonlinDASys')
+            timeInt.algebraic{i-1}  = Rnext.y;
+        end
+        
+        % check specificaiton
+        if ~isempty(spec)
+           if ~check(spec,Rnext.ti)
+               res = 0;
+               R = createReachSetObject(timeInt,timePoint);
+               return;
+           end
+        end
+
+        % increment time and set counter
+        t = tVec(i);
+        options.t = t;
+        if isfield(options,'verbose') && options.verbose 
+            disp(t);
+        end
+
+        % if a trajectory should be tracked
+        if isfield(options,'uTransVec')
+            options.uTrans = options.uTransVec(:,i);
+        end
+
+        % compute next reachable set
+        try
+            [Rnext,options] = post(obj,Rnext,options);
+        catch ME
+            % if error from set explosion, return corresponding information
+            R = createReachSetObject(timeInt,timePoint);
+            reportReachError(ME,t,i);
+            return
         end
     end
     
-    % calculat the constraint set
+    % check specificaiton
+    if ~isempty(spec)
+       if ~check(spec,Rnext.ti)
+           res = 0;
+       end
+    end
+
+    % save last reachable set in cell structure
+    timeInt.set{end} = Rnext.ti; 
+    timeInt.time{end} = interval(tVec(end-1),tVec(end));
+    timePoint.set{end} = Rnext.tp; 
+    timePoint.time{end} = tVec(end);
+
     if isfield(Rnext,'y')
-        Rcont_y{i-1}  = Rnext.y;
-    else
-        Rcont_y = 0;
+        timeInt.algebraic{end}  = Rnext.y;
     end
     
-    %increment time and set counter
-    t = tVec(i); 
-    options.t=t;
-    if isfield(options,'verbose') && options.verbose 
-        disp(t); %plot time
-    end
-    
-    %if a trajectory should be tracked
-    if isfield(options,'uTransVec')
-        options.uTrans = options.uTransVec(:,i);
-    end
-    
-    %compute next reachable set
-    [Rnext,options]=post(obj,Rnext,options);
+    % construct reachset object
+    R = createReachSetObject(timeInt,timePoint);
 end
-
-
-
-%save reachable set in cell structure
-if isfield(options,'saveOrder')
-    Rcont{end} = reduce(Rnext.ti,options.reductionTechnique,options.saveOrder); 
-    Rcont_tp{end} = reduce(Rnext.tp,options.reductionTechnique,options.saveOrder); 
-else
-    Rcont{end} = Rnext.ti; 
-    Rcont_tp{end} = Rnext.tp; 
-end
-
-if compOutputSet
-    Z = get(Rnext.tp,'Z');
-    Rout_tp{end} = zonotope(C*Z) + D * (options.uTrans + options.U) + k;
-
-    Z = get(Rnext.ti,'Z');
-    Rout{end} = zonotope(C*Z) + D * (options.uTrans + options.U) + k;
-    
-    if isfield(options,'outputOrder')
-        Rout_tp{end} = reduce(Rout_tp{end},options.reductionTechnique,options.outputOrder);
-        Rout{end} = reduce(Rout{end},options.reductionTechnique,options.outputOrder);
-    end
-end
-
-if isfield(Rnext,'y')
-    Rcont_y{end}  = Rnext.y;
-else
-    Rcont_y = 0;
-end
-
 
 
 % Auxiliary Functions -----------------------------------------------------
 
-function [C,D,k] = initOutputEquation(obj,options)
-% Extract the C, D and k matrix for the output equation y = C x + D u + k
+function R = createReachSetObject(timeInt,timePoint)
+% create and object of class reachSet that stores the reachable set
 
-   if ~isa(obj,'linearSys')
-      error('Output sets are only implemented for linear systems so far!'); 
-   end
-   
-   % extract output equation parameter (y = C x + D u + k)
-   C = obj.C; D = obj.D; k = obj.k;
-   if ~isempty(C)
-      n = size(C,1);
-   elseif ~isempty(D)
-      n = size(D,1);
-   elseif ~isempty(k)
-      n = size(k,1);
-   else
-      error('All parameter for the output equation are empty!') 
-   end
-   
-   % initialize empty output equation parameter
-   if isempty(C)
-      C = zeros(n,size(obj.A,1)); 
-   end
-   if isempty(D)
-      Z = get(options.U,'Z');
-      D = zeros(n,size(Z,1)); 
-   end  
-   if isempty(k)
-      k = zeros(n,1); 
-   end
+    % remove empty cells
+    if isempty(timeInt.set{end})
+       ind = ~cellfun('isempty',timeInt.set);
+       timePoint.set = timePoint.set(ind);
+       timePoint.time = timePoint.time(ind);
+       timeInt.set = timeInt.set(ind);
+       timeInt.time = timeInt.time(ind);
+       if isfield(timeInt,'algebraic')
+           timeInt.algebraic = timeInt.algebraic(ind);
+       end
+    end
+
+    % check if sets are split is required
+    if ~iscell(timeInt.set{1})
+        if ~isempty(timePoint.set{1}) || isa(timePoint.set{1},'zonoBundle')
+            R = reachSet(timePoint,timeInt);
+        else
+            R = reachSet([],timeInt); 
+        end
+    else
+
+        % no splitting occured -> copy sets
+        if length(timeInt.set{end}) == 1   
+            timeInt.set = cellfun(@(x) x{1},timeInt.set,'UniformOutput',false);
+            if isfield(timeInt,'algebraic')
+                timePoint.set = cellfun(@(x) x{1},timePoint.set,'UniformOutput',false);
+                timeInt.algebraic = cellfun(@(x) x{1},timeInt.algebraic,'UniformOutput',false);
+            else
+                timePoint.set = cellfun(@(x) x{1}.set,timePoint.set,'UniformOutput',false);
+            end
+            R = reachSet(timePoint,timeInt);
+
+        % splitted sets -> bring to correct format
+        else
+
+            ind = 1:length(timePoint.set{1});
+            timeInt_ = {}; timePoint_ = {};
+            parent = zeros(length(timePoint.set{1}),1);
+
+            % loop over all time steps
+            for i = 1:length(timePoint.set)
+
+               % modify index vector
+               ind_ = zeros(length(timePoint.set{i}),1);
+               maxInd = max(ind);
+
+               for j = 1:length(timePoint.set{i})
+                  if isfield(timePoint.set{i}{j},'parent') && i > 1
+                      ind_(j) = maxInd + 1;
+                      parent = [parent; ind(timePoint.set{i}{j}.parent)];
+                      maxInd = maxInd + 1;
+                  else
+                      ind_(j) = ind(timePoint.set{i}{j}.prev);
+                  end
+               end
+               ind = ind_;
+
+               % copy entries
+               for j = 1:length(timePoint.set{i})
+                   if ind(j) <= length(timeInt_)
+                      timeInt_{ind(j)}.set = [timeInt_{ind(j)}.set; timeInt.set{i}(j)];
+                      timeInt_{ind(j)}.time = [timeInt_{ind(j)}.time; timeInt.time(i)];
+                      if isfield(timeInt,'algebraic')
+                          timeInt_{ind(j)}.algebraic = [timeInt_{ind(j)}.algebraic; timeInt.algebraic{i}(j)];
+                      end
+                      timePoint_{ind(j)}.set = [timePoint_{ind(j)}.set; {timePoint.set{i}{j}.set}];
+                      timePoint_{ind(j)}.time = [timePoint_{ind(j)}.time; timePoint.time(i)];
+                   else
+                      timeInt_{ind(j)}.set = timeInt.set{i}(j);
+                      timeInt_{ind(j)}.time = timeInt.time(i);
+                      if isfield(timeInt,'algebraic')
+                          timeInt_{ind(j)}.algebraic = timeInt.algebraic{i}(j);
+                      end
+                      timePoint_{ind(j)}.set = {timePoint.set{i}{j}.set};
+                      timePoint_{ind(j)}.time = timePoint.time(i);
+                   end
+               end
+            end
+
+            % generate reachSet object
+            for i = 1:length(timeInt_)
+                
+                R_ = reachSet(timePoint_{i},timeInt_{i});
+
+                if i == 1
+                    R = R_; 
+                else
+                    if parent(i) > 0
+                        R = add(R,R_,parent(i));
+                    else
+                        R = add(R,R_);
+                    end
+                end
+            end
+        end
+    end
+end
 
 %------------- END OF CODE --------------

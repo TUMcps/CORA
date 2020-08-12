@@ -8,7 +8,7 @@ function V = vertices(obj)
 %    obj - mptPolytope object
 %
 % Outputs:
-%   V - vertices object
+%    V - vertices object
 %
 % Example: 
 %    ---
@@ -37,6 +37,6 @@ for i=1:length(obj.P)
     v_new = lcon2vert(obj.P(i).A,obj.P(i).b,[],[],[],0);
     v = [v; v_new];
 end
-V = vertices(v');
+V = v';
 
 %------------- END OF CODE --------------

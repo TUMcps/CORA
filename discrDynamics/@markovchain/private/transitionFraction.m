@@ -1,4 +1,4 @@
-function [tranFrac] = transitionFraction(R,Rcont,TP)
+function [tranFrac] = transitionFraction(R)
 % transitionFraction - Computes by which probability a transition has
 % occured from deceleration to standstill or from acceleration to speed
 % limit. The probability is computed straightforward for the time point
@@ -10,7 +10,6 @@ function [tranFrac] = transitionFraction(R,Rcont,TP)
 %
 % Inputs:
 %    R - reachable set
-%    Rcont - reachable set that has not been intersected with the guard set
 %    TP - time struct for initial, last time point in invariant as well as 
 %    first and last time point of guard intersection
 %
@@ -29,35 +28,39 @@ function [tranFrac] = transitionFraction(R,Rcont,TP)
 % Author:       Matthias Althoff
 % Written:      21-April-2009
 % Last update:  31-July-2017
+%               24-July-2020
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 %check if a transition has occured
-if length(R.T)==1
-    tranFrac.TP{1}=1;
-    tranFrac.TI{1}=1;    
+if length(R)==1
+    tranFrac.TP{1} = 1;
+    tranFrac.TI{1} = 1;    
 else
 
-    %determine the transition fraction for the time point solution
+    % determine the transition fraction for the time point solution;
+    % we assume that at maximum only one transition can occur
 
-    %compute volume of intersected reachable set
-    volInt=volume(R.T{1}{end});
-    %compute volume of reachable set without intersection
-    volOrig=volume(polytope(Rcont.T{1}{end}));   %use polytope conversion as this has been applied to R, too.
+    % compute volume of reachable set in first location
+    vol_1 = volume(R(1).timePoint.set(end));
+    %compute volume of reachable set in second location
+    vol_2 = volume(R(2).timePoint.set(end));   %use polytope conversion as this has been applied to R, too.
     %compute ratio
-    ratio=volInt/volOrig;
+    ratio = vol_1/(vol_1 + vol_2);
     
     %set transition fraction for time points
-    tranFrac.TP{1}=ratio;
-    tranFrac.TP{2}=1-ratio;
+    tranFrac.TP{1} = ratio;
+    tranFrac.TP{2} = 1-ratio;
     
     %approximate time interval ratio
-    ratioTI=TP{1}.tMax/TP{2}.tMax;
+    tMax_1 = supremum(R{1}.timePoint.time{end});
+    tMax_2 = supremum(R{2}.timePoint.time{end});
+    ratioTI = tMax_1/tMax_2;
     
     %set transition fraction for time intervals
-    tranFrac.TI{1}=ratioTI;
-    tranFrac.TI{2}=1-ratioTI;    
+    tranFrac.TI{1} = ratioTI;
+    tranFrac.TI{2} = 1-ratioTI;    
 end
 
 

@@ -6,9 +6,9 @@ function res = plus(summand1,summand2)
 %
 % Inputs:
 %    summand1 - interval (for computational efficiency, no single value
-%    considered; does not require type checking)
+%               considered; does not require type checking)
 %    summand2 - interval (for computational efficiency, no single value
-%    considered; does not require type checking)
+%               considered; does not require type checking)
 %
 % Outputs:
 %    res - interval
@@ -26,51 +26,41 @@ function res = plus(summand1,summand2)
 % Last update:  23-June-2015
 %               10-August-2016
 %               24-August-2016
+%               05-May-2020 (MW, standardized error message)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-
-%Find an interval object
-%Is summand1 an interval?
+% determine the interval object
 if isa(summand1,'interval')
-    
-    %initialize resulting interval
     res = summand1;
-    %initialize other summand
     summand = summand2;
-    
-%Is summand2 an interval?    
 elseif isa(summand2,'interval')
-    
-    %initialize resulting zonotope
     res = summand2;
-    %initialize other summand
-    summand = summand1;
-       
+    summand = summand1; 
 end
 
-%%Is summand an interval?
+% different cases depending on the class of the summand
 if isa(summand,'interval')
-    %Calculate infimum and supremum
+
     res.inf = res.inf + summand.inf;
     res.sup = res.sup + summand.sup;
 
-% is summand a zonotope
-elseif isa(summand,'zonotope')
-    res = zonotope(res) + summand;
-    
-%is summand a vector?
 elseif isnumeric(summand)
-    %Calculate infimum and supremum
+
     res.inf = res.inf + summand;
-    res.sup = res.sup + summand;
-    
-%something else?    
+    res.sup = res.sup + summand;    
+
+elseif isa(summand,'zonotope') || isa(summand,'conZonotope') || ...
+       isa(summand,'zonoBundle') || isa(summand,'polyZonotope') || ...
+       isa(summand,'mptPolytope')
+
+    res = summand + res;
+
 else
-    res.inf=[];
-    res.sup=[];
-    error('this operation is not implemented');
+
+    % throw error for given arguments
+    error(noops(summand1,summand2));
 end
 
 %------------- END OF CODE --------------

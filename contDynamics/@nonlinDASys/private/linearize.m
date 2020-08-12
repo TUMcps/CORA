@@ -1,6 +1,6 @@
 function [obj,linSys,options,linOptions] = linearize(obj,options,R,R_y)
-% linearize - linearizes the nonlinear DAE system; linearization error is not
-% included yet
+% linearize - linearizes the nonlinear differential algebraic system;
+% linearization error is not included (see linError)
 %
 % Syntax:  
 %    [obj,linSys,options,linOptions] = linearize(obj,options,R)
@@ -26,7 +26,8 @@ function [obj,linSys,options,linOptions] = linearize(obj,options,R,R_y)
 
 % Author:       Matthias Althoff
 % Written:      21-November-2011
-% Last update:  23-May-2013                
+% Last update:  23-May-2013       
+%               28-July-2020
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -37,16 +38,11 @@ p.u = center(options.U) + options.uTrans;
 %linearization point p.x and p.y
 x0 = center(R);
 y0 = center(R_y);
-f0prev_x = obj.dynFile(0, x0, y0, p.u);
-f0prev_y = obj.conFile(0, x0, y0, p.u);
-
-%get jacobian matrices
-[A0,B0,C0,D0,E0,F0] = obj.jacobian(x0, y0, p.u);
+f0prev_x = obj.dynFile(x0, y0, p.u);
 
 
 try %if time step already created
     p.x = x0 + f0prev_x*0.5*options.timeStep;
-    %p.y = y0 - pinv(F0)*f0prev_y;
     p.y = consistentState(obj, p.x, y0, p.u);
 catch
     disp('time step not yet created; this message should only appear once!');
@@ -56,8 +52,8 @@ end
 
 %substitute p into the system equation in order to obtain the constant
 %input
-f0_dyn = obj.dynFile(0, p.x, p.y, p.u);
-f0_con = obj.conFile(0, p.x, p.y, p.u);
+f0_dyn = obj.dynFile(p.x, p.y, p.u);
+f0_con = obj.conFile(p.x, p.y, p.u);
 
 %get jacobian matrices
 [A,B,C,D,E,F] = obj.jacobian(p.x, p.y, p.u);
@@ -69,19 +65,7 @@ CF_inv = C*F_inv;
 f0 = f0_dyn - CF_inv*f0_con;
 A_lin = A - CF_inv*D;
 B_lin = B - CF_inv*E;
-max(real(eig(A_lin)))
-
-%update time step
-%options.timeStep = options.timeFactor*norm(A^2,inf)^(-0.5); %<-- change
-%for variable time step
-
-%obtain factors for initial state and input solution
-for i=1:(options.taylorTerms+1)
-    %time step
-    r = options.timeStep;
-    %compute initial state factor
-    options.factor(i)= r^(i)/factorial(i);    
-end
+max(real(eig(A_lin)));
 
 
 %set up otions for linearized system
@@ -113,8 +97,8 @@ converged = 0;
 
 while ~converged
     
-    l = obj.conFile(0, x0, y0, u0);
-    [A,B,C,D,E,F] = obj.jacobian(x0, y0, u0);
+    l = obj.conFile(x0, y0, u0);
+    [~,~,~,~,~,F] = obj.jacobian(x0, y0, u0);
 
 
     %evaluate jacobian

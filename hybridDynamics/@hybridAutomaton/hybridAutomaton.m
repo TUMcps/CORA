@@ -1,21 +1,20 @@
-function Obj = hybridAutomaton(varargin)
-% hybridAutomaton - Object and Copy Constructor 
+classdef hybridAutomaton
+% hybridAutomaton - constructor for class hybridAutomaton
 %
 % Syntax:  
-%    object constructor: Obj = class_name(varargin)
-%    copy constructor: Obj = otherObj
+%    obj = hybridAutomaton(loc)
 %
 % Inputs:
-%    input1 - location array
+%    loc - cell-array storing the location objects
 %
 % Outputs:
-%    Obj - Generated Object
+%    obj - generated object
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: parallelHybridAutomaton, location, transition
 
 % Author: Matthias Althoff
 % Written: 03-May-2007 
@@ -24,32 +23,23 @@ function Obj = hybridAutomaton(varargin)
 
 %------------- BEGIN CODE --------------
 
+properties (SetAccess = private, GetAccess = public)
+    location = [];       % cell-array of location objects
+end
 
-% If no argument is passed (default constructor)
-if nargin == 0
-    disp('HybridAutomaton needs more input values');
-    Obj=[];
-    % Register the variable as an object
-    Obj = class(Obj, 'hybridAutomaton');    
+methods
     
-% If 1 argument is passed
-elseif nargin == 1
-    %List elements of the class
-    %Obj.id=nextID('hybridAutomaton');  
-    Obj.location=varargin{1};
-    Obj.result=[];
+    % class constructor
+    function obj = hybridAutomaton(varargin)
 
-    % Register the variable as an object
-    Obj = class(Obj, 'hybridAutomaton');
-        
-% Else if the parameter is an identical object, copy object    
-elseif isa(varargin{1}, 'hybridAutomaton')
-    Obj = varargin{1};
-    
-% Else if not enough or too many inputs are passed    
-else
-    disp('This class needs more/less input values');
-    Obj=[];
+        % parse input arguments
+        if nargin == 1
+            obj.location = varargin{1};
+        else
+            error('Wrong number of input arguments!');
+        end
+    end
+end
 end
 
 %------------- END OF CODE --------------

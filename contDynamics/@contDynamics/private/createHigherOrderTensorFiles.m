@@ -38,33 +38,43 @@ function createHigherOrderTensorFiles(fdyn,vars,varsDer,path,name,options)
     % generate the fourth order tensor
     tensor = generateNthTensor(fdyn,z,4);
     func = evalNthTensor(tensor,dz,4);
-    func = simplification(func,options);
+    func = simplification(func,options,dz);
     str = sprintf('tensor%i_%s',4,name);
     pathFile = [path, filesep, str];
-    matlabFunction(func,'File',pathFile,'Vars',{vars.x,vars.u,varsDer.x,varsDer.u});
+    if ~isempty(vars.p)
+        matlabFunction(func,'File',pathFile,'Vars',{vars.x,vars.u,varsDer.x,varsDer.u,vars.p});
+    else
+        matlabFunction(func,'File',pathFile,'Vars',{vars.x,vars.u,varsDer.x,varsDer.u});
+    end
     disp('tensor 4th-order');
     
     % generate all remaining higher order tensors
     for i = 5:N
         tensor = generateNthTensor(fdyn,z,i,tensor);
         func = evalNthTensor(tensor,dz,i);
-        func = simplification(func,options);
+        func = simplification(func,options,dz);
         str = sprintf('tensor%i_%s',i,name);
         pathFile = [path, filesep, str];
-        matlabFunction(func,'File',pathFile,'Vars',{vars.x,vars.u,varsDer.x,varsDer.u});
+        if ~isempty(vars.p)
+            matlabFunction(func,'File',pathFile,'Vars',{vars.x,vars.u,varsDer.x,varsDer.u,vars.p});
+        else
+            matlabFunction(func,'File',pathFile,'Vars',{vars.x,vars.u,varsDer.x,varsDer.u});
+        end
         disp(['tensor ',num2str(i),'th-order']);
     end
 end
 
-function func = simplification(func,options)
+function func = simplification(func,options,dz)
 % simplifies the symbolic expression "func" with the specified method
-    if isfield(options,'simplify')
-        if strcmp(options.simplify,'simplify')
-            func  = simplify(func);
-        elseif strcmp(options.simplify,'collect')
-            func = collect(func,dz);
-        elseif ~strcmp(options.simplify,'none')
-            error('Wrong value for options.simplify!. Only values ''simplify'', ''collect'' and ''none'' are valid!')
+    
+    if isfield(options,'lagrangeRem')
+        temp = options.lagrangeRem;
+        if isfield(temp,'simplify')
+            if strcmp(temp.simplify,'simplify')
+                func  = simplify(func);
+            elseif strcmp(temp.simplify,'collect')
+                func = collect(func,dz);
+            end
         end
     end
 end

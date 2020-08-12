@@ -48,8 +48,7 @@ end
 path = [coraroot '/contDynamics/stateSpaceModels'];
 
 % insert symbolic variables into the system equations
-t = 0;
-fdyn = obj.mFile(t,x,u);
+fdyn = obj.mFile(x,u);
 
 % compute Taylor expansion
 disp('create Taylor expansion');

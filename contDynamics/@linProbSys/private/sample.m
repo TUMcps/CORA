@@ -32,11 +32,11 @@ function [obj] = sample(obj)
 %convert to interval matrix
 intervals=[reshape(Aleft,[],1),reshape(Aright,[],1)];
 
-%build interval hull
-IH=interval(intervals(:,1), intervals(:,2));
+%build interval
+I=interval(intervals(:,1), intervals(:,2));
 
-%get vertices of interval hull
-V=get(vertices(IH),'V');
+%get vertices of interval
+V = vertices(I);
 W = unique(V', 'rows')';
 
 %reshape to different As

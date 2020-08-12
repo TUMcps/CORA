@@ -1,21 +1,27 @@
-function [pZred]=reduce(pZ,option,order)
+function probZred = reduce(probZ,option,order)
 % reduce - Reduces the order of a probabilistic zonotope
-% option 'girard': Use order reduction technique by Antoine Girard
-% option 'althoff': Use order reduction technique by Matthias Althoff where
-% order is set to 1
 %
 % Syntax:  
-%    [Zred]=reduce(Z,option,order)
+%    probZred = reduce(probZ,option,order)
 %
 % Inputs:
-%    pZ - probabilistic zonotope object
-%    option - 'girard' or 'althoff'
+%    probZ - probabilistic zonotope object
+%    option - available options:
+%             - 'girard'
+%             - 'althoff' (order set to 1)
 %    order - order of reduced zonotope
 %
 % Outputs:
-%    pZred - reduced zonotope
+%    probZred - reduced zonotope
 %
-% Example: 
+% Example:
+%    Z1 = rand(2,20);
+%    Z2 = -1+2*rand(2,5);
+%    probZ = probZonotope(Z1,Z2);
+%    probZred = reduce(probZ,'girard',3);
+%
+%    plot(probZ,'dark'); hold on;
+%    plot(probZred,'light');
 %
 % Other m-files required: none
 % Subfunctions: reduceGirard, reduceAlthoff
@@ -23,22 +29,22 @@ function [pZred]=reduce(pZ,option,order)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 27-September-2007 
-% Last update: ---
+% Author:        Matthias Althoff
+% Written:       27-September-2007 
+% Last update:   ---
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 %reduce uncertain mean
-Zred=reduce(zonotope(pZ.Z),option,order);
-pZ.Z=get(Zred,'Z');
+Zred = reduce(zonotope(probZ.Z),option,order);
+probZ.Z = Zred.Z;
 
-if pZ.gauss~=1
+if probZ.gauss~=1
     %reduce probabilistic part
-    pZred=probReduce(pZ);
+    probZred=probReduce(probZ);
 else
-    pZred=pZ;
+    probZred=probZ;
 end
 
 %------------- END OF CODE --------------

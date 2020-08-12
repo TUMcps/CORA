@@ -1,12 +1,12 @@
 function HA = bball(~)
 
 
-%% Generated on 09-Aug-2018
+%% Generated on 15-Jul-2020
 
 %---------------Automaton created from Component 'system'------------------
 
 %% Interface Specification:
-%   This section clarifies the meaning of state & input dimensions
+%   This section clarifies the meaning of state, input & output dimensions
 %   by showing their mapping to SpaceEx variable names. 
 
 % Component 1 (system.ball):
@@ -24,17 +24,17 @@ dynA = ...
 dynB = ...
 [0;0];
 dync = ...
-[0;-9.8100000000000004973799150320701];
-dynamics = linearSys('linearSys', dynA, dynB, dync);
+[0;-9.81];
+dynamics = linearSys(dynA, dynB, dync);
 
 %% equation:
 %   x >= 0
-invA = ...
+A = ...
 [-1,0];
-invb = ...
-[-0];
-invOpt = struct('A', invA, 'b', invb);
-inv = mptPolytope(invOpt);
+b = ...
+[0];
+polyOpt = struct('A', A, 'b', b);
+inv = mptPolytope(polyOpt);
 
 trans = {};
 %% equation:
@@ -47,16 +47,16 @@ reset = struct('A', resetA, 'b', resetb);
 
 %% equation:
 %   x <= eps & v < 0
-guardA = ...
-[1,0;0,1];
-guardb = ...
-[-0;-0];
-guardOpt = struct('A', guardA, 'b', guardb);
-guard = mptPolytope(guardOpt);
+c = [-1;0];
+d = 0;C = ...
+[0,1];
+D = [0];
 
-trans{1} = transition(guard, reset, 1, 'dummy', 'names');
+guard = conHyperplane(c,d,C,D);
 
-loc{1} = location('S1',1, inv, trans, dynamics);
+trans{1} = transition(guard, reset, 1);
+
+loc{1} = location('S1', inv, trans, dynamics);
 
 
 

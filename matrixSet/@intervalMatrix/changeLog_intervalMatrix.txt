@@ -1,5 +1,0 @@
-27 Feb 2015 (MA):
-
-- removed: abs.m,  expmDist.m, expmNorm.m, expmNormErr.m, expmNormErrInf.m,
-
-

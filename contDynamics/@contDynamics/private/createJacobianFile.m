@@ -38,17 +38,9 @@ fid = fopen([path '/jacobian_',name,'.m'],'w');
 if isempty(Jp)
     % write first line
     if isempty(Jcon) % no constraints
-        if isempty(vars.T)
-            fprintf(fid, '%s\n\n', ['function [A,B]=jacobian_',name,'(x,u)']);
-        else
-            fprintf(fid, '%s\n\n', ['function [A,B]=jacobian_',name,'(x,u,T)']);
-        end
+        fprintf(fid, '%s\n\n', ['function [A,B]=jacobian_',name,'(x,u)']);
     else % with constraints
-        if isempty(vars.T)
-            fprintf(fid, '%s\n\n', ['function [A,B,C,D,E,F]=jacobian_',name,'(x,y,u)']);
-        else
-            fprintf(fid, '%s\n\n', ['function [A,B,C,D,E,F]=jacobian_',name,'(x,y,u,T)']);
-        end
+        fprintf(fid, '%s\n\n', ['function [A,B,C,D,E,F]=jacobian_',name,'(x,y,u)']);
     end
   
     % DYNAMIC MATRICES
@@ -112,11 +104,7 @@ if isempty(Jp)
 % system has uncertain parameters
 else
     % write first line
-    if isempty(vars.T)
-        fprintf(fid, '%s\n\n', ['function [A,B]=jacobian_',name,'(x,u,p)']);
-    else
-        fprintf(fid, '%s\n\n', ['function [A,B]=jacobian_',name,'(x,u,p,T)']);
-    end
+    fprintf(fid, '%s\n\n', ['function [A,B]=jacobian_',name,'(x,u,p)']);
     
     % SYSTEM MATRICES
     for iMatrix = 1:length(Jp.x)

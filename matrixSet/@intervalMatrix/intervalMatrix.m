@@ -1,15 +1,23 @@
-classdef intervalMatrix 
+classdef (InferiorClasses = {?mp}) intervalMatrix 
 % intervalMatrix class 
 %
 % Syntax:  
-%    object constructor: Obj = zonotope(varargin)
-%    copy constructor: Obj = otherObj
+%    obj = intervalMatrix(C,D)
+%    obj = intervalMatrix(C,D,setting)
 %
 % Inputs:
-%    input1 - zonotope matrix
+%    C - center matrix
+%    D - width matrix
+%    setting - setting for multiplication ('sharpivmult' or 'standard')
 %
 % Outputs:
-%    Obj - Generated Object
+%    obj - generated object
+%
+% Example:
+%   C = [0 2; 3 1];
+%   D = [1 2; 1 1];
+%
+%   mi = intervalMatrix(C,D);
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -1,16 +1,13 @@
 function Asq = exactSquare(Aint)
-% exactSquare - computes the exact square of an interval matrix 
+% exactSquare - computes the exact square of an interval matrix
 %
-% The computation is according to
-% Kosheleva, O.; Kreinovich, V.; Mayer, G. & Nguyen, H. T. Computing the 
-% cube of an interval matrix is NP-Hard Proc. of the ACM symposium on 
-% Applied computing, 2005, 1449-1453
-%
-% A more easily undersstandable implementation can be found in the unit
+% The computation is according to [1].
+% 
+% A more easily understandable implementation can be found in the unit
 % test 'test_intervalMatrix_exactSquare'.
 %
 % Syntax:  
-%    sq = exactSquare(A)
+%    Asq = exactSquare(Aint)
 %
 % Inputs:
 %    A - interval matrix 
@@ -18,14 +15,20 @@ function Asq = exactSquare(Aint)
 % Outputs:
 %    Asq - resulting interval matrix
 %
-% Example: 
+% Example:
+%    -
+%
+% References:
+%   [1] Kosheleva, O.; Kreinovich, V.; Mayer, G. & Nguyen, H. T. Computing the 
+% cube of an interval matrix is NP-Hard Proc. of the ACM symposium on 
+% Applied computing, 2005, 1449-1453
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: 
-
+%
 % Author:       Matthias Althoff
 % Written:      04-January-2009 
 % Last update:  02-November-2017

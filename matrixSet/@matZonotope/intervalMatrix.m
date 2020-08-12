@@ -45,18 +45,4 @@ end
 matI = intervalMatrix(matZ.center, delta, setting);
 
 
-% %get nr of columns
-% cols=length(matZ.center(1,:));
-% 
-% %convert matrix zonotope to zonotope
-% Z = zonotope(matZ);
-% 
-% %convert to intervalhull
-% IH = intervalhull(Z);
-% 
-% %convert to interval matrix
-% c = vec2mat(center(IH),cols);
-% delta = vec2mat(rad(IH),cols);
-% matI = intervalMatrix(c, delta, setting);
-
 %------------- END OF CODE --------------

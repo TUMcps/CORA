@@ -29,10 +29,10 @@ function [Gcells]=reorderingFilter(G)
 comb = combinator(cols,rows,'c');
 nrOfComb=length(comb(:,1));
 
-Gcells=[];
+Gcells=cell(1,nrOfComb);
 for i=1:nrOfComb
     try
-        Gcells{end+1}=G(:,comb(i,:));
+        Gcells{i}=G(:,comb(i,:));
     catch
         disp('bad indices');
     end

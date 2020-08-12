@@ -36,7 +36,7 @@ else
     Rinit{1} = Rold;
     % obtain consistent initial algebraic set
     y0 = options.y0guess;
-    y0 = consistentInitialState(obj, options.x0, y0, options.uTrans);
+    y0 = consistentInitialState(obj, center(options.R0), y0, options.uTrans);
     Rinit_y{1} = zonotope(y0);
     %initialize old error (should be removed when adapting concept of @nonlinearSys)
     options.oldError = 0*options.maxError;
@@ -65,11 +65,6 @@ for iIteration=1:iterations
 
         %split initial set 
         Rsplit=split(Rinit{iIteration},options,nr);
-        
-%         figure
-%         plot(Rinit{iIteration});
-%         plot(Rsplit{1});
-%         plot(Rsplit{2});
         
         [obj,Rres,options]=initReach(obj,Rsplit,options);
         

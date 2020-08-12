@@ -101,8 +101,8 @@ for iStep=1:(simOptions.runs)
         mPartial=combineOptimized(mPartial,freeDriving(nonZeroIndTotal),nrOfInputs); 
 
         %compute Gamma matrix
-        Gpartial=sparseDiag(mPartial)*GammaFull(nonZeroIndTotal,nonZeroIndTotal);
-        Gpartial=normalizeMatrix_bsx(Gpartial);
+        Gpartial=sparse(diag(mPartial))*GammaFull(nonZeroIndTotal,nonZeroIndTotal);
+        Gpartial=normalizeMatrix(Gpartial);
         %execute Gamma matrix
         p.T{iStep+1}(nonZeroIndTotal)=Gpartial*p.T{iStep+1}(nonZeroIndTotal);    
     end

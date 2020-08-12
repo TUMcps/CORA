@@ -1,4 +1,4 @@
-function res = mergeTransitionSets(obj, transSets, loc, inv)
+function res = mergeTransitionSets(obj, transSets,loc)
 % mergeTransitionSets - Compute the transition set of a combined location 
 %                       from the transition sets of the subcomponents.
 %
@@ -13,7 +13,6 @@ function res = mergeTransitionSets(obj, transSets, loc, inv)
 %     transSets - A cell array containing the transition sets for all
 %                 transitions
 %     loc - id of the current location 
-%     inv - invariant set for the current location
 %
 % Outputs:
 %    res - cell array containing the resulting transition sets
@@ -33,11 +32,6 @@ function res = mergeTransitionSets(obj, transSets, loc, inv)
 
     numComp = length(transSets);
 
-    % compute interval over-approximation of the invariant. The
-    % over-approximation is later intersected with the guard sets, so that 
-    % the guard sets are all bounded
-    invSet = interval(inv);
-
     counter = 0;
     
     % loop over all subcomponents
@@ -53,23 +47,25 @@ function res = mergeTransitionSets(obj, transSets, loc, inv)
             trans = compTrans{t};
 
             % project guard set to the higher dimension
-            guardProj = projectHighDim(get(trans,'guard'),obj.numStates,stateBind);
-            
-            if ~isa(guardProj,'halfspace') && ~isa(guardProj,'constrainedHyperplane')
-                guardProj = guardProj & invSet;
+            guard = trans.guard;
+            if ~isa(guard,'levelSet') && ~isa(guard,'mptPolytope') && ...
+               ~isa(guard,'conHyperplane')
+                guard = mptPolytope(guard);
             end
+            
+            guardProj = projectHighDim(guard,obj.numStates,stateBind);
 
             % project reset function to the higher dimension
-            resetProj = projectReset(get(trans,'reset'),stateBind,obj.numStates);
+            resetProj = projectReset(trans.reset,stateBind,obj.numStates);
 
             % update the destination (target idx only changes in component i)
             targetProj = loc;
-            targetProj{i} = get(trans,'target');
+            targetProj(i) = trans.target;
 
             % construct transition object & add it to set
             counter = counter + 1;
             res{counter} =...
-                transition(guardProj,resetProj,targetProj,'','');
+                transition(guardProj,resetProj,targetProj);
         end
     end
 end

@@ -39,9 +39,17 @@ function obj = convGuard(obj,inv,options)
         
         % intersect with invariant set
         obj.guard = obj.guard & inv;
-          
         
-     elseif ~ismember(options.guardIntersect,{'zonoGirard','hyperplaneMap'})
+        
+     elseif ismember(options.guardIntersect,{'conZonotope','conZonotopeFast'})
+         
+         if isa(obj.guard,'mptPolytope')
+            
+           % convert to conZonotope
+           obj.guard = conZonotope(obj.guard); 
+         end      
+        
+     elseif ~ismember(options.guardIntersect,{'zonoGirard','hyperplaneMap','pancake','nondetGuard'})
         error('Wrong value for setting options.guardIntersect!');  
      end
 end

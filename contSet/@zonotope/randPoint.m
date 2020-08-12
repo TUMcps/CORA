@@ -1,17 +1,21 @@
-function [p] = randPoint(obj)
+function p = randPoint(Z)
 % randPoint - generates a random point within a zonotope
 %
 % Syntax:  
-%    [p] = randPoint(obj)
+%    p = randPoint(obj)
 %
 % Inputs:
-%    obj - zonotope object
+%    Z - zonotope object
 %
 % Outputs:
 %    p - random point in R^n
 %
 % Example: 
-%    ---
+%    Z = zonotope([1;0],rand(2,5));
+%    p = randPoint(Z);
+% 
+%    plot(Z); hold on;
+%    scatter(p(1,:),p(2,:),16,'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -19,25 +23,19 @@ function [p] = randPoint(obj)
 %
 % See also: ---
 
-% Author: Matthias Althoff
-% Written: 23-September-2008 
-% Last update: ---
+% Author:        Matthias Althoff, Mark Wetzlinger
+% Written:       23-September-2008 
+% Last update:   09-June-2020 (MW, remove loop)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 %obtain number of generators
-nrOfGenerators=length(obj.Z(1,:))-1;
-
-%initialize the random point
-p=obj.Z(:,1);
+G = generators(Z);
 
 %add generators randomly
-for i=1:nrOfGenerators
-    p=p+(2*rand(1)-1)*obj.Z(:,i+1);
-end
-
-
+factors = -1 + 2*rand(1,size(G,2));
+p = center(Z) + sum(factors .* G, 2);
 
 
 %------------- END OF CODE --------------

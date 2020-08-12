@@ -1,16 +1,17 @@
-function res = norm(obj, varargin)
-% norm - computes exactly the maximum norm value of all points in a
-% zonotope
+function varargout = norm(Z,type,mode)
+% norm - computes maximum norm value
 %
 % Syntax:  
-%    res = norm(obj, varargin)
+%    val = norm(Z,type,mode)
 %
 % Inputs:
-%    obj - zonotope object
-%    varargin - list of optional inputs
+%    Z    - zonotope object
+%    type - (optional) which kind of norm (default:2)
+%    mode - (optional) 'exact', 'ub' (upper bound),'ub_convex' (more
+%            precise upper bound computed from a convex program)
 %
 % Outputs:
-%   res - resulting maximum norm value
+%   val - norm value
 %
 % Example: 
 %    ---
@@ -19,37 +20,28 @@ function res = norm(obj, varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: minnorm
 
-% Author:       Matthias Althoff
-% Written:      29-November-2016
+% Author:       Victor Gassmann
+% Written:      31-July-2020
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
-% obtain center and generators
-c = obj.Z(:,1);
-G = obj.Z(:,2:end);
-
-% compute point currently providing the maximum norm value
-maxPoint = c;
-
-% loop through generators
-for iGen = 1:length(G(1,:))
-    % check whether addition or subtraction results in larger norm value
-    maxPointPlus  = maxPoint + G(:,iGen);
-    maxPointMinus = maxPoint - G(:,iGen);
-    % plus or minus?
-    if norm(maxPointPlus,varargin{:}) > norm(maxPointMinus,varargin{:})
-        maxPoint = maxPointPlus;
-    else
-        maxPoint = maxPointMinus;
-    end
+if ~exist('mode','var')
+    mode = 'ub';
 end
-
-% the norm of the set equals the norm of the maxPoint
-res = norm(maxPoint,varargin{:});
-
-
+if ~exist('type','var')
+    type = 2;
+end
+if strcmp(mode,'exact')
+    [varargout{1:2}] = norm_exact(Z,type);
+elseif strcmp(mode,'ub')
+    Int = interval(Z);
+    varargout{1} = norm(Int,type);
+elseif strcmp(mode,'ub_convex')
+    varargout{1} = norm_ub(Z,type);
+else
+    error('Specified type argument not supported');
+end
 %------------- END OF CODE --------------

@@ -25,6 +25,6 @@ function segmentMatrix = cellSegments(obj,indexVector)
 
 %------------- BEGIN CODE --------------
 
-segmentMatrix = i2s(obj,indexVector);
+segmentMatrix = i2s(obj.nrOfSegments',indexVector);
 
 %------------- END OF CODE --------------

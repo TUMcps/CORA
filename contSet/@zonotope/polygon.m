@@ -1,6 +1,6 @@
 function p = polygon(Z)
 % polygon - Converts a two-dimensional zonotope into a polygon and returns
-% its vertices
+%    its vertices
 %
 % Syntax:  
 %    p = polygon(Z)
@@ -33,9 +33,8 @@ function p = polygon(Z)
 Z = deleteZeros(Z);
 
 % obtain center and generator
-Zmat = get(Z,'Z');
-c = Zmat(:,1); %center
-G = Zmat(:,2:end); %matrix of generators
+c = center(Z); %center
+G = generators(Z); %matrix of generators
 
 % obtain number of generators
 n = size(G,2);

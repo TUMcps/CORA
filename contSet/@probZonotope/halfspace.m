@@ -1,14 +1,14 @@
-function [obj] = halfspace(obj)
-% halfspace - Generates halfspace representation of the zonotope
+function probZ = halfspace(probZ)
+% halfspace - Generates halfspace representation of the probabilistic zonotope
 %
 % Syntax:  
-%    [obj] = halfspace(obj)
+%    probZ = halfspace(probZ)
 %
 % Inputs:
-%    obj - zonotope object
+%    probZ - probabilistic zonotope object
 %
 % Outputs:
-%    obj - zonotope object
+%    probZ - probabilistic zonotope object
 %
 % Example: 
 %    ---
@@ -19,18 +19,18 @@ function [obj] = halfspace(obj)
 %
 % See also: ---
 
-% Author: Matthias Althoff
-% Written: 07-May-2007 
-% Last update: ---
+% Author:        Matthias Althoff
+% Written:       07-May-2007 
+% Last update:   ---
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 %convert zonotope to polytope and retrieve halfspace representation
-[H,K]=double(polytope(obj));
+[H,K]=double(polytope(probZ));
 %write to object structure
-obj.halfspace.H=H;
-obj.halfspace.K=K;
-obj.halfspace.equations=length(K);
+probZ.halfspace.H=H;
+probZ.halfspace.K=K;
+probZ.halfspace.equations=length(K);
 
 %------------- END OF CODE --------------

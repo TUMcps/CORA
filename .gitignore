@@ -6,11 +6,12 @@
 
 *.txt~
 
-
 #exclude generated files
 generated_*
+models/auxiliary/*
 
-
+#exclude cora2spaceex converted models
+models/CoraConverted/*
 
 /.project
 

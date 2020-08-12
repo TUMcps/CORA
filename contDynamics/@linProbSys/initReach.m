@@ -1,4 +1,4 @@
-function [obj,Rfirst,options] = initReach(obj,Rinit,options)
+function [Rfirst,options] = initReach(obj,Rinit,options)
 % initReach - computes the reachable continuous set for the first time step
 %
 % Syntax:  
@@ -26,6 +26,7 @@ function [obj,Rfirst,options] = initReach(obj,Rinit,options)
 % Last update:  06-October-2007
 %               08-September-2009
 %               25-July-2016 (intervalhull replaced by interval)
+%               17-July-2020 (return values changed)
 % Last revision:---
 
 %------------- BEGIN CODE --------------

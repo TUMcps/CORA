@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="iso-8859-1"?>
 <sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
   <component id="ball_template">
     <param name="x" type="real" local="false" d1="1" d2="1" dynamics="any" />
@@ -15,14 +15,14 @@
       <label>hop</label>
       <guard>x &lt;= eps &amp; v &lt; 0</guard>
       <assignment>v' := -c*v</assignment>
-      <labelposition x="-41.0" y="-69.0" />
+      <labelposition x="14.0" y="-103.0" width="118.0" height="82.0" />
     </transition>
   </component>
   <component id="system">
     <param name="x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
     <param name="v" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
     <param name="hop" type="label" local="false" />
-    <bind component="ball_template" as="ball" x="238.0" y="106.0">
+    <bind component="ball_template" as="ball" x="258.0" y="145.0">
       <map key="x">x</map>
       <map key="v">v</map>
       <map key="g">9.81</map>

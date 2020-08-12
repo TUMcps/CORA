@@ -29,7 +29,7 @@ function [iAxis,relImpr] = evaluateRotations(V,deltaAngle)
 %------------- BEGIN CODE --------------
 
 %compute volume before rotation
-IH=interval(V);
+IH=interval.enclosePoints(V);
 origVol=volume(IH);
 
 % %obtain rotation center
@@ -39,7 +39,7 @@ origVol=volume(IH);
 % V=V-c;
 
 %get number of dimensions
-vertices=get(V,'V');
+vertices=V;
 dim=length(vertices(:,1));
 
 %perform rotations
@@ -50,7 +50,7 @@ for iRot=1:(dim-1)
     Vrot1=rotate(V,dims,deltaAngle);
     Vrot2=rotate(V,dims,-deltaAngle);
     
-    %compute enclosing interval hull
+    %compute enclosing interval
     IH1=interval(Vrot1);
     IH2=interval(Vrot2);
     

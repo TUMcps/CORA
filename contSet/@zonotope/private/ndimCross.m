@@ -21,15 +21,16 @@ function [v] = ndimCross(Q)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: intervalhull,  vertices
+% See also: interval,  vertices
 
-% Author: Matthias Althoff
-% Written: 14-September-2006 
-% Last update: 22-March-2007
+% Author:        Matthias Althoff
+% Written:       14-September-2006 
+% Last update:   22-March-2007
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
+v = zeros(length(Q(:,1)),1);
 for i=1:length(Q(:,1))
     D=Q;
     D(i,:)=[];

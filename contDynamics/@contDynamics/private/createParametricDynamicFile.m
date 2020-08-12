@@ -31,8 +31,7 @@ function createParametricDynamicFile(obj,path,name)
 vars = symVariables(obj,'LRbrackets');
 
 %insert symbolic variables into the system equations
-t=0;
-f=obj.mFile(t,vars.x,vars.u,vars.p);
+f=obj.mFile(vars.x,vars.u,vars.p);
 
 %init
 fcell=cell(1,obj.nrOfParam+1);

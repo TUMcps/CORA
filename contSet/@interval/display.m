@@ -22,24 +22,35 @@ function display(obj)
 
 % Author:       Matthias Althoff
 % Written:      19-June-2015
-% Last update:  22-February-2016 now it displays the name (Dmitry Grebenyuk)
+% Last update:  22-February-2016 (DG, now it displays the name)
+%               01-May-2020 (MW, handling of empty case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-%determine size of interval
-[rows, columns] = size(obj.inf);
+if isempty(obj)
+    dispEmptyObj(obj,inputname(1));
+    
+else
+    fprintf(newline);
+    name = [inputname(1), ' ='];
+    disp(name)
+    fprintf(newline);
 
-name = [inputname(1), ' = '];
-disp(name)
-for i = 1:rows
-    str = [];
-    % display one row
-    for j = 1:columns
-        newStr = sprintf('[%0.5f,%0.5f]',obj.inf(i,j),obj.sup(i,j));
-        str = [str,' ',newStr];
+    %determine size of interval
+    [rows, cols] = size(obj.inf);
+    
+    for i = 1:rows
+        str = ' ';
+        % display one row
+        for j = 1:cols
+            newStr = sprintf('[%0.4f, %0.4f]',obj.inf(i,j),obj.sup(i,j));
+            str = [str,' ',newStr];
+        end
+        disp(str);
     end
-    disp(str);
+    
+    fprintf(newline);
 end
 
 %------------- END OF CODE --------------

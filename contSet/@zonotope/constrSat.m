@@ -1,17 +1,17 @@
-function res = constrSat(obj,C,d)
+function res = constrSat(Z,C,d)
 % constrSat - checks if all values x of a zonotope satisfy the constraint
-% Cx<=d
+%    Cx<=d
 %
 % Syntax:  
-%    res = constrSat(obj,C,d)
+%    res = constrSat(Z,C,d)
 %
 % Inputs:
-%    obj - zonotope object
+%    Z - zonotope object
 %    C - normal vectors of constraints
 %    d - distance to origin of constraints
 %
 % Outputs:
-%    res - 1/0 if constraint is satisfied
+%    res - boolean whether constraint is satisfied
 %
 % Example: 
 %
@@ -29,7 +29,7 @@ function res = constrSat(obj,C,d)
 %------------- BEGIN CODE --------------
 
 %check if constraints are violated
-IH = interval(C*obj) + (-d);
+IH = interval(C*Z) + (-d);
 
 %check if interval contains 0
 res = all(supremum(IH)<0);

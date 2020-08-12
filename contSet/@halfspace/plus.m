@@ -30,13 +30,13 @@ function [h] = plus(summand1,summand2)
 
 %Find a halfspace object
 %Is summand1 a halfspace?
-if strcmp('halfspace',class(summand1))
+if isa(summand1,'halfspace')
     %initialize resulting zonotope
     h=summand1;
     %initialize other summand
     summand=summand2;
 %Is summand2 a zonotope?    
-elseif strcmp('halfspace',class(summand2))
+elseif isa(summand2,'halfspace')
     %initialize resulting zonotope
     h=summand2;
     %initialize other summand

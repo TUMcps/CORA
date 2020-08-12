@@ -57,8 +57,8 @@ eI = eI + E;
 eI_input = eI_input + E*r;
 
 %center of interval computations
-eImid = mid(eI.int);
-eImid_input = mid(eI_input.int);
+eImid = center(eI.int);
+eImid_input = center(eI_input.int);
 
 %save results
 obj.mappingMatrixSet.highOrderZono = eZ + eImid;

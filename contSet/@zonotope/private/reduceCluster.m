@@ -1,17 +1,18 @@
 function Zred = reduceCluster(Z, order, clusterMethod)
 % reduceCluster - method to reduce the order of a zonotope
-% Cluster Method:
-% 1 - spherical kmenas (matlab implementation)
-% 2 - emMean (Cluster after projecting in all d dimensions)
-% 3 - emMeanMod (Cluster using kmeans with abs(cos) as sim. measure
-% 4 - emLineMean (Clustering using em, line as cluster rep., svd)
-% 5 - hierarchicalCluster (Hierarchical clustering using cos. sim., single)
-% 6 - hierarchicalCluster (Hierarchical clustering using cos. sim., complete)
-% 7 - hierarchicalCluster (Hierarchical clustering using cos. sim., average)
-% 8 - hierarchicalCluster (Hierarchical clustering using cos. sim., weighted)
-% 9 - kMed (Clustering, using the medoid as center instead of the mean)
-% 10 - hybrid methods betweine Line Clustering (4) and PCA
-% 11 - cluster in 2d cluster --> remove half of them
+%
+% Cluster Methods available:
+%    1 - spherical kmeans (matlab implementation)
+%    2 - emMean (Cluster after projecting in all d dimensions)
+%    3 - emMeanMod (Cluster using kmeans with abs(cos) as sim. measure
+%    4 - emLineMean (Clustering using em, line as cluster rep., svd)
+%    5 - hierarchicalCluster (Hierarchical clustering using cos. sim., single)
+%    6 - hierarchicalCluster (Hierarchical clustering using cos. sim., complete)
+%    7 - hierarchicalCluster (Hierarchical clustering using cos. sim., average)
+%    8 - hierarchicalCluster (Hierarchical clustering using cos. sim., weighted)
+%    9 - kMed (Clustering, using the medoid as center instead of the mean)
+%    10 - hybrid methods between Line Clustering (4) and PCA
+%    11 - cluster in 2d cluster --> remove half of them
 %
 % Syntax:  
 %    Zred = reduceCluster(Z, order, clusterMethod)
@@ -52,8 +53,8 @@ if ~isempty(Gred)
     rng(1); % For reproducibility (set seed for kmeans)
 
     % get dimension dim from zonotope
-    dim=length(center);
-
+    d = length(center);
+    
     %Delete zero-generators
     G=nonzeroFilter(Gred);
 
@@ -75,47 +76,45 @@ if ~isempty(Gred)
     % Similarity measure: cosine similarity
     % Replicates: how often kmeans is executed
     if clusterMethod == 1
-        [ind, gen] = kmeans(G',dim, 'Distance', 'cosine');
+        [ind, gen] = kmeans(G',d, 'Distance', 'cosine');
         Gt = G';
         Cgen=gen';
-        for k=1:dim
+        for k=1:d
             w = mean(sum(Gt(ind ==k, :).^2, 2));
             Cgen(:,k) = w * Cgen(:,k);
         end
     elseif clusterMethod == 2
-        Cgen = emMean(Z, G, dim, runs); % cluster all Dim
+        Cgen = emMean(Z, G, d, runs); % cluster all Dim
     elseif clusterMethod == 3
-        Cgen = emMeanMod(Z, G, dim, runs);
+        Cgen = emMeanMod(Z, G, d, runs);
     elseif clusterMethod == 4
-        Cgen = emLineMean(Z, G, dim, runs);
+        Cgen = emLineMean(Z, G, d, runs);
     elseif clusterMethod == 5
-        Cgen = hierarchicalCluster(Z, G, dim, runs, clusterMethod);
+        Cgen = hierarchicalCluster(Z, G, d, runs, clusterMethod);
     elseif clusterMethod == 6
-        Cgen = hierarchicalCluster(Z, G, dim, runs, clusterMethod);
+        Cgen = hierarchicalCluster(Z, G, d, runs, clusterMethod);
     elseif clusterMethod == 7
-        Cgen = hierarchicalCluster(Z, G, dim, runs, clusterMethod);
+        Cgen = hierarchicalCluster(Z, G, d, runs, clusterMethod);
     elseif clusterMethod == 8
-        Cgen = hierarchicalCluster(Z, G, dim, runs, clusterMethod);
+        Cgen = hierarchicalCluster(Z, G, d, runs, clusterMethod);
     elseif clusterMethod == 9
-        Cgen = kMed(Z, G, dim, runs);
+        Cgen = kMed(Z, G, d, runs);
     elseif clusterMethod == 10 % Hybrid of PCA and Line clustering
-        Cgen = hybrid(Z, G, dim, runs);
+        Cgen = hybrid(Z, G, d, runs);
     end
     
     % map generators
     Gtrans = Cgen\G;
 
     % box generators
-    Gbox=diag(sum(abs(Gtrans),2));
+    Gbox = diag(sum(abs(Gtrans),2));
 
     % transform generators back
     Gred = Cgen*Gbox;
 end
 
 %build reduced zonotope
-Zred.Z=[center,Gunred,Gred];
-
-
+Zred.Z = [center,Gunred,Gred];
 
 
 %-------------------- END CODE --------------------
