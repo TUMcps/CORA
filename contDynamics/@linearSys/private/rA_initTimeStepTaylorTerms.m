@@ -165,8 +165,8 @@ if options.isInput
 end
 options.savedSets{1}.F{options.taylorTerms,1} = obj.taylor.F;
 options.savedSets{1}.FR0{options.taylorTerms,1} = options.FR0;
+options.savedSets{1}.factor = options.factor;
 if ~options.originContained
-    options.savedSets{1}.factor = options.factor;
     options.savedSets{1}.inputCorr{options.taylorTerms,1} = ...
         obj.taylor.inputCorr;
 else

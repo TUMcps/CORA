@@ -128,7 +128,7 @@ if options.isInput
 end
 options.FR0 = options.savedSets{idxTimeStep}.FR0{options.taylorTerms};
 
-% for inputSolution in syn_post
+% for inputSolution
 if ~options.originContained
     options.factor = options.savedSets{idxTimeStep}.factor;
     obj.taylor.inputCorr = options.savedSets{idxTimeStep}.inputCorr{options.taylorTerms};
@@ -147,7 +147,6 @@ if options.isInput
     addErrorP = sum(abs(generators(options.Q * options.Etu)),2);
     options.ePbox = options.ePbox + addErrorP;
     options.eP = norm(options.ePbox,2);
-% ^ .maxBloatRaux may be easier calculable...
 end
 % -------------------------------------------------------------------------
 
