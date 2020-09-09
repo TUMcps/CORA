@@ -34,10 +34,15 @@ function res = zonotope(obj,varargin)
 
 % Author:       Niklas Kochdumper
 % Written:      13-May-2018
-% Last update:  ---
+% Last update:  09-September-2020 (VG, add empty case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+    if isempty(obj)
+        res = zonotope();
+        return;
+    end
 
     % parse input arguments
     alg = 'nullSpace';

@@ -47,6 +47,20 @@ if any(abs(center(Z1) - center(Z2)) > tol)
     return
 end
 
+% 1D case
+if dim(Z1) == 1 % equal to dim(Z2), see above
+    % reduce generator matrices to one generator
+    g1red = sum(abs(generators(Z1)));
+    g2red = sum(abs(generators(Z2)));
+    min_g = min(g1red,g2red);
+    tol = 1e-12;
+    if (min_g==0 && abs(g1red-g2red) < tol) || ...
+            (g1red-g2red == 0) || (g1red-g2red)/min(g1red,g2red) < tol
+        res = true;
+    end
+    return
+end
+
 G1 = generators(deleteZeros(Z1));
 G2 = generators(deleteZeros(Z2));
 % compare generator matrices
