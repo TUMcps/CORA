@@ -31,20 +31,27 @@ function res = isInterval(Z)
 
 % Author:       Niklas Kochdumper, Mark Wetzlinger
 % Written:      02-January-2020 
-% Last update:  21-April-2020 (speed up)
+% Last update:  21-April-2020 (MW, speed up)
+%               09-September-2020 (MW, 1D case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    res = true;
-    G = generators(Z);
-    for i=1:size(G,2)
-        if nnz(G(:,i)) > 1
-            % two entries -> not an axis-aligned generator
-            res = false;
-            return
-        end
+res = true;
+
+% one-dimensional zonotopes are always intervals
+if dim(Z) == 1
+    return
+end
+
+G = generators(Z);
+for i=1:size(G,2)
+    if nnz(G(:,i)) > 1
+        % two entries -> not an axis-aligned generator
+        res = false;
+        return
     end
+end
     
 end
 
