@@ -37,10 +37,12 @@ Rdelta = Rinit + (-obj.linError.p.x);
 Rtp = A_lin*Rdelta + U;
 
 % obtain linearization error
-if options.tensorOrder > 2
+if options.tensorOrder == 3
     Verror = linError_thirdOrder(obj, options, Rdelta); 
-else
+elseif options.tensorOrder == 2
     Verror = linError_mixed_noInt(obj, options, Rdelta);   
+else
+    error("Tensor Order not implemented!");
 end
 
 

@@ -48,8 +48,10 @@ if nargin > 2 && ~isempty(varargin{2})
     plotOptions = varargin(2:end);
     [linespec,NVpairs] = readPlotOptions(plotOptions);
     [NVpairs,order] = readNameValuePair(NVpairs,'Order','isscalar');
-    [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar');
     [NVpairs,unify] = readNameValuePair(NVpairs,'Unify','islogical',unify);
+    if unify
+        [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar');
+    end
     
     % in reachSet name-value pair 'Filled',true|false is default true,
     % this must be added because called plot functions are default false
@@ -141,15 +143,7 @@ else
             end
 
             % plot the set
-            if isa(temp,'polyZonotope')
-                if isempty(splits)
-                    han = plot(zonotope(temp),[1 2],linespec,NVpairs{:});
-                else
-                    han = plot(temp,[1 2],linespec,'Splits',splits,NVpairs{:});
-                end
-            else
-                han = plot(temp,[1 2],linespec,NVpairs{:});
-            end
+            han = plot(temp,[1 2],linespec,NVpairs{:});
         end
     end
 end

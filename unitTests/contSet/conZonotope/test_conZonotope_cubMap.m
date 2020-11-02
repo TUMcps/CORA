@@ -1,9 +1,9 @@
-function res = test_zonotope_cubicMultiplication
-% test_zonotope_cubicMultiplication - unit test function for cubic 
-%                                     multiplication of zonotopes
+function res = test_conZonotope_cubMap
+% test_conZonotope_cubMap - unit test function for cubic multiplication of 
+%                           constrained zonotopes
 %
 % Syntax:  
-%    res = test_zonotope_cubicMultiplication
+%    res = test_conZonotope_cubMap
 %
 % Inputs:
 %    -
@@ -20,8 +20,8 @@ function res = test_zonotope_cubicMultiplication
 % See also: -
 
 % Author:       Niklas Kochdumper
-% Written:      16-August-2018
-% Last update:  01-May-2020 (MW, cubicMultiplication -> cubMap)
+% Written:      30-October-2020
+% Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -34,7 +34,9 @@ res = false;
 
 % define zonotope
 Z = [0 1 -1; 1 2 0];
-zono = zonotope(Z);
+A = [1 1];
+b = 0;
+cZ = conZonotope(Z,A,b);
 
 % define third-order tensor
 temp = [1 -1; 0 2];
@@ -44,15 +46,22 @@ T{2,1} = temp;
 T{2,2} = temp;
 
 % compute cubic map
-Zres = cubMap(zono,zono,zono,T);
+cZres = cubMap(cZ,cZ,cZ,T);
 
 % define ground truth
-temp = [2 3 1 4 7 1 0 -1 1 6 9 3 12 21 3 0 -3 3 -2 -3 -1 -4 -7 -1 0 1 -1];
+temp = [2 3 1 4 7 6 1 -1 -2 1 9 3 -3 12 -1 -4 21 3 -3 -7 3 -1 1 -1];
 Z_ = [temp;temp];
+A_ = zeros(3,23);
+A_(1,1) = 1;
+A_(1,2) = 1;
+A_(2,3) = 1;
+A_(3,5) = 1;
+A_(3,8) = 1;
+b_ = [0;0;0];
 
 % check for correctness
-if any(any(Z_-Zres.Z))
-    error('zonotope/mixedCubicMultiplication: analytical test failed!');
+if any(any(Z_-cZres.Z)) || any(any(A_-cZres.A)) || any(b_-cZres.b)
+    error('conZonotope/cubMap: analytical test (mixed mul.) failed!');
 end
 
 
@@ -61,7 +70,9 @@ end
 
 % define zonotope
 Z = [0 1 -1; 1 2 0];
-zono = zonotope(Z);
+A = [1 1];
+b = 0;
+cZ = conZonotope(Z,A,b);
 
 % define third-order tensor
 temp = [1 -1; 0 2];
@@ -71,15 +82,17 @@ T{2,1} = temp;
 T{2,2} = temp;
 
 % compute cubic map
-Zres = cubMap(zono,T);
+cZres = cubMap(cZ,T);
 
 % define ground truth
-temp = [16 13 -1 14 -4 0 21 -7 3 -1];
+temp = [16 13 -1 14 -4 21 -7 3 -1];
 Z_ = [temp;temp];
+A_ = [1 1 0 0 0 0 0 0];
+b_ = 0;
 
 % check for correctness
-if any(any(Z_-Zres.Z))
-    error('zonotope/cubicMultiplication: analytical test failed!');
+if any(any(Z_-cZres.Z)) || any(any(A_-cZres.A)) || any(b_-cZres.b)
+    error('conZonotope/cubMap: analytical test failed!');
 end
 
 
@@ -89,12 +102,12 @@ end
 
 % TEST 1: Mixed Multiplication
 
-for i = 1:10
+for i = 1:3
 
     % create three random zonotopes
-    Z1 = zonotope(rand(2,3)-0.5*ones(2,3));
-    Z2 = zonotope(rand(2,4)-0.5*ones(2,4));
-    Z3 = zonotope(rand(2,5)-0.5*ones(2,5));
+    cZ1 = conZonotope.generateRandom(2,[],4);
+    cZ2 = conZonotope.generateRandom(2,[],3);
+    cZ3 = conZonotope.generateRandom(2,[],3);
     
     % create a random tensor
     T{1,1} = rand(2) - 0.5*ones(2);
@@ -103,24 +116,24 @@ for i = 1:10
     T{2,2} = rand(2) - 0.5*ones(2);
     
     % obtain result
-    Zres = cubMap(Z1,Z2,Z3,T);
+    cZres = cubMap(cZ1,cZ2,cZ3,T);
 
     % draw random points inside the zontopes 
-    N = 20;
+    N = 5;
     
     points1 = zeros(2,N);
     points2 = zeros(2,N);
     points3 = zeros(2,N);
     
     for j = 1:N
-       points1(:,j) = randPoint(Z1);
-       points2(:,j) = randPoint(Z2);
-       points3(:,j) = randPoint(Z3);
+       points1(:,j) = randPoint(cZ1);
+       points2(:,j) = randPoint(cZ2);
+       points3(:,j) = randPoint(cZ3);
     end
     
-    points1 = [points1,vertices(Z1)];
-    points2 = [points2,vertices(Z2)];
-    points3 = [points3,vertices(Z3)];
+    points1 = [points1,vertices(cZ1)];
+    points2 = [points2,vertices(cZ2)];
+    points3 = [points3,vertices(cZ3)];
 
     % calculate the cubic map for all possible point combinations
     pointsRes = zeros(2,size(points1,2)*size(points2,2)*size(points3,2));
@@ -135,13 +148,8 @@ for i = 1:10
         end
     end
     
-    % convert zonotope to halfspace representation
-    Zres = halfspace(Zres);
-    C = Zres.halfspace.H;
-    d = Zres.halfspace.K;
-    
 %     % plot the result
-%     plot(Zres,[1,2],'r');
+%     plot(cZres,[1,2],'r','Template',50);
 %     hold on
 %     plot(pointsRes(1,:),pointsRes(2,:),'.k');
     
@@ -150,27 +158,26 @@ for i = 1:10
         
        p = pointsRes(:,j);
         
-       if any(C*p -d > 1e-12)
-          file_name = strcat('test_zonotope_cubicMultiplication_1_', ...
+       if ~in(cZres,p)
+          file_name = strcat('test_conZonotope_cubMap_1_', ...
                              datestr(now,'mm-dd-yyyy_HH-MM'));
                   
           file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
-          save(file_path, 'Z1', 'Z2', 'Z3', 'Zres')
-          error('zonotope/mixedCubicMultiplication: random test failed!'); 
+          save(file_path, 'cZ1', 'cZ2', 'cZ3', 'cZres');
+          
+          error('conZonotope/cubMap: random test (mixed mul.) failed!'); 
        end
     end
 end
 
 
-
-
 % TEST 2: Cubic Multiplication
 
-for i = 1:10
+for i = 1:3
 
-    % create random zonotope
-    Z = zonotope(rand(2,4)-0.5*ones(2,4));
-    
+    % create random constrained zonotope
+    cZ = conZonotope.generateRandom(2,[],4);
+
     % create a random tensor
     T{1,1} = rand(2) - 0.5*ones(2);
     T{1,2} = rand(2) - 0.5*ones(2);
@@ -178,18 +185,18 @@ for i = 1:10
     T{2,2} = rand(2) - 0.5*ones(2);
     
     % obtain result
-    Zres = cubMap(Z,T);
+    cZres = cubMap(cZ,T);
 
-    % draw random points inside the zontopes 
-    N = 1000;
+    % draw random points inside the conZontope
+    N = 100;
     
     points = zeros(2,N);
     
     for j = 1:N
-       points(:,j) = randPoint(Z);
+       points(:,j) = randPoint(cZ);
     end
     
-    points = [points, vertices(Z)];
+    points = [points, vertices(cZ)];
 
     % calculate the cubic map for all possible point combinations
     pointsRes = zeros(size(points));
@@ -199,13 +206,8 @@ for i = 1:10
         pointsRes(:,j) = cubMulPoint(p,p,p,T);
     end
     
-    % convert zonotope to halfspace representation
-    Zres = halfspace(Zres);
-    C = Zres.halfspace.H;
-    d = Zres.halfspace.K;
-    
 %     % plot the result
-%     plot(Zres,[1,2],'r');
+%     plot(cZres,[1,2],'r','Template',50);
 %     hold on
 %     plot(pointsRes(1,:),pointsRes(2,:),'.k');
     
@@ -214,13 +216,14 @@ for i = 1:10
         
        p = pointsRes(:,j);
         
-       if any(C*p -d > 1e-12)
-          file_name = strcat('test_zonotope_cubicMultiplication_2_', ...
+       if ~in(cZres,p)
+          file_name = strcat('test_conZonotope_cubMap_2_', ...
                              datestr(now,'mm-dd-yyyy_HH-MM'));
                   
           file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
-          save(file_path, 'Z', 'Zres')
-          error('zonotope/cubicMultiplication: random test failed!'); 
+          save(file_path, 'cZ', 'cZres')
+          
+          error('conZonotope/cubMap: random test failed!'); 
        end
     end
 end

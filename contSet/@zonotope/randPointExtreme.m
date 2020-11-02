@@ -32,7 +32,7 @@ function p = randPointExtreme(Z)
 
 %------------- BEGIN CODE --------------
 
-%obtain number of generators
+% obtain generator matrix
 G = generators(Z);
 
 % add generators with random factors -1 or 1

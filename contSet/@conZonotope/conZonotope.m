@@ -140,6 +140,10 @@ methods
              
 end
 
+methods (Static = true)
+    cZ = generateRandom(varargin) % generate random constrained zonotope
+end
+
 % prevent unintentional usage of superclass methods
 methods(Hidden)
     
@@ -160,10 +164,6 @@ methods(Hidden)
     end
     
     function containsPoint(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function cubMap(varargin)
         error('This operation is not implemented for class "conZonotope"!'); 
     end
     
@@ -204,10 +204,6 @@ methods(Hidden)
     end
     
     function filterOut(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function generateRandom(varargin)
         error('This operation is not implemented for class "conZonotope"!'); 
     end
     
@@ -272,14 +268,6 @@ methods(Hidden)
     end
     
     function radius(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function randPoint(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function randPointExtreme(varargin)
         error('This operation is not implemented for class "conZonotope"!'); 
     end
     
