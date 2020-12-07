@@ -25,12 +25,14 @@ function [R,res] = reach(obj,params,options,varargin)
 % Written:       26-June-2019
 % Last update:   08-Oct-2019
 %                23-April-2020 (restructure params/options)
+%                07-December-2020 (fix wrong indexing)
 % Last revision: ---
 
 
 %------------- BEGIN CODE --------------
 
-    res = 1;
+    % safety property check
+    res = true;
 
     % options preprocessing
     options = params2options(params,options);
@@ -60,22 +62,7 @@ function [R,res] = reach(obj,params,options,varargin)
     Rnext.tp = options.R0;
 
     % loop over all reachability steps
-    for i = 2:length(tVec)-1
-
-        % compute output set
-        Rout{i-1} = outputSet(C,D,k,Rnext,options);
-
-        % safety property check
-        if ~isempty(spec)
-            if ~check(options.specification,Rout{i-1})
-                % violation
-                timePoint.set = Rout(1:i-1);
-                timePoint.time = num2cell(tVec(2:i)');
-                R = reachSet(timePoint);
-                res = false;
-                return
-            end
-        end
+    for i = 1:length(tVec)-1
 
         % if a trajectory should be tracked
         if isfield(options,'uTransVec')
@@ -90,18 +77,22 @@ function [R,res] = reach(obj,params,options,varargin)
         else
             Rnext.tp = obj.A*Rnext.tp + Uadd + obj.c;
         end
-    end
+        
+        % compute output set
+        Rout{i} = outputSet(C,D,k,Rnext,options);
 
-    Rout{end} = outputSet(C,D,k,Rnext,options);
-
-    % safety property check
-    res = true;
-
-    if ~isempty(spec)
-        if ~check(options.specification,Rout{end})
-            % violation, but no reduction in cell size of Rout
-            res = false;
+        % safety property check
+        if ~isempty(spec)
+            if ~check(options.specification,Rout{i})
+                % violation
+                timePoint.set = Rout(1:i);
+                timePoint.time = num2cell(tVec(2:i+1)');
+                R = reachSet(timePoint);
+                res = false;
+                return
+            end
         end
+        
     end
 
     % construct reachable set object

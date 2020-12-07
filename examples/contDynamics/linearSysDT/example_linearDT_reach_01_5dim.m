@@ -12,9 +12,10 @@ function completed = example_linearDT_reach_01_5dim()
 % Outputs:
 %    res - boolean 
 % 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      20-March-2020
 % Last update:  23-April-2020 (restructure params/options)
+%               07-December-2020 (add output matrix)
 % Last revision:---
 
 
@@ -33,10 +34,16 @@ A = [0.95 -0.15 0 0 0;...
 % input matrix
 B = 1;
 
+% constant input
+c = zeros(5,1);
+
+% output matrix
+C = [2 0 0 0 0; 0 1 0 0 0];
+
 % sampling time
 dt = 0.04;
 
-fiveDimSys = linearSysDT('fiveDimSys',A,B,dt);
+fiveDimSys = linearSysDT('fiveDimSys',A,B,c,C,dt);
 
 
 % Parameter ---------------------------------------------------------------
@@ -68,11 +75,16 @@ simOpt.inpChanges = 10;
 
 simRes = simulateRandom(fiveDimSys, params, simOpt);
 
+% apply output equation y = Cx
+for i=1:simOpt.points
+    outputtraj{i,1} = (C*simRes.x{i}')';
+end
+simRes = simResult(outputtraj,simRes.t);
 
 % Visualization -----------------------------------------------------------
 
 % plot different projections
-dims = {[1 2],[3 4]};
+dims = {[1 2]};
 
 for k = 1:length(dims)
     
@@ -83,7 +95,7 @@ for k = 1:length(dims)
     plot(R,projDims,'FaceColor',[.8 .8 .8],'EdgeColor','b');
     
     % plot initial set
-    plot(params.R0,projDims,'w-','lineWidth',2);
+    plot(C*params.R0,projDims,'w-','lineWidth',2);
     
     % plot simulation results
     plot(simRes,projDims,'.k');

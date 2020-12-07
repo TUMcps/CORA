@@ -74,7 +74,9 @@ function [t,x] = simulate(obj,params)
 
     % get constant offset
     if isempty(obj.c)
-       c = zeros(size(obj.A,1),1); 
+        c = zeros(size(obj.A,1),1); 
+    else
+        c = obj.c;
     end
 
     % loop over all time steps
