@@ -64,6 +64,10 @@ if isfield(options,'u')
            ceil((options.tFinal - options.tStart)/options.timeStep)
         % u has to equal the number of time steps
         error(printOptionOutOfRange(obj, 'u', strct));
+    elseif (isa(obj,'linearSysDT') || isa(obj,'nonlinearSysDT')) && ...
+            size(options.u,2) ~= ceil((options.tFinal - options.tStart)/obj.dt)+1
+        % u has to equal the number of time steps
+        error(printOptionOutOfRange(obj, 'u', strct));
     end
 end
 

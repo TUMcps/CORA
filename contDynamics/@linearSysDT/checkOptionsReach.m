@@ -41,11 +41,6 @@ options = check_verbose(options, obj);
 options = check_reductionTechnique(options, obj);
 options = check_tStart_tFinal(obj, options, checkName);
 
-t = options.tStart:obj.dt:options.tFinal;
-if t(end) ~= options.tFinal
-   error('Final time has to be a multiple of the sampling time!'); 
-end
-
 % MANDATORY OPTIONS -------------------------------------------------------
 
 % algorithm properties:

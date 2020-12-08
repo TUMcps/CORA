@@ -51,6 +51,11 @@ if ~isfield(options,option2)
     error(printOptionMissing(obj,option2,strct));
 elseif options.tFinal < options.tStart
     error(printOptionOutOfRange(obj,option2,strct));
+elseif isa(obj,'linearSysDT') || isa(obj,'nonlinearSysDT') % discrete-time systems
+    t = options.tStart:obj.dt:options.tFinal;
+    if t(end) ~= options.tFinal
+        error(printOptionOutOfRange(obj,option2,strct));
+    end
 end
 
 % check if final time unnecessary large

@@ -51,7 +51,7 @@ function [R,res] = reach(obj,params,options,varargin)
     %time period
     tVec = options.tStart:obj.dt:options.tFinal;
 
-    % initialize parameter for the output equation
+    % initialize parameters for the output equation
     [C,D,k] = initOutputEquation(obj,options);
     Rout = cell(length(tVec)-1,1);
 
@@ -64,18 +64,18 @@ function [R,res] = reach(obj,params,options,varargin)
     % loop over all reachability steps
     for i = 1:length(tVec)-1
 
-        % if a trajectory should be tracked
-        if isfield(options,'uTransVec')
-            options.uTrans = options.uTransVec(:,i);
-            % update input set
-            Uadd = obj.B*(options.U + options.uTrans);
-        end
-
         % write results to reachable set struct Rnext
         if isempty(obj.c)
             Rnext.tp = obj.A*Rnext.tp + Uadd;
         else
             Rnext.tp = obj.A*Rnext.tp + Uadd + obj.c;
+        end
+        
+        % if a trajectory should be tracked
+        if isfield(options,'uTransVec')
+            options.uTrans = options.uTransVec(:,i+1);
+            % update input set
+            Uadd = obj.B*(options.U + options.uTrans);
         end
         
         % compute output set
