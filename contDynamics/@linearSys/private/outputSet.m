@@ -42,7 +42,7 @@ if isfield(options,'saveOrder')
     Rout_tp = reduce(zonotope(C*Z_tp) + D * (options.uTrans + options.U) + k,...
         options.reductionTechnique,options.saveOrder);
 else
-    if any(D)
+    if any(any(D))
         Rout = C*Z + D * (options.uTrans + options.U) + k;
         Rout_tp = C*Z_tp + D * (options.uTrans + options.U) + k;
     elseif isscalar(C) && C == 1 && ~any(k)
