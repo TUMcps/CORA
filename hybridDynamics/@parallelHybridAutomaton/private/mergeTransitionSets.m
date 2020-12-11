@@ -31,7 +31,7 @@ function res = mergeTransitionSets(obj, transSets,loc)
 %------------- BEGIN CODE --------------
 
     numComp = length(transSets);
-
+    res = {};
     counter = 0;
     
     % loop over all subcomponents
