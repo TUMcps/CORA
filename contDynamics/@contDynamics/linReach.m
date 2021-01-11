@@ -49,7 +49,7 @@ abstrerr = Rstart.error;
 [obj,linSys,linOptions] = linearize(obj,options,Rinit); 
 
 % translate Rinit by linearization point
-Rdelta = Rinit+(-obj.linError.p.x);
+Rdelta = Rinit + (-obj.linError.p.x);
 
 % compute reachable set of the linearized system
 if isa(obj,'nonlinParamSys') && isa(options.paramInt,'interval')

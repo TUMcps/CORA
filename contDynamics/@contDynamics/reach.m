@@ -85,7 +85,7 @@ function [R,res] = reach(obj,params,options,varargin)
         reportReachError(ME,options.tStart,1);
         return
     end
-
+    
     % loop over all reachability steps
     for i = 2:length(tVec)-1
         
@@ -99,7 +99,7 @@ function [R,res] = reach(obj,params,options,varargin)
             timeInt.algebraic{i-1}  = Rnext.y;
         end
         
-        % check specificaiton
+        % check specification
         if ~isempty(spec)
            if ~check(spec,Rnext.ti)
                res = 0;
@@ -129,9 +129,10 @@ function [R,res] = reach(obj,params,options,varargin)
             reportReachError(ME,t,i);
             return
         end
+        
     end
     
-    % check specificaiton
+    % check specification
     if ~isempty(spec)
        if ~check(spec,Rnext.ti)
            res = 0;
@@ -145,7 +146,7 @@ function [R,res] = reach(obj,params,options,varargin)
     timePoint.time{end} = tVec(end);
 
     if isfield(Rnext,'y')
-        timeInt.algebraic{end}  = Rnext.y;
+        timeInt.algebraic{end} = Rnext.y;
     end
     
     % construct reachset object
@@ -183,7 +184,7 @@ function R = createReachSetObject(timeInt,timePoint)
         if length(timeInt.set{end}) == 1   
             timeInt.set = cellfun(@(x) x{1},timeInt.set,'UniformOutput',false);
             if isfield(timeInt,'algebraic')
-                timePoint.set = cellfun(@(x) x{1},timePoint.set,'UniformOutput',false);
+                timePoint.set = cellfun(@(x) x{1}.set,timePoint.set,'UniformOutput',false);
                 timeInt.algebraic = cellfun(@(x) x{1},timeInt.algebraic,'UniformOutput',false);
             else
                 timePoint.set = cellfun(@(x) x{1}.set,timePoint.set,'UniformOutput',false);

@@ -101,15 +101,15 @@ for i = 1:length(modes)
         R = add(R,Rtemp);
     end
     
-    % update intitial state
-    params.R0   = Rtemp.timePoint.set{end};
+    % update initial state
+    params.R0 = Rtemp.timePoint.set{end};
 end
 
 
 % Simulation --------------------------------------------------------------
 
 runs = 30;
-params.R0  = zonotope([params.x0,Bound_x]);
+params.R0 = zonotope([params.x0,Bound_x]);
 params.u = center(params.U);
 
 t = cell(runs,1); x = cell(runs,1);
