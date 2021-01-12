@@ -4,8 +4,8 @@ function [R,res] = reach(obj,params,varargin)
 % Syntax:  
 %    R = reach(obj,params)
 %    R = reach(obj,params,options)
-%    [R,res] = reach(obj,param,spec)
-%    [R,res] = reach(obj,param,options,spec)
+%    [R,res] = reach(obj,params,spec)
+%    [R,res] = reach(obj,params,options,spec)
 %
 % Inputs:
 %    obj - continuous system object
@@ -15,7 +15,7 @@ function [R,res] = reach(obj,params,varargin)
 %
 % Outputs:
 %    R - object of class reachSet storing the reachable set
-%    res  - 1 if specifications are satisfied, 0 if not
+%    res - 1 if specifications are satisfied, 0 if not
 %
 % Example: 
 %

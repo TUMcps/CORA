@@ -33,22 +33,23 @@ function [R,res] = reach(obj,params,options,varargin)
 
     % safety property check
     res = true;
-
+    
     % options preprocessing
     options = params2options(params,options);
     options = checkOptionsReach(obj,options);
-    
+
+    % specification
     spec = [];
     if nargin >= 4
-       spec = varargin{1}; 
+    	spec = varargin{1}; 
     end
-
-    %if a trajectory should be tracked
+    
+    % if a trajectory should be tracked
     if isfield(options,'uTransVec')
         options.uTrans = options.uTransVec(:,1);
     end
 
-    %time period
+    % time period
     tVec = options.tStart:obj.dt:options.tFinal;
 
     % initialize parameters for the output equation
@@ -83,7 +84,7 @@ function [R,res] = reach(obj,params,options,varargin)
 
         % safety property check
         if ~isempty(spec)
-            if ~check(options.specification,Rout{i})
+            if ~check(spec,Rout{i})
                 % violation
                 timePoint.set = Rout(1:i);
                 timePoint.time = num2cell(tVec(2:i+1)');
