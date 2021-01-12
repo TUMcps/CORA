@@ -33,7 +33,7 @@ function removedInd = removedHalfspaces(obj,Horig,Korig)
 [obj.P, sol] = obj.P.minHRep();
 
 %check if empty
-if obj.P.isEmptySet
+if isempty(obj)
     removedInd = -inf;
 else
     %init
