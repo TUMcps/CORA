@@ -134,4 +134,13 @@ function res = intcmp(prev_int, int, eps)
     end
 end
 
+function res = unite_ints(input)
+% unite multi-dimensional interval into single interval
+
+    min_int = infimum(input);
+    max_int = supremum(input);
+
+    res = interval(min(min_int), max(max_int));
+end
+
 %------------- END OF CODE --------------
