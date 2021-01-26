@@ -63,7 +63,7 @@ elseif isa(zB2,'zonoBundle')
     zB = zB1;
     
     for i = 1:zB2.parallelSets
-        zB1.Z{end+1} = zB2.Z{i};
+        zB.Z{end+1} = zB2.Z{i};
     end
     
     zB.parallelSets = zB.parallelSets + zB2.parallelSets;
