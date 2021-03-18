@@ -160,12 +160,21 @@ for iFig=1:totalFigures
 
         % loop over branches in R
         for i = 1:size(R,1)
+            
+            if ~isempty(R(i,1).timeInterval)
+                Rset = R(i,1).timeInterval.set;
+                Rtime = R(i,1).timeInterval.time;
+            else
+                Rset = R(i,1).timePoint.set;
+                Rtime = R(i,1).timePoint.time;
+            end
+            
             % loop over all R in branch
-            for j = 1:length(R(i,1).timeInterval.set)
+            for j = 1:length(Rset)
 
                 % get intervals
-                intX = interval(project(R(i,1).timeInterval.set{j},xDim));
-                intT = R(i,1).timeInterval.time{j};
+                intX = interval(project(Rset{j},xDim));
+                intT = Rtime{j};
 
                 intTX = cartProd(intT,intX);
 

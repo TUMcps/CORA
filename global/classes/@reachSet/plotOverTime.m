@@ -54,20 +54,29 @@ if unify
     
     % loop over all reachable sets
     for i = 1:size(R,1)
-       for j = 1:length(R(i,1).timeInterval.set)
+        
+        if ~isempty(R(i,1).timeInterval)
+            Rset = R(i,1).timeInterval.set;
+            Rtime = R(i,1).timeInterval.time;
+        else
+            Rset = R(i,1).timePoint.set;
+            Rtime = R(i,1).timePoint.time;
+        end
+        
+        for j = 1:length(Rset)
 
-           % get intervals
-           intX = interval(project(R(i,1).timeInterval.set{j},dim));
-           intT = R(i,1).timeInterval.time{j};
+            % get intervals
+            intX = interval(project(Rset{j},dim));
+            intT = Rtime{j};
 
-           int = cartProd(intT,intX);
+            int = cartProd(intT,intX);
 
-           % convert to polygon and unite with previous sets
-           V = [infimum(int(1)),infimum(int(1)),supremum(int(1)),supremum(int(1)); ...
+            % convert to polygon and unite with previous sets
+            V = [infimum(int(1)),infimum(int(1)),supremum(int(1)),supremum(int(1)); ...
                 infimum(int(2)),supremum(int(2)),supremum(int(2)),infimum(int(2))];
-           temp = polygon(V(1,:),V(2,:));
-           pgon = pgon | temp;
-       end
+            temp = polygon(V(1,:),V(2,:));
+            pgon = pgon | temp;
+        end
     end
     
     % plot the resulting set
@@ -80,17 +89,26 @@ else
     
     % loop over all reachable sets
     for i = 1:size(R,1)
-       for j = 1:length(R(i,1).timeInterval.set)
+        
+        if ~isempty(R(i,1).timeInterval)
+            Rset = R(i,1).timeInterval.set;
+            Rtime = R(i,1).timeInterval.time;
+        else
+            Rset = R(i,1).timePoint.set;
+            Rtime = R(i,1).timePoint.time;
+        end
+        
+        for j = 1:length(Rset)
 
-           % get intervals
-           intX = interval(project(R(i,1).timeInterval.set{j},dim));
-           intT = R(i,1).timeInterval.time{j};
+            % get intervals
+            intX = interval(project(Rset{j},dim));
+            intT = Rtime{j};
 
-           int = cartProd(intT,intX);
+            int = cartProd(intT,intX);
 
-           % plot interval
-           han = plot(int,[1,2],linespec,NVpairs{:},'Filled',true);
-       end
+            % plot interval
+            han = plot(int,[1,2],linespec,NVpairs{:},'Filled',true);
+        end
     end
 end
 
