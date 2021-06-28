@@ -34,7 +34,7 @@ function [pZ]=reduce(pZ,option,order,varargin)
 %------------- BEGIN CODE --------------
 
     % extract dimensions
-    N = size(pZ.G,1);
+    N = dim(pZ);
     P = size(pZ.G,2);
     Q = size(pZ.Grest,2);
 
