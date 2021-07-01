@@ -41,6 +41,7 @@ function res = isIntersecting(obj1,obj2,varargin)
 % Written:      22-July-2016
 % Last update:  14-Sep-2019
 %               21-Nov-2019 (NK, added intersection with other sets)
+%               01-July-2021 (MW, bug fix in 1D intersection)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -62,7 +63,7 @@ function res = isIntersecting(obj1,obj2,varargin)
     % interval and interval intersection
     if isa(obj2,'interval')
         
-        res = 1;
+        res = true;
         
         % get object properties
         sup1 = obj1.sup;
@@ -73,7 +74,7 @@ function res = isIntersecting(obj1,obj2,varargin)
         % loop over all dimensions
         for i = 1:length(obj1)
            if ~isIntersecting1D(inf1(i),sup1(i),inf2(i),sup2(i))
-              res = 0;
+              res = false;
               return
            end
         end
@@ -104,13 +105,21 @@ end
 
 function res = isIntersecting1D(inf1,sup1,inf2,sup2)
 % check if two one-dimensional intervals intersect
-    res = 0;
 
-    if ((sup1 >= sup2) && (inf1 <= sup2)) || ...
-       ((inf1 <= inf2) && (sup1 >= inf2))
-       
-        res = 1;
+    res = false;
+
+    if inf1 <= inf2
+        if inf2 <= sup1
+            res = true;
+        end
+        
+    else % inf2 < inf1
+        if inf1 <= sup2
+            res = true;
+        end
+        
     end
+    
 end
 
 %------------- END OF CODE --------------
