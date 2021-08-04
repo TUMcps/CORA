@@ -52,9 +52,26 @@ function res = zonoBundle(obj)
         A_ = A*T;
         b_ = b - A*p_;
 
+        % normalize halfspace directions to length 1
+        temp = diag(1./sqrt(sum(A_.^2,2)));
+        A_ = temp * A_; b_ = temp * b_;
+        
         % enclose null-space polytope by a zonotope bundle
-        poly_ = mptPolytope(A_,b_);
-        zB_ = zonoBundle(poly_);
+        d = sqrt(m);
+        p = size(T,2);
+        Z = cell(m,1);
+        
+        for i = 1:m
+            
+            % compute basis orthogonal to current normal vector
+            B = gramSchmidt(A_(i,:)');
+            
+            % compute interval enclousre in the transformed space
+            int = interval([-b_(m+i);-d*ones(p-1,1)],[b_(i);d*ones(p-1,1)]);
+            Z{i} = B * zonotope(int);
+        end
+        
+        zB_ = zonoBundle(Z);
 
         % transform back to original space
         c = obj.Z(:,1);

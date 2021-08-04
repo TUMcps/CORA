@@ -31,14 +31,19 @@ function R = guardIntersect_nondetGuard(obj,R,guard,options)
    
     % loop over all basis
     Z = cell(length(B),1);
-    
+        
     for i = 1:length(B)
        
         % enclose all reachable set with an interval in transformed space
         int = [];
-    
+        
         for j = 1:length(R)
-            int = int | interval(B{i}'*R{j});  
+            intnew = interval(B{i}'*R{j});
+            if isempty(intnew) && isempty(int)
+                int = int | B{i}'*interval(R{j});
+            else
+                int = int | intnew;
+            end
         end
 
         % backtransformation to the original space

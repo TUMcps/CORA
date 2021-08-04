@@ -23,17 +23,20 @@ function options = params2options(params, options)
 
 % Author:       Mark Wetzlinger
 % Written:      23-April-2020
-% Last update:  ---
+% Last update:  05-February-2021 (add empty case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-paramFields = fieldnames(params);
-for i=1:length(paramFields)
-    % copy params into options
-    % note: if same field already in options, it is overwritten
-    options.(paramFields{i}) = params.(paramFields{i});
+if ~isempty(options)
+    paramFields = fieldnames(params);
+    for i=1:length(paramFields)
+        % copy params into options
+        % note: if same field already in options, it is overwritten
+        options.(paramFields{i}) = params.(paramFields{i});
+    end
+else
+    options = params;
 end
-
 
 end

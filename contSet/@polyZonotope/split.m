@@ -45,7 +45,7 @@ function [pZsplit] = split(pZ,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: splitLongestGen, splitOneGen, zonotope/split
+% See also: splitLongestGen, splitDepFactor, zonotope/split
 
 % Author:       Niklas Kochdumper
 % Written:      28-June-2018

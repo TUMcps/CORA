@@ -34,12 +34,14 @@ params.tFinal = 400;                                     % final time
 params.R0 = zonotope([[2; 4; 4; 2; 10; 4],0.2*eye(6)]);  % initial set
 params.U = zonotope([0,0.005]);                          % uncertain input
 
+params_ = params;
+params_.paramInt = interval(0.0148,0.015);          % uncertain paramters
+
 
 % Reachability Settings ---------------------------------------------------
 
 options.timeStep=0.5;
 options.taylorTerms=4;
-options.intermediateOrder = 4;
 options.zonotopeOrder=10;
 options.tensorOrder = 2;
 options.alg = 'lin';
@@ -51,9 +53,6 @@ options.alg = 'lin';
 tank = nonlinearSys(@tank6Eq);
 
 % tank system with uncertain parameters
-optionsParam = options;
-optionsParam.paramInt = interval(0.0148,0.015);
-
 tankParam = nonlinParamSys(@tank6paramEq);
 
 
@@ -66,8 +65,9 @@ tComp = toc;
 disp(['computation time of reachable set without uncertain parameters: ',num2str(tComp)]);
 
 % compute reachable set of tank system with uncertain parameters
+options.intermediateTerms = 4;
 tic
-RcontParam = reach(tankParam, params, optionsParam);
+RcontParam = reach(tankParam, params_, options);
 tComp = toc;
 disp(['computation time of reachable set with uncertain parameters: ',num2str(tComp)]);
 

@@ -1,5 +1,5 @@
 function f=gaussian(x,Sigma)
-% gaussian - 
+% gaussian - computes the values of a Gaussian (normal) distribution
 %
 % Syntax:  
 %    f=gaussian(x,Sigma)
@@ -18,7 +18,7 @@ function f=gaussian(x,Sigma)
 % See also: ---
 
 % Author:       Matthias Althoff
-% Written:      ---
+% Written:      10-October-2007
 % Last update:  ---
 % Last revision:---
 

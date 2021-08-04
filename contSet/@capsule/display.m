@@ -37,8 +37,8 @@ else
     disp(inputname(1) + " =");
     fprintf(newline);
     
-    % display id, dimension
-    display(C.contSet);
+    % display dimension
+    display@contSet(C);
     fprintf(newline);
 
     % display center

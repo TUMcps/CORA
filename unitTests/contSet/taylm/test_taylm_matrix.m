@@ -1,11 +1,11 @@
-function res = test_taylm_matrix(~)
+function res = test_taylm_matrix
 % test_taylm_matrix - unit-tests for Taylor models
 %
 % Syntax:  
-%    res = test_taylm_matrix(~)
+%    res = test_taylm_matrix
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    res - boolean 

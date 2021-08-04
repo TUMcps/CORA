@@ -25,7 +25,7 @@ function res = isequal(Int1,Int2,tol)
 
 % Author:       Mark Wetzlinger
 % Written:      16-Sep-2019
-% Last update:  ---
+% Last update:  12-March-2021 (MW, add dimension mismatch)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -34,8 +34,16 @@ if nargin == 2
     tol = eps;
 end
 
-res = all(abs(infimum(Int1) - infimum(Int2)) < tol) && ... % infima
-    all(abs(supremum(Int1) - supremum(Int2)) < tol); % suprema
+if dim(Int1) ~= dim(Int2)
+    
+    [id,msg] = errDimMismatch();
+    error(id,msg);
+    
+else
 
+    res = all(abs(infimum(Int1) - infimum(Int2)) < tol) && ... % infima
+        all(abs(supremum(Int1) - supremum(Int2)) < tol); % suprema
+
+end
 
 %------------- END OF CODE --------------

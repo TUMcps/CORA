@@ -76,7 +76,11 @@ function cZ = or(cZ1, varargin)
         end
 
         % different cases depending on the class of the second set
-        if isa(cZ2,'conZonotope') || isa(cZ2,'zonotope') || ...
+        if isa(cZ2,'conPolyZono')
+            
+            cZ = cZ2 | cZ1;
+        
+        elseif isa(cZ2,'conZonotope') || isa(cZ2,'zonotope') || ...
            isa(cZ2,'interval') || isa(cZ2,'zonoBundle') || ...
            isa(cZ2,'mptPolytope') || isnumeric(cZ2)
             

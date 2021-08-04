@@ -1,5 +1,5 @@
 function [R,res] = reach(obj,params,options,varargin)
-% reach - computes the reachable set for linear system
+% reach - computes the reachable set for linear discrete-time systems
 %
 % Syntax:  
 %    R = reach(obj,params,options)
@@ -13,7 +13,7 @@ function [R,res] = reach(obj,params,options,varargin)
 %
 % Outputs:
 %    R - object of class reachSet storing the reachable set
-%    res  - 1 if specifications are satisfied, 0 if not
+%    res - 1 if specifications are satisfied, 0 if not
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -33,23 +33,22 @@ function [R,res] = reach(obj,params,options,varargin)
 
     % safety property check
     res = true;
-    
-    % options preprocessing
-    options = params2options(params,options);
-    options = checkOptionsReach(obj,options);
 
+    % options preprocessing
+    options = validateOptions(obj,mfilename,params,options);
+    
     % specification
     spec = [];
     if nargin >= 4
-    	spec = varargin{1}; 
+       spec = varargin{1}; 
     end
-    
-    % if a trajectory should be tracked
+
+    %if a trajectory should be tracked
     if isfield(options,'uTransVec')
         options.uTrans = options.uTransVec(:,1);
     end
 
-    % time period
+    %time period
     tVec = options.tStart:obj.dt:options.tFinal;
 
     % initialize parameters for the output equation
@@ -71,6 +70,9 @@ function [R,res] = reach(obj,params,options,varargin)
         else
             Rnext.tp = obj.A*Rnext.tp + Uadd + obj.c;
         end
+        
+        % log information
+        verboseLog(i,tVec(i),options);
         
         % if a trajectory should be tracked
         if isfield(options,'uTransVec')
@@ -99,8 +101,10 @@ function [R,res] = reach(obj,params,options,varargin)
     % construct reachable set object
     timePoint.set = Rout;
     timePoint.time = num2cell(tVec(2:end)');
-
     R = reachSet(timePoint);
+    
+    % log information
+    verboseLog(length(tVec),tVec(end),options);
 
 end
 

@@ -1,14 +1,15 @@
-function [v] = ndimCross(Q)
+function v = ndimCross(Q)
 % ndimCross - Computes the n-dimensional cross product
 %
 % Syntax:  
-%    [o] = orth(V)
+%    v = ndimCross(Q)
 %
 % Inputs:
 %    V - matrix of column vectors
 %
 % Outputs:
 %    o - orthogonal vector
+%    Q - ???
 %
 % Example: 
 %    Z=zonotope(rand(2,5));

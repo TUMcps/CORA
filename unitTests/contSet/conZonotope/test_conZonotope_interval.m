@@ -86,38 +86,6 @@ end
 
 
 
-% TEST 3: Random Test 3D --------------------------------------------------
-
-% Generate random conZonotope object
-points = rand(3,100);
-ind = convhulln(points');
-ind = unique(ind(:,1),'stable');
-V = points(:,ind);
-
-poly = mptPolytope(V');
-cZono = conZonotope(poly);
-
-% calculate interval
-int = interval(cZono);
-
-% compare with ground-truth for the vertices
-V = vertices(cZono);
-int_ = interval(min(V,[],2),max(V,[],2));
-
-for i = 1:length(int)
-   if abs(infimum(int_(i)) - infimum(int(i))) > 1e-10 || abs(supremum(int_(i)) - supremum(int(i))) > 1e-10
-      file_name = strcat('test_conZonotope_interval_3_', ...
-                         datestr(now,'mm-dd-yyyy_HH-MM'));
-                  
-      file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
-                           file_name);
-                           
-      save(file_path, 'cZono')
-      error('Test 3 failed!'); 
-   end
-end
-
-
 res = true;
 
 

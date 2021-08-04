@@ -18,10 +18,8 @@ function res = contractForwardBackward(f,dom)
 %   
 %    res = contract(f,dom,'forwardBackward');
 %
-%    figure
-%    hold on
-%    xlim([-3,3]);
-%    ylim([-3,3]);
+%    figure; hold on
+%    xlim([-3,3]); ylim([-3,3]);
 %    plot(dom,[1,2],'r');
 %    plot(res,[1,2],'g');
 %    syms x1 x2
@@ -55,7 +53,20 @@ function res = contractForwardBackward(f,dom)
     synTree = f(vars);
     
     % backward iteration
-    res = backpropagation(synTree,interval(0,0),dom);
+    res = dom;
+    
+    for i = 1:size(synTree,1)
+        try 
+            res = backpropagation(synTree(i),interval(0,0),res);
+        catch ex
+            if strcmp(ex.identifier,'CORA:emptySet')
+                res = [];
+                return
+            else
+                error(ex.message);
+            end
+        end
+    end
 
 end
 

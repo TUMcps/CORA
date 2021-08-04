@@ -34,6 +34,9 @@ function [error, errorInt, errorInt_x, errorInt_y, R_y] = linError_mixed_noInt(o
 
 %------------- BEGIN CODE --------------
 
+% set handle to correct file
+obj = setHessian(obj,'standard');
+
 %compute set of algebraic variables
 f0_con = obj.linError.f0_con;
 D = obj.linError.D;

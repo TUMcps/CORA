@@ -57,7 +57,7 @@ function Zbundle = generateRandom(varargin)
             inside = true;
             cen = randPoint(Z{1});
             for i=2:z-1
-                if ~containsPoint(Z{i},cen)
+                if ~in(Z{i},cen)
                     inside = false; continue;
                 end
             end

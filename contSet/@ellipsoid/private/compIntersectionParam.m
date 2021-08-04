@@ -33,7 +33,7 @@ function val = compIntersectionParam(W1,q1,W2,q2)
 %------------- BEGIN CODE --------------
 f = @(p) rootfnc(p,W1,q1,W2,q2);
 val = fzero(f,0.5);
-if (val < 0) | (val > 1) 
+if (val < 0) || (val > 1) 
     if det(W1) > det(W2)
       val = 1;
     else

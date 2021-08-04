@@ -32,7 +32,7 @@ function createJacobianFile(Jdyn,Jcon,Jp,path,name,vars)
 %------------- BEGIN CODE --------------
 
 
-fid = fopen([path '/jacobian_',name,'.m'],'w');
+fid = fopen([path filesep 'jacobian_' name '.m'],'w');
 
 % system has no uncertain parameters
 if isempty(Jp)

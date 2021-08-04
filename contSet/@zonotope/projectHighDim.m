@@ -1,5 +1,5 @@
-function res = projectHighDim(obj,N,dim)
-% projectHighDim - project a zonotope to a higher dimensional space
+function res = projectHighDim(obj,N,proj)
+% projectHighDim - project a zonotope to a higher-dimensional space
 %
 % Syntax:  
 %    res = projectHighDim(obj,N,dim)
@@ -7,7 +7,7 @@ function res = projectHighDim(obj,N,dim)
 % Inputs:
 %    obj - zonotope object
 %    N - dimension of the higher dimensional space
-%    dim - states of the high dimensional space that correspond to the
+%    proj - states of the high dimensional space that correspond to the
 %          states of the low dimensional mptPolytope object
 %
 % Outputs:
@@ -31,7 +31,7 @@ function res = projectHighDim(obj,N,dim)
 %------------- BEGIN CODE --------------
 
     Z = zeros(N,size(obj.Z,2));
-    Z(dim,:) = obj.Z;
+    Z(proj,:) = obj.Z;
     res = zonotope(Z);
 
 %------------- END OF CODE --------------

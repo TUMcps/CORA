@@ -25,6 +25,5 @@ function res = issymmetric(Q,TOL)
 % Last update:  15-October-2019
 % Last revision:---
 %------------- BEGIN CODE --------------
-diff_mat=abs(triu(Q)-tril(Q)');
-res = ~any(any(diff_mat>TOL,1));
+res = all(all(withinTol(triu(Q),tril(Q)',ellipsoid().TOL)));
 %------------- END OF CODE --------------

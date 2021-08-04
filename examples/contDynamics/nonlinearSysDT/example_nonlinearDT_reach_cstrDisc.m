@@ -32,21 +32,16 @@ function completed = example_nonlinearDT_reach_cstrDisc
 % Parameter  --------------------------------------------------------------
 
 params.tFinal = 0.15;
-params.U = zonotope([zeros(2,1),diag([0.1;2])]);
-% zonotope
 params.R0 = zonotope([[-0.15;-45],diag([0.005;3])]);
-% zonotope bundle
-% params.R0 = zonoBundle({ zonotope([[-0.15;-45],diag([0.005;5])]); ...
-%     zonotope([[-0.15;-45],diag([0.005;3])]) });
-% constrained zonotope
-params.R0 = conZonotope([[-0.15;-45],[0.005 0 0; 0 1.5 1.5]], [1 1 -1], 1);
+params.U = zonotope([zeros(2,1),diag([0.1;2])]);
 
 
 % Reachability Settings  --------------------------------------------------
 
-options.zonotopeOrder = 10;
-options.tensorOrder = 2;
+options.zonotopeOrder = 100;
+options.tensorOrder = 3;
 options.errorOrder = 5;
+
 
 % System Dynamics  --------------------------------------------------------
 
@@ -68,7 +63,7 @@ disp("Computation time: " + tComp);
 
 % Simulation --------------------------------------------------------------
 
-simOpt.points = 10;
+simOpt.points = 100;
 simOpt.fracVert = 0.5;
 simOpt.fracInpVert = 0.5;
 simOpt.inpChanges = 3;
@@ -84,11 +79,7 @@ figure; hold on; box on;
 plot(params.R0,[1,2],'w','Filled',true);
 
 % plot reachable set
-if isa(params.R0,'conZonotope')
-    plot(R,[1 2],'b','EdgeColor','none','Splits',5); % for conZonotope
-else
-    plot(R,[1 2],'b','EdgeColor','none');
-end
+plot(R,[1 2],'FaceColor',[.8 .8 .8],'EdgeColor','none');
 
 % plot simulation
 plot(simRes,[1,2],'.k');

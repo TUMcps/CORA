@@ -1,5 +1,5 @@
 function P = enclosingPolytope(Z,varargin)
-% enclosingPolytope - Converts a zonotope to a polytope representation
+% enclosingPolytope - converts a zonotope to a polytope representation
 %
 % Syntax:  
 %    P = enclosingPolytope(Z,varargin)

@@ -77,7 +77,7 @@ res = 1;
 for i = 1:size(points,2)
    resTemp = 0;
    for j = 1:length(qZsplit)
-      if containsPoint(qZsplit{j},points(:,i),1e-10)
+      if in(qZsplit{j},points(:,i),1e-10)
          resTemp = 1;
          break;
       end

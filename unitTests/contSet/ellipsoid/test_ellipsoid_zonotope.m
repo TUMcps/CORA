@@ -1,6 +1,5 @@
 function res = test_ellipsoid_zonotope
-% test_ellipsoid_zonotope - unit test function of zonotope (which
-% implicitly is a unit test for insc_zonotope and enc_zonotope)
+% test_ellipsoid_zonotope - unit test function of zonotope
 %
 % Syntax:  
 %    res = test_ellipsoid_zonotope
@@ -19,60 +18,38 @@ function res = test_ellipsoid_zonotope
 %
 % See also: -
 
-% Author:       Victor Gaﬂmann
-% Written:      14-October-2019
+% Author:       Victor Gassmann
+% Written:      27-July-2021
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 res = true;
-dims = 2:5;
-dGen = 5;
-steps = 3;
-rndDirs = 100;
-for i=dims
-    %randomly generate ellipsoid
-    E = ellipsoid.generateRandom(false,i);
-    n = i;
-    for j=1:steps
-        m = n+j*dGen;
-        Zo_box = zonotope(E);
-        Zo_n = zonotope(E,m,'o:norm');
-        %Zo_nb = zonotope(E,m,'o:norm:bnd');%not implemented yet
-        Zu_box = zonotope(E,[],'u:box');
-        Zu_n = zonotope(E,m,'u:norm');
-        Zu_nb = zonotope(E,m,'u:norm:bnd');
-        %compute rndDirs random unit directions
-        cc = randn(n,rndDirs);
-        nn = cc./repmat(sqrt(sum(cc.^2,1)),n,1);
-        %check if suppfnc(E)<=suppfnc(Z) (E in Z)
-        for k=1:rndDirs
-            d = nn(:,k);
-            %overapproximations
-            if supportFunc(E,d)>supportFunc(Zo_n,d) || ...
-                    supportFunc(E,d)>supportFunc(Zo_box,d)
-                res = false;
-                break;
-            end
-            %underapproximations
-            if supportFunc(E,d)<supportFunc(Zu_n,d) || ...
-                    supportFunc(E,d)<supportFunc(Zu_nb,d) || ...
-                    supportFunc(E,d)<supportFunc(Zu_box,d)
-                res = false;
-                break;
-            end
-        end
-        if ~res
-            break;
-        end
-    end
-    if ~res
+load cases.mat E_c
+for i=1:length(E_c)
+    E1 = E_c{i}.E1; % non-deg
+    Ed1 = E_c{i}.Ed1; % deg
+    E0 = E_c{i}.E0; % all zero
+    n = dim(E1);
+    N = 5*n;
+    
+    Z1 = zonotope(E1,2*n,'i:norm');
+    Zd1 = zonotope(Ed1,2*n,'o:norm');
+    Z0 = zonotope(E0,2*n,'i:norm:bnd');
+    
+    if ~in(E1,randPoint(Z1,N,'extreme')) || ...
+       ~in(Zd1,randPoint(Ed1,N,'extreme')) || ...
+       ~(all(rad(interval(Z0))==0) && all(withinTol(center(Z0),E0.q,E0.TOL)))
+        res = false;
         break;
     end
+    
+    
 end
+
 if res
-    disp('test_ellipsoid_zonotope successful');
+    disp([mfilename,' successful']);
 else
-    disp('test_ellipsoid_zonotope failed');
+    disp([mfilename,' failed']);
 end
 %------------- END OF CODE --------------

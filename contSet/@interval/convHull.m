@@ -1,4 +1,4 @@
-function res = convHull(Int1,Int2)
+function res = convHull(Int1,varargin)
 % convHull - computes an enclosure for the convex hull of two intervals
 %
 % Syntax:  
@@ -20,9 +20,17 @@ function res = convHull(Int1,Int2)
 % Author:        Niklas Kochdumper
 % Written:       26-November-2019 
 % Last update:   05-May-2020 (MW, standardized error message)
+%                12-March-2021 (MW, add empty case)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
+
+% parse input arguments
+if nargin == 1
+    res = Int1; return;
+else
+    Int2 = varargin{1}; 
+end
 
 % determine the interval object
 if ~isa(Int1,'interval')
@@ -32,13 +40,18 @@ if ~isa(Int1,'interval')
 end
 
 % different cases depending on the class of the summand
-if isa(Int2,'interval') || isnumeric(Int2)
+if isa(Int2,'interval') && isempty(Int2)
+    % actually holds for all sets, but other checks might be costly
+    
+    res = interval();
+    
+elseif isa(Int2,'interval') || isnumeric(Int2)
 
     res = Int1 | Int2;
 
 elseif isa(Int2,'zonotope') || isa(Int2,'conZonotope') || ...
        isa(Int2,'zonoBundle') || isa(Int2,'polyZonotope') || ...
-       isa(Int2,'mptPolytope')
+       isa(Int2,'mptPolytope') || isa(Int2,'conPolyZono')
 
     res = convHull(Int2,Int1);
 

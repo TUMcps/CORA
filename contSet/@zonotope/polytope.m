@@ -1,5 +1,5 @@
 function [P,comb,isDeg] = polytope(Z, varargin)
-% polytope - Converts a zonotope from a G- to a H-representation
+% polytope - converts a zonotope from a G- to a H-representation
 %    This function is implemented based on Theorem 7 of [1].
 %
 % Syntax:  
@@ -8,7 +8,9 @@ function [P,comb,isDeg] = polytope(Z, varargin)
 %
 % Inputs:
 %    Z - zonotope object
-%    type - type of polytope returned ('mpt' or 'ppl')
+%    type - type of polytope returned
+%               - 'mpt' (default)
+%               - 'ppl'
 %
 % Outputs:
 %    P - polytope object
@@ -19,17 +21,15 @@ function [P,comb,isDeg] = polytope(Z, varargin)
 %    zono = zonotope.generateRandom(2,[],5);
 %    poly = polytope(zono);
 %
-%    figure
-%    hold on
+%    figure; hold on;
 %    plot(poly,[1,2],'r');
 %
-%    figure
-%    hold on
+%    figure; hold on;
 %    plot(zono,[1,2],'b');
 %
 % References:
 %   [1] Althoff, M.; Stursberg, O. & Buss, M. Computing Reachable Sets
-%       of Hybrid  Systems Using a Combination of Zonotopes and Polytopes
+%       of Hybrid Systems Using a Combination of Zonotopes and Polytopes
 %       Nonlinear Analysis: Hybrid Systems, 2010, 4, 233-249
 % 
 % Other m-files required: vertices, polytope
@@ -79,6 +79,8 @@ if nrGen >= n
     if n > 1
         % get number of possible facets
         comb = combinator(nrGen,n-1,'c');
+        % bypass bug in combinator (rows with all-zeros?!)
+        comb = comb(any(comb,2),:);
 
         % build C matrices for inequality constraint C*x < d
         C=[];
@@ -191,7 +193,7 @@ if isfield(options,'polytopeType') && strcmp(options.polytopeType,'ppl')
     P = pplPolytope(C,d);
 else
     P = mptPolytope(C,d);
-    P = removeRedundancies(P,'aligned');
+    %P = removeRedundancies(P,'aligned');
 end
 
 

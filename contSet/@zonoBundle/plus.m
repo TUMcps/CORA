@@ -56,7 +56,7 @@ function [Zbundle] = plus(summand1,summand2)
             Zbundle.Z{i} = Zbundle.Z{i} + zonoBundle(summand);
         end        
 
-    elseif isa(summand,'polyZonotope')
+    elseif isa(summand,'polyZonotope') || isa(summand,'conPolyZono')
 
         Zbundle = summand + Zbundle;
 

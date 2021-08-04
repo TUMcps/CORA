@@ -23,15 +23,15 @@ function Z = insc_parallelotope(E)
 %
 % See also: zonotope
 
-% Author:       Victor Gassmann
+% Author:       Victor Gassmann, Matthias Althoff
 % Written:      14-October-2019
-% Last update:   ---
-% Last revision: ---
+% Last update:  27-January-2021 (MA, degenerate case implemented)
+%               08-June-2021 (VG, moved degeneracy to main file)
+% Last revision:---
 
 %------------- BEGIN CODE --------------
-if E.isdegenerate
-    error('not implemented for degenerate ellipsoids');
-end
+assert(~E.isdegenerate,'Degeneracy should be handled in main file!');
+
 T = inv(sqrtm(E.Q));
 n = length(E.Q);
 %transform ellipsoid into sphere -> square into sphere -> back transform

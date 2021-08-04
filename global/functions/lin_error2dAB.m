@@ -20,7 +20,7 @@ function [dA,dB] = lin_error2dAB(R,U,hessian,p,varargin)
 % See also: 
 %   -
 
-% Author:       Victor Gaﬂmann
+% Author:       Victor Gassmann
 % Written:      14-May-2019 
 % Last update:  -
 % Last revision: ---

@@ -30,7 +30,12 @@ function val = volume(E)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
+if isempty(E)
+    val = 0;
+    return;
+end
 n = length(E.Q);
+% use volume for n-ball
 Vball = pi^(n/2)/gamma(n/2+1);
 val = Vball*sqrt(det(E.Q));
 %------------- END OF CODE --------------

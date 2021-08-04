@@ -48,8 +48,13 @@ function [Rnext,options] = initReach(obj,Rinit,options)
     for i = 1:length(Rinit)
 
         % compute reachable set of abstraction
-        [Rtemp_ti,Rtemp_tp,dimForSplit] = linReach(obj,options,Rinit{i});
-
+        [Rtemp_ti,Rtemp_tp,dimForSplit,opts] = linReach(obj,options,Rinit{i});
+        
+        % save prevErr to reuse
+        if isfield(opts,'prevErr')
+            options.prevErr = opts.prevErr;
+        end
+        
         % check if initial set has to be split
         if isempty(dimForSplit)
             Rtp{setCounter} = Rtemp_tp;

@@ -23,7 +23,7 @@ function res = mergeTransitionSets(obj, transSets,loc)
 %
 % See also: ---
 
-% Author:       Johann Schöpfer, Niklas Kochdumper
+% Author:       Johann Schoepfer, Niklas Kochdumper
 % Written:      14-June-2018
 % Last update:  09-July-2018 (NK, use function "projectHighDim")
 % Last revision: ---

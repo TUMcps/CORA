@@ -25,7 +25,7 @@ function res = test_capsule_mtimes
 
 %------------- BEGIN CODE --------------
 
-% instantiate random capsule
+% instantiate capsule
 C = capsule([1; 0], [1; -1], 2);
 
 % linear map: 90° = pi/2

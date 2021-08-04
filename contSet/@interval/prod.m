@@ -1,7 +1,8 @@
-function res = prod(obj,n)
+function res = prod(obj,varargin)
 % prod - product of array elements
 %
 % Syntax:  
+%    res = prod(obj)
 %    res = prod(obj,n)
 %
 % Inputs:
@@ -27,6 +28,16 @@ function res = prod(obj,n)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% parse input arguments
+n = 1;
+if nargin <= 1
+    if size(obj,1) == 1
+        n = 2;
+    end
+else
+    n = varargin{1};
+end
 
 if n == 1 % reduce to a row 
     S.type='()'; % to avoid Matlab's bug

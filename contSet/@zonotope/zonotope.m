@@ -1,7 +1,12 @@
-classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonotope
-% zonotope - Object and Copy Constructor 
+classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonotope < contSet
+% zonotope - object constructor for zonotope objects
 %
-% Syntax:  
+% Description:
+%    This class represents zonotopes objects defined as
+%    {c + \sum_{i=1}^p beta_i * g^(i) | beta_i \in [-1,1]}.
+%
+% Syntax:
+%    obj = zonotope()
 %    obj = zonotope(c,G)
 %    obj = zonotope(Z)
 %
@@ -42,7 +47,6 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonotope
 properties (SetAccess = protected, GetAccess = public)
     Z (:,:) {mustBeNumeric} = []; % zonotope center and generator Z = [c,g_1,...,g_p]
     halfspace = [];     % halfspace representation of the zonotope
-    contSet = [];
 end
 
 methods
@@ -54,18 +58,8 @@ methods
             Obj.Z = [];
             Obj.halfspace = [];
 
-            % Generate parent object
-            Obj.contSet = contSet();
-
         % If 1 argument is passed
         else
-            
-            % Generate parent object
-            if ~isempty(varargin{1})
-                Obj.contSet = contSet(length(varargin{1}(:,1)));
-            else
-                Obj.contSet = contSet();
-            end
             
             if nargin == 1
             
@@ -76,20 +70,33 @@ methods
                     % List elements of the class
                     Obj.Z = varargin{1}; 
                     Obj.halfspace = [];
-
                 end
 
             % If 2 arguments are passed
             elseif nargin == 2
 
-                % List elements of the class
-                Obj.Z = [varargin{1},varargin{2}]; 
-                Obj.halfspace = [];
+                % wrong inputs
+                if isempty(varargin{1})
+                    [id,msg] = errConstructor('Center is empty.'); error(id,msg);
+                elseif ~isvector(varargin{1})
+                    [id,msg] = errConstructor('Center is not a vector.'); error(id,msg);
+                elseif ~isempty(varargin{2}) && size(varargin{1},1) ~= size(varargin{2},1)
+                    [id,msg] = errConstructor('Dimension mismatch between center and generator matrix.'); error(id,msg);
+                else
+                    Obj.Z = [varargin{1},varargin{2}]; 
+                    Obj.halfspace = [];
+                end
             
+            elseif nargin > 2
+                
+                % too many input arguments
+                [id,msg] = errConstructor('Too many input arguments.');
+                error(id,msg);
             end
-        
         end
         
+        % set parent object properties
+        Obj.dimension = size(Obj.Z,1);
     end
 end
 

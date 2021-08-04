@@ -1,14 +1,16 @@
 function [c] = center(pZ)
-% center - Returns the center of a polynomial zonotope
+% center - returns the starting point of a polynomial zonotope,
+%    please note that this does not correspond to the geometric
+%    center of the polynomial zonotope in general
 %
 % Syntax:  
-%    [c] = center(qZ)
+%    c = center(pZ)
 %
 % Inputs:
 %    pZ - polyZonotope object
 %
 % Outputs:
-%    c - center of the polynomial zonotope pZ
+%    c - starting point of the polynomial zonotope pZ
 %
 % Example: 
 %    pZ = polyZonotope([3;4],[2 0 1;0 2 1],[0;0],[1 0 3;0 1 1]);
@@ -18,7 +20,7 @@ function [c] = center(pZ)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/center, quadZonotope/center
+% See also: zonotope/center, polyZonotope/center
 
 % Author:       Niklas Kochdumper
 % Written:      27-June-2018

@@ -1,6 +1,6 @@
 function res = isequal(Z1,Z2,tol)
-% isequal - checks if zonotopes are equal
-% note: no deletion of aligned generators (costly)
+% isequal - checks if zonotopes are equal (note: no deletion of aligned
+%    generators since this is quite costly)
 %
 % Syntax:  
 %    res = isequal(Z1,Z2,tol)

@@ -8,8 +8,7 @@ function [val,x] = supportFunc(obj,dir,varargin)
 %
 % Inputs:
 %    obj - interval object
-%    dir - direction for which the bounds are calculated (vector of size
-%          (n,1) )
+%    dir - direction for which the bounds are calculated (vector)
 %    type - upper or lower bound ('lower' or 'upper')
 %
 % Outputs:
@@ -28,7 +27,11 @@ function [val,x] = supportFunc(obj,dir,varargin)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-    
+
+if size(dir,1) == 1 && size(dir,2) >= 1
+    % transpose dir
+    dir = dir';
+end
 [val,x] = supportFunc(zonotope(obj),dir,varargin{:});
 
 %------------- END OF CODE --------------

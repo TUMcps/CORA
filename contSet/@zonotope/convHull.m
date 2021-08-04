@@ -1,4 +1,4 @@
-function res = convHull(Z1,Z2)
+function res = convHull(Z1,varargin)
 % convHull - computes an enclosure for the convex hull of two zonotopes
 %
 % Syntax:  
@@ -17,8 +17,7 @@ function res = convHull(Z1,Z2)
 %
 %    zono = convHull(zono1,zono2);
 %
-%    figure
-%    hold on
+%    figure; hold on;
 %    plot(zono1,[1,2],'r','Filled',true,'EdgeColor','none');
 %    plot(zono2,[1,2],'b','Filled',true,'EdgeColor','none');
 %    plot(zono,[1,2],'g','LineWidth',3);
@@ -35,6 +34,13 @@ function res = convHull(Z1,Z2)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
+
+    % parse input arguments
+    if nargin == 1
+        res = Z1; return;
+    else
+        Z2 = varargin{1};
+    end 
 
     % determine zonotope object
     if ~isa(Z1,'zonotope')
@@ -53,7 +59,8 @@ function res = convHull(Z1,Z2)
         res = zonotope(cZ);
 
     elseif isa(summand,'mptPolytope') || isa(summand,'conZonotope') || ...
-           isa(summand,'zonoBundle') || isa(summand,'polyZonotope')
+           isa(summand,'zonoBundle') || isa(summand,'polyZonotope') || ...
+           isa(summand,'conPolyZono')
 
         res = Z2 + Z1;        
 

@@ -15,7 +15,7 @@ function [R,res] = reach(obj,params,varargin)
 %
 % Outputs:
 %    R - object of class reachSet storing the reachable set
-%    res - 1 if specifications are satisfied, 0 if not
+%    res  - 1 if specifications are satisfied, 0 if not
 %
 % Example: 
 %
@@ -37,11 +37,11 @@ function [R,res] = reach(obj,params,varargin)
     % parse input arguments
     spec = [];
     if nargin == 2
-        options.linAlg = 'adap'; 
+        options.linAlg = 'adaptive'; 
     elseif nargin == 3
         if isa(varargin{1},'specification')
             spec = varargin{1};
-            options.linAlg = 'adap';
+            options.linAlg = 'adaptive';
         else
             options = varargin{1};
         end
@@ -51,15 +51,14 @@ function [R,res] = reach(obj,params,varargin)
     end
     
     % options preprocessing
-    options = params2options(params, options);
-    options = checkOptionsReach(obj,options);
+    options = validateOptions(obj,mfilename,params,options);
     
     if ~isempty(spec)
     	options.specification = spec; 
     end
 
     % decide which reach function to execute by options.linAlg
-    if strcmp(options.linAlg,'adap')
+    if strcmp(options.linAlg,'adaptive')
         [Rout,Rout_tp,res,deltaT] = reach_adaptive(obj, options);
         tVec = cumsum(deltaT) + options.tStart;
     else

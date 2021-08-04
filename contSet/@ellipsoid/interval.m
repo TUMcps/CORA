@@ -33,8 +33,11 @@ n = E.dim;
 E0 = ellipsoid(E.Q,zeros(size(E.q)));
 dI = zeros(n,1);
 Idty = eye(n);
+% compute the width of the ellipsoid in each dimension 
+% using the support function
 for i=1:n
     dI(i) = supportFunc(E0,Idty(:,i));
 end
+% construct the resulting interval
 I = interval(-dI,dI) + E.q;
 %------------- END OF CODE --------------

@@ -37,8 +37,8 @@ function res = isFullDim(obj)
 
     if isempty(obj.A)
         
-        % call zonotope isFullDimensional method
-        res = isFullDimensional(zonotope(obj.Z));
+        % call zonotope isFullDim method
+        res = isFullDim(zonotope(obj.Z));
         
     else
 

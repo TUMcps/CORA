@@ -21,7 +21,7 @@ function res = isYalmipInstalled()
 %
 % See also: @zonotope/minnorm.m
 
-% Author:       Victor Gaﬂmann
+% Author:       Victor Gassmann
 % Written:      15-October-2019
 % Last update:  ---
 % Last revision:---

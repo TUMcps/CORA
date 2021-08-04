@@ -15,7 +15,7 @@ function completed = example_nonlinear_reach_07_vanDerPol_linearRemainder()
 % Example: 
 %
 
-% Author:       Victor Ga�mann
+% Author:       Victor Gassmann
 % Written:      22-May-2019
 % Last update:  23-April-2020 (restructure params/options)
 % Last revision:---

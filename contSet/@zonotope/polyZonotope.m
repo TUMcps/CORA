@@ -1,5 +1,5 @@
 function pZ = polyZonotope(obj)
-% polyZonotope - convert a zonotope object to a polynomial zonotope 
+% polyZonotope - convert a zonotope object to a polyZonotope object
 %
 % Syntax:  
 %    pZ = polyZonotope(obj)
@@ -14,14 +14,13 @@ function pZ = polyZonotope(obj)
 %    zono = zonotope([1 2 0 -1;3 1 2 2]);
 %    pZ = polyZonotope(zono);
 %    
+%    figure;
 %    plot(zono,[1,2],'b','Filled',true,'EdgeColor','none');
-%    xlim([-3,5]);
-%    ylim([-3,9]);
+%    xlim([-3,5]); ylim([-3,9]);
 %
-%    figure
+%    figure;
 %    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
-%    xlim([-3,5]);
-%    ylim([-3,9]);
+%    xlim([-3,5]); ylim([-3,9]);
 %
 % Other m-files required: none
 % Subfunctions: none

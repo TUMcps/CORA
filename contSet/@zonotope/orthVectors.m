@@ -1,9 +1,9 @@
-function [V] = orthVectors(Z)
-% orthVectors - Computes remaining orthogonal vectors when the zonotope is
-% not full dimensional
+function V = orthVectors(Z)
+% orthVectors - computes remaining orthogonal vectors when the zonotope is
+%    not full dimensional
 %
 % Syntax:  
-%    [V] = orthVectors(Z)
+%    V = orthVectors(Z)
 %
 % Inputs:
 %    Z - zonotope
@@ -17,7 +17,7 @@ function [V] = orthVectors(Z)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: intervalhull,  vertices
+% See also: interval,  vertices
 
 % Author:       Matthias Althoff
 % Written:      17-January-2012 

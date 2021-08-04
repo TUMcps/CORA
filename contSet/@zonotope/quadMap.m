@@ -20,12 +20,10 @@ function Zquad = quadMap(varargin)
 %
 %    res = quadMap(zono,Q);
 %
-%    figure
-%    hold on
+%    figure; hold on;
 %    plot(zono,[1,2],'r');
 %
-%    figure
-%    hold on
+%    figure; hold on;
 %    plot(res,[1,2],'b');
 %
 % Other m-files required: none

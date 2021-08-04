@@ -1,27 +1,28 @@
-function [E] = plus(E1,E2,L)
-% plus - Overloaded '+' operator for the addition of two ellipsoids or
-% ellipsoid and vector
+function [E] = plus(obj,S,varargin)
+% plus - Overloaded '+' operator for approximating the Minkowski sum of two
+% ellipsoids 
 %
 % Syntax:  
-%    [E] = plus(E1,E2)
+%    E = plus(obj,S)
+%    E = plus(obj,S,mode)
+%    E = plus(obj,S,L)
+%    E = plus(obj,S,L,mode)
 %
 % Inputs:
-%    E1          - Ellipsoid object/vector
-%    E2          - Ellipsoid object/vector
-%    (optional)L - Unit directions over which length(N) different
-%    lplus(E1,E2,L(:,i)) results are intersected
+%    obj - ellipsoid object
+%    S  - set representation (or cell array thereof)
+%    L (opt)-directions to use for approximation
+%    mode(opt)- type of approximation ('i': inner; 'o': outer)
 %
 % Outputs:
-%    E - Ellipsoid after addition of two ellipsoids/ellipsoid and vector
+%    E - ellipsoid after Minkowski sum
 %
 % Example: 
-%    E1=ellipsoid([1 0; 0 1]);
-%    E2=ellipsoid([1 1; 1 1]);
-%    E =E1+E2;
-%    n = length(E1.Q);
-%    X = randn(n,N);
-%    L = X./repmat(sqrt(sum(X.^2,1)),n,1);
-%    E_alternative = plus(E1,E2,L);
+%
+%
+% References:
+%   [1] Kurzhanskiy, A.A. and Varaiya, P., 2006, December. Ellipsoidal toolbox (ET).
+% In Proceedings of the 45th IEEE Conference on Decision and Control (pp. 1498-1503). IEEE.
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,51 +31,82 @@ function [E] = plus(E1,E2,L)
 % See also: -
 
 % Author:       Victor Gassmann
-% Written:      13-March-2019
+% Written:      09-March-2021
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-if (~isa(E1,'ellipsoid') && ~isa(E1,'double')) || ...
-   (~isa(E1,'ellipsoid') && ~isa(E1,'double'))
-    error('Wrong type of arguments');
+%% parsing & checking
+% check if first or second argument is ellipsoid
+if ~isa(obj,'ellipsoid') 
+    tmp = obj;
+    obj = S;
+    S = tmp;
 end
-if isa(E1,'double') && isa(E2,'double')
-    error('At least one argument has to be of class "ellipsoid"');
-end
-if isa(E1,'double')
-    if size(E1,2)~=1 || (size(E1,1)~=1 && size(E1,1)~=size(E2.q,1))
-        error('Argument has to be either a scalar or a vector with appropriate length');
+% parse arguments
+if isempty(varargin)
+    L = zeros(length(obj.q),0);
+    mode = 'o';
+elseif length(varargin{1})==1
+    if isa(varargin{1},'char')
+        mode = varargin{1};
+        L = zeros(length(obj.q),0);
+    elseif isa(varargin{1},'double')
+        L = varargin{1};
+        mode = 'o';
+    else
+        error('Wrong type for 3. input argument!');
     end
-    E = ellipsoid(E2.Q,E2.q+E1);
+elseif length(varargin{1})==2
+    if ~isa(varargin{1},'double')
+        error('Wrong type for 3. input argument!');
+    end
+    if ~isa(varargin{1},'char')
+        error('Wrong type for 4. input argument!');
+    end
+    L = varargin{1};
+    mode = varargin{2};
+else
+    error('Wrong number of input arguments!');
+end
+
+% handle empty cells, S not a cell etc
+S = prepareSetCellArray(S,obj);
+if isempty(S)
+    E = obj;
     return;
-elseif isa(E2,'double')
-    if size(E2,2)~=1 || (size(E2,1)~=1 && size(E2,1)~=size(E1.q,1))
-        error('Argument has to be either a scalar or a vector with appropriate length');
-    end
-    E = ellipsoid(E1.Q,E1.q+E2);
+end
+
+% check arguments
+if ~any(mode==['i','o'])
+   error('mode has to be either "i" (inner approx) or "o" (outer approx)');
+end
+
+if size(L,1)~=length(obj.q)
+    error('Dimensions of L do not match first argument!');
+end
+
+N = length(S);
+
+%% different Minkowski additions
+if isa(S{1},'double')
+    s = sum(cell2mat(reshape(S,[1,numel(S)])),2);
+    E = ellipsoid(obj.Q,obj.q+s);
     return;
 end
-if E1.isdegenerate || E2.isdegenerate
-    error('Ellipsoids have to be full-dimensional');
-end
-n = E1.dim;
-%compute N random directions
-if ~exist('L','var')
-    %idea is that the intersection has smaller volume; if not, use 
-    %use equal partition; compute enough directions such that each
-    %dimension is "covered"
-    L = eq_point_set(n-1,2*n);
-    counter = 1;
-    while rank(L)<n
-        L = eq_point_set(n-1,2*n+counter);
-        counter = counter + 1;
+
+if isa(S{1},'conPolyZono')
+    E = S{1} + obj; 
+    for i=2:N
+        E = S{i} + E; 
     end
+    return; 
 end
-E = lplus(E1,E2,L(:,1));
-for i=1:length(L)
-    Etmp = lplus(E1,E2,L(:,i));
-    %intersection is necessarily nonempty
-    E = and(E,Etmp,false);
+
+if isa(S{1},'ellipsoid')
+   E = plusEllipsoid(obj,S,L,mode);
+   return;
 end
+
+error('Set representation is not implemented');
 %------------- END OF CODE --------------

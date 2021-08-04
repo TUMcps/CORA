@@ -19,29 +19,29 @@ function res = test_capsule_volume
 % See also: -
 
 % Author:       Mark Wetzlinger
-% Written:      28-August-2019
+% Written:      27-July-2021
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% instantiate capsule = unit circle / ball centered at origin
-unit_radius = 1;
-C_circle = capsule([0; 0], [0; 0], unit_radius);
-C_ball   = capsule([0; 0; 0], [0; 0; 0], unit_radius);
+% instantiate capsule as ball
+n = 3;
+c = [3; 2; -1];
+g = [0; 0; 0];
+r = 0.5;
+C = capsule(c,g,r);
 
 % calculate volume
-vol_circle = volume(C_circle);
-vol_ball   = volume(C_ball);
+vol = volume(C);
 
-% true volume
-vol_circle_true = pi * unit_radius^2;
-vol_ball_true   = 4 / 3 * pi * unit_radius^3;
+% true volume (n-dim sphere)
+vol_true = (pi^(n/2) / gamma(1+n/2)) * r^n;
 
 % compare results
 tol = 1e-9;
-res = abs(vol_circle_true - vol_circle) < tol && ...
-    abs(vol_ball_true - vol_ball) < tol;
+res = abs(vol_true - vol) < tol;
+
 
 if res
     disp('test_volume successful');

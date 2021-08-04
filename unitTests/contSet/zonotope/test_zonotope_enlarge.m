@@ -1,5 +1,5 @@
 function res = test_zonotope_enlarge
-% test_enlarge - unit test function of enlarge
+% test_zonotope_enlarge - unit test function of enlarge
 %
 % Syntax:  
 %    res = test_zonotope_enlarge

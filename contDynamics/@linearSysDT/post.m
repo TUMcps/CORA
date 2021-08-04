@@ -1,17 +1,16 @@
-function [Rnext,options] = post(obj,~,options)
-% post - calls the post functions in the stnadrad or Krylov space
+function Rnext = post(obj,Rnext,Uadd,~)
+% post - computes the reachable set for the next time step
 %
 % Syntax:  
-%    [Rnext,options] = post(obj,R,options)
+%    Rnext = post(obj,Rnext,Uadd)
 %
 % Inputs:
-%    obj - linearSys object
-%    R - reachable set of the previous time step
-%    options - options for the computation of the reachable set
+%    obj - linearSysDT object
+%    Rnext - reachable set of the previous time step
+%    Uadd - uncertain input set
 %
 % Outputs:
 %    Rnext - reachable set of the next time step
-%    options - options for the computation of the reachable set
 %
 % Example: 
 %
@@ -23,18 +22,18 @@ function [Rnext,options] = post(obj,~,options)
 
 % Author:       Matthias Althoff
 % Written:      07-November-2018 
-% Last update:  ---
+% Last update:  08-September-2020
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% check whether error specification for Krylov space exists
-if isfield(options,'krylovError')
-    %compute in Krylov space
-    [Rnext,options] = post_Krylov(obj,options);
+
+% write results to reachable set struct Rnext
+if isempty(obj.c)
+    Rnext.tp = obj.A*Rnext.tp + obj.B*Uadd;
 else
-    % compute in untransformed space
-    [Rnext,options] = post_Euclidean(obj,options);
+    Rnext.tp = obj.A*Rnext.tp + obj.B*Uadd + obj.c;
 end
+
 
 %------------- END OF CODE --------------

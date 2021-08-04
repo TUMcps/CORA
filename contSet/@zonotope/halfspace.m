@@ -1,5 +1,6 @@
 function Z = halfspace(Z)
-% halfspace - Generates halfspace representation of the zonotope
+% halfspace - generates the halfspace representation of the zonotope,
+%    which is stored in the zonotope object (Z.halfspace)
 %
 % Syntax:  
 %    Z = halfspace(Z)

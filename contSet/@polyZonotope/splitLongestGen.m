@@ -1,10 +1,10 @@
-function [pZsplit] = splitLongestGen(pZ,varargin)
+function [pZsplit,factor] = splitLongestGen(pZ,varargin)
 % splitLongestGen - Splits the longest generator dependent generator with a 
 %                   polynomial order of 1 for a polynomial zonotope
 %
 % Syntax:  
-%    [pZsplit] = splitOneGen(pZ)
-%    [pZsplit] = splitOneGen(pZ,polyOrd)
+%    [pZsplit,factor] = splitLongestGen(pZ)
+%    [pZsplit,factor] = splitLongestGen(pZ,polyOrd)
 %
 % Inputs:
 %    pZ - polyZonotope object
@@ -13,6 +13,7 @@ function [pZsplit] = splitLongestGen(pZ,varargin)
 %
 % Outputs:
 %    pZsplit - cell array of split polyZonotopes
+%    factro - identifier of the dependent factor that is split
 %
 % Example: 
 %    pZ = polyZonotope([0;0],[2 0 1;0 2 1],[0;0],[1 0 3;0 1 1]);
@@ -30,12 +31,11 @@ function [pZsplit] = splitLongestGen(pZ,varargin)
 %    plot(pZsplit2{1},[1,2],'m','Filled',true,'EdgeColor','none');
 %    plot(pZsplit2{2},[1,2],'c','Filled',true,'EdgeColor','none');
 %
-%
 % Other m-files required: reduce
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: split, splitOneGen
+% See also: split, splitDepFactor
 
 % Author:       Niklas Kochdumper
 % Written:      29-March-2018
@@ -44,29 +44,21 @@ function [pZsplit] = splitLongestGen(pZ,varargin)
 
 %------------- BEGIN CODE --------------
 
-% find all generators with a polynomial order of one
-temp = sum(pZ.expMat,1);
-ind = find(temp == 1);
+    % determine longest generator
+    len = sum(pZ.G.^2,1);
+    [~,ind] = max(len);
 
-% check if there are generators with a polynomial order of one that can be
-% used for splitting
-if ~isempty(ind)
-    % determine the longest generator with polynomial order 1
-    temp = sum(pZ.G(:,ind).^2,1);
-    [~,indNew] = sort(temp,'descend');
-    index = ind(indNew(1));
-else
-    % determine the longest generator
-    temp = sum(pZ.G.^2,1);
-    [~,indNew] = sort(temp,'descend');
-    index = indNew(1);
-end
+    % find factor with the largest exponent
+    [~,index] = max(pZ.expMat(:,ind));
+    index = pZ.id(index);
 
-% split the zonotope at the determined generator
-if nargin == 2
-   pZsplit = splitOneGen(pZ,index,varargin{1}); 
-else
-   pZsplit = splitOneGen(pZ,index); 
-end
+    % split the zonotope at the determined generator
+    if nargin == 2
+       pZsplit = splitDepFactor(pZ,index,varargin{1}); 
+    else
+       pZsplit = splitDepFactor(pZ,index); 
+    end
+    
+    factor = index;
 
 %------------- END OF CODE --------------

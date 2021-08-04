@@ -25,13 +25,18 @@ function res = isequal(C1,C2,tol)
 
 % Author:       Mark Wetzlinger
 % Written:      16-Sep-2019
-% Last update:  ---
+% Last update:  12-March-2021 (MW, add dimension mismatch)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 if nargin == 2
     tol = eps;
+end
+
+if dim(C1) ~= dim(C2)
+    [id,msg] = errDimMismatch();
+    error(id,msg);
 end
 
 res = all(abs(center(C1) - center(C2)) < tol) && ... % center

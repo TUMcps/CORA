@@ -37,6 +37,12 @@ function [obj,linSys,linOptions] = linearize(obj,options,R)
 %linearization point p.u of the input is the center of the input u
 p.u=center(options.U) + options.uTrans;
 
+% one paramInt for each reachStep
+if isfield(options,'paramInts')
+    currentStep = round((options.t-options.tStart)/options.timeStep)+1;
+    options.paramInt = options.paramInts(:,currentStep);
+end
+
 %linearization point p.p of the parameters is the center of the parameter
 %set paramInt;
 if isa(options.paramInt,'interval')
@@ -47,8 +53,13 @@ end
 
 %linearization point p.x of the state is the center of the last reachable 
 %set R translated by f0*delta_t
-f0prev=obj.mFile(center(R),p.u,p.p);
-p.x=center(R)+f0prev*0.5*options.timeStep;
+if isfield(options,'refPoints')
+    currentStep = round((options.t-options.tStart)/options.timeStep)+1;
+    p.x = 1/2*sum(options.refPoints(:,currentStep:currentStep+1),2);
+else
+    f0prev=obj.mFile(center(R),p.u,p.p);
+    p.x=center(R)+f0prev*0.5*options.timeStep;
+end
 
 %two options: uncertain parameters with fixed bounds or fixed parameters
 %that can change during the reachability analysis

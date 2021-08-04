@@ -31,12 +31,15 @@ function Z = enc_zonotope(E,m,comptype)
 %
 % See also: insc_zonotope
 
-% Author:       Victor Gassmann
+% Author:       Victor Gassmann, Matthias Althoff
 % Written:      18-September-2019
-% Last update:   ---
-% Last revision: ---
+% Last update:  27-January-2021 (MA, degenerate case implemented)
+%               08-June-2021 (VG, moved degeneracy to main file)
+% Last revision:---
 
 %------------- BEGIN CODE --------------
+assert(~E.isdegenerate,'Degeneracy should be handled in main file!');
+
 %check if respective norm should be bounded or computed exactly
 if exist('comptype','var') && strcmp(comptype,'exact')
     doExact = true;
@@ -47,19 +50,15 @@ end
 n = length(E.Q);
 c = center(E);
 %compute transformation matrix s.t. T*E == unit hyper-sphere
-T = inv(sqrtm(E.Q));
+Tinv = sqrtm(E.Q);
 %compute "uniform" distribution of m points on unit hyper-sphere, see
 %[1],[2]
-G = eq_point_set(n-1,m);
-%make sure rank(G)=n
-counter = 1;
-while rank(G)<n
-    G = eq_point_set(n-1,m+counter);
-    counter = counter + 1;
+if n==1
+    G = [-1,1];
+else
+    G = eq_point_set(n-1,m);
 end
-if counter > 1
-    disp(['Increased m from ',num2str(m),' to ' , num2str(m+counter), ' since uniform equal partition algorithm returned rank-deficient matrix for your specification']);
-end
+
 if doExact
     L = minnorm(zonotope([zeros(n,1),G]));
 else
@@ -67,5 +66,6 @@ else
 end
 %we want E \in Z, thus scale zonotope([.,G]) s.t. it touches E (for exact
 %norm computation) and apply retransform
-Z = zonotope([c,1/L*inv(T)*G]);
+Z = zonotope([c,1/L*Tinv*G]);
+    
 %------------- END OF CODE --------------

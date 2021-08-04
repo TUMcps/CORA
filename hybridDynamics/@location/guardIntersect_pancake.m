@@ -217,8 +217,8 @@ function options = defaultOptions(options)
 
     % define options and default values
     opts = {'alg','tensorOrder','errorOrder','intermediateOrder', ...
-            'zonotopeOrder','taylorTerms','timeStep'};
-    defVal = {'lin', 3, 5, 50, 50, 10, 0.01};
+            'zonotopeOrder','taylorTerms','timeStep','intermediateTerms'};
+    defVal = {'lin', 3, 5, 50, 50, 10, 0.01, 4};
     
     % parse options
     list = fields(options);

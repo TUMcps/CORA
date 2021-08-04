@@ -101,7 +101,7 @@ function obj = removeAligned(obj)
             
             while counter <= size(A,1)
                 
-                if abs(sum(A(counter,:)-a_)) < eps
+                if sum(abs(A(counter,:)-a_)) < eps
                    bmin = min(bmin,b(counter));
                    counter = counter + 1;
                 else

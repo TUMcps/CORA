@@ -47,7 +47,9 @@ function S = getSubset(pZ,id,val)
         
         % loop over all variables that are substituted
         for i = 1:length(id)
-           pZ = getSubsetInterval(pZ,id(i),val(i)); 
+            if rad(val(i)) ~= 1 || center(val(i)) ~= 0
+                pZ = getSubsetInterval(pZ,id(i),val(i)); 
+            end
         end
     end
     

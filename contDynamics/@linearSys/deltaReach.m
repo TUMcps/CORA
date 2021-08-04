@@ -47,7 +47,7 @@ if isa(Rinit,'zonotope')
     %original computation
     O = zonotope(zeros(dim,1));
     Rhom=enclose(O,Rhom_tp_delta)+F*Rinit+inputCorr;
-elseif isa(Rinit,'polyZonotope')
+elseif isa(Rinit,'polyZonotope') || isa(Rinit,'conPolyZono')
     O = zeros(dim)*Rhom_tp_delta;
     Rhom=enclose(O,Rhom_tp_delta)+F*zonotope(Rinit)+inputCorr;
 elseif isa(Rinit,'zonoBundle')

@@ -30,8 +30,8 @@ fprintf(newline);
 disp(inputname(1) + " =");
 fprintf(newline);
 
-%display id, dimension
-display(probZ.contSet);
+%display dimension
+display@contSet(probZ);
 fprintf(newline);
 
 %display center

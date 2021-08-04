@@ -25,7 +25,6 @@ classdef contSet
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = protected, GetAccess = public)
-    id (1,1) {mustBeInteger} = 0;
     dimension (1,1) {mustBeInteger} = 0;
 end
 
@@ -42,23 +41,17 @@ methods
             % (copy constructor)
             if isa(varargin{1}, 'contSet')
                 Obj = varargin{1};
-
             else
                 %List elements of the class
                 Obj.dimension = varargin{1};
-
             end
 
         % Else if not enough or too many inputs are passed    
         else
-            disp('This class takes at max. 2 inputs.');
+            disp('This class takes at max. 1 inputs.');
         end
-        
     end
-    
 end
-
-
 end
 
 %------------- END OF CODE --------------

@@ -34,9 +34,9 @@ E3 = E1;
 res = ~isequal(E1,E2) && isequal(E1,E3);
 
 if res
-    disp('test_ellipsoid_isequal successful');
+    disp([mfilename,' successful']);
 else
-    disp('test_ellipsoid_isequal failed');
+    disp([mfilename,' failed']);
 end
 
 %------------- END OF CODE --------------

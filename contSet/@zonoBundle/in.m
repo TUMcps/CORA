@@ -93,7 +93,7 @@ function res = in(obj1,obj2,varargin)
                 res = in(poly,obj2); 
             else
                 cZ = conZonotope(obj1);
-                res = in(cZ,obj2);
+                res = in(cZ,obj2,type);
             end
         end
     end

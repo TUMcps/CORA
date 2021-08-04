@@ -65,7 +65,11 @@ function [pZ] = enclose(varargin)
         expMat = [pZ1.expMat, pZ1.expMat; 0*temp, temp];
         expMat = [expMat, [zeros(size(expMat,1)-1,1); 1]];
 
-        id = [pZ1.id; max(pZ1.id)+1];
+        if ~isempty(pZ1.id)
+            id = [pZ1.id; max(pZ1.id)+1];
+        else
+            id = 1; 
+        end
 
         % compute convex hull of the independent generators by using the
         % enclose function for linear zonotopes

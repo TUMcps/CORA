@@ -18,50 +18,36 @@ function res = test_ellipsoid_in
 %
 % See also: -
 
-% Author:       Victor Gaﬂmann
-% Written:      15-October-2019
-% Last update:  07-August-2020
+% Author:       Victor Gassmann
+% Written:      26-July-2021
+% Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 res = true;
-nRuns = 2;
-condTOL = 1e4;
-for i=10:5:15
-    for j=1:nRuns
-        while 1
-            % make sure ellipsoid is not squished
-            E1 = ellipsoid.generateRandom(false,i);
-            if cond(E1.Q)<=condTOL
-                break;
-            end
-        end
-        E2 = ellipsoid(E1.Q*0.7,E1.q);
-        if ~in(E1,E2)
-            res = false;
-            break;
-        end
-        while 1
-            E1 = ellipsoid.generateRandom(false,i);
-            E2 = ellipsoid.generateRandom(false,i);
-            if cond(E1.Q)<=condTOL && cond(E2.Q)<=condTOL
-                break;
-            end
-        end
-        E = enclose(E1,E2);
-        if ~in(E,E1) || ~in(E,E2)
-            res = false;
-            break;
-        end
+load cases.mat E_c
+for i=1:length(E_c)
+    E1 = E_c{i}.E1; % non-deg
+    Ed1 = E_c{i}.Ed1; % deg
+    E0 = E_c{i}.E0; % all zero
+    n = length(E1.q);
+    
+    Yd = randPoint(Ed1,2*n);
+    if in(E1,Ed1) && ~in(E1,Yd)
+        res = false;
+        break;
     end
-    if ~res
+    
+    if in(E1,E0) && ~in(E1,E0)
+        res = false;
         break;
     end
 end
 
+
 if res
-    disp('test_ellipsoid_in successful');
+    disp([mfilename,' successful']);
 else
-    disp('test_ellipsoid_in failed');
+    disp([mfilename,' failed']);
 end
 %------------- END OF CODE --------------

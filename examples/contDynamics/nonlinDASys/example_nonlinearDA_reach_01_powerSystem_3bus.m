@@ -41,11 +41,9 @@ params.U = zonotope([[1; 0.4],diag([0, 0.04])]);
 options.timeStep = 0.05;
 options.taylorTerms = 6;
 options.zonotopeOrder = 200;
-options.errorOrder = 1.5;
 options.tensorOrder = 2;
 
-options.maxError = [0.5; 0];
-options.maxError_x = options.maxError;
+options.maxError_x = [0.5; 0];
 options.maxError_y = 0.005*[1; 1; 1; 1; 1; 1];
 
 

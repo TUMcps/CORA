@@ -112,6 +112,10 @@ res = true;
 
 end
 
+
+
+% auxiliary functions
+
 function eqty = compareSolutions(sol_1, sol_2, sol_3, TOL)
 %% description:
 %   checks if all solutions are the same

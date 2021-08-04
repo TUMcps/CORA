@@ -1,5 +1,5 @@
 function res = test_ellipsoid_and
-% test_ellipsoid_and - unit test function of plus
+% test_ellipsoid_and - unit test function of and
 %
 % Syntax:  
 %    res = test_ellipsoid_and
@@ -18,45 +18,60 @@ function res = test_ellipsoid_and
 %
 % See also: -
 
-% Author:       Victor Gaﬂmann
-% Written:      14-October-2019
+% Author:       Victor Gassmann
+% Written:      26-July-2021
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 res = true;
-nPoints = 100;
-nRuns = 2;
-for i=10:5:20
-    for j=1:nRuns
-        E1 = ellipsoid.generateRandom(false,i);
-        E2 = ellipsoid.generateRandom(false,i);
-        E = E1&E2;
-        Y1 = sample(E1,nPoints);
-        %see which parts of Y1 are both E1 and E2
-        res1 = containsPoint(E1,Y1);
-        res2 = containsPoint(E2,Y1);
-        %find points which are in the intersection
-        R = res1 & res2;
-        if isempty(E)
-            if any(R)
-                res = false;
-                break;
-            end
-        else
-            Y = Y1(:,R);
-            %check if Y points are in E
-            if ~all(containsPoint(E,Y))
-                res = false;
-                break;
-            end
+load cases.mat E_c
+for i=1:length(E_c)
+    E1 = E_c{i}.E1; %non-deg
+    Ed1 = E_c{i}.Ed1; % deg
+    E0 = E_c{i}.E0; % all zero
+    h1 = E_c{i}.h1;
+    
+    % test ellipsoid (degenerate)
+    Eres = E1 & Ed1;
+    Yd = randPoint(Ed1,2*i);
+    for j=1:size(Yd,2)
+        if in(E1,Yd(:,j)) && ~in(Eres,Yd(:,j))
+            res = false;
+            break;
         end
     end
+    
+    % test ellipsoid (all zero)
+    Eres_0 = E1 & E0;
+    if in(E1,E0.q)
+        if rank(Eres_0)~=0 || ~withinTol(Eres_0.q,E0.q,Eres_0.TOl)
+            res = false;
+            break;
+        end
+    else
+        if ~isempty(Eres_0)
+            res = false;
+            break;
+        end
+    end
+    
+    % test halfspace
+    Eres_h = E1 & h1;
+    
+    Y = randPoint(E1,2*i);
+    for j=1:size(Y,2)
+        if in(h1,Y(:,j)) && ~in(Eres_h,Y(:,j))
+            res = false;
+            break;
+        end
+    end
+    
 end
 
 if res
-    disp('test_ellipsoid_and successful');
+    disp([mfilename,' successful']);
 else
-    disp('test_ellipsoid_and failed');
+    disp([mfilename,' failed']);
 end
 %------------- END OF CODE --------------

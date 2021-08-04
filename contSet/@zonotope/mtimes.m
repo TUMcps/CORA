@@ -1,6 +1,6 @@
 function Z = mtimes(factor1,factor2)
-% mtimes - Overloaded '*' operator for the multiplication of a matrix or an
-% interval matrix with a zonotope
+% mtimes - overloaded '*' operator for the multiplication of a matrix or an
+%    interval matrix with a zonotope
 %
 % Syntax:  
 %    Z = mtimes(matrix,Z)
@@ -10,15 +10,16 @@ function Z = mtimes(factor1,factor2)
 %    Z - zonotope object 
 %
 % Outputs:
-%    Z - Zonotpe after multiplication of a matrix with a zonotope
+%    Z - zonotope after multiplication of a matrix with a zonotope
 %
 % Example: 
 %    Z=zonotope([1 1 0; 0 0 1]);
 %    matrix=[0 1; 1 0];
-%    plot(Z);
-%    hold on
-%    Z=matrix*Z;
-%    plot(Z);
+%    Zmat = matrix*Z;
+%
+%    figure; hold on;
+%    plot(Z,[1,2],'b');
+%    plot(Z,[1,2],'r');
 %
 % References:
 %    [1] M. Althoff. "Reachability analysis and its application to the 

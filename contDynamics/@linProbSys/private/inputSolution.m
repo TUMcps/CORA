@@ -60,7 +60,7 @@ end
 inputSolV=Vsum+E*r*V;
 
 %compute solution due to constant input
-inputSolVtrans=inv(A)*(expm(A*r)-I)*vTrans;
+inputSolVtrans=inv(A)*(expm(A*r)-I)*vTrans; % ... zonotope(vTrans) ?
 
 %compute additional uncertainty if origin is not contained in input set
 if options.originContained

@@ -7,7 +7,9 @@ function Z = enclosePoints(points,varargin)
 %
 % Inputs:
 %    points - matrix storing point cloud (dimension: [n,p] for p points)
-%    method - method used for calculation ('stursberg' or 'maiga')
+%    method - method used for calculation
+%               - 'maiga' (default)
+%               - 'stursberg'
 %
 % Outputs:
 %    Z - zonotope object

@@ -19,7 +19,7 @@ function res = locationProduct(obj, loc)
 %
 % See also: ---
 
-% Author:       Johann Schöpfer, Niklas Kochdumper
+% Author:       Johann Schoepfer, Niklas Kochdumper
 % Written:      08-June-2018  
 % Last update:  09-July-2018
 % Last revision: ---
@@ -51,7 +51,7 @@ function res = locationProduct(obj, loc)
     mergedInvSet = mergeInvariant(obj,invList);
 
     % merge flows (= continuous dynamics)
-    mergedFlow = mergeFlows(obj,flowList);
+    mergedFlow = mergeFlows(obj,flowList,loc);
 
     % merge transitions
     mergedTransSets = mergeTransitionSets(obj,transList,loc);

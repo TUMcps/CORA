@@ -23,20 +23,20 @@ function HA = lotkaVolterra()
 %------------- BEGIN CODE --------------
 
     % Location Outside ----------------------------------------------------
-
+    
     % dynamics
-    sys = nonlinearSys(@lotkaVolterraOutside);
+    sys = nonlinearSys(@lotkaVolterraDyn);
 
     % invariant set
-    syms x y c t
-    vars = [x;y;c;t];
-    eq = -(x-1)^2 - (y-1)^2 + 0.15^2;
+    syms x y t
+    vars = [x;y;t];
+    eq = -(x-1)^2 - (y-1)^2 + 0.161^2;
 
     inv = levelSet(eq,vars,'<=');
 
     % transition
     guard = levelSet(eq,vars,'==');
-    reset.A = eye(4); reset.b = zeros(4,1);
+    reset.A = eye(3); reset.b = zeros(3,1);
 
     trans{1} = transition(guard, reset, 2);
 
@@ -47,17 +47,27 @@ function HA = lotkaVolterra()
     % Location Inside -----------------------------------------------------
 
     % dynamics
-    sys = nonlinearSys(@lotkaVolterraInside);
+    sys = nonlinearSys(@lotkaVolterraDyn);
 
     % invariant set
-    syms x y c t
-    vars = [x;y;c;t];
-    eq = (x-1)^2 + (y-1)^2 - 0.15^2;
+    syms x y t
+    vars = [x;y;t];
+    eq = (x-1)^2 + (y-1)^2 - 0.161^2;
 
     inv = levelSet(eq,vars,'<=');
 
     % location
     loc{2} = location('inside', inv, [], sys);
+    
+    % cannot model transition because of infinite switching
+    % transition
+%     guard = levelSet(eq,vars,'==');
+%     reset.A = eye(3); reset.b = zeros(3,1);
+% 
+%     trans{1} = transition(guard, reset, 1);
+% 
+%     % location
+%     loc{2} = location('inside', inv, trans, sys);
 
 
     % Hybrid Automaton ----------------------------------------------------
@@ -68,20 +78,12 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function f = lotkaVolterraInside(x,u)
+function f = lotkaVolterraDyn(x,u)
 
     f(1,1) = 3*x(1) - 3*x(1)*x(2);
     f(2,1) = x(1)*x(2) - x(2);
     f(3,1) = 1;
-    f(4,1) = 1;
-end
-
-function f = lotkaVolterraOutside(x,u)
-
-    f(1,1) = 3*x(1) - 3*x(1)*x(2);
-    f(2,1) = x(1)*x(2) - x(2);
-    f(3,1) = 0;
-    f(4,1) = 1;
+    
 end
 
 %------------- END OF CODE --------------

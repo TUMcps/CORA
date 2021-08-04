@@ -27,22 +27,44 @@ function poly = enclosePoints(points)
 %
 % See also: zonotope/enclosePoints, interval/enclosePoints
 
-% Author: Niklas Kochdumper
+% Author: Niklas Kochdumper, Victor Gassmann
 % Written: 05-May-2020
-% Last update: ---
+% Last update: 17-March-2021 (now also works for degenerate point cloud)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-    % compute convex hull
+r = rank(points);
+[n,N] = size(points);
+Q = eye(n);
+
+% check whether points are lower-dimensional
+if rank(points)<size(points,1)
+    [Q,~] = qr(points);
+    points = Q'*points;
+    % remove zeros
+    points(r+1:end,:) = [];
+end
+
+% compute convex hull
+if size(points,1)>1
     ind = convhulln(points');
-    
-    ind = reshape(ind,[numel(ind),1]);
-    ind = unique(ind);
-    
-    points = points(:,ind);
-    
-    % construct mptPolytope object
-    poly = mptPolytope(points');
+else
+    [~,ii_max] = max(points);
+    [~,ii_min] = min(points);
+    ind = [ii_max,ii_min];
+end
+
+ind = reshape(ind,[numel(ind),1]);
+ind = unique(ind);
+
+points = points(:,ind);
+
+% add zeros again and backtransform
+points(end+1:end+n-r,:) = zeros(n-r,length(ind));
+points = Q*points;
+
+% construct mptPolytope object
+poly = mptPolytope(points');
 
 %------------- END OF CODE --------------

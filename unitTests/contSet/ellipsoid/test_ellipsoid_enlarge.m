@@ -39,9 +39,9 @@ E_true = ellipsoid([4 0;0 8],[0; 1]);
 res = isequal(E_true,E_enlarged);
 
 if res
-    disp('test_ellipsoid_enlarge successful');
+    disp([mfilename,' successful']);
 else
-    disp('test_ellipsoid_enlarge failed');
+    disp([mfilename,' failed']);
 end
 
 %------------- END OF CODE --------------

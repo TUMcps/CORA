@@ -10,7 +10,7 @@ function res = restructure(pZ,method,order,varargin)
 % Inputs:
 %    pZ - polyZonotope object
 %    method - method used to calculate the new representation ('zonotope'
-%             or 'reduce')
+%             or 'reduce', 'reduceFull', or 'reducePart')
 %    order - desired zonotope order of the dependent factors for the
 %            resulting polynomial zonotope 
 %    genOrder - desired zonotope order of the resulting polynomial zonotope
@@ -61,6 +61,9 @@ function res = restructure(pZ,method,order,varargin)
     elseif startsWith(method,'reduceFull')
         spec = 2;
         redMeth = method(11:end);
+    elseif startsWith(method,'reducePart')
+        spec = 3;
+        redMeth = method(11:end);
     elseif startsWith(method,'reduce')
         spec = 0;
         redMeth = method(7:end);
@@ -75,6 +78,8 @@ function res = restructure(pZ,method,order,varargin)
         res = restructureZono(pZ,order,redMeth);
     elseif spec == 2
         res = restructureReduceFull(pZ,order,redMeth);
+    elseif spec == 3
+        res = restructureReducePart(pZ,order,redMeth);
     else
         res = restructureReduce(pZ,order,redMeth,genOrder);
     end

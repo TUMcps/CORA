@@ -18,39 +18,43 @@ function res = test_ellipsoid_enclose
 %
 % See also: -
 
-% Author:       Victor Gaﬂmann
-% Written:      13-March-2019
+% Author:       Victor Gassmann
+% Written:      26-July-2021
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
-%We need at least one non-degenerate ellipsoid to ensure
-%the union of E1,E2 is not the empty set.
-nRuns = 2;
 res = true;
-for i=10:5:20
-    for j=1:nRuns
-        E1 = ellipsoid.generateRandom(false,i);
-        %although enclose supports one degenerate ellipsoid, 'in' does not at the
-        %moment, thus we only test full-dimensional ellipsoids
-        %E2 = ellipsoid.generateRandom(n);
-        E2 = ellipsoid.generateRandom(false,i);
-        E = enclose(E1,E2);
-        if ~in(E,E1) || ~in(E,E2)
-            res = false;
-            break;
-        end
-    end
-    if ~res
+load cases.mat E_c
+for i=1:length(E_c)
+    E1 = E_c{i}.E1; % non-deg
+    E2 = E_c{i}.E2; % non-deg
+    Ed1 = E_c{i}.Ed1; % deg
+    E0 = E_c{i}.E0; % all zero
+    n = length(E1.q);
+    
+    % test non-deg ellipsoid
+    E = enclose(E1,E2);
+    Y = [randPoint(E1,2*n),randPoint(E2,2*n)];
+    if ~in(E,Y)
+        res = false;
         break;
     end
+    
+    % test degenerate ellipsoids
+    Ed = enclose(Ed1,E0);
+    Yd = [randPoint(Ed1,2*n),E0.q];
+    if ~in(Ed,Yd)
+        res = false;
+        break;
+    end
+    
 end
+
+
 if res
-    disp('test_ellipsoid_enclose successful');
+    disp([mfilename,' successful']);
 else
-    disp('test_ellipsoid_enclose failed');
+    disp([mfilename,' failed']);
 end
-
-
 %------------- END OF CODE --------------

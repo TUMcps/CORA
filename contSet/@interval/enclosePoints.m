@@ -26,9 +26,9 @@ function int = enclosePoints(points)
 %
 % See also: interval
 
-% Author: Niklas Kochdumper
-% Written: 05-May-2020
-% Last update: ---
+% Author:        Niklas Kochdumper
+% Written:       05-May-2020
+% Last update:   ---
 % Last revision: ---
 
 %------------- BEGIN CODE --------------

@@ -2,7 +2,7 @@ function res = test_zonotope_center
 % test_zonotope_center - unit test function of center
 %
 % Syntax:  
-%    res = test_center
+%    res = test_zonotope_center
 %
 % Inputs:
 %    -
@@ -40,31 +40,8 @@ true_vec = [1; 5];
 % check result
 res_val = all(c == true_vec);
 
-% 2. Random Tests ---------------------------------------------------------
-
-dims = 2:8;
-testsPerDim = 1000;
-
-% box has to be the same as conversion to interval
-for d=1:length(dims)
-    for test=1:testsPerDim
-        % create a random zonotope
-        nrOfGens = randi([10,25],1,1);
-        c = rand(dims(d),1);
-        Z = zonotope(c,-1+2*rand(dims(d),nrOfGens));
-
-        % compute center
-        Zcenter = center(Z);
-
-        % check if centers are the same
-        res_rand(d,test) = ~any(abs(Zcenter - c));
-    end
-end
-
-
-
 % add results
-res = res_val && all(all(res_rand));
+res = res_val;
 
 if res
     disp('test_center successful');

@@ -1,4 +1,4 @@
-function res = convHull(P1,P2)
+function res = convHull(P1,varargin)
 % convHull - computes the convex hull of two polytopes
 %
 % Syntax:  
@@ -35,6 +35,13 @@ function res = convHull(P1,P2)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
+
+    % parse input arguments
+    if nargin == 1
+       res = P1; return; 
+    else
+       P2 = varargin{1}; 
+    end
 
     % find a polytope object
     if ~isa(P1,'mptPolytope')

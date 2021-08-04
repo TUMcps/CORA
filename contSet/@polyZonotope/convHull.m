@@ -1,8 +1,9 @@
-function [pZ] = convHull(pZ1,pZ2)
+function pZ = convHull(pZ1,varargin)
 % convHull - Computes the convex hull of two polynomial zonotopes
 %
 % Syntax:  
-%    pZ = convHull(pZ1,pZ2)
+%    pZ = convHull(pZ1)
+%    pZ = linComb(pZ1,pZ2)
 %
 % Inputs:
 %    pZ1 - first polyZonotope object
@@ -12,15 +13,15 @@ function [pZ] = convHull(pZ1,pZ2)
 %    pZ - polyZonotope enclosing pZ1 and pZ2
 %
 % Example: 
-%    pZ1 = polyZonotope([-2;-2],[2 0 1;0 2 1],[],[1 0 3;0 1 1]);
-%    pZ2 = polyZonotope([3;3],[1 -2 1; 2 3 1],[],[1 0 2;0 1 1]);
+%    pZ = polyZonotope([0;0],[1 0;0 1],[],[1 3]);
 %   
-%    pZ = convHull(pZ1,pZ2);
+%    res = convHull(pZ);
 %
-%    hold on
-%    plot(pZ,[1,2],'FaceColor',[0.6 0.6 0.6],'Filled',true,'Splits',12);
-%    plot(pZ1,[1,2],'r','Filled',true,'EdgeColor','none');
-%    plot(pZ2,[1,2],'b','Filled',true,'EdgeColor','none');
+%    figure; hold on;
+%    plot(res,[1,2],'FaceColor',[0.6 0.6 0.6],'Filled',true, ...
+%         'Splits',20,'EdgeColor','none');
+%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','r','Splits',6, ...
+%         'LineWidth',2);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -34,6 +35,21 @@ function [pZ] = convHull(pZ1,pZ2)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+    % parse input arguments
+    if nargin > 1
+        pZ2 = varargin{1};
+        pZ = convHullMult(pZ1,pZ2);
+    else
+        pZ = linComb(pZ1,pZ1);
+    end
+end
+
+
+% Auxiliary Functions -----------------------------------------------------
+
+function pZ = convHullMult(pZ1,pZ2)
+% compute the convex hull of two polynomial zonotopes
 
     % determine polyZonotope object
     if ~isa(pZ1,'polyZonotope')
@@ -50,37 +66,30 @@ function [pZ] = convHull(pZ1,pZ2)
 
             pZ2 = polyZonotope(pZ2);
             
+        elseif isa(pZ2,'conPolyZono')
+            
+            pZ = convHull(pZ2,pZ1);
+            return
+            
         elseif isnumeric(pZ2)
+            
             pZ2 = polyZonotope(pZ2,[],[],[]);
+            
         else        
             % throw error for given arguments
             error(noops(pZ1,pZ2));
         end
     end
 
-    % extend generator end exponent matrix by center vector
-    G1 = [pZ1.c, pZ1.G];
-    G2 = [pZ2.c, pZ2.G];
-
-    expMat1 = [zeros(size(pZ1.expMat,1),1),pZ1.expMat];
-    expMat2 = [zeros(size(pZ2.expMat,1),1),pZ2.expMat];
-
-    % compute convex hull of the dependent generators according to the
-    % equation ch = (0.5 + 0.5 a)*pZ1 + (0.5 - 0.5 a)*pZ2, a \in [-1,1]
-    G = 0.5 * [G1, G1, G2, -G2];
-
-    h1 = size(expMat1,2);
-    h2 = size(expMat2,2);
+    % remove independent generatros
+    pZ1_ = polyZonotope(pZ1.c,pZ1.G,[],pZ1.expMat,pZ1.id);
+    pZ2_ = polyZonotope(pZ2.c,pZ2.G,[],pZ2.expMat,pZ2.id);
     
-    zero1 = zeros(size(expMat1,1),size(expMat2,2));
-    zero2 = zeros(size(expMat2,1),size(expMat1,2));
+    % compute convex hull of depenent part using the linear combination
+    pZ = linComb(linComb(pZ1_,pZ1_),linComb(pZ2_,pZ2_));
     
-    expMat = [expMat1, expMat1, zero1, zero1; ...
-              zero2, zero2, expMat2 expMat2; ...
-              zeros(1,h1), ones(1,h1), zeros(1,h2), ones(1,h2)];
-
-    % compute convex hull of the independent generators by using the
-    % enclose function for linear zonotopes
+    % compute convex hull of the independent part using the convex hull for
+    % zonotopes
     temp = zeros(length(pZ1.c),1);
     zono1 = zonotope([temp, pZ1.Grest]);
     zono2 = zonotope([temp, pZ2.Grest]);
@@ -88,18 +97,8 @@ function [pZ] = convHull(pZ1,pZ2)
     zono = enclose(zono1,zono2);
     Grest = generators(zono);
 
-    % add up all generators that belong to identical exponents
-    [ExpNew,Gnew] = removeRedundantExponents(expMat,G);
-
-    % extract the center vector
-    ind = find(sum(ExpNew,1) == 0);
-
-    c = sum(Gnew(:,ind),2);
-    Gnew(:,ind) = [];
-    ExpNew(:,ind) = [];
-
-    % construct resulting polynomial zonotope object
-    pZ = polyZonotope(c,Gnew,Grest,ExpNew);
-    pZ.id = (1:size(ExpNew,1))';
+    % construct the resulting set
+    pZ.Grest = Grest;
+end
 
 %------------- END OF CODE --------------

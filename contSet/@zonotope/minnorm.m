@@ -26,7 +26,7 @@ function [val,x] = minnorm(Z)
 %
 % See also: norm
 
-% Author:       Victor Gaﬂmann
+% Author:       Victor Gassmann
 % Written:      18-September-2019
 % Last update:  ---
 % Last revision:---

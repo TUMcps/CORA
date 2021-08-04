@@ -22,9 +22,9 @@ function [val,x] = supportFunc(obj,dir,varargin)
 %
 % See also: conZonotope/supportFunc
 
-% Author:       Niklas Kochdumper
+% Author:       Niklas Kochdumper,Victor Gassmann
 % Written:      19-November-2019
-% Last update:  ---
+% Last update:  16-March-2021 (added unbounded support)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -43,19 +43,21 @@ function [val,x] = supportFunc(obj,dir,varargin)
     % linear program options
     options = optimoptions('linprog','display','off');
     
+    s = -1;
     % upper or lower bound
     if strcmp(type,'lower')
-        
-       % solve linear program
-       [x,val] = linprog(dir',A,b,[],[],[],[],options);
-        
-    else
-        
-       % solve linear program
-       [x,val] = linprog(-dir',A,b,[],[],[],[],options);
-       val = -val;
-       
+        s = 1;
     end
+    [x,val,exitflag] = linprog(s*dir',A,b,[],[],[],[],options);
+    val = s*val;
+    if exitflag == -3
+        % unbounded
+        val = -s*inf;
+        x = -s*sign(dir).*inf(length(dir),1);
+    elseif exitflag ~= 1
+        error('Error using linprog!');
+    end
+
 end
 
 %------------- END OF CODE --------------

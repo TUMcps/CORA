@@ -25,12 +25,12 @@ function P = enclosingPolytope(probZ)
 
 % Author:        Matthias Althoff
 % Written:       18-September-2007
-% Last update:   ---
+% Last update:   17-August-2020
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 %reduce probabilistic zonotope
-P = reduce(zonotope(probZ.Z),'best');
+P = reduce(zonotope(probZ.Z),'pca');
 
 %------------- END OF CODE --------------

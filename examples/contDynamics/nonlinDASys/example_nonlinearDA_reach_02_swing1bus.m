@@ -34,7 +34,7 @@ dim_y = 4;
 % initial set
 params.x0 = x0;
 Bound_x = 0.8e-3*eye(2);
-params.R0  = zonotope([params.x0,Bound_x]); % x0
+params.R0 = zonotope([params.x0,Bound_x]); % x0
 
 % initial set (algebraic states)
 params.y0guess = y0.';
@@ -51,8 +51,6 @@ options.timeStep = 0.0001;   % Time step size for reachable set computation
 options.zonotopeOrder = 300; % Zonotope order
 options.taylorTerms = 10;
 options.tensorOrder = 2;
-options.intermediateOrder = 3;
-options.errorOrder = 3;
 
 options.maxError_x = 0.001*ones(dim_x,1);
 options.maxError_y = 0.005*ones(dim_y,1);
@@ -109,7 +107,7 @@ end
 % Simulation --------------------------------------------------------------
 
 runs = 30;
-params.R0 = zonotope([params.x0,Bound_x]);
+params.R0  = zonotope([params.x0,Bound_x]);
 params.u = center(params.U);
 
 t = cell(runs,1); x = cell(runs,1);
@@ -118,9 +116,9 @@ t = cell(runs,1); x = cell(runs,1);
 for r = 1:runs
     
     if r<=20
-        params.x0=randPointExtreme(params.R0);
+        params.x0 = randPoint(params.R0,1,'extreme');
     else
-        params.x0=randPoint(params.R0);
+        params.x0 = randPoint(params.R0);
     end
     
     % loop over all mode switches

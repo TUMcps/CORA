@@ -1,11 +1,12 @@
-function [count,out] = numberOfInputs(f,inpArgs)
+function [count,out] = numberOfInputs(f,varargin)
 % numberOfInputs - computes the number of inputs of a function handle
 %
 % Syntax:  
+%    [count,out] = numberOfInputs(f)
 %    [count,out] = numberOfInputs(f,inpArgs)
 %
 % Inputs:
-%    f - function handle
+%    f - function handle 
 %    inpArgs - number of input arguments for the function 
 %
 % Outputs:
@@ -14,7 +15,7 @@ function [count,out] = numberOfInputs(f,inpArgs)
 %
 % Example:
 %    f = @(x,u) [x(1)*x(5)^2; sin(x(3)) + u(2)];
-%    numberOfInputs(f,2)
+%    numberOfInputs(f)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -22,16 +23,46 @@ function [count,out] = numberOfInputs(f,inpArgs)
 %
 % See also: nonlinearSys
 
-% Author:       Niklas Kochdumper
-% Written:      03-May-2020
+% Author:       Victor Gassmann
+% Written:      11-September-2020
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    if inpArgs > 26
-       error('That many input arguments are not supported!'); 
+    if nargin > 1
+        inpArgs = varargin{1};
+        if inpArgs > 26
+           error('That many input arguments are not supported!'); 
+        end
+    else
+        inpArgs = nargin(f);
+    end
+    
+    % try fast way to determine number of inputs (does not work if
+    % statements like "length(x)" occur in the dynamic function
+    try
+        % create symbolic variables (length 100 for each input)
+        x = sym('x',[100,inpArgs]);
+        xc = num2cell(x,1);
+        
+        % evaluate function
+        fsym = f(xc{:});
+        
+        % determine length of input and output arguments
+        out = length(fsym);
+        vars = symvar(fsym);
+        mask = ismember(x,vars);
+        count = zeros(inpArgs,1);
+        for i=1:inpArgs
+            tmp = find(mask(:,i),1,'last');
+            if isempty(tmp)
+                tmp = 0;
+            end
+            count(i) = tmp;
+        end
+        return;
     end
 
     % upper bound
@@ -91,5 +122,6 @@ function [count,out] = numberOfInputs(f,inpArgs)
     end
     
     out = length(output);
+end
 
 %------------- END OF CODE --------------

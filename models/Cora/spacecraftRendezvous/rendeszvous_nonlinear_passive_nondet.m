@@ -86,7 +86,7 @@ reset = struct('A', resetA, 'b', resetb);
 %   t >= 120 & t <= 150
 guard = mptPolytope([0 0 0 0 -1; 0 0 0 0 1],[-120; 150]);
 
-trans{2} = transition(guard, reset, 3);
+trans{2,1} = transition(guard, reset, 3);
 
 loc{1} = location('S1', inv, trans, dynamics);
 

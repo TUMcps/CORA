@@ -1,9 +1,9 @@
-function res = example_linear_reach_04_adaptive(~)
+function res = example_linear_reach_04_adaptive
 % example_linear_reach_04_adaptive - example for adaptive parameter tuning
 %                                    for linear time-invariant systems
 %
 % Syntax:  
-%    res = example_linear_reach_04_adaptive(~)
+%    res = example_linear_reach_04_adaptive
 %
 % Inputs:
 %    -
@@ -39,26 +39,26 @@ dim = length(A);
 params.tFinal = 5;
 params.R0 = zonotope([[10; 5],0.5*eye(dim)]);       % initial set
 params.U = zonotope([ones(dim,1),0.25*eye(dim)]);   % uncertain inputs
-
+params.u = 0.1*[2 1 1 2 4 4 4 4 2 -2; -1 0 0 2 3 3 3 3 1 -2];
 
 % Reachability Settings ---------------------------------------------------
 
-options.linAlg = 'adap'; % adaptive parameter tuning
-
+options.linAlg = 'adaptive'; % use adaptive parameter tuning
+options.verbose = true;
 
 % Simulation --------------------------------------------------------------
 
-simOpt.points = 10;
-simOpt.fracVert = 0.5;
+simOpt.points = 100;
+simOpt.fracVert = 0.05;
 simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 10;
+simOpt.inpChanges = 2;
 
 simRes = simulateRandom(sys, params, simOpt);
 
 
 % Reachability Analysis ---------------------------------------------------
 
-errs = [1;0.05];
+errs = [1,0.01];
 stepssS = zeros(length(errs),1);
 timesS = zeros(length(errs),1);
 R = cell(length(errs),1);
@@ -71,7 +71,6 @@ for i=1:length(errs)
     timesS(i) = toc;
     stepssS(i) = length(R{i}.timeInterval.set);
 end
-
 
 % Visualization -----------------------------------------------------------
 

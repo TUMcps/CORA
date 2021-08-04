@@ -35,13 +35,11 @@ function res = isIntersecting(obj1,obj2,varargin)
 %    isIntersecting(cZono1,cZono3)
 %
 %    % visualization
-%    figure
-%    hold on
+%    figure; hold on
 %    plot(cZono1,[1,2],'b');
 %    plot(cZono2,[1,2],'g');
 %
-%    figure
-%    hold on
+%    figure; hold on
 %    plot(cZono1,[1,2],'b');
 %    plot(cZono3,[1,2],'r');
 %
@@ -74,7 +72,7 @@ function res = isIntersecting(obj1,obj2,varargin)
     
     % intersection with halfspace, hyperplane or polytope
     if isa(obj2,'halfspace') || isa(obj2,'conHyperplane') || ...
-       isa(obj2,'mptPolytope')
+       isa(obj2,'mptPolytope') || isa(obj2,'ellipsoid')
    
         res = isIntersecting(obj2,obj1,type);
    

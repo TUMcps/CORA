@@ -1,14 +1,17 @@
-function res = contractParallelLinearization(f,dom)
+function res = contractParallelLinearization(f,dom,jacHan,varargin)
 % contractParallelLinearization - implementation of the parallel
 %                                 linearization contractor acc. to 
 %                                 Sec. 4.3.4 in [1]
 %
 % Syntax:  
-%    res = contractParallelLinearization(f,dom)
+%    res = contractParallelLinearization(f,dom,jacHan)
+%    res = contractParallelLinearization(f,dom,jacHan,method)
 %
 % Inputs:
 %    f - function handle for the constraint f(x) = 0
 %    dom - initial domain (class: interval)
+%    jacHan - function handle for the constraint jacobian matrix
+%    method - range bounding method ('interval' or 'taylm')
 %
 % Outputs:
 %    res - contracted domain (class: interval)
@@ -48,26 +51,29 @@ function res = contractParallelLinearization(f,dom)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
- 
-    % construct symbolic variables
-    n = length(dom);
-    vars = sym('x',[n,1]);
-    fSym = f(vars);
 
-    % compute jacobian matrix
-    jac = jacobian(fSym,vars);
-    jacHan = matlabFunction(jac,'Vars',{vars});
+    % parse input arguments
+    method = 'taylm';
+    if nargin >= 4 && ~isempty(varargin{1})
+       method = varargin{1}; 
+    end
 
-    % apply mean value theorem
+    % apply mean value theorem to enclose constraints by parallel planes
     mi = center(dom);
     A = jacHan(mi);
 
-    try
-        tay = taylm(dom);
-        b = f(mi) - A * mi + (interval(jacHan(tay)) - A) * (dom - mi);
-    catch
-        b = f(mi) - A * mi + (jacHan(dom) - A) * (dom - mi);
+    if strcmp(method,'taylm')
+       try
+           tay = taylm(dom);
+           J = interval(jacHan(tay));
+       catch
+           J = jacHan(dom); 
+       end
+    else
+        J = jacHan(dom);
     end
+    
+    b = f(mi) - A * mi + (J - A) * (dom - mi);
 
     % solve linear program to compute new bounds for each variable
     A_ = [-A;A];
@@ -76,8 +82,10 @@ function res = contractParallelLinearization(f,dom)
     infi = infimum(dom);
     sup = supremum(dom);
     
-    options = optimoptions('linprog','Display','off');
+    options = optimoptions('linprog','Display','off', ...
+                           'ConstraintTolerance',1e-9);
     
+    n = length(mi);
     f = zeros(n,1);
     
     for i = 1:n

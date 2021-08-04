@@ -23,14 +23,18 @@ function res = isFullDim(obj)
 %
 % See also: zonotope/isFullDim
 
-% Author:       Niklas Kochdumper
+% Author:       Niklas Kochdumper, Mark Wetzlinger
 % Written:      02-January-2020 
-% Last update:  ---
+% Last update:  12-March-2021 (MW, empty interval)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-r = rad(obj);   
-res = ~any(r == 0);
+if isempty(obj)
+    res = false;
+else
+    r = rad(obj);   
+    res = ~any(r == 0);
+end
 
 %------------- END OF CODE --------------

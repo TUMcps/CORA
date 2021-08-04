@@ -43,8 +43,7 @@ for i = 1:length(Rtmp)
 end
 
 % adapt the options for reachability analysis
-maxError = options.maxError;
-options.maxError = Inf * maxError;
+options.maxError_x = Inf * options.maxError_x;
 
 % loop over all split sets
 perfInd = zeros(length(R),1);

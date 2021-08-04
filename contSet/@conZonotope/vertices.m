@@ -36,7 +36,12 @@ function V = vertices(obj)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-    
+
+% First remove redundant constraints that will not overapproximate the
+% original constrained zonotope. Then we can check whether or not the
+% resulting set is, in fact, a zonotope
+obj = reduceConstraints(obj);
+
 if ~isempty(obj.A)
     
     % Calculate potential vertices of the constrained zonotope (vertices + 

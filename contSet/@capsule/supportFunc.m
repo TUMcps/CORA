@@ -3,8 +3,8 @@ function [val,x] = supportFunc(obj,dir,varargin)
 %            along a certain direction
 %
 % Syntax:  
-%    val = supportFunc(obj,dir)
-%    val = supportFunc(obj,dir,type)
+%    [val,x] = supportFunc(obj,dir)
+%    [val,x] = supportFunc(obj,dir,type)
 %
 % Inputs:
 %    obj - capsule object

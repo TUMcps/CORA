@@ -32,7 +32,7 @@ function completed = example_nonlinear_reach_03_vanDerPol_splitting()
 
 % Parameters --------------------------------------------------------------
 
-params.tFinal = 6.74;
+params.tFinal = 3.2;
 
 % specify initial set as zonotope bundle so that splitting sets is exact
 Z0{1} = zonotope([1.4 0.3 0; 2.3 0 0.05]);

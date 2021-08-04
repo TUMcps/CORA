@@ -33,6 +33,14 @@ function pZ = cartProd(pZ1,pZ2)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+    if isempty(pZ1)
+        pZ = pZ2;
+        return;
+    elseif isempty(pZ2)
+        pZ = pZ1;
+        return;
+    end
     
     % convert other set representations to polyZonotopes (first set)
     if ~isa(pZ1,'polyZonotope')
@@ -40,6 +48,12 @@ function pZ = cartProd(pZ1,pZ2)
             
             pZ1 = zonotope(pZ1);
             pZ1 = polyZonotope(center(pZ1),[],generators(pZ1),[]);
+            
+        elseif isa(pZ1,'conPolyZono')
+            
+            pZ2 = conPolyZono(pZ2);
+            pZ = cartProd(pZ1,pZ2); 
+            return;
             
         elseif isa(pZ1,'mptPolytope') || isa(pZ1,'zonoBundle') || ...
                isa(pZ1,'conZonotope')
@@ -60,6 +74,12 @@ function pZ = cartProd(pZ1,pZ2)
             
             pZ2 = zonotope(pZ2);
             pZ2 = polyZonotope(center(pZ2),[],generators(pZ2),[]);
+            
+        elseif isa(pZ2,'conPolyZono')
+            
+            pZ1 = conPolyZono(pZ1);
+            pZ = cartProd(pZ1,pZ2); 
+            return;
             
         elseif isa(pZ2,'mptPolytope') || isa(pZ2,'zonoBundle') || ...
                isa(pZ2,'conZonotope')

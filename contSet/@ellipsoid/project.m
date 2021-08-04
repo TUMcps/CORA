@@ -28,9 +28,7 @@ function E = project(E_in,dims)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
 I = eye(length(E_in.Q));
 P = I(:,dims);
 E = P'*E_in;
-
 %------------- END OF CODE --------------

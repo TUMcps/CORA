@@ -1,5 +1,5 @@
 function I = interval(Z)
-% interval - Overapproximates a zonotope by an interval hull
+% interval - overapproximates a zonotope by an interval
 %
 % Syntax:  
 %    I = interval(Z)
@@ -13,9 +13,9 @@ function I = interval(Z)
 % Example: 
 %    Z = zonotope(rand(2,5));
 %    I = interval(Z);
-%    plot(Z);
-%    hold on
-%    plot(I);
+%    figure; hold on;
+%    plot(Z,[1,2],'b');
+%    plot(I,[1,2],'r');
 %
 % Other m-files required: interval (constructor)
 % Subfunctions: none

@@ -42,6 +42,13 @@ end
 if nargin >= 3
 	plotOptions = varargin(2:end); 
 end
+
+% check dimension
+if length(dims) < 2
+    error('At least 2 dimensions have to be specified!');
+elseif length(dims) > 3
+    error('Only up to 3 dimensions can be plotted!');
+end
  
 % check if polyhedron is bounded
 if ~isBounded(obj.P)
@@ -51,14 +58,26 @@ if ~isBounded(obj.P)
     yLim = get(gca,'Ylim');
     
     % intersect with the current polytope
-    obj = obj & interval([xLim(1);yLim(1)],[xLim(2);yLim(2)]);
+    if length(dims) == 2
+        obj = project(obj,dims) & interval([xLim(1);yLim(1)], ...
+                                           [xLim(2);yLim(2)]);
+        dims = [1,2];
+    else
+        zLim = get(gca,'Zlim');
+        obj = project(obj,dims) & interval([xLim(1);yLim(1);zLim(1)], ...
+                                           [xLim(2);yLim(2),zLim(2)]);
+        dims = [1,2,3];
+    end
 end
     
 % compute vertices
 V = vertices(obj);
 
 % plot projected vertices
-han = plotPolygon(V(dims,:),plotOptions{:});
-
+if length(dims) == 2
+    han = plotPolygon(V(dims,:),plotOptions{:});
+elseif length(dims) == 3
+    han = plotPolytope3D(V(dims,:),plotOptions{:});
+end
 
 %------------- END OF CODE --------------

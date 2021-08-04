@@ -29,9 +29,10 @@ function res = test_capsule_isempty
 C1 = capsule();
 C2 = capsule([1;1],[],0.5);
 C3 = capsule([1;1],[0;1],0.5);
+C4 = capsule([1;1],[0;1],0);
 
 % compare results
-res = isempty(C1) && ~isempty(C2) && ~isempty(C3);
+res = isempty(C1) && isempty(C2) && ~isempty(C3) && ~isempty(C4);
 
 if res
     disp('test_isempty successful');

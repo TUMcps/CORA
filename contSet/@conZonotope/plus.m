@@ -84,7 +84,7 @@ elseif isa(summand,'zonotope') || isa(summand,'interval') || ...
     
     cZ = cZ + conZonotope(summand);
     
-elseif isa(summand,'polyZonotope')
+elseif isa(summand,'polyZonotope') || isa(summand,'conPolyZono')
     
     cZ = polyZonotope(cZ) + summand;
      

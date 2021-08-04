@@ -23,16 +23,19 @@ function res = isFullDim(Z)
 %
 % See also: isempty
 
-% Author:       Niklas Kochdumper
+% Author:       Niklas Kochdumper, Mark Wetzlinger
 % Written:      02-January-2020 
-% Last update:  ---
+% Last update:  12-March-2021 (MW, add empty case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
+if ~isempty(Z)
     Zdim = dim(Z);
     Grank = rank(generators(Z));
-    
     res = Zdim == Grank;
+else
+    res = false;
+end
 
 %------------- END OF CODE --------------

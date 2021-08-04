@@ -1,5 +1,6 @@
 function Z = deleteZeros(Z)
-% deleteZeros - removes zero generators
+% deleteZeros - removes all generators from a zonotope with zero in all
+%    dimensions
 %
 % Syntax:  
 %    Z = deleteZeros(Z)
@@ -8,7 +9,7 @@ function Z = deleteZeros(Z)
 %    Z - zonotope object
 %
 % Outputs:
-%    Z - reduced zonotope object
+%    Z - zonotope object, every generator has at least one non-zero entry
 %
 % Example:
 %    Z1 = zonotope([0;0],[1 0 -2 0 3 4; 0 0 1 0 -2 1]);

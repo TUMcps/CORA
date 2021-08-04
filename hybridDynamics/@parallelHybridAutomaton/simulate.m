@@ -20,15 +20,15 @@ function [t,x,loc] = simulate(obj,params)
 %
 % See also: simulateRandom
 
-% Author:        Victor Charlent, Johann Schöpfer, Niklas Kochdumper
+% Author:        Victor Charlent, Johann Schoepfer, Niklas Kochdumper
 % Written:       24-May-2016  
 % Last update:   04-July-2018
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-    options = params;
-    options = checkOptionsSimulate(obj,options);
+    % new options preprocessing
+    options = validateOptions(obj,mfilename,params,struct([]));
 
     % initialization
     tInter = options.tStart;         % intermediate time at transitions

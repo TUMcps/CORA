@@ -22,11 +22,16 @@ function d = dim(obj)
 % Author:       Mark Wetzlinger
 % Written:      15-Sep-2019
 % Last update:  09-June-2020 (handling of interval matrices)
+%               12-March-2021 (MW, empty intervals)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 infi = infimum(obj); % equivalently: supremum(obj)
+if isempty(infi)
+    d = 0; return;
+end
+
 [rows, cols] = size(infi);
 if rows == 1
     d = cols;

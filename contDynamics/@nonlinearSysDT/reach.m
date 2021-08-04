@@ -29,8 +29,7 @@ function R = reach(obj,params,options,varargin)
 %------------- BEGIN CODE --------------
 
     % options preprocessing
-    options = params2options(params,options);
-    options = checkOptionsReach(obj,options,0);
+    options = validateOptions(obj,mfilename,params,options);
     
     spec = [];
     if nargin >= 4
@@ -58,9 +57,8 @@ function R = reach(obj,params,options,varargin)
         % compute next reachable set
         R{i+1} = linReach(obj,R{i},options);
 
-        if isfield(options,'verbose') && options.verbose 
-            disp(t(i));
-        end
+        % log information
+        verboseLog(i,t(i),options);
         
         % check specification
         if ~isempty(spec)
@@ -76,8 +74,11 @@ function R = reach(obj,params,options,varargin)
     % create reachable set object
     timePoint.set = R(2:end);
     timePoint.time = num2cell(t(2:end)');
-    
     R = reachSet(timePoint);
+    
+    % log information
+    verboseLog(length(t),t(end),options);
+
 end
 
 %------------- END OF CODE --------------

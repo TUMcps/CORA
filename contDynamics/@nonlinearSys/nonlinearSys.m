@@ -33,6 +33,7 @@ classdef nonlinearSys < contDynamics
 % Last update:  29-October-2007
 %               04-August-2016 (changed to new OO format)
 %               19-May-2020 (NK, changed constructor syntax)
+%               02-February-2021 (MW, add switching between tensor files)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -75,10 +76,7 @@ methods
         % get name from function handle
         if isempty(name)    
             name = func2str(fun);
-            name = strrep(name,'@',''); 
-            name = strrep(name,'(',''); 
-            name = strrep(name,')',''); 
-            name = strrep(name,',','');
+            name = replace(name,{'@','(',')',','},'');
             if ~isvarname(name)
                 name = 'nonlinearSys';
             end
@@ -101,19 +99,29 @@ methods
         
         % assign object properties
         obj.mFile = fun;
-        
-        str = ['obj.jacobian = @jacobian_',name,';'];
-        eval(str);
-        
-        str = ['obj.hessian = @hessianTensor_',name,';'];
-        eval(str);
-        
-        str = ['obj.thirdOrderTensor = @thirdOrderTensor_',name,';'];
-        eval(str);
-        
+        obj.jacobian = eval(['@jacobian_',name]);
+        obj.hessian = eval(['@hessianTensor_',name]);
+        obj.thirdOrderTensor = eval(['@thirdOrderTensor_',name]);
         for i = 4:10
-            str = sprintf('obj.tensors{%i} = @tensor%i_%s;',i-3,i,name);
-            eval(str);
+            obj.tensors{i-3} = eval(sprintf('@tensor%i_%s;',i,name));
+        end
+    end
+    
+    
+    function obj = setHessian(obj,version)
+        % allow switching between standard and interval arithmetic
+        if strcmp(version,'standard')
+            obj.hessian = eval(['@hessianTensor_' obj.name]);
+        elseif strcmp(version,'int')
+            obj.hessian = eval(['@hessianTensorInt_' obj.name]);
+        end
+    end
+    function obj = setThirdOrderTensor(obj,version)
+        % allow switching between standard and interval arithmetic
+        if strcmp(version,'standard')
+            obj.thirdOrderTensor = eval(['@thirdOrderTensor_' obj.name]);
+        elseif strcmp(version,'int')
+            obj.thirdOrderTensor = eval(['@thirdOrderTensorInt_' obj.name]);
         end
     end
     

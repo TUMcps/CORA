@@ -33,9 +33,8 @@ function res = simulateRandom(obj,params,options)
 
 %------------- BEGIN CODE --------------
 
-% check simulation options
-options = params2options(params,options);
-options = checkOptionsSimRandom(obj,options);
+% new options preprocessing
+options = validateOptions(obj,mfilename,params,options);
 
 % initialize random inputs
 u = cell(size(options.Uloc));
@@ -45,17 +44,14 @@ for j = 1:length(u)
 end
 
 % determine random points inside the initial set
-points = zeros(dim(options.R0),options.points);
-counter = 1;
-
-for i = 1:options.points
-   if counter < options.fracVert * options.points
-      points(:,i) = randPointExtreme(options.R0); 
-   else
-      points(:,i) = randPoint(options.R0); 
-   end
-
-   counter = counter + 1;
+nrEx = ceil(options.points*options.fracVert);
+nrNor = options.points - nrEx;
+points = [];
+if nrEx > 0
+   points = [points, randPoint(options.R0,nrEx,'extreme')]; 
+end
+if nrNor > 0
+   points = [points, randPoint(options.R0,nrNor,'standard')];
 end
 
 time = linspace(options.tStart,options.tFinal,options.inpChanges);
@@ -77,7 +73,7 @@ for i = 1:options.points
        optsSim.u = u;
 
        if counter < options.inpChanges * options.fracInpVert 
-           optsSim.u{locCur} = randPointExtreme(options.Uloc{locCur});
+           optsSim.u{locCur} = randPoint(options.Uloc{locCur},1,'extreme');
        else
            optsSim.u{locCur} = randPoint(options.Uloc{locCur});
        end              

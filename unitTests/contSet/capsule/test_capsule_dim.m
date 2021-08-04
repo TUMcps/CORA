@@ -20,16 +20,29 @@ function res = test_capsule_dim
 
 % Author:       Mark Wetzlinger
 % Written:      27-Sep-2019
-% Last update:  ---
+% Last update:  12-March-2021 (MW, add empty case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% 1. Analytical -----------------------------------------------------------
+% 1. Empty case
+C = capsule();
+
+% compute dimension
+C_dim = dim(C);
+
+% true solution
+true_dim = 0;
+
+% compare results
+res_empty = C_dim == true_dim;
+
+
+% 2. Analytical
 % instantiate capsule
 C = capsule([1;1],[1;1],0.5);
 
-% compute enlarged capsule
+% compute dimension
 C_dim = dim(C);
 
 % true solution
@@ -37,28 +50,10 @@ true_dim = 2;
 
 % compare results
 res_analytical = C_dim == true_dim;
-% -------------------------------------------------------------------------
 
-
-% 2. Random ---------------------------------------------------------------
-C = cell(10,1);
-dimension = zeros(10,1);
-for i=1:10
-    dimension(i) = ceil(10*rand(1));
-    center = rand(dimension(i),1);
-    generator = rand(dimension(i),1);
-    r = rand(1);
-    C{i} = capsule(center,generator,r);
-end
-
-res_random = true;
-for i=1:length(C)
-    res_random = res_random && dim(C{i}) == dimension(i);
-end
-% -------------------------------------------------------------------------
 
 % combine tests
-res = res_analytical && res_random;
+res = res_empty && res_analytical;
 
 if res
     disp('test_dim successful');

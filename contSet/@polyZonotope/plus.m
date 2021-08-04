@@ -62,14 +62,17 @@ if isa(summand,'zonotope')
    
 elseif isa(summand,'interval')
     
-    pZ = pZ + zonotope(interval);
+    pZ = pZ + zonotope(summand);
+    
+elseif isa(summand,'conPolyZono')
+    
+    pZ = summand + pZ;
     
 else
     
     % convert other set representations to polynomial zonotopes
-    if ~isa(summand,'polyZonotope')
-        if isa(summand,'zonotope') || isa(summand,'interval') || ...
-           isa(summand,'mptPolytope') || isa(summand,'zonoBundle') || ...
+    if ~isa(summand,'polyZonotope') 
+        if isa(summand,'mptPolytope') || isa(summand,'zonoBundle') || ...
            isa(summand,'conZonotope')
 
             summand = polyZonotope(summand);

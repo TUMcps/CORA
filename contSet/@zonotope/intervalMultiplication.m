@@ -1,7 +1,6 @@
 function Z = intervalMultiplication(Z,I)
 % intervalMultiplication - computes the multiplication of an interval with
-%    a zonotope; requires a seperate function since the zonotope class
-%    is no longer superior to the interval class
+%    a zonotope
 %
 % Syntax:  
 %    Z = intervalMultiplication(Z,I)
@@ -14,12 +13,13 @@ function Z = intervalMultiplication(Z,I)
 %    Z - zonotope after multiplication of an interval with a zonotope
 %
 % Example: 
-%    Z=zonotope([1 1 0; 0 0 1]);
-%    I=interval([0 1; 1 0], [1 2; 2 1]);
-%    plot(Z);
-%    hold on
-%    Z=intervalMultiplication(Z,I);
-%    plot(Z);
+%    Z = zonotope([1 1 0; 0 0 1]);
+%    I = interval([0 1; 1 0], [1 2; 2 1]);
+%    IZ = intervalMultiplication(Z,I);
+%
+%    figure; hold on;
+%    plot(Z,[1,2],'b');
+%    plot(IZ,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none

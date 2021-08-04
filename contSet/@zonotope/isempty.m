@@ -1,8 +1,8 @@
 function res = isempty(obj)
-% is_empty - returns 1 if a zonotope is empty and 0 otherwise
+% isempty - returns true if a zonotope is empty and false otherwise
 %
 % Syntax:  
-%    res = is_empty(obj)
+%    res = isempty(obj)
 %
 % Inputs:
 %    obj - zonotope object

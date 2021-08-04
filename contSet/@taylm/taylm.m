@@ -349,6 +349,8 @@ methods
     res = atan( obj )       % overloaded 'asin()'
     res = getSyms( obj )    % returns a polynomial in a sym form
     res = trace(obj)        % trace for TM matrices
+    res = prod(obj,varargin)    % product of array elements
+    res = sum(obj,varargin)     % sum of array elements
     
     %display functions
     display(obj)

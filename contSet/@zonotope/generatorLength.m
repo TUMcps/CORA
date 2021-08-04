@@ -1,5 +1,5 @@
 function Glength = generatorLength(Z)
-% generatorLength - Returns the lengths of the generators
+% generatorLength - returns the lengths of the generators
 %
 % Syntax:  
 %    Glength = generatorLength(Z)

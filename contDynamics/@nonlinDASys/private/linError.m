@@ -37,6 +37,9 @@ function [Z_error, errorInt, errorInt_x, errorInt_y, R_y] = linError(obj, option
 
 %------------- BEGIN CODE --------------
 
+% set handle to correct file
+obj = setHessian(obj,'int');
+
 %compute set of algebraic variables
 f0_con = obj.linError.f0_con;
 D = obj.linError.D;

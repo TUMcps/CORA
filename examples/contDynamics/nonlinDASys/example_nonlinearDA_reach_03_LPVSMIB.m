@@ -50,9 +50,6 @@ options.timeStep = 0.005;    % Time step size for reachable set computation
 options.zonotopeOrder = 300; % Zonotope order
 options.taylorTerms = 4;
 options.tensorOrder = 2;
-options.intermediateOrder = 3;
-options.errorOrder = 3;
-options.reductionInterval = 1e5;
 
 options.maxError_x = 0.01*ones(dim_x,1);
 options.maxError_y = 0.005*ones(dim_y,1);
@@ -132,11 +129,11 @@ t = cell(runs,1); x = cell(runs,1);
 for r=1:runs
     % set init conditions for run
     if r<=20
-        params.u=randPointExtreme(params.U);
-        params.x0=randPointExtreme(params.R0);
+        params.u = randPoint(params.U,1,'extreme');
+        params.x0 = randPoint(params.R0,1,'extreme');
     else
-        params.u=randPoint(params.U);
-        params.x0=randPoint(params.R0);
+        params.u = randPoint(params.U);
+        params.x0 = randPoint(params.R0);
     end
     for i=1:length(modes)
         P.mode = modes{i};

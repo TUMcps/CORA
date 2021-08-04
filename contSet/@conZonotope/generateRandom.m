@@ -18,8 +18,7 @@ function cZ = generateRandom(varargin)
 %    cZ - random conZonotope object
 %
 % Example: 
-%    cZ = conZonotope.generateRandom(2);
-%    plot(cZ);
+%    cZ = conZonotope.generateRandom(2)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -72,31 +71,9 @@ function cZ = generateRandom(varargin)
     % generate random constraints
     if nrOfCons > 0
         
-        options = optimoptions('linprog','display','off');
-        
-        % initialize valid factor domain
-        l = -ones(m,1);
-        u = ones(m,1);
-        Aeq = []; beq = [];
-        
-        % loop over all constraints
-        for i = 1:nrOfCons
-           
-            % select random direction
-            d = rand(m,1) - 0.5*ones(m,1);
-            
-            % compute upper and lower bound of valid domain in direction
-            [~,lb] = linprog(d,[],[],Aeq,beq,l,u,options);
-            [~,ub] = linprog(-d,[],[],Aeq,beq,l,u,options);
-            ub = -ub;
-            
-            % select random offset betwenn lower and upper bound
-            b_ = lb + (ub-lb).*rand(1,1);
-            
-            % add constraint
-            Aeq = [Aeq; d'];
-            beq = [beq; b_];
-        end
+        p = -1 + 2*rand(m,1);
+        Aeq = -5 + 10*rand(nrOfCons,m);
+        beq = Aeq*p;
         
         % construct constrained zonotope
         cZ = conZonotope(center(Z),G,Aeq,beq);       

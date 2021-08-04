@@ -45,7 +45,7 @@ function res = polyZonotope(obj)
     names = unique(names);
 
     % check if the taylor model is valid
-    if size(obj,2) > 1 || size(obj,1) ~= length(names)
+    if size(obj,2) > 1
        error('taylm/polyZonotope: Invalid taylor model object that can not be converted!') 
     end
     
@@ -85,7 +85,7 @@ function res = polyZonotope(obj)
           G = [G, [zeros(i-1,length(coeff));coeff;zeros(n-i,length(coeff))]]; 
        end
        
-       Etemp = zeros(n,size(e,2));
+       Etemp = zeros(length(names),size(e,2));
        Etemp(ind,:) = e;
        E = [E,Etemp];       
        
@@ -103,5 +103,7 @@ function res = polyZonotope(obj)
     
     % construct resulting polynomial zonotope object
     res = polyZonotope(c,G,Grest,E) + polyZonotope(zeros(n,1),[],[]);
+    
+end
 
 %------------- END OF CODE --------------    

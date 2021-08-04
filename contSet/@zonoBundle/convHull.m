@@ -1,4 +1,4 @@
-function res = convHull(zB1,zB2)
+function res = convHull(zB1,varargin)
 % convHull - computes the convex hull of two zonotope bundles
 %
 % Syntax:  
@@ -38,6 +38,13 @@ function res = convHull(zB1,zB2)
 
 %------------- BEGIN CODE --------------
 
+    % parse input arguments
+    if nargin == 1
+        res = zB1; return;
+    else
+        zB2 = varargin{1}; 
+    end
+
     % find a zonoBundle object
     if ~isa(zB1,'zonoBundle')
         temp = zB1;
@@ -59,7 +66,7 @@ function res = convHull(zB1,zB2)
         
         poly2 = mptPolytope(zB2');
 
-    elseif isa(summand,'polyZonotope')
+    elseif isa(summand,'polyZonotope') || isa(summand,'conPolyZono')
 
         res = zB2 + zB1;
         return

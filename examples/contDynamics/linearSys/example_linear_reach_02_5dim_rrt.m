@@ -69,7 +69,7 @@ simOpt.vertSamp = true;
 simOpt.strechFac = 1;
 
 % simulate using Rapidly Exploring Random Trees
-simRes = simulateRRT(fiveDimSys, R, params, simOpt);
+simRes = simulateRandom(fiveDimSys,params,simOpt,'rrt',R);
 
 
 % Visualization -----------------------------------------------------------

@@ -13,7 +13,7 @@ function createHigherOrderTensorFiles(fdyn,vars,varsDer,path,name,options)
 %    options - struct containing the algorithm options
 %
 % Outputs:
-%    ---
+%    -
 %
 % Example: 
 %
@@ -25,7 +25,7 @@ function createHigherOrderTensorFiles(fdyn,vars,varsDer,path,name,options)
 
 % Author:       Niklas Kochdumper
 % Written:      08-February-2018
-% Last update:  ---
+% Last update:  02-February-2021 (MW, remove code duplicates)
 % Last revision:---
 
 %------------- BEGIN CODE --------------   
@@ -34,22 +34,10 @@ function createHigherOrderTensorFiles(fdyn,vars,varsDer,path,name,options)
     N = options.tensorOrder;
     z = [vars.x;vars.u];
     dz = [varsDer.x;varsDer.u];
-
-    % generate the fourth order tensor
-    tensor = generateNthTensor(fdyn,z,4);
-    func = evalNthTensor(tensor,dz,4);
-    func = simplification(func,options,dz);
-    str = sprintf('tensor%i_%s',4,name);
-    pathFile = [path, filesep, str];
-    if ~isempty(vars.p)
-        matlabFunction(func,'File',pathFile,'Vars',{vars.x,vars.u,varsDer.x,varsDer.u,vars.p});
-    else
-        matlabFunction(func,'File',pathFile,'Vars',{vars.x,vars.u,varsDer.x,varsDer.u});
-    end
-    disp('tensor 4th-order');
     
-    % generate all remaining higher order tensors
-    for i = 5:N
+    tensor = []; % init for first call of generateNthTensor (order 4)
+    % generate all higher-order tensors
+    for i = 4:N
         tensor = generateNthTensor(fdyn,z,i,tensor);
         func = evalNthTensor(tensor,dz,i);
         func = simplification(func,options,dz);
@@ -60,9 +48,11 @@ function createHigherOrderTensorFiles(fdyn,vars,varsDer,path,name,options)
         else
             matlabFunction(func,'File',pathFile,'Vars',{vars.x,vars.u,varsDer.x,varsDer.u});
         end
-        disp(['tensor ',num2str(i),'th-order']);
+        disp(['... compute symbolic tensor ' num2str(i) 'th-order']);
     end
+    
 end
+
 
 function func = simplification(func,options,dz)
 % simplifies the symbolic expression "func" with the specified method
@@ -77,6 +67,7 @@ function func = simplification(func,options,dz)
             end
         end
     end
+    
 end
 
 %------------- END OF CODE --------------

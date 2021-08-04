@@ -1,5 +1,5 @@
 function Z = abs(Z)
-% abs - Returns a zonotope with absolute values of the center and the
+% abs - returns a zonotope with absolute values of the center and the
 %    generators
 %
 % Syntax:  
@@ -9,11 +9,11 @@ function Z = abs(Z)
 %    Z - zonotope object
 %
 % Outputs:
-%    Z - zonotope, where Z=(|c|,|g_1|,...,|g_n|)
+%    Z - zonotope object, where Z=(|c|,|g_1|,...,|g_n|)
 %
 % Example: 
-%    Z=zonotope([1 -1 0; 0 0 -1]);
-%    Z=abs(Z)-->Z=[1 1 0; 0 0 1]
+%    Z = zonotope([1 -1 0; 0 0 -1]);
+%    Z = abs(Z); % Z=[1 1 0; 0 0 1]
 %
 % Other m-files required: none
 % Subfunctions: none

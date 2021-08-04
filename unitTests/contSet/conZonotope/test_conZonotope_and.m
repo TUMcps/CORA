@@ -67,65 +67,7 @@ for i = 1:size(V_,2)
    end
 end
 
-
-% TEST 2: conZonotope (random) --------------------------------------------
-
-% loop over different dimensions
-for j = 2:3
-    
-    % Generate random polytope vertices 1
-    points = rand(j,100);
-    ind = convhulln(points');
-    ind = unique(ind(:,1),'stable');
-    V = points(:,ind);
-    poly1 = mptPolytope(V');
-
-    % Generate random polytope vertices 1
-    points = rand(j,100);
-    ind = convhulln(points');
-    ind = unique(ind(:,1),'stable');
-    V = points(:,ind);
-    poly2 = mptPolytope(V');
-
-    % calculate constrained zonontope intersection
-    cZono1 = conZonotope(poly1);
-    cZono2 = conZonotope(poly2);
-    zonoInt = cZono1 & cZono2;
-    V = vertices(zonoInt);
-
-    % calculate vertices from polytope interesection
-    polyInt = poly1 & poly2;
-    V_ = vertices(polyInt);
-
-    % plot the result
-%     if j == 2
-%         plot(cZono1,[1,2],'r');
-%         hold on
-%         plot(cZono2,[1,2],'b');
-%         plot(zonoInt,[1,2],'g','Filled',true,'EdgeColor','none');
-%         plot(V(1,:),V(2,:),'.k','MarkerSize',12);
-%     end
-
-    % check correctness
-    if ~isempty(V_)
-        for i = 1:size(V_,2)
-           if ~ismembertol(V_(:,i)',V',1e-10,'ByRows',true)
-              file_name = strcat('test_conZonotope_intersection_2_', ...
-                                 datestr(now,'mm-dd-yyyy_HH-MM'));
-                  
-              file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
-                                   file_name);
-                           
-              save(file_path, 'poly1', 'poly2')
-              error('Test 2 (conZonotope random) failed!'); 
-           end
-        end
-    end
-end
-
-
-
-% TEST 3: halfspace (analytical) ------------------------------------------
+% TEST 2: halfspace (analytical) ------------------------------------------
 
 % constrained zonotope
 Z = [0 3 0 1;0 0 2 1];
@@ -156,14 +98,14 @@ V_ = [1 3;0 1];
 % check correctness
 for i = 1:size(V_,2)
    if ~ismembertol(V_(:,i)',V','ByRows',true)
-      error('Test 3 (halfspace analytical) failed!'); 
+      error('Test 2 (halfspace analytical) failed!'); 
    end
 end
 
 
 
 
-% TEST 4: conHyperplane (analytical) ------------------------------
+% TEST 3: conHyperplane (analytical) --------------------------------------
 
 % constrained zonotope
 Z = [0 3 0 1;0 0 2 1];
@@ -199,11 +141,9 @@ V_ = [2 2.5;0.5 0.75];
 % check correctness
 for i = 1:size(V_,2)
    if ~ismembertol(V_(:,i)',V','ByRows',true)
-      error('Test 4 (conHyperplane analytical) failed!'); 
+      error('Test 3 (conHyperplane analytical) failed!'); 
    end
 end
-
-
 
 
 res = true;

@@ -93,7 +93,7 @@ guardb = ...
 [-120];
 guard = conHyperplane(guardA,guardb);
 
-trans{2} = transition(guard, reset, 3);
+trans{2,1} = transition(guard, reset, 3);
 
 loc{1} = location('S1', inv, trans, dynamics);
 

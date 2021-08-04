@@ -1,5 +1,5 @@
 function Zred = reduceUnderApprox(Z,option,order)
-% reduceUnderApprox - Reduces the order of a zonotope so that an
+% reduceUnderApprox - reduces the order of a zonotope so that an
 %                     under-approximation of the original set is obtained
 %
 % Syntax:  
@@ -7,7 +7,7 @@ function Zred = reduceUnderApprox(Z,option,order)
 %
 % Inputs:
 %    Z - zonotope object
-%    option - used reduction method ('sum', 'scale', or 'linProg')
+%    option - reduction method ('sum', 'scale', 'linProg' or 'wetzlinger')
 %    order - zonotope order
 %
 % Outputs:
@@ -27,8 +27,10 @@ function Zred = reduceUnderApprox(Z,option,order)
 %    plot(ZlinProg,[1,2],'m');
 %
 % References:
-%    [1] Sadraddini et. al: Linear Encodings for Polytope Containment
-%        Problems, CDC 2019
+%    [1] Sadraddini et al. "Linear Encodings for Polytope Containment
+%        Problems", CDC 2019
+%    [2] Wetzlinger et al. "Adaptive Parameter Tuning for Reachability 
+%        Analysis of Nonlinear Systems", HSCC 2021             
 %
 % Other m-files required: none
 % Subfunctions: see below
@@ -59,6 +61,8 @@ function Zred = reduceUnderApprox(Z,option,order)
             Zred = reduceUnderApproxScale(Z,order);
         elseif strcmp(option,'linProg')
             Zred = reduceUnderApproxLinProg(Z,order);
+        elseif strcmp(option,'wetzlinger')
+            Zred = reduceUnderApproxWetzlinger(Z,order);
         else
             error('Wrong value for input argument ''option''!');
         end
@@ -150,6 +154,50 @@ function Zred = reduceUnderApproxSum(Z,order)
 
     % construct the reduced zonotope object
     Zred = zonotope([c,G,g]);
+end
+
+function Zred = reduceUnderApproxWetzlinger(Z,order)
+% reduction based on the Hausdorff distance betwenn a zonotope and its
+% interval enclosure (see Theorem 3.2 in [2])
+
+    % select generators to reduce
+    n = dim(Z);
+    N = floor(order*n-n);
+    
+    [c,G,Gred] = selectSmallestGenerators(Z,N);
+
+    % construct zonotope from the generators that are reduced
+    Z1 = zonotope([zeros(length(c),1),Gred]);
+    
+    % state space transformation
+    [S,~,~] = svd([-Gred,Gred]);
+    Z1 = S' * Z1;
+    
+    % compute over-approximation of the Hausdorff distance between the
+    % zonotope and its box enclsoure according to Theorem 3.2 in [2]
+    G_ = abs(generators(Z1));
+    
+    for i = 1:size(G_,2)
+        [~,ind] = max(G_(:,i));
+        G(ind(1),i) = 0;
+    end
+    
+    dist = 2*norm(sum(G_,2));
+    
+    % compute interval inner-approximation of the generators that are
+    % reduced using the Minkowski difference for intervals
+    int1 = interval(Z1);
+    int2 = dist*interval(-ones(n,1),ones(n,1));
+    
+    int = minkDiff(int1,int2);
+    
+    % combine the interval inner-approximation with the unreduced
+    % generators
+    if ~isempty(int)
+        Zred = zonotope(c,G) + S * zonotope(int);
+    else
+        Zred = zonotope(c,G); 
+    end
 end
 
 function [c,G,Gred] = selectSmallestGenerators(Z,N)

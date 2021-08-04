@@ -6,7 +6,7 @@ function varargout = norm(Z,type,mode)
 %
 % Inputs:
 %    Z    - zonotope object
-%    type - (optional) which kind of norm (default:2)
+%    type - (optional) which kind of norm (default: 2)
 %    mode - (optional) 'exact', 'ub' (upper bound),'ub_convex' (more
 %            precise upper bound computed from a convex program)
 %

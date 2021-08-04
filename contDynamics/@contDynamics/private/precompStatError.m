@@ -33,6 +33,9 @@ function [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError(obj,Rdelta,optio
 
 %------------- BEGIN CODE --------------
 
+% set handle to correct file
+obj = setHessian(obj,'standard');
+
 % initialize output arguments
 T = [];
 ind3 = [];
@@ -61,11 +64,14 @@ else
     H = obj.hessian(obj.linError.p.x, obj.linError.p.u);
 end
 
-% calcualte the quadratic map == static second order error
+% calculate the quadratic map == static second order error
 errorSecOrdStat = 0.5*quadMap(Z, H);
 
 % third-order error
 if options.tensorOrder >= 4
+    
+    % set handle to correct file
+    obj = setThirdOrderTensor(obj,'standard');
    
     % reduce the order of the reachable set to speed-up the computations 
     % for cubic multiplication
@@ -93,7 +99,7 @@ if options.tensorOrder >= 4
     errorThirdOrdStat = 1/6 * cubMap(Z,T,ind3);
     
     % calculate the overall static linearization error
-    if isa(Z,'polyZonotope')
+    if isa(Z,'polyZonotope') || isa(Z,'conPolyZono')
         errorStat = exactPlus(errorSecOrdStat,errorThirdOrdStat);
     else
         errorStat = errorSecOrdStat + errorThirdOrdStat;
@@ -106,5 +112,4 @@ end
 
 % reduce the complexity of the set of static errors
 errorStat = reduce(errorStat,options.reductionTechnique,options.intermediateOrder);
-
 %------------- END OF CODE -------------

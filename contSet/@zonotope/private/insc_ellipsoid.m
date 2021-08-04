@@ -28,12 +28,16 @@ function [E] = insc_ellipsoid(Z,comptype)
 %
 % See also: enc_ellipsoid, MVIE, MVEE
 
-% Author:       Victor Gaﬂmann
+% Author:       Victor Gassmann
 % Written:      18-September-2019
-% Last update:   ---
-% Last revision: ---
+% Last update:  08-June-2021 (degeneracy check in main file)
+% Last revision:---
 
 %------------- BEGIN CODE --------------
+rankG = rank(generators(Z));
+dimG = dim(Z);
+assert(rankG==dimG,'Degeneracy should be handled in main file!');
+
 %check if respective norm should be bounded or computed exactly
 if exist('comptype','var') && strcmp(comptype,'exact')
     doExact = true;
@@ -48,7 +52,7 @@ c = Z.Z(:,1);
 E0 = G*G';
 
 %cannot directly fit ellipsoid to zonotope
-if n<m && rank(G)>=n
+if n<m 
     %transformation matrix T s.t. T*ellipsoid(E0) == unit hyper sphere
     T = inv(sqrtm(E0));
     %transform Z
@@ -63,9 +67,7 @@ if n<m && rank(G)>=n
     %point (thus optimal in that sense) (implicit application of inv(T))
     E = ellipsoid(l^2*E0,c);
 %can directly compute the optimal E
-elseif n==m && rank(G)>=n
-    E = ellipsoid(E0,c);
 else
-    error('Not implemented for degenerate zonotopes');
+    E = ellipsoid(E0,c);
 end
 %------------- END OF CODE --------------

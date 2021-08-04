@@ -59,11 +59,10 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 25;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
 simOpt.inpChanges = 10;
+simOpt.p_conf = 0.8;
 
-simRes = simulateRandom(fiveDimSys, params, simOpt);
+simRes = simulateRandom(fiveDimSys, params, simOpt, 'gaussian');
 
 
 % Visualization -----------------------------------------------------------

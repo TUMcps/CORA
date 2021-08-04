@@ -1,4 +1,4 @@
-function removedInd = removedHalfspaces(obj,Horig,Korig)
+function removedInd = removedHalfspaces(obj,Horig)
 % removedHalfspaces - checks which halfspaces have been removed from Porig
 % to obj.
 %
@@ -25,12 +25,13 @@ function removedInd = removedHalfspaces(obj,Horig,Korig)
 % Author:       Matthias Althoff
 % Written:      11-June-2015
 % Last update:  20-August-2015
+%               07-May-2021
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 %remove redundant halfspaces
-[obj.P, sol] = obj.P.minHRep();
+obj.P = obj.P.minHRep();
 
 %check if empty
 if isempty(obj)
@@ -40,13 +41,14 @@ else
     removedInd = [];
     
     %Hbefore
-    Hbefore = [Horig, Korig];
+    Hbefore = Horig;
     
-    %Hafter
-    Hafter = sol.H;
+    %Hafter; also the mirrored normal vectrrs are considered since the
+    %order how the normal vectors are obtained is unknown
+    Hafter = obj.P.H(:,1:end-1); 
     
     %normalize; additional consideration of k value in normalization
-    %ribustifies the result
+    %robustifies the result
     for i=1:length(Hbefore(:,1))
         Hbefore(i,:) = Hbefore(i,:)/norm(Hbefore(i,:));
     end
@@ -59,8 +61,8 @@ else
             diff(j) = sum(abs(Hbefore(i,:) - Hafter(j,:)));
         end
         % find minimum difference
-        [minDiff, ind] = min(diff);
-        if minDiff > length(Hbefore(i,:))*1e-4;
+        minDiff = min(diff);
+        if minDiff > length(Hbefore(i,:))*1e-10
             removedInd = [removedInd,i];
         end
     end

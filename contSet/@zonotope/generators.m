@@ -1,5 +1,5 @@
 function G = generators(Z)
-% generators - Returns the generators of a zonotope as a matrix whose
+% generators - returns the generators of a zonotope as a matrix whose
 %    column vectors are the generators
 %
 % Syntax:  

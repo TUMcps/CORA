@@ -1,4 +1,4 @@
-classdef levelSet
+classdef levelSet < contSet
 % levelSet - class definition for non-linear level sets
 %
 % Syntax:
@@ -83,6 +83,9 @@ methods
            end
            obj.compOp = compOp;
         end
+        
+        % set parent object properties
+        obj.dimension = obj.dim;
         
         % compute derivatives
         if strcmp(compOp,'==')

@@ -1,8 +1,8 @@
-function [Zquad] = quadMap_parallel(Z,Q)
+function Zquad = quadMap_parallel(Z,Q)
 % quadMap - computes \{Q_{ijk}*x_j*x_k|x \in Z\}
 %
 % Syntax:  
-%    [Zquad] = quadMap(Z1,Q)
+%    Zquad = quadMap(Z1,Q)
 %
 % Inputs:
 %    Z - zonotope object

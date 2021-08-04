@@ -1,5 +1,5 @@
 function n = rank(Z)
-% rank - computes the rank of the generator matrix of Z
+% rank - computes the rank of the generator matrix of a zonotope
 %
 % Syntax:  
 %    n = rank(Z)

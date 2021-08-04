@@ -1,5 +1,5 @@
 function Zrem = filterOut(Z)
-% filterOut - Deletes parallelotopes that are covered by other parallelotopes
+% filterOut - deletes parallelotopes that are covered by other parallelotopes
 %
 % Syntax:  
 %    Zrem = filterOut(Z)

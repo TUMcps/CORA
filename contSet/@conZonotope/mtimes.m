@@ -40,7 +40,8 @@ function cZ = mtimes(factor1,factor2)
 if ~isnumeric(factor1)
     error('conZontope/mtimes: operation not implemented yet!')
 else
-    cZ = mtimes@zonotope(factor1,factor2);
+    cZ = factor2;
+    cZ.Z = factor1*factor2.Z;
 end
 
 %------------- END OF CODE --------------

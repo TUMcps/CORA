@@ -53,7 +53,7 @@ elseif isnumeric(summand)
 
 elseif isa(summand,'zonotope') || isa(summand,'conZonotope') || ...
        isa(summand,'zonoBundle') || isa(summand,'polyZonotope') || ...
-       isa(summand,'mptPolytope')
+       isa(summand,'mptPolytope') || isa(summand,'conPolyZono')
 
     res = summand + res;
 

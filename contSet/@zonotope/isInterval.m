@@ -1,5 +1,6 @@
 function res = isInterval(Z)
-% isInterval - check if a zonotope represents an interval
+% isInterval - check if a zonotope can be equivalently represented by an
+%    interval object (all generators axis-aligned)
 %
 % Syntax:  
 %    res = isInterval(Z)
@@ -31,14 +32,13 @@ function res = isInterval(Z)
 
 % Author:       Niklas Kochdumper, Mark Wetzlinger
 % Written:      02-January-2020 
-% Last update:  21-April-2020 (MW, speed up)
+% Last update:  21-April-2020 (speed up)
 %               09-September-2020 (MW, 1D case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 res = true;
-
 % one-dimensional zonotopes are always intervals
 if dim(Z) == 1
     return
@@ -52,6 +52,7 @@ for i=1:size(G,2)
         return
     end
 end
+
     
 end
 

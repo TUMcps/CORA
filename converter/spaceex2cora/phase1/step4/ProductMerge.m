@@ -23,9 +23,9 @@ function [automaton] = ProductMerge(instances)
 %
 % See also: none
 
-% Author: Johann Schöpfer
-% Written: 09-April-2018 
-% Last update: 09-April-2018 
+% Author:        Johann Schoepfer
+% Written:       09-April-2018 
+% Last update:   09-April-2018 
 % Last revision: ---
 
 %------------- BEGIN CODE --------------

@@ -1,10 +1,10 @@
-function runTestSuite_longDuration( varargin )
+function runTestSuite_longDuration(varargin)
 % runTestSuite_longDuration - runs the test suite with test that have a 
 % long duration; all functions starting with the prefix 'testLongDuration_' 
 % are executed
 %
 % Syntax:  
-%    [failed, numberOfTests] = testSuiteCore(varargin)
+%    runTestSuite_longDuration(varargin)
 %
 % Inputs:
 %    verbose - show workspace output or not (not required)

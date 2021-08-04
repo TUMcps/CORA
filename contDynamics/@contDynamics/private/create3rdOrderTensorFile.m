@@ -1,19 +1,21 @@
-function create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,options)
+function create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,infsupFlag,options)
 % create3rdOrderTensorFile - generates an mFile that allows to compute the
-% 3rd order terms 
+%    3rd-order terms 
 %
 % Syntax:  
-%    create3rdOrderTensorFile(obj,path)
+%    create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,infsupFlag,options)
 %
 % Inputs:
 %    J3dyn - symbolic third-order tensor
-%    J3con - symbolic thrid-order tensor (constraints)
+%    J3con - symbolic third-order tensor (constraints)
 %    path - path for saving the file
 %    name - name of the nonlinear function to which the 3rd order tensor belongs
 %    vars - structure containing the symbolic variables
+%    infsupFlag - true if interval arithmetic, otherwise false
 %    options - structure containing the algorithm options
 %
 % Outputs:
+%    -
 %
 % Example: 
 %
@@ -30,6 +32,7 @@ function create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,options)
 %               03-December-2017
 %               24-January-2018 (NK)
 %               13-March-2020 (NK, implemented options.simplify = optimize)
+%               01-February-2021 (MW, add infsupFlag for different filenames)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -75,14 +78,21 @@ for k=1:length(J3con(:,1,1,1))
     end
 end
 
+% different filename depending on whether interval arithmetic is used
+if infsupFlag
+    thirdordername = 'thirdOrderTensorInt_';
+else
+    thirdordername = 'thirdOrderTensor_';
+end
+
 % create the file
-fid = fopen([path '/thirdOrderTensor_',name,'.m'],'w');
+fid = fopen([path filesep thirdordername name '.m'],'w');
 
 % function arguments depending on occurring variable types
 if isempty(vars.y)      % no constraints
-   strHead = ['function [Tf,ind] = thirdOrderTensor_',name]; 
+   strHead = ['function [Tf,ind] = ' thirdordername name]; 
 else                    % constraints
-   strHead = ['function [Tf,Tg,ind] = thirdOrderTensor_',name];
+   strHead = ['function [Tf,Tg,ind] = ' thirdordername name];
 end
 
 strHead = [strHead,'(x,u'];
@@ -90,7 +100,7 @@ symVars = 'vars.x,vars.u';
 
 if ~isempty(vars.p)     % parameter system
     strHead = [strHead,',p)'];
-    symVars = [symVars,'vars.p'];
+    symVars = [symVars,',vars.p'];
 else
     strHead = [strHead,')']; 
 end
@@ -167,7 +177,7 @@ end
 % precompute initialization string
 [rows,cols] = size(Tdyn{1,1});
 sparseStr = ['sparse(',num2str(rows),',',num2str(cols),')'];
-if options.tensorOrder == 3
+if infsupFlag
     if parallel
         initStr = ['C{i}{%i} = interval(',sparseStr,',',sparseStr,');'];
     else

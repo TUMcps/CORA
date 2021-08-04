@@ -28,6 +28,8 @@ function errorZon = linError_mixed_noInt(obj, options, R)
 
 %------------- BEGIN CODE --------------
 
+obj = setHessian(obj,'int');
+
 %obtain intervals and combined interval z
 dx = interval(R);
 du = interval(options.U);
@@ -40,7 +42,7 @@ totalInt_x = dx + obj.linError.p.x;
 totalInt_u = du + obj.linError.p.u;
 
 %compute zonotope of state and input
-Rred = reduce(R,'girard',options.errorOrder);
+Rred = reduce(R,options.reductionTechnique,options.errorOrder);
 Z=cartProd(Rred,options.U);
 
 %obtain hessian tensor

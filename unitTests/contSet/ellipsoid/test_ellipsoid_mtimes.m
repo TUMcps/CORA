@@ -18,7 +18,7 @@ function res = test_ellipsoid_mtimes
 %
 % See also: -
 
-% Author:       Victor Gaßmann
+% Author:       Victor Gassmann
 % Written:      13-March-2019
 % Last update:  ---
 % Last revision:---
@@ -35,8 +35,8 @@ E1 = ellipsoid.generateRandom(true);
 if E1.dim>1
     %Generate random points within E1
     N = 1000;
-    samples = sample(E1,N);
-    if ~all(containsPoint(E1,samples))
+    samples = randPoint(E1,N);
+    if ~in(E1,samples)
         disp('test_ellipsoid_mtimes failed');
         return;
     end
@@ -47,7 +47,7 @@ if E1.dim>1
     %Compute the linear transformation using the sample points
     samples_A = A*samples;
 
-    if ~all(containsPoint(EA,samples_A))
+    if ~in(EA,samples_A)
         disp('test_ellipsoid_mtimes failed');
         return;
     end

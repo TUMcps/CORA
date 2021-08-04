@@ -26,12 +26,12 @@ function res = isequal(E1,E2)
 % Author:       Victor Gassmann
 % Written:      13-March-2019
 % Last update:  15-October-2019
+%               19-March-2021 (use 'eq')
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-TOL = min(E1.TOL,E2.TOL);
-res_q = all(abs(E1.q-E2.q)<=TOL);
-res_Q = all(all(abs(E1.Q-E2.Q)<=TOL));
-res = res_q && res_Q;
-
+if ~isa(E1,'ellipsoid') || ~isa(E2,'ellipsoid')
+    error('Both input arguments need to be of type "ellipsoid"!');
+end
+res = E1==E2;
 %------------- END OF CODE --------------

@@ -20,9 +20,9 @@ function HA = gearbox()
 %
 % See also: example_hybrid_reach_ARCH20_gearbox_GRBX01
 
-% Author: Matthias Althof, Niklas Kochdumper
-% Written: 19-Dec-2016 
-% Last update: 13-May-2020 (NK, moved to seperate file)
+% Author:        Matthias Althoff, Niklas Kochdumper
+% Written:       19-Dec-2016 
+% Last update:   13-May-2020 (NK, moved to seperate file)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -48,19 +48,18 @@ T_f = 1;                        % [Mm], resisting moment
 % Continuous Dynamics -----------------------------------------------------
 
 % system matrix
-A = [...
-        0 0 0 0 0;...
-        0 0 0 0 0;...
-        1 0 0 0 0;...
-        0 1 0 0 0;...
-        0 0 0 0 0]; 
+A = [0 0 0 0 0;...
+     0 0 0 0 0;...
+     1 0 0 0 0;...
+     0 1 0 0 0;...
+     0 0 0 0 0]; 
     
 B = [1/m_s; 0; 0; 0; 0];
 
 c = B*F_s + [0; -R_s*T_f/J_g2; 0; 0; 0];
 
 % get dimension
-dim = length(A);
+dim_x = length(A);
 
 % instantiate linear dynamics 
 linSys  = linearSys('linearSys',A, B, c);
@@ -104,7 +103,7 @@ reset1.A = [a_11, a_12, 0, 0, 0; ...
     0, 0, 1, 0, 0; ...
     0, 0, 0, 1, 0; ...
     a_51, a_52, 0, 0, 1]; 
-reset1.b = zeros(dim,1);
+reset1.b = zeros(dim_x,1);
 
 % transition 
 trans{1} = transition(guard1,reset1,1);
@@ -143,7 +142,7 @@ reset2.A = [a_11, a_12, 0, 0, 0; ...
     0, 0, 1, 0, 0; ...
     0, 0, 0, 1, 0; ...
     a_51, a_52, 0, 0, 1]; 
-reset2.b = zeros(dim,1);
+reset2.b = zeros(dim_x,1);
 
 % transition
 trans{2} = transition(guard2,reset2,1);
@@ -163,7 +162,7 @@ reset3.A = [0, 0, 0, 0, 0; ...
     0, 0, 1, 0, 0; ...
     0, 0, 0, 1, 0; ...
     m_s, m_s, 0, 0, 1]; 
-reset3.b = zeros(dim,1);
+reset3.b = zeros(dim_x,1);
 
 % transition
 trans{3} = transition(guard3,reset3,2);
@@ -183,3 +182,5 @@ loc{1} = location('loc1',inv,trans,linSys);
 
 % hybrid automaton
 HA = hybridAutomaton(loc);
+
+%------------- END OF CODE --------------

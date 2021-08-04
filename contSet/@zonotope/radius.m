@@ -1,5 +1,5 @@
 function r = radius(Z)
-% radius - Computes the radius of a hypersphere enclosing a zonotope
+% radius - computes the radius of a hypersphere enclosing a zonotope
 %
 % Syntax:  
 %    r = radius(Z)

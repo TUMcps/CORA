@@ -60,9 +60,14 @@ function res = isIntersecting(obj1,obj2,varargin)
     
     % check for intersection
     if isa(obj2,'capsule')
-       res = intersectionCapsule(obj1,obj2);
+        % check for dimension mismatch
+        if dim(obj1) ~= dim(obj2)
+            [id,msg] = errDimMismatch();
+            error(id,msg);
+        end
+        res = intersectionCapsule(obj1,obj2);
     elseif isa(obj2,'hyperplane')
-       res = isIntersecting(obj2,obj1,type); 
+        res = isIntersecting(obj2,obj1,type); 
     else
        
        % exact or over-approximative algorithm
@@ -114,7 +119,16 @@ function res = intersectionCapsule(C1,C2)
     dist = norm(p1-p2);
     
     % check for intersection
-    res = dist < C1.r + C2.r;
+    res = dist <= C1.r + C2.r;
+    
+    % additional check for closeness of distances
+    if ~res
+        dummy = C1.r + C2.r; dummy(dummy==0) = 1;
+        if abs(dist-dummy)/dummy < 1e-9
+            % tight enough -> intersection at one point
+            res = true;
+        end
+    end
     
 end
 

@@ -22,11 +22,15 @@ function d = dim(C)
 
 % Author:       Mark Wetzlinger
 % Written:      15-Sep-2019 
-% Last update:  ---
+% Last update:  12-March-2021 (MW, add empty case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-d = length(center(C));
+if ~isempty(C)
+    d = length(center(C));
+else
+    d = 0;
+end
 
 %------------- END OF CODE --------------

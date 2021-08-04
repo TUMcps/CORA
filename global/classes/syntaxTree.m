@@ -61,8 +61,22 @@ methods
     end
     
     function res = power(obj,exp)
-        fHan = @(x,y) power_(x,exp,y); 
-        res = syntaxTree(obj.value^exp,[],'power',fHan,{obj});
+        if ~all(size(obj) == [1,1])
+            res = obj;
+            if all(size(exp) == [1,1])
+               exp = repmat(exp,size(obj)); 
+            end
+            for i = 1:size(obj,1)
+                for j = 1:size(obj,2)
+                    fHan = @(x,y) power_(x,exp(i,j),y); 
+                    res(i,j) = syntaxTree(obj(i,j).value^exp(i,j),[], ...
+                                          'power',fHan,{obj(i,j)});
+                end
+            end
+        else
+            fHan = @(x,y) power_(x,exp,y); 
+            res = syntaxTree(obj.value^exp,[],'power',fHan,{obj});
+        end
     end
     
     function res = mpower(obj,exp)
@@ -136,16 +150,32 @@ methods
     end
     
     function res = plus(obj1,obj2)
-        fHan = @(x,y,z) plus_(x,y,z);
-        if isa(obj1,'syntaxTree')
-           if isa(obj2,'syntaxTree')
-              res = syntaxTree(obj1.value + obj2.value,[],'+',fHan,{obj1,obj2});
-           else
-              res = syntaxTree(obj1.value + obj2,[],'+',fHan,{obj1,obj2});
-           end
+        if isscalar(obj1) && isscalar(obj2)
+            fHan = @(x,y,z) plus_(x,y,z);
+            if isa(obj1,'syntaxTree')
+               if isa(obj2,'syntaxTree')
+                  res = syntaxTree(obj1.value + obj2.value,[],'+',fHan,{obj1,obj2});
+               else
+                  res = syntaxTree(obj1.value + obj2,[],'+',fHan,{obj1,obj2});
+               end
+            else
+                if isa(obj2,'syntaxTree')
+                   res = syntaxTree(obj1 + obj2.value,[],'+',fHan,{obj1,obj2}); 
+                end
+            end
         else
-            if isa(obj2,'syntaxTree')
-               res = syntaxTree(obj1 + obj2.value,[],'+',fHan,{obj1,obj2}); 
+            if isscalar(obj1)
+                obj1 = repmat(obj1,size(obj2));
+            elseif isscalar(obj2)
+                obj2 = repmat(obj2,size(obj1)); 
+            end
+            if ~all(size(obj1) ==  size(obj2))
+                error('Dimensions must agree!');
+            end
+            for i = 1:size(obj1,1)
+                for j = 1:size(obj1,2)
+                    res(i,j) = obj1(i,j) + obj2(i,j);
+                end
             end
         end
     end
@@ -171,20 +201,106 @@ methods
     end
     
     function res = times(obj1,obj2)
-        fHan = @(x,y,z) times_(x,y,z);
-        if isa(obj1,'syntaxTree')
-           if isa(obj2,'syntaxTree')
-              res = syntaxTree(obj1.value * obj2.value,[],'*',fHan,{obj1,obj2});
-           else
-              res = syntaxTree(obj1.value * obj2,[],'*',fHan,{obj1,obj2});
-           end
+        if isscalar(obj1) && isscalar(obj2)
+            fHan = @(x,y,z) times_(x,y,z);
+            if isa(obj1,'syntaxTree')
+               if isa(obj2,'syntaxTree')
+                  res = syntaxTree(obj1.value * obj2.value,[],'*',fHan,{obj1,obj2});
+               else
+                  res = syntaxTree(obj1.value * obj2,[],'*',fHan,{obj1,obj2});
+               end
+            else
+                if isa(obj2,'syntaxTree')
+                   res = syntaxTree(obj1 * obj2.value,[],'*',fHan,{obj1,obj2}); 
+                end
+            end
+        elseif ~isscalar(obj1) && ~isscalar(obj2)
+            if ~all(size(obj1) == size(obj2))
+               error('Dimensions must agree!'); 
+            end
+            for i = 1:size(obj1,1)
+                for j = 1:size(obj1,2)
+                    res(i,j) = obj1(i,j) .* obj2(i,j);
+                end
+            end
         else
-            if isa(obj2,'syntaxTree')
-               res = syntaxTree(obj1 * obj2.value,[],'*',fHan,{obj1,obj2}); 
+            res = obj1 * obj2;
+        end
+    end
+    
+    function res = mtimes(obj1,obj2)
+        if isscalar(obj1) && isscalar(obj2)
+            res = obj1 .* obj2;
+        elseif isscalar(obj1)
+            for i = 1:size(obj2,1)
+               for j = 1:size(obj2,2) 
+                   res(i,j) = obj1 .* obj2(i,j);
+               end
+            end
+        elseif isscalar(obj2)
+            for i = 1:size(obj1,1)
+               for j = 1:size(obj1,2) 
+                   res(i,j) = obj1(i,j) .* obj2;
+               end
+            end
+        else
+            if size(obj1,2) ~= size(obj2,1) 
+               error('Dimensions must agree!'); 
+            end
+            for i = 1:size(obj1,1)
+                for j = 1:size(obj2,2)
+                    res(i,j) = sum(obj1(i,:).*obj2(:,j)');
+                end
             end
         end
     end
     
+    function res = prod(obj,varargin)
+        n = 1;
+        if nargin <= 1
+            if size(obj,1) == 1
+                n = 2;
+            end
+        else
+            n = varargin{1};
+        end
+        S.type = '()';
+        if n == 1
+            S.subs = {1,':'};
+        elseif n == 2
+            S.subs = {':', 1};
+        else
+            error('Wrong input');
+        end
+        res = subsref(obj,S);
+        for i = 2:size(obj, n)
+            S.subs = {i,':'};
+            res = res .* subsref(obj,S);
+        end
+    end
+    
+    function res = sum(obj,varargin)
+        n = 1;
+        if nargin <= 1
+            if size(obj,1) == 1
+                n = 2;
+            end
+        else
+            n = varargin{1};
+        end
+        S.type = '()';
+        if n == 1
+            S.subs = {1,':'};
+        elseif n == 2
+            S.subs = {':', 1};
+        else
+            error('Wrong input');
+        end
+        res = subsref(obj,S);
+        for i = 2:size(obj, n)
+            res = res + obj(i);
+        end
+    end
     
     
     % backpropagation methods
@@ -193,8 +309,13 @@ methods
         % check if node is base variable or not
         if ~isempty(obj.id)
             
-            res = int;
-            res(obj.id) = value & int(obj.id);
+            if ~isIntersecting(value,int(obj.id)) || isempty(value)
+                [msg,ID] = errEmptySet();
+                error(ID,msg);              
+            else
+                res = int;
+                res(obj.id) = value & int(obj.id);
+            end
             
         else
             
@@ -237,7 +358,6 @@ methods
 
                    % backpropagation for the node
                    res = backpropagation(obj.nodes{2},val_,int);
-
                 end
             end
             
@@ -448,15 +568,27 @@ function [res1,res2] = times_(int,intPrev1,intPrev2)
 
     if isa(intPrev1,'interval')
         if isa(intPrev2,'interval')
-            res1 = intPrev1 & (int/intPrev2);
-            res2 = intPrev2 & (int/intPrev1);
+            if ~in(intPrev2,0)
+                res1 = intPrev1 & (int/intPrev2);
+            else
+                res1 = intPrev1;
+            end
+            if ~in(intPrev1,0)
+                res2 = intPrev2 & (int/intPrev1);
+            else
+                res2 = intPrev2; 
+            end
         else
             res1 = intPrev1 & (int/intPrev2);
             res2 = [];
         end
     else
         res1 = [];
-        res2 = intPrev2 & (int/intPrev1);
+        if intPrev1 == 0
+            res2 = intPrev2;
+        else
+            res2 = intPrev2 & (int/intPrev1);
+        end
     end
 end
 

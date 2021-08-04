@@ -67,10 +67,7 @@ options.zonotopeOrder = 500; % Zonotope order
 % Linearization options
 options.tensorOrder          = 2;
 options.alg                  = 'lin';
-options.intermediateOrder    = 3;
-options.errorOrder           = 1.5;
 options.maxError             = 1.0e+02 * ones(12,1);
-options.reductionInterval    = Inf;
 
 
 % System Dynamics ---------------------------------------------------------

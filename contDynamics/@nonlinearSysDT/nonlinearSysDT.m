@@ -6,6 +6,7 @@ classdef nonlinearSysDT < contDynamics
 %    obj = nonlinearSysDT(name,fun,dt)
 %    obj = nonlinearSysDT(fun,dt,states,inputs)
 %    obj = nonlinearSysDT(name,fun,dt,states,inputs)
+%    obj = nonlinearSysDT(name,fun,dt,states,inputs,C)
 %
 % Inputs:
 %    fun - function handle to the dynamic equation
@@ -13,6 +14,7 @@ classdef nonlinearSysDT < contDynamics
 %    dt - sampling time
 %    states - number of states
 %    inputs - number of inputs
+%    C - output matrix
 %
 % Outputs:
 %    obj - Generated Object
@@ -33,6 +35,8 @@ classdef nonlinearSysDT < contDynamics
 % Last update:  29-January-2018
 %               20-March-2020 (MA, simulate random removed, now provided by inherinted class)
 %               19-May-2020 (NK, changed constructor syntax)
+%               02-February-2021 (MW, add switching between tensor files)
+%               25-March-2021 (MA, measurement matrix added)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -45,6 +49,7 @@ properties (SetAccess = private, GetAccess = public)
     thirdOrderTensor = [];      % function handle third-order tensor
     linError = [];
     dt = [];                    % sampling time
+    C = [];                     % measurement matrix
 end
 
 methods
@@ -52,7 +57,7 @@ methods
     % class constructor
     function obj = nonlinearSysDT(varargin)
         
-         name = []; states = []; inputs = [];
+         name = []; states = []; inputs = []; C = [];
         
         % parse input arguments
         if nargin == 2
@@ -73,6 +78,13 @@ methods
             dt = varargin{3};
             states = varargin{4};
             inputs = varargin{5};
+        elseif nargin == 6
+            name = varargin{1};
+            fun = varargin{2};
+            dt = varargin{3};
+            states = varargin{4};
+            inputs = varargin{5};
+            C = varargin{6};
         else
             error('Wrong number of input arguments!');
         end
@@ -80,10 +92,7 @@ methods
         % get name from function handle
         if isempty(name)    
             name = func2str(fun);
-            name = strrep(name,'@',''); 
-            name = strrep(name,'(',''); 
-            name = strrep(name,')',''); 
-            name = strrep(name,',','');
+            name = replace(name,{'@','(',')',','},'');
             if ~isvarname(name)
                 name = 'nonlinearSysDT';
             end
@@ -103,22 +112,44 @@ methods
             end
         end
         
+        % number of outputs (for contDynamics constructor)
+        outputs = 1;
+        if ~isempty(C)
+        	outputs = size(C,1); 
+        end
+        
         % generate parent object
-        obj@contDynamics(name,states,inputs,1);
+        obj@contDynamics(name,states,inputs,outputs);
         
         % assign object properties
         obj.mFile = fun;
         obj.dt = dt;
+        obj.C = C;
         
-        str = ['obj.jacobian = @jacobian_',name,';'];
-        eval(str);
+        obj.jacobian = eval(['@jacobian_',name]);
+        obj.hessian = eval(['@hessianTensor_' obj.name]);
+        obj.thirdOrderTensor = eval(['@thirdOrderTensor_' obj.name]);
         
-        str = ['obj.hessian = @hessianTensor_',name,';'];
-        eval(str);
-        
-        str = ['obj.thirdOrderTensor = @thirdOrderTensor_',name,';'];
-        eval(str);
     end
+    
+    
+    function obj = setHessian(obj,version)
+        % allow switching between standard and interval arithmetic
+        if strcmp(version,'standard')
+            obj.hessian = eval(['@hessianTensor_' obj.name]);
+        elseif strcmp(version,'int')
+            obj.hessian = eval(['@hessianTensorInt_' obj.name]);
+        end
+    end
+    function obj = setThirdOrderTensor(obj,version)
+        % allow switching between standard and interval arithmetic
+        if strcmp(version,'standard')
+            obj.thirdOrderTensor = eval(['@thirdOrderTensor_' obj.name]);
+        elseif strcmp(version,'int')
+            obj.thirdOrderTensor = eval(['@thirdOrderTensorInt_' obj.name]);
+        end
+    end
+    
 end
 end
 

@@ -48,7 +48,11 @@ for idx = 1: numel (systems)
     invariant_cora2spaceex(Obj,location, docNode, invariant);
     flow_cora2spaceex(contDynamics, location, docNode);
     
-    trans = [trans; transition];
+    try
+        trans = [trans; transition];
+    catch
+        trans = [trans; transition'];
+    end
     ids = [ids; ones(length(transition),1)*idx];
     
 end

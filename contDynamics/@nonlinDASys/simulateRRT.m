@@ -37,8 +37,8 @@ function [X_full,zTraj] = simulateRRT(obj,Rcont,params,options)
 
 %------------- BEGIN CODE --------------
 
-options = params2options(params,options);
-options = checkOptionsSimulate(obj,options,false);
+% new options preprocessing
+options = validateOptions(obj,mfilename,params,options);
 
 %nrOfSamples
 nrOfSamples = 10;

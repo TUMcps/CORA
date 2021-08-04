@@ -20,16 +20,23 @@ function res = test_halfspace_dim
 
 % Author:       Mark Wetzlinger
 % Written:      27-Sep-2019
-% Last update:  ---
+% Last update:  16-March-2021 (MW, add empty case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% 1. Analytical -----------------------------------------------------------
-% instantiate capsule
+% 1. empty case
+h = halfspace();
+res_empty = true;
+if dim(h) ~= 0
+    res_empty = false;
+end
+
+% 2. analytical case
+% instantiate halfspace
 h = halfspace([1;1],0.5);
 
-% compute enlarged capsule
+% compute dimension of halfspace
 h_dim = dim(h);
 
 % true solution
@@ -37,27 +44,10 @@ true_dim = 2;
 
 % compare results
 res_analytical = h_dim == true_dim;
-% -------------------------------------------------------------------------
 
-
-% 2. Random ---------------------------------------------------------------
-h = cell(10,1);
-dimension = zeros(10,1);
-for i=1:10
-    dimension(i) = ceil(10*rand(1));
-    vector = rand(dimension(i),1);
-    distance = 4*rand(1);
-    h{i} = halfspace(vector,distance);
-end
-
-res_random = true;
-for i=1:length(h)
-    res_random = res_random && dim(h{i}) == dimension(i);
-end
-% -------------------------------------------------------------------------
 
 % combine tests
-res = res_analytical && res_random;
+res = res_empty && res_analytical;
 
 if res
     disp('test_dim successful');

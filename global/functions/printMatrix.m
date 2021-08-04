@@ -1,4 +1,4 @@
-function printMatrix(M)
+function printMatrix(M, varargin)
 % printMatrix - prints an matrix such that if one executes this command
 % in the workspace, this matrix would be created
 %
@@ -17,14 +17,32 @@ function printMatrix(M)
 % Author:       Matthias Althoff
 % Written:      01-November-2017
 % Last update:  27-June-2018
+%               04-Jan-2021
 % Last revision:---
 
 
 %------------- BEGIN CODE --------------
 
-% accuracy
-accuracy = '%16.16f%s';
-%accuracy = '%4.3f%s';
+% determine accuracy
+if nargin == 1
+    accuracy = '%4.3f%s';
+elseif nargin == 2
+    % numerical value
+    if isnumeric(varargin{1})
+        accuracy = varargin{1};
+    % category
+    elseif ischar(varargin{1})
+        if strcmp(varargin{1},'high')
+            accuracy = '%16.16f%s';
+        end
+    else
+        % default accuracy
+        accuracy = '%4.3f%s';
+    end
+else
+    % default accuracy
+    accuracy = '%4.3f%s';
+end
 
 % write first element
 fprintf('%s\n','[ ...');

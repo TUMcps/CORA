@@ -1,6 +1,5 @@
 function res = test_zonotope_ellipsoid
-% test_zonotope_rank - unit test function of ellipsoid (and implicitly of
-% MVEE, insc_ellipsoid, enc_ellipsoid, MVEE, MVIE)
+% test_zonotope_ellipsoid - unit test function of ellipsoid
 %
 % Syntax:  
 %    res = test_zonotope_ellipsoid
@@ -17,66 +16,42 @@ function res = test_zonotope_ellipsoid
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: insc_ellipsoid,enc_ellipsoid,MVEE,MVIE
+% See also: -
 
-% Author:       Victor Gaßmann
-% Written:      11-October-2019
+% Author:       Victor Gassmann
+% Written:      27-July-2021
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 res = true;
-%do small dimensions if gurobi is not installed => norm takes much longer
-%w/o gurobi
-dims = 2:3:4;
-dGen = 5;
-steps = 2;
-rndDirs = 100;
-for i=dims
-    n = i;
-    for j=1:steps
-        m = n+j*dGen;
-        %randomly generate zonotope
-        Z = zonotope([randn(n,1),randn(n,m)]);
-        %overapproximations
-        Eo_exact = ellipsoid(Z,'o:exact');
-        Eo_n = ellipsoid(Z,'o:norm');
-        Eo_nb = ellipsoid(Z,'o:norm:bnd');
-        %underapproximations
-        Eu_exact = ellipsoid(Z,'u:exact');
-        Eu_n = ellipsoid(Z,'u:norm');
-        %Eu_nb = ellipsoid(Z,'u:norm:bnd');%not implemented yet
-        %compute rndDirs random unit directions
-        cc = randn(n,rndDirs);
-        nn = cc./repmat(sqrt(sum(cc.^2,1)),n,1);
-        %check if suppfnc(E)>=suppfnc(Z) (Z in E)
-        for k=1:rndDirs
-            %overapproximations
-            if supportFunc(Eo_exact,nn(:,k))<supportFunc(Z,nn(:,k)) || ...
-                    supportFunc(Eo_n,nn(:,k))<supportFunc(Z,nn(:,k)) || ...
-               supportFunc(Eo_nb,nn(:,k))<supportFunc(Z,nn(:,k))
-                res = false;
-                break;
-            end
-            %underapproximations
-            if supportFunc(Eu_exact,nn(:,k))>supportFunc(Z,nn(:,k)) || ...
-                    supportFunc(Eu_n,nn(:,k))>supportFunc(Z,nn(:,k))
-                res = false;
-                break;
-            end
-        end
-        if ~res
-            break;
-        end
-    end
-    if ~res
-        break;
-    end
+
+% create zonotopes
+Z1 = zonotope([-4, -3, -2; 1, 2, 3]);
+Z2 = zonotope([1, 4, 2,1; -3, 2, -1,1]);
+
+E1o = ellipsoid(Z1);
+E1i = ellipsoid(Z1,'i:norm');
+
+Y1i = randPoint(E1i,2*dim(Z1),'extreme');
+
+if ~in(E1o,E1i) || ~in(Z1,Y1i) || ~in(E1o,Y1i)
+    res = false;
 end
+
+E2o = ellipsoid(Z2,'o:exact');
+E2i = ellipsoid(Z2,'i:exact');
+
+Y2i = randPoint(E2i,2*dim(Z2),'extreme');
+    
+if ~in(E2o,E2i) || ~in(Z2,Y2i) || ~in(E2o,Y2i)
+    res = false;
+end
+
 if res
-    disp('test_zonotope_ellipsoid successful');
+    disp([mfilename,' successful']);
 else
-    disp('test_zonotope_ellipsoid failed');
+    disp([mfilename,' failed']);
 end
 
 %------------- END OF CODE --------------

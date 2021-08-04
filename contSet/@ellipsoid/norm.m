@@ -36,11 +36,7 @@ end
 if ~all(E.q==0)
     error('Not implemented for non-zero center yet');
 end
-n = E.dim;
-[U,D] = eig(E.Q);
-[lmax,ind] = max(diag(D));
-I = eye(n);
-y = sqrt(lmax)*I(:,ind);
+% transform into eigenspace
+lmax = max(eig(E.Q));
 val = sqrt(lmax);
-% x = U*y+E.q;
 %------------- END OF CODE --------------

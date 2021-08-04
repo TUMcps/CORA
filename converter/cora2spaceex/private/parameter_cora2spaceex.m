@@ -71,7 +71,11 @@ function [nx,nu] = numberOfParams(obj)
         nx = size(obj.A,1);
         B = obj.B;
         B = B(:,sum(abs(B),1) > 0);
-        nu = size(B,2);
+        if isscalar(B)
+            nu = nx;
+        else
+            nu = size(B,2);
+        end
     elseif isa(obj,'hybridAutomaton')
         locs = obj.location;
         nx = 0;

@@ -31,21 +31,18 @@ function simRes = simulateRandom(obj,params,options)
 
 %------------- BEGIN CODE --------------
 
-    options = params2options(params,options);
-    options = checkOptionsSimRandom(obj,options);
+    % new options preprocessing
+    options = validateOptions(obj,mfilename,params,options);
 
     % determine random points inside the initial set
-    points = zeros(dim(options.R0),options.points);
-    counter = 1;
-
-    for i = 1:options.points
-       if counter < options.fracVert * options.points
-          points(:,i) = randPointExtreme(options.R0); 
-       else
-          points(:,i) = randPoint(options.R0); 
-       end
-
-       counter = counter + 1;
+    nrEx = ceil(options.points*options.fracVert);
+    nrNor = options.points - nrEx;
+    points = [];
+    if nrEx > 0
+       points = [points, randPoint(options.R0,nrEx,'extreme')]; 
+    end
+    if nrNor > 0
+       points = [points, randPoint(options.R0,nrNor,'standard')];
     end
 
     % determine time points
@@ -67,7 +64,7 @@ function simRes = simulateRandom(obj,params,options)
            if counter < options.inpChanges * options.fracInpVert 
                params_.u = generateRandomInputs(options,'extreme');
            else
-               params_.u = generateRandomInputs(options,'normal');
+               params_.u = generateRandomInputs(options,'standard');
            end              
 
            % simulate the parallel hybrid automaton
@@ -108,7 +105,7 @@ function uLoc = generateRandomInputs(options,flag)
        for j = 1:length(options.Uloc{i})
            
           if strcmp(flag,'extreme')
-             uLoc{i}{j} = randPointExtreme(options.Uloc{i}{j});
+             uLoc{i}{j} = randPoint(options.Uloc{i}{j},1,'extreme');
           else
              uLoc{i}{j} = randPoint(options.Uloc{i}{j});
           end

@@ -27,7 +27,7 @@ function E = MVEE(Z)
 %
 % See also: enc_ellipsoid, inc_ellipsoid
 
-% Author:        Victor Ga�mann
+% Author:        Victor Gassmann
 % Written:       18-September-2019
 % Last update:   ---
 % Last revision: ---
@@ -44,18 +44,8 @@ end
 %ATTENTION: Exact computation, requires vertices -> scales badly
 %see [1], Sec. 8.4.1 for more details
 %compute zonotope vertices
-V = vertices(Z);
-N = length(V);
-
-Q = sdpvar(n);
-X = V-repmat(c,1,N);
-F = cone([ones(size(X,2),1),X'*Q]');
-options = sdpsettings;
-options.verbose = 0;
-%uncomment if sdpt3 is installed
-%options.solver = 'sdpt3';
-%solve optimization problem
-optimize(F, -logdet(Q), options);
-E = ellipsoid(inv(value(Q)^2),c);
-
+% Bug (?) in vertices: First and last element are the same
+V = unique(vertices(Z)','stable','rows')';
+assert(all(abs(mean(V,2)-c)<=1e-10),'mean of vertices must result in center');
+E = ellipsoid.enclosePoints(V,'min-vol');
 %------------- END OF CODE --------------

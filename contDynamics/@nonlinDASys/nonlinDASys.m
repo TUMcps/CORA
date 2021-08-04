@@ -32,7 +32,7 @@ classdef nonlinDASys < contDynamics
 
 % Author:       Matthias Althoff
 % Written:      27-October-2011
-% Last update:  ---
+% Last update:  02-February-2021 (MW, add switching between tensor files)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -44,10 +44,8 @@ properties (SetAccess = private, GetAccess = public)
     conFile = [];               % function handle to constraint file
     jacobian = [];              % function handle to jacobian matrix
     hessian = [];               % function handle to hessian tensor
-    hessianAbs = [];            
     thirdOrderTensor = [];      % function handle to third-order tensor
     linError = [];
-    other = [];
 end
     
 methods
@@ -85,10 +83,7 @@ methods
         % get name from function handle
         if isempty(name)    
             name = func2str(dynFun);
-            name = strrep(name,'@',''); 
-            name = strrep(name,'(',''); 
-            name = strrep(name,')',''); 
-            name = strrep(name,',','');
+            name = replace(name,{'@','(',')',','},'');
             if ~isvarname(name)
                 name = 'nonlinDASys';
             end
@@ -103,7 +98,7 @@ methods
                 inputs = max(1,max(temp1(3),temp2(3)));
             catch
                 error(['Failed to determine number of states and ' ...
-                       'inputs auotmatically! Please provide number of ' ...
+                       'inputs automatically! Please provide number of ' ...
                        'states and inputs as additional input arguments!']); 
             end
         end
@@ -116,16 +111,29 @@ methods
         obj.dynFile = dynFun;
         obj.conFile = conFun;
 
-        % link jacobian and hessian files
-        str = ['obj.jacobian = @jacobian_',name,';'];
-        eval(str); 
-        str = ['obj.hessian = @hessianTensor_',name,';'];
-        eval(str);
-        str = ['obj.hessianAbs = @hessianTensor_abs_',name,';'];
-        eval(str);
-        str = ['obj.thirdOrderTensor = @thirdOrderTensor_',name,';'];
-        eval(str);       
+        % link jacobian, hessian and third-order tensor files
+        obj.jacobian = eval(['@jacobian_' obj.name]);
+        obj.hessian = eval(['@hessianTensor_' obj.name]);
+        obj.thirdOrderTensor = eval(['@thirdOrderTensor_' obj.name]);
     end
+    
+    function obj = setHessian(obj,version)
+        % allow switching between standard and interval arithmetic
+        if strcmp(version,'standard')
+            obj.hessian = eval(['@hessianTensor_' obj.name]);
+        elseif strcmp(version,'int')
+            obj.hessian = eval(['@hessianTensorInt_' obj.name]);
+        end
+    end
+    function obj = setThirdOrderTensor(obj,version)
+        % allow switching between standard and interval arithmetic
+        if strcmp(version,'standard')
+            obj.thirdOrderTensor = eval(['@thirdOrderTensor_' obj.name]);
+        elseif strcmp(version,'int')
+            obj.thirdOrderTensor = eval(['@thirdOrderTensorInt_' obj.name]);
+        end
+    end
+    
 end
 end
 

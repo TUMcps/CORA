@@ -1,12 +1,12 @@
-function res = test_taylm_division(~)
+function res = test_taylm_division
 % test_taylm_division - unit-tests for Taylor models consisting of 
-%                             division operation
+%    division operation
 %
 % Syntax:  
-%    res = test_taylm_divison(~)
+%    res = test_taylm_division
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    res - boolean 
@@ -25,7 +25,6 @@ function res = test_taylm_division(~)
 %------------- BEGIN CODE --------------
 
 res = true;
-
 %% One-dimensional case
     %% Test 1
     a = interval(1,3);
@@ -74,47 +73,7 @@ res = true;
         res = 0;
         error('test 4 is failed')
     end
-    
-    %% Test 5: Random tests
-    
-    tol = 1e-7;
-    
-    % loop over different intervals
-    for i = 1:5
-        
-        % create a random interval 
-        temp = rand(2,1)*i;
-        iTemp = interval(min(temp),max(temp));
-        
-        for j = 1:20
-            % create the taylor model
-            t = taylm(iTemp,j);
-            T = repmat(t,1,j);
-            
-            % create a taylor polynomial
-            e = 1:j;
-            coeff = rand(j,1);
-            temp = ((T.^e) * coeff);
-            poly = temp(1);
-            for k = 2:length(temp)
-               poly = poly + temp(k); 
-            end
-           
-            % determine the bounds
-            int = interval(1/poly);
-            intReal = 1/interval(poly);
-            
-            if infimum(intReal) - infimum(int) < -tol || supremum(int) - supremum(intReal) < -tol
-                res = 0;
-                file_name = strcat('test_taylm_division_5_', ...
-                                   datestr(now,'mm-dd-yyyy_HH-MM'));
-                  
-                file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
-                save(file_path, 'poly')
-                error('test 5 is failed');
-            end          
-        end
-    end
+ 
 end
 
 %------------- END OF CODE --------------

@@ -45,8 +45,8 @@ if isa(Int2,'interval')
     sup = min(Int1.sup, Int2.sup);
 
     % check if result is empty
-    if all(all(inf <= sup))
-        res = interval(inf,sup);
+    if all(all(inf - sup <= eps))
+        res = interval(min([inf,sup],[],2),max([inf,sup],[],2));
     else
         res = [];
     end
@@ -67,7 +67,8 @@ elseif isa(Int2,'levelSet')
     res = Int2 & Int1;
 
 elseif isa(Int2,'zonotope') || isa(Int2,'conZonotope') || ...
-       isa(Int2,'zonoBundle') || isa(Int2,'mptPolytope')
+       isa(Int2,'zonoBundle') || isa(Int2,'mptPolytope') || ...
+       isa(Int2,'conPolyZono')
 
     res = Int2 & Int1;
 

@@ -33,10 +33,11 @@ function [R,res] = reach(obj,params,options,varargin)
 %------------- BEGIN CODE --------------
 
     res = 1;
+    
+    % options preprocessing
+    options = validateOptions(obj,mfilename,params,options);
 
-    % check user settings
-    options = params2options(params,options);
-    options = checkOptionsReach(obj,options);
+    % compute derivatives for each location
     compDerivatives(obj,options);
     
     spec = [];
@@ -64,10 +65,13 @@ function [R,res] = reach(obj,params,options,varargin)
 
         list = list(2:end);
 
-        % get input, time step, and specification for the current location
+        % get input and specification for the current location
         options.U = options.Uloc{locID};
-        options.timeStep = options.timeStepLoc{locID};
         options.specification = options.specificationLoc{locID};
+        % get timeStep for the current location (unless adaptive)
+        if ~strcmp(options.linAlg,'adaptive')
+            options.timeStep = options.timeStepLoc{locID};
+        end
 
         % compute the reachable set within a location
         [Rtemp,Rjump,res] = reach(obj.location{locID},R0,tStart,options);
@@ -86,6 +90,44 @@ function [R,res] = reach(obj,params,options,varargin)
            R = add(R,temp,parent);
         end
     end
+end
+
+
+
+% Auxiliary Function ------------------------------------------------------
+
+function options = check_flatHA_specification(options,obj,spec)
+% rewrites specifications in the correct format
+
+    locations = obj.location;
+    numLoc = length(locations);
+
+    % initialize specifications with empty cells
+    if isempty(spec)
+
+        specLoc = cell(numLoc,1);
+
+    % same specification for each location  
+    elseif ~iscell(spec)   
+
+        specLoc = cell(numLoc,1);
+
+        for i = 1:numLoc
+            specLoc{i} = spec;
+        end
+
+    % copy specification for each location
+    else
+
+        if all(size(spec) ~= [numLoc,1])
+            error('Input argument "spec" has the wrong format!');
+        else
+            specLoc = spec;
+        end
+    end
+
+    options.specificationLoc = specLoc;
+
 end
 
 %------------- END OF CODE --------------

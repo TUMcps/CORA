@@ -4,10 +4,10 @@ function [trueError, VerrorDyn, VerrorStat] = ...
 % abstrerr_poly - computes the abstraction error for the polynomialization
 %    approach introduced in [1]
 %
-% Syntax:  
-%    [errorStat, errorDyn, errorInt] = 
-%           linError_thirdOrder(obj, options, Rall, Rdiff, H, Zdelta, 
-%                               errorStat, T, ind3, Zdelta3)
+% Syntax:
+%    [trueError, VerrorDyn, VerrorStat] =
+%           abstrerr_poly(obj, options, Rall, Rdiff, H, Zdelta,
+%                               VerrorStat, T, ind3, Zdelta3)
 %
 % Inputs:
 %    obj - nonlinear system object
@@ -19,7 +19,7 @@ function [trueError, VerrorDyn, VerrorStat] = ...
 %    H - Hessian matrix
 %    Zdelta - zonotope over-approximating the reachable set at the
 %             beginning of the time step extended by the input set
-%    errorStat - set of static linearization errors
+%    VerrorStat - set of static linearization errors
 %    T - third-order tensor
 %    ind3 - indices of non-zero entries in the third-order tensor
 %    Zdelta3 - set Zdelta reduced to the zonotope order for the evaluation
@@ -27,8 +27,8 @@ function [trueError, VerrorDyn, VerrorStat] = ...
 %
 % Outputs:
 %    trueError - interval overapproximating the overall linearization error 
-%    errorDyn - zonotope overapproximating the dynamic linearization error
-%    errorStat - zonotope overapproximating the static linearization error
+%    VerrorDyn - zonotope overapproximating the dynamic linearization error
+%    VerrorStat - zonotope overapproximating the static linearization error
 %
 % Other m-files required: precompStatError.m
 % Subfunctions: none
@@ -74,6 +74,10 @@ error_secondOrder_dyn = 0.5*(quadMap(Zdelta,Z_diff,H) ...
 % third-order error
 if options.tensorOrder == 3
     
+    % set handles to correct files
+    obj = setHessian(obj,'standard');
+    obj = setThirdOrderTensor(obj,'int');
+    
     % evaluate the third-order tensor
     if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ...
        ~strcmp(options.lagrangeRem.method,'interval')
@@ -113,6 +117,10 @@ if options.tensorOrder == 3
     
 else
     % tensorOrder >= 4
+    
+    % set handles to correct files
+    obj = setHessian(obj,'standard');
+    obj = setThirdOrderTensor(obj,'standard');
     
     % reduce set Zdiff to the desired zonotope order to speed up the
     % computation of cubic multiplication

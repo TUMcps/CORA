@@ -1,14 +1,14 @@
-function obj = highOrderMappingMatrix(obj,intermediateOrder)
+function obj = highOrderMappingMatrix(obj,intermediateTerms)
 % highOrderMappingMatrix - computes a mapping matrix set without the first
 % two orders
 %
 % Syntax:  
-%    obj = highOrderMappingMatrix(obj,intermediateOrder)
+%    obj = highOrderMappingMatrix(obj,intermediateTerms)
 %
 % Inputs:
 %    obj - linParamSys object 
-%    intermediateOrder - order until which the original matrix set
-%    representation is used
+%    intermediateTerms - order until which the original matrix set
+%                           representation is used
 %
 % Outputs:
 %    obj - resulting linParamSys object 
@@ -23,7 +23,7 @@ function obj = highOrderMappingMatrix(obj,intermediateOrder)
 
 % Author:       Matthias Althoff
 % Written:      05-August-2010
-% Last update:  ---
+% Last update:  15-February-2021 (MW, rename: intermediateTerms)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -41,7 +41,7 @@ r=obj.stepSize;
 %zonotope computations
 eZ = zeros(obj.dim);
 eZ_input = zeros(obj.dim);
-for i=3:intermediateOrder
+for i=3:intermediateTerms
     eZ = eZ + zPow{i}*(1/factorial(i));
     eZ_input = eZ_input + zPow{i}*(r/factorial(i+1));
 end
@@ -49,7 +49,7 @@ end
 %interval computations
 eI = zeros(obj.dim);
 eI_input = zeros(obj.dim);
-for i=(intermediateOrder+1):obj.taylorTerms
+for i=(intermediateTerms+1):obj.taylorTerms
     eI = eI + iPow{i}*(1/factorial(i));
     eI_input = eI_input + iPow{i}*(r/factorial(i+1));
 end

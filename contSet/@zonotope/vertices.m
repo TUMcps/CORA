@@ -1,14 +1,17 @@
 function V = vertices(obj,varargin)
-% vertices - Returns potential vertices of a zonotope
-% WARNING: Do not use this function for high order zonotopes -
-% computational complexity grows exponential!
+% vertices - returns potential vertices of a zonotope
+%    WARNING: Do not use this function for high order zonotopes as the
+%    computational complexity grows exponential!
 %
 % Syntax:  
 %    V = vertices(obj,alg)
 %
 % Inputs:
 %    obj - zonotope object
-%    alg - algorithm used (iterate','polytope','convHull')
+%    alg - algorithm used
+%           - 'convHull' (default)
+%           - 'iterate'
+%           - 'polytope'
 %
 % Outputs:
 %    V - vertices object
@@ -36,7 +39,7 @@ function V = vertices(obj,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    alg = 'iterate';
+    alg = 'convHull';
 
     if nargin == 2
         if ismember(varargin{1},{'iterate','polytope','convHull'})
@@ -87,16 +90,16 @@ end
 function V = verticesConvHull(obj)
 
     % first vertex is the center of the zonotope
-    V = obj(:,1);
+    V = obj.Z(:,1);
 
     % generate further potential vertices in the loop
-    for iVertex = 1:length(obj(1,2:end))
+    for iVertex = 1:length(obj.Z(1,2:end))
 
-        translation = obj(:,iVertex+1)*ones(1,length(V(1,:)));
+        translation = obj.Z(:,iVertex+1)*ones(1,length(V(1,:)));
         V = [V+translation,V-translation];
 
         % remove inner points
-        if iVertex > length(obj(:,1))
+        if iVertex > length(obj.Z(:,1))
             try
                 K = convhulln(V');
                 indices = unique(K);
@@ -189,6 +192,7 @@ function [res,suc] = verticesIterateSVG(obj)
 % compute vertices for the case that zonotope is not full-dimensional
 
     suc = 1;
+    res = [];
 
     % extract object data
     G = generators(obj);

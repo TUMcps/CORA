@@ -1,12 +1,12 @@
-function [V] = underapproximate(Z,S)
-% underapproximate - Returns the vertices of an underapproximation. The
-% underapproximation is computed by finding the vertices that are extreme
-% in the direction of a set of vectors, stored in the matrix S.
-% If S is not specified, it is constructed by the vectors spanning an
-% over-approximative parallelotope.
+function V = underapproximate(Z,S)
+% underapproximate - returns the vertices of an underapproximation. The
+%    underapproximation is computed by finding the vertices that are
+%    extreme in the direction of a set of vectors, stored in the matrix S.
+%    If S is not specified, it is constructed by the vectors spanning an
+%    over-approximative parallelotope.
 %
 % Syntax:  
-%    [V] = underapproximate(Z,S)
+%    V = underapproximate(Z,S)
 %
 % Inputs:
 %    Z - zonotope object

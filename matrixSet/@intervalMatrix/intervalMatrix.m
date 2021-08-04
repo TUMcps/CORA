@@ -29,14 +29,13 @@ classdef (InferiorClasses = {?mp}) intervalMatrix
 % Written:      18-June-2010
 % Last update:  26-August-2011
 %               15-June-2016
+%               06-May-2021
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
     dim = 1;
-    Inf = [];
-    Sup = [];
     int = [];
     setting = 'sharpivmult';
 end
@@ -51,8 +50,6 @@ methods
                 obj = matrixCenter;
             else
                 obj.dim = length(matrixCenter);
-                obj.Inf = matrixCenter;
-                obj.Sup = matrixCenter;
                 obj.int = interval(matrixCenter,matrixCenter);
                 obj.setting = [];
             end
@@ -60,17 +57,13 @@ methods
             obj.dim = length(matrixCenter);
             %ensure positive matrix deltas
             matrixDelta=abs(matrixDelta);
-            obj.Inf = matrixCenter-matrixDelta;
-            obj.Sup = matrixCenter+matrixDelta;
-            obj.int=interval(obj.Inf,obj.Sup);
+            obj.int=interval(matrixCenter-matrixDelta,matrixCenter+matrixDelta);
             obj.setting = [];
         elseif nargin==3
             obj.dim = length(matrixCenter);
             %ensure positive matrix deltas
             matrixDelta=abs(matrixDelta);
-            obj.Inf = matrixCenter-matrixDelta;
-            obj.Sup = matrixCenter+matrixDelta;
-            obj.int=interval(obj.Inf,obj.Sup);
+            obj.int=interval(matrixCenter-matrixDelta,matrixCenter+matrixDelta);
             obj.setting = setting;  %settings: 'sharpivmult','fastivmult'
         end
     end
@@ -89,7 +82,6 @@ methods
     E = exponentialRemainder(intMat,maxOrder)
     IH = interval(intMat)
     V = vertices(intMat)
-    matV = dominantVertices(matI, maxNumber)
     matP = matPolytope(intMat)
     matZ = matZonotope(intMat)
     A = randomSampling(intMat,varargin)
@@ -100,7 +92,6 @@ methods
     absBound = expmAbsoluteBound(intMat,t)
     normBoundErr = expmNormErr(intMat,r)  
     normBoundErr = expmNormErrInf(intMat,r)
-    eI = expmVertex(intMat)
     element = subsref(intMat, S)
     sq = exactSquare(A)
     res = norm(obj, varargin)

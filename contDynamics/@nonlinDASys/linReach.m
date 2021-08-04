@@ -33,7 +33,7 @@ function [Rti,Rtp,Rti_y,perfInd,dimForSplit,options] = linReach(obj,options,Rini
 % Written:      21-November-2011
 % Last update:  28-May-2013
 %               19-May-2020 (MW, error handling for exploding sets)
-%               11-January-2021 (MW, syntax change for reachSet instantation)
+%               11-January-2021 (MW, syntax change for reachSet instantiation)
 % Last revision:---
 
 %------------- BEGIN CODE --------------

@@ -1,12 +1,14 @@
-function res = in(obj1,obj2)
+function res = in(obj1,obj2,mode)
 % in - checks whether obj2 is contained in obj1
 %
 % Syntax:  
 %    res = in(obj1,obj2)
+%    res = in(obj,obj2,mode)
 %
 % Inputs:
 %    obj1 - ellipsoid object 
 %    obj2 - contSet object 
+%    mode - mode of check ('exact' or 'approx')
 %
 % Outputs:
 %    res - result of containment check
@@ -41,97 +43,124 @@ function res = in(obj1,obj2)
 %
 % See also: -
 
-% Author:       Victor Gassmann, Niklas Kochdumper
+% Author:       Victor Gassmann, Niklas Kochdumper, Adrian Kulmburg
 % Written:      15-October-2019 
 % Last update:  21-November-2019 (NK, extend to other sets)
+%               09-March-2021 (included tolerance for q comparison)
+%               17-March-2021 (error handling)
+%               06-July-2021 (AK, merged containsPoint to in)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+if ~exist('mode','var')
+    mode = 'exact';
+end
+if isa(obj2,'double')
 
-    res = 1;
-
-    if isnumeric(obj2)
-        
-        for i = 1:size(obj2,2)
-            res = containsPoint(obj1,obj2(:,i)); 
-            if res ~= 1
-                return;
-            end
+    for i = 1:size(obj2,2)
+        res = containsPoint(obj1,obj2(:,i)); 
+        if ~res
+            return;
         end
-        
-    elseif isa(obj2,'ellipsoid')
-        
-        res = ellipsoidInEllipsoid(obj1,obj2);
-        
+    end
+elseif isa(obj2,'ellipsoid')
+    res = inEllipsoid(obj1,obj2);
+elseif isa(obj2,'zonotope') && strcmp(mode,'approx')
+    obj2 = ellipsoid(obj2,'o:norm:bnd');
+    res = inEllipsoid(obj1,obj2);
+else
+    if strcmp(mode,'exact')
+        if ismethod(obj2,'vertices')
+            % check if all vertices of the set are contained
+            res = in(obj1,vertices(obj2));
+        else
+            error('Mode "exact" not implemented for second argument type!');
+        end   
     else
-        
-        % zonotope over-approximation
-        if isa(obj2,'capsule') || isa(obj2,'taylm') || isa(obj2,'polyZonotope')
-           obj2 = zonotope(obj2); 
+        if ismethod(obj2,'zonotope')
+            % zonotope over-approximation
+            obj2 = zonotope(obj2); 
+            res = in(obj1,obj2);
+        else
+            error('Not implemented for second argument type!');
         end
-        
-        % check if all vertices of the set are contained
-        res = in(obj1,vertices(obj2));
     end
 end
 
+function [B,Val] = containsPoint(E,Y)
+% containsPoint - gives an array of boolean values indiciating whether
+%    points Y are contained in the ellipsoid
+%
+% Syntax:  
+%    [B,Val] = containsPoint(E,Y) gives an array of boolean values indiciating
+%     whether points Y are contained in the ellipsoid
+%
+% Inputs:
+%    E - ellipsoids object
+%    Y - Points
+%
+% Outputs:
+%    B - boolean values indiciating whether
+%        points Y are contained in the ellipsoid
+%    Val-if contained, Value indicates the relative distance to the center of E: Val<=1
+%    <=> contained (=1: on boundary); otherwise: inf
+%
+% Example: 
+%    t = linspace(0,2*pi,1000);
+%    Y = [cos(t);sin(t)];
+%    E = ellipsoid([1,0;0,1/2],[1;1]);
+%    B = containsPoint(E,Y);
+%
 
-% Auxiliary Functions -----------------------------------------------------
-
-function res = containsPoint(E,p)
-% check if a point is inside an ellipsoid
-
-    p_ = p-E.q;
-    y = linsolve(E.Q,p_);
-    res = p_'*y <= 1;
-
+n = dim(E);
+if ~isa(Y,'double')
+    error('Second argument must be a double matrix');
+end
+[m,N] = size(Y);
+if m~=n
+    error('First dimension of second input does not match ellipsoid dimension!');
 end
 
-function res = ellipsoidInEllipsoid(E1,E2)
-% checks whether ellipsoid E2 is contained in ellipsoid E2
 
-    %For more detail, see [1]
-    t = sdpvar;
-    condTOL = 1e6;
-    if E2.dim ~=E1.dim
-        error('dimensions do not match');
-    elseif E2.dim<length(E2.Q) || E1.dim<length(E1.Q)
-        error('E1 or E2 not full-dimensional');
-    elseif cond(E2.Q)>condTOL || cond(E1.Q)>condTOL
-        warning('One of the ellipsoids is very squished in at least one direction - computation might fail');
-    end
-    Q1 = E2.Q;
-    Q2 = E1.Q;
-    q1 = E2.q;
-    q2 = E1.q;
-    %follows from the fact that Q2-Q1>=0 (psd) together with Q1,Q2 invertible
-    %implies inv(A)>=inv(B).
-    if q1==q2
-        res = min(eig(Q2-Q1))>=0;
+B = false(1,N);
+Val = inf(1,N);
+ind_rem_eq = true(1,N);
+if E.isdegenerate
+    nt = rank(E);
+    % if all-zero Q matrix
+    if nt==0
+        B = all(withinTol(repmat(E.q,1,N),Y,E.TOL),1);
+        Val(B) = 0;
         return;
     end
-    if ~isYalmipInstalled()
-        error('YALMIP must be on the MATLAB search path to use this function');
+    [T,~,~] = svd(E.Q);
+    E = T'*E;
+    Y = T'*Y;
+    % save remainder
+    x_rem = E.q(nt+1:end);
+    Y_rem = Y(nt+1:end,:);
+    % check whether x_rem==Y_rem (those that do not fullfill that are
+    % already not contained)
+    % indices of B which might be contained
+    ind_rem_eq = all(withinTol(repmat(x_rem,1,size(Y_rem,2)),Y_rem,E.TOL));
+    % if only center remains
+    if rank(E)==0
+        B(ind_rem_eq) = true;
+        Val(ind_rem_eq) = 1;
+        return;
     end
-    Q1inv = inv(Q1);
-    Q2inv = inv(Q2);
-    M1 = [Q1inv, -Q1inv*q1;
-          -(Q1inv*q1)', q1'*Q1inv*q1-1];
-    M2 = [Q2inv, -Q2inv*q2;
-          -(Q2inv*q2)', q2'*Q2inv*q2-1];
-
-    options = sdpsettings('verbose',0);
-    %when solving problems with higher-dimensional ellipsoids, sdpt3 [2] is
-    %recommended to avoid numerical issues
-    diagnostics = optimize(t*M1>=M2,[],options);
-    %either feasible or not feasible
-    if diagnostics.problem~=1 && diagnostics.problem~=0
-        error('error with solving feasibility problem!');
-    end
-    if value(t)==0
-        error('problem with solution of feasibility problem (t)');
-    end
-    res = ~diagnostics.problem;
+    % project so that E is no longer degenerate
+    E = project(E,1:E.rank);
+    Y = Y(1:E.rank,:);
 end
-
+% convert mask to indices
+tmp = 1:N;
+ii_eq_rem = tmp(ind_rem_eq);
+% now, E is fulldimensional
+for i=ii_eq_rem
+    % simply check using ellipsoid equation
+    val_i = (Y(:,i)-E.q)'*inv(E.Q)*(Y(:,i)-E.q);
+    B(i) = val_i <= 1+E.TOL;
+    Val(i) = B(i)*val_i;
+end
 %------------- END OF CODE --------------

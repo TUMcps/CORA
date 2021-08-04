@@ -1,12 +1,12 @@
-function Z = enlarge(Z,factorVec)
+function Z = enlarge(Z,f)
 % enlarge - enlarges the generators of a zonotope by a vector of factors
 %
 % Syntax:  
-%    Z = enlarge(Z,factorVec)
+%    Z = enlarge(Z,f)
 %
 % Inputs:
 %    Z - zonotope object
-%    factorVec - column vector of factors for the enlargement of each dimension
+%    f - column vector of factors for the enlargement of each dimension
 %
 % Outputs:
 %    Z - zonotope object
@@ -33,6 +33,6 @@ function Z = enlarge(Z,factorVec)
 
 %------------- BEGIN CODE --------------
 
-Z.Z(:,2:end) = factorVec .* Z.Z(:,2:end);
+Z.Z(:,2:end) = f .* Z.Z(:,2:end);
 
 %------------- END OF CODE --------------

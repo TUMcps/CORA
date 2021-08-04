@@ -1,4 +1,4 @@
-function [R,res] = reach(obj,params,options,varargin)
+function [R,res,options] = reach(obj,params,options,varargin)
 % reach - computes the reachable continuous set for the entire time horizon
 %         of a continuous system
 %
@@ -14,7 +14,7 @@ function [R,res] = reach(obj,params,options,varargin)
 %
 % Outputs:
 %    R - object of class reachSet storing the computed reachable set
-%    res  - 1 if specifications are satisfied, 0 if not
+%    res  - true if specifications are satisfied, otherwise false
 %
 % Example: 
 %
@@ -36,11 +36,10 @@ function [R,res] = reach(obj,params,options,varargin)
 
 %------------- BEGIN CODE --------------
 
-    res = 1;
+    res = true;
 
     % options preprocessing
-    options = params2options(params,options);
-    options = checkOptionsReach(obj,options);
+    options = validateOptions(obj,mfilename,params,options);
     
     spec = [];
     if nargin >= 4
@@ -49,7 +48,14 @@ function [R,res] = reach(obj,params,options,varargin)
 
     % compute symbolic derivatives
     if isa(obj,'nonlinearSys') || isa(obj,'nonlinDASys') || isa(obj,'nonlinParamSys')
-       derivatives(obj,options); 
+        derivatives(obj,options);
+        if isa(obj,'nonlinearSys') && contains(options.alg,'adaptive')
+            % nonlinear adaptive algorithm
+            [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,params,options);
+            % construct reachset object
+            R = createReachSetObject(timeInt,timePoint);
+            return;
+        end
     end
 
     % obtain factors for initial state and input solution time step
@@ -76,6 +82,9 @@ function [R,res] = reach(obj,params,options,varargin)
         timeInt.algebraic = cell(length(tVec)-1,1);
     end
 
+    % log information
+    verboseLog(1,options.t,options);
+    
     % initialize reachable set computations
     try
         [Rnext, options] = initReach(obj, options.R0, options);
@@ -85,7 +94,7 @@ function [R,res] = reach(obj,params,options,varargin)
         reportReachError(ME,options.tStart,1);
         return
     end
-    
+
     % loop over all reachability steps
     for i = 2:length(tVec)-1
         
@@ -102,18 +111,16 @@ function [R,res] = reach(obj,params,options,varargin)
         % check specification
         if ~isempty(spec)
            if ~check(spec,Rnext.ti)
-               res = 0;
+               res = false;
                R = createReachSetObject(timeInt,timePoint);
                return;
            end
         end
 
-        % increment time and set counter
-        t = tVec(i);
-        options.t = t;
-        if isfield(options,'verbose') && options.verbose 
-            disp(t);
-        end
+        % increment time
+        options.t = tVec(i);
+        % log information
+        verboseLog(i,options.t,options);
 
         % if a trajectory should be tracked
         if isfield(options,'uTransVec')
@@ -126,16 +133,15 @@ function [R,res] = reach(obj,params,options,varargin)
         catch ME
             % if error from set explosion, return corresponding information
             R = createReachSetObject(timeInt,timePoint);
-            reportReachError(ME,t,i);
+            reportReachError(ME,options.t,i);
             return
         end
-        
     end
     
     % check specification
     if ~isempty(spec)
        if ~check(spec,Rnext.ti)
-           res = 0;
+           res = false;
        end
     end
 
@@ -146,11 +152,15 @@ function [R,res] = reach(obj,params,options,varargin)
     timePoint.time{end} = tVec(end);
 
     if isfield(Rnext,'y')
-        timeInt.algebraic{end} = Rnext.y;
+        timeInt.algebraic{end}  = Rnext.y;
     end
     
     % construct reachset object
     R = createReachSetObject(timeInt,timePoint);
+    
+    % log information
+    verboseLog(i+1,tVec(end),options);
+    
 end
 
 

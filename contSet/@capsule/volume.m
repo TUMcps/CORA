@@ -27,6 +27,11 @@ function vol = volume(C)
 
 %------------- BEGIN CODE --------------
 
+% check empty set
+if isempty(C)
+    vol = []; return;
+end
+
 % the volume is obtained by the volume of an n-dimensional ball and an
 % n-dimensional cylinder
 

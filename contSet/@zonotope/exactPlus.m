@@ -1,7 +1,7 @@
 function Z = exactPlus(Z1,Z2,varargin)
-% exactPlus - Adds two quadZonotopes by adding all generators of common
-%    generator factors. It has to be ensured from outside that the
-%    generator factors match
+% exactPlus - adds two zonotopes by adding all generators of common
+%    generator factors. Caution: It has to be ensured from outside that the
+%    generator factors match!
 %
 % Syntax:  
 %    Z = exactPlus(Z1,Z2)
@@ -9,7 +9,8 @@ function Z = exactPlus(Z1,Z2,varargin)
 % Inputs:
 %    Z1 - zonotope object
 %    Z2 - zonotope object
-%    nrOfGens - limit on the nr of generators that can be added exactly
+%    nrOfGens - (optional) limit on the nr of generators that can be
+%               added exactly
 %
 % Outputs:
 %    Z - final zonotope

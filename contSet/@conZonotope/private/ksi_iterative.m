@@ -56,7 +56,7 @@ for k = 1:iter
         
         % loop over all factors ksi
         for j = 1:n
-            if iA(i,j) ~= Inf
+            if ~isinf(iA(i,j))
                 
                 % calculate new tighend domain for the current factor ksi
                 temp = E;

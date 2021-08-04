@@ -27,10 +27,7 @@ function display(obj)
 
 %------------- BEGIN CODE --------------
 
-%display id
-disp(['id: ', num2str(obj.id)]);
-
-%display dimension
+% display dimension
 disp(['dimension: ', num2str(obj.dimension)]);
 
 %------------- END OF CODE --------------

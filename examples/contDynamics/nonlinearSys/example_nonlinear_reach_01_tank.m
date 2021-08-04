@@ -38,11 +38,10 @@ params.U = zonotope([0,0.005]);
 options.timeStep = 1;
 options.taylorTerms = 4;
 options.zonotopeOrder = 50;
-
-options.intermediateOrder = 5;
-options.errorOrder = 1;
 options.alg = 'lin';
 options.tensorOrder = 2;
+
+options.lagrangeRem.simplify = 'simplify';
 
 
 % System Dynamics ---------------------------------------------------------

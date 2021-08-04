@@ -20,13 +20,13 @@ function res = rad(obj)
 %
 % See also: ---
 
-% Author:       Victor Gassmann
-% Written:      23-July-2020
+% Author:       Matthias Althoff
+% Written:      06-May-2021
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-res = 0.5*(obj.Sup - obj.Inf);
+res = rad(obj.int);
 
 %------------- END OF CODE --------------

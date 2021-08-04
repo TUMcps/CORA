@@ -5,7 +5,7 @@ function [Rti,Rtp,dimForSplit,options] = linReach(obj,options,Rstart)
 %    [Rti,Rtp,dimForSplit,options] = linReach(obj,options,Rstart)
 %
 % Inputs:
-%    obj - nonlinearSys or nonlinearParamSys object
+%    obj - nonlinearSys or nonlinParamSys object
 %    options - struct with algorithm settings
 %    Rstart - initial reachable set
 %
@@ -45,6 +45,13 @@ function [Rti,Rtp,dimForSplit,options] = linReach(obj,options,Rstart)
 Rinit = Rstart.set;
 abstrerr = Rstart.error;
 
+% necessary to update part of abstraction that is dependent on x0 when
+% linearization remainder is not computed
+if isfield(options,'updateInitFnc')
+    currentStep = round((options.t-options.tStart)/options.timeStep)+1;
+    Rinit = options.updateInitFnc(Rinit,currentStep);
+end
+
 % linearize the nonlinear system
 [obj,linSys,linOptions] = linearize(obj,options,Rinit); 
 
@@ -62,11 +69,19 @@ else
         Rdiff = deltaReach(linSys,Rdelta,linOptions);
         
         % precompute static abstraction error
-        [H,Zdelta,errorStat,T,ind3,Zdelta3] = ...
-            precompStatError(obj,Rdelta,options);
+        if options.tensorOrder > 2
+            [H,Zdelta,errorStat,T,ind3,Zdelta3] = ...
+                precompStatError(obj,Rdelta,options);
+        end
     end
 end
-
+if isfield(options,'approxDepOnly') && options.approxDepOnly
+    if ~exist('errorStat','var')
+        errorStat = [];
+    end
+    [Rtp,Rti,dimForSplit,options] = approxDepReachOnly(linSys,obj,R,options,errorStat);
+    return;
+end
 % compute reachable set of the abstracted system including the
 % abstraction error using the selected algorithm
 if strcmp(options.alg,'linRem')
@@ -76,6 +91,19 @@ else
     % loop until the actual abstraction error is smaller than the 
     % estimated linearization error
     Rtp = R.tp; Rti = R.ti; perfIndCurr = inf; perfInd = 0;
+    
+    % used in AROC for reachsetOptimalControl (reachSet with previous
+    % linearization error)
+    if isfield(options,'prevErr')
+        perfIndCurr = 1;
+        if isfield(options,'prevErrScale')
+            scale = options.prevErrScale;
+        else 
+            scale = 0.8;
+        end
+        Rerror = scale*options.prevErr;
+    end
+    
     while perfIndCurr > 1 && perfInd <= 1
         % estimate the abstraction error 
         appliedError = 1.1*abstrerr;
@@ -122,14 +150,20 @@ else
     Rtp = Rtp+obj.linError.p.x;
 
     % compute the reachable set due to the linearization error
-    if isa(linSys,'linParamSys')
-        Rerror = errorSolution(linSys,options,VerrorDyn);
-    else
-        Rerror = errorSolution(linSys,options,VerrorDyn,VerrorStat);
+    if ~exist('Rerror','var')
+        if isa(linSys,'linParamSys')
+            Rerror = errorSolution(linSys,options,VerrorDyn);
+        else
+            Rerror = errorSolution(linSys,options,VerrorDyn,VerrorStat);
+        end
+        if isfield(options,'approxErr') && options.approxErr
+            options.prevErr = Rerror;
+        end
     end
     
     % add the abstraction error to the reachable sets
-    if isa(Rerror,'polyZonotope')
+    if strcmp(options.alg,'poly') && (isa(Rerror,'polyZonotope') || ...
+                                      isa(Rerror,'conPolyZono'))
         Rti=exactPlus(Rti,Rerror);
         Rtp=exactPlus(Rtp,Rerror);
     else
@@ -191,4 +225,54 @@ function [Rtp,Rti,perfInd] = linReach_linRem(obj,R,Rinit,Rdelta,options)
     
 end
 
+function [Rtp,Rti,dimForSplit,options] = approxDepReachOnly(linSys,obj,R,options,errorStat)
+    R_tp = R.tp;
+    R_ti = R.ti;
+    if ~isempty(errorStat) && ~all(isZero(errorStat))
+        Rerror = linSys.taylor.eAtInt*errorStat;
+        R_tp = exactPlus(R_tp,Rerror) + obj.linError.p.x;
+        R_ti = exactPlus(R_ti,Rerror) + obj.linError.p.x;
+    else
+        R_tp = R_tp + obj.linError.p.x;
+        R_ti = R_ti + obj.linError.p.x;
+    end
+    cs = round((options.t-options.tStart)/options.timeStep)+1;
+    R_tp = reduce(R_tp,options.reductionTechnique,options.zonotopeOrder);
+    if cs==1 && isfield(options,'POpt') && isfield(options.POpt,'reachOpt') && options.POpt.reachOpt
+        [Rtp_.set,options] = shiftWithOptimal(R_tp,options);
+    else
+        Rtp_.set = R_tp;
+    end
+    Rti = R_ti;
+    Rtp_.error = zeros(length(R_tp.c),1);
+    Rtp = Rtp_;
+    dimForSplit = [];
+    % Rti is not used, so is not really accurate probably (didn't bother)
+end
+
+function [pZ,options] = shiftWithOptimal(pZ,options)
+    POpt = options.POpt;
+    j = POpt.j;
+    np = POpt.np;
+    idp_1j = POpt.idp_1j;
+    idv = POpt.idv;
+    % remove unused ids, make sure pZ_vp only contains idv, idp
+    ind_eM = all(pZ.expMat==0,2);
+    pZ = polyZonotope(pZ.c,pZ.G,pZ.Grest,pZ.expMat(~ind_eM,:),pZ.id(~ind_eM));
+    pZ = restoreId(pZ,[idv;idp_1j]);
+    assert(isempty(setdiff(pZ.id,[idv;idp_1j])),'contains ids not idp_j,idv');   
+   
+    % find current Optimum
+    nx = length(POpt.Q);
+    np_1j = length(idp_1j);
+    % delta in [-1,1]
+    val = computeCtrl(project(pZ,1:nx),idv,idp_1j,POpt.A_pz_1j,...
+                      POpt.b_pz_1j,POpt.Q,1e-6,-ones(np_1j,1),ones(np_1j,1));
+    % update parameterized reachable set with new value for dp
+    pZb_b = polyZonotope(val,eye(j*np),zeros(j*np,0),eye(j*np),idp_1j);
+    pZ = subs(pZ,pZb_b,idp_1j);
+    % compute & save new "center" p
+    POpt.pc_1j = POpt.pc_1j + POpt.D_1j*val;
+    options.POpt = POpt;
+end
 %------------- END OF CODE --------------

@@ -19,8 +19,8 @@ function [E] = enc_ellipsoid(Z,comptype)
 %    plot(E);
 %
 % References:
-%    [1] : M. Cerny, "Goffin’s algorithm for zonotopes" Kybernetika, 
-%          vol. 48, no. 5, pp. 890–906, 2012
+%    [1] : M. Cerny, "Goffinï¿½s algorithm for zonotopes" Kybernetika, 
+%          vol. 48, no. 5, pp. 890ï¿½906, 2012
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,12 +28,17 @@ function [E] = enc_ellipsoid(Z,comptype)
 %
 % See also: insc_ellipsoid, MVEE, MVIE
 
-% Author:       Victor Gaßmann
+% Author:       Victor Gassmann, Matthias Althoff
 % Written:      18-September-2019
-% Last update:   ---
-% Last revision: ---
+% Last update:  22-December-2020 (MA, degenerate zonotopes added)
+%               08-June-2021 (VG, moved degeneracy to main file)
+% Last revision:---
 
 %------------- BEGIN CODE --------------
+rankG = rank(generators(Z));
+dimG = dim(Z);
+assert(rankG==dimG,'Degeneracy should be handled in main file!');
+
 %check if respective norm should be bounded or computed exactly
 if exist('comptype','var') && strcmp(comptype,'exact')
     doExact = true;
@@ -48,10 +53,10 @@ c = Z.Z(:,1);
 
 %there are more generators than dimensions: cannot "fit" the ellipse directly to
 %generators
-if n<m && rank(G)>=n
+if n<m 
     %compute initial guess for ellipsoid containing Z ([1], Sec, 4.1) 
     Q0 = m*(G*G');
-    TOL = 1e-8;
+    TOL = ellipsoid().TOL;
     Z0 = zonotope([zeros(n,1),G]);
     %compute transformation matrix T s.t. T*ellipsoid(Q0) == unit hyper
     %sphere
@@ -67,10 +72,8 @@ if n<m && rank(G)>=n
     %since radius of said ell. =1, we can choose radius of ell =
     %norm(Zt) and apply inverse transform inv(T) (implicitly done here)
     E = ellipsoid((lambda+TOL)^2*Q0,c);
-elseif n==m && rank(G)>=n
+else
 %direct mapping possible
     E = ellipsoid(n*(G*G'),c);
-else
-    error('Not implemented for degenerate zonotopes');
 end
 %------------- END OF CODE --------------

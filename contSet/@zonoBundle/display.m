@@ -37,8 +37,8 @@ else
     disp(inputname(1) + " =");
     fprintf(newline);
     
-    %display id, dimension
-    display(obj.Z{1}.contSet);
+    % display id, dimension
+    display@contSet(obj);
     fprintf(newline);
     
     maxGens = 10;

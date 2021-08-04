@@ -1,5 +1,5 @@
 function han = plot(Z,varargin)
-% plot - Plots 2-dimensional projection of a zonotope
+% plot - plots 2-dimensional projection of a zonotope
 %
 % Syntax:  
 %    h = plot(Z) plots the zonotope Z for the first two dimensions
@@ -9,7 +9,7 @@ function han = plot(Z,varargin)
 %
 % Inputs:
 %    Z - zonotope object
-%    dims - (optional) dimensions that should be projected
+%    dims - (optional) dimensions onto which the zonotope is projected
 %    type - (optional) plot settings (LineSpec and name-value pairs)
 %
 % Outputs:
@@ -39,42 +39,63 @@ filled = false;
 height = [];
 NVpairs = {};
 
-%If two arguments are passed    
+% if two arguments are passed    
 if nargin==2
     dims=varargin{1};
     
-%If three or more arguments are passed
+% if three or more arguments are passed
 elseif nargin>=3
     dims = varargin{1};
     % parse plot options
     [linespec,NVpairs] = readPlotOptions(varargin(2:end));
-    [NVpairs,filled] = readNameValuePair(NVpairs,'Filled','islogical');
+    [NVpairs,filled] = readNameValuePair(NVpairs,'Filled','islogical',filled);
     [NVpairs,height] = readNameValuePair(NVpairs,'Height','isscalar');
+end
+
+% check dimension
+if length(dims) < 2
+    error('At least 2 dimensions have to be specified!');
+elseif length(dims) > 3
+    error('Only up to 3 dimensions can be plotted!');
 end
 
 % project zonotope
 Z = project(Z,dims);
 
-% convert zonotope to polygon
-p = polygon(Z);
+% 2D or 3D plot
+if length(dims) == 2
 
-%plot and output the handle
-if filled
-    if isempty(height) % no 3D plot
-        han = fill(p(1,:),p(2,:),linespec,NVpairs{:});
-    else
-        zCoordinates = height*ones(length(p(1,:)),1); 
-        han = fill3(p(1,:),p(2,:),zCoordinates,linespec,NVpairs{:}); 
+    % convert zonotope to polygon
+    p = polygon(Z);
+
+    % plot and output the handle
+    if filled
+        if isempty(height) % no 3D plot
+            han = fill(p(1,:),p(2,:),linespec,NVpairs{:});
+        else
+            zCoordinates = height*ones(length(p(1,:)),1); 
+            han = fill3(p(1,:),p(2,:),zCoordinates,linespec,NVpairs{:}); 
+        end
+    else   
+        if isempty(height) % no 3D plot
+            han = plot(p(1,:),p(2,:),linespec,NVpairs{:});
+        else
+            zCoordinates = height*ones(length(p(1,:)),1); 
+            han = plot3(p(1,:),p(2,:),zCoordinates,linespec,NVpairs{:}); 
+        end
     end
-else   
-    if isempty(height) % no 3D plot
-        han = plot(p(1,:),p(2,:),linespec,NVpairs{:});
+
+else
+    
+    % compute vertices
+    V = vertices(Z);
+    
+    % generate 3D plot
+    if ~isempty(V)
+        han = plotPolytope3D(V(dims,:),linespec,NVpairs{:},'Filled',filled);
     else
-        zCoordinates = height*ones(length(p(1,:)),1); 
-        han = plot3(p(1,:),p(2,:),zCoordinates,linespec,NVpairs{:}); 
+        han = [];
     end
 end
-
- 
 
 %------------- END OF CODE --------------

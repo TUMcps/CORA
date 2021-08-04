@@ -5,7 +5,7 @@ function val = norm(obj,type)
 %    val = norm(obj,varargin)
 %
 % Inputs:
-%    obj      - Interal object
+%    obj - interval object
 %    type - additional arguments of builtin/norm
 %
 % Outputs:

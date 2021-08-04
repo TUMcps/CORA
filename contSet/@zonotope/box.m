@@ -1,8 +1,8 @@
-function [Z] = box(Z)
-% box - Computes an enclosing axis-aligned box
+function Z = box(Z)
+% box - computes an enclosing axis-aligned box
 %
 % Syntax:  
-%    [Z] = box(Z)
+%    Z = box(Z)
 %
 % Inputs:
 %    Z - zonotope object
@@ -30,10 +30,10 @@ function [Z] = box(Z)
 
 %------------- BEGIN CODE --------------
 
-%determine new generator matrix
-G=diag(sum(abs(generators(Z)),2));
+% determine new generator matrix
+G = diag(sum(abs(generators(Z)),2));
 
-%instantiate axis-aligned zonotope
-Z.Z=[center(Z),G];
+% instantiate axis-aligned zonotope
+Z.Z = [center(Z),G];
 
 %------------- END OF CODE --------------

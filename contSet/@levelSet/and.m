@@ -47,6 +47,10 @@ function res = and(obj,S)
 %------------- BEGIN CODE --------------
 
     % check input arguments
+    if isa(S,'conPolyZono')
+        res = S & obj; return;
+    end
+
     if ~strcmp(obj.compOp,'==')
        error('Not implemented yet!'); 
     end

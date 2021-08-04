@@ -41,6 +41,9 @@ p.u = options.uTrans;
 %obtain linearization point
 if isfield(options,'linearizationPoint')
     p.x = options.linearizationPoint;
+elseif isfield(options,'refPoints')
+    currentStep = round((options.t-options.tStart)/options.timeStep)+1;
+    p.x = 1/2*sum(options.refPoints(:,currentStep:currentStep+1),2);
 else
     %linearization point p.x of the state is the center of the last
     %reachable set R translated by 0.5*delta_t*f0

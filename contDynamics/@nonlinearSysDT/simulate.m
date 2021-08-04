@@ -42,6 +42,7 @@ function [t,x] = simulate(obj,params)
 % Last update:  29-January-2018 (NK)
 %               24-March-2020 (NK)
 %               08-May-2020 (MW, update interface)
+%               25-March-2021 (MA, initial state and time removed)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -83,5 +84,9 @@ function [t,x] = simulate(obj,params)
 
         x(i+1,:) = temp';
     end
+    
+    % remove initial state and time
+    t(1,:) = [];
+    x(1,:) = [];
 
 %------------- END OF CODE --------------

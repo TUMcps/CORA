@@ -115,7 +115,7 @@ function [A,indPer,fullRank] = rrefInfty(A)
     tol = max(m,n)*eps(class(A))*norm(A,'inf');
 
     % loop over the entire matrix
-    indPer = 1:n-1;
+    indPer = 1:n;
 
     for i = 1:m
         

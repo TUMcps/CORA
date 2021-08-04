@@ -27,22 +27,19 @@ dim_x=2;
 params.R0=zonotope([[1.4;2.3],0.1*[0.3 0;0 0.05]]);
 params.U=zonotope([0,0.005]);
 params.tFinal=2.5; %final time
-
+params.paramInt=interval([0.995;1],[1;1.005]);
 
 % Reachability Settings ---------------------------------------------------
 
 options.timeStep=0.1; %time step size for reachable set computation
 options.taylorTerms=5; %number of taylor terms for reachable sets
+options.intermediateTerms = 4;
 options.zonotopeOrder=10; %zonotope order
-options.intermediateOrder = 4;
 options.maxError = 1*ones(dim_x,1);
 options.reductionInterval=1e3;
 options.tensorOrder = 2;
-options.verbose = true;
+options.verbose = false;
 options.alg = 'lin';
-
-%parameter intervals for reachability analysis
-options.paramInt=interval([0.995;1],[1;1.005]);
 
 
 % System Dynamics ---------------------------------------------------------
@@ -71,6 +68,7 @@ simOpt.points = 60;
 simOpt.fracVert = 0.5;
 simOpt.fracInpVert = 0.5;
 simOpt.inpChanges = 6;
+params = rmfield(params,'paramInt');
 
 simRes = simulateRandom(vanderPol, params, simOpt);
 

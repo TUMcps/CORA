@@ -1,5 +1,5 @@
 function Z = or(Z1, varargin)
-% or - Computes an over-approximation for the union of zonotopes
+% or - computes an over-approximation for the union of zonotopes
 %
 % Syntax:  
 %    Z = or(Z1, Z2)
@@ -10,7 +10,11 @@ function Z = or(Z1, varargin)
 % Inputs:
 %    Z1,...,Zm - zonotope objects
 %    alg - algorithm used to compute the union
-%          ('linProg','tedrake','iterative', 'althoff', or 'parallelotope')
+%               - 'linProg' (default)
+%               - 'tedrake'
+%               - 'iterative'
+%               - 'althoff'
+%               - 'parallelotope'
 %    order - zonotope order of the enclosing zonotope
 %
 % Outputs:
@@ -95,7 +99,7 @@ function Z = or(Z1, varargin)
             end
 
         elseif isa(Z2,'mptPolytope') || isa(Z2,'conZonotope') || ...
-               isa(Z2,'zonoBundle') 
+               isa(Z2,'zonoBundle') || isa(Z2,'conPolyZono')
 
             Z = Z2 | Z1;     
 

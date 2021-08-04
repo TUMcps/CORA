@@ -52,9 +52,9 @@ res = all(res);
 
 
 if res
-    disp('test_ellipsoid_project successful');
+    disp([mfilename,' successful']);
 else
-    disp('test_ellipsoid_project failed');
+    disp([mfilename,' failed']);
 end
 
 %------------- END OF CODE --------------

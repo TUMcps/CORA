@@ -42,15 +42,36 @@ if nargin > 2 && ~isempty(varargin{2})
     [NVpairs,height] = readNameValuePair(NVpairs,'height','isscalar');
 end
 
+% check dimension
+if length(dims) < 2
+    error('At least 2 dimensions have to be specified!');
+elseif length(dims) > 3
+    error('Only up to 3 dimensions can be plotted!');
+end
+
 % loop over all simulated trajectories
 hold on
 for i = 1:length(obj.x)
     if isempty(height) % no 3D plot
-        han = plot(obj.x{i}(:,dims(1)),obj.x{i}(:,dims(2)),linespec,NVpairs{:});
+        if length(dims) == 2
+            han = plot(obj.x{i}(:,dims(1)),obj.x{i}(:,dims(2)), ...
+                       linespec,NVpairs{:});
+        else
+            han = plot3(obj.x{i}(:,dims(1)),obj.x{i}(:,dims(2)), ...
+                        obj.x{i}(:,dims(3)),linespec,NVpairs{:});
+        end
     else
-        zCoordinates = height*ones(length(obj.x{i}(:,dims(1))),1); % z values normalized to [0,1] in other plots
-        han = plot3(obj.x{i}(:,dims(1)),obj.x{i}(:,dims(2)),zCoordinates,linespec,NVpairs{:}); 
+         % z values normalized to [0,1] in other plots
+        zCoordinates = height*ones(length(obj.x{i}(:,dims(1))),1);
+        han = plot3(obj.x{i}(:,dims(1)),obj.x{i}(:,dims(2)), ...
+                    zCoordinates,linespec,NVpairs{:}); 
     end
+end
+
+% show 3 dimensions ('hold on' causes projection to first two dimensions
+%   to be shown if figure was not 3D before)
+if length(dims) == 3
+    view(3);
 end
 
 %------------- END OF CODE --------------

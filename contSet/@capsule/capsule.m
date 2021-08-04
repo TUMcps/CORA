@@ -1,9 +1,12 @@
-classdef capsule
-% capsule - Object and Copy Constructor 
+classdef capsule < contSet
+% capsule - object constructor for capsules
+%
+% Description:
+%    This class represents capsule objects defined as
+%    C := L + S, L = {c + g*a | a \in [-1,1]}, S = {x | ||x||_2 <= r}.
 %
 % Syntax:  
 %    obj = capsule(c)
-%    obj = capsule(r)
 %    obj = capsule(c,g)
 %    obj = capsule(c,r)
 %    obj = capsule(c,g,r)
@@ -14,7 +17,7 @@ classdef capsule
 %    input3 - radius
 %
 % Outputs:
-%    obj - Generated Object
+%    obj - generated capsule object
 %
 % Example:
 %    c = [1;2];
@@ -30,20 +33,20 @@ classdef capsule
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval,  polytope
+% See also: interval, polytope
 
 % Author:       Matthias Althoff
 % Written:      04-March-2019
 % Last update:  02-May-2020 (MW, add property validation)
+%               19-March-2021 (MW, errConstructor, remove capsule(r) case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = protected, GetAccess = public)
     c (:,1) {mustBeNumeric,mustBeFinite} = []; % center
-    g = []; % generator
+    g (:,1) {mustBeNumeric,mustBeFinite} = []; % generator
     r (1,1) {mustBeNonnegative,mustBeFinite} = 0; % radius
-    contSet = [];
 end
    
 methods
@@ -53,7 +56,7 @@ methods
         % default constructor
         if nargin == 0
             
-            Obj.contSet = contSet();
+            Obj.dimension = 0;
             
         else
             
@@ -63,16 +66,12 @@ methods
                     % copy constructor
                     Obj = varargin{1};
                 else
-                    if isvector(varargin{1})
-                        % set center
-                        Obj.c = varargin{1}; 
-                    elseif isscalar(varargin{1})
-                        % set radius
-                        Obj.r = varargin{1}; 
-                    end
+                    % set center
+                    Obj.c = varargin{1}; 
                 end
             elseif nargin == 2
-                if isvector(varargin{1}) && isvector(varargin{2})
+                if isvector(varargin{1}) && isvector(varargin{2}) && ...
+                    length(varargin{1}) == length(varargin{2})
                     % set center and generator
                     Obj.c = varargin{1}; 
                     Obj.g = varargin{2};
@@ -80,30 +79,31 @@ methods
                     % set center and radius
                     Obj.c = varargin{1}; 
                     Obj.r = varargin{2};
+                else
+                    % dimension mismatch
+                    [id,msg] = errConstructor(); error(id,msg);
                 end
+                    
             elseif nargin == 3
                 % set all values
                 Obj.c = varargin{1}; 
                 Obj.g = varargin{2};
                 Obj.r = varargin{3};
+                
+            elseif nargin > 3
+                % too many input arguments
+                [id,msg] = errConstructor('Too many input arguments'); error(id,msg);
             end
 
-            %Generate parent object
-            if ~isempty(varargin{1}) && ~isa(varargin{1}, 'capsule') && isvector(varargin{1})
-                Obj.contSet = contSet(length(varargin{1}(:,1)));
-            else
-                Obj.contSet = contSet();
-            end
-        
+            % set parent object properties
+            Obj.dimension = length(Obj.c);
         end
-        
     end
 end
 
 methods (Static = true)
     C = generateRandom(varargin) % generates random capsule
 end
-
 
 end
 %------------- END OF CODE --------------

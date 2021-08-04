@@ -50,6 +50,13 @@ function han = plot(hyp,varargin)
     if nargin >= 3 && ~isempty(varargin{2})
         type = varargin(2:end); 
     end
+    
+    % check dimension
+    if length(dims) < 2
+        error('At least 2 dimensions have to be specified!');
+    elseif length(dims) > 3
+        error('Only up to 3 dimensions can be plotted!');
+    end
 
     % get size of current plot
     xLim = get(gca,'Xlim');
@@ -63,12 +70,27 @@ function han = plot(hyp,varargin)
         C = []; d = [];
     end
 
-    C = [C;eye(2);-eye(2)];
-    d = [d;xLim(2);yLim(2);-xLim(1);-yLim(1)];
+    if length(dims) == 2
+        C = [C;eye(2);-eye(2)];
+        d = [d;xLim(2);yLim(2);-xLim(1);-yLim(1)];
+    else
+        zLim = get(gca,'Zlim');
+        C = [C;eye(3);-eye(3)];
+        d = [d;xLim(2);yLim(2);zLim(2);-xLim(1);-yLim(1);-zLim(1)];
+    end
 
     vert = lcon2vert(C,d,hyp.h.c(dims)',hyp.h.d);
 
     % plot constrained hyperplane
-    han = plot([vert(1,1),vert(2,1)],[vert(1,2),vert(2,2)],type{:});
+    if length(dims) == 2
+        han = plot([vert(1,1),vert(2,1)],[vert(1,2),vert(2,2)],type{:});
+    else
+        % state space transformation
+        B = gramSchmidt(hyp.h.c);
+        vert_ = B'*vert';
+        ind = convhull(vert_(2:end,:)');
+        
+        han = fill3(vert(ind,1),vert(ind,2),vert(ind,3),type{:}); 
+    end
 
 %------------- END OF CODE --------------

@@ -33,11 +33,11 @@ function completed = example_linearParam_reach_01_rlc_const()
 % get matrix zonotopes of the model
 [matZ_A,matZ_B] = RLCcircuit();
 matI_A = intervalMatrix(matZ_A);
-dim = matZ_A.dim;
+dim_x = matZ_A.dim;
 
 % create linear parametric systems with constant parameters
-sysMatZono  = linParamSys(matZ_A, eye(dim));
-sysIntMat = linParamSys(matI_A, eye(dim));
+sysMatZono  = linParamSys(matZ_A, eye(dim_x));
+sysIntMat = linParamSys(matI_A, eye(dim_x));
 
 
 % Parameter ---------------------------------------------------------------
@@ -49,7 +49,7 @@ intA = intervalMatrix(matZ_A);
 invAmid = inv(center(intA.int));        % inverse of A
 
 intB = intervalMatrix(matZ_B);
-R0 = invAmid*intB*u0 + intervalMatrix(0,1e-3*ones(dim,1));
+R0 = invAmid*intB*u0 + intervalMatrix(0,1e-3*ones(dim_x,1));
 
 params.R0 = zonotope(interval(R0));     % convert initial set to zonotope
 
@@ -63,11 +63,11 @@ params.tFinal = 0.3;
 
 % Reachability Settings ---------------------------------------------------
 
-options.intermediateOrder = 2;
 options.timeStep = 0.001;
 options.zonotopeOrder = 400;
 options.taylorTerms = 8;
-options.compTimePoint = 0;
+options.intermediateTerms = 2;
+options.compTimePoint = false;
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -123,15 +123,15 @@ legend([hanIntMat,hanMatZono],'Interval matrix','Matrix zonotope');
 figure; hold on;
 
 % plot time elapse
-hanIntMat = plotOverTime(RintMat,0.5*dim,'FaceColor',[.6 .6 .6],'EdgeColor','none');
-hanMatZono = plotOverTime(RmatZono,0.5*dim,'FaceColor',[.8 .8 .8],'EdgeColor','none');
+hanIntMat = plotOverTime(RintMat,0.5*dim_x,'FaceColor',[.6 .6 .6],'EdgeColor','none');
+hanMatZono = plotOverTime(RmatZono,0.5*dim_x,'FaceColor',[.8 .8 .8],'EdgeColor','none');
 
 % plot simulation results
-plotOverTime(simRes,0.5*dim);
+plotOverTime(simRes,0.5*dim_x);
 
 % label plot
 xlabel('t');
-ylabel(['x_{',num2str(0.5*dim),'}']);
+ylabel(['x_{',num2str(0.5*dim_x),'}']);
 legend([hanIntMat,hanMatZono],'Interval matrix','Matrix zonotope');
 
 % example completed

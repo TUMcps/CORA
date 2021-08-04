@@ -36,9 +36,9 @@ if isempty(obj.ksi)
 
     % remove all constraints for which the elimination does not result
     % in an over-approximation (less ksi-dimensions -> speed-up)
-    obj = reduce(obj,'redConstr');
+    obj = reduceConstraints(obj);
     
-    % remove all all-zero columns in the contraint matrix
+    % remove all all-zero columns in the constraint matrix
     temp = sum(abs(obj.A),1);
     ind1 = find(temp == 0);
     ind2 = setdiff(1:size(obj.A,2),ind1);

@@ -45,37 +45,59 @@ if nargin >= 3
    plotOptions = varargin(2:end); 
 end
 
-w = warning;
-warning('off','all');
-
-% compute polytopes
-for i = 1:obj.parallelSets
-    
-    % delete zero generators
-    Z = deleteZeros(obj.Z{i});
-    
-    % project zonotope
-    Z = project(Z,dims);
-    
-    % convert to polyshape (Matlab build in class)
-    temp = polygon(Z);
-    V = temp(:,2:end);
-    P{i} = polyshape(V(1,:),V(2,:));
+% check dimension
+if length(dims) < 2
+    error('At least 2 dimensions have to be specified!');
+elseif length(dims) > 3
+    error('Only up to 3 dimensions can be plotted!');
 end
 
-% intersect polytopes
-Pint = P{1};
-for i = 2:obj.parallelSets
-    Pint = intersect(Pint,P{i});
-end
+% 2D vs. 3D plot
+if length(dims) == 2
 
-% get vertices
-V = Pint.Vertices';
+    w = warning;
+    warning('off','all');
 
-% reset warning state to previous setting
-warning(w);
+    % compute polytopes
+    for i = 1:obj.parallelSets
+
+        % delete zero generators
+        Z = deleteZeros(obj.Z{i});
+
+        % project zonotope
+        Z = project(Z,dims);
+
+        % convert to polyshape (Matlab build in class)
+        temp = polygon(Z);
+        V = temp(:,2:end);
+        P{i} = polyshape(V(1,:),V(2,:));
+    end
+
+    % intersect polytopes
+    Pint = P{1};
+    for i = 2:obj.parallelSets
+        Pint = intersect(Pint,P{i});
+    end
+
+    % get vertices
+    V = Pint.Vertices';
+
+    % reset warning state to previous setting
+    warning(w);
+
+    % plot polytope
+    han = plotPolygon(V,plotOptions{:});
+
+else
     
-% plot polytope
-han = plotPolygon(V,plotOptions{:});
+    % project to plotted dimensions
+    obj = project(obj,dims);
+    
+    % compute vertices
+    V = vertices(obj);
+    
+    % plot 3D polytope
+    han = plotPolytope3D(V(dims,:),plotOptions{:}); 
+end
 
 %------------- END OF CODE --------------

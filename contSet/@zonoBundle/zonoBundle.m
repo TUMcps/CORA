@@ -1,4 +1,4 @@
-classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonoBundle
+classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonoBundle  < contSet
 % zonoBundle class 
 %
 % Syntax:  
@@ -61,6 +61,13 @@ methods
                 %get number of parallel sets
                 obj.parallelSets = length(varargin{1});
             end
+        end
+        
+        % set parent object properties
+        if isempty(obj.Z)
+            obj.dimension = 0;
+        else
+            obj.dimension = size(obj.Z{1}.Z,1);
         end
     end
          

@@ -35,26 +35,21 @@ function res = and(obj,S)
 %    res3 = cZono1 & ch;
 %
 %    % visualization
-%    figure
-%    hold on
+%    figure; hold on
 %    plot(cZono1,[1,2],'r');
 %    plot(cZono2,[1,2],'b');
 %    plot(res1,[1,2],'g','Filled',true,'EdgeColor','none');
 %    title('Constrained zonotope');
 %
-%    figure
-%    hold on
-%    xlim([-4,4]);
-%    ylim([-4,4]);
+%    figure; hold on
+%    xlim([-4,4]); ylim([-4,4]);
 %    plot(hs,[1,2],'r','FaceAlpha',0.5);
 %    plot(res2,[1,2],'g','Filled',true,'EdgeColor','none');
 %    plot(cZono2,[1,2],'b');
 %    title('halfspace');
 %
-%    figure
-%    hold on
-%    xlim([0,4]);
-%    ylim([-3,4]);
+%    figure; hold on
+%    xlim([0,4]); ylim([-3,4]);
 %    plot(ch,[1,2],'g');
 %    plot(cZono1,[1,2],'r');
 %    plot(res3,[1,2],'b','LineWidth',2);
@@ -107,6 +102,9 @@ function res = and(obj,S)
         b = [obj.b; S.b; S.Z(:,1) - obj.Z(:,1)];
 
         res = conZonotope(Z,A,b);
+        
+        % delete all zero constraints and generators
+        res = deleteZeros(res);
         
 
     elseif isa(S, 'halfspace')
@@ -187,7 +185,7 @@ function res = and(obj,S)
         % convert to constrained zonotope
         res = obj & conZonotope(S);
         
-    elseif isa(S,'levelSet')
+    elseif isa(S,'levelSet') || isa(S,'conPolyZono')
         
         res = S & obj;
         

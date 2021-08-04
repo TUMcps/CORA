@@ -1,6 +1,6 @@
 function ratio = volumeRatio(Z,P,dims)
-% volume - Computes the approximate volume ratio of a zonotope and its
-%    overapproximating polytope
+% volume - computes the approximate volume ratio of a zonotope and its
+%    over-approximating polytope
 %
 % Syntax:  
 %    ratio = volumeRatio(varargin)

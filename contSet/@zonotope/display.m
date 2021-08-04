@@ -40,8 +40,8 @@ else
     disp(inputname(1) + " =");
     fprintf(newline);
     
-    %display id, dimension
-    display(Z.contSet);
+    %display dimension
+    display@contSet(Z);
     fprintf(newline);
     
     %display center

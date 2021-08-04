@@ -21,13 +21,11 @@ function res = isIntersecting(Z,obj,varargin)
 %    isIntersecting(zono1,zono2)
 %    isIntersecting(zono1,zono3)
 %
-%    figure
-%    hold on
+%    figure; hold on;
 %    plot(zono1,[1,2],'b');
 %    plot(zono2,[1,2],'g');
 %
-%    figure
-%    hold on
+%    figure; hold on;
 %    plot(zono1,[1,2],'b');
 %    plot(zono3,[1,2],'r');
 %
@@ -54,7 +52,7 @@ function res = isIntersecting(Z,obj,varargin)
     
     % call function for other set representations
     if isa(obj,'halfspace') || isa(obj,'conHyperplane') || ...
-       isa(obj,'mptPolytope')
+       isa(obj,'mptPolytope') || isa(obj,'ellipsoid')
    
         res = isIntersecting(obj,Z,varargin{:});
    

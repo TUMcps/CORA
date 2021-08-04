@@ -49,21 +49,32 @@ function [objX,objU] = initRangeBoundingObjects(intX,intU,options)
     % generate taylor model or zoo objects
     if strcmp(options.lagrangeRem.method,'taylorModel')
 
-        objX = taylm(intX,maxOrder,strseq('x',1:length(intX)), ...
+        objX = taylm(intX,maxOrder,idxVars('x',1:length(intX)), ...
                      optMethod,eps,tolerance);
-        objU = taylm(intU,maxOrder,strseq('u',1:length(intU)), ...
+        objU = taylm(intU,maxOrder,idxVars('u',1:length(intU)), ...
                      optMethod,eps,tolerance);
 
     elseif strcmp(options.lagrangeRem.method,'zoo')
 
         objX = zoo(intX,options.lagrangeRem.zooMethods, ...
-                   strseq('x',1:length(intX)),maxOrder,eps,tolerance);
+                   idxVars('x',1:length(intX)),maxOrder,eps,tolerance);
         objU = zoo(intU,options.lagrangeRem.zooMethods, ...
-                   strseq('u',1:length(intU)),maxOrder,eps,tolerance);
+                   idxVars('u',1:length(intU)),maxOrder,eps,tolerance);
 
     else
         error('Wrong value for setting "options.lagrangeRem.method"!');
     end
+
+end
+
+
+function indexedVars = idxVars(varName,idx)
+
+idxLength = length(idx);
+indexedVars = cell(idxLength,1);
+for i=1:idxLength
+    indexedVars{i} = [varName,num2str(idx(i))];
+end
 
 end
 

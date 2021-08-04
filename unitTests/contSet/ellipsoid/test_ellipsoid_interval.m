@@ -18,34 +18,34 @@ function res = test_ellipsoid_interval
 %
 % See also: -
 
-% Author:       Victor Gaﬂmann
-% Written:      16-October-2019
+% Author:       Victor Gassmann
+% Written:      27-July-2021
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 res = true;
-nRuns = 2;
-for i=10:5:15
-    for j=1:nRuns
-        E = ellipsoid.generateRandom(false,i);
-        Y = sample(E,1000);
-        %compute interval
-        I = interval(E);
-        %check if all points are in the interval
-        if ~all(containsPoint(I,Y))
-            res = false;
-            break;
-        end
-    end
-    if ~res
+load cases.mat E_c
+for i=1:length(E_c)
+    E1 = E_c{i}.E1; % non-deg
+    Ed1 = E_c{i}.Ed1; % deg
+    E0 = E_c{i}.E0; % all zero
+    n = length(E1.q);
+    
+    Y = randPoint(E1,2*n);
+    Yd = randPoint(Ed1,2*n);
+    Y0 = E0.q;
+    
+    if ~in(interval(E1),Y) || ~in(interval(Ed1),Yd) || ~in(interval(E0),Y0)
+        res = false;
         break;
     end
 end
 
+
 if res
-    disp('test_ellipsoid_interval successful');
+    disp([mfilename,' successful']);
 else
-    disp('test_ellipsoid_interval failed');
+    disp([mfilename,' failed']);
 end
 %------------- END OF CODE --------------

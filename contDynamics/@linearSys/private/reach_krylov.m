@@ -41,6 +41,9 @@ if isfield(options,'uTransVec')
     options.uTrans = options.uTransVec(:,1);
 end
 
+% log information
+verboseLog(1,options.tStart,options);
+
 %initialize reachable set computations
 [Rnext,options] = initReach_Krylov(obj,options.R0,options);
 
@@ -79,6 +82,9 @@ for i=2:length(tVec)-1
         end
     end
     
+    % log information
+    verboseLog(i,tVec(i),options);
+    
     % if a trajectory should be tracked
     if isfield(options,'uTransVec')
         options.uTrans = options.uTransVec(:,i);
@@ -87,7 +93,7 @@ for i=2:length(tVec)-1
     %compute next reachable set
     [Rnext,options] = post_Krylov(obj,options);
     
-    options.t = options.t + options.timeStep
+    options.t = options.t + options.timeStep;
 end
 
 
@@ -110,7 +116,11 @@ if isfield(options,'specification')
     end
 end
 
-res = 1;
+% log information
+verboseLog(length(tVec),tVec(end),options);
+
+% specification fulfilled
+res = true;
 
 
 end

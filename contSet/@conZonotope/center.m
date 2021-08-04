@@ -37,9 +37,13 @@ function res = center(obj)
 
 %------------- BEGIN CODE --------------
 
-if isempty(obj.A)   % no constraints -> call superclass method
+if isempty(obj.A)   % no constraints -> zonotope center
     
-       res = center@zonotope(obj);
+       if ~isempty(obj.Z)
+            res = obj.Z(:,1);
+       else
+            res = [];
+       end
     
 else                % constraints -> compute chebychev center
            

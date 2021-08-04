@@ -69,7 +69,7 @@ else
     ind1 = find(rad(Idep) == 0);
     ind2 = find(rad(Iind) == 0);
     
-    ind = unique([ind1,ind2]);
+    ind = unique([ind1;ind2]);
     ind = setdiff(1:length(Idep),ind);  
 
     % calculate the volumes of the parallelotopes

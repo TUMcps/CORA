@@ -40,7 +40,7 @@ function res = in(obj1,obj2,varargin)
 
 % Author:       Niklas Kochdumper
 % Written:      19-November-2019
-% Last update:  ---
+% Last update:  26-July-2021 (VG: extended to multiple points)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -50,18 +50,18 @@ function res = in(obj1,obj2,varargin)
     % get object properties
     A = obj1.P.A;
     b = obj1.P.b;
+    
+    % parse input arguments
+    tol = 0;
 
+    if nargin >= 3 && ~isempty(varargin{1})
+       tol = varargin{1}; 
+    end
+    
     % point in polytope containment
     if isnumeric(obj2)
-
-        % parse input arguments
-        tol = 0;
         
-        if nargin >= 3 && ~isempty(varargin{1})
-           tol = varargin{1}; 
-        end
-        
-        if all(A*obj2 - b <= tol)
+        if all(all(A*obj2 - b <= tol))
             res = 1;
         end
 
@@ -71,7 +71,7 @@ function res = in(obj1,obj2,varargin)
         % loop over all halfspaces
         for i = 1:size(A,1)
             b_ = supportFunc(obj2,A(i,:)','upper');
-            if b_ > b(i)
+            if b_ > b(i)+tol
                return 
             end
         end

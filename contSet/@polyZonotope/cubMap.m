@@ -188,7 +188,7 @@ function res = cubMapSingle(pZ,T,ind)
     [ExpNew,Gnew] = removeRedundantExponents(Ecub,Gcub);
     
     % mixed multiplication with the zonotope from the independent terms
-    if ~isempty(pZ.Grest)
+    if ~isempty(pZ.Grest) && ~all(all(pZ.Grest==0))
         
         % cubic multiplication
         pZrest = cubMap(Zrem,T,ind);
@@ -216,7 +216,8 @@ function res = cubMapSingle(pZ,T,ind)
     end
     
     % construct the resulting polynomial zonotope
-    res = polyZonotope(Gnew(:,1) + c, Gnew(:,2:end), Grest, ExpNew(:,2:end));
+    res = polyZonotope(Gnew(:,1) + c, Gnew(:,2:end), Grest, ...
+                       ExpNew(:,2:end), pZ.id);
 end
 
 function res = cubMapMixed(pZ1,pZ2,pZ3,T,ind)

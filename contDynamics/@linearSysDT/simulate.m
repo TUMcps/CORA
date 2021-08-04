@@ -42,6 +42,7 @@ function [t,x] = simulate(obj,params)
 % Written:      20-March-2020
 % Last update:  24-March-2020 (NK)
 %               08-May-2020 (MW, update interface)
+%               12-Jan-2021 (MA, disturbance input added; needs to be moved outside this function in the future)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -79,16 +80,39 @@ function [t,x] = simulate(obj,params)
         c = obj.c;
     end
 
-    % loop over all time steps
-    for i = 1:length(t)-1
-
-        if change
-            temp = obj.A*x(i,:)' + obj.B * params.u(:,i) + c;
-        else
-            temp = obj.A*x(i,:)' + obj.B * params.u + c;
+    if change % changing input
+        if isfield(params,'w') && ~isempty(params.w) % disturbance exists
+            % loop over all time steps
+            for i = 1:length(t)-1
+                temp = obj.A*x(i,:)' + obj.B * params.u(:,i) + c + params.w;
+                x(i+1,:) = temp';
+            end
+        else % no disturbance
+            % loop over all time steps
+            for i = 1:length(t)-1
+                temp = obj.A*x(i,:)' + obj.B * params.u(:,i) + c;
+                x(i+1,:) = temp';
+            end
         end
-
-        x(i+1,:) = temp';
+    else % constant input
+        if isfield(params,'w') && ~isempty(params.w) % disturbance exists
+            % loop over all time steps
+            for i = 1:length(t)-1
+                temp = obj.A*x(i,:)' + obj.B * params.u + c + params.w;
+                x(i+1,:) = temp';
+            end
+        else % no disturbance
+            % loop over all time steps
+            for i = 1:length(t)-1
+                temp = obj.A*x(i,:)' + obj.B * params.u + c;
+                x(i+1,:) = temp';
+            end
+        end
     end
+    
+    
+    % remove initial state and time
+    t(1,:) = [];
+    x(1,:) = [];
     
 %------------- END OF CODE --------------

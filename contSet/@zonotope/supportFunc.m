@@ -1,5 +1,5 @@
 function [val,x,fac] = supportFunc(obj,dir,varargin)
-% supportFunc - Calculate the upper or lower bound of a zonotope object
+% supportFunc - calculates the upper or lower bound of a zonotope object
 %               along a certain direction
 %
 % Syntax:  
@@ -8,8 +8,7 @@ function [val,x,fac] = supportFunc(obj,dir,varargin)
 %
 % Inputs:
 %    obj - zonotope object
-%    dir - direction for which the bounds are calculated (vector of size
-%          (n,1) )
+%    dir - direction for which the bounds are calculated (vector)
 %    type - upper or lower bound ('lower' or 'upper')
 %
 % Outputs:
@@ -32,6 +31,11 @@ function [val,x,fac] = supportFunc(obj,dir,varargin)
     
     % parse input arguments
     type = 'upper';
+    
+    if size(dir,1) == 1 && size(dir,2) >= 1
+        % transpose dir
+        dir = dir';
+    end
     
     if nargin >= 3 && ~isempty(varargin{1})
         type = varargin{1};

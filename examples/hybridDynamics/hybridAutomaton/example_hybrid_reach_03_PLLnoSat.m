@@ -77,11 +77,13 @@ samples = 3;
 
 tic
 for iSim = 1:samples
-    %set initial state, input
+    % set initial state, input
     if iSim<=15
-        params.x0 = [randPointExtreme(params.R0);0;0]; %initial state for simulation
+        p = randPoint(params.R0,1,'extreme');
+        params.x0 = [p;0;0];                % initial state for simulation
     else
-        params.x0 = [randPoint(params.R0);0;0]; %initial state for simulation
+        p = randPoint(params.R0);
+        params.x0 = [p;0;0];                % initial state for simulation
     end
     
     if params.x0(4)~=params.x0(5)

@@ -1,4 +1,4 @@
-classdef (InferiorClasses = {?interval, ?zonotope}) probZonotope
+classdef (InferiorClasses = {?interval, ?zonotope}) probZonotope < contSet
 % probZonotope - class for probabilistic zonotopes
 %
 % Syntax:  
@@ -47,8 +47,6 @@ properties (SetAccess = protected, GetAccess = public)
     gauss (1,1) {mustBeNumericOrLogical} = false;
     % gamma ... cut-off mSigma value
     gamma = 2;
-    % contSet ... "parent" object
-    contSet = [];
 end
 
 methods
@@ -71,8 +69,6 @@ methods
             Obj.cov = []; 
             Obj.gauss = false; 
             Obj.gamma = 2;      % default value
-            
-            Obj.contSet = contSet(length(varargin{1}(:,1)));
 
             % update covariance matrix
             Obj.cov = sigma(Obj);
@@ -88,8 +84,6 @@ methods
             Obj.cov = []; 
             Obj.gauss = false; 
             Obj.gamma = varargin{3};
-            
-            Obj.contSet = contSet(length(varargin{1}(:,1)));
 
             % update covariance matrix
             Obj.cov = sigma(Obj);
@@ -99,6 +93,9 @@ methods
         else
             error('Wrong syntax! Type "help probZonotope" for more information.');
         end
+        
+        % set parent object properties
+        Obj.dimension = size(Obj.Z,1);
         
     end
 end

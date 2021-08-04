@@ -1,6 +1,6 @@
 function Z = enclose(varargin)
-% enclose - Generates a zonotope that encloses a zonotopes and its linear 
-%           transformation
+% enclose - returns a zonotope enclosing a zonotope and its linear 
+%    transformation
 %
 % Syntax:  
 %    Z = enclose(Z1,Z2)
@@ -21,8 +21,7 @@ function Z = enclose(varargin)
 %
 %    Z=enclose(Z1,Z2);
 %
-%    figure;
-%    hold on
+%    figure; hold on;
 %    plot(Z1,[1,2],'r');
 %    plot(Z2,[1,2],'g');
 %    plot(Z,[1,2],'b');

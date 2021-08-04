@@ -84,7 +84,11 @@ function R = guardIntersect_zonoGirard(obj,R,guard,options)
     end
     
     % construct the enclosing zonotope bundle object
-    if length(Z) == 1
+    Z = Z(~cellfun('isempty',Z));
+    
+    if isempty(Z)
+       R = []; 
+    elseif length(Z) == 1
        R = Z{1}; 
     else
        R = zonoBundle(Z); 
@@ -310,10 +314,10 @@ function y = lineIntersect2D(p1,p2,gamma)
 % calculate the intersection between a line segment and a vertical line
 
     % check if gamma is one of the points
-    if p1(1) == gamma 
+    if abs(p1(1) - gamma) < eps 
        y = p1(2);
        return;
-    elseif p2(1) == gamma
+    elseif abs(p2(1) - gamma) < eps
        y = p2(2);
        return;
     end
@@ -384,7 +388,11 @@ function Z = tightenSet(Z,poly)
     cZ = cZ & poly;
     
     % tighten the domain of the zonotope factors
-    cZ = rescale(cZ,'iter');
+    try
+        cZ = rescale(cZ,'iter');
+    catch
+        cZ = rescale(cZ,'optimize');
+    end
     
     % extract the rescaled zonotope from the constrained zonotope
     Z = zonotope(cZ.Z);

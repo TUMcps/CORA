@@ -10,8 +10,14 @@ function res = isempty(obj)
 % Outputs:
 %   res - result in {0,1}
 %
-% Example: 
-%    ---
+% Example:
+%    c = [0;0];
+%    G = [1 0 1;0 1 1];
+%    A = [1 1 1];
+%    b = 4;
+%    cZ = conZonotope([c,G],A,b);
+%
+%    isempty(cZ)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,8 +32,8 @@ function res = isempty(obj)
 
 %------------- BEGIN CODE --------------
 
-% check if the zonotope is empty by calling the superclass method
-res = isempty@zonotope(obj);
+% check if the zonotope is empty
+res = isempty(zonotope(obj.Z));
 
 % check if the constraints are satisfiable 
 if ~res && ~isempty(obj.A)
@@ -74,21 +80,24 @@ if ~res && ~isempty(obj.A)
           end
        end
        
-       % check if the null-space intersects the unit-cube
+       % use linear programming to check if the constrained zonotope is
+       % empty (this seems to be more robust than the previous solution
+       % using the mptPolytope/isempty function)
        if size(obj.A,1) >= 1
            
-           % construct inequality constraints for the unit cube
-           n = size(obj.Z,2)-1;
-           A = [eye(n);-eye(n)];
-           b = [ones(n,1);ones(n,1)];
+           options = optimoptions('linprog','display','off', ...
+                               'OptimalityTolerance',1e-10);	
+                           
+           p = size(obj.A,2);
+           ub = ones(p,1); lb = -ub; f = ones(p,1);
+           
+           [~,~,exitflag] = linprog(f,[],[],obj.A,obj.b,lb,ub,options);
 
-           % transform the constraints to the null space
-           A_ = A*Neq;
-           b_ = b-A*x0;
+            res = 0;
 
-           % create mptPolytope and check if the set is empty
-           poly = mptPolytope(A_,b_);
-           res = isempty(poly);
+            if exitflag == -2
+                res = 1; 
+            end
        end
               
    end 

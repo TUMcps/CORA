@@ -49,7 +49,6 @@ if ~isempty(G)
     if nrOfGens>d*order
 
         %compute metric of generators
-        % (additional 1 for correct handling of one-dimensional zonotopes)
         h = vecnorm(G,1,1) - vecnorm(G,Inf,1);
 
         %number of generators that are not reduced

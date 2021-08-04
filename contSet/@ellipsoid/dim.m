@@ -20,11 +20,11 @@ function d = dim(E)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
+% Author:       Mark Wetzlinger,Victor Gassmann
 % Written:      15-Sep-2019 
-% Last update:  ---
+% Last update:  16-March-2021 (comp independent of property)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-d = E.dim;
+d = length(E.q);
 %------------- END OF CODE --------------

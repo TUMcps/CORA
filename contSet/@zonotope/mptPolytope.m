@@ -1,21 +1,21 @@
-function res = mptPolytope(Z)
-% mptPolytope - Converts a zonotope object to a mptPolytope object
+function P = mptPolytope(Z)
+% mptPolytope - converts a zonotope object to a mptPolytope object
 %
 % Syntax:  
-%    res = mptPolytope(Z)
+%    P = mptPolytope(Z)
 %
 % Inputs:
 %    Z - zonotope object
 %
 % Outputs:
-%    res - mptPolytope object
+%    P - mptPolytope object
 %
 % Example: 
 %    zono = zonotope(rand(2,5));
 %    poly = mptPolytope(zono);
 %
+%    figure; hold on;
 %    plot(poly,[1,2],'r');
-%    figure
 %    plot(zono,[1,2],'b');
 %
 % Other m-files required: vertices, polytope
@@ -31,6 +31,6 @@ function res = mptPolytope(Z)
 
 %------------- BEGIN CODE --------------
 
-    res = polytope(Z,'mpt');
+    P = polytope(Z,'mpt');
     
 %------------- END OF CODE --------------

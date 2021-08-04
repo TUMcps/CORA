@@ -62,7 +62,7 @@ end
 
 %first time step homogeneous solution
 Rhom_tp=eAt*Rinit + Rtrans;
-if isa(Rinit,'polyZonotope')
+if isa(Rinit,'polyZonotope') || isa(Rinit,'conPolyZono')
     Rhom=enclose(Rinit,Rhom_tp)+F*zonotope(Rinit)+inputCorr;
 elseif isa(Rinit,'zonoBundle') 
     Rhom=enclose(Rinit,Rhom_tp)+F*Rinit.Z{1}+inputCorr;
@@ -101,8 +101,4 @@ end
 %write results to reachable set struct Rfirst
 Rfirst.tp=Rtotal_tp;
 Rfirst.ti=Rtotal;
-
-
-
-
 %------------- END OF CODE --------------

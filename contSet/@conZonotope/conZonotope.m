@@ -1,5 +1,9 @@
-classdef conZonotope < zonotope
+classdef conZonotope < contSet
 % conZonotope - object constructor for constrained zonotopes [1]
+%
+% Description:
+%    This class represents constrained zonotope objects defined as
+%    {c + G * beta | ||beta||_Inf <= 1, A * beta <= b}.
 %
 % Syntax:
 %       obj = conZonotope(c,G)
@@ -15,7 +19,7 @@ classdef conZonotope < zonotope
 %    b - constraint vector A*ksi = b
 %
 % Outputs:
-%    obj - Generated Object
+%    obj - generated conZonotope object
 %
 % Example: 
 %    Z = [0 3 0 1;0 0 2 1];
@@ -37,13 +41,18 @@ classdef conZonotope < zonotope
 %
 % Author:        Dmitry Grebenyuk, Mark Wetzlinger
 % Written:       03-September-2017
-% Last update:   ---
+% Last update:   19-March-2021 (MW, errConstructor)
 % Last revision: 02-May-2020 (MW, methods list, rewrite methods(hidden),
 %                                 add property validation)
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
+    
+    % center and generators  x = Z(:,1) + Z(:,2:end)*ksi; |ksi| <= 1
+    % format:       matrix
+    Z (:,:) {mustBeNumeric,mustBeFinite} = [];
+    
     % constraint A*ksi = b; |ksi| <= 1
     % format:       matrix
     A (:,:) {mustBeNumeric,mustBeFinite} = [];
@@ -66,44 +75,54 @@ methods
     % class constructor
     function obj = conZonotope(varargin)
         
-        A = [];
-        b = [];
+        Z = []; A = []; b = [];
         
-        if nargin == 0
-            Z = [];
-        elseif nargin == 1
-            Z = varargin{1};
+        if nargin == 1
+            % copy constructor
+            if isa(varargin{1},'conZonotope')
+                obj = varargin{1};
+            else
+                Z = varargin{1};
+            end
+        
         elseif nargin == 2
+            if ~isvector(varargin{1}) || length(varargin{1}) ~= size(varargin{2},1)
+                [id,msg] = errConstructor(); error(id,msg);
+            end
             Z = [varargin{1},varargin{2}];
+            
         elseif nargin == 3
             Z = varargin{1};
             A = varargin{2};
             b = varargin{3};
+            
         elseif nargin == 4
+            if ~isvector(varargin{1}) || length(varargin{1}) ~= size(varargin{2},1)
+                [id,msg] = errConstructor(); error(id,msg);
+            end
             Z = [varargin{1},varargin{2}];
             A = varargin{3};
             b = varargin{4};
-        else
-            error('This class takes at max 4 inputs.')
+            
+        elseif nargin > 4
+            % too many input arguments
+            [id,msg] = errConstructor('Too many input arguments.'); error(id,msg);
         end
         
-        % create a zonotope
-        obj@zonotope(Z);
-        
-        % check if A and b fit the zonotope
-        % note: this check is necessary, otherwise run-time errors will occur
         if ~isempty(A) && ~isempty(b)
-            if size(A,2) ~= (size(obj.Z,2)-1)
-                error("A has to be of proper dimension.");
-            end
-            if length(b) ~= size(A,1)
-                error("b has to be of proper dimension.");
+            % check correctness of A and b and w.r.t Z
+            if ~isvector(b) ... % b is a vector ?
+                    || size(A,2) ~= (size(Z,2)-1) ... % A fits Z (gens)?
+                    || size(A,1) ~= length(b) % A fits b ?
+                [id,msg] = errConstructor(); error(id,msg);
             end
         end
         
-        % store the matrices for the constraints
-        obj.A = A;
-        obj.b = b;
+        % store object properties
+        obj.Z = Z; obj.A = A; obj.b = b;
+        
+        % set parent object properties
+        obj.dimension = size(obj.Z,1);
     end
     
     
@@ -112,7 +131,9 @@ methods
     cZ = cartProd(cZ1,cZ2);
     res = center(obj);
     cZ = convHull(cZ1,varargin);
+    cPZ = conPolyZono(cZ);
     d = dim(obj);
+    res = deleteZeros(obj);
     display(obj);
     cZ = enclose(varargin);
     res = in(obj1,obj2,varargin);
@@ -130,6 +151,7 @@ methods
     pZ = polyZonotope(obj);
     obj = project(obj,dims);
     cZquad = quadMap(varargin);
+    res = reduceConstraints(obj,varargin);
     res = reduce(obj,method,orderG,varargin);
     res = rescale(obj,varargin);
     cZsplit = split(obj,varargin);
@@ -143,184 +165,6 @@ end
 methods (Static = true)
     cZ = generateRandom(varargin) % generate random constrained zonotope
 end
-
-% prevent unintentional usage of superclass methods
-methods(Hidden)
-    
-    function abs(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function box(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function capsule(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function constrSat(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function containsPoint(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function deleteAligned(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function deleteZeros(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function dominantDirections(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function ellipsoid(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function encloseMany(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function enclosingPolytope(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function enlarge(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function eventFcn(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function exactPlus(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function filterOut(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function generatorLength(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function generators(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function get(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function halfspace(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function intersectZonoStrip(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function isequal(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function isInterval(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function minnorm(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function minus(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function norm(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function normbound(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function orthVectors(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function polygon(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function polytope(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function quadMap_parallel(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function radius(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function rank(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function reduceUnderApprox(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function rotate(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function sampleBox(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function set(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function splitFirstGen(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function taylm(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function tensorMultiplication(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function tensorMultiplication_zono(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function underapproximate(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function volume(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-    function volumeRatio(varargin)
-        error('This operation is not implemented for class "conZonotope"!'); 
-    end
-    
-end
-
 
 end
 

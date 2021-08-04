@@ -1,6 +1,6 @@
 function res = constrSat(Z,C,d)
-% constrSat - checks if all values x of a zonotope satisfy the constraint
-%    Cx<=d
+% constrSat - checks if all points x within a zonotope satisfy the
+%    constraint Cx <= d
 %
 % Syntax:  
 %    res = constrSat(Z,C,d)

@@ -47,6 +47,9 @@ else
     inputCorr = 0;
 end
 
+% log information
+verboseLog(1,options.tStart,options);
+
 %initialize reachable set computations
 [Rnext, options] = initReach_Euclidean(obj, options.R0, options);
 Rtrans  = options.Rtrans;
@@ -71,7 +74,6 @@ for i = 2:length(tVec)-1
     % compute output set
     [Rout{i-1},Rout_tp{i-1}] = outputSet(C,D,k,Rnext,options);
     
-    
     % safety property check
     if isfield(options,'specification')
         if ~check(options.specification,Rout{i-1})
@@ -85,6 +87,9 @@ for i = 2:length(tVec)-1
     
     
     % post: ----------
+    
+    % log information
+    verboseLog(i,tVec(i),options);
 
     % method implemented from Algorithm 1 in [1]
     
@@ -124,8 +129,11 @@ if isfield(options,'specification')
     end
 end
 
-res = true;
+% log information
+verboseLog(length(tVec),tVec(end),options);
 
+% specification fulfilled
+res = true;
 
 end
 

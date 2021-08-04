@@ -93,7 +93,7 @@ reset = struct('A', resetA, 'b', resetb);
 %   t>=t_l & t<=t_u
 guard = interval([-dist;-dist;-dist;-dist;t_l],[dist;dist;dist;dist;t_u]);
 
-trans{2} = transition(guard, reset, 3);
+trans{2,1} = transition(guard, reset, 3);
 
 loc{1} = location('S1', inv, trans, dynamics);
 

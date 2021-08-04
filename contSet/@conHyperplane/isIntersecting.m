@@ -1,5 +1,5 @@
 function res = isIntersecting(obj1,obj2,varargin)
-% isIntersecting - determines if constained hyperplane obj1 intersects obj2
+% isIntersecting - determines if constrained hyperplane obj1 intersects obj2
 %
 % Syntax:  
 %    res = isIntersecting(obj1,obj2)

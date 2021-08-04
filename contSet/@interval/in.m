@@ -31,20 +31,31 @@ function res = in(obj1,obj2)
 
 %------------- BEGIN CODE --------------
 
-res = 0;
+TOL = 1e-12;
+res = false;
 
 % point in interval containment
 if isnumeric(obj2)
-
-    if all(obj1.sup >= obj2) && all(obj1.inf <= obj2)
-        res = 1;
+    
+    % account for numerical jitter
+    obj2lb = obj2 + TOL;
+    obj2ub = obj2 - TOL;
+    
+    if all([all(obj1.inf <= obj2lb), all(obj1.sup >= obj2ub)])
+        res = true;
     end
 
 % interval in interval containment
 elseif isa(obj2,'interval')
+    
+    % check for dimension mismatch
+    if dim(obj1) ~= dim(obj2)
+        [id,msg] = errDimMismatch();
+        error(id,msg);
+    end
 
     if all(obj1.sup >= obj2.sup) && all(obj1.inf <= obj2.inf)
-        res = 1;
+        res = true;
     end
 
 % other set in interval containment

@@ -107,7 +107,11 @@ methods
         
         % number of states, inputs, and outputs
         states = size(A,1);
-        inputs = size(B,2);
+        if ~isscalar(B)
+            inputs = size(B,2);
+        else
+            inputs = states; 
+        end
         outputs = 1;
         if ~isempty(C)
            outputs = size(C,1); 

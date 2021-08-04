@@ -28,18 +28,17 @@ function completed = example_linearParam_reach_02_5dim_var()
 
 % Parameter ---------------------------------------------------------------
 
-dim = 5;
-
+dim_x = 5;
 params.tFinal = 5;
-params.R0 = zonotope([ones(dim,1),0.1*eye(dim)]);   % initial set
-params.U = zonotope([zeros(dim,1),0.1*eye(dim)]);   % uncertain inputs
+params.R0 = zonotope([ones(dim_x,1),0.1*eye(dim_x)]);   % initial set
+params.U = zonotope([zeros(dim_x,1),0.1*eye(dim_x)]);   % uncertain inputs
 
 
 % Reachability Settings ---------------------------------------------------
 
 options.timeStep = 0.05;
 options.taylorTerms = 4;
-options.intermediateOrder = 2;
+options.intermediateTerms = 2;
 options.zonotopeOrder = 20;
 
 
@@ -87,21 +86,21 @@ dims = {[2 3],[4 5]};
 for k = 1:length(dims)
     
     figure; hold on;
-    dim = dims{k};
+    projDims = dims{k};
     
     % plot reachable sets
-    hanInt = plot(Rint,dim,'FaceColor',[.6 .6 .6],'EdgeColor','none');
-    hanZono = plot(Rzono,dim,'FaceColor',[.8 .8 .8],'EdgeColor','none');
+    hanInt = plot(Rint,projDims,'FaceColor',[.6 .6 .6],'EdgeColor','none');
+    hanZono = plot(Rzono,projDims,'FaceColor',[.8 .8 .8],'EdgeColor','none');
     
     % plot initial set
-    plot(params.R0,dim,'w-','lineWidth',2);
+    plot(params.R0,projDims,'w-','lineWidth',2);
     
     % plot simulation results      
-    plot(simRes,dim);
+    plot(simRes,projDims);
 
     % label plot
-    xlabel(['x_{',num2str(dim(1)),'}']);
-    ylabel(['x_{',num2str(dim(2)),'}']);
+    xlabel(['x_{',num2str(projDims(1)),'}']);
+    ylabel(['x_{',num2str(projDims(2)),'}']);
     legend([hanInt,hanZono],'Interval matrix','Matrix zonotopes');
 end
 

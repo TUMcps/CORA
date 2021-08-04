@@ -43,7 +43,6 @@ params.U = zonotope([0,0.005]);                             % uncertain input
 
 options.timeStep = 1;
 options.taylorTerms = 4;
-options.intermediateOrder = 4;
 options.zonotopeOrder = 10;
 
 options.tensorOrder = 2;
@@ -67,9 +66,10 @@ RcontNoParam = reach(tank, params, options);
 tComp = toc;
 disp(['computation time of reachable set without uncertain parameters: ',num2str(tComp)]);
 
-% compute reachable set of tank system without uncertain parameters
+% compute reachable set of tank system with uncertain parameters
+options.intermediateTerms = 4;
+params.paramInt = 0.015;
 tic
-options.paramInt = 0.015;
 RcontParam = reach(tankParam, params, options);
 tComp = toc;
 disp(['computation time of reachable set with uncertain parameters: ',num2str(tComp)]);
@@ -81,6 +81,7 @@ simOpt.points = 60;
 simOpt.fracVert = 0.5;
 simOpt.fracInpVert = 0.5;
 simOpt.inpChanges = 6;
+params = rmfield(params,'paramInt');
 
 simRes = simulateRandom(tank, params, simOpt);
 

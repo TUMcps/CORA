@@ -47,6 +47,11 @@ end
 
 % different cases depending on the class of the summand
 if isa(Int2,'interval')
+    
+    if dim(Int1) ~= dim(Int2)
+        [id,msg] = errDimMismatch();
+        error(id,msg);
+    end
 
     res = interval(min([Int1.inf,Int2.inf],[],2), ...
                    max([Int1.sup,Int2.sup],[],2));
@@ -58,7 +63,7 @@ elseif isnumeric(Int2)
 
 elseif isa(Int2,'zonotope') || isa(Int2,'conZonotope') || ...
        isa(Int2,'zonoBundle') || isa(Int2,'polyZonotope') || ...
-       isa(Int2,'mptPolytope')
+       isa(Int2,'mptPolytope') || isa(Int2,'conPolyZono')
 
     res = Int2 | Int1;
 

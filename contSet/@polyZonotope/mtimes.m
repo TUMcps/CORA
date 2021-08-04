@@ -76,7 +76,7 @@ elseif isa(matrix,'interval')
     inter = interval(pZ);
     s = abs(center(inter)) + rad(inter);
     
-    %compute new polyZonotope
+    % compute new polyZonotope
     pZ.c = m*pZ.c;
     if ~isempty(pZ.G)
         pZ.G = m*pZ.G;

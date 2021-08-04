@@ -26,11 +26,15 @@ function d = dim(obj)
 
 % Author:       Mark Wetzlinger
 % Written:      15-Sep-2019 
-% Last update:  ---
+% Last update:  14-March-2021 (MW, different approach)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-d = length(center(obj));
+if ~isempty(obj.Z)
+    d = size(obj.Z,1);
+else
+    d = 0;
+end
 
 %------------- END OF CODE --------------

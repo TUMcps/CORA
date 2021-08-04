@@ -34,22 +34,10 @@ display@contDynamics(obj);
 disp('type: Nonlinear time continuous system');
 
 %display state space equations
-%generate symbolic states
-for i=1:obj.dim
-    command=['syms x',num2str(i)];
-    eval(command); 
-    command=['x(',num2str(i),')=x',num2str(i),';'];
-    eval(command);
-end
-%generate symbolic inputs
-for i=1:obj.nrOfInputs
-    command=['syms u',num2str(i)];
-    eval(command); 
-    command=['u(',num2str(i),')=u',num2str(i),';'];
-    eval(command);
-end
+x = sym('x',[obj.dim,1]);
+u = sym('u',[obj.nrOfInputs,1]);
 
-dx=obj.mFile(x,u)
+dx = obj.mFile(x,u)
 
 disp('-----------------------------------');
 

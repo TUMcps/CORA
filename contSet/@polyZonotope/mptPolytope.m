@@ -89,7 +89,7 @@ function poly = mptPolytope(pZ,varargin)
         pZ.Grest = [pZ.Grest, generators(zono)];
 
         % determine all potential vertices and remove redundant points
-        points = pointSetExtreme(pZ);
+        points = randPoint(pZ,'all','extreme');
         points = sortrows(points')';
 
         points_ = zeros(size(points));

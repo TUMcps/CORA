@@ -33,9 +33,9 @@ E2 = ellipsoid([1 0;0 2]); % center at origin
 res = isequal(center(E1),[0;1]) && isequal(center(E2),[0;0]);
 
 if res
-    disp('test_ellipsoid_center successful');
+    disp([mfilename,' successful']);
 else
-    disp('test_ellipsoid_center failed');
+    disp([mfilename,' failed']);
 end
 
 %------------- END OF CODE --------------

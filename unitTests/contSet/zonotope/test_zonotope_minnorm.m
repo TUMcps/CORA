@@ -18,7 +18,7 @@ function res = test_zonotope_minnorm
 %
 % See also: -
 
-% Author:       Victor Gaﬂmann
+% Author:       Victor Gassmann
 % Written:      15-October-2019
 % Last update:  ---
 % Last revision:---

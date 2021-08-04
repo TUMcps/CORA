@@ -5,13 +5,18 @@ function res = contract(f,dom,varargin)
 % Syntax:  
 %    res = contract(f,dom)
 %    res = contract(f,dom,alg)
+%    res = contract(f,dom,alg,iter)
+%    res = contract(f,dom,alg,iter,splits)
 %
 % Inputs:
 %    f - function handle for the constraint f(x) = 0
 %    dom - initial domain (class: interval)
 %    alg - algorithm used for contraction. The available algorithms are 
 %          'forwardBackward' (see Sec. 4.2.4 in [1]),  'linearize' 
-%          (see Sec. 4.3.4 in [1]), and 'polyBox' (see [2])
+%          (see Sec. 4.3.4 in [1]), 'polynomial' (see [2]), 'interval', and 
+%          'all' (all contractors together)
+%    iter - number of iteration (integer > 0 or 'fixpoint')
+%    splits - number of recursive splits (integer > 0)
 %
 % Outputs:
 %    res - contracted domain (class: interval)
@@ -22,10 +27,8 @@ function res = contract(f,dom,varargin)
 %   
 %    res = contract(f,dom);
 %
-%    figure
-%    hold on
-%    xlim([-3,3]);
-%    ylim([-3,3]);
+%    figure; hold on;
+%    xlim([-3,3]); ylim([-3,3]);
 %    plot(dom,[1,2],'r');
 %    plot(res,[1,2],'g');
 %    syms x1 x2
@@ -52,19 +55,180 @@ function res = contract(f,dom,varargin)
 
     % parse input arguments
     alg = 'forwardBackward';
+    iter = 1;
+    splits = [];
+    jacHan = [];
+    if nargin >= 3 && ~isempty(varargin{1})
+       alg = varargin{1};
+    end
+    if nargin >= 4 && ~isempty(varargin{2})
+       iter = varargin{2}; 
+    end
+    if nargin >= 5 && ~isempty(varargin{3})
+       splits = varargin{3}; 
+    end    
+    if nargin >= 6 && ~isempty(varargin{4})
+       jacHan = varargin{4}; 
+    end
     
-    if nargin >= 3
-       alg = varargin{1}; 
+    % check user input
+    if ischar(iter) 
+        if strcmp(iter,'fixpoint')
+            iter = 10000;
+        else
+            error('Wrong value for input argument "iter"!');
+        end
+    end
+   
+    if ~ismember(alg,{'forwardBackward','linearize','polynomial', ... 
+                      'interval','all'})
+        error('Wrong value for input argument "alg"!');           
+    end
+    
+    % precompute jacobian matrix
+    if isempty(jacHan) && ismember(alg,{'linearize','interval','all'})
+
+        % construct symbolic variables
+        n = length(dom);
+        vars = sym('x',[n,1]);
+        fSym = f(vars);
+
+        % compute jacobian matrix
+        jac = jacobian(fSym,vars);
+        jacHan = matlabFunction(jac,'Vars',{vars});
     end
 
-    % contract the domain using the selected algorithm
-    if strcmp(alg,'forwardBackward')
-        res = contractForwardBackward(f,dom);
-    elseif strcmp(alg,'linearize')
-        res = contractParallelLinearization(f,dom);
-    elseif strcmp(alg,'polyBox')
-        res = contractPolyBoxRevise(f,dom);
+    % splitting of intervals considered or not
+    if isempty(splits)                                  % no splitting
+    
+        % iteratively contract the domain
+        dom_ = dom;
+
+        for i = 1:iter
+
+            % contract the domain using the selected algorithm
+            if strcmp(alg,'forwardBackward')
+                dom = contractForwardBackward(f,dom);
+            elseif strcmp(alg,'linearize')
+                dom = contractParallelLinearization(f,dom,jacHan);
+            elseif strcmp(alg,'polynomial')
+                dom = contractPolyBoxRevise(f,dom);
+            elseif strcmp(alg,'interval')
+                dom = contractInterval(f,dom,jacHan);
+            elseif strcmp(alg,'all')
+                dom = contractForwardBackward(f,dom);
+                if ~isempty(dom)
+                    dom = contractInterval(f,dom,jacHan);
+                    if ~isempty(dom)
+                        dom = contractParallelLinearization(f,dom,jacHan);
+                        if ~isempty(dom)
+                           dom = contractPolyBoxRevise(f,dom); 
+                        end
+                    end
+                end
+            end
+            
+            % check if set is empty
+            if isempty(dom)
+               res = [];
+               return;
+            end
+
+            % check for convergence
+            if all(abs(infimum(dom)-infimum(dom_)) < eps) && ...
+               all(abs(supremum(dom)-supremum(dom_)) < eps)
+                break;
+            else
+                dom_ = dom;
+            end
+        end
+
+        res = dom;
+        
+    else                                                % splitting
+       
+        % initialization
+        list = {dom};
+        
+        % loop over the number of recursive splits
+        for i = 1:splits
+            
+            list_ = cell(2*length(list),1);
+            counter = 1;
+            
+            % loop over all sets in the list
+            for j = 1:length(list)
+                
+                % determine the best dimension to split and split the 
+                % domain along the determined dimension
+                domSplit = bestSplit(f,list{j});
+                
+                % loop over all splitted domains
+                for k = 1:length(domSplit)
+                    
+                    % check if the domain is empty
+                    temp = f(domSplit{k});
+                    
+                    p = zeros(length(temp),1);
+                    
+                    if ~in(temp,p)
+                       continue; 
+                    end
+                
+                    % contract the splitted domain
+                    domTemp = contract(f,domSplit{k},alg,iter,[],jacHan);
+                
+                    % update the queue
+                    if ~isempty(domTemp)
+                        list_{counter} = domTemp;
+                        counter = counter + 1;  
+                    end
+                end
+            end
+            
+            list = list_(1:counter-1);
+        end
+        
+        % unite all the contracted intervals
+        if ~isempty(list)
+            res = list{1};
+
+            for i = 2:length(list)
+               res = res | list{i}; 
+            end
+        else
+            res = [];
+        end
     end
+end
+
+
+% Auxiliary Functions -----------------------------------------------------
+
+function list = bestSplit(f,dom)
+% determine the dimension along which it is best to split the domain
+
+    n = length(dom);
+    vol = zeros(n,1);
+
+    % loop over all dimensions
+    for i = 1:n
+       
+        % split the domain at the current dimension
+        dom_ = split(dom,i);
+        
+        % evaluate constraint function for the one of the splitted sets
+        val = f(dom_{1});
+        
+        % evaluate the quality of the split
+        vol(i) = volume(val);
+    end
+    
+    % determine best dimension to split
+    [~,ind] = min(vol);
+    
+    % split the domain at the determined dimension
+    list = split(dom,ind);
 end
 
 %------------- END OF CODE --------------

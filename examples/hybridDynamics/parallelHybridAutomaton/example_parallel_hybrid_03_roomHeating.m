@@ -4,10 +4,10 @@ function res = example_parallel_hybrid_03_roomHeating()
 %    described in Sec. 2.3 in [1] with two rooms
 %
 % Syntax:  
-%    example_parallel_hybrid_02_lowPassFilter
+%    example_parallel_hybrid_03_roomHeating
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    res - boolean, true if completed

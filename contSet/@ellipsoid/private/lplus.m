@@ -1,23 +1,23 @@
-function [E] = lplus(E1,E2,l)
-% lplus - Computes the Minkowski sum of two ellipsoids such that resulting
-% overapproximation given by E is tight in direction l
+function E_cell = lplus(E_c,L,mode)
+% lplus - Computes the Minkowski sum of all ellipsoids contained in E_c such that resulting
+% overapproximation given by E is tight in directions L
 %
 % Syntax:
-%    [E] = lplus(E1,E2,l)
+%    E_cell = lplus(E_c,l)
 %
 % Inputs:
-%    E1 - Ellipsoid object
-%    E2 - Ellipsoid object 
-%    l  - unit direction
+%    E_c - cell array containing ellipsoids
+%    L  - unit directions
+%    mode-"i": inner approx; "o"(default): outer approx
 %
 % Outputs:
-%    E - Ellipsoid after addition of two ellipsoids
+%    E - Ellipsoid after minkowski addition
 %
 % Example: 
-%    E1=ellipsoid([1 0; 0 1]);
-%    E2=ellipsoid([1 1; 1 1]);
+%    E1=ellipsoid.generateRandom(2,false);
+%    E2=ellipsoid.generateRandom(2,false);
 %    l =[1;0];
-%    E =lplus(E1,E2,l);
+%    E =lplus({E1,E2},l);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -29,15 +29,55 @@ function [E] = lplus(E1,E2,l)
 %    [1] https://www2.eecs.berkeley.edu/Pubs/TechRpts/2006/EECS-2006-46.pdf
 %
 % Author:       Victor Gassmann
-% Written:      13-March-2019
+% Written:      15-March-2019
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-q = E1.q+E2.q;
-Q1 = E1.Q;
-Q2 = E2.Q;
-%for details, see [1]
-Q = (sqrt(l'*Q1*l)+sqrt(l'*Q2*l))*(Q1/sqrt(l'*Q1*l)+Q2/sqrt(l'*Q2*l));
-E = ellipsoid(Q,q);
+
+
+if length(E_c)==1
+    E_cell = E_c;
+    return;
+end
+
+E_cell = cell(length(E_c),1);
+for i=1:size(L,2)
+    E_cell{i} = lplus_single(E_c,L(:,i),mode);
+end
+
+end
+
+
+%--- helper
+function E = lplus_single(E_c,l,mode)
+n = length(E_c{1}.q);
+if strcmp(mode,'o')
+    % outer approximation
+    q = zeros(n,1);
+    c = 0;
+    Q_ = zeros(n);
+    for i=1:length(E_c)
+        q = q + E_c{i}.q;
+        si = sqrt(l'*E_c{i}.Q*l);
+        c = c + si;
+        if ~withinTol(si,0,E_c{i}.TOL)
+            Q_ = Q_ + E_c{i}.Q/si;
+        end
+    end
+    Q = c*Q_;
+    E = ellipsoid(Q,q);
+else
+    % inner approximation
+    x = sqrtm(E_c{1}.Q)*l;
+    q = zeros(n,1);
+    Q = zeros(n);
+    for i=1:length(E_c)
+        q = q + E_c{i}.q;
+        Qs = sqrtm(E_c{i}.Q);
+        Q = Q + vecalign(x,Qs*l)*Qs;
+    end
+    E = ellipsoid(Q'*Q,q);
+end
+end
 %------------- END OF CODE --------------

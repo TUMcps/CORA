@@ -1,9 +1,8 @@
-function [Zsplit] = split(Z,varargin)
-% split - Splits a zonotope into two or more zonotopes that enclose the
-% zonotope. 
+function Zsplit = split(Z,varargin)
+% split - splits a zonotope into two or more enclosing zonotopes
 %
 % Syntax:  
-%    [Zsplit] = split(Z,varargin)
+%    Zsplit = split(Z,varargin)
 %
 % Inputs:
 %    Z - zonotope object
@@ -12,10 +11,11 @@ function [Zsplit] = split(Z,varargin)
 %    Zsplit - cell array of parallelpipeds represented as zonotopes
 %
 % Example: 
-%    Z=zonotope(rand(2,4));
-%    Zsplit=split(Z);
+%    Z = zonotope(rand(2,4));
+%    Zsplit = split(Z);
+%
+%    figure; hold on;
 %    plot(Z);
-%    hold on
 %    plot(Zsplit{1}{1});
 %    plot(Zsplit{1}{2});
 %    plot(Zsplit{2}{1});

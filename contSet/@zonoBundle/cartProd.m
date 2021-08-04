@@ -67,6 +67,10 @@ function zB = cartProd(zB1,zB2)
             
             zB = cartProd(polyZonotope(zB1),zB2);
             
+        elseif isa(zB2,'conPolyZono')
+            
+            zB = cartProd(conPolyZono(zB1),zB2);
+            
         else
             % throw error for given arguments
             error(noops(zB1,zB2));

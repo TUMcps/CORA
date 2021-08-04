@@ -63,7 +63,7 @@ elseif isa(zB2,'zonoBundle')
     zB = zB1;
     
     for i = 1:zB2.parallelSets
-        zB1.Z{end+1} = zB2.Z{i};
+        zB.Z{end+1} = zB2.Z{i};
     end
     
     zB.parallelSets = zB.parallelSets + zB2.parallelSets;
@@ -149,7 +149,7 @@ elseif isa(zB2,'conHyperplane')
        end
     end
     
-elseif isa(zB2,'levelSet')
+elseif isa(zB2,'levelSet') || isa(zB2,'conPolyZono')
     
     zB = zB2 & zB1;
     

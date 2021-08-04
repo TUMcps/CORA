@@ -63,6 +63,8 @@ if isa(Int1,'interval')
         res = cartProd(mptPolytope(Int1),Int2);
     elseif isa(Int2,'polyZonotope')
         res = cartProd(polyZonotope(Int1),Int2);
+    elseif isa(Int2,'conPolyZono')
+        res = cartProd(conPolyZono(Int1),Int2);
     else
         % throw error for given arguments
         error(noops(Int1,Int2));

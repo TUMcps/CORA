@@ -1,7 +1,8 @@
-function [t,x,ind] = simulate(obj,params,options)
+function [t,x,ind] = simulate(obj,params,varargin)
 % simulate - simulates the system within a location
 %
 % Syntax:  
+%    [t,x] = simulate(obj,params)
 %    [t,x,ind] = simulate(obj,params,options)
 %
 % Inputs:
@@ -10,14 +11,14 @@ function [t,x,ind] = simulate(obj,params,options)
 %       .tStart: initial time
 %       .tFinal: final time
 %       .x0: initial point
+%       .p: value for the parameter
+%       .u: input signal
 %    options - ODE45 options (for hybrid systems)
 %
 % Outputs:
 %    t - time vector
 %    x - state vector
 %    ind - returns the event which has been detected
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,13 +33,74 @@ function [t,x,ind] = simulate(obj,params,options)
 
 %------------- BEGIN CODE --------------
 
-if isempty(options.Events)
-    [t,x] = ode45(getfcn(obj,params),...
-        [params.tStart,params.tFinal],params.x0,options);
+    % parse input arguments
+    isOpt = 0;
+    if nargin >= 3 && ~isempty(varargin{1})
+       options = varargin{1}; 
+       isOpt = 1;
+    end
+    
+    if ~isfield(params,'p')
+        error('Value for the parameters "params.p" is missing!')
+    end
+    
+    if ~isfield(params,'u')
+       params.u = zeros(obj.nrOfInputs,1); 
+    end
+    
+    if ~isfield(params,'tStart')
+       params.tStart = 0;
+    end
+    
+    tFinal = (params.tFinal-params.tStart)/size(params.u,2);
+    
+    if isfield(params,'timeStep')
+        tSpan = 0:params.timeStep:tFinal;
+        if abs(tSpan(end)-tFinal) > 1e-10
+           tSpan = [tSpan,tFinal]; 
+        end
+    else
+        tSpan = [0,tFinal];
+    end
+
+    % simulate the system
+    params_ = params;
+    t = [];
+    x = [];
     ind = [];
-else
-    [t,x,te,xe,ind] = ode45(getfcn(obj,params),...
-        [params.tStart,params.tFinal],params.x0,options);
-end
+    x0 = params.x0;
+    
+    for i = 1:size(params.u,2)
+        
+        params_.u = params.u(:,i);
+        
+        % simulate using MATLABs ode45 function
+        try
+            if isOpt
+                [t_,x_,~,~,ind] = ode45(getfcn(obj,params_),tSpan,x0,options);
+            else
+                [t_,x_,~,~,ind] = ode45(getfcn(obj,params_),tSpan,x0);
+            end
+        catch
+            if isOpt
+                [t_,x_] = ode45(getfcn(obj,params_),tSpan,x0,options);
+            else
+                [t_,x_] = ode45(getfcn(obj,params_),tSpan,x0);
+            end
+        end
+        
+        % store the results
+        x = [x;x_]; 
+        if isempty(t)
+            t = t_ + params.tStart;
+        else 
+            t = [t;t_ + t(end)]; 
+        end
+        x0 = x(end,:)';
+        
+        if ~isempty(ind)
+           return; 
+        end
+    end
 
 %------------- END OF CODE --------------

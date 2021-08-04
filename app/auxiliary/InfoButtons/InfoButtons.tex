@@ -1,0 +1,151 @@
+\documentclass[twocolumn]{article}
+
+\usepackage{amsmath,amssymb}
+\usepackage{natbib}
+\usepackage{bibentry}
+\nobibliography*
+
+\newcommand{\myparagraph}[1]{\paragraph{#1}\mbox{}\\ \mbox{} \\}
+
+
+
+\begin{document}
+	
+\myparagraph{Zonotope Order}
+Given a n-dimensional zonotope 
+	\begin{equation*}
+		\mathcal{Z} := \bigg \{ c + \sum_{i=1}^{m} g_i ~ \alpha_i ~ \bigg| ~ \alpha_i \in [-1,1] \bigg \},
+	\end{equation*}
+	the order of the zonotope $\rho$ is defined as the number of generators $m$ divided by the dimension $n$:
+	\begin{equation*}
+		\rho = \frac{m}{n}.
+	\end{equation*}
+	Since the zonotope order grows constantly during reachability analysis it is for computational reasons required to reduce the order after each reachability step. The setting \textit{zonotope order} specifies an upper bound for the zonotope order of the reachable sets. A higher value increases the precision, but also prolongs the computation time.
+	
+	
+	
+\myparagraph{Taylor Terms}
+The reachability algorithm used by CORA requires the computation of the matrix exponential 
+\begin{equation}
+	e^{At} = \sum_{i=1}^\infty \frac{t^i}{i!} A^i.
+	\label{eq:matExponential}
+\end{equation} 	
+Since it is impossible to calculate $e^{At}$ exactly due to the infinite series in \eqref{eq:matExponential}, $e^{At}$ is instead enclosed by a finite series of order $\kappa$ and a remainder term $\mathbf{E}$:
+\begin{equation*}
+	e^{At} = \sum_{i=1}^\kappa \frac{t^i}{i!} A^i + \mathbf{E}.
+\end{equation*}
+The \textit{taylor terms} setting specifies the order of the series $\kappa$. A higher value increases the precision, but also prolongs the computation time.
+
+\newpage
+
+\myparagraph{Reduction Technique}
+There exist many different approaches to reduce the order of a zonotope. An overview over different reduction methods as well as an evaluation of their performance can be found in [1]. \\
+
+{\footnotesize \noindent \hspace{-8pt}
+\begin{tabular}{p{0.1cm} p{7.5cm}}
+ \textbf{[1]} & \bibentry{Kopetzki2017} \\
+\end{tabular}}
+	
+
+\myparagraph{Reachability Algorithm}
+Several reachability algorithms for linear systems are implemented in CORA: As the default we use the algorithm  described in [1] (\texttt{standard}). The wrapping-free algorithm in [2] (\texttt{wrapping-free}) avoids the wrapping-effect during reachability analysis, and the algorithm in [3] propagates reachable sets from start (\texttt{fromStart}).  One major disadvantage of all these algorithms is that algorithm settings like time step size, zonotope order, etc. have to be tuned manually. We therefore recommend to use the adaptive algorithm in [4] (\texttt{adap}) which determines close to optimal settings automatically.\\
+
+{\footnotesize \noindent \hspace{-8pt}
+\begin{tabular}{p{0.1cm} p{7.5cm}}
+ \textbf{[1]} & \bibentry{Girard2005} \\
+ \textbf{[2]} & \bibentry{Girard2006} \\
+ \textbf{[3]} & \bibentry{Frehse2011} \\
+ \textbf{[4]} & \bibentry{Wetzlinger2020} \\
+\end{tabular}}
+
+\newpage
+\myparagraph{Input Set}
+CORA supports time dependent input sets
+\begin{equation*}
+	\mathcal{U}(t) := u_c(t) \oplus \mathcal{U},
+\end{equation*}
+where $\mathcal{U}$ is the constant input set and $u_c(t)$ is the time-dependent center of the input set. The time dependent center $u_c(t)$ has to be specified as a matrix for which the number of columns is identical to the number of reachability steps.
+
+
+\myparagraph{Conservative Linearization}
+Given a nonlinear system $\dot x = f(x,u)$ the conservative linearization algorithm in [1] linearizes the nonlinear function $f(\cdot)$ in each time step and treats the set of linearization errors as additional uncertain inputs, which then allows to compute the reachable set with a reachability algorithm for linear systems. The algorithm is well-suited for systems with moderate nonlinearities.\\
+
+{\footnotesize \noindent \hspace{-8pt}
+\begin{tabular}{p{0.1cm} p{7.5cm}}
+ \textbf{[1]} & \bibentry{Althoff2008c} \\
+\end{tabular}}
+
+\myparagraph{Conservative Polynomialization}
+The conservative polynomialization algorithm in [1] is an extension to conservative linearization [2]. Instead of linearization, the nonlinear function $f(\cdot)$ of the nonlinear system $\dot x = f(x,u)$ is abstracted by a Taylor series of order $\kappa$, which enables the computation of a tighter reachable set. The algorithm is well-suited for strongly nonlinear systems.\\
+
+{\footnotesize \noindent \hspace{-8pt}
+\begin{tabular}{p{0.1cm} p{7.5cm}}
+ \textbf{[1]} & \bibentry{Althoff2013a} \\
+ \textbf{[2]} & \bibentry{Althoff2008c} \\
+\end{tabular}}
+
+\newpage
+\myparagraph{Tensor Order}
+The tensor order represents the order $\kappa$ of the Taylor series expansion of the nonlinear function $f(\cdot)$ that represents the system $\dot x = f(x,u)$:
+\begin{equation*}
+	\dot{x}_i \in \sum_{j=0}^{\kappa-1} \frac{\left((z(t)-z^*)^T \nabla \right)^j f_i(z^*)}{j!} ~\oplus ~\mathcal{L}_i(t),
+\end{equation*}
+where $z = [x^T~u^T]^T$. For the conservative linearizion algorithm a higher tensor order results in a tighter enclosure of the set of linearization errors. For the conservative polynomialization algorithm a higher tensor order results in a more accurate abstraction of the system dynamics.
+
+
+\myparagraph{Intermediate Order}
+Upper bound for the zonotope order $\rho = \frac{m}{n}$ during interval computations of the algorithm. We recommend to use the same value as for the zonotope order setting.
+
+
+\myparagraph{Error Order}
+The zonotope order $\rho = \frac{m}{n}$ is reduced to \textit{error order} internally before the linearization error is computed. This is done since the computation of the linearization error involves quadratic or even cubic maps that drastically increase the number of generators of the set.
+
+
+\myparagraph{Guard Order}
+For computational reasons, the zonotope order $\rho = \frac{m}{n}$ is reduced to guard order before the intersection with the guard sets is computed.
+
+\newpage
+
+\myparagraph{Guard Intersection Methods}
+CORA implements several methods to compute an enclosure of the intersection between the guard sets and the reachable set: The method based on polytope intersection [1] (\texttt{polytope}), a constrained zonotope based method (\texttt{conZonotope}), the zonotope-hyperplane intersection based method in [2] (\texttt{zonoGirard}), the guard-mapping method in [3] (\texttt{hyperplaneMap}), the time-scaling method in [4] (\texttt{pancake}), one method that is well-suited for non-deterministic guard sets (\texttt{nondetGuard}), and the method in [5] that can handle nonlinear level sets (\texttt{levelSet}). \\
+
+{\footnotesize \noindent \hspace{-8pt}
+\begin{tabular}{p{0.1cm} p{7.5cm}}
+ \textbf{[1]} & \bibentry{Althoff2010d} \\
+ \textbf{[2]} & \bibentry{Girard2008} \\
+ \textbf{[3]} & \bibentry{Althoff2012a} \\
+ \textbf{[4]} & \bibentry{Bak2017} \\
+ \textbf{[5]} & \bibentry{Kochdumper2020d} \\
+\end{tabular}}
+
+\myparagraph{Zonotope}
+A zonotope $\mathcal{Z} \subset \mathbb{R}^n$ is
+\begin{equation*}
+		\mathcal{Z} := \bigg \{ c + \sum_{i=1}^{m} g_i ~ \alpha_i ~ \bigg| ~ \alpha_i \in [-1,1] \bigg \},
+\end{equation*}
+where $c \in \mathbb{R}^n$ is the center and $G = [g_1~\dots~g_m] \in \mathbb{R}^{n \times m}$ is the generator matrix.
+
+
+\newpage
+
+\myparagraph{Guard Intersection Enclosure Methods}
+CORA implements three different techniques to determine the orientation for enclosing guard intersections with oriented hyper-rectangles: Enclosure with an axis-aligned box [1,~Sec.~V.A.a] (\texttt{box}), orientation determined with \textit{Principal Component Analysis} [1,~Sec.~V.A.b] (\texttt{pca}), and orientation aligned with the flow of the system dynamics [1,~Sec.~V.A.d] (\texttt{flow}). \\
+
+{\footnotesize \noindent \hspace{-8pt}
+\begin{tabular}{p{0.1cm} p{7.5cm}}
+ \textbf{[1]} & \bibentry{Althoff2011f} \\
+\end{tabular}}
+
+\myparagraph{Interval}
+A multi-dimensional interval $\mathcal{I} \subset \mathbb{R}^n$ is
+\begin{equation*}
+	\mathcal{I} := \big \{ x \in \mathbb{R}^n ~ \big | ~ \underline{x}_i \leq x_i \leq \overline{x}_i ~ \forall i = 1,\dots,n \big \},
+\end{equation*}
+where $\underline{x} \in \mathbb{R}^n$ is the lower bound and $\overline{x} \in \mathbb{R}^n$ is the upper bound.
+
+
+\bibliographystyle{abbrv}
+\bibliography{../../../manual/althoff_own,../../../manual/althoff_other}	
+	
+\end{document}
+

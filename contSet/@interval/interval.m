@@ -1,22 +1,29 @@
-classdef (InferiorClasses = {?mp}) interval
-% interval class 
+classdef (InferiorClasses = {?mp}) interval < contSet
+% interval - object constructor for real-valued intervals 
 %
-% Syntax:  
-%    object constructor: Obj = interval(varargin)
-%    copy constructor: Obj = otherObj
+% Description:
+%    This class represents interval objects defined as
+%    {x | a_i <= x <= b_i, \forall i = 1,...,n}.
+%
+% Syntax:
+%       obj = interval()
+%       obj = interval(I)
+%       obj = interval(a)
+%       obj = interval(a,b)
 %
 % Inputs:
-%    lowerLimit - left limit
-%    upperLimit - right limit
+%    I - interval object
+%    a - lower limit
+%    b - upper limit
 %
 % Outputs:
-%    Obj - Generated Object
+%    obj - generated interval object
 %
 % Example:
-%    leftLimit = [1;-1];
-%    rightLimit = [2;3];
-%    Int = interval(leftLimit,rightLimit);
-%    plot(zono,[1,2],'r');
+%    a = [1;-1];
+%    b = [2;3];
+%    I = interval(a,b);
+%    plot(I,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,6 +37,7 @@ classdef (InferiorClasses = {?mp}) interval
 %               26-January-2016
 %               15-July-2017 (NK)
 %               01-May-2020 (MW, delete redundant if-else)
+%               20-March-2021 (MW, errConstructor)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -41,32 +49,50 @@ end
 
 methods
     %class constructor
-    function obj = interval(lowerLimit,upperLimit)
+    function obj = interval(varargin)
         
-        %one input
+        % one input argument
         if nargin==1
-            if isa(lowerLimit,'interval')
-                obj = lowerLimit;
-            elseif isnumeric(lowerLimit)
-                obj.inf = lowerLimit;
-                obj.sup = lowerLimit;
-            end
-        
-        %two inputs
-        elseif nargin==2
-            % check sizes
-            if any(any(size(lowerLimit) - size(upperLimit)))
-                error("Limits are of different dimension.");
-            end
-            if all(all(lowerLimit <= upperLimit))
-                obj.inf = lowerLimit;
-                obj.sup = upperLimit;
+            
+            if isa(varargin{1},'interval')
+                % copy constructor
+                obj = varargin{1};
+            elseif isnumeric(varargin{1})
+                obj.inf = varargin{1};
+                obj.sup = varargin{1};
             else
-                error("Lower limit larger than upper limit.");
+                [id,msg] = errConstructor(); error(id,msg);
             end
         
+        % two input arguments
+        elseif nargin==2
+            
+            % check sizes
+            if any(any(size(varargin{1}) - size(varargin{2})))
+                [id,msg] = errConstructor('Limits are of different dimension.');
+                error(id,msg);
+            elseif all(all(varargin{1} <= varargin{2}))
+                obj.inf = varargin{1};
+                obj.sup = varargin{2};
+            else
+                [id,msg] = errConstructor('Lower limit larger than upper limit.');
+                error(id,msg);
+            end
+        
+        elseif nargin > 2
+            
+            % too many input arguments
+            [id,msg] = errConstructor('Too many input arguments.'); error(id,msg);
+            
         end
         
+        % set parent object properties
+        obj.dimension = size(obj.inf,1);
+    end
+    
+    function ind = end(obj,k,n)
+    % overloads the end operator for referencing elements, e.g. I(end,2),
+        ind = size(obj,k);
     end
      
     %methods in seperate files 
@@ -120,7 +146,6 @@ methods
     res = diag(obj) % create diagonal matrix or get diagonal elements of matrix
     [value,isterminal,direction] = eventFcn(obj,x,direction)
     val = get(obj, propName)
-    res = containsPoint(Int,p) % checks if point (array) inside interval
     res = convHull(Int1,Int2) % convex hull of two intervals
     pZ = polyZonotope(obj)
     

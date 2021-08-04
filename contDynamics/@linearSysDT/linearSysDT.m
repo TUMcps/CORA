@@ -49,7 +49,7 @@ classdef linearSysDT < contDynamics
 
 % Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      20-Mar-2020 
-% Last update:  ---
+% Last update:  14-Jun-2021 (MA, invoke observe from superclass)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -144,6 +144,12 @@ methods
         % assign object properties
         obj.A = A; obj.B = B; obj.c = c; obj.C = C; obj.D = D; obj.k = k;
         obj.dt = dt;
+    end
+    
+    % invoke function observe so that the superclass can access private
+    % functions
+    function [R, tcomp] = observe(obj,params,options)
+        [R, tcomp] = observe@contDynamics(obj,params,options);
     end
 end
 end

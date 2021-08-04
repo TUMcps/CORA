@@ -2,8 +2,8 @@ function T = generateNthTensor(f,vars,order,varargin)
 % generateNthTensor - generates the N-th order tensor for function f
 %
 % Syntax:  
-%    T = generateNthTensor(f,vars,order,Tprev)
 %    T = generateNthTensor(f,vars,order)
+%    T = generateNthTensor(f,vars,order,Tprev)
 %
 % Inputs:
 %    f - symbolic function
@@ -12,7 +12,7 @@ function T = generateNthTensor(f,vars,order,varargin)
 %    Tprev - tensor for order-1 (faster computation if specified)
 %
 % Outputs:
-%    T - resulting symnbolic tensor
+%    T - resulting symbolic tensor
 %
 % Example: 
 %
@@ -20,22 +20,33 @@ function T = generateNthTensor(f,vars,order,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: createHigherOrderTensorFiles, evalNthTensor
 
 % Author:       Niklas Kochdumper
 % Written:      08-February-2018
-% Last update:  ---
+% Last update:  02-February-2021 (MW, different handling of varargin)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
     
+if nargin < 3 || nargin > 4
+    error('generateNthTensor: Wrong number of input arguments!'); 
+elseif nargin == 3
+    Tprev = []; % previous tensor not provided
+elseif nargin == 4
+    Tprev = varargin{1};
+    % catch user inputs that are not supported
+    if order == 1
+        error('generateNthTensor: computation from previous tensor not supported for "order = 1"!');
+    end
+end
 
     % initialize tensor 
     T = cell(length(f),1);
 
     % different algorithms depending on whether or not the previous tensor
     % is provided by the user
-    if nargin == 3                  % previous tensor not provided
+    if isempty(Tprev)                  % previous tensor not provided
        
         % different initialization depending on whether the tensor order is
         % odd or even 
@@ -69,14 +80,6 @@ function T = generateNthTensor(f,vars,order,varargin)
         end 
         
     else                            % previous tensor provided
-        
-        % catch user inputs that are not supported
-        if nargin ~= 4
-           error('generateNthTensor: Wrong number of input arguments!'); 
-        end        
-        if order == 1
-           error('generateNthTensor: computation from previous tensor not supported for "order = 1"!');
-        end
         
         % use tensor for order-1 to calculate the current tensor
         Tprev = varargin{1};
@@ -133,6 +136,7 @@ function T = generateNthTensor(f,vars,order,varargin)
             end
         end
     end
+    
 end
 
 

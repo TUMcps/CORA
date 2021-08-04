@@ -3,11 +3,14 @@ function res = in(obj1,obj2,varargin)
 %
 % Syntax:  
 %    res = in(obj1,obj2)
+%    res = in(obj1,obj2,type)
+%    res = in(obj1,obj2,type,tol)
 %
 % Inputs:
 %    obj1 - conZonotope object
 %    obj2 - contSet object or single point
 %    type - type of containment check ('exact' or 'approx')
+%    tol - tolerance for the containment check
 %
 % Outputs:
 %    res - flag specifying if set is enclosed (0 or 1)
@@ -69,6 +72,10 @@ function res = in(obj1,obj2,varargin)
     if nargin >= 3 && strcmp(varargin{1},'approx')
         type = 'approx';
     end
+    if nargin >= 4 && ~isempty(varargin{2})
+        tol = varargin{2}; n = dim(obj1);
+        obj1 = obj1 + zonotope(zeros(n,1),tol*eye(n));
+    end
         
     % point or point cloud in constrained zonotope containment
     if isnumeric(obj2)
@@ -107,7 +114,7 @@ function res = in(obj1,obj2,varargin)
                 poly = mptPolytope(obj1);
                 res = in(poly,obj2); 
             else
-                obj1 = conZonotope(obj1);
+                obj2 = conZonotope(obj2);
                 res = containsSet(obj1,obj2);
             end
         end
@@ -152,7 +159,8 @@ function res = containsPoint(cZ,obj)
     % solve linear program
     f = [zeros(p,1);ones(m,1)];
     
-    options = optimoptions('linprog','display','off');
+    options = optimoptions('linprog','display','off',...
+                           'ConstraintTolerance',1e-9);
     
     [val,~,exitflag] = linprog(f',A,b,Aeq,beq,[],[],options); 
     

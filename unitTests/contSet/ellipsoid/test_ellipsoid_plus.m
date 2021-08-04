@@ -18,36 +18,35 @@ function res = test_ellipsoid_plus
 %
 % See also: -
 
-% Author:       Victor Gaﬂmann
-% Written:      14-October-2019
+% Author:       Victor Gassmann
+% Written:      27-July-2021
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 res = true;
-nPoints = 100;
-nRuns = 2;
-for i=10:5:15
-    for j=1:nRuns
-        E1 = ellipsoid.generateRandom(false,i);
-        E2 = ellipsoid.generateRandom(false,i);
-        E = E1+E2;
-        Y1 = sample(E1,nPoints);
-        Y2 = sample(E2,nPoints);
-        %check if Y1+Y2 \in E
-        for k=1:length(Y1)
-            Y = repmat(Y1(:,k),1,nPoints)+Y2;
-            if ~all(containsPoint(E,Y))
-                res = false;
-                break;
-            end
-        end
+load cases.mat E_c
+for i=1:length(E_c)
+    E1 = E_c{i}.E1; % non-deg
+    Ed1 = E_c{i}.Ed1; % deg
+    E0 = E_c{i}.E0; % all zero
+    N = 2*dim(E1);
+    
+    Y = randPoint(E1,N);
+    Yd = randPoint(Ed1,N);
+    Y0 = randPoint(E0,N);
+    
+    if ~in(E1+Ed1,Y+Yd) || ~in(Ed1+E0,Yd+Y0)
+        res = false;
+        break;
     end
+    
 end
 
+
 if res
-    disp('test_ellipsoid_plus successful');
+    disp([mfilename,' successful']);
 else
-    disp('test_ellipsoid_plus failed');
+    disp([mfilename,' failed']);
 end
 %------------- END OF CODE --------------

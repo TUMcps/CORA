@@ -18,7 +18,7 @@ function res = mergeInvariant(obj, invList)
 %
 % See also: ---
 
-% Author:       Johann Schöpfer, Niklas Kochdumper
+% Author:       Johann Schoepfer, Niklas Kochdumper
 % Written:      08-June-2018  
 % Last update:  09-July-2018 (NK, use "projectHighDim" function)
 % Last revision: ---

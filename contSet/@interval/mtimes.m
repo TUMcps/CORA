@@ -38,10 +38,11 @@ function res = mtimes(factor1,factor2)
 
 %non-interval case
 if isa(factor1,'interval') && ~isa(factor2,'interval')
-    if isa(factor2,'zonotope')
+    if isa(factor2,'zonotope') || isa(factor2,'conZonotope')
        res = intervalMultiplication(factor2,factor1);
        return;
-    elseif isa(factor2,'polyZonotope') || isa(factor2,'zonoBundle')
+    elseif isa(factor2,'polyZonotope') || isa(factor2,'zonoBundle') || ...
+           isa(factor2,'conPolyZono')
        factor1 = intervalMatrix(center(factor1),rad(factor1));
        res = mtimes(factor1,factor2);
        return;
@@ -89,7 +90,7 @@ elseif isscalar(factor1)
         res = factor1.*factor2;
     end
 
-%mixed scalar/matric case: factor 2 is scalar
+%mixed scalar/matrix case: factor 2 is scalar
 elseif isscalar(factor2) 
     
     %obtain possible values

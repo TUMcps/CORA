@@ -33,9 +33,9 @@ E1 = ellipsoid([1 0;0 2],[0; 1]);
 res = ~isempty(E1);
 
 if res
-    disp('test_ellipsoid_isempty successful');
+    disp([mfilename,' successful']);
 else
-    disp('test_ellipsoid_isempty failed');
+    disp([mfilename,' failed']);
 end
 
 %------------- END OF CODE --------------

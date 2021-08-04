@@ -6,8 +6,10 @@ function [statObs,dynObs,x0,goalSet,lanelets, information] = commonroad2cora(fil
 %
 % Inputs:
 %    filename - name of the CommonRoad XML-file scenario (specified as string)
-%    'verbose', true/false - name/input pair specifying whether conversion
+%    'verbose', true/false - name-value pair specifying whether conversion
 %           information should be printed to the terminal. Default is true.
+%    'roadBoundary', true/false - name-value pair specifying whether a road
+%           boundary should be created as a static obstacle. Default is true.
 %
 % Outputs:
 %    statObs - cell-array storing the static obstacles
@@ -24,13 +26,22 @@ function [statObs,dynObs,x0,goalSet,lanelets, information] = commonroad2cora(fil
 %    figure
 %    hold on
 %    for i = 1:length(lanelets)
-%       plot(lanelets{i},[1,2],'FaceColor',[.7 .7 .7],'Filled',true);
+%       plot(lanelets{i}.set, 'FaceColor',[.7 .7 .7]);
 %    end
-%    plot(goalSet{1}.set,[1,2],'r','EdgeColor','none','FaceAlpha',0.5,'Filled',true);
+%
+%    plot(goalSet{1}.set,[1,2],'EdgeColor','none', 'FaceColor', 'r', 'FaceAlpha',0.5);
+%
 %    plot(x0.x,x0.y,'.g','MarkerSize',20);
+%
 %    for i = 1:length(dynObs)
 %       plot(dynObs{i}.set,[1,2],'b','EdgeColor','none','Filled',true);
 %    end
+%
+%    for i = 1:length(statObs)
+%       plot(statObs{i}.set, 'FaceColor', 'y','EdgeColor','none');
+%    end
+%    % Note: Change EdgeColor for static obstacles for better visibility of
+%    % road Boundary
 %
 %    xlim([-32,35]);
 %    ylim([-14,15]);
@@ -44,44 +55,189 @@ function [statObs,dynObs,x0,goalSet,lanelets, information] = commonroad2cora(fil
 
 % Author:       Farah Atour, Niklas Kochdumper, Philipp Gassert
 % Written:      28-April-2020
-% Last update:  07-August-2020
+% Last update:  17-September-2020
 % Last revision: ---
 
 %------------- BEGIN CODE --------------%
 
-tic;
+conTimerStart = tic;
 
 % ----------------------------
 % ----- Reading options ------
 % ----------------------------
 
 defaultVerbose = true;
+defaultRoadBoundary = true;
 
 p = inputParser;
 addParameter(p, 'verbose', defaultVerbose, @(x) islogical(x) || (x == 1) || (x == 0) );
+addParameter(p, 'roadBoundary', defaultRoadBoundary, @(x) islogical(x) || (x == 1) || (x == 0) );
 
 parse(p, varargin{:});
 
 verbose = p.Results.verbose;
-
-% temporary advisory
-
-fprintf('-----------------------------\nConverting...\nPlease report errors to Niklas Kochdumper or Philipp Gassert under ga96man@mytum.de.\n');
+roadBoundary = p.Results.roadBoundary;
 
 % ----------------------------
 % --- Reading the XML file ---
 % ----------------------------
+
+% add '.xml' to the filename if missing
 if ~contains(filename, '.xml')
     filename = strcat(filename,'.xml');
 end
 xDoc = xmlread(filename);
 
-if xDoc.getElementsByTagName('commonRoad').getLength > 1
-    throw(MException('Currently cannot handle more than one scenario!'));
-end
+% assert number of scenarios
+assert(xDoc.getElementsByTagName('commonRoad').getLength == 1, 'Cannot handle more than one scenario!');
 
 % --- Retreive commonRoad version ---
 commonroad_version = xDoc.getElementsByTagName('commonRoad').item(0).getAttribute('commonRoadVersion');
+
+% -----------------------------------------------
+% -- Extract all static and dynamic obstacles ---
+% -----------------------------------------------
+
+timeStep = str2double(xDoc.item(0).getAttribute('timeStepSize'));
+dynamic_counter = 0;        % counts number of dynamic obstacles
+static_counter  = 0;        % counts number of static obstacles
+total_dynamic_counter = 0;  % counts total number of all (time independet) dynObs
+statObs = [];
+dynObs = [];
+boundaryMessage_flag = 1;
+
+w = warning();
+warning('off');
+
+% --- Extracting obstacles for 2020a version ---
+if strcmp(commonroad_version, '2020a')
+    dynamicObstaclesList = xDoc.getElementsByTagName('dynamicObstacle');
+    dynamicObstacles_length = dynamicObstaclesList.getLength;
+    staticObstaclesList = xDoc.getElementsByTagName('staticObstacle');
+    staticObstacles_length = staticObstaclesList.getLength;
+    
+    % extracting dynamic obstacles
+    for i = 0:(dynamicObstacles_length-1)
+        dynamic_counter = dynamic_counter + 1;
+        
+        dynamicBuffer = dynamic_fct(dynamicObstaclesList, i);
+        total_dynamic_counter = total_dynamic_counter + length(dynamicBuffer);
+        
+        for j = 1:length(dynamicBuffer)
+            
+            % get set
+            points = dynamicBuffer(j).polygon;
+            dynObs{end+1,1}.set = polygon(points(:,1),points(:,2));
+            
+            % get time interval;
+            t = dynamicBuffer(j).time*timeStep;
+            if length(t) == 1
+                dynObs{end,1}.time = interval(t);
+            else
+                dynObs{end,1}.time = interval(t(1),t(2));
+            end
+        end
+    end
+    
+    % extracting static obstacles
+    for i = 0:(staticObstacles_length-1)
+        
+        % Inform about existing boundary and possibility to suppress
+        if (staticObstaclesList.item(i).getElementsByTagName('type').getLength > 0) &&...
+                strcmp(getXEl(staticObstaclesList, {'type'}, i), 'roadBoundary') && roadBoundary && boundaryMessage_flag
+            fprintf(strcat('Road Boundary contained in file! Additional Road Boundary is created; ',...
+                'to suppress additional creation, call with name-value pair "roadBoundary", false.\n'));
+        end
+        
+        % initial state
+        ShapeList_initialstate = getXList(staticObstaclesList, {'shape'}, i);
+        stateList_initialstate = getXList(dynamicObstaclesList, {'initialState'}, i);
+        
+        % transforming any shape into a polyshape
+        initialstate_vertices = shape_fct(ShapeList_initialstate, stateList_initialstate);
+        initialstate_polyshape = polyshape(initialstate_vertices); 
+        
+        % split into regions to obtain single-regions obstacles
+        reg = regions(initialstate_polyshape);
+        
+        if length(reg) > 1
+            fprintf('More than one region in static obstacle.\n')
+        end
+        
+        for l = 1:size(reg,1)
+            static_counter = static_counter + 1;
+            vert = reg(l,1).Vertices;
+            statObs{end+1,1} = polygon(vert(:,1),vert(:,2));
+        end
+    end
+    
+% --- Extracting obstacles from 2018b version ---
+elseif strcmp(commonroad_version, '2018b')
+    obstaclesList = xDoc.getElementsByTagName('obstacle');
+    obstacles_length = obstaclesList.getLength;
+    
+    if ~isempty(obstaclesList.item(0))
+        
+        for i = 0:(obstacles_length-1)
+                       
+            % role (static or dynamic)
+            role = char(obstaclesList.item(i).getElementsByTagName('role').item(0).getTextContent);
+            
+            % dynamic obstacles
+            if strcmp(role, 'dynamic')
+                dynamic_counter = dynamic_counter + 1;
+                
+                dynamicBuffer = dynamic_fct(obstaclesList, i);
+                total_dynamic_counter = total_dynamic_counter + length(dynamicBuffer);
+                
+                for j = 1:length(dynamicBuffer)
+                    
+                    % get set
+                    points = dynamicBuffer(j).polygon;
+                    dynObs{end+1,1}.set = polygon(points(:,1),points(:,2));
+                    
+                    % get time interval;
+                    t = dynamicBuffer(j).time*timeStep;
+                    if length(t) == 1
+                        dynObs{end,1}.time = interval(t);
+                    else
+                        dynObs{end,1}.time = interval(t(1),t(2));
+                    end
+                end
+            % static obstacles    
+            else
+                
+                % initial state
+                ShapeList_initialstate = getXList(obstaclesList, {'shape'}, i);
+                stateList_initialstate = getXList(obstaclesList, {'initialState'}, i);
+                initialstate_vertices = shape_fct(ShapeList_initialstate, stateList_initialstate);
+                
+                % Inform about existing boundary and possibility to suppress
+                if (obstaclesList.item(i).getElementsByTagName('type').getLength > 0) &&...
+                        strcmp(getXEl(obstaclesList, {'type'}, i), 'roadBoundary') && roadBoundary && boundaryMessage_flag
+                    fprintf(strcat('Road Boundary contained in file! Additional Road Boundary is created; ',...
+                        'to suppress additional creation, call with name-value pair "roadBoundary", false.\n'));
+                end
+                
+                % split into regions to obtain single-regions obstacles
+                initialstate_polyshape = polyshape(initialstate_vertices);               
+                reg = regions(initialstate_polyshape);
+                
+                if length(reg) > 1
+                    fprintf('More than one region in static obstacle.\n')
+                end
+                
+                for l = 1:length(reg)
+                    static_counter = static_counter + 1;
+                    vert = reg(l,1).Vertices;
+                    statObs{end+1,1} = polygon(vert(:,1),vert(:,2));
+                end
+            end
+        end
+    end
+else
+    fprintf('Unidentified version (not 2018b or 2020a) when extracting obstacle information. No obstacles extracted.');
+end
 
 % -----------------------------------------------
 % -- Extract all lanelets of the road network ---
@@ -90,524 +246,297 @@ commonroad_version = xDoc.getElementsByTagName('commonRoad').item(0).getAttribut
 laneletList = xDoc.getElementsByTagName('lanelet');
 
 % --- Preallocate for better memory and speed ---
-lanelet_length = laneletList.getLength;
-laneletFlag = lanelet_length > 0;
-lanelets = struct('id', cell(lanelet_length,1), ...
+lanelet_length = laneletList.getLength();
+lanelet_flag = lanelet_length > 0;
+laneletsList = struct('id', cell(lanelet_length,1), ...
     'leftBound', cell(lanelet_length,1), ...
     'rightBound', cell(lanelet_length,1));
-pgon = polyshape();
-
+lanelets = cell(lanelet_length,logical(lanelet_length));
+bound_iterator = 0;
 
 for i = 0:(lanelet_length-1)
-    % id
+    
+    % retrieve id and set to -1 for references from goal region specification
     if ~strcmp(laneletList.item(i).getAttribute('id'),'')
-        lanelets(i+1).id = str2double(laneletList.item(i).getAttribute('id'));
+        laneletsList(i+1).id = str2double(laneletList.item(i).getAttribute('id'));
     else
+        laneletsList(i+1).id = -1;
         continue
     end
     
     % left bound
-    boundList = laneletList.item(i).getElementsByTagName('leftBound');
-    leftbound_pointList = boundList.item(0).getElementsByTagName('point');
-    lanelets(i+1).leftBound = zeros(2,leftbound_pointList.getLength());
+    leftbound_pointList = getXList(laneletList, {'leftBound', 'point'}, i);
+    laneletsList(i+1).leftBound = zeros(2,leftbound_pointList.getLength());
+    
     for j = 0:(leftbound_pointList.getLength()-1)
-        lanelets(i+1).leftBound(1,j+1) = str2double(leftbound_pointList.item(j).getElementsByTagName('x').item(0).getTextContent);
-        lanelets(i+1).leftBound(2,j+1) = str2double(leftbound_pointList.item(j).getElementsByTagName('y').item(0).getTextContent);
+        laneletsList(i+1).leftBound(1,j+1) = getXEl(leftbound_pointList, {'x'}, j);
+        laneletsList(i+1).leftBound(2,j+1) = getXEl(leftbound_pointList, {'y'}, j);
     end
     
     % right bound
-    boundList = laneletList.item(i).getElementsByTagName('rightBound');
-    rightbound_pointList = boundList.item(0).getElementsByTagName('point');
-    lanelets(i+1).rightBound = zeros(2,rightbound_pointList.getLength());
+    rightbound_pointList = getXList(laneletList, {'rightBound', 'point'}, i);
+    laneletsList(i+1).rightBound = zeros(2,rightbound_pointList.getLength());
+    
     for j = 0:(rightbound_pointList.getLength()-1)
-        lanelets(i+1).rightBound(1,j+1) = str2double(rightbound_pointList.item(j).getElementsByTagName('x').item(0).getTextContent);
-        lanelets(i+1).rightBound(2,j+1) = str2double(rightbound_pointList.item(j).getElementsByTagName('y').item(0).getTextContent);
+        laneletsList(i+1).rightBound(1,j+1) = getXEl(rightbound_pointList, {'x'}, j);
+        laneletsList(i+1).rightBound(2,j+1) = getXEl(rightbound_pointList, {'y'}, j);
     end
     
-    % vertices of the left bound lanelet
-    x_left = lanelets(i+1).leftBound(1,:);
-    y_left = lanelets(i+1).leftBound(2,:);
+    % vertices of the left bound lanelet (eases handling below)
+    x_left = laneletsList(i+1).leftBound(1,:);
+    y_left = laneletsList(i+1).leftBound(2,:);
     
-    % vertices of the right bound lanelet
-    x_right = flip(lanelets(i+1).rightBound(1,:));
-    y_right = flip(lanelets(i+1).rightBound(2,:));
+    % vertices of the right bound lanelet (eases handling below)
+    x_right = laneletsList(i+1).rightBound(1,:);
+    y_right = laneletsList(i+1).rightBound(2,:);
     
-    % creating a polygon of the lanelet
-    pgon(i+1) = polyshape([x_left,x_right],[y_left,y_right],'Simplify',false);
-    lanelet_poly(i+1).polygon = pgon(i+1).Vertices;
+    % insertion into output cell array
+    lanelets{i+1} = polygon([x_left, flip(x_right)], [y_left, flip(y_right)]);
+    if lanelets{i+1}.set.NumRegions > 1
+        fprintf(strcat('Warning: Lanelet consists of %d regions!',...
+            ' Assuming imprecision contained in pointlist input file.',...
+            ' Continuing without alteration.\n'), lanelets{i+1}.set.NumRegions);
+    end
     
-    % adding polygons to get one polygon of the network road
+    % scenarion boundaries for later use in roadBoundary
     if i == 0
-        poly = pgon(i+1);
+        lim_x = [min([x_left, x_right]), max([x_left, x_right])];
+        lim_y = [min([y_left, y_right]), max([y_left, y_right])];
     else
-        poly = union(poly,pgon(i+1));
+        lim_x = [min([lim_x(1), x_left, x_right]), max([lim_x(2), x_left, x_right])];
+        lim_y = [min([lim_y(1), y_left, y_right]), max([lim_y(2), y_left, y_right])];
+    end
+    
+    % -----------------------------------------------
+    % --- Prepare drivable space for roadBoundary ---
+    % -----------------------------------------------
+    
+    if roadBoundary
+        
+        % retrieve all left neighbours of lane i
+        if laneletList.item(i).getElementsByTagName('adjacentLeft').getLength == 1
+            ref_id = str2double(laneletList.item(i).getElementsByTagName('adjacentLeft').item(0).getAttribute('ref'));
+            direction = laneletList.item(i).getElementsByTagName('adjacentLeft').item(0).getAttribute('drivingDir');
+            
+            % find referred lane
+            for j = 1:i
+                if (laneletsList(j).id == ref_id) && strcmp(direction, 'same')
+                    bound = laneletsList(j).rightBound;
+                elseif (laneletsList(j).id == ref_id) && strcmp(direction, 'opposite')
+                    bound = laneletsList(j).leftBound;
+                else
+                    continue
+                end
+                
+                bound_iterator = bound_iterator + 1;
+                roadBoundaryResiduals(bound_iterator).x = [x_left, bound(1,:)];
+                roadBoundaryResiduals(bound_iterator).y = [y_left, bound(2,:)];
+                break;
+            end
+        elseif laneletList.item(i).getElementsByTagName('adjacentLeft').getLength > 1
+            error('Error: More than one adjacentLeft lanelet. Violates assumptions; Road Boundary functionality fails.')
+        end
+        
+        % retrieve all right neighbours of lane i
+        if laneletList.item(i).getElementsByTagName('adjacentRight').getLength == 1
+            ref_id = str2double(laneletList.item(i).getElementsByTagName('adjacentRight').item(0).getAttribute('ref'));
+            direction = laneletList.item(i).getElementsByTagName('adjacentRight').item(0).getAttribute('drivingDir');
+            
+            % find referred lane
+            for j = 1:i 
+                if (laneletsList(j).id == ref_id) && strcmp(direction, 'same')
+                    bound = laneletsList(j).leftBound;
+                elseif  (laneletsList(j).id == ref_id) && strcmp(direction, 'opposite')
+                    bound = laneletsList(j).rightBound;
+                else
+                    continue
+                end
+                
+                bound_iterator = bound_iterator + 1;
+                roadBoundaryResiduals(bound_iterator).x = [x_right, bound(1,:)];
+                roadBoundaryResiduals(bound_iterator).y = [y_right, bound(2,:)];
+                break;
+            end
+        elseif laneletList.item(i).getElementsByTagName('adjacentRight').getLength > 1
+            error('Error: More than one adjacentRight lanelet. Violates assumptions; Road Boundary functionality fails.')
+        end
+        
+        overshoot_len = 4; % additional free space before and behind road ends (in m)
+        
+        % retrieve all predecessors of lane i or clear space in front by overshoo_len
+        num_pred = laneletList.item(i).getElementsByTagName('predecessor').getLength;
+        if ~num_pred
+            
+            % clear space in front
+            bound_iterator = bound_iterator + 1;
+            points = [x_left(1), y_left(1); x_right(1), y_right(1)];
+            % right angle vector:
+            overshoot_vec = ((points(2,:) - points(1,:)) / pdist(points)) * overshoot_len;
+            roadBoundaryResiduals(bound_iterator).x = [x_left(1); x_right(1);...
+                x_right(1) + overshoot_vec(2); x_left(1) + overshoot_vec(2)];
+            roadBoundaryResiduals(bound_iterator).y = [y_left(1); y_right(1);...
+                y_right(1) - overshoot_vec(1); y_left(1) - overshoot_vec(1)];
+        else
+            
+            % find referred lane
+            for j = 0:(num_pred-1)
+                ref_id = str2double(laneletList.item(i).getElementsByTagName('predecessor').item(j).getAttribute('ref'));
+                
+                for k = 1:i
+                    if laneletsList(k).id == ref_id
+                        bound_iterator = bound_iterator + 1;
+                        roadBoundaryResiduals(bound_iterator).x = [x_left(1); x_right(1);...
+                            laneletsList(k).rightBound(1,end); laneletsList(k).leftBound(1,end)];
+                        roadBoundaryResiduals(bound_iterator).y = [y_left(1); y_right(1);...
+                            laneletsList(k).rightBound(2,end); laneletsList(k).leftBound(2,end)];
+                        break;
+                    end
+                end
+            end
+        end
+        
+        % retrieve all successors of lane i or clear space behind by overshoo_len
+        num_suc = laneletList.item(i).getElementsByTagName('successor').getLength;
+        if ~num_suc
+            
+            % clear space behind
+            bound_iterator = bound_iterator + 1;
+            points = [x_left(end), y_left(end);x_right(end), y_right(end)];
+            % right angle vector:
+            overshoot_vec = ((points(2,:) - points(1,:)) / pdist(points)) * overshoot_len;
+            roadBoundaryResiduals(bound_iterator).x = [x_left(end); x_right(end);...
+                x_right(end) - overshoot_vec(2); x_left(end) - overshoot_vec(2)];
+            roadBoundaryResiduals(bound_iterator).y = [y_left(end); y_right(end);...
+                y_right(end) + overshoot_vec(1); y_left(end) + overshoot_vec(1)];
+        else
+            
+            % find referred lanes
+            for j = 0:(num_suc-1)
+                ref_id = str2double(laneletList.item(i).getElementsByTagName('successor').item(j).getAttribute('ref'));
+                
+                for k = 1:i
+                    if laneletsList(k).id == ref_id
+                        bound_iterator = bound_iterator + 1;
+                        roadBoundaryResiduals(bound_iterator).x = [x_left(end); x_right(end);...
+                            laneletsList(k).rightBound(1,1); laneletsList(k).leftBound(1,1)];
+                        roadBoundaryResiduals(bound_iterator).y = [y_left(end); y_right(end);...
+                            laneletsList(k).rightBound(2,1); laneletsList(k).leftBound(2,1)];
+                        break;
+                    end
+                end
+            end
+        end
     end
 end
 
-% -----------------------------------------------
-% -- Extract all static and dynamic obstacles ---
-% -----------------------------------------------
-
-timeStep = str2double(xDoc.item(0).getAttribute('timeStepSize'));
-dynamic_counter = 0;
-static_counter  = 0;
-dynamicList =  struct();
-staticList =  struct();
-trajectory_count = 0;
-occupancy_count = 0;
-
-% --- Extracting obstacles for 2020a version; dynamicObstacles/staticObstacles separate ---
-if strcmp(commonroad_version, '2020a')
-    dynamicObstaclesList = xDoc.getElementsByTagName('dynamicObstacle');
-    dynamicObstacles_length = dynamicObstaclesList.getLength;
-    staticObstaclesList = xDoc.getElementsByTagName('staticObstacle');
-    staticObstacles_length = staticObstaclesList.getLength;
-    
-    % extracting dynamic obstacles
-    if ~isempty(dynamicObstaclesList.item(0))
-        dynamicObstacles(dynamicObstacles_length).id = [];
-        for i = 0:(dynamicObstacles_length-1)
-            % id
-            dynamicObstacles(i+1).id = str2double(dynamicObstaclesList.item(i).getAttribute('id'));
-            
-            % initial state
-            InitialStateList = dynamicObstaclesList.item(i).getElementsByTagName('initialState');
-            ShapeList_initialstate = dynamicObstaclesList.item(i).getElementsByTagName('shape');
-            positionList = InitialStateList.item(0).getElementsByTagName('position');
-            orient = str2double(InitialStateList.item(0).getElementsByTagName('orientation').item(0).getTextContent);
-            pointList_initialstate = positionList.item(0).getElementsByTagName('point');
-            points_initialstate = points_fct(pointList_initialstate);
-            x_initialstate = points_initialstate.x;
-            y_initialstate = points_initialstate.y;
-            % transforming any shape into a polygon
-            polygon_initialstate = shape_fct(ShapeList_initialstate,x_initialstate,y_initialstate);
-            temp = polyshape(polygon_initialstate,'Simplify',false);
-            temp = rotate(temp,rad2deg(orient),[x_initialstate,y_initialstate]);
-            initialstate_vertices = temp.Vertices;
-            
-            dynamic_counter = dynamic_counter + 1;
-            % occupancySet
-            occupancySetList = dynamicObstaclesList.item(i).getElementsByTagName('occupancySet');
-            if ~isempty(occupancySetList.item(0))
-                occupancy_count = occupancy_count + 1;
-                occupancyList = occupancySetList.item(0).getElementsByTagName('occupancy');
-                % inserting the rest
-                x = x_initialstate;
-                y = y_initialstate;
-                dynamicObstacles(i+1).dynamic = occupancy_fct(occupancyList,x,y);
-                dynamicList(dynamic_counter).dynamic = occupancy_fct(occupancyList,x,y);
-                % inserting the initial state
-                dynamicObstacles(i+1).dynamic(1).polygon = initialstate_vertices;
-                dynamicList(dynamic_counter).dynamic(1).polygon = initialstate_vertices;
-                dynamicObstacles(i+1).dynamic(1).time = 0;
-                dynamicList(dynamic_counter).dynamic(1).time = 0;
-            end
-            
-            % trajectory
-            trajectoryList = dynamicObstaclesList.item(i).getElementsByTagName('trajectory');
-            if ~isempty(trajectoryList.item(0))
-                trajectory_count = trajectory_count + 1;
-                trajectorystateList = trajectoryList.item(0).getElementsByTagName('state');
-                % inserting the rest
-                dynamicObstacles(i+1).dynamic = trajectory_fct(trajectorystateList,ShapeList_initialstate);
-                dynamicList(dynamic_counter).dynamic = trajectory_fct(trajectorystateList,ShapeList_initialstate);
-                % inserting the initial state
-                dynamicObstacles(i+1).dynamic(1).polygon = initialstate_vertices;
-                dynamicList(dynamic_counter).dynamic(1).polygon = initialstate_vertices;
-                dynamicObstacles(i+1).dynamic(1).time = 0;
-                dynamicList(dynamic_counter).dynamic(1).time = 0;
-            end
-        end
+% delete non-lanelet-constituting lanelets (i.e. lanelet references in goal
+% regions that were picked up by getElementsByTagName)
+for i = lanelet_length:-1:1
+    if laneletsList(i).id == -1
+        laneletsList(i) = [];
+        lanelets(i) = [];
     end
-    
-    % extracting static obstacles
-    if ~isempty(staticObstaclesList.item(0))
-        staticObstacles(staticObstacles_length).id = [];
-        for i = 0:(staticObstacles_length-1)
-            % id
-            staticObstacles(i+1).id = str2double(staticObstaclesList.item(i).getAttribute('id'));
-            
-            % initial state
-            InitialStateList = staticObstaclesList.item(i).getElementsByTagName('initialState');
-            ShapeList_initialstate = staticObstaclesList.item(i).getElementsByTagName('shape');
-            positionList = InitialStateList.item(0).getElementsByTagName('position');
-            orient = str2double(InitialStateList.item(0).getElementsByTagName('orientation').item(0).getTextContent);
-            pointList_initialstate = positionList.item(0).getElementsByTagName('point');
-            points_initialstate = points_fct(pointList_initialstate);
-            x_initialstate = points_initialstate.x;
-            y_initialstate = points_initialstate.y;
-            % transforming any shape into a polygon
-            polygon_initialstate = shape_fct(ShapeList_initialstate,x_initialstate,y_initialstate);
-            temp = polyshape(polygon_initialstate,'Simplify',false);
-            temp = rotate(temp,rad2deg(orient),[x_initialstate,y_initialstate]);
-            
-            static_counter = static_counter + 1;
-            
-            % obstacle is a polygon
-            polygonList = ShapeList_initialstate.item(0).getElementsByTagName('polygon');
-            
-            for l = 0:(polygonList.getLength()-1)
-                polygon_pointList = polygonList.item(l).getElementsByTagName('point');
-                x = zeros(1,polygon_pointList.getLength());
-                y = zeros(1,polygon_pointList.getLength());
-                for k = 0:(polygon_pointList.getLength()-1)
-                    x(k+1) = str2double(polygon_pointList.item(k).getElementsByTagName('x').item(0).getTextContent);
-                    y(k+1) = str2double(polygon_pointList.item(k).getElementsByTagName('y').item(0).getTextContent);
-                end
-                temp = polyshape(x,y,'Simplify',false);
-                if l == 0
-                    shape_polygon = temp;
-                else
-                    shape_polygon = union(shape_polygon,temp);
-                end
-            end
-            
-            % obstacle is a rectangle
-            rectangleList = ShapeList_initialstate.item(0).getElementsByTagName('rectangle');
-            
-            rectangle = polyshape();
-            for l = 0:(rectangleList.getLength()-1)
-                xCenter = str2double(rectangleList.item(l).getElementsByTagName('center').item(0).getElementsByTagName('x').item(0).getTextContent);
-                xCenter = xCenter + str2double(InitialStateList.item(l).getElementsByTagName('position').item(0).getElementsByTagName('point').item(0).getElementsByTagName('x').item(0).getTextContent);
-                yCenter = str2double(rectangleList.item(l).getElementsByTagName('center').item(0).getElementsByTagName('y').item(0).getTextContent);
-                yCenter = yCenter + str2double(InitialStateList.item(l).getElementsByTagName('position').item(0).getElementsByTagName('point').item(0).getElementsByTagName('y').item(0).getTextContent);
-                width = str2double(rectangleList.item(l).getElementsByTagName('length').item(0).getTextContent);
-                height = str2double(rectangleList.item(l).getElementsByTagName('width').item(0).getTextContent);
-                orient = str2double(rectangleList.item(l).getElementsByTagName('orientation').item(0).getTextContent);
-                orient = orient + str2double(InitialStateList.item(l).getElementsByTagName('orientation').item(0).getElementsByTagName('exact').item(0).getTextContent);
-                
-                w = width/2;
-                h = height/2;
-                xLeftBottom = xCenter - cos(orient) * w + sin(orient) * h;
-                yLeftBottom = yCenter - cos(orient) * h - sin(orient) * w;
-                xRightBottom = xCenter + cos(orient) * w + sin(orient) * h;
-                yRightBottom = yCenter - cos(orient) * h + sin(orient) * w;
-                xLeftTop = xCenter - cos(orient) * w - sin(orient) * h;
-                yLeftTop = yCenter + cos(orient) * h - sin(orient) * w;
-                xRightTop = xCenter + cos(orient) * w - sin(orient) * h;
-                yRightTop = yCenter + cos(orient) * h + sin(orient) * w;
-                % convert rectangle to corner points list
-                points = [xLeftBottom xLeftTop xRightTop xRightBottom; ...
-                    yLeftBottom yLeftTop yRightTop yRightBottom]';
-                % converting the rectangle into a polygon
-                rectangle(l+1) = polyshape(points,'Simplify',false);
-                % sum all the rectangles(polygons)
-                if l == 0
-                    shape_polygon = rectangle(l+1);
-                else
-                    shape_polygon = union(shape_polygon,rectangle(l+1));
-                end
-            end
-            
-            % obstacle is a circle
-            circleList = ShapeList_initialstate.item(0).getElementsByTagName('circle');
-            
-            % "unit test" for dfinition of shape
-            if (polygonList.getLength > 0) && (circleList.getLength > 0)
-                disp('Error Warning: Obstacle is both circle and polygon! Cannot handle: Will only handle circle.')
-            end
-            
-            circle = polyshape();
-            for l = 0:(circleList.getLength()-1)
-                xCenter = str2double(circleList.item(0).getElementsByTagName('center').item(0).getElementsByTagName('x').item(0).getTextContent);
-                yCenter = str2double(circleList.item(0).getElementsByTagName('center').item(0).getElementsByTagName('y').item(0).getTextContent);
-                radius = str2double(circleList.item(l).getElementsByTagName('radius').item(0).getTextContent);
-                % convering circle into a polygon
-                n = 50; %number of points
-                theta = (0:n-1)*(2*pi/n);
-                x = xCenter + radius*cos(theta);
-                y = yCenter + radius*sin(theta);
-                circle(l+1) = polyshape(x,y,'Simplify',false);
-                % sum all the circles(polygons)
-                if l == 0
-                    shape_polygon = circle(l+1);
-                else
-                    shape_polygon = union(shape_polygon,circle(l+1));
-                end
-            end
-            
-            reg = regions(shape_polygon);
-            
-            for l = 1:size(reg,1)
-                vert = reg(l,1).Vertices;
-                staticObstacles(i+1).static(l).polygon = vert;
-                staticList(static_counter).static(l).polygon = vert;
-                staticObstacles(i+1).static(l).time = 0;
-                staticList(static_counter).static(l).time = 0;
-            end
-        end
-    end
-    
-    % --- Extracting obstacles from 2018b version ---
-elseif strcmp(commonroad_version, '2018b')
-    obstaclesList = xDoc.getElementsByTagName('obstacle');
-    obstacles_length = obstaclesList.getLength;
-    if ~isempty(obstaclesList.item(0))
-        obstacles(obstacles_length).id = [];
-        for i = 0:(obstacles_length-1)
-            % id
-            obstacles(i+1).id = str2double(obstaclesList.item(i).getAttribute('id'));
-            
-            % role
-            roleList = obstaclesList.item(i).getElementsByTagName('role');
-            role = char(roleList.item(0).getTextContent);
-            
-            % initial state
-            InitialStateList = obstaclesList.item(i).getElementsByTagName('initialState');
-            ShapeList_initialstate = obstaclesList.item(i).getElementsByTagName('shape');
-            positionList = InitialStateList.item(0).getElementsByTagName('position');
-            orient = str2double(InitialStateList.item(0).getElementsByTagName('orientation').item(0).getTextContent);
-            pointList_initialstate = positionList.item(0).getElementsByTagName('point');
-            points_initialstate = points_fct(pointList_initialstate);
-            x_initialstate = points_initialstate.x;
-            y_initialstate = points_initialstate.y;
-            % transforming any shape into a polygon
-            polygon_initialstate = shape_fct(ShapeList_initialstate,x_initialstate,y_initialstate);
-            temp = polyshape(polygon_initialstate,'Simplify',false);
-            temp = rotate(temp,rad2deg(orient),[x_initialstate,y_initialstate]);
-            initialstate_vertices = temp.Vertices;
-            
-            if ~strcmp(role, 'static')
-                dynamic_counter = dynamic_counter + 1;
-                % occupancySet
-                occupancySetList = obstaclesList.item(i).getElementsByTagName('occupancySet');
-                if ~isempty(occupancySetList.item(0))
-                    occupancy_count = occupancy_count + 1;
-                    occupancyList = occupancySetList.item(0).getElementsByTagName('occupancy');
-                    % inserting the rest
-                    x = x_initialstate;
-                    y = y_initialstate;
-                    obstacles(i+1).dynamic = occupancy_fct(occupancyList,x,y);
-                    dynamicList(dynamic_counter).dynamic = occupancy_fct(occupancyList,x,y);
-                    % inserting the initial state
-                    obstacles(i+1).dynamic(1).polygon = initialstate_vertices;
-                    dynamicList(dynamic_counter).dynamic(1).polygon = initialstate_vertices;
-                    obstacles(i+1).dynamic(1).time = 0;
-                    dynamicList(dynamic_counter).dynamic(1).time = 0;
-                end
-                
-                % trajectory
-                trajectoryList = obstaclesList.item(i).getElementsByTagName('trajectory');
-                if ~isempty(trajectoryList.item(0))
-                    trajectory_count = trajectory_count + 1;                    
-                    trajectorystateList = trajectoryList.item(0).getElementsByTagName('state');
-                    % inserting the rest
-                    obstacles(i+1).dynamic = trajectory_fct(trajectorystateList,ShapeList_initialstate);
-                    dynamicList(dynamic_counter).dynamic = trajectory_fct(trajectorystateList,ShapeList_initialstate);
-                    % inserting the initial state
-                    obstacles(i+1).dynamic(1).polygon = initialstate_vertices;
-                    dynamicList(dynamic_counter).dynamic(1).polygon = initialstate_vertices;
-                    obstacles(i+1).dynamic(1).time = 0;
-                    dynamicList(dynamic_counter).dynamic(1).time = 0;
-                end
-                
-            else
-                
-                % static obstacle
-                static_counter = static_counter + 1;
-                
-                % obstacle is a polygon
-                polygonList = ShapeList_initialstate.item(0).getElementsByTagName('polygon');
-                
-                for l = 0:(polygonList.getLength()-1)
-                    polygon_pointList = polygonList.item(l).getElementsByTagName('point');
-                    x = zeros(1,polygon_pointList.getLength());
-                    y = zeros(1,polygon_pointList.getLength());
-                    for k = 0:(polygon_pointList.getLength()-1)
-                        x(k+1) = str2double(polygon_pointList.item(k).getElementsByTagName('x').item(0).getTextContent);
-                        y(k+1) = str2double(polygon_pointList.item(k).getElementsByTagName('y').item(0).getTextContent);
-                    end
-                    temp = polyshape(x,y,'Simplify',false);
-                    if l == 0
-                        shape_polygon = temp;
-                    else
-                        shape_polygon = union(shape_polygon,temp);
-                    end
-                end
-                
-                % obstacle is a rectangle
-                rectangleList = ShapeList_initialstate.item(0).getElementsByTagName('rectangle');
-                
-                rectangle = polyshape();
-                for l = 0:(rectangleList.getLength()-1)
-                    xCenter = str2double(rectangleList.item(l).getElementsByTagName('center').item(0).getElementsByTagName('x').item(0).getTextContent);
-                    xCenter = xCenter + str2double(InitialStateList.item(l).getElementsByTagName('position').item(0).getElementsByTagName('point').item(0).getElementsByTagName('x').item(0).getTextContent);
-                    yCenter = str2double(rectangleList.item(l).getElementsByTagName('center').item(0).getElementsByTagName('y').item(0).getTextContent);
-                    yCenter = yCenter + str2double(InitialStateList.item(l).getElementsByTagName('position').item(0).getElementsByTagName('point').item(0).getElementsByTagName('y').item(0).getTextContent);
-                    width = str2double(rectangleList.item(l).getElementsByTagName('length').item(0).getTextContent);
-                    height = str2double(rectangleList.item(l).getElementsByTagName('width').item(0).getTextContent);
-                    orient = str2double(rectangleList.item(l).getElementsByTagName('orientation').item(0).getTextContent);
-                    orient = orient + str2double(InitialStateList.item(l).getElementsByTagName('orientation').item(0).getElementsByTagName('exact').item(0).getTextContent);
-
-                    w = width/2;
-                    h = height/2;
-                    xLeftBottom = xCenter - cos(orient) * w + sin(orient) * h;
-                    yLeftBottom = yCenter - cos(orient) * h - sin(orient) * w;
-                    xRightBottom = xCenter + cos(orient) * w + sin(orient) * h;
-                    yRightBottom = yCenter - cos(orient) * h + sin(orient) * w;
-                    xLeftTop = xCenter - cos(orient) * w - sin(orient) * h;
-                    yLeftTop = yCenter + cos(orient) * h - sin(orient) * w;
-                    xRightTop = xCenter + cos(orient) * w - sin(orient) * h;
-                    yRightTop = yCenter + cos(orient) * h + sin(orient) * w;
-                    % convert rectangle to corner points list
-                    points = [xLeftBottom xLeftTop xRightTop xRightBottom; ...
-                        yLeftBottom yLeftTop yRightTop yRightBottom]';
-                    % converting the rectangle into a polygon
-                    rectangle(l+1) = polyshape(points,'Simplify',false);
-                    % sum all the rectangles(polygons)
-                    if l == 0
-                        shape_polygon = rectangle(l+1);
-                    else
-                        shape_polygon = union(shape_polygon,rectangle(l+1));
-                    end
-                end
-                
-                % obstacle is a circle
-                circleList = ShapeList_initialstate.item(0).getElementsByTagName('circle');
-                
-                circle = polyshape();
-                for l = 0:(circleList.getLength()-1)
-                    xCenter = str2double(circleList.item(0).getElementsByTagName('center').item(0).getElementsByTagName('x').item(0).getTextContent);
-                    yCenter = str2double(circleList.item(0).getElementsByTagName('center').item(0).getElementsByTagName('y').item(0).getTextContent);
-                    radius = str2double(circleList.item(l).getElementsByTagName('radius').item(0).getTextContent);
-                    % convering circle into a polygon
-                    n = 50; %number of points
-                    theta = (0:n-1)*(2*pi/n);
-                    x = xCenter + radius*cos(theta);
-                    y = yCenter + radius*sin(theta);
-                    circle(l+1) = polyshape(x,y,'Simplify',false);
-                    % sum all the circles(polygons)
-                    if l == 0
-                        shape_polygon = circle(l+1);
-                    else
-                        shape_polygon = union(shape_polygon,circle(l+1));
-                    end
-                end
-                
-                reg = regions(shape_polygon);
-                
-                for l = 1:size(reg,1)
-                    vert = reg(l,1).Vertices;
-                    obstacles(i+1).static(l).polygon = vert;
-                    staticList(static_counter).static(l).polygon = vert;
-                    obstacles(i+1).static(l).time = 0;
-                    staticList(static_counter).static(l).time = 0;
-                end
-            end
-        end
-    end
-    
-else
-    disp('Unidentified version (not 2018b or 2020a) when extracting obstacle information. No obstacles extracted.');
 end
 
 % -----------------------------------------------
 % -- Extract all Ego Vehicles -------------------
 % -----------------------------------------------
 
+num_goalRegions = 0;
+num_planningProblems = 0;
+
 egoVehiclesList = xDoc.getElementsByTagName('planningProblem');
 if ~isempty(egoVehiclesList.item(0))
-    egoVehicles(egoVehiclesList.getLength()).initial = [];
-    for i = 0:(egoVehiclesList.getLength()-1)
+    num_planningProblems = egoVehiclesList.getLength();
+    x0(num_planningProblems).x = [];
+    goalSet = cell(1,num_planningProblems);
+    
+    for i = 0:(num_planningProblems-1)
+        num_goalRegions(i+1) = 0;
         
         % initial state
         InitialStateList = egoVehiclesList.item(i).getElementsByTagName('initialState');
-        positionList = InitialStateList.item(0).getElementsByTagName('position');
-        pointList_initialstate = positionList.item(0).getElementsByTagName('point');
-        points_initialstate = points_fct(pointList_initialstate);
-        egoVehicles(i+1).initial.x = points_initialstate.x;
-        egoVehicles(i+1).initial.y = points_initialstate.y;
+        x0(i+1).x = getXEl(egoVehiclesList, {'initialState', 'position', 'point', 'x'}, i);
+        x0(i+1).y = getXEl(egoVehiclesList, {'initialState', 'position', 'point', 'y'}, i);
         
-        timeList_initial = InitialStateList.item(0).getElementsByTagName('time');
-        if ~isempty(timeList_initial.item(0).getElementsByTagName('exact').item(0))
-            egoVehicles(i+1).initial.time = str2double(timeList_initial.item(0).getElementsByTagName('exact').item(0).getTextContent);
-        elseif ~isempty(timeList_initial.item(0).getElementsByTagName('intervalStart').item(0))
-            egoVehicles(i+1).initial.time(1) = str2double(timeList_initial.item(0).getElementsByTagName('intervalStart').item(0).getTextContent);
-            egoVehicles(i+1).initial.time(2) = str2double(timeList_initial.item(0).getElementsByTagName('intervalEnd').item(0).getTextContent);
-        end
-        
-        velocity_initial = InitialStateList.item(0).getElementsByTagName('velocity');
-        egoVehicles.initial.velocity = str2double(velocity_initial.item(0).getElementsByTagName('exact').item(0).getTextContent);
-        
-        orientation_initial = InitialStateList.item(0).getElementsByTagName('orientation');
-        egoVehicles.initial.orientation = str2double(orientation_initial.item(0).getElementsByTagName('exact').item(0).getTextContent);
+        % retrieval of x0-struct information
+        timeList_initial = getXList(InitialStateList, {'time'});
+        x0(i+1).time = interval_or_exact(timeList_initial);
+        x0(i+1).velocity = getXEl(InitialStateList, {'velocity', 'exact'});
+        x0(i+1).orientation = getXEl(InitialStateList, {'orientation', 'exact'});
         
         % goal region
-        goalStateList = egoVehiclesList.item(i).getElementsByTagName('goalState');
-        
-        % position
-        positionList = goalStateList.item(0).getElementsByTagName('position');
-        if ~isempty(positionList.item(0))
-            % point
-            pointList_goal = positionList.item(0).getElementsByTagName('point');
-            if ~isempty(pointList_goal.item(0))
-                points_goal = points_fct(pointList_goal);
-                egoVehicles(i+1).goalRegion.x = points_goal.x;
-                egoVehicles(i+1).goalRegion.y = points_goal.y;
+        goalStateList = getXList(egoVehiclesList, {'goalState'}, i);
+        for k = 0:(goalStateList.getLength()-1)
+            num_goalRegions(i+1) = num_goalRegions(i+1) + 1;
+            
+            % get position/goal space
+            positionList = getXList(goalStateList, {'position'}, k);
+            assert(positionList.getLength() < 2, 'Violation of standard: More than one position for goalState.\n')
+            if ~isempty(positionList.item(0))
+                
+                % lanelets
+                laneletList = positionList.item(0).getElementsByTagName('lanelet');
+                lanelet_length = laneletList.getLength;
+                polyshapeBuffer = polyshape();
+                for m = 0:(lanelet_length-1)
+                    ref = str2double(laneletList.item(m).getAttribute('ref'));
+                    idx = [laneletsList.id] == ref;
+                    polyshapeBuffer = union(polyshapeBuffer,...
+                        polyshape([laneletsList(idx).leftBound, flip(laneletsList(idx).rightBound, 2)]'));
+                end
+                
+                % region by lanelets if found above
+                if lanelet_length
+                    goalSet{num_goalRegions(i+1),i+1}.set =...
+                        polygon(polyshapeBuffer.Vertices(:,1), polyshapeBuffer.Vertices(:,2));
+                
+                % region by shape
+                else
+                    verticesBuffer = shape_fct(positionList);
+                    goalSet{num_goalRegions(i+1),i+1}.set =...
+                        polygon(verticesBuffer(:,1), verticesBuffer(:,2));
+                end
+            else
+                % insert empty set if no goal set found
+                goalSet{num_goalRegions(i+1),i+1}.set = [];
             end
-            % rectangle
-            rectangleList_goal = positionList.item(0).getElementsByTagName('rectangle');
-            if ~isempty(rectangleList_goal.item(0))
-                wid = str2double(rectangleList_goal.item(0).getElementsByTagName('length').item(0).getTextContent);
-                len = str2double(rectangleList_goal.item(0).getElementsByTagName('width').item(0).getTextContent);
-                orient = str2double(rectangleList_goal.item(0).getElementsByTagName('orientation').item(0).getTextContent);
-                centerpoints =rectangleList_goal.item(0).getElementsByTagName('center');
-                x = str2double(centerpoints.item(0).getElementsByTagName('x').item(0).getTextContent);
-                y = str2double(centerpoints.item(0).getElementsByTagName('y').item(0).getTextContent);
-                x_left = x - wid / 2;
-                y_bottom = y - len / 2;
-                % convert rectangle to corner points list
-                points_rec = [x_left x_left x_left + wid x_left + wid; ...
-                    y_bottom y_bottom + len y_bottom + len y_bottom]';
-                % converting the rectangle into a polygon
-                temp = polyshape(points_rec,'Simplify',false);
-                temp = rotate(temp,rad2deg(orient),[x,y]);
-                egoVehicles(i+1).goalRegion.polygon.Poly = temp.Vertices;
+            
+            % time
+            timeList_goal = getXList(goalStateList, {'time'}, k);
+            goalSet{i+1}.time = interval_or_exact(timeList_goal)*timeStep;
+            
+            % velocity
+            velList_goal = getXList(goalStateList, {'velocity'}, k);
+            if ~isempty(velList_goal.item(0))
+                goalSet{i+1}.velocity = interval_or_exact(velList_goal);
+            else
+                goalSet{i+1}.velocity = [];
             end
-            % lanelet
-            laneletList = positionList.item(0).getElementsByTagName('lanelet');
-            lanelet_length = laneletList.getLength;
-            for m = 0:(lanelet_length-1)
-                ref = str2double(laneletList.item(m).getAttribute('ref'));
-                list = [lanelets.id];
-                idx = list == ref;
-                egoVehicles(i+1).goalRegion.polygon(m+1).Poly=  pgon(idx).Vertices;
-            end
-        end
-        
-        % time
-        timeList_goal = goalStateList.item(0).getElementsByTagName('time');
-        if ~isempty(timeList_goal.item(0).getElementsByTagName('exact').item(0))
-            egoVehicles(i+1).goalRegion.time = str2double(timeList_goal.item(0).getElementsByTagName('exact').item(0).getTextContent);
-        elseif ~isempty(timeList_goal.item(0).getElementsByTagName('intervalStart').item(0))
-            egoVehicles(i+1).goalRegion.time(1) = str2double(timeList_goal.item(0).getElementsByTagName('intervalStart').item(0).getTextContent);
-            egoVehicles(i+1).goalRegion.time(2) = str2double(timeList_goal.item(0).getElementsByTagName('intervalEnd').item(0).getTextContent);
-        end
-        
-        % velocity
-        velList_goal = goalStateList.item(0).getElementsByTagName('velocity');
-        if ~isempty(velList_goal.item(0))
-            if ~isempty(velList_goal.item(0).getElementsByTagName('exact').item(0))
-                egoVehicles(i+1).goalRegion.velocity = str2double(velList_goal.item(0).getElementsByTagName('exact').item(0).getTextContent);
-            elseif ~isempty(velList_goal.item(0).getElementsByTagName('intervalStart').item(0))
-                egoVehicles(i+1).goalRegion.velocity(1) = str2double(velList_goal.item(0).getElementsByTagName('intervalStart').item(0).getTextContent);
-                egoVehicles(i+1).goalRegion.velocity(2) = str2double(velList_goal.item(0).getElementsByTagName('intervalEnd').item(0).getTextContent);
-            end
-        end
-        
-        % orientation
-        orientList_goal = goalStateList.item(0).getElementsByTagName('orientation');
-        if ~isempty(orientList_goal.item(0))
-            if ~isempty(orientList_goal.item(0).getElementsByTagName('exact').item(0))
-                egoVehicles(i+1).goalRegion.orientation = str2double(orientList_goal.item(0).getElementsByTagName('exact').item(0).getTextContent);
-            elseif ~isempty(orientList_goal.item(0).getElementsByTagName('intervalStart').item(0))
-                egoVehicles(i+1).goalRegion.orientation(1) = str2double(orientList_goal.item(0).getElementsByTagName('intervalStart').item(0).getTextContent);
-                egoVehicles(i+1).goalRegion.orientation(2) = str2double(orientList_goal.item(0).getElementsByTagName('intervalEnd').item(0).getTextContent);
+            
+            % orientation (Note: Additional measures have to be taken to
+            % avoid confusion between shape orientation and state
+            % orientation in xml
+            orientList_goal = getXList(goalStateList, {'orientation'}, k);
+            if ~isempty(orientList_goal.item(0))
+                for l = 0:(orientList_goal.getLength()-1)
+                    if strcmp('goalState', orientList_goal.item(l).getParentNode.getNodeName)
+                        goalSet{i+1}.orientation = interval_or_exact(orientList_goal, l);
+                        break
+                    end
+                end
+            else
+                goalSet{i+1}.orientation = [];
             end
         end
     end
 else
-    egoVehicles = [];
+    % Return empty arrays if no planning problem exists
+    if verbose
+        fprintf('No planning problem found. Will return empty vectors x0, goalSet');
+    end
+    x0 = [];
+    goalSet = [];
 end
 
 % -----------------------------------------------
@@ -617,292 +546,322 @@ end
 if strcmp(commonroad_version, '2020a')
     information = struct();
     
-    % tags
-    tags_all = xDoc.getElementsByTagName('scenarioTags').item(0).getElementsByTagName('*');
-    tags = cell(length(tags_all));
-    
-    for i = 0:length(tags_all)
-        tags{i+1} = string(tags_all.item(i).getTagName);
+    try
+        % tags
+        tags_all = xDoc.getElementsByTagName('scenarioTags').item(0).getElementsByTagName('*');
+        tags = cell(length(tags_all));
+        
+        for i = 0:length(tags_all)
+            tags{i+1} = string(tags_all.item(i).getTagName);
+        end
+        information.tags = tags;
+        
+        % location
+        information.location.geoNameId = str2double(xDoc.getElementsByTagName('location').item(0)...
+            .getElementsByTagName('geoNameId').item(0).getTextContent);
+        information.location.gpsLatitude = str2double(xDoc.getElementsByTagName('location').item(0)...
+            .getElementsByTagName('gpsLatitude').item(0).getTextContent);
+        information.location.gpsLongitude = str2double(xDoc.getElementsByTagName('location').item(0)...
+            .getElementsByTagName('gpsLongitude').item(0).getTextContent);
     end
-    information.tags = tags;
-    
-    % location
-    information.location.geoNameId = str2double(xDoc.getElementsByTagName('location').item(0).getElementsByTagName('geoNameId').item(0).getTextContent);
-    information.location.gpsLatitude = str2double(xDoc.getElementsByTagName('location').item(0).getElementsByTagName('gpsLatitude').item(0).getTextContent);
-    information.location.gpsLongitude = str2double(xDoc.getElementsByTagName('location').item(0).getElementsByTagName('gpsLongitude').item(0).getTextContent);
-    
 end
 
 % -----------------------------------------------
 % -- Transform to required output format --------
 % -----------------------------------------------
 
-w = warning();
-warning('off');
+% --- Static Obstacles unit test---
+assert(length(statObs) == static_counter, 'Counter mismatch for static obstacles.')
 
-% Static Obstacles
-statObs = [];
+% --- Dynamic Obstacles unit test ---
+assert(length(dynObs) == total_dynamic_counter, 'Counter mismatch for dynamic obstacles.')
 
-% --- Retreive information if obstacles exist ---
-if static_counter
-    for i = 1:length(staticList)
-        for j = 1:length(staticList(i).static)
-            % get set
-            points = staticList(i).static(j).polygon;
-            statObs{end+1,1} = polygon(points(:,1),points(:,2));
-        end
+% --- Road boundary creation ---
+if roadBoundary && lanelet_flag
+    bounds = [lim_x(1)-1,lim_y(1)-1; lim_x(1)-1,lim_y(2)+1;
+              lim_x(2)+1,lim_y(2)+1; lim_x(2)+1,lim_y(1)-1];
+    
+    roadBoundaryPolygon = polyshape(bounds);
+    
+    % subtraction of lanelets (twice, as residuals remained for unknown
+    % reasons, if only done once)
+    for i = [1:length(laneletsList), length(laneletsList):-1:1]
+        points = [laneletsList(i).leftBound(1,:), flip(laneletsList(i).rightBound(1,:));...
+                laneletsList(i).leftBound(2,:), flip(laneletsList(i).rightBound(2,:))]';
+        roadBoundaryPolygon = subtract(roadBoundaryPolygon, polyshape(points));
     end
+    
+    % subtraction of residuals (twice, as residuals remained for unknown
+    % reasons, if only done once)
+    for i = [1:bound_iterator, bound_iterator:-1:1]
+        roadBoundaryPolygon = subtract(roadBoundaryPolygon,...
+            polyshape(roadBoundaryResiduals(i).x, roadBoundaryResiduals(i).y));
+    end
+    
+    buffer = polygon(roadBoundaryPolygon.Vertices(:,1), roadBoundaryPolygon.Vertices(:,2));
+    statObs{end+1,1} = buffer;
 end
 
-% Dynamic Obstacles
-dynObs = [];
-
-% --- Retreive information if obstacles exist ---
-if dynamic_counter
-    for i = 1:length(dynamicList)
-        for j = 1:length(dynamicList(i).dynamic)
-            % get set
-            points = dynamicList(i).dynamic(j).polygon;
-            dynObs{end+1,1}.set = polygon(points(:,1),points(:,2));
-            % get time interval;
-            t = dynamicList(i).dynamic(j).time*timeStep;
-            if length(t) == 1
-                dynObs{end,1}.time = interval(t);
-            else
-                dynObs{end,1}.time = interval(t(1),t(2));
-            end
-        end
+% --- Check for multiple Planning Problems and reduce to one ---
+if num_planningProblems > 1
+    if verbose
+        fprintf(strcat('There are several planning problems found. However, only one',...
+            'can be handled by the converter, thus only the first one will be regarded.\n'));
     end
-end
-
-% ---Retreive planning problem if it exists ---
-if ~isempty(egoVehicles)
-    
-    % Initial Point
-    x0 = egoVehicles.initial;
-    x0.time = x0.time*timeStep;
-    
-    
-    % Goal Region
-    t = egoVehicles.goalRegion.time*timeStep;
-    if length(t) == 1
-        time = interval(t);
-    else
-        time = interval(t(1),t(2));
-    end
-    
-    if isfield(egoVehicles.goalRegion,'velocity')
-        v = egoVehicles.goalRegion.velocity;
-        if length(v) == 1
-            velocity = interval(v);
-        else
-            velocity = interval(v(1),v(2));
-        end
-    else
-        velocity = [];
-    end
-    
-    if isfield(egoVehicles.goalRegion,'orientation')
-        o = egoVehicles.goalRegion.orientation;
-        if length(o) == 1
-            orientation = interval(o);
-        else
-            orientation = interval(o(1),o(2));
-        end
-    else
-        orientation = [];
-    end
-    
-    if isfield(egoVehicles.goalRegion,'polygon')
-        goalSet = cell(length(egoVehicles.goalRegion.polygon),1);
-        
-        for i = 1:length(egoVehicles.goalRegion.polygon)
-            
-            % get goal set set
-            points = egoVehicles.goalRegion.polygon(i).Poly;
-            goalSet{i}.set = polygon(points(:,1),points(:,2));
-            
-            % store time, orientation, and velocity
-            goalSet{i}.time = time;
-            goalSet{i}.orientation = orientation;
-            goalSet{i}.velocity = velocity;
-        end
-    else
-        goalSet{1}.time = egoVehicles.goalRegion.time;
-        goalSet{1}.set = [];
-    end
-else
-    % Return empty arrays if no planning problem exists
-    disp('No planning problem found. Will return empty vectors x0, goalSet');
-    x0 = [];
-    goalSet = [];
-end
-
-% Lanelets (if existent)
-
-if laneletFlag
-    lanelets = cell(length(lanelet_poly),1);
-    
-    for i = 1:length(lanelet_poly)
-        points = lanelet_poly(i).polygon;
-        lanelets{i} = polygon(points(:,1),points(:,2));
-    end
-else
-    lanelets = {};
+    x0 = x0(1);
+    goalSet = goalSet(:,1);
 end
 
 warning(w);
-
-converterTime = toc;
-
-if (occupancy_count + trajectory_count ~= dynamic_counter)
-    fprintf('Warning: During conversion a mismatch for the number of obstacles was encountered, i.e. number of obstacles by trajectory + number of obstacles by occupancy set unequal total number of obstacles. Your scenario may contain dynamic obstacles without dynamics.\nIf not, this is a converter problem; contact Niklas Kochdumper or Philipp Gassert under ga96man@mytum.de.\n');
-end
+converterTime = toc(conTimerStart);
 
 if verbose
-    fprintf(strcat('-----------------------------\nSuccessfully converted\n', filename,...
-        ' with\n%d lanelets,\n%d static obstacles\n%d dynamic obstacles by trajectory\n%d dynamic obstacles by occupancy set\n%d planning problems in\n%d seconds.\n-----------------------------\n'),...
-        length(lanelets), static_counter, trajectory_count, occupancy_count, egoVehiclesList.getLength, converterTime);
+    fprintf(strcat('--------------\nSuccessfully converted\n', filename,...
+        ' with\n%d lanelets,\n',...
+        '%d static obstacles,\n%d dynamic obstacles,\n',...
+        '%d planning problem with\n%d goal regions in\n%.2f seconds.\n--------------\n'),...
+        length(lanelets), static_counter, dynamic_counter, egoVehiclesList.getLength, num_goalRegions, converterTime);
 end
 
 end
 
+%------------- AUXILIARY FUNCTIONS --------------%
 
-% Auxiliary Functions -----------------------------------------------------
+function vertices = shape_fct(shapeList, stateXList, idx)
+% This function returns vertices for the combined polyshape which is the
+% union of all shapes contained in shapeList, possibly combined with
+% position and orientation from the optional parameter stateXList. You can
+% choose which states from stateXList with index idx are relevant by
+% passing the optional parameter idx.
 
-function vertices = shape_fct(shapeList,x,y, orientList)
-% central position of all shapes
-xCenter = x;
-yCenter = y;
-%rectangle
-rectangleList = shapeList.item(0).getElementsByTagName('rectangle');
-%for preallocation
-rectangle = polyshape();
+if ~exist('idx', 'var')
+    idx = 0;
+end
+
+if ~exist('stateXList', 'var')
+    orientation_state = 0;
+    x_state = 0;
+    y_state = 0;
+else
+    assert(stateXList.getLength() >= idx + 1,...
+        sprintf('Expected state list of min length %i; got length %i.\n', idx, stateXList.getLength()));
+    orientation_state = getXEl(stateXList, {'orientation', 'exact'}, idx);
+    x_state = getXEl(stateXList, {'position', 'point', 'x'}, idx);
+    y_state = getXEl(stateXList, {'position', 'point', 'y'}, idx);
+end
+
+% initialize empty shape
+shape_polygon = polyshape();
+
+% rectangle
+rectangleList = getXList(shapeList, {'rectangle'});
 for l = 0:(rectangleList.getLength()-1)
-    width = str2double(rectangleList.item(l).getElementsByTagName('length').item(0).getTextContent);
-    height = str2double(rectangleList.item(l).getElementsByTagName('width').item(0).getTextContent);
-    if exist('orientList', 'var')
-        orient = str2double(orientList.item(l).getTextContent);
-    else
-        orient = 0;
-    end
-%     % finding specific points
-%     xLeft = xCenter - cos(width / 2);
-%     yBottom = yCenter - sin(height / 2);
-%     % convert rectangle to corner points list
-%     points = [xLeft xLeft xLeft+width xLeft+width; ...
-%         yBottom yBottom+height yBottom+height yBottom]';
+    len = getXEl(rectangleList, {'length'}, l);
+    wid = getXEl(rectangleList, {'width'}, l);
     
-    w = width/2;
-    h = height/2;
-    xLeftBottom = xCenter - cos(orient) * w + sin(orient) * h;
-    yLeftBottom = yCenter - cos(orient) * h - sin(orient) * w;
-    xRightBottom = xCenter + cos(orient) * w + sin(orient) * h;
-    yRightBottom = yCenter - cos(orient) * h + sin(orient) * w;
-    xLeftTop = xCenter - cos(orient) * w - sin(orient) * h;
-    yLeftTop = yCenter + cos(orient) * h - sin(orient) * w;
-    xRightTop = xCenter + cos(orient) * w - sin(orient) * h;
-    yRightTop = yCenter + cos(orient) * h + sin(orient) * w;
-    % convert rectangle to corner points list
-    points = [xLeftBottom xLeftTop xRightTop xRightBottom; ...
-        yLeftBottom yLeftTop yRightTop yRightBottom]';
-    % converting the rectangle into a polygon
-    rectangle(l+1) = polyshape(points,'Simplify',false);
-    % sum all the rectangles(polygons)
-    if l == 0
-        shape_polygon = rectangle(l+1);
+    if ~isempty(rectangleList.item(l).getElementsByTagName('center').item(0))
+        x_center = getXEl(rectangleList, {'center', 'x'}) + x_state;
+        y_center = getXEl(rectangleList, {'center', 'y'}) + y_state;
     else
-        shape_polygon = union(shape_polygon,rectangle(l+1));
+        x_center = x_state;
+        y_center = y_state;
     end
+    
+    orientationXList = getXList(rectangleList, {'orientation'}, l);
+    if ~isempty(orientationXList.item(0))
+        if isempty(orientationXList.item(0).getElementsByTagName('exact').item(0))
+            orientation = getXEl(orientationXList) + orientation_state;
+        else
+            orientation = getXEl(orientationXList, {'exact'}) + orientation_state;
+        end
+    else
+        orientation = orientation_state;
+    end
+    
+    points = [-len, -wid; len, -wid; len, wid; -len, wid]/2;
+    points = points * [cos(orientation), sin(orientation); -sin(orientation), cos(orientation)] + [x_center, y_center];
+    
+    % add all the rectangles(polygons)
+    shape_polygon = union(shape_polygon, polyshape(points,'Simplify',false));
 end
-%circle
-circleList = shapeList.item(0).getElementsByTagName('circle');
-%for preallocation
-circle = polyshape();
+
+% circle
+circleList = getXList(shapeList, {'circle'});
 for l = 0:(circleList.getLength()-1)
-    radius = str2double(circleList.item(l).getElementsByTagName('radius').item(0).getTextContent);
-    % convering circle into a polygon
-    n = 50; %number of points
-    theta = (0:n-1)*(2*pi/n);
-    x = xCenter + radius*cos(theta);
-    y = yCenter + radius*sin(theta);
-    circle(l+1) = polyshape(x,y,'Simplify',false);
-    % sum all the circles(polygons)
-    if l == 0
-        shape_polygon = circle(l+1);
-    else
-        shape_polygon = union(shape_polygon,circle(l+1));
-    end
-end
-%polygon
-polygonList = shapeList.item(0).getElementsByTagName('polygon');
-%for preallocation
-pol = polyshape();
-for l = 0:(polygonList.getLength()-1)
-    polygon_pointList = polygonList.item(l).getElementsByTagName('point');
-    x = zeros(1,polygon_pointList.getLength());
-    y = zeros(1,polygon_pointList.getLength());
-    for k = 0:(polygon_pointList.getLength()-1)
-        x(k+1) = str2double(polygon_pointList.item(k).getElementsByTagName('x').item(0).getTextContent);
-        y(k+1) = str2double(polygon_pointList.item(k).getElementsByTagName('y').item(0).getTextContent);
-    end
-    pol(l+1) = polyshape(x,y,'Simplify',false);
-    if l == 0
-        shape_polygon = pol(l+1);
-    else
-        shape_polygon = union(shape_polygon,pol(l+1));
-    end
+    radius = getXEl(circleList, {'radius'}, l);
     
+    if ~isempty(circleList.item(0).getElementsByTagName('center').item(0))
+        x_center = getXEl(circleList, {'center', 'x'}) + x_state;
+        y_center = getXEl(circleList, {'center', 'y'}) + y_state;
+    else
+        x_center = x_state;
+        y_center = y_state;
+    end 
+    
+    % convering circle into a polygon
+    n = 50; % number of points approximating the circle
+    theta = (0:n-1)*(2*pi/n);
+    x = x_center + radius*cos(theta);
+    y = y_center + radius*sin(theta);
+    
+    % add all the circles(polygons)
+    shape_polygon = union(shape_polygon, polyshape(x,y,'Simplify',false));
 end
+
+% polygon
+polygonList = getXList(shapeList, {'polygon'});
+for l = 0:(polygonList.getLength()-1)
+    polygon_pointList = getXList(polygonList, {'point'}, l);
+    points = zeros(polygon_pointList.getLength(), 2);
+    %y = zeros(1,polygon_pointList.getLength());
+    for k = 0:(polygon_pointList.getLength()-1)
+        points((k+1), 1) = getXEl(polygon_pointList, {'x'}, k);
+        points((k+1), 2) = getXEl(polygon_pointList, {'y'}, k);
+    end
+
+    % add all the polyshapes
+    shape_polygon = union(shape_polygon, polyshape(points,'Simplify',false));
+end
+
 vertices =  shape_polygon.Vertices;
 end
 
-function occupancy = occupancy_fct(occupancyList,x,y)
+function dynamicBuffer = dynamic_fct(obstaclesList, i)
+% This function returns a list of dynamic Obstalces extracted from
+% obstaclesList.item(i). It handles occupancySets and trajectories.
+
+% initial state
+ShapeList_initialstate = getXList(obstaclesList, {'shape'}, i);
+stateList_initialstate = getXList(obstaclesList, {'initialState'}, i);
+initialstate_vertices = shape_fct(ShapeList_initialstate, stateList_initialstate);
+
+occupancySetXList = getXList(obstaclesList, {'occupancySet'}, i);
+trajectoryList = getXList(obstaclesList, {'trajectory'}, i);
+
+% by occupancySet
+if ~isempty(occupancySetXList.item(0))
+    occupancyList = getXList(occupancySetXList, {'occupancy'});
+    
+    % creating obstacles
+    dynamicBuffer = occupancy_fct(occupancyList);
+    
+    % by trajectory
+elseif ~isempty(trajectoryList.item(0))
+    trajectorystateList = getXList(trajectoryList, {'state'});
+    
+    % creating obstacles
+    dynamicBuffer = trajectory_fct(trajectorystateList, ShapeList_initialstate);
+else
+    fprintf(strcat('Found dynamic obstacle without dynamics or with probability',...
+        'distribution, which cannot be handled by converter. Resuming...\n'));
+end
+
+% inserting the initial state
+dynamicBuffer(1).polygon = initialstate_vertices;
+dynamicBuffer(1).time = 0;
+
+end
+
+function occupancy = occupancy_fct(occupancyList)
+% This function returns a list of occupancy structs for a given xDocList
 occupancy(occupancyList.getLength).polygon = [];
 for l = 0:(occupancyList.getLength()-1)
-    % shape
-    shapeList_occupancy = occupancyList.item(l).getElementsByTagName('shape');
+    
+    % polygon
+    shapeList_occupancy = getXList(occupancyList, {'shape'}, l);
     if ~isempty(shapeList_occupancy.item(0))
-        occupancy(l+2).polygon = shape_fct(shapeList_occupancy,x,y);
+        occupancy(l+2).polygon = shape_fct(shapeList_occupancy);
+    else
+        assert(0, 'This is a temporary developer warning indicating unexpected behaviour: No shapes found in occupancy.')
     end
-    % time
-    timeList = occupancyList.item(l).getElementsByTagName('time');
-    if ~isempty(timeList.item(0).getElementsByTagName('exact').item(0))
-        occupancy(l+2).time = str2double(timeList.item(0).getElementsByTagName('exact').item(0).getTextContent);
-    elseif ~isempty(timeList.item(0).getElementsByTagName('intervalStart').item(0))
-        occupancy(l+2).time(1) = str2double(timeList.item(0).getElementsByTagName('intervalStart').item(0).getTextContent);
-        occupancy(l+2).time(2) = str2double(timeList.item(0).getElementsByTagName('intervalEnd').item(0).getTextContent);
-    end
-end
-
-end
-
-function trajectory = trajectory_fct(trajectorystateList,ShapeList_initialstate)
-trajectory(trajectorystateList.getLength).polygon = [];
-for l = 0:(trajectorystateList.getLength()-1)
-    % shape
-    positionList_trajectory = trajectorystateList.item(l).getElementsByTagName('position');
-    pointList = positionList_trajectory.item(0).getElementsByTagName('point');
-    position = points_fct(pointList);
-    orientList = trajectorystateList.item(l).getElementsByTagName('orientation');
-    trajectory(l+2).polygon = shape_fct(ShapeList_initialstate,position.x,position.y, orientList);
     
     % time
-    timeList = trajectorystateList.item(l).getElementsByTagName('time');
-    if ~isempty(timeList.item(0).getElementsByTagName('exact').item(0))
-        trajectory(l+2).time = str2double(timeList.item(0).getElementsByTagName('exact').item(0).getTextContent);
+    timeList_occupancy = getXList(occupancyList, {'time'}, l);
+    if ~isempty(timeList_occupancy.item(0).getElementsByTagName('exact').item(0))
+        occupancy(l+2).time = getXEl(timeList_occupancy, {'exact'});
+        
+    elseif ~isempty(timeList_occupancy.item(0).getElementsByTagName('intervalStart').item(0))
+        occupancy(l+2).time(1) = getXEl(timeList_occupancy, {'intervalStart'});
+        occupancy(l+2).time(2) = getXEl(timeList_occupancy, {'intervalEnd'});
+    end
+end
+
+end
+
+function trajectory = trajectory_fct(trajectoryStateXList, shapeXList_initialstate)
+% This function returns a list of trajectory polygon structs for a given xDocList
+
+trajectory(trajectoryStateXList.getLength).polygon = [];
+for l = 0:(trajectoryStateXList.getLength()-1)
+    % polygon
+    trajectory(l+2).polygon = shape_fct(shapeXList_initialstate, trajectoryStateXList, l);
+    
+    % time
+    timeList = getXList(trajectoryStateXList, {'time', 'exact'}, l);
+    if ~isempty(timeList.item(0))
+        trajectory(l+2).time = getXEl(timeList);
     end
 end
 end
 
-function points = points_fct(pointList)
+function elements = getXEl(xDocList, strings, indexes)
+% Returns elements queried in cell array strings. If no vector of indexes
+% is provided, the first element (0-element) is returned. Indexes in
+% indexes are taken in order, starting with the first element until no
+% further elements are provided. There may be more elements in strings than
+% in indexes.
 
-if ~isempty(pointList.item(0).getElementsByTagName('x').item(0))
-    points.x = str2double(pointList.item(0).getElementsByTagName('x').item(0).getTextContent);
-    points.y = str2double(pointList.item(0).getElementsByTagName('y').item(0).getTextContent);
+if ~exist('strings', 'var')
+    strings = [];
+end
+
+if ~exist('indexes', 'var') || isempty(indexes)
+    indexes = 0;
+end
+
+if ~isempty(strings)
+    elements = getXEl(xDocList.item(indexes(1)).getElementsByTagName(strings{1}), strings(2:end), indexes(2:end));
 else
-    points.x = 0;
-    points.y = 0;
-end
+    assert(length(indexes) == 1, 'wrong number of indexes provided')
+    assert(xDocList.getLength() == 1, 'Several items found, where one was expected.')
+    
+    elements = str2double(xDocList.item(indexes).getTextContent);
 end
 
+end
+
+function elements = getXList(xDocList, strings, indexes)
+% Returns elements queried in cell array strings. If no vector of indexes
+% is provided, the first element (0-element) is returned. Indexes in
+% indexes are taken in order, starting with the first element until no
+% further elements are provided. There may be more elements in strings than
+% in indexes.
+
+if ~exist('indexes', 'var') || isempty(indexes)
+    indexes = 0;
+end
+
+if length(strings) > 1
+    elements = getXList(xDocList.item(indexes(1)).getElementsByTagName(strings{1}), strings(2:end), indexes(2:end));
+else
+    elements = xDocList.item(indexes(1)).getElementsByTagName(strings{1});
+end
+
+end
+
+function inter_or_exact = interval_or_exact(XList, idx)
+% This function returns either an interval of two values or a single value
+% from item(idx) given in XList, depending on whether the childNodes are
+% 'exact' or 'intervalStart'/'intervalEnd'
+
+if ~exist('idx', 'var')
+    idx = 0;
+end
+
+if ~isempty(XList.item(idx).getElementsByTagName('exact').item(0))
+    inter_or_exact = getXEl(XList, {'exact'}, idx);
+elseif ~isempty(XList.item(idx).getElementsByTagName('intervalStart').item(0))
+    inter_or_exact = interval(getXEl(XList, {'intervalStart'}, idx), getXEl(XList, {'intervalEnd'}, idx));
+end
+
+end

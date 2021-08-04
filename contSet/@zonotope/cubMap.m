@@ -34,10 +34,10 @@ function res = cubMap(Z,varargin)
 %
 %    Zcub = cubMap(Z,T);
 %
-%    figure 
-%    subplot(1,2,1)
+%    figure ;
+%    subplot(1,2,1);
 %    plot(Z,[1,2],'r','Filled',true,'EdgeColor','none');
-%    subplot(1,2,2)
+%    subplot(1,2,2);
 %    plot(Zcub,[1,2],'b','Filled',true,'EdgeColor','none');
 %
 %    % mixed cubic multiplication

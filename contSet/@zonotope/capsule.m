@@ -1,5 +1,5 @@
 function C = capsule(Z)
-% capsule - Encloses a zonotope with a capsule
+% capsule - encloses a zonotope with a capsule
 %
 % Syntax:  
 %    C = capsule(Z)
@@ -14,8 +14,7 @@ function C = capsule(Z)
 %    Z = zonotope.generateRandom(2);
 %    C = capsule(Z);
 %
-%    figure
-%    hold on
+%    figure; hold on;
 %    plot(Z,[1,2],'r');
 %    plot(C,[1,2],'b');
 %

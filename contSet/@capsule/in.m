@@ -44,13 +44,24 @@ function res = in(obj1,obj2)
 
     res = 1;
 
-    % point in capule containment
+    % point in capsule containment
     if isnumeric(obj2)
         
-        res = containsPoint(obj1,obj2);
+        for i = 1:size(obj2,2)
+            res = containsPoint(obj1,obj2(:,i));
+            if res ~= 1
+                return;
+            end
+        end
         
     % capsule in capsule containment    
     elseif isa(obj2,'capsule')
+        
+        % check dimension mismatch
+        if dim(obj1) ~= dim(obj2)
+            [id,msg] = errDimMismatch();
+            error(id,msg);
+        end
         
         res = containsCapsule(obj1,obj2);
         

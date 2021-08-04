@@ -1,5 +1,6 @@
 function d = dim(Z)
-% dim - return dimension of zonotope
+% dim - returns the dimension in which the zonotope is defined;
+%    caution: this is different from the rank of a zonotope
 %
 % Syntax:  
 %    d = dim(Z)
@@ -8,7 +9,7 @@ function d = dim(Z)
 %    Z - zonotope object
 %
 % Outputs:
-%    d - dimension of Z
+%    d - dimension in which Z is defined
 %
 % Example: 
 %    Z = zonotope([zeros(3,1),rand(3,5)]);
@@ -22,11 +23,15 @@ function d = dim(Z)
 %
 % Author:        Mark Wetzlinger
 % Written:       15-Sep-2019
-% Last update:   ---
+% Last update:   11-March-2021 (MW, add empty case)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-d = length(center(Z));
+if ~isempty(Z)
+    d = length(center(Z));
+else
+    d = 0;
+end
 
 %------------- END OF CODE --------------

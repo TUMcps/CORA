@@ -35,9 +35,9 @@ function res = interval(obj)
 
 %------------- BEGIN CODE --------------
 
-if isempty(obj.A)       % no constraints -> call superclass method
+if isempty(obj.A)       % no constraints -> call zonotope method
     
-    res = interval@zonotope(obj);
+    res = interval(zonotope(obj.Z));
     
 else                    % constraints 
     
@@ -45,7 +45,7 @@ else                    % constraints
     res = interval(zeros(n,1));
 
     % remove the trivial constraint 0*ksi = 0
-    obj = removeZeroConstraints(obj);
+    obj = deleteZeros(obj);
 
     % loop over all dimensions
     for i = 1:n

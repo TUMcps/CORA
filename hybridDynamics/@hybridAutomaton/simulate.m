@@ -27,7 +27,8 @@ function [t,x,loc] = simulate(obj,params)
 
 %------------- BEGIN CODE --------------
 
-params = checkOptionsSimulate(obj,params);
+% new options preprocessing
+params = validateOptions(obj,mfilename,params,struct([]));
 
 % initialization
 tInter = params.tStart;         % intermediate time at transitions

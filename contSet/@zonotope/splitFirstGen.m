@@ -1,15 +1,15 @@
-function [Znew] = splitFirstGen(Z)
+function Znew = splitFirstGen(Z)
 % splitFirstGen - splits first generator, which is in direction of the
-% vector field
+%    vector field
 %
 % Syntax:  
-%    [Zrem] = firstSplitGen(Z)
+%    Znew = firstSplitGen(Z)
 %
 % Inputs:
 %    Z - cell array of zonotope objects
 %
 % Outputs:
-%    Zrem - cell array of remaining zonotope objects
+%    Znew - cell array of remaining zonotope objects
 %
 % Example: 
 %

@@ -52,14 +52,15 @@ function res = isempty(obj)
         f = [ones(m,1);zeros(n,1)];
 
         % solve the dual problem using linear programming
-        options = optimoptions('linprog','display','off');
+        options = optimoptions('linprog','display','off', ...
+                               'OptimalityTolerance',1e-10);	
 
-        [~,val,exitflag] = linprog(f,A,b,[],[],[],[],options);
+        [x,~,exitflag] = linprog(f,A,b,[],[],[],[],options);
 
         % check if polytope is empty
         res = 0;
 
-        if exitflag < 0 || val > eps
+        if exitflag < 0 || any(x(1:m) > 1e-10)
            res = 1; 
         end
     

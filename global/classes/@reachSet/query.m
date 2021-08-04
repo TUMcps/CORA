@@ -29,23 +29,31 @@ function val = query(R,prop)
         for i = 2:size(R,1)
            val = [val;R(i).timeInterval.set]; 
         end
+        
     elseif strcmp(prop,'reachSetTimePoint')
         val = R(1,1).timePoint.set;
         for i = 2:size(R,1)
            val = [val;R(i).timePoint.set]; 
         end
-    elseif strcmp(prop,'finalSet')
         
+    elseif strcmp(prop,'finalSet')
         if size(R,1) == 1
            val = R(1,1).timePoint.set{end}; 
         else
            parents = getParents(R);
-           ind = setdiff(2:size(R,1),parents);
+           ind = setdiff(1:size(R,1),parents);
            val = cell(length(ind),1);
            
            for i = 1:length(ind)
               val{i} = R(ind(i),1).timePoint.set{end};
            end
+        end
+        
+    elseif strcmp(prop,'tVec')
+        if size(R,1) == 1
+            val = [R.timePoint.time{1}; diff(cell2mat(R.timePoint.time))];
+        else
+            error("Currently not implemented");
         end
         
     else

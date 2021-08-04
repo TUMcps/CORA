@@ -1,5 +1,5 @@
 function p = polygon(Z)
-% polygon - Converts a two-dimensional zonotope into a polygon and returns
+% polygon - converts a two-dimensional zonotope into a polygon and returns
 %    its vertices
 %
 % Syntax:  
@@ -21,13 +21,12 @@ function p = polygon(Z)
 %
 % See also: none
 
-% Author:       Daniel Heß (main part), Matthias Althoff (small adaptations)
+% Author:       Daniel Heß, Matthias Althoff
 % Written:      28-June-2016
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
 
 % delete zero generators
 Z = deleteZeros(Z);

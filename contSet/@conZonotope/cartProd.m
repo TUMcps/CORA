@@ -82,7 +82,7 @@ function cZ = cartProd(cZ1,cZ2)
 
             cZ = cartProd(cZ1,conZonotope(cZ2));
             
-        elseif isa(cZ2,'polyZonotope')
+        elseif isa(cZ2,'polyZonotope') || isa(cZ2,'conPolyZono')
             
             cZ = cartProd(polyZonotope(cZ1),cZ2);
             

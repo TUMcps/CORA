@@ -3,8 +3,8 @@ function [val,x] = supportFunc(obj,dir,varargin)
 %               along a certain direction
 %
 % Syntax:  
-%    val = supportFunc(obj,dir)
-%    val = supportFunc(obj,dir,type)
+%    [val,x] = supportFunc(obj,dir)
+%    [val,x] = supportFunc(obj,dir,type)
 %
 % Inputs:
 %    obj - zonoBundle object
@@ -99,6 +99,9 @@ function [val,x] = supportFunc(obj,dir,varargin)
        val = -val;
        
     end
+    
+    % truncate support vector
+    x = x(1:n);
 end
 
 %------------- END OF CODE --------------

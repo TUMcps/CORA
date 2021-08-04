@@ -1,6 +1,5 @@
 function res = conZonotope(obj)
-% conZonotope - convert a zonotope object into a constrained zonotope
-%               object
+% conZonotope - convert a zonotope object into a conZonotope object
 %
 % Syntax:  
 %    res = conZonotope(obj)
@@ -9,7 +8,7 @@ function res = conZonotope(obj)
 %    obj - zonotope object
 %
 % Outputs:
-%    res - c-zonotope object
+%    res - conZonotope object
 %
 % Example:
 %    Z = zonotope([1;0],[1 0; 0 1]);
@@ -27,7 +26,8 @@ function res = conZonotope(obj)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-    
+
+% call constructor with center and generator matrix as inputs
 res = conZonotope(obj.Z);
 
 %------------- END OF CODE --------------

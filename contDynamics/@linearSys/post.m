@@ -1,5 +1,5 @@
 function [Rnext,options] = post(obj,~,options)
-% post - calls the post functions in the stnadrad or Krylov space
+% post - calls the post functions in the standard or Krylov space
 %
 % Syntax:  
 %    [Rnext,options] = post(obj,R,options)

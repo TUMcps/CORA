@@ -34,7 +34,6 @@ function [Rout,Rout_tp,res] = reach_wrappingfree(obj,options)
 % Last update:   14-Aug-2019
 % Last revision: ---
 
-
 %------------- BEGIN CODE --------------
 
 %obtain factors for initial state and input solution
@@ -49,6 +48,9 @@ if isfield(options,'uTransVec')
 else
     inputCorr = 0;
 end
+
+% log information
+verboseLog(1,options.tStart,options);
 
 % initialize reachable set computations
 [Rnext, options] = initReach_Euclidean(obj, options.R0, options);
@@ -74,7 +76,6 @@ for i = 2:length(tVec)-1
     % compute output set
     [Rout{i-1},Rout_tp{i-1}] = outputSet(C,D,k,Rnext,options);
     
-    
     % safety property check
     if isfield(options,'specification')
         if ~check(options.specification,Rout{i-1})
@@ -87,6 +88,9 @@ for i = 2:length(tVec)-1
     end    
     
     % post: (wrapping free) ----------
+    
+    % log information
+    verboseLog(i,tVec(i),options);
     
     % method implemented from Algorithm 2 in [1]
     
@@ -123,15 +127,13 @@ if isfield(options,'specification')
     end
 end
 
+% log information
+verboseLog(length(tVec),tVec(end),options);
+
+% specification fulfilled
 res = true;
 
 end
-
-
-
-
-% Auxiliary Functions -----------------------------------------------------
-
 
 
 %------------- END OF CODE --------------

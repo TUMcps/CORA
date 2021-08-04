@@ -73,6 +73,6 @@ if ~isIntersecting(obj.invariant,timeInt.set{end})
 end
 
 % construct modified reachSet object
-R = reachSet(timeInt,timePoint,R.parent);
+R = reachSet(timePoint,timeInt,R.parent);
 
 %------------- END OF CODE --------------

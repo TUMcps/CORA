@@ -29,8 +29,8 @@ function [Rnext,options] = post(obj,R,options)
 
 %------------- BEGIN CODE --------------
 
-% despite the linear system: the nonlinear system has to be constantly
-% initialized due to the linearization procedure
+%despite the linear system: the nonlinear system has to be constantly
+%initialized due to the linearization procedure
 [Rnext,options] = initReach(obj,R,options);
 
 %reduce zonotopes

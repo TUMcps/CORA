@@ -1,9 +1,9 @@
 function Z = project(Z,proj)
-% project - Returns a zonotope which is projected onto the specified
+% project - returns the projection of a zonotope onto the specified
 %    dimensions
 %
 % Syntax:  
-%    Z = project(Z,dim)
+%    Z = project(Z,proj)
 %
 % Inputs:
 %    Z - zonotope object

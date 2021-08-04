@@ -1,5 +1,8 @@
 function Z = deleteAligned(Z)
-% deleteAligned - combines aligned generators
+% deleteAligned - combines aligned generators to a single generator;
+%    a tolerance is used to determine alignment, so this function
+%    does not necessarily return an over-approximation of the original
+%    zonotope--for this, use reduce instead
 %
 % Syntax:  
 %    Z = deleteAligned(Z)
@@ -8,7 +11,7 @@ function Z = deleteAligned(Z)
 %    Z - zonotope object
 %
 % Outputs:
-%    Z - reduced zonotope object
+%    Z - zonotope object
 %
 % Example:
 %    Z1 = zonotope([1;0],[1 0 1 1 -2 0; 0 1 0 1 -2 -3]);
@@ -40,11 +43,14 @@ G=nonzeroFilter(G);
 %normalize generators
 G_norm = G./vecnorm(G);
 
+% tolerance for alignment
+tol = 1-1e-3;
+
 %find equal generators
 i = 1;
 while i < length(G(1,:))
     G_act = G_norm(:,i);
-    ind = find(abs(G_act'*G_norm(:,(i+1):end)) > 1-1e-3);
+    ind = find(abs(G_act'*G_norm(:,(i+1):end)) > tol);
     if ~isempty(ind)
         ind = ind+i;
         for iAdd = 1:length(ind)

@@ -48,10 +48,8 @@ if nargin > 2 && ~isempty(varargin{2})
     plotOptions = varargin(2:end);
     [linespec,NVpairs] = readPlotOptions(plotOptions);
     [NVpairs,order] = readNameValuePair(NVpairs,'Order','isscalar');
+    [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar');
     [NVpairs,unify] = readNameValuePair(NVpairs,'Unify','islogical',unify);
-    if unify
-        [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar');
-    end
     
     % in reachSet name-value pair 'Filled',true|false is default true,
     % this must be added because called plot functions are default false
@@ -60,6 +58,15 @@ if nargin > 2 && ~isempty(varargin{2})
         NVpairs = [NVpairs,'Filled',true];
     end
 end
+% check dimension
+if length(dims) < 2
+    error('At least 2 dimensions have to be specified!');
+elseif length(dims) > 3
+    error('Only up to 3 dimensions can be plotted!');
+elseif length(dims) == 3
+    unify = 0;
+end
+
 
 % check if the reachable sets should be unified to reduce the storage size
 % of the resulting figure
@@ -91,7 +98,7 @@ if unify
             end
            
             % convert set to polygon object
-            if isa(temp,'polyZonotope')
+            if isa(temp,'polyZonotope') || isa(temp,'conPolyZono')
                 if isempty(splits)
                     V = vertices(zonotope(temp));
                     temp = polygon(V(1,:),V(2,:));
@@ -136,6 +143,12 @@ else
 
             % project set to desired dimensions
             temp = project(set{j},dims);
+            
+            if length(dims) == 2
+               dims_ = [1,2]; 
+            else
+               dims_ = [1,2,3]; 
+            end
 
             % order reduction
             if ~isempty(order)
@@ -143,7 +156,15 @@ else
             end
 
             % plot the set
-            han = plot(temp,[1 2],linespec,NVpairs{:});
+            if isa(temp,'polyZonotope')
+                if isempty(splits)
+                    han = plot(zonotope(temp),dims_,linespec,NVpairs{:});
+                else
+                    han = plot(temp,dims_,linespec,'Splits',splits,NVpairs{:});
+                end
+            else
+                han = plot(temp,dims_,linespec,NVpairs{:});
+            end
         end
     end
 end

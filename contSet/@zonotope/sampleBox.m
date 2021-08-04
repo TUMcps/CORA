@@ -21,7 +21,7 @@ function X = sampleBox(Z,N)
 %
 % See also: none
 
-% Author:       Victor Gaﬂmann
+% Author:       Victor Gassmann
 % Written:      16-October-2019
 % Last update:  ---
 % Last revision:---

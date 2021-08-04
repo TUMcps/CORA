@@ -20,13 +20,13 @@ function c = center(obj)
 %
 % See also: none
 
-% Author:       Victor Gassmann
-% Written:      23-July-2020 
+% Author:       Matthias Althoff
+% Written:      06-May-2021 
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-c = 1/2*(obj.Inf + obj.Sup);
+c = center(obj.int);
 
 %------------- END OF CODE --------------

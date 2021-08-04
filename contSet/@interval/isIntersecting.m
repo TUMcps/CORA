@@ -7,7 +7,7 @@ function res = isIntersecting(obj1,obj2,varargin)
 %
 % Inputs:
 %    obj1 - interval object
-%    obj2 - conSet object
+%    obj2 - contSet object
 %    type - type of check ('exact' or 'approx')
 %
 % Outputs:
@@ -41,7 +41,7 @@ function res = isIntersecting(obj1,obj2,varargin)
 % Written:      22-July-2016
 % Last update:  14-Sep-2019
 %               21-Nov-2019 (NK, added intersection with other sets)
-%               01-July-2021 (MW, bug fix in 1D intersection)
+%               12-Mar-2021 (MW, add empty case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -63,6 +63,11 @@ function res = isIntersecting(obj1,obj2,varargin)
     % interval and interval intersection
     if isa(obj2,'interval')
         
+        % empty case
+        if isempty(obj1) || isempty(obj2)
+            res = false; return;
+        end
+        
         res = true;
         
         % get object properties
@@ -80,24 +85,19 @@ function res = isIntersecting(obj1,obj2,varargin)
         end
         
     elseif isa(obj2,'halfspace') || isa(obj2,'conHyperplane') || ...
-           isa(obj2,'mptPolytope')
+           isa(obj2,'mptPolytope') || isa(obj2,'ellipsoid')
         
         res = isIntersecting(obj2,obj1,type);
         
     else
         
         % exact or over-approximative algorithm
-        if strcmp(type,'exact')
-           
+        if strcmp(type,'exact')           
             res = isIntersecting(obj2,obj1,type);
-            
         else
-            
             res = isIntersecting(mptPolytope(obj1),obj2,type);
-            
         end
     end
-    
 end
 
 
@@ -105,7 +105,6 @@ end
 
 function res = isIntersecting1D(inf1,sup1,inf2,sup2)
 % check if two one-dimensional intervals intersect
-
     res = false;
 
     if inf1 <= inf2
@@ -119,7 +118,15 @@ function res = isIntersecting1D(inf1,sup1,inf2,sup2)
         end
         
     end
-    
+
+    % previous check
+%     if ((sup1 <= sup2) && (sup1 >= inf2)) || ...
+%        ((inf1 <= sup2) && (inf1 >= inf2)) || ...
+%        ((sup2 <= sup1) && (sup2 >= inf1)) || ...
+%        ((inf2 <= sup1) && (inf2 >= inf1))
+%        
+%         res = true;
+%     end
 end
 
 %------------- END OF CODE --------------

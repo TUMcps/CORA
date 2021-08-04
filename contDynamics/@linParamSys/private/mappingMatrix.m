@@ -3,12 +3,11 @@ function [obj] = mappingMatrix(obj,options)
 % next point in time.
 %
 % Syntax:  
-%    [obj] = mappingMatrix(obj,intermediateOrder)
+%    [obj] = mappingMatrix(obj,options)
 %
 % Inputs:
 %    obj - linParamSys object 
-%    intermediateOrder - order until which the original matrix set
-%    representation is used
+%    options - options struct
 %
 % Outputs:
 %    obj - resulting linParamSys object 
@@ -25,6 +24,7 @@ function [obj] = mappingMatrix(obj,options)
 % Written:      05-August-2010
 % Last update:  02-November-2017
 %               03-November-2017
+%               15-February-2021 (MW, rename: intermediateTerms)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -42,9 +42,9 @@ else
     %mixed computation: first terms are matrix zonotopes, further terms are
     %interval matrices
     if obj.constParam
-        [eZ,eI,zPow,iPow,E]= expmMixed(A,obj.stepSize,options.intermediateOrder,obj.taylorTerms);
+        [eZ,eI,zPow,iPow,E]= expmMixed(A,obj.stepSize,options.intermediateTerms,obj.taylorTerms);
     else
-        [eZ,eI,zPow,iPow,E]= expmIndMixed(A,options.intermediateOrder,obj.taylorTerms);
+        [eZ,eI,zPow,iPow,E]= expmIndMixed(A,options.intermediateTerms,obj.taylorTerms);
     end
 
 end

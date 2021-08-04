@@ -59,7 +59,7 @@ else
 end
 %close expression
 fprintf('%16.16f',sup(i+1));
-fprintf(']);');
+fprintf(']);\n');
 
 %------------- END OF CODE --------------
 

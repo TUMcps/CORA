@@ -70,8 +70,8 @@ R = reach(sys, params, options);
 
 % Simulation --------------------------------------------------------------
 
-simOpt.points = 25;
-simOpt.fracVert = 0.5;
+simOpt.points = 20;
+simOpt.fracVert = 0.1;
 simOpt.fracInpVert = 0.5;
 simOpt.inpChanges = 6;
 
@@ -151,7 +151,7 @@ for i=1:totalSets
     end
     
     % pause for video effect
-    pause(0.2);
+%     pause(0.2);
 end
 
 

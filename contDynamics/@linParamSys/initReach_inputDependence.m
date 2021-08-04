@@ -25,7 +25,7 @@ function [obj,Rfirst,options] = initReach_inputDependence(obj, Rinit, options)
 
 % Author:       Matthias Althoff
 % Written:      01-June-2011
-% Last update:  ---
+% Last update:  15-February-2021 (MW, rename: intermediateTerms)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -37,7 +37,7 @@ obj.taylorTerms = options.taylorTerms;
 % compute mapping matrix
 obj = mappingMatrix(obj,options);
 % compute high order mapping matrix
-obj = highOrderMappingMatrix(obj,options.intermediateOrder);
+obj = highOrderMappingMatrix(obj,options.intermediateTerms);
 % compute time interval error (tie)
 obj = tie(obj);
 % compute reachable set due to input

@@ -25,9 +25,6 @@ function M = abs(intMat)
 
 %------------- BEGIN CODE --------------
 
-Minf=infimum(intMat.int);
-Msup=supremum(intMat.int);
-
-M=max(abs(Minf), abs(Msup));
+M = supremum(abs(intMat.int));
 
 %------------- END OF CODE --------------

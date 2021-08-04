@@ -1,4 +1,4 @@
-function [obj] = inputSolution(obj,options)
+function [obj,options] = inputSolution(obj,options)
 % inputSolution - computes the bloating due to the input 
 %
 % Syntax:  
@@ -6,6 +6,7 @@ function [obj] = inputSolution(obj,options)
 %
 % Inputs:
 %    obj - linearSys object
+%    options - options for the computation of the reachable set
 %
 % Outputs:
 %    obj - linearSys object
@@ -36,9 +37,13 @@ function [obj] = inputSolution(obj,options)
 % set of possible inputs
 V = obj.B*options.U;
 
+options.isRV = true;
+if all(center(V) == zeros(obj.dim,1)) && size(V.Z,2) == 1
+    options.isRV = false;
+end
+
 % compute vTrans 
 vTrans = obj.B*options.uTrans;
-
 % consider constant input
 if ~isempty(obj.c)
     vTrans = vTrans + obj.c;
@@ -52,19 +57,30 @@ r = options.timeStep;
 dim = length(A);
 factors = options.factor;
 
-
-%init Vsum
-Vsum = r*V;
-Asum = r*eye(dim);
-%compute higher order terms
-for i = 1:taylorTerms
-    %compute sums
-    Vsum = Vsum+Apower{i}*factors(i+1)*V;
-    Asum = Asum+Apower{i}*factors(i+1);
+if options.isRV
+    %init Vsum
+    Vsum = r*V;
+    Asum = r*eye(dim);
+    %compute higher order terms
+    for i = 1:taylorTerms
+        %compute sums
+        Vsum = Vsum+Apower{i}*factors(i+1)*V;
+        Asum = Asum+Apower{i}*factors(i+1);
+    end
+    
+    %compute overall solution
+    inputSolV = Vsum+E*r*V;
+    
+else
+    % only Asum, since V == origin (0)
+    Asum = r*eye(dim);
+    %compute higher order terms
+    for i = 1:taylorTerms
+        %compute sum
+        Asum = Asum+Apower{i}*factors(i+1);
+    end
+    
 end
-
-%compute overall solution
-inputSolV = Vsum+E*r*V;
 
 %compute solution due to constant input
 eAtInt = Asum+E*r;
@@ -83,11 +99,12 @@ end
 
 %write to object structure
 obj.taylor.V = V;
-if any(any(inputSolV.Z))
+if options.isRV && any(any(inputSolV.Z))
     obj.taylor.RV = inputSolV;
 else
     obj.taylor.RV = zonotope(zeros(obj.dim,1));
 end
+
 if any(any(inputSolVtrans.Z))
     obj.taylor.Rtrans = inputSolVtrans;
 else

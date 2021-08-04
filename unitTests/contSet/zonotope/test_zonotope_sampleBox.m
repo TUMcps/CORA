@@ -18,7 +18,7 @@ function res = test_zonotope_sampleBox
 %
 % See also: -
 
-% Author:       Victor Gaﬂmann
+% Author:       Victor Gassmann
 % Written:      16-October-2019
 % Last update:  ---
 % Last revision:---
@@ -33,7 +33,7 @@ for i=2:5:30
     Z = zonotope([zeros(i,1),G]);
     X = sampleBox(Z,100);
     %check if all samples are contained in Z
-    if ~all(containsPoint(Z,X))
+    if ~in(Z,X)
         res = false;
         break;
     end

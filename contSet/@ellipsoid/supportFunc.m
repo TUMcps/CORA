@@ -1,10 +1,10 @@
-function val = supportFunc(E,dir,varargin)
+function [val,x] = supportFunc(E,dir,varargin)
 % supportFunc - Calculate the upper or lower bound of an ellipsoid object
 %               along a certain direction (see Def. 2.1.2 in [1]) 
 %
 % Syntax:  
-%    val = supportFunc(E,dir)
-%    val = supportFunc(E,dir,type)
+%    [val,x] = supportFunc(E,dir)
+%    [val,x] = supportFunc(E,dir,type)
 %
 % Inputs:
 %    E   - ellipsoid object
@@ -14,6 +14,7 @@ function val = supportFunc(E,dir,varargin)
 %
 % Outputs:
 %    val - bound of the ellipsoid in the specified direction
+%    x   - point for which holds: dir'*x=val
 %
 % Example: 
 %    E = ellipsoid([5 7;7 13],[1;2]);
@@ -37,7 +38,8 @@ function val = supportFunc(E,dir,varargin)
 
 % Author:       Victor Gassmann
 % Written:      20-November-2019
-% Last update:  ---
+% Last update:  12-March-2021
+%               27-July-2021 (fixed degenerate case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -49,30 +51,48 @@ function val = supportFunc(E,dir,varargin)
         type = varargin{1};
     end
 
-    % compute support function
-    l = dir/norm(dir);
-    E0 = ellipsoid(E.Q);
-    
     if strcmp(type,'upper')
-        val = l'*center(E) + suppfnc(E0,l);
+        s = 1;
     else
-        val = l'*center(E) - suppfnc(E0,l);
+        s = -1;
+        
     end
-    
-    val = val * norm(dir);
-    
-end
-
-
-% Auxiliary Functions -----------------------------------------------------
-
-function [S] = suppfnc(E,l)
-
-    S = zeros(size(l,2),1);
-    
-    for i=1:size(l,2)
-        S(i) = l(:,i)'*E.q + sqrt(l(:,i)'*E.Q*l(:,i));
+    val = dir'*E.q + s*sqrt(dir'*E.Q*dir);
+    if nargout > 1
+        H = conHyperplane(dir',val);
+        n_nd = rank(E);
+        n = dim(E);
+        T = eye(n);
+        qt_rem = [];
+        
+        if rank(E)==0
+            x = E.q;
+            return;
+        elseif n_nd<n
+            % remove degenerate dimension and reduce E and hyperplane
+            [T,~,~] = svd(E.Q);
+            dir_t = dir'*T;
+            
+            % check if chosen direction is aligned with one of the
+            % degenerate directions
+            if any(withinTol(dir_t(1:n_nd),0,E.TOL))
+                % this results in a 0=0 type equation (so no constraint on
+                % the remaining variables) => choose center as point
+                x = E.q;
+                return;
+            end
+            E = T'*E;
+            qt_rem = E.q(n_nd+1:end);
+            % project both into non-degenerate dimensions
+            H = conHyperplane(dir_t(1:n_nd),val-dir_t(n_nd+1:end)*qt_rem);
+            E = project(E,1:n_nd);
+        end
+        % find point x which attains the value by forming hyperplane and
+        % intersecting with ellipsoid
+        E_res = E&H;
+        assert(~isempty(E_res),'intersection with tangent hp should not be empty');
+        % basically contains only 1 point
+        x = T*[E_res.q;qt_rem];
     end
 end
-
 %------------- END OF CODE --------------

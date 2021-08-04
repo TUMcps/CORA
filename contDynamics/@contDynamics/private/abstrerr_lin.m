@@ -48,6 +48,9 @@ totalInt_u = IHu + obj.linError.p.u;
 
 
 if options.tensorOrder == 2
+    
+    % assign correct hessian (using interval arithmetic)
+    obj = setHessian(obj,'int');
 
     % obtain maximum absolute values within IHx, IHu
     dx = max(abs(infimum(IHx)),abs(supremum(IHx)));
@@ -90,6 +93,10 @@ if options.tensorOrder == 2
 
 elseif options.tensorOrder == 3
 
+    % set handles to correct files
+    obj = setHessian(obj,'standard');
+    obj = setThirdOrderTensor(obj,'int');
+    
     % obtain intervals and combined interval z
     dz = [IHx; IHu];
 

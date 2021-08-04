@@ -17,7 +17,7 @@ function val = hausdorffDist(pZ,points,varargin)
 %
 % Examples:
 %    pZ = polyZonotope([0;0],[2 0 2;0 2 2],[0;0],[1 0 3;0 1 1]);
-%    points = pointSet(pZ,10000);
+%    points = randPoint(pZ,10000);
 %
 %    dist = hausdorffDist(pZ,points,8)
 %

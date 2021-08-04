@@ -28,6 +28,7 @@ function h=plot(E,varargin)
 % Author:       Victor Gassmann, Mark Wetzlinger
 % Written:      13-March-2019
 % Last update:  14-July-2020 (merge with plotFilled)
+%               12-March-2021
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -50,34 +51,43 @@ elseif nargin>=3
     [NVpairs,filled] = readNameValuePair(NVpairs,'Filled','islogical');
 end
 
-N = 1000;
-t = linspace(0,2*pi,N);
-L = [cos(t);sin(t)];
-if length(E.Q)==1%scalar
-    dims = 1;
+% check dimension
+if length(dims) < 2
+    error('At least 2 dimensions have to be specified!');
+elseif length(dims) > 3
+    error('Only up to 3 dimensions can be plotted!');
 end
-% project ellipsoid
-E_p = project(E,dims);
-%Since L only contains unit vectors l, we know that there exists a y such
-%that l'*y = suppfnc(E_p,L)=l'*q+sqrt(l'*Q*l). Therefore, y =
-%q+Q*l/sqrt(l'*Q*l).
-if length(E.Q)==1
-    Y = boundary(E,2);%N=2 here returns exactly the two boundary points
-    % no filled in case of one-dimensional ellipsoid
-    h = plot(Y,zeros(size(Y)),linespec,NVpairs{:});
-    set(gca,'ytick',[],'Ycolor','w','box','off')
-    return;
-end
-Y = zeros(length(dims),size(L,2));
-for i=1:size(L,2)
-    l = L(:,i);
-    Y(:,i) = E_p.q + E_p.Q*l/sqrt(l'*E_p.Q*l);
-end
-%plot and output the handle
-if filled
-    h = fill(Y(1,:),Y(2,:),linespec,NVpairs{:});
+
+% 2D vs 3D plot
+if length(dims) == 2
+
+    N = 1000;
+    % project ellipsoid
+    E_p = project(E,dims);
+    %Since L only contains unit vectors l, we know that there exists a y
+    %such that l'*y = suppfnc(E_p,L)=l'*q+sqrt(l'*Q*l). Therefore, y =
+    %q+Q*l/sqrt(l'*Q*l).
+%     if E_p.rank<=1
+%         Y = boundary(E_p,2);%N=2 here returns exactly the two boundary points
+%         % no filled in case of rank-1 ellipsoid
+%         h = plot(Y(1,:),Y(2,:),linespec,NVpairs{:});
+%         return;
+%     end
+    Y = boundary(E_p,N);
+    %plot and output the handle
+    if filled
+        h = fill(Y(1,:),Y(2,:),linespec,NVpairs{:});
+    else
+        h = plot(Y(1,:),Y(2,:),linespec,NVpairs{:});
+    end
+
 else
-    h = plot(Y(1,:),Y(2,:),linespec,NVpairs{:});
+    % enclose ellipsoid with zonotope
+    E = project(E,dims);
+    Z = zonotope(E,100,'o:norm');
+    
+    % plot zonotope enclosure
+    h = plot(Z,[1,2,3],linespec,NVpairs{:},'Filled',filled);
 end
 
 %------------- END OF CODE --------------

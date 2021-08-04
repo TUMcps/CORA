@@ -11,7 +11,8 @@ function pZ = deleteZeros(pZ)
 %    pZ - polyZonotope object
 %
 % Example:
-%    pZ = polyZonotope([1;3],[1 2 0;1 -2 0],[1 0 2;0 0 -1],[1 2;1 1;2 1]);
+%    pZ = polyZonotope([1;3],[1 2 0;1 -2 0],[1 0 2;0 0 -1], ...
+%                      [1 0 1;0 0 1;1 2 1]);
 %    pZ = deleteZeros(pZ)
 %
 % Other m-files required: none
@@ -36,8 +37,14 @@ if ~( all(idxD) && all(idxI) )
     % delete zero generators
     pZ.G = pZ.G(:,idxD);
     pZ.expMat = pZ.expMat(:,idxD);
-    % something to do with pZ.id?
     pZ.Grest = pZ.Grest(:,idxI);
+    
+    % delete zero exponents
+    idxE = any(pZ.expMat,2);
+    if ~all(idxE)
+        pZ.expMat = pZ.expMat(idxE,:);
+        pZ.id = pZ.id(idxE);
+    end
 else
     return
 end

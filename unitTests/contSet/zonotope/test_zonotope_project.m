@@ -43,38 +43,9 @@ true_mat = [-4, -3, -2, -1; ...
 % check result
 res_val = all(all(Zmat == true_mat));
 
-% 2. Random Tests ---------------------------------------------------------
-
-dims = 5:5:100;
-testsPerDim = 1000;
-
-% box has to be the same as conversion to interval
-for d=1:length(dims)
-    for test=1:testsPerDim
-        % create a random zonotope
-        nrOfGens = randi([10,25],1,1);
-        c = -1+2*rand(dims(d),1);
-        G = -1+2*rand(dims(d),nrOfGens);
-        Z = zonotope(c,G);
-
-        % choose random subspace
-        projDims = randi([1,dims(d)],1,2);
-
-        % project original center and generator matrix
-        cproj = c(projDims);
-        Gproj = G(projDims,:);
-        
-        % project zonotope
-        Zproj = project(Z,projDims);
-        
-        % check projections return the same result
-        res_rand(d,test) = all(~any(abs(Zproj.Z - [cproj,Gproj])));
-    end
-end
-
 
 % add results
-res = res_val && all(all(res_rand));
+res = res_val;
 
 if res
     disp('test_zonotope_project successful');

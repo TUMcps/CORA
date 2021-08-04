@@ -29,10 +29,9 @@ function [R,res] = reach(obj,params,options,varargin)
 %------------- BEGIN CODE --------------
 
     res = 1;
-
-    % options preprocessing 
-    options = params2options(params,options);
-    options = checkOptionsReach(obj,options);
+    
+    % new options preprocessing
+    options = validateOptions(obj,mfilename,params,options);
 
     options.specification = [];
     if nargin >= 4

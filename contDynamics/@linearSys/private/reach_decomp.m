@@ -47,6 +47,9 @@ end
 
 
 % initialize reachable set computations -----------------------------------
+% log information
+verboseLog(1,options.tStart,options);
+% init reach step
 [Yhat0, options] = initReach_Decomp(obj, options.R0, options);
 % quick exit if violation already
 if isfield(options,'specification')
@@ -82,9 +85,6 @@ eAt   = obj.taylor.eAt; % used every step for update of P and Q
 P     = speye(obj.dim);
 Q     = obj.taylor.eAt;
 tVec  = options.tStart:options.timeStep:options.tFinal;
-if isfield(options,'verbose') && options.verbose
-    fprintf("Total number of iterations: " + (length(tVec)-1) + "\n");
-end
 % -------------------------------------------------------------------------
 
 
@@ -101,6 +101,9 @@ Yhatk_tp   = cell(options.blocks,1);
 tic;
 % loop over all further time steps of reachability analysis ---------------
 for k=2:length(tVec)-1
+    
+    % log information
+    verboseLog(k,tVec(k),options);
     
     % compute next reachable set
     for bi=1:options.blocks
@@ -198,16 +201,11 @@ for k=2:length(tVec)-1
         end
     end
     
-    if isfield(options,'verbose') && options.verbose
-        if (mod(k,10) == 0)
-            fprintf("..iteration " + k + "\n");
-        end
-    end
-    
-    
 end
 % -------------------------------------------------------------------------
 
+% log information
+verboseLog(length(tVec),tVec(end),options);
 
 % no violation of specification
 res = true;

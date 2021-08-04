@@ -73,6 +73,10 @@ elseif isnumeric(summand)
     %Calculate Minkowski sum
     C.c = C.c + summand;
     
+elseif isa(summand,'conPolyZono')
+    
+    C = summand + C;
+    
 %something else?    
 else
     % throw error for given arguments

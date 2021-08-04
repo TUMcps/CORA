@@ -6,10 +6,10 @@ function completed = example_nonlinearParam_reach_03_tank_linearRemainder()
 % 
 %
 % Syntax:  
-%    example_nonlinearParam_reach_01_tank
+%    example_nonlinearParam_reach_03_tank_linearRemainder
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    res - boolean 
@@ -23,7 +23,7 @@ function completed = example_nonlinearParam_reach_03_tank_linearRemainder()
 %        of nonlinear systems with uncertain parameters using
 %        conservative linearization. CDC 2008
 % 
-% Author:       Victor Ga�mann
+% Author:       Victor Gassmann
 % Written:      23-May-2019
 % Last update:  23-April-2020 (restructure params/options)
 % Last revision:---
@@ -37,19 +37,18 @@ dim_x=6;
 params.R0=zonotope([[2; 4; 4; 2; 10; 4],1*eye(dim_x)]);
 params.U=zonotope([0,0.005]); %input for reachability analysis
 params.tFinal=20; %final time
-
+params.paramInt=interval(0.015,0.015); %parameter intervals for reachability analysis
 
 % Reachability Settings ---------------------------------------------------
 
 options.timeStep=1;
 options.taylorTerms=4; %number of taylor terms for reachable sets
-options.intermediateOrder = 4;
+options.intermediateTerms = 4;
 options.zonotopeOrder=10; %zonotope order
 options.maxError = 0.1*ones(dim_x,1);
 options.reductionInterval=1e3;
 options.tensorOrder = 2;
 options.alg = 'lin';
-options.paramInt=interval(0.015,0.015); %parameter intervals for reachability analysis
 
 
 % System Dynamics ---------------------------------------------------------
@@ -78,6 +77,7 @@ simOpt.points = 60;
 simOpt.fracVert = 0.5;
 simOpt.fracInpVert = 0.5;
 simOpt.inpChanges = 6;
+params = rmfield(params,'paramInt');
 
 simRes = simulateRandom(tank, params, simOpt);
 

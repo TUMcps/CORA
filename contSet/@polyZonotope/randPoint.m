@@ -1,11 +1,16 @@
-function [p] = randPoint(pZ)
+function p = randPoint(obj,varargin)
 % randPoint - generates a random point within a polynomial zonotope
 %
 % Syntax:  
-%    [p] = randPoint(pZ)
+%    p = randPoint(obj)
+%    p = randPoint(obj,N)
+%    p = randPoint(obj,N,type)
+%    p = randPoint(obj,'all','extreme')
 %
 % Inputs:
-%    pZ - polyZonotope object
+%    obj - polyZonotope object
+%    N - number of random points
+%    type - type of the random point ('standard' or 'extreme')
 %
 % Outputs:
 %    p - random point in R^n
@@ -23,7 +28,7 @@ function [p] = randPoint(pZ)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: randPointExtreme
+% See also: zonotope/randPoint
 
 % Author:       Niklas Kochdumper
 % Written:      23-March-2018
@@ -32,28 +37,38 @@ function [p] = randPoint(pZ)
 
 %------------- BEGIN CODE --------------
 
+    % parse input arguments
+    N = 1;
+    type = 'standard';
+    if nargin > 1 && ~isempty(varargin{1})
+       N = varargin{1}; 
+    end
+    if nargin > 2 && ~isempty(varargin{2})
+       type = varargin{2}; 
+    end
+
+    % get object properties
+    m = length(obj.id); q = size(obj.Grest,2); 
+    
+    % compute random points for factor domain interval \alpha \in [-1,1]
+    dom = interval(-ones(m+q,1),ones(m+q,1));
+
+    fac = randPoint(dom,N,type);
+
     % center
-    p = pZ.c;
+    p = obj.c * ones(1,size(fac,2));
 
     % Part 1: dependent generators
-    if ~isempty(pZ.G)
-
-        % genrator factors randomly in the interval [-1,1]
-        N = size(pZ.expMat,1);
-        beta = rand(N,1)*2 - ones(N,1);
-
-        fact = prod(beta.^pZ.expMat,1);
-        p = p + pZ.G * fact';
+    if ~isempty(obj.G)
+        for i = 1:size(fac,2)
+            p(:,i) = p(:,i) + obj.G * prod(fac(1:m,i).^obj.expMat,1)';
+        end
     end
 
     % Part 2: independent generators
-    if ~isempty(pZ.Grest)
-
-        % genrator factors randomly in the interval [-1,1]
-        N = size(pZ.Grest,2);
-        alpha = rand(N,1)*2 - ones(N,1);
-
-        p = p + pZ.Grest * alpha;
+    if ~isempty(obj.Grest)
+        p = p + obj.Grest * fac(m+1:end,:);
     end
+end
 
 %------------- END OF CODE --------------

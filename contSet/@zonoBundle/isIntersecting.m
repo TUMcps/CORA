@@ -23,13 +23,11 @@ function res = isIntersecting(obj1,obj2,varargin)
 %    isIntersecting(zB,int1)
 %    isIntersecting(zB,int2)
 %
-%    figure
-%    hold on
+%    figure; hold on
 %    plot(zB,[1,2],'b');
 %    plot(int1,[1,2],'g');
 %    
-%    figure
-%    hold on
+%    figure; hold on
 %    plot(zB,[1,2],'b');
 %    plot(int2,[1,2],'r');
 %
@@ -55,7 +53,7 @@ function res = isIntersecting(obj1,obj2,varargin)
     
     % call function for other set representations
     if isa(obj2,'halfspace') || isa(obj2,'conHyperplane') || ...
-       isa(obj2,'mptPolytope')
+       isa(obj2,'mptPolytope') || isa(obj2,'ellipsoid')
    
         res = isIntersecting(obj2,obj1,varargin{:});
    

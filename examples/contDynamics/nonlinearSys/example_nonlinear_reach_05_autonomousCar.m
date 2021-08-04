@@ -75,7 +75,7 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 simOpt.points = 60;
 simOpt.fracVert = 0.5;
 simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
+simOpt.inpChanges = 400;
 
 % random simulation
 simRes = simulateRandom(vehicle, params, simOpt);

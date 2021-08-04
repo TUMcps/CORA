@@ -124,10 +124,7 @@ methods
         % get name from function handle
         if isempty(name)    
             name = func2str(fun);
-            name = strrep(name,'@',''); 
-            name = strrep(name,'(',''); 
-            name = strrep(name,')',''); 
-            name = strrep(name,',','');
+            name = replace(name,{'@','(',')',','},'');
             if ~isvarname(name)
                 name = 'nonlinParamSys';
             end
@@ -141,7 +138,7 @@ methods
                 params = max(1,temp(3));
             catch
                 error(['Failed to determine number of states and ' ...
-                       'inputs auotmatically! Please provide number of ' ...
+                       'inputs automatically! Please provide number of ' ...
                        'states, inputs, and parameter as additional ', ...
                        'input arguments!']); 
             end
@@ -158,21 +155,31 @@ methods
            obj.constParam = 0; 
         end
 
-        str = ['obj.jacobian = @jacobian_',name,';'];
-        eval(str);
-        
-        str = ['obj.jacobian_freeParam = @jacobian_freeParam_',name,';'];
-        eval(str);
-        
-        str = ['obj.hessian = @hessianTensor_',name,';'];
-        eval(str);
-        
-        str = ['obj.thirdOrderTensor = @thirdOrderTensor_',name,';'];
-        eval(str);
-        
-        str = ['obj.parametricDynamicFile = @parametricDynamicFile_',name,';'];
-        eval(str);
+        obj.jacobian = eval(['@jacobian_',name]);
+        obj.jacobian_freeParam = eval(['@jacobian_freeParam_',name]);
+        obj.hessian = eval(['@hessianTensor_',name]);
+        obj.thirdOrderTensor = eval(['@thirdOrderTensor_',name]);
+        obj.parametricDynamicFile = eval(['@parametricDynamicFile_',name]);
     end
+    
+    
+    function obj = setHessian(obj,version)
+        % allow switching between standard and interval arithmetic
+        if strcmp(version,'standard')
+            obj.hessian = eval(['@hessianTensor_' obj.name]);
+        elseif strcmp(version,'int')
+            obj.hessian = eval(['@hessianTensorInt_' obj.name]);
+        end
+    end
+    function obj = setThirdOrderTensor(obj,version)
+        % allow switching between standard and interval arithmetic
+        if strcmp(version,'standard')
+            obj.thirdOrderTensor = eval(['@thirdOrderTensor_' obj.name]);
+        elseif strcmp(version,'int')
+            obj.thirdOrderTensor = eval(['@thirdOrderTensorInt_' obj.name]);
+        end
+    end
+    
 end
 end
 

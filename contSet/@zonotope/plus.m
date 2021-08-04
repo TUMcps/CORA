@@ -1,5 +1,5 @@
 function Z = plus(summand1,summand2)
-% plus - Overloaded '+' operator for the Minkowski addition of two
+% plus - overloaded '+' operator for the Minkowski addition of two
 %    zonotopes or a zonotope with a vector
 %
 % Syntax:  
@@ -10,7 +10,7 @@ function Z = plus(summand1,summand2)
 %    summand2 - zonotope object or numerical vector
 %
 % Outputs:
-%    Z - Zonotope after Minkowski addition
+%    Z - zonotope after Minkowski addition
 %
 % Example: 
 %    Z=zonotope([1 1 0; 0 0 1]);
@@ -18,10 +18,11 @@ function Z = plus(summand1,summand2)
 %    summand2=[2; 2];
 %    Z1=Z+summand1;
 %    Z2=Z+summand2;
-%    plot(Z);
-%    hold on
-%    plot(Z1);
-%    plot(Z2);
+%
+%    figure; hold on;
+%    plot(Z,[1,2],'b');
+%    plot(Z1,[1,2],'r');
+%    plot(Z2,[1,2],'g');
 %
 % References:
 %    [1] M. Althoff. "Reachability analysis and its application to the 
@@ -68,7 +69,8 @@ function Z = plus(summand1,summand2)
         Z = Z + zonotope(summand);
 
     elseif isa(summand,'mptPolytope') || isa(summand,'conZonotope') || ...
-           isa(summand,'zonoBundle') || isa(summand,'polyZonotope')
+           isa(summand,'zonoBundle') || isa(summand,'polyZonotope') || ...
+           isa(summand,'conPolyZono')
 
         Z = summand + Z;        
 

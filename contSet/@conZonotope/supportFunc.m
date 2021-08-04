@@ -17,6 +17,20 @@ function [val,x,ksi] = supportFunc(obj,dir,varargin)
 %    x - support vector
 %    ksi - factor values that correspond to the bound
 %
+% Example:
+%    Z = [0 1 0 1;0 1 2 -1];
+%    A = [-2 1 -1];
+%    b = 2;
+%    cZ = conZonotope(Z,A,b);
+%
+%    dir = [1;1];
+%    val = supportFunc(cZ,dir);
+%
+%    figure; hold on;
+%    xlim([-3,1]); ylim([-3,4]);
+%    plot(cZ);
+%    plot(conHyperplane(dir,val),[1,2],'r');
+%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

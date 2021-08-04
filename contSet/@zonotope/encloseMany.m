@@ -7,7 +7,7 @@ function [Zenclose,rotMatrixInv] = encloseMany(Z,direction)
 % Inputs:
 %    Z - cell array of zonotopes to be enclosed
 %    direction - mean direction, in which the zonotopes to be enclosed are
-%    heading to
+%                heading to
 %
 % Outputs:
 %    Zenclose - enclosing zonotope (which is an oriented rectangular hull)

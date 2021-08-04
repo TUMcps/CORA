@@ -2,7 +2,7 @@ function res = test_zonotope_cartProd
 % test_zonotope_cartProd - unit test function of cartesian product
 %
 % Syntax:  
-%    res = test_cartProd
+%    res = test_zonotope_cartProd
 %
 % Inputs:
 %    -

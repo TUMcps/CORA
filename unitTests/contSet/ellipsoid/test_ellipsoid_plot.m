@@ -1,7 +1,5 @@
 function res = test_ellipsoid_plot
-% test_ellipsoid_plot - unit test function of plot; this function aims
-%    to go through many variations of input arguments
-%    note: only run-time errors checked, go through manually to check for bugs
+% test_ellipsoid_plot - unit test function of plot
 %
 % Syntax:  
 %    res = test_ellipsoid_plot
@@ -20,34 +18,45 @@ function res = test_ellipsoid_plot
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      04-August-2020
+% Author:       Victor Gassmann
+% Written:      27-July-2021
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
 res = true;
+load cases.mat E_c
+for i=1:length(E_c)
+    E1 = E_c{i}.E1;
+    Ed1 = E_c{i}.Ed1;
+    E0 = E_c{i}.E0;
+    
+    res = tryPlot(E1) && tryPlot(Ed1) && tryPlot(E0);
+    
+    if ~res
+        break;
+    end
+    
+end
 
-% create a random psd Q matrix
-dim_x = 4;
-O = orth(randn(dim_x));
-D = diag(abs(randn(dim_x,1)) + 0.3);
-Q = O*D*O';
 
-% generate ellipsoid
-E = ellipsoid(Q);
+if res
+    disp([mfilename,' successful']);
+else
+    disp([mfilename,' failed']);
+end
 
+end
+
+%-- helper
+function res = tryPlot(E)
+res = true;
 try
     % try all variations in plotting
-    figure;
+    h = figure;
     
     % one argument: object
     plot(E);
-    
-    % two arguments: object, dimensions
-    plot(E,[1,2]);
-    plot(E,[2,3]);
     
     % three arguments: object, dimensions, linespec
     plot(E,[1,2],'r+');
@@ -59,24 +68,21 @@ try
     % three arguments: object, dimensions, NVpair 'Filled'
     plot(E,[1,2],'Filled',true);
     plot(E,[1,2],'Filled',true,'LineWidth',2);
-    plot(E,[1,2],'Filled',true,'EdgeColor','k','FaceColor',[.8 .8 .8]);
+    if isFullDim(project(E,[1,2]))
+        plot(E,[1,2],'Filled',true,'EdgeColor','k','FaceColor',[.8 .8 .8]);
+    end
     
     % four arguments: object, dimensions, linespec, NVpairs
     plot(E,[1,2],'r','Filled',true,'LineWidth',2);
-    plot(E,[1,2],'r','Filled',true,'LineWidth',2,'EdgeColor',[.6 .6 .6]);
+    if isFullDim(project(E,[1,2]))
+        plot(E,[1,2],'r','Filled',true,'LineWidth',2,'EdgeColor',[.6 .6 .6]);
+    end
     
     % close figure
-    close;
+    close(h);
 catch
     close;
     res = false;
 end
-
-if res
-    disp('test_plot successful');
-else
-    disp('test_plot failed');
 end
-
 %------------- END OF CODE --------------
-

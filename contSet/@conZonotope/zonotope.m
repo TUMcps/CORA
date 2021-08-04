@@ -34,16 +34,22 @@ function res = zonotope(obj,varargin)
 
 % Author:       Niklas Kochdumper
 % Written:      13-May-2018
-% Last update:  09-September-2020 (VG, add empty case)
+% Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
+    % handle trivial cases
     if isempty(obj)
         res = zonotope();
         return;
     end
 
+    if isempty(obj.A)
+       res = zonotope(obj.Z);
+       return;
+    end
+    
     % parse input arguments
     alg = 'nullSpace';
     if nargin >= 2
@@ -101,7 +107,14 @@ function res = zonotopeNullSpace(obj)
         ub(i) = -fval;
     end
     
-    int = interval(lb,ub);
+    % handle case where linprog returns very close lb/ub (single point)
+    dummy = norm(ub); dummy(dummy==0) = 1;
+    if norm(ub-lb)/dummy < 1e-12
+        meanval = 0.5*(ub+lb);
+        int = interval(meanval,meanval);
+    else
+        int = interval(lb,ub);
+    end
     
     % compute transformation matrices
     off = p_ + T*center(int);

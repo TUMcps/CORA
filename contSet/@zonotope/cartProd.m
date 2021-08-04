@@ -1,5 +1,5 @@
 function Z = cartProd(Z1,Z2)
-% cartProd - Returns the cartesian product of two zonotopes
+% cartProd - returns the cartesian product of two zonotopes
 %
 % Syntax:  
 %    Z = cartProd(Z1,Z2)
@@ -59,14 +59,16 @@ if isa(Z1,'zonotope')
         Z = cartProd(mptPolytope(Z1),Z2);
     elseif isa(Z2,'polyZonotope')
         Z = cartProd(polyZonotope(Z1),Z2);
+    elseif isa(Z2,'conPolyZono')
+        Z = cartProd(conPolyZono(Z1),Z2);
     else
         % throw error for given arguments
         error(noops(Z1,Z2));
     end
 
-else
+elseif isa(Z2,'zonotope')
 
-    % different cases for different set representations
+    % first argument is a vector
     if isnumeric(Z1)
 
         c = [Z1;center(Z2)];
@@ -78,7 +80,12 @@ else
         error(noops(Z1,Z2));
     end  
     
-end
+else
+    
+    % throw error for given arguments
+    error(noops(Z1,Z2));
+end  
+    
     
     
 end

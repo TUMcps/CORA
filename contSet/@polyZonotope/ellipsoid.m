@@ -1,11 +1,14 @@
-function E = ellipsoid(pZ)
+function E = ellipsoid(pZ,varargin)
 % ellipsoid - computes an enclosing ellipsoid for the polynomial zonotope
 %
 % Syntax:  
 %    E = ellipsoid(pZ)
+%    E = ellipsoid(pZ,method)
 %
 % Inputs:
 %    pZ - polyZonotope object
+%    method - range bounding method that is applied ('interval', ...
+%             'split', 'bnb', 'bnbAdv', 'globOpt' or 'bernstein')
 %
 % Outputs:
 %    E - ellipsoid object
@@ -23,7 +26,7 @@ function E = ellipsoid(pZ)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval, mptPolytope
+% See also: supportFunc, interval, mptPolytope
 
 % Author:       Niklas Kochdumper
 % Written:      02-June-2020
@@ -32,9 +35,11 @@ function E = ellipsoid(pZ)
 
 %------------- BEGIN CODE --------------
 
-    % center polynomial zonotope at origin
-    c = center(pZ);
-    pZ = pZ + (-c);
+    % parse input arguments
+    method = 'bernstein';
+    if nargin > 1
+       method = varargin{1}; 
+    end
 
     % compute basis with Principal Component Analysis
     G = [pZ.G,pZ.Grest];
@@ -42,6 +47,7 @@ function E = ellipsoid(pZ)
     
     % compute interval enclosure in the transformed space
     int = interval(B'*pZ);
+    pZ = pZ + (-B*center(int));
     
     % compute Q matrix of the ellipsoid
     E = ellipsoid(diag(rad(int).^2));
@@ -52,9 +58,9 @@ function E = ellipsoid(pZ)
     pZ_ = quadMap(pZ,Q);
     
     % use range bounding to get radius of the ellipsoid
-    r = supportFunc(pZ_,1,'upper','bernstein');
+    r = supportFunc(pZ_,1,'upper',method);
     
     % construct final ellipsoid
-    E = ellipsoid((E.Q)*r,c);
+    E = ellipsoid((E.Q)*r,B*center(int));
     
 %------------- END OF CODE --------------

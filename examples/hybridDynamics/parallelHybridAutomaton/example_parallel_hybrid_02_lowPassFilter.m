@@ -7,7 +7,7 @@ function res = example_parallel_hybrid_02_lowPassFilter()
 %    example_parallel_hybrid_02_lowPassFilter
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    res - boolean, true if completed

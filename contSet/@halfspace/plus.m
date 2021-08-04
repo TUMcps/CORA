@@ -21,31 +21,42 @@ function [h] = plus(summand1,summand2)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      28-August-2013
-% Last update:  ---
+% Last update:  16-March-2021 (MW, error handling)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-%Find a halfspace object
-%Is summand1 a halfspace?
+% pre-processing: assign halfspace and summand
 if isa(summand1,'halfspace')
-    %initialize resulting zonotope
     h=summand1;
-    %initialize other summand
     summand=summand2;
-%Is summand2 a zonotope?    
+    
 elseif isa(summand2,'halfspace')
-    %initialize resulting zonotope
+    % switch order
     h=summand2;
-    %initialize other summand
     summand=summand1;  
 end
 
-%Is summand a zonotope?
+% error handling
+if isempty(h)
+    % empty case
+    [msg,id] = errEmptySet();
+    error(id,msg);
+elseif ~isvector(summand)
+    % summand not a vector
+    [msg,id] = errWrongInput('summand');
+    error(id,msg);
+elseif dim(h) ~= length(summand)
+    % dimension mismatch
+    [id,msg] = errDimMismatch();
+    error(id,msg);
+end
+        
+
+% compute Minkowski sum
 if isnumeric(summand)
-    %Calculate minkowski sum
     h.d = h.d + h.c.'*summand;
 else
     h = [];

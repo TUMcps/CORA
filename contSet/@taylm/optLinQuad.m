@@ -147,7 +147,7 @@ function minVal = globalMinimizer(obj,dom)
 
                 % add the subdomain that contains the minimum of the linear
                 % part at position 1 in the priority queue
-                if containsPoint(dom1,xMin)
+                if in(dom1,xMin)
                    domMin{1} = dom1;
                    tayMin{1} = t1;
                    domMin{end+1} = dom2;

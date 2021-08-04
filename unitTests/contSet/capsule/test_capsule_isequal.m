@@ -19,20 +19,71 @@ function res = test_capsule_isequal
 % See also: -
 
 % Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
+% Written:      27-July-2021
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% instantiate capsule
-C1 = capsule([1;1],[1;1],0.5);
-C2 = capsule([1;1],[1;0],0.5);
-C3 = C1;
+res = true;
 
-% compare results
+% empty capsule
+C_empty = capsule();
+
+% tolerance
 tol = 1e-9;
-res = ~isequal(C1,C2,tol) && isequal(C1,C3,tol);
+
+% define properties
+c1 = [2; 0; -1];
+c2 = [-1; 1; 0];
+g1 = [0.2; -0.7; 0.4];
+g2 = [-2; -3; -1];
+r1 = 0.2;
+r2 = 0.6;
+C = capsule(c1,g1,r1);
+
+% test combinations of properties
+% ... different center
+C_ = capsule(c2,g1,r1);
+if isequal(C,C_,tol)
+    res = false;
+end
+
+% ... different generator
+C_ = capsule(c1,g2,r1);
+if isequal(C,C_,tol)
+    res = false;
+end
+
+% ... different radius
+C_ = capsule(c1,g1,r2);
+if isequal(C,C_,tol)
+    res = false;
+end
+
+% ... empty capsule -> dimension mismatch
+try
+    isequal(C,C_empty); % here: error should be thrown
+    res = false;
+catch ME
+    if ~strcmp(ME.identifier,'CORA:dimensionMismatch')
+        % other error than expected
+        res = false;
+    end
+end
+
+% ... capsule of reduced dimension
+C_red = capsule(c1(1:end-1),g1(1:end-1),r1);
+try
+    isequal(C,C_red); % here: error should be thrown
+    res = false;
+catch ME
+    if ~strcmp(ME.identifier,'CORA:dimensionMismatch')
+        % other error than expected
+        res = false;
+    end
+end
+
 
 if res
     disp('test_isequal successful');

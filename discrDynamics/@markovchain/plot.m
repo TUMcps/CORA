@@ -82,8 +82,8 @@ hold on
 %plot trajectories
 for initIndx=1:length(trajectories(:,1))
     for inputIndx=1:length(trajectories(1,:))
-        for iLoc=1:length(trajectories{initIndx,inputIndx}.x)
-            val=trajectories{initIndx,inputIndx}.x{iLoc};
+        for iLoc=1:length(trajectories{initIndx,inputIndx})
+            val=trajectories{initIndx,inputIndx}{iLoc};
             plot(val(:,1),val(:,2),'Color',0.6*[1 1 1]);
         end
     end

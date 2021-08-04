@@ -1,11 +1,12 @@
 function res = mptPolytope(obj)
 % mptPolytope - convert a constrained zonotope object to a mptPolytope
+%               according to Prop. 3 in [1]
 %
 % Syntax:  
 %    res = mptPolytope(obj)
 %
 % Inputs:
-%    obj - c-zonotope object
+%    obj - conZonotope object
 %
 % Outputs:
 %    res - mptPolytope object
@@ -25,20 +26,34 @@ function res = mptPolytope(obj)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: mptPolytope
+%
+% References: 
+%   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
+%       estimation and fault detection"
 
 % Author:       Niklas Kochdumper
 % Written:      13-May-2018
-% Last update:  28-April-2019 (MA, code shortened)
+% Last update:  28-April-2019 (MA, code shortened)      
+%               27-December-2020 (NK, use advanced method)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
     
-% extract vertices of the constrained zonotope
-V = vertices(obj);
-
-% construct MPTpolytope
-res = mptPolytope(V');
-
+    % construct lifted zonotope 
+    c = obj.Z(:,1); 
+    G = obj.Z(:,2:end);
+    
+    zono = zonotope([c;-obj.b],[G;obj.A]);
+    
+    % compute halfspace reprsentation of lifted zonotope
+    poly = mptPolytope(zono);
+    
+    % extract halfspace representation for the constrained zonotope
+    C = poly.P.A;
+    d = poly.P.b;
+    n = dim(obj);
+    
+    res = mptPolytope(C(:,1:n),d);
 
 %------------- END OF CODE --------------

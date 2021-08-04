@@ -11,13 +11,21 @@ function V = vertices(obj)
 %    V - vertices object
 %
 % Example: 
-%    ---
+%    C = [1 0 -1 0 1; 0 1 0 -1 1]';
+%    d = [3; 2; 3; 2; 1];   
+%    poly = mptPolytope(C,d);
+%
+%    V = vertices(poly)
+%
+%    figure; hold on;
+%    plot(poly);
+%    plot(V(1,:),V(2,:),'.k','MarkerSize',20);
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: zonotope/vertices
 
 % Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      01-February-2011
@@ -29,14 +37,23 @@ function V = vertices(obj)
 
 %------------- BEGIN CODE --------------
 
-obj.P.minHRep();
+% check if vertex representation already exists
+if obj.P.hasVRep()
+    
+    V = obj.P.V;
+    V = V';
+    
+else
 
-% for each polytope
-v = []; %init set of vertices
-for i=1:length(obj.P)
-    v_new = lcon2vert(obj.P(i).A,obj.P(i).b,[],[],[],0);
-    v = [v; v_new];
+    obj.P.minHRep();
+
+    % for each polytope
+    v = []; %init set of vertices
+    for i=1:length(obj.P)
+        v_new = lcon2vert(obj.P(i).A,obj.P(i).b,[],[],[],0);
+        v = [v; v_new];
+    end
+    V = v';
 end
-V = v';
 
 %------------- END OF CODE --------------

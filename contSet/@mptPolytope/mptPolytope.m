@@ -1,4 +1,4 @@
-classdef (InferiorClasses = {?interval ?intervalMatrix, ?matZonotope}) mptPolytope
+classdef (InferiorClasses = {?interval ?intervalMatrix, ?matZonotope}) mptPolytope < contSet
 % mptPolytope - object and copy constructor 
 %
 % Syntax:  
@@ -83,6 +83,9 @@ methods
             disp('This class needs more/less input values');
             obj=[];
         end
+        
+        % set parent object properties
+        obj.dimension = obj.P.Dim;
 
     end
 end

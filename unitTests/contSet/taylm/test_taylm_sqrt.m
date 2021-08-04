@@ -1,12 +1,11 @@
-function res = test_taylm_sqrt(~)
-% test_taylm_sqrt - unit-test for Taylor models consisting of
-%                       square root functions
+function res = test_taylm_sqrt
+% test_taylm_sqrt - unit test of square root function
 %
 % Syntax:  
-%    res = test_taylm_sqrt(~)
+%    res = test_taylm_sqrt
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    res - boolean 

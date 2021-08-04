@@ -1,12 +1,12 @@
-function res = test_taylm_plus_minus_times(~)
+function res = test_taylm_plus_minus_times
 % test_taylm_plus_minus_times - unit-tests for Taylor models consisting of 
-%                             plus, minus, and times operations
+%    plus, minus, and times operations
 %
 % Syntax:  
-%    res = test_taylm_plus_minus_times(~)
+%    res = test_taylm_plus_minus_times
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    res - boolean 

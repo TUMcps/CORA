@@ -47,13 +47,26 @@ function han = plot(obj,varargin)
     end
     type = [type,'Filled',true];
 
+    % check dimension
+    if length(dims) < 2
+        error('At least 2 dimensions have to be specified!');
+    elseif length(dims) > 3
+        error('Only up to 3 dimensions can be plotted!');
+    end
+    
     % get size of current plot
     xLim = get(gca,'Xlim');
     yLim = get(gca,'Ylim');
 
     % convert to mptPolytope
-    C = [obj.c(dims)';eye(2);-eye(2)];
-    d = [obj.d;xLim(2);yLim(2);-xLim(1);-yLim(1)];
+    if length(dims) == 2
+        C = [obj.c(dims)';eye(2);-eye(2)];
+        d = [obj.d;xLim(2);yLim(2);-xLim(1);-yLim(1)];
+    else
+        zLim = get(gca,'Zlim');
+        C = [obj.c(dims)';eye(3);-eye(3)];
+        d = [obj.d;xLim(2);yLim(2);zLim(2);-xLim(1);-yLim(1);-zLim(1)];
+    end
 
     poly = mptPolytope(C,d);
 

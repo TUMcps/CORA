@@ -1,5 +1,5 @@
 function res = taylm(obj)
-% taylm - enclose a zonotope object with a Talyor model
+% taylm - enclose a zonotope object with a Taylor model
 %
 % Syntax:  
 %    res = taylm(obj)

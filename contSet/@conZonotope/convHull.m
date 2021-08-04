@@ -45,8 +45,12 @@ function cZ = convHull(cZ1,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % use different algorithm for the case with only two sets
-    if nargin == 2
+    % use different algorithms for the case with only one or two sets
+    if nargin == 1
+        
+        cZ = varargin{1};
+        
+    elseif nargin == 2
 
         cZ2 = varargin{1};
         
@@ -68,7 +72,7 @@ function cZ = convHull(cZ1,varargin)
 
             cZ = convHullconZonotope(cZ1,conZonotope(cZ2));
             
-        elseif isa(cZ2,'polyZonotope')
+        elseif isa(cZ2,'polyZonotope') || isa(cZ2,'conPolyZono')
             
             cZ = convHull(polyZonotope(cZ1),cZ2);
 
