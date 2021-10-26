@@ -54,6 +54,10 @@ elseif options.i > 1
         (options.decrFactor - options.varphi(options.i-1));
     % cap for change in finite horizon
     options.timeStep = finitehorizon;
+    if finitehorizon > options.tFinal - options.t
+        options.timeStep = options.tFinal - options.t;
+        finitehorizon = options.timeStep;
+    end
 end
 
 % iteration counter run:
