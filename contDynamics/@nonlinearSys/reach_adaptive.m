@@ -48,7 +48,7 @@ end
 
 % iteration counter and time for main loop
 options.i = 1;
-options.t = 0;
+options.t = options.tStart;
 
 % MAIN LOOP
 while options.tFinal - options.t > 1e-12
