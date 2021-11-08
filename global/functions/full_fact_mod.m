@@ -1,37 +1,44 @@
-function des_mat= full_fact_mod(levels)
+function des_mat = full_fact_mod(levels)
 % Full Fact: gives full factorial design matrix for any levels  
-% more than 2 of any number of variables (minimum 2)
-% usage: des_mat= full_fact(x1,x2,x3);
-% usage: des_mat = full_fact([-1 1],[100 200 300],[1:4]);
-% 
-%  arguments: (input)
-%  x1,x2, x3-  variable levels either in row or column vector. These are
-%  not number of levels but the levels itself
-%  
-% arguments: (output)
-%  des_mat - mxn m= total number of designs (product of all levels) and  
-%           n is number of variables  
-%            The first column shows all the first variable levels, second 
-%            column shows second variable levels and so on. 
-%  
-% Example usage:
-%  x1=[-1 1];x2=[100:100:300];
-%  des_mat = full_fact(x1,x2) % OR
-%  des_mat = full_fact([-1 1],[100:100:300])
-%  des_mat = 
-%     -1   100
-%     -1   200
-%     -1   300
-%      1   100
-%      1   200
-%      1   300
-% 
-%  Bhaskar Dongare
-%  bhaskar_dongare@yahoo.com
-%  Nov-17-2008
-%  modified: 08-April-2016, Matthias Althoff
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%    more than 2 of any number of variables (minimum 2)
+%
+% Syntax:  
+%    des_mat = full_fact_mod(x1,x2,...);
+%
+% Inputs:
+%    x1, x2, ... - variable levels either in row or column vector.
+%                 These are not number of levels, but the levels itself.
+%
+% Outputs:
+%    des_mat - mxn
+%           m = total number of designs (product of all levels) and  
+%           n = number of variables  
+%           The first column shows all the first variable levels,
+%           the second column shows second variable levels and so on. 
+%
+% Example: 
+%    x1=[-1 1]; x2=[100:100:300];
+%    des_mat = full_fact(x1,x2)
+%    des_mat = 
+%       -1   100
+%       -1   200
+%       -1   300
+%        1   100
+%        1   200
+%        1   300
 
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Author:       Bhaskar Dongare (bhaskar_dongare@yahoo.com), Matthias Althoff
+% Written:      17-November-2008
+% Last update:  08-April-2016 (MA)
+% Last revision:---
+
+%------------- BEGIN CODE --------------
 
 if ~all(levels >1)
     error 'Each variables should have minimum 2 levels'
@@ -56,4 +63,6 @@ for i=1:length(levels)
        temp=sortrows(temp);
     end
     des_mat=[des_mat temp];
-end;
+end
+
+%------------- END OF CODE --------------
