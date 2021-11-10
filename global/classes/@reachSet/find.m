@@ -57,7 +57,7 @@ function res = find(R,prop,val)
     elseif strcmp(prop,'time')
         
         if ~isa(val,'interval')
-            val = interal(time);
+            val = interval(time);
         end
         
         for i = 1:size(R,1)
