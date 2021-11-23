@@ -127,6 +127,10 @@ function Rfin = reachTimeScaled(sys,hs,R0,params,options)
     if isfield(options,'maxError')
        options = rmfield(options,'maxError'); 
     end
+    % prevent validateOptions error
+    if isa(sys,'nonlinParamSys') && ~isfield(options,'intermediateTerms')
+        options.intermediateTerms = 4;
+    end
     
     % compute reachable set until 
     R = reach(sys,params,options,spec);
