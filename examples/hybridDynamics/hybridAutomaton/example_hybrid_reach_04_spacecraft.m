@@ -46,9 +46,6 @@ options.timeStep{2} = 5e-2;
 options.zonotopeOrder = 40; 
 options.taylorTerms = 3;
 
-options.intermediateOrder = 2;
-options.errorOrder = 5;
-
 options.tensorOrder = 2;
 options.alg = 'lin';
 
