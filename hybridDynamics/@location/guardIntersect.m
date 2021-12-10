@@ -82,7 +82,7 @@ function [Rguard,actGuards,minInd,maxInd] = guardIntersect(obj,guards,setInd,Rco
         
         % remove all intersections where the flow does not point in the
         % direction of the guard set
-        if isa(guard,'conHyperplane')
+        if isa(guard,'conHyperplane') || isa(guard,'levelSet')
             [res,P{i}] = checkFlow(obj,guard,P{i},options);
             if ~res
                 continue;
