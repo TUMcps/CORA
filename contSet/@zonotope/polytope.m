@@ -74,7 +74,7 @@ G = generators(Z);
 
 isDeg = 0;
 
-if nrGen >= n
+if rank(G) >= n
     
     if n > 1
         % get number of possible facets
@@ -160,7 +160,7 @@ else
     
     isDeg = 1;
     
-    % singluar value decomposition
+    % singular value decomposition
     [S,V,~] = svd(G);
     V = [V,zeros(n,n-nrGen)];
 
