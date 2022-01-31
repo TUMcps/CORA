@@ -444,7 +444,7 @@ function [fun,funJ] = dynamicFunction(sys)
     J = sym('J',[n,n]);
 
     f_ = fun(x);
-    jac = jacobian(f_);
+    jac = jacobian(f_,x);
 
     Jfun = sym(zeros(n,n));
 

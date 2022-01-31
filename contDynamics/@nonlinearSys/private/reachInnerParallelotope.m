@@ -210,7 +210,7 @@ function fun = dynamicFunctionJacobian(sys)
     u = sym('u',[1,1]);
 
     f_ = fun(x,u);
-    jac = jacobian(f_);
+    jac = jacobian(f_,x);
 
     Jfun = sym(zeros(n,n));
 
