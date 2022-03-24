@@ -226,7 +226,7 @@ while startIdx < size(uTransVec,2)
 end
 
 % remove repeated entries
-uTransVec = uTransVec(:,remIdx);
+uTransVec = obj.B * uTransVec(:,remIdx);
 uTransVecSwitch = uTransVecSwitch(:,remIdx);
 
 end
@@ -365,7 +365,7 @@ if isempty(idxTimeStep) || recompuTrans
     end
     if options.isInput
         options.savedSets{idxTimeStep}.Etu = ...
-            obj.taylor.error * options.timeStep * options.U;
+            obj.taylor.error * options.timeStep * (obj.B * options.U);
     end
 
     if ~recompuTrans
@@ -418,6 +418,8 @@ function options = initTimeStep(obj,options)
 shrinkT = 1 / options.timeStepScaling; % (0, 1)
 options.timeStep = maxTimeStepSize(obj,options);
 
+U = obj.B * options.U;
+
 % loop until bloatings due to Q * F * R0 and Q * E * t * u ...
 %    below their respective allowed thresholds
 while true
@@ -440,7 +442,7 @@ while true
         fracRemTime = options.timeStep / (options.tFinal - options.t);
         ePadm = (options.ePmax - options.ePprev - options.eP) * fracRemTime;
         % compute error
-        Etu = obj.taylor.error * options.timeStep * options.U;
+        Etu = obj.taylor.error * options.timeStep * U;
         ePbox = options.ePbox + sum(abs(generators(Etu)),2);
         eP = norm(ePbox,2);
         % if inhom. error already to big, start loop anew
