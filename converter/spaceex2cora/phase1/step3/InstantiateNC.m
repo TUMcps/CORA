@@ -22,11 +22,14 @@ end
 
 for v=1:numel(child.listOfVar)
     var = child.listOfVar(v).name;
-    child.listOfVar(v).name = bind.renames(v);
+    if isempty(bind.renames(bind.keys==var))
+        error("Rename error in spaceex2cora-InstantiateNC.m!");
+    end
+    child.listOfVar(v).name = bind.renames(bind.keys == var);
     for b=1:numel(child.Binds)
         for r=1:numel(child.Binds(b).renames)
             if child.Binds(b).renames(r) == var
-                child.Binds(b).renames(r) = bind.renames(v);
+               child.Binds(b).renames(r) = bind.renames(bind.keys == var);
             end
         end
     end

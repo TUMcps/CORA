@@ -1,10 +1,11 @@
-function [listOfVar, listOfLab ] = CollectVariables(paramStruct)
+function [listOfVar, listOfLab, localVarNames] = CollectVariables(paramStruct)
 
 %INPUT:
 %   paramStruct: parameters in SX formate given in a matlab struct
 %OUTPUT:
 %   listOfVar: list of variables
 %   listOfLab: list of labels
+
 
 % store variables and labels
 listOfVar = struct([]);
@@ -15,18 +16,19 @@ h_nLab = 0;
 h_nVar = 0;
 
 
+
 % Iterate over parameters to:
 %   -split labels and other variables
-%   -
+%   -detect local variables
 
 % these attributes are needed to parse a param definition
-generalAttr = {'name','type'};
+generalAttr = {'name','type','local'};
 
 for i = 1:length(paramStruct)
     %checking existance of parsed fields
     attrIdx = isfield(paramStruct{i}.Attributes,generalAttr);
     if ~all(attrIdx)
-        error('parameter %d lacking one of necessary fields "name","type"',i);
+        error('parameter %d lacking one of necessary fields "name","type","local"',i);
     end
     
     param_type = paramStruct{i}.Attributes.type;
@@ -49,6 +51,7 @@ for i = 1:length(paramStruct)
             % "I" or "J" as the imaginary number.
             % We perform a transformation on all variable names to avoid this.
             listOfVar(h_nVar).name = replaceImagVarnames(name_unsafe);
+            
     end
     
     % Other fields are not used currently.

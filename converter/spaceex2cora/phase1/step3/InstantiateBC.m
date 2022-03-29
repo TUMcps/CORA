@@ -38,16 +38,29 @@ for st = 1:numStates
 end
 
 % eliminate const from listOfVar
-const = false(numel(child.listOfVar),1);
+% const = false(numel(child.listOfVar),1);
+% for v=1:numel(child.listOfVar)
+%     for p=1:numel(parent.listOfVar)
+%         if strcmp(bind.renames(v), parent.listOfVar(p).name)
+%             child.listOfVar(v).name = bind.renames(v);
+%             const(v) = true;
+%             break
+%         end
+%     end
+% end
+noConst = true(numel(child.listOfVar),1);
 for v=1:numel(child.listOfVar)
-    for p=1:numel(parent.listOfVar)
-        if strcmp(bind.renames(v), parent.listOfVar(p).name)
-            child.listOfVar(v).name = bind.renames(v);
-            const(v) = true;
+    for p=1:numel(bind.keys)
+        if strcmp(bind.keys(p), child.listOfVar(v).name)
+            child.listOfVar(v).name = bind.renames(p);
+            if ~isnan(str2double(bind.renames(p)))
+                noConst(v) = false;
+            end
             break
         end
     end
 end
-child.listOfVar = child.listOfVar(const);
+
+child.listOfVar = child.listOfVar(noConst);
 
 end

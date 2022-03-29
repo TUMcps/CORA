@@ -61,11 +61,11 @@ function [R,Rjump_,res] = reach(obj,R0,tStart,options)
         Rjump_ = cell(length(Rguard),1);
 
         for j = 1:length(Rguard)
-            
+             
             iGuard = actGuards(j);
             
             % compute reset
-            Rjump_{j,1}.set = reset(obj.transition{iGuard},Rguard{j});  
+            Rjump_{j,1}.set = reset(obj.transition{iGuard},Rguard{j},options.U);  
             
             % target location and parent reachable set
             Rjump_{j,1}.loc = obj.transition{iGuard}.target;

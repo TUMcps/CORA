@@ -23,7 +23,7 @@ function [R,res] = reach(obj,params,options,varargin)
 
 % Author:       Niklas Kochdumper
 % Written:      04-July-2018 
-% Last update:  14-June-2020
+% Last update:  10-March-2022
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -46,6 +46,31 @@ function [R,res] = reach(obj,params,options,varargin)
     list{1}.time = interval(options.tStart);
     list{1}.parent = 0;
 
+    % create list of label occurences to check wether all labeled
+    % transitions are enabled at the same time
+    % count in how many components a label occurs
+    labelOccs = containers.Map();
+    for i = 1:length(obj.components)
+        labelsInComponent = [];
+        for j = 1:length(obj.components{i}.location)
+            for k = 1:length(obj.components{i}.location{j}.transition)
+                currentLabel = obj.components{i}.location{j}.transition{k}.synchLabel;
+                if ~isempty(currentLabel)
+                    % check if the label is already accounted for within
+                    % the current component to avoid double counting
+                    if isempty(labelsInComponent) || ~ismember(currentLabel,labelsInComponent)
+                        if labelOccs.isKey(currentLabel)
+                            labelOccs(currentLabel) = labelOccs(currentLabel) + 1;
+                        else
+                            labelOccs(currentLabel) = 1;
+                        end
+                        labelsInComponent = vertcat(labelsInComponent,currentLabel);
+                    end
+                end
+            end
+        end
+    end
+    
     % loop until the queue is empty
     while ~isempty(list) && res
 
@@ -58,7 +83,7 @@ function [R,res] = reach(obj,params,options,varargin)
         list = list(2:end);
         
         % construct new location with local Automaton Product
-        locObj = locationProduct(obj,locID);
+        locObj = locationProduct(obj,locID,labelOccs);
 
         % get input, time step, and specification for the current location
         options.U = mergeInputSet(locID,options);
@@ -91,7 +116,7 @@ function U = mergeInputSet(loc,options)
     
     % loop over all used components
     comp = unique(options.inputCompMap);
-    
+        
     for i = 1:length(comp)
         
        % find indizes of component in input set
@@ -108,5 +133,6 @@ function U = mergeInputSet(loc,options)
        end
     end
 end
+
 
 %------------- END OF CODE --------------

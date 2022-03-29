@@ -134,7 +134,7 @@ for comp = 1:numberOfComp
             statedims = num2str(length(Comp.states));
             inputdims = num2str(length(Comp.inputs));
             
-            printDynamicsFile(path,nonlinName,State.Flow.FormalEqs);
+            printDynamicsFile(path,nonlinName,State.Flow.FormalEqs,"flow");
             
             dynamicsStr = dynamicsC + "dynamics = nonlinearSys(@" + ...
                           nonlinName + "," + statedims + "," + ...
@@ -165,29 +165,75 @@ for comp = 1:numberOfComp
             transDestination = num2str(Tran.destination);
             
             % Get Information for Reset for Transition "trans"
-            resetA = printMatrixConverter(Tran.reset.A);
-            resetAStr = "resetA = ..." + newline + resetA + ";" + newline;
-            resetb = printMatrixConverter(Tran.reset.b);
-            resetbStr = "resetb = ..." + newline + resetb + ";" + newline;
-            
-            % Write Reset String
-            tranResetText = Tran.reset.Text;
-            if tranResetText == ""
-                tranResetText = "no reset equation given";
+            if isfield(Tran.reset,'A')
+                % linear reset
+                resetA = printMatrixConverter(Tran.reset.A);
+                resetAStr = "resetA = ..." + newline + resetA + ";" + newline;
+                resetc = printMatrixConverter(Tran.reset.c);
+                resetcStr = "resetc = ..." + newline + resetc + ";" + newline;
+                if isfield(Tran.reset,'hasInput') && Tran.reset.hasInput
+                    resetB = printMatrixConverter(Tran.reset.B);
+                    resetBStr = "resetB = ..." + newline + resetB + ";" + newline;
+                    resetInputDimStr = "resetInputDim = " + num2str(Tran.reset.inputDim)+";"+newline;
+                end
+                
+                % Write Reset String
+                tranResetText = Tran.reset.Text;
+                if tranResetText == ""
+                    tranResetText = "no reset equation given";
+                end
+                resetComment = text2comment("equation:" + newline + tranResetText) + newline;
+                if isfield(Tran.reset,'hasInput') && Tran.reset.hasInput
+                    resetStr = resetComment + resetAStr +resetBStr + resetcStr + resetInputDimStr + ...
+                        "reset = struct('A', resetA, 'B', resetB,'c', resetc," + ...
+                    "'hasInput',1,'inputDim',resetInputDim);" + newlines(2);
+                else
+                    resetStr = resetComment + resetAStr + resetcStr + ...
+                        "reset = struct('A', resetA, 'c', resetc,'hasInput',0);" + newlines(2);
+                end
+            else
+                % nonlinear reset
+                               
+                % choose name of function
+                if numberOfComp == 1
+                    resetFuncName = sprintf("%s_St%d_Tra%d_ResetEq%d",functionName,state,trans);
+                else
+                    resetFuncName = sprintf("%s_C%d_St%d_Tra%d_ResetEq%d",functionName,comp,state,trans);
+                end
+
+                % generate function file for nonlinear reset                
+                printDynamicsFile(path,resetFuncName,Tran.reset.FormalEqs,"reset");
+                tranResetText = Tran.reset.Text;
+                if tranResetText == ""
+                    tranResetText = "no reset equation given";
+                end
+                
+                % Write Reset String
+                resetComment = text2comment("equation:" + newline + tranResetText) + newline;
+                if isfield(Tran.reset,'hasInput') && Tran.reset.hasInput
+                    resetStr = resetComment + "reset = struct('f', @" + ...
+                        resetFuncName + ",'hasInput'," + num2str(Tran.reset.hasInput) + ...
+                        ",'inputDim',"+ num2str(Tran.reset.inputDim) + ");" + newlines(2);
+                else
+                    resetStr = resetComment + "reset = struct('f', @" + ...
+                        resetFuncName +  ",'hasInput',0);" + newlines(2);
+                end
             end
-            resetC = text2comment("equation:" + newline + tranResetText) + newline;
-            resetStr = resetC + resetAStr + resetbStr + ...
-                    "reset = struct('A', resetA, 'b', resetb);" + newlines(2);
             
             % Get Information for Guards for Transition "trans"
             if isa(Tran.guard.set,'mptPolytope')
                 
                 % intersect guard with invariant
-                poly = State.Invariant.set & Tran.guard.set;
-                poly = removeRedundancies(poly,'all');
+                if ~isempty(Tran.guard.set)
+                    poly = State.Invariant.set & Tran.guard.set;
+                    poly = removeRedundancies(poly,'all');
+                    % check if guard can be represented as hyperplane
+                    [res,ch] = isConHyperplane(poly);
+                else
+                    res = 0;
+                    poly = Tran.guard.set;
+                end
                 
-                % check if guard can be represented as hyperplane
-                [res,ch] = isConHyperplane(poly);
                 if res
                     [str1,str2] = conHyperplaneString(ch);
                 else
@@ -203,9 +249,28 @@ for comp = 1:numberOfComp
             guardC = text2comment("equation:" + newline + Tran.guard.Text) + newline;
             guardStr = guardC + str1 + "guard = " + str2 + newlines(2);
             
-            % Write Transition String
-            transStr = "trans{" + num2str(trans) + "} = transition(guard, reset, " +...
-                        transDestination + ");" + newlines(2);
+            % in case of empty guard, also specify state dimension
+            stateDimString = "";
+            if isempty(Tran.guard.set)
+                stateDimString = ", ";
+                if isfield(Tran.reset,'A')
+                    stateDims = num2str(size(Tran.reset.A,1));
+                else
+                    stateDims = num2str(length(Tran.reset.FormalEqs));
+                end
+                stateDimString = stateDimString + stateDims;
+            end
+            
+            
+            % Write Transition String, include label only if it is
+            % non-empty
+            if strlength(Tran.label) > 0
+                transStr = "trans{" + num2str(trans) + "} = transition(guard, reset, " +...
+                    transDestination + ","""+ Tran.label +""""+ stateDimString +");" + newlines(2);
+            else
+                transStr = "trans{" + num2str(trans) + "} = transition(guard, reset, " +...
+                    transDestination + ",[]"+ stateDimString + ");" + newlines(2);
+            end
             % Append Transition string
             transitionStr = transitionStr + resetStr + guardStr + transStr;
             
@@ -228,6 +293,9 @@ for comp = 1:numberOfComp
         % default string for comp without inputs
         inputBindStr = "iBinds{" + comp + "} = [];" + newlines(2);
         % syntax of inputBinds: [[origin,#output-of-origin];[x,x];[y,y];...];
+        if strcmp(Comp.inputs(1).name,'uDummy')
+            inputBindStr = "iBinds{" + comp + "} = [0 1];" + newline;
+        end
         if ~isempty(Comp.inputs) && ~strcmp(Comp.inputs(1).name,'uDummy')
             inputBindStr = "iBinds{" + comp + "} = [[";
             % loop over all inputs
@@ -246,7 +314,18 @@ for comp = 1:numberOfComp
                         for zzz=1:size(Components{c}.outputsGlobal,2)
                             if contains(inputName,Components{c}.outputsGlobal(zzz).name)
                                 origin = c;
+                                % BUGNOTE - This 1 might be wrong?
+                                % Instead zzz?
                                 outputOfOrigin = 1;
+                                break;
+                            end
+                        end
+                        % if the input is not an output, it might be a
+                        % state
+                        for zzz=1:length(Components{c}.states)
+                            if contains(inputName,Components{c}.states(zzz).name)
+                                origin = c;
+                                outputOfOrigin = zzz;
                                 break;
                             end
                         end

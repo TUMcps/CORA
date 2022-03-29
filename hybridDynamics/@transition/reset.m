@@ -1,12 +1,14 @@
-function [y] = reset(obj,x)
+function [y] = reset(obj,x,varargin)
 % reset - resets the continuous state according the reset function
 %
 % Syntax:  
 %    y = reset(obj,x)
+%    y = reset(obj,x,u)
 %
 % Inputs:
 %    obj - transition object
 %    x - state value before the reset
+%    u - input at the time of reset
 %
 % Outputs:
 %    y - state value after the reset
@@ -25,9 +27,18 @@ function [y] = reset(obj,x)
 % Written:      04-May-2007 
 % Last update:  07-October-2008
 %               10-December-2021 (NK, added nonlinear reset functions)
+%               11-February-2022 (MP, added reset function dependent on
+%                                     input)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
+
+
+    u = [];
+    % check if inputs were given
+    if nargin > 2
+        u = varargin{1};
+    end
 
     % get correct orientation of x
     m = size(x,2);
@@ -38,8 +49,16 @@ function [y] = reset(obj,x)
     % loop over all points
     if ~iscell(x)
         if isfield(obj.reset,'A')                       % linear reset
-            y = obj.reset.A*x + obj.reset.b;
+            % with inputs
+            if isfield(obj.reset,'B')
+                y = obj.reset.A*x + obj.reset.B*u + obj.reset.c;
+            % without inputs
+            else
+                y = obj.reset.A*x + obj.reset.c;
+            end
         else                                            % nonlinear reset
+            % compute extended state x' = [x;u]
+            x = cartProd(x,u);
             if isnumeric(x)
                y = obj.reset.f(x);
             else
@@ -51,8 +70,13 @@ function [y] = reset(obj,x)
         for i = 1:length(x)
             if ~isempty(x{i})
                 if isfield(obj.reset,'A')               % linear reset
-                    y{i} = obj.reset.A*x{i}+b;
+                    if isfield(obj.reset,'B')
+                        y{i} = obj.reset.A*x{i}+obj.reset*B + obj.reset.c;
+                    else
+                        y{i} = obj.reset.A*x{i}+b;
+                    end
                 else                                    % nonlinear reset
+                    x{i} = cartProd(x{i},u{i});
                     if isnumeric(y{i})
                         y{i} = obj.reset.f(x{i});
                     else

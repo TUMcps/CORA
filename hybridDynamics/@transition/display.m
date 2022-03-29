@@ -28,6 +28,9 @@ function display(obj)
 %display guard
 display(obj.guard);
 
+% display synchronization label
+disp(strcat('Synchronization label:',obj.synchLabel));
+
 %display target
 disp(['target:',num2str(obj.target)]);
 

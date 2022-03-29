@@ -18,6 +18,12 @@ if nargin >= 1
     Data.name = functionName;
 end
 
+% Matlab does not allow '-' in file names, so we replace it with '_'
+if contains(Data.name,'-')
+    warning("Matlab does not allow '-' in file names, all occurences of '-' are replaced with '_'!");
+    Data.name = strrep(Data.name,'-','_');
+end
+
 if nargin < 3
     % if no resultpath is given, use "cora/models/SpaceExConverted"
     resultpath = strcat(coraroot,'/models/SpaceExConverted/',Data.name);

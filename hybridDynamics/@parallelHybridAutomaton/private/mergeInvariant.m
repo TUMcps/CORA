@@ -37,7 +37,15 @@ function res = mergeInvariant(obj, invList)
 
        % compute intersection with the invariants of the remaining
        % subcomponents
-       res = res & temp;
+       % if an invariant is empty, we assume it stems from a converted
+       % model which had no invariant set in the current location
+       if isempty(res)
+           if ~isempty(temp)
+               res = temp;
+           end
+       elseif ~isempty(temp)
+           res = res & temp;
+       end
     end
 end
 

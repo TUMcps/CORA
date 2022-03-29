@@ -1,4 +1,4 @@
-function [isLinear, A, B, c, formalEqs] = eq2linSys( exprNames, exprs, states, inputs, parseMode)
+function [isLinear, A, B, c, formalEqs,containsInput] = eq2linSys( exprNames, exprs, states, inputs, parseMode)
 % Converts string equations to a LTI system specification (if possible).
 % Returns formatted nonlinear equations otherwise.
 % Requires names of state and input variables as parameter.
@@ -21,6 +21,8 @@ function [isLinear, A, B, c, formalEqs] = eq2linSys( exprNames, exprs, states, i
  %     B: matrix defining linear relations u -> x'
  %     c: vector defining constant components of x'
  %     formalEqs: equations formatted to paste into a matlab dynamics file
+ %     containsInput: boolean specifying if the assignment contains an
+ %     input
  %
  % Returns the Linear System x' = Ax + Bu + c equivalent to the input equations
  
@@ -37,6 +39,7 @@ function [isLinear, A, B, c, formalEqs] = eq2linSys( exprNames, exprs, states, i
  %create symbolic variables for states
  %(with L/R brackets to later replace with regular brackets)
  numStates = length(states);
+ containsInput = 0;
  
  stateNames = strings(numStates,1);
  varnames = cell(numStates,1);
@@ -114,12 +117,14 @@ function [isLinear, A, B, c, formalEqs] = eq2linSys( exprNames, exprs, states, i
     B = double(B_sym);
     c = double(c_sym);
     isLinear = true;
+    containsInput = any(B);
  catch
     %Could not linerarize system.
     A = [];
     B = [];
     c = [];
     isLinear = false;
+    containsInput = any(ismember(symvar(exprs),u));
     
     % Dear future person, who is tasked to implement linear systems with
     % variable parameters:  

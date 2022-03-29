@@ -94,8 +94,17 @@ function res = mergeFlowsLinearSys(obj, flowList)
               tempFlow = flowList{inputBinds(j,1)};
               tempStateBinds = obj.bindsStates{inputBinds(j,1)};
               tempInputBinds = obj.bindsInputs{inputBinds(j,1)};
-              C = tempFlow.C;
 
+              % if a system has no matrices C/D/k, we assume the states are
+              % given as outputs for parallelization (just as for nonlinear
+              % systems)
+              if tempFlow.C == 1 && isempty(tempFlow.D) && isempty(tempFlow.k)
+                  C = eye(tempFlow.dim);
+              else 
+                  C = tempFlow.C;
+              end
+              
+              
               % part with matrix C
               Amerged(stateBinds,tempStateBinds) = ...
                   Amerged(stateBinds,tempStateBinds) + B(:,j)*C(inputBinds(j,2),:);

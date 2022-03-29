@@ -1,4 +1,4 @@
-function res = locationProduct(obj, loc)
+function res = locationProduct(obj, loc,labelOccs)
 % locationProduct - Construct a overall location object from the active 
 %                   loctions of the subcomponts with a local automaton
 %                   product
@@ -9,6 +9,8 @@ function res = locationProduct(obj, loc)
 % Inputs:
 %    obj - parallel hybrid automaton object
 %    loc - ID's for the active location of each subcomponent
+%    labelOccs - map showing occurence of synchronization labels across
+%                components
 %
 % Outputs:
 %    res - constructed location object
@@ -21,7 +23,7 @@ function res = locationProduct(obj, loc)
 
 % Author:       Johann Schoepfer, Niklas Kochdumper
 % Written:      08-June-2018  
-% Last update:  09-July-2018
+% Last update:  16-March-2022
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -54,7 +56,7 @@ function res = locationProduct(obj, loc)
     mergedFlow = mergeFlows(obj,flowList,loc);
 
     % merge transitions
-    mergedTransSets = mergeTransitionSets(obj,transList,loc);
+    mergedTransSets = mergeTransitionSets(obj,transList,loc,labelOccs);
 
     % construct resulting location object
     res = location(mergedInvSet,mergedTransSets,mergedFlow);

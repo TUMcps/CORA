@@ -139,6 +139,16 @@ for k = 1:h_numTrans
     % store warnings
     warnings = [warnings,warn];
     
+    % Assign synchronization label if the field 'label' is given.
+    if isfield(bc_in.transition{k},'label')
+        synchLabel = bc_in.transition{k}.label{1}.Text;
+    else
+        % no label => transition is not synchronized
+        synchLabel = "";
+    end
+    % Store label in data structure
+    bc_out.States(h_source).Trans(h_trans).label = string(synchLabel);
+    
 end
 
 end

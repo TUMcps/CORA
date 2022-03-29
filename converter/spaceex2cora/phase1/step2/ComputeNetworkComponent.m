@@ -15,7 +15,7 @@ nc_out.id = string(nc_in.Attributes.id);
 % Call the function CollectVariables to CollectVariables and Constants.
 % For internal use only, needed in function ComputeNetworkComponent and
 % AssignTemplate
-[listOfVar, ~] = CollectVariables(nc_in.param);
+[listOfVar, listOfLabels] = CollectVariables(nc_in.param);
 nc_out.listOfVar = listOfVar;
 %nc_out.h_listOfLab = listOfLab; %unused since CORA doesn not support it
 
@@ -36,14 +36,30 @@ for i = 1:num_binds
     nc_out.Binds(i).id = boundID;
     nc_out.Binds(i).localName = string(nc_in.bind{i}.Attributes.as);
     
+    
     % parse variable mapping
     maps_in = nc_in.bind{i}.map;
-    num_maps = length(maps_in);
+    
+%     % delete labels from mapping before bind-generation
+%     % (labels here lead to errors due to indexing later)
+    labelList = arrayfun(@(x) x.name,listOfLabels,'UniformOutput',false);
+    j = 1;
+    while j <= length(maps_in)
+        if ismember(maps_in{j}.Attributes.key,labelList)
+            maps_in(j) = [];
+            j = j-1;
+        end
+        j = j+1;
+    end
+    
     
     % preallocate arrays
+    num_maps = length(maps_in);
     keys = strings(num_maps,1);
     values = sym(zeros(num_maps,1));
     values_text = strings(num_maps,1);
+    
+    
     for j = 1:num_maps
         % access name of the mapped variable & the mapped expression
         key_text = maps_in{j}.Attributes.key;

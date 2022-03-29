@@ -11,12 +11,31 @@ BC = comp;
 
 % split variables into states, inputs & others
 % this requires gathering the flow equations of all states
-allVarnames = [];
+% as well as the reset expressions of all transitions
+allStateNames = [];
 allFlowExprs = [];
+
 for i = 1:length(BC.States)
     % reminder: assignment expressions are stored in column vectors
-    allVarnames = [allVarnames; BC.States(i).Flow.varNames];
+    allStateNames = [allStateNames; BC.States(i).Flow.varNames];
+    
     allFlowExprs = [allFlowExprs; BC.States(i).Flow.expressions];
+    
+    for j = 1:length(BC.States(i).Trans)
+        allStateNames = [allStateNames; BC.States(i).Trans(j).reset.varNames];
+        % If inputs/constants are ever changed within a reset (not sure if possible)
+        % this will lead to an error, in this case, make new variable
+        % "resetExpressions" and integrate it into classifyVariables.m
+        allFlowExprs = [allFlowExprs; BC.States(i).Trans(j).reset.expressions];
+    end
+end
+
+if isempty(allStateNames)
+    warning("No flow equations given, assuming all states to be occuring within location invariants!");
+    for i = 1:length(BC.States)
+        names = symvar([BC.States(i).Invariant.equalities;BC.States(i).Invariant.inequalities]);
+        allStateNames = [allStateNames;string(names)'];
+    end
 end
 
 % difference in conversion to flatHA / parallelHA
@@ -29,11 +48,11 @@ if ~convtype
         InvExprsRight = [InvExprsRight; BC.States(i).Invariant.exprRight];
     end
     [BC.states,BC.inputs,BC.outputsLocal,BC.outputsGlobal] = ...
-        classifyVariables(BC.listOfVar,allVarnames,allFlowExprs,InvExprsLeft,InvExprsRight);
+        classifyVariables(BC.listOfVar,allStateNames,allFlowExprs,InvExprsLeft,InvExprsRight);
 else
     % parallelHA / (non-)linear:
     [BC.states,BC.inputs,BC.outputsLocal,BC.outputsGlobal] = ...
-        classifyVariables(BC.listOfVar,allVarnames,allFlowExprs);
+        classifyVariables(BC.listOfVar,allStateNames,allFlowExprs);
 end
 
 % variables that are assigned a derivative are states
@@ -117,15 +136,31 @@ for i = 1:length(BC.States)
         BC.States(i).Trans(j).guard.set = set;
         
         % derive linear representation of assignment
-        [isLin,A,~,b,~] = eq2linSys(Tran.reset.varNames,Tran.reset.expressions,BC.states,[],'assignment');
+        [isLin,A,B,c,eqs,containsInput] = eq2linSys(Tran.reset.varNames,Tran.reset.expressions,...
+                                                    BC.states,BC.inputs,'assignment');
         if(isLin)
             BC.States(i).Trans(j).reset.A = A;
-            BC.States(i).Trans(j).reset.b = b;
+            BC.States(i).Trans(j).reset.c = c;
+            if containsInput
+                % reset is input dependant
+                BC.States(i).Trans(j).reset.B = B;
+                BC.States(i).Trans(j).reset.hasInput = 1;
+                BC.States(i).Trans(j).reset.inputDim = size(B,2);
+            end
         else
-            warning("Transition from ""%s"" to ""%s"" has a non-linear reset function. Using identity...",...
+            if strlength(eqs) ~= 0
+                BC.States(i).Trans(j).reset.FormalEqs = eqs;
+                % check if reset is input dependant
+                if containsInput
+                    BC.States(i).Trans(j).reset.hasInput = 1;
+                    BC.States(i).Trans(j).reset.inputDim = length(BC.inputs);
+                end
+            else
+                warning("Transition from ""%s"" to ""%s"" has a no reset function. Using identity...",...
                     State.name, BC.States(Tran.destination).name);
-            BC.States(i).Trans(j).reset.A = diag(ones(size(BC.states)));
-            BC.States(i).Trans(j).reset.b = zeros(size(BC.states));
+                BC.States(i).Trans(j).reset.A = diag(ones(size(BC.states)));
+                BC.States(i).Trans(j).reset.c = zeros(size(BC.states));
+            end
         end
     end
 end
