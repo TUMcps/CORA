@@ -11,7 +11,7 @@ function res = optBnb( obj )
 %    res - interval
 %
 % Example:
-%   f= @(x) 1 + x.^5 - x.^4;
+%   f = @(x) 1 + x.^5 - x.^4;
 %   x = interval(0,1);
 %   t = taylm(x,10,'x');
 %   T = f(t);
@@ -101,7 +101,7 @@ end
 function res = halve(obj, ind_bit, ind_var) % ind_bit - index of a bit ( a part of an integral)
                                             % ind_val - index of a varible
     % find a middle point
-    m = mid(obj(ind_bit, ind_var));
+    m = center(obj(ind_bit, ind_var));
     
     % break the chosen interval by half
     inf = infimum(obj);
@@ -132,6 +132,15 @@ function res = intcmp(prev_int, int, eps)
     else
         res = 0;
     end
+end
+
+function res = unite_ints(input)
+% unite multi-dimensional interval into single interval
+
+    min_int = infimum(input);
+    max_int = supremum(input);
+
+    res = interval(min(min_int), max(max_int));
 end
 
 %------------- END OF CODE --------------

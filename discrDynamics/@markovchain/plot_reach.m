@@ -26,22 +26,24 @@ function plot_reach(varargin)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 15-September-2006 
-% Last update: 26-March-2008
+% Author:       Matthias Althoff
+% Written:      15-September-2006 
+% Last update:  26-March-2008
+%               24-July-2020
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 %read objects
-Obj=varargin{1};
-HA=varargin{2};
-options=varargin{3};
-actualSegmentNr=varargin{4};
+Obj = varargin{1};
+HA = varargin{2};
+R = varargin{3};
+params = varargin{4};
+actualSegmentNr = varargin{5};
 
 
 %plot sample trajectories and reachable set 
-h=figure;
+h = figure;
 set(gcf,'Units','normalized');
 set(h,'position',[0.1,0.1,0.9,0.3]);
 hold on
@@ -50,7 +52,7 @@ hold on
 subplot(1,3,1); 
 plot(Obj.field);
 hold on
-traj_plot(HA,options);
+traj_plot(HA,R,params);
 
 %choose input that has been devoloped in the end
 iInput=length(Obj.T.T);
@@ -71,29 +73,25 @@ ylabel('x_2');
 
 %-------------------------------------------------------
 %traj_plot: generates sample trajectories
-function traj_plot(HA,options)
+function traj_plot(HA,R,params)
 
-%plot reachable set
-options.plotType = 'b';
-plot(HA,'reachableSet',options);
+% plot reachable set
+plot(R,[1,2],'b','EdgeColor','b');
 
-%initial set
-plot(options.R0,[1 2],'k-', 'lineWidth', 3);
+% plot initial set
+plot(params.R0,[1,2],'w','Filled',true,'EdgeColor','k');
 
-%obtain random simulation results
-for i=1:30
-    %set initial state, input
-    options.x0=randPoint(options.R0); %initial state for simulation
-    options.uLoc{1}=randPoint(options.Uloc{1})+options.uLocTrans{1}; %input for simulation
-    
-    %simulate hybrid automaton
-    HAsim{i}=simulate(HA,options);      
-end
+% settings for random simulation
+simOpt.points = 30;        % number of initial points
+simOpt.fracVert = 0.5;     % fraction of vertices initial set
+simOpt.fracInpVert = 0.5;  % fraction of vertices input set
+simOpt.inpChanges = 10;    % changes of input over time horizon  
 
-%plot simulation results      
-for i=1:length(HAsim)
-    plot(HAsim{i},'simulation',options);
-end
+% random simulation
+simRes = simulateRandom(HA,params,simOpt); 
+
+% plot simulated trajectories
+plot(simRes,[1,2],'k');
 
 
 %-------------------------------------------------------

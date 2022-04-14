@@ -1,5 +1,5 @@
 function r = radius(Z)
-% radius - Computes the radius of a hypersphere enclosing a zonotope
+% radius - computes the radius of a hypersphere enclosing a zonotope
 %
 % Syntax:  
 %    r = radius(Z)
@@ -23,31 +23,27 @@ function r = radius(Z)
 % Author:       Matthias Althoff
 % Written:      19-April-2010
 % Last update:  27-July-2016
+%               27-Aug-2019 (MW)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 %extract generators
-G=Z.Z(:,2:end);
+G = generators(Z);
 
 %method 1
-nrOfGenerators=length(G(1,:));
-r=0;
 %add length of generators
-for i=1:nrOfGenerators
-    rPart=norm(G(:,i));
-    r=r+rPart;
-end
+r = sum(vecnorm(G));
 
 %method 2
-%compute enclosing interval hull
-IH=intervalhull(Z);
-%compute edge length
+%convert to interval (axis-aligned box around zonotope)
+IH=interval(Z);
+%compute half of edge length
 l=rad(IH);
 %compute enclosing radius
-rAlt=sqrt(l'*l);
+rAlt=norm(l);
 
-%chose minimum
+%choose minimum
 r=min(r,rAlt);
 
 %------------- END OF CODE --------------

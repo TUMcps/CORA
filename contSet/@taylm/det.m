@@ -6,6 +6,7 @@ function res = det(obj)
 %
 % Inputs:
 %    obj - a taylm object
+%
 % Outputs:
 %    res - a taylm object
 %

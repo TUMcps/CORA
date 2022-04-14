@@ -26,9 +26,14 @@ function [Rfirst,options] = initReach(obj, Rinit, options)
 % Last update:  16-May-2011
 %               19-February-2012
 %               12-August-2016
+%               19-May-2020 (MW, error handling for exploding sets)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% store taylor terms and time step as object properties
+obj.stepSize = options.timeStep;
+obj.taylorTerms = options.taylorTerms;
 
 % compute mapping matrix
 mappingMatrix(obj,options);
@@ -42,16 +47,33 @@ obj.stepSize=options.timeStep;
 %compute reachable set of first time interval
 %first time step homogeneous solution
 Rhom_tp = obj.mappingMatrixSet.zono*Rinit + obj.mappingMatrixSet.int*Rinit;
-Rhom = enclose(Rinit,Rhom_tp+obj.Rtrans) ...
+if isa(Rinit,'zonoBundle')
+    Rhom = enclose(Rinit,Rhom_tp+obj.Rtrans) ...
+    + obj.F*Rinit.Z{1} + obj.inputCorr + (-1*obj.Rtrans);
+else
+    Rhom = enclose(Rinit,Rhom_tp+obj.Rtrans) ...
     + obj.F*Rinit + obj.inputCorr + (-1*obj.Rtrans);
+end
 
-%total solution
+% total solution
 Rtotal = Rhom + obj.Rinput;
-Rtotal_tp = Rhom_tp + obj.Rinput;
+Rfirst.ti = reduce(Rtotal,options.reductionTechnique,options.zonotopeOrder);
 
-%write results to reachable set struct Rfirst
-Rfirst.tp = reduce(Rtotal_tp,'girard',options.zonotopeOrder);
-Rfirst.ti = reduce(Rtotal,'girard',options.zonotopeOrder);
+if options.compTimePoint
+    Rtotal_tp = Rhom_tp + obj.Rinput;
+    Rfirst.tp = reduce(Rtotal_tp,options.reductionTechnique,options.zonotopeOrder);
+else
+    Rfirst.tp = [];
+end
+
+% check for explosion
+if isa(Rinit,'zonotope')
+    temp = rad(interval(Rinit));
+    if all(temp > eps) && options.compTimePoint && ...
+       max(rad(interval(Rfirst.tp)) ./ rad(interval(Rinit))) > 1e10 % arbitary value
+        throw(printExplosionError());
+    end
+end
 
 
 %------------- END OF CODE --------------

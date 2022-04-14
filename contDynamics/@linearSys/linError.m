@@ -48,11 +48,7 @@ IH=interval(R);
 IHtotal=IH+maxHull;
 totalInt=interval(IHtotal);
 %compute intervals of input
-if strcmp('interval',class(options.U))
-    IHinput=options.U;
-else
-    IHinput=interval(options.U);
-end
+IHinput=interval(options.U);
 inputInt=interval(IHinput);
 
 %translate intervals by linearization point

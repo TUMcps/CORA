@@ -57,7 +57,7 @@ if isa(contSet,'zonotope')
     I=interval(contSet);
 elseif isa(contSet,'polytope')
     V=vertices(extreme(contSet)');
-    I=interval(V);    
+    I=interval.enclosePoints(V);    
 elseif isa(contSet,'mptPolytope')
     I=interval(contSet);  
 else
@@ -122,7 +122,7 @@ cells=(MX-1)*Multiples;
 if isempty(currentIndex)||error
     cells = 0;
 elseif giveAnswerAsIndices
-    cells = s2i(obj,MX);
+    cells = s2i(obj.nrOfSegments',MX);
     
     if sum(bounds(:,1)<obj.intervals(:,1))||sum(bounds(:,2)>obj.intervals(:,2))
         cells = [cells,0];

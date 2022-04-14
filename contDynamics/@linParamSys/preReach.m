@@ -32,7 +32,7 @@ function [obj] = preReach(obj,options)
 obj = tie(obj);
 %compute reachable set due to uncertain input
 U = deleteZeros(options.U);
-obj.RV = errorSolution(obj,U,options);
+obj.RV = errorSolution(obj,options,U);
 
 
 

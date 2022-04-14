@@ -1,6 +1,6 @@
 function matP = simplePlus(summand1,summand2)
 % simplePlus - computes the Minkowski addition of two matrix polytopes 
-% without reducing the vertices by a convex hull computation
+%    without reducing the vertices by a convex hull computation
 %
 % Syntax:  
 %    matP = simplePlus(summand1,summand2)
@@ -36,6 +36,7 @@ for j=1:summand1.verts
         Vpot{end+1}=summand1.vertex{j}+summand2.vertex{i};
     end
 end
+
 %instantiate matrix polytope
 matP=matPolytope(Vpot);
 

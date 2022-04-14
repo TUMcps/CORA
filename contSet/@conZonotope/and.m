@@ -1,72 +1,59 @@
 function res = and(obj,S)
-% intersect - Computes the intersection of a constrained zonotope with
+% and - Computes the intersection of a constrained zonotope with
 %             other set representations
 %
 % Syntax:  
-%    res = intersect(obj,Z)
+%    res = and(obj,S)
 %
 % Inputs:
 %    obj - constrained zonotope object
-%    Z - second set (supported objects: conZonotope, halfspace, 
+%    S - second set (supported objects: conZonotope, halfspace, 
 %                    constrainedHyperlane)
 %
 % Outputs:
 %    res - constrained zonotope object
 %
 % Example: 
-%    % constrained zonotope 1
+%    % constrained zonotopes
 %    Z = [0 3 0 1;0 0 2 1];
 %    A = [1 0 1];
 %    b = 1;
 %    cZono1 = conZonotope(Z,A,b);
 %
-%    % constrained zonotope 2
 %    Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
 %    A = [1 1 1];
 %    b = 1;
 %    cZono2 = conZonotope(Z,A,b);
 %
-%    % hyperplane
-%    C = [1 -2];
-%    d = 1;
-%    hp = halfspace(C,d);
+%    % halfspace and constrained hyperplane
+%    hs = halfspace([1,-2],1);
+%    ch = conHyperplane([1,-2],1,[-2 -0.5;1 0],[-4.25;2.5]);
 %
-%    % constrained hyperplane
-%    Ch = [-2 -0.5;1 0];
-%    dh = [-4.25;2.5];
-%    ch = constrainedHyperplane(hp,Ch,dh);
+%    % compute intersection
+%    res1 = cZono1 & cZono2;
+%    res2 = cZono2 & hs;
+%    res3 = cZono1 & ch;
 %
-%    % intersection between two constrained zonotopes
-%    intZono = cZono1 & cZono2;
-%    figure
+%    % visualization
+%    figure; hold on
 %    plot(cZono1,[1,2],'r');
-%    hold on
 %    plot(cZono2,[1,2],'b');
-%    plotFilled(intZono,[1,2],'g');
+%    plot(res1,[1,2],'g','Filled',true,'EdgeColor','none');
 %    title('Constrained zonotope');
 %
-%    % insection with hyperplane
-%    intZono = cZono2 & hp;
-%    x = -4:0.1:4;
-%    y = (d-C(1)*x)./C(2);
-%    figure
-%    hold on
-%    plot(x,y,'g');
-%    plot(cZono2,[1,2],'r');
-%    plot(intZono,[1,2],'b');
-%    title('hyperplane');
+%    figure; hold on
+%    xlim([-4,4]); ylim([-4,4]);
+%    plot(hs,[1,2],'r','FaceAlpha',0.5);
+%    plot(res2,[1,2],'g','Filled',true,'EdgeColor','none');
+%    plot(cZono2,[1,2],'b');
+%    title('halfspace');
 %
-%    % intersection with constrained hyperplane
-%    intZono = cZono1 & ch;
-%    figure
-%    hold on
-%    poly = mptPolytope([Ch;0 1],[dh;4]);
-%    plotFilled(poly,[1,2],'m','EdgeColor','none','FaceAlpha',0.5);
-%    plot(x,y,'g');
+%    figure; hold on
+%    xlim([0,4]); ylim([-3,4]);
+%    plot(ch,[1,2],'g');
 %    plot(cZono1,[1,2],'r');
-%    plot(intZono,[1,2],'b','LineWidth',2);
-%    title('Constrained hyperplane');
-%       
+%    plot(res3,[1,2],'b','LineWidth',2);
+%    title('Constrained hyperplane');    
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -78,14 +65,19 @@ function res = and(obj,S)
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author: Dmitry Grebenyuk, Niklas Kochdumper
-% Written: 13-May-2018
-% Last update: ---
+% Author:        Dmitry Grebenyuk, Niklas Kochdumper
+% Written:       13-May-2018
+% Last update:   05-May-2020 (MW, standardized error message)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-if ~isempty(S)
+    % get conZonotope object
+    if ~isa(obj,'conZonotope')
+       temp = obj;
+       obj = S;
+       S = temp;
+    end
     
     % Add trivial constraint if the conZonotope object does not have
     % constraints (for easier implementation of the following operations)
@@ -94,7 +86,7 @@ if ~isempty(S)
        obj.b = 0;
     end
     
-    
+    % different cases depending on the set representation
     if isa(S, 'conZonotope') 
         
         if isempty(S.A)
@@ -110,81 +102,98 @@ if ~isempty(S)
         b = [obj.b; S.b; S.Z(:,1) - obj.Z(:,1)];
 
         res = conZonotope(Z,A,b);
-
-
-    elseif isa(S, 'zonotope')
         
-        % Calculate intersection according to equation (13) at Proposition 1 in
-        % reference paper [1]
-        Z = [obj.Z, zeros(size(S.Z)-[0,1])];
-        A = [obj.A zeros(size(obj.A,1),size(S.Z,2)-1); obj.Z(:,2:end), -S.Z(:,2:end)];
-        b = [obj.b; S.Z(:,1) - obj.Z(:,1)];
-
-        res = conZonotope(Z,A,b);
-
+        % delete all zero constraints and generators
+        res = deleteZeros(res);
+        
 
     elseif isa(S, 'halfspace')
 
-        % Extract object properties C*x = d of the hyperplane
-        C = get(S,'c')';
-        d = get(S,'d');
+        % Extract object properties C*x <= d of the halfspace
+        C = S.c';
+        d = S.d;
 
         G = obj.Z(:,2:end);
         c = obj.Z(:,1);
 
+        % compute lower bound
+        l = supportFunc(obj,C','lower');
+        
         % Add additional constraints
-        A = [obj.A; C*G];
-        b = [obj.b; d - C*c];
+        A = [obj.A, zeros(size(obj.A,1),1); C*G, 0.5*(l-d)];
+        b = [obj.b; 0.5*(d+l)-C*c];
+        G = [G,zeros(size(G,1),1)];
 
         res = conZonotope([c,G],A,b);
 
 
-    elseif isa(S, 'constrainedHyperplane')
+    elseif isa(S, 'conHyperplane')
 
-        % Calculate intersection between constrained zonotope and hyperplane
-        res = obj & S.h; 
+        % calculate intersection between constrained zonotope and hyperplane
+        C = (S.h.c)';
+        d = S.h.d;
 
-        % Check if the original unconstrained zonotope violates the constraints
-        % (fast test to see if the computational expensive instersection with
-        % the constraits has to be performed)
-        zono = zonotope(obj.Z);
+        G = obj.Z(:,2:end);
+        c = obj.Z(:,1);
 
-        if ~constrSat(zono, S.C, S.d)    % constraints have to be considered
+        A = [obj.A; C*G];
+        b = [obj.b; d - C*c];
 
-           % calculate a bounding box for the unconstrained zonotope
-           int = interval(zono);
+        res = conZonotope([c,G],A,b); 
 
-           % calculate a polytope that represents the intersection of the
-           % bounding box with the feasible region of the constraints
-           % (polytope has to be closed for numerical stability)
-           n = length(int);
-           A = [-eye(n);eye(n);S.C];
-           b = [-infimum(int);supremum(int);S.d];
-
-           poly = mptPolytope(A,b);
-
-           % intersect the polytope with the part on the hyperplane
-           cZono = conZonotope(poly);
-           res = res & cZono;     
+        % loop over all constraints
+        C = S.C;
+        d = S.d;
+        
+        for i = 1:size(C,1)
+            
+           % construct halfspace
+           hs = halfspace(C(i,:)',d(i));
+           
+           % check if set is fully contained in halfspace
+           if ~in(hs,res)
+              
+               % intersect set with halfspace
+               res = res & hs; 
+           end
         end
 
-
     elseif isa(S,'mptPolytope')
-
-        % convert polytope to constrained zonotope
-        res = obj & conZonotope(S);
-
-    elseif isa(S,'interval')
         
-        % convert interval to  zonotope
-        res = obj & zonotope(S);
+        % get matrices for inequality constraints A*x <= b
+        A = S.P.A;
+        b = S.P.b;
+        
+        res = obj;
+        
+        % loop over all constraints
+        for i = 1:size(A,1)
+            
+           % construct halfspace
+           hs = halfspace(A(i,:)',b(i));
+           
+           % check if set is fully contained in halfspace
+           if ~in(hs,res)
+              
+               % intersect set with halfspace
+               res = res & hs; 
+           end
+        end        
+
+    elseif isa(S,'zonotope') || isa(S,'interval') || isa(S,'zonoBundle')
+
+        % convert to constrained zonotope
+        res = obj & conZonotope(S);
+        
+    elseif isa(S,'levelSet') || isa(S,'conPolyZono')
+        
+        res = S & obj;
         
     else
-        error('Wrong input')
+        % throw error for given arguments
+        error(noops(obj,S));
     end
-else
-    res = conZonotope([],[],[]);
-end
+
 end
 
 %------------- END OF CODE --------------

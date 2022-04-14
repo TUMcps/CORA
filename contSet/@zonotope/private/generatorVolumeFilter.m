@@ -21,6 +21,7 @@ function [Gred]=generatorVolumeFilter(G,rem)
 % Author:       Matthias Althoff
 % Written:      12-September-2008
 % Last update:  19-July-2010
+%               14-March-2019 (sort removed)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -31,6 +32,7 @@ function [Gred]=generatorVolumeFilter(G,rem)
 comb = combinator(cols,rows,'c');
 nrOfComb=length(comb(:,1));
 
+parallelogramVol = zeros(nrOfComb,1);
 for i=1:nrOfComb
     try
         %obtain Gpicked
@@ -47,18 +49,14 @@ for i=1:nrOfComb
     end
 end
 
-%sort the volumes
-[val,index]=sort(parallelogramVol);
-
-%check if there are less options than requested
-if rem>length(val)
-    rem=length(val);
-end
+% obtain indices corresponding to the largest values
+[~,index]=maxk(parallelogramVol, rem);
 
 %store the generator combinations in cells
-for i=1:rem
-    generatorIndices=comb(index(end+1-i),:);
+for i=1:length(index)
+    generatorIndices=comb(index(i),:);
     Gred{i}=G(:,generatorIndices);
 end
+
 
 %------------- END OF CODE --------------

@@ -1,6 +1,14 @@
 function res = tan(intVal)
 % tan - Overloaded 'tan()' operator for intervals
 %
+% inf is infimum, sup is supremum
+%
+% [-Inf, Inf]                   if (sup - inf) >= pi,
+% [-Inf, Inf]                   if (sup - inf) < pi) and inf < pi/2 and (sup < inf or sup > pi/2),
+% [tan(inf), tan(sup)]          if (sup - inf) < pi and inf < pi/2 and (sup >= inf and sup <= pi/2),
+% [-Inf, Inf]                   if (sup - inf) < pi) and inf >= pi/2 and (sup < inf and sup > pi/2),
+% [tan(inf), tan(sup)]          if (sup - inf) < pi and inf >= pi/2 and (sup >= inf or sup <= pi/2).
+%
 % Syntax:  
 %    res = tan(intVal)
 %
@@ -22,17 +30,9 @@ function res = tan(intVal)
 % Written:      03-November-2015
 % Last update:  14-January-2016 (DG)
 %               05-February-2016 (MA)
-%               17-March-2016 Speed improvement, (DA)
-%               12-September-2016 tan([-pi/2, ...]) is fixed (DG)
+%               17-March-2016 (DA, Speed improvement)
+%               12-September-2016 (DG, fixed tan([-pi/2, ...]) )
 % Last revision:---
-
-% inf is infimum, sup is supremum
-
-% [-Inf, Inf]                   if (sup - inf) >= pi,
-% [-Inf, Inf]                   if (sup - inf) < pi) and inf < pi/2 and (sup < inf or sup > pi/2),
-% [tan(inf), tan(sup)]          if (sup - inf) < pi and inf < pi/2 and (sup >= inf and sup <= pi/2),
-% [-Inf, Inf]                   if (sup - inf) < pi) and inf >= pi/2 and (sup < inf and sup > pi/2),
-% [tan(inf), tan(sup)]          if (sup - inf) < pi and inf >= pi/2 and (sup >= inf or sup <= pi/2).
 
 %------------- BEGIN CODE --------------
 

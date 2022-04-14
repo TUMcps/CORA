@@ -4,16 +4,21 @@ function [eZ,eI,zPow,iPow,E] = expmIndMixed(matZ,intermediateOrder,maxOrder)
 % via interval arithmetic.
 %
 % Syntax:  
-%    eZ = expmInd(matZ,maxOrder)
+%    [eZ,eI,zPow,iPow,E] = expmIndMixed(matZ,intermediateOrder,maxOrder)
 %
 % Inputs:
 %    matZ - matrix zonotope
-%    maxOrder - Taylor series order until computation with interval arith.
+%    intermediate Order - Taylor series order until computation is 
+%                           performed with matrix zonotopes
 %    maxOrder - maximum Taylor series order until remainder is computed
 %
 % Outputs:
 %    eZ - matrix zonotope exponential part
 %    eI - interval matrix exponential part
+%    zPow - #nodef
+%    iPow - cell array storing the powers of the matrix:
+%           A,A^2,...,A^(intermediateOrder)
+%    E - interval matrix for the remainder
 %
 % Example: 
 %

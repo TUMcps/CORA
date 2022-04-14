@@ -10,7 +10,7 @@ function [eZ,eI,zPow,iPow,E] = expmMixed(matZ,r,intermediateOrder,maxOrder)
 %    matZ - matrix zonotope
 %    r - time increment
 %    intermediate Order - Taylor series order until computation is 
-%    performed with matrix zonotopes
+%                           performed with matrix zonotopes
 %    maxOrder - maximum Taylor series order until remainder is computed
 %
 % Outputs:

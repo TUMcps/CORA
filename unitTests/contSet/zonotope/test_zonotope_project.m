@@ -18,28 +18,34 @@ function res = test_zonotope_project
 %
 % See also: -
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      26-July-2016
-% Last update:  ---
+% Last update:  09-August-2020 (MW, enhance randomness)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
+% 1. Analytical Test ------------------------------------------------------
+
 % create zonotope
-Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4; 5, 5, 5, 5]);
+Z = zonotope([-4, -3, -2, -1; 1, 2, 3, 4; 5, 5, 5, 5]);
 
 % obtain result
-Z2 = project(Z1,[1 3]);
+Zres = project(Z,[1 3]);
 
 % obtain zonotope matrix
-Zmat = get(Z2,'Z');
+Zmat = Zres.Z;
 
 % true result
 true_mat = [-4, -3, -2, -1; ...
             5, 5, 5, 5];
 
 % check result
-res = all(all(Zmat == true_mat));
+res_val = all(all(Zmat == true_mat));
+
+
+% add results
+res = res_val;
 
 if res
     disp('test_zonotope_project successful');

@@ -3,10 +3,11 @@ function [error, errorInt, errorInt_x, errorInt_y, R_y] = linError_thirdOrder(ob
 % order Taylor expansion
 %
 % Syntax:  
-%    [error, errorInt, errorInt_x, errorInt_y, R_y] = linError_thirdOrder(obj, options, R, Verror_y)
+%    [error, errorInt, errorInt_x, errorInt_y, R_y] = ...
+%           linError_thirdOrder(obj, options, R, Verror_y)
 %
 % Inputs:
-%    obj - nonlinear DAE system object
+%    obj - nonlinear differential algebraic system object
 %    options - options struct
 %    R - actual reachable set
 %    Verror_y - set of algebraic linearization error
@@ -33,6 +34,10 @@ function [error, errorInt, errorInt_x, errorInt_y, R_y] = linError_thirdOrder(ob
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% set handle to correct file
+obj = setHessian(obj,'standard');
+obj = setThirdOrderTensor(obj,'int');
 
 %compute set of algebraic variables
 f0_con = obj.linError.f0_con;
@@ -64,29 +69,29 @@ totalInt_u = du + obj.linError.p.u;
 
 %store Hf and Hg as real-valued 
 for i=1:length(Hf)
-    Hf{i} = mid(Hf{i});
+    Hf{i} = center(Hf{i});
 end
 for i=1:length(Hg)
-    Hg{i} = mid(Hg{i});
+    Hg{i} = center(Hg{i});
 end
 
 
 %compute zonotope of state, constarint variables, and input
-Z_x = get(R,'Z');
-Z_y_cor = get(R_y_cor,'Z');
-Z_y_add = get(R_y_add,'Z');
+Z_x = R.Z;
+Z_y_cor = R_y_cor.Z;
+Z_y_add = R_y_add.Z;
 Z_0 = zeros(length(Z_x(:,1)), length(Z_y_add(1,:)));
 R_xy = zonotope([Z_x, Z_0; Z_y_cor, Z_y_add]);
-R_xyu = cartesianProduct(R_xy, options.U);
-R_xyu = reduce(R_xyu,'girard',options.errorOrder);
+R_xyu = cartProd(R_xy, options.U);
+R_xyu = reduce(R_xyu,options.reductionTechnique,options.errorOrder);
 
 
 %obtain absolute values
 dz_abs = max(abs(infimum(dz)), abs(supremum(dz)));
 
 %second order
-error_x_secondOrder = 0.5*quadraticMultiplication_parallel(R_xyu, Hf);
-error_y_secondOrder = 0.5*quadraticMultiplication_parallel(R_xyu, Hg);
+error_x_secondOrder = 0.5*quadMap_parallel(R_xyu, Hf);
+error_y_secondOrder = 0.5*quadMap_parallel(R_xyu, Hg);
 
 %third order interval evaluation (dynamic part)
 for i=1:length(Tf(:,1))
@@ -117,15 +122,15 @@ error_x = error_x_secondOrder + error_thirdOrder_x_zono;
 error_y = error_y_secondOrder + error_thirdOrder_y_zono;
 
 %compute final error
-Z_err_x = get(error_x_secondOrder,'Z');
+Z_err_x = error_x_secondOrder.Z;
 Z_err_x_add = get(obj.linError.CF_inv*error_y_secondOrder,'Z');
 error_secondOrder = zonotope(Z_err_x + Z_err_x_add);
 error_thirdOrder = error_thirdOrder_x_zono + obj.linError.CF_inv*error_thirdOrder_y_zono;
 error = error_secondOrder + error_thirdOrder;
 
 %reduce
-error = reduce(error,'girard',options.zonotopeOrder);
-error_y = reduce(error_y,'girard',options.zonotopeOrder);
+error = reduce(error,options.reductionTechnique,options.zonotopeOrder);
+error_y = reduce(error_y,options.reductionTechnique,options.zonotopeOrder);
 
 %update R_y
 R_y =  obj.linError.p.y + (-F_inv)*(f0_con + D*R + E*options.U + error_y);

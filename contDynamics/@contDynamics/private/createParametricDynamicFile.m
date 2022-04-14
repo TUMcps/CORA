@@ -31,8 +31,7 @@ function createParametricDynamicFile(obj,path,name)
 vars = symVariables(obj,'LRbrackets');
 
 %insert symbolic variables into the system equations
-t=0;
-f=obj.mFile(t,vars.x,vars.u,vars.p);
+f=obj.mFile(vars.x,vars.u,vars.p);
 
 %init
 fcell=cell(1,obj.nrOfParam+1);
@@ -45,7 +44,7 @@ for i=1:obj.nrOfParam
 end
 
 
-fid = fopen([path,'/parametricDynamicFile_',name,'.m'],'w');
+fid = fopen([path filesep 'parametricDynamicFile_' name '.m'],'w');
 fprintf(fid, '%s\n\n', 'function f=parametricDynamicFile(x,u)');
 for k=1:length(fcell)
     for i=1:obj.dim

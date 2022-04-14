@@ -1,15 +1,15 @@
-function [Znew] = splitFirstGen(Zdummy,Z)
+function Znew = splitFirstGen(Z)
 % splitFirstGen - splits first generator, which is in direction of the
-% vector field
+%    vector field
 %
 % Syntax:  
-%    [Zrem] = firstSplitGen(Zdummy,Z)
+%    Znew = firstSplitGen(Z)
 %
 % Inputs:
 %    Z - cell array of zonotope objects
 %
 % Outputs:
-%    Zrem - cell array of remaining zonotope objects
+%    Znew - cell array of remaining zonotope objects
 %
 % Example: 
 %
@@ -19,10 +19,10 @@ function [Znew] = splitFirstGen(Zdummy,Z)
 %
 % See also: ---
 
-% Author: Matthias Althoff
-% Written: 09-October-2008
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      09-October-2008
+% Last update:  14-March-2019 (sort removed)
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -36,10 +36,10 @@ for i=1:length(Z)
     for j=1:length(G(1,:))
         h(j)=norm(G(:,j)'*G,1);
     end
-    [value,index]=sort(h); 
+    [~,index]=max(h); 
     
     %split longest generator
-    Ztemp = split(Z{i},index(end));
+    Ztemp = split(Z{i},index);
     %Ztemp = split(Z{i},1);
     %write to Znew
     counter=length(Znew);

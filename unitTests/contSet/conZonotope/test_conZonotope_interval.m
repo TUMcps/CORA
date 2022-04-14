@@ -30,7 +30,7 @@ function res = test_conZonotope_interval
 
 %------------- BEGIN CODE --------------
 
-res = 0;
+res = false;
 
 % TEST 1: Figure 1 in [1] -------------------------------------------------
 
@@ -86,30 +86,7 @@ end
 
 
 
-% TEST 3: Random Test 3D --------------------------------------------------
-
-% Generate random conZonotope object
-points = rand(3,100);
-ind = convhulln(points');
-ind = unique(ind(:,1),'stable');
-V = points(:,ind);
-
-poly = mptPolytope(V');
-cZono = conZonotope(poly);
-
-% calculate interval
-int = interval(cZono);
-
-% compare with ground-truth for the vertices
-v = vertices(cZono);
-V = get(v,'V');
-int_ = interval(min(V,[],2),max(V,[],2));
-
-for i = 1:length(int)
-   if abs(infimum(int_(i)) - infimum(int(i))) > 1e-10 || abs(supremum(int_(i)) - supremum(int(i))) > 1e-10
-      error('Test 3 failed!'); 
-   end
-end
+res = true;
 
 
-res = 1;
+%------------- END OF CODE --------------

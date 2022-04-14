@@ -21,16 +21,31 @@ function [h] = mtimes(factor,h)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      26-August-2013
-% Last update:  ---
+% Last update:  16-March-2021 (MW, add empty case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-%assume that factor is an invertible matrix
-invMat = inv(factor);
-h.c = invMat.'*h.c;
+try
+    %assume that factor is an invertible matrix
+    invMat = inv(factor);
+    h.c = invMat.'*h.c;
+    
+catch ME
+    
+    if isempty(h)
+        % empty halfspace
+        [msg,id] = errEmptySet();
+        error(id,msg);
+    elseif abs(det(factor)) < eps
+        error("Linear transformation with near-singular matrix");
+    else
+        rethrow(ME);
+    end
+    
+end
 
 
 %------------- END OF CODE --------------

@@ -1,24 +1,24 @@
-function Obj = location(varargin)
-% location - Object and Copy Constructor 
+classdef location
+% location - constructor of class location
 %
 % Syntax:  
-%    object constructor: Obj = class_name(varargin)
-%    copy constructor: Obj = otherObj
+%    obj = location(invSet,trans,sys)
+%    obj = location(name,invSet,trans,sys)
 %
 % Inputs:
-%    input1 - name of the location: char array
-%    input2 - invariant set: contSet
-%    input3 - transition array: transition
-%    input4 - continuous dynamics: contDynamics 
+%    name - name of the location: char array
+%    invSet - invariant set (class: contSet)
+%    trans - cell-array containing all transitions
+%    sys - continuous dynamics (class: contDynamics) 
 %
 % Outputs:
-%    Obj - Generated Object
+%    obj - gnerated object
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: hybridAutomaton, transition
 
 % Author: Matthias Althoff
 % Written: 02-May-2007 
@@ -27,44 +27,46 @@ function Obj = location(varargin)
 
 %------------- BEGIN CODE --------------
 
-% If no argument is passed (default constructor)
-if nargin == 0
-    disp('Location needs more input values');
-    Obj.name=[];
-    Obj.id=[];
-    Obj.invariant=[];  % also add halfspace representation
-    Obj.transition=[];
-    Obj.contDynamics=[];
-    Obj.other=[];
-    % Register the variable as an object
-    Obj = class(Obj, 'location');    
-    
-% If 5 arguments are passed
-elseif nargin == 5
-    %List elements of the class
-    %Obj.id=nextID('location');  
-    Obj.name=varargin{1};
-    Obj.id=varargin{2};
-    if ~isempty(varargin{3})
-        Obj.invariant=polytope(varargin{3});  % also add halfspace representation
-    else
-        Obj.invariant=[];
-    end
-    Obj.transition=varargin{4};
-    Obj.contDynamics=varargin{5};
-    Obj.other=[];
+properties (SetAccess = private, GetAccess = public)
+    name = [];              % name of the location
+    invariant = [];         % invariant set 
+    transition = [];        % cell-array storing the transitions
+    contDynamics = [];      % system dynamics (contDynamics object)
+end
 
-    % Register the variable as an object
-    Obj = class(Obj, 'location'); 
-        
-% Else if the parameter is an identical object, copy object    
-elseif isa(varargin{1}, 'location')
-    Obj = varargin{1};
+methods
     
-% Else if not enough or too many inputs are passed    
-else
-    disp('This class needs more/less input values');
-    Obj=[];
+    % class constructor
+    function obj = location(varargin)
+
+        % parse input arguments
+        if nargin == 3
+           name = 'location';
+           invSet = varargin{1};
+           trans = varargin{2};
+           sys = varargin{3};
+        elseif nargin == 4
+           name = varargin{1};
+           invSet = varargin{2};
+           trans = varargin{3};
+           sys = varargin{4}; 
+        else
+            error('Wrong number of inputs arguments!');
+        end
+
+        % assign object properties
+        obj.name = name;
+        obj.transition = trans;
+        obj.contDynamics = sys;
+
+        % convert invariant sets to polytopes if possible
+        if isa(invSet,'mptPolytope') || isa(invSet,'levelSet')
+            obj.invariant = invSet;
+        else
+            obj.invariant = mptPolytope(invSet);
+        end
+    end
+end
 end
 
 %------------- END OF CODE --------------

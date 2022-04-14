@@ -18,12 +18,14 @@ function res = test_zonotope_plus
 %
 % See also: -
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      26-July-2016
-% Last update:  ---
+% Last update:  09-August-2020
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% 1. Analytical Test ------------------------------------------------------
 
 % create zonotopes
 Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
@@ -33,14 +35,17 @@ Z2 = zonotope([1 10; -1 -10]);
 Z3 = Z1+Z2;
 
 % obtain zonotope matrix
-Zmat = get(Z3,'Z');
+Zmat = Z3.Z;
 
 % true result
 true_mat = [-3, -3, -2, -1, 10; ...
             0, 2, 3, 4, -10];
 
 % check result
-res = all(all(Zmat == true_mat));
+res_val = all(all(Zmat == true_mat));
+
+% add results
+res = res_val;
 
 if res
     disp('test_zonotope_plus successful');

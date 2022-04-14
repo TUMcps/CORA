@@ -49,7 +49,7 @@ if ~(prod(cellNrs > 0)&&prod(cellNrs<=prod(Obj.nrOfSegments)))
 end
 
 % Get subscripts out of the segment number 
-subscripts=i2s(Obj,cellNrs);
+subscripts=i2s(Obj.nrOfSegments',cellNrs);
 
 for i = 1:size(subscripts,1)
     for j = 1:size(subscripts,2)

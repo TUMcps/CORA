@@ -1,5 +1,5 @@
 function res = test_zonotope_enlarge
-% test_enlarge - unit test function of enlarge
+% test_zonotope_enlarge - unit test function of enlarge
 %
 % Syntax:  
 %    res = test_zonotope_enlarge
@@ -29,10 +29,10 @@ function res = test_zonotope_enlarge
 Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
 
 % obtain enlarged zonotope
-Z2 = enlarge(Z1,[2,1.5]);
+Z2 = enlarge(Z1,[2;1.5]);
 
 % obtain zonotope matrix
-Zmat = get(Z2,'Z');
+Zmat = Z2.Z;
 
 % true result
 true_mat = [-4, -6, -4, -2; ...

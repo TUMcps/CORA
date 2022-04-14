@@ -1,9 +1,9 @@
-function [ratio] = volumeRatio(varargin)
-% volume - Computes the approxiamte volume ratio of a zonotope and its
-% overapproximating polytope
+function ratio = volumeRatio(Z,P,dims)
+% volume - computes the approximate volume ratio of a zonotope and its
+%    over-approximating polytope
 %
 % Syntax:  
-%    [ratio] = volumeRatio(varargin)
+%    ratio = volumeRatio(varargin)
 %
 % Inputs:
 %    Z - zonotope object
@@ -13,7 +13,10 @@ function [ratio] = volumeRatio(varargin)
 % Outputs:
 %    ratio - approximated normalized volume ratio
 %
-% Example: 
+% Example:
+%    Z = zonotope([1;0],rand(2,5));
+%    P = enclosingPolytope(Z);
+%    ratio = volumeRatio(Z,P,1);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -21,34 +24,31 @@ function [ratio] = volumeRatio(varargin)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 12-September-2008 
-% Last update: ---
+% Author:        Matthias Althoff
+% Written:       12-September-2008 
+% Last update:   28-Aug-2019
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 %write inputs to variables
-if nargin==2
-    Z=varargin{1};
-    P=varargin{2};
-    dims=length(Z.Z(:,1));    
-elseif nargin==3
-    Z=varargin{1};
-    P=varargin{2};
-    dims=varargin{3};
+if nargin == 1
+    error("Not enough input values");
+elseif nargin == 2
+    dims=dim(Z);
 end
 
 %obtain dimension
-dim=length(Z.Z(:,1));
+n=dim(Z);
 %generate dim vector
 dimVector=1:dims;
 %obtain number of iterations
-iterations=dim-dims+1;
+iterations=n-dims+1;
 
 %init projected zonotope
 Zproj=Z;
 
+partialRatio = zeros(iterations,1);
 for i=1:iterations
     %projected dimensions
     projDims=dimVector+i-1;

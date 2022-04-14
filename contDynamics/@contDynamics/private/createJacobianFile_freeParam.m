@@ -30,7 +30,7 @@ function createJacobianFile_freeParam(Jdyn,path,name)
 
     
 
-fid = fopen([path '/jacobian_freeParam_',name,'.m'],'w');
+fid = fopen([path filesep 'jacobian_freeParam_' name '.m'],'w');
 fprintf(fid, '%s\n\n', ['function [A,B]=jacobian_freeParam_',name,'(x,u,p)']);
 
 % SYSTEM MATRIX

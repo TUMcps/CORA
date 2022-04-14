@@ -1,19 +1,21 @@
-function [Z] = abs(Z)
-% abs - Returns a zonotope with absolute values of the center and the
-% generators
+function probZ = abs(probZ)
+% abs - Returns a probabilistic zonotope with absolute values
+%    of the center and the interval generators
 %
 % Syntax:  
-%    [Z] = abs(Z)
+%    probZ = abs(probZ)
 %
 % Inputs:
-%    Z - zonotope object
+%    probZ - probZonotope object
 %
 % Outputs:
-%    Z - zonotope, whereas Z=(|c|,|g_1|,...,|g_n|)
+%    probZ - probZonotope, where Z=(|c|,|g_1|,...,|g_n|)
 %
 % Example: 
-%    Z=zonotope([1 -1 0; 0 0 -1]);
-%    Z=abs(Z)-->Z=[1 1 0; 0 0 1]
+%    Z1 = [10 1 -2; 0 1 1];
+%    Z2 = [0.6 1.2; 0.6 -1.2];
+%    probZ = probZonotope(Z1,Z2);
+%    probZabs = abs(probZ);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -21,13 +23,14 @@ function [Z] = abs(Z)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 30-September-2006 
-% Last update: 22-March-2007
+% Author:        Matthias Althoff
+% Written:       30-September-2006 
+% Last update:   22-March-2007
+%                10-June-2020 (MW, update header)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-Z.Z=abs(Z.Z);
+probZ.Z = abs(probZ.Z);
 
 %------------- END OF CODE --------------

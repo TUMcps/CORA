@@ -32,10 +32,8 @@ IH=interval(varargin{1});
 %plot interval
 if nargin==1
     plot(IH);
-elseif nargin==2
-    plot(IH,varargin{2});
-else
-    plot(IH,varargin{2},varargin{3});
+elseif nargin>=2
+    plot(IH,varargin{2:end});
 end
 
 %------------- END OF CODE --------------

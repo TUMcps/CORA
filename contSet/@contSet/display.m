@@ -20,17 +20,14 @@ function display(obj)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 02-May-2007
-% Last update: ---
+% Author:        Matthias Althoff
+% Written:       02-May-2007
+% Last update:   ---
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-%display id
-disp(['id: ', num2str(obj.id)]);
-
-%display dimension
+% display dimension
 disp(['dimension: ', num2str(obj.dimension)]);
 
 %------------- END OF CODE --------------

@@ -4,7 +4,7 @@ function val = expmNormInf(intMat,t)
 % exponential
 %
 % Syntax:  
-%     val = expmNormInf(intMat,t)
+%    val = expmNormInf(intMat,t)
 %
 % Inputs:
 %    intMat - interval matrix

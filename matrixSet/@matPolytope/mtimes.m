@@ -1,6 +1,6 @@
 function matP = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix or a 
-% matrix polytope with a matrix polytope
+%    matrix polytope with a matrix polytope
 %
 % Syntax:  
 %    matP = mtimes(factor1,factor2)

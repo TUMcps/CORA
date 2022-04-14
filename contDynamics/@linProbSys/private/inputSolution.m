@@ -24,35 +24,31 @@ function [obj] = inputSolution(obj,options)
 % Written:      13-February-2007 
 % Last update:  26-February-2008
 %               08-September-2009
+%               17-July-2020
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 %set of possible inputs
-V=obj.B*options.U;
+V = obj.B*options.U;
 
-%compute vTrans if possible
-try
-    vTrans=obj.B*options.uTrans;
-catch
-    vTrans=[];
-end
+%compute vTrans
+vTrans = obj.B*options.uTrans;
 
 %load data from object/options structure
-A=obj.A;
-Apower=obj.taylor.powers;
-E=obj.taylor.error;
-taylorTerms=options.taylorTerms;
-r=options.timeStep;
-dim=dimension(obj);
-I=eye(dim);
-F=obj.taylor.F; 
+A = obj.A;
+Apower = obj.taylor.powers;
+E = obj.taylor.error;
+r = options.timeStep;
+dim = dimension(obj);
+I = eye(dim);
+F = obj.taylor.F; 
 
 %non-probabilistic solution--------------------------------
 %init Vsum
 Vsum=r*V;
 %compute higher order terms
-for i=1:taylorTerms
+for i=1:options.taylorTerms
     %compute factor
     factor=1/factorial(i+1);    
 
@@ -64,19 +60,19 @@ end
 inputSolV=Vsum+E*r*V;
 
 %compute solution due to constant input
-inputSolVtrans=inv(A)*(expm(A*r)-I)*vTrans;
+inputSolVtrans=inv(A)*(expm(A*r)-I)*vTrans; % ... zonotope(vTrans) ?
 
 %compute additional uncertainty if origin is not contained in input set
 if options.originContained
     inputCorr=zeros(dim,1);
 else
-    inputCorr=inv(A)*F*vTrans;
+    inputCorr=inv(A)*F*zonotope(vTrans);
 end
 
 %write to object structure
 obj.taylor.V=V;
-uncertainMean=get(inputSolV+inputSolVtrans,'Z');
-obj.taylor.Rinput=probZonotope(uncertainMean,zeros(dim,1),options.gamma);
+uncertainMean=inputSolV+inputSolVtrans;
+obj.taylor.Rinput=probZonotope(uncertainMean.Z,zeros(dim,1),options.gamma);
 obj.taylor.Rtrans=inputSolVtrans;
 obj.taylor.inputCorr=inputCorr;
 %----------------------------------------------------------
@@ -93,12 +89,10 @@ D=C*C.';
 for i=1:length(lambda)
     for j=1:length(lambda)
         lambdaSum=lambda(i)+lambda(j);
-        Sigma_old(i,j)=D(i,j)/-lambdaSum*exp(lambdaSum*r);
         Sigma(i,j)=D(i,j)/lambdaSum*(1-exp(-lambdaSum*r));
     end
 end
 %Sigma in original coordinates
-Sigma_old=V*Sigma_old*V.';
 Sigma=V*Sigma*V.';
 G=generators(Sigma);
 
@@ -109,5 +103,17 @@ ProbInputSol=probZonotope(zeros(dim,1),G,options.gamma);
 obj.taylor.pRinput=ProbInputSol;
 %----------------------------------------------------------
 
+function [G]=generators(Sigma)
+% returns the generator matrix of a probabilistic zonotope if
+% the covariance matrix Sigma is given
+
+%ensure symmetry for numerical stability
+Sigma=0.5*(Sigma+Sigma');
+
+%get eigenvalue, eigenvectors of Sigma
+[V,W]=eig(Sigma);
+
+%compute new generators
+G=V*sqrt(W);
 
 %------------- END OF CODE --------------

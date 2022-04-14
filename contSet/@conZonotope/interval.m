@@ -19,7 +19,7 @@ function res = interval(obj)
 %    int = interval(cZono);
 %
 %    hold on
-%    plotFilled(cZono,[1,2],'r','EdgeColor','none')
+%    plot(cZono,[1,2],'r','Filled',true,'EdgeColor','none')
 %    plot(int,[1,2],'g');
 %
 % Other m-files required: none
@@ -35,9 +35,9 @@ function res = interval(obj)
 
 %------------- BEGIN CODE --------------
 
-if isempty(obj.A)       % no constraints -> call superclass method
+if isempty(obj.A)       % no constraints -> call zonotope method
     
-    res = interval@zonotope(obj);
+    res = interval(zonotope(obj.Z));
     
 else                    % constraints 
     
@@ -45,7 +45,7 @@ else                    % constraints
     res = interval(zeros(n,1));
 
     % remove the trivial constraint 0*ksi = 0
-    obj = removeZeroConstraints(obj);
+    obj = deleteZeros(obj);
 
     % loop over all dimensions
     for i = 1:n
@@ -53,8 +53,8 @@ else                    % constraints
         temp(i) = 1;
 
         % calculate exact bounds by solving a linear program
-        lb = boundDir(obj,temp,'lower');
-        ub = boundDir(obj,temp,'upper');
+        lb = supportFunc(obj,temp,'lower');
+        ub = supportFunc(obj,temp,'upper');
 
         res(i) = interval(lb,ub);
     end

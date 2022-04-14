@@ -1,16 +1,18 @@
-function plot(varargin)
+function han = plot(obj,varargin)
 % plot - Plots 2-dimensional projection of an interval 
 %
-% Syntax:  
-%    plot(obj,dimensions)
+% Syntax:
+%    plot(obj)
+%    plot(obj,dims)
+%    plot(obj,dims,'r',...)
 %
 % Inputs:
 %    obj - interval object
-%    dimensions - dimensions that should be projected (optional) 
-%    type - plot type
+%    dims - (optional) dimensions that should be projected
+%    type - (optional) plot type (LineSpec and Name-Value pairs)
 %
 % Outputs:
-%    none
+%    han - handle to the plotted object
 %
 % Example: 
 %    I = interval([1; -1], [2; 1]);
@@ -30,13 +32,13 @@ function plot(varargin)
 %------------- BEGIN CODE --------------
 
 %convert to zonotope
-Z = zonotope(varargin{1});
-    
+Z = zonotope(obj);
+
 %plot zonotope
 if nargin == 1
-    plot(Z);
+    han = plot(Z);
 else
-    plot(Z,varargin{2:end});
+    han = plot(Z,varargin{:});
 end
 
 %------------- END OF CODE --------------

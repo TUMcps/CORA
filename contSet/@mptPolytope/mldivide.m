@@ -10,7 +10,7 @@ function obj = mldivide(obj,P)
 %    P - mptPolytope object
 %
 % Outputs:
-%   obj - mptPolytope object
+%    obj - mptPolytope object
 %
 % Example: 
 %    ---

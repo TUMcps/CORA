@@ -1,6 +1,6 @@
 function res = eq(obj, obj2)
-% eq - returns 1 if two polytopes are equal and 0 otherwise; overloads the
-% == operator
+% eq - overloads the '==' operator,
+% returns 1 if two polytopes are equal and 0 otherwise
 %
 % Syntax:  
 %    res = eq(obj, obj2)
@@ -10,7 +10,7 @@ function res = eq(obj, obj2)
 %    obj2 - mptPolytope object
 %
 % Outputs:
-%   res - result in {0,1}
+%    res - boolean whether equal or not
 %
 % Example: 
 %    ---

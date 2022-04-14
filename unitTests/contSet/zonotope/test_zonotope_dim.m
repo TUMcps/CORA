@@ -1,5 +1,5 @@
 function res = test_zonotope_dim
-% test_dim - unit test function of dim
+% test_zonotope_dim - unit test function of dim
 %
 % Syntax:  
 %    res = test_zonotope_dim
@@ -18,25 +18,33 @@ function res = test_zonotope_dim
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      26-July-2016
+% Author:       Mark Wetzlinger
+% Written:      27-July-2021
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% create zonotope
-Z1 = zonotope([1, 2, 0, 4; 5, 6, 0, 0; -1, 4, 0, 8]);
+res = true;
 
-% obtain zonotope without zeros
-d = dim(Z1);
+% check empty zonotope
+Z = zonotope();
+res(1) = dim(Z) == 0;
 
-% true result
-true_val = 2;
 
-% check result
-res = (d==true_val);
+% instantiate zonotope
+c = [-2; 1];
+G = [2 4 5 3 3; 0 3 5 2 3];
+Z = zonotope(c,G);
 
+res(2) = dim(Z) == 2;
+
+% no generator matrix
+Z = zonotope(c);
+res(3) = dim(Z) == 2;
+
+% combine results
+res = all(res);
 
 if res
     disp('test_dim successful');

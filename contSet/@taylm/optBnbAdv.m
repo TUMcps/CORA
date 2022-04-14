@@ -12,7 +12,7 @@ function int = optBnbAdv(obj)
 %    res - interval
 %
 % Example:
-%   f= @(x) 1 + x.^5 - x.^4;
+%   f = @(x) 1 + x.^5 - x.^4;
 %   x = interval(0,1);
 %   t = taylm(x,10,'x');
 %   T = f(t);

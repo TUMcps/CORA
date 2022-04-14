@@ -1,19 +1,21 @@
-function create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,options)
+function create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,infsupFlag,options)
 % create3rdOrderTensorFile - generates an mFile that allows to compute the
-% 3rd order terms 
+%    3rd-order terms 
 %
 % Syntax:  
-%    create3rdOrderTensorFile(obj,path)
+%    create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,infsupFlag,options)
 %
 % Inputs:
 %    J3dyn - symbolic third-order tensor
-%    J3con - symbolic thrid-order tensor (constraints)
+%    J3con - symbolic third-order tensor (constraints)
 %    path - path for saving the file
 %    name - name of the nonlinear function to which the 3rd order tensor belongs
 %    vars - structure containing the symbolic variables
+%    infsupFlag - true if interval arithmetic, otherwise false
 %    options - structure containing the algorithm options
 %
 % Outputs:
+%    -
 %
 % Example: 
 %
@@ -29,6 +31,8 @@ function create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,options)
 %               12-November-2017
 %               03-December-2017
 %               24-January-2018 (NK)
+%               13-March-2020 (NK, implemented options.simplify = optimize)
+%               01-February-2021 (MW, add infsupFlag for different filenames)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -37,24 +41,27 @@ function create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,options)
 taylMod = 0;
 replace = 0;
 parallel = 0;
+opt = 0;
 
-if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ...
-   ~strcmp(options.lagrangeRem.method,'interval')
-    if ~ismember(options.lagrangeRem.method,{'taylorModel','zoo'})
-       error('Wrong value for setting "options.lagrangeRem.method"!');
+if isfield(options,'lagrangeRem')
+    temp = options.lagrangeRem;
+    if isfield(temp,'method') && ~strcmp(temp.method,'interval')
+        taylMod = 1;
     end
-    taylMod = 1;
-end
-if isfield(options,'replacements')
-    replace = 1;
-    if ~isempty(vars.p)
-        rep = options.replacements(vars.x,vars.u,vars.p);
-    else
-        rep = options.replacements(vars.x,vars.u);
+    if isfield(temp,'replacements')
+        replace = 1;
+        if ~isempty(vars.p)
+            rep = temp.replacements(vars.x,vars.u,vars.p);
+        else
+            rep = temp.replacements(vars.x,vars.u);
+        end
     end
-end
-if isfield(options,'tensorParallel') && options.tensorParallel == 1
-    parallel = 1; 
+    if isfield(temp,'tensorParallel') && temp.tensorParallel == 1
+        parallel = 1; 
+    end
+    if isfield(temp,'simplify') && strcmp(temp.simplify,'optimize')
+        opt = 1; 
+    end
 end
 
 %rearrange dynamic part
@@ -71,26 +78,31 @@ for k=1:length(J3con(:,1,1,1))
     end
 end
 
+% different filename depending on whether interval arithmetic is used
+if infsupFlag
+    thirdordername = 'thirdOrderTensorInt_';
+else
+    thirdordername = 'thirdOrderTensor_';
+end
+
 % create the file
-fid = fopen([path '/thirdOrderTensor_',name,'.m'],'w');
+fid = fopen([path filesep thirdordername name '.m'],'w');
 
 % function arguments depending on occurring variable types
 if isempty(vars.y)      % no constraints
-   strHead = ['function Tf = thirdOrderTensor_',name]; 
+   strHead = ['function [Tf,ind] = ' thirdordername name]; 
 else                    % constraints
-   strHead = ['function [Tf,Tg] = thirdOrderTensor_',name];
+   strHead = ['function [Tf,Tg,ind] = ' thirdordername name];
 end
 
 strHead = [strHead,'(x,u'];
+symVars = 'vars.x,vars.u';
 
 if ~isempty(vars.p)     % parameter system
-    strHead = [strHead,',p'];
-end
-
-if isempty(vars.T)      % time continious system
-   strHead = [strHead,')']; 
-else                    % time discrete system
-   strHead = [strHead,',T)'];
+    strHead = [strHead,',p)'];
+    symVars = [symVars,',vars.p'];
+else
+    strHead = [strHead,')']; 
 end
 
 fprintf(fid, '%s\n\n',strHead);
@@ -117,6 +129,38 @@ if ~exist('r','var')
     r = [];
 end
 
+% write call to optimized function to reduce the number of interval operations
+if opt
+    
+    % store indices of nonempty entries
+    counter = 1;
+    ind = cell(size(Tdyn));
+    out = [];
+    
+    for i = 1:size(Tdyn,1)
+        for j = 1:size(Tdyn,2)
+            [r,c] = find(Tdyn{i,j});
+            if ~isempty(r)
+                ind{i,j}.row = r;
+                ind{i,j}.col = c;
+                ind{i,j}.index = counter:counter + length(r)-1;
+                counter = counter + length(r);
+                for k = 1:length(r)
+                    out = [out;Tdyn{i,j}(r(k),c(k))]; 
+                end
+            end
+       end
+    end  
+    
+    % write function
+    if ~isempty(out)
+        index = find(strHead == '(');
+        args = strHead(index(1):end);
+        str = ['out = funOptimize',args,';'];
+        fprintf(fid, '\n\n %s\n\n', str);
+    end
+end
+
 
 % beginning of parallel execution
 if parallel
@@ -133,7 +177,7 @@ end
 % precompute initialization string
 [rows,cols] = size(Tdyn{1,1});
 sparseStr = ['sparse(',num2str(rows),',',num2str(cols),')'];
-if options.tensorOrder == 3
+if infsupFlag
     if parallel
         initStr = ['C{i}{%i} = interval(',sparseStr,',',sparseStr,');'];
     else
@@ -149,12 +193,17 @@ end
 
 
 % dynamic part
+indNonZero = cell(length(Tdyn(:,1)),1);
+
 for k=1:length(Tdyn(:,1))
     
     if parallel
         caseStr = ['case ',num2str(k)];
         fprintf(fid, '\n %s \n', caseStr);
     end
+    
+    % initialize vector of non-zero indices
+    indNonZero{k} = [];
     
     for l=1:length(Tdyn(1,:))
         
@@ -168,22 +217,38 @@ for k=1:length(Tdyn(:,1))
             if taylMod
                 str = sprintf(initStr,l);
                 fprintf(fid, '\n\n %s\n\n', str);
-                writeSparseMatrixTaylorModel(Tdyn{k,l},['C{i}{',num2str(l),'}'],fid);
+                empty = writeSparseMatrixTaylorModel(Tdyn{k,l},['C{i}{',num2str(l),'}'],fid);
             else
                 str = sprintf(initStr,l);
                 fprintf(fid, '\n\n %s\n\n', str);
-                writeSparseMatrix(Tdyn{k,l},['C{i}{',num2str(l),'}'],fid);
+                empty = writeSparseMatrix(Tdyn{k,l},['C{i}{',num2str(l),'}'],fid);
             end
         else
-            if taylMod
+            if opt
                 str = sprintf(initStr,k,l);
                 fprintf(fid, '\n\n %s\n\n', str);
-                writeSparseMatrixTaylorModel(Tdyn{k,l},['Tf{',num2str(k),',',num2str(l),'}'],fid);
+                
+                if ~isempty(ind{k,l})
+                    writeSparseMatrixOptimized(ind{k,l},['Tf{',num2str(k),',',num2str(l),'}'],fid,taylMod);
+                    empty = 0;
+                else
+                    empty = 1;
+                end
             else
-                str = sprintf(initStr,k,l);
-                fprintf(fid, '\n\n %s\n\n', str);
-                writeSparseMatrix(Tdyn{k,l},['Tf{',num2str(k),',',num2str(l),'}'],fid);
+                if taylMod
+                    str = sprintf(initStr,k,l);
+                    fprintf(fid, '\n\n %s\n\n', str);
+                    empty = writeSparseMatrixTaylorModel(Tdyn{k,l},['Tf{',num2str(k),',',num2str(l),'}'],fid);
+                else
+                    str = sprintf(initStr,k,l);
+                    fprintf(fid, '\n\n %s\n\n', str);
+                    empty = writeSparseMatrix(Tdyn{k,l},['Tf{',num2str(k),',',num2str(l),'}'],fid);        
+                end
             end
+        end
+        
+        if ~empty
+           indNonZero{k} = [indNonZero{k}; l]; 
         end
 
         disp(['dynamic index ',num2str(k),',',num2str(l)]);
@@ -221,6 +286,35 @@ if ~isempty(vars.y)
             disp(['dynamic index ',num2str(k),',',num2str(l)]);
         end
     end
+end
+
+% indizes of non-zero elements
+fprintf(fid,'\n ind = cell(%i,1);',length(indNonZero));
+
+for i = 1:length(indNonZero)
+    if ~isempty(indNonZero{i})
+        fprintf(fid,'\n ind{%i} = [',i);
+        for j = 1:length(indNonZero{i})-1
+            fprintf(fid,'%i;',indNonZero{i}(j));
+        end
+        fprintf(fid,'%i];\n\n',indNonZero{i}(end));
+    else
+        fprintf(fid,'\n ind{%i} = [];\n\n',i);
+    end
+end
+
+% create optimized function to reduce the number of interval operations
+if opt && ~isempty(out)
+    % create file with optimized evaluation
+    pathTemp = fullfile(path,'funOptimize.m');
+    str = ['matlabFunction(out,''File'',pathTemp,''Vars'',{',symVars,'});'];
+    eval(str);
+    
+    % read in text from the file
+    text = fileread(pathTemp);
+
+    % print text from file
+    fprintf(fid, '%s',text);
 end
 
 %close file

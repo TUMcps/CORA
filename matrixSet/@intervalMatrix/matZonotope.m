@@ -26,10 +26,10 @@ function matZ = matZonotope(matI)
 %------------- BEGIN CODE --------------
 
 %convert to interval
-IH=interval(matI);
+I=interval(matI);
 
 %convert to zonotope
-Z=zonotope(IH);
+Z=zonotope(I);
 Z=deleteZeros(Z); %delete zero generators
 
 %convert to matrix zonotope

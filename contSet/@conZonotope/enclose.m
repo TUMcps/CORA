@@ -1,22 +1,17 @@
-function [cZ] = enclose(cZ1,cZ2)
+function cZ = enclose(varargin)
 % enclose - generates a conZonotope object that encloses two constrained 
 %           zonotopes, where the second constrained zonotope is a linear 
 %           transformation of the first one
 %
 % Syntax:  
-%    [cZ] = enclose(cZ1, cZ2)
-%
-% Description: 
-%    ATTENTION: This function can only be applied if the second conZonotope
-%    object cZ2 is a linear transformation of the first conZonotope object
-%    cZ1: 
-%           cZ2 = T*cZ1 + t
-%    where T is a numerical matrix and is a vector, a zonotope object or
-%    an interval object
+%    cZ = enclose(cZ1, cZ2)
+%    cZ = enclose(cZ1, M, cZplus)
 %
 % Inputs:
 %    cZ1 - first conZonotope object
-%    cZ2 - second conZonotope object
+%    cZ2 - second conZonotope object, satisfying cZ2 = (M * cZ1) + cZplus
+%    M - matrix for the linear transformation
+%    cZplus - conZonotope object added to the linear transformation
 %
 % Outputs:
 %    cZ - conZonotope object that encloses cZ1 and cZ2
@@ -29,25 +24,24 @@ function [cZ] = enclose(cZ1,cZ2)
 %    cZono1 = conZonotope(Z,A,b);
 %
 %    % linear transformation
-%    T = [1 1.5;-0.5 1];
-%    t = [4;7];
-%    cZono2 = T*cZono1 + t;
+%    M = [1 1.5;-0.5 1];
+%    cZplus = [4;7];
+%    cZono2 = M*cZono1 + cZplus;
 %
 %    % convex hull
 %    cZonoRes = enclose(cZono1,cZono2);
 %
 %    % visualization
 %    hold on
-%    plotFilled(cZonoRes,[1,2],[0.6,0.6,0.6]);
-%    plotFilled(cZono1,[1,2],'r');
-%    plotFilled(cZono2,[1,2],'b');
-%   
+%    plot(cZonoRes,[1,2],'FaceColor',[0.6,0.6,0.6],'Filled',true);
+%    plot(cZono1,[1,2],'r','Filled',true);
+%    plot(cZono2,[1,2],'b','Filled',true);
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: zonotope/enclose
 
 % Author: Niklas Kochdumper
 % Written: 28-June-2018 
@@ -55,6 +49,18 @@ function [cZ] = enclose(cZ1,cZ2)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
+
+% parse input arguments
+if nargin == 2
+    cZ1 = varargin{1};
+    cZ2 = varargin{2};
+else
+    cZ1 = varargin{1};
+    M = varargin{2};
+    cZplus = varargin{3};
+    
+    cZ2 = (M*cZ1) + cZplus;
+end
 
 % retrieve number of generators of the zonotopes
 g1 = length(cZ1.Z(1,:));

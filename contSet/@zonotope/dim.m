@@ -1,33 +1,37 @@
-function [n] = dim(Z)
-% dim - Returns the dimension of a zonotope in the sense that the rank of
-% the generator matrix is computed
+function d = dim(Z)
+% dim - returns the dimension in which the zonotope is defined;
+%    caution: this is different from the rank of a zonotope
 %
 % Syntax:  
-%    [n] = dim(Z)
+%    d = dim(Z)
 %
 % Inputs:
 %    Z - zonotope object
 %
 % Outputs:
-%    n - dimension of the zonotope Z
+%    d - dimension in which Z is defined
 %
 % Example: 
-%    Z=zonotope([1 1 0; 0 0 1]);
-%    n=dim(Z)-->n=2
+%    Z = zonotope([zeros(3,1),rand(3,5)]);
+%    d = dim(Z)
 %
-% Other m-files required: none
+% Other m-files required: center.m
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
-
-% Author:       Matthias Althoff
-% Written:      06-May-2009
-% Last update:  ---
+% See also: rank.m
+%
+% Author:        Mark Wetzlinger
+% Written:       15-Sep-2019
+% Last update:   11-March-2021 (MW, add empty case)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-n=rank(Z.Z(:,2:end));
+if ~isempty(Z)
+    d = length(center(Z));
+else
+    d = 0;
+end
 
 %------------- END OF CODE --------------

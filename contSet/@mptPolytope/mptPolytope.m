@@ -1,22 +1,31 @@
-function obj = mptPolytope(varargin)
+classdef (InferiorClasses = {?interval ?intervalMatrix, ?matZonotope}) mptPolytope < contSet
 % mptPolytope - object and copy constructor 
 %
 % Syntax:  
-%    object constructor: obj = zonotope(varargin)
-%    copy constructor: obj = otherObj
+%    obj = mptPolytope(V)
+%    obj = mptPolytope(C,d)
 %
 % Inputs:
-%    V - vertices
-%    C/d - halfspace representation
+%    V - matrix storing the vertices V = [v_1,...,v_p]^T
+%    C - matrix for the inequality constraint C*x <= d
+%    d - vector for the inequality constraint C*x <= d
 %
 % Outputs:
 %    obj - generated object
+%
+% Example: 
+%    C = [1 0 -1 0 1; 0 1 0 -1 1]';
+%    d = [3; 2; 3; 2; 1];
+%    
+%    poly = mptPolytope(C,d);
+%
+%    plot(poly);
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: intervalhull,  polytope
+% See also: interval,  polytope
 
 % Author:       Matthias Althoff
 % Written:      01-February-2011
@@ -25,54 +34,67 @@ function obj = mptPolytope(varargin)
 
 %------------- BEGIN CODE --------------
 
-%Zonotope is superior to class interval
-superiorto('interval','intervalMatrix','matZonotope');
+properties (SetAccess = protected, GetAccess = public)
+    P = [];
+    halfspace = [];
+end
 
+methods
 
-% If no argument is passed (default constructor)
-if nargin == 0
-    disp('Zonotope needs more input values');
-    obj.P=[];
-    obj.halfspace=[];
-    
-    % Register the variable
-    obj = class(obj, 'mptPolytope');
+    function obj = mptPolytope(varargin)
 
-    
-% If 1 argument is passed
-elseif nargin == 1
-    %List elements of the class
-    try %MPT V3
-        obj.P=Polyhedron(varargin{1});
-    catch %MPT V2
-        obj.P=polytope(varargin{1});
+        % If no argument is passed (default constructor)
+        if nargin == 0
+            disp('mptPolytope needs more input values');
+            obj.P=[];
+            obj.halfspace=[];
+
+        % If 1 argument is passed
+        elseif nargin == 1
+            % copy constructor
+            if isa(varargin{1},'mptPolytope')
+                obj = varargin{1};
+            else
+                %List elements of the class
+                try %MPT V3
+                    obj.P=Polyhedron(varargin{1});
+                catch %MPT V2
+                    obj.P=polytope(varargin{1});
+                end
+                obj.halfspace=[];
+            end
+
+        % If 2 arguments are passed
+        elseif nargin == 2
+            %List elements of the class
+            try %MPT V3
+                obj.P=Polyhedron(varargin{1},varargin{2});
+            catch %MPT V2
+                obj.P=polytope(varargin{1},varargin{2});
+            end
+            obj.halfspace=[];
+
+        % Else if the parameter is an identical object, copy object    
+        elseif isa(varargin{1}, 'mptPolytope')
+            obj = varargin{1};
+
+        % Else if not enough or too many inputs are passed    
+        else
+            disp('This class needs more/less input values');
+            obj=[];
+        end
+        
+        % set parent object properties
+        obj.dimension = obj.P.Dim;
+
     end
-    obj.halfspace=[];
+end
 
-    % Register the variable as an child object of contSet
-    obj = class(obj, 'mptPolytope'); 
-    
-% If 2 arguments are passed
-elseif nargin == 2
-    %List elements of the class
-    try %MPT V3
-        obj.P=Polyhedron(varargin{1},varargin{2});
-    catch %MPT V2
-        obj.P=polytope(varargin{1},varargin{2});
-    end
-    obj.halfspace=[];
+methods (Static = true)
+    poly = generateRandom(varargin) % generate random polyope
+    poly = enclosePoints(points,varargin) % enclose point cloud with polytope
+end
 
-    % Register the variable as an child object of contSet
-    obj = class(obj, 'mptPolytope'); 
-    
-% Else if the parameter is an identical object, copy object    
-elseif isa(varargin{1}, 'mptPolytope')
-    obj = varargin{1};
-    
-% Else if not enough or too many inputs are passed    
-else
-    disp('This class needs more/less input values');
-    obj=[];
 end
 
 %------------- END OF CODE --------------

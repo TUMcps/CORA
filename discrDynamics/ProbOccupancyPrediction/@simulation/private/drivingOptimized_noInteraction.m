@@ -75,9 +75,9 @@ mAct=min(mFull{1},speedRes);
 %combine with free driving probability
 mAct=combineOptimized(mAct,freeDriving,nrOfInputs); 
 
-%cGfull=normalizeMatrix_bsx(Gfull);ompute Gamma matrix
-Gfull=sparseDiag(mAct)*GammaFull;
-Gfull=normalizeMatrix_bsx(Gfull);
+%cGfull=normalizeMatrix(Gfull);ompute Gamma matrix
+Gfull=sparse(diag(mAct))*GammaFull;
+Gfull=normalizeMatrix(Gfull);
 %-----------------------------------------------------------------
 
 

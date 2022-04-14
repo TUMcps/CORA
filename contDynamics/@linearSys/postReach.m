@@ -48,7 +48,7 @@ IH_init = interval(Rinit);
 IH_tp = interval(R_tp);
 IH_err = interval(R_err+RV);
 
-IH = hull(IH_init,IH_tp) + IH_err;
+IH = or(IH_init,IH_tp) + IH_err;
 
 %IH_alt = interval(R_ti);
 

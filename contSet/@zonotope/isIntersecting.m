@@ -1,46 +1,66 @@
-function res = isIntersecting(obj1,obj2)
-% isIntersecting - determines if a set obj2 intersects a zonotope obj1
+function res = isIntersecting(Z,obj,varargin)
+% isIntersecting - determines if zonotope Z intersects obj
 %
 % Syntax:  
-%    res = isIntersecting(obj1,obj2)
+%    res = isIntersecting(Z,obj)
+%    res = isIntersecting(Z,obj,type)
 %
 % Inputs:
-%    obj1 - zonotope object
-%    obj2 - zonotope or interval object
+%    Z - zonotope object
+%    obj - contSet object
+%    type - type of check ('exact' or 'approx')
 %
 % Outputs:
-%    result - 1/0 if set is intersecting, or not
+%    res - 1/0 if set is intersecting, or not
 %
 % Example: 
-%    ---
+%    zono1 = zonotope([0 1 1 0;0 1 0 1]);
+%    zono2 = zonotope([2 -1 1 0;2 1 0 1]);
+%    zono3 = zonotope([3.5 -1 1 0;3 1 0 1]);
+%
+%    isIntersecting(zono1,zono2)
+%    isIntersecting(zono1,zono3)
+%
+%    figure; hold on;
+%    plot(zono1,[1,2],'b');
+%    plot(zono2,[1,2],'g');
+%
+%    figure; hold on;
+%    plot(zono1,[1,2],'b');
+%    plot(zono3,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: conZonotope/isIntersecting
 
 % Author:       Niklas Kochdumper
-% Written:      24-May-2018
+% Written:      21-Nov-2019
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% convert intervals to zonotopes
-if isa(obj2,'interval')
-   obj2 = zonotope(obj2); 
-end
-
-% different set representations
-if isa(obj2,'zonotope')
+    % get zonotope object
+    if ~isa(Z,'zonotope')
+        % switch variables
+        temp = Z;
+        Z = obj;
+        obj = temp;
+    end
     
-    % convert to constraint zonotopes and check if the intersection is
-    % empty
-    res = ~isempty(conZonotope(obj1) & conZonotope(obj2));
-    
-else
-    error('Operation not implemented yet!');
+    % call function for other set representations
+    if isa(obj,'halfspace') || isa(obj,'conHyperplane') || ...
+       isa(obj,'mptPolytope') || isa(obj,'ellipsoid')
+   
+        res = isIntersecting(obj,Z,varargin{:});
+   
+    else
+        
+        res = isIntersecting(conZonotope(Z),obj,varargin{:});
+        
+    end     
 end
 
 %------------- END OF CODE --------------

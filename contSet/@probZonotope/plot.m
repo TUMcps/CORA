@@ -1,18 +1,28 @@
-function [GM]=plot(varargin)
-% plot - Plots 2-dimensional projection of a zonotope with a maximum of 5
-% generators
+function han = plot(probZ,varargin)
+% plot - Plots 2-dimensional projection of a zonotope with a maximum
+%    of 5 generators
 %
 % Syntax:  
-%    plot(Z,dimensions)
+%    h = plot(probZ) plots the probabilistic zonotope probZ for the first two dimensions
+%    h = plot(probZ,dims) plots the probabilistic  zonotope probZ for the two dimensions i,j:
+%        "dims=[i,j]" and returns handle to line-plot object
+%    h = plot(probZ,dims,'Color','red',...) adds the standard plotting preferences
 %
 % Inputs:
-%    Z - zonotope object
-%    dimensions - dimensions that should be projected (optional) 
+%    probZ - probabilistic zonotope object
+%    dims - (optional) dimensions that should be projected
+%    type - (optional) plot settings (LineSpec and name-value pairs)
+%    m - (optional) m-sigma value, default: probZ.gamma
 %
 % Outputs:
-%    none
+%    han - handle of graphics object
+%    maxVal - maximum probabilistic value
 %
-% Example: 
+% Example:
+%    Z1 = [10 1 -2; 0 1 1];
+%    Z2 = [0.6 1.2; 0.6 -1.2];
+%    probZ = probZonotope(Z1,Z2);
+%    plot(pZ,'dark');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -20,137 +30,41 @@ function [GM]=plot(varargin)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 03-August-2007
-% Last update: ---
+% Author:        Matthias Althoff
+% Written:       03-August-2007
+% Last update:   17-July-2020
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-%If only one argument is passed
-if nargin==1
-    pZ=varargin{1};
-    type='solid';
-    dimensions=[1,2];
-    m=pZ.gamma;
-    
+% default values
+dims = [1,2];
+filled = false; % coresponds to mesh/surf for prob. zonotopes
+NVpairs = {};
+m = probZ.gamma;
+
 %If two arguments are passed    
-elseif nargin==2
-    pZ=varargin{1};
-    type=varargin{2};
-    dimensions=[1,2];
-    m=pZ.gamma;
+if nargin==2
+    dims=varargin{1};
     
-%If three arguments are passed    
-elseif nargin==3
-    pZ=varargin{1};
-    type=varargin{2};
-    dimensions=varargin{3};
-    m=pZ.gamma;
-    
-%If four arguments are passed    
-elseif nargin==4
-    pZ=varargin{1};
-    type=varargin{2};
-    dimensions=varargin{3};
-    m=varargin{4};     
-    
-%If too many arguments are passed
-else
-    disp('Error: too many inputs');
-    pZ=varargin{1};
-    dimensions=varargin{2};    
-end
-    
+%If three or more arguments are passed
+elseif nargin>=3
+    dims = varargin{1};
+    % parse plot options
+    [~,NVpairs] = readPlotOptions(varargin(2:end));
+    [NVpairs,filled] = readNameValuePair(NVpairs,'Filled','islogical');
+    [NVpairs,m] = readNameValuePair(NVpairs,'m','isscalar',m);
+end 
 
 %compute enclosing probability
-[eP] = enclosingProbability(pZ,m,dimensions);
+eP = enclosingProbability(probZ,m,dims);
 
-%open new figure
-%figure
-%colormap('cool')
-%colormap('hot')
-
-% l=linspace(1,0,100)';
-% o=ones(100,1);
-% colormap([l,l,o]);
-
-%colormap([0,0,0]);
-
-
-%plot graph
-if strcmp(type,'mesh')
-    mesh(eP.X,eP.Y,eP.P);
-    hidden off
-elseif strcmp(type,'meshHide')
-    colormap([0,0,0]);
-    mesh(eP.X,eP.Y,eP.P); 
-elseif strcmp(type,'blue')
-    colormap([0,0,1]);
-    surf(eP.X,eP.Y,eP.P,'FaceColor','b',...
-    'EdgeColor','none',...
-    'FaceLighting','phong')
-    material dull
-    %alpha(.4)
-    %set lights
-    %camlight right
-    %camlight left
-    camlight headlight   
-elseif strcmp(type,'green')
-    surf(eP.X,eP.Y,eP.P,'FaceColor','g',...
-    'EdgeColor','none',...
-    'FaceLighting','phong')
-    material dull
-    %alpha(.4)
-    %set lights
-    %camlight right
-    %camlight left
-    camlight headlight    
-elseif strcmp(type,'dark')
-    surf(eP.X,eP.Y,eP.P,'FaceColor',[0.2 0.2 0.2],...
-    'EdgeColor','none',...
-    'FaceLighting','phong')
-    material dull
-    %alpha(.4)
-    %set lights
-    %camlight right
-    %camlight left
-    camlight headlight   
-elseif strcmp(type,'light')
-    surf(eP.X,eP.Y,eP.P,'FaceColor',[0.5 0.5 0.5],...
-    'EdgeColor','none',...
-    'FaceLighting','phong')
-    material dull
-    %alpha(.4)
-    %set lights
-    %camlight right
-    %camlight left
-    camlight headlight        
+%plot and output the handle
+if ~filled
+    han = mesh(eP.X,eP.Y,eP.P,NVpairs{:});
 else
-    l=linspace(1,0,100)';
-    o=ones(100,1);
-    colormap([l,l,l]);
-
-    cmap = colormap;
-    newCmap=[ones(1,3);cmap(2:end,:)];
-    %newCmap=cmap;
-    colormap(newCmap);
-    
-    surf(eP.X,eP.Y,eP.P,'FaceColor','interp',...
-    'EdgeColor','none')    
-    
-%     surf(eP.X,eP.Y,eP.P,'FaceColor','interp',...
-%     'EdgeColor','none',...
-%     'FaceLighting','phong')
-%     material dull 
+    han = surf(eP.X,eP.Y,eP.P,NVpairs{:});
 end
-
-
-
-%daspect([40 40 1])
-%axis([-2 1.8 -2 1 0 1.3])
-% xlim([-2 1.8])
-% ylim([-2 1])
-% zlim([0 1.3])
+  
 
 %------------- END OF CODE --------------

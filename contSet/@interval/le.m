@@ -1,6 +1,6 @@
 function res = le(obj1,obj2)
-% le - Overloads the <= operator; here: Is one interval equal or the subset of
-% another interval?
+% le - Overloads the <= operator;
+%    here: Is one interval equal or the subset of another interval?
 %
 % Syntax:  
 %    res = le(obj1,obj2)

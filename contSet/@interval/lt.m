@@ -1,6 +1,6 @@
 function res = lt(obj1,obj2)
-% lt - Overloads the < operator; here: Is one interval the subset of
-% another interval?
+% lt - Overloads the < operator;
+%    here: Is one interval the subset of another interval?
 %
 % Syntax:  
 %    res = lt(obj1,obj2)

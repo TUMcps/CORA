@@ -5,12 +5,17 @@ function [Z_error, errorInt, errorInt_x, errorInt_y, R_y] = linError(obj, option
 %    [obj] = linError(obj,options)
 %
 % Inputs:
-%    obj - nonlinear system object
+%    obj - nonlinear differential algebraic system object
 %    options - options struct
 %    R - actual reachable set
+%    Verror_y - set of algebraic linearization error
 %
 % Outputs:
-%    obj - nonlinear system object
+%    Z_error - zonotope overapproximating the linearization error
+%    errorInt - interval overapproximating the linearization error
+%    errorInt_x - interval overapproximating the linearization error (dynamic part)
+%    errorInt_y - interval overapproximating the linearization error (constraint part)
+%    R_y - reachable set of the algebraic part
 %
 % Example: 
 %
@@ -31,6 +36,9 @@ function [Z_error, errorInt, errorInt_x, errorInt_y, R_y] = linError(obj, option
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% set handle to correct file
+obj = setHessian(obj,'int');
 
 %compute set of algebraic variables
 f0_con = obj.linError.f0_con;

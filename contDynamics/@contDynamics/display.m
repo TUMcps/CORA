@@ -30,17 +30,13 @@ function display(obj)
 %display name and id
 disp(['Continuous dynamics "',obj.name,'"']);
 
-%display state IDs
-disp(['state IDs: ', mat2str(obj.stateIDs)]); 
+% display number of states
+disp(['number of states: ', num2str(obj.dim)]);
 
-%display input IDs
-disp(['input IDs: ', mat2str(obj.inputIDs)]); 
+% display number of inputs
+disp(['number of inputs: ' num2str(obj.nrOfInputs)]);
 
-%display output IDs
-disp(['output IDs: ', mat2str(obj.outputIDs)]); 
-
-%display system dimension
-disp(['state dimension: ', num2str(obj.dim)]);
-
+% display number of outputs
+disp(['number of outputs: ' num2str(obj.nrOfOutputs)]);
 
 %------------- END OF CODE --------------

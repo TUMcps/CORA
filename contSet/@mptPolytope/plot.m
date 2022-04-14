@@ -1,18 +1,19 @@
-function plot(varargin)
+function han = plot(obj,varargin)
 % plot - Plots 2-dimensional projection of a mptPolytope
+%
 % Syntax:  
-%    plot(P,dimensions,type)
+%    han = plot(obj)
+%    han = plot(obj,dims)
+%    han = plot(obj,dims,type)
 %
 % Inputs:
-%    P - pplPolytope
-%    dimensions - dimensions that should be projected (optional) 
-%    type - plot type (optional) 
+%    obj - mptPolytope object
+%    dims - (optional) dimensions of the projection
+%    type - (optional) plot settings (LineSpec and name-value pairs)
 %
 % Outputs:
-%    none
+%    han - handle to the plotted graphics object
 %
-% Example: 
-%    ---
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -29,58 +30,54 @@ function plot(varargin)
 
 %------------- BEGIN CODE --------------
 
-%If only one argument is passed
-if nargin==1
-    P=varargin{1};
-    dimensions=[1,2];
-    type='frame';
-    
-%If two arguments are passed    
-elseif nargin==2
-    P=varargin{1};
-    dimensions=varargin{2};
-    type='frame';
-    
-%If too many arguments are passed
-elseif nargin==3
-    P=varargin{1};
-    dimensions=varargin{2};   
-    type=varargin{3};
-end
- 
-%check if polyhedron is bounded; use own plotting capabilities for bounded
-%polyhedra
-if isBounded(P.P)
-    %compute vertices
-    V=vertices(P);
-    %Plot convex hull of projected vertices
-    if iscell(V)
-        for i=1:length(V)
-            if ~isempty(V{i})
-                plot(vertices(V{i}(dimensions,:)),type);
-            end
-        end
-    else
-        if ~isempty(V)
-            plot(vertices(V(dimensions,:)),type);
-        end
-    end
-else
-    %project polyhedron to dimensions for plotting
-    dims = dimension(P);
-    projDims = length(dimensions);
-    
-    %init projection matrix
-    M = zeros(projDims,dims);
-    
-    for i = 1:projDims
-        M(i,dimensions(i)) = 1;
-    end
-    Pproj = M*P;
-    
-    %plot projection
-    plot(Pproj.P);
+% default settings
+dims = [1,2];
+plotOptions{1} = 'b';
+
+% parse input arguments
+if nargin >= 2 && ~isempty(varargin{1})
+	dims = varargin{1}; 
 end
 
+if nargin >= 3
+	plotOptions = varargin(2:end); 
+end
+
+% check dimension
+if length(dims) < 2
+    error('At least 2 dimensions have to be specified!');
+elseif length(dims) > 3
+    error('Only up to 3 dimensions can be plotted!');
+end
+ 
+% check if polyhedron is bounded
+if ~isBounded(obj.P)
+    
+    % get size of current plot
+    xLim = get(gca,'Xlim');
+    yLim = get(gca,'Ylim');
+    
+    % intersect with the current polytope
+    if length(dims) == 2
+        obj = project(obj,dims) & interval([xLim(1);yLim(1)], ...
+                                           [xLim(2);yLim(2)]);
+        dims = [1,2];
+    else
+        zLim = get(gca,'Zlim');
+        obj = project(obj,dims) & interval([xLim(1);yLim(1);zLim(1)], ...
+                                           [xLim(2);yLim(2),zLim(2)]);
+        dims = [1,2,3];
+    end
+end
+    
+% compute vertices
+V = vertices(obj);
+
+% plot projected vertices
+if length(dims) == 2
+    han = plotPolygon(V(dims,:),plotOptions{:});
+elseif length(dims) == 3
+    han = plotPolytope3D(V(dims,:),plotOptions{:});
+end
 
 %------------- END OF CODE --------------

@@ -38,8 +38,7 @@ path = [coraroot '/contDynamics/stateSpaceModels'];
 [vars]=symVariables(obj,'LRbrackets');
 
 %insert symbolic variables into the system equations
-t = 0;
-fdyn = obj.mFile(t,vars.x,vars.u,vars.p);
+fdyn = obj.mFile(vars.x,vars.u,vars.p);
 
 % check if files should be symbolically generated or not-------------------
 % check if dynamics files already exists
@@ -143,7 +142,7 @@ if generateFiles
         % if parameters are uncertain within an interval
         if isa(options.paramInt,'interval')
             %normalize
-            pCenter = mid(options.paramInt);
+            pCenter = center(options.paramInt);
             pDelta = rad(options.paramInt);
 
             for i=1:obj.nrOfParam
@@ -163,7 +162,7 @@ if generateFiles
         end
     catch
         Jp = [];
-        disp('parameters are not linearally influencing the system');
+        disp('parameters are not linearly influencing the system');
     end
 
     disp('create 2nd order Jacobians');
@@ -257,7 +256,6 @@ if generateFiles
     if options.tensorOrder>2
         createHessianTensorFile(J2dyn,path,obj.name,0);
         create3rdOrderTensorFile(J3dyn,path,obj.name);
-        %create3rdOrderTensorFile_wReplacements(J3dyn,path,options.replacements);
     else
         createHessianTensorFile(J2dyn,path,obj.name,1);
     end

@@ -162,8 +162,8 @@ function minVal = globalMinimizer(func,dom,tol)
         else
 
             % split the interval
-            dom1 = interval(infimum(dom),mid(dom));
-            dom2 = interval(mid(dom),supremum(dom));
+            dom1 = interval(infimum(dom),center(dom));
+            dom2 = interval(center(dom),supremum(dom));
             
             % calculate new bounds
             int1 = func(dom1);

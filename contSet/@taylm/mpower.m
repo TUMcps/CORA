@@ -25,9 +25,9 @@ function res = mpower(base,exponent)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 if isscalar(base)
     res = power(base,exponent);
-    
 elseif exponent > 0 && all(size(base) == size(base'))
     res = base;
     for i = 2:exponent
@@ -38,5 +38,7 @@ elseif exponent == 0 && all(size(base) == size(base'))
 else
     error('Matrix is not square')
 end
+
+
 end
 

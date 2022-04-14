@@ -38,10 +38,8 @@ for i=(length(obj.power.zono)+1):length(obj.power.int)
     Apower{i}=obj.power.int{i};
 end
 
-r=obj.stepSize;
-
 %initialize Asum
-inf=-0.25*r^2;
+inf=-0.25;%*r^2;already included in Apower
 sup=0;
 timeInterval=intervalMatrix(0.5*(sup+inf),0.5*(sup-inf));
 Asum=timeInterval*Apower{2}*(1/factorial(2));
@@ -49,7 +47,7 @@ Asum=timeInterval*Apower{2}*(1/factorial(2));
 for i=3:obj.taylorTerms
     %compute factor
     exp1=-i/(i-1); exp2=-1/(i-1);
-    inf = (i^exp1-i^exp2)*r^i;
+    inf = (i^exp1-i^exp2);%*r^i;already included in Apower
     sup = 0;   
     timeInterval=intervalMatrix(0.5*(sup+inf),0.5*(sup-inf));
     %compute powers

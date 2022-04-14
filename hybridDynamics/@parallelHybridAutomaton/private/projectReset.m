@@ -20,7 +20,7 @@ function res = projectReset(reset,stateBind,dims)
 %
 % See also: none
 
-% Author:       Johann Schöpfer
+% Author:       Johann Schoepfer
 % Written:      14-June-2018
 % Last update:  ---
 % Last revision: ---

@@ -1,5 +1,5 @@
 function [obj] = tie(obj,options)
-% tie - tie: time interval error; computes the error done by 
+% tie - tie=time interval error; computes the error done by 
 % building the convex hull of time point solutions
 %
 % Syntax:  
@@ -29,7 +29,7 @@ function [obj] = tie(obj,options)
 %load data from object/options structure
 Apower=obj.taylor.powers;
 taylorTerms=options.taylorTerms;
-r=options.timeStep;
+rbyfac=options.factor;
 dim=dimension(obj);
 
 %initialize Asum
@@ -39,7 +39,7 @@ Asum_neg=zeros(dim);
 for i=2:taylorTerms
     %compute factor
     exp1=-i/(i-1); exp2=-1/(i-1);
-    factor=(i^exp1-i^exp2)*r^i/factorial(i); 
+    factor=(i^exp1-i^exp2)*rbyfac(i); 
     
     %init Apos, Aneg
     Apos=zeros(dim);

@@ -1,6 +1,5 @@
 function obj = vertcat(varargin)
-% vertcat - Overloads the opertor for vertical concatenation, e.g. 
-% a = [b;c;d];
+% vertcat - Overloads the opertor for vertical concatenation
 %
 % Syntax:  
 %    obj = horzcat(varargin)
@@ -12,8 +11,8 @@ function obj = vertcat(varargin)
 %    obj - interval object 
 %
 % Example: 
-%    a=interval(-1, 1);
-%    b=interval(1, 2);
+%    a = interval(-1, 1);
+%    b = interval(1, 2);
 %    c = [a,b];
 %
 % Other m-files required: none

@@ -1,10 +1,10 @@
-function [cZsplit] = split(obj,varargin)
+function cZsplit = split(obj,varargin)
 % split - splits a constrained zonotope into two or more constrained
 %         zonotopes that enclose the original conZonotope object
 %
 % Syntax:  
-%    [cZsplit] = split(obj)
-%    [cZsplit] = split(obj, dim)
+%    cZsplit = split(obj)
+%    cZsplit = split(obj, splitDim)
 %
 % Description:
 %    If only one input is provided, all possible splits of the
@@ -15,10 +15,10 @@ function [cZsplit] = split(obj,varargin)
 %
 % Inputs:
 %    obj - conZonotope object
-%    dim - dimension of the over-approximating interval that is splitted
+%    splitDim - dimension of the over-approximating interval that is splitted
 %
 % Outputs:
-%    pZsplit - cell array of intervals represented as conZonotope objects
+%    cZsplit - cell array of intervals represented as conZonotope objects
 %
 % Example: 
 %    Z = [0 1 0 1;0 1 2 -1];
@@ -29,21 +29,21 @@ function [cZsplit] = split(obj,varargin)
 %    cZsplit = split(cZono);
 %    
 %    figure
-%    plotFilled(cZono,[1,2],'r');
+%    plot(cZono,[1,2],'r','Filled',true);
 %    xlim([-3,1]);
 %    ylim([-3,4]);
 %
 %    figure
 %    hold on
-%    plotFilled(cZsplit{1}{1},[1,2],'b');
-%    plotFilled(cZsplit{1}{2},[1,2],'g');
+%    plot(cZsplit{1}{1},[1,2],'b','Filled',true);
+%    plot(cZsplit{1}{2},[1,2],'g','Filled',true);
 %    xlim([-3,1]);
 %    ylim([-3,4]);
 %
 %    figure
 %    hold on
-%    plotFilled(cZsplit{2}{1},[1,2],'y');
-%    plotFilled(cZsplit{2}{2},[1,2],'c');
+%    plot(cZsplit{2}{1},[1,2],'y','Filled',true);
+%    plot(cZsplit{2}{2},[1,2],'c','Filled',true);
 %    xlim([-3,1]);
 %    ylim([-3,4]);
 %
@@ -71,44 +71,44 @@ if nargin == 1
     n = length(inter);
     cZsplit = cell(n,1);    
     
-    for dim = 1:n
-        cZsplit{dim} = splitOneDim(obj,inter,dim); 
+    for splitDim = 1:n
+        cZsplit{splitDim} = splitOneDim(obj,inter,splitDim); 
     end
     
 % Case 2: split at the specified generator
 elseif nargin == 2
     
-    dim = varargin{1};
-    cZsplit = splitOneDim(obj,inter,dim);
+    splitDim = varargin{1};
+    cZsplit = splitOneDim(obj,inter,splitDim);
     
 end
 
-
+end
 
 % Auxiliary functions -----------------------------------------------------
 
-function cZsplit = splitOneDim(cZ,inter,dim)
+function cZsplit = splitOneDim(cZ,inter,splitDim)
 
     % interval center and radius
+    c = center(inter);
     r = rad(inter);
-    c = mid(inter);
     
-    % first halp of the over-approximating interval
+    % first half of the over-approximating interval
     cTemp = c;
     rTemp = r;
-    cTemp(dim) = c(dim) - 0.5*r(dim);
-    rTemp(dim) = 0.5 * r(dim); 
+    cTemp(splitDim) = c(splitDim) - 0.5*r(splitDim);
+    rTemp(splitDim) = 0.5 * r(splitDim); 
     
     int1 = interval(cTemp-rTemp,cTemp+rTemp);
     
     % second conZonotope object
-    cTemp(dim) = c(dim) + 0.5*r(dim);
+    cTemp(splitDim) = c(splitDim) + 0.5*r(splitDim);
     int2 = interval(cTemp-rTemp,cTemp+rTemp);
     
     % intersect the intervals with the original conZonotope object
     cZsplit{1} = cZ & int1;
     cZsplit{2} = cZ & int2;
     
-    
+end
     
 %------------- END OF CODE --------------

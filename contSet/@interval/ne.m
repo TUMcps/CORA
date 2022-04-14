@@ -16,7 +16,8 @@ function res = ne( int1, int2 )
 % Subfunctions: none
 % MAT-files required: none
 %
-%
+% See also: 
+
 % Author:       Dmitry Grebenyuk
 % Written:      06-August-2017
 % Last update:  ---
@@ -24,9 +25,9 @@ function res = ne( int1, int2 )
 
 %------------- BEGIN CODE --------------
 
-    res = any(infimum(int1) ~= infimum(int2)) ||...
-        any(supremum(int1) ~= supremum(int2));
+res = any(infimum(int1) ~= infimum(int2)) ||...
+    any(supremum(int1) ~= supremum(int2));
 
 end
 
-%----------------- END -----------------
+%------------- END OF CODE --------------

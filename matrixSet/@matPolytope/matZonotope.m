@@ -36,7 +36,7 @@ for i=1:length(matV)
 end
 
 %convert to zonotope
-Z = zonotope(vertices(V));
+Z = zonotope.enclosePoints(V);
 
 %convert to matrix zonotope
 matZ = matZonotope(Z);

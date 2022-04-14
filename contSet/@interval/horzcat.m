@@ -1,6 +1,5 @@
 function obj = horzcat(varargin)
-% horzcat - Overloads the operator for horizontal concatenation, e.g. 
-% a = [b,c,d];
+% horzcat - Overloads the operator for horizontal concatenation
 %
 % Syntax:  
 %    obj = horzcat(varargin)

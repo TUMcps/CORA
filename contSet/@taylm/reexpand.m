@@ -25,7 +25,7 @@ function res = reexpand(obj,int)
 %------------- BEGIN CODE -------------
 
     % calculate the new expansion point
-    x_e = mid(int);
+    x_e = center(int);
     
     % calculate the scale factor between the old and the new interval for
     % all dimensions

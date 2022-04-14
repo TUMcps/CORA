@@ -34,7 +34,7 @@ function fArray =intersectionDatabase(parameters)
 %------------- BEGIN CODE --------------
 
 
-%obtain uncertain center intervalhull
+%obtain uncertain center interval
 %other traffic participants
 segLength = parameters.segLength; %[m] 
 centerWidth = parameters.centerWidth; %[m]

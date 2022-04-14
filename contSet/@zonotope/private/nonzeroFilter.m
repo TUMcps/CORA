@@ -16,21 +16,15 @@ function [G]=nonzeroFilter(G)
 %
 % See also: 
 
-% Author: Matthias Althoff
-% Written: 12-September-2008
-% Last update: ---
+% Author:        Matthias Althoff, Mark Wetzlinger
+% Written:       12-September-2008
+% Last update:   02-September-2019
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-%Delete zero-generators
-i=1;
-while i<=length(G(1,:))
-    if G(:,i)==0*G(:,i)
-        G(:,i)=[];
-    else
-        i=i+1;
-    end
-end
+% delete zero-generators
+G = G(:,any(G,1));
+
 
 %------------- END OF CODE --------------

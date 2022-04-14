@@ -1,17 +1,22 @@
 function [error, errorInt, errorInt_x, errorInt_y, R_y] = linError_mixed_noInt(obj, options, R, Verror_y)
-% linError - computes the linearization error
+% linError_mixed_noInt - computes the linearization error
 %
 % Syntax:  
-%    [obj] = linError(obj,options)
+%    [error, errorInt, errorInt_x, errorInt_y, R_y] = ...
+%           linError_mixed_noInt(obj, options, R, Verror_y)
 %
 % Inputs:
-%    obj - nonlinear DAE system object
+%    obj - nonlinear differential algebraic system object
 %    options - options struct
 %    R - actual reachable set
+%    Verror_y - set of algebraic linearization error
 %
 % Outputs:
 %    error - zonotope overapproximating the linearization error
 %    errorInt - interval overapproximating the linearization error
+%    errorInt_x - interval overapproximating the linearization error (dynamic part)
+%    errorInt_y - interval overapproximating the linearization error (constraint part)
+%    R_y - reachable set of the algebraic part
 %
 % Example: 
 %
@@ -28,6 +33,9 @@ function [error, errorInt, errorInt_x, errorInt_y, R_y] = linError_mixed_noInt(o
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% set handle to correct file
+obj = setHessian(obj,'standard');
 
 %compute set of algebraic variables
 f0_con = obj.linError.f0_con;
@@ -69,13 +77,13 @@ totalInt_u = du + obj.linError.p.u;
 % end
 
 %compute zonotope of state, constarint variables, and input
-Z_x = get(R,'Z');
-Z_y_cor = get(R_y_cor,'Z');
-Z_y_add = get(R_y_add,'Z');
+Z_x = R.Z;
+Z_y_cor = R_y_cor.Z;
+Z_y_add = R_y_add.Z;
 Z_0 = zeros(length(Z_x(:,1)), length(Z_y_add(1,:)));
 R_xy = zonotope([Z_x, Z_0; Z_y_cor, Z_y_add]);
-R_xyu = cartesianProduct(R_xy, options.U);
-R_xyu = reduce(R_xyu,'girard',options.errorOrder);
+R_xyu = cartProd(R_xy, options.U);
+R_xyu = reduce(R_xyu,options.reductionTechnique,options.errorOrder);
 
 %obtain absolute values
 dz_abs = max(abs(infimum(dz)), abs(supremum(dz)));
@@ -83,18 +91,18 @@ dz_abs = max(abs(infimum(dz)), abs(supremum(dz)));
 
 %separate evaluation
 for i=1:length(Hf)
-    Hf_mid{i} = sparse(mid(Hf{i}));
+    Hf_mid{i} = sparse(center(Hf{i}));
     Hf_rad{i} = sparse(rad(Hf{i}));
 end
 for i=1:length(Hg)
-    Hg_mid{i} = sparse(mid(Hg{i}));
+    Hg_mid{i} = sparse(center(Hg{i}));
     Hg_rad{i} = sparse(rad(Hg{i}));
 end
 %zonotope evaluation
-% error_x_mid_old = 0.5*quadraticMultiplication(R_xyu, Hf_mid);
-% error_y_mid_old = 0.5*quadraticMultiplication(R_xyu, Hg_mid);
-error_x_mid = 0.5*quadraticMultiplication_parallel(R_xyu, Hf_mid);
-error_y_mid = 0.5*quadraticMultiplication_parallel(R_xyu, Hg_mid);
+% error_x_mid_old = 0.5*quadMap(R_xyu, Hf_mid);
+% error_y_mid_old = 0.5*quadMap(R_xyu, Hg_mid);
+error_x_mid = 0.5*quadMap_parallel(R_xyu, Hf_mid);
+error_y_mid = 0.5*quadMap_parallel(R_xyu, Hg_mid);
 
 %interval evaluation
 for i=1:length(Hf)
@@ -115,7 +123,7 @@ error_x = error_x_mid + error_x_rad_zono;
 error_y = error_y_mid + error_y_rad_zono;
 
 %compute final error: to be CHECKED IF CORRELATION APPLIES
-Z_err_x_mid = get(error_x_mid,'Z');
+Z_err_x_mid = error_x_mid.Z;
 Z_err_x_add_mid = get(obj.linError.CF_inv*error_y_mid,'Z');
 error_mid = zonotope(Z_err_x_mid + Z_err_x_add_mid);
 error_rad = error_x_rad_zono + obj.linError.CF_inv*error_y_rad_zono;
@@ -123,8 +131,8 @@ error = error_mid + error_rad;
 %error = error_x + obj.linError.CF_inv*error_y;
 
 %reduce
-error = reduce(error,'girard',options.zonotopeOrder);
-error_y = reduce(error_y,'girard',options.zonotopeOrder);
+error = reduce(error,options.reductionTechnique,options.zonotopeOrder);
+error_y = reduce(error_y,options.reductionTechnique,options.zonotopeOrder);
 
 %update R_y
 R_y =  obj.linError.p.y + (-F_inv)*(f0_con + D*R + E*options.U + error_y);

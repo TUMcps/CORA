@@ -34,8 +34,8 @@ Ag = obj.A.generator;
 c = center(Rinit);
 r = obj.stepSize;
 dim = obj.dim;
-params = obj.A.gens;
-Umat = get(Uconst,'Z');
+Umat = Uconst.Z;
+params = obj.A.gens;%'obj.A.gens' does not work anymore once lin_error2dAB adds lagrange remainder to system matrix
 
 %SECOND ORDER DEPENDENT SOLUTION
 %zero parametric order

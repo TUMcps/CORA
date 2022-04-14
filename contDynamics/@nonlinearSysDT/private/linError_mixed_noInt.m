@@ -1,4 +1,4 @@
-function error = linError_mixed_noInt(obj, options, R)
+function errorZon = linError_mixed_noInt(obj, options, R)
 % linError_mixed_noInt - computes the linearization error
 %
 % Syntax:  
@@ -10,7 +10,7 @@ function error = linError_mixed_noInt(obj, options, R)
 %    R - initial set
 %
 % Outputs:
-%    error - zonotope overapproximating the linearization error
+%    errorZon - zonotope overapproximating the linearization error
 %
 % Example: 
 %
@@ -28,6 +28,8 @@ function error = linError_mixed_noInt(obj, options, R)
 
 %------------- BEGIN CODE --------------
 
+obj = setHessian(obj,'int');
+
 %obtain intervals and combined interval z
 dx = interval(R);
 du = interval(options.U);
@@ -40,8 +42,8 @@ totalInt_x = dx + obj.linError.p.x;
 totalInt_u = du + obj.linError.p.u;
 
 %compute zonotope of state and input
-Rred = reduce(R,'girard',options.errorOrder);
-Z=cartesianProduct(Rred,options.U);
+Rred = reduce(R,options.reductionTechnique,options.errorOrder);
+Z=cartProd(Rred,options.U);
 
 %obtain hessian tensor
 if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ...
@@ -51,31 +53,34 @@ if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ..
     [objX,objU] = initRangeBoundingObjects(totalInt_x,totalInt_u,options);
 
     % evaluate the hessian tensor 
-    H = obj.hessian(objX,objU,options.timeStep);
+    H = obj.hessian(objX,objU);
 else
-    H = obj.hessian(totalInt_x, totalInt_u, options.timeStep);
+    H = obj.hessian(totalInt_x, totalInt_u);
 end
 
 %obtain absolute values
 dz_abs = max(abs(infimum(dz)), abs(supremum(dz)));
 
 %separate evaluation
-for i=1:length(H)
-    H_mid{i} = sparse(mid(H{i}));
+H_mid = cell(obj.dim,1);
+H_rad = cell(obj.dim,1);
+for i=1:obj.dim
+    H_mid{i} = sparse(center(H{i}));
     H_rad{i} = sparse(rad(H{i}));
 end
 
-error_mid = 0.5*quadraticMultiplication(Z, H_mid);
+error_mid = 0.5*quadMap(Z, H_mid);
 
 %interval evaluation
-for i=1:length(H)
+error_rad = zeros(obj.dim,1);
+for i=1:obj.dim
     error_rad(i,1) = 0.5*dz_abs'*H_rad{i}*dz_abs;
 end
 
 %combine results
 error_rad_zono = zonotope(interval(-error_rad, error_rad));
-error = error_mid + error_rad_zono;
+errorZon = error_mid + error_rad_zono;
 
-error = reduce(error,'girard',options.zonotopeOrder);
+errorZon = reduce(errorZon,options.reductionTechnique,options.zonotopeOrder);
 
 %------------- END OF CODE --------------

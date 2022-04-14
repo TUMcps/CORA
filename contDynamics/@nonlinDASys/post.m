@@ -35,11 +35,11 @@ function [Rnext,options] = post(obj,R,options)
 
 %reduce zonotopes
 for i=1:length(Rnext.tp)
-    Rnext.tp{i}=reduce(Rnext.tp{i},'girard',options.zonotopeOrder);
-    Rnext.ti{i}=reduce(Rnext.ti{i},'girard',options.zonotopeOrder);
+    Rnext.tp{i}.set = reduce(Rnext.tp{i}.set,options.reductionTechnique,options.zonotopeOrder);
+    Rnext.ti{i} = reduce(Rnext.ti{i},options.reductionTechnique,options.zonotopeOrder);
 end
 
-% %delete redundant reachable sets
-% Rnext = deleteRedundantSets(Rnext,R,options);
+%delete redundant reachable sets
+Rnext = deleteRedundantSets(Rnext,R,options);
 
 %------------- END OF CODE --------------

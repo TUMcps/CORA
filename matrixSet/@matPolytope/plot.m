@@ -50,10 +50,7 @@ end
 %keep only unique vertices
 V = unique(V, 'rows');
 
-%obtain vertices object
-V=vertices(V');
-
 %plot vertices
-plot(V,style);
+plotPolygon(V',[1,2],style);
 
 %------------- END OF CODE --------------

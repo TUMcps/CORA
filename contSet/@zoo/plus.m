@@ -6,8 +6,8 @@ function res = plus(factor1, factor2)
 %
 % Inputs:
 %    factor1 and factor2 - zoo objects
-%    order  - the cut-off order of the Taylor series. The constat term is
-%    the zero order.
+%    order - the cut-off order of the Taylor series. The constant term is
+%            the zero order.
 %
 % Outputs:
 %    res - a zoo object

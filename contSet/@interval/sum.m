@@ -1,11 +1,12 @@
-function res = sum(intVal)
+function res = sum(obj,varargin)
 % sum - Overloaded 'sum()' operator for intervals
 %
 % Syntax:  
-%    res = sum(intVal)
+%    res = sum(obj)
+%    res = sum(obj,n)
 %
 % Inputs:
-%    intVal - interval object
+%    obj - interval object
 %
 % Outputs:
 %    res - interval object
@@ -25,13 +26,23 @@ function res = sum(intVal)
 
 %------------- BEGIN CODE --------------
 
+% parse input arguments
+n = 1;
+if nargin <= 1
+    if size(obj,1) == 1
+        n = 2;
+    end
+else
+    n = varargin{1};
+end
+
 % init
 res = interval();
 
-%infimum
-res.inf = sum(intVal.inf);
+% infimum
+res.inf = sum(obj.inf,n);
 
-%supremum
-res.sup = sum(intVal.sup);
+% supremum
+res.sup = sum(obj.sup,n);
 
 %------------- END OF CODE --------------

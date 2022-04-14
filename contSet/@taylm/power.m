@@ -26,9 +26,22 @@ function res = power(base,exponent)
 
 %------------- BEGIN CODE --------------
 
-	res = arrayfun(@(a) s_power(a,exponent), base, 'UniformOutput', 0);
-    A = cat(1, res{:});
-    res = reshape(A, size(res));
+    if isscalar(exponent)
+
+        res = arrayfun(@(a) s_power(a,exponent), base, 'UniformOutput', 0);
+        A = cat(1, res{:});
+        res = reshape(A, size(res));
+    
+    elseif ~all(size(base) == size(exponent))
+        error('Dimensions must agree!');
+    else
+        res = base;
+        for i = 1:size(base,1)
+            for j = 1:size(base,2)
+                res(i,j) = base(i,j) .^ exponent(i,j);
+            end
+        end
+    end
 
 end
 

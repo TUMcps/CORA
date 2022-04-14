@@ -1,24 +1,27 @@
-function [pZ] = mtimes(factor1,factor2)
+function probZ = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix or an
-% interval matrix with a zonotope
+%    interval matrix with a probabilistic zonotope according to [1,(4)]
 %
 % Syntax:  
-%    [Z] = mtimes(matrix,Z)
+%    probZ = mtimes(matrix,probZ)
 %
 % Inputs:
 %    matrix - numerical or interval matrix
-%    Z - zonotope object 
+%    probZ - probabilistic zonotope
 %
 % Outputs:
-%    Z - Zonotpe after multiplication of a matrix with a zonotope
+%    probZ - probZonotope after multiplication of a matrix with a zonotope
 %
-% Example: 
-%    Z=zonotope([1 1 0; 0 0 1]);
-%    matrix=[0 1; 1 0];
-%    plot(Z);
-%    hold on
-%    Z=matrix*Z;
-%    plot(Z);
+% Example:
+%    Z1 = [10 1 -2; 0 1 1];
+%    Z2 = [0.6 1.2; 0.6 -1.2];
+%    probZ = probZonotope(Z1,Z2,2);
+%    matrix = rand(2,2);
+%    probZ * matrix;
+%
+% References:
+%    [1] M. Althoff et al. "Safety assessment for stochastic linear systems 
+%        using enclosing hulls of probability density functions", ECC 2009
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -36,29 +39,29 @@ function [pZ] = mtimes(factor1,factor2)
 
 %Find a probabilistic zonotope object
 %Is factor1 a probabilistic zonotope?
-if strcmp('probZonotope',class(factor1))
+if isa(factor1,'probZonotope')
     %initialize resulting probabilistic zonotope
-    pZ=factor1;
+    probZ=factor1;
     %initialize other summand
     matrix=factor2;
 %Is factor2 a probabilistic zonotope?    
-elseif strcmp('probZonotope',class(factor2))
+elseif isa(factor2,'probZonotope')
     %initialize resulting probabilistic zonotope
-    pZ=factor2;
+    probZ=factor2;
     %initialize other summand
     matrix=factor1;  
 end
 
 %numeric matrix
 if isnumeric(matrix)
-    pZ.Z=matrix*pZ.Z;
+    probZ.Z=matrix*probZ.Z;
     %pZ.g=matrix*pZ.g;
-    pZ.cov=matrix*pZ.cov*matrix';
+    probZ.cov=matrix*probZ.cov*matrix';
     
 %interval matrix
-elseif strcmp('interval',class(matrix))
+elseif isa(matrix,'interval')
     %get center of interval matrix
-    T=mid(matrix);
+    T=center(matrix);
     
     %get symmetric interval matrix
     M_min = infimum(matrix);
@@ -66,13 +69,13 @@ elseif strcmp('interval',class(matrix))
     S=0.5*(M_max-M_min);
     
     %probabilistic zonotope to zonotope
-    mSigmaZ=zonotope(pZ);
-    Z=get(mSigmaZ,'Z');
+    mSigmaZ=zonotope(probZ);
+    Z=mSigmaZ.Z;
     Zsum=sum(abs(Z),2);    
     
     %compute new zonotope
-    pZ.Z=[T*pZ.Z,diag(S*Zsum)]; 
-    pZ.g=[T*pZ.g];
+    probZ.Z=[T*probZ.Z,diag(S*Zsum)]; 
+    probZ.g=T*probZ.g;
 end
 
 %------------- END OF CODE --------------

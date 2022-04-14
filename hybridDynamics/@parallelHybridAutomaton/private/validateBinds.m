@@ -1,11 +1,10 @@
-function [numStates,numInputs] = validateBinds(stateBinds,inputBinds)
+function obj = validateBinds(obj)
 % validateBinds - validity test for component interconnection
 %
-% This test ensures: -that component stateBinds are a partition
-%                    -that inputBinds are valid
+% This test ensures: -that inputBinds are valid
+%
 % Inputs:
-%    stateBinds - cell array of nx1 integer arrays. Maps component states 
-%                 to states of composed system
+%    obj - object of class parallelHybridAutomaton
 %    inputBinds - cell array of nx2 int arrays. Maps component inputs to 
 %                 states/inputs of composed system
 %
@@ -26,40 +25,42 @@ function [numStates,numInputs] = validateBinds(stateBinds,inputBinds)
 
 %------------- BEGIN CODE --------------
 
+    % construct stateBinds cell-array
+    numComp = length(obj.components);
+    stateBinds = cell(numComp,1);
+    counter = 1;
+
+    for i = 1:numComp
+       numStates = obj.components{i}.location{1}.contDynamics.dim;
+       stateBinds{i} = (counter:counter+numStates-1)';
+       counter = counter + numStates;
+    end
+    
+    obj.numStates = counter - 1;
+    obj.bindsStates = stateBinds;
+
     % concatenate bind arrays vertically
-    concatStates = vertcat(stateBinds{:});
-    concatInputs = vertcat(inputBinds{:});
+    concatInputs = vertcat(obj.bindsInputs{:});
 
     % check if all indices are specified as integer values
     try
-        int16(concatStates);
         int16(concatInputs);
     catch
-        error('stateBinds/inputBinds: entries have to be integer values!');
-    end
-
-    % check whether the stateBinds form a partition of continuous indices
-    uniqueStates = unique(concatStates);
-    numStates = length(uniqueStates);
-
-    if length(concatStates) ~= numStates
-        error('stateBinds: two states were bound to the same variable!');
-    elseif any(uniqueStates<1) || any(uniqueStates>numStates)
-        error('stateBinds: must map to a continuous index beginning at 1!');
+        error('inputBinds: entries have to be integer values!');
     end
 
     % check whether inputBinds are valid
     inputComps = concatInputs(:,1);
     inputIndices = concatInputs(:,2);
     
-    if any(inputComps < 0)
-       error('inputBinds: indices for components have to be greater than 0!'); 
+    if any(inputComps < 0) || any(inputComps > numComp)
+       error(['inputBinds: indices for components have to be greater ', ...
+              'than 0 and small than the number of components!']); 
     end
     
     % get number of global inputs
-    ind = find(inputComps == 0);
-    temp = unique(inputIndices(ind));
-    numInputs = length(temp);
+    temp = unique(inputIndices(inputComps == 0));
+    obj.numInputs = length(temp);
 
 end
 

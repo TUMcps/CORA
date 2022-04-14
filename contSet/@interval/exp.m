@@ -1,6 +1,10 @@
 function res = exp(intVal)
 % exp - Overloaded 'exp()' operator for intervals
 %
+% x_ is x infimum, x-- is x supremum
+%
+% [exp(x_), exp(x--)].
+%
 % Syntax:  
 %    res = exp(intVal)
 %
@@ -23,20 +27,9 @@ function res = exp(intVal)
 % Last update:  ---
 % Last revision:---
 
-% x_ is x infimum, x-- is x supremum
-
-% [exp(x_), exp(x--)].
-
 %------------- BEGIN CODE --------------
 
 %exponential function is monotonic
 res = interval(exp(intVal.inf), exp(intVal.sup));
-
-% matrix case
-% rand(100, 100)
-%time_CORA =
-%    6.127413732464556e-004
-%time_INTLAB =
-%   0.004009680390026
 
 %------------- END OF CODE --------------

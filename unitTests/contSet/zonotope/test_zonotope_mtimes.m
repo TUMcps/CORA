@@ -35,7 +35,7 @@ M = [-1 2; 3 -4];
 Z2 = M*Z1;
 
 % obtain zonotope matrix
-Zmat = get(Z2,'Z');
+Zmat = Z2.Z;
 
 % true result
 true_mat = [6, 7, 8, 9; ...

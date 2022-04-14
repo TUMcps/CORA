@@ -49,7 +49,7 @@ classdef (InferiorClasses = {?interval}) affine < taylm
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
-
+    % inherits properties from taylm
 end
     
 methods

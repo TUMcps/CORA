@@ -27,7 +27,7 @@ function [handle] = getfcn(obj,options)
 %------------- BEGIN CODE --------------
 
 function dxdt = f(t,x)
-    dxdt = obj.mFile(t,x,options.u,options.p);
+    dxdt = obj.mFile(x,options.u,options.p);
 end
 
 handle = @f;

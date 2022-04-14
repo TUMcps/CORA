@@ -3,7 +3,7 @@ function [Rdelta,options] = deltaReach(obj,Rinit,options)
 % the initial state for all initial states
 %
 % Syntax:  
-%    [obj,Rfirst,options] = deltaReach(obj,Rinit,options)
+%    [Rdelta,options] = deltaReach(obj,Rinit,options)
 %
 % Inputs:
 %    obj - linearSys object
@@ -11,7 +11,6 @@ function [Rdelta,options] = deltaReach(obj,Rinit,options)
 %    options - options for the computation of the reachable set
 %
 % Outputs:
-%    obj - linearSys object
 %    Rdelta - difference reachable set 
 %    options - options for the computation of the reachable set
 %
@@ -23,7 +22,7 @@ function [Rdelta,options] = deltaReach(obj,Rinit,options)
 %
 % See also: none
 
-% Author: Matthias Althoff
+% Author:       Matthias Althoff
 % Written:      18-September-2012
 % Last update:  ---
 % Last revision:---
@@ -42,20 +41,18 @@ Rtrans=obj.taylor.Rtrans;
 
 %first time step homogeneous solution
 dim = length(F);
-Rhom_tp_delta=(eAt - eye(dim))*Rinit + Rtrans;
-%change in computation for polytope examples
-if isa(Rinit,'mptPolytope')
-    Rhom=enclose(O,Rhom_tp_delta)+F*Rinit;
-elseif isa(Rinit,'quadZonotope')
-    O = quadZonotope(zeros(dim,1));
-    Rhom=enclose(O,Rhom_tp_delta)+F*zonotope(Rinit)+inputCorr;
-elseif isa(Rinit,'zonotopeBundle')
-    O = zonotopeBundle({zonotope(zeros(dim,1))});
-    Rhom=enclose(O,Rhom_tp_delta)+F*Rinit.Z{1}+inputCorr;
-else
+Rhom_tp_delta = (eAt - eye(dim))*Rinit + Rtrans;
+
+if isa(Rinit,'zonotope')
     %original computation
     O = zonotope(zeros(dim,1));
     Rhom=enclose(O,Rhom_tp_delta)+F*Rinit+inputCorr;
+elseif isa(Rinit,'polyZonotope') || isa(Rinit,'conPolyZono')
+    O = zeros(dim)*Rhom_tp_delta;
+    Rhom=enclose(O,Rhom_tp_delta)+F*zonotope(Rinit)+inputCorr;
+elseif isa(Rinit,'zonoBundle')
+    O = zonoBundle({zonotope(zeros(dim,1))});
+    Rhom=enclose(O,Rhom_tp_delta)+F*Rinit.Z{1}+inputCorr;
 end
 
 %reduce zonotope

@@ -22,13 +22,10 @@ function res = mrdivide(numerator,denominator)
 % Written:      25-June-2015
 % Last update:  01-July-2015
 %               10-September-2015
-%               13-March-2016           Speed improvement
+%               13-March-2016 (speed improvement)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
-% to initiate res
-res = interval();
 
 if isscalar(denominator)
     res = numerator ./ denominator;

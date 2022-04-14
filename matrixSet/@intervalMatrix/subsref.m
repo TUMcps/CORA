@@ -1,6 +1,6 @@
 function [element] = subsref(obj, S)
 % subsref - Overloads the operator that selects elements, e.g. A(1,2),
-% where the element of the first row and second column is referred to.
+%    where the element of the first row and second column is referred to.
 %
 % Syntax:  
 %    [element] = subsref(obj, S)
@@ -53,13 +53,10 @@ if strcmp(S.type,'()')
     
 %check if dot is used to select elements
 elseif strcmp(S.type,'.')
-    switch S.subs
-        case {'dim'}
-             element=obj.dim;
-        case {'int'}
-            element=obj.int;
-        case {'setting'}
-            element=obj.setting;
+    if isprop(obj,S.subs)
+        element = obj.(S.subs);
+    else
+        error(strcat('Object of class "',class(obj),'" does not have a property "',S.subs,'".'));
     end
 %no selection if parantheses are not used    
 else

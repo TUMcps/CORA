@@ -1,6 +1,21 @@
 function res = sin(intVal)
 % sin - Overloaded 'sin()' operator for intervals
 %
+% inf is x infimum, sup is x supremum
+%
+% [-1, 1]                       if (sup - inf) >= 2*pi,
+% [-1, 1]                       if (sup - inf) < 2*pi) and inf <= pi/2 and sup < inf),
+% [sin(inf), sin(sup)]          if (sup - inf) < 2*pi and inf <= pi/2 and sup <= pi/2 and sup >= inf,
+% [min(sin(inf), sin(sup)), 1]  if (sup - inf) < 2*pi and inf <= pi/2 and sup > pi/2 and sup <= 3/2*pi,
+% [-1, 1]                       if (sup - inf) < 2*pi and inf <= pi/2 and sup > 3/2*pi),
+% [-1, 1]                       if (sup - inf) < 2*pi and inf > pi/2 and inf <= 3/2*pi and sup > pi/2 and sup < inf,
+% [-1, max(sin(inf), sin(sup))] if (sup - inf) < 2*pi and inf > pi/2 and inf <= 3/2*pi and sup <= pi/2,
+% [sin(sup), sin(inf)]          if (sup - inf) < 2*pi and inf > pi/2 and inf <= 3/2*pi and sup > pi/2 and sup <= 3/2*pi and sup >= inf,
+% [-1, 1]                       if (sup - inf) < 2*pi and inf > 3/2*pi and inf <= 2*pi and sup > 3/2*pi and sup < inf,
+% [sin(inf), sin(sup)]          if (sup - inf) < 2*pi and inf > 3/2*pi and inf <= 2*pi and sup <= pi/2,
+% [min(sin(inf), sin(sup)) , 1] if (sup - inf) < 2*pi and inf > 3/2*pi and inf <= 2*pi and sup > pi/2 and sup <= 3/2*pi,
+% [sin(inf), sin(sup)]          if (sup - inf) < 2*pi and inf > 3/2*pi and inf <= 2*pi and sup > 3/2*pi and sup >= inf.
+%
 % Syntax:  
 %    res = sin(intVal)
 %
@@ -24,96 +39,76 @@ function res = sin(intVal)
 %               05-February-2016 (MA)
 %               06-February-2016 (DG)
 %               10-February-2016 (MA)
-%               22-February-2016 the matrix case is rewritten  (Dmitry Grebenyuk)
+%               22-February-2016 (DG, the matrix case is rewritten)
 % Last revision:---
-
-% inf is x infimum, sup is x supremum
-
-% [-1, 1]                       if (sup - inf) >= 2*pi,
-% [-1, 1]                       if (sup - inf) < 2*pi) and inf <= pi/2 and sup < inf),
-% [sin(inf), sin(sup)]          if (sup - inf) < 2*pi and inf <= pi/2 and sup <= pi/2 and sup >= inf,
-% [min(sin(inf), sin(sup)), 1]  if (sup - inf) < 2*pi and inf <= pi/2 and sup > pi/2 and sup <= 3/2*pi,
-% [-1, 1]                       if (sup - inf) < 2*pi and inf <= pi/2 and sup > 3/2*pi),
-% [-1, 1]                       if (sup - inf) < 2*pi and inf > pi/2 and inf <= 3/2*pi and sup > pi/2 and sup < inf,
-% [-1, max(sin(inf), sin(sup))] if (sup - inf) < 2*pi and inf > pi/2 and inf <= 3/2*pi and sup <= pi/2,
-% [sin(sup), sin(inf)]          if (sup - inf) < 2*pi and inf > pi/2 and inf <= 3/2*pi and sup > pi/2 and sup <= 3/2*pi and sup >= inf,
-% [-1, 1]                       if (sup - inf) < 2*pi and inf > 3/2*pi and inf <= 2*pi and sup > 3/2*pi and sup < inf,
-% [sin(inf), sin(sup)]          if (sup - inf) < 2*pi and inf > 3/2*pi and inf <= 2*pi and sup <= pi/2,
-% [min(sin(inf), sin(sup)) , 1] if (sup - inf) < 2*pi and inf > 3/2*pi and inf <= 2*pi and sup > pi/2 and sup <= 3/2*pi,
-% [sin(inf), sin(sup)]          if (sup - inf) < 2*pi and inf > 3/2*pi and inf <= 2*pi and sup > 3/2*pi and sup >= inf.
 
 %------------- BEGIN CODE --------------
 
 % scalar case
 if isnumeric(intVal)
     
-        res = interval();
-     
-        %sup - inf >= 2pi
-        if intVal.sup - intVal.inf >= 2*pi
-            res.inf = -1;
-            res.sup = 1;
-        else
-            %remove multiples of 2*pi
-            inf = mod(intVal.inf, 2*pi);
-            sup = mod(intVal.sup, 2*pi);
+    res = interval();
 
-            %inf in [0, pi/2]
-            if inf <= pi/2
-                if sup < inf %due to mod computation  %I changed <= to < to solve the sin[0, 0] = (-1, 1 ) problem. 13.01.2016 (DG)
-                    res.inf = -1;
-                    res.sup = 1;
-                elseif sup <= pi/2
-                    res.inf = sin(inf);
-                    res.sup = sin(sup);
-                elseif sup <= 3/2*pi
-                    res.inf = min(sin(inf), sin(sup));
-                    res.sup = 1;
-                else 
-                    res.inf = -1;
-                    res.sup = 1;
-                end
-            %inf in [pi/2, 3/2*pi]
-            elseif inf <= 3/2*pi
-                if sup <= pi/2
-                    res.inf = -1;
-                    res.sup = max(sin(inf), sin(sup));
-                elseif sup < inf %due to mod computation
-                    res.inf = -1;
-                    res.sup = 1;
-                elseif sup <= 3/2*pi
-                    res.inf = sin(sup);
-                    res.sup = sin(inf);
-                else 
-                    res.inf = -1;
-                    res.sup = max(sin(inf), sin(sup));
-                end    
-            %inf in [3/2*pi, 2*pi]
-            else
-                if sup <= pi/2
-                    res.inf = sin(inf);
-                    res.sup = sin(sup);
-                elseif sup <= 3/2*pi %this was wrong
-                    res.inf = min(sin(inf), sin(sup));
-                    res.sup = 1;
-                elseif sup < inf %this was wrong
-                    res.inf = -1;
-                    res.sup = 1;
-                else 
-                    res.inf = sin(inf);
-                    res.sup = sin(sup);
-                end 
+    %sup - inf >= 2pi
+    if intVal.sup - intVal.inf >= 2*pi
+        res.inf = -1;
+        res.sup = 1;
+    else
+        %remove multiples of 2*pi
+        inf = mod(intVal.inf, 2*pi);
+        sup = mod(intVal.sup, 2*pi);
+
+        %inf in [0, pi/2]
+        if inf <= pi/2
+            %due to mod computation
+            %I changed <= to < to solve the sin[0, 0] = (-1, 1 ) problem.
+            if sup < inf
+                res.inf = -1;
+                res.sup = 1;
+            elseif sup <= pi/2
+                res.inf = sin(inf);
+                res.sup = sin(sup);
+            elseif sup <= 3/2*pi
+                res.inf = min(sin(inf), sin(sup));
+                res.sup = 1;
+            else 
+                res.inf = -1;
+                res.sup = 1;
             end
+        %inf in [pi/2, 3/2*pi]
+        elseif inf <= 3/2*pi
+            if sup <= pi/2
+                res.inf = -1;
+                res.sup = max(sin(inf), sin(sup));
+            elseif sup < inf %due to mod computation
+                res.inf = -1;
+                res.sup = 1;
+            elseif sup <= 3/2*pi
+                res.inf = sin(sup);
+                res.sup = sin(inf);
+            else 
+                res.inf = -1;
+                res.sup = max(sin(inf), sin(sup));
+            end    
+        %inf in [3/2*pi, 2*pi]
+        else
+            if sup <= pi/2
+                res.inf = sin(inf);
+                res.sup = sin(sup);
+            elseif sup <= 3/2*pi %this was wrong
+                res.inf = min(sin(inf), sin(sup));
+                res.sup = 1;
+            elseif sup < inf %this was wrong
+                res.inf = -1;
+                res.sup = 1;
+            else 
+                res.inf = sin(inf);
+                res.sup = sin(sup);
+            end 
         end
+    end
     
 else
-
-% matrix case
-% rand(100, 100)
-%time_CORA =
-%   0.005376003258901
-%time_INTLAB =
-%   0.016708620023376
 
     % to preserve the shape    
     res = intVal;
@@ -180,7 +175,6 @@ else
     ind13 = find(((intVal.sup - intVal.inf) < 2*pi) & inf > 3/2*pi & inf <= 2*pi & sup > 3/2*pi & sup >= inf);    
     res.inf(ind13) = sin(inf(ind13));
     res.sup(ind13) = sin(sup(ind13));
-
        
 end
 

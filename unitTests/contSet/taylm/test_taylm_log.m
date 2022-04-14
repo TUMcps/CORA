@@ -1,12 +1,11 @@
-function res = test_taylm_log(~)
-% test_taylm_log - unit-test for Taylor models consisting of
-%                       log functions
+function res = test_taylm_log
+% test_taylm_log - unit-test for Taylor models consisting of log functions
 %
 % Syntax:  
-%    res = test_taylm_log(~)
+%    res = test_taylm_log
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    res - boolean 

@@ -1,5 +1,5 @@
 function res = test_zonotope_enclose
-% test_enclose - unit test function of enclose
+% test_zonotope_enclose - unit test function of enclose
 %
 % Syntax:  
 %    res = test_zonotope_enclose
@@ -18,12 +18,14 @@ function res = test_zonotope_enclose
 %
 % See also: -
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      26-July-2016
-% Last update:  ---
+% Last update:  09-August-2020 (MW, enhance randomness)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% 1. Analytical Test ------------------------------------------------------
 
 % create zonotopes
 Z1 = zonotope([1,2,3,4; 5 6 7 8]);
@@ -33,14 +35,18 @@ Z2 = zonotope([9, 10, 11; 12, 13, 14]);
 Z3 = enclose(Z1,Z2);
 
 % obtain zonotope matrix
-Zmat = get(Z3,'Z');
+Zmat = Z3.Z;
 
 % true result
 true_mat = [5, 6, 7, -4, -4, -4, 4; ...
             8.5, 9.5, 10.5, -3.5, -3.5, -3.5, 8];
 
 % check result
-res = all(all(Zmat == true_mat));
+res_val = all(all(Zmat == true_mat));
+
+
+% add results
+res = res_val;
 
 if res
     disp('test_enclose successful');

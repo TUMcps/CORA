@@ -1,6 +1,6 @@
 function [failed, numberOfTests] = testSuiteCore(varargin)
 % testSuiteCore - runs functions starting with a certain prefix contained 
-% in the directory dir or in a subdir
+%    in the directory and recursively searches all subfolders for same prefix
 %
 % Syntax:  
 %    [failed, numberOfTests] = testSuiteCore(varargin)
@@ -16,18 +16,16 @@ function [failed, numberOfTests] = testSuiteCore(varargin)
 %
 % Example: 
 %    -
-%
-% 
+
 % Author:       Dmitry Grebenyuk, Matthias Althoff
 % Written:      31-August-2016
 % Last update:  ---
 % Last revision:---
 
-
 %------------- BEGIN CODE --------------
 
-directory = [coraroot '/unitTests'];
-verbose = 0;
+directory = [coraroot filesep 'unitTests'];
+verbose = false;
 
 if nargin >= 1
     prefix = varargin{1};
@@ -43,26 +41,27 @@ numberOfTests = 0;
 failed = cell(0);
 
 % Find all relevant files in directory und run the tests
-files = dir([directory, ['/',prefix,'_*.m']]);
+files = dir([directory filesep prefix '_*.m']);
 for i=1:size(files,1)
     % Extract the function name
     [~, fname] = fileparts(files(i).name);
     % Supress output of tests by usage of evalc
     try
-        fprintf(['run ',fname,': ']);
+        fprintf(['run ' fname ': ']);
         [~,res] = evalc(fname);
-        if res == 1
+        if res
             fprintf('%s\n','passed');
         else
             fprintf('%s\n','failed');
         end
     catch
-        res = 0;
+        res = false;
         fprintf('%s\n','failed');
     end
     
-    if res == 0
-        failed = [failed {fname}];
+    % save file names of failed tests
+    if ~res
+        failed = [failed; {fname}];
     end
     numberOfTests = numberOfTests + 1;
 end
@@ -70,21 +69,16 @@ end
 % run files in subdirectories
 files = dir(directory);
 for i=1:size(files,1)
-    % Exclude files and directories . and ..
+    % Exclude directories "." and "..", as well as files (checked above)
     if files(i).name(1) == '.' || files(i).isdir == 0
         continue;
     end
-        
-    [subfailed, subnum] = testSuiteCore(prefix, verbose, [directory '/' files(i).name]);
-    failed = [failed subfailed];
+    
+    % recursive call of subfolder (and its subfolders, ... etc.)
+    [subfailed, subnum] = testSuiteCore(prefix,verbose,[directory filesep files(i).name]);
+    failed = [failed; subfailed];
     numberOfTests = numberOfTests + subnum;
 end
-
-% if verbose ~= 0
-%     disp('----------------------------------------------------------------------------');
-%     disp(['run ' int2str(numberOfTests) ' tests, ' int2str(size(failed, 2)) ' failed.']);
-%     disp(strjoin(failed, ',\n'));
-% end
 
 end
 

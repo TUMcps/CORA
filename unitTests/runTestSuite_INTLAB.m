@@ -1,9 +1,9 @@
-function runTestSuite_INTLAB( varargin )
+function runTestSuite_INTLAB(varargin)
 % runTestSuite_INTLAB - runs the standard test suite by executing all functions
 % starting with the prefix 'testINTLAB_'
 %
 % Syntax:  
-%    runTestSuite_INTLAB( varargin )
+%    runTestSuite_INTLAB(varargin)
 %
 % Inputs:
 %    verbose - show workspace output or not (not required)

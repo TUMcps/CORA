@@ -1,18 +1,22 @@
-function singleGenPlot(varargin)
-% plot - Plots 2-dimensional projection of a zonotope with a maximum of 5
-% generators
+function singleGenPlot(probZ,varargin)
+% plot - Plots 2-dimensional projection of a probabilistic zonotope
+%    with a maximum of 5 generators
 %
 % Syntax:  
-%    plot(Z,dimensions)
+%    plot(probZ,dimensions)
 %
 % Inputs:
-%    Z - zonotope object
+%    probZ - probabilistic zonotope object
 %    dimensions - dimensions that should be projected (optional) 
 %
 % Outputs:
-%    none
+%    ---
 %
 % Example: 
+%    Z1 = [10 1 -2; 0 1 1];
+%    Z2 = [0.6 1.2; 0.6 -1.2];
+%    probZ = probZonotope(Z1,Z2);
+%    singleGenPlot(probZ);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,52 +35,48 @@ function singleGenPlot(varargin)
 
 %If only one argument is passed
 if nargin==1
-    pZ=varargin{1};
     type='solid';
-    m=pZ.gamma;
+    m=probZ.gamma;
     
 %If two arguments are passed    
 elseif nargin==2
-    pZ=varargin{1};
-    type=varargin{2}; 
-    m=pZ.gamma;
+    type=varargin{1}; 
+    m=probZ.gamma;
     
 %If three arguments are passed    
 elseif nargin==3
-    pZ=varargin{1};
-    type=varargin{2}; 
-    m=varargin{3};     
+    type=varargin{1}; 
+    m=varargin{2};     
     
 %If too many arguments are passed
 else
     disp('Error: too many inputs');
-    pZ=varargin{1};
     type=varargin{2};    
 end
 
 %dimension of the single generator
-dim=length(pZ.g);
+d=dim(probZ);
 
 %init number of plotted points
 nrOfPoints=1e3;
 
 %get center
-c=pZ.Z(:,1);
+c = center(probZ);
 
-if dim==1
+if d==1
     %compute Sigma
-    Sigma=sigma(pZ);    
+    Sigma=sigma(probZ);    
     
-    if length(pZ.Z)==1
-        x=linspace(-m*norm(pZ.g),m*norm(pZ.g),nrOfPoints);
+    if length(probZ.Z)==1
+        x=linspace(-m*norm(probZ.g),m*norm(probZ.g),nrOfPoints);
         for i=1:nrOfPoints    
             f(i)=gaussian(x(i),Sigma);
         end
     else
-        c1=-sum(abs(pZ.Z(2:end)));
+        c1=-sum(abs(probZ.Z(2:end)));
         c2=-c1;
-        l1=linspace(-m*norm(pZ.g),c1,nrOfPoints);
-        l2=linspace(c2,m*norm(pZ.g),nrOfPoints);
+        l1=linspace(-m*norm(probZ.g),c1,nrOfPoints);
+        l2=linspace(c2,m*norm(probZ.g),nrOfPoints);
         for i=1:nrOfPoints    
             x(i)=l1(i);
             f(i)=gaussian(l1(i)-c1,Sigma);
@@ -89,12 +89,12 @@ if dim==1
     plot(c+x,f);
     (x(2)-x(1))*sum(f)
 else
-    Sigma=norm(pZ.g)^2;  
+    Sigma=norm(probZ.g)^2;  
     l=linspace(-m,m,nrOfPoints);
     for i=1:nrOfPoints
-        x(i)=c(1)+pZ.g(1,1)*l(i);
-        y(i)=c(2)+pZ.g(2,1)*l(i);
-        f(i)=gaussian(norm(pZ.g)*l(i),Sigma);
+        x(i)=c(1)+probZ.g(1,1)*l(i);
+        y(i)=c(2)+probZ.g(2,1)*l(i);
+        f(i)=gaussian(norm(probZ.g)*l(i),Sigma);
     end
 
     xMin=min(x);
@@ -127,7 +127,7 @@ else
         %camlight left
         camlight headlight
     end
-    norm(pZ.g)*(l(2)-l(1))*sum(f)
+    norm(probZ.g)*(l(2)-l(1))*sum(f)
 end
 
 

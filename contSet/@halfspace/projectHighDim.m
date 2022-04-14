@@ -1,14 +1,14 @@
-function res = projectHighDim(obj,N,dim)
+function res = projectHighDim(obj,N,dims)
 % projectHighDim - project a halfspace object to a higher dimensional
 %                  space
 %
 % Syntax:  
-%    res = projectHighDim(obj,N,dim)
+%    res = projectHighDim(obj,N,dims)
 %
 % Inputs:
 %    obj - halfspace object
 %    N - dimension of the higher dimensional space
-%    dim - states of the high dimensional space that correspond to the
+%    dims - states of the high dimensional space that correspond to the
 %          states of the low dimensional mptPolytope object
 %
 % Outputs:
@@ -34,14 +34,14 @@ function res = projectHighDim(obj,N,dim)
 
 %------------- BEGIN CODE --------------
 
-    % initialize variables
-    C = zeros(N,1);
-    d = obj.d;
+% initialize variables
+C = zeros(N,1);
+d = obj.d;
 
-    % insert parameters from the original halfspace object
-    C(dim) = obj.c;
+% insert parameters from the original halfspace object
+C(dims) = obj.c;
 
-    % construct the resulting high dimensional halfspace object
-    res = halfspace(C,d);
+% construct the resulting high dimensional halfspace object
+res = halfspace(C,d);
 
 %------------- END OF CODE --------------

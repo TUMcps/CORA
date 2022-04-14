@@ -1,5 +1,5 @@
 function res = test_zonotope_polytope
-% test_polytope - unit test function of polytope
+% test_zonotope_polytope - unit test function of polytope
 %
 % Syntax:  
 %    res = test_zonotope_polytope
@@ -24,6 +24,10 @@ function res = test_zonotope_polytope
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+res = true;
+
+% Analytical Test ---------------------------------------------------------
 
 % create zonotope
 Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
@@ -51,14 +55,15 @@ true_C = [ 0.554700196225229   0.832050294337844; ...
 true_d =  [2.773500981126146; 0; 0; 5.547001962252290; 5.547001962252290; 7.276068751089989];
 
 % check result
-res_H = all(all(abs(C-true_C) < 1e-13));
-res_b = all(abs(d-true_d) < 1e-13);
-res = res_H & res_b;
+for i = size(C,1)
+    [temp,ind] = ismembertol(C(i,:),true_C,1e-13,'ByRows',true);
+    if ~temp || abs(d(i)-true_d(ind)) > 1e-13 || size(C,1) ~= size(true_C,1)
+        error('Analytical test failed!'); 
+    end
+end
 
 if res
-    disp('test_polytope successful');
-else
-    disp('test_polytope failed; MPT toolbox in MATLAB path?');
+    disp('test_zonotope_polytope successful');
 end
 
 %------------- END OF CODE --------------

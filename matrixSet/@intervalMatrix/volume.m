@@ -1,6 +1,6 @@
 function vol = volume(matI)
 % volume - computes the volume of an interval matrix by computing the 
-% volume of the corresponding interval hull
+%    volume of the corresponding interval
 %
 % Syntax:  
 %    vol = volume(matI)
@@ -26,10 +26,10 @@ function vol = volume(matI)
 
 %------------- BEGIN CODE --------------
 
-%conversion to a zonotope
-IH = intervalhull(matI);
+%conversion to a interval
+I = interval(matI);
 
-%compute volume of the zonotope
-vol = volume(IH);
+%compute volume of the interval
+vol = volume(I);
 
 %------------- END OF CODE --------------

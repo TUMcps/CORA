@@ -46,7 +46,7 @@ if exponent>=0
     end
 else
     matPpower=[];
-    disp('no negative powers supported')
+    error('no negative powers supported')
 end
 
 %------------- END OF CODE --------------

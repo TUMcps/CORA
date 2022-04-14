@@ -1,19 +1,17 @@
-function [Rfirst,options] = initReach(obj,Rold,options)
+function [Rnext,options] = initReach(obj,Rinit,options)
 % initReach - computes the reachable continuous set for the first time step
 %
 % Syntax:  
-%    [Rnext] = initReach(obj,R,options)
+%    [Rnext,options] = initReach(obj,Rinit,options)
 %
 % Inputs:
 %    obj - nonlinearSys object
 %    Rinit - initial reachable set
-%    options - options for the computation of the reachable set
+%    options - struct containing the algorithm settings
 %
 % Outputs:
-%    obj - nonlinearSys object
-%    Rfirst - first reachable set 
-%
-% Example: 
+%    Rfirst - first reachable set
+%    options - struct containting the algorithm settings
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,70 +24,111 @@ function [Rfirst,options] = initReach(obj,Rold,options)
 % Last update:  04-January-2008
 %               27-April-2009
 %               16-August-2016 (now identical to initReach of @nonlinearSys; solve by inheritance in the future)
+%               17-May-2019
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-%check if Rinit can be obtained from options
-if iscell(Rold)
-    Rinit=Rold;
-else
-    %first run
-    Rinit{1}.set=Rold;
-    Rinit{1}.error=0*options.maxError; %initially error is assumed to be 0
-end
-iterations=length(Rinit);
+    % initialization for the case that it is the first time step
+    if ~iscell(Rinit)                                        
+        R{1}.set = Rinit;
+        R{1}.error = zeros(size(options.maxError));
+        Rinit = R;
+    end
+    
+    % compute reachable set using the options.linRem algorithm
+    if strcmp(options.alg,'linRem')
+        [Rnext,options] = initReach_linRem(obj,Rinit,options);
+        return;
+    end
 
-%initialize set counter
-setCounter=1;
+    % loop over all parallel sets
+    setCounter = 1; Rtp = {}; Rti = {}; R0 = {};
 
-for iIteration=1:iterations
-    %try
-    [Rti,Rtp,nr,options] = linReach(obj,options,Rinit{iIteration},1);
-%     catch
-%         disp('error')
-%     end
+    for i = 1:length(Rinit)
 
-    %check if initial set has to be split
-    if isempty(nr)
-        %save reachable sets in cell
-        Rtotal_tp{setCounter}=Rtp;
-        Rtotal_ti{setCounter}=Rti;
+        % compute reachable set of abstraction
+        [Rtemp_ti,Rtemp_tp,dimForSplit,opts] = linReach(obj,options,Rinit{i});
         
-        %setCounter update
-        setCounter=setCounter+1;
-    else
-        disp('split!!');
+        % save prevErr to reuse
+        if isfield(opts,'prevErr')
+            options.prevErr = opts.prevErr;
+        end
+        
+        % check if initial set has to be split
+        if isempty(dimForSplit)
+            Rtp{setCounter} = Rtemp_tp;
+            Rtp{setCounter}.prev = i;
+            Rti{setCounter} = Rtemp_ti;
+            R0{setCounter} = Rinit{i};
+            setCounter = setCounter+1;
+        else
+            disp('split!!');
 
-        %split initial set 
-        Rtmp=split(Rinit{iIteration}.set,nr);
-        Rsplit{1}.set=Rtmp{1};
-        Rsplit{2}.set=Rtmp{2};
-        %reset error
-        Rsplit{1}.error = 0*options.maxError;
-        Rsplit{2}.error = 0*options.maxError;
-        
-%         figure
-%         plot(Rinit{iIteration});
-%         plot(Rsplit{1});
-%         plot(Rsplit{2});
-        
-        [Rres,options]=initReach(obj,Rsplit,options);
-        
-        for i=1:length(Rres.tp)
-            % add results to other results
-            Rtotal_tp{setCounter}=Rres.tp{i};
-            Rtotal_ti{setCounter}=Rres.ti{i};
+            % split the initial set 
+            Rtmp = split(Rinit{i}.set,dimForSplit);
+            Rsplit{1}.set = Rtmp{1};
+            Rsplit{2}.set = Rtmp{2};
 
-            % update setCounter 
-            setCounter=setCounter+1;
+            % reset the linearization error
+            Rsplit{1}.error = 0*options.maxError;
+            Rsplit{2}.error = 0*options.maxError;
+
+            % compute the reachable set for the splitted sets
+            Rres = initReach(obj,Rsplit,options);
+
+            for j = 1:length(Rres.tp)
+                Rtp{setCounter} = Rres.tp{j};
+                Rtp{setCounter}.parent = i;
+                Rti{setCounter} = Rres.ti{j};
+                R0{setCounter} = Rres.R0{j};
+                setCounter = setCounter + 1;
+            end
         end
     end
+
+    % store the results
+    Rnext.tp = Rtp;
+    Rnext.ti = Rti;
+    Rnext.R0 = R0;
 end
 
 
-%write results to reachable set struct Rfirst
-Rfirst.tp=Rtotal_tp;
-Rfirst.ti=Rtotal_ti;
+% Auxiliary Functions -----------------------------------------------------
+
+function [Rnext,options] = initReach_linRem(obj,Rinit,options)
+
+
+    % compute the reachable set using the options.alg = 'lin' algorithm to
+    % obtain a first rough over-approximation of the reachable set
+    options_ = options;
+    options_.alg = 'lin';
+    
+    Rtemp = initReach(obj,Rinit,options_);
+    
+    % loop over all parallel sets 
+    Rtp = cell(length(Rtemp.ti),1); 
+    Rti = cell(length(Rtemp.ti),1);
+
+    for i = 1:length(Rtemp.ti)
+
+        % compute reachable set with the "linear remainder" algorithm to
+        % obtain a refined reachable set
+        R0 = Rtemp.R0{i};
+        options.Ronestep = Rtemp.ti{i};
+        
+        [Rti{i},Rtp{i}] = linReach(obj,options,R0);
+        
+        % copy information about previous reachble set and parent
+        Rtp{i}.prev = Rtemp.tp{i}.prev;
+        if isfield(Rtemp.tp{i},'parent')
+           Rtp{i}.parent = Rtemp.tp{i}.parent; 
+        end
+    end
+
+    % store the results
+    Rnext.tp = Rtp;
+    Rnext.ti = Rti;
+end
 
 %------------- END OF CODE --------------

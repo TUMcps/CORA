@@ -1,21 +1,23 @@
-function [obj,t,x,index] = simulate(obj,opt,tstart,tfinal,x0,options)
+function [t,x] = simulate(obj,options)
 % simulate - simulates the linear interval system within a location
 %
 % Syntax:  
-%    [t,x,index] = simulate(obj,tstart,tfinal,x0,options)
+%    [t,x,ind] = simulate(obj,params,options)
 %
 % Inputs:
-%    obj - linIntSys object
-%    tstart - start time
-%    tfinal - final time
-%    x0 - initial state 
-%    options - contains, e.g. the events when a guard is hit
+%    obj - linProbSys object
+%    options - struct containing the parameters for the simulation
+%       .tStart initial time t0
+%       .tFinal final time tf
+%       .x0 initial point x0
+%       .u piecewise constant input signal u(t) specified as a matrix
+%           for which the number of rows is identical to the number of
+%           system input
 %
 % Outputs:
-%    obj - linIntSys object
 %    t - time vector
 %    x - state vector
-%    index - returns the event which has been detected
+%    ind - returns the event which has been detected
 %
 % Example: 
 %
@@ -28,19 +30,21 @@ function [obj,t,x,index] = simulate(obj,opt,tstart,tfinal,x0,options)
 % Author:       Matthias Althoff
 % Written:      16-May-2007 
 % Last update:  26-February-2008
+%               17-July-2020
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 %self-programmed euler solver
-h=opt.timeStep/5;
-t(1)=tstart;
-x(:,1)=x0;
+h = options.timeStep/5;
+nrOfTimeSteps = ceil((options.tFinal-options.tStart)/h);
+t = linspace(options.tStart, options.tFinal, nrOfTimeSteps);
+x(:,1) = options.x0;
 
 %obtain dimension
 dim=length(obj.A);
 
-for i=1:(ceil((tfinal-tstart)/h)+1) %+1 to enforce that simulation is quit
+for i=1:nrOfTimeSteps-1
     
     %compute random value from the noise signal
     mu=zeros(dim,1);
@@ -49,11 +53,8 @@ for i=1:(ceil((tfinal-tstart)/h)+1) %+1 to enforce that simulation is quit
     
     %next state
     x(:,i+1)=expm(obj.A*h)*x(:,i)+... %initial solution
-        inv(obj.A)*(expm(obj.A*h)-eye(length(obj.A)))*(opt.u+u); %input solution
+        inv(obj.A)*(expm(obj.A*h)-eye(length(obj.A)))*(options.u+u); %input solution
 end
-index=[];
 x=x';
-%ode4: fixed step size Runge-Kutta
 
-    
 %------------- END OF CODE --------------

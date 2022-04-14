@@ -29,7 +29,7 @@ function rotMat = rotationMatrix(h, newDir)
 %------------- BEGIN CODE --------------
 
 %get dimension
-dim = length(h.c);
+dim_x = length(h.c);
 n = h.c/norm(h.c);
 
 if abs(n.'*newDir) ~= 1
@@ -42,14 +42,14 @@ if abs(n.'*newDir) ~= 1
     indVec = newDir - (newDir.'*n)*n;
     B(:,2) = indVec/norm(indVec);
     %complete mapping matrix B
-    if dim>2
-        B(:,3:dim) = null(B(:,1:2).'); 
+    if dim_x>2
+        B(:,3:dim_x) = null(B(:,1:2).'); 
     end
     
     %compute angle between uVec and n
     angle = acos(newDir.'*n);
     %rotation matrix
-    R = eye(dim);
+    R = eye(dim_x);
     R(1,1) = cos(angle);
     R(1,2) = -sin(angle);
     R(2,1) = sin(angle);
@@ -59,9 +59,9 @@ if abs(n.'*newDir) ~= 1
     
 else
     if n.'*newDir == 1
-        rotMat = eye(dim);
+        rotMat = eye(dim_x);
     else
-        rotMat = -eye(dim);
+        rotMat = -eye(dim_x);
     end
 end
 

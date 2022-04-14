@@ -1,5 +1,5 @@
 function [varargout] = size(obj, varargin)
-% size - Overloads the opertor that returns the size of the object
+% size - Overloads the operator that returns the size of the object
 %
 % Syntax:  
 %    varargout = size(obj)

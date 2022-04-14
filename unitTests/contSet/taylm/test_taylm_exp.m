@@ -1,12 +1,12 @@
-function res = test_taylm_exp(~)
-% test_taylm_exp - unit-tests for Taylor models consisting of
-%                       exponent functions
+function res = test_taylm_exp
+% test_taylm_exp - unit-tests for Taylor models consisting of exponential
+%    functions
 %
 % Syntax:  
-%    res = test_taylm_exp(~)
+%    res = test_taylm_exp
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    res - boolean 

@@ -1,26 +1,34 @@
-classdef matZonotope
+classdef (InferiorClasses = {?mp}) matZonotope
 % matZonotope class 
 %
 % Syntax:  
-%    object constructor: Obj = zonotope(varargin)
-%    copy constructor: Obj = otherObj
+%   obj = matZonotope(C,G)
 %
 % Inputs:
-%    input1 - zonotope matrix
+%    C - center matrix
+%    G - cell-array storing the generator matrices
 %
 % Outputs:
-%    Obj - Generated Object
+%    obj - generated object
+%
+% Example:
+%    C = [0 0; 0 0];
+%    G{1} = [1 3; -1 2];
+%    G{2} = [2 0; 1 -1];
+%
+%    mz = matZonotope(C,G);
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: intervalhull,  polytope
+% See also: intervalMatrix, matPolytope
 
 % Author:       Matthias Althoff
 % Written:      14-September-2006 
 % Last update:  22-March-2007
 %               04-June-2010
+%               27-Aug-2019
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -33,7 +41,8 @@ properties (SetAccess = private, GetAccess = public)
 end
     
 methods
-    %class constructor
+    
+    % class constructor
     function obj = matZonotope(input1,input2)
         %one input
         if nargin==0
@@ -41,16 +50,19 @@ methods
             matrixGenerator = [];
         elseif nargin==1
             if isa(input1,'zonotope')
-                Z=get(input1,'Z');
                 %extract center
-                c=Z(:,1);
+                c=center(input1);
                 %extract generator matrix
-                G=Z(:,2:end);
+                G=generators(input1);
                 %obtain matrix center
                 matrixCenter = vec2mat(c);
                 %obtain matrix generators
-                for i=1:length(G(1,:))
-                    matrixGenerator{i}=vec2mat(G(:,i));
+                if ~isempty(G)
+                    for i=1:length(G(1,:))
+                        matrixGenerator{i}=vec2mat(G(:,i));
+                    end
+                else
+                    matrixGenerator{1} = zeros(size(matrixCenter));
                 end
             else
                 matrixCenter=input1;
@@ -83,6 +95,7 @@ methods
     vol = volume(matI)
     matZ1 = concatenate(matZ1,matZ2)
     res = norm(obj, varargin)
+    newObj = subsref(obj, S)
         
     %display functions
     plot(varargin)

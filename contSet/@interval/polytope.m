@@ -5,7 +5,7 @@ function P = polytope(obj,varargin)
 %    P = polytope(ob,options)
 %
 % Inputs:
-%    obj - interval hull object
+%    obj - interval object
 %    options - options struct 
 %
 % Outputs:

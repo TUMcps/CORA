@@ -2,13 +2,11 @@ classdef parallelHybridAutomaton
 % hybridAutomaton - Object and Copy Constructor 
 %
 % Syntax:  
-%    obj = parallelHybridAutomaton(components,stateBinds,inputBinds)
+%    obj = parallelHybridAutomaton(components,inputBinds)
 %
 % Inputs:
 %    components - cell array of hybridAutomaton objects that represent the
 %                 subcomponents
-%    stateBinds - cell array of nx1 int arrays. Maps component states to 
-%                 states of composed system
 %    inputBinds - cell array of nx2 int arrays. Maps component inputs to 
 %                 states/inputs of composed system
 %
@@ -32,67 +30,43 @@ properties (SetAccess = protected, GetAccess = public)
     
     % list of hybridAutomaton objects representing the subcomponents of the
     % system
-    components = [];
+    components (:,1) {cell} = {}
     
     % description of the composition of the single subcomponents
-    bindsStates = [];
+    bindsStates (:,1) {cell} = {}
     
     % description of the connection of the single subcomponents
-    bindsInputs = [];
-    
-    % struct storing the results of simulation and reachability analysis
-    result = [];  
+    bindsInputs (:,1) {cell} = {}
     
     % number of states for the complete automaton
-    numStates = [];
+    numStates (1,1) {mustBeNonnegative,mustBeFinite} = 0;
     
     % number of inputs for the complete automaton
-    numInputs = [];
+    numInputs (1,1) {mustBeNonnegative,mustBeFinite} = 0;
 end
 
 methods
     
     % Class Constructor
-    function Obj = parallelHybridAutomaton(varargin)
+    function Obj = parallelHybridAutomaton(components,inputBinds)
+            
+        % parse input arguments
+        Obj.components = components;
         
-        % no argument is passed (default constructor)
-        if nargin == 0
-            
-            disp('ParallelHybridAutomaton needs more input values');
-            Obj=[];
-
-
-        elseif nargin == 3
-            
-            % parse input arguments
-            Obj.components=varargin{1};
-
-            stateBinds = varargin{2};
-            inputBinds = varargin{3};
-
-            % make sure cells are column arrays
-            if size(stateBinds,2) > 1
-                stateBinds = stateBinds.';
-            end
-            if size(inputBinds,2) > 1
-                inputBinds = inputBinds.';
-            end
-            
-            % extract overall state and input dimensions
-            [Obj.numStates,Obj.numInputs] = validateBinds(stateBinds,inputBinds);
-            
-            % initialize remaining properties
-            Obj.bindsStates = stateBinds;
-            Obj.bindsInputs = inputBinds;
-
-            Obj.result=[];
-
-
-        % not enough or too many inputs are passed    
+        if size(inputBinds,2) > 1
+            Obj.bindsInputs = inputBinds.';
         else
-            disp('This class needs more/less input values');
-            Obj=[];
+            Obj.bindsInputs = inputBinds;
         end
+        
+        for i = 1:length(Obj.components)
+           if ~isa(Obj.components{i},'hybridAutomaton')
+              error('Wrong format for input argument "components"!'); 
+           end
+        end
+
+        % extract overall state and input dimensions
+        Obj = validateBinds(Obj);
     end
 end
 end

@@ -42,7 +42,8 @@ for i = 1:mi
         poly = displayPoly(obj(i,j));
         
         % get an interval part
-        remainder = sprintf('[%0.5f,%0.5f]',infimum(obj(i,j).remainder),supremum(obj(i,j).remainder));
+        remainder = sprintf('[%0.4f,%0.4f]',...
+            infimum(obj(i,j).remainder),supremum(obj(i,j).remainder));
         
         % add both parts
         str = [poly, ' + ', remainder];

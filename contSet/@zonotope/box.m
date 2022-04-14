@@ -1,8 +1,8 @@
-function [Z] = box(Z)
-% box - Computes an enclosing axis-aligned box
+function Z = box(Z)
+% box - computes an enclosing axis-aligned box
 %
 % Syntax:  
-%    [Z] = box(Z)
+%    Z = box(Z)
 %
 % Inputs:
 %    Z - zonotope object
@@ -17,26 +17,23 @@ function [Z] = box(Z)
 %    hold on
 %    plot(B);
 %
-% Other m-files required: intervalhull(constructor)
+% Other m-files required: ---
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: vertices, polytope
 
-% Author: Matthias Althoff
-% Written: 09-March-2009
-% Last update: ---
+% Author:        Matthias Althoff
+% Written:       09-March-2009
+% Last update:   27-Aug-2019
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-%extract generators
-G=Z.Z(:,2:end);
+% determine new generator matrix
+G = diag(sum(abs(generators(Z)),2));
 
-%determine new generator matrix
-G=diag(sum(abs(G),2));
-
-%instantiate interval hull
-Z.Z=[Z.Z(:,1),G];
+% instantiate axis-aligned zonotope
+Z.Z = [center(Z),G];
 
 %------------- END OF CODE --------------

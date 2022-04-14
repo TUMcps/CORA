@@ -1,9 +1,7 @@
 function res = test_intervalMatrix_exactSquare
 % test_intervalMatrix_exactSquare - unit test function of exactSquare
-% according to
-% Kosheleva, O.; Kreinovich, V.; Mayer, G. & Nguyen, H. T. Computing the 
-% cube of an interval matrix is NP-Hard Proc. of the ACM symposium on 
-% Applied computing, 2005, 1449-1453
+%    according to [1]
+% 
 % 
 % Syntax:  
 %    res = test_intervalMatrix_exactSquare
@@ -15,6 +13,11 @@ function res = test_intervalMatrix_exactSquare
 %    res - boolean 
 %
 % Example: 
+%
+% References:
+%    [1] Kosheleva, O.; Kreinovich, V.; Mayer, G. & Nguyen, H. T.
+%        Computing the cube of an interval matrix is NP-Hard.
+%        Proc. of the ACM symposium on Applied computing, 2005, 1449-1453
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -103,6 +106,6 @@ res_1 = all(I <= enlarge(I2,1+1e-8));
 res_2 = all(I2 <= enlarge(I,1+1e-8));
 
 %result of different computation techniques
-res = res_1*res_2;
+res = res_1 && res_2;
 
 %------------- END OF CODE --------------

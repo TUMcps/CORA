@@ -16,7 +16,7 @@ function M = abs(intMat)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: OTHER_FUNCTION_NAME1,  OTHER_FUNCTION_NAME2
+% See also:
 
 % Author:       Matthias Althoff
 % Written:      21-July-2010
@@ -25,9 +25,6 @@ function M = abs(intMat)
 
 %------------- BEGIN CODE --------------
 
-Minf=infimum(intMat.int);
-Msup=supremum(intMat.int);
-
-M=max(abs(Minf), abs(Msup));
+M = supremum(abs(intMat.int));
 
 %------------- END OF CODE --------------

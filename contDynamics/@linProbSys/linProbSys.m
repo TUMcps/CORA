@@ -38,7 +38,7 @@ end
 methods
     %class constructor
     function obj = linProbSys(varargin)
-        obj@contDynamics(varargin{1},ones(length(varargin{2}),1),1,1); %instantiate parent class
+        obj@contDynamics(varargin{1},length(varargin{2}),1,1); %instantiate parent class
         %4 inputs
         if nargin==4
             obj.A = varargin{2};

@@ -1,48 +1,71 @@
 function res = isempty(obj)
-% is_empty - returns 1 if a pplPolytope is empty and 0 otherwise
+% isempty - check if a polytope is empty
 %
 % Syntax:  
-%    res = is_empty(obj)
+%    res = isempty(obj)
 %
 % Inputs:
-%    obj - pplPolytope object
+%    obj - mptPolytope object
 %
 % Outputs:
-%   res - result in {0,1}
+%    res - result in {0,1}
 %
 % Example: 
-%    ---
+%    poly = mptPolytope([1 0;-1 0;0 1;0 -1],[3;0;3;-4]);
+%    isempty(poly)
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: conZonotope/isempty
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      03-February-2011
 % Last update:  16-July-2015
 %               20-August-2015
+%               21-November-2019 (NK, use linear programming)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
+    % solve the following linear program to check if a polytope 
+    % {x | A x <= b} is empty:
+    %
+    % min sum(y)
+    %
+    % s.t. A x - y <= b
+    %            y >= 0
 
-try %MPT 3
-    res = all(isEmptySet(obj.P));
-catch %MPT2
+    % get object properties
+    A = obj.P.A;
+    b = obj.P.b;
     
-    %get properties
-    Array = get(obj.P,'Array');
-    H = get(obj.P,'H');
-    K = get(obj.P,'K');
-    RCheb = get(obj.P,'RCheb');
+    [m,n] = size(A);
+    
+    if ~isempty(A)
+    
+        % construct constraint matrices and objective function
+        A = [-eye(m),A;-eye(m),zeros(m,n)];
+        b = [b;zeros(m,1)];
 
-    %check for emtiness; see display function of mpt polytope code
-    if isempty(Array) & H==1 & K==-Inf & RCheb==-Inf
-        res=1;
+        f = [ones(m,1);zeros(n,1)];
+
+        % solve the dual problem using linear programming
+        options = optimoptions('linprog','display','off', ...
+                               'OptimalityTolerance',1e-10);	
+
+        [x,~,exitflag] = linprog(f,A,b,[],[],[],[],options);
+
+        % check if polytope is empty
+        res = 0;
+
+        if exitflag < 0 || any(x(1:m) > 1e-10)
+           res = 1; 
+        end
+    
     else
-        res=0;
+       res = 1; 
     end
 end
 

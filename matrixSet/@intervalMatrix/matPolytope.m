@@ -20,13 +20,13 @@ function matP = matPolytope(matI)
 
 % Author:       Matthias Althoff
 % Written:      21-June-2010 
-% Last update:  ---
+% Last update:  06-May-2021
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 %obtain vertices
-V = dominantVertices(matI,inf);
+V = vertices(matI);
 
 %instantiate matrix polytope
 matP=matPolytope(V);

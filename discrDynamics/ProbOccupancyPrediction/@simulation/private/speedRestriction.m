@@ -1,9 +1,9 @@
-function [inputProb]=speedRestriction(simOptions,markovChainSpec)
+function [inputProb] = speedRestriction(simOptions,markovChainSpec)
 % speedRestriction - Restricts the speed on roads due to speed limits or
 % the road geometry (maximum speed through curves)
 %
 % Syntax:  
-%    [inputProb]=speedRestriction(simOptions,markovChainSpec)
+%    [inputProb] = speedRestriction(simOptions,markovChainSpec)
 %    
 %
 % Inputs:
@@ -22,9 +22,9 @@ function [inputProb]=speedRestriction(simOptions,markovChainSpec)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 03-July-2008 
-% Last update: 28-August-2008
+% Author:       Matthias Althoff
+% Written:      03-July-2008 
+% Last update:  28-August-2008
 % Last revision: ---
 
 %------------- BEGIN CODE --------------

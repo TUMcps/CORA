@@ -30,21 +30,18 @@ disp('-----------------------------------');
 %display parent object
 display@contDynamics(obj);
 
+% display number of parameter
+disp(['number of parameters: ',num2str(obj.nrOfParam)]);
+
 %display type
 disp('type: Nonlinear parameter system');
 
-%display number of states, inputs and parameters
-disp(['nr of states: ',num2str(obj.dim)]);
-disp(['nr of inputs: ',num2str(obj.nrOfInputs)]);
-disp(['nr of parameters: ',num2str(obj.nrOfParam)]);
-
 %display state space equations
 %create symbolic variables
-[x,u,~,p]=symVariables(obj);
+vars = symVariables(obj);
 
 %insert symbolic variables into the system equations
-t=0;
-f=obj.mFile(t,x,u,p);
+f=obj.mFile(vars.x,vars.u,vars.p);
 disp('state space equations:')
 for i=1:length(f)
     disp(['f(',num2str(i),') = ',char(f(i))]);

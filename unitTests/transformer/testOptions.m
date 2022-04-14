@@ -22,7 +22,7 @@ options.polytopeType = 'mpt';
  options.reductionTechnique = 'girard';
  options.isHybrid = 1;
  options.isHyperplaneMap = 0;
- options.enclosureEnables = [5]; %choose enclosure method(s)
+ options.enclose = [5]; %choose enclosure method(s)
  options.originContained = 0;
 %--------------------------------------------------------------------------
 %set input:

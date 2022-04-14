@@ -1,12 +1,12 @@
-function [V] = underapproximate(varargin)
-% underapproximates - Returns the vertices of an underapproximation. The
-% underapproximation is computed by finding the vertices that are extreme
-% in the direction of a set of vectors, stored in the matrix S. If S is not
-% specified, it is constructed by the vectors spanning an
-% over-approximative parallelotope.
+function V = underapproximate(Z,S)
+% underapproximate - returns the vertices of an underapproximation. The
+%    underapproximation is computed by finding the vertices that are
+%    extreme in the direction of a set of vectors, stored in the matrix S.
+%    If S is not specified, it is constructed by the vectors spanning an
+%    over-approximative parallelotope.
 %
 % Syntax:  
-%    [V] = underapproximate(varargin)
+%    V = underapproximate(Z,S)
 %
 % Inputs:
 %    Z - zonotope object
@@ -17,7 +17,7 @@ function [V] = underapproximate(varargin)
 %
 % Example: ---
 %
-% Other m-files required: intervalhull(constructor)
+% Other m-files required: ---
 % Subfunctions: none
 % MAT-files required: none
 %
@@ -25,15 +25,14 @@ function [V] = underapproximate(varargin)
 
 % Author:       Matthias Althoff
 % Written:      19-July-2010
-% Last update:  ---
+% Last update:  28-Aug-2019
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 %extract center and generators
-Z = varargin{1};
-c = Z.Z(:,1);
-G = Z.Z(:,2:end);
+c = center(Z);
+G = generators(Z);
 
 if nargin==1
     [rows,cols] = size(G);
@@ -42,8 +41,6 @@ if nargin==1
     else
         S = dominantDirections(Z);
     end
-elseif nargin == 2
-    S = varargin{2};
 end
 
 %obtain extreme vertices along directions in S

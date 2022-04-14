@@ -30,26 +30,24 @@ disp('-----------------------------------');
 %display parent object
 display@contDynamics(obj);
 
+% display number of algebric states
+disp(['number of alg. variables: ', num2str(obj.nrOfConstraints)]);
+
 %display type
 disp('type: Nonlinear differential algebraic system');
 
-%display number of states, inputs and parameters
-disp(['nr of states: ',num2str(obj.dim)]);
-disp(['nr of inputs: ',num2str(obj.nrOfInputs)]);
-
 %display state space equations
 %create symbolic variables
-[x,u]=symVariables(obj);
+var = symVariables(obj);
 
 %insert symbolic variables into the system equations
-t=0;
-fdyn=obj.dynFile(t,x,u);
+fdyn=obj.dynFile(var.x,var.y,var.u);
 disp('dynamic state space equations:')
 for i=1:length(fdyn)
     disp(['f(',num2str(i),') = ',char(fdyn(i))]);
 end
 
-fcon=obj.conFile(t,x,u);
+fcon=obj.conFile(var.x,var.y,var.u);
 disp('constraint equations:')
 for i=1:length(fcon)
     disp(['constr ',num2str(i),': 0 = ',char(fcon(i))]);

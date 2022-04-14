@@ -29,8 +29,7 @@ function matV = vertices(matZ)
 Z = zonotope(matZ);
 
 %compute vertices
-V = vertices(Z, 1:matZ.dim^2, 'alternative');
-V = get(V,'V');
+V = vertices(Z,'polytope');
 V = unique(V', 'rows')'; %eliminate vectors that occur multiple times
 
 %convert vertices to matrix vertices

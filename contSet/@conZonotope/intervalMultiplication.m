@@ -1,6 +1,6 @@
 function res = intervalMultiplication(obj,I)
 % intervalMultiplication - computes the multiplication of an interval with
-% a constraint zonotope. This function is called by the interval/mtimes
+% a constrained zonotope. This function is called by the interval/mtimes
 % function
 %
 % Syntax:  
@@ -42,10 +42,10 @@ function res = intervalMultiplication(obj,I)
 
 
     % center and radius of interval matrix
-    m=mid(I);
+    m=center(I);
     r=rad(I);
 
-    % absolute value of zontope center and generators
+    % absolute value of zonotope center and generators
     Zabssum=sum(abs(obj.Z),2);
 
     % construct resulting conZonotope object

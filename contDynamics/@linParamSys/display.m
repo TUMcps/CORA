@@ -31,7 +31,14 @@ disp('-----------------------------------');
 display@contDynamics(obj);
 
 %display type
-disp('type: Linear parameter varying system');
+disp('type: Linear parametric system');
+
+% display paraemter type
+if obj.constParam
+    disp('parameter: constant'); 
+else
+    disp('parameter: time-varying');
+end
 
 %display A-Matrix
 disp('System matrix: ');
@@ -40,10 +47,6 @@ display(obj.A);
 %display B-Matrix
 disp('Input matrix: ');
 display(obj.B);
-
-%display Taylor terms
-disp('Number of Taylor terms: ');
-disp(obj.taylorTerms);
 
 disp('-----------------------------------');
 

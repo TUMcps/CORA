@@ -1,5 +1,6 @@
 function res = test_zonotope_deleteZeros
-% test_deleteZeros - unit test function of deleteZeros
+% test_zonotope_deleteZeros - unit test function of deleteZeros
+%    this encompasses checking the function nonzeroFilter
 %
 % Syntax:  
 %    res = test_zonotope_deleteZeros
@@ -18,12 +19,14 @@ function res = test_zonotope_deleteZeros
 %
 % See also: -
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      26-July-2016
-% Last update:  ---
+% Last update:  09-August-2020 (MW, enhance randomness)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% 1. Analytical Test ------------------------------------------------------
 
 % create zonotope
 Z1 = zonotope([1,2,0,4; 5 6 0 0]);
@@ -32,14 +35,19 @@ Z1 = zonotope([1,2,0,4; 5 6 0 0]);
 Z2 = deleteZeros(Z1);
 
 % obtain zonotope matrix
-Zmat = get(Z2,'Z');
+Zmat = Z2.Z;
 
 % true result
 true_mat = [1, 2, 4; 5, 6, 0];
 
 % check result
-res = all(all(Zmat == true_mat));
+res_val = all(all(Zmat == true_mat));
 
+
+
+
+% add results
+res = res_val;
 
 if res
     disp('test_deleteZeros successful');

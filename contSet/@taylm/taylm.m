@@ -2,12 +2,11 @@ classdef (InferiorClasses = {?interval}) taylm
 % taylm (Taylor model) class.
 %
 % Syntax:  
-%    object constructor:    Obj = taylm()
-%                           Obj = taylm(int)
-%                           Obj = taylm(int, max_order, names, opt_method, eps, tolerance)
-%                           Obj = taylm(func,int)
-%                           Obj = taylm(func,int,max_order, opt_method, eps, tolerance)
-%    copy constructor: Obj = otherObj
+%    Obj = taylm()
+%    Obj = taylm(int)
+%    Obj = taylm(int, max_order, names, opt_method, eps, tolerance)
+%    Obj = taylm(func,int)
+%    Obj = taylm(func,int,max_order, opt_method, eps, tolerance)
 %
 % Inputs:
 %    int - interval object that defines the ranges of the variables
@@ -61,13 +60,12 @@ classdef (InferiorClasses = {?interval}) taylm
 %       (Tool Presentation)"
 
 % Author:       Dmitry Grebenyuk, Niklas Kochdumper
-% Written:      29-March-2016
-%               18-July-2017 (DG) Multivariable polynomial pack is added
+% Written:      29-March-2016             
+% Last update:  18-July-2017 (DG) Multivariable polynomial pack is added
 %               29-July-2017 (DG, NK) The NK' code is imerged with the DG'
-%               11-October-2017(DG) Syms as an input
+%               11-October-2017 (DG) Syms as an input
 %               3-April-2018 (NK) Restructured constructor
-% Last update:  ---
-%               ---
+%               02-May-2020 (MW) add property validation 
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -75,7 +73,7 @@ classdef (InferiorClasses = {?interval}) taylm
 properties (SetAccess = private, GetAccess = public)
     % coefficients of polynomial terms. 
     % format:       column vector
-    coefficients = [];
+    coefficients (:,1) {mustBeNumeric,mustBeFinite} = [];
     
     % monomials for of poly. terms (i.e. x*(y.^2)*z -> [1;2;1])
     % format:      cell array of column vectors
@@ -92,38 +90,40 @@ properties (SetAccess = private, GetAccess = public)
     
     % stores the maximal order of a polynomial
     % format:       integer
-    max_order; 
+    max_order (1,1) {mustBeInteger} = 6; 
     
     % defines the method used to determine an interval over-approximation
     % format:       string ('int' or 'bnb')
-    opt_method;
+    opt_method (1,:) char {mustBeMember(opt_method,{'int','bnb','bnbAdv','linQuad'})} = 'int';
     
     % precision for the branch and bound optimization (opt_method = 'bnb')
     % format:       scalar (> 0)
-    eps;
+    eps (1,1) {mustBePositive} = 0.001;
     
     % coefficients smaller than this value get moved to the remainder
     % format:       scalar (> 0)
-    tolerance;      
-
+    tolerance (1,1) {mustBePositive} = 1e-8;
+    
 end
     
 methods
     % class constructor
     function obj = taylm(varargin)
         
-        
-        % default values for optional inputs
         max_order = 6;
         opt_method = 'int';
         eps = 0.001;
         tolerance = 1e-8;
         
-        
-        % no input
+        % default constructor
         if nargin==0
             
             obj.coefficients = 0;
+            
+        % copy constructor
+        elseif isa(varargin{1},'taylm')
+            
+            obj = varargin{1};
             
         % first input is an interval
         elseif isa(varargin{1},'interval')           
@@ -136,9 +136,6 @@ methods
            end
            if nargin >= 4 && ~isempty(varargin{4})
                opt_method = varargin{4};
-               if ~ischar(opt_method) || ~ismember(opt_method,{'int','bnb','bnbAdv','linQuad'})
-                  error('Wrong value for input argument "opt_method"!'); 
-               end
            end
            if nargin >= 5 && ~isempty(varargin{5})
                eps = varargin{5};
@@ -170,7 +167,7 @@ methods
                obj = repelem(obj,size(int,1),size(int,2));
                for i = 1:size(int,1)
                    for j = 1:size(int,2)
-                       obj(i,j).coefficients = [mid(int(i,j)); rad(int(i,j))];
+                       obj(i,j).coefficients = [center(int(i,j)); rad(int(i,j))];
                        obj(i,j).monomials = hashFunction([0; 1]);
                        obj(i,j).max_order = max_order;
                        obj(i,j).opt_method = opt_method;
@@ -183,7 +180,7 @@ methods
 
            else
 
-               obj.coefficients = [mid(int); rad(int)];
+               obj.coefficients = [center(int); rad(int)];
                obj.monomials = hashFunction([0; 1]);
                obj.max_order = max_order;
                obj.opt_method = opt_method;
@@ -309,6 +306,11 @@ methods
                end
             end
             
+        % convert numeric inputs to class taylm
+        elseif isnumeric(varargin{1})
+            
+            obj = taylm(interval(varargin{1}),varargin{2:end});
+            
         else
            error('Wrong syntax. Type "help taylm" for more information.');
         end    
@@ -347,6 +349,8 @@ methods
     res = atan( obj )       % overloaded 'asin()'
     res = getSyms( obj )    % returns a polynomial in a sym form
     res = trace(obj)        % trace for TM matrices
+    res = prod(obj,varargin)    % product of array elements
+    res = sum(obj,varargin)     % sum of array elements
     
     %display functions
     display(obj)

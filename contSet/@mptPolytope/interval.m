@@ -2,13 +2,13 @@ function I = interval(obj)
 % interval - encloses a mptPolytope by an interval
 %
 % Syntax:  
-%    I = intervalhull(obj)
+%    I = interval(obj)
 %
 % Inputs:
 %    obj - mptPolytope object
 %
 % Outputs:
-%   I - interval 
+%    I - interval 
 %
 % Example: 
 %    ---
@@ -64,11 +64,11 @@ for iColumn = 1:1:nColumns
 end
 
 
-%instantiate interval hull
+%instantiate interval
 try
     I = interval(leftLim,rightLim);
 catch
-    error('intervalhull generation failed');
+    error('interval generation failed');
 end
 
 
