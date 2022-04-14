@@ -42,7 +42,6 @@ options.reductionTechnique = 'girard';
 options.isHyperplaneMap = 0;
 options.enclosureEnables = 5; %choose enclosure method(s)
 options.originContained = 0;
-options.guardIntersect = 'polytope';
 %--------------------------------------------------------------------------
 
 
