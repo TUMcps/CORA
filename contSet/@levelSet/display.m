@@ -41,7 +41,16 @@ for i=1:nrVars-1
 end
 varsPrintStr = varsPrintStr + varsStr(nrVars);
 
-disp("  eq: f(" + varsPrintStr + ") " + ls.compOp + " " + string(ls.eq) + newline);
-
+if length(ls.compOp) == 1
+    disp("  eq: f(" + varsPrintStr + ") " + ls.compOp + " " + string(ls.eq) + newline);
+else
+    for i = 1:length(ls.compOp)
+        andStr = "";
+        if i ~= length(ls.compOp)
+            andStr = " & ";
+        end
+        disp("  eq_"+i+": f(" + varsPrintStr + ") " + ls.compOp(i) + " " + string(vpa(ls.eq(i),3)) + andStr + newline);
+    end
+end
 
 %------------- END OF CODE --------------

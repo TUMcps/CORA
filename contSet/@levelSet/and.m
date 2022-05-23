@@ -51,6 +51,24 @@ function res = and(obj,S)
         res = S & obj; return;
     end
 
+    if isa(S,'mptPolytope')
+        S = levelSet(S);
+    end
+    
+    % check if S is a level Set with same compOp => use specialiced algorithm
+    if isa(S,'levelSet')
+        if length(unique([obj.compOp;S.compOp])) ~= 1
+            error('Not implemented yet!');
+        else 
+            % use vars from obj (should be irrelevant which ones are used)
+            vars = obj.vars;
+            newEqs = [obj.eq;subs(S.eq,S.vars,vars)];
+            newCompOp = [obj.compOp;S.compOp];
+            res = levelSet(newEqs,vars,newCompOp);
+        end
+        return;
+    end
+    
     if ~strcmp(obj.compOp,'==')
        error('Not implemented yet!'); 
     end
