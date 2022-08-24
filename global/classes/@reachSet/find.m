@@ -57,15 +57,8 @@ function res = find(R,prop,val)
     elseif strcmp(prop,'time')
         
         if ~isa(val,'interval')
-<<<<<<< HEAD
            % val = interval(time);
 	    val = interval(val);
-
-=======
-            %val = interval(time);
-            val = interval(val);
-            
->>>>>>> 1feb085221f24651c81a4742ba968a618e1e99af
         end
         
         for i = 1:size(R,1)
