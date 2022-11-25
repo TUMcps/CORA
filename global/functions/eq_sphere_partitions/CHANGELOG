@@ -1,0 +1,1201 @@
+Recursive Zonal Equal Area (EQ) Sphere Partitioning Toolbox.
+Release 1.10 2005-06-26
+Copyright 2004-2005 Paul Leopardi for the University of New South Wales.
+CHANGELOG
+
+For licensing, see COPYING
+For references, see AUTHORS
+
+Changes between Revision 1.02 and Release 1.10 as at 2005-06-26
+===============================================================
+
+1) Renamed directories
+
+New name                  Old name
+----------------------------------
+eq_illustrations          illustrations
+eq_partitions             partitions
+eq_point_set_props        point_set_props
+eq_region_props           region_props
+eq_test                   test
+eq_utilities              utilities
+
+2) Renamed functions
+
+New name                  Old name
+----------------------------------
+eq_utilities:
+euc2sph_dist               e2s
+sph2euc_dist               s2e
+polar2cart                 s2x
+cart2polar2                x2s2
+
+Other files affected by this change are:
+./Contents.m
+
+eq_illustrations:
+project_s2_partition.m       project_s3_partition.m    show_s2_partition.m
+
+eq_partitions:
+eq_point_set.m               eq_point_set_polar.m
+
+eq_point_set_props:
+calc_packing_density.m
+
+eq_region_props/private:
+max_diam_bound_of_regions.m  max_vertex_diam_of_regions.m
+
+eq_utilities:
+Contents.m
+
+3) Moved functions
+
+eq_illustrations/private to to eq_utilities
+fatcurve.m                  haslight.m
+
+Related changes:
+eq_utilities/fatcurve.m:
+o Flesh out description and examples
+
+Other files affected by this change are:
+./Contents.m
+
+eq_utilities:
+Contents.m
+
+4) Renamed documentation files
+
+New name                  Old name
+----------------------------------
+./
+AUTHORS                   AUTHORS.txt
+CHANGELOG                 CHANGELOG.txt
+COPYING                   COPYING.txt
+INSTALL                   INSTALL.txt
+
+These files amd all M files have been updated to reflect this change.
+
+5) Changed documentation file format
+
+./README.txt
+./INSTALL.txt
+
+These files now have lines terminated by CR-LF to suit DOS and Windows Notepad.
+
+6) Distinguish between info and error messages during
+   installation and uninstallation
+
+./:
+install_eq_toolbox.m        uninstall_eq_toolbox.m
+
+private
+install.m                   uninstall.m
+
+7) Drop old x2s2 code by Jakob Bjerkemo.
+
+eq_utilities/cart2polar2.m:
+Use cart2sph
+
+./AUTHORS:
+Drop reference to x2s2,
+  2001-03-27 by Jakob Bjerkemo for School of Mathematics, UNSW.
+  since this code is no longer used.
+
+8) Optimizations
+
+eq_partitions/eq_point_set_polar.m
+Optimize running time:
+o use slice assignments
+o trade space for time by using a cache
+
+9) Fixes for installation bugs
+
+./install_eq_toolbox.m:
+o Restructure tests for existing pathdef.m file and guesses for pathdef_dir
+o Simplify tests after mkdir
+o On Windows, do not use [getenv('USERPROFILE') '\matlab'] directory
+
+private/savepathonly.m
+o Initialize cell array removed{} as size 0 rather than size 1
+o On Windows, do not remove [getenv('USERPROFILE') '\matlab'] directory
+
+./INSTALL
+Updated to reflect these fixes.
+
+10) Other bug fixes
+
+eq_partitions/eq_regions.m:
+Fix bug in assignment of dim_1_rot
+
+eq_point_set_props/point_set_energy_dist.m
+Fix nasty but obvious bug by using separate variables dist and min_dist
+
+11) Packaging uses *.zip rather than *.tar.gz
+
+./INSTALL updated to reflect this.
+
+12) New references
+
+./AUTHORS:
+Add reference to [Leo05].
+
+13) Files in private modified and relicenced with permission
+
+./AUTHORS updated to reflect this.
+
+14) New Release number 1.10
+
+Update release number in all Contents.m files, as well as
+AUTHORS  CHANGELOG  COPYING  INSTALL.txt  README.txt
+
+Changes between Revision 1.01 and Revision 1.02 as at 2005-04-24
+================================================================
+
+1) Optimizations
+
+eq_partitions/eq_regions.m:
+Optimize running time:
+ o move 'if nargout' blocks, refactor slice assignments
+ o trade space for time by using a cache
+
+eq_utilities/area_of_cap.m:
+o Use incomplete Beta function BETAINC for dim == 3,
+    (when s_cap < pi/6 or s_cap > pi*5/6) and for all dim > 3.
+o Use sin(s_cap).^2 in preference to (1-cos(s_cap))/2.
+
+eq_utilities/sradius_of_cap.m:
+o Use asin rather than acos to avoid subtraction.
+o Use symmetry to avoid loss of accuracy in the Southern hemisphere.
+o Remove check for when area is close to area of sphere.
+
+
+Changes between Release 1.00 and Revision 1.01 as at 2005-03-16
+===============================================================
+
+1) Optimizations
+
+eq_utilities/area_of_cap.m:
+Use incomplete Beta function BETAINC for dim > 8.
+
+
+Changes between first release of 2004-11-20 and Release 1.00 as at 2005-02-13
+=============================================================================
+
+The main semantic change is listed at 10.5) below, and elaborated here.
+
+Circle offset is now the default for EQ_POINT_SET_POLAR and EQ_REGIONS,
+because the original default placement of regions was arbitrary and haphazard.
+
+The main effect of this change is that the default result of partitions for
+dim > 1 has changed. This includes the default result for EQ_POINT_SET and all
+functions which call it. As a consequence, the energy of the default RZ point
+set for dim > 1 is likely to be different from the energy obtained from
+earlier versions of the software, including the version of 2004-11-20.
+
+List of changes.
+---------------
+1) Extensive help comments and updated copyright notices throughout.
+   This includes Contents.m in each user-visible directory.
+
+2) Complete restructure from a single directory to the following structure:
+
+.:
+AUTHORS.txt     CHANGELOG.txt     Contents.m              COPYING.txt
+illustrations/  info.ins          install_eq_toolbox.m    INSTALL.txt
+partitions/     point_set_props/  private/                README.txt
+region_props/   test/             uninstall_eq_toolbox.m  utilities/
+
+illustrations:
+Contents.m           illustration_options.m  private/
+project_point_set.m  project_s2_partition.m  project_s3_partition.m
+show_s2_partition.m  show_r3_point_set.m
+
+illustrations/private:
+fatcurve.m  haslight.m  show_s2_sphere.m  surf_jet.m  x2eqarea.m  x2stereo.m
+
+partitions:
+Contents.m      illustrate_eq_algorithm.m  partition_options.m   private/
+eq_caps.m       eq_point_set.m             eq_point_set_polar.m  eq_regions.m
+
+partitions/private:
+bot_cap_region.m     cap_colats.m   centres_of_regions.m  circle_offset.m
+ideal_region_list.m  num_collars.m  polar_colat.m         rot3.m
+round_to_naturals.m  s2_offset.m    sphere_region.m       top_cap_region.m
+
+point_set_props:
+calc_dist_coeff.m        calc_energy_coeff.m     calc_packing_density.m
+Contents.m               point_set_dist_coeff.m  point_set_energy_coeff.m
+point_set_energy_dist.m  point_set_min_dist.m    point_set_packing_density.m
+eq_dist_coeff.m          eq_energy_coeff.m       eq_energy_dist.m
+eq_min_dist.m            eq_packing_density.m    eq_point_set_property.m
+
+private:
+install.m  savepathonly.m  uninstall.m
+
+region_props:
+Contents.m        private/               eq_diam_bound.m
+eq_diam_coeff.m   eq_regions_property.m  eq_vertex_diam_coeff.m
+eq_vertex_diam.m
+
+region_props/private:
+expand_region_for_diam.m      max_diam_bound_of_regions.m
+max_vertex_diam_of_regions.m  pseudo_region_for_diam.m
+
+test:
+Contents.m        eq_area_error.m
+
+utilities:
+area_of_cap.m     area_of_collar.m      area_of_ideal_region.m
+area_of_sphere.m  Contents.m            e2s.m
+euclidean_dist.m  ideal_collar_angle.m  s2e.m
+s2x.m             spherical_dist.m      sradius_of_cap.m
+volume_of_ball.m  x2s2.m
+
+3) Wholesale renaming of functions
+
+Functions were renamed to make the names more consistent, more inutitive,
+more distinctive, and sometimes shorter.
+The change log before 2004-11-20 refers to functions by their old names.
+
+New name                  Old name
+----------------------------------
+illustrations:
+project_s2_partition.m    illustrate_s2_partition.m
+project_s3_partition.m    illustrate_s3_partition.m
+show_s2_partition.m       plot3_s2_partition.m
+
+partitions:
+eq_caps.m                 part_to_caps.m
+eq_point_set.m            partsphere.m
+eq_point_set_polar.m      part_to_points.m
+eq_regions.m              part_to_regions.m
+
+partitions/private:
+rot3.m                    rot.m
+
+point_set_props:
+point_set_energy_dist.m   sphere_energy_dist.m
+point_set_min_dist.m      sphere_min_dist.m
+
+region_props:
+eq_diam_bound.m           max_diam_bound.m
+eq_diam_coeff.m           vertex_diam_bound_coeff.m
+eq_vertex_diam_coeff.m    vertex_diam_coeff.m
+eq_vertex_diam.m          max_vertex_diam.m
+
+test:
+eq_area_error.m           area_error.m
+
+4) New functions, replaced functions, deleted functions
+
+The following functions are new. Many of these are mentioned in the changes
+listed below.
+
+install_eq_toolbox.m
+o Install using Toolbox Installer, with sensible defaults
+
+uninstall_eq_toolbox.m
+o Uninstall using Toolbox Installer.
+
+illustrations/illustration_options.m
+o Options for illustrations of RZ partitions
+
+illustrations/project_point_set.m
+o Use projection to illustrate a point set of S^2 or S^3
+
+illustrations/show_r3_point_set.m
+o 3D illustration of a point set
+
+illustrations/private/haslight.m
+o Check if axis handle has a light attached
+
+illustrations/private/show_s2_sphere.m
+o Illustrate the unit sphere S^2
+
+illustrations/private/surf_jet.m
+o Set up extreme color values using COLORMAP JET
+
+partitions/partition_options.m
+o Options for RZ partition
+
+partitions/private/s2_offset.m
+o Experimental offset rotation of S^2
+
+point_set_props/calc_dist_coeff.m
+o Coefficient of minimum distance
+
+point_set_props/calc_packing_density.m
+o Density of packing given by minimum distance
+
+point_set_props/point_set_dist_coeff.m
+o Coefficient of minimum distance of a point set
+
+point_set_props/point_set_energy_coeff.m
+o Coefficient in expansion of energy of a point set
+
+point_set_props/point_set_energy_dist.m
+o r^(-s) energy and minimum distance of a point set
+
+point_set_props/point_set_min_dist.m
+o Minimum distance between points of a point set 
+
+point_set_props/point_set_packing_density.m
+o  Density of packing given by min dist of a point set
+
+point_set_props/eq_dist_coeff.m
+o Coefficient of minimum distance of an RZ point set
+
+point_set_props/eq_energy_coeff.m
+o Coefficient in expansion of energy of an RZ point set
+
+point_set_props/eq_min_dist.m
+o Minimum distance between points of an RZ point set 
+
+point_set_props/eq_packing_density.m
+o  Density of packing given by minimum distance of RZ point set
+
+point_set_props/eq_point_set_property.m
+o Property of an RZ point set
+
+private/install.m
+o Install toolbox directories
+
+private/savepathonly.m
+o Save the current MATLAB path to the file pathdef.m
+
+private/uninstall.m
+o Uninstall toolbox directories
+
+region_props/eq_regions_property.m
+o Property of regions of an RZ partition
+
+region_props/eq_vertex_diam_coeff.m
+o Coefficient of maximum vertex diameter of RZ partition
+
+The following functions have been replaced:
+
+list_energy_dist.m and list_energy_dist_squares.m,
+o Replaced by point_set_props/eq_energy_dist.m
+
+list_min_dist_powers.m and list_min_dist_squares.m,
+o Replaced by point_set_props/eq_min_dist.m
+
+doc.m, help.m, readme.m
+o Replaced by AUTHORS.txt, CHANGELOG.txt, README.txt and Contents.m
+
+stereoplot3.m
+o Replaced by illustrations/project_point_set.m
+
+The following functions have been deleted:
+
+calc_dist_ratio.m
+o Out of scope.
+
+dist_matrix.m, sphere_dist_matrix.m
+o Out of scope.
+
+minus_dist.m, minus_dist_sq.m
+o No longer needed. 
+  Were used in constrained nonlinear optimization to estimate diameter. 
+
+r2s.m, s2r.m
+o Duplicates of e2s.m and s2e.m.
+
+region_is_cap.m, region_is_sphere.m
+o No longer needed. 
+  Were used to estimate diameter. 
+
+run_diam_bound_coeff_from.m,   run_vertex_diam_bound_coeff_from.m
+run_vertex_diam_bound_coeff.m, run_vertex_diam_coeff.m
+o Out of scope. 
+  Were used for batch jobs run from Linux shell scripts.
+
+5) Use of subfunctions.
+
+The following M files now contain the subfunctions as listed. 
+As a consequence, the subfunctions no longer exist as separate M files.
+
+illustrations/illustration_options.m:
+ DUPLICATE_ERROR, OPTION_ERROR, VALUE_ERROR
+
+illustrations/project_s2_partition.m:
+ PROJECT_S2_REGION, PROJECT_S2_EQ_POINT_SET
+
+illustrations/project_s3_partition.m:
+ PROJECT_S3_REGION, PROJECT_S3_EQ_POINT_SET
+
+illustrations/show_s2_partition.m:
+ SHOW_S2_REGION
+
+partitions/illustrate_eq_algorithm.m:
+ OPTION_ARGUMENTS, ILLUSTRATE_STEPS_1_2, 
+ ILLUSTRATE_STEPS_3_5, ILLUSTRATE_STEPS_6_7
+
+partitions/partition_options.m:
+ DUPLICATE_ERROR, OPTION_ERROR, VALUE_ERROR
+
+point_set_props/calc_energy_coeff.m:
+ SPHERE_INT_ENERGY
+
+point_set_props/point_set_energy_dist.m:
+ POTENTIAL
+
+region_props/private/expand_region_for_diam.m:
+ APPEND
+
+region_props/private/max_diam_bound_of_regions.m:
+ DIAM_BOUND_REGION
+
+region_props/private/max_vertex_diam_of_regions.m:
+ VERTEX_DIAM_REGION
+
+test/eq_area_error.m:
+ AREA_OF_REGION
+
+utilities/area_of_cap.m:
+ AREA_INTEGRAND_OF_CAP
+
+6) Installation functions install_eq_toolbox.m, uninstall_eq_toolbox.m,
+   which use the modified Toolbox Installer functions private/install.m and
+   private/uninstall.m.
+
+Changes to private/install.m:
+o Do not warn on IS_INSTALLED; do not save info.ins
+o Use savepath rather than path2rc with Matlab 7 or greater
+
+Changes to private/uninstall.m
+o Use rmpath only when directory name is in path.
+o Do not warn on IS_INSTALLED; do not save info.ins
+o Use savepath rather than path2rc with Matlab 7 or greater
+o Use pathsep rather than ':', use lower case if not case sensitive
+
+7) Partition options and illustration options functions.
+
+These make the user interface more consistent and easier to use.
+
+Partition options are implemented by partitions/partition_options.m and used by
+
+illustrations/project_s2_partition.m
+illustrations/project_s3_partition.m
+illustrations/show_s2_partition.m
+partitions/illustrate_eq_algorithm.m
+partitions/eq_point_set.m
+partitions/eq_point_set_polar.m
+partitions/eq_regions.m
+point_set_props/eq_energy_dist.m
+point_set_props/eq_point_set_property.m
+
+Illustration options are implemented by illustrations/illustration_options.m and
+used by
+
+illustrations/project_point_set.m
+illustrations/project_s2_partition.m
+illustrations/project_s3_partition.m
+illustrations/show_s2_partition.m
+illustrations/show_r3_point_set.m
+partitions/illustrate_eq_algorithm.m
+
+8) Consistent acceptance of argument N as an arbitrary array.
+
+This also makes the user interface more consistent and easier to use.
+
+The following functions contain loops where N is flattened into a row matrix and
+the result is reshaped to the original array size of N.
+
+point_set_props/calc_energy_coeff.m
+point_set_props/eq_energy_dist.m
+point_set_props/eq_point_set_property.m
+region_props/eq_diam_coeff.m
+region_props/eq_regions_property.m
+test/eq_area_error.m
+
+The following function uses the function EQ_POINT_SET_PROPERTY:
+
+point_set_props/eq_min_dist.m
+
+The following functions use the function EQ_REGIONS_PROPERTY:
+
+region_props/eq_diam_bound.m
+region_props/eq_vertex_diam.m
+
+As a consequence of these changes, the following functions have been replaced:
+
+list_energy_dist.m and list_energy_dist_squares.m,
+replaced by point_set_props/eq_energy_dist.m
+
+list_min_dist_powers.m and list_min_dist_squares.m,
+replaced by point_set_props/eq_min_dist.m
+
+Also, region_props/eq_vertex_diam_coeff.m has been simplified.
+
+The following functions also use flatten and reshape, but for an argument other
+than N:
+
+utilities/area_of_cap.m for argument S_CAP
+utilities/sradius_of_cap.m for argument AREA
+
+9) Checks for number of arguments.
+
+The following functions now use NARGCHK:
+
+partitions/eq_caps.m
+partitions/eq_point_set.m
+partitions/eq_point_set_polar.m
+partitions/eq_regions.m
+point_set_props/calc_dist_coeff.m
+point_set_props/calc_packing_density.m
+point_set_props/point_set_dist_coeff.m
+point_set_props/point_set_energy_coeff.m
+point_set_props/point_set_packing_density.m
+point_set_props/eq_dist_coeff.m
+point_set_props/eq_energy_coeff.m
+point_set_props/eq_energy_dist.m
+point_set_props/eq_min_dist.m
+point_set_props/eq_packing_density.m
+point_set_props/eq_point_set_property.m
+region_props/eq_diam_coeff.m
+test/eq_area_error.m
+
+The following functions now use NARGOUTCHK:
+
+partitions/eq_caps.m
+partitions/eq_regions.m
+region_props/eq_diam_coeff.m
+test/eq_area_error.m
+
+10) Changes which affect one or a few functions.
+
+10.1) illustrations/project_s2_partition.m
+Now uses normalized font sizes.
+
+10.2) illustrations/project_s2_partition.m, illustrations/project_s3_partition.m
+o Now use illustrations/illustrate_point_set.m
+o Removed unnecessary calls to PACK
+
+10.3) illustrations/show_s2_partition.m, illustrations/show_r3_point_set.m, 
+o Now use new function SURF_JET to set up extreme values for COLARMAP JET.
+  Also, SURF_JET uses HASLIGHT to determine if a light already exists,
+  and only calls CAMLIGHT if there is no existing light.
+o Now use new function SHOW_S2_SPHERE to draw the unit sphere S^2.
+  Also, SHOW_S2_SPHERE sets specular reflection of the unit sphere to 0.
+o show_s2_partition now uses PAUSE(0) to build up the illustration 
+  collar-by-collar rather than region-by-region. This is faster.  
+
+10.4) partitions/eq_caps.m
+Check for integer dim and N removed.
+
+10.5) partitions/eq_point_set_polar.m, partitions/eq_regions.m,
+o Check for integer dim and N moved to earlier in the function.
+o Circle offset is now the default.
+o Now use new function S2_OFFSET.
+
+10.6) partitions/eq_regions.m
+DIM_1_ROT is now consistently created whenever NARGOUT > 1.
+
+10.7) test/area_error.m
+Call to PART_TO_REGIONS_FOR_DIAM corrected to call EQ_REGIONS.
+
+10.8) utilities/circle_offset.m
+Details of the extra twist in CIRCLE_OFFSET have changed.
+Was MIN(4,FLOOR(N_BOT/4))/N_BOT and always applied, since the offset was optional.
+Is now 6/N_BOT and applied only if EXTRA_OFFSET is true.
+
+10.9) utilities/sradius_of_cap.m
+Handles upper end point of interval more robustly.
+If ABS(AREA-AREA_OF_SPHERE(DIM)) < EPS then S_CAP is set to pi,
+instead of calling FZERO.
+
+10.10) utilities/x2s2.m
+Now uses ATAN2.
+This makes X2S2(EQ_POINT_SET(2,N)) more consistent with EQ_POINT_SET_POLAR(2,N).
+
+Revision history before first release of 2004-11-20
+===================================================
+
+Matlab revision history
+-----------------------
+
+append.m:
+  2004-01-05
+  Started.
+
+area_error.m:
+  2004-08-18
+  Use a multidimensional array for regions
+  2004-03-23
+  Simplify by removing options.
+  2004-01-20
+  Ensure that routine works whether N is a number or range specified by a row matrix 
+.
+  2004-01-19
+  Started.
+
+area_integrand_of_cap.m:
+  2004-03-26
+  Area integrand for quadrature in area_of_cap.
+  2004-03-26
+  Started.
+
+area_of_cap.m:
+  2004-06-11
+  Fix incorrect case 5.
+  Use expressions from Maple up to dim=8
+  2004-03-23
+  Use Lobatto quadrature rather than symbolic toolbox for dim > 5.
+  Use the term "spherical radius" rather than just "angle".
+  Rename variables to match use of "spherical radius".
+  2004-01-05
+  Started.
+
+area_of_collar.m:
+  2004-01-19
+  Started.
+
+area_of_ideal_region.m:
+  2004-01-19
+  Rename area_of_region to area_of_ideal_region.
+  2004-01-05
+  Started.
+
+area_of_region.m:
+  2004-03-23
+  Use the term "colatitude" rather than just "angle".
+  Rename variables to match use of "colatitude".
+  2004-01-19
+  Started.
+
+area_of_sphere.m:
+  2004-05-24
+  Allow dim to be an array
+  2004-01-05
+  Started.
+
+bot_cap_region.m:
+  2004-01-19
+  Represent regions using two points only.
+  Represent circle as [0,2*pi] to get area right.
+  2004-01-05
+  Started.
+
+calc_dist_ratio.m:
+  2004-01-19
+  Rename area_of_region to area_of_ideal_region.
+  2004-01-05
+  Started.
+
+calc_energy_coeff.m:
+  2004-01-05
+  Started.
+
+calc_energy_dist.m:
+  2004-01-05
+  Started.
+
+Changes from early Maple version:
+1. Make s an optional parameter with default dim-1.
+2. Return minimum distance rather than distance ratio.
+3. Return two values, energy and min_dist, with min_dist optional.
+
+cap_colats.m:
+  2004-03-23
+  Rename function to cap_colats.
+  Use the term "colatitude" rather than just "angle".
+  Rename variables to match use of "colatitude".
+  2004-02-04
+  Improve variable names.
+  2004-01-19
+  Rename area_of_region to area_of_ideal_region.
+  2004-01-05
+  Started.
+
+centre_of_region.m:
+  2004-10-29
+  Started.
+
+centres_of_regions.m:
+  2004-10-29
+  Started.
+
+circle_offset.m:
+  2004-08-15
+  Bring centre points into alignment to match changes to
+  part_to_caps and part_to_points.
+  2004-01-05
+  Started.
+
+diam_bound_coeff.m:
+  2004-06-21
+  Started, based on diam_bound.
+
+diam_bound_region.m:
+  2004-07-20
+  Ensure diam_bound <= 2
+  2004-07-15
+  Remove level parameter.
+  Remove calls to region_is_boxy and corner_diam_region
+  Use pseudo_region_for_diam
+  2004-06-21
+  Started, based on diam_region.
+
+diam_coeff.m:
+  2004-11-19
+  Removed - needs solve_diam_region which is too complicated
+  2004-03-23
+  Simplify by removing options.
+  Simplify definition of diam coeff.
+  2004-01-22
+  Ensure that routine works whether N is a number or range specified by a row matrix.
+  2004-01-19
+  Rename area_of_region to area_of_ideal_region.
+  2004-01-12
+  Allow N to be an array.
+  2004-01-05
+  Started.
+
+diam_region.m:
+  2004-11-19
+  Removed - needs solve_diam_region which is too complicated
+  2004-08-18
+  Use the term 'vertex' rather than 'corner point'.
+  2004-06-28
+  Use region_is_boxy and region_is_cap
+  2004-06-21
+  Use corner_diam_region
+  2004-06-16
+  Use a number of different starting points for solve_diam_region
+  2004-03-23
+  Use Euclidean distance.
+  2004-01-19
+  Represent regions using two points only.
+  2004-01-05
+  Started.
+
+euclidean_dist.m:
+  2004-01-05
+  Started.
+
+expand_region_for_diam.m:
+  2004-08-18
+  Remove unused fuzz variable.
+  Fix help comment.
+  2004-06-27
+  Use pseudo_region_for_diam
+  2004-03-23
+  Use the term "colatitude" rather than just "angle".
+  Rename variables to match use of "colatitude".
+  2004-01-19
+  Started.
+
+ideal_collar_angle.m:
+  2004-10-19
+  Allow N to be an array
+  2004-06-02
+  Revert to definition as per revision 1.02
+  2004-04-08
+  Use factor of r2s(1) to avoid kink in value when Euclidean == 1
+  2004-04-08
+  Convert Euclidean to spherical distance only when Euclidean <= 1
+  2004-03-25
+  Convert Euclidean to spherical distance
+  2004-01-19
+  Rename area_of_region to area_of_ideal_region.
+  2004-01-05
+  Started.
+
+ideal_region_list.m:
+  2004-03-23
+  Use the term "colatitude" rather than just "angle".
+  Rename variables to match use of "colatitude".
+  2004-02-04
+  Apply some optimizations.
+  2004-01-05
+  Started.
+
+illustrate_s2_partition.m:
+  2004-10-29
+  Add default fontsize and fix other defaults
+  2004-09-22
+  Add fontsize parameter
+  2004-08-19
+  Started, based on illustrate_s3_partition.
+
+illustrate_s2_points.m:
+  2004-08-19
+  Started, based on illustrate_s3_points.
+
+illustrate_s2_region.m:
+  2004-08-19
+  Started, based on illustrate_s3_region.
+
+illustrate_s3_partition.m:
+  2004-10-29
+  Match output arguments of part_to_regions
+  2004-08-18
+  Match output arguments of part_to_regions
+  2004-08-17
+  Optionally create a movie
+  2004-08-13
+  Started.
+
+illustrate_s3_points.m:
+  2004-01-05
+  Started.
+
+illustrate_s3_region.m:
+  2004-08-13
+  Started.
+
+list_energy_dist.m:
+  2004-01-05
+  Started.
+
+Changes from early Maple version:
+1. Make s an optional parameter with default dim-1.
+2. Return minimum distance rather than distance ratio.
+3. Return two values, energy and min_dist, with min_dist optional.
+
+list_energy_dist_squares.m:
+  2004-01-05
+  Started.
+
+Changes from early Maple version:
+1. Make s an optional parameter with default dim-1.
+2. Return minimum distance rather than distance ratio.
+3. Return two values, energy and min_dist, with min_dist optional.
+
+max_diam_bound.m:
+  2004-06-21
+  based on max_diam
+  Started.
+
+max_diam_bound_of_regions.m:
+  2004-08-18
+  diam_bound_region no longer has a level parameter
+  Use a multidimensional array for regions
+  2004-06-21
+  Started, based on max_diam_of_regions.
+
+max_diam.m:
+  2004-11-19
+  Removed - needs solve_diam_region which is too complicated
+  2004-03-23
+  Simplify by removing options.
+  2004-01-05
+  Started.
+
+max_diam_of_regions.m:
+  2004-11-19
+  Removed - needs solve_diam_region which is too complicated
+  2004-08-18
+  Use a multidimensional array for regions
+  2004-03-23
+  Use the term "colatitude" rather than "latitude".
+  Rename variables to match use of "colatitude".
+  2004-01-05
+  Started.
+
+max_vertex_diam.m:
+  2004-08-18
+  Use the term 'vertex' rather than 'corner point'.
+  2004-07-26
+  Started, based on max_diam.
+
+max_vertex_diam_of_regions.m:
+  2004-08-18
+  Use a multidimensional array for regions
+  Use the term 'vertex' rather than 'vertex point'.
+  2004-07-26
+  Started, based on max_diam_of_regions.
+
+num_collars.m:
+  2004-10-19
+  Allow N, c_polar and a_ideal to be arrays
+  2004-03-23
+  Simplify by removing options.
+  Use floor(x+0.3) rather than rounding.
+  Use the term "colatitude" rather than just "angle".
+  Rename variables to match use of "colatitude".
+  2004-01-05
+  Started.
+
+partsphere.m:
+  2004-10-15
+  Correct help comments
+  2004-06-19
+  Match changes to part_to_points
+  2004-01-05
+  Started.
+
+part_to_caps.m:
+  2004-08-14
+  Make dim==1 consistent with dim>1 by 
+  returning the longitude of a sector enclosing the
+  cumulative sum of arc lengths given by summing n_regions.
+  2004-03-23
+  Simplify by removing options.
+  Use the term "colatitude" rather than just "angle".
+  Rename variables to match use of "colatitude".
+  2004-01-05
+  Started.
+
+part_to_points.m:
+  2004-08-18
+  Fix O(3) rotation.
+  2004-08-14
+  Match change in part_to_caps for dim==1
+  2004-06-19
+  Simplify by removing options
+  2004-01-08
+  (Experimental)
+  Rotate 2-spheres to prevent alignment of north poles.
+  2004-01-05
+  Started.
+
+part_to_regions.m:
+  2004-10-18
+  Remove output parameter top_n_regions
+  Make output parameter dim_1_rot consistent with offset_regions
+  2004-08-18
+  Restore output parameter top_n_regions
+  Fix O(3) rotation
+  2004-08-17
+  Use a multidimensional array for regions
+  (Experimental) Return dim_1_rot array of O(3) offset rotations for dim=3.
+  2004-08-14
+  Match change in part_to_caps for dim==1
+  2004-03-23
+  Simplify by removing options.
+  Use the term "colatitude" rather than just "angle".
+  Rename variables to match use of "colatitude".
+  2004-01-19
+  Represent regions using two points only.
+  2004-01-05
+  Started.
+
+plot3_s2_partition.m:
+  2004-09-22
+  Add fontsize parameter
+  2004-08-19
+  Started, based on illustrate_s3_partition.
+
+plot3_s2_region.m:
+  2004-08-19
+  Started, based on illustrate_s3_region.
+
+polar_colat.m:
+  2004-10-19
+  Allow N to be an array, allow N==1, N==2.
+  2004-03-23
+  Rename function to polar_colat.
+  Use the term "colatitude" rather than just "angle".
+  Rename variables to match use of "colatitude".
+  2004-01-19
+  Rename area_of_region to area_of_ideal_region.
+  2004-01-05
+  Started.
+
+potential.m:
+  2004-08-05
+  Change ln to log
+  2004-01-05
+  Started.
+
+pseudo_region_for_diam.m:
+  2004-06-27
+  Started, based on expand_region_for_diam.
+
+r2s.m:
+  2004-03-25
+  Started.
+
+region_is_cap.m:
+  2004-06-28
+  Started, based on region_is_boxy.
+
+region_is_sphere.m:
+  2004-06-29
+  Started, based on region_is_cap.
+
+round_to_naturals.m:
+  2004-01-05
+  Started.
+
+s2e.m:
+  2004-07-02
+  Change name to s2e
+  2004-01-05
+  Started.
+
+s2r.m:
+  2004-01-05
+  Started.
+
+s2x.m:
+  2004-06-19
+  Normalize over all dimensions, not just the last one
+  2004-06-03
+  Optimize for speed.
+  2004-01-05
+  Started.
+
+solve_diam_region.m:
+  2004-11-19
+  Removed - too complicated - needs constrained nonlinear optimization
+  2004-06-16
+  Parameters s1 and s2 give the starting point.
+  Return the points r1 and r2 to the caller.
+  Adjust limits. Turn off all warnings.
+  2004-06-14
+  Turn off divideByZero warning. Define tolerance.
+  Limit iterations, function evaluations, SQP iterations.
+  2004-06-14
+  Started.
+
+sphere_energy_dist.m:
+  2004-01-05
+  Started.
+
+Changes from early Maple version:
+1. Change default s from 1 to dim-1.
+2. Return minimum distance rather than distance ratio.
+3. Return two values, energy and min_dist, with min_dist optional.
+
+sphere_int_energy.m:
+  2004-01-05
+  Started.
+
+sphere_region.m:
+  2004-01-19
+  Represent regions using two points only.
+  Represent circle as [0,2*pi] to get area right.
+  2004-01-05
+  Started.
+
+spherical_dist.m:
+  2004-01-05
+  Started.
+
+sradius_of_cap.m:
+  2004-10-19
+  Allow area to be an array
+  2004-03-23
+  Use the term "spherical radius" rather than just "angle".
+  Rename variables to match use of "spherical radius".
+  2004-01-05
+  Started.
+
+stereoplot3.m:
+  2004-01-05
+  Started.
+
+top_cap_region.m:
+  2004-01-19
+  Represent regions using two points only.
+  2004-01-05
+  Started.
+
+vertex_diam_bound_coeff.m:
+  2004-08-18
+  Use the term 'vertex' rather than 'corner point'.
+  2004-07-26
+  Started, based on diam_coeff.
+
+vertex_diam_coeff.m:
+  2004-08-18
+  Use the term 'vertex' rather than 'corner point'.
+  2004-07-26
+  Started, based on diam_coeff.
+
+vertex_diam_region.m:
+  2004-08-18
+  Use the term 'vertex' rather than 'corner point'.
+  Fix help comment.
+  2004-01-05
+  Started, based on diam_region.
+
+volume_of_ball.m:
+  2004-08-19
+  Started, based on area_of_sphere.
+
+x2eqarea.m:
+  2004-08-20
+  Work correctly for all dimensions such that dim>0.
+  2004-08-13
+  Started, based on x2stereo.
+
+x2s2.m:
+  2004-03-23
+  Import from EFV program.
+  Clean up.
+  EFV$ Revision:10.8  $ 2003-10-29
+  PL Fix bug which occurred when X(1:0) == 0
+  EFV$ Revision:10.0  $ 2002-07-19
+  PL Allow points to be anywhere, avoid division by zero
+  EFV$ Revision: 8.0  $ 2001-10-10
+  Adapted by Paul Leopardi Started. 2001-10-10
+  Jakob Bjerkemo 2001-03-27
+  School of Mathematics, UNSW
+
+x2stereo.m:
+  2004-08-20
+  Match changes to x2eqarea, including new definition of dim
+  2004-01-05
+  Started.
+
+Maple revision history
+----------------------
+2003-12-11: Begin port to Matlab
+2003-10-08: Use a common maximum for all tests.
+2003-09-29: Make S^3 plotting a little more tolerant of deviations
+            from the axis.
+            Refine s2x.
+2003-09-27: Spherical distance spherical_dist, and Euclidean distance
+            euclidean_dist functions.
+            Clean up conversions s2x and s2r.
+2003-09-26: Plot energy coefficients.
+            Fix functions which list energy and energy coefficients: 
+            they had incorrect array assignments.
+            Gram determinant for S^2 points.
+2003-09-25: Use Euclidean diameters as well as spherical diameters.
+            Fix comments for partition to regions.
+            Add an option for partition to regions to include
+            "degenerate regions" for the caps and for whole spheres.
+            When obtaining maximum diameters,
+            include diameters of degenerate regions.
+            Fix today's changes to comparsion of diameter
+            coefficients for square numbers of points.
+            Fix handling of number of arguments in all
+            functions with optional arguments.
+2003-09-24: Change partition to regions to return a list of lists of
+            points, rather than a list of trees.
+            Fix calculation of diameters: try to compare
+            as many points as needed and as few as possible.
+            Reverse order of angles in polar coordinates
+            to better match conventions.
+            Further improve plotting of S^3 points.
+            This revision history.
+2003-09-23: Add options round_n_regions, round_n_collars,
+            offset_regions to all partition functions.
+2003-09-18: Fix calculation of diameters: diameter is not necessarily
+            the distance between opposite points.
+2003-09-17: Calculate diameters of regions: list_diam_coeff, max_diam,
+            diam_region.
+            Improve plotting, with optional colours.
+2003-09-16: Re-organize energy tests: test_energy_dist, list_energy,
+            calc_energy_coeff, etc.
+2003-09-16: Partition to centre points in Cartesian coordinates;
+            partsphere with min_energy option, spiral_points.
+2003-09-15: Plot S^3 using stereographic projection,
+            print_energy_heading, test_energy,  min_energy option for
+            part_to_points.
+2003-09-13: Partition to "centre" points: part_to_points,
+            uses angular centre points. More extensive comments.
+2003-09-12: Partion to regions: part_to_regions, using a tree structure.
+            Partition to "centre" points: part_to_points, using
+            circle_offset, test_sn to test energy and distance,
+2003-09-07: Partition to corner points: part_to_corners. area_of_cap
+            based on Le Gia and Sloan.
+            Extensive comments and references.
+2003-09-05: Partition to nested spherical caps: part_to_caps.
+            area_of_cap based on explicit area integrals for
+            specific dimensions.

@@ -1,0 +1,15 @@
+# This file ensures that the folder exists
+
+# Ignore everything
+*
+
+# Exept the converted model "bouncing ball"
+!bball/
+
+# But do not ignore .gitignore
+!.gitignore
+
+
+
+
+

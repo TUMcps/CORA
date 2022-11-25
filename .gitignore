@@ -1,0 +1,27 @@
+# exclude autosave files
+
+*.asv
+
+*.m~
+
+*.txt~
+
+#exclude generated files
+generated_*
+models/auxiliary/*
+
+#exclude cora2spaceex converted models
+models/CoraConverted/*
+
+/.project
+
+#exclude latex generated files
+manual/*.aux
+manual/*.bbl
+manual/*.blg
+manual/*.dvi
+manual/*.log
+manual/*.out
+manual/*.pdf
+manual/*.ps
+manual/*.toc

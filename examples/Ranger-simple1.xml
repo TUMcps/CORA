@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="Movement">
+    <param name="pos" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="vel" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="acc" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="const_acc" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="bound" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <location id="1" name="Movement" x="635.0" y="296.0" width="272.0" height="176.0">
+      <invariant>pos &lt;= bound &amp;
+pos &gt;= -bound</invariant>
+      <flow>pos' == vel &amp;
+vel' == acc &amp;
+acc' == 0 &amp;
+
+t' == 1</flow>
+    </location>
+    <transition source="1" target="1">
+      <guard>pos &gt;= bound</guard>
+      <assignment>acc := -const_acc &amp;
+pos := bound &amp;
+vel := 0</assignment>
+      <labelposition x="-50.0" y="-96.0" width="120.0" height="94.0" />
+    </transition>
+    <transition source="1" target="1">
+      <guard>pos &lt;= -bound</guard>
+      <assignment>acc := const_acc &amp;
+pos := -bound &amp;
+vel := 0</assignment>
+      <labelposition x="-55.0" y="-11.0" width="120.0" height="100.0" />
+      <middlepoint x="0.0" y="122.0" />
+    </transition>
+  </component>
+</sspaceex>
+

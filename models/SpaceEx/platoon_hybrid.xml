@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="platoon11">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x3" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x4" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x5" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x6" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x7" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x8" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x9" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="u" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="min" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="max" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <location id="1" name="elf" x="642.0" y="153.0" width="936.0" height="248.0">
+      <invariant>t &lt;= 20 &amp;
+min &lt;= u &lt;= max</invariant>
+      <flow>x1' == x2 &amp;
+x2' == -x3 + u&amp;
+x3' == 1.605*x1 + 4.868*x2 -3.5754*x3 -0.8198*x4 + 0.427*x5 - 0.045*x6 -0.1942*x7 + 0.3626*x8 - 0.0946*x9 &amp;
+x4' == x5 &amp;
+x5' == x3 - x6&amp;
+x6' == 0.8718*x1 + 3.814*x2 -0.0754*x3 + 1.1936*x4 + 3.6258*x5  -3.2396*x6 -0.595*x7+ 0.1294*x8 -0.0796*x9 &amp;
+x7' == x8 &amp;
+x8' == x6 - x9 &amp;
+x9' == 0.7132*x1 + 3.573*x2 - 0.0964*x3 + 0.8472*x4 + 3.2568*x5 - 0.0876*x6 + 1.2726*x7 + 3.072*x8 - 3.1356*x9 &amp;
+t' == 1</flow>
+    </location>
+    <location id="3" name="dreizehn" x="656.0" y="600.0" width="1046.0" height="244.0">
+      <invariant>t &lt;= 20  &amp;
+min &lt;= u &lt;= max</invariant>
+      <flow>x1' == x2 &amp;
+x2' == -x3 + u&amp;
+x3' == 1.605*x1 + 4.868*x2 -3.5754*x3 &amp;
+x4' == x5 &amp;
+x5' == x3 - x6&amp;
+x6' == 1.1936*x4 + 3.6258*x5  -3.2396*x6 &amp;
+x7' == x8 &amp;
+x8' == x6 - x9 &amp;
+x9' == 0.7132*x1 + 3.573*x2 - 0.0964*x3 + 0.8472*x4 + 3.2568*x5 - 0.0876*x6 + 1.2726*x7 + 3.072*x8 - 3.1356*x9&amp;
+t' == 1</flow>
+    </location>
+    <transition source="1" target="3">
+      <guard>t &gt;= 20</guard>
+      <assignment>t = 0</assignment>
+      <labelposition x="-99.0" y="10.0" width="64.0" height="62.0" />
+      <middlepoint x="612.0" y="371.0" />
+    </transition>
+    <transition source="3" target="1">
+      <guard>t &gt;= 20</guard>
+      <assignment>t = 0</assignment>
+      <labelposition x="-6.0" y="-9.0" width="92.0" height="72.0" />
+      <middlepoint x="685.5" y="376.0" />
+    </transition>
+  </component>
+  <component id="u_big-91">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x3" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x4" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x5" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x6" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x7" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x8" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x9" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="u" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <bind component="platoon11" as="platoon11_1">
+      <map key="x1">x1</map>
+      <map key="x2">x2</map>
+      <map key="x3">x3</map>
+      <map key="x4">x4</map>
+      <map key="x5">x5</map>
+      <map key="x6">x6</map>
+      <map key="x7">x7</map>
+      <map key="x8">x8</map>
+      <map key="x9">x9</map>
+      <map key="t">t</map>
+      <map key="u">u</map>
+      <map key="min">-9</map>
+      <map key="max">1</map>
+    </bind>
+  </component>
+  <component id="u_small-31">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x3" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x4" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x5" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x6" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x7" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x8" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x9" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="u" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <bind component="platoon11" as="platoon11_1" x="398.0" y="66.0">
+      <map key="x1">x1</map>
+      <map key="x2">x2</map>
+      <map key="x3">x3</map>
+      <map key="x4">x4</map>
+      <map key="x5">x5</map>
+      <map key="x6">x6</map>
+      <map key="x7">x7</map>
+      <map key="x8">x8</map>
+      <map key="x9">x9</map>
+      <map key="t">t</map>
+      <map key="u">u</map>
+      <map key="min">-3</map>
+      <map key="max">1</map>
+    </bind>
+  </component>
+</sspaceex>
+

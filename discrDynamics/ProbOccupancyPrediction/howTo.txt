@@ -1,0 +1,9 @@
+1. run 'intersection/start_intersectionDatabase' to obtain an intersection database. The result is a structure 'fArray'.
+
+2. run 'start_carReach' to compute the Markov chain of a traffic participant. You have to select the corresponding fArray file to make sure that the segment length of the path is consistent. The type of traffic participant is exchanged by exchanging the loaded hybrid automaton model, e.g. to load the bicycle model use '[HA,options,stateField,inputField,changeSpeed] = initBicycle(fArray.segmentLength);'. Finally save the resulting probabilistic model.
+
+2b. (optional) Instead of computing the Markov chain by simulations, one can compute it using reachability analysis by using 'carReach_reach'.
+
+2. select scenario; each scenario rechires to load a certain amount of MC models:
+
+- braking: this one already works with the new structure of the probabilistic model.
