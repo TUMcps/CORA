@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="ChaserSpacecraftTemplate">
+    <param name="x" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="y" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="vx" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="vy" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="r" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="mu" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="m_c" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="n" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="K1_11" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K1_12" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K1_13" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K1_14" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K1_21" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K1_22" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K1_23" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K1_24" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K2_11" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K2_12" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K2_13" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K2_14" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K2_21" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K2_22" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K2_23" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <param name="K2_24" type="real" local="false" d1="1" d2="1" dynamics="const"/>
+    <location id="1" name="P1" x="426.0" y="95.0" width="556.0" height="136.0">
+      <invariant>t&lt;=125&amp;x&lt;=-100</invariant>
+      <flow>
+            x'==vx &amp;
+            y'==vy &amp;
+            vx'== (n^2 + K1_11/m_c)*x + (2*n + K1_14/m_c)*vy + K1_12/m_c * y + K1_13/m_c * vx + mu/r^2 - mu/sqrt((r+x)^2-y^2)^3 * (r+x)&amp;
+            vy'== (n^2 + K1_22/m_c)*y + (K1_23/m_c -2*n)*vx + K1_21/m_c * x + K1_24/m_c * vy - mu/sqrt((r+x)^2-y^2)^3 * y &amp;
+            t'==1
+       </flow>
+    </location>
+    <location id="2" name="P2" x="440.0" y="322.0" width="712.0" height="130.0">
+      <invariant>t&lt;=125 &amp; y&gt;=-100 &amp; x+y&gt;=-141.1 &amp; x&gt;=-100 &amp; y-x&lt;=141.1 &amp; y&lt;=100 &amp; x+y&lt;=141.1 &amp; x&lt;=100 &amp; y-x&gt;=-141.1</invariant>
+      <flow>
+            x'==vx &amp;
+            y'==vy &amp;
+            vx'== (n^2 + K2_11/m_c)*x + (2*n + K2_14/m_c)*vy + K2_12/m_c * y + K2_13/m_c * vx + mu/r^2 - mu/sqrt((r+x)^2-y^2)^3 * (r+x)&amp;
+            vy'== (n^2 + K2_22/m_c)*y + (K2_23/m_c -2*n)*vx + K2_21/m_c * x + K2_24/m_c * vy - mu/sqrt((r+x)^2-y^2)^3 * y &amp;
+            t'==1
+       </flow>
+    </location>
+    <location id="3" name="Passive" x="426.0" y="95.0" width="556.0" height="136.0">
+      <invariant>x&lt;=10000 &amp; x&gt;=-10000</invariant>
+      <flow>
+            x'==vx &amp; 
+            y'==vy &amp; 
+            vx'== n^2 * x + 2*n*vy + mu/r^2 - mu/sqrt((r+x)^2-y^2)^3 * (r+x) &amp;
+            vy'== n^2*y - 2*n*vx - mu/sqrt((r+x)^2-y^2)^3 * y &amp;
+            t'==1
+      </flow>
+    </location>
+    <transition source="1" target="2">
+      <label>P1P2</label>
+      <guard>y&gt;=-100 &amp; x+y &gt;=-141.1 &amp; x&gt;=-100 &amp; y-x&lt;=141.1 &amp; y&lt;=100 &amp; x+y&lt;=141.1 &amp; x&lt;=100 &amp; y-x&gt;=-141.1 &amp; t &lt; 120</guard>
+      <labelposition x="-287.0" y="-7.0" width="624.0" height="64.0" />
+    </transition>
+    <transition source="1" target="3">
+      <label>P1Pass</label>
+      <guard>t&gt;=120</guard>
+      <labelposition x="-287.0" y="-7.0" width="624.0" height="64.0" />
+    </transition>
+    <transition source="2" target="3">
+      <label>P2Pass</label>
+      <guard>t&gt;=120</guard>
+      <labelposition x="-287.0" y="-7.0" width="624.0" height="64.0" />
+    </transition>
+  </component>
+  <component id="system">
+    <param name="x" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="y" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="vx" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="vy" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <bind component="ChaserSpacecraftTemplate" as="SpaceCraft">
+        <map key="x">x</map>
+        <map key="y">y</map>
+        <map key="vx">vx</map>
+        <map key="vy">vy</map>
+        <map key="r">42164000</map>
+        <map key="mu">3.986e14*3600</map>
+        <map key="m_c">500</map>
+        <map key="n">0.004375293492336</map>
+        <map key="K1_11">-28.8287</map>
+        <map key="K1_12">0.1005</map>
+        <map key="K1_13">-1449.9754</map>
+        <map key="K1_14">0.0046</map>
+        <map key="K1_21">-0.087</map>
+        <map key="K1_22">-33.2562</map>
+        <map key="K1_23">0.00462</map>
+        <map key="K1_24">-1451.5013</map>
+        <map key="K2_11">-288.0288</map>
+        <map key="K2_12">0.1312</map>
+        <map key="K2_13">-9614.9898</map>
+        <map key="K2_14">0</map>
+        <map key="K2_21">-0.1312</map>
+        <map key="K2_22">-288 </map>
+        <map key="K2_23">0</map>
+        <map key="K2_24">-9614.9883</map>
+    </bind>
+  </component>
+</sspaceex>

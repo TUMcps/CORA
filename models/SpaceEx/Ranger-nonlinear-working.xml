@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="RobotMovement">
+    <param name="pos_x" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="pos_y" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="vel_x" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="vel_y" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="acc_x" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="acc_y" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="yaw" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="yawVel" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="yawAcc" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="movement_blocked" type="label" local="false" />
+    <param name="set_vel" type="label" local="false" />
+    <param name="set_acc" type="label" local="false" />
+    <param name="set_yawVel" type="label" local="false" />
+    <param name="set_yawAcc" type="label" local="false" />
+    <param name="arg_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="arg_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <location id="2" name="Movement" x="672.0" y="276.0" width="358.0" height="192.0">
+      <invariant>-0.00001 &lt;= yaw &amp; yaw &lt;= 6.2832</invariant>
+      <flow>pos_x' == vel_x &amp; pos_y' == vel_y &amp;
+vel_x' == acc_x &amp; vel_y' == acc_y &amp;
+acc_x' == 0 &amp; acc_y' == 0 &amp;
+yaw' == yawVel &amp; yawVel' == yawAcc &amp; yawAcc' == 0 &amp;
+t' == 1</flow>
+    </location>
+    <transition source="2" target="2">
+      <label>movement_blocked</label>
+      <assignment>vel_x := 0 &amp; vel_y := 0 &amp;
+acc_x := 0 &amp; acc_y := 0</assignment>
+      <labelposition x="-125.0" y="3.0" width="266.0" height="70.0" />
+      <middlepoint x="12.0" y="208.0" />
+    </transition>
+    <transition source="2" target="2">
+      <label>set_vel</label>
+      <assignment>vel_x := arg_x &amp; vel_y := arg_y</assignment>
+      <labelposition x="12.0" y="-148.0" width="202.0" height="50.0" />
+      <middlepoint x="224.0" y="-1.0" />
+    </transition>
+    <transition source="2" target="2">
+      <label>set_acc</label>
+      <assignment>acc_x := arg_x &amp; acc_y := arg_y</assignment>
+      <labelposition x="23.0" y="-72.0" width="212.0" height="50.0" />
+      <middlepoint x="224.0" y="-2.0" />
+    </transition>
+    <transition source="2" target="2">
+      <label>set_yawVel</label>
+      <assignment>yawVel := arg_x</assignment>
+      <labelposition x="58.0" y="7.0" width="146.0" height="50.0" />
+      <middlepoint x="224.0" y="-1.0" />
+    </transition>
+    <transition source="2" target="2">
+      <label>set_yawAcc</label>
+      <assignment>yawAcc := arg_x</assignment>
+      <labelposition x="31.0" y="86.0" width="168.0" height="50.0" />
+      <middlepoint x="224.0" y="-1.0" />
+    </transition>
+    <transition source="2" target="2">
+      <guard>yaw &gt;= 6.2832</guard>
+      <assignment>yaw := yaw - 6.28319</assignment>
+      <labelposition x="-7.0" y="-82.0" width="156.0" height="84.0" />
+    </transition>
+    <transition source="2" target="2">
+      <guard>yaw &lt;= -0.00001</guard>
+      <assignment>yaw := yaw + 6.28319</assignment>
+      <labelposition x="-153.0" y="-83.0" width="150.0" height="86.0" />
+    </transition>
+  </component>
+  <component id="CollisionDetection">
+    <param name="obstacle_x" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="obstacle_y" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="collisionRadius" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="pos_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="pos_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="movement_blocked" type="label" local="false" />
+    <location id="3" name="OutsideCollisionRadius" x="449.0" y="188.0" width="438.0" height="68.0">
+      <invariant>(pos_x - obstacle_x)^2 + (pos_y - obstacle_y)^2 &gt;= collisionRadius^2</invariant>
+    </location>
+    <transition source="3" target="3">
+      <label>movement_blocked</label>
+      <guard>(pos_x - obstacle_x)^2 + (pos_y - obstacle_y)^2 &lt;= collisionRadius^2</guard>
+      <labelposition x="-223.0" y="-65.0" width="442.0" height="60.0" />
+    </transition>
+  </component>
+  <component id="Obstacle_InputEventMapping">
+    <param name="pos_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="pos_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="obstacle_x" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="obstacle_y" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="detectionRadius" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="resetRadius" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="obstacle" type="label" local="false" />
+    <location id="5" name="InDetectionRadius" x="858.0" y="335.0" width="544.0" height="64.0">
+      <invariant>(pos_x - obstacle_x)^2 + (pos_y - obstacle_y)^2 &lt;= (detectionRadius + resetRadius)^2</invariant>
+    </location>
+    <location id="6" name="OutsideDetectionRadius" x="267.0" y="333.0" width="446.0" height="66.0">
+      <invariant>(pos_x - obstacle_x)^2 + (pos_y - obstacle_y)^2 &gt;= detectionRadius^2</invariant>
+    </location>
+    <transition source="6" target="5">
+      <label>obstacle</label>
+      <guard>(pos_x - obstacle_x)^2 + (pos_y - obstacle_y)^2 &lt;= detectionRadius^2</guard>
+      <labelposition x="-234.0" y="-57.0" width="468.0" height="58.0" />
+      <middlepoint x="567.5" y="269.0" />
+    </transition>
+    <transition source="5" target="6">
+      <guard>(pos_x - obstacle_x)^2 + (pos_y - obstacle_y)^2 &gt;= (detectionRadius + resetRadius)^2</guard>
+      <labelposition x="-260.0" y="-5.0" width="540.0" height="54.0" />
+      <middlepoint x="559.5" y="400.0" />
+    </transition>
+  </component>
+  <component id="Move_OperationMapping">
+    <param name="set_vel" type="label" local="false" />
+    <param name="set_acc" type="label" local="false" />
+    <param name="set_yawVel" type="label" local="false" />
+    <param name="set_yawAcc" type="label" local="false" />
+    <param name="arg_x" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="arg_y" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="yaw" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="moveCall" type="label" local="false" />
+    <param name="ls" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="as" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="timer" type="real" local="true" d1="1" d2="1" dynamics="any" />
+    <location id="1" name="WaitForCall" x="328.0" y="414.0" width="118.0" height="96.0">
+      <flow>arg_x' == 0 &amp;
+arg_y' == 0 &amp;
+timer' == 1</flow>
+    </location>
+    <location id="2" name="SetLinearSpeedArgs" x="326.0" y="210.0" width="150.0" height="92.0">
+      <invariant>timer &lt;= 0</invariant>
+      <flow>arg_x' == 0 &amp;
+arg_y' == 0 &amp;
+timer' == 1</flow>
+    </location>
+    <location id="3" name="SetLinearSpeed" x="1131.0" y="206.0" width="162.0" height="114.0">
+      <invariant>timer &lt;= 0</invariant>
+      <flow>arg_x' == 0 &amp;
+arg_y' == 0 &amp;
+timer' == 1</flow>
+    </location>
+    <location id="4" name="SetAngularSpeedArgs" x="1132.0" y="610.0" width="206.0" height="110.0">
+      <invariant>timer &lt;= 0</invariant>
+      <flow>arg_x' == 0 &amp;
+arg_y' == 0 &amp;
+timer' == 1</flow>
+    </location>
+    <location id="5" name="SetAngularSpeed" x="333.0" y="615.0" width="190.0" height="102.0">
+      <invariant>timer &lt;= 0</invariant>
+      <flow>arg_x' == 0 &amp;
+arg_y' == 0 &amp;
+timer' == 1</flow>
+    </location>
+    <transition source="1" target="2">
+      <label>moveCall</label>
+      <assignment>timer := 0</assignment>
+      <labelposition x="-86.0" y="-19.0" width="74.0" height="50.0" />
+    </transition>
+    <transition source="3" target="4">
+      <label>set_vel</label>
+      <assignment>timer := 0</assignment>
+      <labelposition x="10.0" y="-38.0" width="106.0" height="50.0" />
+    </transition>
+    <transition source="4" target="5">
+      <guard>timer &gt;= 0</guard>
+      <assignment>arg_x := as &amp;
+timer := 0</assignment>
+      <labelposition x="-67.0" y="-12.0" width="120.0" height="76.0" />
+    </transition>
+    <transition source="5" target="1">
+      <label>set_yawVel</label>
+      <labelposition x="-81.0" y="-21.0" width="74.0" height="50.0" />
+    </transition>
+    <transition source="2" target="3">
+      <assignment>arg_x := ls*(-1 + 0.5*(yaw-3.14159)^2 - 0.041667*(yaw-3.14159)^4 + 0.0013889*(yaw-3.14159)^6 - 2.4801e-5*(yaw-3.14159)^8) &amp;
+arg_y := ls*(-(yaw-3.14159) + 0.16667*(yaw-3.14159)^3 - 0.0083333*(yaw-3.14159)^5 + 0.00019841*(yaw-3.14159)^7 - 2.7557e-6*(yaw-3.14159)^9) &amp;
+timer := 0</assignment>
+      <labelposition x="-482.0" y="-139.0" width="938.0" height="88.0" />
+    </transition>
+  </component>
+  <component id="Environment">
+    <param name="pos_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="pos_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="vel_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="vel_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="acc_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="acc_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yaw" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yawVel" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yawAcc" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="movement_blocked" type="label" local="false" />
+    <param name="set_vel" type="label" local="false" />
+    <param name="set_acc" type="label" local="false" />
+    <param name="set_yawVel" type="label" local="false" />
+    <param name="set_yawAcc" type="label" local="false" />
+    <param name="arg_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="arg_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="obstacle_x" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="true" />
+    <param name="obstacle_y" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="true" />
+    <param name="collisionRadius" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="true" />
+    <param name="detectionRadius" type="real" local="false" d1="1" d2="1" dynamics="const" controlled="true" />
+    <param name="obstacle" type="label" local="false" />
+    <param name="t1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <bind component="RobotMovement" as="RobotMovement" x="627.0" y="143.0">
+      <map key="pos_x">pos_x</map>
+      <map key="pos_y">pos_y</map>
+      <map key="vel_x">vel_x</map>
+      <map key="vel_y">vel_y</map>
+      <map key="acc_x">acc_x</map>
+      <map key="acc_y">acc_y</map>
+      <map key="t">t1</map>
+      <map key="movement_blocked">movement_blocked</map>
+      <map key="set_vel">set_vel</map>
+      <map key="set_acc">set_acc</map>
+      <map key="set_yawVel">set_yawVel</map>
+      <map key="set_yawAcc">set_yawAcc</map>
+      <map key="arg_x">arg_x</map>
+      <map key="arg_y">arg_y</map>
+      <map key="yaw">yaw</map>
+      <map key="yawVel">yawVel</map>
+      <map key="yawAcc">yawAcc</map>
+    </bind>
+    <bind component="CollisionDetection" as="CollisionDetection" x="768.0" y="341.0">
+      <map key="obstacle_x">obstacle_x</map>
+      <map key="obstacle_y">obstacle_y</map>
+      <map key="collisionRadius">collisionRadius</map>
+      <map key="pos_x">pos_x</map>
+      <map key="pos_y">pos_y</map>
+      <map key="movement_blocked">movement_blocked</map>
+    </bind>
+    <bind component="Obstacle_InputEventMapping" as="Obstacle_InputEventMapping" x="474.0" y="503.0">
+      <map key="obstacle_x">obstacle_x</map>
+      <map key="obstacle_y">obstacle_y</map>
+      <map key="detectionRadius">detectionRadius</map>
+      <map key="pos_x">pos_x</map>
+      <map key="pos_y">pos_y</map>
+      <map key="obstacle">obstacle</map>
+      <map key="resetRadius">0.00001</map>
+    </bind>
+  </component>
+  <component id="EnvironmentMapping">
+    <param name="pos_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="pos_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="vel_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="vel_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="acc_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="acc_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yaw" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yawVel" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yawAcc" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="movement_blocked" type="label" local="false" />
+    <param name="set_vel" type="label" local="false" />
+    <param name="set_acc" type="label" local="false" />
+    <param name="set_yawVel" type="label" local="false" />
+    <param name="set_yawAcc" type="label" local="false" />
+    <param name="arg_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="arg_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="moveCall" type="label" local="false" />
+    <param name="ls" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="as" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="obstacle" type="label" local="false" />
+    <bind component="Environment" as="Environment" x="670.0" y="188.0">
+      <map key="pos_x">pos_x</map>
+      <map key="pos_y">pos_y</map>
+      <map key="vel_x">vel_x</map>
+      <map key="vel_y">vel_y</map>
+      <map key="acc_x">acc_x</map>
+      <map key="acc_y">acc_y</map>
+      <map key="yaw">yaw</map>
+      <map key="yawVel">yawVel</map>
+      <map key="yawAcc">yawAcc</map>
+      <map key="t">t</map>
+      <map key="set_vel">set_vel</map>
+      <map key="set_acc">set_acc</map>
+      <map key="set_yawVel">set_yawVel</map>
+      <map key="set_yawAcc">set_yawAcc</map>
+      <map key="arg_x">arg_x</map>
+      <map key="arg_y">arg_y</map>
+      <map key="obstacle_x">5</map>
+      <map key="obstacle_y">5</map>
+      <map key="collisionRadius">1</map>
+      <map key="detectionRadius">3</map>
+      <map key="obstacle">obstacle</map>
+      <map key="movement_blocked">movement_blocked</map>
+      <map key="t1" />
+    </bind>
+    <bind component="Move_OperationMapping" as="Move_OperationMapping" x="412.0" y="519.0">
+      <map key="set_vel">set_vel</map>
+      <map key="set_acc">set_acc</map>
+      <map key="set_yawVel">set_yawVel</map>
+      <map key="set_yawAcc">set_yawAcc</map>
+      <map key="arg_x">arg_x</map>
+      <map key="arg_y">arg_y</map>
+      <map key="yaw">yaw</map>
+      <map key="moveCall">moveCall</map>
+      <map key="ls">ls</map>
+      <map key="as">as</map>
+    </bind>
+  </component>
+  <component id="RangerRoboChart">
+    <param name="obstacle" type="label" local="false" />
+    <param name="moveCall" type="label" local="false" />
+    <param name="ls" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="as" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="lv" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="av" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="timer" type="real" local="true" d1="1" d2="1" dynamics="any" />
+    <param name="turnTimer" type="real" local="true" d1="1" d2="1" dynamics="any" />
+    <param name="turnTime" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <location id="2" name="Moving_setArgs" x="252.0" y="99.0" width="152.0" height="110.0">
+      <invariant>timer &lt;= 0</invariant>
+      <flow>ls' == 0 &amp;
+as' == 0 &amp;
+timer' == 1 &amp;
+turnTimer' == 1</flow>
+    </location>
+    <location id="1" name="Moving_call" x="504.0" y="97.0" width="136.0" height="110.0">
+      <invariant>timer &lt;= 0</invariant>
+      <flow>ls' == 0 &amp;
+as' == 0 &amp;
+timer' == 1 &amp;
+turnTimer' == 1</flow>
+    </location>
+    <location id="3" name="Moving" x="728.0" y="99.0" width="148.0" height="114.0">
+      <flow>ls' == 0 &amp;
+as' == 0 &amp;
+timer' == 1 &amp;
+turnTimer' == 1</flow>
+    </location>
+    <location id="4" name="Turning_setArgs" x="728.0" y="307.0" width="140.0" height="110.0">
+      <invariant>timer &lt;= 0</invariant>
+      <flow>ls' == 0 &amp;
+as' == 0 &amp;
+timer' == 1 &amp;
+turnTimer' == 1</flow>
+    </location>
+    <location id="5" name="Turning_call" x="508.0" y="307.0" width="110.0" height="118.0">
+      <invariant>timer &lt;= 0</invariant>
+      <flow>ls' == 0 &amp;
+as' == 0 &amp;
+timer' == 1 &amp;
+turnTimer' == 1</flow>
+    </location>
+    <location id="6" name="Turning" x="251.0" y="307.0" width="150.0" height="108.0">
+      <invariant>timer &lt;= turnTime</invariant>
+      <flow>turnTimer' == 1 &amp;
+ls' == 0 &amp;
+as' == 0 &amp;
+timer' == 1</flow>
+    </location>
+    <transition source="2" target="1">
+      <assignment>ls := lv &amp;
+as := 0</assignment>
+      <labelposition x="-32.0" y="-30.0" width="68.0" height="88.0" />
+    </transition>
+    <transition source="1" target="3">
+      <label>moveCall</label>
+      <labelposition x="-35.0" y="9.0" width="70.0" height="54.0" />
+    </transition>
+    <transition source="3" target="4">
+      <label>obstacle</label>
+      <assignment>timer := 0</assignment>
+      <labelposition x="7.0" y="-25.0" width="76.0" height="50.0" />
+    </transition>
+    <transition source="4" target="5">
+      <guard>timer &gt;= 0</guard>
+      <assignment>ls := 0 &amp;
+as := av &amp;
+timer := 0</assignment>
+      <labelposition x="-55.0" y="-5.0" width="104.0" height="98.0" />
+    </transition>
+    <transition source="5" target="6">
+      <label>moveCall</label>
+      <guard>timer &gt;= 0</guard>
+      <assignment>timer := 0</assignment>
+      <labelposition x="-45.0" y="19.0" width="108.0" height="54.0" />
+    </transition>
+    <transition source="6" target="2">
+      <guard>timer &gt;= turnTime</guard>
+      <assignment>timer := 0</assignment>
+      <labelposition x="-22.0" y="-30.0" width="184.0" height="62.0" />
+    </transition>
+  </component>
+  <component id="RoboWorld">
+    <param name="pos_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="pos_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="vel_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="vel_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="acc_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="acc_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yaw" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yawVel" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yawAcc" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="movement_blocked" type="label" local="false" />
+    <param name="set_vel" type="label" local="false" />
+    <param name="set_acc" type="label" local="false" />
+    <param name="set_yawVel" type="label" local="false" />
+    <param name="set_yawAcc" type="label" local="false" />
+    <param name="arg_x" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="arg_y" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="moveCall" type="label" local="false" />
+    <param name="ls" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="as" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="obstacle" type="label" local="false" />
+    <bind component="EnvironmentMapping" as="EnvironmentMapping" x="662.0" y="184.0">
+      <map key="pos_x">pos_x</map>
+      <map key="pos_y">pos_y</map>
+      <map key="vel_x">vel_x</map>
+      <map key="vel_y">vel_y</map>
+      <map key="acc_x">acc_x</map>
+      <map key="acc_y">acc_y</map>
+      <map key="yaw">yaw</map>
+      <map key="yawVel">yawVel</map>
+      <map key="yawAcc">yawAcc</map>
+      <map key="t">t</map>
+      <map key="obstacle">obstacle</map>
+      <map key="moveCall">moveCall</map>
+      <map key="as">as</map>
+      <map key="ls">ls</map>
+      <map key="movement_blocked">movement_blocked</map>
+      <map key="set_vel">set_vel</map>
+      <map key="set_acc">set_acc</map>
+      <map key="set_yawVel">set_yawVel</map>
+      <map key="set_yawAcc">set_yawAcc</map>
+      <map key="arg_x">arg_x</map>
+      <map key="arg_y">arg_y</map>
+    </bind>
+    <bind component="RangerRoboChart" as="RangerRoboChart" x="391.0" y="485.0">
+      <map key="obstacle">obstacle</map>
+      <map key="moveCall">moveCall</map>
+      <map key="as">as</map>
+      <map key="lv">1</map>
+      <map key="av">1.5708</map>
+      <map key="turnTime">2</map>
+      <map key="ls">ls</map>
+    </bind>
+  </component>
+</sspaceex>
+

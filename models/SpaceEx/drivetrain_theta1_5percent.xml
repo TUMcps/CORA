@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" math="SpaceEx" version="0.2">
+  <component id="root_sys">
+    <note>Created by Hyst v1.4
+Hybrid Automaton in SpaceEx
+Converted from file: 
+Command Line arguments: -gen drivetrain "-theta 1 -init_scale 0.05" -o drivetrain_theta1_5percent.xml -tool spaceex ""</note>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x1" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x2" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x3" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x4" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x5" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x6" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x7" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x8" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x9" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="t" type="real"/>
+    <location id="1" name="negAngle">
+      <invariant>x1 &lt;= -0.03</invariant>
+      <flow>x1' == 1.0 / 12.0 * x7 - x9 &amp;
+ x2' == (0.5 * (12.0 * x4 - x7) + 0.5 * (12.0 * x3 - 12.0 * (x1 + x8)) + 0.5 * (12.0 * 5.0 - 1.0 / 0.3 * (x2 - 1.0 / 12.0 * 10000.0 * (x1 - -0.03) - 0.0 * x7)) - x2) / 0.1 &amp;
+ x3' == x4 &amp;
+ x4' == 5.0 &amp;
+ x5' == x6 &amp;
+ x6' == 1.0 / 140.0 * (100000.0 * (x8 - x5) - 5.6 * x6) &amp;
+ x7' == 1.0 / 0.3 * (x2 - 1.0 / 12.0 * 10000.0 * (x1 - -0.03) - 0.0 * x7) &amp;
+ x8' == x9 &amp;
+ x9' == 0.01 * (10000.0 * (x1 - -0.03) - 100000.0 * (x8 - x5) - 1.0 * x9) &amp;
+ t' == 1.0</flow>
+    </location>
+    <location id="2" name="deadzone">
+      <invariant>-0.03 &lt;= x1 &amp;
+ x1 &lt;= 0.03</invariant>
+      <flow>x1' == 1.0 / 12.0 * x7 - x9 &amp;
+ x2' == (0.5 * (12.0 * x4 - x7) + 0.5 * (12.0 * x3 - 12.0 * (x1 + x8)) + 0.5 * (12.0 * 5.0 - 1.0 / 0.3 * (x2 - 1.0 / 12.0 * 0.0 * (x1 - -0.03) - 0.0 * x7)) - x2) / 0.1 &amp;
+ x3' == x4 &amp;
+ x4' == 5.0 &amp;
+ x5' == x6 &amp;
+ x6' == 1.0 / 140.0 * (100000.0 * (x8 - x5) - 5.6 * x6) &amp;
+ x7' == 1.0 / 0.3 * (x2 - 1.0 / 12.0 * 0.0 * (x1 - -0.03) - 0.0 * x7) &amp;
+ x8' == x9 &amp;
+ x9' == 0.01 * (0.0 * (x1 - -0.03) - 100000.0 * (x8 - x5) - 1.0 * x9) &amp;
+ t' == 1.0</flow>
+    </location>
+    <location id="3" name="posAngle">
+      <invariant>0.03 &lt;= x1</invariant>
+      <flow>x1' == 1.0 / 12.0 * x7 - x9 &amp;
+ x2' == (0.5 * (12.0 * x4 - x7) + 0.5 * (12.0 * x3 - 12.0 * (x1 + x8)) + 0.5 * (12.0 * 5.0 - 1.0 / 0.3 * (x2 - 1.0 / 12.0 * 10000.0 * (x1 - 0.03) - 0.0 * x7)) - x2) / 0.1 &amp;
+ x3' == x4 &amp;
+ x4' == 5.0 &amp;
+ x5' == x6 &amp;
+ x6' == 1.0 / 140.0 * (100000.0 * (x8 - x5) - 5.6 * x6) &amp;
+ x7' == 1.0 / 0.3 * (x2 - 1.0 / 12.0 * 10000.0 * (x1 - 0.03) - 0.0 * x7) &amp;
+ x8' == x9 &amp;
+ x9' == 0.01 * (10000.0 * (x1 - 0.03) - 100000.0 * (x8 - x5) - 1.0 * x9) &amp;
+ t' == 1.0</flow>
+    </location>
+    <location id="4" name="negAngleInit">
+      <invariant>t &lt;= 0.2</invariant>
+      <flow>x1' == 1.0 / 12.0 * x7 - x9 &amp;
+ x2' == (0.5 * (12.0 * x4 - x7) + 0.5 * (12.0 * x3 - 12.0 * (x1 + x8)) + 0.5 * (12.0 * -5.0 - 1.0 / 0.3 * (x2 - 1.0 / 12.0 * 10000.0 * (x1 - -0.03) - 0.0 * x7)) - x2) / 0.1 &amp;
+ x3' == x4 &amp;
+ x4' == -5.0 &amp;
+ x5' == x6 &amp;
+ x6' == 1.0 / 140.0 * (100000.0 * (x8 - x5) - 5.6 * x6) &amp;
+ x7' == 1.0 / 0.3 * (x2 - 1.0 / 12.0 * 10000.0 * (x1 - -0.03) - 0.0 * x7) &amp;
+ x8' == x9 &amp;
+ x9' == 0.01 * (10000.0 * (x1 - -0.03) - 100000.0 * (x8 - x5) - 1.0 * x9) &amp;
+ t' == 1.0</flow>
+    </location>
+    <transition asap="false" bezier="false" source="4" target="1" timedriven="false">
+      <guard>t &gt;= 0.2</guard>
+      <labelposition/>
+      <middlepoint/>
+    </transition>
+    <transition asap="false" bezier="false" source="1" target="2" timedriven="false">
+      <guard>x1 &gt;= -0.03</guard>
+      <labelposition/>
+      <middlepoint/>
+    </transition>
+    <transition asap="false" bezier="false" source="2" target="3" timedriven="false">
+      <guard>x1 &gt;= 0.03</guard>
+      <labelposition/>
+      <middlepoint/>
+    </transition>
+    <transition asap="false" bezier="false" source="2" target="1" timedriven="false">
+      <guard>x1 &lt;= -0.03</guard>
+      <labelposition/>
+      <middlepoint/>
+    </transition>
+    <transition asap="false" bezier="false" source="3" target="2" timedriven="false">
+      <guard>x1 &lt;= 0.03</guard>
+      <labelposition/>
+      <middlepoint/>
+    </transition>
+  </component>
+  <component id="root_net">
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x1" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x2" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x3" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x4" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x5" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x6" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x7" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x8" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="x9" type="real"/>
+    <param controlled="true" d1="1" d2="1" dynamics="any" local="false" name="t" type="real"/>
+    <bind as="root" component="root_sys">
+      <map key="x1">x1</map>
+      <map key="x2">x2</map>
+      <map key="x3">x3</map>
+      <map key="x4">x4</map>
+      <map key="x5">x5</map>
+      <map key="x6">x6</map>
+      <map key="x7">x7</map>
+      <map key="x8">x8</map>
+      <map key="x9">x9</map>
+      <map key="t">t</map>
+    </bind>
+  </component>
+</sspaceex>
+

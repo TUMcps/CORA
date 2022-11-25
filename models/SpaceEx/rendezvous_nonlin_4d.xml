@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="ChaserSpacecraftTemplate">
+    <param name="x" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="y" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="vx" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="vy" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="r" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <param name="mu" type="real" local="false" d1="1" d2="1" dynamics="const" />
+    <location id="1" name="Passive" x="426.0" y="95.0" width="556.0" height="136.0">
+      <invariant>x&lt;=10000 &amp; x&gt;=-10000</invariant>
+      <flow>x'==vx &amp; y'==vy &amp; vx'== sqrt(mu/r^3)^2 * x + 2*sqrt(mu/r^3)*vy + mu/r^2 - mu/sqrt((r+x)^2-y^2)^3 * (r+x) &amp; vy'== sqrt(mu/r^3)^2*y - 2*sqrt(mu/r^3)*vx - mu/sqrt((r+x)^2-y^2)^3 * y</flow>
+    </location>
+  </component>
+  <component id="system">
+    <param name="x" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="y" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="vx" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="vy" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <bind component="ChaserSpacecraftTemplate" as="SpaceCraft">
+        <map key="x">x</map>
+        <map key="y">y</map>
+        <map key="vx">vx</map>
+        <map key="vy">vy</map>
+        <map key="r">42164000</map>
+        <map key="mu">3.986e14*3600</map>
+    </bind>
+  </component>
+</sspaceex>

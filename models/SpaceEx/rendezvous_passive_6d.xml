@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="ChaserSpacecraft">
+    <param name="x" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="y" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="vx" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="vy" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="ux" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="uy" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="t" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="P2P3" type="label" local="false" />
+    <param name="P2Pass" type="label" local="false" />
+    <param name="P3Pass" type="label" local="false" />
+    <location id="1" name="P2" x="426.0" y="95.0" width="556.0" height="136.0">
+      <invariant>t&lt;=125&amp;x&lt;=-100</invariant>
+      <flow>t'==1 &amp; x'==vx &amp; y'==vy &amp; vx'==-0.057599765881773*x+0.00877200894463775*vy-0.002*ux &amp; vy'==-0.00875351105536225*vx-0.002*uy &amp; ux'==28.8286776769430*vx-0.100479948259883*vy+1449.97541985328*(0.0000575894721132*x+0.00876276*vy-0.002*ux)-0.00462447231887482*(-0.00876276*vx-0.002*uy) &amp; uy'==0.0870156786852279*vx+33.2561992450513*vy-0.00462447231887482*(0.0000575894721132*x+0.00876276*vy-0.002*ux)+1451.50134643428*(-0.00876276*vx-0.002*uy)</flow>
+    </location>
+    <location id="2" name="P3" x="440.0" y="322.0" width="712.0" height="130.0">
+      <invariant>t&lt;=125&amp; y&gt;=-100 &amp; x+y&gt;=-141.1 &amp; x&gt;=-100 &amp; y-x&lt;=141.1 &amp; y&lt;=100 &amp; x+y&lt;=141.1 &amp; x&lt;=100 &amp; y-x&gt;=-141.1</invariant>
+      <flow>t'==1 &amp; x'==vx &amp; y'==vy &amp; vx'==-0.057599765881773*x+0.00877200894463775*vy-0.002*ux &amp; vy'==-0.00875351105536225*vx-0.002*uy &amp; ux'==288.028766271474*vx-0.131243039715836*vy+9614.98979543236*(0.0000575894721132*x+0.00876276*vy-0.002*ux)+0.000000341199965400404*(-0.00876276*vx-0.002*uy) &amp; uy'==0.131243040368934*vx+287.999970095943*vy+0.000000341199965400404*(0.0000575894721132*x+0.00876276*vy-0.002*ux)+9614.98829796995*(-0.00876276*vx-0.002*uy)</flow>
+    </location>
+    <location id="3" name="Passive" x="426.0" y="95.0" width="556.0" height="136.0">
+      <invariant>t&gt;=120</invariant>
+      <flow>t'==1 &amp; x'==vx &amp; y'==vy &amp; vx'==0.0000575894721132000*x+0.00876276*vy &amp; vy'==-0.00876276*vx &amp; ux'==0 &amp; uy'==0</flow>
+    </location>
+    <transition source="1" target="2">
+      <label>P2P3</label>
+      <guard>y&gt;=-100 &amp; x+y &gt;=-141.1 &amp; x&gt;=-100 &amp; y-x&lt;=141.1 &amp; y&lt;=100 &amp; x+y&lt;=141.1 &amp; x&lt;=100 &amp; y-x&gt;=-141.1</guard>
+      <labelposition x="-287.0" y="-7.0" width="624.0" height="64.0" />
+    </transition>
+    <transition source="1" target="3">
+      <label>P2Pass</label>
+      <guard>t&gt;=120</guard>
+      <labelposition x="-287.0" y="-7.0" width="624.0" height="64.0" />
+    </transition>
+    <transition source="2" target="3">
+      <label>P3Pass</label>
+      <guard>t&gt;=120</guard>
+      <labelposition x="-287.0" y="-7.0" width="624.0" height="64.0" />
+    </transition>
+  </component>
+</sspaceex>

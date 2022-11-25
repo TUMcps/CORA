@@ -1,0 +1,133 @@
+Recursive Zonal Equal Area (EQ) Sphere Partitioning Toolbox.
+Release 1.10 2005-06-26
+Copyright 2004-2005 Paul Leopardi for the University of New South Wales.
+INSTALL.txt
+
+For licensing, see COPYING.
+For references, see AUTHORS.
+For revision history, see CHANGELOG.
+
+NOTE:
+This file has lines terminated by CR-LF for use with DOS and Windows Notepad.
+On Windows, to read AUTHORS, COPYING and CHANGELOG, use another editor, such as
+Wordpad or the Matlab editor.
+
+Installation
+============
+This toolbox is organized into a number of directories. To use it effectively,
+these directories need to be on your Matlab path every time you start Matlab.
+You will therefore need to install the toolbox before using it.
+
+To do this,
+1. You need to unzip the file eqsp-1.10.zip into the directory
+   where you want the toolbox to reside. This will create the subdirectory
+   eq_sphere_partitions.
+
+   On Linux, Unix and Mac OS X, to perform the unzip, run the GNU unzip command
+       unzip eqsp-1.00.zip
+   On Mac OS X, as an alternative, you can use:
+       Stuffit Expander (free): http://www.stuffit.com/mac/expander/index.html
+   On Windows, use one of:
+       7-zip (free):            http://www.7-zip.org
+       Winzip (commercial):     http://www.winzip.com
+
+2. Run Matlab, change directory to eq_sphere_partitions and then run
+   install_eq_toolbox.
+
+The function INSTALL_EQ_TOOLBOX adds the directories of this toolbox to your
+Matlab path by changing the contents of the Matlab file pathdef.m. Here is the
+result of HELP INSTALL_EQ_TOOLBOX. 
+-------------------------------------------------------------------------------
+ INSTALL_EQ_TOOLBOX Install using Toolbox Installer, with sensible defaults
+
+ Syntax
+  install_eq_toolbox(arg);
+
+ Description
+  INSTALL_EQ_TOOLBOX uses Toolbox Installer to install this toolbox. It must
+  be run from the top level directory of this toolbox, which must contain the
+  file info.ins.
+
+  If INSTALL_EQ_TOOLBOX is called with no argument, it asks the user for
+  confirmation before taking any action.
+
+  INSTALL_EQ_TOOLBOX first checks if the file pathname.m exists on the current
+  Matlab path and can be appended to.
+  If so, it asks the user for confirmation and then simply calls the INSTALL
+  function of Toolbox Installer to update the file pathname.m.
+  If not, it tries to choose a sensible directory in which to create a new
+  pathdef.m file, and suggests this to the user before proceeding.
+
+  INSTALL_EQ_TOOLBOX DIRNAME, that is INSTALL_EQ_TOOLBOX('DIRNAME'),
+  calls INSTALL('DIRNAME'), using DIRNAME as the directory for pathdef.m.
+
+  INSTALL_EQ_TOOLBOX -, that is INSTALL_EQ_TOOLBOX('-'), calls INSTALL('-'),
+  which displays a dialog box so the user can select the directory to be used
+  for pathdef.m.
+
+ Notes
+  If it is necessary to create a new pathdef.m file, the directory which
+  INSTALL_EQ_TOOLBOX suggests to the user for this file defaults to
+  the directory which contains startup.m, if this exists.
+
+  Otherwise INSTALL_EQ_TOOLBOX suggests the following directory to the user:
+  For Unix systems including Linux and Mac: $HOME/matlab
+  For Windows systems: [matlabroot '\toolbox\local'].
+  If this directory does not exist, INSTALL_EQ_TOOLBOX tries to create it.
+
+  For Toolbox Installer 2.2 by B. Rasmus Anthin, see
+  Matlab Central File Exchange
+  http://www.mathworks.com/matlabcentral/fileexchange/
+  Home page of B. Rasmus Anthin
+  http://www.etek.chalmers.se/~e8rasmus/
+
+ Examples
+  > install_eq_toolbox
+  Info: Installer will create the file /c/leopardi/matlab/pathdef.m
+  Proceed (y/n)? y
+  Info: Installer has created the directory /c/leopardi/matlab
+  Info: Installed.
+
+  > install_eq_toolbox
+  Info: Installer will update the file /c/leopardi/matlab/pathdef.m
+  Proceed (y/n)? y
+  Info: Installed.
+
+  > install_eq_toolbox
+  Info: Installer will update the file /c/leopardi/matlab/pathdef.m
+  Info: Proceed (y/n)? n
+
+  > cd ~
+  > install_eq_toolbox
+  ??? Error using ==> install_eq_toolbox
+  Please run install_eq_toolbox from toolbox directory, eg. /c/leopardi/[...]
+
+ See also
+  UNINSTALL_EQ_TOOLBOX, PATHDEF, PATH, Toolbox Installer 2.2
+-------------------------------------------------------------------------------
+
+Uninstallation
+==============
+This toolbox also provides an uninstallation command. The function
+UNINSTALL_EQ_TOOLBOX removes the toolbox directories from the path, and saves
+the updated path to pathdef.m. Note that UNINSTALL_EQ_TOOLBOX does not undo
+everything done by INSTALL_EQ_TOOLBOX. In particular, UNINSTALL_EQ_TOOLBOX does
+not delete pathdef.m or its directory, even if these were created by
+INSTALL_EQ_TOOLBOX.
+
+For more details, see HELP UNINSTALL_EQ_TOOLBOX (in lower case).
+
+Installing other Matlab toolboxes or upgrading Matlab
+=====================================================
+Since INSTALL_EQ_TOOLBOX may create the file pathdef.m, you will need to be
+careful when installing other Matlab toolboxes or upgrading Matlab.
+In particular, you will need to ensure that your Matlab path is set correctly.
+
+If things go badly wrong and you can't fix the problem in any other way,
+try the following steps:
+
+1. Use UNINSTALL_EQ_TOOLBOX to uninstall this toolbox.
+2. If you know that INSTALL_EQ_TOOLBOX created the file pathdef.m
+   then delete this file.
+3. Install the other Matlab toolboxes or upgrade Matlab.
+4. Run INSTALL_EQ_TOOLBOX again.

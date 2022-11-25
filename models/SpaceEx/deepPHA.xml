@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="BC_Temp_states2">
+    <param name="xTs2_1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="xTs2_2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="yTs2_1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="yTs2_2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <location id="1" name="locTs2_1" x="305.0" y="90.0" width="242.0" height="104.0">
+      <invariant>xTs2_1 &gt; -10 &amp; xTs2_1 &lt; 10 &amp; xTs2_2 &gt; -15 &amp; xTs2_2 &lt; 5 &amp; yTs2_1 == xTs2_1 &amp; yTs2_2 == xTs2_2</invariant>
+      <flow>xTs2_1' = 1 &amp; xTs2_2' = -2</flow>
+    </location>
+    <location id="2" name="locTs2_2" x="306.0" y="254.0" width="246.0" height="104.0">
+      <invariant>xTs2_1 &gt; -20 &amp; xTs2_1 &lt; 10 &amp; xTs2_2 &gt; -10 &amp; xTs2_2 &lt; 15 &amp; yTs2_2 == xTs2_1 &amp; yTs2_1 == xTs2_2</invariant>
+      <flow>xTs2_1' = -2 &amp; xTs2_2' = 1</flow>
+    </location>
+    <transition source="1" target="2">
+      <label>transTs2_12</label>
+      <guard>xTs2_1 &lt; -9 &amp; xTs2_1 &gt; 9 &amp; xTs2_2 &lt; -14 &amp; xTs2_2 &gt; 4</guard>
+      <assignment>xTs_11 := 3 &amp; xTs2_2 := -2</assignment>
+      <labelposition x="137.0" y="-132.0" width="252.0" height="112.0" />
+    </transition>
+    <transition source="2" target="1">
+      <label>transTs2_21</label>
+      <guard>xTs2_1 &lt; -19 &amp; xTs2_1 &gt; 9 &amp; xTs2_2 &lt; -9 &amp; xTs2_2 &gt; 14</guard>
+      <assignment>xTs2_1 := -2 &amp; xTs2_2 := 0</assignment>
+      <labelposition x="151.0" y="28.0" width="242.0" height="112.0" />
+    </transition>
+  </component>
+  <component id="BC_Temp_states1">
+    <param name="xTs1_1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="yTs1_1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="uTs1_1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <location id="1" name="locTs1_1" x="288.0" y="137.0" width="174.0" height="110.0">
+      <invariant>xTs1_1 &gt; -15 &amp; xTs1_1 &lt; 10 &amp; yTs1_1 == xTs1_1</invariant>
+      <flow>xTs1_1' = 2 + uTs1_1</flow>
+    </location>
+    <location id="2" name="locTs1_2" x="234.0" y="380.0" width="190.0" height="114.0">
+      <invariant>xTs1_1 &gt; -5 &amp; xTs1_1 &lt; 20</invariant>
+      <flow>xTs1_1' = -1 + uTs1_1</flow>
+    </location>
+    <location id="3" name="locTs1_3" x="605.0" y="247.0" width="188.0" height="104.0">
+      <invariant>xTs1_1 &gt; -25 &amp; xTs1_1 &lt; 0</invariant>
+      <flow>xTs1_1' = 2 - uTs1_1</flow>
+    </location>
+    <transition source="1" target="2">
+      <label>transTs1_12</label>
+      <guard>xTs1_1 &gt; 9</guard>
+      <assignment>xTs1_1 := 17</assignment>
+      <labelposition x="-206.0" y="-96.0" width="120.0" height="68.0" />
+    </transition>
+    <transition source="1" target="3">
+      <label>transTs1_13</label>
+      <guard>xTs1_1 &lt; -14</guard>
+      <assignment>xTs1_1 := -7</assignment>
+      <labelposition x="-33.0" y="-155.0" width="110.0" height="66.0" />
+    </transition>
+    <transition source="2" target="1">
+      <label>transTs1_21</label>
+      <guard>xTs1_1 &gt; 19</guard>
+      <assignment>xTs1_1 := -3</assignment>
+      <labelposition x="-212.0" y="-23.0" width="124.0" height="68.0" />
+    </transition>
+    <transition source="2" target="3">
+      <label>transTs1_23</label>
+      <guard>xTs1_1 &lt; -4</guard>
+      <assignment>xTs1_1 := -24</assignment>
+      <labelposition x="-65.0" y="43.0" width="104.0" height="76.0" />
+    </transition>
+    <transition source="3" target="1">
+      <label>transTs1_31</label>
+      <guard>xTs1_1 &gt; -1</guard>
+      <assignment>xTs1_1 := -11</assignment>
+      <labelposition x="93.0" y="-119.0" width="106.0" height="74.0" />
+    </transition>
+    <transition source="3" target="2">
+      <label>transTs1_32</label>
+      <guard>xTs1_1 &lt; -24</guard>
+      <assignment>xTs1_1 := 7</assignment>
+      <labelposition x="73.0" y="9.0" width="124.0" height="74.0" />
+    </transition>
+  </component>
+  <component id="BC_Temp_states3">
+    <param name="xTs3_1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="xTs3_2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="xTs3_3" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="uTs3_1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <location id="1" name="locTs3_1" x="466.0" y="107.0" width="532.0" height="62.0">
+      <invariant>xTs3_1 &gt; 0 &amp; xTs3_1 &lt; 10 &amp; xTs3_2 &gt; 0 &amp; xTs3_2 &lt; 20 &amp; xTs3_3 &gt; 0 &amp; xTs3_3 &lt; 10</invariant>
+      <flow>xTs3_1' = -1 - uTs3_1 &amp; xTs3_2' = 2 + uTs3_1 &amp; xTs3_3' = 1 + uTs3_1</flow>
+    </location>
+    <location id="2" name="locTs3_2" x="471.0" y="444.0" width="620.0" height="76.0">
+      <invariant>xTs3_1 &gt; 0 &amp; xTs3_1 &lt; 20 &amp; xTs3_2 &gt; -10 &amp; xTs3_2 &lt; 10 &amp; xTs3_3 &gt; 0 &amp; xTs3_3 &lt; 10</invariant>
+      <flow>xTs3_1' = 2 + uTs3_1 &amp; xTs3_2' = 1 + uTs3_1 &amp; xTs3_3' = 1 + uTs3_1</flow>
+    </location>
+    <transition source="1" target="2">
+      <label>transTs3_12</label>
+      <guard>xTs3_1 &lt; 1 &amp; xTs3_1 &gt; 9 &amp; xTs3_2 &lt; 1 &amp; xTs3_2 &gt; 19 &amp; xTs3_3 &lt; 1 &amp; xTs3_3 &gt; 9</guard>
+      <assignment>xTs3_1 := 2 &amp; xTs3_2 := -8 &amp; xTs3_3 := 2</assignment>
+      <labelposition x="-457.0" y="-77.0" width="542.0" height="64.0" />
+    </transition>
+    <transition source="2" target="1">
+      <label>transTs3_21</label>
+      <guard>xTs3_1 &lt; 1 &amp; xTs3_1 &gt; 19 &amp; xTs3_2 &lt; -9 &amp; xTs3_2 &gt; 9 &amp; xTs3_3 &lt; 1 &amp; xTs3_3 &gt; 9</guard>
+      <assignment>xTs3_1 := 8 &amp; xTs3_2 := 2 &amp; xTs3_3 := 2</assignment>
+      <labelposition x="-57.0" y="18.0" width="514.0" height="72.0" />
+    </transition>
+  </component>
+  <component id="NCLevel3">
+    <param name="xNC3_5" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="xNC3_3" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="xNC3_12" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yNC3_4" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yNC3_2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yNC3_6" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <bind component="BC_Temp_states1" as="BC_Temp_states1_1" x="442.0" y="199.0" width="118.0" height="58.0">
+      <map key="xTs1_1">xNC3_5</map>
+      <map key="yTs1_1">yNC3_4</map>
+      <map key="uTs1_1">xNC3_3</map>
+    </bind>
+    <bind component="BC_Temp_states2" as="BC_Temp_states2_1" x="525.0" y="327.0" width="122.0" height="58.0">
+      <map key="xTs2_1">xNC3_3</map>
+      <map key="xTs2_2">xNC3_12</map>
+      <map key="yTs2_1">yNC3_2</map>
+      <map key="yTs2_2">yNC3_6</map>
+    </bind>
+  </component>
+  <component id="NCLevel2">
+    <param name="xNC2_9" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="xNC2_11" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="xNC2_2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="xNC2_1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="xNC2_10" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="xNC2_5" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="xNC2_3" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="xNC2_12" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yNC2_1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yNC2_5" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yNC2_4" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yNC2_2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="yNC2_6" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="uNC2_1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <bind component="BC_Temp_states2" as="BC_Temp_states2_1" x="681.0" y="253.0" width="116.0" height="60.0">
+      <map key="xTs2_1">xNC2_9</map>
+      <map key="xTs2_2">xNC2_11</map>
+      <map key="yTs2_1">yNC2_1</map>
+      <map key="yTs2_2">yNC2_5</map>
+    </bind>
+    <bind component="BC_Temp_states3" as="BC_Temp_states3_1" x="452.0" y="341.0" width="118.0" height="84.0">
+      <map key="xTs3_1">xNC2_2</map>
+      <map key="xTs3_2">xNC2_1</map>
+      <map key="xTs3_3">xNC2_10</map>
+      <map key="uTs3_1">uNC2_1</map>
+    </bind>
+    <bind component="NCLevel3" as="NCLevel3_1" x="637.0" y="446.0" width="138.0" height="76.0">
+      <map key="xNC3_5">xNC2_5</map>
+      <map key="xNC3_3">xNC2_3</map>
+      <map key="xNC3_12">xNC2_12</map>
+      <map key="yNC3_4">yNC2_4</map>
+      <map key="yNC3_2">yNC2_2</map>
+      <map key="yNC3_6">yNC2_6</map>
+    </bind>
+  </component>
+  <component id="NCLevel1">
+    <param name="x4" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x6" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x7" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x8" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x9" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x11" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x10" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x5" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x3" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x12" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="y3" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="y1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="y5" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="y4" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="y2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="y6" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="u1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <bind component="BC_Temp_states3" as="BC_Temp_states3_1" x="623.0" y="94.0" width="110.0" height="94.0">
+      <map key="xTs3_1">x4</map>
+      <map key="xTs3_2">x6</map>
+      <map key="xTs3_3">x8</map>
+      <map key="uTs3_1">u1</map>
+    </bind>
+    <bind component="BC_Temp_states1" as="BC_Temp_states1_1" x="690.0" y="219.0" width="110.0" height="50.0">
+      <map key="xTs1_1">x7</map>
+      <map key="yTs1_1">y3</map>
+      <map key="uTs1_1">x4</map>
+    </bind>
+    <bind component="NCLevel2" as="NCLevel2_1" x="751.0" y="379.0" width="134.0" height="178.0">
+      <map key="xNC2_9">x9</map>
+      <map key="xNC2_11">x11</map>
+      <map key="xNC2_2">x2</map>
+      <map key="xNC2_1">x1</map>
+      <map key="xNC2_10">x10</map>
+      <map key="xNC2_5">x5</map>
+      <map key="xNC2_3">x3</map>
+      <map key="xNC2_12">x12</map>
+      <map key="yNC2_1">y1</map>
+      <map key="yNC2_5">y5</map>
+      <map key="yNC2_4">y4</map>
+      <map key="yNC2_2">y2</map>
+      <map key="yNC2_6">y6</map>
+      <map key="uNC2_1">u1</map>
+    </bind>
+  </component>
+</sspaceex>
+
