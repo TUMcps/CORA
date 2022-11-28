@@ -1,18 +1,19 @@
 function matP = plus(summand1,summand2)
-% plus - Overloaded '+' operator for the Minkowski addition of two
-% matrix polytopes or a matrix polytope with a matrix
+% plus - Overloaded '+' operator for the Minkowski addition of two matrix
+%    polytopes or a matrix polytope with a matrix
 %
 % Syntax:  
 %    matP = plus(summand1,summand2)
 %
 % Inputs:
-%    summand1 - matrix polytope or numerical matrix
-%    summand2 - matrix polytope or numerical matrix
+%    summand1 - matPolytope object or numerical matrix
+%    summand2 - matPolytope object or numerical matrix
 %
 % Outputs:
-%    matZ - matrix zonotpe after Minkowsi addition
+%    matP - matrix polytope after Minkowski addition
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,19 +29,7 @@ function matP = plus(summand1,summand2)
 %------------- BEGIN CODE --------------
 
 %Find a matrix polytope object
-%Is summand1 a matrix polytope?
-if isa(summand1,'matPolytope')
-    %initialize matrix polytope
-    matP=summand1;
-    %initialize other summand
-    summand=summand2;
-%Is summand2 a matrix zonotope?    
-elseif isa(summand2,'matPolytope')
-    %initialize matrix polytope
-    matP=summand2;
-    %initialize other summand
-    summand=summand1;  
-end
+[matP,summand] = findClassArg(summand1,summand2,classname);
 
 %Is summand a matrix polytope?
 if isa(summand,'matPolytope')

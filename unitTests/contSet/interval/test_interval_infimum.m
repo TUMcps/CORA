@@ -24,7 +24,7 @@ function res = test_interval_infimum
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-% Defenition problem
+
 tol = 1e-9;
 res = true;
 
@@ -32,41 +32,32 @@ c = interval([-5.0, -4.0, -3, 0, 0, 5], [-2, 0.0, 2.0, 0, 5, 8]);
 
 if abs( infimum(c(1)) + 5.0 ) > tol
 	res = false;
-	disp('test_infimum failed');
 	return;
 end
 
 if abs( infimum(c(2)) + 4.0 ) > tol
 	res = false;
-	disp('test_infimum failed');
 	return;
 end
 
 if abs( infimum(c(3)) + 3.0 ) > tol
 	res = false;
-	disp('test_infimum failed');
 	return;
 end
 
 if abs( infimum(c(4)) + 0.0 ) > tol
 	res = false;
-	disp('test_infimum failed');
 	return;
 end
 
 if abs( infimum(c(5)) - 0.0 ) > tol
 	res = false;
-	disp('test_infimum failed');
 	return;
 end
 
 if abs( infimum(c(6)) - 5.0 ) > tol
 	res = false;
-	disp('test_infimum failed');
 	return;
 end
-
-disp('test_infimum successful');
-return;
 
 %------------- END OF CODE --------------

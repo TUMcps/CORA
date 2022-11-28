@@ -1,11 +1,11 @@
-function res = test_nonlinearSys_reach_06_tank_linearRemainder
-% test_nonlinearSys_reach_06_tank_linearRemainder - example of
+function res = testLongDuration_nonlinearSys_reach_06_tank_linearRemainder
+% testLongDuration_nonlinearSys_reach_06_tank_linearRemainder - example of
 %    nonlinear reachability  analysis;
 %
 % This example can be found in [1, Sec. 3.4.5] or in [2].
 %
 % Syntax:  
-%    example_nonlinearSys_reach_01_tank
+%    testLongDuration_nonlinearSys_reach_06_tank_linearRemainder
 %
 % Inputs:
 %    -
@@ -42,8 +42,6 @@ params.U = zonotope([0,0.005]);
 options.timeStep=4; %time step size for reachable set computation
 options.taylorTerms=4; %number of taylor terms for reachable sets
 options.zonotopeOrder=50; %zonotope order
-options.intermediateOrder=5;
-options.errorOrder=1;
 options.reductionInterval=1e3;
 options.maxError = ones(dim_x,1);
 
@@ -63,18 +61,10 @@ tComp1 = toc(tx1);
 disp(['computation time of reachable set with normal lagrange remainder: ',num2str(tComp1)]);
 tx2 = tic;
 options.alg = 'linRem';
+options.intermediateOrder=5;
 R = reach(tank, params, options); %remainder added to system matrices
 tComp2 = toc(tx2);
 disp(['computation time of reachable set with remainder added to system matrix: ',num2str(tComp2)]);
-
-
-% Simulation --------------------------------------------------------------
-
-simOpt.points = 60;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
-simRes = simulateRandom(tank, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -96,15 +86,14 @@ if plotting
         figure; hold on; box on;
 
         % plot reachable set (normal lagrange remainder)
-        plot(R_wo_linear,projDims,'b','Filled',true,'EdgeColor','none');
+        plot(R_wo_linear,projDims,'b');
 
         % plot reachable sets (lagrange remainder added to system matrices
         % (A,B))
-        plot(R,projDims,'r','Filled',true,'EdgeColor','none');
-
+        plot(R,projDims,'r');
 
         %plot initial set
-        plot(params.R0,projDims,'w','Filled',true,'EdgeColor','k');
+        plot(params.R0,projDims,'k','FaceColor','w');
 
 
         %plot simulation results      

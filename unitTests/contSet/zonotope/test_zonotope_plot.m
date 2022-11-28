@@ -29,7 +29,8 @@ function res = test_zonotope_plot
 
 res = true;
 
-Z = zonotope(rand(3,5));
+% instantiate zonotope
+Z = zonotope([1;-1;2],[2 -1 3; 0 1 -1; -1 4 2]);
 
 try
     % try all variations in plotting
@@ -39,6 +40,7 @@ try
     plot(Z);
     
     % two arguments: object, dimensions
+    plot(Z,1);
     plot(Z,[1,2]);
     plot(Z,[2,3]);
     
@@ -49,14 +51,9 @@ try
     plot(Z,[1,2],'LineWidth',2);
     plot(Z,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
     
-    % three arguments: object, dimensions, NVpair 'Filled'
-    plot(Z,[1,2],'Filled',true);
-    plot(Z,[1,2],'Filled',true,'LineWidth',2);
-    plot(Z,[1,2],'Filled',true,'EdgeColor','k','FaceColor',[.8 .8 .8]);
-    
     % four arguments: object, dimensions, linespec, NVpairs
-    plot(Z,[1,2],'r','Filled',true,'LineWidth',2);
-    plot(Z,[1,2],'r','Filled',true,'LineWidth',2,'EdgeColor',[.6 .6 .6]);
+    plot(Z,[1,2],'r','LineWidth',2);
+    plot(Z,[1,2],'r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
     
     % close figure
     close;
@@ -65,11 +62,4 @@ catch
     res = false;
 end
 
-if res
-    disp('test_plot successful');
-else
-    disp('test_plot failed');
-end
-
 %------------- END OF CODE --------------
-

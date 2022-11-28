@@ -5,7 +5,7 @@ function E = exponentialRemainder(intMat,maxOrder)
 %    E = exponentialRemainder(intMat,maxOrder)
 %
 % Inputs:
-%    intMat - interval matrix
+%    intMat - intervalMatrix object
 %    maxOrder - maximum order of Taylor series
 %
 % Outputs:

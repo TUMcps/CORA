@@ -1,13 +1,35 @@
-function comp = AssignTemplate( template, bind, listOfVar, listOfLab)
-
-% INPUT:
-%     template: the component template being bound
-%     map: struct specifying variable mappings
-%     listOfVar: list of Variables of the binding component
-%     listOfLab: list of Labels for the template (unused)
-% OUTPUT:
-%     comp: the component in structHA format with assigned Variables and
+function comp = AssignTemplate(template,bind,listOfVar,listOfLab)
+% AssignTemplate - Resolves variable and constant names to their original
+%                  name/constant values
+%
+% Syntax:  
+%    comp = AssignTemplate(template,bind,listOfVar,listOfLab)
+%
+% Inputs:
+%    template - the component template being bound
+%    map - struct specifying variable mappings
+%    listOfVar - list of Variables of the binding component
+%    listOfLab - list of Labels for the template (unused)
+%
+% Outputs:
+%    comp - the component in structHA format with assigned Variables and
 %           Constants
+%
+% Example: 
+%    ---
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
+
+% Author:       ???
+% Written:      ???
+% Last update:  ---
+% Last revision:---
+
+%------------- BEGIN CODE --------------
 
 comp = template;
 
@@ -47,10 +69,11 @@ for i = 1:length(map)
         end
     end
     if varIdx == 0
-        error('Error while mapping variables: key "%s" not found.',var);
+        throw(CORAerror('CORA:converterIssue',...
+            ['Error while mapping variables: key ' char(var) ' not found.']));
     end
     
-    % Test wether a numeric value is mapped
+    % Test whether a numeric value is mapped
     if ~isempty(str2num(value))
         comp.h_listOfVar(varIdx).value = value;
         % bound constant mapping is finished here
@@ -66,7 +89,8 @@ for i = 1:length(map)
         end
     end
     if valueIdx == 0
-        error('Error while mapping variables: assigned variable "%s" not found.',value);
+        throw(CORAerror('CORA:converterIssue',...
+            ['Error while mapping variables: assigned variable ' char(value) ' not found.']));
     end
     
     % store name of mapped variable
@@ -79,5 +103,4 @@ for i = 1:length(map)
     
 end
 
-end
-
+%------------- END OF CODE --------------

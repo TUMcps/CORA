@@ -1,12 +1,12 @@
-function newObj = subsref(obj, S)
+function newObj = subsref(I,S)
 % subsref - Overloads the operator that selects elements, e.g. I(1,2),
 %    where the element of the first row and second column is referred to.
 %
 % Syntax:  
-%    newObj = subsref(obj, S)
+%    newObj = subsref(I,S)
 %
 % Inputs:
-%    obj - interval object 
+%    I - interval object 
 %    S - contains information of the type and content of element selections  
 %
 % Outputs:
@@ -34,34 +34,34 @@ function newObj = subsref(obj, S)
 %check if parantheses are used to select elements
 if length(S) == 1 && strcmp(S.type,'()')
     %obtain sub-intervals from the interval object
-    newObj = obj;
+    newObj = I;
     % only one index specified
     if length(S.subs)==1
-        newObj.inf=obj.inf(S.subs{1});
-        newObj.sup=obj.sup(S.subs{1});
+        newObj.inf=I.inf(S.subs{1});
+        newObj.sup=I.sup(S.subs{1});
     %two indices specified
     elseif length(S.subs)==2
         %Select column of obj
         if strcmp(S.subs{1},':')
             column=S.subs{2};
-            newObj.inf=obj.inf(:,column);
-            newObj.sup=obj.sup(:,column);
+            newObj.inf=I.inf(:,column);
+            newObj.sup=I.sup(:,column);
         %Select row of V    
         elseif strcmp(S.subs{2},':')
             row=S.subs{1};
-            newObj.inf=obj.inf(row,:);
-            newObj.sup=obj.sup(row,:);
+            newObj.inf=I.inf(row,:);
+            newObj.sup=I.sup(row,:);
         %Select single element of V    
-        elseif isnumeric(S.subs{1}) && isnumeric(S.subs{1})
+        elseif isnumeric(S.subs{1})
             row=S.subs{1};
             column=S.subs{2};
-            newObj.inf=obj.inf(row,column);
-            newObj.sup=obj.sup(row,column);
+            newObj.inf=I.inf(row,column);
+            newObj.sup=I.sup(row,column);
         end
     end
 else
     % call build in subsref function as a default
-    newObj = builtin('subsref', obj, S);
+    newObj = builtin('subsref', I, S);
 end
 
 %------------- END OF CODE --------------

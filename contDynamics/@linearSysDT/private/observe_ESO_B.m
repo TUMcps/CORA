@@ -1,5 +1,5 @@
 function [R,tcomp] = observe_ESO_B(obj,options)
-% observe_ESO_B - computes the guaranted state estimation approach
+% observe_ESO_B - computes the guaranteed state estimation approach
 % from [1].
 %
 %

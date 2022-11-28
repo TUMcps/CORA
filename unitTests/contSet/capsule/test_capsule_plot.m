@@ -29,6 +29,7 @@ function res = test_capsule_plot
 
 res = true;
 
+% instantiate capsule
 C = capsule([1;1;2],[0;1;-0.5],0.5);
 
 try
@@ -39,6 +40,7 @@ try
     plot(C);
     
     % two arguments: object, dimensions
+    plot(C,1);
     plot(C,[1,2]);
     plot(C,[2,3]);
     
@@ -49,14 +51,9 @@ try
     plot(C,[1,2],'LineWidth',2);
     plot(C,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
     
-    % three arguments: object, dimensions, NVpair 'Filled'
-    plot(C,[1,2],'Filled',true);
-    plot(C,[1,2],'Filled',true,'LineWidth',2);
-    plot(C,[1,2],'Filled',true,'EdgeColor','k','FaceColor',[.8 .8 .8]);
-    
     % four arguments: object, dimensions, linespec, NVpairs
-    plot(C,[1,2],'r','Filled',true,'LineWidth',2);
-    plot(C,[1,2],'r','Filled',true,'LineWidth',2,'EdgeColor',[.6 .6 .6]);
+    plot(C,[1,2],'FaceColor','r','LineWidth',2);
+    plot(C,[1,2],'FaceColor','r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
     
     % close figure
     close;
@@ -65,11 +62,4 @@ catch
     res = false;
 end
 
-if res
-    disp('test_plot successful');
-else
-    disp('test_plot failed');
-end
-
 %------------- END OF CODE --------------
-

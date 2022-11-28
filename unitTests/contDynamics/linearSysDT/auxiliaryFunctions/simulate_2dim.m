@@ -28,7 +28,7 @@ function simulate_2dim
 %------------- BEGIN CODE --------------
 
 % set path
-savepath = [coraroot '/unitTests/contDynamics/linearSysDT/models'];
+savepath = [CORAROOT filesep 'unitTests' filesep 'contDynamics' filesep 'linearSysDT' filesep 'models'];
 
 %% Settings
 
@@ -60,9 +60,10 @@ params.u = zeros(2,1); %input transition
 
 options.points = 1;
 options.p_conf = 0.999; % probability that sample of normal distribution within specified set
+options.type = 'gaussian';
 
 % simulate result assuming Gaussian distributions
-simRes = simulateRandom(sys, params, options,'gaussian');
+simRes = simulateRandom(sys, params, options);
 
 %% obtain output values
 for i=1:length(simRes.t{1})

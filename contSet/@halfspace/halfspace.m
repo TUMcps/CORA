@@ -11,7 +11,7 @@ classdef halfspace < contSet
 %    obj = halfspace(c,d)
 %
 % Inputs:
-%    c - normal vector of the halfspace
+%    c - normal vector of the halfspace (n-by-1)
 %    d - distance to the origin (scalar)
 %
 % Outputs:
@@ -27,7 +27,7 @@ classdef halfspace < contSet
 % Written:      06-June-2011
 % Last update:  14-Aug-2019
 %               02-May-2020 (add property validation)
-%               19-March-2021 (MW, errConstructor)
+%               19-March-2021 (MW, error messages)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -50,7 +50,7 @@ methods
             if isa(varargin{1},'halfspace')
                 obj = varargin{1};     
             else
-                [id,msg] = errConstructor(); error(id,msg);
+                throw(CORAerror('CORA:wrongValue','first',"'halfspace' object or normal vector"));
             end
         %one input
         elseif nargin==2
@@ -60,7 +60,7 @@ methods
             obj.d = varargin{2};
         elseif nargin > 2
             % too many input arguments
-            [id,msg] = errConstructor('Too many input arguments'); error(id,msg);
+            throw(CORAerror('CORA:tooManyInputArgs',2));
         end
         
         % set parent object properties
@@ -69,7 +69,7 @@ methods
 end
 
 methods (Static = true)
-    h = generateRandom(varargin) % generates random halfspace
+    hs = generateRandom(varargin) % generates random halfspace
 end
 
 

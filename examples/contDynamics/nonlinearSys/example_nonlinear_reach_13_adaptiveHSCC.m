@@ -4,13 +4,13 @@ function res = example_nonlinear_reach_13_adaptiveHSCC
 %    reproducing results from [1]
 %
 % Syntax:  
-%    example_nonlinear_reach_14_adaptiveHSCC2
+%    res = example_nonlinear_reach_13_adaptiveHSCC
 %
 % Inputs:
 %    -
 %
 % Outputs:
-%    res - boolean
+%    res - true/false
 %
 % References:
 %    [1] M. Wetzlinger, A. Kulmburg, M. Althoff. "Adaptive Parameter Tuning
@@ -57,8 +57,6 @@ tab2(1,2) = volume(interval(endset));
 % simulation
 simOpt.points = 10;           % number of initial points
 simOpt.fracVert = 0.2;        % fraction of vertices initial set
-simOpt.fracInpVert = 0.5;     % fraction of vertices input set
-simOpt.inpChanges = 1;        % changes of input over time horizon
 
 simRes = simulateRandom(sys,params,simOpt);
 
@@ -72,8 +70,7 @@ sysxticks = {[0,5,10],[0,3,6]};
 sysyticks = {[0,3,6],[0,5,10]};
 for p=1:ceil(sys.dim/2)
     subplot(rows,cols,p); hold on; box on;
-    plot(R,projDims{p},'FaceColor',setfacegray,'EdgeColor',setfacegray,...
-        'Filled',true);
+    plot(R,projDims{p},'FaceColor',setfacegray,'EdgeColor',setfacegray);
     plot(simRes,projDims{p},'Color',setedgeblue);
     if p == 1; plot(params.R0,projDims{p},'r','LineWidth',1.5);
     else;      scatter(0.01,0.01,3,'r','filled');

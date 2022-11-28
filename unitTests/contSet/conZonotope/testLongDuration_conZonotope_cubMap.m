@@ -26,7 +26,7 @@ function res = testLongDuration_conZonotope_cubMap
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
 
 
 %% RANDOM TESTS
@@ -36,9 +36,9 @@ res = false;
 for i = 1:3
 
     % create three random zonotopes
-    cZ1 = conZonotope.generateRandom(2,[],4);
-    cZ2 = conZonotope.generateRandom(2,[],3);
-    cZ3 = conZonotope.generateRandom(2,[],3);
+    cZ1 = conZonotope.generateRandom('Dimension',2,'NrGenerators',4);
+    cZ2 = conZonotope.generateRandom('Dimension',2,'NrGenerators',3);
+    cZ3 = conZonotope.generateRandom('Dimension',2,'NrGenerators',3);
     
     % create a random tensor
     T{1,1} = rand(2) - 0.5*ones(2);
@@ -49,7 +49,7 @@ for i = 1:3
     % obtain result
     cZres = cubMap(cZ1,cZ2,cZ3,T);
 
-    % draw random points inside the zontopes 
+    % draw random points inside the zonotopes 
     N = 5;
     
     points1 = zeros(2,N);
@@ -89,14 +89,14 @@ for i = 1:3
         
        p = pointsRes(:,j);
         
-       if ~in(cZres,p)
+       if ~contains(cZres,p)
           file_name = strcat('testLongDuration_conZonotope_cubMap_1_', ...
                              datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-          file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
-          save(file_path, 'cZ1', 'cZ2', 'cZ3', 'cZres');
+          file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', file_name);
+          save(file_path, 'cZ1', 'cZ2', 'cZ3', 'T');
           
-          error('conZonotope/cubMap: random test (mixed mul.) failed!'); 
+          throw(CORAerror('CORA:testFailed'));
        end
     end
 end
@@ -107,7 +107,7 @@ end
 for i = 1:3
 
     % create random constrained zonotope
-    cZ = conZonotope.generateRandom(2,[],4);
+    cZ = conZonotope.generateRandom('Dimension',2,'NrGenerators',4);
 
     % create a random tensor
     T{1,1} = rand(2) - 0.5*ones(2);
@@ -118,7 +118,7 @@ for i = 1:3
     % obtain result
     cZres = cubMap(cZ,T);
 
-    % draw random points inside the conZontope
+    % draw random points inside the conzonotope
     N = 100;
     
     points = zeros(2,N);
@@ -147,19 +147,15 @@ for i = 1:3
         
        p = pointsRes(:,j);
         
-       if ~in(cZres,p)
+       if ~contains(cZres,p)
           file_name = strcat('testLongDuration_conZonotope_cubMap_2_', ...
                              datestr(now,'mm-dd-yyyy_HH-MM'));
-                  
-          file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
-          save(file_path, 'cZ', 'cZres')
-          
-          error('conZonotope/cubMap: random test failed!'); 
+          file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', file_name);
+          save(file_path, 'cZ', 'T')
+          throw(CORAerror('CORA:testFailed'));
        end
     end
 end
-
-res = true;
 
 end
 

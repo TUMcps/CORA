@@ -12,7 +12,8 @@ function matP = mtimes(factor1,factor2)
 % Outputs:
 %    matP - matrix polytope
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -33,43 +33,39 @@ res = true;
 Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
 A = [1 1 1];
 b = 1;
-cZono = conZonotope(Z,A,b);
+cZ = conZonotope(Z,A,b);
 
 try
     % try all variations in plotting
     figure;
     
     % one argument: object
-    plot(cZono);
+    plot(cZ);
     
     % two arguments: object, dimensions
-    plot(cZono,[1,2]);
+    plot(cZ,1);
+    plot(cZ,[1,2]);
     
     % three arguments: object, dimensions, linespec
-    plot(cZono,[1,2],'r+');
+    plot(cZ,[1,2],'r+');
     
     % three arguments: object, dimensions, NVpairs
-    plot(cZono,[1,2],'LineWidth',2);
-    plot(cZono,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
-    
-    % three arguments: object, dimensions, NVpair 'Filled'
-    plot(cZono,[1,2],'Filled',true);
-    plot(cZono,[1,2],'Filled',true,'LineWidth',2);
-    plot(cZono,[1,2],'Filled',true,'EdgeColor','k','FaceColor',[.8 .8 .8]);
+    plot(cZ,[1,2],'LineWidth',2);
+    plot(cZ,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
     
     % three arguments: object, dimensions, NVpair 'Splits'
-    plot(cZono,[1,2],'Splits',4);
-    plot(cZono,[1,2],'Splits',4,'LineWidth',2);
-    plot(cZono,[1,2],'Splits',4,'Filled',true,'EdgeColor','k','FaceColor',[.8 .8 .8]);
+    plot(cZ,[1,2],'Splits',4);
+    plot(cZ,[1,2],'Splits',4,'LineWidth',2);
+    plot(cZ,[1,2],'Splits',4,'EdgeColor','k','FaceColor',[.8 .8 .8]);
 
     % three arguments: object, dimensions, NVpair 'Template'
-    plot(cZono,[1,2],'Template',16);
-    plot(cZono,[1,2],'Template',16,'LineWidth',2);
-    plot(cZono,[1,2],'Template',16,'Filled',true,'EdgeColor','k','FaceColor',[.8 .8 .8]);
+    plot(cZ,[1,2],'Template',16);
+    plot(cZ,[1,2],'Template',16,'LineWidth',2);
+    plot(cZ,[1,2],'Template',16,'EdgeColor','k','FaceColor',[.8 .8 .8]);
     
     % four arguments: object, dimensions, linespec, NVpairs
-    plot(cZono,[1,2],'r','Filled',true,'LineWidth',2);
-    plot(cZono,[1,2],'r','Filled',true,'LineWidth',2,'EdgeColor',[.6 .6 .6]);
+    plot(cZ,[1,2],'r','LineWidth',2);
+    plot(cZ,[1,2],'r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
     
     % close figure
     close;
@@ -78,10 +74,9 @@ catch
     res = false;
 end
 
-if res
-    disp('testLongDuration_conZonotope_plot successful');
-else
-    disp('testLongDuration_conZonotope_plot failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'cZ');
 end
 
 %------------- END OF CODE --------------

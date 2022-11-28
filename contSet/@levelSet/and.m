@@ -1,12 +1,12 @@
-function res = and(obj,S)
-% and - Computes the intersection of between a levelSet and a set S with
-%       the method described in [1]
+function res = and(ls,S)
+% and - Computes the intersection of between a level set and a set S with
+%    the method described in [1]
 %
 % Syntax:  
-%    res = and(obj,S)
+%    res = and(ls,S)
 %
 % Inputs:
-%    obj - level set (class: levelSet)
+%    ls - levelSet object
 %    S - contSet object
 %
 % Outputs:
@@ -16,18 +16,14 @@ function res = and(obj,S)
 %    syms x y
 %    eq = x^2 + y^2 - 4;
 %    ls = levelSet(eq,[x;y],'==');
-%    
 %    pZ = polyZonotope([2;2],[0.5 0 0.5;0 0.5 0.5],[],eye(3));
 %
 %    res = ls & pZ;
 %
-%    figure
-%    hold on
-%    plot(pZ,[1,2],'g','Filled',true,'EdgeColor','none');
-%    xlim([-4,4]);
-%    ylim([-4,4]);
+%    figure; hold on; xlim([-4,4]); ylim([-4,4]);
+%    plot(pZ,[1,2],'FaceColor','g');
 %    plot(ls,[1,2],'b');   
-%    plot(res,[1,2],'r','Filled',true,'EdgeColor','r','LineWidth',3);
+%    plot(res,[1,2],'FaceColor','r','LineWidth',3);
 %
 % References:
 %   [1] N. Kochdumper et al. "Reachability Analysis for Hybrid Systems with 
@@ -39,59 +35,68 @@ function res = and(obj,S)
 %
 % See also: conHyperplane/and, halfspace/and
 
-% Author: Niklas Kochdumper
-% Written: 22-July-2019
-% Last update: ---
-% Last revision: ---
+% Author:       Niklas Kochdumper
+% Written:      22-July-2019
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
+    % pre-processing
+    [resFound,vars] = pre_and('levelSet',ls,S);
+    
+    % check premature exit
+    if resFound
+        % if result has been found, it is stored in the first entry of var
+        res = vars{1}; return
+    else
+        % potential re-ordering
+        ls = vars{1}; S = vars{2};
+    end
+
+
     % check input arguments
     if isa(S,'conPolyZono')
-        res = S & obj; return;
+        res = S & ls; return
     end
 
     if isa(S,'mptPolytope')
         S = levelSet(S);
     end
     
-    % check if S is a level Set with same compOp => use specialiced algorithm
+    % check if S is a level Set with same compOp => use specialized algorithm
     if isa(S,'levelSet')
-        if length(unique([obj.compOp;S.compOp])) ~= 1
-            error('Not implemented yet!');
-        else 
-            % use vars from obj (should be irrelevant which ones are used)
-            vars = obj.vars;
-            newEqs = [obj.eq;subs(S.eq,S.vars,vars)];
-            newCompOp = [obj.compOp;S.compOp];
-            res = levelSet(newEqs,vars,newCompOp);
-        end
+        % use vars from ls (should be irrelevant which ones are used)
+        vars = ls.vars;
+        newEqs = [ls.eq;subs(S.eq,S.vars,vars)];
+        newCompOp = uniteCompOp(ls.compOp,S.compOp);
+        res = levelSet(newEqs,vars,newCompOp);
         return;
     end
     
-    if ~strcmp(obj.compOp,'==')
-       error('Not implemented yet!'); 
+    if ~strcmp(ls.compOp,'==')
+        throw(CORAerror('CORA:noops',ls,S));
     end
 
     % compute interval over-approximation
-    int = interval(S);
+    I = interval(S);
     
     % tighten interval to enclose the level set
-    int = tightenDomain(obj,int);
+    I = tightenDomain(ls,I);
     
     % compute polynomial zonotope with unsolvable method
-    [res,err,var] = polyZonotopeUnsolvable(obj,int);
+    [res,err,var] = polyZonotopeUnsolvable(ls,I);
     
     % check if equation is solvable for one variable
-    if obj.solveable
+    if ls.solvable
         
         % select variable for taylor expansion
-        [var_,eq] = selectVariable(obj,int);
+        [var_,eq] = selectVariable(ls,I);
         
         if length(eq) == 1
             
             % compute polynomial zonotope with the solvable method
-            [res_,err_] = polyZonotopeSolveable(eq{1},var_,int);
+            [res_,err_] = polyZonotopeSolvable(eq{1},var_,I);
             
             % select the better over-approximation
             if err_ < err
@@ -103,39 +108,39 @@ function res = and(obj,S)
     end
     
     % use interval enclosure if it is smaller
-    if err > 2*rad(int(var))
-       res = polyZonotope(int); 
+    if err > 2*rad(I(var))
+        res = polyZonotope(I); 
     end
     
     % convert back to original set representation
     if ~isa(S,'polyZonotope')
-       contSet = class(S);
-       eval(['res = ',contSet,'(res)';]);
+        contSet = class(S);
+        eval(['res = ',contSet,'(res);']);
     end
 end
 
 
 % Auxiliary Functions -----------------------------------------------------
 
-function [res,err,var] = polyZonotopeUnsolvable(obj,int)
+function [res,err,var] = polyZonotopeUnsolvable(ls,I)
 % compute over-approximating polynomial zonotope for the case where the
 % nonlinear equation of the level set is not solvable for one variable 
 % (see Sec. 4.3 in [1])
     
     % compute matrices of taylor expansion
-    m = center(int);
-    r = rad(int);
+    m = center(I);
+    r = rad(I);
     n = length(m);
-    int_ = int - m;
+    int_ = I - m;
 
-    eq = obj.funHan(m);
-    grad = obj.der.grad(m);
-    hess = obj.der.hess(m);
+    eq = ls.funHan(m);
+    grad = ls.der.grad(m);
+    hess = ls.der.hess(m);
 
     third = cell(length(m),1);
     for k = 1:length(third)
-       han = obj.der.third{k};
-       third{k} = han(int);
+       han = ls.der.third{k};
+       third{k} = han(I);
     end
     
     % select variable for which the expansion is solved
@@ -202,27 +207,27 @@ function [res,err,var] = polyZonotopeUnsolvable(obj,int)
     res = polyZonotope(c,G,Grest,expMat);
     
     % approximation error added as uncertainty
-    err = 2*rad(rem + 0.5*quadEval(hess,int-m));
+    err = 2*rad(rem + 0.5*quadEval(hess,I-m));
 end
 
-function [res,err] = polyZonotopeSolveable(eq,var,int)
+function [res,err] = polyZonotopeSolvable(eq,var,I)
 % compute over-approximating polynomial zonotope for the case where the
 % nonlinear equation of the level set is solvable for one variable 
 % (see Sec. 4.3 in [1])
 
     % interval without selected variable
-    infi = infimum(int);
-    sup = supremum(int);
+    lb = infimum(I);
+    ub = supremum(I);
     
-    infi(var) = [];
-    sup(var) = [];
+    lb(var) = [];
+    ub(var) = [];
     
-    int_ = interval(infi,sup);
-    m_ = center(int_);
-    r_ = rad(int_);
+    I_ = interval(lb,ub);
+    m_ = center(I_);
+    r_ = rad(I_);
 
     % taylor series expansion point == center of interval
-    m = center(int);
+    m = center(I);
     n = length(m);
     
     % compute matrices of taylor expansion
@@ -232,11 +237,11 @@ function [res,err] = polyZonotopeSolveable(eq,var,int)
     third = cell(length(eq.third),1);
     for i = 1:length(third)
        funHan = eq.third{i};
-       third{i} = funHan(int);
+       third{i} = funHan(I);
     end
     
     % compute lagrange remainder
-    intTemp = int_ - m_;
+    intTemp = I_ - m_;
     rem = interval(0,0);
     
     for i = 1:length(third)
@@ -270,7 +275,6 @@ function [res,err] = polyZonotopeSolveable(eq,var,int)
     G_ = [0.5*G_,grad' * diag(r_)];
     expMat_ = [expMat_,eye(n-1)];
     
-    
     % assemble polynomial zonotope
     if var == 1
        c = [c_;m_];
@@ -298,14 +302,15 @@ function [res,err] = polyZonotopeSolveable(eq,var,int)
     
 end
 
-function [var,eq] = selectVariable(obj,int)
+function [var,eq] = selectVariable(ls,I)
 % select variable for taylor expansion
 
     % check if there is one equation with a unique solution
-    for i = 1:length(obj.solved)
-        if obj.solved{i}.contained && obj.solved{i}.solveable && length(obj.solved{i}.eq) == 1
+    for i = 1:length(ls.solved)
+        if ls.solved{i}.contained && ls.solved{i}.solvable ...
+                && length(ls.solved{i}.eq) == 1
            var = i;
-           eq = {obj.solved{i}.funHan{1}};
+           eq = {ls.solved{i}.funHan{1}};
            return;
         end
     end
@@ -314,25 +319,25 @@ function [var,eq] = selectVariable(obj,int)
     var = [];
     eq = [];
     
-    infi = infimum(int);
-    sup = supremum(int);
+    lb = infimum(I);
+    ub = supremum(I);
 
-    for i = 1:length(obj.solved)
+    for i = 1:length(ls.solved)
         
-       if obj.solved{i}.contained && obj.solved{i}.solveable
+       if ls.solved{i}.contained && ls.solved{i}.solvable
            
           eqTemp = {};
           
-          for j = 1:length(obj.solved{i}.eq)
+          for j = 1:length(ls.solved{i}.eq)
               
-              funHan = obj.solved{i}.funHan{j}.eq;
+              funHan = ls.solved{i}.funHan{j}.eq;
               
               try
-                  intTemp = funHan(int);
-                  if ~(supremum(intTemp) < infi(i) || ...
-                       infimum(intTemp) > sup(i))
+                  intTemp = funHan(I);
+                  if ~(supremum(intTemp) < lb(i) || ...
+                       infimum(intTemp) > ub(i))
 
-                        eqTemp{end+1} = obj.solved{i}.funHan{j};
+                        eqTemp{end+1} = ls.solved{i}.funHan{j};
                   end
               end
           end
@@ -350,18 +355,37 @@ function [var,eq] = selectVariable(obj,int)
     end
 end
 
-function res = quadEval(Q,int)
+function res = quadEval(Q,I)
 % tight evaluation of a quadratic term using interval arithmetic
 
     res = interval(0,0);
         
-    for k = 1:length(int)
+    for k = 1:length(I)
         temp = interval(0,0);
-        for l = k+1:length(int)
-            temp = temp + (Q(k,l) + Q(l,k)) * int(l);
+        for l = k+1:length(I)
+            temp = temp + (Q(k,l) + Q(l,k)) * I(l);
         end
-        res = res + Q(k,k) * int(k)^2 + temp * int(k);
+        res = res + Q(k,k) * I(k)^2 + temp * I(k);
     end
+end
+
+function compOp = uniteCompOp(compOp1,compOp2)
+
+% make all cells and vertical
+if iscell(compOp1) && size(compOp1,1) > 1
+    compOp1 = compOp1';
+else
+    compOp1 = {compOp1};
+end
+if iscell(compOp2) && size(compOp2,1) > 1
+    compOp2 = compOp2';
+else
+    compOp2 = {compOp2};
+end
+
+% concatenate
+compOp = [compOp1;compOp2];
+
 end
 
 %------------- END OF CODE --------------

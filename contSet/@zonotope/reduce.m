@@ -1,13 +1,13 @@
-function Zred = reduce(Z,option,varargin)
+function [Z,varargout] = reduce(Z,method,varargin)
 % reduce - reduces the order of a zonotope, the resulting zonotope is an
 %    over-approximation of the original zonotope
 %
 % Syntax:  
-%    Zred = reduce(Z,option,order)
+%    Z = reduce(Z,method,order)
 %
 % Inputs:
 %    Z - zonotope object
-%    option - string specifying the reduction method:
+%    method - string specifying the reduction method:
 %                   - 'adaptive'        Thm. 3.2. in [6]
 %                   - 'cluster'         Sec. III.B in [3]
 %                   - 'combastel'       Sec. 3.2 in [4]
@@ -19,19 +19,27 @@ function Zred = reduce(Z,option,varargin)
 %                   - 'pca'             Sec. III.A in [3]
 %                   - 'scott'           Appendix of [5]
 %                   - 'redistribute'
+%                   - 'valero'          
 %    order - order of reduced zonotope
+%    filterLength - ???
+%    options - ???
+%    alg - ???
 %
 % Outputs:
-%    Zred - reduced zonotope (over-approximation)
+%    Z - zonotope object
+%    dHerror - (optional, only 'adaptive') over-approximation of the
+%              Hausdorff distance between the original and reduced zonotope
+%    gredIdx - index of reduced generators
 %
 % Example: 
-%    Z=zonotope(rand(2,10));
+%    Z = zonotope([1;-1],[2 3 1 -1 -2 1 -4 3 0; 2 3 -2 1 -3 2 1 0 2]);
+%    Zred1 = reduce(Z,'girard',2);
+%    Zred2 = reduce(Z,'combastel',2);
+%
 %    figure; hold on;
 %    plot(Z,[1,2],'g');
-%    Zred=reduce(Z,'girard',2);
-%    plot(Zred,[1,2],'r');
-%    Zred=reduce(Z,'combastel',2);
-%    plot(Zred,[1,2],'b');
+%    plot(Zred1,[1,2],'r');
+%    plot(Zred2,[1,2],'b');
 %
 % References:
 %    [1] M. Althoff. "Reachability analysis and its application to the 
@@ -46,6 +54,8 @@ function Zred = reduce(Z,option,varargin)
 %        estimation and fault detection", Automatica 2016
 %    [6] M. Wetzlinger et al. "Adaptive parameter tuning for reachability
 %        analysis of nonlinear systems", HSCC 2021.
+%    [7] C.E. Valero et al. "On minimal volume zonotope order reduction",
+%        Automatica 2021 (in revision)
 %
 % Other m-files required: none
 % Subfunctions: see below
@@ -77,73 +87,87 @@ elseif nargin==4
 elseif nargin==5
     order=varargin{1};
     filterLength=varargin{2};
-    method = varargin{3};
+    option = varargin{3};
 %6 inputs
 elseif nargin==6
     order=varargin{1};
     filterLength=varargin{2};
-    method = varargin{3};
+    option = varargin{3};
     alg = varargin{4};
 end
 
 % remove substring necessary for special reduction for polyZonotopes (not
 % needed here
-if startsWith(option,'approxdep_')
-    option = erase(option,'approxdep_');
+if startsWith(method,'approxdep_')
+    method = erase(method,'approxdep_');
 end
 
-%option='girard'
-if strcmp(option,'girard')
-    Zred=reduceGirard(Z,order);
-%option='adaptive'
-elseif strcmp(option,'adaptive')
-    % note: var 'order' is not an order here!
-    Zred=reduceAdaptive(Z,order);
-%option='combastel'
-elseif strcmp(option,'combastel')
-    Zred=reduceCombastel(Z,order);
-%option='PCA'
-elseif strcmp(option,'pca')
-    Zred = reducePCA(Z,order);
-%option='methA'
-elseif strcmp(option,'methA')
-    Zred=reduceMethA(Z,order);
-%option='methB'
-elseif strcmp(option,'methB')
-    Zred=reduceMethB(Z,order,filterLength); 
-%option='methC'
-elseif strcmp(option,'methC')
-    Zred=reduceMethC(Z,order,filterLength); 
-%option='methE'
-elseif strcmp(option,'methE')
-    Zred=reduceMethE(Z,order);  
-%option='methF'
-elseif strcmp(option,'methF')
-    Zred=reduceMethF(Z);   
-%option='redistribute'
-elseif strcmp(option,'redistribute')
-    Zred=reduceRedistribute(Z,order);   
-% option='cluster'
-elseif strcmp(option,'cluster')
-    Zred=reduceCluster(Z,order, method);
-% option='scott'
-elseif strcmp(option,'scott')
-    Zred=reduceScott(Z,order);
-% % option='KclusterAllDim', order must be 1
-% elseif strcmp(option,'KclusterAllDim')
-%     Zred=reduceKclusterAllDim(Z,order);
-% % option='iter'
-% elseif strcmp(option,'clusterIter')
-%     Zred=reduceClusterIter(Z,order); 
-% option='constOpt'
-elseif strcmp(option,'constOpt')
-    method = 'svd';
-    alg = 'interior-point';
-    [Zred]=reduceConstOpt(Z,order, method, alg);  
+% select option
+if strcmp(method,'girard')
+    Z=reduceGirard(Z,order);
 
-%wrong argument
+%option='idx'
+elseif strcmp(method,'idx')
+    % note: var 'order' is not an order here
+    Z = reduceIdx(Z,order);
+
+elseif strcmp(method,'adaptive')
+    % note: var 'order' is not an order here!
+    [Z,dHerror,gredIdx] = reduceAdaptive(Z,order);
+    % additional output arguments
+    varargout{1} = dHerror;
+    varargout{2} = gredIdx;
+
+elseif strcmp(method,'combastel')
+    Z=reduceCombastel(Z,order);
+
+elseif strcmp(method,'pca')
+    Z = reducePCA(Z,order);
+
+elseif strcmp(method,'methA')
+    Z=reduceMethA(Z,order);
+
+elseif strcmp(method,'methB')
+    Z=reduceMethB(Z,order,filterLength); 
+
+elseif strcmp(method,'methC')
+    Z=reduceMethC(Z,order,filterLength);
+
+elseif strcmp(method,'methE')
+    Z=reduceMethE(Z,order);  
+
+elseif strcmp(method,'methF')
+    Z=reduceMethF(Z);   
+
+elseif strcmp(method,'redistribute')
+    Z=reduceRedistribute(Z,order);   
+
+elseif strcmp(method,'cluster')
+    Z=reduceCluster(Z,order, option);
+
+elseif strcmp(method,'scott')
+    Z=reduceScott(Z,order);
+
+elseif strcmp(method,'valero')
+    Z=reduceValero(Z,order);
+
+% elseif strcmp(method,'KclusterAllDim')
+%     % order must be 1
+%     Zred=reduceKclusterAllDim(Z,order);
+
+% elseif strcmp(method,'clusterIter')
+%     Zred=reduceClusterIter(Z,order); 
+
+elseif strcmp(method,'constOpt')
+    option = 'svd';
+    alg = 'interior-point';
+    Z = reduceConstOpt(Z,order, option, alg);  
+
+% wrong method
 else
-    error('Invalid reduction method!');
+    throw(CORAerror('CORA:wrongValue','second',...
+        "'adaptive', 'cluster', 'combastel', 'constOpt', 'girard'" + ...
+        "'methA', 'methB', 'methC', 'pca', 'scott', 'redistribute', or 'valero'"));
 end
 
 %------------- END OF CODE --------------

@@ -41,11 +41,4 @@ cols_true = 1;
 % compare results
 res = rows == rows_true && cols == cols_true;
 
-
-if res
-    disp('test_size successful');
-else
-    disp('test_size failed');
-end
-
 %------------- END OF CODE --------------

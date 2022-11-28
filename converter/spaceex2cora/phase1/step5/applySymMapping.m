@@ -1,13 +1,34 @@
-function [sym_out] = applySymMapping(sym_in,keys,values)
-% substitute variables in "sym_in" with symbolic values
-% INPUTS:
-%       sym_in (symbolic): symbolic expressions to be manipulated
-%       keys (string): names of variables to be substituted
-%       values (symbolic): values to be substituted for above variables
-%           keys & values must be vectors of same length
-%           keys(i) is substituted by values(i)
-% OUTPUTS:
-%       sym_out: sym_in after substitutions are performed
+function sym_out = applySymMapping(sym_in,keys,values)
+% applySymMapping - substitute variables with symbolic values
+%
+% Syntax:  
+%    sym_out = applySymMapping(sym_in,keys,values)
+%
+% Inputs:
+%    sym_in (symbolic) - symbolic expressions to be manipulated
+%    keys (string) - names of variables to be substituted
+%    values (symbolic) - values to be substituted for above variables
+%                        keys & values must be vectors of same length
+%                        keys(i) is substituted by values(i)
+%
+% Outputs:
+%    sym_out (symbolic) - sym_in after substitutions
+%
+% Example: 
+%    ---
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
+
+% Author:       ???
+% Written:      ???
+% Last update:  ---
+% Last revision:---
+
+%------------- BEGIN CODE --------------
 
 % convert parameters to cell array if necessary, (required for subs)
 if iscell(keys)
@@ -32,4 +53,4 @@ end
 sym_out = subs(sym_in,keys_c,values_c);
 % that was easy
 
-end
+%------------- END OF CODE -------------

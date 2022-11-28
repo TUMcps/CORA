@@ -1,26 +1,25 @@
-function res = mptPolytope(obj)
+function P = mptPolytope(cZ)
 % mptPolytope - convert a constrained zonotope object to a mptPolytope
-%               according to Prop. 3 in [1]
+%    according to Prop. 3 in [1]
 %
 % Syntax:  
-%    res = mptPolytope(obj)
+%    P = mptPolytope(cZ)
 %
 % Inputs:
-%    obj - conZonotope object
+%    cZ - conZonotope object
 %
 % Outputs:
-%    res - mptPolytope object
+%    P - mptPolytope object
 %
 % Example: 
 %    Z = [0 1 0 1;0 1 2 -1];
-%    A = [-2 1 -1];
-%    b = 2;
-%    cZono = conZonotope(Z,A,b);
-%    poly = mptPolytope(cZono);
+%    A = [-2 1 -1]; b = 2;
+%    cZ = conZonotope(Z,A,b);
+%    P = mptPolytope(cZ);
 %
-%    hold on
-%    plot(cZono,[1,2],'r','Filled',true,'EdgeColor','none')
-%    plot(poly,[1,2],'g');
+%    figure; hold on;
+%    plot(cZ,[1,2],'FaceColor','r');
+%    plot(P,[1,2],'g');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -40,20 +39,28 @@ function res = mptPolytope(obj)
 
 %------------- BEGIN CODE --------------
     
+    % 2-dimensional set -> use efficient algorithm for vertex computation
+    if dim(cZ) == 2
+        V = vertices(cZ);
+        P = mptPolytope(V');
+        return;
+    end
+
     % construct lifted zonotope 
-    c = obj.Z(:,1); 
-    G = obj.Z(:,2:end);
+    c = cZ.Z(:,1); 
+    G = cZ.Z(:,2:end);
     
-    zono = zonotope([c;-obj.b],[G;obj.A]);
+    Z = zonotope([c;-cZ.b],[G;cZ.A]);
     
     % compute halfspace reprsentation of lifted zonotope
-    poly = mptPolytope(zono);
+    P = mptPolytope(Z);
     
     % extract halfspace representation for the constrained zonotope
-    C = poly.P.A;
-    d = poly.P.b;
-    n = dim(obj);
+    C = P.P.A;
+    d = P.P.b;
+    n = dim(cZ);
     
-    res = mptPolytope(C(:,1:n),d);
+    % instantiate polytope
+    P = mptPolytope(C(:,1:n),d);
 
 %------------- END OF CODE --------------

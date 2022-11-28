@@ -1,18 +1,21 @@
 function horner = hornerTaylorSeries(intMat,maxOrder) 
-% returns the approximation of e^intMat using the horner scheme evaluation
-%    of the taylorSeries and the 
+% hornerTaylorSeries - returns the approximation of e^intMat using the
+%    horner scheme evaluation of the taylorSeries and the 
 %
 % Syntax:  
-%    val = hornerTaylorSeries(intMat,t)
+%    horner = hornerTaylorSeries(intMat,maxOrder)
 %
 % Inputs:
-%    intMat - interval matrix (nxn)
-%    maxOrder - maximum order of the TaylorSeries, has to be > abs(intMat) +2
+%    intMat - intervalMatrix object (nxn)
+%    maxOrder - maximum order of the TaylorSeries, has to be greater than
+%               abs(intMat) + 2
 %
 % Outputs:
-%    taylor - the exponentiation with hornerScheme evaluation of the truncated Taylor-Series 
+%    horner - the exponentiation with hornerScheme evaluation of the
+%             truncated Taylor series 
 %
 % Example: 
+%    -
 %
 % Other m-files required: intervalMatrixRemainder.m 
 % Subfunctions: none
@@ -28,12 +31,11 @@ function horner = hornerTaylorSeries(intMat,maxOrder)
 %------------- BEGIN CODE --------------
 
 %get norm and size of the matrix
-alpha = norm(intMat,inf);
-
+alpha = norm(intMat,Inf);
 
 n = length(intMat.int.sup);
 % maxOrder has to be alpha +2 in order to calculate a solution
-if(maxOrder +2 <= alpha)
+if(maxOrder + 2 <= alpha)
     horner = [];
     return;
 end
@@ -43,9 +45,10 @@ E = eye(n);
 % so it uses maxOrder first and finishes with 1, as factor the startpoint 
 horner = plus(E,mtimes(intMat,maxOrder^-1));
 for i= 1:maxOrder-1
-    horner = plus (E, mtimes((maxOrder-i)^-1, mtimes(intMat,horner)) );
+    horner = plus(E, mtimes((maxOrder-i)^-1, mtimes(intMat,horner)) );
 end
 
 % Remainder has to be added on the solution, in order to minimize the error
 horner = plus(horner, intervalMatrixRemainder(intMat,alpha,maxOrder));
 
+%------------- END OF CODE --------------

@@ -1,29 +1,25 @@
-function res = or(Int1,Int2)
-% or - compute the union of two intervals
+function res = or(I,S)
+% or - computes the union of an interval and a set
 %
 % Syntax:  
-%    res = or(Int1,Int2)
+%    res = or(I,S)
 %
 % Inputs:
-%    Int1 - interval object
-%    Int2 - interval object
+%    I - interval object
+%    S - contSet object
 %
 % Outputs:
-%    res - union of the two intervals
+%    res - union of the two sets
 %
 % Example: 
-%    int1 = interval([-2;-2],[-1;-1]);
-%    int2 = interval([0;0],[2;2]);
-%    
-%    res = int1 | int2;
+%    I1 = interval([-2;-2],[-1;-1]);
+%    I2 = interval([0;0],[2;2]);
+%    res = I1 | I2;
 %
-%    figure
-%    hold on
-%    plot(int1,[1,2],'g','Filled',true,'EdgeColor','none');
-%    plot(int2,[1,2],'b','Filled',true,'EdgeColor','none');
+%    figure; hold on; xlim([-3,3]); ylim([-3,3]);
+%    plot(I1,[1,2],'FaceColor','g');
+%    plot(I2,[1,2],'FaceColor','b');
 %    plot(res,[1,2],'r');
-%    xlim([-3,3]);
-%    ylim([-3,3]);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -37,39 +33,41 @@ function res = or(Int1,Int2)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
+if isempty(S) && ~isempty(I)
+    res = I; return;
+end
+    
 % determine the interval object
-if ~isa(Int1,'interval')
-    temp = Int1;
-    Int1 = Int2;
-    Int2 = temp;
+if ~isa(I,'interval')
+    temp = I;
+    I = S;
+    S = temp;
 end
 
 % different cases depending on the class of the summand
-if isa(Int2,'interval')
+if isa(S,'interval')
     
-    if dim(Int1) ~= dim(Int2)
-        [id,msg] = errDimMismatch();
-        error(id,msg);
+    if dim(I) ~= dim(S)
+        throw(CORAerror('CORA:dimensionMismatch',I,S));
     end
 
-    res = interval(min([Int1.inf,Int2.inf],[],2), ...
-                   max([Int1.sup,Int2.sup],[],2));
+    res = interval(min([I.inf,S.inf],[],2), ...
+                   max([I.sup,S.sup],[],2));
 
-elseif isnumeric(Int2)
+elseif isnumeric(S)
 
-    res = interval(min([Int1.inf,Int2],[],2), ...
-                   max([Int1.sup,Int2],[],2));
+    res = interval(min([I.inf,S],[],2), ...
+                   max([I.sup,S],[],2));
 
-elseif isa(Int2,'zonotope') || isa(Int2,'conZonotope') || ...
-       isa(Int2,'zonoBundle') || isa(Int2,'polyZonotope') || ...
-       isa(Int2,'mptPolytope') || isa(Int2,'conPolyZono')
+elseif isa(S,'zonotope') || isa(S,'conZonotope') || ...
+       isa(S,'zonoBundle') || isa(S,'polyZonotope') || ...
+       isa(S,'mptPolytope') || isa(S,'conPolyZono')
 
-    res = Int2 | Int1;
+    res = S | I;
 
 else
     % throw error for given arguments
-    error(noops(Int1,Int2));
+    throw(CORAerror('CORA:noops',I,S));
 end
 
 %------------- END OF CODE --------------

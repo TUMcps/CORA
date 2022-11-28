@@ -1,18 +1,18 @@
-function [obj] = inputSolution(obj,options)
+function obj = inputSolution(obj,options)
 % inputSolution - computes the bloating due to the input 
 %
 % Syntax:  
-%    [obj] = inputSolution(obj,options)
+%    obj = inputSolution(obj,options)
 %
 % Inputs:
-%    obj - linear interval system object
+%    obj - linProbSys object
 %    options - options struct
 %
 % Outputs:
-%    obj - linear interval system object
+%    obj - linProbSys object
 %
 % Example: 
-%    Text for example...
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -40,8 +40,8 @@ A = obj.A;
 Apower = obj.taylor.powers;
 E = obj.taylor.error;
 r = options.timeStep;
-dim = dimension(obj);
-I = eye(dim);
+n = obj.dim;
+I = eye(n);
 F = obj.taylor.F; 
 
 %non-probabilistic solution--------------------------------
@@ -64,7 +64,7 @@ inputSolVtrans=inv(A)*(expm(A*r)-I)*vTrans; % ... zonotope(vTrans) ?
 
 %compute additional uncertainty if origin is not contained in input set
 if options.originContained
-    inputCorr=zeros(dim,1);
+    inputCorr=zeros(n,1);
 else
     inputCorr=inv(A)*F*zonotope(vTrans);
 end
@@ -72,7 +72,7 @@ end
 %write to object structure
 obj.taylor.V=V;
 uncertainMean=inputSolV+inputSolVtrans;
-obj.taylor.Rinput=probZonotope(uncertainMean.Z,zeros(dim,1),options.gamma);
+obj.taylor.Rinput=probZonotope(uncertainMean.Z,zeros(n,1),options.gamma);
 obj.taylor.Rtrans=inputSolVtrans;
 obj.taylor.inputCorr=inputCorr;
 %----------------------------------------------------------
@@ -97,7 +97,7 @@ Sigma=V*Sigma*V.';
 G=generators(Sigma);
 
 %instantiate probabilistic zonotope
-ProbInputSol=probZonotope(zeros(dim,1),G,options.gamma);
+ProbInputSol=probZonotope(zeros(n,1),G,options.gamma);
 
 %write to object structure
 obj.taylor.pRinput=ProbInputSol;

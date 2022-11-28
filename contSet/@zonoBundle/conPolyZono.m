@@ -1,6 +1,6 @@
 function cPZ = conPolyZono(zB)
 % conPolyZono - convert a zonotope bundle to a constrained polynomial
-%               zonotope
+%    zonotope
 %
 % Syntax:  
 %    cPZ = conPolyZono(zB)
@@ -12,8 +12,8 @@ function cPZ = conPolyZono(zB)
 %    cPZ - conPolyZono object
 %
 % Example: 
-%    zB = zonoBundle.generateRandom(2);
-%    cPZ = conPolyZono(poly)
+%    zB = zonoBundle.generateRandom('Dimension',2);
+%    cPZ = conPolyZono(zB)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -24,12 +24,10 @@ function cPZ = conPolyZono(zB)
 % Author:       Niklas Kochdumper
 % Written:      21-January-2020
 % Last update:  ---
-% Last revision: ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    cPZ = conPolyZono(conZonotope(zB));
-    
-end
+cPZ = conPolyZono(conZonotope(zB));
     
 %------------- END OF CODE --------------

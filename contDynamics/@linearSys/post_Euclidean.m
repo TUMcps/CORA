@@ -42,10 +42,10 @@ eAt=obj.taylor.eAt;
 if strcmp(options.linAlg,'wrapping-free')
     % option 1 (wrapping free)
     % method implemented from Algorithm 2 in
-    % A. Girard, C. Le Guernic, and O. Maler, “Efficient computation of 
-    % reachable sets of linear time-invariant systems with inputs,�? in 
+    % A. Girard, C. Le Guernic, and O. Maler, 鈥淓fficient computation of 
+    % reachable sets of linear time-invariant systems with inputs,鈥? in 
     % Hybrid Systems: Computation and Control, ser. LNCS 3927. Springer, 
-    % 2006, pp. 257–271.
+    % 2006, pp. 257鈥�271.
     if isfield(options,'uTransVec') % check whether input vector changes
         [Rhom,Rhom_tp,Rtrans,inputCorr] = inputInducedUpdates(obj,options);
     else
@@ -61,9 +61,9 @@ if strcmp(options.linAlg,'wrapping-free')
 elseif strcmp(options.linAlg,'standard')
     % option 2 (not wrapping-free)
     % method implemented from Algorithm 1 in
-    % A. Girard, “Reachability of uncertain linear systems using 
-    % zonotopes,�? in Hybrid Systems: Computation and Control, 
-    % ser. LNCS 3414. Springer, 2005, pp. 291–305.
+    % A. Girard, 鈥淩eachability of uncertain linear systems using 
+    % zonotopes,鈥? in Hybrid Systems: Computation and Control, 
+    % ser. LNCS 3414. Springer, 2005, pp. 291鈥�305.
     if isfield(options,'uTransVec') % check whether input vector changes
         [Rhom,Rhom_tp,~,inputCorr] = inputInducedUpdates(obj,options);
     else
@@ -81,7 +81,8 @@ elseif strcmp(options.linAlg,'standard')
         Rhom_tp=reduce(Rhom_tp,options.reductionTechnique,options.zonotopeOrder);
     end
 else
-    error("Don't use this function with the given options.linAlg");
+    throw(CORAerror('CORA:wrongFieldValue','options.alg',...
+        {'standard','wrapping-free'}));
 end
 
 %save homogeneous and particulate solution to options struct

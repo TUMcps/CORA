@@ -1,5 +1,8 @@
 function [val,x] = minnorm(Z)
-% minnorm - computes the point whose norm is min w.r.t the center
+% minnorm - computes the point whose norm is minimal with respect to the
+%    center of the zonotope; caution: this function requires the halfspace
+%    representation of the zonotope and thus scales exponentially with
+%    respect to the dimension
 %
 % Syntax:  
 %    [val,x] = minnorm(Z)
@@ -8,7 +11,7 @@ function [val,x] = minnorm(Z)
 %    Z - zonotope object
 %
 % Outputs:
-%    val - value of minimum zonotope norm, i.e. the point on the
+%    val - value of minimum zonotope norm, i.e., the point on the
 %          boundary of Z which has minimum distance to the zonotope center
 %    x - point on boundary attaining minimum norm
 %
@@ -32,13 +35,13 @@ function [val,x] = minnorm(Z)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-%%%ATTENTION: Requires halfspace representation, scales badly!
+
 %extract zonotope info
 G = generators(Z);
 c = center(Z);
 n = dim(Z);
 %get halfspace rep
-P = polytope(zonotope([zeros(n,1),G]));
+P = mptPolytope(zonotope([zeros(n,1),G]));
 P = get(P,'P');
 A = P.A;
 b = P.b;

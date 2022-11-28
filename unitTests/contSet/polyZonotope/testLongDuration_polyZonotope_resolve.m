@@ -31,8 +31,9 @@ for i=1:nTests
     %% analytic test
     n = randi(30);
     ng = randi([3,10]);
-    nf = randi([2,10]);
-    pZ = noIndep(polyZonotope.generateRandom(n,ng,nf));
+    nf = ng - 1;
+    pZ = noIndep(polyZonotope.generateRandom('Dimension',n,...
+        'NrGenerators',ng,'NrFactors',nf));
     x = sym('x',[size(pZ.expMat,1),1],'real');
     ne = length(pZ.id);
     ind_res = ismember(pZ.id,unique(randi(ne-1,ne-1,1)));
@@ -57,8 +58,7 @@ for i=1:nTests
     end
 end
 if ~res
-    disp('testLongDuration_polyZonotope_resolve failed');
-else
-    disp('testLongDuration_polyZonotope_resolve successful');
+    path = pathFailedTests(mfilename());
+    save(path,'pZ','cj','f');
 end
 %------------- END OF CODE --------------

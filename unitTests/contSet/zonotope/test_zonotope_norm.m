@@ -26,8 +26,8 @@ function res = test_zonotope_norm
 %------------- BEGIN CODE --------------
 
 TOL = 1e-6;
-res = true;
-
+% res = true;
+res = (norm(zonotope()) == -Inf);
 % instantiate zonotope
 c = zeros(2,1);
 G = [2 5 4 3; -4 -6 2 3];
@@ -42,13 +42,6 @@ V = vertices(Z);
 if (val2_exact-val2_ub) > TOL || (val2_exact-val2_ubc) > TOL ...
         || abs(val2_exact-max(sqrt(sum(V.^2))))/val2_exact > TOL
     res = false;
-end
-
-
-if res
-    disp('test_zonotope_norm successful');
-else
-    disp('test_zonotope_norm failed');
 end
 
 %------------- END OF CODE --------------

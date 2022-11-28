@@ -41,13 +41,6 @@ for i=1:length(E_c)
         res = false;
         break;
     end
-    
 end
 
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

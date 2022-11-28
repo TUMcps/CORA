@@ -71,10 +71,4 @@ res_rand = all(infimum(IntEnlarge) == infimum(IntEnlarge_true)) && ...
 % add results
 res = res_analytical && res_rand;
 
-if res
-    disp('test_enlarge successful');
-else
-    disp('test_enlarge failed');
-end
-
 %------------- END OF CODE --------------

@@ -1,27 +1,24 @@
-function res = split(obj,dim)
+function res = split(I,n)
 % split - split an interval in one dimension
 %
 % Syntax:  
-%    res = split(obj,dim)
+%    res = split(I,n)
 %
 % Inputs:
-%    obj - interval object
-%    dim - index of the dimension that is splitted
+%    I - interval object
+%    n - index of the dimension that is splitted
 %
 % Outputs:
 %    res - cell-array containing the splitted intervals
 %
 % Example: 
-%    int = interval([-1;-1],[1;1]);
-%    intSplit = split(int,1);
+%    I = interval([-1;-1],[1;1]);
+%    I_split = split(I,1);
 % 
-%    figure
-%    hold on
-%    plot(intSplit{1},[1,2],'g','Filled',true,'EdgeColor','none');
-%    plot(intSplit{2},[1,2],'b','Filled',true,'EdgeColor','none');
-%    plot(int,[1,2],'r');
-%    xlim([-2,2]);
-%    ylim([-2,2]);
+%    figure; hold on; xlim([-2,2]); ylim([-2,2]);
+%    plot(I_split{1},[1,2],'FaceColor','g');
+%    plot(I_split{2},[1,2],'FaceColor','b');
+%    plot(I,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -36,14 +33,14 @@ function res = split(obj,dim)
 
 %------------- BEGIN CODE --------------
 
-m = center(obj);
+m = center(I);
 
-sup = obj.sup;
-infi = obj.inf;
+sup = I.sup;
+infi = I.inf;
 
-sup(dim) = m(dim);
-infi(dim) = m(dim);
+sup(n) = m(n);
+infi(n) = m(n);
 
-res = {interval(obj.inf,sup),interval(infi,obj.sup)};
+res = {interval(I.inf,sup),interval(infi,I.sup)};
 
 %------------- END OF CODE --------------

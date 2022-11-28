@@ -41,7 +41,7 @@ pZ3 = probZonotope(Z1,Z2,2);
 
 % polytope to be intersected
 I = interval([-10; -5],[10; -3]);
-P = polytope(I);
+P = mptPolytope(I);
 
 % provide mArray to determine accuracy of over-approximation
 mArray = [3 2 1];

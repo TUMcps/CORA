@@ -1,18 +1,18 @@
-function [t,x,loc,xJump] = simulate(obj,params)
+function [t,x,nextloc,xJump] = simulate(loc,params)
 % simulate - simulates the system within a location, detects the guard set
-% that is hit and computes the reset
+%    that is hit and computes the reset
 %
 % Syntax:
-%    [t,x,loc,xJump] = simulate(obj,params)
+%    [t,x,nextloc,xJump] = simulate(loc,params)
 %
 % Inputs:
-%    obj - location object
+%    loc - location object
 %    params - struct storing the simulation parameter
 %
 % Outputs:
 %    t - time vector
 %    x - state vector
-%    loc - next location
+%    nextloc - next location
 %    xJump - state after jump according to the reset map
 %
 % Example:
@@ -34,68 +34,71 @@ function [t,x,loc,xJump] = simulate(obj,params)
 
 %------------- BEGIN CODE --------------
 
-    % get current location
-    currentLoc = params.loc;
-    params = rmfield(params,'loc');
+% get current location
+currentLoc = params.loc;
+params = rmfield(params,'loc');
 
-    % convert all guard sets to halfspace-representation (polytope)
-    for i = 1:length(obj.transition)
-       obj.transition{i} = guard2polytope(obj.transition{i}); 
+% convert all guard sets to halfspace-representation (polytope)
+for i=1:length(loc.transition)
+    loc.transition{i} = guard2polytope(loc.transition{i}); 
+end
+
+% define event function from halfspace inequalities
+eventOptions = odeset('Events',eventFcn(loc));
+options = odeset(eventOptions);
+
+% simulate continuous dynamics
+[t,x,index] = simulate(loc.contDynamics,params,options);
+
+% determine the guard set which is crossed by the trajectory
+if ~isempty(index)
+    % final time not reached
+
+    % determine active guard
+    list = indexList(loc);
+    
+    nActivatedGuards = length(index);
+    activatedGuards = [];
+    
+    % check if invariant set was left without hitting a guard set
+    if all(list(index) == 0)
+        throw(CORAerror('CORA:specialError',...
+            'Trajectory left the invariant set without hitting a guard set!')); 
     end
-
-    % define event function from halfspace inequalities
-    eventOptions = odeset('Events',eventFcn(obj));
-    options = odeset(eventOptions);
     
-    % simulate continuous dynamics
-    [t,x,index] = simulate(obj.contDynamics,params,options);
-    
-    % determine the guard set which is crossed by the trajectory
-    if ~isempty(index)                          % final time not reached
+    % loop over all active guards
+    for iActivatedGuard = 1:nActivatedGuards
         
-        % determine active guard
-        [list] = indexList(obj);
+        guard = list(index(iActivatedGuard));
         
-        nActivatedGuards = length(index);
-        activatedGuards = [];
-        
-        % check if invariant set was left without hitting a guard set
-        if all(list(index) == 0)
-            error('Trajectory left the invariant set without hitting a guard set!'); 
-        end
-        
-        % loop over all active guards
-        for iActivatedGuard = 1:nActivatedGuards
+        if guard ~= 0 && (~any(activatedGuards == guard))
             
-            guard = list(index(iActivatedGuard));
+            guardSet = loc.transition{guard}.guard;
             
-            if guard ~= 0 && (~any(activatedGuards == guard))
+            % check whether only one halfspace has beed crossed or if 
+            % the point is indeed inside the guard set
+            if contains(guardSet, x(end,:)', 'exact', 1e-6)
                 
-                guardSet = obj.transition{guard}.guard;
+                % next location and reset function
+                nextloc = loc.transition{guard}.target;
+                xJump = reset(loc.transition{guard},x(end,:));
+                break;
                 
-                % check whether only one halfspace has beed crossed or if 
-                % the point is indeed inside the guard set
-                if in(guardSet, x(end,:)', 1e-6)
-                    
-                    % next location and reset function
-                    loc = obj.transition{guard}.target;
-                    xJump=reset(obj.transition{guard},x(end,:));
-                    break;
-                    
-                else
-                    
-                    % only one halfspace crossed -> continue simulation in
-                    % the current location
-                    loc = currentLoc;
-                    xJump = x(end,:);
-                end
+            else
                 
-                activatedGuards = [activatedGuards,guard];
+                % only one halfspace crossed -> continue simulation in
+                % the current location
+                nextloc = currentLoc;
+                xJump = x(end,:);
             end
+            
+            activatedGuards = [activatedGuards,guard];
         end
-        
-    else                                        % final time reached
-        loc=[]; xJump=[];
     end
+    
+else
+    % final time reached
+    nextloc = []; xJump = [];
+end
 
 %------------- END OF CODE --------------

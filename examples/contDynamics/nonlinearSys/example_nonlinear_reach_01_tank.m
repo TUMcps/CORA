@@ -1,6 +1,6 @@
 function completed = example_nonlinear_reach_01_tank
 % example_nonlinear_reach_01_tank - example of nonlinear reachability 
-%                                   analysis with conservative linearizaton
+%    analysis with conservative linearization
 %
 % This example can be found in [1, Sec. 3.4.5] or in [2].
 %
@@ -8,10 +8,10 @@ function completed = example_nonlinear_reach_01_tank
 %    completed = example_nonlinear_reach_01_tank()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    completed - boolean 
+%    completed - true/false 
 %
 % References:
 %    [1] M. Althoff, “Reachability analysis and its application to the 
@@ -26,7 +26,7 @@ function completed = example_nonlinear_reach_01_tank
 
 %------------- BEGIN CODE --------------
 
-% Parameter ---------------------------------------------------------------
+% Parameters --------------------------------------------------------------
 
 params.tFinal = 400;
 params.R0 = zonotope([[2; 4; 4; 2; 10; 4],0.2*eye(6)]);
@@ -60,10 +60,6 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 60;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
-
 simRes = simulateRandom(tank, params, simOpt);
 
 
@@ -77,13 +73,13 @@ for k = 1:length(dims)
     projDim = dims{k};
     
     % plot reachable sets
-    plot(R,projDim,'FaceColor',[.8 .8 .8],'EdgeColor','none');
+    plot(R,projDim);
     
     % plot initial set
-    plot(params.R0,projDim,'w','Filled',true,'EdgeColor','k');
+    plot(params.R0,projDim,'k','FaceColor','w');
     
     % plot simulation results     
-    plot(simRes,projDim,'b');
+    plot(simRes,projDim);
 
     % label plot
     xlabel(['x_{',num2str(projDim(1)),'}']);
@@ -92,6 +88,6 @@ end
 
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

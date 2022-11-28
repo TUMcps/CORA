@@ -8,20 +8,20 @@ classdef linParamSys < contDynamics
 %    obj = linParamSys(name,A,B,type)
 %
 % Inputs:
+%    name - name of the system
 %    A - system matrix
 %    B - input matrix
-%    name - name of the system
-%    type - 'constParam' (constant parameter, default) or 'varParam' (time
-%            varying parameter)
+%    type - constant/time-varying parameters
+%           - 'constParam' (constant parameters, default)
+%           - 'varParam' (time-varying parameters)
 %
 % Outputs:
-%    obj - Generated Object
+%    obj - generated linParamSys object
 %
 % Example:
 %    Ac = [-2 0; 1.5 -3];
 %    Aw = [0 0; 0.5 0];
 %    A = intervalMatrix(Ac,Aw);
-%
 %    B = [1; 1];
 %
 %    sys = linParamSys(A,B,'varParam')
@@ -34,17 +34,20 @@ classdef linParamSys < contDynamics
 
 % Author:       Matthias Althoff
 % Written:      23-September-2010
-% Last update:  01-November-2017 (add possibility to change between constant and varying parameters)
+% Last update:  01-November-2017 (add possibility to change between
+%                                 constant and varying parameters)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
   
 
 properties (SetAccess = private, GetAccess = public)
-    A = 1;
-    B = 0;
-    %stepSize = 0.01/max(abs(eig(A.center)));
-    constParam = 1; %flag if parameters are constant or time-varying
+
+    A = 1;                          % state matrix
+    B = 0;                          % input matrix
+    constParam logical = true;      % constant or time-varying parameters
+    
+    % ...
     stepSize = 1;
     taylorTerms = [];
     mappingMatrixSet = [];
@@ -86,7 +89,8 @@ methods
         
         % check input arguments
         if ~ischar(type) || ~ismember(type,{'constParam','varParam'})
-           error('Wrong value for input argument "type"!'); 
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                '"Type" has to be either "constParam" or "varParam".'));
         end
         
         % number of states and inputs
@@ -106,7 +110,7 @@ methods
         obj.B = B;
         
         if strcmp(type,'varParam')
-           obj.constParam = 0; 
+            obj.constParam = false; 
         end
     end
 end

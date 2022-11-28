@@ -12,8 +12,8 @@ function p = polygon(Z)
 %    p - ordered set of points of a polygon
 %
 % Example: 
-%    Z=zonotope([1 1 0; 0 0 1]);
-%    p=polygon(Z);
+%    Z = zonotope([1 1 0; 0 0 1]);
+%    p = polygon(Z);
 %
 % Other m-files required: none
 % Subfunctions: none

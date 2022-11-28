@@ -1,9 +1,9 @@
-function completed = testLongDuration_nonlinParamSys_reach_04_vanderPol_linearRemainder
-% example_nonlinearParam_reach_04_vanderPol_linearRemainder - example of
+function completed = testLongDuration_nonlinParamSys_reach_04_VDP_linearRemainder
+% testLongDuration_nonlinParamSys_reach_04_VDP_linearRemainder - example of
 %    nonlinear reachability analysis with uncertain parameters; 
 %
 % Syntax:  
-%    completed = example_nonlinParamSys_reach_04_vanderPol_linearRemainder
+%    completed = testLongDuration_nonlinParamSys_reach_04_VDP_linearRemainder
 %
 % Inputs:
 %    -
@@ -65,10 +65,8 @@ disp(['computation time of reachable set with remainder added to system matrix: 
 
 % Simulation --------------------------------------------------------------
 
+params = rmfield(params,'paramInt');
 simOpt.points = 60;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
 simRes = simulateRandom(vanderPol, params, simOpt);
 
 
@@ -85,13 +83,13 @@ if plotting
     figure; hold on; box on;
 
     % reachable set: standard lagrange remainder
-    plot(R_wo_linear,projectedDims,'b','EdgeColor','none','Order',plotOrder);
+    plot(R_wo_linear,projectedDims,'b','Order',plotOrder);
 
     % reachable set: lagrange remainder added to system matrices (A,B)
-    plot(R_Param,projectedDims,'r','EdgeColor','none','Order',plotOrder);
+    plot(R_Param,projectedDims,'r','Order',plotOrder);
 
     %plot initial set
-    plot(params.R0,projectedDims,'w','Filled',true,'EdgeColor','k');
+    plot(params.R0,projectedDims,'k','FaceColor','w');
 
     %plot simulation results
     plot(simRes,projectedDims,'k');

@@ -1,6 +1,6 @@
 function res = isHyperplane(hyp)
-% isequal - checks whether the conHyperplane object is representable as a
-% simple hyperplane or not
+% isHyperplane - checks whether a constrained hyperplane can be represented
+%    as a simple hyperplane
 %
 % Syntax:  
 %    res = isHyperplane(hyp)
@@ -9,10 +9,11 @@ function res = isHyperplane(hyp)
 %    hyp - conHyperplane object
 %
 % Outputs:
-%    res - boolean indicating whether hyp is a simple hyperplane or not
+%    res - true/false
 %
 % Example: 
-%    ---
+%    hyp = conHyperplane(halfspace([1;1],0),[1 0;-1 0],[2;2]);
+%    isHyperplane(hyp)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,8 +27,8 @@ function res = isHyperplane(hyp)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-% if is one-dimensional and consistent (checked in constructor), always
-% true
+
+% always true if conHyperplane is 1D and consistent (checked in constructor)
 if dim(hyp)==1
     res = true;
     return;
@@ -44,11 +45,13 @@ n = dim(hyp);
 % null space has exactly n-1 vectors
 B = null(c');
 for i=1:n-1
-    if supportFunc(hyp,B(:,1),'upper')<inf ||...
-       supportFunc(hyp,B(:,1),'lower')>-inf
+    if supportFunc(hyp,B(:,1),'upper') < Inf || ...
+       supportFunc(hyp,B(:,1),'lower') > -Inf
         res = false;
         return;
     end
 end
+
 res = true;
+
 %------------- END OF CODE --------------

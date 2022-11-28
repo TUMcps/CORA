@@ -1,5 +1,6 @@
 function printDynamicsFile(path,name,dynamics,usecase)
-% printDynamicsFile - create a file defining a nonlinear function for the spaceex2cora converter 
+% printDynamicsFile - create a file defining a nonlinear function for the
+%    spaceex2cora converter 
 %
 % Syntax:  
 %    printDynamicsFile(path,name,dynamics,usecase)
@@ -12,13 +13,9 @@ function printDynamicsFile(path,name,dynamics,usecase)
 %               symbolic equations
 %    usecase - string specifiying the use of the created function
 %              available options: flow, reset
-% 
-% 
-% 
 %   
 % Outputs:
-%   ---
-%
+%    ---
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,22 +23,19 @@ function printDynamicsFile(path,name,dynamics,usecase)
 %
 % See also: ---
 
-% Author:       unknown
-% Written:      unknown
-% Last update:  30.01.2022 MP - include nonlinear reset functions in sx2cora
+% Author:       ???, Maximilian Perschl
+% Written:      ???
+% Last update:  30-January-2022 (MP, include nonlinear reset functions in
+%                                sx2cora)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 if ~contains(['flow','reset'],usecase)
-    error("Unknown usecase for dynamics file!");
+    throw(CORAerror('CORA:converterIssue','Unknown usecase for dynamics file.'));
 end
 
-warning("using linux filepath adjustment!--printDynamicsFile.m");
-% windows
-% auxpath = [path '/auxiliary'];
-% linux
-auxpath = path + "/auxiliary";
+auxpath = [path '/auxiliary'];
 if ~exist(auxpath,'dir')
     mkdir(auxpath);
 end
@@ -52,7 +46,7 @@ fname = strcat(auxpath,'/',name,'.m');
 file = fopen(fname,'w');
 
 if file<0
-    error('could not open file "%s"',fname);
+    throw(CORAerror('CORA:converterIssue',['Could not open file ' fname '.']));
 end
 
 % write file contents
@@ -82,4 +76,4 @@ fclose(file);
 % ensure matlab detects new function
 rehash path;
 
-end
+%------------- END OF CODE --------------

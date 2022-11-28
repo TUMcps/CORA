@@ -1,5 +1,5 @@
 function [R,tcomp] = observe_PRadA(obj,options)
-% observe_PRadA - computes the guaranted state estimation approach
+% observe_PRadA - computes the guaranteed state estimation approach
 % from Sec. 4.1 in [1].
 %
 %

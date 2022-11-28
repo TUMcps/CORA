@@ -1,15 +1,15 @@
-function obj = add(obj1,obj2)
+function spec = add(spec1,spec2)
 % add - joins two specification objects
 %
 % Syntax:  
-%    obj = add(obj1,obj2)
+%    spec = add(spec1,spec2)
 %
 % Inputs:
-%    obj1 - specification object
-%    obj2 - specification object
+%    spec1 - specification object
+%    spec2 - specification object
 %
 % Outputs:
-%    obj - resulting specification object
+%    spec - resulting specification object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -24,17 +24,29 @@ function obj = add(obj1,obj2)
 
 %------------- BEGIN CODE --------------
 
-    obj = repelem(obj1(1,1),size(obj1,1)+size(obj2,1),1);
-    cnt = 1;
-    
-    for i = 1:size(obj1,1)
-        obj(cnt,1) = obj1(i,1);
-        cnt = cnt + 1;
-    end
-    
-    for i = 1:size(obj2,1)
-        obj(cnt,1) = obj2(i,1);
-        cnt = cnt + 1;
-    end
+% quick exit in case one of the two specification objects is empty
+if isempty(spec1)
+    spec = spec2; return;
+end
+if isempty(spec2)
+    spec = spec1; return; 
+end
+
+% instantiate joint specification object
+spec = repelem(spec1(1,1),size(spec1,1)+size(spec2,1),1);
+% counter for total number of specifications
+cnt = 1;
+
+% loop over all specifications in the first object
+for i = 1:size(spec1,1)
+    spec(cnt,1) = spec1(i,1);
+    cnt = cnt + 1;
+end
+
+% loop over all specifications in the second object
+for i = 1:size(spec2,1)
+    spec(cnt,1) = spec2(i,1);
+    cnt = cnt + 1;
+end
 
 %------------- END OF CODE --------------

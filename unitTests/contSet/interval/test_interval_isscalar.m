@@ -31,7 +31,6 @@ c = isscalar( test );
 
 if c ~= false
 	res = false;
-	disp('test_isscalar failed');
 	return;
 end
 
@@ -40,7 +39,6 @@ c = isscalar( test );
 
 if c ~= false
 	res = false;
-	disp('test_isscalar failed');
 	return;
 end
 
@@ -49,11 +47,7 @@ c = isscalar( test );
 
 if c ~= true
 	res = false;
-	disp('test_isscalar failed');
 	return;
 end
-
-disp('test_isscalar successful');
-return;
 
 %------------- END OF CODE --------------

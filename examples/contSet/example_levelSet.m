@@ -8,14 +8,14 @@ function completed = example_levelSet()
 %    -
 %
 % Outputs:
-%    completed - boolean
+%    completed - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        ---
 % Written:       ---
 % Last update:   ---
@@ -34,14 +34,14 @@ ls2 = levelSet(eq,[x;y],'<=');
 subplot(1,2,1)
 xlim([-1.5,1.5]);
 ylim([-1,1]);
-plot(ls1,[1,2],'b');
+plot(ls1);
 
 subplot(1,2,2)
 xlim([-1.5,1.5]);
 ylim([-1,1]);
-plot(ls2,[1,2],'r','FaceAlpha',0.5);
+plot(ls2,[1,2],'Color',colorblind('r'));
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

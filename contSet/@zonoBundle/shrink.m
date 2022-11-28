@@ -1,15 +1,16 @@
-function [Zbundle] = shrink(Zbundle,filterLength)
-% shrink - shrinks a zonotope bundle, i.e. the separate zonotopes are
-% shrunk; however: in total, the size of the zonotope bundle will increase
+function zB = shrink(zB,filterLength)
+% shrink - shrinks each zonotope in a zonotope bundle; however: in total,
+%    the size of the zonotope bundle will increase
 %
 % Syntax:  
-%    [Zbundle] = shrink(Zbundle)
+%    zB = shrink(zB,filterLength)
 %
 % Inputs:
-%    Zbundle - zonotope bundle
+%    zB - zonoBundle object
+%    filterLength - ???
 %
 % Outputs:
-%     Zbundle - zonotope bundle
+%    zB - zonoBundle object
 %
 % Example: 
 %    ---
@@ -27,26 +28,27 @@ function [Zbundle] = shrink(Zbundle,filterLength)
 
 %------------- BEGIN CODE --------------
 
-%compute overapproximative parallelotope for each zonotope
-for i=1:Zbundle.parallelSets
-    Zred{i}=reduce(Zbundle.Z{i},'methC',1,filterLength);
+% compute over-approximative parallelotope for each zonotope
+Zred = cell(zB.parallelSets,1);
+for i=1:zB.parallelSets
+    Zred{i} = reduce(zB.Z{i},'methC',1,filterLength);
 end
 
-%intersect all parallelotopes
-P=polytope(Zred{1});
-for i=2:Zbundle.parallelSets
-    P=P&polytope(Zred{i});
+% intersect all parallelotopes
+P = mptPolytope(Zred{1});
+for i=2:zB.parallelSets
+    P = P & mptPolytope(Zred{i});
 end
 
-%check if polytope is empty
+% check if polytope is empty
 if ~isempty(P)
-    %overapproximate polytope by zonotopes
-    for i=1:Zbundle.parallelSets
+    % over-approximate polytope by zonotopes
+    for i=1:zB.parallelSets
         Zmat = Zred{i}.Z;
-        Zbundle.Z{i} = parallelotope(P,Zmat(:,2:end));
+        zB.Z{i} = parallelotope(P,Zmat(:,2:end));
     end
 else
-    Zbundle = [];
+    zB = [];
 end
 
 %------------- END OF CODE --------------

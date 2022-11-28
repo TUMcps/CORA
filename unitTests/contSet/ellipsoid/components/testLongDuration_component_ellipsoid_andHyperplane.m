@@ -1,8 +1,9 @@
-function res = testLongDuration_ellipsoid_andHyperplane
-% testLongDuration_ellipsoid_andHyperplane - unit test function of testLongDuration_ellipsoid_andHyperplane
+function res = testLongDuration_component_ellipsoid_andHyperplane
+% testLongDuration_component_ellipsoid_andHyperplane - unit test function
+%    of andHyperplane
 %
 % Syntax:  
-%    res = testLongDuration_ellipsoid_andHyperplane
+%    res = testLongDuration_component_ellipsoid_andHyperplane
 %
 % Inputs:
 %    -
@@ -30,7 +31,7 @@ bools = [false,true];
 for i=10:5:15
     for j=1:nRuns
         for k=1:2
-            E = ellipsoid.generateRandom(bools(k),i);
+            E = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k));
             % construct hyperplane that intersects and check
             % select random boundary point
             N = 2*E.dim;
@@ -50,6 +51,8 @@ for i=10:5:15
             end
         end
         if ~res
+            path = pathFailedTests(mfilename());
+            save(path,'E','H');
             break;
         end
     end

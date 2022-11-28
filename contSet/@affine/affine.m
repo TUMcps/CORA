@@ -2,10 +2,10 @@ classdef (InferiorClasses = {?interval}) affine < taylm
 % affine arithmetic class.
 %
 % Syntax:
-%       object constructor: obj = affine(int)
-%       object constructor: obj = affine(int, name, opt_method, eps, tolerance)
-%       object constructor: obj = affine(lower_b, upper_b)
-%       object constructor: obj = affine(lower_b, upper_b, name, opt_method, eps, tolerance)
+%    obj = affine(int)
+%    obj = affine(int, name, opt_method, eps, tolerance)
+%    obj = affine(lower_b, upper_b)
+%    obj = affine(lower_b, upper_b, name, opt_method, eps, tolerance)
 %
 % Inputs:
 %    int - an interval
@@ -16,9 +16,9 @@ classdef (InferiorClasses = {?interval}) affine < taylm
 %                 taylor models 
 %                  'int': standard interval arithmetic (default)
 %                  'bnb': branch and bound method is used to find min/max
-%                  'bnbAdv': branch and bound with re-expansion of taylor models
+%                  'bnbAdv': branch and bound with re-expansion of Taylor models
 %    eps - precision for the selected optimization method (opt_method = 'bnb', 
-%          opt_method = 'bnbAdv' and opt_method = 'linQuad')
+%          opt_method = 'bnbAdv', and opt_method = 'linQuad')
 %    tolerance - monomials with coefficients smaller than this value are
 %                moved to the remainder
 %
@@ -58,7 +58,7 @@ methods
         
         % check user input
         if nargin < 1
-            error('Wrong syntax. Type "help affine" for more information.')
+            throw(CORAerror('CORA:notEnoughInputArgs',1));
         end
         
         % first input is an interval object
@@ -71,7 +71,7 @@ methods
         else
             
             if nargin < 2
-                error('Wrong syntax. Type "help affine" for more information.')
+                throw(CORAerror('CORA:notEnoughInputArgs',2));
             end
             
             int = interval(varargin{1},varargin{2});
@@ -91,7 +91,7 @@ methods
                names = genDefaultVarNames(int,varargin{parseIndex},inputname(1));
            end
         catch ex
-           error(ex.message);
+           rethrow(ex);
         end
         
         % parse input arguments
@@ -108,7 +108,7 @@ methods
         % check if the selected optimization mehtod is feasible
         % (optimization with 'linQuad' is not possible for class affine)
         if ~ischar(opt_method) || ~ismember(opt_method,{'int','bnb','bnbAdv'})
-          error('Wrong value for input argument "opt_method"!'); 
+            throw(CORAerror('CORA:wrongValue','third/fourth',"'int','bnb' or 'bnbAdv'"));
         end
         
         % create the object by calling the constructor of the superclass

@@ -5,7 +5,7 @@ function inputSet = errorSolution(obj,options,V)
 %    inputSet = errorSolution(obj,options,V)
 %
 % Inputs:
-%    obj - linear system object
+%    obj - linParamSys object
 %    options - options struct
 %    V - set of linearization errors
 %
@@ -52,6 +52,5 @@ inputSet = inputSet + obj.E*r*Vabs;
 
 %delete zero generators in zonotope representation
 inputSet = deleteZeros(inputSet);
-
 
 %------------- END OF CODE --------------

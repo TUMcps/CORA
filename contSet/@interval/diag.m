@@ -1,11 +1,11 @@
-function res = diag(obj)
+function res = diag(I)
 % diag - Create diagonal matrix or get diagonal elements of matrix
 %
 % Syntax:  
-%    res = diag(obj)
+%    res = diag(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
 %    res - diagonal matrix or diagonal elements of matrix
@@ -28,6 +28,6 @@ function res = diag(obj)
 %------------- BEGIN CODE --------------
 
 % obtain result
-res = interval(diag(obj.inf), diag(obj.sup));
+res = interval(diag(I.inf), diag(I.sup));
 
 %------------- END OF CODE --------------

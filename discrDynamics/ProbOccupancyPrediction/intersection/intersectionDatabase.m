@@ -206,7 +206,8 @@ function [movedPoints]=relativeGridPoints(obj,angleTrans,trans,intervals)
 %------------- BEGIN CODE --------------
 
 %compute grid points
-originalPoints=gridPoints(obj,intervals);
+% originalPoints=gridPoints(obj,intervals);
+originalPoints=aux_gridPoints(obj,intervals);
 
 %generate rotation matrix
 rot=[cos(angleTrans) -sin(angleTrans);...
@@ -216,5 +217,28 @@ rot=[cos(angleTrans) -sin(angleTrans);...
 nrOfPoints=length(originalPoints(1,:));
 movedPoints=rot*originalPoints+trans*ones(1,nrOfPoints);
 
+
+function coordinateMat = aux_gridPoints(obj,segments)
+
+%obtain segment length
+segLengthVec = (obj.sup-obj.inf)./segments;
+
+%obtain first grid point
+startingPoint = obj.inf(:,1) + 0.5*segLengthVec;
+coordinateMat = startingPoint;
+
+%obtain segment combinations
+n = length(obj.inf(:,1));
+
+if isscalar(segments)
+    comb = full_fact_mod(ones(n,1)*segments);
+else
+    comb = full_fact_mod(segments);
+end
+
+%add further grid points
+for i = 2:length(comb(:,1))
+    coordinateMat(:,i) = startingPoint+(comb(i,:)'-1).*segLengthVec;
+end
 
 %------------- END OF CODE --------------

@@ -9,15 +9,11 @@ function res = test_partition_get_intervals()
 %
 % Outputs:
 %    res - boolean 
-%
-% Example: 
-%
-% 
+
 % Author:       Aaron Pereira, Matthias Althoff
 % Written:      02-August-2017
 % Last update:  02-August-2018 (MA)
 % Last revision:---
-
 
 %------------- BEGIN CODE --------------
 

@@ -1,18 +1,19 @@
-function display(obj)
-% display - Displays the left and right limit of the interval
+function display(I)
+% display - Displays the properties of an interal object (lower and upper
+%    bounds) on the command window
 %
 % Syntax:  
-%    display(obj)
+%    display(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
 %    ---
 %
 % Example: 
-%    a = interval(2,3);
-%    display(a);
+%    I = interval(2,3);
+%    display(I);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,23 +29,23 @@ function display(obj)
 
 %------------- BEGIN CODE --------------
 
-if isempty(obj)
-    dispEmptyObj(obj,inputname(1));
+if isemptyobject(I)
+    
+    dispEmptyObj(I,inputname(1));
     
 else
     fprintf(newline);
-    name = [inputname(1), ' ='];
-    disp(name)
+    disp([inputname(1), ' =']);
     fprintf(newline);
 
     %determine size of interval
-    [rows, cols] = size(obj.inf);
+    [rows, cols] = size(I.inf);
     
     for i = 1:rows
         str = ' ';
         % display one row
         for j = 1:cols
-            newStr = sprintf('[%0.4f, %0.4f]',obj.inf(i,j),obj.sup(i,j));
+            newStr = sprintf('[%0.4f, %0.4f]',I.inf(i,j),I.sup(i,j));
             str = [str,' ',newStr];
         end
         disp(str);

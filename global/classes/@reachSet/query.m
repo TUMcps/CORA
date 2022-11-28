@@ -6,7 +6,11 @@ function val = query(R,prop)
 %
 % Inputs:
 %    R - reachSet object
-%    prop - property ('reachSet', 'reachSetTimePoint', or 'finalSet')
+%    prop - property: 
+%           'reachSet': cell-array of time-interval solutions
+%           'reachSetTimePoint': cell-array of time-point solutions
+%           'finalSet': final time-point solution
+%           'tVec': vector of time steps
 %
 % Outputs:
 %    val - value of the property
@@ -23,6 +27,10 @@ function val = query(R,prop)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+    % check input arguments
+    inputArgsCheck({{R,'att',{'reachSet'},{''}}; ...
+                    {prop,'str',{'reachSet','reachSetTimePoint','finalSet','tVec'}}});
 
     if strcmp(prop,'reachSet')
         val = R(1,1).timeInterval.set;
@@ -51,13 +59,11 @@ function val = query(R,prop)
         
     elseif strcmp(prop,'tVec')
         if size(R,1) == 1
-            val = [R.timePoint.time{1}; diff(cell2mat(R.timePoint.time))];
+            val = diff(cell2mat(R.timePoint.time));
         else
-            error("Currently not implemented");
+            throw(CORAerror('CORA:notSupported','Multiple branches not supported.'));
         end
-        
-    else
-       error('Wrong value for input arguments "prop"!'); 
+         
     end
 end
 

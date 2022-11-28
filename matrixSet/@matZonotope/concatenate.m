@@ -1,16 +1,16 @@
 function matZ1 = concatenate(matZ1,matZ2)
 % concatenate - concatenates the center and all generators of the second
-% matrix zonotope to the first one
+%    matrix zonotope to the first one
 %
 % Syntax:  
 %    matZ = concatenate(matZ1,matZ2)
 %
 % Inputs:
-%    matZ1 - zonotope matrix object
-%    matZ2 - zonotope matrix object
+%    matZ1 - matZonotope object
+%    matZ2 - matZonotope object
 %
 % Outputs:
-%    matZ - zonotope matrix object
+%    matZ - matrix zonotope object
 %
 % Example: 
 %
@@ -37,6 +37,5 @@ end
 
 %update number of generators
 matZ1.gens = length(matZ1.generator);
-
 
 %------------- END OF CODE --------------

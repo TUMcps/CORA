@@ -25,7 +25,7 @@ function probModel = carReach(fileName,pathName,modelInitialization)
 
 %set path
 global filePath
-filePath = [coraroot '/contDynamics/stateSpaceModels'];
+filePath = [CORAROOT filesep 'contDynamics' filesep 'stateSpaceModels'];
 
 %load fArray to determine segment length of road 
 cd(pathName);

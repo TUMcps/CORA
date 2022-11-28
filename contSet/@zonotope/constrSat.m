@@ -1,6 +1,6 @@
 function res = constrSat(Z,C,d)
-% constrSat - checks if all points x within a zonotope satisfy the
-%    constraint Cx <= d
+% constrSat - checks if all points x within a zonotope satisfy a linear
+%    inequality constraint
 %
 % Syntax:  
 %    res = constrSat(Z,C,d)
@@ -28,11 +28,10 @@ function res = constrSat(Z,C,d)
 
 %------------- BEGIN CODE --------------
 
-%check if constraints are violated
-IH = interval(C*Z) + (-d);
+% check if constraints are violated
+I = interval(C*Z) + (-d);
 
-%check if interval contains 0
-res = all(supremum(IH)<0);
-
+% check if interval contains 0
+res = all(supremum(I) < 0);
 
 %------------- END OF CODE --------------

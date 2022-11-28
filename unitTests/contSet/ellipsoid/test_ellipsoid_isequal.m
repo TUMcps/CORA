@@ -33,10 +33,4 @@ E3 = E1;
 % compare results
 res = ~isequal(E1,E2) && isequal(E1,E3);
 
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
-
 %------------- END OF CODE --------------

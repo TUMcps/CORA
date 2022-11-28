@@ -1,25 +1,22 @@
 function completed = example_linearParam_reach_01_rlc_const()
 % example_linearParam_reach_01_rlc_const - example of linear parametric
-%                                          reachability analysis with 
-%                                          constant parameter
-%
-% This example is taken from [1].
+%     reachability analysis with constant parameters, taken from [1]
 %
 % Syntax:  
 %    completed = example_linearParam_reach_01_rlc_const()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    completed - boolean 
+%    completed - true/false 
 %
 % References:
 %    [1] M. Althoff, B. H. Krogh, and O. Stursberg. "Modeling, Design, and 
 %        Simulation of Systems with Uncertainties", chapter Analyzing 
 %        Reachability of Linear Dynamic Systems with Parametric 
 %        Uncertainties, pages 69-94. Springer, 2011.
-% 
+
 % Author:       Matthias Althoff
 % Written:      18-August-2016
 % Last update:  23-April-2020 (restructure params/options)
@@ -40,7 +37,7 @@ sysMatZono  = linParamSys(matZ_A, eye(dim_x));
 sysIntMat = linParamSys(matI_A, eye(dim_x));
 
 
-% Parameter ---------------------------------------------------------------
+% Parameters --------------------------------------------------------------
 
 % compute initial set
 u0 = intervalMatrix(0,0.2);             % range of voltages
@@ -88,10 +85,6 @@ disp(['computation time of reachable set using interval matrices: ',num2str(tCom
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 60;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
-
 simRes = simulateRandom(sysIntMat, params, simOpt);
 
 
@@ -103,11 +96,11 @@ figure; hold on; box on;
 projDim = [20,40];
     
 % plot reachable sets
-hanIntMat = plot(RintMat,projDim,'FaceColor',[.6 .6 .6],'EdgeColor','none','Order',10);
-hanMatZono = plot(RmatZono,projDim,'FaceColor',[.8 .8 .8],'EdgeColor','none','Order',10);
+hanIntMat = plot(RintMat,projDim,'Order',10);
+hanMatZono = plot(RmatZono,projDim,'FaceColor',colorblind('gray'),'Order',10);
 
 % plot initial set
-plot(params.R0,projDim,'w','Filled',true,'EdgeColor','k');
+plot(params.R0,projDim,'k','FaceColor','w');
 
 % plot simulation results     
 plot(simRes,projDim);
@@ -123,18 +116,18 @@ legend([hanIntMat,hanMatZono],'Interval matrix','Matrix zonotope');
 figure; hold on;
 
 % plot time elapse
-hanIntMat = plotOverTime(RintMat,0.5*dim_x,'FaceColor',[.6 .6 .6],'EdgeColor','none');
-hanMatZono = plotOverTime(RmatZono,0.5*dim_x,'FaceColor',[.8 .8 .8],'EdgeColor','none');
+hanIntMat = plotOverTime(RintMat,projDim(1));
+hanMatZono = plotOverTime(RmatZono,projDim(1),'FaceColor',colorblind('gray'));
 
 % plot simulation results
-plotOverTime(simRes,0.5*dim_x);
+plotOverTime(simRes,projDim(1));
 
 % label plot
 xlabel('t');
-ylabel(['x_{',num2str(0.5*dim_x),'}']);
+ylabel(['x_{',num2str(projDim(1)),'}']);
 legend([hanIntMat,hanMatZono],'Interval matrix','Matrix zonotope');
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

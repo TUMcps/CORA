@@ -1,8 +1,8 @@
 function estSet = intervalObserver_unitTest(obj,params,options)
-% intervalObserver - realizes the interval observer in [1].
+% intervalObserver_unitTest - realizes the interval observer in [1].
 %
 % Syntax:  
-%    estSet = intervalObserver(obj,params,options)
+%    estSet = intervalObserver_unitTest(obj,params,options)
 %
 % Inputs:
 %    obj - linear discrete-time system object
@@ -18,6 +18,10 @@ function estSet = intervalObserver_unitTest(obj,params,options)
 %        invariant systems. IEEE Transactions on Automatic Control,
 %        64(11):4717-4724, 2019.
 
+% Author:        ???
+% Written:       ???
+% Last update:   ---
+% Last revision: ---
 
 %------------- BEGIN CODE --------------
 

@@ -45,6 +45,4 @@ end
 
 tree = fnames;
 
-end
-
 %------------- END OF CODE --------------

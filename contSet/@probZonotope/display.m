@@ -1,5 +1,7 @@
 function display(probZ)
-% display - Displays information about a probabilistic zonotope
+% display - Displays the properties of a probZonotope object (center,
+%    interval generators, probabilistic generators, covariance matrix) on
+%    the command window
 %
 % Syntax:  
 %    display(probZ)

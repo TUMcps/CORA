@@ -23,7 +23,7 @@ function res = testMP_Krylov_initReach(~)
 %------------- BEGIN CODE --------------
 
 % enable access to private function "initReach_Krylov"
-path = coraroot();
+path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSys','private','initReach_Krylov.m');
 target = fullfile(path,'contDynamics','@linearSys','initReach_Krylov.m');
 copyfile(source,target);
@@ -114,18 +114,18 @@ options_Krylov = options;
 
 % homogeneous solution; time point
 epsilonBox = 1e-4*interval(-ones(length(C(:,1)),1),ones(length(C(:,1)),1));
-res(1) = in(options_Krylov.Rhom_tp_proj + epsilonBox, C*options.Rhom_tp);
+res(1) = contains(options_Krylov.Rhom_tp_proj + epsilonBox, C*options.Rhom_tp);
 
 % homogeneous solution; time interval
-res(2) = in(options_Krylov.Rhom_proj, C*options.Rhom);
+res(2) = contains(options_Krylov.Rhom_proj, C*options.Rhom);
 
 % input solution (without Rtrans)
-res(3) = in(options_Krylov.Raux_proj + epsilonBox, C*options.Raux);
+res(3) = contains(options_Krylov.Raux_proj + epsilonBox, C*options.Raux);
 
 % input solution (with Rtrans); errors for Rtrans added to Raux in Krylov computations to
 % avoid new generators
 epsilonBox = 1e-3*interval(-ones(length(C(:,1)),1),ones(length(C(:,1)),1)); % check if Krylov method can be that much tighter
-res(4) = in(options_Krylov.Rtrans_proj + options_Krylov.Raux_proj  + epsilonBox, C*(options.Raux + options.Rtrans));
+res(4) = contains(options_Krylov.Rtrans_proj + options_Krylov.Raux_proj  + epsilonBox, C*(options.Raux + options.Rtrans));
 
 % All tests passed?
 res = all(res);

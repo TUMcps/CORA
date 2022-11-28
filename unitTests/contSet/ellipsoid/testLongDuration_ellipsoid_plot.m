@@ -56,14 +56,9 @@ try
     plot(E,[1,2],'LineWidth',2);
     plot(E,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
     
-    % three arguments: object, dimensions, NVpair 'Filled'
-    plot(E,[1,2],'Filled',true);
-    plot(E,[1,2],'Filled',true,'LineWidth',2);
-    plot(E,[1,2],'Filled',true,'EdgeColor','k','FaceColor',[.8 .8 .8]);
-    
     % four arguments: object, dimensions, linespec, NVpairs
-    plot(E,[1,2],'r','Filled',true,'LineWidth',2);
-    plot(E,[1,2],'r','Filled',true,'LineWidth',2,'EdgeColor',[.6 .6 .6]);
+    plot(E,[1,2],'FaceColor','r','LineWidth',2);
+    plot(E,[1,2],'FaceColor','r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
     
     % close figure
     close;
@@ -72,10 +67,9 @@ catch
     res = false;
 end
 
-if res
-    disp('test_plot successful');
-else
-    disp('test_plot failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'O','D');
 end
 
 %------------- END OF CODE --------------

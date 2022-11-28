@@ -25,60 +25,66 @@ function res = find(R,prop,val)
 
 %------------- BEGIN CODE --------------
 
-    res = [];
-    
-    % get all reachSet objects with the specified location
-    if strcmp(prop,'location')
-        
-        for i = 1:size(R,1)
-           if R(i).loc == val
-              if isempty(res)
-                  res = R(i); 
-              else
-                  res = add(res,R(i));
-              end
-           end
-        end
-        
-    % get all reachSet objects with the specified parent
-    elseif strcmp(prop,'parent')
-        
-        for i = 1:size(R,1)
-           if R(i).parent == val
-              if isempty(res)
-                  res = R(i); 
-              else
-                  res = add(res,R(i));
-              end
-           end
-        end
-        
-    % get all reachSet objects inside the specified time interval
-    elseif strcmp(prop,'time')
-        
-        if ~isa(val,'interval')
-            val = interval(val);
-        end
-        
-        for i = 1:size(R,1)
-            
-           ind = [];
-           
-           for j = 1:length(R(i).timeInterval.time) 
-              if isIntersecting(R(i).timeInterval.time{j},val)
-                  ind = [ind;j];
-              end
-           end
-            
-           temp = getSubset(R(i),ind);
-           
-           if isempty(res)
-               res = temp; 
-           else
-               res = add(res,temp);
-           end   
-        end
-    end    
+% check input arguments (only first two)
+inputArgsCheck({{R,'att',{'reachSet'},{''}};
+                {prop,'str',{'location','parent','time'}}});
+
+% init result
+res = [];
+
+% get all reachSet objects with the specified location
+if strcmp(prop,'location')
+
+    for i = 1:size(R,1)
+       if R(i).loc == val
+          if isempty(res)
+              res = R(i); 
+          else
+              res = add(res,R(i));
+          end
+       end
+    end
+
+% get all reachSet objects with the specified parent
+elseif strcmp(prop,'parent')
+
+    for i = 1:size(R,1)
+       if R(i).parent == val
+          if isempty(res)
+              res = R(i); 
+          else
+              res = add(res,R(i));
+          end
+       end
+    end
+
+% get all reachSet objects inside the specified time interval
+elseif strcmp(prop,'time')
+
+    if ~isa(val,'interval')
+        val = interval(val);
+    end
+
+    for i = 1:size(R,1)
+
+       ind = [];
+
+       for j = 1:length(R(i).timeInterval.time) 
+          if isIntersecting(R(i).timeInterval.time{j},val)
+              ind = [ind;j];
+          end
+       end
+
+       temp = getSubset(R(i),ind);
+
+       if isempty(res)
+           res = temp; 
+       else
+           res = add(res,temp);
+       end   
+    end
+end
+
 end
 
 

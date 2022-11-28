@@ -1,6 +1,6 @@
 function pZ = polyZonotope(cPZ)
-% polyZonotope - enclose constrained polynomial zonotope with a polynomial
-%                zonotope
+% polyZonotope - enclose a constrained polynomial zonotope with a
+%    polynomial zonotope
 %
 % Syntax:  
 %    pZ = polyZonotope(cPZ)
@@ -9,7 +9,7 @@ function pZ = polyZonotope(cPZ)
 %    cPZ - conPolyZono object 
 %
 % Outputs:
-%    pZ - polyZonotope object enclosing cPZ
+%    pZ - polyZonotope object
 %
 % Example:  
 %    c = [0;0];
@@ -23,7 +23,7 @@ function pZ = polyZonotope(cPZ)
 %    pZ = polyZonotope(cPZ);
 %   
 %    figure; hold on;
-%    plot(cPZ,[1,2],'r','Splits',20,'Filled',true,'EdgeColor','none');
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',20);
 %    plot(pZ);
 %
 % Other m-files required: reduce
@@ -39,12 +39,10 @@ function pZ = polyZonotope(cPZ)
 
 %------------- BEGIN CODE --------------
 
-    % remove all constraints
-    cPZ = reduceConstraints(cPZ,0);
-    
-    % represent the resulting object as a polynomial zonotope
-    pZ = polyZonotope(cPZ.c,cPZ.G,cPZ.Grest,cPZ.expMat,cPZ.id);
-    
-end
+% remove all constraints
+cPZ = reduceConstraints(cPZ,0);
+
+% represent the resulting object as a polynomial zonotope
+pZ = polyZonotope(cPZ.c,cPZ.G,cPZ.Grest,cPZ.expMat,cPZ.id);
     
 %------------- END OF CODE --------------

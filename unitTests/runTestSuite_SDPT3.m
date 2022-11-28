@@ -12,11 +12,7 @@ function runTestSuite_SDPT3(varargin)
 %
 % Outputs:
 %    -
-%
-% Example: 
-%    -
-%
-% 
+
 % Author:       Matthias Althoff
 % Written:      07-July-2021
 % Last update:  ---
@@ -25,7 +21,7 @@ function runTestSuite_SDPT3(varargin)
 
 %------------- BEGIN CODE --------------
 
-directory = [coraroot '/unitTests'];
+directory = [CORAROOT filesep 'unitTests'];
 verbose = 1;
 
 if nargin >= 1

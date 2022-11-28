@@ -34,10 +34,11 @@ else
 end
 
 function dxdt = f(~,x)
-    dxdt = obj.A*x + obj.B*options.u + c;
+    dxdt = obj.A*x + obj.B*options.u + c + options.w;
 end
 
 handle = @f;
+
 end
 
 %------------- END OF CODE --------------

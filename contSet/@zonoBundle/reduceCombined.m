@@ -1,17 +1,18 @@
-function Zred = reduceCombined(Zbundle,option,varargin)
+function zB = reduceCombined(zB,option,varargin)
 % reduceCombined - Reduces the order of a zonotope bundle by not reducing
-% each zonotope separately, but in a combined fashion
+%    each zonotope separately, but in a combined fashion
 %
 % Syntax:  
-%    [Zbundle]=reduceCombined(Zbundle,option,varargin)
+%    zB = reduceCombined(zB,option,varargin)
 %
 % Inputs:
-%    Zbundle - zonotope bundle
+%    zB - zonoBundle object
 %    option - reduction method selector
-%    varargin - order and/or filterLength
+%    order - desired order
+%    filterLength - ???
 %
 % Outputs:
-%    Z - reduced zonotope
+%    zB - reduced zonotope bundle
 %
 % Example: 
 %    ---
@@ -29,30 +30,20 @@ function Zred = reduceCombined(Zbundle,option,varargin)
 
 %------------- BEGIN CODE --------------
 
-%2 inputs
-if nargin==2
-    order=1;
-    filterLength=[];
-%3 inputs
-elseif nargin==3
-    order=varargin{1};
-    filterLength=[];
-%4 inputs
-elseif nargin==4
-    order=varargin{1};
-    filterLength=varargin{2};
-end
+% parse input arguments
+[order,filterLength] = setDefaultValues({1,[]},varargin);
 
+% check input arguments
+inputArgsCheck({{zB,'att','zonoBundle'};
+                {order,'att','numeric','nonnan'};
+                {filterLength,'att','numeric','nonnan'}});
 
 %option='methC'
 if strcmp(option,'methC')
-    [Zred,t]=reduceMethC(Zbundle,filterLength);   
-    
-
+    [zB,t] = reduceMethC(zB,filterLength);
 %wrong argument
 else
-    disp('Error: Second argument is wrong');
-    Zred=[];
+    throw(CORAerror('CORA:wrongValue','second','methC'));
 end
 
 

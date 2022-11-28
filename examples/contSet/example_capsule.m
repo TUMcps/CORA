@@ -9,14 +9,14 @@ function completed = example_capsule()
 %    -
 %
 % Outputs:
-%    completed - boolean
+%    completed - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        ---
 % Written:       ---
 % Last update:   ---
@@ -40,19 +40,19 @@ s = [0;1];
 C3 = C2 + s;
 
 % check capsule-in-capsule containment
-res1 = in(C1,C2);
-res2 = in(C1,C3);
+res1 = contains(C1,C2);
+res2 = contains(C1,C3);
 
 disp(['C2 in C1?: ',num2str(res1)]);
 disp(['C3 in C1?: ',num2str(res2)]);
 
 % visualization
 figure; hold on
-plot(C1,[1,2],'r');
-plot(C2,[1,2],'g');
-plot(C3,[1,2],'b');
+plot(C1,[1,2]);
+plot(C2,[1,2],'Color',colorblind('r'));
+plot(C3,[1,2],'k');
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

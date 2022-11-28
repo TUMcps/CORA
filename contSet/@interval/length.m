@@ -1,19 +1,19 @@
-function L = length(obj)
+function l = length(I)
 % length - Overloads the operator that returns the length
 %    of the longest array dimension
 %
 % Syntax:  
-%    L = length(obj)
+%    l = length(I)
 %
 % Inputs:
-%    obj - interval object 
+%    I - interval object 
 %
 % Outputs:
-%    L - length of the largest array dimension in X.
+%    l - length of the largest array dimension.
 %
 % Example: 
-%    a=interval([-1 1], [1 2]);
-%    length(a)
+%    I = interval([-1 1], [1 2]);
+%    length(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,7 +28,7 @@ function L = length(obj)
 
 %------------- BEGIN CODE --------------
 
-%returns length of infimum
-L = length(obj.inf);
+% length of infimum and supremum equal
+l = length(I.inf);
 
 %------------- END OF CODE --------------

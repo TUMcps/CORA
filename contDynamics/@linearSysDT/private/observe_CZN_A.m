@@ -1,5 +1,5 @@
 function [R,tcomp] = observe_CZN_A(obj,options)
-% observe_CZN_A - computes the guaranted state estimation approach
+% observe_CZN_A - computes the guaranteed state estimation approach
 % from [1].
 %
 %

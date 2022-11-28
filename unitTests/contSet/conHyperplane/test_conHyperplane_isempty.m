@@ -32,10 +32,4 @@ hyp3 = conHyperplane();
 % combine tests
 res = ~isempty(hyp1) && ~isempty(hyp2) && isempty(hyp3);
 
-if res
-    disp('test_isempty successful');
-else
-    disp('test_isempty failed');
-end
-
 %------------- END OF CODE --------------

@@ -1,26 +1,25 @@
-function d = dim(Z)
-% dim - returns the dimension in which the zonotope is defined;
-%    caution: this is different from the rank of a zonotope
+function n = dim(Z)
+% dim - returns the dimension of the ambient space of a zonotope
 %
 % Syntax:  
-%    d = dim(Z)
+%    n = dim(Z)
 %
 % Inputs:
 %    Z - zonotope object
 %
 % Outputs:
-%    d - dimension in which Z is defined
+%    n - dimension of the ambient space
 %
 % Example: 
-%    Z = zonotope([zeros(3,1),rand(3,5)]);
-%    d = dim(Z)
+%    Z = zonotope([-1;1;2],[2 4 -3; 2 1 0; 0 2 -1]]);
+%    n = dim(Z)
 %
-% Other m-files required: center.m
+% Other m-files required: zonotope/center
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: rank.m
-%
+% See also: zonotope/rank
+
 % Author:        Mark Wetzlinger
 % Written:       15-Sep-2019
 % Last update:   11-March-2021 (MW, add empty case)
@@ -29,9 +28,9 @@ function d = dim(Z)
 %------------- BEGIN CODE --------------
 
 if ~isempty(Z)
-    d = length(center(Z));
+    n = length(center(Z));
 else
-    d = 0;
+    n = 0;
 end
 
 %------------- END OF CODE --------------

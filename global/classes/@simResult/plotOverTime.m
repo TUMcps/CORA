@@ -1,17 +1,22 @@
-function han = plotOverTime(obj,varargin)
-% plotOverTime - plots a the simulated trajectories over time
+function han = plotOverTime(simRes,varargin)
+% plotOverTime - plots the simulated trajectories over time
 %
 % Syntax:  
-%    han = plotOverTime(obj)
-%    han = plotOverTime(obj,dim,color)
+%    han = plotOverTime(simRes)
+%    han = plotOverTime(simRes,dims)
+%    han = plotOverTime(simRes,dims,type)
 %
 % Inputs:
-%    obj - simResult object
-%    dim - dimension that should be projected
-%    color - color of the plotted trajectory ('r','b', etc.)
+%    simRes - simResult object
+%    dims - (optional) dimensions for projection
+%    type - (optional) plot settings (LineSpec and Name-Value pairs)
+%          'Traj', <whichtraj> corresponding to
+%                   x ... state trajectory (default)
+%                   y ... output trajectory (default if no ti)
+%                   a ... algebraic trajectory
 %
 % Outputs:
-%    han - handle for the resulting graphic object
+%    han - handle to the graphics object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,23 +32,57 @@ function han = plotOverTime(obj,varargin)
 %------------- BEGIN CODE --------------
 
 % default values for the optional input arguments
-dims = 1;
-linespec = 'k';
-NVpairs = {};
+dims = setDefaultValues({1},varargin{:});
 
 % parse input arguments
-if nargin > 1 && ~isempty(varargin{1})
-    dims = varargin{1};
-end
-if nargin > 2 && ~isempty(varargin{2})
-    plotOptions = varargin(2:end);
-    [linespec,NVpairs] = readPlotOptions(plotOptions);
-end
+NVpairs = readPlotOptions(varargin(2:end),'simResult');
+[NVpairs,whichtraj] = readNameValuePair(NVpairs,'Traj','ischar','x');
+
+% check which trajectory has to be plotted
+whichtraj = checkTraj(simRes,whichtraj);
 
 % loop over all simulated trajectories
 hold on
-for i = 1:length(obj.x)
-    han = plot(obj.t{i},obj.x{i}(:,dims),linespec,NVpairs{:});
+for i = 1:length(simRes.(whichtraj))
+    han = plot(simRes.t{i},simRes.(whichtraj){i}(:,dims),NVpairs{:});
+end
+
+if nargout == 0
+    clear han;
+end
+
+end
+
+
+% Auxiliary function ------------------------------------------------------
+
+function whichtraj = checkTraj(simRes,whichtraj)
+
+% must be character vector for switch-expression to work properly
+if isempty(whichtraj)
+    % default value
+    whichtraj = 'x';
+end
+
+switch whichtraj
+    case 'x'
+        % no issues (should always be there)
+        
+    case 'y'
+        if isempty(simRes(1).y)
+            throw(CORAerror('CORA:emptyProperty'));
+        end
+
+    case 'a'
+        if isempty(simRes(1).a)
+            throw(CORAerror('CORA:emptyProperty'));
+        end
+
+    otherwise
+        % error
+        throw(CORAerror('CORA:specialError','Wrong value for name-value pair'));
+end
+
 end
 
 %------------- END OF CODE --------------

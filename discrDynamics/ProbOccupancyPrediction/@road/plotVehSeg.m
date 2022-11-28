@@ -23,10 +23,10 @@ function plotVehSeg(obj,iSeg,iDevSeg,Zvehicle)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 28-January-2009
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      28-January-2009
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

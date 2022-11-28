@@ -30,7 +30,7 @@ function res = testLongDuration_conZonotope_and
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
 
 % TEST 1: conZonotope (random) --------------------------------------------
 
@@ -66,28 +66,21 @@ for j = 2:3
 %         plot(cZono1,[1,2],'r');
 %         hold on
 %         plot(cZono2,[1,2],'b');
-%         plot(zonoInt,[1,2],'g','Filled',true,'EdgeColor','none');
+%         plot(zonoInt,[1,2],'FaceColor','g');
 %         plot(V(1,:),V(2,:),'.k','MarkerSize',12);
 %     end
 
     % check correctness
-    if ~isempty(V_)
-        for i = 1:size(V_,2)
-           if ~ismembertol(V_(:,i)',V',1e-10,'ByRows',true)
-              file_name = strcat('testLongDuration_conZonotope_intersection_2_', ...
-                                 datestr(now,'mm-dd-yyyy_HH-MM'));
-                  
-              file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
-                                   file_name);
-                           
-              save(file_path, 'poly1', 'poly2')
-              error('Test 1 (conZonotope random) failed!'); 
-           end
-        end
+    if ~compareMatrices(V,V_,1e-10)
+          file_name = strcat('testLongDuration_conZonotope_intersection_2_', ...
+                             datestr(now,'mm-dd-yyyy_HH-MM'));
+          file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
+                               file_name);
+          save(file_path, 'poly1', 'poly2')
+          res = false;
+          break
     end
 end
-
-res = true;
 
 
 %------------- END OF CODE --------------

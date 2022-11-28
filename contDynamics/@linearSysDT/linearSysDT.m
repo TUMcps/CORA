@@ -16,8 +16,8 @@ classdef linearSysDT < contDynamics
 % Description:
 %    Generates a discrete-time linear system object according to the 
 %    following first-order difference equations:
-%       x(i+1) = A x(i) + B u(i) + c + w(i)
-%       y(i) = C x(i) + D u(i) + k + v(i)
+%       x(k+1) = A x(k) + B u(k) + c + w(k)
+%       y(k) = C x(k) + D u(k) + k + v(k)
 %
 % Inputs:
 %    name - name of system
@@ -30,16 +30,14 @@ classdef linearSysDT < contDynamics
 %    k - output offset
 %
 % Outputs:
-%    obj - Generated Object
+%    obj - generated linearSysDT object
 %
 % Example:
 %    A = [-0.4 0.6; 0.6 -0.4];
 %    B = [0; 1];
 %    C = [1 0];
-%
 %    dt = 0.4;
-%
-%    sys = linearSysDT(A,B,[],C,dt)
+%    sys = linearSysDT(A,B,0,C,dt)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -50,18 +48,19 @@ classdef linearSysDT < contDynamics
 % Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      20-Mar-2020 
 % Last update:  14-Jun-2021 (MA, invoke observe from superclass)
+%               19-November-2021 (MW, default values for C, D, k)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
-    A = [];     % system matrix
-    B = 1;      % input matrix
-    c = [];     % constant input
-    C = 1;      % output matrix
-    D = [];     % throughput matrix
-    k = [];     % output offset
-    dt = [];    % sampling time
+    A {mustBeNumeric} = [];                         % system matrix: n x n
+    B {mustBeNumeric} = 1;                          % input matrix: n x m
+    c {mustBeNumeric} = [];                     	% constant input: n x 1
+    C {mustBeNumeric} = [];                         % output matrix: q x n
+    D {mustBeNumeric} = [];                         % throughput matrix: q x m
+    k {mustBeNumeric} = [];                         % output offset: q x 1
+    dt {mustBeNumeric} = [];                        % sampling time
 end
 
 methods
@@ -69,80 +68,90 @@ methods
     % class constructor
     function obj = linearSysDT(varargin)
         
-        % check if system name is provided
-        name = 'linearSysDT';
-        A = []; B = []; c = []; C = 1; D = []; k = [];
-        
-        if ischar(varargin{1})
-           name = varargin{1};
-           A = varargin{2};
-           B = varargin{3};
-           if nargin == 4
-               dt = varargin{4};
-           elseif nargin == 5
-               c = varargin{4};
-               dt = varargin{5};
-           elseif nargin == 6
-               c = varargin{4};
-               C = varargin{5};
-               dt = varargin{6};
-           elseif nargin == 7
-               c = varargin{4};
-               C = varargin{5};
-               D = varargin{6};
-               dt = varargin{7};
-           elseif nargin == 8
-               c = varargin{4};
-               C = varargin{5};
-               D = varargin{6};
-               k = varargin{7};
-               dt = varargin{8};
-           else
-               error('Wrong number of input arguments!');
-           end 
-            
-        else
-           A = varargin{1};
-           B = varargin{2};
-           if nargin == 3
-               dt = varargin{3};
-           elseif nargin == 4
-               c = varargin{3};
-               dt = varargin{4};
-           elseif nargin == 5
-               c = varargin{3};
-               C = varargin{4};
-               dt = varargin{5};
-           elseif nargin == 6
-               c = varargin{3};
-               C = varargin{4};
-               D = varargin{5};
-               dt = varargin{6};
-           elseif nargin == 7
-               c = varargin{3};
-               C = varargin{4};
-               D = varargin{5};
-               k = varargin{6};
-               dt = varargin{7};
-           else
-               error('Wrong number of input arguments!');
-           end 
+        % not enough or too many input arguments
+        if nargin < 3 || nargin > 8
+            throw(CORAerror('CORA:notEnoughInputArgs',3));
+        elseif nargin > 8
+            throw(CORAerror('CORA:tooManyInputArgs',8));
         end
+
+        % parse name, system matrix, input matrix
+        if ischar(varargin{1})
+            name = varargin{1};
+            A = varargin{2};
+            B = varargin{3};
+            cnt = 3;
+        else
+            name = 'linearSysDT'; % default name
+            A = varargin{1};
+            B = varargin{2};
+            cnt = 2;
+        end
+        % note that cnt is +1 compared to linearSys due to dt-arguments
         
         % get number of states, inputs, and outputs
         states = size(A,1);
-        inputs = size(B,2);
+        inputs = states;
+        outputs = states;
         
-        outputs = 1;
-        if ~isempty(C)
-           outputs = size(C,1); 
+        % number of inputs
+        if ~isscalar(B)
+            inputs = size(B,2);
         end
+        
+        % for c, D, and k: overwrite empty entries by default zeros
+        % case C = [] is allowed: yields no output computation in code
+        
+        % constant input
+        c = zeros(states,1); % default value
+        if nargin > cnt + 1
+        	cnt = cnt + 1;
+            if ~isempty(varargin{cnt})
+                c = varargin{cnt};
+            end 
+        end
+        
+        % output matrix
+        C = 1; % default value
+        if nargin > cnt + 1
+        	cnt = cnt + 1;
+            C = varargin{cnt};
+        end
+        % compute number of outputs
+        if ~isempty(C) && ~isscalar(C)
+            outputs = size(C,1); 
+        end
+        
+        % throughput matrix
+        D = 0; % default value
+        if inputs ~= outputs
+            D = zeros(outputs,inputs); % default value
+        end
+        if nargin > cnt + 1
+        	cnt = cnt + 1;
+            if ~isempty(varargin{cnt})
+                D = varargin{cnt};
+            end 
+        end
+        
+        % output offset
+        k = zeros(outputs,1); % default value
+        if nargin > cnt + 1
+        	cnt = cnt + 1;
+            if ~isempty(varargin{cnt})
+                k = varargin{cnt};
+            end
+        end
+        
+        % sampling time (always last input argument)
+        dt = varargin{end};
         
         % instantiate parent class
         obj@contDynamics(name,states,inputs,outputs); 
         
         % assign object properties
-        obj.A = A; obj.B = B; obj.c = c; obj.C = C; obj.D = D; obj.k = k;
+        obj.A = A; obj.B = B; obj.c = c;
+        obj.C = C; obj.D = D; obj.k = k;
         obj.dt = dt;
     end
     
@@ -152,6 +161,7 @@ methods
         [R, tcomp] = observe@contDynamics(obj,params,options);
     end
 end
+
 end
 
 %------------- END OF CODE --------------

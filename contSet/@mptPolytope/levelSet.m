@@ -29,15 +29,12 @@ A = obj.P.A;
 b = obj.P.b;
 
 if ~isempty(obj.P.Ae)
-    error("Not implemented yet!");
+    throw(CORAerror('CORA:notSupported','Equality constraints not supported.'));
 end
 
 equations = A*vars - b;
 compOps = repmat({'<='},size(A,1),1);
 
 res = levelSet(equations,vars,compOps);
-
-  
-end
 
 %------------- END OF CODE --------------

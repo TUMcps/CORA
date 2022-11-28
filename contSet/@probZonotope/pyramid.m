@@ -48,7 +48,7 @@ end
 probTotal=0;
 for i=1:length(mArray)
     %convert zonotope to polytope
-    msP=polytope(msZ{i});
+    msP=mptPolytope(msZ{i});
 %     if i==1
 %         plot(msZ{i});
 %         hold on
@@ -87,7 +87,7 @@ end
 % %plot remaining pyramid: only for the special case of the HSCC08 paper
 % %example
 % I=interval([-10,10;-5,-3;-10,100]);
-% P=polytope(I);
+% P=mptPolytope(I);
 % for i=1:length(mArray)
 %     Znew=msZ{i}.Z;
 %     Znew(3,1)=0.5*(maxVal(i+1)+maxVal(i));

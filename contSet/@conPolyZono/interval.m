@@ -1,13 +1,12 @@
-function res = interval(obj,varargin)
-% interval - computes an enclosing interval of a constrained polynomial
-%            zonotope
+function I = interval(cPZ,varargin)
+% interval - encloses a constrained polynomial zonotope by an interval
 %
 % Syntax:  
-%    res = interval(obj)
-%    res = interval(obj,method)
+%    I = interval(cPZ)
+%    I = interval(cPZ,method)
 %
 % Inputs:
-%    obj - conPolyZono object
+%    cPZ - conPolyZono object
 %    method - method that is used to calculate the interval enclosure
 %              'conZonotope': conversion to a constrained zonotope
 %              'interval': interval arithmetic
@@ -15,7 +14,7 @@ function res = interval(obj,varargin)
 %              'quadProg': quadratic programming
 %
 % Outputs:
-%    res - interval object
+%    I - interval object
 %
 % Example: 
 %    A = 1/8 * [-10 2 2 3 3];
@@ -29,7 +28,7 @@ function res = interval(obj,varargin)
 %    int = interval(cPZ);
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'r','Filled',true,'EdgeColor','none','Splits',20);
+%    plot(cPZ,[1,2],'r','Splits',20);
 %    plot(int,[1,2],'b');
 %
 % Other m-files required: reduce
@@ -45,49 +44,46 @@ function res = interval(obj,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    method = 'conZonotope';
+% parse input arguments
+method = setDefaultValues({'conZonotope'},varargin{:});  
+
+% check input arguments
+inputArgsCheck({{cPZ,'att','conPolyZono'};
+                {method,'str',{'conZonotope','interval','split','quadProg'}}});
+
+% compute enclosing interval with the spe
+if strcmp(method,'conZonotope')
     
-    if nargin > 1
-       method = varargin{1}; 
+    % compute conZonotope enclosure of conPolyZono object
+    zono = conZonotope(cPZ);
+    
+    % enclose zonotope with an interval
+    I = interval(zono);
+    
+elseif strcmp(method,'interval')
+    
+    % compute zonotope enclosure of conPolyZono object
+    zono = zonotope(cPZ);
+    
+    % enclose zonotope with an interval
+    I = interval(zono);
+    
+elseif strcmp(method,'split') || strcmp(method,'quadProg')
+    
+    n = dim(cPZ);
+    I = interval(zeros(n,1));
+
+    % loop over all dimensions
+    for i = 1:n
+        
+        % construct unit vector
+        temp = zeros(n,1);
+        temp(i) = 1;
+
+        % calculate bounds
+        I(i) = supportFunc(cPZ,temp,'range',method);
     end
     
-    % compute enclosing interval with the spe
-    if strcmp(method,'conZonotope')
-        
-        % compute conZonotope enclosure of conPolyZono object
-        zono = conZonotope(obj);
-        
-        % enclose zonotope with an interval
-        res = interval(zono);
-        
-    elseif strcmp(method,'interval')
-        
-        % compute zonotope enclosure of conPolyZono object
-        zono = zonotope(obj);
-        
-        % enclose zonotope with an interval
-        res = interval(zono);
-        
-    elseif strcmp(method,'split') || strcmp(method,'quadProg')
-        
-        n = dim(obj);
-        res = interval(zeros(n,1));
-
-        % loop over all dimensions
-        for i = 1:n
-            
-            % construct unit vector
-            temp = zeros(n,1);
-            temp(i) = 1;
-
-            % calculate bounds
-            res(i) = supportFunc(obj,temp,'range',method);
-        end
-        
-    else
-        error('Wrong value for input argument "method"!'); 
-    end
 end
 
 %------------- END OF CODE --------------

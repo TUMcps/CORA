@@ -42,9 +42,11 @@ lower_true = [-2; -6; -3];
 upper_true = [ 2;  5;  2];
 IntUnion_true = interval(lower_true, upper_true);
 
+% empty set
+res_e = or(Int1,interval()) == Int1;
 % compare results
 res_analytical = all(infimum(IntUnion) == infimum(IntUnion_true)) && ...
-        all(supremum(IntUnion) == supremum(IntUnion_true));
+        all(supremum(IntUnion) == supremum(IntUnion_true)) && res_e;
 % -------------------------------------------------------------------------
 
 % TEST 2: Random ----------------------------------------------------------
@@ -72,11 +74,5 @@ res_rand = all(infimum(IntUnion) == infimum(IntUnion_true)) && ...
 
 % add results
 res = res_analytical && res_rand;
-
-if res
-    disp('test_or successful');
-else
-    disp('test_or failed');
-end
 
 %------------- END OF CODE --------------

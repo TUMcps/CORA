@@ -2,14 +2,14 @@ function plot(varargin)
 % plot - Plots 2-dimensional projection of an interval matrix
 %
 % Syntax:  
-%    plot(obj,dimensions)
+%    plot(intMat,dimensions)
 %
 % Inputs:
-%    obj - interval matrix
+%    intMat - interval matrix
 %    dimensions - dimensions that should be projected (optional) 
 %
 % Outputs:
-%    none
+%    -
 %
 % Example: 
 %
@@ -26,14 +26,7 @@ function plot(varargin)
 
 %------------- BEGIN CODE --------------
 
-%convert to interval matrix to interval
-IH=interval(varargin{1});
-    
-%plot interval
-if nargin==1
-    plot(IH);
-elseif nargin>=2
-    plot(IH,varargin{2:end});
-end
+% convert to interval and plot
+plot(interval(intMat),varargin{:});
 
 %------------- END OF CODE --------------

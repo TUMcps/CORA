@@ -36,6 +36,11 @@ function probZred = reduce(probZ,option,order)
 
 %------------- BEGIN CODE --------------
 
+% check input arguments
+inputArgsCheck({{probZ,'att','probZonotope'};
+                {option,'str',{'girard','althoff'}};
+                {order,'att','numeric','nonnan'}});
+
 %reduce uncertain mean
 Zred = reduce(zonotope(probZ.Z),option,order);
 probZ.Z = Zred.Z;

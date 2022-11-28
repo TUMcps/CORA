@@ -1,6 +1,5 @@
 function G = generators(Z)
-% generators - returns the generators of a zonotope as a matrix whose
-%    column vectors are the generators
+% generators - returns the generator matrix of a zonotope
 %
 % Syntax:  
 %    G = generators(Z)
@@ -9,7 +8,7 @@ function G = generators(Z)
 %    Z - zonotope object
 %
 % Outputs:
-%    G - matrix of generators stored as column vectors
+%    G - generator matrix
 %
 % Example: 
 %    Z = zonotope([1 1 0; 0 0 1]);

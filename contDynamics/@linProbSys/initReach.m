@@ -13,7 +13,8 @@ function [Rfirst,options] = initReach(obj,Rinit,options)
 %    obj - linIntSys object
 %    Rfirst - first reachable set struct
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,7 +31,6 @@ function [Rfirst,options] = initReach(obj,Rinit,options)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
 
 % compute exponential matrix
 obj = pexpm(obj,options);

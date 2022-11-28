@@ -6,11 +6,11 @@ function matP = simplePlus(summand1,summand2)
 %    matP = simplePlus(summand1,summand2)
 %
 % Inputs:
-%    summand1 - matrix polytope
-%    summand2 - matrix polytope
+%    summand1 - matPolytope object
+%    summand2 - matPolytope object
 %
 % Outputs:
-%    matP - matrix polytope after Minkowsi addition
+%    matP - matrix polytope after Minkowski addition
 %
 % Example: 
 %
@@ -27,7 +27,6 @@ function matP = simplePlus(summand1,summand2)
 
 %------------- BEGIN CODE --------------
 
-
 %initialize potential vertices
 Vpot=[];
 %Calculate posiible new vertices by adding all combinations
@@ -39,6 +38,5 @@ end
 
 %instantiate matrix polytope
 matP=matPolytope(Vpot);
-
 
 %------------- END OF CODE --------------

@@ -6,13 +6,14 @@ function A = randomSampling(matZ,varargin)
 %
 % Inputs:
 %    matZ - matrix zonotope
-%    samples - number of segments
-%    options - options struct
+%    samples - (optional) number of segments
+%    options - (optional) options struct
 %
 % Outputs:
 %    A - cell array of matrices
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,17 +31,17 @@ function A = randomSampling(matZ,varargin)
 % set default inputs
 if nargin == 1
     samples = 1;
-    extreme = 1;
+    extreme = true;
 elseif nargin == 2
     samples = varargin{1};
-    extreme = 1;
+    extreme = true;
 else
     samples = varargin{1};
     options = varargin{2};
     if isfield(options,'extremeSampling')
         extreme = options.extremeSampling;
     else
-        extreme = 1;
+        extreme = true;
     end
 end
 
@@ -51,13 +52,12 @@ for i=1:samples
     A{i}=matZ.center;
     %add generator matrices
     for iGen=1:matZ.gens
-        if extreme
+        if extreme % extreme
             A{i}=A{i} + sign(2*rand(1)-1).*matZ.generator{iGen};
-        else
+        else % random
             A{i}=A{i} + (2*rand(1)-1).*matZ.generator{iGen};
         end
     end
 end
 
-%------------- END OF CODE --------------
 %------------- END OF CODE --------------

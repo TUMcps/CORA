@@ -1,19 +1,24 @@
-function zB = enclose(varargin)
-% enclose - Generates a zonoBundle that encloses a zonoBundle and its
-%           linear transformation (see Proposition 5 in [1])
+function zB = enclose(zB,varargin)
+% enclose - encloses a zonotope bundle and its affine transformation (see
+%    Proposition 5 in [1])
+%
+% Description:
+%    Computes the set
+%    { a x1 + (1 - a) * (M x1 + x2) | x1 \in zB, x2 \in S, a \in [0,1] }
+%    where S = M*zB + Splus
 %
 % Syntax:  
-%    zB = enclose(zB1,zB2)
-%    zB = enclose(zB1,M,zBplus)
+%    zB = enclose(zB,S)
+%    zB = enclose(zB,M,Splus)
 %
 % Inputs:
-%    zB1 - first zonoBundle object
-%    zB2 - second zonoBundle object, satisfying zB2 = (M * zB1) + zBplus
+%    zB - zonoBundle object
+%    S - contSet object
 %    M - matrix for the linear transformation
-%    zBplus - zonoBundle object added to the linear transformation
+%    Splus - zonoBundle object added to the linear transformation
 %
 % Outputs:
-%    zB - zonoBundle that encloses zB1 and zB2
+%    zB - zonoBundle object that encloses given zonotope bundle and set
 %
 % References:
 %    [1] M. Althoff. "Zonotope bundles for the efficient computation of 
@@ -34,30 +39,34 @@ function zB = enclose(varargin)
 
 % parse input arguments
 if nargin == 2
-    Zbundle1 = varargin{1};
-    Zbundle2 = varargin{2};
+    S = varargin{1};
+elseif nargin == 3
+    % evaluate M*zB + Splus
+    S = (varargin{1}*zB) + varargin{2};
 else
-    Zbundle1 = varargin{1};
-    M = varargin{2};
-    zBplus = varargin{3};
-    
-    Zbundle2 = (M*Zbundle1) + zBplus;
+    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
-% compute set
-zB = Zbundle1;
 
-if isa(Zbundle2,'zonoBundle')
-    %compute enclosure for each zonotope pair
-    for i=1:Zbundle1.parallelSets
-        zB.Z{i}=enclose(Zbundle1.Z{i},Zbundle2.Z{i});
+if isa(S,'zonoBundle')
+
+    % compute enclosure for each zonotope pair
+    for i=1:zB.parallelSets
+        zB.Z{i} = enclose(zB.Z{i},S.Z{i});
     end
-elseif isa(Zbundle2,'zonotope')
-    %compute enclosure for each zonotope
-    for i=1:Zbundle1.parallelSets
-        zB.Z{i}=enclose(Zbundle1.Z{i},Zbundle2);
+
+elseif isa(S,'zonotope')
+
+    % compute enclosure for each zonotope
+    for i=1:zB.parallelSets
+        zB.Z{i} = enclose(zB.Z{i},S);
     end
+
+else
+
+    % not implemented for other contSet classes
+    throw(CORAerror('CORA:noops',zB,S));
+
 end
-
 
 %------------- END OF CODE --------------

@@ -37,6 +37,16 @@ function V = vertices(obj)
 
 %------------- BEGIN CODE --------------
 
+% pre-processing
+[res,vars] = pre_vertices('mptPolytope',obj);
+
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    V = vars{1}; return
+end
+
+
 % check if vertex representation already exists
 if obj.P.hasVRep()
     

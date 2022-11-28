@@ -1,16 +1,18 @@
 function createRemainderFile_certainInput(obj)
-% createRemainderFile - generates an mFile that allows to compute the
-% lagrange remainder
+% createRemainderFile_certainInput - generates an mFile that allows to
+%    compute the lagrange remainder
 %
 % Syntax:  
-%    createRemainderFile(obj)
+%    createRemainderFile_certainInput(obj)
 %
 % Inputs:
-%    obj - nonlinear system object
+%    obj - nonlinearSys object
 %
 % Outputs:
+%    -
 %
 % Example: 
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -43,7 +45,7 @@ f=simple(f);
 %f=vpa(f);
 
 
-fid = fopen([coraroot '/contDynamics/stateSpaceModels/lagrangeRemainder.m'],'w');
+fid = fopen([CORAROOT filesep 'contDynamics' filesep 'stateSpaceModels' filesep 'lagrangeRemainder.m'],'w');
 fprintf(fid, '%s\n\n', 'function f=lagrangeRemainder(x,u,dx,du)');
 for k=1:length(J2(:,1,1))
     str=['f(',num2str(k),',1)=',char(f(k,1)),';'];

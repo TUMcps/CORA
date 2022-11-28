@@ -29,7 +29,7 @@ function simulateVehicle
 %------------- BEGIN CODE --------------
 
 % set path
-savepath = [coraroot '/unitTests/contDynamics/linearSysDT/models'];
+savepath = [CORAROOT filesep 'unitTests' filesep 'contDynamics' filesep 'linearSysDT' filesep 'models'];
 
 % model dimension
 dim = 6;
@@ -144,9 +144,10 @@ params.u = InpSig'; %input transition
 
 options.points = 1;
 options.p_conf = 0.999; % probability that sample of normal distribution within specified set
+options.type = 'gaussian';
 
 % simulate result assuming Gaussian distributions
-simRes = simulateRandom(vehicle, params, options,'gaussian');
+simRes = simulateRandom(vehicle, params, options);
 
 %% obtain output values
 for i=1:length(simRes.t{1})

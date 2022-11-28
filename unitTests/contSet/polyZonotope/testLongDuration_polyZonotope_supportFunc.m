@@ -27,8 +27,6 @@ function res = testLongDuration_polyZonotope_supportFunc
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
 %% RANDOM TESTS
 
 % TEST 2-dimensional
@@ -50,7 +48,7 @@ for j = 1:length(methods)
         dir = rand(2,1)-0.5*ones(2,1);
 
         % calculate the bounds for this direction
-        inter = supportFunc(pZ,dir,'range',methods{j});
+        I = supportFunc(pZ,dir,'range',methods{j});
 
         % determine random point and extreme points inside the original 
         % polynomial zonotope
@@ -63,10 +61,13 @@ for j = 1:length(methods)
         % check if the all points from the polynomial zonotope are located
         % inside the calculated range
         points_ = dir' * points;
-        suc = infimum(inter) - min(points_) < 1e-10 && max(points_) - supremum(inter) < 1e-10;
+        suc = (infimum(I) < min(points_) || withinTol(infimum(I) - min(points_),0,1e-10) ) ...
+            || ( max(points_) < supremum(I) || withinTol(max(points_) - supremum(I),0,1e-10) );
 
         if ~suc
-           error('testLongDuration_polyZonotope_supportFunc: random test 2D failed!'); 
+           path = pathFailedTests(mfilename());
+           save(path,'points','pZ','I');
+           throw(CORAerror('CORA:testFailed'));
         end
     end
 end
@@ -90,7 +91,7 @@ for j = 1:length(methods)
         dir = rand(4,1)-0.5*ones(4,1);
 
         % calculate the bounds for this direction
-        inter = supportFunc(pZ,dir,'range',methods{j});
+        I = supportFunc(pZ,dir,'range',methods{j});
 
         % determine random point and extreme points inside the original 
         % polynomial zonotope
@@ -103,10 +104,12 @@ for j = 1:length(methods)
         % check if the all points from the polynomial zonotope are located
         % inside the calculated range
         points_ = dir' * points;
-        suc = infimum(inter) - min(points_) < 1e-10 && max(points_) - supremum(inter) < 1e-10;
+        suc = infimum(I) - min(points_) < 1e-10 && max(points_) - supremum(I) < 1e-10;
 
         if ~suc
-           error('testLongDuration_polyZonotope_supportFunc: random test 4D failed!'); 
+           path = pathFailedTests(mfilename());
+           save(path,'points','I','pZ');
+           throw(CORAerror('CORA:testFailed'));
         end
     end
 end

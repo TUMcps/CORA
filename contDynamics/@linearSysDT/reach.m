@@ -13,7 +13,7 @@ function [R,res] = reach(obj,params,options,varargin)
 %
 % Outputs:
 %    R - object of class reachSet storing the reachable set
-%    res - 1 if specifications are satisfied, 0 if not
+%    res - true if specifications are satisfied, false otherwise
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -24,88 +24,90 @@ function [R,res] = reach(obj,params,options,varargin)
 % Author:        Mark Wetzlinger
 % Written:       26-June-2019
 % Last update:   08-Oct-2019
-%                23-April-2020 (restructure params/options)
-%                07-December-2020 (fix wrong indexing)
+%                23-April-2020 (MW, restructure params/options)
+%                07-December-2020 (MW, fix wrong indexing)
+%                16-November-2021 (MW, add disturbance W)
 % Last revision: ---
 
 
 %------------- BEGIN CODE --------------
 
-    % safety property check
-    res = true;
+% safety property check
+res = true;
 
-    % options preprocessing
-    options = validateOptions(obj,mfilename,params,options);
-    
-    % specification
-    spec = [];
-    if nargin >= 4
-       spec = varargin{1}; 
-    end
+% options preprocessing
+options = validateOptions(obj,mfilename,params,options);
 
-    %if a trajectory should be tracked
-    if isfield(options,'uTransVec')
-        options.uTrans = options.uTransVec(:,1);
-    end
-
-    %time period
-    tVec = options.tStart:obj.dt:options.tFinal;
-
-    % initialize parameters for the output equation
-    [C,D,k] = initOutputEquation(obj,options);
-    Rout = cell(length(tVec)-1,1);
-
-    % initialize input set
-    Uadd = obj.B*(options.U + options.uTrans);
-
-    % initialize reachable set
-    Rnext.tp = options.R0;
-
-    % loop over all reachability steps
-    for i = 1:length(tVec)-1
-
-        % write results to reachable set struct Rnext
-        if isempty(obj.c)
-            Rnext.tp = obj.A*Rnext.tp + Uadd;
-        else
-            Rnext.tp = obj.A*Rnext.tp + Uadd + obj.c;
-        end
-        
-        % log information
-        verboseLog(i,tVec(i),options);
-        
-        % if a trajectory should be tracked
-        if isfield(options,'uTransVec')
-            options.uTrans = options.uTransVec(:,i+1);
-            % update input set
-            Uadd = obj.B*(options.U + options.uTrans);
-        end
-        
-        % compute output set
-        Rout{i} = outputSet(C,D,k,Rnext,options);
-
-        % safety property check
-        if ~isempty(spec)
-            if ~check(spec,Rout{i})
-                % violation
-                timePoint.set = Rout(1:i);
-                timePoint.time = num2cell(tVec(2:i+1)');
-                R = reachSet(timePoint);
-                res = false;
-                return
-            end
-        end
-        
-    end
-
-    % construct reachable set object
-    timePoint.set = Rout;
-    timePoint.time = num2cell(tVec(2:end)');
-    R = reachSet(timePoint);
-    
-    % log information
-    verboseLog(length(tVec),tVec(end),options);
-
+% specification
+spec = [];
+if nargin >= 4
+   spec = varargin{1}; 
 end
+
+%if a trajectory should be tracked
+if isfield(options,'uTransVec')
+    options.uTrans = options.uTransVec(:,1);
+end
+
+% time period and number of steps
+tVec = options.tStart:obj.dt:options.tFinal;
+steps = length(tVec)-1;
+options.i = 0;
+
+% initialize parameters for the output equation
+Rout = cell(steps+1,1);
+
+% initialize input set
+Uadd = obj.B*(options.U + options.uTrans);
+
+% initialize reachable set
+Rnext.tp = options.R0;
+
+% loop over all reachability steps
+for i = 1:steps
+    
+    % step counter
+    options.i = i;
+    
+    % compute output set at beginning of current step
+    Rout{i} = outputSet(obj,options,Rnext.tp);
+
+    % if a trajectory should be tracked
+    if isfield(options,'uTransVec')
+        options.uTrans = options.uTransVec(:,i);
+        % update input set
+        Uadd = obj.B*(options.U + options.uTrans);
+    end
+    
+    % write results to reachable set struct Rnext
+    Rnext.tp = obj.A*Rnext.tp + Uadd + obj.c + options.W;
+
+    % log information
+    verboseLog(i,tVec(i),options);
+
+    % safety property check
+    if ~isempty(spec)
+        if ~check(spec,Rout{i},interval(tVec(i)))
+            % violation
+            timePoint.set = Rout(1:i);
+            timePoint.time = num2cell(tVec(1:i)');
+            R = reachSet(timePoint);
+            res = false;
+            return
+        end
+    end
+end
+
+% compute last output set
+Rout{end} = outputSet(obj,options,Rnext.tp);
+
+
+% construct reachable set object
+timePoint.set = Rout;
+timePoint.time = num2cell(tVec');
+R = reachSet(timePoint);
+
+% log information
+verboseLog(length(tVec),tVec(end),options);
 
 %------------- END OF CODE --------------

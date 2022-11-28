@@ -1,4 +1,4 @@
-function [acceleration] = input2acceleration_old(input,velocity,type)
+function acceleration = input2acceleration_old(input,velocity,type)
 % input2acceleration_old - transforms the input (-1,1) to a physical 
 % acceleration. For decelartion with input (-1,0), the deceleration is
 % modeled linear with a maximum deceleration of -10 m/s^2. For the
@@ -6,7 +6,7 @@ function [acceleration] = input2acceleration_old(input,velocity,type)
 % performed.
 %
 % Syntax:  
-%    [acceleration] = input2acceleration_old(input,velocity,type)
+%    acceleration = input2acceleration_old(input,velocity,type)
 %
 % Inputs:
 %    input - input of the car ranging from (-1,1)
@@ -39,15 +39,12 @@ elseif strcmp(type,'bicycle')
     c5=7;
 end
 
-
 %if the car brakes
 if input<0
     acceleration=10*input; %max deceleration: 10 m/s^2
 %if the car accelerates
 else
     acceleration=c4*(1-((velocity/c5))^2)*input; %speed
-end
-
 end
 
 %------------- END OF CODE --------------

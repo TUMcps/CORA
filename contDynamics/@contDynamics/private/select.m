@@ -1,6 +1,6 @@
 function dimForSplit = select(obj,options,Rinit)
 % select - selects the split strategy of the reachable set causing the
-%          least linearization error
+%    least linearization error
 %
 % Syntax:  
 %    dimForSplit = select(obj,options,Rinit)

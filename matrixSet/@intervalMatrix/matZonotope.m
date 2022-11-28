@@ -1,11 +1,11 @@
-function matZ = matZonotope(matI)
-% matZonotopes - converts an interval matrix to a matrix zonotope
+function matZ = matZonotope(intMat)
+% matZonotope - converts an interval matrix to a matrix zonotope
 %
 % Syntax:  
-%    matZ = matZonotope(matI)
+%    matZ = matZonotope(intMat)
 %
 % Inputs:
-%    matI - interval matrix 
+%    intMat - intervalMatrix object
 %
 % Outputs:
 %    matZ - zonotope matrix
@@ -26,7 +26,7 @@ function matZ = matZonotope(matI)
 %------------- BEGIN CODE --------------
 
 %convert to interval
-I=interval(matI);
+I=interval(intMat);
 
 %convert to zonotope
 Z=zonotope(I);

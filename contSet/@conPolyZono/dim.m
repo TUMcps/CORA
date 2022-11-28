@@ -1,25 +1,31 @@
-function d = dim(cPZ)
-% dim - return dimension of constrained polynomial zonotope
+function n = dim(cPZ)
+% dim - returns the dimension of the ambient space of the constrained
+%    polynomial zonotope
 %
 % Syntax:  
-%    d = dim(cPZ)
+%    n = dim(cPZ)
 %
 % Inputs:
 %    cPZ - conPolyZono object
 %
 % Outputs:
-%    d - dimension of cPZ
+%    n - dimension of the ambient space
 %
 % Example: 
-%    cPZ = conPolyZonotope.generateRandom(4);
-%    d = dim(cPZ)
+%    A = 1/8 * [-10 2 2 3 3];
+%    b = -3/8;
+%    expMat_ = [1 0 1 2 0; 0 1 1 0 2; 0 0 0 0 0];
+%    c = [0;0];
+%    G = [1 0 1 -1/4;0 1 -1 1/4];
+%    expMat = [1 0 2 0;0 1 1 0; 0 0 0 1];
+%    n = dim(cPZ)
 %
 % Other m-files required: center.m
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: polyZonotope/dim
-%
+
 % Author:        Niklas Kochdumper
 % Written:       21-January-2021
 % Last update:   ---
@@ -27,6 +33,6 @@ function d = dim(cPZ)
 
 %------------- BEGIN CODE --------------
 
-    d = length(cPZ.c);
+n = length(cPZ.c);
 
 %------------- END OF CODE --------------

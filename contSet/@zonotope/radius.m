@@ -11,8 +11,8 @@ function r = radius(Z)
 %    r - radius
 %
 % Example: 
-%    Z=zonotope(rand(2,5));
-%    r=radius(Z);
+%    Z = zonotope([1;-1],[-1 2 1; 3 2 0]);
+%    r = radius(Z)
 %
 % Other m-files required: ---
 % Subfunctions: none

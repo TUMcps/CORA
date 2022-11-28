@@ -17,10 +17,7 @@ function res = testMP_Krylov_linearTimeErrorBound(~)
 %    [1] Althoff, M.: Reachability Analysis of Large Linear Systems With
 %        Uncertain Inputs in the Krylov Subspace , IEEE Transactions on 
 %        Automatic Control 65(2), 477–492, 2020.
-%
-% Example: 
-%
-% 
+
 % Author:       Matthias Althoff
 % Written:      17-November-2018
 % Last update:  ---
@@ -30,7 +27,7 @@ function res = testMP_Krylov_linearTimeErrorBound(~)
 %------------- BEGIN CODE --------------
 
 % enable access to private function "initReach_Krylov"
-path = coraroot();
+path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSys','private','initReach_Krylov.m');
 target = fullfile(path,'contDynamics','@linearSys','initReach_Krylov.m');
 copyfile(source,target);

@@ -1,48 +1,46 @@
 function res = cubMap(Z,varargin)
 % cubMap - computes an enclosure of the set corresponding to the cubic 
-%          multiplication of a zonotope with a third-order tensor
+%    multiplication of a zonotope with a third-order tensor
 %
 % Description:
-%   Calulates the following set:
-%   { z = (x' T x) * x | x \in Z }
+%    Calculates the following set:
+%    { z = (x' T x) * x | x \in Z }
 %
-%   If three polyZonotopes are provided, the function calculates the set:
-%   { z = (x1' T x2) * x3 | x1 \in Z1, x2 \in Z2, x3 \in Z3 }
+%    If three polyZonotopes are provided, the function calculates the set:
+%    { z = (x1' T x2) * x3 | x1 \in Z1, x2 \in Z2, x3 \in Z3 }
 %
 % Syntax:  
 %    res = cubMap(Z,T)
+%    res = cubMap(Z,T,ind)
 %    res = cubMap(Z1,Z2,Z3,T)
-%    res = cubMap(Z,T,ind)     
 %    res = cubMap(Z1,Z2,Z3,T,ind)
 %
 % Inputs:
 %    Z,Z1,Z2,Z3 - zonotope objects
 %    T - third-order tensor
-%    ind - cell-array containing the non-zero indizes of the tensor
+%    ind - cell-array containing the non-zero indices of the tensor
 %
 % Outputs:
 %    res - zonotope object representing the set of the cubic mapping
 %
 % Example: 
 %    % cubic multiplication
-%    Z = zonotope.generateRandom(2,[],4);
+%    Z = zonotope([1;-1],[1 3 -2 -1; 0 2 -1 1]);
 %    
-%    T{1,1} = rand(2);
-%    T{1,2} = rand(2);
-%    T{2,1} = rand(2);
-%    T{2,2} = rand(2);
+%    T{1,1} = rand(2); T{1,2} = rand(2);
+%    T{2,1} = rand(2); T{2,2} = rand(2);
 %
 %    Zcub = cubMap(Z,T);
 %
-%    figure ;
+%    figure;
 %    subplot(1,2,1);
-%    plot(Z,[1,2],'r','Filled',true,'EdgeColor','none');
+%    plot(Z,[1,2],'FaceColor','r');
 %    subplot(1,2,2);
-%    plot(Zcub,[1,2],'b','Filled',true,'EdgeColor','none');
+%    plot(Zcub,[1,2],'FaceColor','b');
 %
 %    % mixed cubic multiplication
-%    Z2 = zonotope.generateRandom(2,[],5);
-%    Z3 = zonotope.generateRandom(2,[],3);
+%    Z2 = zonotope([1;-1],[-1 3 -2 0 3; -2 1 0 2 -1]);
+%    Z3 = zonotope([1;-1],[-3 2 0; 2 1 -1]);
 %
 %    ZcubMixed = cubMap(Z,Z2,Z3,T);
 %
@@ -50,7 +48,7 @@ function res = cubMap(Z,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: quadMap, zonotope/cubMap
+% See also: quadMap
 
 % Author:       Niklas Kochdumper
 % Written:      17-August-2018
@@ -59,46 +57,59 @@ function res = cubMap(Z,varargin)
 
 %------------- BEGIN CODE --------------
 
+    % check number of input arguments
+    if nargin < 2
+        throw(CORAerror('CORA:notEnoughInputArgs',2));
+    elseif nargin > 5
+        throw(CORAerror('CORA:tooManyInputArgs',5));
+    end
+
     % cubic multiplication or mixed cubic multiplication
-    if isa(varargin{1},'zonotope')
+    if nargin == 4 || nargin == 5
         
-        % check user input
-        if nargin < 4
-           error('Wrong syntax for function cubMap!'); 
-        end
-        
+        % assign input arguments
         Z2 = varargin{1};
         Z3 = varargin{2};
         T = varargin{3};
         
         % parse optional input arguments
-        if nargin > 4
-           ind = varargin{4}; 
+        if nargin == 5
+            ind = varargin{4}; 
         else
-           temp = 1:size(T,2);
-           ind = repmat({temp},[size(T,1),1]);
-        end 
+            temp = 1:size(T,2);
+            ind = repmat({temp},[size(T,1),1]);
+        end
+
+        % check input arguments
+        inputArgsCheck({{Z,'att','zonotope'};
+                        {Z2,'att','zonotope'};
+                        {Z3,'att','zonotope'};
+                        {T,'att','cell'};
+                        {ind,'att','cell'}});
         
         % mixed cubic multiplication
         res = cubMapMixed(Z,Z2,Z3,T,ind);
         
-    else
+    elseif nargin == 2 || nargin == 3
+        % res = cubMap(Z,T)
+        % res = cubMap(Z,T,ind)
         
-        % check user input
-        if nargin < 2
-           error('Wrong syntax for function cubMap!'); 
-        end
-        
+        % assign input arguments
         T = varargin{1};
         
         % parse optional input arguments
         if nargin > 2
-           ind = varargin{2}; 
+            ind = varargin{2}; 
         else
-           temp = 1:size(T,2);
-           ind = repmat({temp},[size(T,1),1]);
+            temp = 1:size(T,2);
+            ind = repmat({temp},[size(T,1),1]);
         end 
         
+        % check input arguments
+        inputArgsCheck({{Z,'att','zonotope'};
+                        {T,'att','cell'};
+                        {ind,'att','cell'}});
+
         % cubic multiplication
         res = cubMapSingle(Z,T,ind);       
     end
@@ -186,7 +197,7 @@ function res = cubMapSingle(Z,T,ind)
 end
 
 function res = cubMapMixed(Z1,Z2,Z3,T,ind)
-% calulates the following set:
+% calculates the following set:
 % { z = (x1' T x2) * x3 | x1 \in pZ1, x2 \in pZ2, x3 \in pZ3 }
 
     % initialize variables

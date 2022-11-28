@@ -1,22 +1,22 @@
-function r = radius(obj, varargin)
-% radius - Computes radius of an enclosing hyperball of an ellipsoid
+function r = radius(E,varargin)
+% radius - Computes the radius of an enclosing hyperball of an ellipsoid
 %
 % Syntax:  
-%    r = radius(obj) returns the largest radius
-%    r = radius(obj,i) returns the i largest radii
+%    r = radius(E) returns the largest radius
+%    r = radius(E,i) returns the i largest radii
 %
 % Inputs:
 %    obj - ellipsoid object
+%    i - integer > 0
 %
 % Outputs:
-%    r - radius of enclosing hyperball/vector of radii
+%    r - radius/vector of radii of enclosing hyperball
 %
 % Example: 
 %    E = ellipsoid([1,0.5;0.5,3],[1;-1]);
 %    r = radius(E);
 %
-%    figure
-%    hold on
+%    figure; hold on;
 %    plot(E,[1,2],'r');
 %    Ecirc = ellipsoid(r^2 * eye(2),center(E));
 %    plot(Ecirc,[1,2],'b');
@@ -27,31 +27,31 @@ function r = radius(obj, varargin)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Victor Gassmann
 % Written:      05-March-2021
 % Last update:  19-March-2021 (VG: empty case added)
+%               24-March-2022 (VG: change input argument)
+%               04-July-2022 (VG: input checks)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% no further input
-if nargin==1
-    i = 1; % only largest radius considered
-elseif nargin==2
-    i = varargin{1};
-else
-    disp('too many inputs');
-end
+% default: only largest radius considered
+i = setDefaultValues({1},varargin{:});
 
-if isempty(obj)
-    r = [];
-    return;
+% check input arguments
+inputArgsCheck({{E,'att','ellipsoid','scalar'};
+                {i,'att','numeric',{'integer','>=',1,'<=',dim(E)}}});
+
+% quick check for empty set
+if isempty(E)
+    r = []; return
 end
 
 % compute eigenvalues
-d = eigs(obj.Q,i); % since we use Q^{-1} as a shape matrix
+d = eigs(E.Q,i); % since we use Q^{-1} as a shape matrix
 
-%compute radius
+% compute radius
 r = sqrt(d); % since we use Q^{-1} as a shape matrix
 
 %------------- END OF CODE --------------

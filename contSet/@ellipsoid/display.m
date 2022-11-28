@@ -1,5 +1,6 @@
 function display(E)
-% display - Displays the center and generators of an Ellipsoid
+% display - Displays the properties of an ellipsoid object (center, shape
+%    matrix, dimension, degeneracy) on the command window
 %
 % Syntax:  
 %    display(E)
@@ -11,7 +12,7 @@ function display(E)
 %    ---
 %
 % Example: 
-%    E=ellipsoid([1,0;0,1]);
+%    E = ellipsoid([1,0;0,1]);
 %    display(E);
 %
 % Other m-files required: none
@@ -27,7 +28,10 @@ function display(E)
 
 %------------- BEGIN CODE --------------
 
-if isempty(E)
+% check input arguments
+inputArgsCheck({{E,'att','ellipsoid','scalar'}});
+
+if isemptyobject(E)
     
     dispEmptyObj(E,inputname(1));
     
@@ -47,11 +51,11 @@ else
 
     %display actual dimension
     disp('dimension: ');
-    disp(E.dim); 
+    disp(dim(E)); 
 
     %display whether degenerate or not
     disp('degenerate: ');
-    disp(E.isdegenerate);
+    disp(~isFullDim(E));
 
 end
 

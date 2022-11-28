@@ -11,11 +11,7 @@ function runTestSuite_INTLAB(varargin)
 %
 % Outputs:
 %    -
-%
-% Example: 
-%    -
-%
-% 
+
 % Author:       Matthias Althoff
 % Written:      31-August-2016
 % Last update:  ---
@@ -24,7 +20,7 @@ function runTestSuite_INTLAB(varargin)
 
 %------------- BEGIN CODE --------------
 
-directory = [coraroot '/unitTests'];
+directory = [CORAROOT filesep 'unitTests'];
 verbose = 1;
 
 if nargin >= 1

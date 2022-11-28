@@ -37,10 +37,13 @@ timestr = datestr(datetime);
 timestr = strrep(timestr,':','-');
 
 % create .mat filename
-filename = strcat(coraroot,'/unitTests/failedTests/',testFileName,'-',timestr,'.mat');
+filename = [CORAROOT filesep 'unitTests' filesep 'failedTests' filesep ...
+    testFileName '-' timestr '.mat'];
 
 % save .mat file with all input arguments
 save(filename,'varargin');
 
 
 end
+
+%------------- END OF CODE --------------

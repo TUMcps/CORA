@@ -74,17 +74,17 @@ simOpt = {};
 simOpt{1}.points = 1;
 simOpt{1}.fracVert = 0.5;
 simOpt{1}.fracInpVert = 0.5;
-simOpt{1}.inpChanges = 10;
+simOpt{1}.nrConstInp = 10;
 % case: no input changes
 simOpt{2}.points = 10;
 simOpt{2}.fracVert = 0.5;
 simOpt{2}.fracInpVert = 0.5;
-simOpt{2}.inpChanges = 0;
+simOpt{2}.nrConstInp = 1;
 % case: only extreme points
 simOpt{3}.points = 10;
 simOpt{3}.fracVert = 1;
 simOpt{3}.fracInpVert = 1;
-simOpt{3}.inpChanges = 10;
+simOpt{3}.nrConstInp = 10;
 
 
 

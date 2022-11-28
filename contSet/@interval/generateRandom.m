@@ -1,17 +1,20 @@
-function Int = generateRandom(varargin)
+function I = generateRandom(varargin)
 % generateRandom - Generates a random interval
 %
 % Syntax:  
-%    Int = generateRandom(varargin)
+%    I = interval.generateRandom()
+%    I = interval.generateRandom('Dimension',n)
 %
 % Inputs:
-%    dim - (optional) dimension
+%    Name-Value pairs (all options, arbitrary order):
+%       <'Dimension',d> - dimension
 %
 % Outputs:
-%    Int - random interval
+%    I - random interval
 %
 % Example: 
-%    Int = interval.generateRandom();
+%    I = interval.generateRandom('Dimension',2);
+%    plot(I);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -21,26 +24,38 @@ function Int = generateRandom(varargin)
 
 % Author:       Mark Wetzlinger
 % Written:      17-Sep-2019
-% Last update:  ---
+% Last update:  19-May-2022 (name-value pair syntax)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-if nargin == 1
-    dim_x = varargin{1};
+% name-value pairs -> number of input arguments is always a multiple of 2
+if mod(nargin,2) ~= 0
+    throw(CORAerror('CORA:evenNumberInputArgs'));
 else
-    dim_low = 1;
-    dim_up  = 10;
-    dim_x = dim_low + floor(rand(1) * (dim_up - dim_low + 1));
+    % read input arguments
+    NVpairs = varargin(1:end);
+    % check list of name-value pairs
+    checkNameValuePairs(NVpairs,{'Dimension'});
+    % dimension given?
+    [NVpairs,n] = readNameValuePair(NVpairs,'Dimension');
 end
 
-% ranges
-range_low = -10;
-middle = 0;
-range_up = 10;
+% check input arguments
+inputArgsCheck({{n,'att','numeric','nonnan'}});
+
+% default computation for dimension
+if isempty(n)
+    nmax = 10;
+    n = randi(nmax);
+end
+
+% default computation of bounds
+lb = -10; mid = 0; ub = 10;
+infi = lb + rand(n,1)*(mid - lb);
+supr = mid + rand(n,1)*(ub - mid);
 
 % instantiate interval
-Int = interval(range_low + rand(dim_x,1)*(middle - range_low),...
-        middle + rand(dim_x,1)*(range_up - middle));
+I = interval(infi,supr);
 
 %------------- END OF CODE --------------

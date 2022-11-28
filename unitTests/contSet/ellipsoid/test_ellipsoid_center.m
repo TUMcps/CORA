@@ -28,14 +28,9 @@ function res = test_ellipsoid_center
 % instantiate ellipsoids
 E1 = ellipsoid([1 0;0 2],[0; 1]);
 E2 = ellipsoid([1 0;0 2]); % center at origin
-
+E3 = ellipsoid();
+res_e = isnumeric(center(E3)) && isempty(center(E3));
 % compare results
-res = isequal(center(E1),[0;1]) && isequal(center(E2),[0;0]);
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
+res = isequal(center(E1),[0;1]) && isequal(center(E2),[0;0]) && res_e;
 
 %------------- END OF CODE --------------

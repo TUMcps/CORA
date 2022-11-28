@@ -1,15 +1,16 @@
-function [handle] = getfcn(obj,options)
+function han = getfcn(obj,options)
 % getfcn - returns the function handle of the continuous function specified
-% by the linear system object
+%    by the nonlinear parametric system
 %
 % Syntax:  
-%    [handle] = getfcn(obj)
+%    han = getfcn(obj,options)
 %
 % Inputs:
 %    obj - linearSys object
+%    options - reachability settings
 %
 % Outputs:
-%    handle - function handle
+%    han - function handle
 %
 % Example: 
 %
@@ -19,10 +20,10 @@ function [handle] = getfcn(obj,options)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 17-October-2007 
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      17-October-2007 
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -30,8 +31,8 @@ function dxdt = f(t,x)
     dxdt = obj.mFile(x,options.u,options.p);
 end
 
-handle = @f;
-end
+han = @f;
 
+end
 
 %------------- END OF CODE --------------

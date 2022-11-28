@@ -1,42 +1,39 @@
-function res = isIntersecting(obj1,obj2,varargin)
-% isIntersecting - determines if constrained hyperplane obj1 intersects obj2
+function res = isIntersecting(hyp,S,varargin)
+% isIntersecting - determines if a constrained hyperplane intersects a set
 %
 % Syntax:  
-%    res = isIntersecting(obj1,obj2)
-%    res = isIntersecting(obj1,obj2,type)
+%    res = isIntersecting(hyp,S)
+%    res = isIntersecting(hyp,S,type)
 %
 % Inputs:
-%    obj1 - conHyperplane object
-%    obj2 - contSet object
+%    hyp - conHyperplane object
+%    S - contSet object
 %    type - type of check ('exact' or 'approx')
 %
-% Example: 
-%    hp = conHyperplane(halfspace([1;1],0),[1 0;-1 0],[2;2]);
-%    zono = zonotope([0 1 1 0; 0 1 0 1]);
-%    poly = mptPolytope([-1 -1; 1 0;-1 0; 0 1; 0 -1],[2;3;2;3;2]) + [2;2];
+% Outputs:
+%    res - true/false
 %
-%    isIntersecting(hp,zono)
-%    isIntersecting(hp,poly)
+% Example: 
+%    hyp = conHyperplane(halfspace([1;1],0),[1 0;-1 0],[2;2]);
+%    Z = zonotope([0 1 1 0; 0 1 0 1]);
+%    P = mptPolytope([-1 -1; 1 0;-1 0; 0 1; 0 -1],[2;3;2;3;2]) + [2;2];
+%
+%    isIntersecting(hyp,Z)
+%    isIntersecting(hyp,P)
 % 
-%    figure
-%    hold on
-%    xlim([-6,6]);
-%    ylim([-6,6]);
-%    plot(hp,[1,2],'b');
-%    plot(zono,[1,2],'g');
+%    figure; hold on; xlim([-6,6]); ylim([-6,6]);
+%    plot(hyp,[1,2],'b');
+%    plot(Z,[1,2],'g');
 % 
-%    figure
-%    hold on
-%    xlim([-6,6]);
-%    ylim([-6,6]);
-%    plot(hp,[1,2],'b');
-%    plot(poly,[1,2],'r');
+%    figure; hold on; xlim([-6,6]); ylim([-6,6]);
+%    plot(hyp,[1,2],'b');
+%    plot(P,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conHyperplane/isIntersecing
+% See also: conHyperplane/in
 
 % Author:       Niklas Kochdumper
 % Written:      16-May-2018
@@ -46,68 +43,67 @@ function res = isIntersecting(obj1,obj2,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    type = 'exact';
-    
-    if nargin >= 3 && ~isempty(varargin{1}) 
-        type = varargin{1};
+    % pre-processing
+    [resFound,vars] = pre_isIntersecting('conHyperplane',hyp,S,varargin{:});
+
+    % check premature exit
+    if resFound
+        % if result has been found, it is stored in the first entry of var
+        res = vars{1}; return
+    else
+        % assign values
+        hyp = vars{1}; S = vars{2}; type = vars{3};
     end
     
-    % get conHyperplane object
-    if ~isa(obj1,'conHyperplane')
-       temp = obj1;
-       obj1 = obj2;
-       obj2 = temp;
-    end
     
     % exact or apprxomiative algorithm
     if strcmp(type,'exact')
         
-        if isempty(obj1.C) && ~isa(obj2,'zonoBundle')
-            res = isIntersecting(obj1,obj2,'approx');
+        if isempty(hyp.C) && ~isa(S,'zonoBundle')
+            res = isIntersecting(hyp,S,'approx');
         else
-            if isa(obj2,'mptPolytope')
-                res = intersectPolyPoly(obj1,obj2);
-            elseif isa(obj2,'interval') || isa(obj2,'zonotope')
-                res = intersectPolyConZono(obj1,conZonotope(obj2));
-            elseif isa(obj2,'conZonotope')
-                res = intersectPolyConZono(obj1,obj2);
-            elseif isa(obj2,'zonoBundle')
-                res = intersectPolyZonoBundle(obj1,obj2);  
+            if isa(S,'mptPolytope')
+                res = intersectPolyPoly(hyp,S);
+            elseif isa(S,'interval') || isa(S,'zonotope')
+                res = intersectPolyConZono(hyp,conZonotope(S));
+            elseif isa(S,'conZonotope')
+                res = intersectPolyConZono(hyp,S);
+            elseif isa(S,'zonoBundle')
+                res = intersectPolyZonoBundle(hyp,S);  
             else
-                error('No exact algorithm implemented for this set representation!');
+                throw(CORAerror('CORA:noExactAlg',S,type));
             end
         end
         
     else
        
-        res = 1;
+        res = true;
         
         % special 'approx' algorithm for zonotope bundles
-        if isa(obj2,'zonoBundle')
+        if isa(S,'zonoBundle')
         
             % loop over all parallel zonotopes
-            for j = 1:length(obj2.Z)
+            for j = 1:length(S.Z)
 
-                zono = zonotope(obj2.Z{j});
+                zono = zonotope(S.Z{j});
             
                 % check instesection with hyperplane
-                infi = supportFunc(zono,obj1.h.c,'lower');
-                sup = supportFunc(zono,obj1.h.c,'upper');
+                lb = supportFunc(zono,hyp.h.c,'lower');
+                ub = supportFunc(zono,hyp.h.c,'upper');
 
-                if ~in(interval(infi,sup),obj1.h.d)
-                   res = 0;
+                if ~contains(interval(lb,ub),hyp.h.d)
+                   res = false;
                    return;
                 end
 
                 % check intersection with inequality constraints
-                C = obj1.C;
-                d = obj1.d;
+                C = hyp.C;
+                d = hyp.d;
 
                 for i = 1:size(C,1)
                    bound = supportFunc(zono,C(i,:)','lower');
                    if bound > d(i)
-                      res = 0;
+                      res = false;
                       return;
                    end
                 end
@@ -116,22 +112,22 @@ function res = isIntersecting(obj1,obj2,varargin)
         else
             
             % check instesection with hyperplane
-            infi = supportFunc(obj2,obj1.h.c,'lower');
-            sup = supportFunc(obj2,obj1.h.c,'upper');
+            lb = supportFunc(S,hyp.h.c,'lower');
+            ub = supportFunc(S,hyp.h.c,'upper');
 
-            if ~in(interval(infi,sup),obj1.h.d)
-               res = 0;
+            if ~contains(interval(lb,ub),hyp.h.d)
+               res = false;
                return;
             end
 
             % check intersection with inequality constraints
-            C = obj1.C;
-            d = obj1.d;
+            C = hyp.C;
+            d = hyp.d;
 
             for i = 1:size(C,1)
-               bound = supportFunc(obj2,C(i,:)','lower');
+               bound = supportFunc(S,C(i,:)','lower');
                if bound > d(i)
-                  res = 0;
+                  res = false;
                   return;
                end
             end
@@ -178,16 +174,16 @@ function res = intersectPolyPoly(obj1,obj2)
     [~,val,exitflag] = linprog(f,A,b,Aeq,beq,[],[],options);
 
     % check if intersection between the two polytopes is empty
-    res = 1;
+    res = true;
     
     if exitflag < 0 || val > eps
-       res = 0; 
+        res = false; 
     end
 end
 
 function res = intersectPolyConZono(obj1,obj2)
 % check if a constrained hyperplane {x | h x = d, H x < k}   
-% and a constraint zonotope {x = c + G*a | A*a = b, a \in [-1,1]} intersect 
+% and a constrained zonotope {x = c + G*a | A*a = b, a \in [-1,1]} intersect 
 % by solving the following linear program:
 %
 % min sum(y)
@@ -247,10 +243,10 @@ function res = intersectPolyConZono(obj1,obj2)
     [~,val,exitflag] = linprog(f,A,b,Aeq,beq,[],[],options);
 
     % check if intersection between the two polytopes is empty
-    res = 1;
+    res = true;
     
     if exitflag < 0 || val > eps
-       res = 0; 
+        res = false; 
     end
 end
     
@@ -325,10 +321,10 @@ function res = intersectPolyZonoBundle(obj1,obj2)
     [~,val,exitflag] = linprog(f,A,b,Aeq,beq,[],[],options);
 
     % check if intersection between the two polytopes is empty
-    res = 1;
+    res = true;
     
     if exitflag < 0 || val > eps
-       res = 0; 
+        res = false; 
     end
 end
 

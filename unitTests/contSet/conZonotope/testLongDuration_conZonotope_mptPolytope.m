@@ -30,7 +30,7 @@ function res = testLongDuration_conZonotope_mptPolytope
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
 
 % TEST 1: 2D --------------------------------------------------------------
 
@@ -57,37 +57,33 @@ for j = 1:5
     V2 = vertices(poly);
 
     % plot the result
-%     plot(cZono,[1,2],'b','Filled',true,'EdgeColor','none');
+%     plot(cZono,[1,2],'FaceColor','b');
 %     hold on
 %     plot(poly,[1,2],'r');
 %     plot(V(1,:),V(2,:),'.k','MarkerSize',12);
 
 
     % Check for correctness
-    for i = 1:size(V,2)
-       if ~ismembertol(V(:,i)',V1',1e-10,'ByRows',true)
-           file_name = strcat('testLongDuration_conZonotope_polytope_1_', ...
-                              datestr(now,'mm-dd-yyyy_HH-MM'));
-                  
-           file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
-                                file_name);
-                           
-           save(file_path, 'cZono')
-           error('Test 1 failed! Wrong conZonotope vertices!'); 
-       end
+    if ~compareMatrices(V,V1,1e-10)
+       file_name = strcat('testLongDuration_conZonotope_polytope_1_', ...
+                          datestr(now,'mm-dd-yyyy_HH-MM'));
+              
+       file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
+                            file_name);
+                       
+       save(file_path, 'cZono')
+       throw(CORAerror('CORA:testFailed'));
     end
 
-    for i = 1:size(V,2)
-       if ~ismembertol(V(:,i)',V2',1e-10,'ByRows',true)
-           file_name = strcat('testLongDuration_conZonotope_polytope_1_', ...
-                              datestr(now,'mm-dd-yyyy_HH-MM'));
-                  
-           file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
-                                file_name);
-                           
-           save(file_path, 'poly')
-          error('Test 1 failed! Wrong mptPolytope vertices!'); 
-       end
+    if ~compareMatrices(V,V2,1e-10)
+       file_name = strcat('testLongDuration_conZonotope_polytope_1_', ...
+                          datestr(now,'mm-dd-yyyy_HH-MM'));
+              
+       file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
+                            file_name);
+                       
+       save(file_path, 'poly')
+       throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -117,37 +113,27 @@ for j = 1:5
     V2 = vertices(poly);
 
     % Check for correctness
-    for i = 1:size(V,2)
-       if ~ismembertol(V(:,i)',V1',1e-10,'ByRows',true)
-           file_name = strcat('testLongDuration_conZonotope_polytope_2_', ...
-                              datestr(now,'mm-dd-yyyy_HH-MM'));
-                  
-           file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
-                                file_name);
-                           
-           save(file_path, 'cZono')
-           error('Test 2 failed! Wrong conZonotope vertices!'); 
-       end
+    if ~compareMatrices(V,V1,1e-10)
+       file_name = strcat('testLongDuration_conZonotope_polytope_2_', ...
+                          datestr(now,'mm-dd-yyyy_HH-MM'));
+              
+       file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
+                            file_name);
+                       
+       save(file_path, 'cZono')
+       throw(CORAerror('CORA:testFailed'));
     end
 
-    for i = 1:size(V,2)
-       if ~ismembertol(V(:,i)',V2',1e-10,'ByRows',true)
-           file_name = strcat('testLongDuration_conZonotope_polytope_1_', ...
-                              datestr(now,'mm-dd-yyyy_HH-MM'));
-                  
-           file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
-                                file_name);
-                           
-           save(file_path, 'poly')
-           error('Test 2 failed! Wrong mptPolytope vertices!'); 
-       end
+    if ~compareMatrices(V,V1,1e-10)
+       file_name = strcat('testLongDuration_conZonotope_polytope_1_', ...
+                          datestr(now,'mm-dd-yyyy_HH-MM'));
+              
+       file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
+                            file_name);
+                       
+       save(file_path, 'poly')
+       throw(CORAerror('CORA:testFailed'));
     end
 end
-
-
-
-
-res = true;
-
 
 %------------- END OF CODE --------------

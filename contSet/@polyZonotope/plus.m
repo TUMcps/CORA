@@ -1,13 +1,13 @@
 function pZ = plus(summand1,summand2)
-% plus - Overloaded '+' operator for the Minkowski addition of a
-%        polyZonotope object with a set
+% plus - Overloaded '+' operator for the Minkowski addition of a polynomial
+%    zonotope with another set representation or a point
 %
 % Syntax:  
 %    pZ = plus(summand1,summand2)
 %
 % Inputs:
 %    summand1 - polyZonotope object
-%    summand2 - polyZonotope-, interval-, zonotope-object or vector
+%    summand2 - contSet object or numerical vector
 %
 % Outputs:
 %    pZ - polyZonotope object after Minkowski addition
@@ -18,13 +18,12 @@ function pZ = plus(summand1,summand2)
 %   
 %    pZsum = pZ + zono;
 %
-%    figure
-%    hold on
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
-%    plot(zono,[1,2],'b','Filled',true,'EdgeColor','none');
+%    figure; hold on
+%    plot(pZ,[1,2],'FaceColor','r');
+%    plot(zono,[1,2],'FaceColor','b');
 %
 %    figure
-%    plot(pZsum,[1,2],'FaceColor',[0 0.5 0],'Filled',true,'EdgeColor','none');
+%    plot(pZsum,[1,2],'FaceColor',[0 0.5 0]);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -40,54 +39,75 @@ function pZ = plus(summand1,summand2)
 %------------- BEGIN CODE --------------
 
 % determine which summand is the polyZonotope object
-if isa(summand1,'polyZonotope')
-    pZ = summand1;
-    summand = summand2;  
-elseif isa(summand2,'polyZonotope')
-    pZ = summand2;
-    summand = summand1;  
-end
+[pZ,summand] = findClassArg(summand1,summand2,'polyZonotope');
 
-% summand is a numeric vector
-if isnumeric(summand)
-    pZ.c = pZ.c + summand;
-    return;
-end
+try
 
-% different cases for the different set representations
-if isa(summand,'zonotope')
+    % summand is a numeric vector
+    if isnumeric(summand)
+        pZ.c = pZ.c + summand;
+        return;
+    end
     
-    pZ.c = pZ.c + center(summand);
-    pZ.Grest = [pZ.Grest, generators(summand)];
-   
-elseif isa(summand,'interval')
+    % different cases for the different set representations
+    if isa(summand,'zonotope')
+        
+        pZ.c = pZ.c + center(summand);
+        pZ.Grest = [pZ.Grest, generators(summand)];
+       
+    elseif isa(summand,'interval')
+        
+        pZ = pZ + zonotope(summand);
+        
+    elseif isa(summand,'conPolyZono')
+        
+        pZ = summand + pZ;
+        
+    else
+        
+        % convert other set representations to polynomial zonotopes
+        if ~isa(summand,'polyZonotope') 
+            if isa(summand,'mptPolytope') || isa(summand,'zonoBundle') || ...
+               isa(summand,'conZonotope')
     
-    pZ = pZ + zonotope(summand);
-    
-elseif isa(summand,'conPolyZono')
-    
-    pZ = summand + pZ;
-    
-else
-    
-    % convert other set representations to polynomial zonotopes
-    if ~isa(summand,'polyZonotope') 
-        if isa(summand,'mptPolytope') || isa(summand,'zonoBundle') || ...
-           isa(summand,'conZonotope')
-
-            summand = polyZonotope(summand);
-        else
-            % throw error for given arguments
-            error(noops(summand1,summand2));
+                summand = polyZonotope(summand);
+            else
+                % throw error for given arguments
+                throw(CORAerror('CORA:noops',summand1,summand2));
+            end
         end
+    
+        % compute Minkowski sum
+        pZ.c = pZ.c + summand.c;
+        pZ.G = [pZ.G,summand.G];
+        pZ.expMat = blkdiag(pZ.expMat,summand.expMat);
+        pZ.Grest = [pZ.Grest,summand.Grest];
+        pZ.id = [pZ.id;max(pZ.id) + summand.id];
+        
     end
 
-    % compute Minkowski sum
-    pZ.c = pZ.c + summand.c;
-    pZ.G = [pZ.G,summand.G];
-    pZ.expMat = blkdiag(pZ.expMat,summand.expMat);
-    pZ.Grest = [pZ.Grest,summand.Grest];
-    pZ.id = [pZ.id;max(pZ.id) + summand.id];
+catch ME
+    % note: error has already occured, so the operations below don't have
+    % to be efficient
+
+    % already know what's going on...
+    if startsWith(ME.identifier,'CORA')
+        rethrow(ME);
+    end
+
+    % check for empty sets
+    if isempty(pZ)
+        return
+    elseif isemptyobject(summand)
+        pZ = polyZonotope(); return
+    end
+
+    % check whether different dimension of ambient space
+    equalDimCheck(pZ,summand);
+
+    % other error...
+    rethrow(ME);
+
 end
 
 %------------- END OF CODE --------------

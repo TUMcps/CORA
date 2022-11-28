@@ -1,18 +1,21 @@
-function createParametricDynamicFile(obj,path,name)
+function createParametricDynamicFile(obj,mFile,path,name)
 % createParametricDynamicFile - generates an mFile of the dynamic equations
-% sorted by parameter influences
+%    sorted by parameter influences
 %
 % Syntax:  
-%    createParametricDynamicFile(obj)
+%    createParametricDynamicFile(obj,mFile,path,name)
 %
 % Inputs:
 %    obj - nonlinear system object
+%    mFile - function handle for the function (dynamic or output)
 %    path - file-path to the folder containing the model files
-%    name - name of the nonlinear system from which the file is generated
+%    name - function name for the parametric dynamic file
 %
 % Outputs:
+%    -
 %
 % Example: 
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,7 +34,7 @@ function createParametricDynamicFile(obj,path,name)
 vars = symVariables(obj,'LRbrackets');
 
 %insert symbolic variables into the system equations
-f=obj.mFile(vars.x,vars.u,vars.p);
+f=mFile(vars.x,vars.u,vars.p);
 
 %init
 fcell=cell(1,obj.nrOfParam+1);
@@ -44,10 +47,10 @@ for i=1:obj.nrOfParam
 end
 
 
-fid = fopen([path filesep 'parametricDynamicFile_' name '.m'],'w');
-fprintf(fid, '%s\n\n', 'function f=parametricDynamicFile(x,u)');
+fid = fopen([path filesep name '.m'],'w');
+fprintf(fid, '%s\n\n', ['function f=' name '(x,u)']);
 for k=1:length(fcell)
-    for i=1:obj.dim
+    for i=1:length(f)
         str=['f{',num2str(k),'}(',num2str(i),',1)=',char(fcell{k}(i,1)),';'];
         str=bracketSubs(str);
         %write in file
@@ -57,14 +60,5 @@ end
 
 %close file
 fclose(fid);
-
-function [str]=bracketSubs(str)
-
-%generate left and right brackets
-str=strrep(str,'L','(');
-str=strrep(str,'R',')');
-
-% % add "interval()" to string
-% str=['infsup(',str,',',str,')'];
 
 %------------- END OF CODE --------------

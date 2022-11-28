@@ -42,7 +42,9 @@ for i=1:nrOfTests
     % random dimension
     n = randi(30);
     for k=1:2
-        E = ellipsoid.generateRandom(n,bools(k));
+        %%% generate all variables necessary to replicate results
+        E = ellipsoid.generateRandom('Dimension',n,'IsDegenerate',bools(k));
+        %%%
         E = ellipsoid(E.Q);
         [U,~,~] = svd(E.Q);
         IntE = interval(U'*E);
@@ -67,10 +69,9 @@ end
 % combine results
 res = res_empty && res_rand;
 
-if res
-    disp('testLongDuration_ellipsoid_radius successful');
-else
-    disp('testLongDuration_ellipsoid_radius failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'E','n');
 end
 
 %------------- END OF CODE --------------

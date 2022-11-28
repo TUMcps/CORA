@@ -44,110 +44,112 @@ methods
         obj.set = polyshape(x,y);
     end
     
-    function han = plot(obj,dims,varargin)
+    function han = plot(pgon,dims,varargin)
     % plot the polygon object (always 2D!)
     % input argument dims is here for compliance with other plot functions)
     
         % parse input arguments
-        filled = 0;
-        linespec = 'b';
-        NVpairs = {};
+        NVpairs = {'EdgeColor',colorblind('b')};
         
         if nargin >= 3
-            [linespec,NVpairs] = readPlotOptions(varargin(1:end));
-            [NVpairs,filled] = readNameValuePair(NVpairs,'Filled', ...
-                                                 'islogical',filled);
+            NVpairs = readPlotOptions(varargin(1:end),'polygon');
+            % name-value 'Filled',true|false is deprecated: issue warning
+            [NVpairs,filled] = readNameValuePair(NVpairs,'Filled','islogical');
+            % faceAlpha = 1 (not the default 0.35 from @polyshape/plot)
+            % except otherwise specified by user
+            [NVpairs,facealpha] = readNameValuePair(NVpairs,'FaceAlpha','isscalar');
+            if ~isempty(filled)
+                warning("Name-value pair 'Filled'-true|false is ignored.");
+            end
         end
+        % readout 'FaceColor' to decide plot/fill call where necessary
+        [~,facecolor] = readNameValuePair(NVpairs,'FaceColor');
         
         % plot the polygon object
-        if filled
-            han = plot(obj.set,'FaceColor',linespec,'FaceAlpha',...
-                       1,NVpairs{:});
+        if isempty(facecolor) || strcmp(facecolor,'none') || ~isempty(facealpha)
+            han = plot(pgon.set,NVpairs{:});            
         else
-            han = plot(obj.set,'FaceColor','none','EdgeColor', ...
-                       linespec,NVpairs{:});
+            han = plot(pgon.set,NVpairs{:},'FaceAlpha',1);
         end
     end
     
-    function c = center(obj)
+    function c = center(pgon)
     % get the center of the polygon
-        [x,y] = centroid(obj.set);
+        [x,y] = centroid(pgon.set);
         c = [x;y];
     end
     
-    function res = isIntersecting(obj1,obj2)
+    function res = isIntersecting(pgon1,pgon2)
     % check if two polygon object insterst
-        temp = intersect(obj1.set,obj2.set);
+        temp = intersect(pgon1.set,pgon2.set);
         res = ~isempty(temp.Vertices);
     end
     
-    function res = in(obj1,obj2)
-    % check if polygon obj2 is inside polygon obj2
+    function res = contains(pgon1,pgon2)
+    % check if polygon object obj1 contains polygon obj2 or a vector of
+    % points (one logical value for each point)
     
-        if isnumeric(obj2)
+        if isnumeric(pgon2)
             
-            res = isinterior(obj1.set,obj2(1),obj2(2));
+            res = isinterior(pgon1.set,pgon2(1,:),pgon2(2,:))';
             
-        elseif isa(obj2,'polygon')
+        elseif isa(pgon2,'polygon')
             
             % compute union
-            u = union(obj1.set,obj2.set);
+            u = union(pgon1.set,pgon2.set);
 
             % check if area of obj1 is identical to area of union
-            A1 = area(obj1.set);
+            A1 = area(pgon1.set);
             A2 = area(u);
 
             res = A1 == A2;
         else
-            error('This set representation is not supported!');
+            throw(CORAerror('CORA:notSupported',...
+                'This set representation is not supported!'));
         end
     end
     
-    function obj = and(obj1,obj2)
+    function pgon = and(pgon1,pgon2)
     % computes the intersection of two polygons
     
-        temp = intersect(obj1.set,obj2.set);
+        temp = intersect(pgon1.set,pgon2.set);
         V = temp.Vertices;
-        obj = polygon(V(:,1),V(:,2));  
+        pgon = polygon(V(:,1),V(:,2));  
     end
     
-    function obj = or(obj1,obj2)
+    function pgon = or(pgon1,pgon2)
     % computes the union of two polygons
         
-        if isempty(obj1)
-            obj = obj2; 
-        elseif isempty(obj2)
-            obj = obj1;
+        if isempty(pgon1)
+            pgon = pgon2; 
+        elseif isempty(pgon2)
+            pgon = pgon1;
         else
-            temp = union(obj1.set,obj2.set);
+            temp = union(pgon1.set,pgon2.set);
             V = temp.Vertices;
-            obj = polygon(V(:,1),V(:,2));
+            pgon = polygon(V(:,1),V(:,2));
         end
         
     end
     
-    function obj = plus(obj,summand)
-    % compute the minkowski sum with a point    
+    function pgon = plus(pgon,summand)
+    % compute the minkowski sum   
         
        % get polygon object
-       if ~isa(obj,'polygon')
-          temp = obj;
-          obj = summand;
-          summand = temp;
-       end
+       [pgon,summand] = findClassArg(pgon,summand,'polygon');
        
        % different types of sets
        if isnumeric(summand)
            % translate the polygon
-           obj.set = translate(obj.set,summand');
+           pgon.set = translate(pgon.set,summand');
        elseif isa(summand,'polygon')
            % compute Minkowski sum
            w = warning();
            warning('off');
            
-           T1 = triangulation(obj);
+           T1 = triangulation(pgon);
            T2 = triangulation(summand);
-           obj = [];
+           pgon = [];
            
            for i = 1:length(T1)
                for j = 1:length(T2)
@@ -157,72 +159,111 @@ methods
                    for k = 1:size(V1,1)
                        V = [V; V2 + V1(k,:)];
                    end
-                   obj = obj | convHull(polygon(V(:,1),V(:,2)));
+                   pgon = pgon | convHull(polygon(V(:,1),V(:,2)));
                end
            end
            
            warning(w);
        else
-          error('Operation "plus" is not yet implemented for this set representation!'); 
+           throw(CORAerror('CORA:noops',pgon,summand)); 
        end
     end
     
-    function obj = mtimes(mat,obj)
+    function pgon = minus(pgon,minuend)
+    % compute the Minkowski difference
+    
+        % different types of sets
+        if isnumeric(minuend)
+           pgon.set = translate(pgon.set,-minuend'); 
+        elseif isa(minuend,'polygon')
+           % compute Mink. diff. by translating the mirrored minuend along
+           % the boundary of the polygon
+           c = center(minuend);
+           minuend = minuend - c;
+           pgon = pgon - c;
+           temp = minuend.set.Vertices;
+           minuend = polygon(-temp(:,1),-temp(:,2));
+           V = pgon.set.Vertices;
+           V = [V;V(1,:)]';
+           diff = [];
+           for i = 1:size(V,2)-1
+              diff = linComb(minuend + V(:,i),minuend + V(:,i+1)) | diff;
+           end
+           pgon.set = subtract(pgon.set, diff.set);
+        else
+            throw(CORAerror('CORA:noops',pgon,minuend));
+        end 
+    end
+
+    function pgon = minkDiff(pgon,minuend)
+    % compute the Minkowski difference
+        pgon = minus(pgon,minuend);
+    end
+    
+    function pgon = mtimes(M,pgon)
     % compute linear transformation of a polygon
        
        % check dimension of the matrix
-       if ~isnumeric(mat) || size(mat,1) ~= 2 || size(mat,2) ~= 2
-          error('Operation "mtimes" is only defined for square matrices of dimension 2!'); 
+       if ~isnumeric(M) || any(size(M) ~= [2,2])
+           throw(CORAerror('CORA:specialError',...
+               'Operation "mtimes" is only defined for square matrices of dimension 2!')); 
        end
        
        % multiplication with matrix
        w = warning();
        warning('off');
        
-       V = obj.set.Vertices;
-       V = (mat*V')'; 
+       V = pgon.set.Vertices;
+       V = (M*V')'; 
 
-       obj = polygon(V(:,1),V(:,2));
+       pgon = polygon(V(:,1),V(:,2));
        
        warning(w);
     end
     
-    function obj = convHull(obj1,varargin)
+    function pgon = convHull(pgon,varargin)
     % compute convex hull of a polygon
-    
+
+        % only for one other set implemented
+        if nargin > 2
+            throw(CORAerror('CORA:tooManyInputArgs',2));
+        end
+
         % compute union if two sets are passed
         if nargin > 1
-            temp = obj1 | varargin{1};
-        else
-            temp = obj1; 
+            pgon = pgon | varargin{1};
         end
         
         % compute convex hull
-        temp = convhull(temp.set);
+        pgon = convhull(pgon.set);
         
         % construct resulting polygon object
-        V = temp.Vertices;
-        obj = polygon(V(:,1),V(:,2));
+        V = pgon.Vertices;
+        pgon = polygon(V(:,1),V(:,2));
     end
     
-    function obj = quadMap(varargin)
+    function pgon = quadMap(varargin)
     % compute tight enclosure of the quadratic map
     
-        if nargin == 2
+        if nargin < 2
+            throw(CORAerror('CORA:notEnoughInputArgs',2));
+        elseif nargin > 3
+            throw(CORAerror('CORA:tooManyInputArgs',3));
+
+        elseif nargin == 2
             
             % parse input arguments
             pgon = varargin{1};
             Q = varargin{2};
             
             if ~all(size(Q) == [2,1])
-               [msg,id] = errWrongInput('Q');
-               error(msg,id);
+                throw(CORAerror('CORA:wrongValue','second',"be of the size [2,1]"));
             end
             
             % compute triangulation of polygon and compute quadratic map
             % for each triangle using polynomial zonotopes
             list = triangulation(pgon);
-            obj = [];
+            pgon = [];
             
             for i = 1:length(list)
                 
@@ -237,7 +278,7 @@ methods
                temp = polygon(temp);
                
                % unite with results for other triangles
-               obj = obj | temp;
+               pgon = pgon | temp;
                
             end
             
@@ -249,8 +290,7 @@ methods
             Q = varargin{3};
             
             if ~all(size(Q) == [2,1])
-               [msg,id] = errWrongInput('Q');
-               error(msg,id);
+                throw(CORAerror('CORA:wrongValue','second',"be of the size [2,1]"));
             end
             
             % compute triangulation of polygons and compute quadratic map
@@ -258,7 +298,7 @@ methods
             list1 = triangulation(pgon1);
             list2 = triangulation(pgon2);
             
-            obj = [];
+            pgon = [];
             
             for i = 1:length(list1)
                 
@@ -279,62 +319,63 @@ methods
                    temp = polygon(temp);
 
                    % unite with results for other triangles
-                   obj = obj | temp;
+                   pgon = pgon | temp;
                
                end
             end
             
-        else
-            error('Wrong number of input arguments')
         end       
     end
     
-    function obj = linComb(obj1,obj2)
+    function pgon = linComb(pgon1,pgon2)
     % compute linear combination of two polygons
         
         w = warning();
         warning('off');
     
-        list1 = triangulation(obj1);
-        list2 = triangulation(obj2);
+        list1 = triangulation(pgon1);
+        list2 = triangulation(pgon2);
         
-        obj = [];
+        pgon = [];
         
         for i = 1:length(list1)
             for j = 1:length(list2)
-                obj = obj | convHull(list1{i},list2{j});
+                pgon = pgon | convHull(list1{i},list2{j});
             end
         end
         
         warning(w);
     end
         
-    function int = interval(obj)
+    function I = interval(pgon)
     % compute an interval enclosure of the polygon
     
-        V = obj.set.Vertices;
-        int = interval(min(V,[],1)',max(V,[],1)');
+        V = pgon.set.Vertices;
+        I = interval(min(V,[],1)',max(V,[],1)');
+    end
+
+    function P = mptPolytope(pgon)
+    % convert a convex polygon to a mptPolytope
+
+        if isConvex(pgon)
+            P = mptPolytope(pgon.set.Vertices);
+        else
+            P = mptPolytope(convHull(pgon));
+        end
     end
     
-    function p = randPoint(obj,varargin)
+    function p = randPoint(pgon,varargin)
     % draw random points within the polygon
         
         % parse input arguments
-        N = 1;
-        type = 'normal';
-        if nargin > 1 && ~isempty(varargin{1})
-           N = varargin{1}; 
-        end
-        if nargin > 2 && ~isempty(varargin{2})
-           type = varargin{2}; 
-        end
+        [N,type] = setDefaultValues({1,'standard'},varargin{:});
         
         % different types of random points
-        if strcmp(type,'normal')
+        if strcmp(type,'standard')
            
             p = zeros(2,N);
             
-            list = triangulation(obj);
+            list = triangulation(pgon);
             cnt = 1;
             cnt_ = 1;
             
@@ -358,11 +399,11 @@ methods
             % return all extreme point
             if ischar(N) && strcmp(N,'all')
             
-                p = obj.set.Vertices';
+                p = pgon.set.Vertices';
             
             else
                
-                V = obj.set.Vertices;
+                V = pgon.set.Vertices;
                 
                 if N <= size(V,1)
                     ind = randperm(size(V,1));
@@ -379,17 +420,35 @@ methods
                 end
             end
             
-        else
-            [msg,id] = errWrongInput('type');
-            error(id,msg);
         end
     end
+
+    function res = isConvex(pgon)
+    % check if the polygon is convex
+
+        res = false;
+        try
+            % polygon is convex if its convex hull has the same number of
+            % vertices as the polygon itself already has
+            if length(convhull(pgon.set.Vertices))-1 == size(pgon.set.Vertices,1)
+                res = true;
+            end
+        catch
+            warning("Built-in method 'convHull' failed. Result returned as 'false'.");
+        end
+    end
+
+    function res = dim(pgon)
+    % return dimension of the polygon (always two-dimensional)
+
+        res = 2;
+    end
     
-    function list = triangulation(obj)
+    function list = triangulation(pgon)
     % compute an triangulation of the polygon
     
         % compute triangulation
-        T = triangulation(obj.set);
+        T = triangulation(pgon.set);
         
         % convert the triangles to polygons
         list = cell(size(T.ConnectivityList,1),1);
@@ -400,43 +459,90 @@ methods
         end
     end
     
-    function obj = simplify(obj,varargin)
+    function pgon = simplify(pgon,varargin)
     % enclose the polygon by a simpler polygon with less vertices   
         
-        % parse input arguments
-        tol = 0.01;
-        if nargin >= 2 && ~isempty(varargin{1})
-            tol = varargin{1};
+        if nargin > 2
+            throw(CORAerror('CORA:tooManyInputArgs',2));
         end
+        % default values
+        tol = setDefaultValues({0.01},varargin{:});
+        % check input arguments
+        inputArgsCheck({{pgon,'att','polygon'},...
+                        {tol,'att','numeric',{'scalar','nonnegative'}}});
     
         % simplify polygon boundary using the Douglar-Peucker algorithm 
-        V = obj.set.Vertices;
+        V = pgon.set.Vertices;
         V_ = douglasPeucker(V',tol);
-        obj = polygon(V_(1,:),V_(2,:));
+        pgon = polygon(V_(1,:),V_(2,:));
         
-        % enlare the simplified polygon so that it is guaranteed that it
+        % enlarge the simplified polygon so that it is guaranteed that it
         % encloses the original polygon
         temp = polygon([-tol -tol tol tol],[-tol tol tol -tol]);
-        obj = obj + temp;
+        pgon = pgon + temp;
+    end
+
+    function list = splitIntoConvexSets(pgon)
+    % split a polygon into a set of convex regions
+
+        % compute triangulation
+        list = triangulation(pgon);
+
+        % unite neighbouring polygons to obtain larger convex shapes
+        while true
+    
+            finished = true;
+
+            % loop over all polygons in the current list
+            for i = 1:length(list)
+
+                stop = false;
+
+                % try to combine it with other polygons in the list
+                for j = i+1:length(list)
+
+                    tmp = list{i} | list{j};
+
+                    if isConvex(tmp)
+                        list{i} = tmp;
+                        list{j} = [];
+                        stop = true; finished = false;
+                        break;
+                    end
+                end
+
+                if stop
+                    break;
+                end
+            end
+
+            % remove empty list entries
+            list = list(~cellfun('isempty',list));
+
+            if finished
+                break;
+            end
+        end
     end
 end
 
 methods (Static = true)
     
-    function obj = generateRandom() 
+    function pgon = generateRandom() 
     % generate random polygon
         
         points = 10*rand(1) * (-1 + 2*rand(2,100)) + 10*(-1 + 2*rand(2,1));
-        obj = polygon.enclosePoints(points);
+        pgon = polygon.enclosePoints(points);
     end
     
-    function obj = enclosePoints(points) 
-    % enclose point cloud with zonotope
+    function pgon = enclosePoints(points) 
+    % enclose point cloud with polygon
     
         ind = boundary(points',0.5);
-        obj = polygon(points(1,ind),points(2,ind));
+        pgon = polygon(points(1,ind),points(2,ind));
     end
 end
+
 end
 
 %------------- END OF CODE --------------

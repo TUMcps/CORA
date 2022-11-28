@@ -1,9 +1,9 @@
 function [R,R_Krylov] = exponential_Krylov(obj,R,options)
-% exponential_krylov - computes the overapproximation of the exponential of a system 
-% matrix up to a certain accuracy using a Krylov subspace
+% exponential_Krylov - computes the overapproximation of the exponential of 
+%    a system matrix up to a certain accuracy using a Krylov subspace
 %
 % Syntax:  
-%    [obj] = exponential_Krylov(obj,options)
+%    [R,R_Krylov] = exponential_Krylov(obj,options)
 %
 % Inputs:
 %    obj - linearSys object
@@ -11,8 +11,8 @@ function [R,R_Krylov] = exponential_Krylov(obj,R,options)
 %    options - reachability options
 %
 % Outputs:
-%    obj - linearSys object
-%    linRed - reduced linear system
+%    R - reachable set
+%    R_Krylov - rechable set due to Krylov error
 %
 % Example: 
 %    -
@@ -30,7 +30,8 @@ function [R,R_Krylov] = exponential_Krylov(obj,R,options)
 
 %------------- BEGIN CODE --------------
 
-% Multiply previous reachable set with exponential matrix------------------
+% Multiply previous reachable set with exponential matrix
+
 % obtain center and generators of previous reachable set
 c = sparse(center(R));
 G = sparse(generators(R));
@@ -81,17 +82,15 @@ if options.krylovError > 2*eps
     % Krylov error computation
     error_normalized = obj.krylov.errorBound_normalized;
     error = norm(Rinit)*error_normalized;
-    Krylov_interval = interval(-1,1)*ones(dimension(obj),1)*error;
+    Krylov_interval = interval(-1,1)*ones(obj.dim,1)*error;
     R_Krylov = zonotope(Krylov_interval);
 
     % initial-state-solution zonotope
-    R = zonotope([c_new,G_new,error*eye(dimension(obj))]);
-    %--------------------------------------------------------------------------
+    R = zonotope([c_new,G_new,error*eye(obj.dim)]);
+    
 else
     R_Krylov = 0;
     R = zonotope([c_new,G_new]);
 end
-
-  
 
 %------------- END OF CODE --------------

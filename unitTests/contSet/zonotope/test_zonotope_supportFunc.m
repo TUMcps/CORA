@@ -26,6 +26,11 @@ function res = test_zonotope_supportFunc
 %------------- BEGIN CODE --------------
 
 res = false;
+% empty set
+Z_e = polyZonotope();
+if supportFunc(Z_e,[1;1],'upper') == -Inf && supportFunc(Z_e,[1;1],'lower') == Inf
+    res = true;
+end
 TOL = 1e-8;
 
 % instantiate zonotope
@@ -40,13 +45,6 @@ Z = zonotope(c,G);
 if abs(supportFunc(Z,x_min)-val_min^2)>TOL || ...
         abs(supportFunc(Z,x_max)-val_max^2)>TOL
     res = true;
-end
-
-
-if res
-    disp('test_zonotope_supportFunc successful');
-else
-    disp('test_zonotope_supportFunc failed');
 end
 
 %------------- END OF CODE --------------

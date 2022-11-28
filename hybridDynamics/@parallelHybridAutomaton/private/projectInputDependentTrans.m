@@ -1,19 +1,20 @@
-function trans = projectInputDependentTrans(pha, trans,N,compIndex,loc,targ)
-% projectInputDependentTrans - Constructs a transition of adequat dimension
-%                              for a PHA with a transition which depends on
-%                              states and inputs
+function trans = projectInputDependentTrans(pHA,trans,N,compIndex,locID,targ,id)
+% projectInputDependentTrans - Constructs a transition of adequate
+%    dimension for a parallel hybrid automaton with a transition which
+%    depends on inputs (e.g., states of other components)
 %
 % Syntax:
-%    res = projectInputDependentTrans(pha, transition)
+%    res = projectInputDependentTrans(pHA,trans,N,compIndex,locID,targ,id)
 %
 % Inputs:
-%    pha - parallel hybrid automaton object
-%    transition - the transition in question
+%    pHA - parallelHybridAutomaton object
+%    trans - the transition in question
 %    N - dimensions of the higher dimensional space
 %    compIndex - index of the component belonging to the transition
-%    loc - location vector of the pha
+%    locID - IDs of the currently active locations
 %    targ - target of the generated transition
-%    
+%    id - true/false whether identity reset function should be used for all
+%         other states
 %
 % Outputs:
 %    transition - constructed transition object
@@ -27,55 +28,65 @@ function trans = projectInputDependentTrans(pha, trans,N,compIndex,loc,targ)
 % Author:       Maximilian Perschl
 % Written:      17-February-2022
 % Last update:  ---
-% Last revision: ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
     % project guard set to the higher dimension
     guard = trans.guard;
-    if ~isa(guard,'levelSet') && ~isa(guard,'mptPolytope') && ...
-            ~isa(guard,'conHyperplane')
+    if ~(isnumeric(guard) && isempty(guard)) && ~isa(guard,'levelSet') ...
+            && ~isa(guard,'mptPolytope') && ~isa(guard,'conHyperplane')
+        % convert to mptPolytope unless guard set is [], a levelSet,
+        % an mptPolytope, or a conHyperplane
         guard = mptPolytope(guard);
     end
 
-    guard = projectHighDim(guard,N,pha.bindsStates{compIndex});
+    % only project unless guard set is []
+    if ~(isnumeric(guard) && isempty(guard))
+        guard = projectHighDim(guard,N,pHA.bindsStates{compIndex});
+    end
 
     % project reset function to the higher dimension
     if isfield(trans.reset,'A')
-        reset = projectLinearReset(pha,trans.reset,compIndex,loc);
+        reset = projectLinearReset(pHA,trans.reset,compIndex,locID,id);
     else
-        reset = projectNonlinearReset(pha,trans.reset,compIndex);
+        reset = projectNonlinearReset(pHA,trans.reset,compIndex,id);
     end
     
     % update the target location
-   target = targ;
+    target = targ;
    
-   % create transition object
-   trans = transition(guard,reset,target);
+    % create transition object
+    trans = transition(guard,reset,target);
    
 end
 
 % Auxiliary Functions -----------------------------------------------------
-function reset = projectLinearReset(pha,reset,compIndex,loc)
+function resetStruct = projectLinearReset(pHA,resetStruct,compIndex,locID,id)
 % compute new reset matrices A,B,c according to the state/input dimensions
-% of the new automata, with the mapping of outputs of other components to
-% the inputs of the automaton which owns the relevant transition taken into
-% account
+% of the new automaton, where the mapping of inputs (which are states of
+% other components, defined in pHA.bindsInputs) is resolved; the resulting
+% reset function depends only on the full state and the global inputs
 
     % get fields from struct
-    A = reset.A;
-    B = reset.B;
-    c = reset.c;
+    A = resetStruct.A;
+    B = resetStruct.B;
+    c = resetStruct.c;
     
-    stateBinds = pha.bindsStates;
-    inputBinds = pha.bindsInputs;
+    % read state and input binds
+    stateBinds = pHA.bindsStates;
+    inputBinds = pHA.bindsInputs;
     
-    sysDim = pha.numStates;
-    sysInput = pha.numInputs;
+    % read number of states and inputs of the entire automaton
+    sysDim = pHA.numStates;
+    sysInput = pHA.numInputs;
     
-    % Instantiate new matrices
-    % default is identity <=> other components remain unaffected
-    Aproj = eye(sysDim,sysDim);
+    % Instantiate matrices in full state dimension
+    if id
+        Aproj = eye(sysDim,sysDim);
+    else
+        Aproj = zeros(sysDim,sysDim);
+    end
     Bproj = zeros(sysDim,sysInput);
     cProj = zeros(sysDim,1);
     
@@ -85,175 +96,210 @@ function reset = projectLinearReset(pha,reset,compIndex,loc)
     Aproj(stateBinds{compIndex},stateBinds{compIndex}) = A;
     % sort inputs by global and received from other components
     bind = inputBinds{compIndex};
+
+    % loop over all inputs to current component
     for i = 1:size(bind,1)
         if bind(i,1) == 0
-            % global input --> old B matrix in new B matrix
-            globalIndex = bind(i,2);
-            Bproj(stateBinds{compIndex},globalIndex) = B(:,i);
+            % input i is a global input --> insert that part of the old
+            % input matrix into the new input matrix
+            Bproj(stateBinds{compIndex},bind(i,2)) = B(:,i);
+
         else
-            % input received from subcomponent --> set entries in Aproj and
-            % Bproj equal to subcomponent's flow's C and D multiplied by
-            % transition's B
-            outsideComponentIndex = bind(i,1);
-            outsideOutputIndex = bind(i,2);
-            % get dynamics of other subcomponent
-            outsideDynamics = pha.components{outsideComponentIndex}.location{loc(outsideOutputIndex)}.contDynamics;
-            % other subcomponent flow linear or nonlinear?
-            if isa(outsideDynamics,'linearSys')
-                % reset is Ax + Bu + c
-                % u is C'*x + D'*u' + k' with C',D',k',u' being 
-                % output dynamics and inputs to outside component
-                % => Bu = BC'x + BD'u' + Bk'
+            % input i is the state of another component --> set entries in
+            % Aproj and Bproj equal to that component's matrices C and D
+            % multiplied by the transition's B
+
+            % index of component where input i comes from
+            otherComponentIdx = bind(i,1);
+            % row in output equation of other component
+            otherOutputIdx = bind(i,2);
+
+            % get flow of other component
+            otherFlow = pHA.components{otherComponentIdx}.location{locID(otherComponentIdx)}.contDynamics;
+
+            % is other component's flow linear or nonlinear?
+            if isa(otherFlow,'linearSys')
+                % our reset is
+                %   Ax + Bu + c
+                % where the input u is
+                %   C'*x + D'*u' + k'
+                % where C',D',k',u' are variables of the other component;
+                % the resulting value for Bu in our reset then becomes:
+                %   Bu = BC'x + BD'u' + Bk'
                 
-                
-                % ------Note: this check might be irrelevant because-------------------
-                %             it is already checked in mergeFlows.m
-                
-                % if D'u' contains non-global inputs we give an error, since this
-                % could lead to infinite loops 
+                % if D'u' contains non-global inputs we give an error,
+                % since this could lead to infinite loops 
                 % (either D'(_,i) needs to be zero or u'(i) needs to be
                 % global)
-                for j = 1:size(outsideDynamics.D,2)
-                    if ~(outsideDynamics.D(outsideOutputIndex,j) == 0 || inputBinds{outsideComponentIndex}(j,1) == 0)
-                        error(['It is not allowed for the throughput matrix D '...
+                for j = 1:size(otherFlow.D,2)
+                    if ~(otherFlow.D(otherOutputIdx,j) == 0 ...
+                            || inputBinds{otherComponentIdx}(j,1) == 0)
+                        throw(CORAerror('CORA:notSupported',...
+                            ['It is not allowed for the throughput matrix D '...
                             'to point to inputs that are defined by the '...
                             'output of other subsystems, since it would '...
-                            'otherwise be able to construct infinite loops!']);                 
+                            'otherwise be able to construct infinite loops!']));                 
                     end
                 end
-                outsideSystem_C = outsideDynamics.C; 
-                outsideSystem_D = outsideDynamics.D;
-                outsideSystem_k = outsideDynamics.k;
+
+                % read out output equation of other component
+                otherFlow_C = otherFlow.C; 
+                otherFlow_D = otherFlow.D;
+                otherFlow_k = otherFlow.k;
                 
-                % if a system has no matrices C/D/k, we assume the states are
-                % given as outputs for parallelization (just as for nonlinear
-                % systems)
-                if outsideSystem_C == 1 && isempty(outsideSystem_D) && isempty(outsideSystem_k)
-                    outsideSystem_C = eye(outsideDynamics.dim);
+                % if a system has no matrices C/D/k, we assume the states
+                % are given as outputs for parallelization (just as for
+                % nonlinear systems)
+                if isscalar(otherFlow_C) && otherFlow_C == 1 ...
+                        && isempty(otherFlow_D) && isempty(otherFlow_k)
+                    otherFlow_C = eye(otherFlow.dim);
                 end
-                % compute adjusted matrices (only one column needed)
-                BC_i = B(:,i).*outsideSystem_C(outsideOutputIndex,:);
+
+                % compute adjusted matrices (only requires the column
+                % corresponding to the state our reset function receives as
+                % an input)
+                BC_i = B(:,i) .* otherFlow_C(otherOutputIdx,:);
                 BD_i = 0;
-                if ~isempty(outsideSystem_D)
-                	BD_i = B(:,i).*outsideSystem_D(outsideOutputIndex,:);
+                if ~isempty(otherFlow_D)
+                	BD_i = B(:,i) .* otherFlow_D(otherOutputIdx,:);
                 end
                 Bk_i = 0;
-                if ~isempty(outsideSystem_k)
-                    Bk_i = B(:,i).*outsideSystem_k(outsideOutputIndex);
+                if ~isempty(otherFlow_k)
+                    Bk_i = B(:,i) .* otherFlow_k(otherOutputIdx);
                 end
-                % adjust global reset matrices
+
+                % adjust full reset matrices A, B, and vector c
+                Aproj(stateBinds{compIndex},stateBinds{otherComponentIdx}) = ...
+                    Aproj(stateBinds{compIndex},stateBinds{otherComponentIdx}) + BC_i;
                 
-                Aproj(stateBinds{compIndex},stateBinds{outsideComponentIndex}) = ...
-                    Aproj(stateBinds{compIndex},stateBinds{outsideComponentIndex}) + BC_i;
-                
-                
-                % get indices of global inputs outside component receives 
+                % indices of the global inputs the other component receives 
                 globalInputIndices = [];
-                for j = 1:size(inputBinds{outsideComponentIndex},1)
-                    if inputBinds{outsideComponentIndex}(j,1) == 0
-                        globalInputIndices = vertcat(globalInputIndices,inputBinds{outsideComponentIndex}(j,2));
+                for j = 1:size(inputBinds{otherComponentIdx},1)
+                    if inputBinds{otherComponentIdx}(j,1) == 0
+                        globalInputIndices = vertcat(globalInputIndices,...
+                            inputBinds{otherComponentIdx}(j,2));
                     end
                 end
                 if ~isempty(globalInputIndices)
-                    Bproj(stateBinds{compIndex},inputBinds{outsideComponentIndex}) = ...
+                    Bproj(stateBinds{compIndex},globalInputIndices) = ...
                         Bproj(stateBinds{compIndex},globalInputIndices) + BD_i;
                 end
                 cProj(stateBinds{compIndex}) = cProj(stateBinds{compIndex}) + Bk_i;
+
             else
-                error("Mixing different system classes is not allowed for PHAs!");
+                throw(CORAerror('CORA:notSupported',...
+                    ['Mixing different system classes is not supported for '...
+                    'reachability analysis of parallel hybrid automata.']));
             end
+
         end
     end
-    
     
     % transition vector c
     cProj(stateBinds{compIndex}) = c;
     
-    % update reset struct
-    reset.A = Aproj;
-    reset.B = Bproj;
-    reset.c = cProj;
-    reset.hasInput = 1;
-    reset.inputDim = pha.numInputs;
-end
+    % assign matrices and vector
+    resetStruct.A = Aproj;
+    resetStruct.B = Bproj;
+    resetStruct.c = cProj;
 
-
-function resetResult = projectNonlinearReset(pha,reset,compIndex)
-% project nonlinear reset function dependent on inputs
-% change reset function along with derivatives up to third order 
-
-% compute state and input variables
-x = sym('x',[pha.numStates,1]);
-u = sym('u',[pha.numInputs,1]);
-
-% initialize dynamic function
-f = sym(ones(pha.numStates,1));
-
-% compute symbolic vector resolving input mapping
-% vector models the altered state x' = [x;u] of the subcomponent
-x_reset = x(pha.bindsStates{compIndex});
-
-% add inputs/outside states
-% Note: Nonlinear-systems do not have outputs right now, so we take the
-% i-th state instead
-for i = 1:size(pha.bindsInputs{compIndex},1)
-    binds = pha.bindsInputs{compIndex}(i,:);
-    if binds(1) == 0 
-        x_reset = [x_reset;u(binds(2))];
+    % update properties
+    resetStruct.stateDim = sysDim;    
+    resetStruct.inputDim = sysInput;
+    if sysInput > 0
+        resetStruct.hasInput = true;
     else
-        x_reset = [x_reset;x(pha.bindsStates{binds(1)}(binds(2)))];
+        resetStruct.hasInput = false;
     end
+
 end
 
+function resetResult = projectNonlinearReset(pHA,resetStruct,compIdx,id)
+% project nonlinear reset function to the full state dimension, where the
+% reset function depends on inputs (either states of other components or
+% global inputs); additionally, we update all derivatives up to third order
 
-% get symbolic function of original reset function
-% with inputs mapping resolved
-fOld = reset.f(x_reset);
+    % enlist state and input variables
+    x = sym('x',[pHA.numStates,1]);
+    u = sym('u',[pHA.numInputs,1]);
+    
+    % initialize reset function
+    if id
+        f = sym(ones(pHA.numStates,1));
+    else
+        f = sym(zeros(pHA.numStates,1));
+    end
 
-% inject original reset in projected reset
-f(pha.bindsStates{compIndex}) = fOld;
-
-% convert symbolic function to function handle,
-f_han = matlabFunction(f,'Vars',{x,u});
-
-% compute jacobian, hessian and third order tensor
-% with augmented state x' = [x;u];
-
-x_aug = [x;u];
-
-J = jacobian(f,x_aug);
-
-J_han = matlabFunction(J,'Vars',{x_aug});
-
-Q = cell(pha.numStates,1);
-
-for i = 1:pha.numStates
-    Q{i,1} = matlabFunction(hessian(f(i),x),'Vars',{x_aug});
-end
-
-T = cell(size(J,1));
-
-for i = 1:size(J,1)
-    for j = 1:size(J,2)
-        temp = hessian(J(i,j),x_aug);
-        if any(any(temp~=0))
-            T{i,j} = matlabFunction(temp,'Vars',{x_aug});
+    % read out state binds
+    statebinds = pHA.bindsStates{compIdx};
+    
+    % initialize symbolic vector containing of states of given component
+    x_reset = x(statebinds);
+    
+    % resolve input binds: in addition to its own states, the reset
+    % function of the component takes the inputs (either from other
+    % components or global inputs) as input arguments
+    for i = 1:size(pHA.bindsInputs{compIdx},1)
+        binds = pHA.bindsInputs{compIdx}(i,:);
+        if binds(1) == 0 
+            x_reset = [x_reset;u(binds(2))];
+        else
+            x_reset = [x_reset;x(pHA.bindsStates{binds(1)}(binds(2)))];
         end
     end
+    
+    % symbolic evaluation of the component's reset function (input mappings
+    % are resolved and now corresponds to state variables)
+    fOld = resetStruct.f(x_reset);
+    
+    % insert original reset in projected reset
+    f(statebinds) = fOld;
+    
+    % augment the state: full state + global inputs
+    x_aug = [x;u];
+
+    % convert symbolic function to function handle
+    f_han = matlabFunction(f,'Vars',{x_aug});
+    
+    % compute Jacobian
+    J = jacobian(f,x_aug);
+    J_han = matlabFunction(J,'Vars',{x_aug});
+    
+    % compute Hessian
+    Q = cell(pHA.numStates,1);
+    % skip all dimensions that do not occur in state binds (= all-zero)
+    for i=1:length(statebinds)
+        temp = hessian(f(statebinds(i)),x_aug);
+        Q{statebinds(i),1} = matlabFunction(temp,'Vars',{x_aug});
+    end
+    
+    % compute third-order tensor
+    T = cell(pHA.numStates,pHA.numStates+pHA.numInputs);
+    % skip all rows in Jacobian that do not occur in state binds
+    for i = 1:length(statebinds)
+        for j = 1:pHA.numStates+pHA.numInputs
+            temp = hessian(J(statebinds(i),j),x_aug);
+            if any(any(temp~=0))
+                T{statebinds(i),j} = matlabFunction(temp,'Vars',{x_aug});
+            end
+        end
+    end
+    
+    % instantiate reset struct
+    resetResult.f = f_han;
+    resetResult.J = J_han;
+    resetResult.Q = Q;
+    resetResult.T = T;
+
+    % properties
+    resetResult.stateDim = pHA.numStates;
+    resetResult.inputDim = pHA.numInputs;
+    if pHA.numInputs > 0
+        resetResult.hasInput = true;
+    else
+        resetResult.hasInput = false;
+    end
+
 end
 
-% create resulting reset struct
-resetResult.f = f_han;
-
-resetResult.J = J_han;
-
-resetResult.Q = Q;
-
-resetResult.T = T;
-
-resetResult.hasInput = 1;
-
-resetResult.inputDim = pha.numInputs;
-
-end
 %------------- END OF CODE --------------

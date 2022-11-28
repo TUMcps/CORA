@@ -1,19 +1,19 @@
-function [R,res] = reach(obj,params,options,varargin)
+function [R,res] = reach(pHA,params,options,varargin)
 % reach - computes the reachable set for a parallel hybrid automaton
 %
 % Syntax:  
-%    R = reach(obj,params,options)
-%    [R,res] = reach(obj,params,options,spec)
+%    R = reach(pHA,params,options)
+%    [R,res] = reach(pHA,params,options,spec)
 %
 % Inputs:
-%    obj - parallel hybrid automaton object
+%    pHA - parallelHybridAutomaton object
 %    params - parameter defining the reachability problem
 %    options - options for the computation of reachable sets
 %    spec - object of class specification 
 %
 % Outputs:
-%    R - object of class reachSet storing the reachable set
-%    res  - 1 if specifications are satisfied, 0 if not
+%    R - reachSet object storing the reachable set
+%    res - true/false whether specifications are satisfied
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,86 +23,138 @@ function [R,res] = reach(obj,params,options,varargin)
 
 % Author:       Niklas Kochdumper
 % Written:      04-July-2018 
-% Last update:  10-March-2022
-% Last revision: ---
+% Last update:  14-June-2020
+%               13-October-2021 (MP, implemented location-specific
+%                                specifications)
+%               03-March-2022 (MP, implemented synchronization labels)
+%               27-November-2022 (MW, restructure specification syntax)
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    res = 1;
+    res = true;
     
     % new options preprocessing
-    options = validateOptions(obj,mfilename,params,options);
+    options = validateOptions(pHA,mfilename,params,options);
 
+    % preprocessing of specifications
     options.specification = [];
+    spec = [];
+    specLocSpecific = false;
+    
     if nargin >= 4
-       options.specification = varargin{1}; 
+        spec = varargin{1};
+        % init that all specs are active everywhere
+        options.specification = spec;
+        % check if location-specific specs given 
+        for i=1:length(spec)
+            if isempty(spec(i).location)
+                specLocSpecific = true; break
+            end
+        end
     end
     
-    % initialization
+    % initialize reachable set
     R = [];
 
+    % initialize queue
     list{1}.set = options.R0;
     list{1}.loc = options.startLoc;
     list{1}.time = interval(options.tStart);
     list{1}.parent = 0;
 
-    % create list of label occurences to check wether all labeled
-    % transitions are enabled at the same time
-    % count in how many components a label occurs
-    labelOccs = containers.Map();
-    for i = 1:length(obj.components)
-        labelsInComponent = [];
-        for j = 1:length(obj.components{i}.location)
-            for k = 1:length(obj.components{i}.location{j}.transition)
-                currentLabel = obj.components{i}.location{j}.transition{k}.synchLabel;
-                if ~isempty(currentLabel)
-                    % check if the label is already accounted for within
-                    % the current component to avoid double counting
-                    if isempty(labelsInComponent) || ~ismember(currentLabel,labelsInComponent)
-                        if labelOccs.isKey(currentLabel)
-                            labelOccs(currentLabel) = labelOccs(currentLabel) + 1;
-                        else
-                            labelOccs(currentLabel) = 1;
-                        end
-                        labelsInComponent = vertcat(labelsInComponent,currentLabel);
-                    end
-                end
-            end
-        end
+    % display information on command window
+    if options.verbose
+        disp("Start analysis...");
+        disp("  pre-process synchronization labels...");
     end
+
+    % initialize tracker (for livelock detection)
+    tracker = struct(...
+        'switchingTime',interval(),...
+        'locID',double.empty(0,length(options.startLoc)),...
+        'transition',double.empty(0,length(options.startLoc)),...
+        'syncLabel','');
+
+    % create list of label occurences to check whether all labeled
+    % transitions are enabled at the same time
+    allLabels = labelOccurrences(pHA);
+
+    % number of iterations in the main loop
+    k = 0;
     
-    % loop until the queue is empty
+    % loop until the queue is empty or a specification is violated
     while ~isempty(list) && res
 
-        % get first element of the queue
+        % increment number of iterations
+        k = k + 1;
+
+        % update tracking
+        tracker(k,1).switchingTime = list{1}.time;
+        tracker(k,1).locID = list{1}.loc;
+
+        % get locations for each hybrid automaton, initial set for 
+        % automaton product, start time, and parent branch for reachable
+        % set computation of first element in the queue
         locID = list{1}.loc;
         R0 = list{1}.set;
         tStart = list{1}.time;
         parent = list{1}.parent;
 
-        list = list(2:end);
+        % filter the specifications for the ones relevant to the local
+        % automaton product (if no specification is location-specific, the
+        % specifications are always the same ones as initialized)
+        if specLocSpecific
+            options.specification = filterSpecifications(spec,locID);
+        end
         
+        % compute input set for the constructed location
+        options.U = mergeInputSet(locID,options.Uloc,options.inputCompMap);
+        
+        % check for immediate transitions
+        [list,tracker,restart] = immediateTransition(pHA,list,locID,...
+            allLabels,R0,options.U,tracker,options.verbose);
+        % check for livelock
+        if checkLivelock(tracker); break; end
+        % restart if immediate transition has occurred
+        if restart; continue; end
+
         % construct new location with local Automaton Product
-        locObj = locationProduct(obj,locID,labelOccs);
+        if options.verbose
+            disp("  compute location product of locations [" + ...
+               strjoin(string(locID),',') + "]...");
+        end
+        locObj = locationProduct(pHA,locID,allLabels);
 
-        % get input, time step, and specification for the current location
-        options.U = mergeInputSet(locID,options);
-
-        % compute the reachable set within a location
+        % compute the reachable set within the constructed location
+        if options.verbose
+            disp("  compute reachable set in locations [" + ...
+               strjoin(string(locID),',') + "]...");
+        end
         [Rtemp,Rjump,res] = reach(locObj,R0,tStart,options);
+
+        % remove current element from the queue
+        list = list(2:end);
 
         % add the new sets to the queue
         for i = 1:length(Rjump)
             Rjump{i}.parent = Rjump{i}.parent + length(R);
         end
-        
         list = [list; Rjump];
+
+        % display transitions on command window
+        if options.verbose && isscalar(list)
+            % multiple successor locations currently not supported...
+            disp("  transition: locations [" + strjoin(string(locID),",") + ...
+                "] -> locations [" + strjoin(string(list{1}.loc),",") + ...
+                "]... (time: " + string(list{1}.time) + ")");
+        end
 
         % store the computed reachable set
         for i = 1:size(Rtemp,1)
-           temp = reachSet(Rtemp.timePoint,Rtemp.timeInterval, ...
-                           Rtemp.parent,locID);
-           R = add(R,temp,parent);
+            temp = reachSet(Rtemp.timePoint,Rtemp.timeInterval,...
+                                Rtemp.parent,locID);
+            R = add(R,temp,parent);
         end
     end
 end
@@ -110,29 +162,66 @@ end
     
 % Auxiliary Functions -----------------------------------------------------
 
-function U = mergeInputSet(loc,options)
+function U = mergeInputSet(loc,Uloc,inputCompMap)
+% compute the joint input set for the location generated via the automaton
+% product of all individual hybrid automata
 
-    numInp = length(options.inputCompMap);
-    
     % loop over all used components
-    comp = unique(options.inputCompMap);
+    numInp = length(inputCompMap);
+    comp = unique(inputCompMap);
+    
+    for i=1:length(comp)
         
-    for i = 1:length(comp)
+        % find indices of component in input set
+        ind = find(inputCompMap == comp(i));
         
-       % find indizes of component in input set
-       ind = find(options.inputCompMap == comp(i));
-       
-       % project to higher dimensional space
-       Utemp = projectHighDim(options.Uloc{comp(i)}{loc(comp(i))},numInp,ind);
-       
-       % add to overall input set
-       if i == 1
-          U = Utemp; 
-       else
-          U = U + Utemp; 
-       end
+        % project input set of location from individual hybrid automaton
+        % to higher-dimensional space of automaton product
+        Utemp = projectHighDim(Uloc{comp(i)}{loc(comp(i))},numInp,ind);
+        
+        % add to overall input set
+        if i == 1
+            U = Utemp; 
+        else
+            U = U + Utemp; 
+        end
     end
+
 end
 
+function activeSpecs = filterSpecifications(spec,locID)
+% filter the specifications for the ones relevant to the local automaton
+% product: if a specific subcomponent is within a location where a
+% specification is relevant, the specification is checked in the next
+% reachability step
+
+    % number of components
+    nrComp = length(locID);
+
+    % number of specifications
+    nrSpecs = length(spec);
+    
+    % start with empty list, collect indices of relevant specifications
+    activeSpecs_idx = false(nrSpecs,1);
+    
+    % loop over components and specifications to see if they are active in
+    % the current set of locations (given location per subcomponent)
+    for i=1:nrSpecs
+        % active in all locations of any subcomponent?
+        if any(cellfun(@(x) isempty(x),spec(i).location,'UniformOutput',true))
+            activeSpecs_idx(i) = true; continue
+        end
+        % loop over subcomponents
+        for j=1:nrComp
+            if any(spec(i).location{j} == locID(j))
+                activeSpecs_idx(i) = true; break
+            end
+        end
+    end
+    
+    % return specification object containing only active specifications
+    activeSpecs = spec(activeSpecs_idx);
+
+end
 
 %------------- END OF CODE --------------

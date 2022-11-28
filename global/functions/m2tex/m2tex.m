@@ -1170,7 +1170,7 @@ if ~isempty(idx.lib)
 end
 function [idx,lib_ex] = check_points(line,idx,lib_ex)
 % This subroutine checks all found hints of the subroutine
-% "check_colors", wether they are valid.
+% "check_colors", whether they are valid.
 %% if double-comments exist
 if ~isempty(idx.com2)
     idx.com     = [];

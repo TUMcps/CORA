@@ -23,7 +23,8 @@ function [Rnext,options] = initReach(obj,Rinit,options)
 % Written:      29-October-2007 
 % Last update:  04-January-2008
 %               27-April-2009
-%               16-August-2016 (now identical to initReach of @nonlinearSys; solve by inheritance in the future)
+%               16-August-2016 (now identical to initReach of @nonlinearSys;
+%                               solve by inheritance in the future)
 %               17-May-2019
 % Last revision: ---
 

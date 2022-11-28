@@ -1,9 +1,8 @@
 function completed = example_linearSysDT_observe_longitudinalCommonRoad
 % example_linearSysDT_observe_longitudinalCommonRoad - example for 
-% guaranteed state estimation of linear discrete-time systems.
-%
-% The longitundinal dynamics of traffic participants from a CommonRoad file
-% is estimated.
+%     guaranteed state estimation of linear discrete-time systems.
+%     The longitundinal dynamics of traffic participants from a CommonRoad
+%     file is estimated.
 %
 % Syntax:  
 %    completed = example_linearSysDT_observe_longitudinalCommonRoad
@@ -12,13 +11,13 @@ function completed = example_linearSysDT_observe_longitudinalCommonRoad
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    completed - true/false 
 %
 % Example: 
 %    -
- 
+
 % Author:       Matthias Althoff, Niklas Kochdumper, Carlos Valero
-% Written:      15-Jul-2021
+% Written:      15-July-2021
 % Last update:  ---
 % Last revision:---
 
@@ -114,7 +113,7 @@ ylabel('v_x');
 
 
 % example completed
-completed = 1;
+completed = true;
 
 
 %------------- END OF CODE --------------

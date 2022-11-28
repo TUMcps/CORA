@@ -26,10 +26,6 @@ function res = testLongDuration_polyZonotope_cubMap
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-%% RANDOM TESTS
-
 % TEST zonotope (cubic multiplication)
 
 % compare the result of the polyZonotope/cubMap function
@@ -38,8 +34,8 @@ res = false;
 for dim = 2:5
    
     % create random zonotope
-    zono = zonotope(rand(2,10)-0.5*ones(2,10));
-    pZ = polyZonotope(zono);
+    Z = zonotope(rand(2,10)-0.5*ones(2,10));
+    pZ = polyZonotope(Z);
     
     % create random third-order tensor
     T{1,1} = rand(2)-0.5*ones(2);
@@ -48,7 +44,7 @@ for dim = 2:5
     T{2,2} = rand(2)-0.5*ones(2);
     
     % compute cubic map
-    zonoRes = cubMap(zono,T);
+    zonoRes = cubMap(Z,T);
     pZres = cubMap(pZ,T);
     
     % over approximate the resulting polynomial zonotope with a zonotope
@@ -57,16 +53,10 @@ for dim = 2:5
     % test for equality
     Tol = 1e-12;
     
-    if any(size(zonoRes_) ~= size(zonoRes_)) || any(abs(center(zonoRes_) - center(zonoRes)) > Tol)
-        error('testLongDuration_polyZonotope_cubMap: comparison with zonotope implementation failed!'); 
-    else
-        G = generators(zonoRes);
-        G_ = generators(zonoRes_);
-        for i = 1:size(G,2)
-            if ~ismembertol(G(:,i)',G_',Tol,'ByRows',true)
-                error('testLongDuration_polyZonotope_cubMap: comparison with zonotope implementation failed!'); 
-            end
-        end
+    if ~isequal(zonoRes,zonoRes_,Tol)
+        path = pathFailedTests(mfilename());
+        save(path,'Z','pZ','T');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -104,15 +94,14 @@ for i = 1:3
     end
 
 %     % visualize result
-%     plot(pZ,[1,2],5,'FaceColor',[.5 .5 .5],'Filled',true,'Splits',30);
-%     hold on
+%     figure; hold on;
+%     plot(pZ,[1,2],5,'FaceColor',[.5 .5 .5],'Splits',30);
 %     plot(initPoints(1,:),initPoints(2,:),'.k');
 %     plot(zonotope(pZ),[1,2],'r');
 % 
-%     figure
-%     plot(pZres,[1,2],'FaceColor',[.5 .5 .5],'Filled',true,'Order',5,'Splits',30)
-%     hold on
-%     plot(zonotope(pZres),[1,2],'r');
+%     figure; hold on;
+%     plot(pZres,[1,2],'FaceColor',[.5 .5 .5],'Order',5,'Splits',30)
+%     plot(zonotope(    ),[1,2],'r');
 %     plot(points(1,:),points(2,:),'.k');
 
     % check if the polynomial zonotope obtained by computing the quadratic map
@@ -120,7 +109,9 @@ for i = 1:3
     suc = containsPointSet(pZres,points,[],30);
    
     if ~suc
-        error('testLongDuration_polyZonotope_cubMap: random test cubic multiplication failed!');
+        path = pathFailedTests(mfilename());
+        save(path,'c','G','Grest','expMat','points','initPoints','T');
+        throw(CORAerror('CORA:testFailed'));
     end  
 end
 
@@ -158,16 +149,10 @@ for dim = 2:5
     % test for equality
     Tol = 1e-12;
     
-    if any(size(zonoRes_) ~= size(zonoRes_)) || any(abs(center(zonoRes_) - center(zonoRes)) > Tol)
-        error('testLongDuration_polyZonotope_cubMap: comparison with zonotope implementation failed!'); 
-    else
-        G = generators(zonoRes);
-        G_ = generators(zonoRes_);
-        for i = 1:size(G,2)
-            if ~ismembertol(G(:,i)',G_',Tol,'ByRows',true)
-                error('testLongDuration_polyZonotope_cubMap: comparison with zonotope implementation failed!'); 
-            end
-        end
+    if ~isequal(zonoRes,zonoRes_,Tol)
+        path = pathFailedTests(mfilename());
+        save(path,'Z','pZ','T');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -216,27 +201,27 @@ for i = 1:3
         end
     end
 
-%     % visulaize result
-%     figure
-%     plot(pZres,[1,2],'FaceColor',[.5 .5 .5],'Filled',true,'Order',5,'Splits',30)
-%     hold on
+%     % visualize result
+%     figure; hold on;
+%     plot(pZres,[1,2],'FaceColor',[.5 .5 .5],'Order',5,'Splits',30)
 %     plot(zonotope(pZres),[1,2],'r');
 %     plot(pointsRes(1,:),pointsRes(2,:),'.k');
 
-    % check if the polynomial zonotope obtained by computing the quadratic map
-    % encloses all randomly drawn and mapped points
+    % check if the polynomial zonotope obtained by computing the quadratic
+    % map encloses all randomly drawn and mapped points
     suc = containsPointSet(pZres,pointsRes,[],30);
    
     if ~suc
-        error('testLongDuration_polyZonotope_cubMap: random test mixed multiplication failed!');
+        path = pathFailedTests(mfilename());
+        save(path,'c','G','Grest','expMat','points1','points2','points3','T');
+        throw(CORAerror('CORA:testFailed'));
     end  
 end
 
-
 res = true;
 
-
 end
+
 
 % Auxiliary Functions -----------------------------------------------------
 

@@ -29,15 +29,18 @@ function T = generateNthTensor(f,vars,order,varargin)
 
 %------------- BEGIN CODE --------------
     
-if nargin < 3 || nargin > 4
-    error('generateNthTensor: Wrong number of input arguments!'); 
+if nargin < 3
+    throw(CORAerror('CORA:notEnoughInputArgs',3));
+elseif nargin > 4
+    throw(CORAerror('CORA:tooManyInputArgs',4));
 elseif nargin == 3
     Tprev = []; % previous tensor not provided
 elseif nargin == 4
     Tprev = varargin{1};
     % catch user inputs that are not supported
     if order == 1
-        error('generateNthTensor: computation from previous tensor not supported for "order = 1"!');
+        throw(CORAerror('CORA:wrongValue','third',...
+            'The computation from previous tensor not supported for order = 1.'));
     end
 end
 
@@ -139,6 +142,7 @@ end
     
 end
 
+% Auxiliary Functions -----------------------------------------------------
 
 function H = hessianRecursive(f,vars,order)
 % recursive function that calculates the tensor of the specified order for

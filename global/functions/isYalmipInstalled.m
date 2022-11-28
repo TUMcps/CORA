@@ -2,13 +2,16 @@ function res = isYalmipInstalled()
 % isYalmipInstalled - checks if YALMIP [1] is installed
 %
 % Syntax:  
-%    [val] = norm(Z)
+%    res = isYalmipInstalled
+%
+% Inputs:
+%    -
 %
 % Outputs:
-%   res - true if installed, false otherwise
+%    res - true if installed, false otherwise
 %
 % Example: 
-%    ---
+%    -
 %
 % References:
 %    [1] Löfberg, J., 2004, September. YALMIP: A toolbox for 

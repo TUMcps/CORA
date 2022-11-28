@@ -17,16 +17,13 @@ function perf = performanceObserver(EstSet)
 %        in preparation.
 %
 % Example: 
-%
- 
+
 % Author:       Matthias Althoff
 % Written:      16-Jan-2021
 % Last update:  ---
 % Last revision:---
 
-
 %------------- BEGIN CODE --------------
-
 
 %% Loop through all sets
 % initialize values

@@ -1,12 +1,12 @@
 function res = testLongDuration_nonlinearSys_simplifyOptimize
-% test_nonlinearSys_simplifyOptimize - unit test function for the creation
+% testLongDuration_nonlinearSys_simplifyOptimize - unit test function for the creation
 %    of tensors with setting options.simplify = 'optimize'
 %
 % Checks if the results with options.simplify = 'optimize' are identical to
 % the results without optimization
 %
 % Syntax:  
-%    res = test_nonlinearSys_simplifyOptimize
+%    res = testLongDuration_nonlinearSys_simplifyOptimize
 %
 % Inputs:
 %    -
@@ -68,8 +68,8 @@ function res = testLongDuration_nonlinearSys_simplifyOptimize
             temp1 = center(H1{j});
             temp2 = center(H2{j});
             
-            if max(max(abs(temp1-temp2))) > 1e-14
-               error('Test failed!'); 
+            if ~all(all(withinTol(temp1,temp2,1e-14)))
+                throw(CORAerror('CORA:testFailed'));
             end
         end
     end
@@ -111,8 +111,8 @@ function res = testLongDuration_nonlinearSys_simplifyOptimize
                 temp1 = center(T1{j,k});
                 temp2 = center(T2{j,k});
 
-                if max(max(abs(temp1-temp2))) > 1e-14
-                   error('Test failed!'); 
+                if ~all(all(withinTol(temp1,temp2,1e-14)))
+                    throw(CORAerror('CORA:testFailed'));
                 end
             end
         end

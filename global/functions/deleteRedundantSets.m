@@ -1,9 +1,9 @@
-function [R] = deleteRedundantSets(R,Rold,options)
+function R = deleteRedundantSets(R,Rold,options)
 % deleteRedundantSets - delete reachable sets that are already covered by
-% other sets
+%    other sets
 %
 % Syntax:  
-%    [R] = deleteRedundantSets(R,Rold,options)
+%    R = deleteRedundantSets(R,Rold,options)
 %
 % Inputs:
 %    R - reachable sets
@@ -14,6 +14,7 @@ function [R] = deleteRedundantSets(R,Rold,options)
 %    R - reachable sets
 %
 % Example: 
+%    ---
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,7 +29,6 @@ function [R] = deleteRedundantSets(R,Rold,options)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
 
 %set reduction method
 redMethod='pca';
@@ -51,7 +51,7 @@ if R.internalCount==options.reductionInterval
     for i=1:length(R.tp)
         R.tp{i}.set=reduce(R.tp{i}.set,redMethod,1);
         %generate polytope
-        R.P{i}=polytope(R.tp{i}.set,options);
+        R.P{i} = mptPolytope(R.tp{i}.set);
     end    
 elseif R.internalCount==2
     %intersect each reachable set with each previous reachable set
@@ -59,7 +59,7 @@ elseif R.internalCount==2
         %approximate new set of time points by parallelpiped 
         R.tp{iNewSet}.set=reduce(R.tp{iNewSet}.set,redMethod,1);
         %generate mpt polytope
-        Pnew{iNewSet}=polytope(R.tp{iNewSet}.set,options);
+        Pnew{iNewSet}=mptPolytope(R.tp{iNewSet}.set);
     end
     %initialize Pcut
     Pcut=Pnew;
@@ -96,7 +96,7 @@ elseif R.internalCount==2
         end    
     end
     
-    %copy only ckecked reachable sets
+    %copy only checked reachable sets
     R.tp=[];
     for i=1:length(Rnew)
         R.tp{i} = Rnew{i};

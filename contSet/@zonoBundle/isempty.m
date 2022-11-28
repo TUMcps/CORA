@@ -1,14 +1,14 @@
-function res = isempty(obj)
-% isempty - checks if zonoBundle is empty or not
+function res = isempty(zB)
+% isempty - checks if a zonotope bundle is the empty set
 %
 % Syntax:  
-%    res = isempty(obj)
+%    res = isempty(zB)
 %
 % Inputs:
-%    obj - zonoBundle object
+%    zB - zonoBundle object
 %
 % Outputs:
-%    res - boolean whether obj is empty or not
+%    res - true/false
 %
 % Example: 
 %    ---
@@ -26,15 +26,15 @@ function res = isempty(obj)
 
 %------------- BEGIN CODE --------------
 
-    % check if any of the single zonotopes is empty
-    for i = 1:length(obj.Z)
-       if isempty(obj.Z{i})
-           res = 1;
-           return;
-       end
-    end
-    
-    % check if the intersection of the zonotopes is empty
-    res = isempty(conZonotope(obj));
+% check if any of the single zonotopes is empty
+for i = 1:length(zB.Z)
+   if isempty(zB.Z{i})
+       res = true;
+       return;
+   end
+end
+
+% check if the intersection of the zonotopes is empty
+res = isempty(conZonotope(zB));
 
 %------------- END OF CODE --------------

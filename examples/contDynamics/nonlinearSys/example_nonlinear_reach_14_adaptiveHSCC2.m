@@ -72,8 +72,6 @@ for sys_no = 1:sys_total
         % simulation
         simOpt.points = 1000;                       % number of initial points
         simOpt.fracVert = 2^sys.dim/simOpt.points;  % fraction of vertices initial set
-        simOpt.fracInpVert = 0.5;                   % fraction of vertices input set
-        simOpt.inpChanges = 1;                      % changes of input over time horizon
 
         simRes = simulateRandom(sys,params,simOpt);
 

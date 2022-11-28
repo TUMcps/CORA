@@ -1,19 +1,21 @@
-function Zbundle = generateRandom(varargin)
-% generateRandom - Generates a random zonoBundle
+function zB = generateRandom(varargin)
+% generateRandom - Generates a random zonotope bundle
 %
 % Syntax:  
-%    Zbundle = generateRandom()
-%    Zbundle = generateRandom(dim,zons)
+%    zB = zonoBundle.generateRandom()
+%    zB = zonoBundle.generateRandom('Dimension',n)
+%    zB = zonoBundle.generateRandom('Dimension',n,'NrZonotopes',nrZonos)
 %
 % Inputs:
-%    dim - (optional) dimension
-%    zons - (optional) number of zonotopes
+%    Name-Value pairs (all options, arbitrary order):
+%       <'Dimension',n> - dimension
+%       <'NrZonotopes',nrZonos> - number of zonotopes in bundle
 %
 % Outputs:
-%    Zbundle - random zonoBundle
+%    zB - random zonotope bundle
 %
 % Example: 
-%    Zbundle = zonoBundle.generateRandom();
+%    zB = zonoBundle.generateRandom('Dimension',2);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,49 +25,57 @@ function Zbundle = generateRandom(varargin)
 
 % Author:       Mark Wetzlinger
 % Written:      17-Sep-2019
-% Last update:  ---
+% Last update:  19-May-2022 (name-value pair syntax)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    % bounds for parameters
-    dim_low = 1;
-    dim_up = 5;
+% name-value pairs -> number of input arguments is always a multiple of 2
+if mod(nargin,2) ~= 0
+    throw(CORAerror('CORA:evenNumberInputArgs'));
+else
+    % read input arguments
+    NVpairs = varargin(1:end);
+    % check list of name-value pairs
+    checkNameValuePairs(NVpairs,{'Dimension','NrZonotopes'});
+    % dimension given?
+    [NVpairs,n] = readNameValuePair(NVpairs,'Dimension');
+    % number of zonotopes given?
+    [NVpairs,nrZonos] = readNameValuePair(NVpairs,'NrZonotopes');
+end
 
-    zons_low = 2;
-    zons_up = 5;
+% default computation for dimension
+if isempty(n)
+    nmax = 10;
+    n = randi(nmax);
+end
 
-    % randomly compute parameters
-    zons = zons_low + floor(rand(1) * (zons_up - zons_low + 1));
-    n = dim_low + floor(rand(1) * (dim_up - dim_low + 1));
+% default number of generators
+if isempty(nrZonos)
+    nrZonos = 1+randi(4);
+end
 
-    % parse input arguments
-    if nargin >= 1 && ~isempty(varargin{1})
-       n = varargin{1};
-    end
+% construct random zonotope bundle
+listZ = cell(zons,1);
+listZ{1} = zonotope.generateRandom('Dimension',n);
 
-    if nargin >= 2 && ~isempty(varargin{2})
-       zons = varargin{2};  
-    end
-
-    % construct random zonotope bundle
-    Z = cell(zons,1);
-    Z{1} = zonotope.generateRandom(n);
-    for z=2:zons
-        inside = false;
-        while ~inside
-            inside = true;
-            cen = randPoint(Z{1});
-            for i=2:z-1
-                if ~in(Z{i},cen)
-                    inside = false; continue;
-                end
+% to ensure that zonotope bundle not empty, the center of the next zonotope
+% in the list is a point contained in all previous zonotopes
+for z=2:nrZonos
+    inside = false;
+    while ~inside
+        inside = true;
+        c = randPoint(listZ{1});
+        for i=2:z-1
+            if ~contains(listZ{i},c)
+                inside = false; continue;
             end
         end
-        Z{z} = zonotope.generateRandom(n,cen);
     end
+    listZ{z,1} = zonotope.generateRandom('Dimension',n,'Center',c);
+end
 
-    % instantiate interval
-    Zbundle = zonoBundle(Z);
+% instantiate zonotope bundle
+zB = zonoBundle(listZ);
 
 %------------- END OF CODE --------------

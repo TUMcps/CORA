@@ -1,5 +1,6 @@
-function cZ = or(cZ1, varargin)
-% or - Computes an over-approximation for the union of conZonotope objects
+function cZ = or(cZ1,varargin)
+% or - Computes an over-approximation for the union of a constrained
+%    zonotope and other sets
 %
 % Syntax:  
 %    cZ = or(cZ1, cZ2)
@@ -18,27 +19,24 @@ function cZ = or(cZ1, varargin)
 % Example: 
 %    % create constrained zonotopes
 %    Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
-%    A = [1 1 1];
-%    b = 1;
-%    cZono1 = conZonotope(Z,A,b);
+%    A = [1 1 1]; b = 1;
+%    cZ1 = conZonotope(Z,A,b);
 % 
 %    Z = [4 2 0 0;4 1 1 0];
-%    A = [1 1 -1];
-%    b = 0;
-%    cZono2 = conZonotope(Z,A,b);
+%    A = [1 1 -1]; b = 0;
+%    cZ2 = conZonotope(Z,A,b);
 %  
 %    Z = [4 2 0 0;-4 1 1 0];
-%    cZono3 = conZonotope(Z,[],[]);
-%
+%    cZ3 = conZonotope(Z,[],[]);
+% 
 %    % compute conZonotpe that encloses the union
-%    res = or(cZono1,cZono2,cZono3);
-%
+%    res = or(cZ1,cZ2,cZ3);
+% 
 %    % visualization
-%    figure
-%    hold on
-%    plot(cZono1,[1,2],'r','Filled',true,'EdgeColor','none');
-%    plot(cZono2,[1,2],'b','Filled',true,'EdgeColor','none');
-%    plot(cZono3,[1,2],'g','Filled',true,'EdgeColor','none');
+%    figure; hold on;
+%    plot(cZ1,[1,2],'FaceColor','r');
+%    plot(cZ2,[1,2],'FaceColor','b');
+%    plot(cZ3,[1,2],'FaceColor','g');
 %    plot(res,[1,2],'k');
 %
 % References:
@@ -66,26 +64,26 @@ function cZ = or(cZ1, varargin)
     if nargin == 2 || (nargin > 2 && ...
                       (isempty(varargin{2}) || ischar(varargin{2})))
                   
-        cZ2 = varargin{1};
+        S = varargin{1};
 
         % determine conZonotope object
         if ~isa(cZ1,'conZonotope')
             temp = cZ1;
-            cZ1 = cZ2;
-            cZ2 = temp;
+            cZ1 = S;
+            S = temp;
         end
 
         % different cases depending on the class of the second set
-        if isa(cZ2,'conPolyZono')
+        if isa(S,'conPolyZono')
             
-            cZ = cZ2 | cZ1;
+            cZ = S | cZ1;
         
-        elseif isa(cZ2,'conZonotope') || isa(cZ2,'zonotope') || ...
-           isa(cZ2,'interval') || isa(cZ2,'zonoBundle') || ...
-           isa(cZ2,'mptPolytope') || isnumeric(cZ2)
+        elseif isa(S,'conZonotope') || isa(S,'zonotope') || ...
+           isa(S,'interval') || isa(S,'zonoBundle') || ...
+           isa(S,'mptPolytope') || isnumeric(S)
             
-            if ~isa(cZ2,'conZonotope')
-               cZ2 = conZonotope(cZ2); 
+            if ~isa(S,'conZonotope')
+                S = conZonotope(S); 
             end
             
             % parse input arguments
@@ -100,16 +98,16 @@ function cZ = or(cZ1, varargin)
             % compute over-approximation of the union with the selected 
             % algorithm
             if strcmp(alg,'linProg')
-               cZ = unionLinProg({cZ1,cZ2},order);
+               cZ = unionLinProg({cZ1,S},order);
             elseif strcmp(alg,'tedrake')
-               cZ = unionTedrake({cZ2,cZ2},order);
+               cZ = unionTedrake({S,S},order);
             else
-               error('Wrong value for input argument ''alg''!'); 
+                throw(CORAerror('CORA:wrongValue','second',"'linProg' or 'tedrake'"));
             end
 
         else
             % throw error for given arguments
-            error(noops(cZ1,cZ2));
+            throw(CORAerror('CORA:noops',cZ1,S));
         end
     
     else
@@ -142,7 +140,7 @@ function cZ = or(cZ1, varargin)
         elseif strcmp(alg,'tedrake')
            cZ = unionTedrake([{cZ1};Zcell],order);
         else
-           error('Wrong value for input argument ''alg''!'); 
+            throw(CORAerror('CORA:wrongValue','second',"'linProg' or 'tedrake'"));
         end
     end
 end

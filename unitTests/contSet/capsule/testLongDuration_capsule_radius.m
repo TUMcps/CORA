@@ -35,16 +35,11 @@ for n=1:2:30
     
     % since capsule is a ball, enclosing radius is radius
     if radius(C) ~= r
-        res = false; break;
+        res = false;
+        path = pathFailedTests(mfilename());
+        save(path,'C','r');
+        break;
     end
-end
-
-
-% combine results
-if res
-    disp('test_radius successful');
-else
-    disp('test_radius failed');
 end
 
 %------------- END OF CODE --------------

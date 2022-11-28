@@ -1,17 +1,18 @@
-function d = dim(obj)
-% dim - returns the dimension of the space the interval is a subset of
+function n = dim(I)
+% dim - returns the dimension of the ambient space of an interval
 %
 % Syntax:  
-%    d = dim(obj)
+%    n = dim(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
-%    d - dimension of obj 
+%    n - dimension of the ambient space
 %
-% Example: 
-%    ---
+% Example:
+%    I = interval([-1;-2],[3;4]);
+%    n = dim(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,18 +28,18 @@ function d = dim(obj)
 
 %------------- BEGIN CODE --------------
 
-infi = infimum(obj); % equivalently: supremum(obj)
+infi = infimum(I); % equivalently: supremum(I)
 if isempty(infi)
-    d = 0; return;
+    n = 0; return;
 end
 
 [rows, cols] = size(infi);
 if rows == 1
-    d = cols;
+    n = cols;
 elseif cols == 1
-    d = rows;
+    n = rows;
 else
-    d = [rows, cols];
+    n = [rows, cols];
 end
 
 

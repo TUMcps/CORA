@@ -11,8 +11,9 @@ function I = interval(Z)
 %    I - interval object
 %
 % Example: 
-%    Z = zonotope(rand(2,5));
+%    Z = zonotope([-1;1],[3 2 -1; 2 1 -1]);
 %    I = interval(Z);
+%
 %    figure; hold on;
 %    plot(Z,[1,2],'b');
 %    plot(I,[1,2],'r');
@@ -33,16 +34,15 @@ function I = interval(Z)
 
 %------------- BEGIN CODE --------------
 
-%extract center
+% extract center
 c = center(Z);
 
-%determine left and right limit
-%specially designed for high performance
+% determine lower and upper bounds in each dimension
 delta = sum(abs(Z.Z),2) - abs(c);
 leftLimit = c - delta;
 rightLimit = c + delta;
 
-%instantiate interval
+% instantiate interval
 I = interval(leftLimit,rightLimit);
 
 %------------- END OF CODE --------------

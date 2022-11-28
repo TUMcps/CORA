@@ -1,22 +1,22 @@
-function res = simulateRandom(obj,params,options)
+function simRes = simulateRandom(HA,params,varargin)
 % simulateRandom - simulates a hybrid automata for random initial points
 %                  and random inputs
 %
 % Syntax:  
-%    obj = simulateRandom(obj,params,options)
+%    res = simulateRandom(HA,params,options)
 %
 % Inputs:
-%    obj - hybrid automaton object
+%    HA - hybridAutomaton object
 %    params - system parameters
 %    options - settings for random simulation
 %       .points - nr of simulation runs
 %       .fracVert - fraction of initial states starting from vertices
 %       .fracInpVert - fraction of input values taken from the 
 %                       vertices of the input set
-%       .inpChanges - number of times the input is changed in a simulation run
+%       .nrConstInp - number of piecewise constant inputs
 %
 % Outputs:
-%    res - simRes object which stored simulation results
+%    simRes - simResult object storing simulation results
 %
 % Example: 
 %
@@ -33,14 +33,20 @@ function res = simulateRandom(obj,params,options)
 
 %------------- BEGIN CODE --------------
 
-% new options preprocessing
-options = validateOptions(obj,mfilename,params,options);
+% input argument validation
+options = struct();
+if nargin == 3 && isstruct(varargin{1})
+    options = varargin{1};
+end
+
+% options preprocessing
+options = validateOptions(HA,mfilename,params,options);
 
 % initialize random inputs
 u = cell(size(options.Uloc));
 
 for j = 1:length(u)
-   u{j} = randPoint(options.Uloc{j});
+    u{j} = randPoint(options.Uloc{j});
 end
 
 % determine random points inside the initial set
@@ -48,13 +54,13 @@ nrEx = ceil(options.points*options.fracVert);
 nrNor = options.points - nrEx;
 points = [];
 if nrEx > 0
-   points = [points, randPoint(options.R0,nrEx,'extreme')]; 
+    points = [points, randPoint(options.R0,nrEx,'extreme')]; 
 end
 if nrNor > 0
-   points = [points, randPoint(options.R0,nrNor,'standard')];
+    points = [points, randPoint(options.R0,nrNor,'standard')];
 end
 
-time = linspace(options.tStart,options.tFinal,options.inpChanges);
+time = linspace(options.tStart,options.tFinal,options.nrConstInp);
 startLoc = options.startLoc;
 
 % initialization
@@ -72,7 +78,7 @@ for i = 1:options.points
        % compute random input
        optsSim.u = u;
 
-       if counter < options.inpChanges * options.fracInpVert 
+       if counter < options.nrConstInp * options.fracInpVert 
            optsSim.u{locCur} = randPoint(options.Uloc{locCur},1,'extreme');
        else
            optsSim.u{locCur} = randPoint(options.Uloc{locCur});
@@ -87,7 +93,7 @@ for i = 1:options.points
        optsSim.startLoc = locCur;
        optsSim.finalLoc = options.finalLoc;
 
-       [tTemp,xTemp,locTemp] = simulate(obj,optsSim);
+       [tTemp,xTemp,locTemp] = simulate(HA,optsSim);
 
        % store results
        t = [t; tTemp]; x = [x; xTemp]; loc = [loc; locTemp];
@@ -102,8 +108,6 @@ for i = 1:options.points
 end
     
 % create object storing the simulation results
-res = simResult(x,t,loc);
-    
-end
+simRes = simResult(x,t,loc);
 
 %------------- END OF CODE --------------

@@ -2,7 +2,7 @@ function res = testLongDuration_zonotope_center
 % testLongDuration_zonotope_center - unit test function of center
 %
 % Syntax:  
-%    res = test_center
+%    res = testLongDuration_zonotope_center
 %
 % Inputs:
 %    -
@@ -50,10 +50,9 @@ end
 % add results
 res = all(all(res_rand));
 
-if res
-    disp('test_center successful');
-else
-    disp('test_center failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'c','Z');
 end
 
 %------------- END OF CODE --------------

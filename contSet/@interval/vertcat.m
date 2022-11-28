@@ -1,19 +1,19 @@
-function obj = vertcat(varargin)
+function I = vertcat(varargin)
 % vertcat - Overloads the opertor for vertical concatenation
 %
 % Syntax:  
-%    obj = horzcat(varargin)
+%    I = vertcat(varargin)
 %
 % Inputs:
 %    varargin - list of interval objects 
 %
 % Outputs:
-%    obj - interval object 
+%    I - interval object 
 %
 % Example: 
-%    a = interval(-1, 1);
-%    b = interval(1, 2);
-%    c = [a,b];
+%    I1 = interval(-1, 1);
+%    I2 = interval(1, 2);
+%    I = [I1,I2];
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,24 +28,24 @@ function obj = vertcat(varargin)
 
 %------------- BEGIN CODE --------------
 
-obj = varargin{1};
+I = varargin{1};
 
 %if object is not an interval
-if ~isa(obj,'interval')
-    tmp = obj;
-    obj = interval();
-    obj.inf = tmp;
-    obj.sup = tmp;
+if ~isa(I,'interval')
+    tmp = I;
+    I = interval();
+    I.inf = tmp;
+    I.sup = tmp;
 end
 
 for i = 2:nargin
     %check if concatented variable is an interval
     if isa(varargin{i},'interval')
-        obj.inf = [obj.inf; varargin{i}.inf];
-        obj.sup = [obj.sup; varargin{i}.sup];
+        I.inf = [I.inf; varargin{i}.inf];
+        I.sup = [I.sup; varargin{i}.sup];
     else
-        obj.inf = [obj.inf; varargin{i}];
-        obj.sup = [obj.sup; varargin{i}];
+        I.inf = [I.inf; varargin{i}];
+        I.sup = [I.sup; varargin{i}];
     end
 end
 

@@ -29,7 +29,7 @@ function simulatePedestrian
 %------------- BEGIN CODE --------------
 
 % set path
-savepath = [coraroot '/unitTests/contDynamics/linearSysDT/models'];
+savepath = [CORAROOT filesep 'unitTests' filesep 'contDynamics' filesep 'linearSysDT' filesep 'models'];
 
 %% Settings
 
@@ -92,7 +92,7 @@ pedestrian = linearSysDT('pedestrian',A_d, B_d, c, C, options.timeStep); %initia
 
 % create unit ball for a_max<1 [m/s^2]
 E_ball = ellipsoid(diag([0, 0, 1, 1]));
-Z_ball = zonotope(E_ball, 10, 'o:norm');
+Z_ball = zonotope(E_ball, 10, 'outer:norm');
 W = Z_ball; % disturbance set
 W_d = (eye(4)*options.timeStep + A*options.timeStep^2/2)*W; % discrete-time disturbance set
 V = zonotope([zeros(2,1), 0.1*eye(2)]); % sensor noise set
@@ -109,9 +109,10 @@ params.u = acceleration; %input transition
 
 options.points = 1;
 options.p_conf = 0.999; % probability that sample of normal distribution within specified set
+options.type = 'gaussian';
 
 % simulate result assuming Gaussian distributions
-simRes = simulateRandom(pedestrian, params, options,'gaussian');
+simRes = simulateRandom(pedestrian, params, options);
 
 %% obtain output values
 for i=1:length(simRes.t{1})

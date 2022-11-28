@@ -26,15 +26,11 @@ function res = testLongDuration_interval_randPoint
 %------------- BEGIN CODE --------------
 
 % empty case
-Int = interval();
-res_empty = true;
-try
-    p = randPoint(Int); % <- should throw error here
-    res_empty = false;
-end
+I = interval();
+res_empty = isempty(randPoint(I));
 
 % random intervals
-nrTests = 1000;
+nrTests = 100;
 nrRandPoints = 1;
 res_rand = true;
 for i=1:nrTests
@@ -46,17 +42,17 @@ for i=1:nrTests
     ub = rand(n,1);
     
     % init interval
-    Int = interval(lb,ub);
+    I = interval(lb,ub);
     
     % check 'standard' method
-    p = randPoint(Int,nrRandPoints);
+    p = randPoint(I,nrRandPoints);
     % check 'extreme' method
-    p = [p, randPoint(Int,nrRandPoints,'extreme')];
+    p = [p, randPoint(I,nrRandPoints,'extreme')];
     % check 'gaussian' method (only for run-time errors)
     pr = 0.8;
-    randPoint(Int,nrRandPoints,'gaussian',pr);
+    randPoint(I,nrRandPoints,'gaussian',pr);
     
-    if ~in(Int,p)
+    if ~contains(I,p)
         res_rand = false; break;
     end
     
@@ -66,10 +62,9 @@ end
 % combine results
 res = res_rand && res_empty;
 
-if res
-    disp('test_randPoint successful');
-else
-    disp('test_randPoint failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'lb','ub','n','p');
 end
 
 %------------- END OF CODE --------------

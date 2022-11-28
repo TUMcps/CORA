@@ -1,10 +1,9 @@
 function [R,tcomp] = observe_FRadC(obj,options)
-% observe_FRadC - computes the guaranted state estimation approach
-% from [1].
-%
+% observe_FRadC - computes the guaranteed state estimation approach
+%    from [1].
 %
 % Syntax:  
-%    [R,Rout] = observe_FRadA(obj,options)
+%    [R,tcomp] = observe_FRadC(obj,options)
 %
 % Inputs:
 %    obj - discrete-time linear system object
@@ -19,7 +18,8 @@ function [R,tcomp] = observe_FRadC(obj,options)
 %        Gain optimality under distinct uncertainty paradigms and
 %        robust convergence. Automatica, 55:265-273, 2015.
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none

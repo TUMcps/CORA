@@ -24,7 +24,7 @@ function res = testMP_Krylov_homogeneousSolution_projection(~)
 %------------- BEGIN CODE --------------
 
 % enable access to private function "initReach_Krylov"
-path = coraroot();
+path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSys','private','initReach_Krylov.m');
 target = fullfile(path,'contDynamics','@linearSys','initReach_Krylov.m');
 copyfile(source,target);
@@ -94,7 +94,7 @@ R_exact = expm(A*options.timeStep)*options.R0;
 R_proj = C*R_exact;
 
 % Is exact solution in zonotope?
-res = in(Rnext.tp,R_proj);
+res = contains(Rnext.tp,R_proj);
 
 % revoke access to private function "initReach_Krylov"
 delete(target);

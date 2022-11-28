@@ -12,7 +12,8 @@ function Rnext = post(obj,Rnext,Uadd,~)
 % Outputs:
 %    Rnext - reachable set of the next time step
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,17 +24,13 @@ function Rnext = post(obj,Rnext,Uadd,~)
 % Author:       Matthias Althoff
 % Written:      07-November-2018 
 % Last update:  08-September-2020
+%               19-November-2021 (MW, remove case differentation due to new
+%                                       constructor syntax)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-
 % write results to reachable set struct Rnext
-if isempty(obj.c)
-    Rnext.tp = obj.A*Rnext.tp + obj.B*Uadd;
-else
-    Rnext.tp = obj.A*Rnext.tp + obj.B*Uadd + obj.c;
-end
-
+Rnext.tp = obj.A*Rnext.tp + obj.B*Uadd + obj.c;
 
 %------------- END OF CODE --------------

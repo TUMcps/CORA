@@ -20,10 +20,10 @@ function [pNorm]=normalize(p1,p2)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 19-November-2007 
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      19-November-2007 
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
         

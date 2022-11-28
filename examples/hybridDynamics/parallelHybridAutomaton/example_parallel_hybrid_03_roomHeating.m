@@ -4,17 +4,23 @@ function res = example_parallel_hybrid_03_roomHeating()
 %    described in Sec. 2.3 in [1] with two rooms
 %
 % Syntax:  
-%    example_parallel_hybrid_03_roomHeating
+%    res = example_parallel_hybrid_03_roomHeating
 %
 % Inputs:
 %    -
 %
 % Outputs:
-%    res - boolean, true if completed
+%    res - true/false
 %
 % References:
 %   [1] A. Fehnker and F. Ivancic. "Benchmarks for Hybrid Systems 
 %       Verification", HSCC 2004
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
 % Author:       Niklas Kochdumper
 % Written:      26-June-2020
@@ -26,7 +32,7 @@ function res = example_parallel_hybrid_03_roomHeating()
 
 % System Dynamics ---------------------------------------------------------
 
-PHA = roomHeatingParallel();
+pHA = roomHeatingParallel();
 
 
 % Parameter ---------------------------------------------------------------
@@ -51,39 +57,27 @@ options.guardIntersect = 'zonoGirard';
 
 % Simulation --------------------------------------------------------------
 
-simOpt.points = 10;        % number of initial points
-simOpt.fracVert = 0.5;     % fraction of vertices initial set
-simOpt.fracInpVert = 0.5;  % fraction of vertices input set
-simOpt.inpChanges = 20;    % changes of input over time horizon  
-
-simRes = simulateRandom(PHA,params,simOpt);
+simRes = simulateRandom(pHA,params);
 
 
 % Reachability Analysis ---------------------------------------------------
 
-R = reach(PHA,params,options);
+R = reach(pHA,params,options);
 
 
 % Visualization -----------------------------------------------------------
 
-% temperature room 1 over time
-figure; box on; hold on
-plotOverTime(R,1,'FaceColor',[.6 .6 .6],'EdgeColor','none');
-plotOverTime(simRes,1);
-xlabel('Time')
-ylabel('Temperature');
-title('Room 1');
-xlim([0,params.tFinal]);
+% temperature room k over time
+for k=1:2
+    figure; box on; hold on
+    plotOverTime(R,k);
+    plotOverTime(simRes,k);
+    xlabel('Time')
+    ylabel('Temperature');
+    title(['Room ' num2str(k)]);
+    xlim([0,params.tFinal]);
+end
 
-% temperature room 2 over time
-figure; box on; hold on
-plotOverTime(R,2,'FaceColor',[.6 .6 .6],'EdgeColor','none');
-plotOverTime(simRes,2);
-xlabel('Time')
-ylabel('Temperature');
-title('Room 2');
-xlim([0,params.tFinal]);
-
-res = 1;
+res = true;
 
 %------------- END OF CODE --------------

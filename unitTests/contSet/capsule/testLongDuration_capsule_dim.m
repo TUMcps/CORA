@@ -27,24 +27,23 @@ function res = testLongDuration_capsule_dim
 
 % Random
 C = cell(10,1);
-dimension = zeros(10,1);
+n = zeros(10,1);
 for i=1:10
-    dimension(i) = ceil(10*rand(1));
-    center = rand(dimension(i),1);
-    generator = rand(dimension(i),1);
+    n(i) = ceil(10*rand(1));
+    center = rand(n(i),1);
+    generator = rand(n(i),1);
     r = rand(1);
     C{i} = capsule(center,generator,r);
 end
 
 res = true;
 for i=1:length(C)
-    res = res && dim(C{i}) == dimension(i);
+    res = res && dim(C{i}) == n(i);
 end
 
-if res
-    disp('test_dim successful');
-else
-    disp('test_dim failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'center','n','generator');
 end
 
 %------------- END OF CODE --------------

@@ -1,16 +1,15 @@
-function [IH] = interval(Zbundle)
-% interval - Overapproximates a zonotope bundle by an interval according to
-%            Proposition 6 in [1]
-%            
+function I = interval(zB)
+% interval - converts a zonotope bundle to an interval according to
+%    Proposition 6 in [1]
 %
 % Syntax:  
-%    [IH] = interval(Zbundle)
+%    I = interval(zB)
 %
 % Inputs:
-%    Zbundle - zonotope bundle
+%    zB - zonoBundle object
 %
 % Outputs:
-%    IH - interval object
+%    I - interval object
 %
 % References:
 %    [1] M. Althoff. "Zonotope bundles for the efficient computation of 
@@ -20,7 +19,7 @@ function [IH] = interval(Zbundle)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: vertices, polytope
+% See also: ---
 
 % Author:       Matthias Althoff
 % Written:      10-November-2010
@@ -29,16 +28,16 @@ function [IH] = interval(Zbundle)
 
 %------------- BEGIN CODE --------------
 
-%enclose all zonotopes by an interval
-IHtmp=cell(Zbundle.parallelSets,1);
-for i=1:Zbundle.parallelSets
-    IHtmp{i}=interval(Zbundle.Z{i});
+% enclose all zonotopes by an interval
+IHtmp = cell(zB.parallelSets,1);
+for i=1:zB.parallelSets
+    IHtmp{i} = interval(zB.Z{i});
 end
 
-%intersect interval hulls
-IH=IHtmp{1};
-for i=2:Zbundle.parallelSets
-    IH=IH&IHtmp{i};
+% intersect interval hulls
+I = IHtmp{1};
+for i=2:zB.parallelSets
+    I = I & IHtmp{i};
 end
 
 %------------- END OF CODE --------------

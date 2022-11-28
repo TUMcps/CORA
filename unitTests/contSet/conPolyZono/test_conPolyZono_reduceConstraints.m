@@ -1,7 +1,6 @@
 function res = test_conPolyZono_reduceConstraints
 % test_conPolyZono_reduceConstraints - unit test function for the
-%                                      constraint reduction of constrained 
-%                                      polynomial zonotopes
+%    constraint reduction of constrained polynomial zonotopes
 %
 % Syntax:  
 %    res = test_conPolyZono_reduceConstraints()
@@ -25,35 +24,35 @@ function res = test_conPolyZono_reduceConstraints
 
 %------------- BEGIN CODE --------------
 
-    res = 1;
- 
-    % Analytical Tests ----------------------------------------------------
+res = true;
 
-    % define constrained polynomial zonotope
-    c = [0;0];
-    G = [1 0 1 -1; 0 1 1 1];
-    expMat = [1 0 1 2; 0 1 1 0; 0 0 1 1];
-    A = [1 -0.5 0.5];
-    b = 0.5;
-    expMat_ = [0 1 2; 1 0 0; 0 1 0];
+% Analytical Tests ----------------------------------------------------
 
-    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+% define constrained polynomial zonotope
+c = [0;0];
+G = [1 0 1 -1; 0 1 1 1];
+expMat = [1 0 1 2; 0 1 1 0; 0 0 1 1];
+A = [1 -0.5 0.5];
+b = 0.5;
+expMat_ = [0 1 2; 1 0 0; 0 1 0];
 
-    % remove constraints
-    cPZ = reduceConstraints(cPZ,0);
+cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
 
-    % compare with exact solution
-    c = [0;0];
-    G = [0 1 0 0.5 -1 -0.5 0.5; 0.5 0 -0.5 1 1 -0.5 0.5];
-    expMat = [0 1 2 1 2 3 2; 0 0 0 1 1 1 2];
-    id = [1;3];
-    
-    cPZ_ = conPolyZono(c,G,expMat,[],[],[],[],id);
-    
-    if ~isequal(cPZ,cPZ_)
-        error('Analytical test failed!');
-    end
-    
+% remove constraints
+cPZ = reduceConstraints(cPZ,0);
+
+% compare with exact solution
+c = [0;0.5];
+G = [1  -1  0.5 0   0.5 -0.5;
+     0   1  1  -0.5 0.5 -0.5];
+expMat = [1 2 1 2 2 3;
+          0 1 1 0 2 1];
+id = [1;3];
+
+cPZ_ = conPolyZono(c,G,expMat,[],[],[],[],id);
+
+if ~isequal(cPZ,cPZ_)
+    res = false;
 end
 
 %------------- END OF CODE --------------

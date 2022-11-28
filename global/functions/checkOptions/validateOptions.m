@@ -37,7 +37,7 @@ if isa(sys,'contDynamics') && any(contains(func,{'simulate','observe'}))
 end
 configfile = ['config_' classname '_' func];
 if ~isfile([currfolder filesep 'configfiles' filesep configfile '.m'])
-    error("No configuration file for desired validation file");
+    throw(CORAerror('CORA:fileNotFound',configfile));
 end
 
 % initialize codex of error messages (global variable)
@@ -65,24 +65,22 @@ end
 % Auxiliary Functions -----------------------------------------------------
 
 function list = checkFullList(sys,func,params,options,configfile,listname)
-% list          ... params struct / options struct
-% blueprint     ... paramsList / optionsList (from config file)
 % sys           ... object of some contDynamics class
 % func          ... name of checked function, i.e. 'reach'
+% params        ... list of model parameters
+% options       ... list of algorithmic parameters
 % configfile    ... name of configuration file
 % listname      ... 'params', 'options', for error messages
 
 % read configuration file
 if strcmp(listname,'params')
     [blueprint,~] = eval([configfile '(sys,params,options)']);
-    list = params;
 elseif strcmp(listname,'options')
     [~,blueprint] = eval([configfile '(sys,params,options)']);
-    list = options;
 end
 
 % set non-cond defaults
-list = setMissingDefaults(list,blueprint,sys,listname);
+list = setMissingDefaults(params,options,blueprint,sys,listname);
 
 % update configuration file
 if strcmp(listname,'params')
@@ -127,7 +125,11 @@ validateList(list,blueprint,sys,listname,skipIdx);
 
 if any(condBPIdx)
     % set conditional defaults (now also listed in blueprint as 'default')
-    list = setMissingDefaults(list,blueprint,sys,listname);
+    if strcmp(listname,'params')
+        list = setMissingDefaults(list,options,blueprint,sys,listname);
+    elseif strcmp(listname,'options')
+        list = setMissingDefaults(params,list,blueprint,sys,listname);
+    end
     
     % another update of blueprint would be required if any of the
     % conditional defaults were set automatically to their default value
@@ -144,13 +146,13 @@ end
 if strcmp(listname,'params')
     redundantFields(list,options,blueprint,sys,func,listname,redIdx);
 elseif strcmp(listname,'options')
-    redundantFields(list,params,blueprint,sys,func,listname,redIdx);
+    redundantFields(params,list,blueprint,sys,func,listname,redIdx);
+end
+
 end
 
 
-end
-
-function list = setMissingDefaults(list,blueprint,sys,listname)
+function list = setMissingDefaults(params,options,blueprint,sys,listname)
 % list      ... params struct / options struct
 % blueprint ... paramsList / optionsList (from config file)
 % sys       ... object of some hybrid or contDynamics class
@@ -158,6 +160,13 @@ function list = setMissingDefaults(list,blueprint,sys,listname)
 
 % only checked whether default params / options are there or not
 % if not -> add that param / option with default value
+
+% read configuration file
+if strcmp(listname,'params')
+    list = params;
+elseif strcmp(listname,'options')
+    list = options;
+end
 
 % indices with default values (skip where condfunc given)
 idxDefault = ismember(blueprint.status,'default') & ...
@@ -173,18 +182,28 @@ for i=1:length(defFields)
         % assign default value by reading from list of default values
         if ~contains(defFields{i},'.')
             % standard param / option
-            list.(defFields{i}) = getDefaultValue(defFields{i},sys,listname);
+            if strcmp(listname,'params')
+                list.(defFields{i}) = getDefaultValue(defFields{i},sys,list,options,listname);
+            elseif strcmp(listname,'options')
+                list.(defFields{i}) = getDefaultValue(defFields{i},sys,params,list,listname);
+            end
         else
             % param / option is a struct
             dotIdx = strfind(defFields{i},'.');
             firstname = defFields{i}(1:dotIdx-1);
             secondname = defFields{i}(dotIdx+1:end);
-            list.(firstname).(secondname) = getDefaultValue(defFields{i},sys,listname);
+            if strcmp(listname,'params')
+                list.(firstname).(secondname) = getDefaultValue(defFields{i},sys,list,options,listname);
+            elseif strcmp(listname,'options')
+                list.(firstname).(secondname) = getDefaultValue(defFields{i},sys,params,list,listname);
+            end
+            
         end
     end
 end
 
 end
+
 
 function validateList(list,blueprint,sys,listname,skipIdx)
 % list      ... params struct / options struct
@@ -207,9 +226,9 @@ for i=1:length(blueprint.name)
     if strcmp(blueprint.status{i},'mandatory') && isempty(blueprint.condfunc{i})
         if ~isfield(list,blueprint.name{i})
             % mandatory option missing -> print error
-            error(sprintf(...
-                'Error in %s check for %s object:\n  %s.%s is missing.',...
-                listname,class(sys),listname,blueprint.name{i}));
+            throw(CORAerror('CORA:specialError',...
+                sprintf('Error in %s check for %s object:\n  %s.%s is missing.',...
+                listname,class(sys),listname,blueprint.name{i})));
         end
     end
 end
@@ -234,16 +253,6 @@ while ~all(checkSuccessful)
             
             % check validity of assigned value
             for j=1:length(blueprint.checkfuncs{i})
-                % current method
-%                 if ~contains(blueprint.name{i},'.') % standard
-%                     if ~blueprint.checkfuncs{i}{j}(list.(blueprint.name{i}))
-%                         error(printOptionOutOfRange(sys,blueprint.name{i},listname));
-%                     end
-%                 else % special handling for struct
-%                     if ~blueprint.checkfuncs{i}{j}(list.(firstname).(secondname))
-%                         error(printOptionOutOfRange(sys,blueprint.name{i},listname));
-%                     end
-%                 end
                 
                 % future handling of error messages
                 errmsgid = blueprint.errmsgs{i}{j};
@@ -264,7 +273,8 @@ while ~all(checkSuccessful)
                 end
                 % error message if validation failed
                 if ~rescheck
-                    error(sprintf([listname '.' blueprint.name{i} ' ' msg '.']));
+                    throw(CORAerror('CORA:specialError',...
+                        sprintf([listname '.' blueprint.name{i} ' ' msg '.'])));
                 end
             end
             % all checks for parameter have been successful
@@ -275,12 +285,13 @@ while ~all(checkSuccessful)
     
     sanitycounter = sanitycounter + 1;
     if sanitycounter == 5 % prevent infinite loop
-        error("Bug in definition of validation function. Report to devs.");
+        throw(CORAerror('CORA:specialError','Bug in validateOptions.'));
     end
 
 end
 
 end
+
 
 function [blueprint,condBPIdx,condIdx] = checkCond(list,blueprint)
 % list      ... params struct / options struct
@@ -313,9 +324,10 @@ end
 
 end
 
-function redundantFields(list,otherlist,blueprint,sys,func,listname,redIdx)
-% list      ... params struct / options struct
-% otherlist ... complementary: params struct / options struct
+
+function redundantFields(params,options,blueprint,sys,func,listname,redIdx)
+% params    ... params struct
+% options   ... options struct
 % blueprint ... paramsList / optionsList (from config file)
 % sys       ... object of some hybrid or contDynamics class
 % func      ... name of checked function, i.e. 'reach'
@@ -323,7 +335,11 @@ function redundantFields(list,otherlist,blueprint,sys,func,listname,redIdx)
 % redIdx    ... redundant indices from original list
 
 % simplify access to names of provided params / options
-allfields = readAllFields(list);
+if strcmp(listname,'params')
+    allfields = readAllFields(params);
+elseif strcmp(listname,'options')
+    allfields = readAllFields(options);
+end
 
 % if cond-default given, redIdx shorter than list -> expand
 if length(allfields) > length(redIdx)
@@ -336,9 +352,6 @@ redTxt = '';
 if (isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')) ...
         && ~strcmp(func,'simulate')
     % simulateRandom -> simulateStandard (corresponding func in contDynamics)
-    if strcmp(func,'simulateRandom')
-        func = 'simulateStandard';
-    end
     if isa(sys,'hybridAutomaton')
         % check contDynamics class from all locations
         for i=1:length(sys.location)
@@ -371,20 +384,22 @@ if (isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')) ...
     for i=1:length(configfile)
         if isa(sys,'hybridAutomaton')
             if strcmp(listname,'params')
-                [contDynlist,~] = eval([configfile{i} '(sys.location{cfgIdx(i)}.contDynamics,list,otherlist)']);
+                [contDynlist,~] = eval([configfile{i} '(sys.location{cfgIdx(i)}.contDynamics,params,options)']);
             elseif strcmp(listname,'options')
-                [~,contDynlist] = eval([configfile{i} '(sys.location{cfgIdx(i)}.contDynamics,otherlist,list)']);
+                [~,contDynlist] = eval([configfile{i} '(sys.location{cfgIdx(i)}.contDynamics,params,options)']);
             end
         elseif isa(sys,'parallelHybridAutomaton')
             cfgpHAcomp = find(cfgIdx(i)<=comps,1,'first');
             cfgpHAloc = cfgIdx(i) - comps(find(cfgIdx(i)>=comps,1,'last'));
-            if isempty(cfgpHAloc); cfgpHAloc = cfgIdx(i); end
+            if isempty(cfgpHAloc)
+                cfgpHAloc = cfgIdx(i);
+            end
             if strcmp(listname,'params')
                 [contDynlist,~] = eval([configfile{i} ...
-                    '(sys.components{cfgpHAcomp}.location{cfgpHAloc}.contDynamics,list,otherlist)']);
+                    '(sys.components{cfgpHAcomp}.location{cfgpHAloc}.contDynamics,params,options)']);
             elseif strcmp(listname,'options')
                 [~,contDynlist] = eval([configfile{i} ...
-                    '(sys.components{cfgpHAcomp}.location{cfgpHAloc}.contDynamics,otherlist,list)']);
+                    '(sys.components{cfgpHAcomp}.location{cfgpHAloc}.contDynamics,params,options)']);
             end
         end
         blueprint.name = [blueprint.name; contDynlist.name];
@@ -426,6 +441,7 @@ end
 
 end
 
+
 function allfields = readAllFields(list)
 % list      ... params struct / options struct
 
@@ -444,12 +460,8 @@ while idx < length(allfields)
         allfields = [allfields(1:idx-1+shift); temp];
         idx = idx + shift - 1;
     end
-    if idx == 100
-        error("Bug!"); % remove...
-    end
 end
 
 end
 
 %------------- END OF CODE --------------
-

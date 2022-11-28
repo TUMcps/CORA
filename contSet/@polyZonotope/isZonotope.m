@@ -8,7 +8,7 @@ function res = isZonotope(pZ)
 %    pZ - polyZonotope object
 %
 % Outputs:
-%    res - 1 if set is a zonotope, 0 if not
+%    res - true/false
 %
 % Example: 
 %    pZ1 = polyZonotope([-0.5;0],[1.5 -0.5;-0.5 -2],[],[0 1;1 0]);
@@ -17,13 +17,11 @@ function res = isZonotope(pZ)
 %    isZonotope(pZ1)
 %    isZonotope(pZ2)
 %
-%    figure
-%    hold on
-%    plot(pZ1,[1,2],'b','Filled',true,'EdgeColor','none','Splits',10);
+%    figure; hold on
+%    plot(pZ1,[1,2],'FaceColor','b','Splits',10);
 %
-%    figure
-%    hold on
-%    plot(pZ2,[1,2],'r','Filled',true,'EdgeColor','none','Splits',10);
+%    figure; hold on
+%    plot(pZ2,[1,2],'FaceColor','r','Splits',10);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,23 +36,22 @@ function res = isZonotope(pZ)
 
 %------------- BEGIN CODE --------------
 
-    res = 0;
+res = false;
 
-    % remove redundant exponent vectors
-    [expMat,G] = removeRedundantExponents(pZ.expMat,pZ.G);
+% remove redundant exponent vectors
+[expMat,G] = removeRedundantExponents(pZ.expMat,pZ.G);
 
-    % check matrix dimensions
-    if size(expMat,1) ~= size(G,2)
-        return;
-    end
+% check matrix dimensions
+if size(expMat,1) ~= size(G,2)
+    return;
+end
 
-    % sort exponent matrix rows
-    expMat = sortrows(expMat,'descend');
+% sort exponent matrix rows
+expMat = sortrows(expMat,'descend');
 
-    % check if exponent matrix is the identity matrix
-    if sum(sum(abs(expMat-diag(diag(expMat))))) == 0
-        res = 1;
-    end
+% check if exponent matrix is the identity matrix
+if sum(sum(abs(expMat-diag(diag(expMat))))) == 0
+    res = true;
 end
 
 %------------- END OF CODE --------------

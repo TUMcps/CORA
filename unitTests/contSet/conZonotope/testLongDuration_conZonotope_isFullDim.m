@@ -69,10 +69,9 @@ for i=1:nrOfTests
 end
 
 
-if res
-    disp('testLongDuration_conZonotope_isFullDim successful');
-else
-    disp('testLongDuration_conZonotope_isFullDim failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','c','G','A','b');
 end
 
 %------------- END OF CODE --------------

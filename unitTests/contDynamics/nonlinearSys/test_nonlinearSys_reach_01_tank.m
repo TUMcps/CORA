@@ -42,7 +42,6 @@ params.U = zonotope([0,0.005]);
 options.timeStep=4; %time step size for reachable set computation
 options.taylorTerms=4; %number of taylor terms for reachable sets
 options.zonotopeOrder=50; %zonotope order
-options.errorOrder=1;
 
 options.alg = 'lin';
 options.tensorOrder = 2;

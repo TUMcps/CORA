@@ -28,7 +28,7 @@ function res = test_capsule_mtimes
 % instantiate capsule
 C = capsule([1; 0], [1; -1], 2);
 
-% linear map: 90° = pi/2
+% linear map: 90 degrees = pi/2
 angle = pi/2;
 R=[cos(angle) -sin(angle); sin(angle) cos(angle)];
 C_mtimes = R * C;
@@ -42,13 +42,10 @@ res(1) = all(abs(center(C_mtimes) - center(C_mtimes_true)) < tol);
 res(2) = all(abs(C_mtimes.g - C_mtimes_true.g) < tol);
 res(3) = abs(radius(C_mtimes) - radius(C_mtimes_true)) < tol;
 
+% empty set
+res(4) = isempty(R * capsule());
+
 % add results
 res = all(res);
-
-if res
-    disp('test_mtimes successful');
-else
-    disp('test_mtimes failed');
-end
 
 %------------- END OF CODE --------------

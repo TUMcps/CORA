@@ -31,6 +31,15 @@ function V = vertices(probZ)
 
 %------------- BEGIN CODE --------------
 
+% pre-processing
+[res,vars] = pre_vertices('probZonotope',probZ);
+
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    V = vars{1}; return
+end
+
 %get matrix from object
 probZmat=probZ.Z;
 

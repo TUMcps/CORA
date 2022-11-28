@@ -25,7 +25,6 @@ function obj = uplus(obj)
 
 %------------- BEGIN CODE --------------
 
+% dummy function
 
-end
 %------------- END OF CODE --------------
-

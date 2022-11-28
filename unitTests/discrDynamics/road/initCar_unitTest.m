@@ -1,8 +1,9 @@
 function [HA,options,params,stateField,inputField,changeSpeed]=initCar_unitTest(segLength)
-% initCar - initializes a car model for the abstraction to a Markov chain
+% initCar_unitTest - initializes a car model for the abstraction to a 
+%    Markov chain
 %
 % Syntax:  
-%    [HA,options,stateField,inputField,changeSpeed]=initCar(varargin)
+%    [HA,options,stateField,inputField,changeSpeed]=initCar_unitTest(varargin)
 %
 % Inputs:
 %    -
@@ -15,10 +16,7 @@ function [HA,options,params,stateField,inputField,changeSpeed]=initCar_unitTest(
 %    inputField - partition object of the input space
 %    changeSpeed - speed from which the acceleration is bounded by engine
 %    power
-%
-% Example: 
-%
-% 
+
 % Author:       Matthias Althoff
 % Written:      12-October-2009
 % Last update:  31-July-2016
@@ -61,7 +59,7 @@ sS=linearSys('sS',[0 0;0 0],[0;0]); %standstill
 
 %reset map for all transitions
 reset.A=eye(2); 
-reset.b=zeros(2,1);
+reset.c=zeros(2,1);
 
 %values required to set up invariant and guard sets
 dist = 1e3; 
@@ -104,5 +102,6 @@ stateField = partition([0, segLength*posSegments;... %position in m
                      [posSegments;2]);
 inputField = partition([-1,1],...  %acceleartion in m/s^2
                      2);
-%--------------------------------------------------------------------------
+
+%------------- END OF CODE --------------
 

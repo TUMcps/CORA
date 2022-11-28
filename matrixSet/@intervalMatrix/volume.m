@@ -1,12 +1,12 @@
-function vol = volume(matI)
+function vol = volume(intMat)
 % volume - computes the volume of an interval matrix by computing the 
 %    volume of the corresponding interval
 %
 % Syntax:  
-%    vol = volume(matI)
+%    vol = volume(intMat)
 %
 % Inputs:
-%    matI - interval matrix
+%    intMat - intervalMatrix object
 %
 % Outputs:
 %    vol - volume
@@ -27,7 +27,7 @@ function vol = volume(matI)
 %------------- BEGIN CODE --------------
 
 %conversion to a interval
-I = interval(matI);
+I = interval(intMat);
 
 %compute volume of the interval
 vol = volume(I);

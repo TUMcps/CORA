@@ -91,7 +91,7 @@ methods
 
         % error if too many inputs are passed    
         else
-            error('Wrong syntax! Type "help probZonotope" for more information.');
+            throw(CORAerror('CORA:tooManyInputArgs',3));
         end
         
         % set parent object properties

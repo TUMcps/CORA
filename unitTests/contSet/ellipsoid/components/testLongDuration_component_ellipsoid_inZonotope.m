@@ -1,8 +1,9 @@
-function res = testLongDuration_ellipsoid_inZonotope
-% testLongDuration_ellipsoid_inZonotope - unit test function of testLongDuration_ellipsoid_inZonotope
+function res = testLongDuration_component_ellipsoid_inZonotope
+% testLongDuration_component_ellipsoid_inZonotope - unit test function of
+%    testLongDuration_ellipsoid_inZonotope
 %
 % Syntax:  
-%    res = testLongDuration_ellipsoid_inZonotope
+%    res = testLongDuration_component_ellipsoid_inZonotope
 %
 % Inputs:
 %    -
@@ -30,19 +31,21 @@ for i=2:3
     for j=1:nRuns
         % do not test vertices in high dims as comp. complexity prevents it
         % for high dimensions
-        Z = zonotope.generateRandom(2);
-        E_Zo = ellipsoid(Z,'o:exact');
-        if ~in(E_Zo,Z)
+        Z = zonotope.generateRandom('Dimension',2);
+        E_Zo = ellipsoid(Z,'outer:exact');
+        if ~contains(E_Zo,Z)
             res = false;
             break;
         end
-        E_Zi = ellipsoid(Z,'i:exact');
-        if ~in(E_Zo,E_Zi)
+        E_Zi = ellipsoid(Z,'inner:exact');
+        if ~contains(E_Zo,E_Zi)
             res = false;
             break;
         end
     end
     if ~res
+        path = pathFailedTests(mfilename());
+        save(path,'Z');
         break;
     end
 end

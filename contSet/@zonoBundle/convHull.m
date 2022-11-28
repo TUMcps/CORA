@@ -1,28 +1,27 @@
-function res = convHull(zB1,varargin)
+function zB = convHull(zB,varargin)
 % convHull - computes the convex hull of two zonotope bundles
 %
 % Syntax:  
-%    res = convHull(zB1,zB2)
+%    res = convHull(zB,S)
 %
 % Inputs:
-%    zB1 - first zonoBundle object
-%    zB2 - second zonoBundle object
+%    zB - zonoBundle object
+%    S - contSet object
 %
 % Outputs:
-%    res - zonoBundle enclosing the convex hull of zB1 and zB2
+%    zB - zonoBundle enclosing the convex hull
 %
 % Example: 
-%    int = interval([4;3],[6;6]);
-%    zono1 = zonotope([0 1 2 0;0 1 0 2]);
-%    zono2 = zonotope([3 -0.5 3 0;-1 0.5 0 3]);
-%    zB = zonoBundle({zono1,zono2});
+%    I = interval([4;3],[6;6]);
+%    Z1 = zonotope([0 1 2 0;0 1 0 2]);
+%    Z2 = zonotope([3 -0.5 3 0;-1 0.5 0 3]);
+%    zB = zonoBundle({Z1,Z2});
 %
-%    res = convHull(int,zB);
+%    res = convHull(zB,I);
 %
-%    figure
-%    hold on
-%    plot(int,[1,2],'b','Filled',true,'EdgeColor','none');
-%    plot(zB,[1,2],'r','Filled',true,'EdgeColor','none');
+%    figure; hold on;
+%    plot(int,[1,2],'FaceColor','b');
+%    plot(zB,[1,2],'FaceColor','r');
 %    plot(res,[1,2],'g','LineWidth',3);
 %
 % Other m-files required: none
@@ -40,50 +39,49 @@ function res = convHull(zB1,varargin)
 
     % parse input arguments
     if nargin == 1
-        res = zB1; return;
+        return;
     else
-        zB2 = varargin{1}; 
+        S = varargin{1}; 
     end
 
     % find a zonoBundle object
-    if ~isa(zB1,'zonoBundle')
-        temp = zB1;
-        zB1 = zB2;
-        zB2 = temp;
+    if ~isa(zB,'zonoBundle')
+        temp = zB;
+        zB = S;
+        S = temp;
     end
 
     % different cases depending on the class of the second summand
-    if isa(zB2,'zonoBundle') || isa(zB2,'interval') || ...
-       isa(zB2,'zonotope') || isa(zB2,'conZonotope')
+    if isa(S,'zonoBundle') || isa(S,'interval') || ...
+        isa(S,'zonotope') || isa(S,'conZonotope')
 
-        poly2 = mptPolytope(zB2);
+        P2 = mptPolytope(S);
 
-    elseif isa(zB2,'mptPolytope')
+    elseif isa(S,'mptPolytope')
 
-        poly2 = zB2;
+        P2 = S;
         
-    elseif isnumeric(zB2)
+    elseif isnumeric(S)
         
-        poly2 = mptPolytope(zB2');
+        P2 = mptPolytope(S');
 
     elseif isa(summand,'polyZonotope') || isa(summand,'conPolyZono')
 
-        res = zB2 + zB1;
-        return
+        zB = S + zB; return;
 
     else
         % throw error for given arguments
-        error(noops(zB1,zB2));
+        throw(CORAerror('CORA:noops',zB,S));
     end
     
     % convert first zonoBundle to mptPolytope
-    poly1 = mptPolytope(zB1);
+    P1 = mptPolytope(zB);
     
     % compute convex hull
-    poly = convHull(poly1,poly2);
+    P = convHull(P1,P2);
     
     % convert to a zonotope bundle
-    res = zonoBundle(poly);
+    zB = zonoBundle(P);
 
 end
 

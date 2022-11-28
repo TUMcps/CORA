@@ -3,7 +3,7 @@ function res = testLongDuration_polyZonotope_mptPolytope
 %    conversion of a mptPolytope to a polynomial zonotope
 %
 % Syntax:  
-%    res = test_polyZonotope_mptPolytope
+%    res = testLongDuration_polyZonotope_mptPolytope
 %
 % Inputs:
 %    -
@@ -26,9 +26,7 @@ function res = testLongDuration_polyZonotope_mptPolytope
 
 %------------- BEGIN CODE --------------
 
-res = 0;
-
-%% RANDOM TESTS
+res = true;
 
 % TEST 2-dimensional (Polytope -> Polynomial Zonotope)
 
@@ -41,17 +39,17 @@ for j = 10:15
     V = points(:,ind(1:min(j,length(ind))));
 
     % Construct a mptPolytope object from the vertices
-    poly = mptPolytope(V');
+    P = mptPolytope(V');
 
     % Convert to polynomial zonotope
-    pZres = polyZonotope(poly);
+    pZres = polyZonotope(P);
     
     % check if the all polytope vertices are located inside the polynomial
     % zonotope
     suc = containsPointSet(pZres,V,[],30);
     
     if ~suc
-       error('test_polyZonotope_mptPolytope: random test 2D (polytope -> polyZonotope) failed!'); 
+        throw(CORAerror('CORA:testFailed'));
     end   
 end
 
@@ -68,17 +66,17 @@ for j = 10:12
     V = points(:,ind(1:min(j,length(ind))));
 
     % Construct a mptPolytope object from the vertices
-    poly = mptPolytope(V');
+    P = mptPolytope(V');
 
     % Convert to polynomial zonotope
-    pZres = polyZonotope(poly);
+    pZres = polyZonotope(P);
     
     % check if the all polytope vertices are located inside the polynomial
     % zonotope
     suc = containsPointSet(pZres,V,[],30);
     
     if ~suc
-       error('test_polyZonotope_mptPolytope: random test 4D (polytope -> polyZonotope) failed!'); 
+        throw(CORAerror('CORA:testFailed'));
     end   
 end
 
@@ -95,27 +93,25 @@ for j = 10:15
     V = points(:,ind(1:min(j,length(ind))));
 
     % Construct a mptPolytope object from the vertices
-    poly = mptPolytope(V');
+    P = mptPolytope(V');
 
     % Convert to polynomial zonotope
-    pZ = polyZonotope(poly);
+    pZ = polyZonotope(P);
 
     % Convert back to a polytope
-    poly_ = mptPolytope(pZ);
+    P_ = mptPolytope(pZ);
 
 %     % Visualize the result
 %     hold on
-%     plot(poly,[1,2],'r','Filled',true,'EdgeColor','none');
-%     plot(poly_,[1,2],'b');
+%     plot(P,[1,2],'FaceColor','r');
+%     plot(P_,[1,2],'b');
 
     % Calculate the vertices
-    V_ = vertices(poly_);
+    V_ = vertices(P_);
 
     % check if the vertices are identical to the original points
-    for i = 1:size(V,2)
-       if ~ismembertol(V(:,i)',V_',1e-12,'ByRows',true) 
-          error('test_polyZonotope_mptPolytope: random test 2D (polyZonotope -> mptPolytope) failed!');
-       end
+    if ~compareMatrices(V,V_,1e-12)
+        throw(CORAerror('CORA:testFailed'));
     end   
 end
 
@@ -125,43 +121,43 @@ end
 for j = 4:6
 
     % Generate random zonotope
-    zono = zonotope(rand(2,j) - 0.5*ones(2,j));
+    Z = zonotope(rand(2,j) - 0.5*ones(2,j));
 
     % Create point located outside the zonotope
-    inter = interval(zono);
-    inter = interval(zonotope([mid(inter),1.1*diag(rad(inter))]));
+    I = interval(Z);
+    I = interval(zonotope([center(I),1.1*diag(rad(I))]));
 
     ind = floor(rand() * 3.9) + 1;
-    V = vertices(inter);
+    V = vertices(I);
     p = V(:,ind);
 
     % Determine all vertices 
-    V = vertices(zono);
+    V = vertices(Z);
     V = [V,p];
 
     % Construct a polytope by computation of the convex hull
     % between the zonotope and the point
-    pZ1 = polyZonotope(zono);
+    pZ1 = polyZonotope(Z);
     pZ2 = polyZonotope(p,[],[],[]);
 
     pZ = enclose(pZ1,pZ2);
 
     % Convert back to a polytope
-    poly_ = mptPolytope(pZ);
+    P_ = mptPolytope(pZ);
+
+    % Calculate the vertices
+    V_ = vertices(P_);
 
 %     % Visualize the result
 %     hold on
-%     plot(poly_,[1,2],'b');     
+%     plot(P_,[1,2],'b');     
 %     plot(V(1,:),V(2,:),'.k','MarkerSize',20);
+%     plot(V_(1,:),V_(2,:),'.r','MarkerSize',20);
 
-    % Calculate the vertices
-    V_ = vertices(poly_);
-
-    % check if the vertices are identical to the original points
-    for i = 1:size(V_,2)
-       if ~ismembertol(V_(:,i)',V',1e-12,'ByRows',true) 
-          error('test_polyZonotope_mptPolytope: random test 2D (zonotope-point-case) failed!');
-       end
+    % check if the vertices are identical to the original points (only has
+    % to be a subset)
+    if ~compareMatrices(V_,V,1e-12,'subset')
+        throw(CORAerror('CORA:testFailed'));
     end   
 end
 
@@ -181,12 +177,11 @@ for j = 1:5
     pZ = polyZonotope(c,G,Grest,expMat);
 
     % Over-approximate by a polytope
-    poly = mptPolytope(pZ);
+    P = mptPolytope(pZ);
     
     % Extract polytope parameter
-    P = get(poly,'P');
-    C = P.A;
-    d = P.b;
+    C = P.P.A;
+    d = P.P.b;
     
     % construct set of random points located inside the polynomial zonotope
     N = 10000;
@@ -197,7 +192,7 @@ for j = 1:5
 
 %     % Visualize the result
 %     hold on
-%     plot(poly,[1,2],'b');     
+%     plot(P,[1,2],'b');     
 %     plot(points(1,:),points(2,:),'.k');
 
     % check if all points are located inside the over-approximating
@@ -205,7 +200,7 @@ for j = 1:5
     temp = C * points - d * ones(1,size(points,2));
     
     if any(temp > 1e-12)
-       error('test_polyZonotope_mptPolytope: random test 2D (polytope enclosure) failed!');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -222,26 +217,21 @@ for j = 10:11
     V = points(:,ind(1:min(j,length(ind))));
 
     % Construct a mptPolytope object from the vertices
-    poly = mptPolytope(V');
+    P = mptPolytope(V');
 
     % Convert to polynomial zonotope
-    pZ = polyZonotope(poly);
+    pZ = polyZonotope(P);
     
     % Convert back to a polytope
-    poly_ = mptPolytope(pZ);
+    P_ = mptPolytope(pZ);
     
     % Calculate the vertices
-    V_ = vertices(poly_);
+    V_ = vertices(P_);
     
     % check if the vertices are identical to the original points
-    for i = 1:size(V,2)
-       if ~ismembertol(V(:,i)',V_',1e-12,'ByRows',true) 
-          error('test_polyZonotope_mptPolytope: random test 4D (polyZonotope -> mptPolytope) failed!');
-       end
+    if ~compareMatrices(V,V_,1e-12)
+        throw(CORAerror('CORA:testFailed'));
     end   
 end
-
-
-res = 1;
 
 %------------- END OF CODE --------------

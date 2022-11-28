@@ -23,7 +23,7 @@ function int = interval(obj)
 
 %------------- BEGIN CODE -------------
 
-    int = arrayfun(@(a) s_zoo2int(a), obj, 'UniformOutput', 0);
+    int = arrayfun(@(a) s_zoo2int(a), obj, 'UniformOutput', false);
     A = [int{:}];
     int = reshape(A, size(int)); 
     

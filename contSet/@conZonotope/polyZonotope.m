@@ -1,32 +1,25 @@
-function pZ = polyZonotope(obj)
-% polyZonotope - Convert constrained zonotope to a polynomial zonotope
+function pZ = polyZonotope(cZ)
+% polyZonotope - Converts a constrained zonotope to a polynomial zonotope
 %
 % Syntax:  
-%    pZ = polyZonotope(obj)
+%    pZ = polyZonotope(cZ)
 %
 % Inputs:
-%    obj - conZonotope object
+%    cZ - conZonotope object
 %
 % Outputs:
 %    pZ - polyZonotope object
 %
 % Example: 
 %    Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
-%    A = [1 1 1];
-%    b = 1;
+%    A = [1 1 1]; b = 1;
 %    cZ = conZonotope(Z,A,b);
 %
 %    pZ = polyZonotope(cZ);
 %
-%    figure
-%    plot(cZ,[1,2],'r','Filled',true,'EdgeColor','none');
-%    xlim([-4,5]);
-%    ylim([-2,3]);
-% 
-%    figure
-%    plot(pZ,[1,2],'b','Filled',true,'EdgeColor','none');
-%    xlim([-4,5]);
-%    ylim([-2,3]);
+%    figure; hold on; xlim([-4,5]); ylim([-2,3]);
+%    plot(cZ,[1,2],'FaceColor','r');
+%    plot(pZ,[1,2],'b');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -41,7 +34,7 @@ function pZ = polyZonotope(obj)
 
 %------------- BEGIN CODE --------------
 
-    poly = mptPolytope(obj);
-    pZ = polyZonotope(poly);
+poly = mptPolytope(cZ);
+pZ = polyZonotope(poly);
 
 %------------- END OF CODE --------------

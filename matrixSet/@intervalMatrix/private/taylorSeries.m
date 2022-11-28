@@ -1,18 +1,19 @@
-function taylor = taylorSeries(intMat, maxOrder)
-% returns the approximation of e^intMat using the truncated Taylor series
-%    with maxOrder iterations.
+function taylor = taylorSeries(intMat,maxOrder)
+% taylorSeries - returns the approximation of e^intMat using the truncated
+%    Taylor series with maxOrder iterations.
 %
 % Syntax:  
-%    val = taylorSeries(intMat,maxOrder)
+%    taylor = taylorSeries(intMat,maxOrder)
 %
 % Inputs:
-%    intMat - interval matrix (nxn)
+%    intMat - intervalMatrix object (nxn)
 %    maxOrder - maximum order of the TaylorSeries, has to be > abs(intMat)+2
 %
 % Outputs:
 %    taylor - the exponentiation with the truncated Taylor series 
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: intervalMatrixRemainder.m 
 % Subfunctions: none
@@ -61,5 +62,4 @@ taylor = plus(taylor,pow);
 % watch out, if maxOrder is too low, the result won't be helpful
 taylor = plus(taylor, intervalMatrixRemainder(intMat,alpha,maxOrder));
 
-
-
+%------------- END OF CODE --------------

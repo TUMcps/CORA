@@ -1,4 +1,28 @@
 function writeMatrix(M,fid)
+% writeMatrix - ???
+%
+% Syntax:  
+%    writeMatrix(M,fid)
+%
+% Inputs:
+%    M - symbolic matrix
+%    fid - identifier of the file to which the matrix is written
+%
+% Outputs:
+%    ---
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: ---
+
+% Author:       ???
+% Written:      ???
+% Last update:  ---
+% Last revision:---
+
+%------------- BEGIN CODE --------------
 
 %write each row
 for iRow=1:(length(M(:,1)))
@@ -26,3 +50,5 @@ for iRow=1:(length(M(:,1)))
         fprintf(fid, '%s\n\n', str);   
     end
 end
+
+%------------- END OF CODE --------------

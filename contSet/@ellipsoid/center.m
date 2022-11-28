@@ -1,18 +1,18 @@
-function [c] = center(E)
+function c = center(E)
 % center - returns the center of an ellipsoid object
 %
 % Syntax:  
-%    [c] = center(E);
+%    c = center(E);
 %
 % Inputs:
-%    E - Ellipsoid object
+%    E - ellipsoid object
 %
 % Outputs:
-%    c - center of E
+%    c - center of ellipsoid
 %
 % Example: 
-%    E1=ellipsoid([1 0; 0 1]);
-%    c = center(E1);
+%    E = ellipsoid([1 0; 0 1]);
+%    c = center(E);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -22,9 +22,14 @@ function [c] = center(E)
 
 % Author:       Victor Gassmann
 % Written:      13-March-2019
-% Last update:  ---
+% Last update:  04-July-2022 (VG: avoid class array problems)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% make sure it is not a class array
+inputArgsCheck({{E,'att','ellipsoid','scalar'}});
+
 c = E.q;
+
 %------------- END OF CODE --------------

@@ -1,18 +1,18 @@
-function [res,R] = checkFlow(obj,guard,R,options)
+function [res,R] = checkFlow(loc,guard,R,options)
 % checkFlow - remove all intersections for which the flow of the system
-%             does not point toward the guard set (see Sec. 4.4.4 in [1])
+%    does not point toward the guard set (see Sec. 4.4.4 in [1])
 %
 % Syntax:  
-%    [res,R] = checkFlow(obj,guard,R,options)
+%    [res,R] = checkFlow(loc,guard,R,options)
 %
 % Inputs:
-%    obj - object of class location
+%    loc - location object
 %    guard - guard set (class: constrained hyperplane)
 %    R - list of reachable sets
 %    options - struct containing the algorithm settings
 %
 % Outputs:
-%    res - 1 if flow point toward the guard, 0 otherwise
+%    res - true/false whether flow points toward the guard
 %    R - updated list of reachable sets
 %
 % References:
@@ -32,21 +32,22 @@ function [res,R] = checkFlow(obj,guard,R,options)
 
 %------------- BEGIN CODE --------------
 
-    sys = obj.contDynamics;
+    % read out continuous dynamics
+    sys = loc.contDynamics;
     
     % adapt the guard set such that the normal vector of the hyperplane
     % points toward the outside of the invariant set
     if isa(guard,'conHyperplane')
-        guard = adaptGuard(obj,guard,R); 
+        guard = adaptGuard(loc,guard,R); 
     else
-        outside = getOutside(obj,guard,R);
+        outside = getOutside(loc,guard,R);
     end
     
     % loop over all reachable sets
     R_ = cell(length(R),1);
     counter = 1;
     
-    for i = 1:length(R)
+    for i=1:length(R)
             
         % check if the flow points toward the guard set
         if isa(guard,'conHyperplane')
@@ -63,9 +64,11 @@ function [res,R] = checkFlow(obj,guard,R,options)
     
     % check if all sets are empty
     if counter > 1
-        res = 1; R = R_(1:counter-1);
+        res = true;
+        R = R_(1:counter-1);
     else
-        res = 0; R = [];
+        res = false;
+        R = [];
     end
 end
 
@@ -90,19 +93,19 @@ function res = flowInDirection(sys,guard,R,options)
     flow = c'*flow;
     
     if flow > 0
-       res = 1;
-       return;
+        res = true;
+        return;
     end
 
     % compute interval enclosure of the reachable set
     B = gramSchmidt(guard.h.c);
     
     if isa(Rproj,'zonoBundle')
-       Rproj = Rproj.Z{1}; 
+        Rproj = Rproj.Z{1}; 
     end
     
     if ~isa(Rproj,'zonotope')
-       Rproj = zonotope(Rproj); 
+        Rproj = zonotope(Rproj); 
     end
     
     R = B * reduce(B'*Rproj,'pca',1);
@@ -116,7 +119,7 @@ function res = flowInDirection(sys,guard,R,options)
         flow = temp*cen + (temp*G)*int + ...
                 (c'*sys.B)*interval(options.U);
         if ~isempty(sys.c)
-           flow = flow + c'*sys.c; 
+            flow = flow + c'*sys.c; 
         end
     else
         tay = taylm(R);
@@ -142,7 +145,7 @@ function res = flowInDirectionLevelSet(sys,guard,R,outside,options)
     flow = outside*guard.der.grad(c)'*fcnHan(0,c);
     
     if flow > 0
-       res = 1;
+       res = true;
        return;
     end
 
@@ -163,55 +166,56 @@ function res = flowInDirectionLevelSet(sys,guard,R,outside,options)
     res = supremum(interval(flow)) > 0;
 end
 
-function guard = adaptGuard(obj,guard,R)
+function guard = adaptGuard(loc,guard,R)
 % adapt the guard set such that the normal vector of the hyperplane points
 % toward the outside of the invariant set
 
     hs = halfspace(guard.h.c,guard.h.d);
-    inv = obj.invariant;
+    inv = loc.invariant;
     
     % get center of the first reachable set
     if iscell(R{1})
-       c = center(R{1}{1}); 
+        c = center(R{1}{1}); 
     else
-       c = center(R{1}); 
+        c = center(R{1}); 
     end
     
     % check if center is on the correct side of the hyperplane
-    if in(inv,c)
-       if ~in(hs,c)
-           guard = conHyperplane(-guard.h.c,-guard.h.d);
-       end
+    if contains(inv,c)
+        if ~contains(hs,c)
+            guard = conHyperplane(-guard.h.c,-guard.h.d);
+        end
     else
-       if in(hs,c)
-           guard = conHyperplane(-guard.h.c,-guard.h.d);
-       end
+        if contains(hs,c)
+            guard = conHyperplane(-guard.h.c,-guard.h.d);
+        end
     end
 end
 
-function outside = getOutside(obj,guard,R)
+function outside = getOutside(loc,guard,R)
 % determine which side of the guard set is the outside of the invariant set
 % g(x) >= 0 is outside => outside = 1
 % g(x) < 0 is outside => outside = -1
 
-    inv = obj.invariant; outside = 1;
+    inv = loc.invariant;
+    outside = 1;
     
     % get center of the first reachable set
     if iscell(R{1})
-       c = center(R{1}{1}); 
+        c = center(R{1}{1}); 
     else
-       c = center(R{1}); 
+        c = center(R{1}); 
     end
     
     % check if center is on the correct side of the hyperplane
-    if in(inv,c)
-       if guard.funHan(c) > 0
-           outside = -1;
-       end
+    if contains(inv,c)
+        if guard.funHan(c) > 0
+            outside = -1;
+        end
     else
-       if guard.funHan(c) <= 0
-           outside = -1;
-       end
+        if guard.funHan(c) <= 0
+            outside = -1;
+        end
     end
 
 end

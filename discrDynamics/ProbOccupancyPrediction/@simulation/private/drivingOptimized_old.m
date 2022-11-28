@@ -23,10 +23,10 @@ function [p,pTotal,pTrans]=drivingOptimized(simOptions,markovChainSpec)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 15-June-2009
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      15-June-2009
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

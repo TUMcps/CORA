@@ -1,14 +1,14 @@
-function Int = interval(matI)
+function I = interval(intMat)
 % interval - Converts an interval matrix to an interval vector
 %
 % Syntax:  
-%    Int = interval(matI)
+%    I = interval(intMat)
 %
 % Inputs:
-%    matI - interval matrix
+%    intMat - intervalMatrix object
 %
 % Outputs:
-%    Int - interval hull
+%    I - interval object
 %
 % Example: 
 %
@@ -16,7 +16,7 @@ function Int = interval(matI)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Author:       Matthias Althoff
 % Written:      21-June-2010
@@ -26,13 +26,10 @@ function Int = interval(matI)
 %------------- BEGIN CODE --------------
 
 %convert matrix limits
-leftLimit = mat2vec(infimum(matI.int));
-rightLimit = mat2vec(supremum(matI.int));
+leftLimit = mat2vec(infimum(intMat.int));
+rightLimit = mat2vec(supremum(intMat.int));
     
-%instantiate interval hull (using MPT toolbox)
-Int=interval(leftLimit,rightLimit);
-
-
-
+%instantiate interval hull
+I=interval(leftLimit,rightLimit);
 
 %------------- END OF CODE --------------

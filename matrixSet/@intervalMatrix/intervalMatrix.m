@@ -16,8 +16,7 @@ classdef (InferiorClasses = {?mp}) intervalMatrix
 % Example:
 %   C = [0 2; 3 1];
 %   D = [1 2; 1 1];
-%
-%   mi = intervalMatrix(C,D);
+%   intMat = intervalMatrix(C,D);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -72,11 +71,11 @@ methods
     intMat = plus(summand1,summand2)
     intMat = mtimes(factor1,factor2)
     intMat = mpower(intMat,exponent)
-    intMat = powers(varargin)
-    [eI, iPow, E] = expm(varargin)
-    [eI, iPow, E] = expmInd(varargin)
-    [eI,eI2,iPow,iPow2,E] = expmMixed(matI,r,intermediateOrder,maxOrder)
-    [eI,eI2,iPow,iPow2,E] = expmIndMixed(matI,intermediateOrder,maxOrder)
+    intMat = powers(intMat,varargin)
+    [eI, iPow, E] = expm(intMat,varargin)
+    [eI, iPow, E] = expmInd(intMat,varargin)
+    [eI,eI2,iPow,iPow2,E] = expmMixed(intMat,r,intermediateOrder,maxOrder)
+    [eI,eI2,iPow,iPow2,E] = expmIndMixed(intMat,intermediateOrder,maxOrder)
     M = abs(intMat)
     n = infNorm(intMat)
     E = exponentialRemainder(intMat,maxOrder)
@@ -86,19 +85,19 @@ methods
     matZ = matZonotope(intMat)
     A = randomSampling(intMat,varargin)
     dist = expmDist(intMat,exactMat,maxOrder)
-    vol = volume(matI)
+    vol = volume(intMat)
     val = expmNorm(intMat,t)
     val = expmNormInf(intMat,t)
     absBound = expmAbsoluteBound(intMat,t)
     normBoundErr = expmNormErr(intMat,r)  
     normBoundErr = expmNormErrInf(intMat,r)
     element = subsref(intMat, S)
-    sq = exactSquare(A)
-    res = norm(obj, varargin)
+    sq = exactSquare(intMat)
+    res = norm(intMAt, varargin)
     
     %display functions
     plot(varargin)
-    display(obj)
+    display(intMat)
 end
 end
 

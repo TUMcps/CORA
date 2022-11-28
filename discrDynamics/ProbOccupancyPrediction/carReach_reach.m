@@ -24,7 +24,7 @@ function probModel = carReach_reach(fileName,pathName,modelInitialization)
 %------------- BEGIN CODE --------------
 
 %load fArray to determine segment length of road 
-cd(coraroot);
+cd(CORAROOT);
 file=load(fileName);
 fArray=file.fArray;
 

@@ -9,18 +9,13 @@ function res = test_partition_get_polytopes()
 %
 % Outputs:
 %    res - boolean 
-%
-% Example: 
-%
-% 
+
 % Author:       Aaron Pereira, Matthias Althoff
 % Written:      02-August-2017
 % Last update:  02-August-2018 (MA)
 % Last revision:---
 
-
 %------------- BEGIN CODE --------------
-
 
 %setup partitions
 threeDimField=partition([0,10; -3,3; 0,1],[5;10;3]);

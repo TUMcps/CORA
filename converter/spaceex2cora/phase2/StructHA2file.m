@@ -1,15 +1,33 @@
-function [] = StructHA2file(Data,functionName,resultpath)
-% Function creates a new Matlab file containing a parallel hybrid
-% automaton in CORA formate
+function StructHA2file(Data,functionName,resultpath)
+% StructHA2file - Function creates a new Matlab file containing a parallel
+%    hybrid automaton
 %
-% INPUT:
-%    Data: Automaton in structHA format
-%    functionName (optional): desired name of generated MATLAB function
-%               (default: filename of source SX file, contained in Data)
-%    resultpath (optional): target directory of generated files
+% Syntax:
+%    StructHA2file(Data,functionName,resultpath)
+%
+% Inputs:
+%    Data - Automaton in structHA format
+%    functionName (optional) - desired name of generated MATLAB function
+%                 (default: filename of source SX file, contained in Data)
+%    resultpath (optional) - target directory of generated files
 %               (default: <transformer directory>/coramodels)
-% OUTPUT:
-%    void
+%
+% Outputs:
+%    ---
+%
+% Example: 
+%    ---
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
+
+% Author:       ???
+% Written:      ???
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -20,13 +38,13 @@ end
 
 % Matlab does not allow '-' in file names, so we replace it with '_'
 if contains(Data.name,'-')
-    warning("Matlab does not allow '-' in file names, all occurences of '-' are replaced with '_'!");
+    warning("Matlab does not allow '-' in file names, all occurrences of '-' are replaced with '_'!");
     Data.name = strrep(Data.name,'-','_');
 end
 
 if nargin < 3
     % if no resultpath is given, use "cora/models/SpaceExConverted"
-    resultpath = strcat(coraroot,'/models/SpaceExConverted/',Data.name);
+    resultpath = [CORAROOT filesep 'models' filesep 'SpaceExConverted' filesep Data.name];
 end
 
 if ~exist(resultpath,'dir')
@@ -63,7 +81,7 @@ fileID = fopen(fname, 'w');
 %END DEBUG
 
 if fileID<0
-    error('could not open output file %s',fname);
+    throw(CORAerror('CORA:converterIssue',['Could not open output file ' fname]));
 end
 
 fwrite(fileID, Str);
@@ -73,7 +91,5 @@ fclose(fileID);
 rehash path;
 
 disp("----------------------StructHA2file COMPLETE---------------------");
-
-end
 
 %------------- END OF CODE --------------

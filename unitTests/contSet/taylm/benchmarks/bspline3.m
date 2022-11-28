@@ -4,18 +4,24 @@ function res = bspline3(u)
 % Syntax:  
 %    res = bspline3(u)
 %
-% Example: 
+% Inputs:
+%    u - see benchmark
+%
+% Output:
+%    res - result
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
-%
+
 % Author:       Dmitry Grebenyuk
 % Written:      10-October-2017
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-    res = -u*u*u / 6.0;
+
+res = -u*u*u / 6.0;
 end
+
 %------------- END OF CODE --------------

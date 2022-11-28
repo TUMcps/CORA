@@ -37,13 +37,17 @@ end
 res_rand = true;
 nrOfTests = 100;
 for i=1:nrOfTests
-
+    %%% generate all variables necessary to replicate results
     % random dimension
     n = randi(15);
-    
     % random shape matrix (psd and non-psd) and random center
     q = randn(n,1);
     Q_nonpsd = randn(n);
+    % wrong initializations
+    q_plus1 = randn(n+1,1);
+    q_mat = randn(n);
+    temp = randn(n+1);
+    %%%
     Q = Q_nonpsd * Q_nonpsd';
     
     % admissible initializations
@@ -60,10 +64,6 @@ for i=1:nrOfTests
     end
     
     
-    % wrong initializations
-    q_plus1 = randn(n+1,1);
-    q_mat = randn(n);
-    temp = randn(n+1);
     Q_plus1 = temp * temp';
     
     % shape matrix non-psd (only n > 1)
@@ -104,10 +104,9 @@ end
 % combine results
 res = res_empty && res_rand;
 
-if res
-    disp('testLongDuration_ellipsoid_ellipsoid successful');
-else
-    disp('testLongDuration_ellipsoid_ellipsoid failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','q','Q_nonpsd','q_plus1','q_mat','temp');
 end
 
 %------------- END OF CODE --------------

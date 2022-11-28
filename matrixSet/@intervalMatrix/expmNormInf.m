@@ -1,13 +1,13 @@
 function val = expmNormInf(intMat,t)
 % expmNormInf - returns the over-approximation of the inf-norm of the 
-% symmetric solution of the computation of the mapping mimicing the 
-% exponential
+%    symmetric solution of the computation of the mapping mimicing the 
+%    exponential
 %
 % Syntax:  
 %    val = expmNormInf(intMat,t)
 %
 % Inputs:
-%    intMat - interval matrix
+%    intMat - intervalMatrix object
 %    t - time
 %
 % Outputs:

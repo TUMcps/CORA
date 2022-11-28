@@ -18,21 +18,19 @@ function res = testLongDuration_linearSys_reachInner()
 
 %------------- BEGIN CODE --------------
 
-res = true;
-
-% Parameter -----------------------------------------------------------
+% Parameters --------------------------------------------------------------
 
 params.tFinal = 1;
 params.R0 = zonotope([ones(5,1),0.1*diag(ones(5,1))]);
 
 
-% Reachability Settings -----------------------------------------------
+% Reachability Settings ---------------------------------------------------
 
 options.timeStep = 0.02;
 options.zonotopeOrder = 20;
 
 
-% System Dynamics -----------------------------------------------------
+% System Dynamics ---------------------------------------------------------
 
 A = [-1 -4 0 0 0; 4 -1 0 0 0; 0 0 -3 1 0; 0 0 -1 -3 0; 0 0 0 0 -2];
 B = 1;
@@ -40,13 +38,13 @@ B = 1;
 sys = linearSys('fiveDimSys',A,B); 
 
 
-% Reachability Analysis -----------------------------------------------
+% Reachability Analysis ---------------------------------------------------
 
 % compute inner-approximation
 Rin = reachInner(sys,params,options);
 
 
-% Verification --------------------------------------------------------
+% Verification ------------------------------------------------------------
 
 % Test 1: check if all points inside the computed inner-approximation
 %         are located in the initial set if simulated backward in time
@@ -59,6 +57,7 @@ points = zeros(sys.dim,N);
 
 R0 = mptPolytope(params.R0);
 
+res1 = true;
 for i = 1:N
 
     % draw random point from inner-approximation
@@ -78,25 +77,24 @@ for i = 1:N
     p = x(end,:)';
     points(:,i) = p;
 
-    if ~in(R0,p,1e-4)
-       res = false;
-       error('Not a valid inner-approximation!')
+    if ~contains(R0,p,'exact',1e-4)
+        % not a valid inner-approximation
+        res1 = false;
     end
 end
 
-%     figure; hold on;
-%     plot(params.R0);
-%     plot(points(1,:),points(2,:),'.k');
-
+% figure; hold on;
+% plot(params.R0);
+% plot(points(1,:),points(2,:),'.k');
 
 % Test 2: check if the result matches the stored one
-
 I_saved = interval([-0.013937383819512;-0.570761541921580;0.061914997162599;-0.021873749737811;0.121801754912951], ...
                    [0.089837441984412;-0.466986716117656;0.075673885420954;-0.008114861479455;0.148868811560274]);
 I = interval(R_i);
 
-res = in(enlarge(I_saved,1+1e-12),I) & in(enlarge(I,1+1e-12),I_saved);
-    
-end
+res2 = isequal(I,I_saved,1e-12);
+
+% combine results
+res = res1 && res2;
     
 %------------- END OF CODE --------------

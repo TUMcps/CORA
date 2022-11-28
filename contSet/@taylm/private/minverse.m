@@ -1,11 +1,5 @@
 function res = minverse(obj)
-% minverse - Compute the matrix inverse for Taylor models
-%
-% This method is implemented from 
-% R. Trinchero, P. Manfredi, T. Ding and I. S. Stievano, "Combined 
-% Parametric and Worst Case Circuit Analysis via Taylor Models," in IEEE 
-% Transactions on Circuits and Systems I: Regular Papers, vol. 63, no. 7, 
-% pp. 1067-1078, July 2016.
+% minverse - Compute the matrix inverse for Taylor models acc. to [1]
 %
 % Syntax:  
 %    res = minverse(obj)
@@ -15,6 +9,12 @@ function res = minverse(obj)
 %
 % Outputs:
 %    res - resulting taylm object
+%
+% References:
+%    [1] R. Trinchero, P. Manfredi, T. Ding and I. S. Stievano, "Combined 
+%        Parametric and Worst Case Circuit Analysis via Taylor Models," in
+%        IEEE Transactions on Circuits and Systems I: Regular Papers,
+%        vol. 63, no. 7, pp. 1067-1078, July 2016.
 %
 % Other m-files required: interval, interval
 % Subfunctions: none
@@ -51,7 +51,7 @@ function res = minverse(obj)
         if isempty(c_f)
             T = obj;
             c_f = 1/0;
-            error('division by zero')
+            throw(CORAerror('CORA:outOfDomain','validDomain','not containing 0'));
         else    
             T = obj - c_f;
             A = inv(c_f);

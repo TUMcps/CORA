@@ -28,12 +28,12 @@ res = true;
 nRuns = 2;
 for i=10:5:15
     for j=1:nRuns
-        E = ellipsoid.generateRandom(false,i);
+        E = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',false);
         Y = randPoint(E,1000);
         %compute interval
         I = interval(E);
         %check if all points are in the interval
-        if ~in(I,Y)
+        if ~contains(I,Y)
             res = false;
             break;
         end
@@ -43,9 +43,8 @@ for i=10:5:15
     end
 end
 
-if res
-    disp('testLongDuration_ellipsoid_interval successful');
-else
-    disp('testLongDuration_ellipsoid_interval failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'E','Y');
 end
 %------------- END OF CODE --------------

@@ -8,28 +8,24 @@ function zB = or(zB1, varargin)
 %    zB = or(zB1, ... , zBm, alg, order)
 %
 % Inputs:
-%    zB1,...,zBm - zonoBunlde objects
-%    alg - algorithm used to compute the union ('linProg', or 'tedrake')
+%    zB1,...,zBm - zonoBundle objects
+%    alg - algorithm used to compute the union ('linProg' or 'tedrake')
 %    order - zonotope order of the enclosing zonotope
 %
 % Outputs:
 %    zB - resulting zonoBundle object enclosing the union
 %
 % Example: 
-%    % define sets
-%    zono1 = zonotope([0 1 2 0;0 1 0 2]);
-%    zono2 = zonotope([3 -0.5 3 0;-1 0.5 0 3]);
-%    zB = zonoBundle({zono1,zono2});
-%    int = interval([4;4],[5;6]);
+%    Z1 = zonotope([0 1 2 0;0 1 0 2]);
+%    Z2 = zonotope([3 -0.5 3 0;-1 0.5 0 3]);
+%    zB = zonoBundle({Z1,Z2});
+%    I = interval([4;4],[5;6]);
 %
-%    % union
-%    res = zB | int;
+%    res = zB | I;
 %
-%    % visualization
-%    figure
-%    hold on
-%    plot(zB,[1,2],'r','Filled',true,'EdgeColor','none');
-%    plot(int,[1,2],'b','Filled',true,'EdgeColor','none');
+%    figure; hold on;
+%    plot(zB,[1,2],'FaceColor','r');
+%    plot(I,[1,2],'FaceColor','b');
 %    plot(res,[1,2],'k');
 %
 % Other m-files required: none
@@ -45,9 +41,9 @@ function zB = or(zB1, varargin)
 
 %------------- BEGIN CODE --------------
 
-    % convert to conZonotope and call conZonotope method
-    zB1 = conZonotope(zB1);
-    cZ = or(zB1, varargin{:});
-    zB = zonoBundle(cZ);
+% convert to conZonotope and call conZonotope method
+zB1 = conZonotope(zB1);
+cZ = or(zB1, varargin{:});
+zB = zonoBundle(cZ);
     
 %------------- END OF CODE --------------

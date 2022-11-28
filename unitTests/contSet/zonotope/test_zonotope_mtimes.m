@@ -41,13 +41,10 @@ Zmat = Z2.Z;
 true_mat = [6, 7, 8, 9; ...
             -16, -17, -18, -19];
 
-% check result
-res = all(all(Zmat == true_mat));
+% empty set
+res_e = isempty(M*zonotope());
 
-if res
-    disp('test_zonotope_mtimes successful');
-else
-    disp('test_zonotope_mtimes failed');
-end
+% check result
+res = all(all(Zmat == true_mat)) && res_e;
 
 %------------- END OF CODE --------------

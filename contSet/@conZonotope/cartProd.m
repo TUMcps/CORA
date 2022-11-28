@@ -1,28 +1,26 @@
-function cZ = cartProd(cZ1,cZ2)
-% cartProd - Returns the cartesian product of two conZonotope objects
+function cZ = cartProd(cZ,S)
+% cartProd - Returns the Cartesian product of a constrained zonotope and
+%    other set representations or points
 % 
 % Syntax:  
-%    cZ = cartProd(cZ1,cZ2)
+%    cZ = cartProd(cZ,S)
 %
 % Inputs:
-%    cZ1 - conZonotope object
-%    cZ2 - conZonotope object
+%    cZ - conZonotope object
+%    S - contSet object
 %
 % Outputs:
-%    cZ - resulting conZonotope object
+%    cZ - conZonotope object
 %
 % Example: 
 %    Z = [0 1 2];
-%    A = [1 1];
-%    b = 1;
+%    A = [1 1]; b = 1;
 %    cZ = conZonotope(Z,A,b);
-%    zono = zonotope([0 1]);
+%    Z = zonotope([0 1]);
+%    cZcart = cartProd(cZ,Z);
 %
-%    cZcart = cartProd(cZ,zono);
-%
-%    plot(cZcart,[1,2],'r','Filled',true);
-%    xlim([0.5 2.5]);
-%    ylim([-1.5 1.5]);
+%    figure; hold on; xlim([0.5 2.5]); ylim([-1.5 1.5]);
+%    plot(cZcart,[1,2],'FaceColor','r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -37,72 +35,85 @@ function cZ = cartProd(cZ1,cZ2)
 
 %------------- BEGIN CODE --------------
 
-    % first or second set is constrained zonotope
-    if isa(cZ1,'conZonotope')
+% pre-processing
+[res,vars] = pre_cartProd('conZonotope',cZ,S);
 
-        % different cases for different set representations
-        if isa(cZ2,'conZonotope')
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    cZ = vars{1}; return
+else
+    % potential re-ordering
+    cZ = vars{1}; S = vars{2};
+end
 
-            % new center vector
-            c = [cZ1.Z(:,1); cZ2.Z(:,1)];
 
-            % new generator matrix
-            G = blkdiag(cZ1.Z(:,2:end),cZ2.Z(:,2:end));
+% first or second set is constrained zonotope
+if isa(cZ,'conZonotope')
 
-            % new constraint matrix
-            h1 = size(cZ1.A,1);
-            h2 = size(cZ2.A,1);
+    % different cases for different set representations
+    if isa(S,'conZonotope')
 
-            m1 = size(cZ1.Z,2)-1;
-            m2 = size(cZ2.Z,2)-1;
+        % new center vector
+        c = [cZ.Z(:,1); S.Z(:,1)];
 
-            if isempty(cZ1.A)
-               if isempty(cZ2.A)
-                  A = []; 
-               else
-                  A = [zeros(h2,m1),cZ2.A];
-               end
-            else
-               if isempty(cZ2.A)
-                  A = [cZ1.A,zeros(h1,m2)];
-               else
-                  A = [[cZ1.A,zeros(h1,m2)];[zeros(h2,m1),cZ2.A]];
-               end
-            end
+        % new generator matrix
+        G = blkdiag(cZ.Z(:,2:end),S.Z(:,2:end));
 
-            % new constraint offset
-            b = [cZ1.b;cZ2.b];
+        % new constraint matrix
+        h1 = size(cZ.A,1);
+        h2 = size(S.A,1);
 
-            % generate resulting constrained zonotope
-            cZ = conZonotope([c,G],A,b);
+        m1 = size(cZ.Z,2)-1;
+        m2 = size(S.Z,2)-1;
 
-        elseif isnumeric(cZ2) || isa(cZ2,'zonotope') || ...
-               isa(cZ2,'interval') || isa(cZ2,'mptPolytope') || ...
-               isa(cZ2,'zonoBundle')
-
-            cZ = cartProd(cZ1,conZonotope(cZ2));
-            
-        elseif isa(cZ2,'polyZonotope') || isa(cZ2,'conPolyZono')
-            
-            cZ = cartProd(polyZonotope(cZ1),cZ2);
-            
+        if isempty(cZ.A)
+           if isempty(S.A)
+              A = []; 
+           else
+              A = [zeros(h2,m1),S.A];
+           end
         else
-            % throw error for given arguments
-            error(noops(cZ1,cZ2));
+           if isempty(S.A)
+              A = [cZ.A,zeros(h1,m2)];
+           else
+              A = [[cZ.A,zeros(h1,m2)];[zeros(h2,m1),S.A]];
+           end
         end
 
+        % new constraint offset
+        b = [cZ.b;S.b];
+
+        % generate resulting constrained zonotope
+        cZ = conZonotope([c,G],A,b);
+
+    elseif isnumeric(S) || isa(S,'zonotope') || ...
+           isa(S,'interval') || isa(S,'mptPolytope') || ...
+           isa(S,'zonoBundle')
+
+        cZ = cartProd(cZ,conZonotope(S));
+        
+    elseif isa(S,'polyZonotope') || isa(S,'conPolyZono')
+        
+        cZ = cartProd(polyZonotope(cZ),S);
+        
     else
-
-        % different cases for different set representations
-        if isnumeric(cZ1)
-
-            cZ = cartProd(conZonotope(cZ1),cZ2);
-
-        else
-            % throw error for given arguments
-            error(noops(cZ1,cZ2));
-        end  
+        % throw error for given arguments
+        throw(CORAerror('CORA:noops',cZ,S));
     end
+
+else
+
+    % different cases for different set representations
+    if isnumeric(cZ)
+
+        cZ = cartProd(conZonotope(cZ),S);
+
+    else
+        % throw error for given arguments
+        throw(CORAerror('CORA:noops',cZ,S));
+    end
+    
 end
 
 %------------- END OF CODE --------------

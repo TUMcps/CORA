@@ -31,12 +31,20 @@ function [paramsList,optionsList] = config_linearSys_reach(sys,params,options)
 initParamsOptionsLists();
 
 % append entries to list of model parameters
-add2params('R0','mandatory',{@(val)any(ismember(getMembers('R0'),class(val))),@(val)eq(dim(val),sys.dim)},...
-    {'memberR0','eqsysdim'});
-add2params('U','default',{@(val)any(ismember(getMembers('U'),class(val)))},{'memberU'});
-add2params('u','default',{@isnumeric},{'isnumeric'});
 add2params('tStart','default',{@isscalar,@(val)ge(val,0)},{'isscalar','gezero'});
 add2params('tFinal','mandatory',{@isscalar,@(val)ge(val,params.tStart)},{'isscalar','getStart'});
+add2params('R0','mandatory',{@(val)any(ismember(getMembers('R0'),class(val))),@(val)eq(dim(val),sys.dim)},...
+    {'memberR0','eqsysdim'});
+add2params('U','default',{@(val)any(ismember(getMembers('U'),class(val))),...
+    @(val)eq(dim(val),sys.nrOfInputs)},{'memberU','eqinput'});
+add2params('u','default',{@isnumeric,@(val)eq(size(val,1),sys.nrOfInputs)},{'isnumeric','eqinput'});
+add2params('tu','default',{@isvector,@isnumeric,@(val)all(diff(val)>0),...
+    @(val)c_tu(val,sys,params,options)},{'isvector','isnumeric','vectorgezero',''},...
+    {@()isfield(options,'linAlg') && strcmp(options.linAlg,'adaptive')});
+add2params('W','default',{@(val)any(ismember(getMembers('W'),class(val))),...
+    @(val)eq(dim(val),sys.dim)},{'memberW','eqsysdim'});
+add2params('V','default',{@(val)any(ismember(getMembers('V'),class(val))),...
+    @(val)eq(dim(val),sys.nrOfOutputs)},{'memberV','eqoutput'});
 
 % append entries to list of algorithm parameters
 add2options('verbose','default',{@isscalar,@islogical},{'isscalar','islogical'});
@@ -55,8 +63,11 @@ add2options('timeStep','mandatory',{@isscalar,@(val)val>0,@(val)abs(params.tFina
     {'isscalar','gezero','intsteps',''},{@()~strcmp(options.linAlg,'adaptive')});
 add2options('taylorTerms','mandatory',{@isscalar,@(val)mod(val,1)==0,@(val)ge(val,1)},...
     {'isscalar','integer','geone'},{@()~strcmp(options.linAlg,'adaptive')});
+
 add2options('zonotopeOrder','mandatory',{@isscalar,@(val)ge(val,1)},...
-    {'isscalar','geone'},{@()~strcmp(options.linAlg,'adaptive')});
+    {'isscalar','geone'},{@()~any(strcmp(options.linAlg,{'adaptive','supportFunc'}))});
+% add2options('l','mandatory',{@isnumeric,@(val)eq(size(val,1),sys.nrOfOutputs)},...
+%     {'isnumeric','eqoutput'},{@()strcmp(options.linAlg,'supportFunc')});
 
 add2options('partition','mandatory',{@(val)c_partition(val,sys,options)},...
     {''},{@()strcmp(options.linAlg,'decomp')});

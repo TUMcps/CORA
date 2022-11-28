@@ -1,5 +1,5 @@
 function R = observe_stripBased(obj,options)
-% observe_stripBased - computes the guaranted state estimation approach
+% observe_stripBased - computes the guaranteed state estimation approach
 % according to the set membership approach, see [1].
 %
 %

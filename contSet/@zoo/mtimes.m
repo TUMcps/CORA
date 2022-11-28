@@ -26,33 +26,31 @@ function res = mtimes(factor1, factor2)
 % Last revision:---
 
 %------------- BEGIN CODE -------------
-    if isa(factor1, 'zoo') && isa(factor2, 'zoo')
-        
-        [factor1,factor2] = combineZooObjects(factor1,factor2);
-        res = factor1;
-        for i = 1:length(res.method)
-           res.objects{i} = factor1.objects{i} * factor2.objects{i}; 
-        end   
 
-    elseif isa(factor1,'zoo') && (isa(factor2,'double') || isa(factor2,'interval'))
-
-        res = factor1;
-        for i = 1:length(res.method)
-           res.objects{i} = factor1.objects{i} * factor2; 
-        end  
+if isa(factor1, 'zoo') && isa(factor2, 'zoo')
     
-    elseif (isa(factor1,'double') || isa(factor1,'interval')) && isa(factor2,'zoo')
-        
-        res = factor2;
-        for i = 1:length(res.method)
-           res.objects{i} = factor2.objects{i} * factor1; 
-        end  
-        
-    else
-        
-        error('Wrong input')
-        
-    end
+    [factor1,factor2] = combineZooObjects(factor1,factor2);
+    res = factor1;
+    for i = 1:length(res.method)
+       res.objects{i} = factor1.objects{i} * factor2.objects{i}; 
+    end   
 
+elseif isa(factor1,'zoo') && (isa(factor2,'double') || isa(factor2,'interval'))
+
+    res = factor1;
+    for i = 1:length(res.method)
+       res.objects{i} = factor1.objects{i} * factor2; 
+    end  
+
+elseif (isa(factor1,'double') || isa(factor1,'interval')) && isa(factor2,'zoo')
+    
+    res = factor2;
+    for i = 1:length(res.method)
+       res.objects{i} = factor2.objects{i} * factor1; 
+    end  
+    
+else
+     throw(CORAerror('CORA:wrongValue','first/second',"'double', 'interval', or 'zoo'"));
 end
+
 %------------- END OF CODE --------------

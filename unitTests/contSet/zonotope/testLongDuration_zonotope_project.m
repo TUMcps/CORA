@@ -30,17 +30,22 @@ function res = testLongDuration_zonotope_project
 dims = 5:5:100;
 testsPerDim = 1000;
 
-% box has to be the same as conversion to interval
-for d=1:length(dims)
+for i=1:length(dims)
     for test=1:testsPerDim
         % create a random zonotope
         nrOfGens = randi([10,25],1,1);
-        c = -1+2*rand(dims(d),1);
-        G = -1+2*rand(dims(d),nrOfGens);
+        c = -1+2*rand(dims(i),1);
+        G = -1+2*rand(dims(i),nrOfGens);
         Z = zonotope(c,G);
 
         % choose random subspace
-        projDims = randi([1,dims(d)],1,2);
+        projDims = randi([1,dims(i)],1,2);
+        if rand < 0.5
+            % choose logical indexing
+            temp = projDims;
+            projDims = false(dims(i),1);
+            projDims(temp) = true;
+        end
 
         % project original center and generator matrix
         cproj = c(projDims);
@@ -50,7 +55,7 @@ for d=1:length(dims)
         Zproj = project(Z,projDims);
         
         % check projections return the same result
-        res_rand(d,test) = all(~any(abs(Zproj.Z - [cproj,Gproj])));
+        res_rand(i,test) = all(~any(abs(Zproj.Z - [cproj,Gproj])));
     end
 end
 
@@ -58,10 +63,9 @@ end
 % add results
 res = all(all(res_rand));
 
-if res
-    disp('testLongDuration_zonotope_project successful');
-else
-    disp('testLongDuration_zonotope_project failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'nrOfGens','c','G','projDims');
 end
 
 %------------- END OF CODE --------------

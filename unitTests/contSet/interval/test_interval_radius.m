@@ -36,10 +36,4 @@ true_rad = sqrt(13);
 
 res = Int_rad == true_rad;
 
-if res
-    disp('test_radius successful');
-else
-    disp('test_radius failed');
-end
-
 %------------- END OF CODE --------------

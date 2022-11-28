@@ -1,18 +1,18 @@
-function res = infimum(obj)
+function res = infimum(I)
 % infimum - returns the infimum of an interval
 %
 % Syntax:  
-%    res = inf(obj)
+%    res = inf(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - numerical value
+%    res - infimum of interval
 %
 % Example: 
-%    a = interval([-1 1], [1 2]);
-%    b = inf(a)
+%    I = interval([-1 1], [1 2]);
+%    res = infimum(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,6 +27,6 @@ function res = infimum(obj)
 
 %------------- BEGIN CODE --------------
 
-res = obj.inf;
+res = I.inf;
 
 %------------- END OF CODE --------------

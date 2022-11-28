@@ -1,9 +1,9 @@
 function [OGain,tComp]= observe_gain_PRadC(obj,options)
-% observe_gain_PRadC - computes the gain for the guaranted state estimation
-% approach from [1] and [2].
+% observe_gain_PRadC - computes the gain for the guaranteed state estimation
+%    approach from [1] and [2].
 %
 % Syntax:  
-%    [OGain,tComp] = observe_PRadC(obj,options)
+%    [OGain,tComp] = observe_gain_PRadC(obj,options)
 %
 % Inputs:
 %    obj - discrete-time linear system object
@@ -12,6 +12,9 @@ function [OGain,tComp]= observe_gain_PRadC(obj,options)
 % Outputs:
 %    OGain - observer gain
 %    tComp - computation time
+%
+% Example: 
+%    -
 %
 % Reference:
 %    [1] Ye Wang, Teodoro Alamo, Vicenc Puig, and Gabriela
@@ -27,8 +30,6 @@ function [OGain,tComp]= observe_gain_PRadC(obj,options)
 %        discrete-time descriptor LPV systems. IEEE Transactions
 %        on Automatic Control, 64(5):2092-2099, 2019.
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
@@ -40,10 +41,9 @@ function [OGain,tComp]= observe_gain_PRadC(obj,options)
 % Last update:   02-Jan-2021
 % Last revision: ---
 
-
 %------------- BEGIN CODE --------------
 
-tic
+tic;
 
 % E and F in [1] are chosen such that they are multiplied with unit
 % uncertainties; thus, E and F can be seen as generators of zonotopes
@@ -52,14 +52,14 @@ E = generators(options.W);
 F = generators(options.V);
 
 % obtain system dimension and nr of outputs
-dim = size(obj.A,1); 
-nrOfOutputs = size(obj.C,1);
+n = obj.dim; 
+nrOfOutputs = obj.nrOfOutputs;
 
 %% define YALMIPs symbolic decision variables
 % weight of F_P radius
-P = sdpvar(dim,dim,'symmetric'); 
+P = sdpvar(n,n,'symmetric'); 
 % gain matrix
-Y = sdpvar(dim,nrOfOutputs,'full'); 
+Y = sdpvar(n,nrOfOutputs,'full'); 
 
 %% set G and O 
 G = sdpvar(size(E,2),size(E,2),'diag');
@@ -100,13 +100,13 @@ while(beta_up-beta_lo)> beta_tol
     SM = sdpvar(SM);
 
     % optimization criterion seems to not be specified in [1]
-    crit = -trace(P); 
+    objective = -trace(P); 
 
     % LMI problem to be solved
-    pblmi =  [(P>=0), (SM>=0) ,(G>=0), (O>=0)];
+    constraint =  [(P>=0), (SM>=0) ,(G>=0), (O>=0)];
 
     % Solve LMI conditions
-    solpb = optimize(pblmi,crit,options_sdp);
+    solpb = optimize(constraint, objective, options_sdp);
 
     % Check if LMI is feasible
     if solpb.problem == 1

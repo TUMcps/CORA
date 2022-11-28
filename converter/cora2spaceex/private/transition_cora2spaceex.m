@@ -21,12 +21,12 @@ function tran = transition_cora2spaceex(component, docNode, target, id)
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
-%
+
 %------------- BEGIN CODE --------------
 
 %Add the element node (transition), for the parent element (component) and

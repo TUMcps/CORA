@@ -27,8 +27,6 @@ function res = test_zonotope_and
 
 res = true;
 
-% 1. Analytical Test ------------------------------------------------------
-
 % 1D (convertible to intervals)
 Z1 = zonotope(0,3);
 Z2 = zonotope(5,1);
@@ -59,13 +57,10 @@ Z2 = zonotope(zeros(2,1),rand(2,2));
 Z1and2 = Z1 & Z2; % full-dimensional intersection
 res(6) = ~isempty(Z1and2);
 
+% empty set
+% Z_e = zonotope();
+% res(7) = isempty(Z1 & Z_e);
+
 res = all(res);
-
-
-if res
-    disp('test_and successful');
-else
-    disp('test_and failed');
-end
 
 %------------- END OF CODE --------------

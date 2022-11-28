@@ -20,10 +20,10 @@ function [devProbLeft,dispDevProbLeft,devProbRight,dispDevProbRight]=deviationPr
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 26-March-2009
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      26-March-2009
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

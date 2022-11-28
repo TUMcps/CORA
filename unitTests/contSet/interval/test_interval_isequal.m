@@ -36,10 +36,4 @@ Int3 = Int1;
 % check if all points are in interval
 res = ~isequal(Int1,Int2) && isequal(Int1,Int3);
 
-if res
-    disp('test_isequal successful');
-else
-    disp('test_isequal failed');
-end
-
 %------------- END OF CODE --------------

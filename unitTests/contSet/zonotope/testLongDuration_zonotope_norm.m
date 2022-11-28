@@ -44,10 +44,10 @@ for i=2:4
         break;
     end
 end
-if res
-    disp('testLongDuration_zonotope_norm successful');
-else
-    disp('testLongDuration_zonotope_norm failed');
+
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'Z');
 end
 
 %------------- END OF CODE --------------

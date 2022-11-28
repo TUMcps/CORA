@@ -5,7 +5,8 @@ function res = mtimes(factor1, factor2)
 %    res = mtimes(factor1, factor2)
 %
 % Inputs:
-%    factor1 and factor2 - taylm objects
+%    factor1 - taylm object
+%    factor2 - taylm object
 %
 % Outputs:
 %    res - a taylm object
@@ -44,7 +45,7 @@ if n1 == m2
 elseif (isa(factor1, 'double') || isa(factor2, 'double')) && (isscalar(factor1) || isscalar(factor2))
     res = factor1 .* factor2;
 else
-    error('Matrix dimensions do not agree!');
+    throw(CORAerror('CORA:dimensionMismatch',factor1,factor2));
 end
 
 %------------- END OF CODE --------------

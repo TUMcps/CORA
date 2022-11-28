@@ -1,23 +1,24 @@
-function V = vertices(obj,varargin)
+function V = vertices(Z,varargin)
 % vertices - returns potential vertices of a zonotope
-%    WARNING: Do not use this function for high order zonotopes as the
-%    computational complexity grows exponential!
+%    WARNING: Do not use this function for high-order zonotopes as the
+%    computational complexity grows exponentially!
 %
-% Syntax:  
-%    V = vertices(obj,alg)
+% Syntax:
+%    V = vertices(Z)
+%    V = vertices(Z,alg)
 %
 % Inputs:
-%    obj - zonotope object
+%    Z - zonotope object
 %    alg - algorithm used
 %           - 'convHull' (default)
 %           - 'iterate'
 %           - 'polytope'
 %
 % Outputs:
-%    V - vertices object
+%    V - matrix
 %
-% Example: 
-%    Z = zonotope(rand(2,5));
+% Example:
+%    Z = zonotope([1;-1],[1 3 -2 1 0; 0 2 1 -2 1]);
 %    V = vertices(Z)
 %
 % Other m-files required: none
@@ -38,68 +39,76 @@ function V = vertices(obj,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    alg = 'convHull';
-
-    if nargin == 2
-        if ismember(varargin{1},{'iterate','polytope','convHull'})
-           alg = varargin{1};
-        else
-           error('Wrong value for input arguments ''alg''!'); 
-        end
+    % pre-processing
+    [res,vars] = pre_vertices('zonotope',Z,varargin{:});
+    
+    % check premature exit
+    if res
+        % if result has been found, it is stored in the first entry of var
+        V = vars{1}; return
+    else
+        Z = vars{1}; alg = vars{2};
     end
 
+
     % different cases for different dimensions
-    n = size(obj.Z,1);
+    n = dim(Z);
     
     if n == 1
 
         % compute the two vertices for one-dimensional case
-        temp = sum(abs(obj.Z(:,2:end)));
-        V = [obj.Z(:,1) - temp,obj.Z(:,1) + temp];
+        c = center(Z);
+        temp = sum(abs(generators(Z)),2);
+        V = [c - temp,c + temp];
 
     elseif n == 2
 
         % use function "polygon" for two dimensional zonotopes -> faster
-        V = polygon(obj);
+        V = polygon(Z);
 
     else
         
         % apply the selected algorithm
         if strcmp(alg,'iterate')
-            V = verticesIterate(obj);
+            V = verticesIterate(Z);
         elseif strcmp(alg,'polytope')
-            V = verticesPolytope(obj);
+            V = verticesPolytope(Z);
         else
-            V = verticesConvHull(obj);
+            V = verticesConvHull(Z);
         end
     end
+
+    % remove duplicates
+    V = unique(V','rows','stable')';
+    
 end
 
 
 
 % Auxiliary Functions -----------------------------------------------------
 
-function V = verticesPolytope(obj)
+function V = verticesPolytope(Z)
 
-    P = polytope(obj);
+    P = mptPolytope(Z);
     V = vertices(P);
 
 end
 
-function V = verticesConvHull(obj)
+function V = verticesConvHull(Z)
 
     % first vertex is the center of the zonotope
-    V = obj.Z(:,1);
+    V = center(Z);
+    n = dim(Z);
+    nrGens = size(generators(Z),2);
 
     % generate further potential vertices in the loop
-    for iVertex = 1:length(obj.Z(1,2:end))
+    for iVertex = 1:nrGens
 
-        translation = obj.Z(:,iVertex+1)*ones(1,length(V(1,:)));
+        translation = Z.Z(:,iVertex+1)*ones(1,length(V(1,:)));
         V = [V+translation,V-translation];
 
         % remove inner points
-        if iVertex > length(obj.Z(:,1))
+        if iVertex > n
             try
                 K = convhulln(V');
                 indices = unique(K);
@@ -114,20 +123,20 @@ function V = verticesConvHull(obj)
     end
 end
 
-function V = verticesIterate(obj)
+function V = verticesIterate(Z)
 
     % delete aligned and all-zero generators
-    obj = deleteAligned(obj);
-    obj = deleteZeros(obj);
+    Z = deleteAligned(Z);
+    Z = deleteZeros(Z);
 
     % extract object data
-    G = generators(obj);
-    c = center(obj);
+    G = generators(Z);
+    c = center(Z);
     n = size(G,1);
     
     % catch the case where the zonotope is not full-dimensional
     if size(G,2) < n
-        V = verticesIterateSVG(obj);
+        V = verticesIterateSVG(Z);
         return;
     end
 
@@ -136,13 +145,12 @@ function V = verticesIterate(obj)
     V = c + G(:,1:n)*vert;
     
     % compute halfspaces of the parallelotope
-    [poly,~,isDeg] = polytope(zonotope([c,G(:,1:n)]));
+    [poly,~,isDeg] = mptPolytope(zonotope([c,G(:,1:n)]));
     if isDeg
-        V = verticesIterateSVG(obj);
+        V = verticesIterateSVG(Z);
         return;
     else
-        P = get(poly,'P');
-        A = P.A;
+        A = poly.P.A;
     end
     
     % loop over all remaining generators 
@@ -188,18 +196,18 @@ function V = verticesIterate(obj)
 
 end
 
-function [res,suc] = verticesIterateSVG(obj)
+function [res,suc] = verticesIterateSVG(Z)
 % compute vertices for the case that zonotope is not full-dimensional
 
-    suc = 1;
+    suc = true;
     res = [];
 
     % extract object data
-    G = generators(obj);
-    c = center(obj);
-    n = size(G,1);
+    G = generators(Z);
+    c = center(Z);
+    n = dim(Z);
 
-    % singluar value decomposition
+    % singular value decomposition
     [S,V,~] = svd(G);
     
     if size(V,2) < size(G,1)
@@ -220,7 +228,7 @@ function [res,suc] = verticesIterateSVG(obj)
         % transform back to original space
         res = S*[V;zeros(length(ind),size(V,2))];
     else
-        suc = 0;
+        suc = false;
     end 
 end
 
@@ -228,11 +236,9 @@ function res = numVertices(m,n)
 % compute number of zonotope vertices
 
     res = 0;
-    
     for i = 0:n-1
-       res = res + nchoosek(m-1,i); 
+        res = res + nchoosek(m-1,i); 
     end
-
     res = 2*res;
 end
 

@@ -27,7 +27,7 @@ function createTableObservers
 %------------- BEGIN CODE --------------
 
 % set path
-path = [coraroot '/unitTests/contDynamics/linearSysDT/results'];
+path = [CORAROOT filesep 'unitTests' filesep 'contDynamics' filesep 'linearSysDT' filesep 'results'];
 close all
 
 % load file
@@ -203,3 +203,5 @@ function type = determineType(observer)
     end
         
 end
+
+%------------- END OF CODE --------------

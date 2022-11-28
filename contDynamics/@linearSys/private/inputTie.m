@@ -1,16 +1,16 @@
-function [obj]=inputTie(obj,options)
+function obj = inputTie(obj,options)
 % inputTie - tie: time interval error; computes the error done by 
 % the linear assumption of the constant input solution
 %
 % Syntax:  
-%    [obj]=inputTie(obj,options)
+%    obj = inputTie(obj,options)
 %
 % Inputs:
-%    obj - linear interval system object
+%    obj - linearSys object
 %    options - options struct
 %
 % Outputs:
-%    obj - linear interval system object
+%    obj - linearSys object
 %
 % Example: 
 %
@@ -20,7 +20,7 @@ function [obj]=inputTie(obj,options)
 %
 % See also: expm, inputSol
 
-% Author: Matthias Althoff
+% Author:       Matthias Althoff
 % Written:      11-May-2009
 % Last update:  13-November-2017
 %               22-February-2018
@@ -33,11 +33,11 @@ Apower=obj.taylor.powers;
 E = obj.taylor.error;
 taylorTerms=options.taylorTerms;
 r=options.timeStep;
-dim=dimension(obj);
+n=obj.dim;
 
 % initialize Asum
-Asum_pos=zeros(dim);
-Asum_neg=zeros(dim);
+Asum_pos=zeros(n);
+Asum_neg=zeros(n);
 
 for i=2:(taylorTerms+1)
     % compute factor
@@ -45,8 +45,8 @@ for i=2:(taylorTerms+1)
     factor=(i^exp1-i^exp2)*options.factor(i); 
     
     % init Apos, Aneg
-    Apos=zeros(dim);
-    Aneg=zeros(dim);
+    Apos=zeros(n);
+    Aneg=zeros(n);
     
     % obtain positive and negative parts
     pos_ind = Apower{i-1}>0;

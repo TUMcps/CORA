@@ -171,7 +171,7 @@ else
 end
 
 %show logo
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 imfile1 = 'CORAlogo.png';
 axes(handles.panelHeader, 'position', [0.6,0.3,0.6,0.7]);
 [cora_logo, ~, alpha] = imread([path_im, imfile1]);
@@ -457,7 +457,7 @@ switch currentOption
 end
 
 file = script;
-path = [coraroot, filesep, 'models', filesep];
+path = [CORAROOT, filesep, 'models', filesep];
 dinfo = dir(path);
 dinfo(ismember( {dinfo.name}, {'.', '..'})) = [];
 allFileNames = {dinfo(:).name};
@@ -467,7 +467,7 @@ if ~any(ismember(allFileNames, 'auxiliary'))
 end
 
 addpath([path, 'auxiliary'])
-path = [coraroot, filesep, 'models', filesep, 'auxiliary'];
+path = [CORAROOT, filesep, 'models', filesep, 'auxiliary'];
 file_system = fullfile(path, file);
 handles.fileSystem = file_system;
 guidata(hObject, handles) %update handles
@@ -1564,9 +1564,9 @@ if get(hObject,'Value')
     set(handles.pbDownNoP_RSim_Linear, 'Enable', 'off')
     set(handles.txtFV_RSim_Linear, 'Enable', 'off')
     set(handles.txtFIV_RSim_Linear, 'Enable', 'off')
-    set(handles.txtIC_RSim_Linear, 'Enable', 'off')
-    set(handles.pbUpIC_RSim_Linear, 'Enable', 'off')
-    set(handles.pbDownIC_RSim_Linear, 'Enable', 'off')
+    set(handles.txtNCI_RSim_Linear, 'Enable', 'off')
+    set(handles.pbUpNCI_RSim_Linear, 'Enable', 'off')
+    set(handles.pbDownNCI_RSim_Linear, 'Enable', 'off')
     set(handles.txtNoP_SimRRT_Linear, 'Enable', 'off')
     set(handles.pbUpNoP_SimRRT_Linear, 'Enable', 'off')
     set(handles.pbDownNoP_SimRRT_Linear, 'Enable', 'off')
@@ -1671,9 +1671,9 @@ if get(hObject,'Value')
     set(handles.pbDownNoP_RSim_Linear, 'Enable', 'on')
     set(handles.txtFV_RSim_Linear, 'Enable', 'on')
     set(handles.txtFIV_RSim_Linear, 'Enable', 'on')
-    set(handles.txtIC_RSim_Linear, 'Enable', 'on')
-    set(handles.pbUpIC_RSim_Linear, 'Enable', 'on')
-    set(handles.pbDownIC_RSim_Linear, 'Enable', 'on')
+    set(handles.txtNCI_RSim_Linear, 'Enable', 'on')
+    set(handles.pbUpNCI_RSim_Linear, 'Enable', 'on')
+    set(handles.pbDownNCI_RSim_Linear, 'Enable', 'on')
     
     set(handles.txtNoP_SimRRT_Linear, 'Enable', 'off')
     set(handles.pbUpNoP_SimRRT_Linear, 'Enable', 'off')
@@ -1695,9 +1695,9 @@ else
     set(handles.pbDownNoP_RSim_Linear, 'Enable', 'off')
     set(handles.txtFV_RSim_Linear, 'Enable', 'off')
     set(handles.txtFIV_RSim_Linear, 'Enable', 'off')
-    set(handles.txtIC_RSim_Linear, 'Enable', 'off')
-    set(handles.pbUpIC_RSim_Linear, 'Enable', 'off')
-    set(handles.pbDownIC_RSim_Linear, 'Enable', 'off')
+    set(handles.txtNCI_RSim_Linear, 'Enable', 'off')
+    set(handles.pbUpNCI_RSim_Linear, 'Enable', 'off')
+    set(handles.pbDownNCI_RSim_Linear, 'Enable', 'off')
     
 end
 
@@ -1812,13 +1812,13 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-function txtIC_RSim_Linear_Callback(hObject, eventdata, handles)
-% hObject    handle to txtIC_RSim_Linear (see GCBO)
+function txtNCI_RSim_Linear_Callback(hObject, eventdata, handles)
+% hObject    handle to txtNCI_RSim_Linear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of txtIC_RSim_Linear as text
-%        str2double(get(hObject,'String')) returns contents of txtIC_RSim_Linear as a double
+% Hints: get(hObject,'String') returns contents of txtNCI_RSim_Linear as text
+%        str2double(get(hObject,'String')) returns contents of txtNCI_RSim_Linear as a double
 value = str2double(get(hObject, 'String'));
 
 if value < 1
@@ -1829,8 +1829,8 @@ value = num2str(value);
 set(hObject, 'String', value);
 
 % --- Executes during object creation, after setting all properties.
-function txtIC_RSim_Linear_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to txtIC_RSim_Linear (see GCBO)
+function txtNCI_RSim_Linear_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to txtNCI_RSim_Linear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1868,9 +1868,9 @@ if get(hObject,'Value')
     set(handles.pbDownNoP_RSim_Linear, 'Enable', 'off')
     set(handles.txtFV_RSim_Linear, 'Enable', 'off')
     set(handles.txtFIV_RSim_Linear, 'Enable', 'off')
-    set(handles.txtIC_RSim_Linear, 'Enable', 'off')
-    set(handles.pbUpIC_RSim_Linear, 'Enable', 'off')
-    set(handles.pbDownIC_RSim_Linear, 'Enable', 'off')
+    set(handles.txtNCI_RSim_Linear, 'Enable', 'off')
+    set(handles.pbUpNCI_RSim_Linear, 'Enable', 'off')
+    set(handles.pbDownNCI_RSim_Linear, 'Enable', 'off')
     
     set(handles.txtNoP_SimRRT_Linear, 'Enable', 'on')
     set(handles.pbUpNoP_SimRRT_Linear, 'Enable', 'on')
@@ -1948,28 +1948,28 @@ value = num2str(value);
 set(handles.txtNoP_SimRRT_Linear, 'String', value);
 
 
-% --- Executes on button press in pbDownIC_RSim_Linear.
-function pbDownIC_RSim_Linear_Callback(hObject, eventdata, handles)
-% hObject    handle to pbDownIC_RSim_Linear (see GCBO)
+% --- Executes on button press in pbDownNCI_RSim_Linear.
+function pbDownNCI_RSim_Linear_Callback(hObject, eventdata, handles)
+% hObject    handle to pbDownNCI_RSim_Linear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-value = get(handles.txtIC_RSim_Linear, 'String');
+value = get(handles.txtNCI_RSim_Linear, 'String');
 value = str2double(value) - 1;
 
 if value > 0
     value = num2str(value);
-    set(handles.txtIC_RSim_Linear, 'String', value);
+    set(handles.txtNCI_RSim_Linear, 'String', value);
 end
 
-% --- Executes on button press in pbUpIC_RSim_Linear.
-function pbUpIC_RSim_Linear_Callback(hObject, eventdata, handles)
-% hObject    handle to pbUpIC_RSim_Linear (see GCBO)
+% --- Executes on button press in pbUpNCI_RSim_Linear.
+function pbUpNCI_RSim_Linear_Callback(hObject, eventdata, handles)
+% hObject    handle to pbUpNCI_RSim_Linear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-value = get(handles.txtIC_RSim_Linear, 'String');
+value = get(handles.txtNCI_RSim_Linear, 'String');
 value = str2double(value) + 1;
 value = num2str(value);
-set(handles.txtIC_RSim_Linear, 'String', value);
+set(handles.txtNCI_RSim_Linear, 'String', value);
 
 
 % --- Executes on button press in rbYesEPS_SimRRT_Linear.
@@ -3834,9 +3834,9 @@ if get(hObject,'Value')
     set(handles.pbDownNoP_RSim_Nonlinear, 'Enable', 'off')
     set(handles.txtFV_RSim_Nonlinear, 'Enable', 'off')
     set(handles.txtFIV_RSim_Nonlinear, 'Enable', 'off')
-    set(handles.txtIC_RSim_Nonlinear, 'Enable', 'off')
-    set(handles.pbUpIC_RSim_Nonlinear, 'Enable', 'off')
-    set(handles.pbDownIC_RSim_Nonlinear, 'Enable', 'off')
+    set(handles.txtNCI_RSim_Nonlinear, 'Enable', 'off')
+    set(handles.pbUpNCI_RSim_Nonlinear, 'Enable', 'off')
+    set(handles.pbDownNCI_RSim_Nonlinear, 'Enable', 'off')
     set(handles.txtNoP_SimRRT_Nonlinear, 'Enable', 'off')
     set(handles.pbUpNoP_SimRRT_Nonlinear, 'Enable', 'off')
     set(handles.pbDownNoP_SimRRT_Nonlinear, 'Enable', 'off')
@@ -3933,9 +3933,9 @@ if get(hObject,'Value')
     set(handles.pbDownNoP_RSim_Nonlinear, 'Enable', 'on')
     set(handles.txtFV_RSim_Nonlinear, 'Enable', 'on')
     set(handles.txtFIV_RSim_Nonlinear, 'Enable', 'on')
-    set(handles.txtIC_RSim_Nonlinear, 'Enable', 'on')
-    set(handles.pbUpIC_RSim_Nonlinear, 'Enable', 'on')
-    set(handles.pbDownIC_RSim_Nonlinear, 'Enable', 'on')
+    set(handles.txtNCI_RSim_Nonlinear, 'Enable', 'on')
+    set(handles.pbUpNCI_RSim_Nonlinear, 'Enable', 'on')
+    set(handles.pbDownNCI_RSim_Nonlinear, 'Enable', 'on')
     
     set(handles.txtNoP_SimRRT_Nonlinear, 'Enable', 'off')
     set(handles.pbUpNoP_SimRRT_Nonlinear, 'Enable', 'off')
@@ -3957,9 +3957,9 @@ else
     set(handles.pbDownNoP_RSim_Nonlinear, 'Enable', 'off')
     set(handles.txtFV_RSim_Nonlinear, 'Enable', 'off')
     set(handles.txtFIV_RSim_Nonlinear, 'Enable', 'off')
-    set(handles.txtIC_RSim_Nonlinear, 'Enable', 'off')
-    set(handles.pbUpIC_RSim_Nonlinear, 'Enable', 'off')
-    set(handles.pbDownIC_RSim_Nonlinear, 'Enable', 'off')
+    set(handles.txtNCI_RSim_Nonlinear, 'Enable', 'off')
+    set(handles.pbUpNCI_RSim_Nonlinear, 'Enable', 'off')
+    set(handles.pbDownNCI_RSim_Nonlinear, 'Enable', 'off')
     
 end
 
@@ -4077,8 +4077,8 @@ end
 
 
 
-function txtIC_RSim_Nonlinear_Callback(hObject, eventdata, handles)
-% hObject    handle to txtIC_RSim_Nonlinear (see GCBO)
+function txtNCI_RSim_Nonlinear_Callback(hObject, eventdata, handles)
+% hObject    handle to txtNCI_RSim_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -4093,8 +4093,8 @@ set(hObject, 'String', value);
 
 
 % --- Executes during object creation, after setting all properties.
-function txtIC_RSim_Nonlinear_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to txtIC_RSim_Nonlinear (see GCBO)
+function txtNCI_RSim_Nonlinear_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to txtNCI_RSim_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -4130,9 +4130,9 @@ if get(hObject,'Value')
     set(handles.pbDownNoP_RSim_Nonlinear, 'Enable', 'off')
     set(handles.txtFV_RSim_Nonlinear, 'Enable', 'off')
     set(handles.txtFIV_RSim_Nonlinear, 'Enable', 'off')
-    set(handles.txtIC_RSim_Nonlinear, 'Enable', 'off')
-    set(handles.pbUpIC_RSim_Nonlinear, 'Enable', 'off')
-    set(handles.pbDownIC_RSim_Nonlinear, 'Enable', 'off')
+    set(handles.txtNCI_RSim_Nonlinear, 'Enable', 'off')
+    set(handles.pbUpNCI_RSim_Nonlinear, 'Enable', 'off')
+    set(handles.pbDownNCI_RSim_Nonlinear, 'Enable', 'off')
     
     set(handles.txtNoP_SimRRT_Nonlinear, 'Enable', 'on')
     set(handles.pbUpNoP_SimRRT_Nonlinear, 'Enable', 'on')
@@ -4213,28 +4213,28 @@ value = num2str(value);
 set(handles.txtNoP_SimRRT_Nonlinear, 'String', value);
 
 
-% --- Executes on button press in pbDownIC_RSim_Nonlinear.
-function pbDownIC_RSim_Nonlinear_Callback(hObject, eventdata, handles)
-% hObject    handle to pbDownIC_RSim_Nonlinear (see GCBO)
+% --- Executes on button press in pbDownNCI_RSim_Nonlinear.
+function pbDownNCI_RSim_Nonlinear_Callback(hObject, eventdata, handles)
+% hObject    handle to pbDownNCI_RSim_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-value = get(handles.txtIC_RSim_Nonlinear, 'String');
+value = get(handles.txtNCI_RSim_Nonlinear, 'String');
 value = str2double(value) - 1;
 
 if value > 0
     value = num2str(value);
-    set(handles.txtIC_RSim_Nonlinear, 'String', value);
+    set(handles.txtNCI_RSim_Nonlinear, 'String', value);
 end
 
-% --- Executes on button press in pbUpIC_RSim_Nonlinear.
-function pbUpIC_RSim_Nonlinear_Callback(hObject, eventdata, handles)
-% hObject    handle to pbUpIC_RSim_Nonlinear (see GCBO)
+% --- Executes on button press in pbUpNCI_RSim_Nonlinear.
+function pbUpNCI_RSim_Nonlinear_Callback(hObject, eventdata, handles)
+% hObject    handle to pbUpNCI_RSim_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-value = get(handles.txtIC_RSim_Nonlinear, 'String');
+value = get(handles.txtNCI_RSim_Nonlinear, 'String');
 value = str2double(value) + 1;
 value = num2str(value);
-set(handles.txtIC_RSim_Nonlinear, 'String', value);
+set(handles.txtNCI_RSim_Nonlinear, 'String', value);
 
 
 % --- Executes on button press in rbYesEPS_SimRRT_Nonlinear.
@@ -4400,7 +4400,7 @@ if isempty(dynamics_equations)
     return
 end
 
-id = fopen([coraroot, filesep, 'models', filesep, 'auxiliary',filesep,'dynamicsEq_nonlinear.m'], 'wt');
+id = fopen([CORAROOT, filesep, 'models', filesep, 'auxiliary',filesep,'dynamicsEq_nonlinear.m'], 'wt');
 fprintf(id, '%s\n', 'function f = dynamicsEq_nonlinear(x, u)');
 for line = 1:size(dynamics_equations,1)
     fprintf(id, '%s', '    ');
@@ -4409,7 +4409,7 @@ end
 fprintf(id, '%s', 'end');
 fclose(id);
 
-handles.dynamicsEq_Nonlinear = [coraroot, filesep, 'models', filesep, 'auxiliary',filesep,'dynamicsEq_nonlinear.m'];
+handles.dynamicsEq_Nonlinear = [CORAROOT, filesep, 'models', filesep, 'auxiliary',filesep,'dynamicsEq_nonlinear.m'];
 
 dynamics_equation = handles.dynamicsEq_Nonlinear;
 dynamics_equation = strsplit(dynamics_equation, filesep);
@@ -4418,11 +4418,11 @@ dynamics_equation = strsplit(dynamics_equation,'.');
 dynamics_equation = dynamics_equation{1};
 dynamicsEq_handle_str = ['@', dynamics_equation];
 dynamicsEq_handle = eval('base', dynamicsEq_handle_str);
-addpath([coraroot, filesep, 'models', filesep, 'auxiliary'])
+addpath([CORAROOT, filesep, 'models', filesep, 'auxiliary'])
 handles.dynamicsEq_Nonlinear_error =0;
 
 try
-    [temp,dimensions]  = numberOfInputs_app(dynamicsEq_handle,2);
+    [temp,dimensions]  = inputArgsLength_app(dynamicsEq_handle,2);
     nrOfInputs = max(1,temp(2));
 catch
     message = sprintf('Please make sure the equations are written in the following form: \n f(1,1) = ... \n f(2,1) = ... \n\n staring with the letter f and all the parameters/variables are defined!');
@@ -4433,7 +4433,7 @@ end
 handles.dynamicsEq_Nonlinear_error = 1;
 
 %extract num_states, num_inputs
-[temp,dimensions]  = numberOfInputs_app(dynamicsEq_handle,2);
+[temp,dimensions]  = inputArgsLength_app(dynamicsEq_handle,2);
 nrOfInputs = max(1,temp(2));
 dimensions = string(1:dimensions);
 dimensions1 = ['', dimensions, 'time'];
@@ -4514,7 +4514,7 @@ end
 
 
 %extract num_states, num_inputs
-[temp,dimensions_eq]  = numberOfInputs_app(dynamicsEq_handle,2);
+[temp,dimensions_eq]  = inputArgsLength_app(dynamicsEq_handle,2);
 nrOfInputs = max(1,temp(2));
 dimensions = string(1:dimensions_eq);
 dimensions1 = ['', dimensions, 'time'];
@@ -5178,7 +5178,7 @@ function pb_infoZO_Linear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoZO_Linear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_zonotopeOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -5189,7 +5189,7 @@ function pb_infoTT_Linear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoTT_Linear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_taylorTerms.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -5200,7 +5200,7 @@ function pb_infoRT_Linear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoRT_Linear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_reductionTechnique.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -5211,7 +5211,7 @@ function pbInfoLA_Linear_Callback(hObject, eventdata, handles)
 % hObject    handle to pbInfoLA_Linear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_linAlg.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -5222,7 +5222,7 @@ function pb_infoZO_Nonlinear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoZO_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_zonotopeOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -5232,7 +5232,7 @@ function pb_infoTT_Nonlinear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoTT_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_taylorTerms.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -5242,7 +5242,7 @@ function pb_infoRT_Nonlinear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoRT_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_reductionTechnique.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -5252,7 +5252,7 @@ function pb_infoMLE_Nonlinear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoMLE_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'InfoSaveData.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -5262,7 +5262,7 @@ function pb_infoRI_Nonlinear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoRI_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'InfoSaveData.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -5272,7 +5272,7 @@ function pb_infoCL_Nonlinear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCL_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_consLinearization.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -5282,7 +5282,7 @@ function pb_infoCP_Nonlinear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCP_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_consPolynomialization.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -5292,7 +5292,7 @@ function pb_infoCLTO_Nonlinear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCLTO_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_tensorOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -5302,7 +5302,7 @@ function pb_infoCPTO_Nonlinear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCPTO_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_tensorOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -5312,7 +5312,7 @@ function pb_infoCPIO_Nonlinear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCPIO_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_intermediateOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -5322,7 +5322,7 @@ function pb_infoCPEE_Nonlinear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCPEE_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_errorOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -6034,7 +6034,7 @@ function pb_infoZO_Hybrid_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoZO_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_zonotopeOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -6044,7 +6044,7 @@ function pb_infoTT_Hybrid_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoTT_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_taylorTerms.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -6054,7 +6054,7 @@ function pb_infoRT_Hybrid_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoRT_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_reductionTechnique.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -6064,7 +6064,7 @@ function pbInfoLA_Hybrid_Callback(hObject, eventdata, handles)
 % hObject    handle to pbInfoLA_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_linAlg.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -6951,9 +6951,9 @@ if get(hObject,'Value')
     set(handles.pbDownNoP_RSim_Hybrid, 'Enable', 'off')
     set(handles.txtFV_RSim_Hybrid, 'Enable', 'off')
     set(handles.txtFIV_RSim_Hybrid, 'Enable', 'off')
-    set(handles.txtIC_RSim_Hybrid, 'Enable', 'off')
-    set(handles.pbUpIC_RSim_Hybrid, 'Enable', 'off')
-    set(handles.pbDownIC_RSim_Hybrid, 'Enable', 'off')
+    set(handles.txtNCI_RSim_Hybrid, 'Enable', 'off')
+    set(handles.pbUpNCI_RSim_Hybrid, 'Enable', 'off')
+    set(handles.pbDownNCI_RSim_Hybrid, 'Enable', 'off')
     set(handles.txtNoP_SimRRT_Hybrid, 'Enable', 'off')
     set(handles.pbUpNoP_SimRRT_Hybrid, 'Enable', 'off')
     set(handles.pbDownNoP_SimRRT_Hybrid, 'Enable', 'off')
@@ -7050,9 +7050,9 @@ if get(hObject,'Value')
     set(handles.pbDownNoP_RSim_Hybrid, 'Enable', 'on')
     set(handles.txtFV_RSim_Hybrid, 'Enable', 'on')
     set(handles.txtFIV_RSim_Hybrid, 'Enable', 'on')
-    set(handles.txtIC_RSim_Hybrid, 'Enable', 'on')
-    set(handles.pbUpIC_RSim_Hybrid, 'Enable', 'on')
-    set(handles.pbDownIC_RSim_Hybrid, 'Enable', 'on')
+    set(handles.txtNCI_RSim_Hybrid, 'Enable', 'on')
+    set(handles.pbUpNCI_RSim_Hybrid, 'Enable', 'on')
+    set(handles.pbDownNCI_RSim_Hybrid, 'Enable', 'on')
     
     set(handles.txtNoP_SimRRT_Hybrid, 'Enable', 'off')
     set(handles.pbUpNoP_SimRRT_Hybrid, 'Enable', 'off')
@@ -7074,9 +7074,9 @@ else
     set(handles.pbDownNoP_RSim_Hybrid, 'Enable', 'off')
     set(handles.txtFV_RSim_Hybrid, 'Enable', 'off')
     set(handles.txtFIV_RSim_Hybrid, 'Enable', 'off')
-    set(handles.txtIC_RSim_Hybrid, 'Enable', 'off')
-    set(handles.pbUpIC_RSim_Hybrid, 'Enable', 'off')
-    set(handles.pbDownIC_RSim_Hybrid, 'Enable', 'off')
+    set(handles.txtNCI_RSim_Hybrid, 'Enable', 'off')
+    set(handles.pbUpNCI_RSim_Hybrid, 'Enable', 'off')
+    set(handles.pbDownNCI_RSim_Hybrid, 'Enable', 'off')
     
 end
 
@@ -7193,8 +7193,8 @@ end
 
 
 
-function txtIC_RSim_Hybrid_Callback(hObject, eventdata, handles)
-% hObject    handle to txtIC_RSim_Hybrid (see GCBO)
+function txtNCI_RSim_Hybrid_Callback(hObject, eventdata, handles)
+% hObject    handle to txtNCI_RSim_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -7208,8 +7208,8 @@ value = num2str(value);
 set(hObject, 'String', value);
 
 % --- Executes during object creation, after setting all properties.
-function txtIC_RSim_Hybrid_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to txtIC_RSim_Hybrid (see GCBO)
+function txtNCI_RSim_Hybrid_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to txtNCI_RSim_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -7245,9 +7245,9 @@ if get(hObject,'Value')
     set(handles.pbDownNoP_RSim_Hybrid, 'Enable', 'off')
     set(handles.txtFV_RSim_Hybrid, 'Enable', 'off')
     set(handles.txtFIV_RSim_Hybrid, 'Enable', 'off')
-    set(handles.txtIC_RSim_Hybrid, 'Enable', 'off')
-    set(handles.pbUpIC_RSim_Hybrid, 'Enable', 'off')
-    set(handles.pbDownIC_RSim_Hybrid, 'Enable', 'off')
+    set(handles.txtNCI_RSim_Hybrid, 'Enable', 'off')
+    set(handles.pbUpNCI_RSim_Hybrid, 'Enable', 'off')
+    set(handles.pbDownNCI_RSim_Hybrid, 'Enable', 'off')
     
     set(handles.txtNoP_SimRRT_Hybrid, 'Enable', 'on')
     set(handles.pbUpNoP_SimRRT_Hybrid, 'Enable', 'on')
@@ -7321,29 +7321,29 @@ value = str2double(value) + 1;
 value = num2str(value);
 set(handles.txtNoP_SimRRT_Hybrid, 'String', value);
 
-% --- Executes on button press in pbDownIC_RSim_Hybrid.
-function pbDownIC_RSim_Hybrid_Callback(hObject, eventdata, handles)
-% hObject    handle to pbDownIC_RSim_Hybrid (see GCBO)
+% --- Executes on button press in pbDownNCI_RSim_Hybrid.
+function pbDownNCI_RSim_Hybrid_Callback(hObject, eventdata, handles)
+% hObject    handle to pbDownNCI_RSim_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-value = get(handles.txtIC_RSim_Hybrid, 'String');
+value = get(handles.txtNCI_RSim_Hybrid, 'String');
 value = str2double(value) - 1;
 
 if value > 0
     value = num2str(value);
-    set(handles.txtIC_RSim_Hybrid, 'String', value);
+    set(handles.txtNCI_RSim_Hybrid, 'String', value);
 end
 
 
-% --- Executes on button press in pbUpIC_RSim_Hybrid.
-function pbUpIC_RSim_Hybrid_Callback(hObject, eventdata, handles)
-% hObject    handle to pbUpIC_RSim_Hybrid (see GCBO)
+% --- Executes on button press in pbUpNCI_RSim_Hybrid.
+function pbUpNCI_RSim_Hybrid_Callback(hObject, eventdata, handles)
+% hObject    handle to pbUpNCI_RSim_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-value = get(handles.txtIC_RSim_Hybrid, 'String');
+value = get(handles.txtNCI_RSim_Hybrid, 'String');
 value = str2double(value) + 1;
 value = num2str(value);
-set(handles.txtIC_RSim_Hybrid, 'String', value);
+set(handles.txtNCI_RSim_Hybrid, 'String', value);
 
 % --- Executes on button press in rbYesEPS_SimRRT_Hybrid.
 function rbYesEPS_SimRRT_Hybrid_Callback(hObject, eventdata, handles)
@@ -7839,7 +7839,7 @@ function pb_infoCL_Hybrid_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCL_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_consLinearization.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -7849,7 +7849,7 @@ function pb_infoCP_Hybrid_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCP_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_consPolynomialization.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -7859,7 +7859,7 @@ function pb_infoCLTO_Hybrid_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCLTO_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_tensorOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -7869,7 +7869,7 @@ function pb_infoCPTO_Hybrid_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCPTO_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_tensorOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -7879,7 +7879,7 @@ function pb_infoCPIO_Hybrid_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCPIO_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_intermediateOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -7889,7 +7889,7 @@ function pb_infoCPEE_Hybrid_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCPEE_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_errorOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -7966,7 +7966,7 @@ function pb_info_enclose_Hybrid_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_info_enclose_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_enclose.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -7977,7 +7977,7 @@ function pb_input_set_Linear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_input_set_Linear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_inputSet.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -7987,7 +7987,7 @@ function pb_input_set_Nonlinear_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_input_set_Nonlinear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_inputSet.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -7997,7 +7997,7 @@ function pb_input_set_Hybrid_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_input_set_Hybrid (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_inputSet.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -8008,7 +8008,7 @@ function pb_infoCPIO_Nonlinear_lin_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCPIO_Nonlinear_lin (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_intermediateOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -8019,7 +8019,7 @@ function pb_infoCPEE_Nonlinear_lin_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCPEE_Nonlinear_lin (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_errorOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -8235,7 +8235,7 @@ function pb_infoCPIO_Hybrid_lin_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCPIO_Hybrid_lin (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_intermediateOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;
@@ -8246,7 +8246,7 @@ function pb_infoCPEE_Hybrid_lin_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_infoCPEE_Hybrid_lin (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im_ZO = 'Info_errorOrder.png';
 infoBox({[path_im, im_ZO]});
 uiwait;

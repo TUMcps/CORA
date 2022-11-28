@@ -1,18 +1,18 @@
-function [obj] = inputSolution(obj,options)
+function obj = inputSolution(obj,options)
 % inputSolution - computes the bloating due to the input 
 %
 % Syntax:  
-%    [obj] = inputSolution(obj,options)
+%    obj = inputSolution(obj,options)
 %
 % Inputs:
-%    obj - linear interval system object
+%    obj - linParamSys object
 %    options - options struct
 %
 % Outputs:
-%    obj - linear interval system object
+%    obj - linParamSys object
 %
 % Example: 
-%    Text for example...
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -74,7 +74,7 @@ if options.originContained
     inputCorr = zeros(obj.dim,1);
 else
     %compute inputF
-    [obj] = inputTie(obj,options);
+    obj = inputTie(obj,options);
     inputCorr = obj.inputF*zonotope(vTrans);
 end
 

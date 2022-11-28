@@ -1,17 +1,18 @@
-function varargout = norm(Z,type,mode)
+function varargout = norm(Z,varargin)
 % norm - computes maximum norm value
 %
 % Syntax:  
 %    val = norm(Z,type,mode)
 %
 % Inputs:
-%    Z    - zonotope object
+%    Z - zonotope object
 %    type - (optional) which kind of norm (default: 2)
 %    mode - (optional) 'exact', 'ub' (upper bound),'ub_convex' (more
 %            precise upper bound computed from a convex program)
 %
 % Outputs:
-%   val - norm value
+%    val - norm value
+%    x - vertex attaining maximum norm
 %
 % Example: 
 %    ---
@@ -28,20 +29,26 @@ function varargout = norm(Z,type,mode)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-if ~exist('mode','var')
-    mode = 'ub';
+
+% pre-processing
+[res,vars] = pre_norm('zonotope',Z,varargin{:});
+
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    varargout{1} = vars{1}; return
+else
+    % assign values
+    Z = vars{1}; type = vars{2}; mode = vars{3};
 end
-if ~exist('type','var')
-    type = 2;
-end
+
+
 if strcmp(mode,'exact')
     [varargout{1:2}] = norm_exact(Z,type);
 elseif strcmp(mode,'ub')
-    Int = interval(Z);
-    varargout{1} = norm(Int,type);
+    varargout{1} = norm(interval(Z),type);
 elseif strcmp(mode,'ub_convex')
     varargout{1} = norm_ub(Z,type);
-else
-    error('Specified type argument not supported');
 end
+
 %------------- END OF CODE --------------

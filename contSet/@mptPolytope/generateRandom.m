@@ -1,22 +1,22 @@
-function poly = generateRandom(varargin)
+function P = generateRandom(varargin)
 % generateRandom - Generates a random zonotope
 %
 % Syntax:  
-%    poly = generateRandom()
-%    poly = generateRandom(dim)
-%    poly = generateRandom(dim,cen)
+%    poly = mptPolytope.generateRandom()
+%    poly = mptPolytope.generateRandom('Dimension',n)
+%    poly = mptPolytope.generateRandom('Dimension',n,'Center',c)
 %
 % Inputs:
-%    dim      - dimension
-%    cen      - (optional) center
+%    Name-Value pairs (all options, arbitrary order):
+%       <'Dimension',n> - dimension
+%       <'Center',c> - center
 %
 % Outputs:
-%    poly - random mptPolytope
+%    P - random polytope
 %
 % Example: 
-%    poly = mptPolytope.generateRandom(2);
-%
-%    plot(poly);
+%    P = mptPolytope.generateRandom('Dimension',2);
+%    plot(P);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,31 +26,49 @@ function poly = generateRandom(varargin)
 
 % Author:       Niklas Kochdumper
 % Written:      05-May-2020
-% Last update:  ---
+% Last update:  19-May-2022 (MW, name-value pair syntax)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments 
-    n = rand(1,5);
+% name-value pairs -> number of input arguments is always a multiple of 2
+if mod(nargin,2) ~= 0
+    throw(CORAerror('CORA:evenNumberInputArgs'));
+else
+    % read input arguments
+    NVpairs = varargin(1:end);
+    % check list of name-value pairs
+    checkNameValuePairs(NVpairs,{'Dimension','Center'});
+    % dimension given?
+    [NVpairs,n] = readNameValuePair(NVpairs,'Dimension');
+    % center given?
+    [NVpairs,c] = readNameValuePair(NVpairs,'Center');
+end
 
-    if nargin >= 1 && ~isempty(varargin{1})
-       n = varargin{1}; 
+% default dimension
+if isempty(n)
+    if isempty(c)
+        maxdim = 10;
+        n = randi(maxdim);
+    else
+        n = length(c);
     end
+end
 
-    cen = -10 + 20*rand(n,1);
+% default computation of center (only approximately center of P)
+if isempty(c)
+    c = -10 + 20*rand(n,1);
+end
 
-    if nargin >= 2 && ~isempty(varargin{2})
-       cen = varargin{2}; 
-    end
+% generate random normal distribution
+A = rand(n,n);
+% compute random points
+sigma = 0.5*(A+A') + n*eye(n);
+nrPoints = n*10;
+points = mvnrnd(c,sigma,nrPoints)';
 
-    % generate random normal distribution
-    A = rand(n,n);
 
-    sigma = 0.5*(A+A') + n*eye(n);
-    points = mvnrnd(cen,sigma,n + 100)';
-
-    % generate random mptPolytope
-    poly = mptPolytope.enclosePoints(points);
+% instantiate polytope
+P = mptPolytope.enclosePoints(points);
 
 %------------- END OF CODE --------------

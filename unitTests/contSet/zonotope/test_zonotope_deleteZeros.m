@@ -26,8 +26,6 @@ function res = test_zonotope_deleteZeros
 
 %------------- BEGIN CODE --------------
 
-% 1. Analytical Test ------------------------------------------------------
-
 % create zonotope
 Z1 = zonotope([1,2,0,4; 5 6 0 0]);
 
@@ -43,16 +41,7 @@ true_mat = [1, 2, 4; 5, 6, 0];
 % check result
 res_val = all(all(Zmat == true_mat));
 
-
-
-
 % add results
 res = res_val;
-
-if res
-    disp('test_deleteZeros successful');
-else
-    disp('test_deleteZeros failed');
-end
 
 %------------- END OF CODE --------------

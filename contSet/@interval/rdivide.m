@@ -17,15 +17,16 @@ function res = rdivide(numerator, denominator)
 %    res = rdivide(numerator, denominator)
 %
 % Inputs:
-%    numerator, denominator - interval objects
+%    numerator - interval object
+%    denominator - interval object
 %
 % Outputs:
 %    res - interval object after elementwise division
 %
 % Example: 
-%    I=interval(rand(6,2));
-%    divisor=rand(6,1);
-%    I=I./divisor
+%    I = interval([-4;2],[1;3]);
+%    divisor = [3;2];
+%    I = I./divisor
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -41,8 +42,8 @@ function res = rdivide(numerator, denominator)
 
 %------------- BEGIN CODE --------------
 
-% an interval / a (maxtrix of) scalar(s)
-if isa(numerator, 'interval') == 1 && isa(denominator, 'interval') == 0
+% an interval / a (matrix of) scalar(s)
+if isa(numerator, 'interval') && ~isa(denominator, 'interval')
     
     % a matrix of scalars or a scalar
     if isequal(size(denominator),size(numerator)) || isequal(size(denominator),[1, 1])
@@ -62,11 +63,11 @@ if isa(numerator, 'interval') == 1 && isa(denominator, 'interval') == 0
         end
 
     else
-        error('The input size is wrong.')
+        throw(CORAerror('CORA:specialError','The input size is wrong.'));
     end
 
 % a (matrix of) scalar(s) / an interval
-elseif isa(numerator, 'interval') == 0 && isa(denominator, 'interval') == 1
+elseif ~isa(numerator, 'interval') && isa(denominator, 'interval')
     
     if size(numerator) == 1
 
@@ -107,27 +108,26 @@ elseif isa(numerator, 'interval') == 0 && isa(denominator, 'interval') == 1
         res.sup(ind1) = +Inf;
 
     else
-        error('The input size is wrong.')
+        throw(CORAerror('CORA:specialError','The input size is wrong.'));
     end
     
 % an interval / an interval (x / y)
-elseif isa(numerator, 'interval') == 1 && isa(denominator, 'interval') == 1
+elseif isa(numerator, 'interval') && isa(denominator, 'interval')
     
     if isequal(size(numerator), size(denominator)) || ...
-            isequal(size(numerator), [1, 1]) == 1 || ...
-            isequal(size(denominator), [1, 1]) == 1
+            isequal(size(numerator), [1, 1]) || ...
+            isequal(size(denominator), [1, 1])
         y = 1 ./ denominator;
         res = numerator .* y;
     else
-        error('The input size is wrong.')
+        throw(CORAerror('CORA:specialError','The input size is wrong.'));
     end
     
 end
 
 % return error if NaN occures
-if any(any(isnan(res.inf))) || any(any(isnan(res.sup))) || ...
-        any(any(isinf(res.inf))) || any(any(isinf(res.sup)))
-	error(resIntNaNInf()); 
+if any(any(isnan(res.inf))) || any(any(isnan(res.sup)))
+    throw(CORAerror('CORA:outOfDomain','validDomain','inf ~= 0 && sup ~= 0'));
 end
 
 %------------- END OF CODE --------------

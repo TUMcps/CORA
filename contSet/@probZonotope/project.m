@@ -1,16 +1,15 @@
-function probZ = project(probZ,proj)
-% project - Returns a zonotope which is projected onto the specified
-%    dimensions
+function probZ = project(probZ,dims)
+% project - projects a probabilistic zonotope onto the specified dimensions
 %
 % Syntax:  
-%    probZ = project(probZ,proj)
+%    probZ = project(probZ,dims)
 %
 % Inputs:
-%    probZ - probabilistic zonotope object
-%    proj - projected dimensions
+%    probZ - (probZonotope) probabilistic zonotope
+%    dims - dimensions for projection
 %
 % Outputs:
-%    probZ - projected probabilistic zonotope
+%    probZ - (probZonotope) projected probabilistic zonotope
 %
 % Example: 
 %    Z1 = [10 1 -2; 0 1 1; -1 0 3];
@@ -32,10 +31,9 @@ function probZ = project(probZ,proj)
 %------------- BEGIN CODE --------------
 
 % project set-based part
-probZ.Z = probZ.Z(proj,:);
+probZ.Z = probZ.Z(dims,:);
 
 % project probabilistic part
-probZ.cov = probZ.cov(proj,proj);
-
+probZ.cov = probZ.cov(dims,dims);
 
 %------------- END OF CODE --------------

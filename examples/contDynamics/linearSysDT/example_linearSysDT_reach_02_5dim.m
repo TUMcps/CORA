@@ -1,19 +1,19 @@
-function completed = example_linearDT_reach_02_5dim()
-% example_linearDT_reach_02_5dim - example for linear reachability 
-%                                  analysis using discrete time
+function completed = example_linearSysDT_reach_02_5dim()
+% example_linearSysDT_reach_02_5dim - example for linear reachability 
+%    analysis using discrete time
 %
 % Syntax:  
-%    completed = example_linearDT_reach_02_5dim()
+%    completed = example_linearSysDT_reach_02_5dim()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    completed - boolean 
+%    completed - true/false 
 %
 % Example: 
-%
-% 
+%    -
+
 % Author:       Matthias Althoff
 % Written:      31-July-2018
 % Last update:  23-April-2020 (moved here from contDynamics/linearSys)
@@ -41,7 +41,7 @@ dt = 0.04;
 sys = linearSysDT('fiveDimSys',A,B,dt);
 
 
-% Parameter ---------------------------------------------------------------
+% Parameters --------------------------------------------------------------
 
 params.tFinal = 5;
 params.R0 = zonotope(ones(dim_x,1),0.1*eye(dim_x));
@@ -64,10 +64,6 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 25;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 10;
-
 simRes = simulateRandom(sys, params, simOpt);
 
 
@@ -82,13 +78,13 @@ for k = 1:length(dims)
     projDims = dims{k};
 
     % plot reachable set
-    plot(R,projDims,'FaceColor',[.8 .8 .8],'EdgeColor','b');
+    plot(R,projDims);
     
     % plot initial set
-    plot(params.R0,projDims,'w-','lineWidth',2);
+    plot(params.R0,projDims,'FaceColor','w','EdgeColor','k');
     
     % plot simulation results
-    plot(simRes,projDims,'.k');
+    plot(simRes,projDims,'Marker','.');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);
@@ -96,6 +92,6 @@ for k = 1:length(dims)
 end
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

@@ -1,19 +1,19 @@
-function simRes = simulateRandom(obj,params,options)
-% simulateRandom - simulates a parallel hybrid automata for points drawn
-%                  randomly from the initial set
+function simRes = simulateRandom(pHA,params,varargin)
+% simulateRandom - simulates a trajectory of a parallel hybrid automaton
 %
 % Syntax:  
-%    simRes = simulateRandom(obj,params,options)
+%    simRes = simulateRandom(pHA,params)
+%    simRes = simulateRandom(pHA,params,options)
 %
 % Inputs:
-%    obj - parallel hybrid automaton object
+%    pHA - parallelHybridAutomaton object
 %    params - system parameters
 %    options - settings for random simulation
 %       .points - nr of simulation runs
 %       .fracVert - fraction of initial states starting from vertices
 %       .fracInpVert - fraction of input values taken from the 
 %                       vertices of the input set
-%       .inpChanges - number of times the input is changed in a simulation run
+%       .nrConstInp - number of different inputs in one simulation run
 %
 % Outputs:
 %    simRes - object of class simResult storing the simulation results
@@ -31,63 +31,70 @@ function simRes = simulateRandom(obj,params,options)
 
 %------------- BEGIN CODE --------------
 
-    % new options preprocessing
-    options = validateOptions(obj,mfilename,params,options);
+% input argument validation
+options = struct();
+if nargin == 3 && isstruct(varargin{1})
+    options = varargin{1};
+end
 
-    % determine random points inside the initial set
-    nrEx = ceil(options.points*options.fracVert);
-    nrNor = options.points - nrEx;
-    points = [];
-    if nrEx > 0
-       points = [points, randPoint(options.R0,nrEx,'extreme')]; 
-    end
-    if nrNor > 0
-       points = [points, randPoint(options.R0,nrNor,'standard')];
-    end
+% options preprocessing
+options = validateOptions(pHA,mfilename,params,options);
 
-    % determine time points
-    time = linspace(options.tStart,options.tFinal,options.inpChanges);
+% determine random points inside the initial set
+nrEx = ceil(options.points*options.fracVert);
+nrNor = options.points - nrEx;
+points = [];
+if nrEx > 0
+    points = [points, randPoint(options.R0,nrEx,'extreme')]; 
+end
+if nrNor > 0
+    points = [points, randPoint(options.R0,nrNor,'standard')];
+end
+
+% determine time points
+time = linspace(options.tStart,options.tFinal,options.nrConstInp);
+
+% initialization
+x = {}; t = {}; locs = {};
+
+% simulate the parallel hybrid automaton
+for i = 1:options.points
+
+   counter = 1;
+   loc = options.startLoc;
+
+   % loop over all input changes
+   for g = 1:length(time)-1
+
+       % get random inputs
+       if counter < options.nrConstInp * options.fracInpVert 
+           params_.u = generateRandomInputs(options,'extreme');
+       else
+           params_.u = generateRandomInputs(options,'standard');
+       end              
+
+       % simulate the parallel hybrid automaton
+       params_.x0 = points(:,i);
+       params_.tStart = time(g);
+       params_.tFinal = time(g+1);
+       params_.startLoc = loc;
+       params_.inputCompMap = options.inputCompMap;
+
+       [tTemp,xTemp,locTemp] = simulate(pHA,params_);
+
+       % store results
+       t = [t;tTemp]; x = [x;xTemp]; locs = [locs;locTemp];
+
+       % update location and initial point
+       points(:,i) = xTemp{end}(end,:)';
+       loc = locTemp{end};
+       counter = counter + 1;
+   end
+end
+
+% construct simResult object
+simRes = simResult(x,t,locs);
     
-    % initialization
-    x = {}; t = {}; locs = {};
-
-    % simulate the parallel hybrid automaton
-    for i = 1:options.points
-
-       counter = 1;
-       loc = options.startLoc;
-
-       % loop over all input changes
-       for g = 1:length(time)-1
-
-           % get random inputs
-           if counter < options.inpChanges * options.fracInpVert 
-               params_.u = generateRandomInputs(options,'extreme');
-           else
-               params_.u = generateRandomInputs(options,'standard');
-           end              
-
-           % simulate the parallel hybrid automaton
-           params_.x0 = points(:,i);
-           params_.tStart = time(g);
-           params_.tFinal = time(g+1);
-           params_.startLoc = loc;
-           params_.inputCompMap = options.inputCompMap;
-
-           [tTemp,xTemp,locTemp] = simulate(obj,params_);
-
-           % store results
-           t = [t;tTemp]; x = [x;xTemp]; locs = [locs;locTemp];
-           
-           % update location and initial point
-           points(:,i) = xTemp{end}(end,:)';
-           loc = locTemp{end};
-           counter = counter + 1;
-       end
-    end
-    
-    % construct simResult object
-    simRes = simResult(x,t,locs);
 end
     
     

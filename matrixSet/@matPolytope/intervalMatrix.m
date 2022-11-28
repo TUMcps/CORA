@@ -1,15 +1,15 @@
-function matI = intervalMatrix(matP)
+function intMat = intervalMatrix(matP)
 % intervalMatrix - computes an enclosing interval matrix of a matrix
-% polytope
+%    polytope
 %
 % Syntax:  
-%    matI = intervalMatrix(matP)
+%    intMat = intervalMatrix(matP)
 %
 % Inputs:
-%    matP - matrix polytope
+%    matP - matPolytope object
 %
 % Outputs:
-%    matI - intervalMatrix
+%    intMat - intervalMatrix object
 %
 % Example: 
 %
@@ -27,8 +27,8 @@ function matI = intervalMatrix(matP)
 %------------- BEGIN CODE --------------
 
 %initialize minimum and maximum values
-minMat=ones(matP.dim)*inf;
-maxMat=ones(matP.dim)*(-inf);
+minMat=Inf(matP.dim);
+maxMat=-Inf(matP.dim);
 
 %find minimum and maximum values
 for i=1:matP.verts
@@ -44,8 +44,8 @@ for i=1:matP.verts
 end
 
 %instantiate interval matrix
-center=0.5*(minMat+maxMat);
-delta=0.5*(maxMat-minMat);
-matI=intervalMatrix(center,delta);
+C=0.5*(minMat+maxMat);
+D=0.5*(maxMat-minMat);
+intMat=intervalMatrix(C,D);
 
 %------------- END OF CODE --------------

@@ -1,5 +1,5 @@
 function res = testLongDuration_zonotope_deleteZeros
-% test_deleteZeros - unit test function of deleteZeros
+% testLongDuration_zonotope_deleteZeros - unit test function of deleteZeros
 %    this encompasses checking the function nonzeroFilter
 %
 % Syntax:  
@@ -31,6 +31,8 @@ function res = testLongDuration_zonotope_deleteZeros
 tol = 1e-9;
 dims = 5:5:25;
 testsPerDim = 1000;
+
+res_rand = false(length(dims),testsPerDim);
 
 % compare randomly generated zonotopes
 for d=1:length(dims)
@@ -68,10 +70,9 @@ end
 % add results
 res = all(all(res_rand));
 
-if res
-    disp('test_deleteZeros successful');
-else
-    disp('test_deleteZeros failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'nrOfGens','Gnozeros','Gzeros');
 end
 
 %------------- END OF CODE --------------

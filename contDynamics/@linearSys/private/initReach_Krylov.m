@@ -1,9 +1,9 @@
 function [Rfirst,options] = initReach_Krylov(obj,Rinit,options)
-% reach_Krylov - computes the reachable continuous set for the first time 
-% step using Krylov subspace methods
+% initReach_Krylov - computes the reachable continuous set for the first
+%    time step using Krylov subspace methods
 %
 % Syntax:  
-%    [obj,Rfirst,options] = initReach_Krylov(obj,Rinit,options)
+%    [Rfirst,options] = initReach_Krylov(obj,Rinit,options)
 %
 % Inputs:
 %    obj - linearSys object
@@ -89,7 +89,8 @@ else
     norm_c = norm(c);
     new_tie_error_mid = norm_c*V_c*Fmid(:,1);
     new_tie_error_rad = norm_c*abs(V_c*Frad(:,1));
-    tie_error = interval(new_tie_error_mid - new_tie_error_rad, new_tie_error_mid + new_tie_error_rad);
+    tie_error = interval(new_tie_error_mid - new_tie_error_rad, ...
+        new_tie_error_mid + new_tie_error_rad);
 
     
     %Compute new center
@@ -119,7 +120,8 @@ for iGen = 1:nrOfGens
         % generate reduced order system for the generators
         A_red_g = H_g{iGen};
         B_red_g = V_g{iGen}'*obj.B;
-        linRedSys_g = linearSys('linearReducedDynamics',A_red_g,B_red_g); %initialize linear reduced dynamics
+        %initialize linear reduced dynamics
+        linRedSys_g = linearSys('linearReducedDynamics',A_red_g,B_red_g);
         
         % compute exponential matrix
         linRedSys_g = exponential(linRedSys_g,options);
@@ -133,7 +135,8 @@ for iGen = 1:nrOfGens
         norm_g = norm(G(:,iGen));
         new_tie_error_mid = norm_g*V_g{iGen}*Fmid(:,1);
         new_tie_error_rad = norm_g*abs(V_g{iGen}*Frad(:,1));
-        tie_error = tie_error + interval(new_tie_error_mid - new_tie_error_rad, new_tie_error_mid + new_tie_error_rad);
+        tie_error = tie_error + interval(new_tie_error_mid - new_tie_error_rad, ...
+            new_tie_error_mid + new_tie_error_rad);
         
         %Compute new generator
         eAt = expm(A_red_g*options.timeStep);
@@ -150,11 +153,11 @@ if options.krylovError > 2*eps
 %     error_normalized = obj.krylov.errorBound_normalized;
 %     error = norm(Rinit)*error_normalized;
     error = options.krylovError;
-    Krylov_interval = interval(-1,1)*ones(dimension(obj),1)*error;
+    Krylov_interval = interval(-1,1)*ones(obj.dim,1)*error;
     R_Krylov = zonotope(Krylov_interval);
     
     % initial-state-solution zonotope
-    R_initSol = zonotope([c_new,G_new,error*eye(dimension(obj))]);
+    R_initSol = zonotope([c_new,G_new,error*eye(obj.dim)]);
 else
     R_Krylov = 0;
     

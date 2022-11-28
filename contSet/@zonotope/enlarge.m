@@ -1,5 +1,6 @@
 function Z = enlarge(Z,f)
-% enlarge - enlarges the generators of a zonotope by a vector of factors
+% enlarge - enlarges the generators of a zonotope by a scalar factor or
+%    independently in each dimension by a vector of factors
 %
 % Syntax:  
 %    Z = enlarge(Z,f)
@@ -16,7 +17,8 @@ function Z = enlarge(Z,f)
 %    Zlarger = enlarge(Z,1.2);
 %    Zsmaller = enlarge(Z,[0.9;0.8]);
 % 
-%    plot(Z); hold on;
+%    figure; hold on;
+%    plot(Z);
 %    plot(Zlarger,[1,2],'g');
 %    plot(Zsmaller,[1,2],'r');
 %

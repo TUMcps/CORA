@@ -1,10 +1,10 @@
 function [R,R_Krylov] = exponential_Krylov_projected(obj,R0,options,stateFlag)
-% exponential_krylov_precomputed - computes the overapproximation of the 
-% exponential of a system matrix up to a certain accuracy using a Krylov 
-% subspace; the subspace is already precomputed
+% exponential_Krylov_projected - computes the overapproximation of the 
+%    exponential of a system matrix up to a certain accuracy using a Krylov 
+%    subspace; the subspace is already precomputed
 %
 % Syntax:  
-%    [R,R_Krylov] = exponential_Krylov_precomputed(obj,options)
+%    [R,R_Krylov] = exponential_Krylov_projected(obj,options)
 %
 % Inputs:
 %    obj - linearSys object

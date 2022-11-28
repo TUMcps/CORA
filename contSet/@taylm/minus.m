@@ -90,8 +90,8 @@ function res = s_minus(factor1, factor2)
         res.remainder = factor1 + res.remainder;
         
     else
-        
-        error('Wrong input')
+        throw(CORAerror('CORA:wrongValue','first/second',...
+            "be 'taylm ' or 'interval'"));
         
     end
 end    

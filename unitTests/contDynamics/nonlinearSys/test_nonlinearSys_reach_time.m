@@ -64,7 +64,6 @@ Rset = reach(vehicle, params, options);
 simOpt.points = 5;
 simOpt.fracVert = 0.5;
 simOpt.fracInpVert = 1;
-simOpt.inpChanges = 200;
 simRes = simulateRandom(vehicle,params,simOpt);
 
 
@@ -83,7 +82,7 @@ for i = 1:length(simRes.x)
        file_name = strcat('test_reach_time_', ...
                           datestr(now,'mm-dd-yyyy_HH-MM'));
                    
-       file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+       file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                             file_name);
                   
        save(file_path, 'simRes')
@@ -103,3 +102,5 @@ end
 %     end
 %     counter = counter + 2;
 % end
+
+%------------- END OF CODE --------------

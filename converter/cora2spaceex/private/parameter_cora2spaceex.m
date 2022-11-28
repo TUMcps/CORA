@@ -20,12 +20,12 @@ function parameter_cora2spaceex(Obj, component, docNode)
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
-%
+
 %------------- BEGIN CODE --------------
 
 % get number of states and inputs
@@ -64,7 +64,7 @@ function [nx,nu] = numberOfParams(obj)
 % act on the system dynamics and are not just dummy inputs are considered.
 
     if isa(obj,'nonlinearSys')
-        temp = numberOfInputs(obj.mFile,2);
+        temp = inputArgsLength(obj.mFile,2);
         nx = temp(1);
         nu = temp(2);
     elseif isa(obj,'linearSys')
@@ -87,7 +87,7 @@ function [nx,nu] = numberOfParams(obj)
            nu = max(nu,nuTemp);
         end
     else
-        error('This object is not yet supported for conversion!');
+        throw(CORAerror('CORA:notSupported','Given contDynamics class not supported.'));
     end
 end
 

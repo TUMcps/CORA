@@ -1,8 +1,8 @@
 function res = testINTLAB_power_random(~)
-% test_power_random - unit_test_function for comparing to IntLabV6
+% testINTLAB_power_random - unit_test_function for comparing to IntLabV6
 %
 % Syntax:  
-%    res = test_power_random (~)
+%    res = testINTLAB_power_random(~)
 %
 % Inputs:
 %    no 
@@ -85,8 +85,4 @@ if ( isempty(bad_ones_max) ~= true)
     res = false;
 end
 
-disp('test_power_random successful');
-disp(' ')
-
-return;
-
+%------------- END OF CODE --------------

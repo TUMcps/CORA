@@ -1,18 +1,18 @@
-function res = isZero(pZ,TOL)
-% isZero - Checks if a polynomial zonotope is all zero
+function res = isZero(pZ,varargin)
+% isZero - Checks if a polynomial zonotope only represents the origin
 %
 % Syntax:  
 %    res = isZero(pZ)
 %
 % Inputs:
 %    pZ - polyZonotope object
-%    TOL- (optional) tolerance
+%    tol - (optional) tolerance
 %
 % Outputs:
-%    res - 1 if set is all zero, 0 otherwise
+%    res - true/false
 %
 % Example: 
-%    pZ = polyZonotope([0;0],[1,1],zeros(2,0),[1,2;3,4;5,6]);
+%    pZ = polyZonotope([0;0],[1,2;0,0],[],[1,2;3,4;5,6]);
 %    res = isZero(pZ);    
 %
 % Other m-files required: none
@@ -27,8 +27,15 @@ function res = isZero(pZ,TOL)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-if ~exist('TOL','var')
-    TOL = eps;
-end
-res = all(abs([pZ.c,pZ.G,pZ.Grest])<=TOL,2);
-%------------- END CODE --------------
+
+% default value
+tol = setDefaultValues({0},varargin{:});
+
+% parse input arguments
+inputArgsCheck({{pZ,'att','polyZonotope'};
+                {tol,'att','numeric',{'nonnegative','scalar','nonnan'}}});
+
+tmp = abs([pZ.c,pZ.G,pZ.Grest]);
+res = all(( withinTol(tmp,0,tol) ),2);
+
+%------------- END OF CODE --------------

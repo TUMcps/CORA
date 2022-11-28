@@ -3,19 +3,19 @@ function res = example_nonlinearDA_reach_02_swing1bus
 %    reachability analysis from [1], single machine infinite bus (SMIB)
 %
 % Syntax:  
-%    example_nonlinearDA_reach_02_swing1bus
+%    res = example_nonlinearDA_reach_02_swing1bus
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false
 %
 % Reference:
 %    [1] Ahmed El-Guindy, Control and Stability of Power Systems
 %        using Reachability Analysis, PhD Thesis, TUM 2017
-% 
-% Author:       Ahmed ElGuindy, Mark Wetzlinger
+
+% Author:       Ahmed El-Guindy, Mark Wetzlinger
 % Written:      18-May-2020
 % Last update:  ---
 % Last revision:---
@@ -32,9 +32,8 @@ dim_y = 4;
 % Parameters --------------------------------------------------------------
 
 % initial set
-params.x0 = x0;
 Bound_x = 0.8e-3*eye(2);
-params.R0 = zonotope([params.x0,Bound_x]); % x0
+params.R0 = zonotope([x0,Bound_x]); % x0
 
 % initial set (algebraic states)
 params.y0guess = y0.';
@@ -51,6 +50,8 @@ options.timeStep = 0.0001;   % Time step size for reachable set computation
 options.zonotopeOrder = 300; % Zonotope order
 options.taylorTerms = 10;
 options.tensorOrder = 2;
+options.errorOrder = 10;
+options.verbose = true;
 
 options.maxError_x = 0.001*ones(dim_x,1);
 options.maxError_y = 0.005*ones(dim_y,1);
@@ -107,7 +108,7 @@ end
 % Simulation --------------------------------------------------------------
 
 runs = 30;
-params.R0  = zonotope([params.x0,Bound_x]);
+params.R0  = zonotope([x0,Bound_x]);
 params.u = center(params.U);
 
 t = cell(runs,1); x = cell(runs,1);
@@ -133,23 +134,20 @@ for r = 1:runs
         params.y0 = xFinal(dim_x+1:dim_x+dim_y).';
     end
 end
-
+simRes = simResult(x,t);
 
 % Visualization -----------------------------------------------------------
 
 figure; hold on; box on;
-projDim=[1 2];
 
 % plot reachable set
-plot(R,[1,2],'FaceColor',[.6 .6 .6],'EdgeColor','none');
+plot(R);
 
 % plot simulation results
-for r = 1:runs
-    plot(x{r}(:,projDim(1)),x{r}(:,projDim(2)),'b');
-end
+plot(simRes);
 
 % example completed
-res = 1;
+res = true;
 
 end
 

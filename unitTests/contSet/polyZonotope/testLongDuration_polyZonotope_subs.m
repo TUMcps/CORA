@@ -27,14 +27,14 @@ res = true;
 nTests = 50;
 for i=1:nTests
     n = randi(30);
-    pZ = polyZonotope.generateRandom(n);
+    pZ = polyZonotope.generateRandom('Dimension',n);
     ne_max = size(pZ.expMat,1);
     % produce random ids for pZ
     id = randperm(ne_max,ne_max)'-ceil(ne_max/2);
     id_subs = id(unique(randi([1,ne_max],ne_max,1),'stable'));
     ns = length(id_subs);
     % generate random pZ to insert
-    pZ_in = polyZonotope.generateRandom(ns);
+    pZ_in = polyZonotope.generateRandom('Dimension',ns);
     nin = size(pZ_in.expMat,1);
     id_in = randperm(4*nin,nin)'-2*nin;
     % remove rest matrices
@@ -77,8 +77,7 @@ for i=1:nTests
 end
 
 if ~res
-    disp('testLongDuration_polyZonotope_subs failed');
-else
-    disp('testLongDuration_polyZonotope_subs successful');
+    path = pathFailedTests(mfilename());
+    save(path,'pZ_in','pZ','pZ_res');
 end
 %------------- END OF CODE --------------

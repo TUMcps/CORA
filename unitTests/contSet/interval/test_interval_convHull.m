@@ -41,20 +41,11 @@ I_dim3 = interval(-rand(3,1),rand(3,1));
 I_dim7 = interval(-rand(7,1),rand(7,1));
 try
     convHull(I_dim3,I_dim7);
-catch ME
-    if ~strcmp(ME.identifier,'CORA:dimensionMismatch')
-        res_mismatch = false;
-    end
+    res_mismatch = false;
 end
 
 % combine results
 res = res_empty && res_mismatch;
-
-if res
-    disp('test_convHull successful');
-else
-    disp('test_convHull failed');
-end
 
 %------------- END OF CODE --------------
 

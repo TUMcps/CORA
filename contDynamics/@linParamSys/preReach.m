@@ -1,15 +1,15 @@
-function [obj] = preReach(obj,options)
+function obj = preReach(obj,options)
 % preReach - prepares reachable set computation for linear systems
 %
-% Syntax:  
-%    [obj] = preReach(obj,options)
+% Syntax:
+%    obj = preReach(obj,options)
 %
 % Inputs:
-%    obj - linearSys object
+%    obj - linParamSys object
 %    options - options for the computation of the reachable set
 %
 % Outputs:
-%    obj - linearSys object
+%    obj - linParamSys object
 %
 % Example: 
 %
@@ -33,8 +33,5 @@ obj = tie(obj);
 %compute reachable set due to uncertain input
 U = deleteZeros(options.U);
 obj.RV = errorSolution(obj,options,U);
-
-
-
 
 %------------- END OF CODE --------------

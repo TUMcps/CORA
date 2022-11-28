@@ -1,5 +1,6 @@
 function [Rti,Rtp,options] = linReach_adaptive(obj,options,Rstart)
-% linReach_adaptive - computes the reachable set after linearization
+% linReach_adaptive - computes the reachable set after linearization;
+%    based on automated tuning from [3] applied to algorithms [1,2]
 %
 % Syntax:  
 %    [Rti,Rtp,options] = linReach_adaptive(obj,options,Rstart)
@@ -19,6 +20,8 @@ function [Rti,Rtp,options] = linReach_adaptive(obj,options,Rstart)
 %       uncertain parameters using conservative linearization"
 %   [2] M. Althoff et al. "Reachability analysis of nonlinear systems using 
 %       conservative polynomialization and non-convex sets"
+%   [3] M. Wetzlinger et al. "Automated parameter tuning for reachability
+%        analysis of nonlinear systems", HSCC 2021.
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -29,49 +32,72 @@ function [Rti,Rtp,options] = linReach_adaptive(obj,options,Rstart)
 % Author:        Mark Wetzlinger
 % Written:       11-December-2020
 % Last update:   15-January-2021
+%                30-June-2021
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 % set linearization error
-error_adm = zeros(obj.dim,1);
+error_adm = options.error_adm_horizon;
 
 % time step size + set abstraction order ----------------------------------
 % finite horizon depending on varphi, init at start, control below
-lastStep = false; veryfirststep = false; timeStepequalDelta = false;
+lastStep = false; veryfirststep = false; timeStepequalHorizon = false;
+
+% first step
 if options.i == 1
     veryfirststep = true;
-    options.timeStep = options.tFinal * 0.01; % initial guess
+    % initial guess for time step size / finite horizon
+    options.timeStep = (options.tFinal - options.tStart) * 0.01;
     finitehorizon = options.timeStep;
+    
+% last step
 elseif options.timeStep > options.tFinal - options.t
     lastStep = true;
     options.timeStep = options.tFinal - options.t;
     finitehorizon = options.timeStep;
+    
+% non-start/end step
 elseif options.i > 1
-    % take last one and estimate so that varphi = zetaphi
+    % take last one and estimate so that varphi ~ zetaphi
     finitehorizon = options.finitehorizon(options.i-1) * ...
-        (options.decrFactor - options.zetaphi) / ...
+        (options.decrFactor - options.zetaphi(options.minorder+1)) / ...
         (options.decrFactor - options.varphi(options.i-1));
-    % cap for change in finite horizon
-    options.timeStep = finitehorizon;
-    if finitehorizon > options.tFinal - options.t
-        options.timeStep = options.tFinal - options.t;
-        finitehorizon = options.timeStep;
+    options.timeStep = min([options.tFinal - options.t, finitehorizon]);
+%     options.timeStep = min([options.tFinal - options.t, ...
+%         max([finitehorizon, options.timeStep * 2])]);
+    finitehorizon = options.timeStep;
+    
+    assert(options.timeStep > 0,'Tuning error.. report to devs');
+    
+    if options.i == 2 && strcmp(options.alg,'poly') && options.polyGain
+        % gain of one order in poly-algorithm is lost after one step
+        % (exact reasons unclear as of now)
+        options.orders = options.orders - 1;
+        options.minorder = min(options.orders);
     end
 end
 
+% check if Rstart is degenerate (each dimension): order may change
+zeroWidthDim = sum(abs(generators(zonotope(Rstart))),2) == 0;
+
 % iteration counter run:
-% ...0 only for first step in lin
-% ...otherwise: 1: compute finitehorizon (use last deltat for varphi), 2: compute optimal deltat
+% - 0: only for first step in lin, otherwise:
+% - 1: compute finitehorizon (use last deltat for varphi),
+% - 2: compute optimal deltat
 options.run = 0;
-% adaptive tensor order (first step: pre-computation by comparison on start sets)
+
+% first step: adaptive tensor order
 if veryfirststep && strcmp(options.alg,'lin')
     % compute L for start set to decide abstraction order
-    options = lbL(obj,options,Rstart);
+    options = aux_initStepTensorOrder(obj,options,Rstart);
 end
-thistO = options.tensorOrder;
+% thistO = options.tensorOrder;
+% nexttO = options.tensorOrder; % init
 options.run = options.run + 1;
 % -------------------------------------------------------------------------
+
+% log
 abscount = 0;
 
 % loop for time step adaptation
@@ -115,19 +141,19 @@ while true
     % the estimated abstraction error
     Rlintp = Rlin.tp; Rlinti = Rlin.ti;
     
-    perfIndCounter = 1; perfInds = []; Lconverged = true;
+    perfIndCounter = 1; perfInds = []; options.Lconverged = false;
     while true
+        % increment counter how often abstraction error computed
         abscount = abscount + 1;
-        % estimate the abstraction error
-        appliedError = 1.1*error_adm; % error_adm always interval
+        
+        % set resulting from (estimated!) abstraction error
         if any(error_adm)
-            % set resulting from abstraction error
-            errG = diag(appliedError);
-            Verror = zonotope([0*appliedError,errG(:,any(errG,1))]);
+            errG = diag(error_adm);
+            Verror = zonotope([0*error_adm,errG(:,any(errG,1))]);
             % compute abstraction error as input solution
             RallError = errorSolution_adaptive(linSys,options,Verror);
         else
-            % only used in options.i == 1, but important for adaptive
+            % only used in options.run == 1, but important for adaptive
             RallError = zonotope(zeros(obj.dim,1));
         end
         
@@ -160,60 +186,47 @@ while true
             end
         catch ME
             if strcmp(ME.identifier,'reach:setoutofdomain')
-                Lconverged = false; break
+                options.Lconverged = false; break
             else
                 rethrow(ME);
             end
         end
         
         % compare linearization error with the maximum admissible error
-        perfIndCurr = max(trueError ./ appliedError);
+        perfIndCurr = max(trueError ./ error_adm);
         if perfIndCurr <= 1 || ~any(trueError)
-            % error converged: compute tensorOrder for next step (only lin)
-            if strcmp(options.alg,'lin') && options.run == 2
-                % compute L for other tensorOrder (2/3)
-                if options.tensorOrder == 2
-                    L0_2 = trueError; options.tensorOrder = 3;
-                    [~,~,L0_3,~] = abstractionError_adaptive(obj,options,Rmax,Rtemp);
-                else
-                    L0_3 = trueError; options.tensorOrder = 2;
-                    [~,~,L0_2,~] = abstractionError_adaptive(obj,options,Rmax,Rtemp);
-                end
-
-                % cut linear dimensions
-                L0_2lin = L0_2(L0_2 ~= 0); L0_3lin = L0_3(L0_3 ~= 0);
-
-                % compare Lagrange remainder to decide which
-                %    tensorOrder to use (for next step)
-                if all( L0_3lin ./ L0_2lin > options.zetaK ); nexttO = 2;
-                else;                                         nexttO = 3;
-                end
-                options.tensorOrder = thistO; % for safety
-            end
+            % just for information
+            perfInds(perfIndCounter) = perfIndCurr;
+            options.Lconverged = true;
             break
         elseif perfIndCounter > 1
             perfInds(perfIndCounter) = perfIndCurr;
             if perfIndCounter > 2 && perfInds(perfIndCounter) > perfInds(perfIndCounter-1)
-                Lconverged = false; break
+                options.Lconverged = false; break
             end
         end
         
-        error_adm = trueError;
+        % increase admissible abstraction error for next iteration
+        error_adm = 1.1 * trueError;
         perfIndCounter = perfIndCounter + 1;
     end
     
     % if either L was out of domain or did not converge
-    if ~Lconverged
+    if ~options.Lconverged
+        % half time step, reset linearization error
         options.timeStep = options.timeStep * 0.5;
         finitehorizon = options.timeStep;
-        error_adm = zeros(obj.dim,1);
+        error_adm = zeros(obj.dim,1); % options.error_adm_horizon
         continue
     end
     % ... now containment of L ensured
     
-    if veryfirststep
-        % very first run through here
-        options = getPowers(linSys,options,VerrorDyn);
+    % if rank of Rstart changes... re-compute orders
+    if veryfirststep || ~all(zeroWidthDim == options.zeroWidthDim)
+        options.zeroWidthDim = zeroWidthDim;
+        options = aux_getPowers(obj,options,linSys,zeroWidthDim,VerrorDyn);
+        % old version
+%         options = aux_getPowers_old(linSys,options,VerrorDyn);
     end
     
     % compute set of abstraction errors
@@ -222,6 +235,14 @@ while true
     % measure abstraction error
     if isa(Rerror,'polyZonotope')
         abstrerr = sum(abs(Rerror.Grest),2)';
+        % Here, we take the independent generators, as they represent
+        % relatively truthfully the part of the abstraction error
+        % corresponding to the V^{\Delta} (see [2] Section 4.2). However,
+        % there is also a part of the static error remaining in this part,
+        % which contaminates the result if Rerror is a polynomial zonotope. 
+        % This leads to an order decrease of 1, which happens to be 
+        % beneficial for our approach, as it ensures the stability of the 
+        % time step choosing (i.e., the chosen time-step is not too small).
     else
         abstrerr = sum(abs(generators(Rerror)),2)';
     end
@@ -229,178 +250,319 @@ while true
     % two runs in each step
     if options.run == 1 && ~lastStep
         % ... run using finite horizon
+        
+        % first step more cumbersome as there is no previous knowledge
         if options.i == 1
-            % first step more cumbersome as there is no previous knowledge
+            
             if veryfirststep
-                % shrink time step by decrFactor to get varphi (only options.i == 1)
                 veryfirststep = false;
-                abstrerr_Delta = abstrerr;
-                Rerror_Delta = Rerror;
-                Rti_Delta = Rlinti; Rtp_Delta = Rlintp;
-                linx_Delta = obj.linError.p.x;
-                zetaP_Delta = zetaP;
+                % save values from finite horizon
+                abstrerr_h = abstrerr;
+                Rerror_h = Rerror;
+                Rti_h = Rlinti; Rtp_h = Rlintp;
+                linx_h = obj.linError.p.x;
+                zetaP_h = zetaP;
+                % decrease time step size and linearization error
                 options.timeStep = options.decrFactor * options.timeStep;
-                error_adm = zeros(obj.dim,1);
+                error_adm = options.decrFactor * trueError;
                 continue;
             end
+            
             % take worst-case current gain (use same dimensions as for lin)
-            varphi = max( abstrerr(options.lindims) ./ abstrerr_Delta(options.lindims) );
-            if options.i == 1 && varphi < options.zetaphi
-                % varphi not large enough ... decrease again
+            % to avoid numerical issues (i.e., lower orders jumping to
+            % "impossible" values for varphi_i due to other effects), take
+            % only dimensions with lowest order
+            temp = abstrerr(options.orders == options.minorder) ./ ...
+                abstrerr_h(options.orders == options.minorder);
+            varphi = max( temp(~isnan(temp)) );
+            
+            % check condition for varphi
+            if varphi < options.zetaphi(options.minorder+1)
+                % decrease time step size
                 finitehorizon = options.timeStep;
-                abstrerr_Delta = abstrerr;
-                Rerror_Delta = Rerror;
-                Rti_Delta = Rlinti; Rtp_Delta = Rlintp;
-                linx_Delta = obj.linError.p.x;
-                zetaP_Delta = zetaP;
                 options.timeStep = options.decrFactor * options.timeStep;
-                error_adm = zeros(obj.dim,1);
+                % reset estimate for linearization error
+                error_adm = options.decrFactor * trueError;
+                % save values from finite horizon
+                abstrerr_h = abstrerr;
+                Rerror_h = Rerror;
+                Rti_h = Rlinti; Rtp_h = Rlintp;
+                linx_h = obj.linError.p.x;
+                zetaP_h = zetaP;
                 continue;
             end
+            
+            options.varphi(options.i,1) = varphi;
             options.finitehorizon(options.i,1) = finitehorizon;
-            % estimate near-optimal delta t from optimization function
-            [options.timeStep,~] = optimaldeltat(Rstart,Rerror_Delta,...
-                finitehorizon,varphi,zetaP_Delta,options);
-            % reuse information (scrap once pre-computation replaced)
+            % estimate near-optimal delta t by optimization function
+            [options.timeStep,~] = aux_optimaldeltat(Rstart,Rerror_h,...
+                finitehorizon,varphi,zetaP_h,options);
+            % save abstraction error, reset to zero for optimal time step size
+            options.error_adm_horizon = trueError;
             error_adm = zeros(obj.dim,1);
             
+        % non-start/end step
         elseif options.i > 1
-            abstrerr_Delta = abstrerr;
-            Rerror_Delta = Rerror;
-            Rti_Delta = Rlinti; Rtp_Delta = Rlintp;
-            linx_Delta = obj.linError.p.x;
-            [options.timeStep,~] = optimaldeltat(Rstart,Rerror_Delta,...
+            % save values from finite horizon
+            abstrerr_h = abstrerr;
+            Rerror_h = Rerror;
+            Rti_h = Rlinti; Rtp_h = Rlintp;
+            linx_h = obj.linError.p.x;
+            % solve optimization problem for time step size
+            [options.timeStep,~] = aux_optimaldeltat(Rstart,Rerror_h,...
                 finitehorizon,options.varphi(options.i-1),zetaP,options);
-            error_adm = zeros(obj.dim,1);
+            % set time step to remaining time horizon if too large
+            options.timeStep = min([options.timeStep, options.tFinal - options.t]);
+            % save linearization error for next step
+            options.error_adm_horizon = trueError;
+            % set linearization error to values for previous optimal delta t
+            error_adm = options.error_adm_Deltatopt;
         end
         
     elseif options.run == 2 || lastStep
-        % ... run using tuned time step size / scaled time step size for varphi
-        if timeStepequalDelta
-            options.varphi(options.i,1) = ...
-                max( abstrerr(options.lindims) ./ abstrerr_Delta(options.lindims) );
+        % ... run using tuned time step size (or scaled time step size
+        % for varphi if timeStepEqualHorizon is true, or last step)
+        if timeStepequalHorizon
+            temp = abstrerr(options.orders == options.minorder) ./ ...
+                abstrerr_h(options.orders == options.minorder);
+            options.varphi(options.i,1) = max( temp(~isnan(temp)) );
         elseif ~lastStep
-            options.varphi(options.i,1) = varphiest(finitehorizon,options.timeStep,...
-                Rerror_Delta,Rerror,options.decrFactor);
+            options.varphi(options.i,1) = aux_varphiest(finitehorizon,...
+                options.timeStep,Rerror_h,Rerror,options.decrFactor,options.minorder);
         end
+        % save finite horizon and linearization error for next step
         options.finitehorizon(options.i,1) = finitehorizon;
+        options.error_adm_Deltatopt = trueError;
+        
+        % predict tensor order of next step
+        if strcmp(options.alg,'lin')
+            if options.i == 1
+                % save time step and abstrerr
+                options.kappa_deltat = options.timeStep;
+                options.kappa_abstrerr = vecnorm(abstrerr);
+            elseif ~lastStep
+                % compensate for the difference between the current time
+                % step size and stored time step size by varphi
+                options = aux_nextStepTensorOrder(obj,options,...
+                    vecnorm(abstrerr),linSys,Rmax,Rtemp);
+            end
+        end
+        
         % second run finished -> exit
-        options.abscount(options.i,1) = abscount;
         break
     end
     
-    % update counter
+    % update run counter
     options.run = options.run + 1;
     
     if options.timeStep == finitehorizon
         % required Rerror and Rlin already there, but compute
-        % decrFactor*finitehorizon for usable varphi
-        timeStepequalDelta = true;
+        % timeStep = decrFactor*finitehorizon for usable varphi
+        % (otherwise two points required for varphi are the same point)
+        timeStepequalHorizon = true;
         options.timeStep = options.timeStep * options.decrFactor;
     end 
     
 end
 
-% use correct Rerror in case optimal time step size is equal to finitehorizon
-if timeStepequalDelta
-    % reset time step size for time increment in loop outside
+% use correct Rerror (if optimal time step size is equal to finitehorizon)
+if timeStepequalHorizon
+    % reset time step size for correct time increment in loop outside
     options.timeStep = finitehorizon;
-    % choose sets computed by Delta (last run: finitehorizon*decrFactor)
-    Rti = Rti_Delta + linx_Delta; Rtp = Rtp_Delta + linx_Delta;
-    Rerror = Rerror_Delta;
+    % choose sets computed by horizon (last run: finitehorizon*decrFactor)
+    Rti = Rti_h + linx_h; Rtp = Rtp_h + linx_h;
+    Rerror = Rerror_h;
 else
     % translate reachable sets by linearization point
     Rti = Rlinti + obj.linError.p.x; Rtp = Rlintp + obj.linError.p.x;
 end
 
-% add the abstraction error to the reachable sets
+% add the set of abstraction errors to the reachable sets
 if isa(Rerror,'polyZonotope')
-    Rti=exactPlus(Rti,Rerror); Rtp=exactPlus(Rtp,Rerror);
+    Rti = exactPlus(Rti,Rerror);
+    Rtp = exactPlus(Rtp,Rerror);
 else
-    Rti=Rti+Rerror; Rtp=Rtp+Rerror;
+    Rti = Rti + Rerror; Rtp = Rtp + Rerror;
 end
 
-% varphi prediction / regression of next step (change once all ready)
-if strcmp(options.alg,'lin') && ~lastStep && nexttO ~= thistO
-    % switch of tensorOrder: compute also other Rerror
-    % (required for varphi of next step)
-    options.tensorOrder = nexttO;
-end
+% save counter of how often Lagrange remainder was computed
+options.abscount(options.i,1) = abscount;
 
 end
-
 
 
 
 % Auxiliary Functions -----------------------------------------------------
 
-function varphi = varphiest(Delta,deltatlast,Rerr,Rerrlast,decrFactor)
+% adaptation of tensorOrder: init step
+function options = aux_initStepTensorOrder(obj,options,Rstartset)
+% computes L for the start set of the first step to determine tensorOrder
 
-% compute set sizes
-if isa(Rerr,'zonotope') && isa(Rerrlast,'zonotope')
-    rerr1 = vecnorm(sum(abs(generators(Rerr)),2),2);
-    rerrk = vecnorm(sum(abs(generators(Rerrlast)),2),2);
+% special handling for initial set as just a single point
+if isempty(generators(Rstartset))
+    options.tensorOrder = 2;
+    return;
+end
+
+obj.linError.p.u = center(options.U);
+obj.linError.p.x = center(Rstartset);
+Rdelta = Rstartset + (-obj.linError.p.x);
+
+% compute L for both kappas
+options.tensorOrder = 2;
+[~,~,L0_2,options] = abstractionError_adaptive(obj,options,Rdelta);
+options.tensorOrder = 3;
+[~,~,L0_3,options] = abstractionError_adaptive(obj,options,Rdelta);
+
+% cut linear dimensions
+L0_2lin = L0_2(L0_2 ~= 0);
+L0_3lin = L0_3(L0_3 ~= 0);
+
+% compare Lagrange remainder to decide which tensorOrder to use
+if all( L0_3lin ./ L0_2lin > options.zetaK )
+    options.tensorOrder = 2;
 else
-    rerr1 = vecnorm(sum(abs(Rerr.Grest),2),2);
-    rerrk = vecnorm(sum(abs(Rerrlast.Grest),2),2);
+    options.tensorOrder = 3;
 end
 
-k = Delta / deltatlast;
-rhs = k * rerrk / rerr1;
-kprime = - log(k) / log(decrFactor);
-kprime_floor = floor(kprime);
-kprime_ceil = ceil(kprime);
 
-tol = 0.001;
+end
 
-% starting lb / ub by 0 and decrFactor
-varphi_floor_lb = 0;
-varphi_ceil_lb = 0;
-varphi_floor_ub = decrFactor;
-varphi_ceil_ub = decrFactor;
+% adaptation of tensorOrder: every step for next step
+function options = aux_nextStepTensorOrder(obj,options,abstrerr,linSys,Rmax,Rtemp)
 
-varphi_floor = varphi_floor_lb;
-varphi_ceil = varphi_ceil_lb;
+% time step sizes
+timeStep = options.timeStep;
+timeStep_prev = options.kappa_deltat;
 
-% binary search
-counter = 0;
-while true
-    allvarphi_floor = ( varphi_floor + (1 - decrFactor .^ [0:kprime_floor]) ...
-        * (decrFactor - varphi_floor) ) / decrFactor;
-    allvarphi_ceil = ( varphi_ceil + (1 - decrFactor .^ [0:kprime_ceil]) ...
-        * (decrFactor - varphi_ceil) ) / decrFactor;
-    res_floor = prod(allvarphi_floor) - rhs;
-    res_ceil = prod(allvarphi_ceil) - rhs;
+% compute varphi for given time step sizes
+varphi_lim = options.decrFactor^(options.minorder+1);
+varphitotal = aux_varphitotal(options.varphi(options.i),varphi_lim,...
+    timeStep_prev,timeStep,options.decrFactor);
+
+% abstraction error
+abstrerr_prev = options.kappa_abstrerr;
+% compute estimate of abstraction error
+abstrerr_est = varphitotal * abstrerr;
+
+% compare to last saved abstraction error (computed using same kappa)
+if options.tensorOrder == 2 
+    % original criterion:
+    % only check other tensorOrder if abstraction error has grown
+%     if abstrerr_est / abstrerr_prev - 1 > 1 - options.zetaK
+    % adapted criterion:
+    if abs(abstrerr_est / abstrerr_prev - 1) > 1 - options.zetaK
+        abstrerr_2 = abstrerr;
+        % compute abstraction error for other tensor order
+        options.tensorOrder = 3;
+    else
+        return;
+    end
     
-    % termination condition
-    if abs(res_floor) < tol && abs(res_ceil) < tol
-        break
-    end
-    if res_floor < 0
-        varphi_floor_lb = varphi_floor;
-        varphi_floor = 0.5 * (varphi_floor + varphi_floor_ub);
+    % compute set of abstraction errors
+    [VerrorDyn,~,err] = abstractionError_adaptive(obj,options,Rmax,Rtemp);
+    Rerror = errorSolution_adaptive(linSys,options,VerrorDyn);
+    % simplify to scalar value
+    abstrerr_3 = vecnorm(sum(abs(generators(Rerror)),2));
+    
+    % compare results
+    if ~all( abstrerr_3 ./ abstrerr_2 > options.zetaK )
+        options.kappa_deltat = options.timeStep;
+        options.kappa_abstrerr = abstrerr_3;
+        options.error_adm_Deltatopt = err;
+        options.error_adm_horizon = zeros(obj.dim,1);
     else
-        varphi_floor_ub = varphi_floor;
-        varphi_floor = 0.5 * (varphi_floor_lb + varphi_floor);
+        options.tensorOrder = 2;
     end
-    if res_ceil < 0
-        varphi_ceil_lb = varphi_ceil;
-        varphi_ceil = 0.5 * (varphi_ceil + varphi_ceil_ub);
+    
+elseif options.tensorOrder == 3
+    % original criterion:
+    % only check other tensorOrder if abstraction error has shrunk
+%     if 1 - abstrerr_est / abstrerr_prev < 1 - options.zetaK
+    % adapted criterion:
+    if abs(abstrerr_est / abstrerr_prev - 1) > 1 - options.zetaK
+        abstrerr_3 = abstrerr;
+        % compute other tensor order and check again
+        options.tensorOrder = 2;
     else
-        varphi_ceil_ub = varphi_ceil;
-        varphi_ceil = 0.5 * (varphi_ceil_lb + varphi_ceil);
+        return;
     end
-    counter = counter + 1;
-    if counter > 10000
-        error("Adaptive tuning unstable, choose manual tuning.");
+    
+    % compute set of abstraction errors
+    [VerrorDyn,~,err] = abstractionError_adaptive(obj,options,Rmax,Rtemp);
+    Rerror = errorSolution_adaptive(linSys,options,VerrorDyn);
+    % simplify to scalar value
+    abstrerr_2 = vecnorm(sum(abs(generators(Rerror)),2));
+    
+    % compare results
+    if all( abstrerr_3 ./ abstrerr_2 > options.zetaK )
+        options.kappa_deltat = options.timeStep;
+        options.kappa_abstrerr = abstrerr_2;
+        options.error_adm_Deltatopt = err;
+        options.error_adm_horizon = zeros(obj.dim,1);
+    else
+        options.tensorOrder = 3;
     end
 end
-varphi = varphi_floor + (kprime - floor(kprime)) * (varphi_ceil - varphi_floor);
-
 
 end
 
-function [deltatest,kprimeest] = optimaldeltat(Rt,Rerr,deltat,varphimin,zetaP,opt)
+% compute total scaling for two time step sizes given some starting varphi
+function varphitotal = aux_varphitotal(varphi,varphi_lim,timeStep_prev,timeStep_curr,decrFactor)
+
+% number of times current time step size needs to be scaled in order to
+% reach previous time step size
+nrScalings = log(timeStep_prev / timeStep_curr) / log(decrFactor);
+
+% since varphi is only valid for fixed decrFactor / at current time step,
+% we have to compute the remaining list of varphis by linear interpolation
+varphis = varphi;
+
+% current time step size smaller than previous one
+if nrScalings > 0
+    
+    nrScalings_low = floor(nrScalings + 10*eps);
+    nrScalings_high = nrScalings_low + 1;
+    
+    % linearly interpolate between (0,varphi_lim) and (timeStep,varphi)
+    for i=1:nrScalings_low
+        varphis(i+1,1) = varphi + (varphi_lim - varphi) * ...
+            (timeStep_curr - decrFactor^i * timeStep_curr) / (timeStep_curr - 0);
+    end
+    
+    % compute remaining partial decrFactor
+    varphis(end) = varphis(end) + (1 - varphis(end)) * ...
+        (timeStep_prev - timeStep_curr * decrFactor^nrScalings_high) / ...
+        (timeStep_curr * (decrFactor^nrScalings_low - decrFactor^nrScalings_high));
+    
+% current time step size larger than previous one
+else
+    
+    nrScalings_low = ceil(nrScalings - 10*eps);
+    nrScalings_high = nrScalings_low - 1;
+    
+    % linearly extrapolate the line (0,varphi_lim) -- (timeStep,varphi)
+    for i=-1:-1:nrScalings_low
+        varphis(end+1,1) = varphi + (varphi_lim - varphi) * ...
+            (timeStep_curr - decrFactor^i * timeStep_curr) / (timeStep_curr - 0);
+    end
+    
+    % compute remaining partial decrFactor
+    varphis(end) = varphis(end) + (1 - varphis(end)) * ...
+    	(timeStep_prev - timeStep_curr * decrFactor^nrScalings_high) / ...
+        (timeStep_curr * (decrFactor^nrScalings_low - decrFactor^nrScalings_high));
+    
+    varphis = 1 ./ varphis;
+    
+end
+
+% combine varphis
+varphitotal = prod(varphis);
+
+end
+
+% optimization function for optimal time step size
+function [deltatest,kprimeest] = aux_optimaldeltat(Rt,Rerr,deltat,varphimin,zetaP,opt)
 
 % read from options struct
 mu = opt.decrFactor;
@@ -430,8 +592,8 @@ end
 
 % model varphi by linear interpolation over the gain
 % ...bounds: 1 (at deltatmin) to measured gain (at deltat)
-varphimax = mu; varphiDelta = (varphimax - varphimin);
-varphi = (varphimin + (deltats(1) - deltats)/deltats(1) * varphiDelta) / mu;
+varphimax = mu; varphi_h = (varphimax - varphimin);
+varphi = (varphimin + (deltats(1) - deltats)/deltats(1) * varphi_h) / mu;
 varphiprod = cumprod(varphi);
 
 % optimization by minimization of set size after finite horizon
@@ -450,53 +612,240 @@ objfuncset = rR * (1+2*zetaZ) .^ k * zetaP + rerr1 ./ k .* varphiprod .* ...
 deltatest = deltats(bestIdxnew);
 kprimeest = bestIdxnew - 1;
 
-rabskest = rerr1 / k(bestIdxnew) * varphiprod(bestIdxnew);
+% rabskest = rerr1 / k(bestIdxnew) * varphiprod(bestIdxnew);
 
 end
 
-function options = lbL(obj,options,Rstartset)
-% computes the lower bound for the Lagrange remainder
-% ... that is, L and Rerr for the start set of the current step
+% estimation of order for given finite horizon
+function varphi = aux_varphiest(horizon,deltat,Rerr_h,Rerr_deltat,decrFactor,minorder)
 
-obj.linError.p.u = center(options.U);
-obj.linError.p.x = center(Rstartset);
-Rdelta = Rstartset + (-obj.linError.p.x);
-
-% compute L for both kappas
-options.tensorOrder = 2;
-[~,~,L0_2,options] = abstractionError_adaptive(obj,options,Rdelta);
-options.tensorOrder = 3;
-[~,~,L0_3,options] = abstractionError_adaptive(obj,options,Rdelta);
-
-% cut linear dimensions
-L0_2lin = L0_2(L0_2 ~= 0);
-L0_3lin = L0_3(L0_3 ~= 0);
-
-% compare Lagrange remainder to decide which tensorOrder to use
-if all( L0_3lin ./ L0_2lin > options.zetaK )
-    options.tensorOrder = 2;
+% compute estimate for set sizes
+if isa(Rerr_h,'zonotope') && isa(Rerr_deltat,'zonotope')
+    rerr1 = vecnorm(sum(abs(generators(Rerr_h)),2),2);
+    rerrk = vecnorm(sum(abs(generators(Rerr_deltat)),2),2);
 else
-    options.tensorOrder = 3;
+    rerr1 = vecnorm(sum(abs(Rerr_h.Grest),2),2);
+    rerrk = vecnorm(sum(abs(Rerr_deltat.Grest),2),2);
 end
 
+% sanity check: rerr1 and rerrk are computed in the same time step,
+% therefore rerr1 has to be larger than rerrk unless there are some
+% artifacts or we are in a theoretically unexplored region of Rerror
+assert(rerr1 > rerrk,'Check abstraction errors');
+
+% right-hand side ... total scaling by varphi
+rhs = rerrk / rerr1;
+
+% limit varphi
+varphi_lim = decrFactor^(minorder+1); % if power always 1, former results
+
+% use bisection to find varphi
+% upper bound: varphi = limit value at deltat -> 0
+varphi_up = decrFactor^(minorder+1);
+% compute accumulated scaling
+varphitotal = aux_varphitotal(varphi_up,varphi_lim,deltat,horizon,decrFactor);
+% compute residual of prod of varphi (assuming varphi) and rhs
+residual_up = varphitotal - rhs;
+
+% lower bound: varphi = 0
+varphi_low = 0;
+% compute accumulated scaling
+varphitotal = aux_varphitotal(varphi_low,varphi_lim,deltat,horizon,decrFactor);
+% compute residual of prod of varphi (assuming varphi) and rhs
+residual_low = varphitotal - rhs;
+
+% counter for number of iterations
+cnt = 0;
+
+while true
+    
+    % increment counter
+    cnt = cnt + 1;
+    
+    % update varphi by bisection
+    varphi(cnt,1) = varphi_low + 0.5 * (varphi_up - varphi_low);
+    % old version
+%     varphi(cnt,1) = varphi_low + (varphi_up - varphi_low) * ...
+%         -residual_low / (residual_up - residual_low);
+
+    % compute accumulated scaling
+    varphitotal = aux_varphitotal(varphi(cnt),varphi_lim,deltat,horizon,decrFactor);
+
+    % compute residual of prod of varphi (assuming varphi) and rhs
+    residual(cnt,1) = varphitotal - rhs;
+    if residual(cnt) < 0
+        residual_low = residual(cnt);
+        varphi_low = varphi(cnt);
+    else
+        residual_up = residual(cnt);
+        varphi_up = varphi(cnt);
+    end
+    
+    % break condition
+    if cnt == 10000
+        error("Bug in varphi estimation... report to devs");
+    end
+    if abs(residual(cnt)) < 1e-9 || ...
+            (cnt > 1 && abs(varphi(cnt) - varphi(cnt-1)) < 1e-6)
+        varphi = varphi(cnt);
+        break;
+    end
 
 end
 
-function options = getPowers(obj,options,Vdyn)
-% computes linear exponents for convergence of abstraction error
-% only called once!
+end
 
+% order of abstraction error
+function options = aux_getPowers(obj,options,linSys,zeroWidthDim,Vdyn)
+% only called once after the very first converged L!
+
+% hard-coded shortcut
+if options.i == 1 && isfield(options,'orders')
+    options.minorder = min(options.orders);
+    return;
+end
+
+% propagation matrix
+A = linSys.A;
 n = obj.dim;
+% m = obj.nrOfInputs;
+    
+% start set is just a point
+if all(zeroWidthDim)
+    sigma = 2*ones(n,1);
+
+% start set is full-dimensional (non-degenerate)
+elseif ~any(zeroWidthDim)
+    sigma = zeros(n,1);
+
+% start set is degenerate
+elseif any(zeroWidthDim)
+
+    % examine every row in G to obtain dependency on time step size;
+    % this is done by going over all products z' * H{i} * z
+    % and checking whether the resulting term converges to 0 and if so,
+    % how the zeroWidthDim-dimensions linear or quadratic factors
+    sigma = zeros(n,1); % init
+    sigmafound = false(n,1);
+    
+    % evaluate Hessian...
+    % assumptions:  1. no order over time
+    %               2. no accidental zeros
+    % ... hence, evaluation on linearization point sufficient
+    % TODO: make this more robust if needed
+    if options.isHessianConst
+        % easier case: Hessian is constant
+        Hess = options.hessianConst;
+    else
+        if strcmp(options.alg,'poly')
+            Hess = obj.hessian(obj.linError.p.x,obj.linError.p.u);
+        else
+            % Hessian requires evaluation on intervals for x and u...
+            % try eval on linearization point, set handle to correct file
+            obj = setHessian(obj,'standard');
+            Hess = obj.hessian(obj.linError.p.x,obj.linError.p.u);
+        end
+    end
+    
+    for i=1:n
+
+        % take Hessian corresponding to current dimension
+        H = Hess{i};
+        
+        % go over non-zeroWidthDims
+        for j=1:n
+            if ~zeroWidthDim(j) && H(j,j) ~= 0
+                sigma(i) = 0; sigmafound(i) = true; break;
+            end
+        end
+        % go to next dimension
+        if sigmafound(i)
+            continue;
+        end
+
+        % go over sum of off-diag entries
+        sigma(i) = Inf;
+        for j=1:n
+            for jj=j+1:n
+                if H(j,jj) + H(jj,j) ~= 0
+                    sigma(i) = min([sigma(i), nnz(zeroWidthDim([j,jj]))]);
+                    sigmafound(i) = true;
+                end
+            end
+        end
+
+        % sigma still not found (should not be the case)
+        if ~sigmafound(i)
+            sigma(i) = 2;
+        end
+
+    end
+end
+
+% poly: second-order dynamical error can go to 0 by O(t^1)
+% ... only if L(3) is all-zero, otherwise dependencies...
+% TODO: extend to arbitrary third-order tensors (no cases in current
+% systems so can be done later)
+if strcmp(options.alg,'poly')
+    options.polyGain = false;
+    if options.thirdOrderTensorempty
+        sigma = sigma + 1;
+        options.polyGain = true;
+    end
+end
+
+% express G as function over sigma (implicitly)
+Gzero = vecnorm(generators(Vdyn),1,2) == 0;
+
+% compute q_i
+% ... define G depending on sigmas (dependency on t!)
+qi = Inf(n,1);
+p = 0;
 Apower = eye(n);
-Vgens = generators(Vdyn);
-powers = ones(n,1);
+qip = [];
+while true
+    
+    % loop over q_i
+    for i=1:n
+        % init q_i
+        qip(i,p+1) = Inf;
+        for j=1:n
+            % loop over all multiplications
+            if ~Gzero(j) && Apower(i,j) ~= 0
+                qip(i,p+1) = min([qip(i,p+1),sigma(j)]);
+            end
+        end
+    end
+    
+    % q_i = min_p q_i^(p) + p
+    qi = min([qi, qip(:,p+1) + p],[],2);
+    
+    % break loop if no lower value for q_i is computable
+    % CAUTION: are there cases where this is not a sufficient criterion?
+    % ... loop could break if all equations are linear (?)
+    if all(qi < p+1)
+        break;
+    end
+    
+    % increment power
+    p = p + 1;
+    Apower = Apower * A;
+    
+    % safety break condition
+    if p == 100
+        warning("Check computation for order of abstraction error");
+        % fix for prodDesParam, where dot(x4) = 0... thus Inf (probably
+        % works also for similar systems)
+        if all(qi(~isinf(qi)) < p+1)
+            break;
+        end
+    end
+    
+end
 
-% powers with linear gain
-ApowerV = Apower * Vgens;
-powerIncr = ~any(ApowerV,2);
-powers = powers + ones(n,1) .* powerIncr;
-
-options.lindims = powers == 1;
+% write to options struct
+options.orders = qi;
+options.minorder = min(options.orders);
 
 end
 

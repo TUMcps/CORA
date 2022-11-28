@@ -31,8 +31,9 @@ dim_x = 8;
 params.tFinal=0.1; %final time
 params.R0 = zonotope([[0; 0; 0; 22; 0 ; 0; -2.1854; 0],...
     0.05*diag([1, 1, 1, 1, 1, 1, 1, 1])]); %initial state for reachability analysis
-params.uTransVec = uTRansVec4CASreach();
-params.U = zonotope([0*params.uTransVec(:,1), 0.05*diag([ones(5,1);zeros(21,1)])]);
+params.u = uTRansVec4CASreach();
+params.u = params.u(:,1:10);
+params.U = zonotope([0*params.u(:,1), 0.05*diag([ones(5,1);zeros(21,1)])]);
 
 
 % Reachability Settings ---------------------------------------------------
@@ -49,12 +50,12 @@ options.reductionInterval = inf;
 
 % System Dynamics ---------------------------------------------------------
 
-vehicle = nonlinearSys(@vmodel_A_bicycle_linear_controlled); %initialize van-der-Pol oscillator
+vehicle = nonlinearSys(@vmodel_A_bicycle_linear_controlled);
 
 
 % Reachability Analysis --------------------------------------------------- 
 
-    R = reach(vehicle, params, options);
+R = reach(vehicle, params, options);
 
 
 % Numerical Evaluation ----------------------------------------------------

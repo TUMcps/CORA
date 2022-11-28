@@ -16,9 +16,9 @@ function pZ = reduce(pZ,option,order,varargin)
 %    pZ = polyZonotope([0;0],[2 0 1;0 1 1],[0.1,-0.4;0.2,0.3],[1 0 3;0 1 1]);
 %    pZred = reduce(pZ,'girard',2);
 %
-%    hold on
-%    plot(pZred,[1,2],'b','Filled',true,'EdgeColor','none');
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
+%    figure; hold on;
+%    plot(pZred,[1,2],'FaceColor','b');
+%    plot(pZ,[1,2],'FaceColor','r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -40,21 +40,9 @@ function pZ = reduce(pZ,option,order,varargin)
         return;
     end
 
-    global idv;
     if contains(option,'approxdep_')
         % remove independent generators
-        pZ = polyZonotope(pZ.c,pZ.G,zeros(length(pZ.c),0),pZ.expMat,pZ.id);
-        if ~isempty(idv)
-            method = erase(option,'approxdep_');
-            [pZ_v,pZ_nv] = onlyId(pZ,idv);
-            o_v = ceil(order/2);
-            o_nv = order-o_v;
-            pZr_v = reduce(pZ_v,method,o_v);
-            pZr_nv = reduce(pZ_nv,method,o_nv);
-            pZ = exactPlus(pZr_v,pZr_nv);
-            pZ = polyZonotope(pZ.c,pZ.G,zeros(length(pZ.c),1),pZ.expMat,pZ.id);
-            return;
-        end
+        pZ.Grest = zeros(dim(pZ),0);
     end
     % extract dimensions
     N = length(pZ.c);
@@ -72,8 +60,7 @@ function pZ = reduce(pZ,option,order,varargin)
         G = [pZ.G,pZ.Grest];
 
         % half the generator length for exponents that are all even
-        temp = prod(ones(size(pZ.expMat))-mod(pZ.expMat,2),1);
-        ind = find(temp == 1);
+        ind = ~any(mod(pZ.expMat,2),1);
         G(:,ind) = 0.5 * G(:,ind);
 
         % calculate the length of the generator vectors with a special metric
@@ -83,7 +70,7 @@ function pZ = reduce(pZ,option,order,varargin)
         [~,ind] = sort(len,'descend');
         ind = ind(K+1:end);
 
-        % split the indizes into the ones for dependent and independent
+        % split the indices into the ones for dependent and independent
         % generators
         indDep = ind(ind <= P);
         indInd = ind(ind > P);
@@ -99,7 +86,7 @@ function pZ = reduce(pZ,option,order,varargin)
 
         zono = zonotope(pZtemp);    % zonotope over-approximation
 
-        % reduce the constructed zontope with the reduction techniques for
+        % reduce the constructed zonotope with the reduction techniques for
         % linear zonotopes
         zonoRed = reduce(zono,option,1,varargin{:});
 
@@ -113,15 +100,17 @@ function pZ = reduce(pZ,option,order,varargin)
         pZ.Grest = [pZ.Grest, generators(zonoRed)];
 
     end
+    
     if contains(option,'approxdep_')
-        pZ = polyZonotope(pZ.c,pZ.G,zeros(length(pZ.c),0),pZ.expMat,pZ.id);
-    else
-        % remove all exponent vector dimensions that have no entries
-        temp = sum(pZ.expMat,2);
-        ind = find(temp > 0);
-        pZ.expMat = pZ.expMat(ind,:);
-        pZ.id = pZ.id(ind);
+        % again remove rest generators
+        pZ.Grest = zeros(dim(pZ),0);
     end
+    
+    % remove all exponent vector dimensions that have no entries
+    ind = sum(pZ.expMat,2)>0;
+    pZ.expMat = pZ.expMat(ind,:);
+    pZ.id = pZ.id(ind);
+    
 end
 
 %------------- END OF CODE --------------

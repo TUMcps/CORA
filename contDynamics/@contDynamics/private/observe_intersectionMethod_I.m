@@ -1,7 +1,6 @@
 function Rint = observe_intersectionMethod_I(obj,R,y,options)
 % observe_intersectionMethod_I - intersects the reachable set with
-% measurement strips according to intersection method I in [1]. 
-%
+%    measurement strips according to intersection method I in [1]. 
 %
 % Syntax:  
 %    Rint = observe_intersectionMethod_I(obj,R,y,options)
@@ -15,12 +14,13 @@ function Rint = observe_intersectionMethod_I(obj,R,y,options)
 % Outputs:
 %    Rint - resulting zonotope after intersections with strips
 %
+% Example:
+%    -
+%
 % Reference:
 %    [1] M. Althoff and J. J. Rath. Comparison of Set-Based Techniques 
 %        for Guaranteed State Estimation of Linear Disturbed Systems, 
 %        in preparation.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -29,12 +29,11 @@ function Rint = observe_intersectionMethod_I(obj,R,y,options)
 % See also: none
 
 % Author:        Matthias Althoff
-% Written:       08-Sep-2020
+% Written:       08-September-2020
 % Last update:   ---
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
-
 
 % init intersection zonotope
 Rint = R;
@@ -43,7 +42,6 @@ for iStrip = 1:length(y)
     % in case a lambda value has been precomputed
     if isnumeric(options.intersectionTechnique)
         technique = options.intersectionTechnique(:,iStrip);
-    % otherwise
     else
         technique = options.intersectionTechnique;
     end
@@ -65,7 +63,5 @@ end
 % hold on
 % plot(P,[1 2],'k');
 % plot(Rint,[1 2],'r--');
-
-
 
 %------------- END OF CODE --------------

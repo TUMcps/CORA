@@ -1,17 +1,16 @@
 function res = example_linear_reach_05_innerApprox()
 % example_linear_reach_05_innerApprox - example that demonstrates how to
-%                                       compute an inner-approximation of 
-%                                       the reachable set
+%    compute an inner-approximation of the reachable set
 %
 % Syntax:  
 %    res = example_linear_reach_05_innerApprox()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
+%    res - true/false 
+
 % Author:       Niklas Kochdumper
 % Written:      27-August-2020
 % Last update:  ---
@@ -19,7 +18,7 @@ function res = example_linear_reach_05_innerApprox()
 
 %------------- BEGIN CODE --------------
 
-% Parameter ---------------------------------------------------------------
+% Parameters --------------------------------------------------------------
 
 params.tFinal = 1;
 params.R0 = zonotope([ones(5,1),0.1*diag(ones(5,1))]);
@@ -76,16 +75,14 @@ for k = 1:length(dims)
     figure; hold on; box on
     projDims = dims{k};
 
-    % plot outer-approximation 
-    for i = 1:length(Rout.timePoint.set)
-        h1 = plot(Rout.timePoint.set{i},projDims,'b');
-    end
+    % plot outer-approximation
+    h1 = plot(Rout,projDims,'Set','tp');
     
     % plot inner-approximation
-    h2 = plot(Rin,projDims,'r','Filled',false);
+    h2 = plot(Rin,projDims,'FaceColor',colorblind('r'));
 
     % plot initial set
-    plot(params.R0,projDims,'w','Filled',true);
+    plot(params.R0,projDims,'w');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);
@@ -102,10 +99,10 @@ for k = 1:length(dims)
     projDims = dims{k};
 
     % plot outer-approximation 
-    h1 = plot(Rout.timePoint.set{end},projDims,'b');
+    h1 = plot(Rout.timePoint.set{end},projDims);
     
     % plot inner-approximation
-    h2 = plot(Rin.timePoint.set{end},projDims,'r','Filled',false);
+    h2 = plot(Rin.timePoint.set{end},projDims,'Color',colorblind('r'));
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);
@@ -116,6 +113,6 @@ for k = 1:length(dims)
 end
 
 % example completed
-res = 1;
+res = true;
 
 %------------- END OF CODE --------------

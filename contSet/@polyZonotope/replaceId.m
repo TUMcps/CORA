@@ -1,17 +1,22 @@
-function PZ = replaceId(pZ,varargin)
-% replaceId - replace (part of) id with new one
+function pZ = replaceId(pZ,varargin)
+% replaceId - replace all or some of the identifiers with new ones
 %
 % Syntax:  
-%    PZ = replaceId(pZ,id_new)
-%    PZ = replaceId(pZ,id_old,id_new)
+%    pZ = replaceId(pZ,id_part_new)
+%    pZ = replaceId(pZ,id_part_old,id_part_new)
 %
 % Inputs:
-%    pZ     - polyZonotope object
-%    id_new - new id that replaces id_old
-%    id_old - old id
+%    pZ - polyZonotope object
+%    id_part_new - new identifiers replacing old identifiers
+%    id_part_old - old identifers
 %
 % Outputs:
-%    PZ     - polyZonotope object with id_old replaced by id_new
+%    pZ - modified polyZonotope object with replaced identifiers
+%
+% Example:
+%    pZ = polyZonotope(0,[1,2],[],[1,2;3,4;5,6],[1;2;3]);
+%    pZ_newId = replaceId(pZ,[3;1],[1;3]);
+%    pZ_newId.id
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -21,27 +26,43 @@ function PZ = replaceId(pZ,varargin)
 
 % Author:        Victor Gassmann
 % Written:       12-January-2021 
-% Last update:   ---
+% Last update:   28-February-2022
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
-if length(varargin)==1
+
+% parse input arguments
+if length(varargin) == 1
     id_part_old = pZ.id;
     id_part_new = varargin{1};
-elseif length(varargin)==2
+elseif length(varargin) == 2
     id_part_old = varargin{1};
     id_part_new = varargin{2};
 else
-    error('Wrong type of input arguments');
+    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
+
+% check input arguments
 if length(id_part_old)~=length(id_part_new) || ~all(ismember(id_part_old,pZ.id))
-    error('id not valid');
+     throw(CORAerror('CORA:wrongValue','second and/or third',...
+         "The identifiers in 'id_part_new' and 'id_part_old' should be of the same length, " + ...
+         "and they should only contain identifiers contained in the polynomial zonotope."));
 end
-[Id,ind] = sort(pZ.id);
-[Id_part_old,ind_part_old] = sort(id_part_old);
-Id_part_new = id_part_new(ind_part_old);
-Id_new = Id;
-Id_new(ismember(Id,Id_part_old)) = Id_part_new;
-ind_rev(ind) = 1:length(ind);
-PZ = polyZonotope(pZ.c,pZ.G,pZ.Grest,pZ.expMat,Id_new(ind_rev));
+
+% read out indices of identifiers in polynomial zonotope
+ii_o = subsetIndex(pZ.id,id_part_old);
+pZ.id(ii_o) = id_part_new;
+
+% remove possibly duplicate entries from id
+[id_new,~,iic] = unique(pZ.id,'stable'); 
+ii_id = accumarray(iic,(1:length(pZ.id))',[],@(x){x});
+expMat = zeros(length(ii_id),size(pZ.expMat,2));
+for i=1:length(ii_id)
+    expMat(i,:) = sum(pZ.expMat(ii_id{i},:),1);
+end
+
+% assign identifiers and exponent matrix
+pZ.id = id_new;
+pZ.expMat = expMat;
+
 %------------- END OF CODE --------------

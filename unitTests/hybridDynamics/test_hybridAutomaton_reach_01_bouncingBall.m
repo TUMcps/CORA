@@ -15,7 +15,7 @@ function res = test_hybridAutomaton_reach_01_bouncingBall
 %
 % Outputs:
 %    res - boolean 
- 
+
 % Author:       Matthias Althoff
 % Written:      27-July-2016
 % Last update:  ---
@@ -39,8 +39,7 @@ options.zonotopeOrder = 20;
 
 % settings for hybrid systems
 options.guardIntersect = 'polytope';
-options.enclose = {'pca'}; 
-
+options.enclose = {'pca'};
 
 % Hybrid Automaton --------------------------------------------------------
 
@@ -60,7 +59,8 @@ inv = mptPolytope([-1,0],0);
 guard = conHyperplane([1,0],0,[0,1],0);
 
 % reset function
-reset.A = [0, 0; 0, alpha]; reset.b = zeros(2,1);
+reset.A = [0, 0; 0, alpha]; 
+reset.c = zeros(2,1);
 
 % transitions
 trans{1} = transition(guard,reset,1);

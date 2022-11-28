@@ -1,6 +1,6 @@
 function createHessianTensorFile(J2dyn,J2con,path,name,vars,infsupFlag,options)
 % createHessianTensorFile - generates an mFile that allows to compute the
-% hessian tensor
+%    hessian tensor
 %
 % Syntax:  
 %    createHessianTensorFile(J2dyn,J2con,path,name,vars,infsupFlag,options)
@@ -9,7 +9,7 @@ function createHessianTensorFile(J2dyn,J2con,path,name,vars,infsupFlag,options)
 %    J2dyn - Hessians of differential equation
 %    J2con - Hessians of constraint equation
 %    path - path for saving the file
-%    name - name of the nonlinear function to which the hessian belongs
+%    name - function name for the Hessian file
 %    vars - symbolic variables
 %    infsupFlag - true if interval arithmetic, otherwise false
 %    options - additional information for tensors
@@ -17,7 +17,8 @@ function createHessianTensorFile(J2dyn,J2con,path,name,vars,infsupFlag,options)
 % Outputs:
 %    - 
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,155 +26,226 @@ function createHessianTensorFile(J2dyn,J2con,path,name,vars,infsupFlag,options)
 %
 % See also: ---
 
-% Author:       Matthias Althoff, Niklas Kochdumper
+% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
 % Written:      21-August-2012
 % Last update:  08-March-2017
 %               05-November-2017
 %               03-December-2017
 %               13-March-2020 (NK, implemented options.simplify = optimize)
 %               01-February-2021 (MW, different filename due to infsupFlag)
+%               01-June-2022 (MW, optimize for constraint part)
+%               09-June-2022 (MA, considered case that only constraint part is non-empty)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% read out options
-taylMod = 0;
-opt = 0;
+% default options
+taylMod = false;
+opt = false;
 
+% read out options
 if isfield(options,'lagrangeRem')
     temp = options.lagrangeRem;
     if isfield(temp,'method') && ~strcmp(temp.method,'interval')
-        taylMod = 1;
+        taylMod = true;
     end
     if isfield(temp,'simplify') && strcmp(temp.simplify,'optimize')
-        opt = 1; 
+        opt = true;
     end
 end
 
 % init
-Hdyn = cell(length(vars.x),1);
-Hcon = cell(length(vars.y),1);
+Hdyn = cell(size(J2dyn,1),1); %length(vars.x)
+Hcon = cell(size(J2con,1),1); %length(vars.y)
 
 % squeeze dynamic part
-for k=1:length(vars.x)
+for k=1:size(J2dyn,1) %length(vars.x)
     Hdyn{k} = squeeze(J2dyn(k,:,:));
 end
 % squeeze constraint part
-for k=1:length(vars.y)
+for k=1:size(J2con,1) %length(vars.y)
     Hcon{k} = squeeze(J2con(k,:,:));
 end
 
-% different filename depending on whether interval arithmetic is used
-if infsupFlag
-    hessianname = 'hessianTensorInt_';
-else
-    hessianname = 'hessianTensor_';
-end
-
-fid = fopen([path filesep hessianname name '.m'],'w');
+fid = fopen([path filesep name '.m'],'w');
 % function arguments depending on occurring variable types
 if isempty(vars.p)
     if isempty(vars.y) % no constraints
-        fprintf(fid, '%s\n\n', ['function Hf=' hessianname name '(x,u)']);
-        args = '(x,u)';
-        symVars = 'vars.x,vars.u';
+        argsin = '(x,u)';
+        argsout = 'Hf';
     else % with constraints
-        fprintf(fid, '%s\n\n', ['function [Hf,Hg]=' hessianname name '(x,y,u)']);
-        args = '(x,y,u)';
-        symVars = 'vars.x,vars.y,vars.u';
+        argsin = '(x,y,u)';
+        argsout = '[Hf,Hg]';
     end
 else
-    fprintf(fid, '%s\n\n', ['function Hf=' hessianname name '(x,u,p)']);
-    args = '(x,u,p)';
-    symVars = 'vars.x,vars.u,vars.p';
+    argsin = '(x,u,p)';
+    argsout = 'Hf';
 end
+fprintf(fid, '%s\n\n', ['function ' argsout '=' name argsin]);
 
 % write call to optimized function to reduce the number of interval operations
-if opt  
-    % write function
-    str = ['out = funOptimize',args,';'];
-    fprintf(fid, '\n\n %s\n\n', str);
-    
-    % store indices of nonempty enries
-    counter = 1;
-    ind = cell(size(Hdyn));
-    out = [];
-    
-    for i = 1:length(Hdyn)
-       [r,c] = find(Hdyn{i});
-       if ~isempty(r)
-           ind{i}.row = r;
-           ind{i}.col = c;
-           ind{i}.index = counter:counter + length(r)-1;
-           counter = counter + length(r);
-           for j = 1:length(r)
-              out = [out;Hdyn{i}(r(j),c(j))]; 
-           end
-       end
-    end  
+if opt
+    % symVars only used for call to matlabfunction (different from input
+    % arguments to hessian file!)
+    symVars = {'vars.x','vars.y','vars.u','vars.p'};
+    symVars = strjoin(symVars([~isempty(vars.x) ~isempty(vars.y) ...
+        ~isempty(vars.u) ~isempty(vars.p)]),',');
+    argsinOpt = ['(' strrep(symVars,'vars.','') ')'];
+
+    % dynamic part
+    if ~isempty(vars.x)
+        str = ['outDyn = funOptimizeDyn',argsinOpt,';'];
+        fprintf(fid, '\n\n %s\n\n', str);
+        
+        % store indices of nonempty entries
+        counter = 1;
+        indDyn = cell(size(Hdyn));
+        outDyn = [];
+        
+        for i = 1:length(Hdyn)
+            [r,c] = find(Hdyn{i});
+            if ~isempty(r)
+                indDyn{i}.row = r;
+                indDyn{i}.col = c;
+                indDyn{i}.index = counter:counter + length(r)-1;
+                counter = counter + length(r);
+                for j = 1:length(r)
+                    outDyn = [outDyn;Hdyn{i}(r(j),c(j))]; 
+                end
+            end
+        end
+    end
+
+    % constraint part
+    if ~isempty(vars.y)
+        str = ['outCon = funOptimizeCon',argsinOpt,';'];
+        fprintf(fid, '\n\n %s\n\n', str);
+        
+        % store indices of nonempty entries
+        counter = 1;
+        indCon = cell(size(Hcon));
+        outCon = [];
+        
+        for i = 1:length(Hcon)
+            [r,c] = find(Hcon{i});
+            if ~isempty(r)
+                indCon{i}.row = r;
+                indCon{i}.col = c;
+                indCon{i}.index = counter:counter + length(r)-1;
+                counter = counter + length(r);
+                for j = 1:length(r)
+                    outCon = [outCon;Hcon{i}(r(j),c(j))]; 
+                end
+            end
+        end
+    end
 end
 
 %dynamic part
-for k=1:length(Hdyn)
-    %get matrix size
-    [rows,cols] = size(Hdyn{k});
-    sparseStr = ['sparse(',num2str(rows),',',num2str(cols),')'];
-    if infsupFlag 
-        str=['Hf{',num2str(k),'} = interval(',sparseStr,',',sparseStr,');'];
-    else
-        str=['Hf{',num2str(k),'} = ',sparseStr,';'];
-    end
-    %write in file if Hessian is used as Lagrange remainder
-    fprintf(fid, '\n\n %s\n\n', str);
-    % write rest of matrix
-    if ~opt
-        if infsupFlag && taylMod
-            writeSparseMatrixTaylorModel(Hdyn{k},['Hf{',num2str(k),'}'],fid);
+if ~isempty(vars.x)
+    for k=1:length(Hdyn)
+        % get matrix size
+        [rows,cols] = size(Hdyn{k});
+        sparseStr = ['sparse(',num2str(rows),',',num2str(cols),')'];
+        if infsupFlag 
+            str=['Hf{',num2str(k),'} = interval(',sparseStr,',',sparseStr,');'];
         else
-            writeSparseMatrix(Hdyn{k},['Hf{',num2str(k),'}'],fid);
+            str=['Hf{',num2str(k),'} = ',sparseStr,';'];
         end
-    elseif ~isempty(ind{k})
-        writeSparseMatrixOptimized(ind{k},['Hf{',num2str(k),'}'],fid,taylMod);
+        % write in file if Hessian is used as Lagrange remainder
+        fprintf(fid, '\n\n %s\n\n', str);
+        % write rest of matrix
+        if ~opt
+            if infsupFlag && taylMod
+                writeSparseMatrixTaylorModel(Hdyn{k},['Hf{',num2str(k),'}'],fid);
+            else
+                writeSparseMatrix(Hdyn{k},['Hf{',num2str(k),'}'],fid);
+            end
+        elseif ~isempty(indDyn{k})
+            writeSparseMatrixOptimized(indDyn{k},['Hf{',num2str(k),'}'],fid,taylMod);
+        end
+        
+        disp(['dynamics dim ',num2str(k)]);
     end
-    
-    disp(['dynamics dim ',num2str(k)]);
+else
+    fprintf(fid,'\n\nHf = {};\n\n');
 end
 
 %constraint part
-for k=1:length(Hcon)
-    %get matrix size
-    [rows,cols] = size(Hcon{k});
-    sparseStr = ['sparse(',num2str(rows),',',num2str(cols),')'];
-    if infsupFlag 
-        str=['Hg{',num2str(k),'} = interval(',sparseStr,',',sparseStr,');'];
-    else
-        str=['Hg{',num2str(k),'} = ',sparseStr,';'];
+if ~isempty(vars.y)
+    for k=1:length(Hcon)
+        % get matrix size
+        [rows,cols] = size(Hcon{k});
+        sparseStr = ['sparse(',num2str(rows),',',num2str(cols),')'];
+        if infsupFlag 
+            str=['Hg{',num2str(k),'} = interval(',sparseStr,',',sparseStr,');'];
+        else
+            str=['Hg{',num2str(k),'} = ',sparseStr,';'];
+        end
+        % write in file if Hessian is used as Lagrange remainder
+        fprintf(fid, '\n\n %s\n\n', str);
+        % write rest of matrix
+        if ~opt
+            if infsupFlag && taylMod
+                writeSparseMatrixTaylorModel(Hcon{k},['Hg{',num2str(k),'}'],fid);
+            else
+                writeSparseMatrix(Hcon{k},['Hg{',num2str(k),'}'],fid);
+            end
+        elseif ~isempty(indCon{k})
+            writeSparseMatrixOptimized(indCon{k},['Hg{',num2str(k),'}'],fid,taylMod);
+        end
+        
+        disp(['constraint dim ',num2str(k)]);
     end
-    %write in file if Hessian is used as Lagrange remainder
-    fprintf(fid, '\n\n %s\n\n', str);
-    % write rest of matrix
-    writeSparseMatrix(Hcon{k},['Hg{',num2str(k),'}'],fid);
-    
-    disp(['constraint dim ',num2str(k)]);
 end
+
+% add empty line and 'end'
+fprintf(fid,'\nend');
 
 % create optimized function to reduce the number of interval operations
 if opt
-    % create file with optimized evaluation
-    pathTemp = fullfile(path,'funOptimize.m');
-    str = ['matlabFunction(out,''File'',pathTemp,''Vars'',{',symVars,'});'];
-    eval(str);
-    
-    % read in text from the file
-    text = fileread(pathTemp);
+    % dynamic part
+    if ~isempty(vars.x)
+        pathTemp = fullfile(path,'funOptimizeDyn.m');
+        eval(['matlabFunction(outDyn,''File'',pathTemp,''Vars'',{',symVars,'});']);
 
-    % print text from file
-    fprintf(fid, '%s',text);
+        % print text from 'funOptimizeDyn' to hessian tensor file
+        text = fileread(pathTemp);
+
+        % last two chars in 'text' always make up linebreak, thus check indices
+        % end-4 until end-2 for 'end' to see whether 'end' is still required
+        if strcmp(text(end-4:end-2),'end')
+            fprintf(fid,'\n\n%s\n',text);
+        else
+            fprintf(fid,'\n\n%s\nend',text);
+        end
+
+        % delete funOptimizeDyn file
+        delete([path filesep 'funOptimizeDyn.m']);
+    end
+
+    % constraint part
+    if ~isempty(vars.y)
+        pathTemp = fullfile(path,'funOptimizeCon.m');
+        eval(['matlabFunction(outCon,''File'',pathTemp,''Vars'',{',symVars,'});']);
+        
+        % print text from 'funOptimizeCon' to hessian tensor file
+        text = fileread(pathTemp);
+        
+        % last two chars in 'text' always make up linebreak, thus check indices
+        % end-4 until end-2 for 'end' to see whether 'end' is still required
+        if strcmp(text(end-4:end-2),'end')
+            fprintf(fid,'\n\n%s\n',text);
+        else
+            fprintf(fid,'\n\n%s\nend',text);
+        end
+    
+        % delete funOptimizeCon file
+        delete([path filesep 'funOptimizeCon.m']);
+    end
 end
 
-%close file
+% close file
 fclose(fid);
-
-
 
 %------------- END OF CODE --------------

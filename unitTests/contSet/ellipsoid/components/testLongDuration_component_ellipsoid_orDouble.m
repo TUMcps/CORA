@@ -1,6 +1,6 @@
 function res = testLongDuration_component_ellipsoid_orDouble
 % testLongDuration_component_ellipsoid_orDouble - unit test function of 
-% ellipsoid_orDouble
+%    ellipsoid_orDouble
 %
 % Syntax:  
 %    res = testLongDuration_component_ellipsoid_orDouble
@@ -29,28 +29,23 @@ res = true;
 nRuns = 2;
 bools = [false,true];
 % smaller dims since halfspaces and vertices are involved
-for i=5:5:10
+for i=[2,5:5:10]
     for j=1:nRuns
         for k=1:2 
             try
-                E = ellipsoid.generateRandom(i,bools(k));
-                % generate points randomly
-                N = 2*dim(E);
-                V = randn(dim(E),N);
+                %%% generate all variables necessary to replicate results
+                E = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k));
+                V = randn(dim(E),2*dim(E));
+                %%%
+                
                 for m=1:2
                     [U,S,V] = svd(V);
                     S(1,1) = bools(m)*S(1,1);
                     V = U*S*V';
-                    V_c = mat2cell(V,E.dim,ones(1,N));
-                    Eo = or(E,V_c);
-                    Ei = or(E,V_c,'i');
-                    % check whether subset property holds
-                    if ~in(Eo,Ei)
-                        res = false;
-                        break;
-                    end
+                    Eo = or(E,V);
+                    
                     % check whether V are contained in Eo
-                    if ~in(Eo,V)
+                    if ~contains(Eo,V)
                         res = false;
                         break;
                     end
@@ -73,5 +68,11 @@ for i=5:5:10
     if ~res
         break;
     end
+end
+
+% save if failed
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'E','V');
 end
 %------------- END OF CODE --------------

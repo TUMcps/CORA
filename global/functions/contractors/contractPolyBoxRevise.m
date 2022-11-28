@@ -61,8 +61,9 @@ function res = contractPolyBoxRevise(f,dom)
         end
     catch ex
         if strcmp(ex.identifier,'symbolic:sym:sym2poly:errmsg2')
-            error(['Contractor "polynomial" is only applicable for ', ...
-                   'polynomial constraints!']);
+            throw(CORAerror('CORA:specialError',...
+                ['Contractor "polynomial" is only applicable for ', ...
+                   'polynomial constraints!']));
         end
     end
 

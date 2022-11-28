@@ -1,5 +1,5 @@
 function completed = example_conZonotope()
-% example_conZonotope - example instantiation of a conZonotope objects
+% example_conZonotope - example instantiation of a conZonotope object
 %
 % Syntax:  
 %    completed = example_conZonotope()
@@ -8,14 +8,14 @@ function completed = example_conZonotope()
 %    -
 %
 % Outputs:
-%    completed - boolean
+%    completed - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Niklas Kochdumper
 % Written:       15-July-2020
 % Last update:   ---
@@ -29,8 +29,10 @@ b = 2; % constraints (vector b)
 
 cZ = conZonotope(Z,A,b) % construct conZonotope object
 
-plotZono(cZ,[1,2]); % visualize conZonotope object + linear zonotope
+figure; hold on; box on;
+plot(cZ); % visualize conZonotope object
+plot(zonotope(cZ),[1,2],'Color',colorblind('r')); % visualize unconstrained zonotope object
 
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

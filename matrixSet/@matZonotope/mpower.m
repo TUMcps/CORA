@@ -5,7 +5,7 @@ function matZpower = mpower(matZ,exponent)
 %    matZ = mpower(matZ,exponent)
 %
 % Inputs:
-%    matZ - matrix zonotope
+%    matZ - matZonotope object
 %    exponent - exponent
 %
 % Outputs:
@@ -26,27 +26,26 @@ function matZpower = mpower(matZ,exponent)
 
 %------------- BEGIN CODE --------------
 
+% check input arguments
+inputArgsCheck({{matZ,'att','matZonotope'}, ...
+                {exponent,'att','numeric',{'scalar','integer','nonnegative'}}});
+
 %factor1 is a numeric matrix
-if exponent>=0
-    if exponent==0
-        %return identity matrix
-        matZpower=matZ;
-        matZpower.center=eye(matZ.dim);
-        matZpower.generator=[];
-        matZpower.gens=0;
-    elseif exponent==1
-        %do nothing
-        matZpower=matZ;
-    else
-        matZpower=matZ*matZ;
-        for i=3:exponent
-        %multiply matrix zonotope with itself
-            matZpower=matZpower*matZ;
-        end
-    end
+if exponent==0
+    %return identity matrix
+    matZpower=matZ;
+    matZpower.center=eye(matZ.dim);
+    matZpower.generator=[];
+    matZpower.gens=0;
+elseif exponent==1
+    %do nothing
+    matZpower=matZ;
 else
-    matZpower=[];
-    disp('no negative powers supported')
+    matZpower=matZ*matZ;
+    for i=3:exponent
+    %multiply matrix zonotope with itself
+        matZpower=matZpower*matZ;
+    end
 end
 
 %------------- END OF CODE --------------

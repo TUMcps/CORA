@@ -1,9 +1,9 @@
 function [OGain,tComp]= observe_gain_NomG(obj,options)
-% observe_gain_NomG - computes the gain for the guaranted state estimation
-% approach from [1].
+% observe_gain_NomG - computes the gain for the guaranteed state estimation
+%    approach from [1].
 %
 % Syntax:  
-%    [R,Rout] = observe_NomG(obj,options)
+%    [R,Rout] = observe_gain_NomG(obj,options)
 %
 % Inputs:
 %    obj - discrete-time linear system object
@@ -13,13 +13,14 @@ function [OGain,tComp]= observe_gain_NomG(obj,options)
 %    OGain - observer gain
 %    tComp - computation time
 %
+% Example: 
+%    -
+%
 % Reference:
 %    [1] Ye Wang, Vicenç Puig, and Gabriela Cembrano. Set-
 %        membership approach and Kalman observer based on
 %        zonotopes for discrete-time descriptor systems. Automatica,
 %        93:435-443, 2018.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,14 +33,13 @@ function [OGain,tComp]= observe_gain_NomG(obj,options)
 % Last update:   ---
 % Last revision: ---
 
-
 %------------- BEGIN CODE --------------
 
-tic
+tic;
 
 % obtain system dimension and nr of outputs
-dim = size(obj.A,1); 
-nrOfOutputs = size(obj.C,1);
+n = obj.dim;
+nrOfOutputs = obj.nrOfOutputs;
 
 % set options of solver
 options_sdp = sdpsettings;
@@ -48,11 +48,11 @@ options_sdp.verbose = 0;
 
 %% define YALMIPs symbolic decision variables
 % state
-P = sdpvar(dim,dim,'symmetric'); 
+P = sdpvar(n,n,'symmetric'); 
 % gain matrix
-Y = sdpvar(dim,nrOfOutputs,'full'); 
+Y = sdpvar(n,nrOfOutputs,'full'); 
         
-mu =1; % decay rate
+mu = 1; % decay rate
 
 %% Solving the LMI Problem
 % create symmetric matrix SM of LMI
@@ -61,13 +61,12 @@ SM(1,1) = mu*P;
 SM(2,1) = P*obj.A-Y*obj.C;
 SM(2,2) = P;
 SM = sdpvar(SM);
-ObjR = [P>=0,SM>=0]; % The objective function
-sol_lmi = optimize(ObjR,[],options_sdp); % optimze the LMIs
+constraint = [P>=0,SM>=0]; % constraint
+sol_lmi = optimize(constraint, [], options_sdp); % solve LMIs; no objective
 
 % Check if LMI is feasible
 if sol_lmi.problem == 1
     disp('LMIs are infeasible');
-    OGain= zeros(dim,nrOfOutputs);
 else
     % extract values from YALMIP symbolic decision variables
     P = value(P);

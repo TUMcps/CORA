@@ -1,8 +1,8 @@
 function res = testINTLAB_atan_random(~)
-% test_atan_random - unit_test_function for comparing to IntLabV6
+% testINTLAB_atan_random - unit_test_function for comparing to IntLabV6
 %
 % Syntax:  
-%    res = test_atan_random (~)
+%    res = testINTLAB_atan_random (~)
 %
 % Inputs:
 %    no 
@@ -77,7 +77,4 @@ if ( isempty(bad_ones_max) ~= true)
     res = false;
 end
 
-disp('test_atan_random successful');
-disp(' ')
-
-return;
+%------------- END OF CODE --------------

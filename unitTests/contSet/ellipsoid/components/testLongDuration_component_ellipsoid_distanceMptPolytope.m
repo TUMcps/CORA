@@ -1,8 +1,9 @@
-function res = testLongDuration_ellipsoid_distanceMptPolytope
-% testLongDuration_ellipsoid_distanceMptPolytope - unit test function of testLongDuration_ellipsoid_distanceMptPolytope
+function res = testLongDuration_component_ellipsoid_distanceMptPolytope
+% testLongDuration_component_ellipsoid_distanceMptPolytope - unit test
+%    function of distanceMptPolytope
 %
 % Syntax:  
-%    res = testLongDuration_ellipsoid_distanceMptPolytope
+%    res = testLongDuration_component_ellipsoid_distanceMptPolytope
 %
 % Inputs:
 %    -
@@ -28,18 +29,21 @@ res = true;
 nRuns = 2;
 bools = [false,true];
 % smaller dimensions since vertices and halfspaces are involved
-for i=5:5:10
+for i=[5,6,7]
     for j=1:nRuns
         for k=1:2 
-            E = ellipsoid.generateRandom(i,bools(k));
+            %%% generate all variables necessary to replicate results
+            E = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k));
             N = 3*i;
             % generate random point cloud center around origin
             V = randn(i,N);
-            V = V - mean(V,2);
             B = randPoint(E,N,'extreme');
             m = ceil(N*rand);
-            s = E.q + rand*(B(:,m)-E.q);
+            fac_s = rand;
             r = randi([1,i]);
+            %%%
+            V = V - mean(V,2);
+            s = E.q + fac_s*(B(:,m)-E.q);
             IntE = interval(E);
             IntV = interval(mptPolytope(V'));
             for m=1:2
@@ -52,7 +56,7 @@ for i=5:5:10
                 % intersects with E
                 P1 = mptPolytope(V1');
                 d1 = distance(E,P1);
-                if ~withinTol(d1,0,E.TOL)
+                if d1>E.TOL
                     res = false;
                     break;
                 end
@@ -61,7 +65,7 @@ for i=5:5:10
                 V2 = V+2*rad(IntE)+2*rad(IntV);
                 P2 = mptPolytope(V2');
                 d2 = distance(E,P2);
-                if withinTol(d2,0,E.TOL)
+                if d2<=E.TOL
                     res = false;
                     break;
                 end
@@ -75,6 +79,8 @@ for i=5:5:10
         end
     end
     if ~res
+        path = pathFailedTests(mfilename());
+        save(path,'E','N','V','B','m','fac_s','r');
         break;
     end
 end

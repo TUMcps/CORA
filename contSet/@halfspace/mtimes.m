@@ -1,19 +1,21 @@
-function [h] = mtimes(factor,h)
+function hs = mtimes(M,hs)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix with
-% a halfspace
+%    a halfspace
 %
 % Syntax:  
-%    [h] = mtimes(factor,h)
+%    hs = mtimes(M,hs)
 %
 % Inputs:
-%    factor - numerical matrix
-%    h - halfspace object
+%    M - numerical matrix
+%    hs - halfspace object
 %
 % Outputs:
-%    h - halfspace object
+%    hs - halfspace object
 %
 % Example: 
-%    ---
+%    M = [0.6980 0.7161; -0.7161 0.6980];
+%    hs = halfspace([1 1],2);
+%    M * hs;
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,19 +30,25 @@ function [h] = mtimes(factor,h)
 
 %------------- BEGIN CODE --------------
 
+% empty case
+if isempty(hs)
+    return
+end
+
 try
     %assume that factor is an invertible matrix
-    invMat = inv(factor);
-    h.c = invMat.'*h.c;
+    invMat = inv(M);
+    hs.c = invMat.'*hs.c;
     
 catch ME
     
-    if isempty(h)
-        % empty halfspace
-        [msg,id] = errEmptySet();
-        error(id,msg);
-    elseif abs(det(factor)) < eps
-        error("Linear transformation with near-singular matrix");
+    if diff(size(M)) ~= 0
+        throw(CORAerror('CORA:wrongValue','first','square matrix'));
+    elseif size(M,2) ~= dim(hs)
+        throw(CORAerror('CORA:dimensionMismatch',M,hs));
+    elseif abs(det(M)) < eps
+        throw(CORAerror('CORA:specialError',...
+            'Linear transformation with near-singular matrix'));
     else
         rethrow(ME);
     end

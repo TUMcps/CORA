@@ -1,4 +1,4 @@
-function res = cosh(intVal)
+function I = cosh(I)
 % cosh - Overloaded 'cosh()' operator for intervals
 %
 % x_ is x infimum, x-- is x supremum
@@ -8,15 +8,17 @@ function res = cosh(intVal)
 % [1, max( acosh(x_), acosh(x--)] if (x_ < 0) and (x-- > 0).
 %
 % Syntax:  
-%    res = cosh(intVal)
+%    I = cosh(I)
 %
 % Inputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - interval object
+%    I - interval object
 %
-% Example: 
+% Example:
+%    I = interval([-2;3],[3;4]);
+%    res = cosh(I);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,44 +29,43 @@ function res = cosh(intVal)
 % Author:       Matthias Althoff
 % Written:      05-February-2016
 % Last update:  21-February-2016 (DG, the matrix case is rewritten)
+%               21-May-2022 (MW, remove new instantiation)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % scalar case
-if isnumeric(intVal)
+if isnumeric(I)
 
-    res = interval();
-
-    if intVal.sup <= 0
-        res.inf = cosh(intVal.sup);
-        res.sup = cosh(intVal.inf);
-    elseif intVal.inf >= 0
-        res.inf = cosh(intVal.inf);
-        res.sup = cosh(intVal.sup);
+    if I.sup <= 0
+        I.inf = cosh(I.sup);
+        I.sup = cosh(I.inf);
+    elseif I.inf >= 0
+        I.inf = cosh(I.inf);
+        I.sup = cosh(I.sup);
     else
-        res.inf = 1;
-        res.sup = cosh( max( abs(intVal.inf), abs(intVal.sup) ) );
+        I.inf = 1;
+        I.sup = cosh( max( abs(I.inf), abs(I.sup) ) );
     end
         
 else
 
-    % to preserve the shape    
-    res = intVal;
+    lb = I.inf;
+    ub = I.sup;
     
     % find indices
     
-    ind1 = find(intVal.sup <= 0);   
-    res.inf(ind1) = cosh(intVal.sup(ind1));
-    res.sup(ind1) = cosh(intVal.inf(ind1));
+    ind1 = find(ub <= 0);   
+    I.inf(ind1) = cosh(ub(ind1));
+    I.sup(ind1) = cosh(lb(ind1));
     
-    ind2 = find(intVal.inf >= 0);    
-    res.inf(ind2) = cosh(intVal.inf(ind2));
-    res.sup(ind2) = cosh(intVal.sup(ind2));
+    ind2 = find(lb >= 0);    
+    I.inf(ind2) = cosh(lb(ind2));
+    I.sup(ind2) = cosh(ub(ind2));
     
-    ind3 = find(intVal.inf <0 & intVal.sup > 0);    
-    res.inf(ind3) = 1;
-    res.sup(ind3) = cosh( max( abs(intVal.inf(ind3)), abs(intVal.sup(ind3)) ) );
+    ind3 = find(lb <0 & ub > 0);    
+    I.inf(ind3) = 1;
+    I.sup(ind3) = cosh( max( abs(lb(ind3)), abs(ub(ind3)) ) );
        
 end
 

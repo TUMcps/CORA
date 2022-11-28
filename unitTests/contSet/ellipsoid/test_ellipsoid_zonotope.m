@@ -33,23 +33,16 @@ for i=1:length(E_c)
     n = dim(E1);
     N = 5*n;
     
-    Z1 = zonotope(E1,2*n,'i:norm');
-    Zd1 = zonotope(Ed1,2*n,'o:norm');
-    Z0 = zonotope(E0,2*n,'i:norm:bnd');
+    Z1 = zonotope(E1,2*n,'inner:norm');
+    Zd1 = zonotope(Ed1,2*n,'outer:norm');
+    Z0 = zonotope(E0,2*n,'inner:norm_bnd');
     
-    if ~in(E1,randPoint(Z1,N,'extreme')) || ...
-       ~in(Zd1,randPoint(Ed1,N,'extreme')) || ...
+    if ~all(contains(E1,randPoint(Z1,N,'extreme'))) || ...
+       ~all(contains(Zd1,randPoint(Ed1,N,'extreme'))) || ...
        ~(all(rad(interval(Z0))==0) && all(withinTol(center(Z0),E0.q,E0.TOL)))
         res = false;
         break;
-    end
-    
-    
+    end    
 end
 
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

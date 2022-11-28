@@ -124,7 +124,7 @@ inv = mptPolytope(-n',-p.alpha);
 guard1 = h1;
 %resets
 reset1.A = eye(dim);
-reset1.b = zeros(dim,1);
+reset1.c = zeros(dim,1);
 %transitions
 trans{1} = transition(guard1,reset1,2); %--> next loc: 2
 %specify location
@@ -138,7 +138,7 @@ guard1 = h1;
 guard2 = h2;
 %reset 1
 reset1.A=eye(dim);
-reset1.b=zeros(dim,1);
+reset1.c=zeros(dim,1);
 %transition 1
 trans=[];
 trans{1}=transition(guard1,reset1,1); %--> next loc: 1
@@ -153,7 +153,7 @@ inv = mptPolytope(n',-p.alpha);
 guard1 = h2;
 %reset 1
 reset1.A=eye(dim);
-reset1.b=zeros(dim,1);
+reset1.c=zeros(dim,1);
 %transition 1
 trans=[];
 trans{1}=transition(guard1,reset1,2); %--> next loc: 2

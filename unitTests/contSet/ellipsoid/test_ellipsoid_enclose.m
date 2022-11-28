@@ -36,7 +36,7 @@ for i=1:length(E_c)
     % test non-deg ellipsoid
     E = enclose(E1,E2);
     Y = [randPoint(E1,2*n),randPoint(E2,2*n)];
-    if ~in(E,Y)
+    if ~contains(E,Y)
         res = false;
         break;
     end
@@ -44,17 +44,11 @@ for i=1:length(E_c)
     % test degenerate ellipsoids
     Ed = enclose(Ed1,E0);
     Yd = [randPoint(Ed1,2*n),E0.q];
-    if ~in(Ed,Yd)
+    if ~contains(Ed,Yd)
         res = false;
         break;
     end
     
 end
 
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

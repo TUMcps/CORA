@@ -87,7 +87,7 @@ function [bound,xMin,domMin,xMax,domMax] = globVerBounds(func,dom,tol,varargin)
     
     % parse input arguments
     if nargin < 3
-       error('Wrong syntax!. Type "help globVerMinimization" for help.'); 
+        throw(CORAerror('CORA:notEnoughInputArgs',3));
     end
     if nargin >= 4 && ~isempty(varargin{1})
        max_order = varargin{1}; 

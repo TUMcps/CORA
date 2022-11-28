@@ -1,6 +1,6 @@
 function val = supportFunc(pZ,dir,varargin)
-% supportFunc - Calculate the upper or lower bound of a polynomial zonotope
-%               object along a certain direction
+% supportFunc - Calculates the upper or lower bound of a polynomial
+%    zonotope along a given direction
 %
 % Syntax:  
 %    val = supportFunc(pZ,dir)
@@ -45,8 +45,8 @@ function val = supportFunc(pZ,dir,varargin)
 %    ub2 = conHyperplane(dir,supremum(b2));
 %    lb2 = conHyperplane(dir,infimum(b2));
 %
-%    hold on
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
+%    figure; hold on;
+%    plot(pZ,[1,2],'FaceColor','r');
 %    plot(ub1,[1,2],'b');
 %    plot(lb1,[1,2],'b');
 %    plot(ub2,[1,2],'g');
@@ -65,18 +65,25 @@ function val = supportFunc(pZ,dir,varargin)
 
 %------------- BEGIN CODE --------------
     
-    % parse input arguments
-    type = 'upper';
-    method = 'interval';
+    % pre-processing
+    [res,vars] = pre_supportFunc('polyZonotope',pZ,dir,varargin{:});
     
-    if nargin > 2 && ~isempty(varargin{1})
-       type = varargin{1}; 
-    end
-    if nargin > 3 && ~isempty(varargin{2})
-       method = varargin{2}; 
+    % check premature exit
+    if res
+        % if result has been found, it is stored in the first entry of var
+        val = vars{1}; return
+    else
+        pZ = vars{1}; dir = vars{2}; type = vars{3};
+        method = vars{4}; tol = vars{6};
+        if strcmp(method,'split')
+            splits = vars{5};
+        elseif any(strcmp(method,{'bnb','bnbAdv','globOpt'}))
+            maxOrder = vars{5};
+        end
     end
     
-    % different methods to calculate the over-approximation
+
+    % different methods to evaluate the support function
     if strcmp(method,'interval')
        
         % project the polynomial zonotope onto the direction
@@ -86,9 +93,11 @@ function val = supportFunc(pZ,dir,varargin)
         val = interval(zonotope(pZ_));
         
         if strcmp(type,'lower')
-           val = infimum(val); 
+            val = infimum(val); 
         elseif strcmp(type,'upper')
-           val = supremum(val);
+            val = supremum(val);
+        elseif strcmp(type,'range')
+            % 'val' is already desired result
         end
         
     elseif strcmp(method,'bernstein')
@@ -97,42 +106,17 @@ function val = supportFunc(pZ,dir,varargin)
         
     elseif strcmp(method,'split')
         
-        % parse input arguments
-        splits = 8;
-        if nargin >= 5
-           splits = varargin{3}; 
-        end
-        
-        % compute support function 
         val = supportFuncSplit(pZ,dir,type,splits);
 
     % determine bounds with taylor models and "branch and bound" or
     % advanced "branch and bound"
     elseif strcmp(method,'bnb') || strcmp(method,'bnbAdv')
-            
-        % parse input arguments
-        maxOrder = 5;
-        if nargin >= 5
-            maxOrder = varargin{3}; 
-        end
 
-        % compute support function
         val = supportFuncBnB(pZ,dir,type,method,maxOrder);
 
     % determine bounds with global verified optimization
-    elseif strcmp(method,'globOpt')          
+    elseif strcmp(method,'globOpt')
 
-        % parse input arguments
-        tol = 1e-3;
-        maxOrder = 5;
-        if nargin >= 5 && ~isempty(varargin{3})
-           maxOrder = varargin{3}; 
-        end
-        if nargin >= 6 && ~isempty(varargin{4})
-           tol = varargin{4}; 
-        end
-
-        % compute support function
         val = supportFuncGlobOpt(pZ,dir,type,maxOrder,tol);
 
     % determine bounds using quadratic programming
@@ -140,8 +124,6 @@ function val = supportFunc(pZ,dir,varargin)
 
         val = supportFuncQuadProg(pZ,dir,type);
 
-    else
-        error('Wrong value for input argument ''type''');
     end
 end
 
@@ -178,41 +160,75 @@ end
 function val = supportFuncSplit(pZ,dir,type,splits)
 % compute support function by recursively splitting the set
 
+    % handle different types
+    if strcmp(type,'lower')
+       val = -supportFuncSplit(pZ,-dir,'upper',splits);
+       return;
+    elseif strcmp(type,'range')
+       up = supportFuncSplit(pZ,dir,'upper',splits);
+       low = -supportFuncSplit(pZ,-dir,'upper',splits);
+       val = interval(low,up);
+       return;
+    end
+
     % project the polynomial zonotope onto the direction
     pZ_ = dir' * pZ;
 
     % split the polynomial zonotope multiple times to obtain a better 
     % over-approximation of the real shape
     pZsplit{1} = pZ_;
+    val_min = -inf; val_max = -inf;
 
-    for i=1:splits
+    for i = 1:splits
+        
         qZnew = [];
-        for j=1:length(pZsplit)
+        
+        for j = 1:length(pZsplit)
+            
             res = splitLongestGen(pZsplit{j});
-            qZnew{end+1} = res{1};
-            qZnew{end+1} = res{2};
+            
+            for k = 1:length(res)
+                
+                % compute support function for enclosing zonotope
+                [val,~,alpha] = supportFunc(zonotope(res{k}),1);
+                
+                % update upper and lower bound
+                if val > val_max
+                   
+                    % update upper bound
+                    val_max = val;
+                    
+                    % update lower bound by determining most critical point
+                    ind1 = find(sum(res{k}.expMat,1) == 1);
+                    ind2 = find(sum(res{k}.expMat(:,ind1),2) == 1);
+                    
+                    beta = alpha(size(res{k}.expMat,2)+1:end);
+                    alpha_ = zeros(size(res{k}.expMat,1),1);
+                    alpha_(ind2) = alpha(ind1);
+                    
+                    tmp = res{k}.c + sum(res{k}.G .*  ...
+                                            prod(alpha_.^res{k}.expMat,1)); 
+                    
+                    if ~isempty(beta)
+                        tmp = tmp + res{k}.Grest*beta;
+                    end
+                    
+                    if tmp > val_min
+                       val_min = tmp; 
+                    end
+                end
+                
+                % add new set to queue (if not smaller than lower bound)
+                if val > val_min
+                   qZnew{end+1} = res{k}; 
+                end
+            end
         end
+        
         pZsplit = qZnew;
     end
-
-    % calculate the interval over-approximation
-    Min = inf;
-    Max = -inf;
-
-    for i = 1:length(pZsplit)
-       inter = interval(pZsplit{i});
-       Min = min(Min,infimum(inter));
-       Max = max(Max,supremum(inter));
-    end
-
-    % extract the desired bound
-    if strcmp(type,'lower')
-       val = Min; 
-    elseif strcmp(type,'upper')
-       val = Max;
-    else
-       val = interval(Min,Max);
-    end
+    
+    val = val_max;
 end
 
 function val = supportFuncBnB(pZ,dir,type,method,maxOrder)

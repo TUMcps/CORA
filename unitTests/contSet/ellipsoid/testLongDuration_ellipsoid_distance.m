@@ -38,9 +38,4 @@ res = res && testLongDuration_component_ellipsoid_distanceMptPolytope;
 % double
 res = res && testLongDuration_component_ellipsoid_distancePoint;
 
-if res
-    disp('testLongDuration_ellipsoid_distance successful');
-else
-    disp('testLongDuration_ellipsoid_distance failed');
-end
 %------------- END OF CODE --------------

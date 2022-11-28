@@ -43,10 +43,4 @@ res(3) = ~isFullDim(Z);
 % combine results
 res = all(res);
 
-if res
-    disp('test_isFullDim successful');
-else
-    disp('test_isFullDim failed');
-end
-
 %------------- END OF CODE --------------

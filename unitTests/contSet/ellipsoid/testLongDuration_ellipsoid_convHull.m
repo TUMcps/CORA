@@ -28,9 +28,4 @@ function res = testLongDuration_ellipsoid_convHull
 % simply is "or"
 res = testLongDuration_ellipsoid_or;
 
-if res
-    disp('testLongDuration_ellipsoid_convHull successful');
-else
-    disp('testLongDuration_ellipsoid_convHull failed');
-end
 %------------- END OF CODE --------------

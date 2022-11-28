@@ -24,12 +24,7 @@ function res = test_ellipsoid_convHull
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 [~,res] = evalc('test_ellipsoid_or');
 
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

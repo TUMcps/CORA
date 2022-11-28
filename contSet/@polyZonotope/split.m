@@ -1,6 +1,6 @@
 function [pZsplit] = split(pZ,varargin)
 % split - splits a polynomial zonotope into two or more polynomial
-%         zonotopes that enclose the original polyZonotope object
+%    zonotopes that jointly enclose that polynomial zonotope
 %
 % Syntax:  
 %    [pZsplit] = split(pZ)
@@ -16,7 +16,7 @@ function [pZsplit] = split(pZ,varargin)
 % Inputs:
 %    pZ - polyZonotope object
 %    gen - generator of the over-approximating parallelotope that is
-%    splitted
+%          splitted
 %
 % Outputs:
 %    pZsplit - cell array of parallotopes represented as polyZonotopes
@@ -25,21 +25,15 @@ function [pZsplit] = split(pZ,varargin)
 %    pZ = polyZonotope([0;0],[2 0 2;0 2 2],[0;0],[1 0 3;0 1 1]);
 %    pZsplit = split(pZ);
 %    
-%    figure
-%    hold on
-%    plot(pZsplit{1}{1},[1,2],'b','Filled',true);
-%    plot(pZsplit{1}{2},[1,2],'g','Filled',true);
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
-%    xlim([-5,5]);
-%    ylim([-8,8]);
+%    figure; hold on; xlim([-5,5]); ylim([-8,8]);
+%    plot(pZsplit{1}{1},[1,2],'FaceColor','b');
+%    plot(pZsplit{1}{2},[1,2],'FaceColor','g');
+%    plot(pZ,[1,2],'FaceColor','r');
 %
-%    figure
-%    hold on
-%    plot(pZsplit{2}{1},[1,2],'y','Filled',true);
-%    plot(pZsplit{2}{2},[1,2],'c','Filled',true);
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
-%    xlim([-5,5]);
-%    ylim([-8,8]);
+%    figure; hold on; xlim([-5,5]); ylim([-8,8]);
+%    plot(pZsplit{2}{1},[1,2],'FaceColor','y');
+%    plot(pZsplit{2}{2},[1,2],'FaceColor','c');
+%    plot(pZ,[1,2],'FaceColor','r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -78,7 +72,7 @@ elseif nargin == 2
     
 end
 
-
+end
 
 % Auxiliary functions -----------------------------------------------------
 
@@ -100,4 +94,6 @@ function Zsplit = splitOneDim(Z,splitDim)
     Zsplit{1} = polyZonotope(c1,Gnew,[]);
     Zsplit{2} = polyZonotope(c2,Gnew,[]);   
     
+end
+
 %------------- END OF CODE --------------

@@ -1,16 +1,16 @@
-function res = quadMap(varargin)
+function cPZ = quadMap(varargin)
 % quadMap - computes the quadratic map of a constrained polynomial zonotope
 %
 % Syntax:  
-%    res = quadMap(cPZ,Q)
-%    res = quadMap(cPZ1,cPZ2,Q)
+%    cPZ = quadMap(cPZ1,Q)
+%    cPZ = quadMap(cPZ1,cPZ2,Q)
 %
 % Inputs:
-%    cPZ,cPZ1,cPZ2 - conPolyZono objects
+%    cPZ1,cPZ2 - conPolyZono objects
 %    Q - quadratic coefficients as a cell of matrices
 %
 % Outputs:
-%    res - resulting set as a conPolyZono object
+%    cPZ - conPolyZono object
 %
 % Example: 
 %    c = [0;0];
@@ -27,10 +27,10 @@ function res = quadMap(varargin)
 %    res = quadMap(cPZ,Q);
 %
 %    figure; hold on
-%    plot(cPZ,[1,2],'b','Filled',true,'EdgeColor','none','Splits',20);
+%    plot(cPZ,[1,2],'FaceColor','b','Splits',20);
 %
 %    figure; hold on
-%    plot(res,[1,2],'r','Filled',true,'EdgeColor','none','Splits',20);
+%    plot(res,[1,2],'FaceColor','r','Splits',20);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -45,34 +45,43 @@ function res = quadMap(varargin)
 
 %------------- BEGIN CODE --------------
 
+if nargin == 1
+    throw(CORAerror('CORA:notEnoughInputArgs',2));
 
-    if nargin == 2                                  % quadratic map
-        
-        % compute quadratic map for polynomial zonotopes
-        cPZ = varargin{1};
-        pZ = polyZonotope(cPZ.c,cPZ.G,cPZ.Grest,cPZ.expMat,cPZ.id);
-        
-        pZ = quadMap(pZ,varargin{2});
-        
-        % convert to constraint polynomial zonotope
-        res = conPolyZono(pZ.c,pZ.G,pZ.expMat, ...
-                          cPZ.A,cPZ.b,cPZ.expMat_,pZ.Grest,pZ.id);
-                      
-    else                                            % mixed quadrtic map
-        
-        % compute quadratic map for polynomial zonotopes
-        cPZ1 = varargin{1}; cPZ2 = varargin{2};
-        pZ1 = polyZonotope(cPZ1.c,cPZ1.G,cPZ1.Grest,cPZ1.expMat,cPZ1.id);
-        pZ2 = polyZonotope(cPZ2.c,cPZ2.G,cPZ2.Grest,cPZ2.expMat,cPZ2.id);
-        
-        pZ = quadMap(pZ1,pZ2,varargin{3});
-        
-        % convert to constraint polynomial zonotope
-        cPZ = conPolyZono(pZ);
-        
-        % update constraints
-        res = updateConstraints(cPZ,cPZ1,cPZ2);
-    end
+elseif nargin == 2                                  % quadratic map
+    % syntax:
+    % cPZ = quadMap(cPZ1,Q)
+    
+    % compute quadratic map for polynomial zonotopes
+    cPZ = varargin{1};
+    pZ = polyZonotope(cPZ.c,cPZ.G,cPZ.Grest,cPZ.expMat,cPZ.id);
+    
+    pZ = quadMap(pZ,varargin{2});
+    
+    % convert to constraint polynomial zonotope
+    cPZ = conPolyZono(pZ.c,pZ.G,pZ.expMat,...
+                      cPZ.A,cPZ.b,cPZ.expMat_,pZ.Grest,pZ.id);
+                  
+elseif nargin == 3                                  % mixed quadratic map
+    % syntax:
+    % cPZ = quadMap(cPZ1,cPZ2,Q)
+    
+    % compute quadratic map for polynomial zonotopes
+    cPZ1 = varargin{1}; cPZ2 = varargin{2};
+    pZ1 = polyZonotope(cPZ1.c,cPZ1.G,cPZ1.Grest,cPZ1.expMat,cPZ1.id);
+    pZ2 = polyZonotope(cPZ2.c,cPZ2.G,cPZ2.Grest,cPZ2.expMat,cPZ2.id);
+    
+    pZ = quadMap(pZ1,pZ2,varargin{3});
+    
+    % convert to constraint polynomial zonotope
+    cPZ = conPolyZono(pZ);
+    
+    % update constraints
+    cPZ = updateConstraints(cPZ,cPZ1,cPZ2);
+    
+else
+    
+    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
 %------------- END OF CODE --------------

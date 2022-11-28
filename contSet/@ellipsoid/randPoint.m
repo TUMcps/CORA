@@ -2,28 +2,27 @@ function p = randPoint(E,varargin)
 % randPoint - generates a random point within an ellipsoid
 %
 % Syntax:  
-%    p = randPoint(obj)
-%    p = randPoint(obj,N)
-%    p = randPoint(obj,type)
-%    p = randPoint(obj,N,type)
-%    p = randPoint(obj,N,'gaussian',pr)
-%    p = randPoint(obj,'gaussian',pr)
+%    p = randPoint(E)
+%    p = randPoint(E,N)
+%    p = randPoint(E,N,type)
+%    p = randPoint(E,N,'gaussian',pr)
 %
 % Inputs:
-%    obj - ellipsoid object
+%    E - ellipsoid object
 %    N - number of random points
-%    type - type of the random point ('standard' or 'gaussian' or 'extreme')
+%    type - type of the random point ('standard', 'gaussian', or 'extreme')
 %    pr - probability that a value is within the set (only type = 'gaussian')
 %
 % Outputs:
 %    p - random point in R^n
 %
 % Example: 
-%    E = ellipsoid([1;0],rand(2,5));
+%    E = ellipsoid([9.3 -0.6 1.9;-0.6 4.7 2.5; 1.9 2.5 4.2]);
 %    p = randPoint(E);
 % 
-%    plot(E); hold on;
-%    scatter(p(1,:),p(2,:),16,'r');
+%    figure; hold on;
+%    plot(E);
+%    scatter(p(1,:),p(2,:),16,'r','filled');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -34,84 +33,58 @@ function p = randPoint(E,varargin)
 % Author:        Victor Gassmann
 % Written:       18-March-2021
 % Last update:   25-June-2021 (MP, add type gaussian)
+%                19-August-2022 (MW, integrate standardized pre-processing)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
-% NOTE: This function does not produce a uniform distribution!
-% parse input arguments
-if ~isa(E,'ellipsoid')
-    error('First argument has to be of type "ellipsoid"!');
-end
-defaultType = 'standard';
-defaultN = 1;
-types = {'standard','gaussian'};
-if isempty(varargin)
-    N = 1;
-    type = defaultType;
-elseif length(varargin)==1
-    if isa(varargin{1},'double') && isscalar(varargin{1}) && mod(varargin{1},1)==0
-        N = varargin{1};
-        type = defaultType;
-    elseif isa(varargin{1},'char') && any(strcmp(varargin{1},types))
-        N = defaultN;
-        type = varargin{1};
-    else
-        error('Wrong type for second input argument!');
-    end
-elseif length(varargin)==2
-    if isa(varargin{1},'char') && strcmp(varargin{1},'gaussian') && isa(varargin{2},'double')
-        type = varargin{1};
-        pr = varargin{2};
-    elseif ~(isa(varargin{1},'double') && isscalar(varargin{1}) && mod(varargin{1},1)==0)...
-            || ~isa(varargin{2},'char') 
-        error('Wrong type of input arguments!');
-    else
-        N = varargin{1};
-        type = varargin{2};
-    end
-elseif length(varargin)==3
-    if isnumeric(varargin{1}) && isscalar(varargin{1}) && isa(varargin{2},'char') ...
-            && strcmp(varargin{2},'gaussian') && isa(varargin{3},'double')
-        N = varargin{1};
-        type = varargin{2};
-        pr = varargin{3};
-    else
-        error('Type ''standard'' only supports up to 3 input arguments!');
-    end
+
+% pre-processing
+[res,vars] = pre_randPoint('ellipsoid',E,varargin{:});
+
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of vars
+    p = vars{1}; return
 else
-    error('Function only supports up to 4 input arguments!');
+    % assign variables
+    E = vars{1}; N = vars{2}; type = vars{3}; pr = vars{4};
+    % sampling with 'gaussian' is done in contSet method: see below
 end
 
-
-if isempty(E)
-    p = [];
-    return;
+% 'all' vertices not supported
+if ischar(N) && strcmp(N,'all')
+    throw(CORAerror('CORA:notSupported',...
+        "Number of vertices 'all' is not supported for class ellipsoid."));
 end
+
+% ellipsoid is just a point
 if rank(E)==0
+    % replicate point N times
     p = repmat(E.q,1,N);
     return;
 end
+
+% read center
 c = E.q;
+% shift center
 E = E + (-c);
+
+% compute rank and dimension
 r = rank(E);
 n = dim(E);
+
+% determine degeneracy: if so, project on proper subspace (via SVD)
 n_rem = n-r;
 [T,~,~] = svd(E.Q);
 E = T'*E;
-% if degenerate, project
 E = project(E,1:r);
 G = inv(sqrtm(E.Q));
 E = G*E;
 
 
-
 % generate different types of extreme points
 if strcmp(type,'gaussian')
-    if nargin == 3
-        pt = randPoint@contSet(E,type,pr);
-    else
-        pt = randPoint@contSet(E,N,type,pr);
-    end
+    pt = randPoint@contSet(E,N,type,pr);
     
     % stack again, backtransform and shift
     p = T*[inv(G)*pt;zeros(n_rem,N)] + c;
@@ -127,12 +100,13 @@ elseif strcmp(type,'standard')
     
     % stack again, backtransform and shift
     p = T*[inv(G)*pt;zeros(n_rem,N)] + c;
+
 elseif strcmp(type,'extreme')
     pt = boundary(E,N);
     
     % stack again, backtransform and shift
     p = T*[inv(G)*pt;zeros(n_rem,N)] + c;
-else
-    error('"Type" has to be ''gaussian'',''standard'', or ''extreme''!');
+
 end
+
 %------------- END OF CODE --------------

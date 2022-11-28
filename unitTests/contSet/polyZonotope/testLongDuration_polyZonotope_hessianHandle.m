@@ -31,8 +31,9 @@ for i=1:nTests
     %% analytic test
     n = randi(1);
     ng = randi([3,10]);
-    nf = randi([2,10]);
-    pZ = noIndep(polyZonotope.generateRandom(n,ng,nf));
+    nf = ng - 1;
+    pZ = noIndep(polyZonotope.generateRandom('Dimension',n,...
+        'NrGenerators',ng,'NrFactors',nf));
     x = sym('x',[size(pZ.expMat,1),1],'real');
     ne = length(pZ.id);
     ind_diff = ismember(pZ.id,unique(randi(ne-1,ne-1,1)));
@@ -43,7 +44,7 @@ for i=1:nTests
     hess_sym = hessian(f_sym,x(ind_diff));
     
     % compute hessian handle of pZ
-    [f_hess,H_str] = hessianHandle(pZ,pZ.id(ind_diff));
+    [f_hess,H_str] = hessianHandle(pZ,pZ.id(ind_diff),pZ.id(~ind_diff));
     
     % check structure
     if ~isempty(nonzeros(hess_sym(~H_str)))
@@ -68,9 +69,9 @@ for i=1:nTests
         break;
     end
 end
+
 if ~res
-    disp('testLongDuration_polyZonotope_hessianHandle failed');
-else
-    disp('testLongDuration_polyZonotope_hessianHandle successful');
+    path = pathFailedTests(mfilename());
+    save(path,'pZ','f','f_val');
 end
 %------------- END OF CODE --------------

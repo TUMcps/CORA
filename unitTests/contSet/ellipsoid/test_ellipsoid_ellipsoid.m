@@ -24,6 +24,7 @@ function res = test_ellipsoid_ellipsoid
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 res = true;
 tol = 1e-12;
 load cases.mat E_c
@@ -89,10 +90,4 @@ for i=1:length(E_c)
     
 end
 
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

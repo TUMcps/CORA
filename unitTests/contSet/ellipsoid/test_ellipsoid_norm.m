@@ -24,8 +24,13 @@ function res = test_ellipsoid_norm
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-res = true;
+
 load cases.mat E_c
+
+% empty set
+res = isinf(norm(ellipsoid()));
+
+% loop over cases
 for i=1:length(E_c)
     E1 = ellipsoid(E_c{i}.E1.Q);
     Ed1 = ellipsoid(E_c{i}.Ed1.Q);
@@ -41,15 +46,6 @@ for i=1:length(E_c)
         res = false;
         break;
     end
-        
-
-    
 end
 
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

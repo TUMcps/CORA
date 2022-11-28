@@ -21,10 +21,7 @@ function res = testSDPT3_linearSysDT_observe_06_Hinf_G()
 %        Interval estimation methods for discrete-time linear time-
 %        invariant systems. IEEE Transactions on Automatic Control,
 %        64(11):4717-4724, 2019.
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      25-Feb-2021
 % Last update:  ---
@@ -34,7 +31,7 @@ function res = testSDPT3_linearSysDT_observe_06_Hinf_G()
 
 
 %% enable access to private function "observe_gain_Hinf"
-path = coraroot();
+path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSysDT','private','observe_gain_HinfG.m');
 target = fullfile(path,'contDynamics','@linearSysDT','observe_gain_HinfG.m');
 copyfile(source,target);
@@ -72,7 +69,7 @@ for iSet = 1:timeSteps
     res_encl = (IH <= enlarge(IH_alternative,1+accuracy));
     res_incl = (IH_alternative <= enlarge(IH,1+accuracy));
     % check if simulation is enclosed
-    res_sim = in(IH,simRes.x{1}(iSet,:)');
+    res_sim = contains(IH,simRes.x{1}(iSet,:)');
     % combine results
     resPartial(iSet) = res_encl*res_incl*res_sim;
 end

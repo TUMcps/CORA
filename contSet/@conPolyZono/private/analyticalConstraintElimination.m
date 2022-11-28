@@ -1,13 +1,12 @@
-function listFin = analyticalConstraintElimination(obj)  
-% analyticalConstraintElimination - Eliminate some special cases of
-%                                   constraints that can be solved
-%                                   analytically
+function listFin = analyticalConstraintElimination(cPZ)  
+% analyticalConstraintElimination - Eliminates some special cases of
+%    constraints that can be solved analytically
 %
 % Syntax:  
-%    listFin = analyticalConstraintElimination(obj)  
+%    listFin = analyticalConstraintElimination(cPZ)  
 %
 % Inputs:
-%    obj - conPolyZonotope object
+%    cPZ - conPolyZono object
 %
 % Outputs:
 %    listFin - list of sets whose union is identical to the original set
@@ -18,7 +17,7 @@ function listFin = analyticalConstraintElimination(obj)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: plot, polygon
+% See also: ---
 
 % Author:       Niklas Kochdumper
 % Written:      30-November-2018
@@ -27,7 +26,7 @@ function listFin = analyticalConstraintElimination(obj)
 
 %------------- BEGIN CODE --------------
 
-    list{1} = obj;
+    list{1} = cPZ;
     listFin = {};
     
     % loop until no more constraints can be eliminated
@@ -46,8 +45,8 @@ function listFin = analyticalConstraintElimination(obj)
             
             for j = 1:length(ind)
                
-                [val_,ind_,empty] = elimSingleEntryConstraint( ...
-                                    objTemp.A(ind(j),:),objTemp.b(ind(j)),objTemp.expMat_);
+                [val_,ind_,empty] = elimSingleEntryConstraint(...
+                    objTemp.A(ind(j),:),objTemp.b(ind(j)),objTemp.expMat_);
                 
                 if empty
                     continue;
@@ -65,8 +64,8 @@ function listFin = analyticalConstraintElimination(obj)
             for j = 1:size(objTemp.A,1)
                ind = find(objTemp.A(j,:) ~= 0);
                if max(sum(objTemp.expMat_(:,ind),1)) == 2
-                   [val_,ind_,empty] = elimQuadConstraint(objTemp.A(j,ind), ...
-                                            objTemp.b(j),objTemp.expMat_(:,ind));
+                   [val_,ind_,empty] = elimQuadConstraint(objTemp.A(j,ind),...
+                    objTemp.b(j),objTemp.expMat_(:,ind));
                                         
                    if empty
                       continue;
@@ -86,7 +85,8 @@ function listFin = analyticalConstraintElimination(obj)
                 if objTemp.b(j) == 0
                     ind = find(objTemp.A(j,:) ~= 0);
                     if all(objTemp.expMat_(:,ind) == 0 | objTemp.expMat_(:,ind) == 2)
-                        [val_,ind_] = elimSpecialCase(objTemp.A(ind),objTemp.expMat_(:,ind));
+                        [val_,ind_] = elimSpecialCase(objTemp.A(ind),...
+                            objTemp.expMat_(:,ind));
                         
                         if ~isempty(val_)
                             [val,indices] = updateValues(val,indices,val_,ind_);
@@ -130,7 +130,7 @@ end
 
 function [val_,ind_,empty] = elimSingleEntryConstraint(A,b,expMat)
 
-    empty = 0; val_ = [];
+    empty = false; val_ = [];
 
     index = find(A);
     ind_ = find(expMat(:,index));
@@ -141,7 +141,7 @@ function [val_,ind_,empty] = elimSingleEntryConstraint(A,b,expMat)
         temp = nthroot(b/A(index),expMat(ind_,index));
 
         if temp > 1     % value located outside the domain
-           empty = 1;
+           empty = true;
            return;
         else
            if mod(expMat(ind_,index),2) == 0
@@ -160,8 +160,8 @@ function [val_,ind_,empty] = elimSingleEntryConstraint(A,b,expMat)
                val_ = [1 -1;1 -1];
            elseif b/A(index) == -1
                val_ = [1 -1;-1 1];
-           elseif b/A(index) > 1 || bA(index) < -1
-               empty = 1;
+           elseif b/A(index) > 1 || b/A(index) < -1
+               empty = true;
                return;
            end
         end
@@ -170,7 +170,7 @@ end
     
 function [val,ind,empty] = elimQuadConstraint(A,b,expMat)
 
-    empty = 0;
+    empty = false;
     val = [];
     
     % eliminate zero rows from the exponent matrix
@@ -196,7 +196,7 @@ function [val,ind,empty] = elimQuadConstraint(A,b,expMat)
             % check if the constraint can be eliminated
             if b > v
                ind = [];
-               empty = 1;
+               empty = true;
             elseif b == v
                val = x;
             end
@@ -220,7 +220,7 @@ function [val,ind,empty] = elimQuadConstraint(A,b,expMat)
                 % check if the constraint can be eliminated
                 if b < v
                    ind = [];
-                   empty = 1;
+                   empty = true;
                 elseif b == v
                    val = x;
                 end
@@ -393,7 +393,7 @@ function res = subsFactorValue(obj,ind,val)
     id = obj.id;
     id(ind) = [];
     
-    % construct resulting conPolyZonotope object
+    % construct resulting conPolyZono object
     res = conPolyZono(obj.c,G,expMat,A,obj.b,expMat_,obj.Grest,id);
     
     % remove redundant monomials

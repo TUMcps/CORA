@@ -1,34 +1,29 @@
-function obj = and(obj,S)
+function res = and(hs,S)
 % and - computes the intersection of a halfspace with a set
 %
 % Syntax:  
-%    obj = and(obj,S)
+%    res = and(hs,S)
 %
 % Inputs:
-%    obj - halfspace object
-%    S - conSet object
+%    hs - halfspace object
+%    S - contSet object
 %
 % Outputs:
-%    obj - conSet object
+%    obj - contSet object
 %
 % Example: 
-%    % define sets
-%    zono1 = zonotope([0 1 2 0;0 1 0 2]);
-%    zono2 = zonotope([3 -0.5 3 0;-1 0.5 0 3]);
-%    zB = zonoBundle({zono1,zono2});
-%
+%    Z1 = zonotope([0 1 2 0;0 1 0 2]);
+%    Z2 = zonotope([3 -0.5 3 0;-1 0.5 0 3]);
+%    zB = zonoBundle({Z1,Z2});
 %    hs = halfspace([1 1],2);
 %
-%    % intersection
-%    res1 = hs & zB;
+%    res = hs & zB;
 %
-%    % visualization
-%    figure
-%    hold on
+%    figure; hold on;
 %    xlim([-1,4]);
 %    ylim([-4,4]);
 %    plot(hs,[1,2],'r','FaceAlpha',0.5);
-%    plot(res1,[1,2],'g','Filled',true,'EdgeColor','none');
+%    plot(res,[1,2],'FaceColor','g');
 %    plot(zB,[1,2],'b','LineWidth',3);
 %
 % Other m-files required: none
@@ -44,6 +39,7 @@ function obj = and(obj,S)
 
 %------------- BEGIN CODE --------------
 
-    obj = S & obj;
+% input argument check happens there
+res = S & hs;
 
 %------------- END OF CODE --------------

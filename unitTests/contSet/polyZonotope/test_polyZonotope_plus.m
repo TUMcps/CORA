@@ -26,10 +26,6 @@ function res = test_polyZonotope_plus
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-%% ANALYTICAL TESTS
-
 % TEST 1
 
 % create polynomial zonotopes
@@ -54,8 +50,8 @@ G =  [-3 -1 3 2 -2 -1; 1 -1 -1 0 -2 -3];
 expMat = [1 0 1 5 0 2; 0 1 3 0 0 0; 0 0 0 0 1 3];
 
 % check for correctness
-if any(c-pZres.c)
-    error('test_polyZonotope_plus: analytical test 1 failed!');
+if ~all(withinTol(c,pZres.c))
+    throw(CORAerror('CORA:testFailed'));
 end
 
 for i = 1:size(expMat,2)    
@@ -64,13 +60,16 @@ for i = 1:size(expMat,2)
     ind_ = find(ind > 0);
     
     if isempty(ind_)
-        error('test_polyZonotope_plus: analytical test failed!');        
+        throw(CORAerror('CORA:testFailed'));
     elseif ~all(pZres.G(:,ind_(1)) == G(:,i))
-        error('test_polyZonotope_plus: analytical test failed!');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 
-
+% empty set
+if ~isempty(pZ1 + polyZonotope())
+    throw(CORAerror('CORA:testFailed'));
+end
 
 res = true;
 

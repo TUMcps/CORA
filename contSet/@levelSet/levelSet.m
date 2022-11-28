@@ -2,8 +2,8 @@ classdef levelSet < contSet
 % levelSet - class definition for non-linear level sets
 %
 % Syntax:
-%       obj = levelSet(eq,vars,compOp)
-%       obj = levelSet(eq,vars,compOp,solved)
+%    obj = levelSet(eq,vars,compOp)
+%    obj = levelSet(eq,vars,compOp,solved)
 %
 % Inputs:
 %    eq - symbolic equation defining the set (eq == 0 or eq <= 0 or eq < 0)
@@ -12,24 +12,30 @@ classdef levelSet < contSet
 %    solved - equation solved for one variable
 %
 % Outputs:
-%    obj - generated level set object
+%    obj - generated levelSet object
 %
-% Example: 
+% Example 1: single equation
 %    syms x y
 %    eq = x^2 + y^2 - 4;
 %    ls = levelSet(eq,[x;y],'==');
 %    
-%    figure
-%    hold on
-%    xlim([-3,3]);
-%    ylim([-3,3]);
+%    figure; hold on; xlim([-3,3]); ylim([-3,3]);
+%    plot(ls,[1,2],'r');
+%
+% Example 2: multiple equations
+%    syms x y
+%    eq1 = x^2 + y^2 - 4;
+%    eq2 = x + y;
+%    ls = levelSet([eq1;eq2],[x;y],{'<=';'<='});
+%    
+%    figure; hold on; xlim([-3,3]); ylim([-3,3]);
 %    plot(ls,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: halfspace, constrainedHyperplane
+% See also: halfspace, conHyperplane
 
 % Author:       Niklas Kochdumper
 % Written:      19-July-2019
@@ -40,14 +46,15 @@ classdef levelSet < contSet
 
 properties (SetAccess = private, GetAccess = public)
     
-    eq = [];        % symbolic equation
-    compOp = [];    % comparison operator
-    vars = [];      % symbolic variables
-    funHan = [];    % function handle for the non-linear equation
-    der = [];       % derivatives of the non-linear equation
-    dim = [];       % dimension
-    solved = [];    % symbolic equation solved for one variable
-    solveable = 0;  % equation is solvable for one variable
+    eq (:,1) = [];      % symbolic equation
+    vars (:,1) = [];    % symbolic variables
+    compOp = [];        % comparison operator
+    
+    funHan = [];        % function handle for the non-linear equation
+    der = [];           % derivatives of the non-linear equation
+    dim = [];           % dimension
+    solved = [];        % symbolic equation solved for one variable
+    solvable = false;   % equation is solvable for one variable
     
 end
     
@@ -56,6 +63,11 @@ methods
     % class constructor
     function obj = levelSet(eq,vars,compOp,varargin)
         
+        if nargin == 0
+            % empty set
+            return
+        end
+
         if nargin == 1 && isa(eq,'levelSet')
             % copy constructor
             obj = eq;
@@ -71,17 +83,15 @@ methods
         
         if ~iscell(compOp)
             if ismember(compOp,{'==','<=','<'})
-               obj.compOp = compOp; 
+                obj.compOp = compOp; 
             else
-               error('levelSet: wrong value for input argument "compOp"!');
+                throw(CORAerror('CORA:wrongValue','third',"be '==' or '<=' or '<'"));
             end
         else
-           for i = 1:length(compOp)
-               if ~ismember(compOp,{'<=','<'})
-                   error('levelSet: wrong value for input argument "compOp"!');
-               end
-           end
-           obj.compOp = compOp;
+            if any(cellfun(@(x) ~ismember(x,{'<=','<'}),compOp,'UniformOutput',true))
+                throw(CORAerror('CORA:wrongValue','third',"be '<=' or '<'"));
+            end
+            obj.compOp = compOp;
         end
         
         % set parent object properties
@@ -127,7 +137,7 @@ methods
                       % check if the equation could be solved for variable
                       try
                           if ~isempty(temp)
-                             obj.solved{i}.solveable = 1;
+                             obj.solved{i}.solvable = 1;
                              obj.solved{i}.eq = temp;
 
                              % loop over all solutions
@@ -142,22 +152,23 @@ methods
                                 obj.solved{i}.funHan{j}.hess = hess_;
                                 obj.solved{i}.funHan{j}.third = third_;
 
-                                obj.solved{i}.funHan{j}.eq = matlabFunction(obj.solved{i}.eq(j),'Vars',{vars});
+                                obj.solved{i}.funHan{j}.eq = ...
+                                    matlabFunction(obj.solved{i}.eq(j),'Vars',{vars});
                              end
 
-                             obj.solveable = 1;
+                             obj.solvable = 1;
                           else
-                             obj.solved{i}.solveable = 0;
+                             obj.solved{i}.solvable = 0;
                              obj.solved{i}.eq = [];
                              obj.solved{i}.funHan = [];
                           end
                       catch
-                          obj.solved{i}.solveable = 0;
+                          obj.solved{i}.solvable = 0;
                           obj.solved{i}.eq = [];
                       end
                   else
                       obj.solved{i}.contained = 0;
-                      obj.solved{i}.solveable = 0;
+                      obj.solved{i}.solvable = 0;
                       obj.solved{i}.eq = [];
                       obj.solved{i}.funHan = [];
                   end

@@ -26,9 +26,7 @@ function res = testLongDuration_interval_acos
 
 %------------- BEGIN CODE --------------
 
-
-% Random tests ---------------------------------------------------------
-
+% Random tests
 numberRandTests = 10000;
 
 % all x<1 or x>1 must return NaN
@@ -59,15 +57,12 @@ for i=1:numberRandTests
 end
 
 
-
-% final test result -------------------------------------------------------
-
+% final test result
 res = all(res_rand);
 
-if res
-    disp('test_acos successful');
-else
-    disp('test_acos failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'a','b');
 end
 
 end

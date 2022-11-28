@@ -34,7 +34,7 @@ function [obj,options] = expmtie_adaptive(obj,options)
 % load data from object/options structure
 A = obj.A;
 A_abs = abs(A);
-n = dimension(obj);
+n = obj.dim;
 deltat = options.timeStep;
 % deltatbyfac = options.factor;
 

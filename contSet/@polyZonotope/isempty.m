@@ -1,5 +1,5 @@
 function res = isempty(pZ)
-% isempty - checks if a polyZonotope object is empty
+% isempty - checks if a polynomial zonotope is the empty set
 %
 % Syntax:  
 %    res = isempty(pZ)
@@ -8,7 +8,7 @@ function res = isempty(pZ)
 %    pZ - polyZonotope object
 %
 % Outputs:
-%    res - boolean whether pZ is empty
+%    res - true/false
 %
 % Example: 
 %    pZ1 = polyZonotope([2;1],[1 0; -2 1],[1; 0],[0 2; 1 0]);
@@ -32,4 +32,3 @@ function res = isempty(pZ)
 res = isempty(pZ.c) && isempty(pZ.G) && isempty(pZ.Grest);
 
 %------------- END OF CODE --------------
-

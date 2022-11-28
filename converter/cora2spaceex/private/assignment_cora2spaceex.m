@@ -20,16 +20,16 @@ function assignment_cora2spaceex(tran, docNode, reset)
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
-%
+
 %------------- BEGIN CODE --------------
 
 A = reset.A;
-b = reset.b;
+b = reset.c;
 
 dim = size(A,1);
 

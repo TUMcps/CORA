@@ -1,18 +1,21 @@
-function plot(varargin)
+function plot(matZ,varargin)
 % plot - Plots 2-dimensional projection of a matrix zonotope
 %
-% Syntax:  
-%    plot(obj,dimensions)
+% Syntax:
+%    plot(matZ)
+%    plot(matZ,dimensions)
+%    plot(matZ,dimensions,linespec)
 %
 % Inputs:
-%    obj - matrix zonotope
-%    dimensions - dimensions that should be projected (optional) 
-%    linespec - plot style (optional) 
+%    matZ - matZonotope object
+%    dimensions - (optional) dimensions that should be projected
+%    linespec - (optional) plot style
 %
 % Outputs:
-%    none
+%    -
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,15 +31,9 @@ function plot(varargin)
 %------------- BEGIN CODE --------------
 
 %convert from matrix zonotope to zonotope
-Z=zonotope(varargin{1});
+Z=zonotope(matZ);
     
 %plot zonotope
-if nargin==1
-    plot(Z);
-elseif nargin==2
-    plot(Z,varargin{2});
-else
-    plot(Z,varargin{2},varargin{3});
-end
+plot(Z,varargin{:});
 
 %------------- END OF CODE --------------

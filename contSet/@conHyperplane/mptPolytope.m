@@ -1,14 +1,18 @@
-function P = mptPolytope(obj)
-% mptPolytope - Converts a constrained hyperplane to a mptPolytope object
+function P = mptPolytope(hyp)
+% mptPolytope - Converts a constrained hyperplane to a polytope
 %
 % Syntax:  
-%    P = mptPolytope(obj)
+%    P = mptPolytope(hyp)
 %
 % Inputs:
-%    obj - conHyperplane object
+%    hyp - conHyperplane object
 %
 % Outputs:
 %    P - mptPolytope object
+%
+% Example:
+%    hyp = conHyperplane(halfspace([1;1],0),[1 0;-1 0],[2;2]);
+%    P = mptPolytope(hyp);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,16 +27,16 @@ function P = mptPolytope(obj)
 
 %------------- BEGIN CODE --------------
 
-    if isempty(obj.C)
-        A = [obj.h.c';-obj.h.c'];
-        b = [obj.h.d;-obj.h.d];       
-    else
-        A = [obj.h.c';-obj.h.c';obj.C];
-        b = [obj.h.d;-obj.h.d;obj.d];
-    end
-
-    P = mptPolytope(A,b);
-
+% conversion
+if isempty(hyp.C)
+    A = [hyp.h.c';-hyp.h.c'];
+    b = [hyp.h.d;-hyp.h.d];       
+else
+    A = [hyp.h.c';-hyp.h.c';hyp.C];
+    b = [hyp.h.d;-hyp.h.d;hyp.d];
 end
+
+% instantiate polytope
+P = mptPolytope(A,b);
 
 %------------- END OF CODE --------------

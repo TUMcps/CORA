@@ -1,35 +1,32 @@
-function cZ = convHull(cZ1,varargin)
-% convHull - computes the convex hull of two constrained zonotopes
+function cZ = convHull(cZ,varargin)
+% convHull - computes the convex hull of a constrained zonotope and one or
+%    multiple other set representations
 %
 % Syntax:  
-%    cZ = convHull(cZ1,cZ2)
-%    cZ = convHull(cZ1,...,cZm)
+%    cZ = convHull(cZ,S)
+%    cZ = convHull(cZ,S1,...,Sm)
 %
 % Inputs:
-%    cZ1,...,cZm - conZonotope objects
+%    cZ - conZonotope object
+%    S1,...Sm - contSet objects
 %
 % Outputs:
-%    cZ - conZonotope object representing the convex hull of cZ1 and cZ2
+%    cZ - conZonotope object
 %
 % Example: 
-%    % constrained zonotopes
 %    Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
-%    A = [1 1 1];
-%    b = 1;
-%    cZono1 = conZonotope(Z,A,b);
+%    A = [1 1 1]; b = 1;
+%    cZ1 = conZonotope(Z,A,b);
 %
 %    Z = [4 2 0 0;4 1 1 0];
-%    A = [1 1 -1];
-%    b = 0;
-%    cZono2 = conZonotope(Z,A,b);
+%    A = [1 1 -1]; b = 0;
+%    cZ2 = conZonotope(Z,A,b);
 %
-%    % convex hull
-%    res = convHull(cZono1,cZono2);
+%    res = convHull(cZ1,cZ2);
 %
-%    % visualization
-%    hold on
-%    plot(cZono1,[1,2],'r','Filled',true,'EdgeColor','none');
-%    plot(cZono2,[1,2],'b','Filled',true,'EdgeColor','none');
+%    figure; hold on;
+%    plot(cZ1,[1,2],'FaceColor','r');
+%    plot(cZ2,[1,2],'FaceColor','b');
 %    plot(res,[1,2],'g','LineWidth',3);
 %
 % Other m-files required: none
@@ -46,53 +43,60 @@ function cZ = convHull(cZ1,varargin)
 %------------- BEGIN CODE --------------
 
     % use different algorithms for the case with only one or two sets
-    if nargin == 1
-        
-        cZ = varargin{1};
-        
-    elseif nargin == 2
+    if nargin == 2
 
-        cZ2 = varargin{1};
-        
+        S = varargin{1};
+        if isemptyobject(S)
+            cZ = cZ; return
+        end
+        if isemptyobject(cZ)
+            cZ = S; return
+        end
         % find a conZonotope object
-        if ~isa(cZ1,'conZonotope')
-            temp = cZ1;
-            cZ1 = cZ2;
-            cZ2 = temp;
+        if ~isa(cZ,'conZonotope')
+            temp = cZ;
+            cZ = S;
+            S = temp;
         end
 
         % handle different classes of the second set
-        if isa(cZ2, 'conZonotope')
+        if isa(S, 'conZonotope')
 
-            cZ = convHullconZonotope(cZ1,cZ2);
+            cZ = convHullconZonotope(cZ,S);
 
-        elseif isa(cZ2,'zonotope') || isa(cZ2,'interval') || ...
-               isa(cZ2,'mptPolyope') || isa(cZ2,'zonoBundle') || ...
-               isnumeric(cZ2)
+        elseif isa(S,'zonotope') || isa(S,'interval') || ...
+               isa(S,'mptPolytope') || isa(S,'zonoBundle') || ...
+               isnumeric(S)
 
-            cZ = convHullconZonotope(cZ1,conZonotope(cZ2));
+            cZ = convHullconZonotope(cZ,conZonotope(S));
             
-        elseif isa(cZ2,'polyZonotope') || isa(cZ2,'conPolyZono')
+        elseif isa(S,'polyZonotope') || isa(S,'conPolyZono')
             
-            cZ = convHull(polyZonotope(cZ1),cZ2);
+            cZ = convHull(polyZonotope(cZ),S);
 
         else
             % throw error for given arguments
-            error(noops(cZ1,cZ2));
+            throw(CORAerror('CORA:noops',cZ,S));
         end
+
+    elseif all(cellfun(@(x) isa(x,'conZonotope'),varargin,'UniformOutput',true))
+
+        % multiple sets only if all are constrained zonotopes
+        list = [{cZ},varargin];
+        cZ = convHullMany(list);
 
     else
 
-        list = [{cZ1},varargin];
-        cZ = convHullMany(list);
+        throw(CORAerror('CORA:noops',cZ,varargin(:)));
 
     end
 end
-    
+
+
 % Auxiliary Functions -----------------------------------------------------
 
 function cZ = convHullconZonotope(cZ1,cZ2)
-% compute convex hull of two constrained zonotopes 
+% compute convex hull of two constrained zonotopes
 
     % obtain object properties
     c1 = cZ1.Z(:,1);
@@ -155,8 +159,7 @@ end
 
 
 function cZ = convHullMany(list)
-% compute convex hull of many constrained zonotopes   
-
+% compute convex hull of many constrained zonotopes
 
     % initialize variables
     n = size(cZ1.Z,1);
@@ -208,6 +211,7 @@ function cZ = convHullMany(list)
     b = [b_;1-0.5*length(list)];
     
     cZ = conZonotope([c_,G_],A,b);  
+
 end
 
 %------------- END OF CODE --------------

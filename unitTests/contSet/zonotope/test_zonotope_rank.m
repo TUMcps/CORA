@@ -35,13 +35,6 @@ d = rank(Z1);
 true_val = 2;
 
 % check result
-res = (d==true_val);
-
-
-if res
-    disp('test_rank successful');
-else
-    disp('test_rank failed');
-end
+res = (d==true_val) && (rank(zonotope())==0);
 
 %------------- END OF CODE --------------

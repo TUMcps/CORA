@@ -1,14 +1,14 @@
-function [v] = ndimCross(Q)
+function v = ndimCross(Q)
 % ndimCross - Computes the n-dimensional cross product
 %
 % Syntax:  
-%    [v] = nDimCross(Q)
+%    v = ndimCross(Q)
 %
 % Inputs:
-%    Q - 
+%    Q - ???
 %
 % Outputs:
-%    v - 
+%    v - ???
 %
 % Example: 
 %    -

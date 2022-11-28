@@ -103,8 +103,9 @@ linError = linError([1 3 5 6]);
 points = points([1 3 5 6],:);
 
 for i = 1:N
-    if ~in(linError,points(:,i))
-    	error('test_nonlinear_error failed!'); 
+    if ~contains(linError,points(:,i))
+    	res = false;
+        break
     end
 end
 

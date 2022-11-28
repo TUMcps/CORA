@@ -48,7 +48,7 @@ function res = inverse(obj)
         
         %producing T_tilda from the manual
         if isempty(c_f) || c_f == 0
-            error('Function ''taylm/inverse'' is not defined for value 0!'); 
+            throw(CORAerror('CORA:outOfDomain','validDomain','Function ''taylm/inverse'' is not defined for value 0!'));
         else    
             T = obj - c_f;
             c_f = 1./c_f;
@@ -58,7 +58,7 @@ function res = inverse(obj)
         rem = interval(T);
         temp = rem + 1./c_f;
         if infimum(temp) <= 0 && supremum(temp) >= 0
-            error('Function ''taylm/inverse'' is not defined for value 0!'); 
+            throw(CORAerror('CORA:outOfDomain','validDomain','Function ''taylm/inverse'' is not defined for value 0!'));
         end
         
         % sum initialisation

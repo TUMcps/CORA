@@ -20,10 +20,7 @@ function res = testMosek_linearSysDT_observe_gain_03_PRadC()
 %        Cembrano. A distributed set-membership approach based on
 %        zonotopes for interconnected systems. In Proc. of the IEEE
 %        Conference on Decision and Control (CDC), pages 668–673, 2018.
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      18-September-2020
 % Last update:  ---
@@ -32,7 +29,7 @@ function res = testMosek_linearSysDT_observe_gain_03_PRadC()
 %------------- BEGIN CODE --------------
 
 % enable access to private function "observe_gain_PRadC"
-path = coraroot();
+path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSysDT','private','observe_gain_PRadC.m');
 target = fullfile(path,'contDynamics','@linearSysDT','observe_gain_PRadC.m');
 copyfile(source,target);

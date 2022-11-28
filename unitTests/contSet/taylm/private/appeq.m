@@ -10,24 +10,24 @@ function res = appeq(int1, int2, eps)
 % Outputs:
 %    res - boolean 
 %
-% Example: 
-%
 % Other m-files required: interval
 % Subfunctions: none
 % MAT-files required: none
-%
-%
+
 % Author:       Dmitry Grebenyuk
 % Written:      07-August-2017
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-    if isa(int1, 'interval') && isa(int2, 'interval')
-        res = all( abs(infimum(int1) - infimum(int2)) <= eps )  &&...
-            all( abs(supremum(int1) - supremum(int2)) <= eps );
-    elseif isa(int1, 'double') && isa(int2, 'double')
-        res = all( abs(int1 - int2) <= eps );
-    end  
+
+if isa(int1, 'interval') && isa(int2, 'interval')
+    res = all( abs(infimum(int1) - infimum(int2)) <= eps )  &&...
+        all( abs(supremum(int1) - supremum(int2)) <= eps );
+elseif isa(int1, 'double') && isa(int2, 'double')
+    res = all( abs(int1 - int2) <= eps );
+end  
 end
+
+%------------- END OF CODE --------------
 

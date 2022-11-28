@@ -2,24 +2,27 @@ function Z = generateRandom(varargin)
 % generateRandom - Generates a random zonotope
 %
 % Syntax:  
-%    Z = generateRandom(varargin)
+%    Z = zonotope.generateRandom()
+%    Z = zonotope.generateRandom('Dimension',n)
+%    Z = zonotope.generateRandom('Dimension',n,'NrGenerators',nrGens)
 %
 % Inputs:
-%    dim      - (optional) dimension
-%    cen      - (optional) center
-%    nrOfGens - (optional) number of generators
-%    type     - (optional) distribution from which generators are created
-%                'uniform', 'exp', 'gamma'
+%    Name-Value pairs (all options, arbitrary order):
+%       <'Dimension',n> - dimension
+%       <'Center',c> - center
+%       <'NrGenerators',nrGens> - number of generators
+%       <'Distribution',type> - distribution for generators
+%           typeDist has to be {'uniform', 'exp', 'gamma'}
 %
 % Outputs:
 %    Z - random zonotope
 %
 % Example: 
 %    Z1 = zonotope.generateRandom();
-%    Z2 = zonotope.generateRandom(3);
-%    Z3 = zonotope.generateRandom(2,ones(2,1));
-%    Z4 = zonotope.generateRandom(4,zeros(4,1),10);
-%    Z5 = zonotope.generateRandom(3,zeros(3,1),20,'gamma');
+%    Z2 = zonotope.generateRandom('Dimension',3);
+%    Z3 = zonotope.generateRandom('Center',ones(2,1));
+%    Z4 = zonotope.generateRandom('Dimension',4,'NrGenerators',10);
+%    Z5 = zonotope.generateRandom('Distribution','gamma');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,68 +34,77 @@ function Z = generateRandom(varargin)
 % Written:      17-Sep-2019
 % Last update:  24-Sep-2019
 %               01-May-2020 (integration of randomZonotope.m)
+%               19-May-2022 (name-value pair syntax)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% define bounds for random values
-dim_low = 2;
-dim_up = 10;
-orderGen_low = 1;
-orderGen_up = 10;
-center_low = -5;
-center_up = 5;
-maxLength = 5; % only type = 'uniform'
+% name-value pairs -> number of input arguments is always a multiple of 2
+if mod(nargin,2) ~= 0
+    throw(CORAerror('CORA:evenNumberInputArgs'));
+else
+    % read input arguments
+    NVpairs = varargin(1:end);
+    % check list of name-value pairs
+    checkNameValuePairs(NVpairs,{'Dimension','Center','NrGenerators','Distribution'});
+    % dimension given?
+    [NVpairs,n] = readNameValuePair(NVpairs,'Dimension');
+    % center given?
+    [NVpairs,c] = readNameValuePair(NVpairs,'Center');
+    % number of generators given?
+    [NVpairs,nrGens] = readNameValuePair(NVpairs,'NrGenerators');
+    % distribution for generators given?
+    [NVpairs,type] = readNameValuePair(NVpairs,'Distribution');
+end
 
-if nargin < 4
+% default computation for dimension
+if isempty(n)
+    if isempty(c)
+        nmax = 10;
+        n = randi(nmax);
+    else
+        n = length(c);
+    end
+end
+
+% default computation for center
+if isempty(c)
+    c = 10*randn(n,1);
+end
+
+% default number of generators
+if isempty(nrGens)
+    nrGens = 2*n;
+end
+
+% default distribution
+if isempty(type)
     type = 'uniform';
-else
-    type = varargin{4};
 end
 
-% generate random values
-if nargin >= 1 && ~isempty(varargin{1})
-    n = varargin{1};
-else
-    n = dim_low + floor(rand(1) * (dim_up - dim_low + 1));
-end
+% generate random vector for the generator lengths
+l = zeros(nrGens,1);
 
-c = center_low + rand(n,1) * (center_up - center_low);
-
-numGen_low = floor(orderGen_low*n);
-numGen_up = floor(orderGen_up*n);
-
-nrOfGens = numGen_low + floor(rand(1) * (numGen_up - numGen_low));
-
-if nargin >= 2 && ~isempty(varargin{2})
-   c = varargin{2};
-end
-if nargin >= 3 && ~isempty(varargin{3})
-   nrOfGens = varargin{3}; 
-end
-
-%generate random vector for the generator lengths
-l = zeros(nrOfGens,1);
-%uniform distribution
+% uniform distribution
 if strcmp(type,'uniform')
-    l = maxLength*rand(nrOfGens,1);
+    l = rand(nrGens,1);
 
-%exponential distribution    
+% exponential distribution    
 elseif strcmp(type,'exp')
-    l = exprnd(1,nrOfGens,1);
+    l = exprnd(1,nrGens,1);
 
-%gaussian distribution    
+% gaussian distribution    
 elseif strcmp(type,'gamma')
-    l = gamrnd(2,1,nrOfGens,1);
+    l = gamrnd(2,1,nrGens,1);
 end
 
 % init generator matrix
-G = zeros(n,nrOfGens);
-%create generators
-for i=1:nrOfGens
-    %generate random point on sphere
+G = zeros(n,nrGens);
+% create generators
+for i=1:nrGens
+    % generate random point on sphere
     gTmp = randomPointOnSphere(n);
-    %stretch by length
+    % stretch by length
     G(:,i) = l(i)*gTmp;
 end
 

@@ -1,81 +1,121 @@
 function [ExpMatNew,Gnew] = removeRedundantExponents(ExpMat,G)
 % removeRedundantExponents - add up all generators that belong to terms
-%                            with identical exponents 
+%    with identical exponents
 %
-% Syntax:  
-%    [ExpMatNew, Gnew] = removeRedundantExponents(ExpMat, G)
+% Syntax:
+%    [ExpMatNew, Gnew] = removeRedundantExponents(ExpMat,G)
 %
 % Inputs:
 %    ExpMat - matrix containing the exponent vectors
 %    G - generator matrix
 %
 % Outputs:
-%    ExpMat - modified exponent matrix
-%    G - modified generator matrix
+%    ExpMatNew - modified exponent matrix
+%    Gnew - modified generator matrix
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
-% Author:        Niklas Kochdumper
-% Written:       25-June-2018 
+% Author:        Niklas Kochdumper, Tobias Ladner
+% Written:       25-June-2018
 % Last update:   21-April-2020 (remove zero-length generators)
+%                23-June-2022 (performance optimizations)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-    % remove zero-length generators
-    idxD = any(G,1);
-    
-    % skip if all non-zero
-    if ~all(idxD)
-        if all(~idxD)
-            ExpMatNew = zeros(size(ExpMat,1),1);
-            Gnew = zeros(size(G,1),1);
-            return;
-        else
-            G = G(:,idxD);
-            ExpMat = ExpMat(:,idxD);
-        end
-    end
-
-    % add hash value of the exponent vectors to the exponent matrix 
-    temp = 1:1:size(ExpMat,1);
-    rankMat = [(temp*ExpMat)', ExpMat'];
-    
-    % sort the exponent vectors according to the hash value
-    [~, ind] = sortrows(rankMat);
-    ExpMatTemp = ExpMat(:,ind);
-    Gtemp = G(:,ind);
-    
-    % initialization
-    counterNew = 1;
-    ExpMatNew = zeros(size(ExpMat));
-    Gnew = zeros(size(G));
-    
-    % first entry
-    ExpMatNew(:,counterNew) = ExpMatTemp(:,1);
-    Gnew(:,counterNew) = Gtemp(:,1);
-    
-    % loop over all exponent vectors
-    for counter = 2:size(ExpMatTemp,2)
-        
-        if all(ExpMatNew(:,counterNew) == ExpMatTemp(:,counter))           
-            Gnew(:,counterNew) = Gnew(:,counterNew) + Gtemp(:,counter);
-        else
-            counterNew = counterNew + 1;
-            Gnew(:,counterNew) = Gtemp(:,counter);
-            ExpMatNew(:,counterNew) = ExpMatTemp(:,counter);
-        end
-        
-    end 
-    
-    % truncate exponent and generator matrix
-    ExpMatNew = ExpMatNew(:,1:counterNew);
-    Gnew = Gnew(:,1:counterNew);
-
+% return directly if G is empty
+if isempty(G)
+    ExpMatNew = ExpMat;
+    Gnew = G;
+    return;
 end
+
+% remove zero-length generators
+idxD = any(G,1);
+
+% skip if all non-zero
+if ~all(idxD)
+    if all(~idxD)
+        ExpMatNew = zeros(size(ExpMat,1),1);
+        Gnew = zeros(size(G,1),1);
+        return;
+    else
+        G = G(:,idxD);
+        ExpMat = ExpMat(:,idxD);
+    end
+end
+
+% add hash value of the exponent vectors to the exponent matrix
+r = rng;
+rng(1); % deterministic random hash vector
+hashVec = rand(1, size(ExpMat, 1));
+hashMat = (hashVec*ExpMat)';
+rng(r) % restore rng
+
+% sort the exponent vectors according to the hash value
+[hashes, ind] = sortrows(hashMat);
+ind = ind'; % row
+
+% test if all (sorted) hashes are different
+uniqueHashIdx = [hashes(1:end-1) ~= hashes(2:end); true] ... % succ 
+    & [true; hashes(1:end-1) ~= hashes(2:end)]; % pred
+
+% if so, return directly
+numUnique = sum(uniqueHashIdx);
+if numUnique == size(ExpMat, 2)
+    ExpMatNew = ExpMat;
+    Gnew = G;
+    return
+end
+
+% initialize new matrices
+ExpMatNew = zeros(size(ExpMat));
+Gnew = zeros(size(G));
+
+% copy unique hashes
+uniqueColumns = ind(uniqueHashIdx);
+ExpMatNew(:, 1:numUnique) = ExpMat(:, uniqueColumns);
+Gnew(:, 1:numUnique) = G(:, uniqueColumns);
+current = numUnique + 1;
+
+% continue with potential redundancies
+ind = ind(~uniqueHashIdx);
+
+ExpMat = ExpMat(:, ind);
+G = G(:, ind);
+hashMat = hashMat(ind);
+ind = 1:length(ind);
+
+% first entry
+ind_i = ind(1);
+exp_c = ExpMat(:,ind_i);
+hash_c = hashMat(ind_i);
+ExpMatNew(:,current) = exp_c;
+Gnew(:,current) = G(:,ind_i);
+
+% loop over all exponent vectors
+for ind_i = ind(2:end)
+    hash_i = hashMat(ind_i);
+    exp_i = ExpMat(:,ind_i);
+
+    if hash_c == hash_i && all(exp_c == exp_i)           
+        Gnew(:,current) = Gnew(:,current) + G(:,ind_i);
+    else
+        current = current + 1;
+        exp_c = exp_i;
+        hash_c = hash_i;
+        ExpMatNew(:,current) = exp_c;
+        Gnew(:,current) = G(:,ind_i);
+    end
+end 
+
+
+% truncate exponent and generator matrix
+ExpMatNew(:,current+1:end) = [];
+Gnew(:,current+1:end) = [];
 
 %------------- END OF CODE --------------

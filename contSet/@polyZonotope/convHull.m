@@ -1,16 +1,17 @@
-function pZ = convHull(pZ1,varargin)
-% convHull - Computes the convex hull of two polynomial zonotopes
+function pZ = convHull(pZ,varargin)
+% convHull - Computes the convex hull of a polynomial zonotope and another
+%    set representation
 %
 % Syntax:  
-%    pZ = convHull(pZ1)
-%    pZ = linComb(pZ1,pZ2)
+%    pZ = convHull(pZ)
+%    pZ = convHull(pZ,S)
 %
 % Inputs:
-%    pZ1 - first polyZonotope object
-%    pZ2 - second polyZonotope object
+%    pZ - polyZonotope object
+%    S - contSet object
 %
 % Outputs:
-%    pZ - polyZonotope enclosing pZ1 and pZ2
+%    pZ - polyZonotope object
 %
 % Example: 
 %    pZ = polyZonotope([0;0],[1 0;0 1],[],[1 3]);
@@ -18,10 +19,8 @@ function pZ = convHull(pZ1,varargin)
 %    res = convHull(pZ);
 %
 %    figure; hold on;
-%    plot(res,[1,2],'FaceColor',[0.6 0.6 0.6],'Filled',true, ...
-%         'Splits',20,'EdgeColor','none');
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','r','Splits',6, ...
-%         'LineWidth',2);
+%    plot(res,[1,2],'FaceColor',[0.6 0.6 0.6],'Splits',20);
+%    plot(pZ,[1,2],'FaceColor','r','Splits',6,'LineWidth',2);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,52 +37,53 @@ function pZ = convHull(pZ1,varargin)
 
     % parse input arguments
     if nargin > 1
-        pZ2 = varargin{1};
-        pZ = convHullMult(pZ1,pZ2);
+        pZ = convHullMult(pZ,varargin{1});
     else
-        pZ = linComb(pZ1,pZ1);
+        pZ = linComb(pZ,pZ);
     end
 end
 
 
 % Auxiliary Functions -----------------------------------------------------
 
-function pZ = convHullMult(pZ1,pZ2)
+function pZ = convHullMult(pZ1,S)
 % compute the convex hull of two polynomial zonotopes
-
+    if isempty(S)
+        pZ = pZ1; return;
+    end
     % determine polyZonotope object
     if ~isa(pZ1,'polyZonotope')
         temp = pZ1;
-        pZ1 = pZ2;
-        pZ2 = temp;
+        pZ1 = S;
+        S = temp;
     end
     
     % convert other set representations to polynomial zonotopes
-    if ~isa(pZ2,'polyZonotope')
-        if isa(pZ2,'zonotope') || isa(pZ2,'interval') || ...
-           isa(pZ2,'mptPolytope') || isa(pZ2,'zonoBundle') || ...
-           isa(pZ2,'conZonotope')
+    if ~isa(S,'polyZonotope')
+        if isa(S,'zonotope') || isa(S,'interval') || ...
+           isa(S,'mptPolytope') || isa(S,'zonoBundle') || ...
+           isa(S,'conZonotope')
 
-            pZ2 = polyZonotope(pZ2);
+            S = polyZonotope(S);
             
-        elseif isa(pZ2,'conPolyZono')
+        elseif isa(S,'conPolyZono')
             
-            pZ = convHull(pZ2,pZ1);
+            pZ = convHull(S,pZ1);
             return
             
-        elseif isnumeric(pZ2)
+        elseif isnumeric(S)
             
-            pZ2 = polyZonotope(pZ2,[],[],[]);
+            S = polyZonotope(S,[],[],[]);
             
         else        
             % throw error for given arguments
-            error(noops(pZ1,pZ2));
+            throw(CORAerror('CORA:noops',pZ1,S));
         end
     end
 
     % remove independent generatros
     pZ1_ = polyZonotope(pZ1.c,pZ1.G,[],pZ1.expMat,pZ1.id);
-    pZ2_ = polyZonotope(pZ2.c,pZ2.G,[],pZ2.expMat,pZ2.id);
+    pZ2_ = polyZonotope(S.c,S.G,[],S.expMat,S.id);
     
     % compute convex hull of depenent part using the linear combination
     pZ = linComb(linComb(pZ1_,pZ1_),linComb(pZ2_,pZ2_));
@@ -92,13 +92,14 @@ function pZ = convHullMult(pZ1,pZ2)
     % zonotopes
     temp = zeros(length(pZ1.c),1);
     zono1 = zonotope([temp, pZ1.Grest]);
-    zono2 = zonotope([temp, pZ2.Grest]);
+    zono2 = zonotope([temp, S.Grest]);
 
     zono = enclose(zono1,zono2);
     Grest = generators(zono);
 
     % construct the resulting set
     pZ.Grest = Grest;
+
 end
 
 %------------- END OF CODE --------------

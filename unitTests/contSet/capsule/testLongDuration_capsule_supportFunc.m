@@ -45,21 +45,11 @@ for n=2:4:30
         val = supportFunc(C,dirs(:,d));
         if abs(val) > 2
             res = false;
-            break
+            path = pathFailedTests(mfilename());
+            save(path,'g');
+            return
         end
-    end
-    
-    if ~res
-        break;
-    end
-    
-end
-
-
-if res
-    disp('test_supportFunc successful');
-else
-    disp('test_supportFunc failed');
+    end    
 end
 
 %------------- END OF CODE --------------

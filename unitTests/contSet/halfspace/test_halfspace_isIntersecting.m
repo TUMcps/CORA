@@ -25,10 +25,12 @@ function res = test_halfspace_isIntersecting
 
 %------------- BEGIN CODE --------------
 
+% intersection with empty set
+res_e = ~isIntersecting(halfspace([1 1],2),zonotope());
+
 % TEST 1: Zonotopes -------------------------------------------------------
 % instantiate zonotope
 Z = zonotope([zeros(2,1),[1 1; -1 1]]);
-% plot(Z);
 
 % instantiate halfspaces
 h_above = halfspace([0 1],3);
@@ -85,12 +87,6 @@ res_int = res_above && res_upperboundary && res_through && ...
 
 
 % combine tests
-res = res_zon && res_int;
-
-if res
-    disp('test_isIntersecting successful');
-else
-    disp('test_isIntersecting failed');
-end
+res = res_e && res_zon && res_int;
 
 %------------- END OF CODE --------------

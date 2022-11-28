@@ -20,8 +20,8 @@ function [obj,options] = inputSolution(obj,options)
 %
 % See also: ---
 
-% Author: Matthias Althoff
-% Written: 08-May-2007 
+% Author:       Matthias Althoff
+% Written:      08-May-2007 
 % Last update:  26-October-2007
 %               07-October-2008
 %               27-April-2009
@@ -30,12 +30,24 @@ function [obj,options] = inputSolution(obj,options)
 %               15-June-2016
 %               25-July-2016 (intervalhull replaced by interval)
 %               01-November-2017 (consideration of constant input c)
+%               16-November-2021 (disturbance set W)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
+% possible effect of disturbance: total input is then
+%   V = obj.B*options.U + (options.W - center(options.W))
+%   vTrans = obj.B*options.uTrans + center(options.W)
+if isfield(options,'W')
+    Wcenter = center(options.W);
+    W = options.W + (-Wcenter);
+else
+    Wcenter = 0;
+    W = 0;
+end
+
 % set of possible inputs
-V = obj.B*options.U;
+V = obj.B*options.U + W;
 
 options.isRV = true;
 if all(center(V) == zeros(obj.dim,1)) && size(V.Z,2) == 1
@@ -43,7 +55,7 @@ if all(center(V) == zeros(obj.dim,1)) && size(V.Z,2) == 1
 end
 
 % compute vTrans 
-vTrans = obj.B*options.uTrans;
+vTrans = obj.B*options.uTrans + Wcenter;
 % consider constant input
 if ~isempty(obj.c)
     vTrans = vTrans + obj.c;

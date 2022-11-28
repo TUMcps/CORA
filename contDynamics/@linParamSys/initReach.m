@@ -1,8 +1,8 @@
-function [Rfirst,options] = initReach(obj, Rinit, options)
+function [Rfirst,options] = initReach(obj,Rinit,options)
 % initReach - computes the reachable continuous set for the first time step
 %
 % Syntax:  
-%    [obj,Rfirst] = initReach(obj,Rinit,options)
+%    [Rfirst,options] = initReach(obj,Rinit,options)
 %
 % Inputs:
 %    obj - linParamSys object
@@ -10,8 +10,8 @@ function [Rfirst,options] = initReach(obj, Rinit, options)
 %    options - options for the computation of the reachable set
 %
 % Outputs:
-%    obj - linParamSys object
 %    Rfirst - first reachable set 
+%    options - options for the computation of the reachable set
 %
 % Example: 
 %
@@ -71,9 +71,8 @@ if isa(Rinit,'zonotope')
     temp = rad(interval(Rinit));
     if all(temp > eps) && options.compTimePoint && ...
        max(rad(interval(Rfirst.tp)) ./ rad(interval(Rinit))) > 1e10 % arbitary value
-        throw(printExplosionError());
+        throw(CORAerror('CORA:reachSetExplosion'));
     end
 end
-
 
 %------------- END OF CODE --------------

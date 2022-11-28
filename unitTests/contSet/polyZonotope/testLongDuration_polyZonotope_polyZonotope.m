@@ -69,54 +69,54 @@ for i=1:nrOfTests
     % admissible initializations
     % only center
     pZ = polyZonotope(c);
-    if any(abs(center(pZ) - c) > tol)
+    if ~all(withinTol(center(pZ),c,tol))
         res_rand = false; break;
     end
     
     % center and dependent generators
     pZ = polyZonotope(c,G);
-    if any(abs(center(pZ) - c) > tol) || any(any(abs(pZ.G - G) > tol))
+    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(G,pZ.G,tol)
         res_rand = false; break;
     end
     
     % center and independent generators
     pZ = polyZonotope(c,[],Grest);
-    if any(abs(center(pZ) - c) > tol) || ~isempty(pZ.G) ...
-            || any(any(abs(pZ.Grest - Grest) > tol))
+    if ~all(withinTol(center(pZ),c,tol)) || ~isempty(pZ.G) ...
+            || ~compareMatrices(pZ.Grest,Grest,tol)
         res_rand = false; break;
     end
     
     % center, dependent, and independent generators
     pZ = polyZonotope(c,G,Grest);
-    if any(abs(center(pZ) - c) > tol) || any(any(abs(pZ.G - G) > tol)) ...
-            || any(any(abs(pZ.Grest - Grest) > tol))
+    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.Grest,Grest,tol) ...
+            || ~compareMatrices(G,pZ.G,tol)
         res_rand = false; break;
     end
     
     % center, dependent, independent generators, and exponent matrix
     pZ = polyZonotope(c,G,Grest,expMat);
-    if any(abs(center(pZ) - c) > tol) || any(any(abs(pZ.Grest - Grest) > tol)) ...
-            || ~sameGexpMat(G,expMat,pZ.G,pZ.expMat,tol)
+    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.Grest,Grest,tol) ...
+            || ~compareMatrices([G;expMat],[pZ.G;pZ.expMat],tol)
         res_rand = false; break;
     end
     
     % center, dependent generators and exponent matrix
     pZ = polyZonotope(c,G,[],expMat);
-    if any(abs(center(pZ) - c) > tol) || ~sameGexpMat(G,expMat,pZ.G,pZ.expMat,tol)
+    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices([G;expMat],[pZ.G;pZ.expMat],tol)
         res_rand = false; break;
     end
     
     % center, dependent generators, exponent matrix, and identifiers
     pZ = polyZonotope(c,G,[],expMat,id);
-    if any(abs(center(pZ) - c) > tol) || ~sameGexpMat(G,expMat,pZ.G,pZ.expMat,tol) ...
+    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices([G;expMat],[pZ.G;pZ.expMat],tol) ...
             || any(abs(pZ.id - id) > tol)
         res_rand = false; break;
     end
     
     % center, independent generators, dependent generators, exponent matrix, and identifiers
     pZ = polyZonotope(c,G,Grest,expMat,id);
-    if any(abs(center(pZ) - c) > tol) || any(any(abs(pZ.Grest - Grest) > tol)) ...
-            || ~sameGexpMat(G,expMat,pZ.G,pZ.expMat,tol) ...
+    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.Grest,Grest,tol) ...
+            || ~compareMatrices([G;expMat],[pZ.G;pZ.expMat],tol) ...
             || any(abs(pZ.id - id) > tol)
         res_rand = false; break;
     end
@@ -270,53 +270,9 @@ end
 % combine results
 res = res_empty && res_rand;
 
-if res
-    disp('testLongDuration_polyZonotope successful');
-else
-    disp('testLongDuration_polyZonotope failed');
-end
-
-end
-
-
-% Auxiliary Function ------------------------------------------------------
-function same = sameGexpMat(G,expMat,G_new,expMat_new,tol)
-% assumption: no redundancies removal in expMat -> expMat_new
-
-if any(size(G) ~= size(G_new)) || any(size(expMat) ~= size(expMat_new))
-    same = false; return;
-end
-
-% quick check (same order as before)
-if ~(any(any(abs(G_new - G) > tol)) || any(any(abs(expMat_new - expMat) > tol)))
-    same = true; return;
-end
-
-% init output argument
-same = true;
-% go through generators and exponent columns one by one
-nrGens = size(G,2);
-for k=1:nrGens
-    % select first generator
-    gk = G(:,1);
-    
-    % search for gk in G_new
-    idx = find(all(abs(G_new - gk) < tol,1),1,'first');
-    % generator not found
-    if isempty(idx)
-        same = false; break;
-    end
-    
-    % check equality of expMat columns
-    if any(abs(expMat(:,1) - expMat_new(:,idx)) > tol)
-        same = false; break;
-    end
-    
-    % remove columns in Gs and expMats
-    G(:,1) = []; expMat(:,1) = [];
-    G_new(:,idx) = []; expMat_new(:,idx) = [];
-end
-
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'pZ','c','G','expMat','Grest');
 end
 
 %------------- END OF CODE --------------

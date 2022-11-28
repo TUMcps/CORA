@@ -20,7 +20,7 @@ function res = test_nonlinearSys_reach_poly
 
 %------------- BEGIN CODE --------------
 
-res = 0;
+res = true;
 
 % Parameter ---------------------------------------------------------------
 
@@ -69,7 +69,7 @@ R0{4} = zonotope(c - G(:,2),G(:,1));
 simOpt.points = 50;
 simOpt.fracVert = 4e-4;
 simOpt.fracInpVert = 0.9;
-simOpt.inpChanges = 2;
+simOpt.nrConstInp = 2;
 
 % simulate the system
 points = [];
@@ -80,7 +80,7 @@ for i = 1:length(R0)
     simRes = simulateRandom(sys, params, simOpt);
     
     for j = 1:length(simRes.x)
-       points = [points, simRes.x{j}(end,:)']; 
+        points = [points, simRes.x{j}(end,:)']; 
     end
 end
 
@@ -88,20 +88,34 @@ end
 
 % Verification ------------------------------------------------------------
 
-% check if all points are located inside the time point reachable set
+% % join axis-aligned generators in polyZonotope
+% pZ = R.timePoint.set{end};
+% 
+% % read out and remove independent part
+% Grest = pZ.Grest;
+% pZ = noIndep(pZ);
+% 
+% % reduce independent part (without error)
+% aligned_1 = Grest(1,:) == 0;
+% aligned_2 = Grest(2,:) == 0;
+% Grest_new = [Grest(:,~aligned_1 & ~aligned_2), ...
+%     sum(abs(Grest(:,aligned_1)),2), sum(abs(Grest(:,aligned_2)),2)];
+% 
+% % rejoin independent part
+% pZ = pZ + zonotope(zeros(2,1),Grest_new);
+
+% check if all points are located inside the time-point reachable set
 pgon = polygon(R.timePoint.set{end},12);
 
 for i = 1:size(points,2)
-   if ~in(pgon,points(:,i))
-      error('Unit test failed!');
-   end
+    if ~contains(pgon,points(:,i))
+        res = false;
+    end
 end
 
 % % visualize the set
 % figure; hold on;
 % plot(R.timePoint.set{end},[1,2],'r','Splits',12);
 % plot(points(1,:),points(2,:),'.k');
-
-res = true;
 
 %------------- END OF CODE --------------

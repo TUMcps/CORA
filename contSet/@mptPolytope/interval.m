@@ -65,11 +65,8 @@ end
 
 
 %instantiate interval
-try
-    I = interval(leftLim,rightLim);
-catch
-    error('interval generation failed');
-end
+I = interval(leftLim,rightLim);
+
 
 
 

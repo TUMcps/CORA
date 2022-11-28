@@ -1,12 +1,12 @@
-function R = guardIntersect_zonoGirard(obj,R,guard,options)
+function R = guardIntersect_zonoGirard(loc,R,guard,options)
 % guardIntersect_zonoGirard - implementation of the zonotope-hyperplane
-%                             intersection approach described in [1]
+%    intersection approach described in [1]
 %
 % Syntax:  
-%    R = guardIntersect_zonoGirard(obj,R,guard,options)
+%    R = guardIntersect_zonoGirard(loc,R,guard,options)
 %
 % Inputs:
-%    obj - object of class location
+%    loc - location object
 %    R - list of intersections between the reachable set and the guard
 %    guard - guard set (class: constrained hyperplane)
 %    options - struct containing the algorithm settings
@@ -14,33 +14,34 @@ function R = guardIntersect_zonoGirard(obj,R,guard,options)
 % Outputs:
 %    R - set enclosing the guard intersection
 %
-% Other m-files required: none
-% Subfunctions: none
-% MAT-files required: none
-%
-% See also: ---
-%
 % References: 
 %   [1] A. Girard et al. "Zonotope/Hyperplane Intersection for Hybrid 
 %       Systems Reachablity Analysis"
 %   [2] M. Althoff et al. "Zonotope bundles for the efficient computation 
 %       of reachable sets", 2011
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-% Author: Stefan Liu, Niklas Kochdumper
-% Written: 19-Dec-2016 
-% Last update: 18-May-2018 (NK, integration into CORA)
-%              19-December-2019 (NK, restructured the code)
-% Last revision: ---
+% Author:       Stefan Liu, Niklas Kochdumper
+% Written:      19-Dec-2016 
+% Last update:  18-May-2018 (NK, integration into CORA)
+%               19-December-2019 (NK, restructured the code)
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
     % check if guard set is a constrained hyperplane
     if ~isa(guard,'conHyperplane')
-       error('The method ''zonoGirard'' only supports guards given as conHyperplane objects!'); 
+        throw(CORAerror('CORA:specialError',...
+            "The method 'zonoGirard' only supports guards given as conHyperplane objects!")); 
     end
 
     % calc. orthogonal basis with the methods described in Sec. V.A in [2]
-    B = calcBasis(obj,R,guard,options);
+    B = calcBasis(loc,R,guard,options);
     
     % construct polytope from guard set inequality constraints C*x <= d
     if ~isempty(guard.C)
@@ -62,20 +63,20 @@ function R = guardIntersect_zonoGirard(obj,R,guard,options)
             
             % unite all intervals
             if j == 1
-                int = intTemp;
+                I = intTemp;
             else
-                int = int | intTemp;
+                I = I | intTemp;
             end
         end
         
         % set for one basis is empty -> overall set is emtpy
-        if isempty(int)
+        if isempty(I)
             R = [];
             return;
         end
         
         % transform back to original space
-        Z{i} = B{i}*zonotope(int);
+        Z{i} = B{i}*zonotope(I);
         
         % remove parts outside the guard sets inequality constraints
         if ~isempty(poly)
@@ -87,11 +88,11 @@ function R = guardIntersect_zonoGirard(obj,R,guard,options)
     Z = Z(~cellfun('isempty',Z));
     
     if isempty(Z)
-       R = []; 
+        R = []; 
     elseif length(Z) == 1
-       R = Z{1}; 
+        R = Z{1}; 
     else
-       R = zonoBundle(Z); 
+        R = zonoBundle(Z); 
     end 
 end
 
@@ -103,7 +104,7 @@ function I = enclosingInterval(guard,B,Z)
 
     % enclose the set with a zonotope
     if ~isa(Z,'zonotope') && ~isa(Z,'zonoBundle')
-       Z = zonotope(Z);
+        Z = zonotope(Z);
     end
 
     % get hyperplane normal vector and offset
@@ -157,8 +158,8 @@ function I = enclosingInterval(guard,B,Z)
     test = ub >= lb;
 
     if ~all(test)
-       ind = find(test == 0);
-       ub(ind) = ub(ind) + eps * ones(length(ind),1);
+        ind = find(test == 0);
+        ub(ind) = ub(ind) + eps * ones(length(ind),1);
     end
 
     if all(lb <= ub)
@@ -169,8 +170,8 @@ function I = enclosingInterval(guard,B,Z)
 end
 
 
-function [ m,M ] = bound_intersect_2D( Z,L )
-% Implementation of Algorithm 3 in reference paper [1]
+function [m,M] = bound_intersect_2D(Z,L)
+% Implementation of Algorithm 3 in [1]
 
     Z = deleteZeros(Z);
 
@@ -305,8 +306,10 @@ function [m,m_over,m_unde] = dichotomicSearch(P_0,G_0,s_0,gamma,dir,Z,queue)
     if isempty(m)
         [m,m_over,m_unde] = dichotomicSearch(queue{1,1},queue{1,2},queue{1,3},gamma,dir,Z,queue);
     else
-        m_over = P(2);% overapproximation
-        m_unde = P(2)+s(2);% underapproximation
+        % overapproximation
+        m_over = P(2);
+        % underapproximation
+        m_unde = P(2)+s(2);
     end
 end
 

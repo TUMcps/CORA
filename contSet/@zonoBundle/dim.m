@@ -1,25 +1,27 @@
-function d = dim(zB)
-% dim - return dimension of zonotope
+function n = dim(zB)
+% dim - returns the dimension of the ambient space of a zonotope bundle
 %
 % Syntax:  
-%    d = dim(zB)
+%    n = dim(zB)
 %
 % Inputs:
 %    zB - zonoBundle object
 %
 % Outputs:
-%    d - dimension of zB
+%    n - dimension of the ambient space
 %
 % Example: 
-%    zB = zonoBundle.generateRandom(2);
-%    d = dim(zB)
+%    Z1 = zonotope(zeros(2,1),[1 0.5; -0.2 1]);
+%    Z2 = zonotope(ones(2,1),[1 -0.5; 0.2 1]);
+%    zB = zonoBundle({Z1,Z2});
+%    n = dim(zB)
 %
 % Other m-files required: center.m
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: rank.m
-%
+
 % Author:        Niklas Kochdumper
 % Written:       23-November-2020
 % Last update:   ---
@@ -27,6 +29,6 @@ function d = dim(zB)
 
 %------------- BEGIN CODE --------------
 
-    d = length(center(zB.Z{1}));
+n = length(center(zB.Z{1}));
 
 %------------- END OF CODE --------------

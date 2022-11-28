@@ -27,7 +27,7 @@ function R = append(R,Radd)
 
 % currently, only one branch per reachSet object
 if length(R) > 1 || length(Radd) > 1
-    error('Multiple branches of R not checked.');
+    throw(CORAerror('CORA:notSupported','Multiple branches not supported.'));
 end
 
 % empty objects
@@ -42,12 +42,13 @@ else
     shift = R.timePoint.time{end};
     
     % number of sets of Radd
-    noSets = length(Radd.timePoint.set);
+    nrSets_tp = length(Radd.timePoint.set);
+    nrSets_ti = length(Radd.timeInterval.set);
     
     % time-point sets
     R.timePoint.set = [R.timePoint.set; Radd.timePoint.set];
     % shift time
-    for i=1:noSets
+    for i=1:nrSets_tp
         Radd.timePoint.time{i} = Radd.timePoint.time{i} + shift;
     end
     R.timePoint.time = [R.timePoint.time; Radd.timePoint.time];
@@ -58,7 +59,7 @@ else
         
         R.timeInterval.set = [R.timeInterval.set; Radd.timeInterval.set];
         % shift time
-        for i=1:noSets
+        for i=1:nrSets_ti
             Radd.timeInterval.time{i} = Radd.timeInterval.time{i} + shift;
         end
         R.timeInterval.time = [R.timeInterval.time; Radd.timeInterval.time];

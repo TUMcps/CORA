@@ -1,22 +1,22 @@
-function [obj] = dependentTerms(obj,options)
-% dependentTerms - computes exact Taylor terms of
-% 1. an interval matrix exponential
-% 2. the series considering the input
-% additionally, the exact square of an interval matrix is computed exactly
+function obj = exactTerms(obj,options)
+% exactTerms - computes exact Taylor terms of
+%    1. an interval matrix exponential
+%    2. the series considering the input
+%    additionally, the exact square of an interval matrix is computed
 %
-% These different tasks are computed in one m-file to save computation
-% time: the for loop has to be executed only once and help functions do not
-% have to be called so often
+%    These different tasks are computed in one m-file to save computation
+%    time: the for loop has to be executed only once and help functions do
+%    not have to be called so often
 %
 % Syntax:  
-%    [obj] = dependentTerms(obj,options)
+%    obj = exactTerms(obj,options)
 %
 % Inputs:
-%    obj - linear interval system (linIntSys) object
+%    obj - linProbSys object
 %    options - options struct
 %
 % Outputs:
-%    obj - linear interval system (linIntSys) object
+%    obj - linProbSys object
 %
 % Example: 
 %
@@ -24,7 +24,7 @@ function [obj] = dependentTerms(obj,options)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: OTHER_FUNCTION_NAME1,  OTHER_FUNCTION_NAME2
+% See also: none
 
 % Author:       Matthias Althoff
 % Written:      20-February-2007 
@@ -37,22 +37,22 @@ function [obj] = dependentTerms(obj,options)
 %load data from object structure
 A=obj.A;
 r=options.timeStep;
-dim=dimension(obj);
+n=obj.dim;
 
 %initialize the square of A (sq), the first term of the interval exponential (H), the
 %first term of the exponential for the input (Hu)
 sq=0*A;
 H=0*A;
 Hu=0*A;
-E=eye(dim); %identity matrix
+E=eye(n); %identity matrix
 
 %get diagonal elements of A (diagA)
-for i=1:dim
+for i=1:n
     diagA(i,i)=A(i,i);
 end
 
 %compute elements of H, Hu and sq
-for i=1:dim
+for i=1:n
     %i neq j
     %auxiliary value s
     s=sum(A,i);
@@ -87,19 +87,26 @@ obj.taylor.sq=sq;
 obj.taylor.H=H;
 obj.taylor.Hu=Hu;
 
-%auxiliary function g()
-function [res]=g(a,r)
-    if in(interval(-1/r),a)
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = g(a,r)
+
+    if contains(interval(-1/r),a)
         res=-0.5;
     else
         a_inf=infimum(a);
         a_sup=supremum(a);
         res=min(a_inf*r+0.5*a_inf^2*r^2,a_sup*r+0.5*a_sup^2*r^2);
     end
+
+end
     
-%auxiliary function gu()
 function [res]=gu(a,r)
-    if in(interval(-3/(2*r)),a)
+
+    if contains(interval(-3/(2*r)),a)
         res=-9/24*r;
     else
         a_inf=infimum(a);
@@ -107,13 +114,17 @@ function [res]=gu(a,r)
         res=min(0.5*a_inf*r^2+1/6*a_inf^2*r^3,0.5*a_sup*r^2+1/6*a_sup^2*r^3);
     end    
 
+end
+
+
+function s=sum(A,i)
 %sum function:
 %s=0.5 \sum_{k:k\neq i,k\neq j} a_{ik}a_{kj}t^2
-function s=sum(A,i)
 
-for k=1:length(A)
-    A(k,k)=0;
+    for k=1:length(A)
+        A(k,k)=0;
+    end
+    s=A(i,:)*A;
+
 end
-s=A(i,:)*A;
-
 %------------- END OF CODE --------------

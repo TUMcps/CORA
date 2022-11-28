@@ -81,13 +81,6 @@ end
 try
     hs = halfspace(c,d,d); % <- should throw error here
     res = false;
-end 
-
-
-if res
-    disp('test_halfspace successful');
-else
-    disp('test_halfspace failed');
 end
 
 %------------- END OF CODE --------------

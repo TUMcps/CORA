@@ -1,5 +1,6 @@
 function display(Z)
-% display - Displays the center and generators of a zonotope
+% display - Displays the properties of a zonotope object (center and
+%    generator matrix) on the command window
 %
 % Syntax:  
 %    display(Z)
@@ -8,7 +9,7 @@ function display(Z)
 %    Z - zonotope object
 %
 % Outputs:
-%    (to console)
+%    ---
 %
 % Example: 
 %    Z=zonotope(rand(2,6));
@@ -30,7 +31,7 @@ function display(Z)
 
 %------------- BEGIN CODE --------------
 
-if isempty(Z)
+if isemptyobject(Z)
     
     dispEmptyObj(Z,inputname(1));
     
@@ -50,8 +51,7 @@ else
 
     %display generators
     G = generators(Z);
-    maxGens = 10;
-    displayGenerators(G,maxGens,'G');
+    displayGenerators(G,DISPLAYDIM_MAX,'G');
     
 end
 

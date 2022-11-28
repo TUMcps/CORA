@@ -8,14 +8,14 @@ function completed = example_zoo()
 %    -
 %
 % Outputs:
-%    completed - boolean
+%    completed - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Matthias Althoff
 % Written:       29-June-2018
 % Last update:   ---
@@ -40,6 +40,6 @@ f = @(x) sin(x) * (x+1);
 intZoo = interval(f(z))
 intTay = interval(f(tay))
 
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

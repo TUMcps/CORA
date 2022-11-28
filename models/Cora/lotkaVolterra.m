@@ -12,8 +12,8 @@ function HA = lotkaVolterra()
 %    HA - hybridAutomaton object
 % 
 % References:
-%    [1] L. Geretti, “ARCH-COMP20 Category Report: Continuous and Hybrid 
-%        Systems with Nonlinear Dynamics", 2020
+%    [1] L. Geretti et al., "ARCH-COMP20 Category Report: Continuous and
+%        Hybrid Systems with Nonlinear Dynamics", 2020
 
 % Author:        Niklas Kochdumper
 % Written:       19-June-2020
@@ -36,7 +36,7 @@ function HA = lotkaVolterra()
 
     % transition
     guard = levelSet(eq,vars,'==');
-    reset.A = eye(3); reset.b = zeros(3,1);
+    reset.A = eye(3); reset.c = zeros(3,1);
 
     trans{1} = transition(guard, reset, 2);
 
@@ -62,7 +62,7 @@ function HA = lotkaVolterra()
     % cannot model transition because of infinite switching
     % transition
 %     guard = levelSet(eq,vars,'==');
-%     reset.A = eye(3); reset.b = zeros(3,1);
+%     reset.A = eye(3); reset.c = zeros(3,1);
 % 
 %     trans{1} = transition(guard, reset, 1);
 % 
@@ -80,9 +80,9 @@ end
 
 function f = lotkaVolterraDyn(x,u)
 
-    f(1,1) = 3*x(1) - 3*x(1)*x(2);
-    f(2,1) = x(1)*x(2) - x(2);
-    f(3,1) = 1;
+    f = [3*x(1) - 3*x(1)*x(2);
+         x(1)*x(2) - x(2);
+         1];
     
 end
 

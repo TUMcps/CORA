@@ -1,9 +1,9 @@
-function [vol] = modVolume(P)
+function vol = modVolume(P)
 % modVolume - reliable computation of the volume of a polytope; if volume
-% cannot be computed, it is overapproximated by an interval hull
+%    cannot be computed, it is overapproximated by an interval hull
 %
 % Syntax:  
-%    [vol] = modVolume(P)
+%    vol = modVolume(P)
 %
 % Inputs:
 %    P - polytope object
@@ -36,6 +36,5 @@ catch
     vol=volume(IH);        
     disp('Volume had to be overapproximated')
 end
-
 
 %------------- END OF CODE --------------

@@ -25,8 +25,6 @@ function res = test_zonotope_enclose
 
 %------------- BEGIN CODE --------------
 
-% 1. Analytical Test ------------------------------------------------------
-
 % create zonotopes
 Z1 = zonotope([1,2,3,4; 5 6 7 8]);
 Z2 = zonotope([9, 10, 11; 12, 13, 14]);
@@ -47,11 +45,5 @@ res_val = all(all(Zmat == true_mat));
 
 % add results
 res = res_val;
-
-if res
-    disp('test_enclose successful');
-else
-    disp('test_enclose failed');
-end
 
 %------------- END OF CODE --------------

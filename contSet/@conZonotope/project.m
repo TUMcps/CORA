@@ -1,23 +1,21 @@
-function obj = project(obj,projDim)
-% project - project a constrained zonotope object to a subspace
+function cZ = project(cZ,dims)
+% project - projects a constrained zonotope onto the specified dimensions
 %
 % Syntax:  
-%    obj = project(obj,projDim)
+%    cZ = project(cZ,dims)
 %
 % Inputs:
-%    obj - conZonotope object
-%    projDim - dimensions of the projection
+%    cZ - (conZonotope) constrained zonotope
+%    dims - dimensions for projection
 %
 % Outputs:
-%    obj - contrained zonotope object
+%    cZ - (conZonotope) projected constrained zonotope
 %
 % Example: 
 %    Z = [0 1 0 1 0;0 1 2 -1 0;0 0 0 0 1];
-%    A = [-2 1 -1 0];
-%    b = 2;
-%    cZono = conZonotope(Z,A,b);
-%    projZono = project(cZono,[1,2]);
-%    
+%    A = [-2 1 -1 0]; b = 2;
+%    cZ = conZonotope(Z,A,b);
+%    cZres = project(cZ,[1,2]);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -34,14 +32,13 @@ function obj = project(obj,projDim)
 
 try
     % try projection first, as isempty() can be quite costly
-    obj.Z = obj.Z(projDim,:);
+    cZ.Z = cZ.Z(dims,:);
 catch ME
     % now check if conZonotope was empty
-    if isempty(obj)
-        [msg,id] = errEmptySet();
-        error(id,msg);
-    elseif any(projDim > dim(obj))
-        error("Dimensions for projection exceed dimension of conZonotope!");
+    if isempty(cZ)
+        throw(CORAerror('CORA:emptySet'));
+    elseif any(dims > dim(cZ))
+        throw(CORAerror('CORA:wrongValue','second','should not exceed dimension of conZonotope'));
     else
         rethrow(ME);
     end

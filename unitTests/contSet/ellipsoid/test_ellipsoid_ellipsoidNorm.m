@@ -1,8 +1,8 @@
 function res = test_ellipsoid_ellipsoidNorm
-% test_ellipsoid_ellipsoidNorm - unit test function of ellipsoidNorm
+% test_ellipsoid_ellipsoidNorm - unit test
 %
 % Syntax:  
-%    res = test_ellipsoid_or
+%    res = test_ellipsoid_ellipsoidNorm
 %
 % Inputs:
 %    -
@@ -24,6 +24,7 @@ function res = test_ellipsoid_ellipsoidNorm
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 res = true;
 load cases.mat E_c
 tol = 100*eps; % Tolerance to make sure that all comparisons run smoothly
@@ -76,9 +77,4 @@ for i=1:length(E_c)
 
 end
 
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

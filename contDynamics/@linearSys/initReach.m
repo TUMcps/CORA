@@ -23,10 +23,10 @@ function [Rfirst,options] = initReach(obj,Rinit,options)
 %
 % See also: none
 
-% Author: Matthias Althoff
+% Author:       Matthias Althoff
 % Written:      07-November-2018
 % Last update:  ---
-% Last revision: ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

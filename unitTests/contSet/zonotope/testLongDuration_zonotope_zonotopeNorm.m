@@ -33,11 +33,13 @@ Npoints = 10; % Number of points to be tested
 %% Points inside
 for dim = dims
     for i = 1:Ntests
-        Z = zonotope.generateRandom(dim);
+        Z = zonotope.generateRandom('Dimension',dim);
         P = randPoint(Z,Npoints);
         for i_p = 1:size(P,2)
             if zonotopeNorm(Z,P(:,i_p)-Z.center) > 1+tol
-                error("Test for point-cloud inside zonotope failed!")
+                path = pathFailedTests(mfilename());
+                save(path,'Z','P');
+                throw(CORAerror('CORA:testFailed'));
             end
         end
     end
@@ -46,7 +48,7 @@ end
 %% Points outside
 for dim = dims
     for i = 1:Ntests
-        Z = zonotope.generateRandom(dim);
+        Z = zonotope.generateRandom('Dimension',dim);
         % Lift Z to a space with one more dimension, that way we're sure
         % that the points cannot be contained if we choose them right
         Z_lift = zonotope([Z.center;0], [Z.generators;zeros(1,size(Z.generators,2))]);
@@ -58,7 +60,9 @@ for dim = dims
         
         for i_p = 1:size(P_lift,2)
             if zonotopeNorm(Z_lift, P_lift(:,i_p)-Z_lift.center) <= 1-tol
-                error("Test for point-cloud outside zonotope failed!")
+                path = pathFailedTests(mfilename());
+                save(path,'Z','P');
+                throw(CORAerror('CORA:testFailed'));
             end
         end
     end
@@ -67,24 +71,31 @@ end
 %% Check norm-properties
 for dim = dims
     for i=1:Ntests
-        Z = zonotope.generateRandom(dim);
+        Z = zonotope.generateRandom('Dimension',dim);
         
         p1 = randPoint(Z);
         p2 = randPoint(Z);
         
         % Check triangle inequality
         if ~(zonotopeNorm(Z,p1+p2) <= zonotopeNorm(Z,p1)+zonotopeNorm(Z,p2)+tol)
-            error("Test for triangle inequality failed!")
+            path = pathFailedTests(mfilename());
+            save(path,'p1','p2','Z');
+            throw(CORAerror('CORA:testFailed'));
         end
         
         % Check symmetry
-        if ~(zonotopeNorm(Z,p1) <= zonotopeNorm(Z,-p1) + tol && zonotopeNorm(Z,p1) >= zonotopeNorm(Z,-p1) - tol)
-            error("Test for symmetry failed!")
+        if ~(zonotopeNorm(Z,p1) <= zonotopeNorm(Z,-p1) + tol ...
+                && zonotopeNorm(Z,p1) >= zonotopeNorm(Z,-p1) - tol)
+            path = pathFailedTests(mfilename());
+            save(path,'Z','p1','p2');
+            throw(CORAerror('CORA:testFailed'));
         end
         
         % Check part of the positive definiteness
         if ~(zonotopeNorm(Z, zeros(dim,1)) <= tol)
-            error("Test for positive definitness failed!")
+            path = pathFailedTests(mfilename());
+            save(path,'Z','p1','p2');
+            throw(CORAerror('CORA:testFailed'));
         end
     end
 end

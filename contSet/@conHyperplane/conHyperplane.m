@@ -15,11 +15,11 @@ classdef conHyperplane < contSet
 %    hs - halfspace object defining the constraint a*x = b
 %    a - normal vector of the hyperplane a*x = b
 %    b - offset of the hyperplane a*x = b
-%    C - constrained matrix for the inequality constraints C*x <= d
-%    d - constrained vector for the inequality constraints C*x <= d
+%    C - constraint matrix for the inequality constraints C*x <= d
+%    d - constraint vector for the inequality constraints C*x <= d
 %
 % Outputs:
-%    obj - generated conHyperplane object
+%    obj - conHyperplane object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,7 +31,7 @@ classdef conHyperplane < contSet
 % Written:      10-August-2011
 % Last update:  22-Nov-2019 (NK, renamed + added additional constructors)
 %               02-May-2020 (MW, added property validation)
-%               19-March-2021 (MW, errConstructor)
+%               19-March-2021 (MW, error messages)
 %               22-March-2021 (VG, added 1D case)
 % Last revision:---
 
@@ -39,7 +39,7 @@ classdef conHyperplane < contSet
 
 
 properties (SetAccess = private, GetAccess = public)
-    h = []; %halfspace obj
+    h = []; % halfspace obj
     C (:,:) {mustBeNumeric,mustBeFinite} = [];
     d (:,1) {mustBeNumeric,mustBeFinite} = 0;
 end
@@ -59,18 +59,23 @@ methods
             elseif isa(varargin{1},'halfspace')
                 obj.h = varargin{1};
             else
-                % other inputs if nargin == 1 not allowed
-                [id,msg] = errConstructor(); error(id,msg);
+                throw(CORAerror('CORA:wrongValue','first',...
+                    "'conHyperplane' object or 'halfspace' object"));
             end
             
         elseif nargin == 2
             obj.h = halfspace(varargin{1},varargin{2});
             
         elseif nargin == 3
-            if ~isa(varargin{1},'halfspace') ...
-                    || dim(varargin{1}) ~= size(varargin{2},2) ...
-                    || size(varargin{2},1) ~= length(varargin{3})
-                [id,msg] = errConstructor(); error(id,msg);
+            if ~isa(varargin{1},'halfspace') 
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                     'If three input arguments are given, the first one has to be a ''halfspace'' object'));
+            elseif dim(varargin{1}) ~= size(varargin{2},2)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'The dimension of the constraint matrix does not match the dimension of the halfspace.'));
+            elseif size(varargin{2},1) ~= length(varargin{3})
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'The length of the constraint offset does not match the dimension of the constraint matrix.'));
             else
                 obj.h = varargin{1};
                 obj.C = varargin{2};
@@ -78,9 +83,12 @@ methods
             end
             
         elseif nargin == 4
-            if length(varargin{1}) ~= size(varargin{3},2) ...
-                    || size(varargin{3},1) ~= length(varargin{4})
-                [id,msg] = errConstructor(); error(id,msg);
+            if length(varargin{1}) ~= size(varargin{3},2)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'The dimension of the constraint matrix does not match the dimension of the halfspace.'));
+            elseif size(varargin{3},1) ~= length(varargin{4})
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'The length of the constraint offset does not match the dimension of the constraint matrix.'));
             else
                 obj.h = halfspace(varargin{1},varargin{2});
                 obj.C = varargin{3};
@@ -89,7 +97,7 @@ methods
             
         elseif nargin > 4
             % too many input arguments
-            [id,msg] = errConstructor('Too many input arguments'); error(id,msg);
+            throw(CORAerror('CORA:tooManyInputArgs',4));
         end
         
         % handle 1D case
@@ -97,9 +105,9 @@ methods
             x = obj.h.d/obj.h.c;
             % check if x is in {x|Cx\leq d}
             X = mptPolytope(obj.C,obj.d);
-            if ~in(X,x)
-                [id,msg] = errConstructor('Assignment not consistent: implicit value for x given by hyperplane not contained in {x|C*x<=d}!');
-                error(id,msg);
+            if ~contains(X,x)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Assignment not consistent: implicit value for x given by hyperplane not contained in {x | C*x <= d}!'));
             end         
         end
         
@@ -109,17 +117,22 @@ methods
     end
          
     % methods in seperate files  
-    obj = and(obj,S)
+    res = and(hyp,S)
+    res = contains(hyp,S)
+    n = dim(hyp)
+    val = distance(hyp,S)
     res = isempty(hyp)
-    res = isequal(hyp1,hyp2)
-    res = isIntersecting(obj1,obj2,varargin)
-    P = mptPolytope(obj)
-    han = plot(obj,varargin)
-    res = projectHighDim(obj,N,dims)
-    res = projectOnHyperplane(h, S)    
+    res = isequal(hyp1,hyp2,varargin)
+    res = isHyperplane(hyp)
+    res = isIntersecting(hyp,S,varargin)
+    P = mptPolytope(hyp)
+    han = plot(hyp,varargin)
+    hyp = projectHighDim(hyp,N,dims)
+    Sproj = projectOnHyperplane(hyp,S)
+    [val,x] = supportFunc(hyp,d,type)
         
     % display functions
-    display(obj)
+    display(hyp)
 
 end
 end

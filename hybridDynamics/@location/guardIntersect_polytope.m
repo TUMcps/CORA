@@ -1,13 +1,12 @@
-function R = guardIntersect_polytope(obj,R,guard,options)
+function R = guardIntersect_polytope(loc,R,guard,options)
 % guardIntersect_polytope - enclosure of guard intersections based on
-%                           using a combination of zonotopes and polytopes
-%                           as described in [1]
+%    using a combination of zonotopes and polytopes as described in [1]
 %
 % Syntax:  
-%    R = guardIntersect_polytope(obj,R,options)
+%    R = guardIntersect_polytope(loc,R,options)
 %
 % Inputs:
-%    obj - object of class location
+%    loc - location object
 %    R - list of intersections between the reachable set and the guard
 %    guard - guard set
 %    options - struct containing the algorithm settings
@@ -20,7 +19,7 @@ function R = guardIntersect_polytope(obj,R,guard,options)
 %       a Combination of Zonotopes and Polytopes", 2009
 %   [2] M. Althoff et al. "Zonotope bundles for the efficient computation 
 %       of reachable sets", 2011
-% 
+
 % Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      19-December-2019
 % Last update:  ---
@@ -35,7 +34,7 @@ function R = guardIntersect_polytope(obj,R,guard,options)
 
     % intersect the reachable sets with the guard set
     for i = 1:length(R)
-       R{i} = R{i} & guard; 
+        R{i} = R{i} & guard; 
     end
 
     % compute vertices
@@ -52,7 +51,7 @@ function R = guardIntersect_polytope(obj,R,guard,options)
     m = length(options.enclose);
     Z = cell(m,1);
     
-    for i = 1:m
+    for i=1:m
         
         switch options.enclose{i}
             case 'box'
@@ -65,19 +64,20 @@ function R = guardIntersect_polytope(obj,R,guard,options)
                 
             case 'flow'
                 % Flow method as described in Section V.A.d) in [2]
-                Z{i} = flowEnclosure(obj.contDynamics,V,options); 
+                Z{i} = flowEnclosure(loc.contDynamics,V,options); 
                 
             otherwise
-                error('Wrong value for options.enclose!');
+                throw(CORAerror('CORA:wrongFieldValue','options.enclose',...
+                    {'box','pca','flow'}));
                 
         end
     end
     
-    % construct the enclosing zonotope bundle object
+    % construct the enclosing zonotope or zonotope bundle object
     if length(Z) == 1
-       R = Z{1}; 
+        R = Z{1}; 
     else
-       R = zonoBundle(Z); 
+        R = zonoBundle(Z); 
     end 
 end
 
@@ -110,7 +110,7 @@ function P = conv2polytope(R)
 
     % enclose set with zonotope
     if ~isa(R,'zonotope')
-       R = zonotope(R); 
+        R = zonotope(R); 
     end
 
     % reduce the given set with different methods

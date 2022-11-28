@@ -22,7 +22,7 @@ function ls = projectHighDim(ls,N,dims)
 % Author:       Maximilian Perschl
 % Written:      25-February-2022
 % Last update:  ---
-% Last revision: ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -35,4 +35,4 @@ newEq = subs(newEq,oldVars,newVars(dims));
 
 ls = levelSet(newEq,newVars,ls.compOp);
 
-%------------- END CODE ----------------
+%------------- END OF CODE ----------------

@@ -21,8 +21,7 @@ function res = test_linearSysDT_observe_02_2dim
 %        state estimation by zonotopes. Automatica, 41(6):1035–1043, 2005.
 %
 % Example: 
-%     -
- 
+
 % Author:       Matthias Althoff
 % Written:      19-November-2020
 % Last update:  04-June-2021
@@ -76,9 +75,9 @@ for iEst = 1:length(Estimator)
     
     % if ellipsoids are required
     if any(strcmp(estName,{'ESO-A','ESO-B','ESO-C','ESO-D','ESO-E'}))
-        params.R0 = ellipsoid(params.R0,'i:norm'); % inscribe ellipsoid
-        params.W = ellipsoid(params.W,'i:norm'); % inscribe ellipsoid
-        params.V = ellipsoid(params.V,'i:norm'); % inscribe ellipsoid
+        params.R0 = ellipsoid(params.R0,'inner:norm'); % inscribe ellipsoid
+        params.W = ellipsoid(params.W,'inner:norm'); % inscribe ellipsoid
+        params.V = ellipsoid(params.V,'inner:norm'); % inscribe ellipsoid
     % if constrained zonotopes are required
     elseif any(strcmp(estName,{'CZN-A','CZN-B'}))
         params.R0 = conZonotope(params.R0);

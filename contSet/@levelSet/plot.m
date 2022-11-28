@@ -1,28 +1,26 @@
-function han = plot(obj,varargin)
-% plot - plots 2-dimensional projection of a levelSet
+function han = plot(ls,varargin)
+% plot - plots a projection of a level set
 %
 % Syntax:  
-%    plot(obj)
-%    plot(obj,dims)
-%    plot(obj,dims,type)
+%    han = plot(ls)
+%    han = plot(ls,dims)
+%    han = plot(ls,dims,type)
 %
 % Inputs:
-%    obj - levelSet object
-%    dims - (optional) dimensions that should be projected (optional).
-%               assumption: other entries of the normal vector are zeros
-%    type - (optional) plot settings (LineSpec and name-value pairs)
+%    ls - levelSet object
+%    dims - (optional) dimensions for projection
+%           (assumption: other entries of the normal vector are zeros)
+%    type - (optional) plot settings (LineSpec and Name-Value pairs)
 %
 % Outputs:
-%    han - handle to graphics object
+%    han - handle to the graphics object
 %
 % Example: 
 %    syms x y
 %    eq = x^2 + y^2 - 4;
 %    ls = levelSet(eq,[x;y],'==');
 %    
-%    figure; hold on; box on;
-%    xlim([-3,3]);
-%    ylim([-3,3]);
+%    figure; hold on; box on; xlim([-3,3]); ylim([-3,3]);
 %    plot(ls,[1,2],'r');
 %
 % Other m-files required: none
@@ -39,47 +37,58 @@ function han = plot(obj,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    dims = [1,2];
-    type = {'b'};
-    if nargin >= 2
-        dims = varargin{1}; 
-    end
-    if nargin >= 3
-        [linespec,type] = readPlotOptions(varargin(2:end));
-        [type,~] = readNameValuePair(type,'Filled','islogical',false);
-        type = [{linespec},type];
-    end
+    dims = setDefaultValues({[1,2]},varargin{:});
+
+    % check input arguments
+    inputArgsCheck({{ls,'att','levelSet'};
+                    {dims,'att','numeric',{'nonnan','integer','vector','positive'}}});
+
+    % read out plot options
+    type = readPlotOptions(varargin(2:end));
 
     % check dimension
-    if length(dims) < 2
-        error('At least 2 dimensions have to be specified!');
+    if length(dims) < 1
+        throw(CORAerror('CORA:plotProperties',1));
     elseif length(dims) > 3
-        error('Only up to 3 dimensions can be plotted!');
+        throw(CORAerror('CORA:plotProperties',3));
+    end
+
+    if length(dims) == 1
+        % add artificial dimension at 2nd dimension
+        dim_old = 1:length(ls.vars);
+        dim_old = 2 + dim_old; % shift
+        dim_old(dims) = 1;
+        ls = projectHighDim(ls, length(dim_old)+2, dim_old);
+        dims = [1;2];
     end
 
     % different types of level sets
-    if strcmp(obj.compOp,'==')
+    if strcmp(ls.compOp,'==')
 
         % different methods for the different dimensions
         if length(dims) == 2
-            han = plot2Dcontour(obj,dims,type);
+            han = plot2Dcontour(ls,dims,type);
         else
-            [res,ind] = isSolvable(obj,dims);
+            [res,ind] = isSolvable(ls,dims);
 
             if res
-                han = plot3Dsolveable(obj,dims,ind,type);
+                han = plot3Dsolvable(ls,dims,ind,type);
             else
-                han = plot3Dgrid(obj,dims,type); 
+                han = plot3Dgrid(ls,dims,type); 
             end
         end
 
     else
         % different methods for the differnt dimensions
         if length(dims) == 2
-            han = plot2Dgrid(obj,dims,type);
+            han = plot2Dgrid(ls,dims,type);
         else
-            han = plot3Dgrid(obj,dims,type); 
+            han = plot3Dgrid(ls,dims,type); 
         end 
+    end
+    
+    if nargout == 0
+        clear han;
     end
 end
 
@@ -88,6 +97,9 @@ end
 
 function han = plot2Dcontour(obj,dims,type)
 % plot 2D level set using Matlabs contour plot function
+
+    % re-read plotOptions, since always plot called
+    type = readPlotOptions(type,'contour');
 
     % get limits of figure
     ax = gca;
@@ -113,11 +125,16 @@ function han = plot2Dcontour(obj,dims,type)
         end
     end
 
-    [~,han] = contour(X,Y,Z,[0,0],type{:});
+    % level at which contour is plotted: always at z = 0
+    level = [0 0];
+    [~,han] = contour(X,Y,Z,level,type{:});
 end
 
 function han = plot2Dgrid(obj,dims,type)
 % plot 2D level set by gridding the plot area 
+
+    % re-read plotOptions, since always fill called
+    type = readPlotOptions(type,'fill');
 
     % get limits of figure
     ax = gca;
@@ -156,14 +173,20 @@ function han = plot2Dgrid(obj,dims,type)
                 x = X(i,j) + [-dx_ -dx_ dx_ dx_];
                 y = Y(i,j) + [-dy_ dy_ dy_ -dy_];
                 
-                han = fill(x,y,type{:},'EdgeColor','none');
+                % fill is unhappy if no RGB value is provided, the given
+                % value is overwritten anyway
+                dummyRGB = colorblind('b');
+                han = fill(x,y,dummyRGB,type{:});
             end
         end
     end  
 end
 
-function han = plot3Dsolveable(obj,dims,ind,type)
+function han = plot3Dsolvable(obj,dims,ind,type)
 % plot 3D level set by solving for one variable
+
+    % re-read plotOptions, since always surf ~ fill called
+    type = readPlotOptions(type,'fill');
 
     % get limits of figure
     ax = gca;
@@ -202,17 +225,20 @@ function han = plot3Dsolveable(obj,dims,ind,type)
     end
     
     if ind == 1
-        han = surf(Z,X,Y,'FaceColor',type{1},type{2:end});
+        han = surf(Z,X,Y,type{:});
     elseif ind == 2
-        han = surf(X,Z,Y,'FaceColor',type{1},type{2:end});
+        han = surf(X,Z,Y,type{:});
     else
-        han = surf(X,Y,Z,'FaceColor',type{1},type{2:end});
+        han = surf(X,Y,Z,type{:});
     end
 
 end
 
 function han = plot3Dgrid(obj,dims,type)
-% plot 3D level set by gridding the plot area 
+% plot 3D level set by gridding the plot area
+
+    % re-read plotOptions, since always fill called
+    type = readPlotOptions(type,'fill');
 
     % get limits of figure
     ax = gca;
@@ -253,7 +279,7 @@ function han = plot3Dgrid(obj,dims,type)
                 
                 % plot the grid cell if it intersects the level set
                 if isIntersecting(obj,int,'approx')
-                    han = plot(int,dims,type{:},'Filled',true);
+                    han = plot(int,dims,type{:});
                 end
             end
         end
@@ -263,9 +289,9 @@ end
 function [res,ind] = isSolvable(obj,dims)
 % check if the level set equation is solvable for one variable
 
-    res = 0;
+    res = false;
     
-    if ~obj.solveable
+    if ~obj.solvable
        return; 
     end
 
@@ -280,7 +306,7 @@ function [res,ind] = isSolvable(obj,dims)
     end
     
     if ind ~= 0
-       res = 1;
+       res = true;
     end
 end
 

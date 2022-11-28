@@ -1,8 +1,9 @@
 function ratio = approxVolumeRatio(pZ,varargin)
-% approxVolumeRatio - Calculate the approximate ratio of the volumes 
-%                     between the dependent generator and the independent  
-%                     generator part of the polynomial zonotope 
-%                     ratio = (V_ind/V_dep)^(1/n)
+% approxVolumeRatio - Calculates the approximate ratio of the volumes 
+%    between the polynomial zonotope constructed by only the dependent
+%    generators of the given polynomial zonotope and the zonotope
+%    constructed by the independent generator part of the polynomial
+%    zonotope; the ratio is computed as ratio = (V_ind/V_dep)^(1/n)
 %
 % Syntax:  
 %    ratio = approxVolumeRatio(pZ)
@@ -33,10 +34,11 @@ function ratio = approxVolumeRatio(pZ,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-type = 'interval';
-if nargin >= 2
-   type = varargin{1}; 
-end
+type = setDefaultValues({'interval'},varargin{:});
+
+% check input arguments
+inputArgsCheck({{pZ,'att','polyZonotope'};
+                {type,'str',{'interval','pca'}}});
 
 % special cases
 if isempty(pZ.Grest)

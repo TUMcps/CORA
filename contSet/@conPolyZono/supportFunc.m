@@ -1,6 +1,6 @@
 function val = supportFunc(cPZ,dir,varargin)
 % supportFunc - calculate the upper or lower bound of a constrained 
-%               polynomial zonotope object along a certain direction
+%    polynomial zonotope object along a certain direction
 %
 % Syntax:  
 %    val = supportFunc(cPZ,dir)
@@ -46,7 +46,7 @@ function val = supportFunc(cPZ,dir,varargin)
 %    lb2 = conHyperplane(dir,infimum(b2));
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'r','Filled',true,'EdgeColor','none','Splits',15);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',15);
 %    plot(ub1,[1,2],'b');
 %    plot(lb1,[1,2],'b');
 %    plot(ub2,[1,2],'g');
@@ -56,7 +56,7 @@ function val = supportFunc(cPZ,dir,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: polyZonotope/supportFun, conZonotope/supportFunc
+% See also: polyZonotope/supportFunc, conZonotope/supportFunc
 
 % Author:       Niklas Kochdumper
 % Written:      29-July-2018
@@ -65,16 +65,18 @@ function val = supportFunc(cPZ,dir,varargin)
 
 %------------- BEGIN CODE --------------
     
-    % parse input arguments
-    type = 'upper';
-    method = 'conZonotope';
+    % pre-processing
+    [res,vars] = pre_supportFunc('conPolyZono',cPZ,dir,varargin{:});
     
-    if nargin > 2 && ~isempty(varargin{1})
-       type = varargin{1}; 
+    % check premature exit
+    if res
+        % if result has been found, it is stored in the first entry of var
+        val = vars{1}; return
+    else
+        cPZ = vars{1}; dir = vars{2}; type = vars{3};
+        method = vars{4}; splits = vars{5};
     end
-    if nargin > 3 && ~isempty(varargin{2})
-       method = varargin{2}; 
-    end
+
     
     % different methods to calculate the over-approximation
     if strcmp(method,'interval')
@@ -86,18 +88,14 @@ function val = supportFunc(cPZ,dir,varargin)
         val = interval(zonotope(cPZ_));
         
         if strcmp(type,'lower')
-           val = infimum(val); 
+            val = infimum(val); 
         elseif strcmp(type,'upper')
-           val = supremum(val);
+            val = supremum(val);
+        elseif strcmp(type,'range')
+            throw(CORAerror('CORA:notSupported',type));
         end
         
     elseif strcmp(method,'split')
-        
-        % parse input arguments
-        splits = 8;
-        if nargin >= 5
-           splits = varargin{3}; 
-        end
         
         % copute support function
         val = supportFuncSplit(cPZ,dir,type,splits);
@@ -110,9 +108,6 @@ function val = supportFunc(cPZ,dir,varargin)
         
         val = supportFuncQuadProg(cPZ,dir,type);
         
-    else
-        [id,msg] = errWrongInput('method');
-        error(id,msg);
     end
 end
 
@@ -140,27 +135,25 @@ function val = supportFuncSplit(cPZ,dir,type,splits)
     end
 
     % calculate the interval over-approximation
-    Min = inf;
-    Max = -inf;
+    Min = Inf;
+    Max = -Inf;
 
     for i = 1:length(cPZsplit)
        try
-           inter = interval(cPZsplit{i},'interval');
-       catch ex
-           [~,id] = errEmptySet();
-           if strcmp(ex.identifier,id)
+           I = interval(cPZsplit{i},'interval');
+       catch ME
+           if strcmp(ME.identifier,'CORA:emptySet')
               continue;
            else
-              error(ex.identifier,ex.message);
+              rethrow(ME);
            end
        end
-       Min = min(Min,infimum(inter));
-       Max = max(Max,supremum(inter));
+       Min = min(Min,infimum(I));
+       Max = max(Max,supremum(I));
     end
 
     if isinf(Min) || isinf(Max)
-        [msg,id] = errEmptySet();
-        error(id,msg);
+        throw(CORAerror('CORA:emptySet'));
     end
 
     % extract the desired bound

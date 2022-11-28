@@ -56,7 +56,7 @@ inv = mptPolytope([1 0; 0 1],[T_off;T_off]);
 guard = conHyperplane([1 0],T_off);
 
 reset.A = eye(2);
-reset.b = zeros(2,1);
+reset.c = zeros(2,1);
 
 trans{1} = transition(guard,reset,2);
 
@@ -64,7 +64,7 @@ trans{1} = transition(guard,reset,2);
 guard = conHyperplane([0 1],T_off);
 
 reset.A = eye(2);
-reset.b = zeros(2,1);
+reset.c = zeros(2,1);
 
 trans{2} = transition(guard,reset,3);
 
@@ -88,7 +88,7 @@ inv = mptPolytope([-1 0; 0 1],[-T_on;T_off]);
 guard = conHyperplane([1 0],T_on);
 
 reset.A = eye(2);
-reset.b = zeros(2,1);
+reset.c = zeros(2,1);
 
 trans{1} = transition(guard,reset,1);
 
@@ -96,7 +96,7 @@ trans{1} = transition(guard,reset,1);
 guard = conHyperplane([0 1],T_off);
 
 reset.A = eye(2);
-reset.b = zeros(2,1);
+reset.c = zeros(2,1);
 
 trans{2} = transition(guard,reset,4);
 
@@ -120,7 +120,7 @@ inv = mptPolytope([1 0; 0 -1],[T_off;-T_on]);
 guard = conHyperplane([1 0],T_off);
 
 reset.A = eye(2);
-reset.b = zeros(2,1);
+reset.c = zeros(2,1);
 
 trans{1} = transition(guard,reset,4);
 
@@ -128,7 +128,7 @@ trans{1} = transition(guard,reset,4);
 guard = conHyperplane([0 1],T_on);
 
 reset.A = eye(2);
-reset.b = zeros(2,1);
+reset.c = zeros(2,1);
 
 trans{2} = transition(guard,reset,1);
 
@@ -151,7 +151,7 @@ inv = mptPolytope([-1 0; 0 -1],[-T_on;-T_on]);
 guard = conHyperplane([1 0],T_on);
 
 reset.A = eye(2);
-reset.b = zeros(2,1);
+reset.c = zeros(2,1);
 
 trans{1} = transition(guard,reset,2);
 
@@ -159,7 +159,7 @@ trans{1} = transition(guard,reset,2);
 guard = conHyperplane([0 1],T_on);
 
 reset.A = eye(2);
-reset.b = zeros(2,1);
+reset.c = zeros(2,1);
 
 trans{2} = transition(guard,reset,3);
 

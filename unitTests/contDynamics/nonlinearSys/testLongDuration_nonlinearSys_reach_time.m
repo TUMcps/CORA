@@ -1,5 +1,5 @@
 function res = testLongDuration_nonlinearSys_reach_time
-% test_nonlinearSys_reach_time - unit_test_function of nonlinear
+% testLongDuration_nonlinearSys_reach_time - unit_test_function of nonlinear
 %    reachability analysis for following a reference trajectory
 %
 % Checks the solution of an autonomous car following a reference trajectory;
@@ -7,7 +7,7 @@ function res = testLongDuration_nonlinearSys_reach_time
 % the simulated trajectories
 %
 % Syntax:  
-%    res = test_nonlinearSys_reach_time
+%    res = testLongDuration_nonlinearSys_reach_time
 %
 % Inputs:
 %    -
@@ -62,7 +62,6 @@ Rset = reach(vehicle, params, options);
 simOpt.points = 20;
 simOpt.fracVert = 0.5;
 simOpt.fracInpVert = 1;
-simOpt.inpChanges = 400;
 simRes = simulateRandom(vehicle,params,simOpt);
 
 
@@ -81,7 +80,7 @@ for i = 1:length(simRes.x)
        file_name = strcat('test_reach_time_', ...
                           datestr(now,'mm-dd-yyyy_HH-MM'));
                    
-       file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+       file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                             file_name);
                   
        save(file_path, 'simRes')
@@ -101,3 +100,5 @@ end
 %     end
 %     counter = counter + 2;
 % end
+
+%------------- END OF CODE --------------

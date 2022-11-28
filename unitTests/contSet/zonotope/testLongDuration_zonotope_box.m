@@ -28,10 +28,10 @@ function res = testLongDuration_zonotope_box
 % set tolerance
 tol = 1e-9;
 
-% 2. Random Tests ---------------------------------------------------------
-
 dims = 2:8;
 testsPerDim = 1000;
+
+res_rand = false(length(dims),testsPerDim);
 
 % box has to be the same as conversion to interval
 for d=1:length(dims)
@@ -54,10 +54,9 @@ end
 % add results
 res = all(all(res_rand));
 
-if res
-    disp('test_box successful');
-else
-    disp('test_box failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'Z');
 end
 
 %------------- END OF CODE --------------

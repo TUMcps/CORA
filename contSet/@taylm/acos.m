@@ -1,4 +1,4 @@
-function res = acos( obj )
+function res = acos(obj)
 % acos - Overloaded 'acos()' operator for a taylm expression
 %
 % Syntax:  
@@ -27,8 +27,8 @@ function res = acos( obj )
 % Last update:  ---
 % Last revision:---
 
-
 %------------- BEGIN CODE --------------
-    res = pi/2 - asin(obj);
-end
+
+res = pi/2 - asin(obj);
+
 %------------- END OF CODE --------------

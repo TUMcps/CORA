@@ -1,26 +1,22 @@
-function pZ = polyZonotope(obj)
-% polyZonotope - convert a zonotope object to a polyZonotope object
+function pZ = polyZonotope(Z)
+% polyZonotope - converts a zonotope object to a polyZonotope object
 %
 % Syntax:  
-%    pZ = polyZonotope(obj)
+%    pZ = polyZonotope(Z)
 %
 % Inputs:
-%    obj - zonotope object (class zonotope)
+%    Z - zonotope object
 %
 % Outputs:
-%    pZ - polynomial zonotope object (class polyZonotope)
+%    pZ - polyZonotope object
 %
 % Example: 
-%    zono = zonotope([1 2 0 -1;3 1 2 2]);
-%    pZ = polyZonotope(zono);
+%    Z = zonotope([1 2 0 -1;3 1 2 2]);
+%    pZ = polyZonotope(Z);
 %    
-%    figure;
-%    plot(zono,[1,2],'b','Filled',true,'EdgeColor','none');
-%    xlim([-3,5]); ylim([-3,9]);
-%
-%    figure;
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
-%    xlim([-3,5]); ylim([-3,9]);
+%    figure; xlim([-3,5]); ylim([-3,9]);
+%    plot(Z,[1,2],'FaceColor','b');
+%    plot(pZ,[1,2],'r--');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -35,10 +31,10 @@ function pZ = polyZonotope(obj)
 
 %------------- BEGIN CODE --------------
 
-    c = obj.Z(:,1);
-    G = obj.Z(:,2:end);
-    expMat = eye(size(G,2));
+c = Z.Z(:,1);
+G = Z.Z(:,2:end);
+expMat = eye(size(G,2));
 
-    pZ = polyZonotope(c,G,[],expMat);
+pZ = polyZonotope(c,G,[],expMat);
     
 %------------- END OF CODE --------------

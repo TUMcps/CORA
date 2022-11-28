@@ -27,9 +27,10 @@ function V = orthVectors(Z)
 %------------- BEGIN CODE --------------
 
 %determine missing vectors
+n = dim(Z);
 G = generators(Z);
-[n, gens] = size(G);
-nrOfVectors = n - gens;
+nrGens = size(G,2);
+nrOfVectors = n - nrGens;
 
 %compute missing vectors
 if nrOfVectors > 0
@@ -49,7 +50,7 @@ if nrOfVectors > 0
             randMat(:,1) = [];
         end
     end
-    V = G(:,(gens+1):n);
+    V = G(:,(nrGens+1):n);
 else
     V = [];
 end

@@ -1,24 +1,24 @@
 function printInterval(I)
 % printInterval - prints an interval such that if one executes this command
-% in the workspace, this intreval would be created
+%    in the workspace, this interval would be created
 %
 % Syntax:  
 %    printInterval(I)
 %
 % Inputs:
-%    no
+%    I - interval object
 %
 % Outputs:
-%    res - boolean 
+%    --- 
 %
 % Example: 
-%
-% 
+%    I = interval([-1;-2],[2;3]);
+%    printInterval(I)
+
 % Author:       Matthias Althoff
 % Written:      12-August-2016
 % Last update:  ---
 % Last revision:---
-
 
 %------------- BEGIN CODE --------------
 
@@ -62,4 +62,3 @@ fprintf('%16.16f',sup(i+1));
 fprintf(']);\n');
 
 %------------- END OF CODE --------------
-

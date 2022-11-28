@@ -31,6 +31,8 @@ function res = testLongDuration_zonotope_isInterval
 dims = 5:5:100;
 testsPerDim = 1000;
 
+res_randcomp = false(length(dims),testsPerDim);
+
 % compare randomly generated zonotopes
 for d=1:length(dims)
     for test=1:testsPerDim
@@ -64,10 +66,9 @@ end
 % add results
 res = all(all(res_randcomp));
 
-if res
-    disp('test_isInterval successful');
-else
-    disp('test_isInterval failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'idx','nrOfGens','GnonInt','vals');
 end
 
 %------------- END OF CODE --------------

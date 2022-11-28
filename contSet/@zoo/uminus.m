@@ -25,7 +25,7 @@ function obj = uminus(obj)
 
 %------------- BEGIN CODE --------------
 
-    obj = arrayfun(@(a) s_uminus(a), obj, 'UniformOutput', 0);
+    obj = arrayfun(@(a) s_uminus(a), obj, 'UniformOutput', false);
     A = cat(1, obj{:});
     obj = reshape(A, size(obj));
 

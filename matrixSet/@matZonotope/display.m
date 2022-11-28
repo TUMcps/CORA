@@ -5,7 +5,7 @@ function display(matZ)
 %    display(matZ)
 %
 % Inputs:
-%    matZ - matrix zonotope object
+%    matZ - matZonotope object
 %
 % Outputs:
 %    ---

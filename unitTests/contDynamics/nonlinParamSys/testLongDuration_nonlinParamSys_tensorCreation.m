@@ -1,12 +1,12 @@
-function res = test_nonlinParamSys_tensorCreation
-% test_nonlinParamSys_tensorCreation - unit test function for the creation
-%                                      of the third-order-tensor file
+function res = testLongDuration_nonlinParamSys_tensorCreation
+% testLongDuration_nonlinParamSys_tensorCreation - unit test function for
+%    the creation of the third-order-tensor file
 %
 % Checks different scenarios of settings, where each scenario results in a
 % different third-order tensor
 %
 % Syntax:  
-%    res = test_nonlinParamSys_tensorCreation
+%    res = testLongDuration_nonlinParamSys_tensorCreation
 %
 % Inputs:
 %    -

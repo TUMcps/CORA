@@ -1,13 +1,16 @@
 function testRectangle(varargin)
 % testRectangle - tests somne properties for the pre-computation of the 
-% fraction of a polytopes that intersects with another polytope of same 
-% size, but different position and orientation
+%    fraction of a polytopes that intersects with another polytope of same 
+%    size, but different position and orientation
 %
 % Syntax:  
 %    testRectangle()
 %
 % Inputs:
-%    obj - road object
+%    pos1 - ???
+%    pos2 - ???
+%    angle1 - ???
+%    angle2 - ???
 %
 % Outputs:
 %    fArray - 3-dimensional fraction array
@@ -20,10 +23,10 @@ function testRectangle(varargin)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 02-April-2008 
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      02-April-2008 
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -146,11 +149,11 @@ plot(Zenl);
 plot(Zrel);
 
 %transform to polytopes and compute relative intersected volume
-P1orig=polytope(Z1orig);
-P2orig=polytope(Z2orig);
-P1=polytope(Z1);
-Prel=polytope(Zrel);
-Penl=polytope(Zenl);
+P1orig=mptPolytope(Z1orig);
+P2orig=mptPolytope(Z2orig);
+P1=mptPolytope(Z1);
+Prel=mptPolytope(Zrel);
+Penl=mptPolytope(Zenl);
 
 PintOrig=P1orig&P2orig;
 PintRel=P1&Prel;
@@ -161,6 +164,5 @@ fullVol=modVolume(P1);
 partVolOrig=modVolume(PintOrig)/fullVol
 partVolRel=modVolume(PintRel)/fullVol
 partVolEncl=modVolume(PintEncl)/fullVol
-
 
 %------------- END OF CODE --------------

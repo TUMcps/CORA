@@ -48,14 +48,14 @@ function obj = s_set(obj,property,value)
     elseif strcmp(property,'opt_method')
         obj.opt_method = value;
         if ~ismember(value,{'int','bnb','bnbAdv','linQuad'})
-          error('Wrong value for input argument "opt_method"!'); 
+            throw(CORAerror('CORA:wrongValue','third',"'int', 'bnb', 'bnbAdv' or 'linQuad'"));
         end
     elseif strcmp(property,'eps')
         obj.eps = value;
     elseif strcmp(property,'tolerane')
         obj.tolerance = value;
     else
-        error('Wrong value for input argument "property"!'); 
+        throw(CORAerror('CORA:wrongValue','second',"'max_order', 'eps' or 'tolerance'"));
     end
 end
 

@@ -1,8 +1,8 @@
-function rem = getRem( obj )
-% getRem( obj ) - returns remainder
+function rem = getRem(obj)
+% getRem - returns remainder
 %
 % Syntax:  
-%    rem = getCoef( obj )
+%    rem = getRem(obj)
 %
 % Inputs:
 %    obj - a Taylor model
@@ -10,7 +10,8 @@ function rem = getRem( obj )
 % Outputs:
 %    rem - an interval 
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: taylm
 % Subfunctions: none
@@ -33,4 +34,4 @@ function rem = getRem( obj )
 %
     rem = obj.remainder;
 
-end
+%------------- END OF CODE --------------

@@ -1,12 +1,12 @@
-function res = zonotope(obj,varargin)
+function Z = zonotope(cZ,varargin)
 % zonotope - over-approximates a constrained zonotope with a zonotope
 %
 % Syntax:  
-%    res = zonotope(obj)
-%    res = zonotope(obj,alg)
+%    Z = zonotope(cZ)
+%    Z = zonotope(cZ,alg)
 %
 % Inputs:
-%    obj - conZonotope object
+%    cZ - conZonotope object
 %    alg - algorithm used to compute enclosure ('nullSpace' or 'reduce')
 %
 % Outputs:
@@ -14,15 +14,14 @@ function res = zonotope(obj,varargin)
 %
 % Example: 
 %    Z = [0 1 0 1;0 1 2 -1];
-%    A = [-2 1 -1];
-%    b = 2;
-%    cZono = conZonotope(Z,A,b);
+%    A = [-2 1 -1]; b = 2;
+%    cZ = conZonotope(Z,A,b);
 %
-%    zono1 = zonotope(cZono,'nullSpace');
-%    zono2 = zonotope(cZono,'reduce')
+%    Z1 = zonotope(cZ,'nullSpace');
+%    Z2 = zonotope(cZ,'reduce')
 %
-%    hold on
-%    plot(cZono,[1,2],'FaceColor',[.7 .7 .7],'Filled',true,'EdgeColor','none')
+%    figure; hold on;
+%    plot(cZono,[1,2],'FaceColor',[.7 .7 .7]);
 %    plot(zono1,[1,2],'b');
 %    plot(zono2,[1,2],'r');
 %
@@ -40,29 +39,28 @@ function res = zonotope(obj,varargin)
 %------------- BEGIN CODE --------------
 
     % handle trivial cases
-    if isempty(obj)
-        res = zonotope();
+    if isempty(cZ)
+        Z = zonotope();
         return;
     end
 
-    if isempty(obj.A)
-       res = zonotope(obj.Z);
+    if isempty(cZ.A)
+       Z = zonotope(cZ.Z);
        return;
     end
     
     % parse input arguments
-    alg = 'nullSpace';
-    if nargin >= 2
-        alg = varargin{1};
-    end
+    alg = setDefaultValues({'nullSpace'},varargin{:});
+
+    % check input arguments
+    inputArgsCheck({{cZ,'att','conZonotope'};
+                    {alg,'str',{'nullSpace','reduce'}}});
     
     % compute over-approximation using the selected algorithm
     if strcmp(alg,'nullSpace')
-        res = zonotopeNullSpace(obj);
+        Z = zonotopeNullSpace(cZ);
     elseif strcmp(alg,'reduce')
-        res = zonotopeReduce(obj);
-    else
-        error('Wrong value for input argument ''alg''!');
+        Z = zonotopeReduce(cZ);
     end
 end
 

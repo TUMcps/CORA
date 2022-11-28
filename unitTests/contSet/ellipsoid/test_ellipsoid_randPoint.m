@@ -24,8 +24,13 @@ function res = test_ellipsoid_randPoint
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-res = true;
+
 load cases.mat E_c
+
+% empty set
+res = isnumeric(randPoint(ellipsoid())) && isempty(randPoint(ellipsoid()));
+
+% loop over cases
 for i=1:length(E_c)
     E1 = E_c{i}.E1; % non-deg
     Ed1 = E_c{i}.Ed1; % deg
@@ -37,19 +42,11 @@ for i=1:length(E_c)
         res = false;
         break;
     end
-    
-end
-
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
 end
 
 end
 
-%-- helper
+% Auxiliary function ------------------------------------------------------
 function res = withinRange(E,N)
     % all extreme points need to be between min(radius) and max(radius)
     n = dim(E);
@@ -57,6 +54,7 @@ function res = withinRange(E,N)
     nY = sqrt(sum((Y-E.q).^2,1));
     rE = radius(E,n);
     IntR = interval(min(rE),max(rE));
-    res = in(IntR,nY);
+    res = all(contains(IntR,nY));
 end
+
 %------------- END OF CODE --------------

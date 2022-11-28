@@ -1,10 +1,9 @@
 function res = testLongDuration_conPolyZono_conZonotope
-% test_conPolyZono_conZonotope - unit test function for constrained 
-%                                zonotope enclosure of constrained 
-%                                polynomial zonotopes
+% testLongDuration_conPolyZono_conZonotope - unit test function for 
+%    constrained zonotope enclosure of constrained polynomial zonotopes
 %
 % Syntax:  
-%    test_conPolyZono_conZonotope
+%    testLongDuration_conPolyZono_conZonotope
 %
 % Inputs:
 %    -
@@ -25,7 +24,7 @@ function res = testLongDuration_conPolyZono_conZonotope
 
 %------------- BEGIN CODE --------------
 
-    res = 1;
+    res = true;
     tol = 1e-5;
     
     % Random Tests --------------------------------------------------------
@@ -49,13 +48,13 @@ function res = testLongDuration_conPolyZono_conZonotope
             cZ = conZonotope(cPZ,methods{j});
             
             % check for correctness
-            if ~in(cZ,points,'exact',tol)
+            if ~contains(cZ,points,'exact',tol)
                 
                 % save variables so that failure can be reproduced
                 path = pathFailedTests(mfilename());
                 save(path,'cPZ','points');
                 
-                error('Random test failed!');
+                throw(CORAerror('CORA:testFailed'));
             end
         end
     end

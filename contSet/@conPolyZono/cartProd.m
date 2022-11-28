@@ -1,13 +1,13 @@
-function res = cartProd(cPZ1,cPZ2)
-% cartProd - Returns the Cartesian product of two constrained polynomial
-%            zonotopes
+function cPZ = cartProd(cPZ,S)
+% cartProd - Returns the Cartesian product of a constrained polynomial
+%    zonotope and another set
 %
 % Syntax:  
-%    res = cartProd(cPZ1,cPZ2)
+%    res = cartProd(cPZ,S)
 %
 % Inputs:
-%    cPZ1 - conPolyZono object (or other set representation)
-%    cPZ2 - conPolyZono object (or other set representation)
+%    cPZ - conPolyZono object
+%    S - contSet object
 %
 % Outputs:
 %    res - conPolyZono object representing the Cartesian product
@@ -26,8 +26,8 @@ function res = cartProd(cPZ1,cPZ2)
 %    res = cartProd(cPZ,I);
 %
 %    figure; hold on; box on; grid on;
-%    plot(res,[1,2,3],'b','Filled',true,'Splits',10);
-%    plot(cPZ,[1,2],'r','Splits',15,'Filled',true,'EdgeColor','none');
+%    plot(res,[1,2,3],'FaceColor','b','Splits',10);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',15);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -42,62 +42,65 @@ function res = cartProd(cPZ1,cPZ2)
 
 %------------- BEGIN CODE --------------
 
-    if isempty(cPZ1)
-        res = cPZ2;
-        return;
-    elseif isempty(cPZ2)
-        res = cPZ1;
-        return;
-    end
-    
-    % convert other set representations to polyZonotopes (first set)
-    if ~isa(cPZ1,'conPolyZono')
-        if isa(cPZ1,'zonotope') || isa(cPZ1,'interval') || isnumeric(cPZ1) 
-        
-            Z = zonotope(cPZ1);
-            cPZ1 = conPolyZono(center(Z),[],[],generators(Z));
-            
-        elseif isa(cPZ1,'mptPolytope') || isa(cPZ1,'taylm') || ...
-               isa(cPZ1,'zonoBundle') || isa(cPZ1,'conZonotope') || ...
-               isa(cPZ1,'ellipsoid') || isa(cPZ1,'capsule') || ...
-               isa(cPZ1,'polyZonotope')
-            
-            cPZ1 = conPolyZono(cPZ1);
-       
-        else        
-            % throw error for given arguments
-            error(noops(cPZ1,cPZ2));
-        end
-    end
-        
-    if ~isa(cPZ2,'conPolyZono')
-        if isa(cPZ2,'zonotope') || isa(cPZ2,'interval') || isnumeric(cPZ2)
-            
-            Z = zonotope(cPZ2);
-            cPZ2 = conPolyZono(center(Z),[],[],generators(Z));
-            
-        elseif isa(cPZ2,'mptPolytope') || isa(cPZ2,'taylm') || ...
-               isa(cPZ2,'zonoBundle') || isa(cPZ2,'conZonotope') || ...
-               isa(cPZ2,'ellipsoid') || isa(cPZ2,'capsule') || ...
-               isa(cPZ2,'polyZonotope')
-            
-            cPZ2 = conPolyZono(cPZ2);
+% pre-processing
+[res,vars] = pre_cartProd('conPolyZono',cPZ,S);
 
-        else        
-            % throw error for given arguments
-            error(noops(cPZ1,cPZ2));
-        end
-    end 
-    
-    % compute Cartesian product for polynomial zonotopes
-    pZ1 = polyZonotope(cPZ1.c,cPZ1.G,cPZ1.Grest,cPZ1.expMat,cPZ1.id);
-    pZ2 = polyZonotope(cPZ2.c,cPZ2.G,cPZ2.Grest,cPZ2.expMat,cPZ2.id);
-
-    pZ = cartProd(pZ1,pZ2);
-
-    % upadate constraints
-    res = updateConstraints(conPolyZono(pZ),cPZ1,cPZ2);
-    
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    cPZ = vars{1}; return
+else
+    % potential re-ordering
+    cPZ = vars{1}; S = vars{2};
 end
+
+
+% convert other set representations to polyZonotopes (first set)
+if ~isa(cPZ,'conPolyZono')
+    if isa(cPZ,'zonotope') || isa(cPZ,'interval') || isnumeric(cPZ) 
+    
+        Z = zonotope(cPZ);
+        cPZ = conPolyZono(center(Z),[],[],generators(Z));
+        
+    elseif isa(cPZ,'mptPolytope') || isa(cPZ,'taylm') || ...
+           isa(cPZ,'zonoBundle') || isa(cPZ,'conZonotope') || ...
+           isa(cPZ,'ellipsoid') || isa(cPZ,'capsule') || ...
+           isa(cPZ,'polyZonotope')
+        
+        cPZ = conPolyZono(cPZ);
+   
+    else        
+        % throw error for given arguments
+        throw(CORAerror('CORA:noops',cPZ,S));
+    end
+end
+    
+if ~isa(S,'conPolyZono')
+    if isa(S,'zonotope') || isa(S,'interval') || isnumeric(S)
+        
+        Z = zonotope(S);
+        S = conPolyZono(center(Z),[],[],generators(Z));
+        
+    elseif isa(S,'mptPolytope') || isa(S,'taylm') || ...
+           isa(S,'zonoBundle') || isa(S,'conZonotope') || ...
+           isa(S,'ellipsoid') || isa(S,'capsule') || ...
+           isa(S,'polyZonotope')
+        
+        S = conPolyZono(S);
+
+    else        
+        % throw error for given arguments
+        throw(CORAerror('CORA:noops',cPZ,S));
+    end
+end 
+      
+% compute Cartesian product for polynomial zonotopes
+pZ1 = polyZonotope(cPZ.c,cPZ.G,cPZ.Grest,cPZ.expMat,cPZ.id);
+pZ2 = polyZonotope(S.c,S.G,S.Grest,S.expMat,S.id);
+
+pZ = cartProd(pZ1,pZ2);
+
+% update constraints
+cPZ = updateConstraints(conPolyZono(pZ),cPZ,S);
 
 %------------- END OF CODE --------------

@@ -1,8 +1,8 @@
 function res = minus(minuend,subtrahend)
-% plus - Overloaded '-' operator for intervals
+% minus - Overloaded '-' operator for intervals
 %
 % Syntax:  
-%    res = plus(summand1,summand2)
+%    res = minus(minuend,subtrahend)
 %
 % Inputs:
 %    minuend - interval or numerical value
@@ -11,7 +11,10 @@ function res = minus(minuend,subtrahend)
 % Outputs:
 %    res - interval
 %
-% Example: 
+% Example:
+%    minuend = interval([-2;1],[3;2]);
+%    subtrahend = interval([-0.5;0.2],[0.2;0.6]);
+%    minuend - subtrahend
 %
 % Other m-files required: none
 % Subfunctions: none

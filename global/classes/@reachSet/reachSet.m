@@ -2,23 +2,25 @@ classdef reachSet
 % reachSet - class that stores reachable sets
 %
 % Syntax:  
-%    obj = reachSet(timePoint)
-%    obj = reachSet(timePoint,parent)
-%    obj = reachSet(timePoint,parent,loc)
-%    obj = reachSet(timePoint,timeInt)
-%    obj = reachSet(timePoint,timeInt,parent);
-%    obj = reachSet(timePoint,timeInt,parent,loc);
+%    R = reachSet(timePoint)
+%    R = reachSet(timePoint,parent)
+%    R = reachSet(timePoint,parent,loc)
+%    R = reachSet(timePoint,timeInt)
+%    R = reachSet(timePoint,timeInt,parent)
+%    R = reachSet(timePoint,timeInt,parent,loc)
 %
 % Inputs:
-%    timePoint - struct with fields .set and .time storing the time point
-%                reachable set
-%    timeInt - struct with fields .set, .time, and .algebraic (nonlinDAsys)
-%              storing the time interval reachable set
+%    timePoint - struct with fields .set, .time, and .error (linearSys if
+%                adaptive algorithm called) storing the time point
+%                reachable or output set
+%    timeInt - struct with fields .set, .time, .error (linearSys if
+%              adaptive algorithm called), and .algebraic (nonlinDASys)
+%              storing the time interval reachable or output set
 %    parent - index of the parent reachable set
 %    loc - index of the location (hybrid systems)
 %
 % Outputs:
-%    obj - generated object
+%    R - generated reachSet object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -35,64 +37,84 @@ classdef reachSet
 
 properties (SetAccess = private, GetAccess = public)
     
-    timePoint = [];                     % time point reachable set
-    timeInterval = [];                  % time interval reachable set
-    parent (1,1) {mustBeInteger} = 0;   % index of parent reachable set
-    loc (:,1) {mustBeInteger} = 0;      % index of the location (hybrid)
+    % time-point reachable set
+    timePoint = [];
+
+    % time-interval reachable set
+    timeInterval = [];
+
+    % index of parent reachable set
+    parent (1,1) {mustBeInteger,mustBeNonnegative} = 0;
+
+    % index of the location (hybrid)
+    loc (:,1) {mustBeInteger,mustBeNonnegative} = 0;
 end
     
 methods
     
     % class constructor
-    function obj = reachSet(varargin)
+    function R = reachSet(varargin)
         
         % parse input arguments
-        if nargin == 1
-            obj.timePoint = varargin{1};
+        if nargin == 0
+            return
+            % empty object
+        elseif nargin == 1
+            R.timePoint = varargin{1};
         elseif nargin == 2
-            obj.timePoint = varargin{1};
+            R.timePoint = varargin{1};
             if ~isstruct(varargin{2})
-                obj.parent = varargin{2};
+                R.parent = varargin{2};
             else
-                obj.timeInterval = varargin{2};
+                R.timeInterval = varargin{2};
             end
         elseif nargin == 3
-            obj.timePoint = varargin{1};
+            R.timePoint = varargin{1};
             if ~isstruct(varargin{2})
-                obj.parent = varargin{2};
-                obj.loc = varargin{3};
+                R.parent = varargin{2};
+                R.loc = varargin{3};
             else
-                obj.timeInterval = varargin{2};
-                obj.parent = varargin{3};
+                R.timeInterval = varargin{2};
+                R.parent = varargin{3};
             end
         elseif nargin == 4
-            obj.timePoint = varargin{1};
-            obj.timeInterval = varargin{2};
-            obj.parent = varargin{3};
-            obj.loc = varargin{4};
+            R.timePoint = varargin{1};
+            R.timeInterval = varargin{2};
+            R.parent = varargin{3};
+            R.loc = varargin{4};
         else
-           error('Wrong number of input arguments for class "reachSet"!'); 
-        end  
-        
-        % check correctness of inputs
-        if ~isempty(obj.timeInterval)
-           temp = obj.timeInterval;
-           if ~isstruct(temp) || ~isfield(temp,'set') || ...
-              ~isfield(temp,'time') || ~iscell(temp.set) || ...
-              ~iscell(temp.time) || any(size(temp.set) ~= size(temp.time))
-               error('Wrong format for input arguments');
-           end
+            throw(CORAerror('CORA:tooManyInputArgs',4));
         end
         
-        if ~isempty(obj.timePoint)
-           temp = obj.timePoint;
-           if ~isstruct(temp) || ~isfield(temp,'set') || ...
-              ~isfield(temp,'time') || ~iscell(temp.set) || ...
-              ~iscell(temp.time) || any(size(temp.set) ~= size(temp.time))
-               error('Wrong format for input arguments');
-           end
+        % check correct format of reachable sets
+        sets = {'timeInterval','timePoint'};
+        for i=1:length(sets)
+            if ~isempty(R.(sets{i}))
+                temp = R.(sets{i});
+                if ~isstruct(temp) ... % has to be a struct
+                        || ~isfield(temp,'set') || ... % has to have .set
+                        ~isfield(temp,'time') || ... % has to have .time
+                        (~isempty(temp.set) && ~iscell(temp.set)) || ... % .set have to be cells
+                        (~isempty(temp.time) && ~iscell(temp.time)) || ... % .time have to be cells
+                        any(size(temp.set) ~= size(temp.time)) % .set and .time have to be of equal length
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                        'Fields .set and/or .time have the wrong format.'));
+                end
+                % optional fields: .error, .algebraic
+                if isfield(temp,'error') && ...
+                        ( ~isnumeric(temp.error) || ... % has to be numeric
+                          any(size(temp.error) ~= size(temp.time)) ) % correct length
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                        'Field .error have the wrong format.'));
+                elseif isfield(temp,'algebraic') && ...
+                        ( ~iscell(temp.algebraic) || ... % has to be cell-array
+                          any(size(temp.algebraic) ~= size(temp.time)) ) % correct length
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                        'Field .algebraic have the wrong format.'));
+                end
+            end
         end
-    end   
+    end
     
     % assign array elements
     function obj = subsasgn(obj, S, value)
@@ -106,6 +128,12 @@ methods
         res = builtin('subsref', obj, S);
     end
 end
+
+methods (Static = true)
+    % instantiate reachSet object from structs
+    R = initReachSet(timePoint,timeInt)
+end
+
 end
 
 %------------- END OF CODE --------------

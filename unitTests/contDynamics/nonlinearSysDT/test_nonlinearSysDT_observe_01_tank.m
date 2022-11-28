@@ -1,11 +1,11 @@
 function res = test_nonlinearSysDT_observe_01_tank()
 % test_nonlinearSysDT_observe_01_tank - unit_test_function for guaranteed
-% state estimation of nonlinear discrete-time tank system.
+%    state estimation of nonlinear discrete-time tank system.
 %
-% Checks the state estmation of the nonlinearSysDT class for a tank example 
-% from [1]; It is checked whether the enclosing interval of the 
-% final observed set is close to an interval provided by a previous 
-% solution that has been saved
+%    Checks the state estmation of the nonlinearSysDT class for a tank
+%    example from [1]; It is checked whether the enclosing interval of the 
+%    final observed set is close to an interval provided by a previous 
+%    solution that has been saved
 %
 % Syntax:  
 %    res = test_nonlinearSysDT_observe_01_tank
@@ -14,29 +14,49 @@ function res = test_nonlinearSysDT_observe_01_tank()
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % Reference:
 %    [1] M. Althoff "Guaranteed State Estimation in CORA 2021", ARCH 2021
 %
 % Example: 
 %    -
- 
+
 % Author:       Matthias Althoff
-% Written:      25-Mar-2021
+% Written:      25-March-2021
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
+% define tank model
+dt = 0.5;
+n = 6; m = 3; r = 3;
+fun = @(x,u) tank6EqDT_inflow4(x,u,dt);
+out_fun = @(x,u)[0,1,0,0,0,0;0,0,0,1,0,0;0,0,0,0,1,0]*x(1:n);
+tank = nonlinearSysDT('tank',fun,dt,n,m,out_fun,r);
 
-%% Load tank model
-load tankModel_nonlin_dim6 tank params options
-
-% more robust case
+% parameters
 params.tFinal = 10;
-params.u = params.u(:,1:20);
-params.y = params.y(:,1:20);
+params.R0 = zonotope(20*ones(6,1),4*eye(6));
+params.U = zonotope(zeros(3,1));
+params.V = zonotope(zeros(3,1),0.2*eye(3));
+params.W = zonotope(zeros(6,1),0.001*eye(6));
+params.u = [0.1000    0.1000    0.1000    0.1025    0.1050    0.1075    0.1100    0.1125    0.1150    0.1175    0.1200    0.1225    0.1250    0.1275    0.1300    0.1325    0.1350    0.1375    0.1400    0.1425;
+    0.1000    0.1000    0.1000    0.1025    0.1050    0.1075    0.1100    0.1125    0.1150    0.1175    0.1200    0.1225    0.1250    0.1275    0.1300    0.1325    0.1350    0.1375    0.1400    0.1425;
+    0.1000    0.1000    0.1000    0.1050    0.1100    0.1150    0.1200    0.1250    0.1300    0.1350    0.1400    0.1450    0.1500    0.1550    0.1600    0.1650    0.1700    0.1750    0.1800    0.1850];
+params.y = [18.587107801413037  19.284508642234258  19.804172917266072  19.984844940204784  20.278953550132702  20.483743290472002  20.674406205375988  20.564287471887262  20.524616208625844  20.390858909530351  20.579505841851283  20.499347774002867  20.334643962630423 20.272233256206864  20.167743326619661  20.169739624168546  20.104461580569449  20.060900527281170  19.937554706454481  19.834875810069285;
+  20.225990245627816  20.158180661305583  20.171464843998834  20.327437617339143  20.153618747112297  20.380068720276380  20.376688700844845  20.299247293957542  20.243419253755508  20.277306209637565  20.290071755637200  20.468834597540557  20.270783553258500 20.223394465701581  20.467148457713510  20.201977670029528  20.431607252968249  20.481135248015988  20.487405103697650  20.410091165821306;
+  19.112251238495777  18.973762663726877  18.948170824104380  18.992192949983256  19.001881958518979  19.150117548502443  18.975701530881086  19.088283489795671  18.991871883700380  19.066458349897363  18.943805866972866  19.214278885933556  18.957978956507624 19.084269923675965  19.183361721875762  19.081041506305120  19.118244206333170  19.284683679863136  19.156503106336739  19.215720898675404];
+
+% settings
+options.timeStep = dt;
+options.zonotopeOrder = 100;
+options.reductionTechnique = 'pca';
+options.tensorOrder = 2;
+options.errorOrder = 1;
+% options.points = 1;
+% options.p_conf = 0.9990;
 
 % Set of evaluated estimators
 Estimator = {
@@ -109,8 +129,7 @@ for iEst = 1:length(Estimator)
     end
 
     %check if slightly bloated versions enclose each other
-    resPartial(end+1) = (IH <= enlarge(IH_saved,1+accuracy));
-    resPartial(end+1) = (IH_saved <= enlarge(IH,1+accuracy));
+    resPartial(end+1) = isequal(IH,IH_saved,1+accuracy);
 end
 
 % final result

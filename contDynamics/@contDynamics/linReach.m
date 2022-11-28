@@ -141,7 +141,7 @@ else
         
         % clean exit in case of set explosion
         if any(abstrerr > 1e+100)
-            throw(printExplosionError());
+            throw(CORAerror('CORA:reachSetExplosion'));
         end
     end
 
@@ -236,43 +236,12 @@ function [Rtp,Rti,dimForSplit,options] = approxDepReachOnly(linSys,obj,R,options
         R_tp = R_tp + obj.linError.p.x;
         R_ti = R_ti + obj.linError.p.x;
     end
-    cs = round((options.t-options.tStart)/options.timeStep)+1;
-    R_tp = reduce(R_tp,options.reductionTechnique,options.zonotopeOrder);
-    if cs==1 && isfield(options,'POpt') && isfield(options.POpt,'reachOpt') && options.POpt.reachOpt
-        [Rtp_.set,options] = shiftWithOptimal(R_tp,options);
-    else
-        Rtp_.set = R_tp;
-    end
+    R_tp = noIndep(reduce(R_tp,options.reductionTechnique,options.zonotopeOrder));
+    R_ti = noIndep(reduce(R_ti,options.reductionTechnique,options.zonotopeOrder));
+    Rtp_.set = R_tp;
     Rti = R_ti;
     Rtp_.error = zeros(length(R_tp.c),1);
     Rtp = Rtp_;
     dimForSplit = [];
-    % Rti is not used, so is not really accurate probably (didn't bother)
-end
-
-function [pZ,options] = shiftWithOptimal(pZ,options)
-    POpt = options.POpt;
-    j = POpt.j;
-    np = POpt.np;
-    idp_1j = POpt.idp_1j;
-    idv = POpt.idv;
-    % remove unused ids, make sure pZ_vp only contains idv, idp
-    ind_eM = all(pZ.expMat==0,2);
-    pZ = polyZonotope(pZ.c,pZ.G,pZ.Grest,pZ.expMat(~ind_eM,:),pZ.id(~ind_eM));
-    pZ = restoreId(pZ,[idv;idp_1j]);
-    assert(isempty(setdiff(pZ.id,[idv;idp_1j])),'contains ids not idp_j,idv');   
-   
-    % find current Optimum
-    nx = length(POpt.Q);
-    np_1j = length(idp_1j);
-    % delta in [-1,1]
-    val = computeCtrl(project(pZ,1:nx),idv,idp_1j,POpt.A_pz_1j,...
-                      POpt.b_pz_1j,POpt.Q,1e-6,-ones(np_1j,1),ones(np_1j,1));
-    % update parameterized reachable set with new value for dp
-    pZb_b = polyZonotope(val,eye(j*np),zeros(j*np,0),eye(j*np),idp_1j);
-    pZ = subs(pZ,pZb_b,idp_1j);
-    % compute & save new "center" p
-    POpt.pc_1j = POpt.pc_1j + POpt.D_1j*val;
-    options.POpt = POpt;
 end
 %------------- END OF CODE --------------

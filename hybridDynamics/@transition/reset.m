@@ -1,14 +1,14 @@
-function [y] = reset(obj,x,varargin)
+function y = reset(trans,x,varargin)
 % reset - resets the continuous state according the reset function
 %
 % Syntax:  
-%    y = reset(obj,x)
-%    y = reset(obj,x,u)
+%    y = reset(trans,x)
+%    y = reset(trans,x,u)
 %
 % Inputs:
-%    obj - transition object
+%    trans - transition object
 %    x - state value before the reset
-%    u - input at the time of reset
+%    u - (optional) input at the time of reset
 %
 % Outputs:
 %    y - state value after the reset
@@ -27,13 +27,12 @@ function [y] = reset(obj,x,varargin)
 % Written:      04-May-2007 
 % Last update:  07-October-2008
 %               10-December-2021 (NK, added nonlinear reset functions)
-%               11-February-2022 (MP, added reset function dependent on
-%                                     input)
-% Last revision: ---
+%               11-February-2022 (MP, added input dependence)
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
-
+    % default: no inputs given
     u = [];
     % check if inputs were given
     if nargin > 2
@@ -41,98 +40,126 @@ function [y] = reset(obj,x,varargin)
     end
 
     % get correct orientation of x
-    m = size(x,2);
-    if m ~= 1
+    if size(x,2) > 1
         x = x';
     end
 
     % loop over all points
     if ~iscell(x)
-        if isfield(obj.reset,'A')                       % linear reset
-            % with inputs
-            if isfield(obj.reset,'B')
-                y = obj.reset.A*x + obj.reset.B*u + obj.reset.c;
-            % without inputs
+
+        % check whether reset function is linear or nonlinear
+        if isfield(trans.reset,'A')
+            % linear reset
+
+            if ~isfield(trans.reset,'B') || (~any(any(trans.reset.B)) && isempty(u))
+                % without inputs
+                y = trans.reset.A*x + trans.reset.c;
             else
-                y = obj.reset.A*x + obj.reset.c;
+                % with inputs
+                y = trans.reset.A*x + trans.reset.B*u + trans.reset.c;
             end
-        else                                            % nonlinear reset
-            % compute extended state x' = [x;u]
-            x = cartProd(x,u);
+
+        else
+            % nonlinear reset
+
+            if trans.reset.inputDim > 0
+                % compute extended state x' = [x;u]
+                x = cartProd(x,u);
+            end
             if isnumeric(x)
-               y = obj.reset.f(x);
+                y = trans.reset.f(x);
             else
-               y = nonlinearReset(obj,x); 
+                y = nonlinearReset(trans,x);
             end
         end
+
     else
         y = cell(length(x));
-        for i = 1:length(x)
+        for i=1:length(x)
             if ~isempty(x{i})
-                if isfield(obj.reset,'A')               % linear reset
-                    if isfield(obj.reset,'B')
-                        y{i} = obj.reset.A*x{i}+obj.reset*B + obj.reset.c;
+                if isfield(trans.reset,'A')
+                    % linear reset
+                    if isfield(trans.reset,'B')
+                        % with input
+                        y{i} = trans.reset.A*x{i} + trans.reset*B + trans.reset.c;
                     else
-                        y{i} = obj.reset.A*x{i}+b;
+                        % without input
+                        y{i} = trans.reset.A*x{i} + trans.reset.c;
                     end
-                else                                    % nonlinear reset
+                
+                else
+                    % nonlinear reset
                     x{i} = cartProd(x{i},u{i});
                     if isnumeric(y{i})
-                        y{i} = obj.reset.f(x{i});
+                        y{i} = trans.reset.f(x{i});
                     else
-                        y{i} = nonlinearReset(obj,x{i});
+                        y{i} = nonlinearReset(trans,x{i});
                     end
                 end
+
             end
         end
     end
+
 end
 
 
 % Auxiliary Functions -----------------------------------------------------
 
-function Y = nonlinearReset(obj,X)
+function Y = nonlinearReset(trans,X)
 % compute the resulting set for a nonlinear reset function using the
 % approach described in Sec. 4.4 in [1]
 
+    % dimension of state and (global) inputs
+    n = trans.reset.stateDim;
+    m = trans.reset.inputDim;
+
     % Taylor series expansion point
+    % (length: number of states + number of global inputs)
     p = center(X);
     
     % interval enclosure of set
-    int = interval(X);
+    I = interval(X);
     
-    % evaluate derivatives
-    f = obj.reset.f(p);
-    J = obj.reset.J(p);
+    % evaluate reset function at expansion point
+    f = trans.reset.f(p);
+
+    % evaluate Jacobian at expansion point
+    J = trans.reset.J(p);
     
-    Q = cell(length(f),1);
-    for i = 1:length(f)
-       funHan = obj.reset.Q{i};
-       Q{i} = funHan(p);
+    % evaluate Hessians at expansion point
+    Q = cell(n,1);
+    for i = 1:n
+        funHan = trans.reset.Q{i};
+        if ~isempty(funHan)
+            Q{i} = funHan(p);
+        end
     end
     
-    T = cell(size(J));
-    for i = 1:size(J,1)
-        for j = 1:size(J,2)
-            if ~isempty(obj.reset.T{i,j})
-                funHan = obj.reset.T{i,j};
-                T{i,j} = funHan(int);
+    % evaluate third-order tensors over entire set
+    T = cell(n,n+m);
+    for i = 1:n
+        for j = 1:n+m
+            funHan = trans.reset.T{i,j};
+            if ~isempty(funHan)
+                T{i,j} = funHan(I);
             end
         end
     end
 
-    % compute Largrange remainder
-    int = int - p;
-    rem = interval(zeros(size(T,1),1));
+    % compute Lagrange remainder
+    I = I - p;
+    rem = interval(zeros(n,1));
     
-    for i = 1:size(T,1)
-        for j = 1:size(T,2)
+    for i = 1:n
+        for j = 1:n+m
             if ~isempty(T{i,j})
-                rem(i) = rem(i) + int(j) * transpose(int) * T{i,j} * int;
+                rem(i) = rem(i) + I(j) * transpose(I) * T{i,j} * I;
             end
         end
     end
     
+    % include factor and convert remainder to zonotope for quadMap below
     rem = zonotope(1/6*rem);
 
     % compute over-approximation using a Taylor series of order 2

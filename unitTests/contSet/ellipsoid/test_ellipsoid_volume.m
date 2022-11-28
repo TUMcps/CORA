@@ -24,7 +24,8 @@ function res = test_ellipsoid_volume
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-res = true;
+% res = true;
+res = (volume(ellipsoid()) == 0);
 load cases.mat E_c
 for i=1:length(E_c)
     E1 = E_c{i}.E1; % non-deg
@@ -38,13 +39,7 @@ for i=1:length(E_c)
             ~withinTol(volume(E1),E1_vol,E1.TOL)
         res = false;
         break;
-    end
-    
+    end    
 end
 
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

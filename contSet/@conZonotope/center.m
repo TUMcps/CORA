@@ -1,26 +1,25 @@
-function res = center(obj)
+function c = center(cZ)
 % center - returns a point inside the constrained zonotope. The point is
-%          constructed from the chebychev-center of the polytope in the
-%          zonotope factor space
+%    constructed from the chebychev-center of the polytope in the zonotope
+%    factor space
 %
 % Syntax:  
-%    res = center(obj)
+%    c = center(cZ)
 %
 % Inputs:
-%    obj - conZonotope object
+%    cZ - conZonotope object
 %
 % Outputs:
-%    res - point inside the constrained zonotope
+%    c - point inside the constrained zonotope
 %
 % Example: 
 %    Z = [0 1 0 1;0 1 2 -1];
-%    A = [-2 1 -1];
-%    b = 2;
+%    A = [-2 1 -1]; b = 2;
 %    cZono = conZonotope(Z,A,b);
 % 
 %    c = center(cZono);
 %
-%    hold on
+%    figure; hold on;
 %    plot(cZono,[1,2],'r');
 %    plot(c(1),c(2),'.k','MarkerSize',20);
 %
@@ -37,26 +36,26 @@ function res = center(obj)
 
 %------------- BEGIN CODE --------------
 
-if isempty(obj.A)   % no constraints -> zonotope center
+if isempty(cZ.A)   % no constraints -> zonotope center
     
-       if ~isempty(obj.Z)
-            res = obj.Z(:,1);
+       if ~isempty(cZ.Z)
+            c = cZ.Z(:,1);
        else
-            res = [];
+            c = [];
        end
     
 else                % constraints -> compute chebychev center
            
        % construct inequality constraints for the unit cube
-       n = size(obj.Z,2)-1;
+       n = size(cZ.Z,2)-1;
        A = [eye(n);-eye(n)];
        b = [ones(n,1);ones(n,1)];
 
        % calculate null space of the constraints
-       Neq = null(obj.A); 
+       Neq = null(cZ.A); 
        
        % Calculate a single point that satisfies the constraints
-       x0 = pinv(obj.A)*obj.b;
+       x0 = pinv(cZ.A)*cZ.b;
        
        % transform the constraints to the null space
        A_ = A*Neq;
@@ -74,7 +73,7 @@ else                % constraints -> compute chebychev center
        
        % compute center of the constraint zonotope using the the factors
        % from the chebychev center in the factor space
-       res = obj.Z(:,1) + obj.Z(:,2:end) * c_;
+       c = cZ.Z(:,1) + cZ.Z(:,2:end) * c_;
 end
 
 %------------- END OF CODE --------------

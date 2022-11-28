@@ -1,28 +1,23 @@
-function [res,points] = simulateRRT(obj, R, params, options)
+function simRes = simulateRRT(obj,options)
 % simulateRRT - simulates a system using rapidly exploring random trees
 %
 % Syntax:
-%    res = simulateRRT(obj, R, params, options)
-%    [res,points] = simulateRRT(obj, R, params, options)
+%    simRes = simulateRRT(obj,options)
 %
 % Inputs:
 %    obj - contDynamics object
-%    R - object of class reachSet storing the computed reachable set
-%    params - struct containing the parameter that define the 
-%             reachability problem
-%    options - struct containing settings for the random simulation
-%
-%       .points:    number of random initial points (positive integer)
-%       .vertSamp:  flag that specifies if random initial points, inputs,
-%                   and parameters are sampled from the vertices of the 
-%                   corresponding sets (0 or 1)
-%       .strechFac: stretching factor for enlarging the reachable sets 
-%                   during execution of the algorithm (scalar > 1).
+%    options - struct containing model parameters and settings for the 
+%              random simulation
+%       .points:     number of random initial points (positive integer)
+%       .vertSamp:   flag that specifies if random initial points, inputs,
+%                    and parameters are sampled from the vertices of the 
+%                    corresponding sets (0 or 1)
+%       .stretchFac: stretching factor for enlarging the reachable sets 
+%                    during execution of the algorithm (scalar > 1).
 %
 % Outputs:
-%    res - object of class simResult storing time and states of the
-%          simulated trajectories
-%    points - final points of the simulation
+%    simRes - object of class simResult storing time and states of the
+%             simulated trajectories
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -33,17 +28,18 @@ function [res,points] = simulateRRT(obj, R, params, options)
 % Author:       Matthias Althoff
 % Written:      02-September-2011
 % Last update:  23-September-2016
+%               23-November-2022 (MW, update syntax)
 % Last revision:---
 
-%------------- BEGIN CODE --------------
-
-% options preprocessing
-options = validateOptions(obj,mfilename,params,options);
+%------------- BEGIN CODE --------------´
 
 % set simulation options
 stepsizeOptions = odeset('MaxStep',0.2*(options.tFinal-options.tStart));
 % generate overall options
 opt = odeset(stepsizeOptions);
+
+% read out reachable set
+R = options.R;
 
 % initialize
 X_sample_size = 2*rad(interval(R.timePoint.set{1}));
@@ -62,21 +58,24 @@ V_input_mat = V_input;
 nrOfExtrInputs = length(V_input_mat(1,:));
 
 % initialize simulation results
-x = cell(length(R.timePoint.set)*options.points,1);
-t = cell(length(R.timePoint.set)*options.points,1);
-cnt = 1;
+x = cell(options.points,1);
+t = cell(options.points,1);
 
 % init obtained states from the RRT
 if options.vertSamp
-   X = randPoint(options.R0,options.points,'extreme'); 
+    X = randPoint(options.R0,options.points,'extreme'); 
 else
-   X = randPoint(options.R0,options.points,'standard');
+    X = randPoint(options.R0,options.points,'standard');
 end
 
+% number of time steps
+nrSteps = length(R.timeInterval.set);
+
 % loop over all time steps
-for iStep = 1:length(R.timePoint.set)
+for iStep = 1:nrSteps
     
-    iStep
+    % display current step (execution rather slow...)
+    disp("Step " + iStep + " of " + nrSteps);
     
     % update time
     options.tStart = infimum(R.timeInterval.time{iStep});
@@ -85,8 +84,8 @@ for iStep = 1:length(R.timePoint.set)
     % loop over all trajectories
     for iSample = 1:options.points        
 
-        % enlarge reachable set
-        R_enl = enlarge(R.timePoint.set{iStep},options.strechFac);
+        % enlarge reachable set at starting point in time
+        R_enl = enlarge(R.timePoint.set{iStep},options.stretchFac);
 
         %sample
         if options.vertSamp
@@ -121,19 +120,16 @@ for iStep = 1:length(R.timePoint.set)
         X_new(:,iSample) = x_nearest;
 
         % store trajectories
-        x{cnt} = x_traj{ind};
-        t{cnt} = t_traj{ind};
-        cnt = cnt + 1;
+        x{iSample} = [x{iSample}; x_traj{ind}];
+        t{iSample} = [t{iSample}; t_traj{ind}];
     end
-    % store results
-    points{iStep} = X_new;
     
     % update X
     X = X_new;
 end
 
 % construct object storing the simulation results
-res = simResult(x,t);
+simRes = simResult(x,t);
 
 
 % Auxiliary Functions -----------------------------------------------------

@@ -32,7 +32,6 @@ Int1 = interval([-2; -2],[-1; 0]);
 try
     c = log(Int1);
     res = false;
-    disp('test_log failed');
     return;
 catch
     % log results in NaN -> should throw error
@@ -43,17 +42,13 @@ c = log(Int2);
 
 if ~isinf(infimum(c(1, 1))) || abs( supremum(c(1, 1)) - 0.6931471805599 ) > tol
 	res = false;
-	disp('test_log failed');
 	return;
 end
 
 if abs( infimum(c(1, 2)) - 0.0 ) > tol || abs( supremum(c(1, 2)) - 0.6931471805599 ) > tol
 	res = false;
-	disp('test_log failed');
 	return;
 end
 
-
-disp('test_log successful');
 
 %------------- END OF CODE --------------

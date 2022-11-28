@@ -97,10 +97,9 @@ end
 
 res = all(res_rand_scalar) && all(res_rand_int);
 
-if res
-    disp('test_rdivide successful');
-else
-    disp('test_rdivide failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'a','b');
 end
 
 end

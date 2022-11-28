@@ -26,7 +26,7 @@ function res = testLongDuration_halfspace_plus
 %------------- BEGIN CODE --------------
 
 % Random tests
-res_rand = true;
+res = true;
 nrTests = 1000;
 
 for i=1:nrTests
@@ -55,19 +55,14 @@ for i=1:nrTests
     
     % compare results
     if ~isequal(h_plus,h_true)
-        res_rand = false; break;
+        res = false; break;
     end       
     
 end
 
-
-% combine tests
-res = res_rand;
-
-if res_rand
-    disp('test_plus successful');
-else
-    disp('test_plus failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','c','d','v');
 end
 
 %------------- END OF CODE --------------

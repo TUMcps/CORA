@@ -1,21 +1,22 @@
-function res = isFullDim(obj)
-% isFullDim - check if an interval is full-dimensional
+function res = isFullDim(I)
+% isFullDim - checks if the dimension of the affine hull of an interval is
+%    equal to the dimension of its ambient space
 %
 % Syntax:  
-%    res = isFullDim(obj)
+%    res = isFullDim(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - 1 if interval is full-dimensional, 0 else
+%    res - true/false
 %
 % Example:
-%    int1 = interval([-1;-2],[1;2]);
-%    int2 = interval([-1;-2],[1;-2]);
+%    I1 = interval([-1;-2],[1;2]);
+%    I2 = interval([-1;-2],[1;-2]);
 %
-%    isFullDim(int1)
-%    isFullDim(int2)
+%    isFullDim(I1)
+%    isFullDim(I2)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,11 +31,10 @@ function res = isFullDim(obj)
 
 %------------- BEGIN CODE --------------
 
-if isempty(obj)
+if isempty(I)
     res = false;
 else
-    r = rad(obj);   
-    res = ~any(r == 0);
+    res = ~any(withinTol(rad(I),0)); 
 end
 
 %------------- END OF CODE --------------

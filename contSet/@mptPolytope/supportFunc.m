@@ -1,10 +1,10 @@
 function [val,x] = supportFunc(obj,dir,varargin)
-% supportFunc - Calculate the upper or lower bound of a mptPolytope object
-%            along a certain direction
+% supportFunc - Calculate the upper or lower bound of a polytope along a
+%    certain direction
 %
 % Syntax:  
 %    val = supportFunc(obj,dir)
-%    val = supportFunc(obj,dir,type)
+%    [val,x] = supportFunc(obj,dir,type)
 %
 % Inputs:
 %    obj - mptPolytope object
@@ -13,7 +13,7 @@ function [val,x] = supportFunc(obj,dir,varargin)
 %    type - upper or lower bound ('lower' or 'upper')
 %
 % Outputs:
-%    val - bound of the constraind zonotope in the specified direction
+%    val - bound of the polytope in the specified direction
 %    x - support vector
 %
 % Other m-files required: none
@@ -22,42 +22,50 @@ function [val,x] = supportFunc(obj,dir,varargin)
 %
 % See also: conZonotope/supportFunc
 
-% Author:       Niklas Kochdumper,Victor Gassmann
+% Author:       Niklas Kochdumper, Victor Gassmann
 % Written:      19-November-2019
 % Last update:  16-March-2021 (added unbounded support)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
     
-    % parse input arguments
-    type = 'upper';
-    
-    if nargin >= 3 && ~isempty(varargin{1})
-        type = varargin{1};
-    end
+% pre-processing
+[res,vars] = pre_supportFunc('mptPolytope',obj,dir,varargin{:});
 
-    % get object properties
-    A = obj.P.A;
-    b = obj.P.b;
-    
-    % linear program options
-    options = optimoptions('linprog','display','off');
-    
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    val = vars{1}; return
+else
+    obj = vars{1}; dir = vars{2}; type = vars{3};
+end
+
+
+% upper or lower bound
+if strcmp(type,'lower')
+    s = 1;
+elseif strcmp(type,'upper')
     s = -1;
-    % upper or lower bound
-    if strcmp(type,'lower')
-        s = 1;
-    end
-    [x,val,exitflag] = linprog(s*dir',A,b,[],[],[],[],options);
-    val = s*val;
-    if exitflag == -3
-        % unbounded
-        val = -s*inf;
-        x = -s*sign(dir).*inf(length(dir),1);
-    elseif exitflag ~= 1
-        error('Error using linprog!');
-    end
+elseif strcmp(type,'range')
+    throw(CORAerror('CORA:notSupported',type));
+end
 
+% get object properties
+A = obj.P.A;
+b = obj.P.b;
+
+% linear program options
+options = optimoptions('linprog','display','off');
+
+[x,val,exitflag] = linprog(s*dir',A,b,[],[],[],[],options);
+val = s*val;
+
+if exitflag == -3
+    % unbounded
+    val = -s*Inf;
+    x = -s*sign(dir).*Inf(length(dir),1);
+elseif exitflag ~= 1
+    throw(CORAerror('CORA:solverIssue'));
 end
 
 %------------- END OF CODE --------------

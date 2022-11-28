@@ -1,16 +1,16 @@
 function cPZ = plus(summand1,summand2)
 % plus - Overloaded '+' operator for the Minkowski addition of a
-%        constrained polynomial zonotope with other set representations
+%    constrained polynomial zonotope with other sets or points
 %
 % Syntax:  
 %    cPZ = plus(summand1,summand2)
 %
 % Inputs:
-%    summand1 - conPolyZono object, other set rep., or numerical vector
-%    summand2 - conPolyZono object, other set rep., or numerical vector
+%    summand1 - conPolyZono object, contSet object, or numerical vector
+%    summand2 - conPolyZono object, contSet object, or numerical vector
 %
 % Outputs:
-%    cPZ - conPolyZonotope after Minkowsi addition
+%    cPZ - conPolyZono object
 %
 % Example: 
 %    c = [0;0];
@@ -26,9 +26,9 @@ function cPZ = plus(summand1,summand2)
 %    res = cPZ + E; 
 %
 %    figure; hold on;
-%    plot(res,[1,2],'b','Filled',true,'EdgeColor','none','Splits',25);
-%    plot(E,[1,2],'g','Filled',true,'EdgeColor','none');
-%    plot(cPZ,[1,2],'r','Filled',true,'EdgeColor','none','Splits',15);
+%    plot(res,[1,2],'FaceColor','b','Splits',25);
+%    plot(E,[1,2],'FaceColor','g');
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',15);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -43,45 +43,64 @@ function cPZ = plus(summand1,summand2)
 
 %------------- BEGIN CODE --------------
 
-    % determine which summand is the conPolyZono object
-    if isa(summand1,'conPolyZono')
-        cPZ = summand1;
-        summand = summand2;  
-    elseif isa(summand2,'conPolyZono')
-        cPZ = summand2;
-        summand = summand1;  
-    end
-    
+% determine which summand is the conPolyZono object
+[cPZ,S] = findClassArg(summand1,summand2,'conPolyZono');
+
+try
+
     % different cases for different set represnetations
-    if isnumeric(summand) || isa(summand,'interval') || ...
-       isa(summand,'zonotope')
+    if isnumeric(S) || isa(S,'interval') || ...
+       isa(S,'zonotope')
     
-       Z = zonotope(summand);
+       Z = zonotope(S);
        cPZ.c = cPZ.c + center(Z);
        cPZ.Grest = [cPZ.Grest,generators(Z)];
        
-    elseif isa(summand,'conPolyZono') || isa(summand,'mptPolytope') || ...
-           isa(summand,'zonoBundle') || isa(summand,'conZonotope') || ...
-           isa(summand,'ellipsoid') || isa(summand,'capsule') || ...
-           isa(summand,'polyZonotope') || isa(summand,'taylm')
+    elseif isa(S,'conPolyZono') || isa(S,'mptPolytope') || ...
+           isa(S,'zonoBundle') || isa(S,'conZonotope') || ...
+           isa(S,'ellipsoid') || isa(S,'capsule') || ...
+           isa(S,'polyZonotope') || isa(S,'taylm')
         
          % convert to conPolyZono object
-         summand = conPolyZono(summand);
+         S = conPolyZono(S);
        
          % update states
-         cPZ.c = cPZ.c + summand.c;
-         cPZ.G = [cPZ.G, summand.G];
-         cPZ.expMat = blkdiag(cPZ.expMat,summand.expMat);
+         cPZ.c = cPZ.c + S.c;
+         cPZ.G = [cPZ.G, S.G];
+         cPZ.expMat = blkdiag(cPZ.expMat,S.expMat);
          
-         cPZ.Grest = [cPZ.Grest, summand.Grest];
+         cPZ.Grest = [cPZ.Grest, S.Grest];
          
          % update constraints
-         cPZ = updateConstraints(cPZ,cPZ,summand);
+         cPZ = updateConstraints(cPZ,cPZ,S);
          
     else
          % throw error for given arguments
-         error(noops(cPZ,summand));
+         throw(CORAerror('CORA:noops',cPZ,S));
     end
+
+catch ME
+    % note: error has already occured, so the operations below don't have
+    % to be efficient
+
+    % already know what's going on...
+    if startsWith(ME.identifier,'CORA')
+        rethrow(ME);
+    end
+
+    % check for empty sets
+    if isempty(Z)
+        return
+    elseif isemptyobject(summand)
+        Z = zonotope(); return
+    end
+
+    % check whether different dimension of ambient space
+    equalDimCheck(Z,summand);
+
+    % other error...
+    rethrow(ME);
+
 end
 
 %------------- END OF CODE --------------

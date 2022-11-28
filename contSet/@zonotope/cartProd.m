@@ -1,21 +1,20 @@
-function Z = cartProd(Z1,Z2)
+function Z = cartProd(Z,S)
 % cartProd - returns the cartesian product of two zonotopes
 %
 % Syntax:  
-%    Z = cartProd(Z1,Z2)
+%    Z = cartProd(Z,S)
 %
 % Inputs:
-%    Z1 - zonotope object
-%    Z2 - zonotope object
+%    Z - zonotope object
+%    S - contSet object
 %
 % Outputs:
 %    Z - zonotope object
 %
 % Example: 
-%    zono1 = zonotope.generateRandom(2);
-%    zono2 = zonotope.generateRandom(3);
-%
-%    zono = cartProd(zono1,zono2);
+%    Z1 = zonotope([-1;1],[1 3 2; -3 0 1]);
+%    Z2 = zonotope([0;2;-3],[1 4 -2; 2 0 -1; 0 2 2]);
+%    Z = cartProd(Z1,Z2);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,59 +30,59 @@ function Z = cartProd(Z1,Z2)
 
 %------------- BEGIN CODE --------------
 
+% pre-processing
+[res,vars] = pre_cartProd('zonotope',Z,S);
+
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    Z = zonotope(vars{1}); return
+else
+    % potential re-ordering
+    Z = vars{1}; S = vars{2};
+end
+
+
 % first or second set is zonotope
-if isa(Z1,'zonotope')
+if isa(Z,'zonotope')
 
     % different cases for different set representations
-    if isa(Z2,'zonotope')
-
-        c = [center(Z1);center(Z2)];
-        G = blkdiag(generators(Z1),generators(Z2));
-
-        Z = zonotope([c,G]);
-
-    elseif isnumeric(Z2)
-
-        c = [center(Z1);Z2];
-        G = [generators(Z1);zeros(size(Z2,1),size(Z1.Z,2)-1)];
-
-        Z = zonotope([c,G]);
-
-    elseif isa(Z2,'interval') 
-        Z = cartProd(Z1,zonotope(Z2));
-    elseif isa(Z2,'conZonotope')
-        Z = cartProd(conZonotope(Z1),Z2);
-    elseif isa(Z2,'zonoBundle')
-        Z = cartProd(zonoBundle(Z1),Z2);
-    elseif isa(Z2,'mptPolytope')
-        Z = cartProd(mptPolytope(Z1),Z2);
-    elseif isa(Z2,'polyZonotope')
-        Z = cartProd(polyZonotope(Z1),Z2);
-    elseif isa(Z2,'conPolyZono')
-        Z = cartProd(conPolyZono(Z1),Z2);
+    if isa(S,'zonotope')
+        Z.Z = [[center(Z);center(S)],blkdiag(generators(Z),generators(S))];
+    elseif isnumeric(S)
+        Z.Z = [[center(Z);S],[generators(Z);zeros(size(S,1),size(Z.Z,2)-1)]];
+    elseif isa(S,'interval') 
+        Z = cartProd(Z,zonotope(S));
+    elseif isa(S,'conZonotope')
+        Z = cartProd(conZonotope(Z),S);
+    elseif isa(S,'zonoBundle')
+        Z = cartProd(zonoBundle(Z),S);
+    elseif isa(S,'mptPolytope')
+        Z = cartProd(mptPolytope(Z),S);
+    elseif isa(S,'polyZonotope')
+        Z = cartProd(polyZonotope(Z),S);
+    elseif isa(S,'conPolyZono')
+        Z = cartProd(conPolyZono(Z),S);
     else
         % throw error for given arguments
-        error(noops(Z1,Z2));
+        throw(CORAerror('CORA:noops',Z,S));
     end
 
-elseif isa(Z2,'zonotope')
+elseif isa(S,'zonotope')
 
     % first argument is a vector
-    if isnumeric(Z1)
-
-        c = [Z1;center(Z2)];
-        G = [zeros(size(Z1,1),size(Z2.Z,2)-1);generators(Z2)];
-        Z = zonotope([c,G]);
-
+    if isnumeric(Z)
+        Z.Z = [[Z;center(S)],[zeros(size(Z,1),size(S.Z,2)-1);generators(S)]];
     else
         % throw error for given arguments
-        error(noops(Z1,Z2));
+        throw(CORAerror('CORA:noops',Z,S));
     end  
     
 else
     
     % throw error for given arguments
-    error(noops(Z1,Z2));
+    throw(CORAerror('CORA:noops',Z,S));
+    
 end  
     
     

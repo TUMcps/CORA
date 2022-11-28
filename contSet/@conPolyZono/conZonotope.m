@@ -1,21 +1,21 @@
-function res = conZonotope(obj,varargin)
+function cZ = conZonotope(cPZ,varargin)
 % conZonotope - Computes a constrained zonotope that over-approximates the 
-%               conPolyZonotope object
+%    constrained polynomial zonotope
 %
 % Syntax:  
-%    res = conZonotope(obj)
-%    res = conZonotope(obj,type)
-%    res = conZonotope(obj,type,method)
+%    cZ = conZonotope(cPZ)
+%    cZ = conZonotope(cPZ,type)
+%    cZ = conZonotope(cPZ,type,method)
 %
 % Inputs:
-%    obj - conPolyZonotope object
+%    cPZ - conPolyZono object
 %    type - algorithm used to compute conZonotope enclosure ('linearize',
 %           'extend', or 'all')
 %    method - algorithm used for contraction ('forwardBackward',
 %             'linearize', 'polynomial', 'interval', 'all', or 'none')
 %
 % Outputs:
-%    res - conZonotope object
+%    cZ - conZonotope object
 %
 % Example: 
 %    A = 1/8 * [-10 2 2 3 3];
@@ -29,7 +29,7 @@ function res = conZonotope(obj,varargin)
 %    cZ = conZonotope(cPZ);
 %
 %    figure; hold on
-%    plot(cPZ,[1,2],'r','Splits',20,'Filled',true,'EdgeColor','none');
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',20);
 %    plot(cZ,[1,2],'b');
 %    plot(zonotope(cPZ),[1,2],'g');
 %
@@ -50,60 +50,57 @@ function res = conZonotope(obj,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    type = 'all';
-    method = 'linearize';
-    
-    if nargin > 1 && ~isempty(varargin{1})
-        type = varargin{1};
-    end
-    if nargin > 2 && ~isempty(varargin{2})
-        method = varargin{2};
-    end
+    [type,method] = setDefaultValues({'all','linearize'},varargin{:}); 
+
+    % check input arguments
+    inputArgsCheck({{cPZ,'att','conPolyZono'};
+                    {type,'str',{'all','extend','linearize'}};
+                    {method,'str',{'forwardBackward','linearize',...
+                        'polynomial','interval','all','none'}}});
 
     % rescale the domain for the factors
     if ~strcmp(method,'none')
-        obj = rescale(obj,method);
+        cPZ = rescale(cPZ,method);
     end
     
     % check if constraints are present
-    if ~isempty(obj.A)
+    if ~isempty(cPZ.A)
 
         % enclose set with a conZonotope using the selected algorithm
         if strcmp(type,'extend')
-            res = conZonotopeExtend(obj);
+            cZ = conZonotopeExtend(cPZ);
         elseif strcmp(type,'linearize')
-            res = conZonotopeLinearize(obj);
+            cZ = conZonotopeLinearize(cPZ);
         elseif strcmp(type,'all')
-            res = conZonotopeAll(obj);
-        else
-           error('Wrong value for input argument "type"!'); 
+            cZ = conZonotopeAll(cPZ);
         end
     
     else
-        res = conZonotope(zonotope(obj));
+        cZ = conZonotope(zonotope(cPZ));
     end
+
 end
 
 
 % Auxiliary Functions -----------------------------------------------------
 
-function res = conZonotopeExtend(obj)
+function res = conZonotopeExtend(cPZ)
 % enclose set with a constrained zonotope based on an extension to a higher
 % dimensional space
 
     % transform to equivalent higher-dimensional polynomial zonotope
-    c = [obj.c; -obj.b];
-    G = blkdiag(obj.G,obj.A);
-    expMat = [obj.expMat,obj.expMat_];
+    c = [cPZ.c; -cPZ.b];
+    G = blkdiag(cPZ.G,cPZ.A);
+    expMat = [cPZ.expMat,cPZ.expMat_];
     
     pZ = polyZonotope(c,G,[],expMat);
     
     % enclose higher dimensional polynomial zonotope with a zonotope
-    zono = zonotope(pZ);
+    Z = zonotope(pZ);
 
     % extract linear generators and constraints from zonotope enclosure
-    n = dim(obj);
-    G_ = generators(zono); c_ = center(zono);
+    n = dim(cPZ);
+    G_ = generators(Z); c_ = center(Z);
     
     G = G_(1:n,:); c = c_(1:n);
     A = G_(n+1:end,:); b = -c_(n+1:end);
@@ -111,28 +108,28 @@ function res = conZonotopeExtend(obj)
     res = conZonotope([c,G],A,b);
     
     % add independent generators
-    if ~isempty(obj.Grest)
-       res = res + zonotope(zeros(n,1),obj.Grest); 
+    if ~isempty(cPZ.Grest)
+       res = res + zonotope(zeros(n,1),cPZ.Grest); 
     end
 end
 
-function res = conZonotopeLinearize(obj)
+function res = conZonotopeLinearize(cPZ)
 % enclose set with a constrained zonotope based on an enclosure of the
 % nonlinear constraints with parallel hyperplanes according to Sec. 4.3.4
 % in [1]
 
     % over-approximate the unconstrained poly. zonotope with a zonotope
-    G = obj.G;
+    G = cPZ.G;
     
-    temp = prod(ones(size(obj.expMat))-mod(obj.expMat,2),1);
+    temp = prod(ones(size(cPZ.expMat))-mod(cPZ.expMat,2),1);
     ind_ = find(temp == 1);
     Gquad = G(:,ind_);
 
-    ind = find(sum(obj.expMat,1) == 1);
-    G1 = zeros(size(G,1),length(obj.id));
+    ind = find(sum(cPZ.expMat,1) == 1);
+    G1 = zeros(size(G,1),length(cPZ.id));
     
-    for i = 1:length(obj.id)
-        index = find(obj.expMat(i,ind) == 1);
+    for i = 1:length(cPZ.id)
+        index = find(cPZ.expMat(i,ind) == 1);
         if ~isempty(index)
             G1(:,i) = G(:,ind(index));   
         end
@@ -140,15 +137,15 @@ function res = conZonotopeLinearize(obj)
     
     G(:,ind_) = [];
     
-    c = obj.c + 0.5 * sum(Gquad,2);
+    c = cPZ.c + 0.5 * sum(Gquad,2);
     G = [G1, 0.5*Gquad G];
     
     % enclose each nonlinear constraint f(x) by two parallel hyperplanes 
     % defined as J*x + l <= f(x) <= J*x + b (see Eq. (4.93) in [1])
-    jacHan = funHanJacobian(obj.A,obj.expMat_);
-    funHan = @(x) funCon(x,obj.b,obj.A,obj.expMat_);
+    jacHan = funHanJacobian(cPZ.A,cPZ.expMat_);
+    funHan = @(x) funCon(x,cPZ.b,cPZ.A,cPZ.expMat_);
     
-    temp = ones(length(obj.id),1);
+    temp = ones(length(cPZ.id),1);
     dom = interval(-temp,temp);
     
     cen = center(dom);
@@ -166,8 +163,8 @@ function res = conZonotopeLinearize(obj)
     res = conZonotope([c,G],A,b);    
     
     % add independent generators
-    if ~isempty(obj.Grest)
-       res = res + zonotope(zeros(size(c)),obj.Grest); 
+    if ~isempty(cPZ.Grest)
+       res = res + zonotope(zeros(size(c)),cPZ.Grest); 
     end
 end
 

@@ -1,18 +1,19 @@
-function res = norm(obj, varargin)
-% norm - computes approximately the maximum norm value of all possible matrices
+function val = norm(matZ,varargin)
+% norm - computes approximately the maximum norm value of all possible
+%    matrices
 %
 % Syntax:  
-%    res = norm(obj, varargin)
+%    val = norm(matZ,varargin)
 %
 % Inputs:
-%    matZ - matrix zonotope
-%    varargin - list of optional inputs
+%    matZ - matZonotope object
+%    varargin - list of optional inputs for norm function
 %
 % Outputs:
-%    res - resulting maximum norm value
+%    val - resulting maximum norm value
 %
 % Example: 
-%    ---
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,7 +28,10 @@ function res = norm(obj, varargin)
 
 %------------- BEGIN CODE --------------
 
-M = intervalMatrix(obj);
-res = norm(M,varargin{:});
+% convert to interval matrix
+M = intervalMatrix(matZ);
+
+% compute norm of interval matrix
+val = norm(M,varargin{:});
 
 %------------- END OF CODE --------------

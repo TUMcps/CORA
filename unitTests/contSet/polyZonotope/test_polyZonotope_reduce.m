@@ -46,9 +46,9 @@ Grest =  [3 0; 0 4];
 c = [0;0];
 
 % check for correctness
-if any(c-pZred.c) || any(any(Grest-pZred.Grest)) || ~isempty(pZred.G) || ...
-   ~isempty(pZred.expMat) || ~isempty(pZred.id)
-    error('test_polyZonotope_reduce: analytical test 1 failed!');
+if ~all(withinTol(c,pZred.c)) || ~compareMatrices(Grest,pZred.Grest) ...
+        || ~isempty(pZred.G) || ~isempty(pZred.expMat) || ~isempty(pZred.id)
+    throw(CORAerror('CORA:testFailed'));
 end
 
 
@@ -72,11 +72,10 @@ Grest = [-4 2.5 0; -1 0 6.5];
 expMat = 1;
 
 % check for correctness
-if any(c-pZred.c) || any(any(G-pZred.G)) || any(any(Grest-pZred.Grest)) || ...
-   any(any(expMat-pZred.expMat))
-    error('test_polyZonotope_reduce: analytical test 2 failed!');
+if ~all(withinTol(c,pZred.c)) || ~compareMatrices(G,pZred.G) ...
+        || ~compareMatrices(Grest,pZred.Grest)
+    throw(CORAerror('CORA:testFailed'));
 end
-
 
 res = true;
 

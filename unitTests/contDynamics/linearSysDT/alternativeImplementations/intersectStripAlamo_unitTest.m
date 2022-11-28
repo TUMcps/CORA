@@ -1,9 +1,9 @@
 function Zres = intersectStripAlamo_unitTest(Z,C,phi,d)
-% intersectStripAlamo - computes the intersection between a zonotope and
+% intersectStripAlamo_unitTest - computes the intersection between a zonotope and
 % a strip defined as |C x-d| <= phi according to [1]
 %
 % Syntax:  
-%    Zres = intersectStripAlamo(Z,C,phi,d)
+%    Zres = intersectStripAlamo_unitTest(Z,C,phi,d)
 %
 % Inputs:
 %    Z - zonotope object
@@ -40,6 +40,10 @@ function Zres = intersectStripAlamo_unitTest(Z,C,phi,d)
 %        state estimation by zonotopes. Automatica, 41(6):1035-1043,
 %        2005.
 
+% Author:        ???
+% Written:       ???
+% Last update:   ---
+% Last revision: ---
 
 %------------- BEGIN CODE --------------
 

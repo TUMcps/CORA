@@ -69,7 +69,7 @@ function res = convHull(P1,varargin)
 
     else
         % throw error for given arguments
-        error(noops(P1,P2));
+        throw(CORAerror('CORA:noops',P1,P2));
     end
     
     % comptue vertices of first polytope

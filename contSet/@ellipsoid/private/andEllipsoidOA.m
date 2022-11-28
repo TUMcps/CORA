@@ -1,6 +1,6 @@
 function E = andEllipsoidOA(E1,E2)
-% andEllipsoidOA - Computes the outer approximation of the intersection between two
-%           ellipsoids
+% andEllipsoidOA - Computes an outer-approximation of the intersection
+%    of an ellipsoid and another ellipsoid or a vector
 %
 % Syntax:  
 %    E = andEllipsoidOA(E1,E2)
@@ -13,8 +13,10 @@ function E = andEllipsoidOA(E1,E2)
 %    E - ellipsoid after intersection
 %
 % References:
-%   [1] Kurzhanskiy, A.A. and Varaiya, P., 2006, December. Ellipsoidal toolbox (ET).
-% In Proceedings of the 45th IEEE Conference on Decision and Control (pp. 1498-1503). IEEE.
+%   [1] Kurzhanskiy, A.A. and Varaiya, P., 2006, December. Ellipsoidal
+%       toolbox (ET). In Proceedings of the 45th IEEE Conference on
+%       Decision and Control (pp. 1498-1503). IEEE.
+%   [2] https://www2.eecs.berkeley.edu/Pubs/TechRpts/2006/EECS-2006-46.pdf
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,15 +30,18 @@ function E = andEllipsoidOA(E1,E2)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-if E1.isdegenerate && E2.isdegenerate
-    error('At least one ellipsoid has to be full-dimensional!')
+
+if ~isFullDim(E1) && ~isFullDim(E2)
+    throw(CORAerror('CORA:degenerateSet',...
+        'At least one ellipsoid has to be full-dimensional!'));
 end
 
-%check if ellipsoids are equal (within tolerance)
+% check if ellipsoids are equal (within tolerance)
 if E1==E2
     E = E1;
     return;
 end
+
 % check if ellipsoids are intersecting
 if ~isIntersecting(E1,E2)
     E = ellipsoid;
@@ -44,25 +49,24 @@ if ~isIntersecting(E1,E2)
 end
 
 % make sure that at most E2 is degenerate 
-if E1.isdegenerate
+if ~isFullDim(E1)
     tmp = E2;
     E2 = E1;
     E1 = tmp;
 end
 
+% define values if E2 is not degenerate (reused later)
 n = length(E1.q);
 I = eye(n);
 T = eye(n);
 x2_rem = [];
 
 % handle degeneracy
-if E2.isdegenerate
+if ~isFullDim(E2)
     nt = rank(E2);
-    % already handled in ellipsoid/and, but include for safety
-    if nt==0
-        
-    end
     [T,~,~] = svd(E2.Q);
+    % transform E1 and E2 into new space where E2 degeneracies are exposed
+    % as last n-nt dimensions
     E2 = T'*E2;
     E1 = T'*E1;
     % project
@@ -76,21 +80,36 @@ if E2.isdegenerate
         % since they are intersecting, E1 will not be empty
         assert(~isempty(E1),'Bug: Intersection should not be empty');
     end
+
+    if nt==1
+        % 1D case, handle separately
+        % in that case, the exact result is E1
+        E = T*E1;
+        return;
+    end
+
     % E1 also has zeros at nt+1:n
     E1 = project(E1,1:nt);
 end
 
 n_nd = length(E1.q);
+
+% define inverted matrices for computation of intersection parameter
 W1 = inv(E1.Q);
 W2 = inv(E2.Q);
 q1 = E1.q;
 q2 = E2.q;
+% compute intersection parameter (see [2, Sec. 2.2.5])
 p = compIntersectionParam(W1,q1,W2,q2);
 
+% find the shape and center of the parameterized family of shapes and
+% centers by using the calculated p
 [~,Qt,qt] = rootfnc(p,W1,q1,W2,q2);
+% check if result describes an ellipsoid; if not => empty set
 if any(eig(Qt)<0)
     E = ellipsoid;
 else
     E = T*ellipsoid([Qt,zeros(n_nd,n-n_nd);zeros(n-n_nd,n)],[qt;x2_rem]);
 end
+
 %------------- END OF CODE --------------

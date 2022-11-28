@@ -26,7 +26,7 @@ function res = testLongDuration_polyZonotope_zonotope
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
 
 
 %% RANDOM TESTS
@@ -57,10 +57,12 @@ for i = 1:5
 
     % check if the all points from the original polynomial zonotope are
     % enclosed by the reduced polynomial zonotope
-    suc = in(zono, points);
+    suc = contains(zono, points);
     
     if ~suc
-       error('testLongDuration_polyZonotope_zonotope: random test 2D failed!'); 
+       path = pathFailedTests(mfilename());
+       save(path,'zono','points','pZ');
+       throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -92,13 +94,11 @@ for i = 1:5
 
     % check if the all points from the original polynomial zonotope are
     % enclosed by the reduced polynomial zonotope
-    suc = in(zono, points);
+    suc = contains(zono, points);
     
     if ~suc
-       error('testLongDuration_polyZonotope_zonotope: random test 4D failed!'); 
+        throw(CORAerror('CORA:testFailed'));
     end
 end
-
-res = true;
 
 %------------- END OF CODE --------------

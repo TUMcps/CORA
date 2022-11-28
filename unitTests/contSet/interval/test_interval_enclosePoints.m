@@ -39,11 +39,4 @@ I_true = interval([1; 6],[5; 9]);
 % check with correct solution
 res = I == I_true;
 
-
-if res
-    disp('test_enclosePoints successful');
-else
-    disp('test_enclosePoints failed');
-end
-
 %------------- END OF CODE --------------

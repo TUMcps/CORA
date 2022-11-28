@@ -54,22 +54,22 @@ R =  [...
 Zint = conIntersect(Z, Y, R);
 isempty(Zint);
 
-% plot sets
-figure; 
-subplot(1,2,1); hold on
-plot(R*Z,[1 2],'b');
-plot(Y,[1 2],'r');
-subplot(1,2,2); hold on
-plot(R*Z,[3 4],'b');
-plot(Y,[3 4],'r');
-
-figure;
-subplot(1,2,1); hold on
-plot(Z,[1 2],'b');
-plot(Zint,[1 2],'r');
-subplot(1,2,2); hold on
-plot(Z,[3 4],'b');
-plot(Zint,[3 4],'r');
+% plot sets (for debugging)
+% figure; 
+% subplot(1,2,1); hold on
+% plot(R*Z,[1 2],'b');
+% plot(Y,[1 2],'r');
+% subplot(1,2,2); hold on
+% plot(R*Z,[3 4],'b');
+% plot(Y,[3 4],'r');
+% 
+% figure;
+% subplot(1,2,1); hold on
+% plot(Z,[1 2],'b');
+% plot(Zint,[1 2],'r');
+% subplot(1,2,2); hold on
+% plot(Z,[3 4],'b');
+% plot(Zint,[3 4],'r');
 
 
 % first constrained zonotope Z
@@ -88,7 +88,9 @@ res4 = mptPolytope(R*Z_zono) & mptPolytope(Y_zono);
 % combine checks
 res = res2 && res3;
 
-
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'Z','Y');
 end
 
 %------------- END OF CODE --------------

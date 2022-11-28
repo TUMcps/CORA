@@ -24,6 +24,7 @@ function res = test_zonotope_minnorm
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 TOL = 1e-12;
 res = true;
 for i=2:7
@@ -45,11 +46,6 @@ for i=2:7
     if ~res
         break;
     end
-end
-if res
-    disp('test_zonotope_minnorm successful');
-else
-    disp('test_zonotope_minnorm failed');
 end
 
 %------------- END OF CODE --------------

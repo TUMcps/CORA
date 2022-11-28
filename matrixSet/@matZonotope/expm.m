@@ -1,12 +1,12 @@
-function eZ = expm(matZono,varargin)
+function eZ = expm(matZ,varargin)
 % expm - operator for the exponential matrix of a matrix zonotope
 %
 % Syntax:  
-%    eZ = expm(matZono)
-%    eZ = expm(matZono,maxOrder)
+%    eZ = expm(matZ)
+%    eZ = expm(matZ,maxOrder)
 %
 % Inputs:
-%    matZono - matrix zonotope
+%    matZ - matZonotope object
 %    maxOrder - maximum Taylor series order until remainder is computed
 %
 % Outputs:
@@ -16,9 +16,9 @@ function eZ = expm(matZono,varargin)
 %    C = [0 1;0 -2.5];
 %    D = [0 0;0 0.5];
 %    intMat = intervalMatrix(C,D);
-%    matZono = matZonotope(intMat);
+%    matZ = matZonotope(intMat);
 %
-%    eZ = expm(matZono)
+%    eZ = expm(matZ)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -33,14 +33,10 @@ function eZ = expm(matZono,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    maxOrder = 10;
-    
-    if nargin > 1
-       maxOrder = varargin{1}; 
-    end
-    
-    % compute matrix exponential
-    eZ = expmInd(matZono,maxOrder);
+% parse input arguments
+maxOrder = setDefaultValues({10},varargin{:});
+
+% compute matrix exponential
+eZ = expmInd(matZ,maxOrder);
 
 %------------- END OF CODE --------------

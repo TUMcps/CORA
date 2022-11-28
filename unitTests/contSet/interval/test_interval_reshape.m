@@ -65,10 +65,4 @@ end
 % add results
 res = res_withResult && res_error && res_diffDim;
 
-if res
-    disp('test_reshape successful');
-else
-    disp('test_reshape failed');
-end
-
 %------------- END OF CODE --------------

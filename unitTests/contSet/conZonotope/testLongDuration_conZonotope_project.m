@@ -50,8 +50,15 @@ for i=1:nrOfTests
     selectedDims = randperm(n);
     selectedDims = selectedDims(1:floor(n/2));
     selectedDims = sort(selectedDims);
-    projDim = 1:n;
-    projDim = projDim(selectedDims);
+    if rand > 0.5
+        % use logical indexing
+        projDim = false(n,1);
+        projDim(selectedDims) = true;
+    else
+        % use standard indexing
+        projDim = 1:n;
+        projDim = projDim(selectedDims);
+    end
     
     % random center
     c = randn(n,1);
@@ -69,9 +76,9 @@ for i=1:nrOfTests
     conZonoProj_true = conZonotope(c(selectedDims),G(selectedDims,:));
        
     % compare results
-    if any(any(abs(conZonoProj.Z - conZonoProj_true.Z))) > tol || ...
-            any(any(abs(conZonoProj.A - conZonoProj_true.A))) > tol || ...
-            any(any(abs(conZonoProj.b - conZonoProj_true.b))) > tol
+    if any(any(abs(conZonoProj.Z - conZonoProj_true.Z) > tol)) || ...
+            any(any(abs(conZonoProj.A - conZonoProj_true.A) > tol)) || ...
+            any(any(abs(conZonoProj.b - conZonoProj_true.b) > tol))
         res = false; break;
     end
     
@@ -89,19 +96,18 @@ for i=1:nrOfTests
     conZonoProj_true = conZonotope(c(selectedDims),G(selectedDims,:),A,b);
     
     % compare results
-    if any(any(abs(conZonoProj.Z - conZonoProj_true.Z))) > tol || ...
-            any(any(abs(conZonoProj.A - conZonoProj_true.A))) > tol || ...
-            any(any(abs(conZonoProj.b - conZonoProj_true.b))) > tol
+    if any(any(abs(conZonoProj.Z - conZonoProj_true.Z) > tol)) || ...
+            any(any(abs(conZonoProj.A - conZonoProj_true.A) > tol)) || ...
+            any(any(abs(conZonoProj.b - conZonoProj_true.b) > tol))
         res = false; break;
     end
     
 end
 
 
-if res
-    disp('testLongDuration_conZonotope_project successful');
-else
-    disp('testLongDuration_conZonotope_project failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','c','G','selectedDims');
 end
 
 %------------- END OF CODE --------------

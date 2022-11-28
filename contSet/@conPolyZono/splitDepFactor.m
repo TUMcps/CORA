@@ -1,11 +1,11 @@
-function cPZsplit = splitDepFactor(obj,factor)
-% splitDepFactor - Splits one factor of a conPolyZono object
+function cPZsplit = splitDepFactor(cPZ,factor)
+% splitDepFactor - Splits one factor of a constrained polynomial zonotope
 %
 % Syntax:  
-%    cPZsplit = splitDepFactor(obj,factor)
+%    cPZsplit = splitDepFactor(cPZ,factor)
 %
 % Inputs:
-%    obj - conPolyZono object
+%    cPZ - conPolyZono object
 %    factor - index of the factor whos domain is splitted
 %
 % Outputs:
@@ -26,14 +26,17 @@ function cPZsplit = splitDepFactor(obj,factor)
 
 %------------- BEGIN CODE --------------
 
-    % construct domains after split
-    dom1 = interval(-1,0);
-    dom2 = interval(0,1);
-    
-    % compute the splitted conPolyZonotope objects
-    cPZsplit{1} = getSubset(obj,factor,dom1);
-    cPZsplit{2} = getSubset(obj,factor,dom2);
-    
-end
-    
+% check input arguments
+inputArgsCheck({{cPZ,'att','conPolyZono'};
+                {factor,'att','numeric',{'nonnan','integer',...
+                    'nonnegative','scalar'}}});
+
+% construct domains after split
+dom1 = interval(-1,0);
+dom2 = interval(0,1);
+
+% compute the splitted conPolyZonotope objects
+cPZsplit{1} = getSubset(cPZ,factor,dom1);
+cPZsplit{2} = getSubset(cPZ,factor,dom2);
+
 %------------- END OF CODE --------------

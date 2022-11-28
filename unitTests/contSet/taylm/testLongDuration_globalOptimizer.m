@@ -1,17 +1,15 @@
 function res = testLongDuration_globalOptimizer
-% test_globalOptimizer - unit_test_function that tests the verified
-%    computation of bounds of a function on some domain
+% testLongDuration_globalOptimizer - unit_test_function that tests the 
+%    verified computation of bounds of a function on some domain
 %
 % Syntax:  
-%    res = test_globalOptimizer
+%    res = testLongDuration_globalOptimizer
 %
 % Inputs:
 %    -
 %
 % Outputs:
 %    res - boolean 
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,7 +25,7 @@ function res = testLongDuration_globalOptimizer
 %------------- BEGIN CODE --------------
 
 
-res = 0;
+res = false;
 tol = 0.001;
 
 
@@ -240,7 +238,7 @@ checkOverapproximationTol(interval(min(min(Z)),max(max(Z))),int,1e-10);
 
 
 
-res = 1;
+res = true;
 
 
 end
@@ -271,7 +269,7 @@ end
 function checkOverapproximation(intReal,int)
     
     if any(infimum(int) > infimum(intReal)) || any(supremum(int) < supremum(intReal))
-        error('testLongDuration_taylm_optimizer failed!');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -279,7 +277,7 @@ function checkOverapproximationTol(intReal,int,tol)
     
     if any(infimum(int) > infimum(intReal)+ones(size(intReal))*tol) || ...
        any(supremum(int) < supremum(intReal)-ones(size(intReal))*tol)
-        error('testLongDuration_taylm_optimizer failed!');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -288,6 +286,8 @@ function checkDiffToOpt(intReal,int,tol)
 % of the function
 
     if any(abs(infimum(intReal) - infimum(int)) > tol) || any(abs(supremum(int) - supremum(intReal)) > tol)
-        error('testLongDuration_taylm_optimizer failed!');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
+
+%------------- END OF CODE --------------

@@ -44,10 +44,4 @@ res_val = isInterval(Z1) && ~isInterval(Z2);
 % add results
 res = all(res_val);
 
-if res
-    disp('test_isInterval successful');
-else
-    disp('test_isInterval failed');
-end
-
 %------------- END OF CODE --------------

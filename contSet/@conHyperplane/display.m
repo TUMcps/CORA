@@ -1,16 +1,18 @@
-function display(obj)
-% display - Displays the hyperplane and the constraint system
+function display(hyp)
+% display - Displays the properties of a conHyperplane object (halfspace,
+%    constraint system) on the command window
 %
 % Syntax:  
-%    display(obj)
+%    display(hyp)
 %
 % Inputs:
-%    obj - conHyperplane object
+%    hyp - conHyperplane object
 %
 % Outputs:
 %    ---
 %
-% Example: 
+% Example:
+%    hyp = conHyperplane(halfspace([1;1],0),[1 0;-1 0],[2;2])
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -18,36 +20,46 @@ function display(obj)
 %
 % See also: none
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      10-August-2011
 % Last update:  02-May-2020 (MW, added empty case)
+%               18-June-2022 (MW, empty constraint system)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-if isempty(obj)
+if isemptyobject(hyp)
     
-    dispEmptyObj(obj,inputname(1));
+    dispEmptyObj(hyp,inputname(1));
     
 else
 
-    fprintf(newline);
-    disp(inputname(1) + " =");
-    fprintf(newline);
+    try
+        inputname;
+        fprintf(newline);
+        disp(inputname(1) + " =");
+        fprintf(newline);
+    catch
+        % nothing here
+    end
     
     %display hyperplane
     disp('normal vector:');
-    disp(obj.h.c);
+    disp(hyp.h.c);
     disp('distance to origin:');
-    disp(obj.h.d);
+    disp(hyp.h.d);
 
     %display constraint system
-    disp('Constraint system (Cx <= d):')
-
-    disp('C:');
-    disp(obj.C);
-    disp('d:');
-    disp(obj.d);
+    if isHyperplane(hyp)
+        disp('constraint system (Cx <= d): (none)');
+    else
+        disp('constraint system (Cx <= d):');
+    
+        disp('C:');
+        disp(hyp.C);
+        disp('d:');
+        disp(hyp.d);
+    end
 
 end
 

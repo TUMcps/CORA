@@ -1,9 +1,9 @@
-function [Rnext,options] = post_Krylov(obj,R,options)
-% post - computes the reachable continuous set for one time step in the
-% Krylov subspace
+function [Rnext,options] = post_Krylov_nonProjected(obj,R,options)
+% post_Krylov_nonProjected - computes the reachable continuous set for one
+%    time step in the Krylov subspace
 %
 % Syntax:  
-%    [Rnext,options] = post_Krylov(obj,R,options)
+%    [Rnext,options] = post_Krylov_nonProjected(obj,R,options)
 %
 % Inputs:
 %    obj - linearSys object

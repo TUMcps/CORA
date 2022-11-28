@@ -24,7 +24,7 @@ function runExamples(varargin)
 %------------- BEGIN CODE --------------
 
 % default settings
-directory = [coraroot filesep 'examples'];
+directory = [CORAROOT filesep 'examples'];
 prefix = 'example';
 verbose = true;
 

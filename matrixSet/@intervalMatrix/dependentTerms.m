@@ -2,15 +2,15 @@ function [intSq,intH] = dependentTerms(obj,r)
 % dependentTerms - computes exact Taylor terms of an interval matrix square
 %    and an interval matrix exponential
 %
-% These different tasks are computed in one m-file to save computation
-% time: the for loop has to be executed only once and help functions do not
-% have to be called so often
+%    These different tasks are computed in one m-file to save computation
+%    time: the for loop has to be executed only once and help functions do
+%    not have to be called so often
 %
 % Syntax:  
 %    [intSq,intH] = dependentTerms(obj,r)
 %
 % Inputs:
-%    obj - linear interval system (linIntSys) object
+%    obj - linParamSys object
 %    r - time step increment
 %
 % Outputs:
@@ -35,22 +35,22 @@ function [intSq,intH] = dependentTerms(obj,r)
 
 %load data from object structure
 A=obj.int;
-dim=obj.dim;
+n=obj.dim;
 
 %initialize the square of A (sq), the first term of the interval
 %exponential (H)
 sq=0*A;
 H=0*A;
-I=eye(dim); %identity matrix
+I=eye(n);
 
 %get diagonal elements of A (diagA)
-diagA=interval(zeros(dim),zeros(dim)); %initialize
-for i=1:dim
+diagA=interval(zeros(n),zeros(n)); %initialize
+for i=1:n
     diagA(i,i)=A(i,i);
 end
 
 %compute elements of sq and H
-for i=1:dim
+for i=1:n
     %i neq j
     %auxiliary value s
     s=sum(A,i);
@@ -72,7 +72,6 @@ for i=1:dim
     %compute diagonal elements for H
     kappa=max(a_inf*r+0.5*a_inf^2*r^2, a_sup*r+0.5*a_sup^2*r^2);
     H(i,i)=H(i,i)+interval(g(A(i,i),r),kappa);         
-    %--------------------------------------------------------------
 end
 
 %write as interval matrices
@@ -82,9 +81,8 @@ intH=intervalMatrix(center(H)+I,rad(H));
 end
 
 
-% AUXILIARY FUNCTIONS
-
-function [res]=g(a,r)
+% Auxiliary functions -----------------------------------------------------
+function res = g(a,r)
     if isIntersecting(interval(-1/r,-1/r),a)
         res=-0.5;
     else
@@ -94,8 +92,7 @@ function [res]=g(a,r)
     end
 end
 
-
-function [res]=gu(a,r)
+function res= gu(a,r)
     if in(interval(-3/(2*r)),a)
         res=-9/24*r;
     else
@@ -105,16 +102,13 @@ function [res]=gu(a,r)
             0.5*a_sup*r^2+1/6*a_sup^2*r^3);
     end    
 end
-
     
 function s=sum(A,i)
-%sum function:
-%s=0.5 \sum_{k:k\neq i,k\neq j} a_{ik}a_{kj}t^2
+%sum function: s=0.5 \sum_{k:k\neq i,k\neq j} a_{ik}a_{kj}t^2
     n=length(A);
     k=0:n;
     ind=k*n+1:n+1:n^2;
     A(ind)=zeros(n,1);
-
     s=A(i,:)*A;
 end
 

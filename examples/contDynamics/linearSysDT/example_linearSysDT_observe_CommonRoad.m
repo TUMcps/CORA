@@ -1,9 +1,7 @@
 function completed = example_linearSysDT_observe_CommonRoad
-% example_linearSysDT_observe_CommonRoad - example for 
-% guaranteed state estimation of linear discrete-time systems.
-%
-% The dynamics of traffic participants from a CommonRoad file
-% is estimated.
+% example_linearSysDT_observe_CommonRoad - example for guaranteed state
+%     estimation of linear discrete-time systems; the dynamics of traffic
+%     participants from a CommonRoad file is estimated.
 %
 % Syntax:  
 %    completed = example_linearSysDT_observe_CommonRoad
@@ -12,13 +10,13 @@ function completed = example_linearSysDT_observe_CommonRoad
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    completed - true/false
 %
 % Example: 
 %    -
- 
+
 % Author:       Matthias Althoff, Niklas Kochdumper, Carlos Valero
-% Written:      15-Jul-2021
+% Written:      15-July-2021
 % Last update:  ---
 % Last revision:---
 
@@ -116,18 +114,18 @@ ylabel('v_x');
 figure; hold on;
 plotOverTime(R,4);
 xlabel('time');
-ylabel('v_x');
+ylabel('v_y');
 
 figure; hold on;
-plot(R,[1,2],'Filled',true);
-plot(traj{5}.x(1,:),traj{5}.x(2,:),'r');
+plot(R,[1,2]);
+plot(traj{5}.x(1,:),traj{5}.x(2,:),'Color',colorblind('y'));
 xlabel('x');
 ylabel('y');
 axis equal;
 
 
 % example completed
-completed = 1;
+completed = true;
 
 
 %------------- END OF CODE --------------

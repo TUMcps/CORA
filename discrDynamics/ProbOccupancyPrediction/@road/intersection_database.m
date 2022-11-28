@@ -26,7 +26,7 @@ function p = intersection_database(obj,fArray,intDatabase,pos1,angle1,pos2,angle
 %
 % See also: none
 
-% Author: Matthias Althoff
+% Author:       Matthias Althoff
 % Written:      18-August-2016   
 % Last update:  ---
 % Last revision:---

@@ -1,9 +1,9 @@
 function [OGain,tComp]= observe_gain_PRadB(obj,options)
-% observe_gain_PRadB - computes the gain for the guaranted state estimation
-% approach from [1].
+% observe_gain_PRadB - computes the gain for the guaranteed state estimation
+%    approach from [1].
 %
 % Syntax:  
-%    [OGain,tComp] = observe_PRadB(obj,options)
+%    [OGain,tComp] = observe_gain_PRadB(obj,options)
 %
 % Inputs:
 %    obj - discrete-time linear system object
@@ -13,14 +13,15 @@ function [OGain,tComp]= observe_gain_PRadB(obj,options)
 %    OGain - observer gain
 %    tComp - computation time
 %
+% Example: 
+%    -
+%
 % Reference:
 %    [1] V. T. H. Le, C. Stoica, T. Alamo, E. F. Camacho, and
 %        D. Dumur. Zonotope-based set-membership estimation for
 %        multi-output uncertain systems. In Proc. of the IEEE
 %        International Symposium on Intelligent Control (ISIC),
 %        pages 212–217, 2013.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,7 +33,6 @@ function [OGain,tComp]= observe_gain_PRadB(obj,options)
 % Written:       18-Sep-2020
 % Last update:   02-Jan-2020
 % Last revision: ---
-
 
 %------------- BEGIN CODE --------------
 
@@ -46,14 +46,14 @@ sys.E = generators(options.W);
 sys.F = generators(options.V);
 
 % obtain system dimension and nr of outputs
-dim = size(obj.A,1); 
-nrOfOutputs = size(obj.C,1);
+n = obj.dim; 
+nrOfOutputs = size(obj.C,1); % not obj.nrOfOutputs since obj.C has been altered in the calling function!
 
 %% define YALMIPs symbolic decision variables
 % state
-P = sdpvar(dim,dim,'symmetric'); 
+P = sdpvar(n,n,'symmetric'); 
 % gain matrix
-Y = sdpvar(dim,nrOfOutputs,'full'); 
+Y = sdpvar(n,nrOfOutputs,'full'); 
 % factor to be maximized for minimizing the P-radius
 tau = sdpvar(1,1); 
 
@@ -90,13 +90,13 @@ while(beta_up-beta_lo)> beta_tol
 
     % define the optimization criterion as in eq. (17) of [1]
     % instead of maximizing tau, we minimize -tau
-    crit =-tau; 
+    objective = -tau; 
 
     % LMI problem to be solved
-    pblmi =  [(P>=0), (SM>=0), (cond2>=eye(dim)*tau), (tau>=0)];
+    constraint =  [(P>=0), (SM>=0), (cond2>=eye(n)*tau), (tau>=0)];
 
     % Solve LMI conditions
-    solpb = optimize(pblmi,crit,options_sdp);
+    solpb = optimize(constraint, objective, options_sdp);
 
     % Check if LMI is feasible
     if solpb.problem == 1

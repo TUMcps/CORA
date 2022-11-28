@@ -3,17 +3,14 @@ function res = test_partition_center_functions()
 % intersectingCells and cellCenter
 %
 % Syntax:  
-%    res = test_partition_intersection()
+%    res = test_partition_center_functions()
 %
 % Inputs:
 %    no
 %
 % Outputs:
 %    res - boolean 
-%
-% Example: 
-%
-% 
+
 % Author:       Aaron Pereira, Matthias Althoff
 % Written:      02-August-2017
 % Last update:  02-August-2018 (MA)

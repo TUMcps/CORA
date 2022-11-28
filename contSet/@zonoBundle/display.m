@@ -1,17 +1,21 @@
-function display(obj)
-% display - Displays a zonotope bundle
+function display(zB)
+% display - Displays the properties of a zonoBundle object (center and 
+%    generator matrix of each zonotope) on the command window
 %
 % Syntax:  
-%    display(obj)
+%    display(zB)
 %
 % Inputs:
-%    Z - zonotope bundle
+%    zB - zonoBundle object
 %
 % Outputs:
 %    ---
 %
 % Example: 
-%    ---
+%    Z1 = zonotope(zeros(2,1),[1 0.5; -0.2 1]);
+%    Z2 = zonotope(ones(2,1),[1 -0.5; 0.2 1]);
+%    zB = zonoBundle({Z1,Z2});
+%    display(zB)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,9 +31,9 @@ function display(obj)
 
 %------------- BEGIN CODE --------------
 
-%display each zonotope
-if obj.parallelSets == 0
-    dispEmptyObj(obj,inputname(1));
+if isemptyobject(zB)
+    
+    dispEmptyObj(zB,inputname(1));
     
 else
     
@@ -38,20 +42,23 @@ else
     fprintf(newline);
     
     % display id, dimension
-    display@contSet(obj);
+    display@contSet(zB);
     fprintf(newline);
     
+    % cap number of generators
     maxGens = 10;
-    for i=1:obj.parallelSets
+
+    % display each zonotope
+    for i=1:zB.parallelSets
         
         disp(['zonotope ',num2str(i),':',newline]);
         
         %display center
         disp('c: ');
-        disp(center(obj.Z{i}));
+        disp(center(zB.Z{i}));
 
         %display generators
-        G = generators(obj.Z{i});
+        G = generators(zB.Z{i});
         displayGenerators(G,maxGens,'G');
         
     end

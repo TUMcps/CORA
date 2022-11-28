@@ -1,12 +1,12 @@
-function res = test_nonlinearSys_tensorCreation
-% test_nonlinearSys_tensorCreation - unit_test_function for the creation of
-%                                 the third-order-tensor file
+function res = testLongDuration_nonlinearSys_tensorCreation
+% testLongDuration_nonlinearSys_tensorCreation - unit_test_function for the
+%    creation of the third-order-tensor file
 %
-% Checks different scenarios of settings, where each scenario results in a
-% different third-order tensor
+%    Checks different scenarios of settings, where each scenario results in
+%    a different third-order tensor
 %
 % Syntax:  
-%    res = test_nonlinearSys_tensorCreation()
+%    res = testLongDuration_nonlinearSys_tensorCreation()
 %
 % Inputs:
 %    -

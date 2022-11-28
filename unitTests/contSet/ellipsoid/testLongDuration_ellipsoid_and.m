@@ -1,8 +1,8 @@
 function res = testLongDuration_ellipsoid_and
-% test_ellipsoid_and - unit test function of and
+% testLongDuration_ellipsoid_and - unit test function of and
 %
 % Syntax:  
-%    res = test_ellipsoid_and
+%    res = testLongDuration_ellipsoid_and
 %
 % Inputs:
 %    -
@@ -32,9 +32,4 @@ res = res && testLongDuration_component_ellipsoid_andEllipsoid();
 % halfspace
 res = res && testLongDuration_component_ellipsoid_andHalfspace();
 
-if res
-    disp('test_ellipsoid_and successful');
-else
-    disp('test_ellipsoid_and failed');
-end
 %------------- END OF CODE --------------

@@ -1,6 +1,6 @@
 function [objX,objU] = initRangeBoundingObjects(intX,intU,options)
-% initBoundingObjects - creates taylm- or zoo-objects for the state and
-%                       input variables
+% initRangeBoundingObjects - creates taylm- or zoo-objects for the state
+%    and input variables
 %
 % Syntax:  
 %    [objX, objU] = initRangeBoundingObjects(intX, intU, options)
@@ -62,19 +62,21 @@ function [objX,objU] = initRangeBoundingObjects(intX,intU,options)
                    idxVars('u',1:length(intU)),maxOrder,eps,tolerance);
 
     else
-        error('Wrong value for setting "options.lagrangeRem.method"!');
+        throw(CORAerror('CORA:wrongFieldValue','options.lagrangeRem.method',...
+            {'taylorModel','zoo'}));
     end
 
 end
 
+% Auxiliary Functions -----------------------------------------------------
 
 function indexedVars = idxVars(varName,idx)
 
-idxLength = length(idx);
-indexedVars = cell(idxLength,1);
-for i=1:idxLength
-    indexedVars{i} = [varName,num2str(idx(i))];
-end
+    idxLength = length(idx);
+    indexedVars = cell(idxLength,1);
+    for i=1:idxLength
+        indexedVars{i} = [varName,num2str(idx(i))];
+    end
 
 end
 

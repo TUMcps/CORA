@@ -1,30 +1,31 @@
 function [val,x] = supportFunc(E,dir,varargin)
-% supportFunc - Calculate the upper or lower bound of an ellipsoid object
-%               along a certain direction (see Def. 2.1.2 in [1]) 
+% supportFunc - Calculate the upper or lower bound of an ellipsoid along a
+%    certain direction (see Def. 2.1.2 in [1]) 
 %
 % Syntax:  
 %    [val,x] = supportFunc(E,dir)
 %    [val,x] = supportFunc(E,dir,type)
 %
 % Inputs:
-%    E   - ellipsoid object
+%    E - ellipsoid object
 %    dir - direction for which the bounds are calculated (vector of size
 %          (n,1) )
-%    type - upper or lower bound ('lower' or 'upper')
+%    type - upper or lower bound ('lower',upper','range')
 %
 % Outputs:
 %    val - bound of the ellipsoid in the specified direction
-%    x   - point for which holds: dir'*x=val
+%    x - point for which holds: dir'*x=val
 %
 % Example: 
 %    E = ellipsoid([5 7;7 13],[1;2]);
+%    dir = [1;1];
 %
-%    val = supportFunc(E,[1;1]);
+%    [val,x] = supportFunc(E,dir);
 %   
-%    figure
-%    hold on
+%    figure; hold on; box on;
 %    plot(E,[1,2],'b');
-%    plot(conHyperplane(halfspace([1;1],val),[],[]),[1,2],'g');
+%    plot(conHyperplane(dir,val),[1,2],'g');
+%    plot(x(1),x(2),'.r','MarkerSize',20);
 %
 % References: 
 %   [1] A. Kurzhanski et al. "Ellipsoidal Toolbox Manual", 2006
@@ -40,59 +41,70 @@ function [val,x] = supportFunc(E,dir,varargin)
 % Written:      20-November-2019
 % Last update:  12-March-2021
 %               27-July-2021 (fixed degenerate case)
+%               04-July-2022 (VG: class array case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    type = 'upper';
-    
-    if nargin >= 3 && ~isempty(varargin{1})
-        type = varargin{1};
-    end
+% pre-processing
+[res,vars] = pre_supportFunc('ellipsoid',E,dir,varargin{:});
 
-    if strcmp(type,'upper')
-        s = 1;
-    else
-        s = -1;
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    val = vars{1}; return
+else
+    E = vars{1}; dir = vars{2}; type = vars{3};
+end
+      
+
+if strcmp(type,'upper')
+    s = 1;
+elseif strcmp(type,'lower')
+    s = -1;
+elseif strcmp(type,'range')
+    throw(CORAerror('CORA:notSupported',type));
+end
+
+val = dir'*E.q + s*sqrt(dir'*E.Q*dir);
+if nargout > 1
+    H = conHyperplane(dir',val);
+    n_nd = rank(E);
+    n = dim(E);
+    T = eye(n);
+    qt_rem = [];
+    
+    if rank(E)==0
+        x = E.q;
+        return;
+    elseif n_nd<n
+        % remove degenerate dimension and reduce E and hyperplane
+        [T,~,~] = svd(E.Q);
+        dir_t = dir'*T;
         
-    end
-    val = dir'*E.q + s*sqrt(dir'*E.Q*dir);
-    if nargout > 1
-        H = conHyperplane(dir',val);
-        n_nd = rank(E);
-        n = dim(E);
-        T = eye(n);
-        qt_rem = [];
-        
-        if rank(E)==0
+        % check if chosen direction is aligned with one of the
+        % degenerate directions
+        if any(withinTol(dir_t(1:n_nd),0,E.TOL))
+            % this results in a 0=0 type equation (so no constraint on
+            % the remaining variables) => choose center as point
             x = E.q;
             return;
-        elseif n_nd<n
-            % remove degenerate dimension and reduce E and hyperplane
-            [T,~,~] = svd(E.Q);
-            dir_t = dir'*T;
-            
-            % check if chosen direction is aligned with one of the
-            % degenerate directions
-            if any(withinTol(dir_t(1:n_nd),0,E.TOL))
-                % this results in a 0=0 type equation (so no constraint on
-                % the remaining variables) => choose center as point
-                x = E.q;
-                return;
-            end
-            E = T'*E;
-            qt_rem = E.q(n_nd+1:end);
-            % project both into non-degenerate dimensions
-            H = conHyperplane(dir_t(1:n_nd),val-dir_t(n_nd+1:end)*qt_rem);
-            E = project(E,1:n_nd);
         end
-        % find point x which attains the value by forming hyperplane and
-        % intersecting with ellipsoid
-        E_res = E&H;
-        assert(~isempty(E_res),'intersection with tangent hp should not be empty');
-        % basically contains only 1 point
-        x = T*[E_res.q;qt_rem];
+        E = T'*E;
+        qt_rem = E.q(n_nd+1:end);
+        % project both into non-degenerate dimensions
+        H = conHyperplane(dir_t(1:n_nd),val-dir_t(n_nd+1:end)*qt_rem);
+        E = project(E,1:n_nd);
     end
+    % find point x which attains the value by forming hyperplane and
+    % intersecting with ellipsoid
+    E_res = E&H;
+    if isempty(E_res)
+        throw(CORAerror('CORA:specialError',...
+            'intersection with tangent hp should not be empty'));
+    end
+    % basically contains only 1 point
+    x = T*[E_res.q;qt_rem];
 end
+
 %------------- END OF CODE --------------

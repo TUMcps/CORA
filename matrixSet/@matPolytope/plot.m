@@ -1,18 +1,19 @@
-function plot(varargin)
+function plot(matP,varargin)
 % plot - Plots 2-dimensional projection of a matrix polytope
 %
 % Syntax:  
-%    plot(obj,dimensions)
+%    plot(matP,dimensions)
 %
 % Inputs:
-%    obj - matrix polytope
+%    matP - matPolytope object
 %    dimensions - dimensions that should be projected (optional) 
 %    linespec - plot style (optional) 
 %
 % Outputs:
-%    none
+%    -
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none

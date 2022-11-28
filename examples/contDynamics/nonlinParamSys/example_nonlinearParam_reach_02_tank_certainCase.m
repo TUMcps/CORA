@@ -1,13 +1,10 @@
 function completed = example_nonlinearParam_reach_02_tank_certainCase()
 % example_nonlinearParam_reach_02_tank_certainCase - example of nonlinear
-%    reachability analysis with uncertain parameters; this example is also 
-%    a unit test function. The difference compared to the uncertain case is
-%    that the parameter value is fixed. Unlike the example in the class
-%    nonlinearSys, one can change the parameter values using the
-%    options.paramInt.
-%
-% This example can be found in [1, Sec. 3.4.5] or in [2].
-%
+%    reachability analysis with uncertain parameters taken from
+%    [1, Sec. 3.4.5] or in [2]; this example is also a unit test function.
+%    The difference compared to the uncertain case is that the parameter
+%    value is fixed. Unlike the example in the class nonlinearSys, one can
+%    change the parameter values using options.paramInt.
 %
 % Syntax:  
 %    completed = example_nonlinearParam_reach_02_tank_certainCase()
@@ -16,14 +13,14 @@ function completed = example_nonlinearParam_reach_02_tank_certainCase()
 %    -
 %
 % Outputs:
-%    completed - boolean 
+%    completed - true/false 
 %
 % References:
 %    [1] M. Althoff, “Reachability analysis and its application to the 
 %        safety assessment of autonomous cars", Dissertation, TUM 2010
 %    [2] M. Althoff et al. "Reachability analysis of nonlinear systems with 
 %        uncertain parameters using conservative linearization", CDC 2008 
-% 
+
 % Author:       Matthias Althoff
 % Written:      19-August-2016
 % Last update:  23-April-2020 (restructure params/options)
@@ -78,9 +75,6 @@ disp(['computation time of reachable set with uncertain parameters: ',num2str(tC
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 60;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
 params = rmfield(params,'paramInt');
 
 simRes = simulateRandom(tank, params, simOpt);
@@ -96,28 +90,28 @@ for k = 1:length(dims)
     figure;
     projDims = dims{k};
     
-    subplot(1,2,1); hold on; box on
+    subplot(1,2,1); hold on; box on;
 
     % plot reachable set (with uncertain paramaeters)
-    plot(RcontParam,projDims,'FaceColor',[.6 .6 .6],'EdgeColor','none');
+    plot(RcontParam,projDims);
 
     % plot initial set
-    plot(params.R0,projDims,'w','Filled',true,'EdgeColor','k');
+    plot(params.R0,projDims,'k','FaceColor','w');
     
-    subplot(1,2,2); hold on; box on
+    subplot(1,2,2); hold on; box on;
     
     % plot reachable set (without uncertain parameters)
-    plot(RcontNoParam,projDims,'w','EdgeColor','k');
+    plot(RcontNoParam,projDims,'FaceColor',colorblind('r'));
 
     % plot initial set
-    plot(params.R0,projDims,'w','Filled',true,'EdgeColor','k');
+    plot(params.R0,projDims,'k','FaceColor','w');
     
     % loop over all subplots
     for sp=1:2
         subplot(1,2,sp); hold on;
         
         % plot simulation results      
-        plot(simRes,projDims,'b');
+        plot(simRes,projDims);
 
         % label plot
         xlabel(['x_{',num2str(projDims(1)),'}']);
@@ -126,6 +120,6 @@ for k = 1:length(dims)
 end
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

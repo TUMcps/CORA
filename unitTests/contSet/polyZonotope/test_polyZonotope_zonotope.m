@@ -26,7 +26,7 @@ function res = test_polyZonotope_zonotope
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
 
 %% ANALYTICAL TESTS
 
@@ -49,19 +49,8 @@ c = [1.5; 3];
 G =  [1 2 0.5 -3; 1 -1 1 -1];
 
 % check for correctness
-if any(c-c_)
-    error('test_polyZonotope_zonotope: analytical test 1 failed!');
+if ~all(withinTol(c,c_)) || ~compareMatrices(G,G_)
+    res = false;
 end
-for i = 1:size(G,2)
-   if ~ismember(G(:,i)',G_)
-       error('test_polyZonotope_zonotope: analytical test 1 failed!');
-   end
-end
-
-
-
-
-
-res = true;
 
 %------------- END OF CODE --------------

@@ -8,7 +8,7 @@ function res = isInterval(pZ)
 %    pZ - polyZonotope object
 %
 % Outputs:
-%    res - 1 if set is a interval, 0 if not
+%    res - true/false
 %
 % Example: 
 %    pZ1 = polyZonotope([-0.5;0],[1.5 0;0 -2],[],[0 1;1 0]);
@@ -17,13 +17,11 @@ function res = isInterval(pZ)
 %    isZonotope(pZ1)
 %    isZonotope(pZ2)
 %
-%    figure
-%    hold on
-%    plot(pZ1,[1,2],'b','Filled',true,'EdgeColor','none','Splits',10);
-%
-%    figure
-%    hold on
-%    plot(pZ2,[1,2],'r','Filled',true,'EdgeColor','none','Splits',10);
+%    figure; hold on;
+%    plot(pZ1,[1,2],'FaceColor','b','Splits',10);
+% 
+%    figure; hold on;
+%    plot(pZ2,[1,2],'FaceColor','r','Splits',10);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,18 +36,17 @@ function res = isInterval(pZ)
 
 %------------- BEGIN CODE --------------
 
-    res = 0;
+res = false;
 
-    % check if polynomial zonotope is a zonotope
-    if ~isZonotope(pZ)
-        return;
-    end
-
-    % convert to zonotope
-    zono = zonotope(pZ);
-
-    % check if zonotope is an interval
-    res = isInterval(zono);
+% check if polynomial zonotope is a zonotope
+if ~isZonotope(pZ)
+    return;
 end
+
+% convert to zonotope
+zono = zonotope(pZ);
+
+% check if zonotope is an interval
+res = isInterval(zono);
 
 %------------- END OF CODE --------------

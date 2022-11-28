@@ -34,9 +34,6 @@ function [error, errorInt, errorInt_x, errorInt_y, R_y] = linError_mixed_noInt(o
 
 %------------- BEGIN CODE --------------
 
-% set handle to correct file
-obj = setHessian(obj,'standard');
-
 %compute set of algebraic variables
 f0_con = obj.linError.f0_con;
 D = obj.linError.D;
@@ -61,20 +58,8 @@ totalInt_y = dy + obj.linError.p.y;
 totalInt_u = du + obj.linError.p.u;
 
 %obtain hessian tensor
+obj.setHessian('int');
 [Hf, Hg] = obj.hessian(totalInt_x, totalInt_y, totalInt_u);
-
-% %[Hf_old, Hg_old] = hessianTensor(totalInt_x, totalInt_y, totalInt_u);
-% %[Hf, Hg] = hessianTensor_optimized(totalInt_x, totalInt_y, totalInt_u);
-% if strcmp(options.mode,'normal')
-%     [Hf, Hg] = hessianTensor_normal_monotone_parallel(totalInt_x, totalInt_y, totalInt_u);
-%     %[Hf, Hg] = hessianTensor_normal_parallel(totalInt_x, totalInt_y, totalInt_u);
-%     %[Hf,Hg]=hessianTensor_normal_test2;
-%     %[Hf, Hg] = hessianTensor_normal_test(totalInt_x, totalInt_y, totalInt_u);
-%     %[Hf, Hg] = hessianTensor_normal(totalInt_x, totalInt_y, totalInt_u);
-% elseif strcmp(options.mode,'fault')
-%     [Hf, Hg] = hessianTensor_fault_monotone_parallel(totalInt_x, totalInt_y, totalInt_u);
-%     %[Hf, Hg] = hessianTensor_fault(totalInt_x, totalInt_y, totalInt_u);
-% end
 
 %compute zonotope of state, constarint variables, and input
 Z_x = R.Z;
@@ -87,7 +72,6 @@ R_xyu = reduce(R_xyu,options.reductionTechnique,options.errorOrder);
 
 %obtain absolute values
 dz_abs = max(abs(infimum(dz)), abs(supremum(dz)));
-%dz_abs = max(abs(inf(dz)), abs(sup(dz))); %INTLAB syntax
 
 %separate evaluation
 for i=1:length(Hf)
@@ -106,15 +90,11 @@ error_y_mid = 0.5*quadMap_parallel(R_xyu, Hg_mid);
 
 %interval evaluation
 for i=1:length(Hf)
-    %error_x_rad_old(i,1) = 0.5*dz'*Hf_rad{i}*dz;
     error_x_rad(i,1) = 0.5*dz_abs'*Hf_rad{i}*dz_abs;
 end
 for i=1:length(Hg)
-    %error_y_rad_old(i,1) = 0.5*dz'*Hg_rad{i}*dz;
     error_y_rad(i,1) = 0.5*dz_abs'*Hg_rad{i}*dz_abs;
 end
-
-
 
 %combine results
 error_x_rad_zono = zonotope(interval(-error_x_rad, error_x_rad));
@@ -124,7 +104,7 @@ error_y = error_y_mid + error_y_rad_zono;
 
 %compute final error: to be CHECKED IF CORRELATION APPLIES
 Z_err_x_mid = error_x_mid.Z;
-Z_err_x_add_mid = get(obj.linError.CF_inv*error_y_mid,'Z');
+Z_err_x_add_mid = obj.linError.CF_inv*error_y_mid.Z;
 error_mid = zonotope(Z_err_x_mid + Z_err_x_add_mid);
 error_rad = error_x_rad_zono + obj.linError.CF_inv*error_y_rad_zono;
 error = error_mid + error_rad;

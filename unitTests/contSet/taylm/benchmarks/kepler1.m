@@ -4,19 +4,25 @@ function res = kepler1(x1, x2, x3, x4)
 % Syntax:  
 %    res = kepler1(x1, x2, x3, x4)
 %
-% Example: 
+% Inputs:
+%    x1-x6 - see benchmark
+%
+% Output:
+%    res - result
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
-%
+
 % Author:       Dmitry Grebenyuk
 % Written:      10-October-2017
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-    res = x1 * x4 * (-x1 + x2 + x3 - x4) + x2 * (x1 - x2 + x3 + x4) + x3 * (x1 + x2 - x3 + x4) - ...
-      x2 * x3 * x4 - x1 * x3 - x1 * x2 - x4;
+
+res = x1 * x4 * (-x1 + x2 + x3 - x4) + x2 * (x1 - x2 + x3 + x4) + x3 * (x1 + x2 - x3 + x4) - ...
+   x2 * x3 * x4 - x1 * x3 - x1 * x2 - x4;
 end
+
 %------------- END OF CODE --------------

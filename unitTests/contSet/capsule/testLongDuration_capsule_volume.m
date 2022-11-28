@@ -48,16 +48,12 @@ for i=1:nrOfTests
     % compare results
     tol = 1e-9;
     if abs(vol_true - vol) > tol
-        res = false; break;
+        res = false;
+        path = pathFailedTests(mfilename());
+        save(path,'n','c','r');
+        break;
     end
 
-end
-
-
-if res
-    disp('test_volume successful');
-else
-    disp('test_volume failed');
 end
 
 %------------- END OF CODE --------------

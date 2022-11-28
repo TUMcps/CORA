@@ -155,7 +155,7 @@ for i = 1:length(dims)
     projDim = dims{i};
     
     % plot reachable set
-    plot(R,projDim,'FaceColor',[.7 .7 .7],'Filled',true,'EdgeColor','none','Order',3);
+    plot(R,projDim,'Order',3);
     
     % plot simulation results
     plot(simRes,projDim);
@@ -166,6 +166,6 @@ for i = 1:length(dims)
 end
 
 % example completed
-res = 1;
+res = true;
 
 %------------- END OF CODE --------------

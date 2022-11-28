@@ -26,10 +26,7 @@ function res = testLongDuration_polyZonotope_split
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-%% RANDOM TESTS
-
+res = true;
 
 % TEST 2-dimensional
 
@@ -69,7 +66,9 @@ for i = 1:5
     suc = containsPointSet(pZ,points,[],30);
     
     if ~suc
-       error('testLongDuration_polyZonotope_split: random test 2D failed!'); 
+       path = pathFailedTests(mfilename());
+       save(path,'pZ','points');
+       throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -112,10 +111,11 @@ for i = 1:5
     suc = containsPointSet(pZ,points);
     
     if ~suc
-       error('testLongDuration_polyZonotope_split: random test 4D failed!'); 
+       path = pathFailedTests(mfilename());
+       save(path,'pZ','points');
+       throw(CORAerror('CORA:testFailed'));
     end
 end
 
-res = true;
 
 %------------- END OF CODE --------------

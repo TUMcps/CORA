@@ -1,8 +1,9 @@
 function E = andHyperplane(E,H)
-% andHyperplane - compute the exact intersection of an ellipsoid and a hyperplane
+% andHyperplane - computes the exact intersection of an ellipsoid and a
+%    hyperplane
 %
 % Syntax:  
-%    [E] = andHyperplane(E,H)
+%    E = andHyperplane(E,H)
 %
 % Inputs:
 %    E - Ellipsoid object
@@ -10,7 +11,6 @@ function E = andHyperplane(E,H)
 %
 % Outputs:
 %    E - ellipsoid object
-%
 %
 % References: 
 %   [1] A. Kurzhanski et al. "Ellipsoidal Toolbox Manual", 2006
@@ -28,20 +28,23 @@ function E = andHyperplane(E,H)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 if distance(E,H)>E.TOL
     E = ellipsoid;
     return;
 end
+
 % they are intersecting
 n = length(E.q);
 x_rem = zeros(0,1);
 T = eye(n);
 
-if E.isdegenerate
+if ~isFullDim(E)
     nt = rank(E);
     % check if E.Q is all zero
     if nt==0
-        if in(H,E.q)
+        % if E is 0-d, the result is either E.q if E.q\in H, or empty set
+        if contains(H,E.q)
             E = ellipsoid(zeros(n),E.q);
         else
             E = ellipsoid;
@@ -49,6 +52,7 @@ if E.isdegenerate
         return;
     end
     [T,~,~] = svd(E.Q);
+    % transform E such that degenerate dimensions are axis-aligned
     E = T'*E;
     % transform hyperplane (possible since T unitary)
     H = conHyperplane((T'*H.h.c)',H.h.d);
@@ -69,12 +73,13 @@ I = eye(n_nd);
 % check if only 1 non-degenerate dimension remains in E_nd
 if n_nd==1
     % E, H are 1d: check if intervals intersect
+    % compute enclosing interval
     IntE = E.q + interval(-sqrt(E.Q),sqrt(E.Q));
     xH = H.h.d/H.h.c;
     x_max = max(abs(xH));
     r_xH = x_max*E.TOL;
     IntE_TOL = IntE + interval(-r_xH,r_xH);
-    if ~in(IntE_TOL,xH)
+    if ~contains(IntE_TOL,xH)
         E = ellipsoid;
         return;
     end
@@ -97,7 +102,8 @@ else
     if a<0 && a>-E.TOL
         a = 0;
     elseif a<-E.TOL
-        error('Error computing intersection of ellipsoid and hyperplane!');
+        throw(CORAerror('CORA:specialError',...
+            'Error computing intersection of ellipsoid and hyperplane!'));
     end
     W_s = a*[zeros(1,n_nd);[zeros(n_nd-1,1),Mbinv]];
     Ew = ellipsoid(W_s,w_s);
@@ -107,4 +113,5 @@ end
 % reintroduce x_rem and backtransform
 E = ellipsoid([E_t.Q,zeros(n_nd,n_rem);zeros(n_rem,n)],[E_t.q;x_rem]);
 E = T*E;
+
 %------------- END OF CODE --------------

@@ -1,18 +1,19 @@
-function [obj]=inputTie(obj,options)
-% inputTie - tie: time interval error; computes the error done by 
-% the linear assumption of the constant input solution
+function obj = inputTie(obj,options)
+% inputTie - tie: time interval error; computes the error done by the
+%    linear assumption of the constant input solution
 %
 % Syntax:  
-%    [obj]=inputTie(obj,options)
+%    obj = inputTie(obj,options)
 %
 % Inputs:
-%    obj - linear interval system object
+%    obj - linParamSys object
 %    options - options struct
 %
 % Outputs:
-%    obj - linear interval system object
+%    obj - linParamSys object
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -20,7 +21,7 @@ function [obj]=inputTie(obj,options)
 %
 % See also: expm, inputSol
 
-% Author: Matthias Althoff
+% Author:       Matthias Althoff
 % Written:      22-June-2009
 % Last update:  13-November-2017
 % Last revision:---
@@ -70,12 +71,11 @@ if epsilon < 1
     phi = norm_A^(obj.taylorTerms+1)*r^(obj.taylorTerms+1)/(factorial(obj.taylorTerms + 1)*(1-epsilon));
     Einput = ones(length(obj.A))*interval(-1,1)*phi/norm_A;
 else
-    Einput = interval(-inf,inf);
+    Einput = interval(-Inf,Inf);
     disp('Taylor order not high enough');
 end
 %write to object structure
 obj.inputF=Asum+Einput;
 %obj.inputF=Asum+obj.E*r;
-
 
 %------------- END OF CODE --------------

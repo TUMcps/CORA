@@ -1,33 +1,52 @@
-function [isLinear, A, B, c, formalEqs] = eq2linSysFlat(exprNames, exprs, states, inputs, outputsLocal, map, parseMode)
-% Converts string equations to a LTI system specification (if possible).
-% Returns formatted nonlinear equations otherwise.
-% Requires names of state and input variables as parameter.
-% Requires names of constants and values to substitute.
-% WARNING: could produce incorrect results, if any variables are named 
-% "xL<number>R" or "uL<number>R
-
+function [isLinear,A,B,c,formalEqs] = ...
+    eq2linSysFlat(exprNames,exprs,states,inputs,outputsLocal,map,parseMode)
+% eq2linSysFlat - Converts string equations to a LTI system specification
+%    (if possible). Returns formatted nonlinear equations otherwise.
+%    Requires names of state and input variables as parameter.
+%    Requires names of constants and values to substitute.
+%    WARNING: could produce incorrect results, if any variables are named 
+%       "xL<number>R" or "uL<number>R
+%
+% Syntax:  
+%    [isLinear,A,B,c,formalEqs] = ...
+%       eq2linSysFlat(exprNames,exprs,states,inputs,outputsLocal,map,parseMode)
+%
 % Inputs:
-%     equation: string - flow equation in SX form
+%    exprNames (symbolic) - Ordered list specifing which expression
+%                           defines which state, used to order the equations needed for a
+%                           non-linear system correctly
+%    exprs (string) - flow equation in SX form
 %              rough format := <eq>("&" <eq>)*
 %                      <eq> := <state>' "==" <expr(states,inputs,constants)>
-%              (permitting '=','==' or ':=' for assignment)
-%     states: struct - states x[] of LTI system
-%     inputs: struct - input signals u[]
-%     constants: struct - constant variables of known value
-%     parseMode: 'flow'(default)|'assignment' - affects default outputs
-% Outputs:
-%     isLinear: equations successfully linearized? (logical)
-%     A: matrix defining linear relations x -> x'
-%     B: matrix defining linear relations u -> x'
-%     c: vector defining constant components of x'
-%     formalEqs: equations formatted to paste into a matlab dynamics file
+%              (permitting '=', '==', or ':=' for assignment)
+%    states (struct) - states of LTI system
+%    inputs (struct) - input signals
+%    outputsLocal - ???
+%    map - ???
+%    parseMode - affects default outputs ('flow'(default), 'assignment')
 %
-% Returns the Linear System x' = Ax + Bu + c equivalent to the input equations
+% Outputs:
+%    isLinear - equations successfully linearized? (logical)
+%    A - state matrix of LTI system
+%    B - input matrix of LTI system
+%    c - constant offset of LTI system
+%    formalEqs - equations formatted to paste into a matlab dynamics file
+%
+% Example: 
+%    ---
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-% example:
-%         [isLin,A,B,c,eqs] = eq2linSys('x'' == v + xErr & v'' == -g + vErr',...
-%           struct('name',{'x','v'}),struct('name',{'xErr','vErr'}),...
-%           struct('name',{'g'},'value',{9.81}))
+% Author:       ???
+% Written:      ???
+% Last update:  ---
+% Last revision:---
+
+%------------- BEGIN CODE --------------
 
 if nargin < 7
     parseMode = 'flow';
@@ -90,14 +109,15 @@ end
 
 %check whether variables except x & u & y remain
 isSubset = all(ismember(symvar(exprs), [x;u;y]));
-if(~isSubset)
+if ~isSubset
     %print detailed error message
     diff = setdiff(symvar(exprs), [x;u;y]);
     varstr = char(diff(1));
     if(length(diff) > 1)
         varstr = [varstr sprintf(', %s',diff(2:end))];
     end
-    error('Error while parsing %s: unknown variables [%s]',parseMode,varstr);
+    throw(CORAerror('CORA:converterIssue',...
+        ['Error while parsing ' char(parseMode) ': unknown variables [' varstr ']']));
 end
 
 % assign exprs to symbolic function, such that f(i) = xi'
@@ -164,5 +184,4 @@ end
 
 formalEqs = join(eqs,newline);
 
-
-end
+%------------- END OF CODE -------------

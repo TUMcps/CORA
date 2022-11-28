@@ -12,7 +12,7 @@ function Z = halfspace(Z)
 %    Z - zonotope object, including halfspace representation
 %
 % Example: 
-%    Z = zonotope([0;0],rand(2,4));
+%    Z = zonotope([0;0],[2 1 -3; 2 -1 1]);
 %    Z = halfspace(Z);
 %
 % Other m-files required: none
@@ -44,11 +44,12 @@ if all(size(G)==size(G,1)) && rank(G)==size(G,1)
     K = K./hn;
 else
     %convert zonotope to polytope and retrieve halfspace representation
-    P = polytope(Z);
+    P = mptPolytope(Z);
     H = get(P,'H');
     K = get(P,'K');
 end
-%write to object structure
+
+% write to object structure
 Z.halfspace.H=H;
 Z.halfspace.K=K;
 Z.halfspace.equations=length(K);

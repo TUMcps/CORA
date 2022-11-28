@@ -1,5 +1,5 @@
-function res = test_nonlinParamSys_reach_02_tank_certainCase
-% test_nonlinParamSys_reach_02_tank_certainCase - test of nonlinear
+function res = testLongDuration_nonlinParamSys_reach_02_tank_certainCase
+% testLongDuration_nonlinParamSys_reach_02_tank_certainCase - test of nonlinear
 %    reachability analysis with uncertain parameters.
 %    The difference compared to the uncertain case is that the parameter
 %    value is fixed. Unlike the example in the class nonlinearSys, one can
@@ -8,7 +8,7 @@ function res = test_nonlinParamSys_reach_02_tank_certainCase
 % This example can be found in [1, Sec. 3.4.5] or in [2].
 %
 % Syntax:  
-%    test_nonlinParamSys_reach_02_tank_certainCase
+%    testLongDuration_nonlinParamSys_reach_02_tank_certainCase
 %
 % Inputs:
 %    -

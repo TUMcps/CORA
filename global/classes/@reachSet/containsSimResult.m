@@ -4,14 +4,16 @@ function res = containsSimResult(R,simRes,varargin)
 %
 % Syntax:  
 %    res = containsSimResult(R,simRes)
+%    res = containsSimResult(R,simRes,verbose)
 %
 % Inputs:
 %    R - object of class reachSet
 %    simRes - object of class simRes
-%    verbose - true/false: outputs current simRes.x / total no. of simRes.x
+%    verbose - true/false: outputs current simRes.x and total number of
+%              simRes.x
 %
 % Outputs:
-%    res - boolean
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,21 +28,17 @@ function res = containsSimResult(R,simRes,varargin)
 
 %------------- BEGIN CODE --------------
 
-% init output
-res = false;
+% set default values
+verbose = setDefaultValues({false},varargin{:});
 
 % check input arguments
-if ~isa(simRes,'simResult')
-    error('Second input argument has to be of class simResult.');
-end
-verbose = false;
-if nargin == 3 && islogical(varargin{1})
-    verbose = varargin{1};
-end
+inputArgsCheck({{R,'att',{'reachSet'},{''}};
+                {simRes,'att',{'simResult'},{''}};
+                {verbose,'att',{'logical'},{''}}});
 
 % currently not checked cases
 if length(R) > 1
-    error('Multiple branches of R not checked.');
+    throw(CORAerror('CORA:notSupported','Multiple branches not supported.'));
 end
 
 
@@ -62,13 +60,13 @@ for iSim = 1:length(simRes.x)
            
         % find reachable set at same time as sim point
         for iSet = 1:length(R.timeInterval.time)
-        	if in(R.timeInterval.time{iSet},timePoint)
+            if contains(R.timeInterval.time{iSet},timePoint)
                 break;
             end
         end
         
         % check if point in reachable set
-        if ~in(R.timeInterval.set{iSet},simPoint)
+        if ~contains(R.timeInterval.set{iSet},simPoint)
             res = false; return;
         end
         
@@ -79,5 +77,4 @@ end
 % check successful
 res = true;
 
-end
-
+%------------- END OF CODE --------------

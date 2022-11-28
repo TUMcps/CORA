@@ -1,6 +1,6 @@
 function res = testLongDuration_component_ellipsoid_distanceEllipsoid
 % testLongDuration_component_ellipsoid_distanceEllipsoid - unit test 
-% function of distanceEllipsoid
+%    function of distanceEllipsoid
 %
 % Syntax:  
 %    res = testLongDuration_component_ellipsoid_distanceEllipsoid
@@ -32,27 +32,31 @@ for i=5:5:10
     for j=1:nRuns
         for k=1:2 
             try
-                E1 = ellipsoid.generateRandom(i,false);
-                E2 = ellipsoid.generateRandom(i,bools(k));
+                %%% generate all variables necessary to replicate results
+                E1 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',false);
+                E2 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k));
                 N = 2*i;
                 m = ceil(N*rand);
                 B = randPoint(E1,N,'extreme');
+                fac_s = rand;
+                r = ceil(i*rand);
+                k = k;
+                %%%
                 b = B(:,m);
-                s = E1.q + rand*(b-E1.q);
+                s = E1.q + fac_s*(b-E1.q);
                 % E1 and E2 are intersecting
                 E2 = ellipsoid(E2.Q,s);
-                if ~withinTol(distance(E1,E2),0,E1.TOL)
+                if distance(E1,E2)>E1.TOL
                     res = false;
                     break;
                 end
                 IntE1 = interval(E1);
                 q3 = E1.q+2.1*rad(IntE1);
                 [U,S,~] = svd(E1.Q);
-                r = ceil(i*rand);
                 S(r,r) = bools(k)*S(r,r);
                 % guaranteed to not intersect with E1
                 E3 = ellipsoid(U*S*U',q3);
-                if withinTol(distance(E1,E3),0,E1.TOL)
+                if distance(E1,E3)<=E1.TOL
                     res = false;
                     break;
                 end
@@ -68,7 +72,9 @@ for i=5:5:10
             break;
         end
     end
-    if ~res
+    if ~res                    
+        path = pathFailedTests(mfilename());
+        save(path,'E1','E2','N','m','B','fac_s','r','k');
         break;
     end
 end

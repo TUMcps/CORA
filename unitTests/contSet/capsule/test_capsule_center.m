@@ -45,11 +45,4 @@ if ~all(c == c_true)
     res = false;
 end
 
-
-if res
-    disp('test_center successful');
-else
-    disp('test_center failed');
-end
-
 %------------- END OF CODE --------------

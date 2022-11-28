@@ -1,17 +1,18 @@
-function res = isIntersecting(obj1,obj2,varargin)
-% isIntersecting - determines if polyZonotope obj1 intersects obj2
+function res = isIntersecting(cPZ,S,varargin)
+% isIntersecting - determines if a constrained polynomial zonotope
+%    intersects a set
 %
 % Syntax:  
-%    res = isIntersecting(obj1,obj2)
-%    res = isIntersecting(obj1,obj2,type)
+%    res = isIntersecting(cPZ,S)
+%    res = isIntersecting(cPZ,S,type)
 %
 % Inputs:
-%    obj1 - polyZonotope object
-%    obj2 - contSet object
+%    cPZ - conPolyZono object
+%    S - contSet object
 %    type - type of check ('exact' or 'approx')
 %
 % Outputs:
-%    res - 1/0 if set is intersecting, or not
+%    res - true/false
 %
 % Example: 
 %    c = [0;0];
@@ -28,7 +29,7 @@ function res = isIntersecting(obj1,obj2,varargin)
 %    res2 = isIntersecting(cPZ,pZ2,'approx')
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'b','Filled',true,'EdgeColor','none','Splits',15);
+%    plot(cPZ,[1,2],'FaceColor','b','Splits',15);
 %    plot(pZ1,[1,2],'g');
 %    plot(pZ2,[1,2],'r');
 %
@@ -45,55 +46,60 @@ function res = isIntersecting(obj1,obj2,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse optional input arguments
-    type = 'exact';
-    
-    if nargin >= 3 && ~isempty(varargin{1}) 
-        type = varargin{1};
-    end
-    
-    if strcmp(type,'exact')
-       error(errNoExactAlg(obj2,obj1));
-    end
+% pre-processing
+[resFound,vars] = pre_isIntersecting('conPolyZono',cPZ,S,varargin{:});
 
-    % get polyZonotope object
-    if ~isa(obj1,'conPolyZono')
-        temp = obj1; obj1 = obj2; obj2 = temp;
+% check premature exit
+if resFound
+    % if result has been found, it is stored in the first entry of var
+    res = vars{1}; return
+else
+    % assign values
+    cPZ = vars{1}; S = vars{2}; type = vars{3};
+end
+
+
+if strcmp(type,'exact')
+    throw(CORAerror('CORA:noExactAlg',cPZ,S));
+end
+
+% % % get polyZonotope object
+% % if ~isa(cPZ,'conPolyZono')
+% %     temp = cPZ; cPZ = S; S = temp;
+% % end
+
+% call function for other set representations
+if isa(S,'conPolyZono') || isa(S,'polyZonotope') || ...
+   isa(S,'capsule')
+    
+    % fast check based on zonotope enclosure
+    res = isIntersecting(zonotope(cPZ),zonotope(S));
+    
+    if ~res
+        return; 
     end
     
-    % call function for other set representations
-    if isa(obj2,'conPolyZono') || isa(obj2,'polyZonotope') || ...
-       isa(obj2,'capsule')
-        
-        % fast check based on zonotope enclosure
-        res = isIntersecting(zonotope(obj1),zonotope(obj2));
-        
-        if ~res
-            return; 
-        end
-        
-        % convert second set to constrained polynomial zonotope
-        obj2 = conPolyZono(obj2);
-        
-        % compute intersection of the two sets
-        int = obj1 & obj2;
-        
-        % check if the intersection is empty
-        res = ~isempty(int);
-        
-        
-    elseif isa(obj2,'halfspace') || isa(obj2,'conHyperplane') || ...
-           isa(obj2,'mptPolytope') || isa(obj2,'zonotope') || ...
-           isa(obj2,'interval') || isa(obj2,'zonoBundle') || ...
-           isa(obj2,'conZonotope') || isa(obj2,'ellipsoid')
-   
-        res = isIntersecting(obj2,obj1,type);
-   
-    else
-        
-        % throw error for given arguments
-        error(noops(obj1,obj2));
-    end     
+    % convert second set to constrained polynomial zonotope
+    S = conPolyZono(S);
+    
+    % compute intersection of the two sets
+    int = cPZ & S;
+    
+    % check if the intersection is empty
+    res = ~isempty(int);
+    
+    
+elseif isa(S,'halfspace') || isa(S,'conHyperplane') || ...
+       isa(S,'mptPolytope') || isa(S,'zonotope') || ...
+       isa(S,'interval') || isa(S,'zonoBundle') || ...
+       isa(S,'conZonotope') || isa(S,'ellipsoid')
+
+    res = isIntersecting(S,cPZ,type);
+
+else
+    
+    % throw error for given arguments
+    throw(CORAerror('CORA:noops',cPZ,S));
 end
 
 %------------- END OF CODE --------------

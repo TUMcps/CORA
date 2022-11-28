@@ -233,7 +233,7 @@ elseif strcmp(options.alg,'poly') && options.tensorOrder == 3
     
 % OTHER COMBINATIONS OF ALG/TENSORORDER NOT IMPLEMENTED YET
 else
-    error("Abstraction not implemented!");
+    throw(CORAerror('CORA:notSupported','Specified tensor order not supported.'));
 end
 
 end

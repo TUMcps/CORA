@@ -24,39 +24,40 @@ function res = test_ellipsoid_supportFunc
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-res = true;
-load cases.mat E_c
+
+load cases.mat E_c  
+
+% empty set
+res = supportFunc(ellipsoid(),[1;1],'upper') == -Inf ...
+    && supportFunc(ellipsoid(),[1;1],'lower') == Inf;
+
+% loop over cases
 for i=1:length(E_c)
     E1 = E_c{i}.E1; % non-deg
     Ed1 = E_c{i}.Ed1; % deg
     E0 = E_c{i}.E0; % all zero
     
     res = checkSuppFunc(E1) && checkSuppFunc(Ed1) && checkSuppFunc(E0);
-    
+end
+
 end
 
 
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
-end
-
-%-- helper
+% Auxiliary functions -----------------------------------------------------
 function res = checkSuppFunc(E)
-n = dim(E);
-[T,S,~] = svd(E.Q);
-s = sqrt(diag(S));
-res = true;
-for i=1:n
-    l = T(:,i);
-    [val,x] = supportFunc(E,l);
-    ri = abs(val-l'*E.q);
-    if ~withinTol(s(i),ri,E.TOL) || ~withinTol(norm(x-E.q),s(i),E.TOL)
-        res = false;
-        break;
+    n = dim(E);
+    [T,S,~] = svd(E.Q);
+    s = sqrt(diag(S));
+    res = true;
+    for i=1:n
+        l = T(:,i);
+        [val,x] = supportFunc(E,l);
+        ri = abs(val-l'*E.q);
+        if ~withinTol(s(i),ri,E.TOL) || ~withinTol(norm(x-E.q),s(i),E.TOL)
+            res = false;
+            break;
+        end
     end
 end
-end
+
 %------------- END OF CODE --------------

@@ -25,19 +25,11 @@ function res = testLongDuration_zonotope_randPoint
 
 %------------- BEGIN CODE --------------
 
-res = true;
+% tolerance
 tol = 1e-9;
 
-% check empty zonotope object -> error
-Z = zonotope();
-try 
-    p = randPoint(Z); % <- should throw error here
-    res = false;
-catch ME
-    if ~strcmp(ME.identifier,'CORA:emptySet')
-        res = false;
-    end
-end
+% check empty zonotope object
+res = isempty(randPoint(zonotope()));
 
 
 % number of tests
@@ -81,27 +73,22 @@ for i=1:nrOfTests
     % check for containment in zonotope
     % (use containsPoint instead of in, since the latter has a bug)
     for j=1:nrPtsStandard
-        if ~in(Z,pNormal(:,j))
+        if ~contains(Z,pNormal(:,j))
             res = false; break;
         end
     end
     for j=1:nrPtsExtreme
-        if ~in(enlarge(Z,1+tol),pExtreme(:,j))
+        if ~contains(enlarge(Z,1+tol),pExtreme(:,j))
             % enlarging Z is required, otherwise wrong result!
             res = false; break;
         end
     end
     
     if ~res
+        path = pathFailedTests(mfilename());
+        save(path,'n','c','pNormal','pExtreme','pGaussian');
         break;
     end
-end
-
-
-if res
-    disp('testLongDuration_zonotope_randPoint successful');
-else
-    disp('testLongDuration_zonotope_randPoint failed');
 end
 
 %------------- END OF CODE --------------

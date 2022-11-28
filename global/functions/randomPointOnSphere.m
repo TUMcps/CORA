@@ -1,11 +1,11 @@
-function [x]=randomPointOnSphere(dim)
-% randomVector - generates a random vector
+function x = randomPointOnSphere(n)
+% randomPointOnSphere - generates a random vector
 %
 % Syntax:  
-%    [x]=randomVector(dim)
+%    x = randomPointOnSphere(n)
 %
 % Inputs:
-%    dim - dimension
+%    n - dimension
 %
 % Outputs:
 %    x - random vector
@@ -18,17 +18,17 @@ function [x]=randomPointOnSphere(dim)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 30-September-2008
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      30-September-2008
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
-%generate normally distributed random varibles
-x = randn(dim,1);
+% generate normally distributed random variable
+x = randn(n,1);
 
-%normalize result
-x=x/norm(x);
+% normalize result
+x = x/norm(x);
 
 %------------- END OF CODE --------------

@@ -83,8 +83,7 @@ function res = times(factor1,factor2)
     %    res = arrayfun(@(a) s_times_it(a, factor2), factor1, 'UniformOutput', 0);
         
     else
-        
-        error('Wrong input')
+        throw(CORAerror('CORA:wrongValue','first/second',"check documentation"));
         
     end
     A = cat(1, res{:});

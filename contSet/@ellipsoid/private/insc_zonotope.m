@@ -1,29 +1,32 @@
 function Z = insc_zonotope(E,m,comptype)
-% insc_zonotope - underapproximates an ellipsoid by a zonotope
+% insc_zonotope - inner-approximates an ellipsoid by a zonotope
 %
 % Syntax:  
-%    E = insc_zonotope(Z,N)
+%    Z = insc_zonotope(E,m,comptype)
 %
 % Inputs:
-%    E       - ellipsoid object
-%    comptype- (Optional) Specifies whether function uses an upper bound on the 
-%              maximum zonotope norm or the exact value
+%    E - ellipsoid object
+%    m - number of generators
+%    comptype - (optional) Specifies whether function uses an upper bound
+%               on the maximum zonotope norm or the exact value
+%               ('exact'/'approx')
 %
 % Outputs:
 %    Z - zonotope object
 %
 % Example: 
-%    E = ellipsoid.generateRandom(0,2);
+%    E = ellipsoid.generateRandom('Dimension',2);
 %    Z = insc_zonotope(E,20);
+%
+%    figure; hold on;
 %    plot(E);
-%    hold on
-%    plot(Z);
+%    plot(Z,[1,2],'r');
 %
 % References:
-%    [1] : P. Leopardi, "Distributing points on the sphere," School of Mathematics
-%          and Statistics. PhD thesis. University of New South Wales, 2007
-%    [2] : The Recursive Zonal Equal Area (EQ) Sphere Partitioning Toolbox,
-%          https://de.mathworks.com/matlabcentral/fileexchange/13356-eq_sphere_partitions
+%    [1] P. Leopardi, "Distributing points on the sphere," School of Mathematics
+%        and Statistics. PhD thesis. University of New South Wales, 2007
+%    [2] The Recursive Zonal Equal Area (EQ) Sphere Partitioning Toolbox,
+%        https://de.mathworks.com/matlabcentral/fileexchange/13356-eq_sphere_partitions
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -37,11 +40,18 @@ function Z = insc_zonotope(E,m,comptype)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-assert(~E.isdegenerate,'Degeneracy should be handled in main file!');
+
+if ~isFullDim(E)
+    throw(CORAerror('CORA:degenerateSet','Should be handled in main file'));
+end
 
 %check if respective norm should be bounded or computed exactly
-if exist('comptype','var') && strcmp(comptype,'exact')
-    doExact = true;
+if exist('comptype','var') 
+    if strcmp(comptype,'exact')
+        doExact = true;
+    elseif ~strcmp(comptype,'approx')
+        throw(CORAerror('CORA:wrongValue','third',"Must be either 'exact' or 'approx'."));
+    end
 else
     doExact = false;
 end 
@@ -58,6 +68,7 @@ else
     G = eq_point_set(n-1,m);
 end
 
+% compute zonotope norm
 if doExact
     R = norm(zonotope([zeros(n,1),G]),2,'exact');
 else

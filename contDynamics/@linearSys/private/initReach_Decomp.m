@@ -206,8 +206,11 @@ for bi=1:options.blocks
     end
     % ---------------------------------------------------------------------
 
+    % initialize output blocks
+    Yhat0.ti{bi} = zeros(obj.nrOfOutputs,1);
+    Yhat0.tp{bi} = zeros(obj.nrOfOutputs,1);
     
-    % calculate output blocks (only if corresponding C block non-zero -----
+    % calculate output blocks (only if corresponding C block non-zero) ----
     if Cno0(bi)
         Yhat0.ti{bi} = full(C{bi} * Xhat0.ti{bi});
         Yhat0.tp{bi} = full(C{bi} * Xhat0.tp{bi});

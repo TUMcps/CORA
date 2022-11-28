@@ -1,8 +1,8 @@
 function res = test_conHyperplane_isIntersecting
-% test_isIntersecting - unit test function of isIntersecting
+% test_conHyperplane_isIntersecting - unit test function of isIntersecting
 %
 % Syntax:  
-%    res = test_isIntersecting
+%    res = test_conHyperplane_isIntersecting
 %
 % Inputs:
 %    -
@@ -83,14 +83,11 @@ res_int = ~res_above && res_upperboundary && res_through && ...
     res_lowerboundary && ~res_below;
 % -------------------------------------------------------------------------
 
+% empty set
+hyp_e = conHyperplane();
+res_e = ~isIntersecting(hyp_above,hyp_e);
 
 % combine tests
-res = res_zon && res_int;
-
-if res
-    disp('test_isIntersecting successful');
-else
-    disp('test_isIntersecting failed');
-end
+res = res_zon && res_int && res_e;
 
 %------------- END OF CODE --------------

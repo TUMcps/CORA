@@ -58,7 +58,7 @@ inv = mptPolytope([-1,0],0);
 guard = conHyperplane([1,0],0,[0,1],0);
 
 % reset function
-reset.A = [0, 0; 0, alpha]; reset.b = zeros(2,1);
+reset.A = [0, 0; 0, alpha]; reset.c = zeros(2,1);
 
 % transitions
 trans{1} = transition(guard,reset,1);
@@ -81,35 +81,27 @@ disp(['Computation time for reachable set: ',num2str(tComp),' s']);
 
 % Simulation --------------------------------------------------------------
 
-% settings for random simulation
-simOpt.points = 10;        % number of initial points
-simOpt.fracVert = 0.5;     % fraction of vertices initial set
-simOpt.fracInpVert = 0.5;  % fraction of vertices input set
-simOpt.inpChanges = 10;    % changes of input over time horizon  
-
-% random simulation
-simRes = simulateRandom(HA,params,simOpt); 
+simRes = simulateRandom(HA,params); 
 
 
 
 % Visualization -----------------------------------------------------------
 
-figure 
-hold on
+figure; hold on;
 
 % plot reachable set
-plot(R,[1,2],'w','EdgeColor','k');
+plot(R,[1,2]);
 
 % plot initial set
-plot(params.R0,[1,2],'r','Filled',true,'EdgeColor','k');
+plot(params.R0,[1,2],'FaceColor','w','EdgeColor','k');
 
 % plot simulated trajectories
-plot(simRes,[1,2],'b');
+plot(simRes,[1,2]);
 
 axis([0,1.2,-6,4]);
 
 
-res = 1;
+res = true;
 
 
 %------------- END OF CODE --------------

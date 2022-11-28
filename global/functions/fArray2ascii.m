@@ -1,5 +1,5 @@
 function fArray2ascii
-% fArray2ascii - 
+% fArray2ascii - ???
 %
 % Syntax:  
 %    fArray2ascii
@@ -59,3 +59,5 @@ end
     
 %close file
 status = fclose(fid)
+
+%------------- END OF CODE --------------

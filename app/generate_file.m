@@ -51,14 +51,14 @@ switch currentOption
         simOpt_points_random      = get(handles.txtNoP_RSim_Linear, 'String');
         simOpt_fracVert_random    = get(handles.txtFV_RSim_Linear, 'String');
         simOpt_fracInpVert_random = get(handles.txtFIV_RSim_Linear, 'String');
-        simOpt_inpChanges_random  = get(handles.txtIC_RSim_Linear, 'String');
+        simOpt_nrConstInp_random  = get(handles.txtNCI_RSim_Linear, 'String');
         
         % RRT simulation settings
-        Simulate_RRT         = get(handles.rbSimRRT_Linear, 'Value');
-        simOpt_points_RRT    = get(handles.txtNoP_RSim_Linear, 'String');
-        Yes                  = get(handles.rbYesEPS_SimRRT_Linear, 'Value');
-        No                   = get(handles.rbNoEPS_SimRRT_Linear, 'Value');
-        simOpt_strechFac_RRT = get(handles.txtSF_SimRRT_Linear, 'String');
+        Simulate_RRT          = get(handles.rbSimRRT_Linear, 'Value');
+        simOpt_points_RRT     = get(handles.txtNoP_RSim_Linear, 'String');
+        Yes                   = get(handles.rbYesEPS_SimRRT_Linear, 'Value');
+        No                    = get(handles.rbNoEPS_SimRRT_Linear, 'Value');
+        simOpt_stretchFac_RRT = get(handles.txtSF_SimRRT_Linear, 'String');
         
         % plotting settings
         dims = get(handles.listPlots_Linear, 'String');
@@ -129,14 +129,14 @@ switch currentOption
         simOpt_points_random      = get(handles.txtNoP_RSim_Nonlinear, 'String');
         simOpt_fracVert_random    = get(handles.txtFV_RSim_Nonlinear, 'String');
         simOpt_fracInpVert_random = get(handles.txtFIV_RSim_Nonlinear, 'String');
-        simOpt_inpChanges_random  = get(handles.txtIC_RSim_Nonlinear, 'String');
+        simOpt_nrConstInp_random  = get(handles.txtNCI_RSim_Nonlinear, 'String');
         
         % RRT simulation settings
-        Simulate_RRT         = get(handles.rbSimRRT_Nonlinear, 'Value');
-        simOpt_points_RRT    = get(handles.txtNoP_RSim_Nonlinear, 'String');
-        Yes                  = get(handles.rbYesEPS_SimRRT_Nonlinear, 'Value');
-        No                   = get(handles.rbNoEPS_SimRRT_Nonlinear, 'Value');
-        simOpt_strechFac_RRT = get(handles.txtSF_SimRRT_Nonlinear, 'String');
+        Simulate_RRT          = get(handles.rbSimRRT_Nonlinear, 'Value');
+        simOpt_points_RRT     = get(handles.txtNoP_RSim_Nonlinear, 'String');
+        Yes                   = get(handles.rbYesEPS_SimRRT_Nonlinear, 'Value');
+        No                    = get(handles.rbNoEPS_SimRRT_Nonlinear, 'Value');
+        simOpt_stretchFac_RRT = get(handles.txtSF_SimRRT_Nonlinear, 'String');
         
         % plotting settings
         dims = get(handles.listPlots_Nonlinear, 'String');
@@ -221,14 +221,14 @@ switch currentOption
         simOpt_points_random      = get(handles.txtNoP_RSim_Hybrid, 'String');
         simOpt_fracVert_random    = get(handles.txtFV_RSim_Hybrid, 'String');
         simOpt_fracInpVert_random = get(handles.txtFIV_RSim_Hybrid, 'String');
-        simOpt_inpChanges_random  = get(handles.txtIC_RSim_Hybrid, 'String');
+        simOpt_nrConstInp_random  = get(handles.txtNCI_RSim_Hybrid, 'String');
         
         % RRT simulation settings
-        Simulate_RRT         = get(handles.rbSimRRT_Hybrid, 'Value');
-        simOpt_points_RRT    = get(handles.txtNoP_RSim_Hybrid, 'String');
-        Yes                  = get(handles.rbYesEPS_SimRRT_Hybrid, 'Value');
-        No                   = get(handles.rbNoEPS_SimRRT_Hybrid, 'Value');
-        simOpt_strechFac_RRT = get(handles.txtSF_SimRRT_Hybrid, 'String');
+        Simulate_RRT          = get(handles.rbSimRRT_Hybrid, 'Value');
+        simOpt_points_RRT     = get(handles.txtNoP_RSim_Hybrid, 'String');
+        Yes                   = get(handles.rbYesEPS_SimRRT_Hybrid, 'Value');
+        No                    = get(handles.rbNoEPS_SimRRT_Hybrid, 'Value');
+        simOpt_stretchFac_RRT = get(handles.txtSF_SimRRT_Hybrid, 'String');
         
         % plotting settings
         dims = get(handles.listPlots_Hybrid, 'String');
@@ -498,7 +498,7 @@ elseif Random_Simulation
     fprintf(id, '%s = %s;\n', 'simOpt.points', simOpt_points_random);
     fprintf(id, '%s = %s;\n', 'simOpt.fracVert', simOpt_fracVert_random);
     fprintf(id, '%s = %s;\n', 'simOpt.fracInpVert', simOpt_fracInpVert_random);
-    fprintf(id, '%s = %s;\n', 'simOpt.inpChanges', simOpt_inpChanges_random);
+    fprintf(id, '%s = %s;\n', 'simOpt.nrConstInp', simOpt_nrConstInp_random);
     
     fprintf(id, '\n%s = simulateRandom(%s, %s, %s);\n\n', ...
         'simRes', Sys, 'params', 'simOpt');
@@ -516,7 +516,7 @@ elseif Simulate_RRT
         fprintf(id, '%s = %s;\n', 'simOpt.vertSamp', 'boolean(0)');
     end
     
-    fprintf(id, '%s = %s;\n', 'simOpt.strechFac', simOpt_strechFac_RRT);
+    fprintf(id, '%s = %s;\n', 'simOpt.stretchFac', simOpt_stretchFac_RRT);
     fprintf(id, '\n%s = simulateRandom(%s, %s, %s, %s, ''rrt'');\n\n', ...
         'simRes', Sys, 'reachSet', 'params', 'simOpt');
 end
@@ -632,7 +632,7 @@ fprintf(id, '%s\n\n', 'end');
 if SpaceEx
     fprintf(id, '\n%s\n\n', '%% Auxiliary Functions ----------------------------------------------------');
     path = fullfile('models','SpaceExConverted');
-    file2 = fullfile(coraroot,path,name);
+    file2 = fullfile(CORAROOT,path,name);
     dinfo = dir(file2);
     dinfo(ismember( {dinfo.name}, {'.', '..'})) = [];
     for i = 1:size(dinfo,1)
@@ -887,7 +887,7 @@ elseif get(handles.rbLoadDynamicEquation_Nonlinear, 'Value') || get(handles.rbEn
         dynamicsEq_handle = eval('base', dynamicsEq_handle_str);
         
         %extract num_dimensions, num_inputs
-        [temp,dimensions]  = numberOfInputs_app(dynamicsEq_handle,2);
+        [temp,dimensions]  = inputArgsLength_app(dynamicsEq_handle,2);
         nrOfInputs = max(1,temp(2));
         
         fprintf(id, '\nnonlinSys = nonlinearSys(%s);\n\n',dynamicsEq_handle_str);
@@ -1182,7 +1182,7 @@ k = 0 ;
 if isempty(u_num)
         for i = 1:size(u_size,2)
             if size(U_input,2) == 1
-                if ~in(U_input,u_size(:,i))
+                if ~contains(U_input,u_size(:,i))
                     uiwait(msgbox('The value of u in simulation is not inside the input set (U)', 'Error', 'error', 'modal'))
                     fclose(id);
                     err = 1;
@@ -1191,7 +1191,7 @@ if isempty(u_num)
             else
                 for j = 1:size(U_input,2)
                     if ~isempty(U_input{j})
-                        if ~in(U_input{j},u_size(:,i))
+                        if ~contains(U_input{j},u_size(:,i))
                             k = k + 1;
                         end
                     end
@@ -1206,7 +1206,7 @@ if isempty(u_num)
         end
 elseif size(u_num,2) == size(u_size,2)
     for i = 1:size(u_size,2)
-        if ~in(U_input+u_num(:,i),u_size(:,i))
+        if ~contains(U_input+u_num(:,i),u_size(:,i))
             uiwait(msgbox('The value of u in simulation is not inside the input set (U)', 'Error', 'error', 'modal'))
             fclose(id);
             err = 1;
@@ -1220,7 +1220,7 @@ else
         for j = 1:size(u_size,2)
             inf1 = time(i); sup1 = time(i+1); inf2 = timeSim(j); sup2 = timeSim(j+1);
             if ((sup1 > sup2 + eps) && (inf1 + eps < sup2)) || ((inf1 + eps < inf2) && (sup1 > inf2 + eps))
-                if ~in(U_input+u_num(:,i),u_size(:,j))
+                if ~contains(U_input+u_num(:,i),u_size(:,j))
                     uiwait(msgbox('The value of u in simulation is not inside the input set (U)', 'Error', 'error', 'modal'))
                     fclose(id);
                     err = 1;

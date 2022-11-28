@@ -1,14 +1,14 @@
-function res = zonoBundle(obj)
+function zB = zonoBundle(Z)
 % conZonotope - convert a zonotope object into a zonotope bundle object
 %
 % Syntax:  
-%    res = zonoBundle(obj)
+%    zB = zonoBundle(Z)
 %
 % Inputs:
-%    obj - zonotope object
+%    Z - zonotope object
 %
 % Outputs:
-%    res - zonoBundle object
+%    zB - zonoBundle object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,6 +23,6 @@ function res = zonoBundle(obj)
 
 %------------- BEGIN CODE --------------
     
-    res = zonoBundle({obj});
+zB = zonoBundle({Z});
 
 %------------- END OF CODE --------------

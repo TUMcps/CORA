@@ -1,20 +1,20 @@
 function C = project(C,dims)
-% project - Returns a capsule which is projected onto the specified
-% dimensions
+% project - projects a capsule onto the specified dimensions
 %
 % Syntax:  
 %    C = project(C,dims)
 %
 % Inputs:
-%    C - capsule
-%    dims - projected dimensions
+%    C - (capsule) capsule
+%    dims - dimensions for projection
 %
 % Outputs:
-%    C - capsule
+%    C - (capsule) projected capsule
 %
 % Example: 
 %    C = capsule([1; 1; 0], [0; 0; 1], 0.5);
-%    Z = project(Z,[1 3]);
+%    Z1 = project(Z,[1 3]);
+%    Z2 = project(Z,[true false true]);
 %
 % Other m-files required: none
 % Subfunctions: none

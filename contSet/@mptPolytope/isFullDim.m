@@ -1,21 +1,22 @@
-function res = isFullDim(obj)
-% isFullDim - check if a polytope is full-dimensional
+function res = isFullDim(P)
+% isFullDim - checks if the dimension of the affine hull of a polytope is
+%    equal to the dimension of its ambient space
 %
 % Syntax:  
-%    res = isFullDim(obj)
+%    res = isFullDim(P)
 %
 % Inputs:
-%    obj - mptPolytope object
+%    P - mptPolytope object
 %
 % Outputs:
-%    res - 1 if mptPolytope is full-dimensional, 0 else
+%    res - true/false
 %
 % Example:
-%    poly1 = mptPolytope([1 0;0 1;-1 0; 0 -1],[1;1;0;0]);
-%    poly2 = mptPolytope([1 0;0 1;-1 0; 0 -1],[1;0;0;0]);
+%    P1 = mptPolytope([1 0;0 1;-1 0; 0 -1],[1;1;0;0]);
+%    P2 = mptPolytope([1 0;0 1;-1 0; 0 -1],[1;0;0;0]);
 %
-%    isFullDim(poly1)
-%    isFullDim(poly2)
+%    isFullDim(P1)
+%    isFullDim(P2)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,26 +31,26 @@ function res = isFullDim(obj)
 
 %------------- BEGIN CODE --------------
 
-    res = 1;
+% init result
+res = true;
 
-    % get object properties
-    A = obj.P.A;
-    b = obj.P.b;
+% get object properties
+A = P.P.A;
+b = P.P.b;
 
-    % normalize constraint matrix
-    n = sqrt(sum(A.^2,2));
-    A = A./n;
-    b = b./n;
+% normalize constraint matrix
+n = sqrt(sum(A.^2,2));
+A = A./n;
+b = b./n;
+
+% loop over all constraints
+for i = 1:length(b)
     
-    % loop over all constraints
-    for i = 1:length(b)
-        
-       [res_,ind] = ismembertol(-A(i,:),A,eps,'ByRows',true);
-        
-       if res_ && b(ind) == -b(i)
-           res = 0;
-           return;
-       end
+    [res_,ind] = ismembertol(-A(i,:),A,eps,'ByRows',true);
+    
+    if res_ && b(ind) == -b(i)
+        res = false; return;
     end
+end
 
 %------------- END OF CODE --------------

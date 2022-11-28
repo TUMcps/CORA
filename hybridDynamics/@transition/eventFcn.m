@@ -1,19 +1,19 @@
-function [value,isterminal,direction] = eventFcn(obj,x)
+function [value,isterminal,direction] = eventFcn(trans,x)
 % eventFcn - returns the event function results of a guard set of a 
-% transition
+%    transition
 %
 % Syntax:  
-%    [value,isterminal,direction] = eventFcn(obj,x)
+%    [value,isterminal,direction] = eventFcn(trans,x)
 %
 % Inputs:
-%    obj - transition object
+%    trans - transition object
 %    x - system state
 %
 % Outputs:
 %    value - value of the event function
 %    isterminal - specifies if the simulation stops if an event turns zero
 %    direction - specifies if the value of the event function has to 
-%    turn from negative to positive or the other way round
+%                turn from negative to positive or the other way round
 %
 % Example: 
 %
@@ -23,15 +23,15 @@ function [value,isterminal,direction] = eventFcn(obj,x)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 07-May-2007 
-% Last update: 07-September-2007
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      07-May-2007 
+% Last update:  07-September-2007
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% [value,isterminal,direction] = eventFcn(obj.guard,x,0);
-%[value,isterminal,direction] = eventFcn(obj.guard,x,1);
-[value,isterminal,direction] = eventFcn(obj.guard,x,-1);
+% [value,isterminal,direction] = eventFcn(trans.guard,x,0);
+% [value,isterminal,direction] = eventFcn(trans.guard,x,1);
+[value,isterminal,direction] = eventFcn(trans.guard,x,-1);
 
 %------------- END OF CODE --------------

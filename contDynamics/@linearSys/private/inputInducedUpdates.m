@@ -25,6 +25,7 @@ function [Rhom,Rhom_tp,Rtrans,inputCorr] = inputInducedUpdates(obj,options)
 % Author:        Matthias Althoff, Mark Wetzlinger
 % Written:       15-July-2019 (from @linearSys > post_Euclidean.m)
 % Last update:   16-February-2021 (MW, update 'fromStart')
+%                16-November-2021 (MW, include disturbance set W)
 % Last revision: ---
 
 
@@ -36,8 +37,19 @@ eAtInt = obj.taylor.eAtInt;
 F = obj.taylor.F;
 inputF = obj.taylor.inputF;
 
+if isfield(options,'W')
+    Wcenter = center(options.W);
+else
+    Wcenter = 0;
+end
+
 % solution due to constant inputs
-vTrans = obj.B*options.uTrans;
+vTrans = obj.B*options.uTrans + Wcenter;
+
+if ~isempty(obj.c)
+    vTrans = vTrans + obj.c;
+end
+
 Rtrans = eAtInt*zonotope(vTrans);
 % effect should only be considered once in a single time interval:
 inputCorr = inputF*zonotope(vTrans);

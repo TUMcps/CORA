@@ -27,9 +27,8 @@ function res = test_interval_asin
 %------------- BEGIN CODE --------------
 
 tol = 1e-9;
-res = true;
 
-% 1. Check special values -------------------------------------------------
+% Check special values
 
 % x     asin(x)
 % -1    -pi/2
@@ -47,18 +46,7 @@ if any(abs( b.inf - binf_true ) > tol) || any(abs( b.sup - bsup_true ) > tol)
     res_val = false;
 end
 
-
-
-% final test result -------------------------------------------------------
-
+% final test result
 res = all(res_val);
-
-if res
-    disp('test_asin successful');
-else
-    disp('test_asin failed');
-end
-
-end
 
 %------------- END OF CODE --------------

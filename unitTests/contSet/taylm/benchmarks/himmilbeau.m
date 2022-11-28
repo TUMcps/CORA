@@ -4,18 +4,24 @@ function res = himmilbeau(x1, x2)
 % Syntax:  
 %    res = himmilbeau(x1, x2)
 %
-% Example: 
+% Inputs:
+%    x1-x2 - see benchmark
+%
+% Output:
+%    res - result 
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
-%
+
 % Author:       Dmitry Grebenyuk
 % Written:      10-October-2017
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-    res = (x1*x1 + x2 - 11)*(x1 * x1 + x2 - 11) + (x1 + x2*x2 - 7)*(x1 + x2*x2 - 7);
+
+res = (x1*x1 + x2 - 11)*(x1 * x1 + x2 - 11) + (x1 + x2*x2 - 7)*(x1 + x2*x2 - 7);
 end
+
 %------------- END OF CODE --------------

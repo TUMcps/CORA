@@ -27,8 +27,6 @@ function res = testLongDuration_zonotope_and
 
 res = true;
 
-% 2. Random Tests ---------------------------------------------------------
-
 dims = 2:2:8;
 testsPerDim = 10;
 
@@ -46,18 +44,12 @@ for d=1:length(dims)
         Zempty = Z1 & Z3; % empty
         if isempty(Znonempty) || ~isempty(Zempty)
             res = false;
+            path = pathFailedTests(mfilename());
+            save(path,'Z1','Z2','Z3');
             disp('test_and failed');
             return
         end
     end
-end
-
-
-
-if res
-    disp('test_and successful');
-else
-    disp('test_and failed');
 end
 
 %------------- END OF CODE --------------

@@ -1,9 +1,9 @@
-function res = test_nonlinearSys_linError()
-% test_nonlinearSys_linError - test if the linearization error for nonlinear
-%                           systems is computed correctly
+function res = testLongDuration_nonlinearSys_linError()
+% testLongDuration_nonlinearSys_linError - test if the linearization error
+%    for nonlinear systems is computed correctly
 %
 % Syntax:  
-%    res = test_nonlinearSys_linError()
+%    res = testLongDuration_nonlinearSys_linError()
 %
 % Inputs:
 %    -
@@ -103,8 +103,9 @@ linError = linError([1 3 5 6]);
 points = points([1 3 5 6],:);
 
 for i = 1:N
-    if ~in(linError,points(:,i))
-    	error('test_nonlinear_error failed!'); 
+    if ~contains(linError,points(:,i))
+        res = false;
+    	break
     end
 end
 

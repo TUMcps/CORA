@@ -1,0 +1,58 @@
+function res = test_ellipsoid_contains
+% test_ellipsoid_contains - unit test function of contains
+%
+% Syntax:  
+%    res = test_ellipsoid_contains
+%
+% Inputs:
+%    -
+%
+% Outputs:
+%    res - true/false 
+%
+% Example: 
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Author:       Victor Gassmann
+% Written:      26-July-2021
+% Last update:  ---
+% Last revision:---
+
+%------------- BEGIN CODE --------------
+
+res = true;
+load cases.mat E_c
+
+% empty set
+E_e = ellipsoid();
+res = contains(E_c{1}.E1,E_e) && ~contains(E_e,E_c{1}.E1);
+
+% loop over cases
+for i=1:length(E_c)
+    E1 = E_c{i}.E1; % non-deg
+    Ed1 = E_c{i}.Ed1; % deg
+    E0 = E_c{i}.E0; % all zero
+    n = length(E1.q);
+    
+    Yd = randPoint(Ed1,2*n);
+    if contains(E1,Ed1) && ~contains(E1,Yd)
+        res = false;
+        break;
+    end
+    
+    if contains(E1,E0) && ~contains(E1,E0)
+        res = false;
+        break;
+    end
+    E_e = ellipsoid();
+    if contains(E_e,E1) || ~contains(E1,E_e)
+        res = false;
+    end
+end
+
+%------------- END OF CODE --------------

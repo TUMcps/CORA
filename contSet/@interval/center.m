@@ -1,18 +1,18 @@
-function res = center(obj)
+function c = center(I)
 % center - returns the center of an interval
 %
 % Syntax:  
-%    res = center(obj)
+%    c = center(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - center of interval (vector)
+%    c - center of interval (vector)
 %
 % Example: 
-%    a = interval([-1 1], [1 2]);
-%    b = center(a)
+%    I = interval([-1;1],[1;2]);
+%    c = center(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,7 +26,10 @@ function res = center(obj)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+if isempty(I)
+    c = []; return ;
+end
 
-res = 0.5*(obj.inf + obj.sup);
+c = 0.5*(I.inf + I.sup);
 
 %------------- END OF CODE --------------

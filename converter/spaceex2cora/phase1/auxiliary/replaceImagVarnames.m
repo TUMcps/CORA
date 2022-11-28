@@ -1,11 +1,13 @@
 function safetext = replaceImagVarnames(text)
 % replaceImagVarnames - given a string mathematical expression, replace all
-%    variable names, that could interpreted as the imaginary number
-%    by the symbolic toolkit.
+%    variable names that could interpreted as the imaginary number by the
+%    built-in symbolic toolbox.
+%
+% Description:
 %    Replace (i,j,I,J) by safe names (ii,jj,II,JJ).
 %    Apply the following name transformation to conserve name uniqueness:
 %       transform(str) = c^(n+1)  IF  str = c^n & c ∈ {i,j,I,J}
-%       transform(str) = str        OTHERWISE
+%       transform(str) = str      OTHERWISE
 %
 % Syntax:  
 %    safetext = replaceImagVarnames(text)
@@ -16,7 +18,8 @@ function safetext = replaceImagVarnames(text)
 % Outputs:
 %    safetext - expression with same logic as text, safe for sym parsing
 %
-% Example: replaceImagVarnames("I + 5*(time - jj)") -> "II + 5*(time - jjj)"
+% Example:
+%    replaceImagVarnames("I + 5*(time - jj)") % -> "II + 5*(time - jjj)"
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,7 +29,7 @@ function safetext = replaceImagVarnames(text)
 
 % Author:        Johann Schoepfer
 % Written:       09-April-2018 
-% Last update:   09-April-2018 
+% Last update:   ---
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -78,7 +81,5 @@ safechars = [safechars chars(lastIdx:end)];
 
 % convert the char vector back to string, & return the result
 safetext = string(safechars);
-
-end
 
 %------------- END OF CODE -------------

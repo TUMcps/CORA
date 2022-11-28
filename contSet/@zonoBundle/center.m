@@ -1,18 +1,20 @@
-function [c] = center(Z)
-% center - Returns the center of a zonotope bundle; the center is defined
-% as the center of the last zonotope; alternative: mean of all centers
+function c = center(zB)
+% center - Returns the center of the last zonotope of a zonotope bundle
 %
 % Syntax:  
-%    [c] = center(Z)
+%    c = center(zB)
 %
 % Inputs:
-%    Z - zonotope object
+%    zB - zonoBundle object
 %
 % Outputs:
-%    c - center of the zonotope Z
+%    c - center
 %
-% Example: 
-%    ---
+% Example:
+%    Z1 = zonotope(zeros(2,1),[1 0.5; -0.2 1]);
+%    Z2 = zonotope(ones(2,1),[1 -0.5; 0.2 1]);
+%    zB = zonoBundle({Z1,Z2});
+%    c = center(zB)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,6 +29,6 @@ function [c] = center(Z)
 
 %------------- BEGIN CODE --------------
 
-c=center(Z.Z{end});
+c = center(zB.Z{end});
 
 %------------- END OF CODE --------------

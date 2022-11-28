@@ -1,16 +1,21 @@
-function Val = distance(obj,S)
-% enclose - Computes the distance between an ellipsoid and the set S (or
-% single point)
+function val = distance(E,S)
+% distance - Computes the distance between an ellipsoid and the another set
+%    representation or a point
 %
 % Syntax:  
-%    E = distance(obj,S)
+%    val = distance(E,S)
 %
 % Inputs:
-%    obj - ellipsoid object
-%    S   - set (ellipsoid, constHyperplane, ...) or cell array thereof
+%    E - ellipsoid object
+%    S - contSet object/array
 %
 % Outputs:
-%    Val - distance(s) between obj and S
+%    val - distance(s) between ellipsoid and set/point
+%
+% Example:
+%    E = ellipsoid(eye(2));
+%    S = halfspace([1 1]/sqrt(2),-2);
+%    distance(E,S)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -21,56 +26,63 @@ function Val = distance(obj,S)
 % Author:       Victor Gassmann
 % Written:      08-March-2021
 % Last update:  18-March-2021 (allowing cell arrays)
+%               04-July-2022 (VG: replace cell arrays by class arrays)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 %% parsing & checking
-if ~isa(obj,'ellipsoid')
-    error('First input argument has to be of type "ellipsoid"!');
-end
+% check input arguments
+inputArgsCheck({{E,'att','ellipsoid','scalar'};
+                {S,'att',{'contSet','numeric'},'nonempty'}});
 
-% handle empty cells, S not a cell etc
-[S,size_S] = prepareSetCellArray(S,obj);
-if isempty(S)
+% check equal dimensions
+equalDimCheck(E,S);
+
+if isa(S,'contSet')
+    val = zeros(size(S));
+else
+    val = zeros(1,size(S,2));
+end
+if all(isempty(S))
     % distance to empty set = 0 since empty-set \subseteq obj
-    Val = 0;
+    val(:) = 0;
     return;
 end
-N = length(S);
+
 %% different distances
-Val = zeros(N,1);
-if isa(S{1},'ellipsoid')
-    for i=1:N
-        Val(i) = distanceEllipsoid(obj,S{i});
+if isa(S,'ellipsoid')
+    for i=1:numel(S)
+        val(i) = distanceEllipsoid(E,S(i));
     end
     
-elseif isa(S{1},'conHyperplane')
+elseif isa(S,'conHyperplane')
     % conHyperplane actually is a hyperplane
-    for i=1:N
-        if isHyperplane(S{i})
-            Val(i) = distanceHyperplane(obj,S{i});
+    for i=1:numel(S)
+        if isHyperplane(S(i))
+            val(i) = distanceHyperplane(E,S(i));
         else
             % use mptPolytope implementation
-            S{i} = mptPolytope(S{i});
-            Val(i) = distanceMptPolytope(E,S{i});
+            val(i) = distanceMptPolytope(E,mptPolytope(S(i)));
         end
     end
     
-elseif isa(S{1},'halfspace')
+elseif isa(S,'halfspace')
     % convert to mptPolytope
-    for i=1:N
-        Val(i) = distanceMptPolytope(obj,mptPolytope(S{i}));
+    for i=1:numel(S)
+        val(i) = distanceMptPolytope(E,mptPolytope(S(i)));
     end
     
-elseif isa(S{1},'mptPolytope')
-    for i=1:N
-        Val(i) = distanceMptPolytope(obj,S{i});
+elseif isa(S,'mptPolytope')
+    for i=1:numel(S)
+        val(i) = distanceMptPolytope(E,S(i));
     end
     
-elseif isa(S{1},'double')
-    Val = distancePoint(obj,S);
+elseif isa(S,'double')
+    val = distancePoint(E,S);
+
 else
-    error('second input argument type not supported');
+    throw(CORAerror('CORA:noops',E,S));
+    
 end
-Val = reshape(Val,size_S);
+
 %------------- END OF CODE --------------

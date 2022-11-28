@@ -1,13 +1,13 @@
-function [Rnext, options] = initReach(obj, Rold, options)
+function [Rnext, options] = initReach(obj, Rstart, options)
 % initReach - computes the reachable continuous set for the next step
 %    given the current set as the start set
 %
 % Syntax:  
-%    [Rnext, options] = initReach(obj, Rold, options)
+%    [Rnext, options] = initReach(obj, Rstart, options)
 %
 % Inputs:
 %    obj - nonlinearSys object
-%    Rold - initial reachable set
+%    Rstart - initial reachable set
 %    options - options for the computation of the reachable set
 %
 % Outputs:
@@ -31,9 +31,9 @@ function [Rnext, options] = initReach(obj, Rold, options)
 %------------- BEGIN CODE --------------
 
 % regular iteration (incl. splits)
-if isstruct(Rold)
-    Rinit = Rold.tp;
-    Rinit_y = Rold.y;
+if isstruct(Rstart)
+    Rinit = Rstart.tp;
+    Rinit_y = Rstart.y;
     
     iterations=length(Rinit);
     
@@ -41,16 +41,16 @@ if isstruct(Rold)
 else
     
     % nr of init sets can vary if split in first step
-    if ~iscell(Rold)
-        Rold = {Rold};
+    if ~iscell(Rstart)
+        Rstart = {Rstart};
     end
-    iterations = length(Rold);
+    iterations = length(Rstart);
     
     Rinit = cell(iterations,1); Rinit_y = cell(iterations,1);
     for k=1:iterations
-        Rinit{k}.set = Rold{k};
-        Rinit{k}.error_x = 0*options.maxError_x;
-        Rinit{k}.error_y = 0*options.maxError_y;
+        Rinit{k}.set = Rstart{k};
+        Rinit{k}.error_x = zeros(size(options.maxError_x));
+        Rinit{k}.error_y = zeros(size(options.maxError_y));
         % obtain consistent initial algebraic set
         y0 = options.y0guess;
         y0 = consistentInitialState(obj, center(Rinit{k}.set), y0, options.uTrans);

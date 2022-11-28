@@ -1,14 +1,14 @@
-function p = randPoint(obj,varargin)
+function p = randPoint(pZ,varargin)
 % randPoint - generates a random point within a polynomial zonotope
 %
 % Syntax:  
-%    p = randPoint(obj)
-%    p = randPoint(obj,N)
-%    p = randPoint(obj,N,type)
-%    p = randPoint(obj,'all','extreme')
+%    p = randPoint(pZ)
+%    p = randPoint(pZ,N)
+%    p = randPoint(pZ,N,type)
+%    p = randPoint(pZ,'all','extreme')
 %
 % Inputs:
-%    obj - polyZonotope object
+%    pZ - polyZonotope object
 %    N - number of random points
 %    type - type of the random point ('standard' or 'extreme')
 %
@@ -17,11 +17,10 @@ function p = randPoint(obj,varargin)
 %
 % Example: 
 %    pZ = polyZonotope([0;0], [2 0 1;1 2 1],[],[1 0 1;0 1 3]);
-%    
 %    p = randPoint(pZ);
 %
-%    hold on
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
+%    figure; hold on;
+%    plot(pZ,[1,2],'FaceColor','r');
 %    plot(p(1),p(2),'.k','MarkerSize',20);
 %
 % Other m-files required: none
@@ -32,43 +31,48 @@ function p = randPoint(obj,varargin)
 
 % Author:       Niklas Kochdumper
 % Written:      23-March-2018
-% Last update:  ---
+% Last update:  19-August-2022 (MW, integrate standardized pre-processing)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    N = 1;
-    type = 'standard';
-    if nargin > 1 && ~isempty(varargin{1})
-       N = varargin{1}; 
+% pre-processing
+[res,vars] = pre_randPoint('polyZonotope',pZ,varargin{:});
+
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of vars
+    p = vars{1}; return
+else
+    % assign variables
+    pZ = vars{1}; N = vars{2}; type = vars{3}; pr = vars{4};
+    % sampling with 'gaussian' is done in contSet method
+    if strcmp(type,'gaussian')
+        p = randPoint@contSet(pZ,N,type,pr); return
     end
-    if nargin > 2 && ~isempty(varargin{2})
-       type = varargin{2}; 
+end
+
+% get object properties
+m = length(pZ.id); q = size(pZ.Grest,2); 
+
+% compute random points for factor domain interval \alpha \in [-1,1]
+dom = interval(-ones(m+q,1),ones(m+q,1));
+
+fac = randPoint(dom,N,type);
+
+% center
+p = pZ.c * ones(1,size(fac,2));
+
+% Part 1: dependent generators
+if ~isempty(pZ.G)
+    for i = 1:size(fac,2)
+        p(:,i) = p(:,i) + pZ.G * prod(fac(1:m,i).^pZ.expMat,1)';
     end
+end
 
-    % get object properties
-    m = length(obj.id); q = size(obj.Grest,2); 
-    
-    % compute random points for factor domain interval \alpha \in [-1,1]
-    dom = interval(-ones(m+q,1),ones(m+q,1));
-
-    fac = randPoint(dom,N,type);
-
-    % center
-    p = obj.c * ones(1,size(fac,2));
-
-    % Part 1: dependent generators
-    if ~isempty(obj.G)
-        for i = 1:size(fac,2)
-            p(:,i) = p(:,i) + obj.G * prod(fac(1:m,i).^obj.expMat,1)';
-        end
-    end
-
-    % Part 2: independent generators
-    if ~isempty(obj.Grest)
-        p = p + obj.Grest * fac(m+1:end,:);
-    end
+% Part 2: independent generators
+if ~isempty(pZ.Grest)
+    p = p + pZ.Grest * fac(m+1:end,:);
 end
 
 %------------- END OF CODE --------------

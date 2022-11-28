@@ -1,5 +1,5 @@
 function [R,tcomp] = observe_volMinB(obj,options)
-% observe_volMinB - computes the guaranted state estimation approach
+% observe_volMinB - computes the guaranteed state estimation approach
 % from [1].
 %
 %

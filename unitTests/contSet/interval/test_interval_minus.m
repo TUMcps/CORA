@@ -34,7 +34,6 @@ b = interval(1, 1);
 c = a - b;
 if abs( infimum(c) + 1.0 ) > tol || abs( supremum(c) + 1.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
@@ -43,7 +42,6 @@ b = interval(1, 1);
 c = b - a;
 if abs( infimum(c) - 1.0 ) > tol || abs( supremum(c) - 1.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
@@ -52,7 +50,6 @@ b = interval(-1, 0);
 c = a - b;
 if abs( infimum(c) + 1.0 ) > tol || abs( supremum(c) - 1.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
@@ -61,7 +58,6 @@ b = interval(-2, 0);
 c = a - b;
 if abs( infimum(c) + 1.0 ) > tol || abs( supremum(c) - 2.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
@@ -70,7 +66,6 @@ b = interval(-2.0, 0);
 c = a - b;
 if abs( infimum(c) + 1.0 ) > tol || abs( supremum(c) - 2.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
@@ -79,7 +74,6 @@ b = interval(0, 1);
 c = a - b;
 if abs( infimum(c) + 1.0 ) > tol || abs( supremum(c) - 1.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
@@ -88,7 +82,6 @@ b = interval(0, 2);
 c = a - b;
 if abs( infimum(c) + 2.0 ) > tol || abs( supremum(c) - 1.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
@@ -97,7 +90,6 @@ b = interval(0, 2.0);
 c = a - b;
 if abs( infimum(c) + 2.0 ) > tol || abs( supremum(c) - 1.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
@@ -106,7 +98,6 @@ b = interval(-3.0, 2.0);
 c = a - b;
 if abs( infimum(c) + 4.0 ) > tol || abs( supremum(c) - 5.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
@@ -115,7 +106,6 @@ b = interval(-3.0, 2.0);
 c = b - a;
 if abs( infimum(c) + 5.0 ) > tol || abs( supremum(c) - 4.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
@@ -123,7 +113,6 @@ a = interval(-2.0, 1.0);
 c = 1 - a;
 if abs( infimum(c) + 0.0 ) > tol || abs( supremum(c) - 3.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
@@ -131,7 +120,6 @@ a = interval(-2.0, 1.0);
 c = a - 1;
 if abs( infimum(c) + 3.0 ) > tol || abs( supremum(c) - 0.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
@@ -141,41 +129,32 @@ c = a - b;
 
 if abs( infimum(c(1)) + 2.8 ) > tol || abs( supremum(c(1)) - 4.1 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
 if abs( infimum(c(2)) + 4.0 ) > tol || abs( supremum(c(2)) - 4.5 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
 if abs( infimum(c(3)) + 5.8 ) > tol || abs( supremum(c(3)) - 5.3 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
 if abs( infimum(c(4)) + 0.0 ) > tol || abs( supremum(c(4)) - 0.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
 if abs( infimum(c(5)) + 5.7 ) > tol || abs( supremum(c(5)) - 5.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
 
 if abs( infimum(c(6)) + 3.2 ) > tol || abs( supremum(c(6)) - 3.0 ) > tol
 	res = false;
-	disp('test_minus failed');
 	return;
 end
-
-disp('test_minus successful');
-return;
 
 %------------- END OF CODE --------------

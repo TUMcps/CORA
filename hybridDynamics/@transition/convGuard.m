@@ -1,17 +1,17 @@
-function obj = convGuard(obj,inv,options)
-% convGuard - convert the guard sets to the set representation that is
-%             required for the selected guard-intersection method
+function trans = convGuard(trans,inv,options)
+% convGuard - converts the guard sets to the set representation that is
+%    required for the selected guard-intersection method
 %
 % Syntax:  
-%    obj = convGuard(obj,inv,options)
+%    trans = convGuard(trans,inv,options)
 %
 % Inputs:
-%    obj - transition object
+%    trans - transition object
 %    inv - invariant set of the location
 %    options - struct containing algorithm settings
 %
 % Outputs:
-%    obj - modified transition object
+%    trans - modified transition object
 %
 % Example: 
 %
@@ -23,35 +23,36 @@ function obj = convGuard(obj,inv,options)
 
 % Author:       Niklas Kochdumper
 % Written:      16-May-2018
-% Last update:  ---
+% Last update:  19-June-2022 (MW, error message, use switch-case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-     if strcmp(options.guardIntersect,'polytope')
-         
-        if ~isa(obj.guard,'mptPolytope')
-            
-           % convert to mptPolytope
-           obj.guard = polytope(obj.guard);          
-          
+switch options.guardIntersect
+
+    case 'polytope'
+
+        if ~isa(trans.guard,'mptPolytope')
+            % convert to mptPolytope
+            trans.guard = mptPolytope(trans.guard);
         end
         
         % intersect with invariant set
-        obj.guard = obj.guard & inv;
-        
-        
-     elseif ismember(options.guardIntersect,{'conZonotope','conZonotopeFast'})
-         
-         if isa(obj.guard,'mptPolytope')
-            
-           % convert to conZonotope
-           obj.guard = conZonotope(obj.guard); 
-         end      
-        
-     elseif ~ismember(options.guardIntersect,{'zonoGirard','hyperplaneMap','pancake','nondetGuard'})
-        error('Wrong value for setting options.guardIntersect!');  
-     end
+        trans.guard = trans.guard & inv;
+
+    case {'conZonotope','conZonotopeFast'}
+    
+        if isa(trans.guard,'mptPolytope')
+            % convert to conZonotope
+            trans.guard = conZonotope(trans.guard);
+        end      
+
+    otherwise
+
+        % throw error
+        throw(CORAerror('CORA:wrongFieldValue','options.guardIntersect',...
+            {'zonoGirard','hyperplaneMap','pancake','nondetGuard'}));
+
 end
 
 %------------- END OF CODE --------------

@@ -15,7 +15,7 @@ function [R,res] = reach(obj,params,varargin)
 %
 % Outputs:
 %    R - object of class reachSet storing the reachable set
-%    res  - 1 if specifications are satisfied, 0 if not
+%    res - true/false whether specifications are satisfied
 %
 % Example: 
 %
@@ -50,82 +50,85 @@ function [R,res] = reach(obj,params,varargin)
         spec = varargin{2};
     end
     
+
     % options preprocessing
     options = validateOptions(obj,mfilename,params,options);
     
+    specLogic = [];
     if ~isempty(spec)
-    	options.specification = spec; 
+        [spec,specLogic] = splitLogic(spec);
+        if ~isempty(spec)
+    	    options.specification = spec;
+        end
     end
 
     % decide which reach function to execute by options.linAlg
     if strcmp(options.linAlg,'adaptive')
-        [Rout,Rout_tp,res,deltaT] = reach_adaptive(obj, options);
-        tVec = cumsum(deltaT) + options.tStart;
+        [timeInt,timePoint,res] = reach_adaptive(obj, options);
     else
         % all below, const. time step sizes
-        tVec = (options.tStart+options.timeStep:options.timeStep:options.tFinal)';
         if strcmp(options.linAlg,'standard')
-            [Rout,Rout_tp,res] = reach_standard(obj, options);
+            [timeInt,timePoint,res] = reach_standard(obj, options);
         elseif strcmp(options.linAlg,'wrapping-free')
-            [Rout,Rout_tp,res] = reach_wrappingfree(obj, options);
+            [timeInt,timePoint,res] = reach_wrappingfree(obj, options);
         elseif strcmp(options.linAlg,'fromStart')
-            [Rout,Rout_tp,res] = reach_fromStart(obj, options);
+            [timeInt,timePoint,res] = reach_fromStart(obj, options);
         elseif strcmp(options.linAlg,'decomp')
-            [Rout,Rout_tp,res] = reach_decomp(obj, options);
+            [timeInt,timePoint,res] = reach_decomp(obj, options);
         elseif strcmp(options.linAlg,'krylov')
-            [Rout,Rout_tp,res] = reach_krylov(obj, options);
+            [timeInt,timePoint,res] = reach_krylov(obj, options);
         end
+        % error vector (initial set: no error; error not computed -> NaN)
+        timePoint.error = [0; NaN(length(timePoint.set)-1,1)];
+        timeInt.error = NaN(length(timeInt.set),1);
     end
 
     % create object of class reachSet
-    R = createReachSetObject(Rout,Rout_tp,tVec,options);
+    R = reachSet.initReachSet(timePoint,timeInt);
 
+    % check temporal logic specifications
+    if res && ~isempty(specLogic)
+        res = check(specLogic,R);
+    end
 end
 
 
 % Auxiliary Functions -----------------------------------------------------
 
-function R = createReachSetObject(Rout,Rout_tp,tVec,options)
+function R = createReachSetObject(Rout,Rout_tp,tVec,Rout_error,Rout_tp_error)
 % create and object of class reachSet that stores the reachable set
 
-    % time-point reachable set
-    timePoint.set = Rout_tp;
-    timePoint.time = num2cell(tVec);
-    
-    if length(timePoint.time) ~= length(timePoint.set)
-       timePoint.time = timePoint.time(1:length(timePoint.set)); 
+    if ~isempty(Rout_tp)
+        % time-point reachable set
+        timePoint.set = Rout_tp;
+        timePoint.time = num2cell(tVec);
+
+        if length(timePoint.time) ~= length(timePoint.set)
+            timePoint.time = timePoint.time(1:length(timePoint.set)); 
+        end
+        % only adaptive:
+        if ~isnan(Rout_tp_error)
+            timePoint.error = Rout_tp_error;
+        end
     end
     
-    % time interval reachable set
-    timeInt.set = Rout;
-    timeInt.time = cell(length(Rout),1);
-    
-    t = options.tStart;
-    
-    for i = 1:length(Rout)
-        timeInt.time{i} = interval(t,tVec(i));
-        t = tVec(i);
+    if ~isempty(Rout)
+        % time-interval reachable set
+        timeInt.set = Rout;
+        timeInt.time = cell(length(Rout),1);
+
+        for i = 1:length(Rout)
+            timeInt.time{i} = interval(tVec(i),tVec(i+1));
+        end
+        % only adaptive:
+        if ~isnan(Rout_error)
+            timeInt.error = Rout_error;
+        end
     end
     
     % construct object of class reachSet
-    if strcmp(options.linAlg,'decomp')
-        R = [];
-        for i = 1:length(timePoint.set{1})
-           timePoint_ = timePoint;
-           timePoint_.set = cellfun(@(x) x{i},timePoint.set,'UniformOutput',false);
-           timeInt_ = timeInt;
-           timeInt_.set = cellfun(@(x) x{i},timeInt.set,'UniformOutput',false);
-           if ~isempty(timeInt_.set{1})
-               if isempty(R)
-                   R = reachSet(timePoint_,timeInt_); 
-               else
-                   R = add(R,reachSet(timePoint_,timeInt_));
-               end
-           end
-        end
-    else
-        R = reachSet(timePoint,timeInt);
-    end
+    R = reachSet(timePoint,timeInt);
+    
 end
 
 %------------- END OF CODE --------------

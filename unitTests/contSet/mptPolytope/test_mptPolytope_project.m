@@ -25,9 +25,7 @@ function res = test_mptPolytope_project
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-% Analytical Tests --------------------------------------------------------
+res = true;
 
 % define polytope
 A = [-1 0; 2 4; 1 -2];
@@ -39,19 +37,16 @@ poly = mptPolytope(A,b);
 poly_ = project(poly,1);
 V = vertices(poly_);
 
-if ~all(ismember(V,[1 3]))
-   error('Analytical test for "mptPolytope/project" failed!');
+if ~compareMatrices(V,[1 3])
+    res = false;
 end
 
 % project to dimension 2
 poly_ = project(poly,2);
 V = vertices(poly_);
 
-if ~all(ismember(V,[1 3]))
-   error('Analytical test for "mptPolytope/project" failed!');
+if ~compareMatrices(V,[1 3])
+    res = false;
 end
 
-
-
-res = true;
-    
+%------------- END OF CODE --------------

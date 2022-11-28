@@ -1,13 +1,13 @@
-function [t,x,loc] = simulate(obj,params)
-% simulate - simulates a hybrid automaton
+function [t,x,loc] = simulate(HA,params)
+% simulate - simulates a trajectory of a hybrid automaton
 %
 % Syntax:  
-%    obj = simulate(obj,params)
+%    [t,x] = simulate(HA,params)
+%    [t,x,loc] = simulate(HA,params)
 %
 % Inputs:
-%    obj - hybrid automaton object
+%    HA - hybridAutomaton object
 %    params - system parameters
-%    options - simulation options
 %
 % Outputs:
 %    t - cell-array storing the time vectors
@@ -28,13 +28,14 @@ function [t,x,loc] = simulate(obj,params)
 %------------- BEGIN CODE --------------
 
 % new options preprocessing
-params = validateOptions(obj,mfilename,params,struct([]));
+params = validateOptions(HA,mfilename,params,struct([]));
 
 % initialization
 tInter = params.tStart;         % intermediate time at transitions
 locCurr = params.startLoc;      % current location
 xInter = params.x0;             % intermediate state at transitions
 
+% init output arguments
 loc = {}; t = {}; x = {};
 
 % iteratively simulate for each location seperately
@@ -48,7 +49,7 @@ while (tInter < params.tFinal) && ...
     params.tStart = tInter;
     params.x0 = xInter;
     params.loc = locCurr;
-    [tNew,xNew,locCurr,xInter] = simulate(obj.location{locCurr},params);
+    [tNew,xNew,locCurr,xInter] = simulate(HA.location{locCurr},params);
 
     % update time
     tInter = tNew(end);

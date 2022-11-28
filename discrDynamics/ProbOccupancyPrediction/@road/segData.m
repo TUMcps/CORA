@@ -21,13 +21,12 @@ function [pos,angle]=segData(obj,segNumber,devNumber)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 13-March-2008 
-% Last update: 01-April-2008
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      13-March-2008 
+% Last update:  01-April-2008
+% Last revision:---
 
 %------------- BEGIN CODE --------------
-
 
 %get number of deviation segments
 nrOfDev=obj.nrOfDevSegments;

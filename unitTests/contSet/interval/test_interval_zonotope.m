@@ -71,10 +71,4 @@ res_rand = all(abs(center(Zrand) - center(Zrand_true)) < tol) && ...
 % add results
 res = res_analytical && res_rand;
 
-if res
-    disp('test_zonotope successful');
-else
-    disp('test_zonotope failed');
-end
-
 %------------- END OF CODE --------------

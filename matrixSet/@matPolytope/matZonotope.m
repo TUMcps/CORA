@@ -1,17 +1,17 @@
 function matZ = matZonotope(matP)
-% matZonotope - computes an enclosing matrix zonotope of a matrix
-% polytope
+% matZonotope - computes an enclosing matrix zonotope of a matrix polytope
 %
 % Syntax:  
 %    matZ = matZonotope(matP)
 %
 % Inputs:
-%    matP - matrix polytope
+%    matP - matPolytope object
 %
 % Outputs:
-%    matZ - matrix zonotope
+%    matZ - matZonotope object
 %
 % Example: 
+%    - 
 %
 % Other m-files required: none
 % Subfunctions: none

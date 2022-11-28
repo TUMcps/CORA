@@ -9,13 +9,13 @@ function han = plotPolytope3D(V,varargin)
 %    varargin - plot settings specified as linespec and name-value pairs
 %
 % Outputs:
-%    han - handle of graphics object
+%    han - handle to the graphics object
 %
 % Example: 
-%    zono = zonotope.generateRandom(3,[],10);
+%    zono = zonotope.generateRandom('Dimension',3,'NrGenerators',10);
 %    V = vertices(zono);
 %
-%    plotPolytope3D(V,'r','Filled',true);
+%    plotPolytope3D(V,'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,15 +31,14 @@ function han = plotPolytope3D(V,varargin)
 %------------- BEGIN CODE --------------
 
 % default
-linespec = 'b';
-filled = false;
-NVpairs = {};
+NVpairs = {'Color',colorblind('b')};
 
-% read plot options
+% read plot options if provided
 if ~isempty(varargin)
-    [linespec,NVpairs] = readPlotOptions(varargin);
-    [NVpairs,filled] = readNameValuePair(NVpairs,'Filled','islogical');
+    NVpairs = readPlotOptions(varargin);
 end
+% readout 'FaceColor' to decide plot/fill call where necessary
+[~,facecolor] = readNameValuePair(NVpairs,'FaceColor');
 
 % check if vertex array is not empty
 if ~isempty(V)
@@ -88,14 +87,12 @@ if ~isempty(V)
             ind = convhull(vert_(2:end,:)');
         
             % plot the facet
-            if filled
-                han = fill3(vert(ind,1),vert(ind,2),vert(ind,3), ...
-                            linespec,NVpairs{:});
+            if isempty(facecolor) || strcmp(facecolor,'none')
+                han = plot3(vert(ind,1),vert(ind,2),vert(ind,3), NVpairs{:});
             else
-                han = fill3(vert(ind,1),vert(ind,2),vert(ind,3), ...
-                            linespec,'EdgeColor',linespec,'FaceColor', ...
-                            'none',NVpairs{:});
+                han = fill3(vert(ind,1),vert(ind,2),vert(ind,3), facecolor, NVpairs{:});
             end
+%             han = fill3(vert(ind,1),vert(ind,2),vert(ind,3),NVpairs{:});
         end
     end
     

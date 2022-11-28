@@ -19,12 +19,12 @@ function guard_cora2spaceex(tran, docNode, guard)
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
-%
+
 %------------- BEGIN CODE --------------
 
 
@@ -48,7 +48,7 @@ function guard_cora2spaceex(tran, docNode, guard)
         eqs = levelSet_cora2spaceex(guard);
         
     else     
-        error('This type of guard sets are not supported!');
+        throw(CORAerror('CORA:notSupported','Given guard set class not supported.'));
     end
 
     % Add the element node (guard), for the parent element (transition) and

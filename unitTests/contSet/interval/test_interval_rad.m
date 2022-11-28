@@ -31,95 +31,74 @@ c = rad(a);
 
 if abs( c(1) - 1.5 ) > tol
 	res = false;
-	disp('test_rad failed');
 	return;
 end
 
 if abs( c(2) - 2.0 ) > tol
 	res = false;
-	disp('test_rad failed');
 	return;
 end
 
 if abs( c(3) - 2.5 ) > tol
 	res = false;
-	disp('test_rad failed');
 	return;
 end
 
 if abs( c(4) - 0 ) > tol
 	res = false;
-	disp('test_rad failed');
 	return;
 end
 
 if abs( c(5) - 2.5 ) > tol
 	res = false;
-	disp('test_rad failed');
 	return;
 end
 
 if abs( c(6) - 1.5 ) > tol
 	res = false;
-	disp('test_rad failed');
 	return;
 end
 
-%%-------
 
 a = interval([-5.0; -4.0; -3; 0; 0; 5], [-2; 0.0; 2.0; 0; 5; 8]);
 c = rad(a);
 
 if abs( c(1) - 1.5 ) > tol
 	res = false;
-	disp('test_rad failed');
 	return;
 end
 
 if abs( c(2) - 2.0 ) > tol
 	res = false;
-	disp('test_rad failed');
 	return;
 end
 
 if abs( c(3) - 2.5 ) > tol
 	res = false;
-	disp('test_rad failed');
 	return;
 end
 
 if abs( c(4) - 0 ) > tol
 	res = false;
-	disp('test_rad failed');
 	return;
 end
 
 if abs( c(5) - 2.5 ) > tol
 	res = false;
-	disp('test_rad failed');
 	return;
 end
 
 if abs( c(6) - 1.5 ) > tol
 	res = false;
-	disp('test_rad failed');
 	return;
 end
 
-%%--------
 
 a = interval();
 c = rad(a);
 
 if isempty(c) ~= true
 	res = false;
-	disp('test_rad failed');
 	return;
 end
-
-%%--------
-
-disp('test_rad successful');
-return;
-
 %------------- END OF CODE --------------

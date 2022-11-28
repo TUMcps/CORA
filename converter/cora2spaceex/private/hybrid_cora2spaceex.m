@@ -20,12 +20,12 @@ function docNode = hybrid_cora2spaceex(Obj, component, docNode)
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
-%
+
 %------------- BEGIN CODE --------------
 
 systems = Obj.location;

@@ -33,8 +33,8 @@ vect = [1; 1];
 C_vect = C + vect;
 
 % Minkowski addition: capsule
-Cadd = capsule([0; 1], [sqrt(2); sqrt(2)], 1);
-C_caps = C + Cadd;
+C_add = capsule([0; 1], [sqrt(2); sqrt(2)], 1);
+C_caps = C + C_add;
 
 % true solution
 C_vect_true = capsule([2; 1], [-4; 3], 1);
@@ -49,13 +49,10 @@ res_caps(1) = all(abs(center(C_caps) - center(C_caps_true)) < tol);
 res_caps(2) = all(abs(C_caps.g - C_caps_true.g) < tol);
 res_caps(3) = abs(radius(C_caps) - radius(C_caps_true)) < tol;
 
-% add results
-res = all([res_vect, res_caps]);
+% empty set
+res_e = isempty(C_add + capsule());
 
-if res
-    disp('test_plus successful');
-else
-    disp('test_plus failed');
-end
+% add results
+res = all([res_vect, res_caps, res_e]);
 
 %------------- END OF CODE --------------

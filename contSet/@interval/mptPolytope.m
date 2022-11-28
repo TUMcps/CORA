@@ -1,18 +1,18 @@
-function poly = mptPolytope(obj)
+function P = mptPolytope(I)
 % mptPolytope - convert an interval to a mptPolytope
 %
 % Syntax:  
-%    poly = mptPolytope(obj)
+%    P = mptPolytope(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
-%    poly - mptPolytope object
+%    P - mptPolytope object
 %
 % Example: 
-%    int = interval([-1;0],[1;3]);
-%    poly = mptPolytope(int);
+%    I = interval([-1;0],[1;3]);
+%    P = mptPolytope(I);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,16 +28,22 @@ function poly = mptPolytope(obj)
 %------------- BEGIN CODE --------------
 
 % check if the interval has the correct format
-if size(obj,2) > 1
-   error('Input argument ''obj'' has the wrong format!'); 
+if size(I,2) > 1
+    throw(CORAerror('CORA:wrongInputInConstructor',...
+        'Input argument ''I'' has the wrong format!'));
 end
 
 % construct halfspace constraints
-n = length(obj);
+n = length(I);
 C = [eye(n);-eye(n)];
-d = [supremum(obj);-infimum(obj)];
+d = [supremum(I);-infimum(I)];
+
+% eliminate unbounded directions
+idxInf = isinf(d);
+C = C(~idxInf,:);
+d = d(~idxInf);
 
 % construct mptPolytope object
-poly = mptPolytope(C,d);
+P = mptPolytope(C,d);
 
 %------------- END OF CODE --------------

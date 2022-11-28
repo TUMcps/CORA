@@ -36,16 +36,10 @@ for i=1:length(E_c)
     Yd = randPoint(Ed1,2*n);
     Y0 = E0.q;
     
-    if ~in(interval(E1),Y) || ~in(interval(Ed1),Yd) || ~in(interval(E0),Y0)
+    if ~all(contains(interval(E1),Y)) || ~all(contains(interval(Ed1),Yd)) || ~contains(interval(E0),Y0)
         res = false;
         break;
     end
 end
 
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

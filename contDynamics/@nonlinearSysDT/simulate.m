@@ -1,8 +1,9 @@
-function [t,x] = simulate(obj,params)
+function [t,x,ind,y] = simulate(obj,params)
 % simulate - simulates a nonlinear discrete-time system
 %
 % Syntax:  
 %    [t,x] = simulate(obj,params)
+%    [t,x,ind,y] = simulate(obj,params)
 %
 % Inputs:
 %    obj - nonlinearSysDT object
@@ -17,6 +18,8 @@ function [t,x] = simulate(obj,params)
 % Outputs:
 %    t - time vector
 %    x - state vector
+%    ind - returns the event which has been detected
+%    y - output vector
 %
 % Example: 
 %    f = @(x,u) [x(1) + u(1);x(2) + u(2)*cos(x(1));x(3) + u(2)*sin(x(1))];
@@ -47,46 +50,56 @@ function [t,x] = simulate(obj,params)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    if ~isfield(params,'tStart')
-       params.tStart = 0; 
+if nargout == 3
+    ind = [];
+end
+if nargout == 4
+    warning("Output trajectories not supported for class nonlinearSysDT!");
+	y = [];
+end
+
+% parse input arguments
+if ~isfield(params,'tStart')
+	params.tStart = 0; 
+end
+
+t = params.tStart:obj.dt:params.tFinal;
+t = t';
+
+if t(end) ~= params.tFinal
+	throw(CORAerror('CORA:specialError',...
+        'Final time has to be a multiple of the sampling time!')); 
+end
+
+% consider changing inputs
+change = false;
+
+if size(params.u,2) ~= 1
+    change = true;
+    if size(params.u,2) ~= length(t)-1
+        throw(CORAerror('CORA:specialError',...
+            'Input signal "params.u" has the wrong dimension!'));
+    end
+end
+
+% initialization
+x = zeros(length(t),length(params.x0));
+x(1,:) = params.x0';
+
+% loop over all time steps
+for i = 1:length(t)-1
+
+    if change
+        temp = obj.mFile(x(i,:)',params.u(:,i));
+    else
+        temp = obj.mFile(x(i,:)',params.u);
     end
 
-    t = params.tStart:obj.dt:params.tFinal;
-    t = t';
+    x(i+1,:) = temp';
+end
 
-    if t(end) ~= params.tFinal
-       error('Final time has to be a multiple of the sampling time!'); 
-    end
-
-    % consider changing inputs
-    change = 0;
-
-    if size(params.u,2) ~= 1
-        change = 1;
-        if size(params.u,2) ~= length(t)-1
-            error('Input signal "params.u" has the wrong dimension!'); 
-        end
-    end
-
-    % initialization
-    x = zeros(length(t),length(params.x0));
-    x(1,:) = params.x0';
-
-    % loop over all time steps
-    for i = 1:length(t)-1
-
-        if change
-            temp = obj.mFile(x(i,:)',params.u(:,i));
-        else
-            temp = obj.mFile(x(i,:)',params.u);
-        end
-
-        x(i+1,:) = temp';
-    end
-    
-    % remove initial state and time
-    t(1,:) = [];
-    x(1,:) = [];
+% remove initial state and time
+t(1,:) = [];
+x(1,:) = [];
 
 %------------- END OF CODE --------------

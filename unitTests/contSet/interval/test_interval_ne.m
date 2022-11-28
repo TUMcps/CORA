@@ -58,10 +58,4 @@ res(3) = res_rand == res_rand_true;
 % compare results
 res = all(res);
 
-if res
-    disp('test_ne successful');
-else
-    disp('test_ne failed');
-end
-
 %------------- END OF CODE --------------

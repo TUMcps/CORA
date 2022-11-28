@@ -17,12 +17,12 @@ function invariant_cora2spaceex(Obj,location, docNode, inv)
 % MAT-files required: none
 %
 % See also: cora2spaceex
-%
+
 % Author:        Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
-%
+
 %------------- BEGIN CODE --------------
 
 if isa(Obj,'hybridAutomaton')
@@ -47,7 +47,7 @@ if isa(Obj,'hybridAutomaton')
         eqs = levelSet_cora2spaceex(inv);
         
     else     
-        error('This type of invariant sets are not supported!');
+        throw(CORAerror('CORA:notSupported','Given invariant set class not supported.'));
     end
     
     % Add the element node (invariant), for the parent element (location) and
@@ -66,3 +66,4 @@ end
 
 end
 
+%------------- END OF CODE --------------

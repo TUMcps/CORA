@@ -1,18 +1,18 @@
-function res = rad(obj)
+function r = rad(I)
 % rad - returns the radius of an interval
 %
 % Syntax:  
-%    res = rad(obj)
+%    r = rad(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - numerical value
+%    r - numerical value
 %
 % Example: 
-%    a = interval([-1 1], [1 2]);
-%    b = rad(a)
+%    I = interval([-1 1], [1 2]);
+%    r = rad(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,6 +27,6 @@ function res = rad(obj)
 
 %------------- BEGIN CODE --------------
 
-res = 0.5*(obj.sup - obj.inf);
+r = 0.5*(I.sup - I.inf);
 
 %------------- END OF CODE --------------

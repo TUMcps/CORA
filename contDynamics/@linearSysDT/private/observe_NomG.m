@@ -1,5 +1,5 @@
 function [R,tcomp] = observe_NomG(obj,options)
-% observe_NomG - computes the guaranted state estimation approach
+% observe_NomG - computes the guaranteed state estimation approach
 % from [1].
 %
 % Syntax:  

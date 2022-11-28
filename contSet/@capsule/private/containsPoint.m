@@ -30,7 +30,6 @@ function res = containsPoint(C,p)
 %------------- BEGIN CODE --------------
 
 numPoints = size(p,2);
-
 % set result to 0
 res = false(numPoints,1);
 
@@ -76,6 +75,5 @@ for iPoint = 1:numPoints
         end
     end
 end
-
 
 %------------- END OF CODE --------------

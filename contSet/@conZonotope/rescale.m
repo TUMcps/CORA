@@ -1,29 +1,27 @@
-function res = rescale(obj,varargin)
-% resclae - Rescales the domains for the factors ksi of a constrained
-%           zonotope
+function cZ = rescale(cZ,varargin)
+% resclae - Rescales the domains for the factors of a constrained zonotope
 %
 % Syntax:  
-%    res = rescale(obj)
-%    res = rescale(obj, method)
+%    cZ = rescale(cZ)
+%    cZ = rescale(cZ, method)
 %
 % Inputs:
-%    obj - c-zonotope object
+%    cZ - conZonotope object
 %    method - method used to determine the tighend domain for the zonotope
 %             factors ('exact' or 'iter')
 %
 % Outputs:
-%    res - c-zonotope object
+%    cZ - conZonotope object
 %
 % Example:
 %    Z = [0 1 0 1;0 1 2 -1];
-%    A = [-2 1 -1];
-%    b = 2;
-%    cZono = conZonotope(Z,A,b);
-%    cRes = rescale(cZono,'iter');
+%    A = [-2 1 -1]; b = 2;
+%    cZ = conZonotope(Z,A,b);
+%    cZres = rescale(cZ,'iter');
 %    
-%    hold on
-%    plotZono(cZono,[1,2]);
-%    plotZono(cRes,[1,2],{'g'});
+%    figure; hold on;
+%    plotZono(cZ,[1,2]);
+%    plotZono(cZres,[1,2],{'g'});
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -43,36 +41,37 @@ function res = rescale(obj,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    method = 'exact';
-    if nargin == 2
-       method = varargin{1};
-    end
+    method = setDefaultValues({'exact'},varargin{:});
+
+    % check input arguments
+    inputArgsCheck({{cZ,'att','conZonotope'};
+                    {method,'str',{'exact','iter'}}});
 
     % determine the new domain for each factor ksi
     try
-        if isempty(obj.A)
-            error('No constrains left!');
-        elseif isempty(obj.ksi)
+        if isempty(cZ.A)
+            throw(CORAerror('CORA:specialError','No constraints left!'));
+        elseif isempty(cZ.ksi)
             if strcmp(method,'iter')
-                obj = preconditioning(obj);
-                [domKsi, R] = ksi_iterative( obj );
+                cZ = preconditioning(cZ);
+                [domKsi, R] = ksi_iterative(cZ);
             else
-                domKsi = ksi_optimizer( obj );
+                domKsi = ksi_optimizer(cZ);
             end
 
             ksi_l = infimum(domKsi);
             ksi_u = supremum(domKsi);
         else
-            ksi_l = min(obj.ksi,[],2);
-            ksi_u = max(obj.ksi,[],2);
+            ksi_l = min(cZ.ksi,[],2);
+            ksi_u = max(cZ.ksi,[],2);
         end
         
     catch ex
         % provide meaningful error message for the user
-        if isempty(obj)
-            error('Set is empty!');
+        if isempty(cZ)
+            throw(CORAerror('CORA:emptySet'));
         else
-            error(ex.message);
+            rethrow(ex);
         end
     end
 
@@ -85,26 +84,23 @@ function res = rescale(obj,varargin)
         rho_l = infimum(R);
         rho_u = supremum(R);
 
-        obj.R = [(rho_l - ksi_m)./ksi_r, (rho_u - ksi_m)./ksi_r];
+        cZ.R = [(rho_l - ksi_m)./ksi_r, (rho_u - ksi_m)./ksi_r];
     end
 
     % rescale c-zonotope (Equation (24) in reference paper [1])
     temp = diag(ksi_r);
 
-    G = obj.Z(:, 2:end);
-    c = obj.Z(:, 1) + G*ksi_m;
-    obj.Z = [c, G * temp];
-    obj.b = obj.b - obj.A * ksi_m;
-    obj.A = obj.A * temp;
+    G = cZ.Z(:, 2:end);
+    c = cZ.Z(:, 1) + G*ksi_m;
+    cZ.Z = [c, G * temp];
+    cZ.b = cZ.b - cZ.A * ksi_m;
+    cZ.A = cZ.A * temp;
 
-    if ~isempty(obj.ksi)
-       temp = ones(1,size(obj.ksi,2));
-       ksi = obj.ksi - ksi_m*temp;
-       obj.ksi = zeros(size(ksi)) + ksi.*((1./ksi_r)*temp);
+    if ~isempty(cZ.ksi)
+       temp = ones(1,size(cZ.ksi,2));
+       ksi = cZ.ksi - ksi_m*temp;
+       cZ.ksi = zeros(size(ksi)) + ksi.*((1./ksi_r)*temp);
     end
-
-    % output the result
-    res = obj;
 
 end
 
@@ -113,17 +109,17 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function obj = preconditioning(obj)
+function cZ = preconditioning(cZ)
 % preconditioning of the constraint matrix to improve rescaling    
 
     % bring constraint matrices to Reduced Echelon Form
-    [obj.A,obj.b,indPer] = rrefInfty(obj.A,obj.b);
+    [cZ.A,cZ.b,indPer] = rrefInfty(cZ.A,cZ.b);
     
     % adapt the generator matrix to the new order of factors
-    c = obj.Z(:,1);
-    G = obj.Z(:,2:end);
+    c = cZ.Z(:,1);
+    G = cZ.Z(:,2:end);
     
-    obj.Z = [c, G(:,indPer)];
+    cZ.Z = [c, G(:,indPer)];
 end
 
 

@@ -26,11 +26,6 @@ function res = testLongDuration_polyZonotope_enclose
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-
-%% RANDOM TESTS
-
 % TEST 2-dimensional
 
 for i = 1:5
@@ -85,8 +80,8 @@ for i = 1:5
     end
     
 %     % visualize result
-%     plot(pZ,[1,2],'FaceColor',[.6 .6 .6],'Filled',true,'Order',3);
-%     hold on
+%     figure; hold on;
+%     plot(pZ,[1,2],'FaceColor',[.6 .6 .6],'Order',3);
 %     plotRandPoint(pZ1,[1,2],100000,'.r');
 %     plotRandPoint(pZ2,[1,2],100000,'.b');
 %     plot(points(1,:),points(2,:),'.k');
@@ -96,7 +91,9 @@ for i = 1:5
     suc = containsPointSet(pZ,points,[],30);
     
     if ~suc
-       error('testLongDuration_polyZonotope_enclose: random test 2D failed!'); 
+        path = pathFailedTests(mfilename());
+        save(path,'pZ','points');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -160,7 +157,9 @@ for i = 1:5
     suc = containsPointSet(pZ,points,[],5);
     
     if ~suc
-       error('testLongDuration_polyZonotope_enclose: random test 4D failed!'); 
+       path = pathFailedTests(mfilename());
+       save(path,'pZ','points');
+       throw(CORAerror('CORA:testFailed'));
     end
 end
 

@@ -1,9 +1,9 @@
 function simulateTank_30(options)
-% simulateTank - simulates a tank system to disturbances and 
+% simulateTank_30 - simulates a tank system to disturbances and 
 % sensor noise
 %
 % Syntax:  
-%    simulateTank(options)
+%    simulateTank_30(options)
 %
 % Inputs:
 %    options - options struct
@@ -29,7 +29,8 @@ function simulateTank_30(options)
 %------------- BEGIN CODE --------------
 
 % set path
-savepath = [coraroot '/unitTests/contDynamics/nonlinearSysDT/models'];
+savepath = [CORAROOT filesep 'unitTests' filesep 'contDynamics' ...
+    filesep 'nonlinearSysDT' filesep 'models'];
 close all
 
 %% Settings
@@ -111,24 +112,27 @@ C(20,28) = 1; % 28th tank measured
 C(21,29) = 1; % 29th tank measured
 
 % dimension, inputs, and measurements
-dim = length(C(1,:));
+n = length(C(1,:));
 measurements = length(C(:,1));
 inputs = length(u(:,1));
+
+out_fun = @(x,u) C*x(1:n);
+outputs = size(C,1);
 
 %% System Dynamics 
 
 % helper function
 fun = @(x,u) tank30EqDT_inflow15(x,u,options.timeStep);
 
-tank = nonlinearSysDT('tankSystem_30',fun,options.timeStep,dim,inputs,C); % initialize tank system
+tank = nonlinearSysDT('tankSystem_30',fun,options.timeStep,n,inputs,out_fun,outputs); % initialize tank system
 
 
 %% Parameters
-W = zonotope([zeros(dim,1), 0.001*eye(dim)]); % disturbance set
+W = zonotope([zeros(n,1), 0.001*eye(n)]); % disturbance set
 V = zonotope([zeros(measurements,1), 0.2*eye(measurements)]); % sensor noise set
 
 params.tFinal = length(u(1,:))*options.timeStep; %final time
-params.R0 = zonotope(20*ones(dim,1),4*eye(dim)); %initial set
+params.R0 = zonotope(20*ones(n,1),4*eye(n)); %initial set
 params.V = V; % sensor noise set
 params.W = W; % disturbance set
 params.u = u; %input transition
@@ -139,9 +143,10 @@ params.u = u; %input transition
 
 options.points = 1;
 options.p_conf = 0.999; % probability that sample of normal distribution within specified set
+options.type = 'gaussian';
 
 % simulate result assuming Gaussian distributions
-simRes = simulateRandom(tank, params, options, 'gaussian');
+simRes = simulateRandom(tank, params, options);
 
 %% obtain output values
 for i=1:length(simRes.t{1})

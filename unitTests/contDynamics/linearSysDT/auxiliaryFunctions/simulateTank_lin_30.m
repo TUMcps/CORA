@@ -1,9 +1,9 @@
 function simulateTank_lin_30(options)
-% simulateTank_lin_12 - simulates a linearized tank system to disturbances and 
+% simulateTank_lin_30 - simulates a linearized tank system to disturbances and 
 % sensor noise
 %
 % Syntax:  
-%    simulateTank_lin(options)_12
+%    simulateTank_lin_30(options)_12
 %
 % Inputs:
 %    options - options struct
@@ -30,7 +30,7 @@ function simulateTank_lin_30(options)
 
 
 % set path
-savepath = [coraroot '/unitTests/contDynamics/linearSysDT/models'];
+savepath = [CORAROOT filesep 'unitTests' filesep 'contDynamics' filesep 'linearSysDT' filesep 'models'];
 close all
 
 %% Settings
@@ -201,9 +201,10 @@ params.u = u; %input transition --> remove after fixing options checks
 
 options.points = 1;
 options.p_conf = 0.999; % probability that sample of normal distribution within specified set
+options.type = 'gaussian';
 
 % simulate result assuming Gaussian distributions
-simRes = simulateRandom(tank, params, options,'gaussian');
+simRes = simulateRandom(tank, params, options);
 
 %% obtain output values
 for i=1:length(simRes.t{1})

@@ -33,10 +33,4 @@ h3 = h1;
 % combine tests
 res = ~isequal(h1,h2) && isequal(h1,h3);
 
-if res
-    disp('test_isequal successful');
-else
-    disp('test_isequal failed');
-end
-
 %------------- END OF CODE --------------

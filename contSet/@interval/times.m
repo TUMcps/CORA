@@ -5,15 +5,16 @@ function res = times(factor1,factor2)
 %    res = times(factor1,factor2)
 %
 % Inputs:
-%    factor1 - interval (for computational efficiency, no single value
-%              considered; does not require type checking)
-%    factor2 - interval (for computational efficiency, no single value
-%              considered; does not require type checking)
+%    factor1 - interval object
+%    factor2 - interval object
 %
 % Outputs:
-%    res - interval
+%    res - interval object
 %
-% Example: 
+% Example:
+%    factor1 = interval([-2;1],[3;2]);
+%    factor2 = interval([-1;-2],[1;2]);
+%    factor1 .* factor2
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -60,7 +61,5 @@ else
               max(possibleValues{3},possibleValues{4})));
     
 end
-
-
 
 %------------- END OF CODE --------------

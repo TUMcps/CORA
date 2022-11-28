@@ -38,7 +38,8 @@ for i=1:numberRandTests
     b = a^0;
     if b.inf ~= 1 || b.sup ~= 1
         res = false;
-        disp('test_mpower failed');
+        path = pathFailedTests(mfilename());
+        save(path,'a');
         return;
     end
 end
@@ -50,7 +51,8 @@ for i=1:numberRandTests
     b = a^exponent;
     if b.inf < 0
         res = false;
-        disp('test_mpower failed');
+        path = pathFailedTests(mfilename());
+        save(path,'a','exponent');
         return;
     end
 end
@@ -63,7 +65,8 @@ for i=1:numberRandTests
     b = a^exponent;
     if b.inf <= 0
         res = false;
-        disp('test_mpower failed');
+        path = pathFailedTests(mfilename());
+        save(path,'randinf');
         return;
     end
 end
@@ -76,12 +79,12 @@ for i=1:numberRandTests
         b = a^rand(1);
         if b.inf <= 0
             res = false;
-            disp('test_mpower failed');
             return;
         end
     catch
         res = false;
-        disp('test_mpower failed');
+        path = pathFailedTests(mfilename());
+        save(path,'a','randinf');
         return;
     end
 end
@@ -94,15 +97,13 @@ for i=1:numberRandTests
         if ~all(isnan(b.inf))
             res = false;
             disp('test_mpower failed');
+            path = pathFailedTests(mfilename());
+            save(path,'a','b');
             return;
         end
     catch
         continue
     end
 end
-
-
-disp('test_mpower successful');
-return;
 
 %------------- END OF CODE --------------

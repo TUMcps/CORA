@@ -1,15 +1,15 @@
 function res = isIntersectingMixed(E,S)
-% isIntersectingMixed - checks whether E intersects contSet S
+% isIntersectingMixed - checks whether an ellipsoid intersects another set
 %
 % Syntax:  
 %    res = isIntersectingMixed(E,S)
 %
 % Inputs:
 %    E - ellipsoid object
-%    S - set
+%    S - contSet object
 %
 % Outputs:
-%    res - boolean
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,7 +23,8 @@ function res = isIntersectingMixed(E,S)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-if E.isdegenerate
+
+if ~isFullDim(E)
     % cannot do exactly, as e.g. intersection of zonotope with hyperplane
     % also not exactly possible
     % thus: simply bloat degenerate dimensions
@@ -42,8 +43,9 @@ int = interval(temp);
 
 % check if \exists x: 0 < (x-q)'Q^-1(x-q) < 1 -> intersection
 if ~isempty(int & interval(0,1))
-  res = true; 
+    res = true; 
 else
-  res = false; 
-end   
+    res = false;
+end
+
 %------------- END OF CODE --------------

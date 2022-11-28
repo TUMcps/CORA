@@ -67,11 +67,4 @@ for d=1:dim
     end
 end
 
-
-if res
-    disp('test_split successful');
-else
-    disp('test_split failed');
-end
-
 %------------- END OF CODE --------------

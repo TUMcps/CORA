@@ -1,35 +1,33 @@
-function res = isIntersecting(obj1,obj2,varargin)
-% isIntersecting - determines if interval obj1 intersects obj2
+function res = isIntersecting(I,S,varargin)
+% isIntersecting - determines if an interval intersects a set
 %
 % Syntax:  
-%    res = isIntersecting(obj1,obj2)
-%    res = isIntersecting(obj1,obj2,type)
+%    res = isIntersecting(I,S)
+%    res = isIntersecting(I,S,type)
 %
 % Inputs:
-%    obj1 - interval object
-%    obj2 - contSet object
+%    I - interval object
+%    S - contSet object
 %    type - type of check ('exact' or 'approx')
 %
 % Outputs:
-%    res - 1/0 if set is intersecting, or not
+%    res - true/false
 %
 % Example: 
-%    int1 = interval([0;0],[2;2]);
-%    int2 = interval([1;1],[3;3]);
-%    int3 = interval([-3;-3],[-1;1]);
+%    I1 = interval([0;0],[2;2]);
+%    I2 = interval([1;1],[3;3]);
+%    I3 = interval([-3;-3],[-1;1]);
 %
-%    isIntersecting(int1,int2)
-%    isIntersecting(int1,int3)
+%    isIntersecting(I1,I2)
+%    isIntersecting(I1,I3)
 %
-%    figure
-%    hold on
-%    plot(int1,[1,2],'b');
-%    plot(int2,[1,2],'g');
+%    figure; hold on;
+%    plot(I1,[1,2],'b');
+%    plot(I2,[1,2],'g');
 %
-%    figure
-%    hold on
-%    plot(int1,[1,2],'b');
-%    plot(int3,[1,2],'r');
+%    figure; hold on;
+%    plot(I1,[1,2],'b');
+%    plot(I3,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -46,58 +44,53 @@ function res = isIntersecting(obj1,obj2,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    type = 'exact';
-    
-    if nargin >= 3 && ~isempty(varargin{1}) 
-        type = varargin{1};
+    % pre-processing
+    [resFound,vars] = pre_isIntersecting('interval',I,S,varargin{:});
+
+    % check premature exit
+    if resFound
+        % if result has been found, it is stored in the first entry of var
+        res = vars{1}; return
+    else
+        % assign values
+        I = vars{1}; S = vars{2}; type = vars{3};
     end
     
-    % get interval object
-    if ~isa(obj1,'interval')
-       temp = obj1;
-       obj1 = obj2;
-       obj2 = temp;
-    end
     
     % interval and interval intersection
-    if isa(obj2,'interval')
-        
-        % empty case
-        if isempty(obj1) || isempty(obj2)
-            res = false; return;
-        end
+    if isa(S,'interval')
         
         res = true;
         
         % get object properties
-        sup1 = obj1.sup;
-        inf1 = obj1.inf;
-        sup2 = obj2.sup;
-        inf2 = obj2.inf;
+        sup1 = I.sup;
+        inf1 = I.inf;
+        sup2 = S.sup;
+        inf2 = S.inf;
         
         % loop over all dimensions
-        for i = 1:length(obj1)
+        for i = 1:length(I)
            if ~isIntersecting1D(inf1(i),sup1(i),inf2(i),sup2(i))
               res = false;
               return
            end
         end
         
-    elseif isa(obj2,'halfspace') || isa(obj2,'conHyperplane') || ...
-           isa(obj2,'mptPolytope') || isa(obj2,'ellipsoid')
+    elseif isa(S,'halfspace') || isa(S,'conHyperplane') || ...
+           isa(S,'mptPolytope') || isa(S,'ellipsoid')
         
-        res = isIntersecting(obj2,obj1,type);
+        res = isIntersecting(S,I,type);
         
     else
         
         % exact or over-approximative algorithm
         if strcmp(type,'exact')           
-            res = isIntersecting(obj2,obj1,type);
+            res = isIntersecting(S,I,type);
         else
-            res = isIntersecting(mptPolytope(obj1),obj2,type);
+            res = isIntersecting(mptPolytope(I),S,type);
         end
     end
+    
 end
 
 
@@ -119,14 +112,6 @@ function res = isIntersecting1D(inf1,sup1,inf2,sup2)
         
     end
 
-    % previous check
-%     if ((sup1 <= sup2) && (sup1 >= inf2)) || ...
-%        ((inf1 <= sup2) && (inf1 >= inf2)) || ...
-%        ((sup2 <= sup1) && (sup2 >= inf1)) || ...
-%        ((inf2 <= sup1) && (inf2 >= inf1))
-%        
-%         res = true;
-%     end
 end
 
 %------------- END OF CODE --------------

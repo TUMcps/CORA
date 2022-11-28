@@ -1,5 +1,5 @@
 function res = isInterval(Z)
-% isInterval - check if a zonotope can be equivalently represented by an
+% isInterval - checks if a zonotope can be equivalently represented by an
 %    interval object (all generators axis-aligned)
 %
 % Syntax:  
@@ -9,20 +9,18 @@ function res = isInterval(Z)
 %    Z - zonotope object
 %
 % Outputs:
-%    res - 1 if zonotope represents an interval, 0 else
+%    res - true/false
 %
 % Example:
-%    zono1 = zonotope([1 0 1;3 2 0]);
-%    zono2 = zonotope([1 2 -1;3 4 2]);
-%
-%    isInterval(zono1)
-%    isInterval(zono2)
-%
-%    figure
-%    plot(zono1,[1,2],'r');
-%
-%    figure
-%    plot(zono2,[1,2],'b');
+%    Z1 = zonotope([1 0 1;3 2 0]);
+%    Z2 = zonotope([1 2 -1;3 4 2]);
+% 
+%    isInterval(Z1)
+%    isInterval(Z2)
+% 
+%    figure; hold on;
+%    plot(Z1,[1,2],'r');
+%    plot(Z2,[1,2],'b');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -51,9 +49,6 @@ for i=1:size(G,2)
         res = false;
         return
     end
-end
-
-    
 end
 
 %------------- END OF CODE --------------

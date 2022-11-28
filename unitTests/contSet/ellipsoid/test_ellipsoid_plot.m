@@ -24,8 +24,10 @@ function res = test_ellipsoid_plot
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 res = true;
 load cases.mat E_c
+
 for i=1:length(E_c)
     E1 = E_c{i}.E1;
     Ed1 = E_c{i}.Ed1;
@@ -35,21 +37,15 @@ for i=1:length(E_c)
     
     if ~res
         break;
-    end
-    
-end
-
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
+    end 
 end
 
 end
 
-%-- helper
+
+% Auxiliary function ------------------------------------------------------
 function res = tryPlot(E)
+
 res = true;
 try
     % try all variations in plotting
@@ -57,6 +53,10 @@ try
     
     % one argument: object
     plot(E);
+
+    % two arguments: object and dimension
+    plot(E,1);
+    plot(E,[1,2]);
     
     % three arguments: object, dimensions, linespec
     plot(E,[1,2],'r+');
@@ -65,17 +65,10 @@ try
     plot(E,[1,2],'LineWidth',2);
     plot(E,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
     
-    % three arguments: object, dimensions, NVpair 'Filled'
-    plot(E,[1,2],'Filled',true);
-    plot(E,[1,2],'Filled',true,'LineWidth',2);
-    if isFullDim(project(E,[1,2]))
-        plot(E,[1,2],'Filled',true,'EdgeColor','k','FaceColor',[.8 .8 .8]);
-    end
-    
     % four arguments: object, dimensions, linespec, NVpairs
-    plot(E,[1,2],'r','Filled',true,'LineWidth',2);
+    plot(E,[1,2],'FaceColor','r','LineWidth',2);
     if isFullDim(project(E,[1,2]))
-        plot(E,[1,2],'r','Filled',true,'LineWidth',2,'EdgeColor',[.6 .6 .6]);
+        plot(E,[1,2],'FaceColor','r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
     end
     
     % close figure
@@ -84,5 +77,7 @@ catch
     close;
     res = false;
 end
+
 end
+
 %------------- END OF CODE --------------

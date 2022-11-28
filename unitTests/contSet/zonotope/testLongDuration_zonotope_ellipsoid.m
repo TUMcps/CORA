@@ -1,6 +1,6 @@
 function res = testLongDuration_zonotope_ellipsoid
-% testLongDuration_zonotope_rank - unit test function of ellipsoid (and implicitly of
-% MVEE, insc_ellipsoid, enc_ellipsoid, MVEE, MVIE)
+% testLongDuration_zonotope_ellipsoid - unit test function of ellipsoid
+%    (and implicitly of MVEE, insc_ellipsoid, enc_ellipsoid, MVEE, MVIE)
 %
 % Syntax:  
 %    res = testLongDuration_zonotope_ellipsoid
@@ -45,23 +45,23 @@ for i=dims
         
         %% overapproximations
         % normal case
-        Eo_exact = ellipsoid(Z,'o:exact');
-        Eo_n = ellipsoid(Z,'o:norm');
-        Eo_nb = ellipsoid(Z,'o:norm:bnd');
+        Eo_exact = ellipsoid(Z,'outer:exact');
+        Eo_n = ellipsoid(Z,'outer:norm');
+        Eo_nb = ellipsoid(Z,'outer:norm_bnd');
         % degenerate case
-        Eo_exact_deg = ellipsoid(Z_deg,'o:exact');
-        Eo_n_deg = ellipsoid(Z_deg,'o:norm');
-        Eo_nb_deg = ellipsoid(Z_deg,'o:norm:bnd');
+        Eo_exact_deg = ellipsoid(Z_deg,'outer:exact');
+        Eo_n_deg = ellipsoid(Z_deg,'outer:norm');
+        Eo_nb_deg = ellipsoid(Z_deg,'outer:norm_bnd');
         
         %% underapproximations
         % normal case
-        Eu_exact = ellipsoid(Z,'i:exact');
-        Eu_n = ellipsoid(Z,'i:norm');
-        %Eu_nb = ellipsoid(Z,'i:norm:bnd');
+        Eu_exact = ellipsoid(Z,'inner:exact');
+        Eu_n = ellipsoid(Z,'inner:norm');
+        %Eu_nb = ellipsoid(Z,'inner:norm_bnd');
         % degenerate case
-        Eu_exact_deg = ellipsoid(Z_deg,'i:exact');
-        Eu_n_deg = ellipsoid(Z_deg,'i:norm');
-        %Eu_nb_deg = ellipsoid(Z_deg,'i:norm:bnd');
+        Eu_exact_deg = ellipsoid(Z_deg,'inner:exact');
+        Eu_n_deg = ellipsoid(Z_deg,'inner:norm');
+        %Eu_nb_deg = ellipsoid(Z_deg,'inner:norm_bnd');
         
         %% compute rndDirs random unit directions
         % normal case
@@ -112,10 +112,10 @@ for i=dims
         break;
     end
 end
-if res
-    disp('testLongDuration_zonotope_ellipsoid successful');
-else
-    disp('testLongDuration_zonotope_ellipsoid failed');
+
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'Z','T','cc');
 end
 
 %------------- END OF CODE --------------

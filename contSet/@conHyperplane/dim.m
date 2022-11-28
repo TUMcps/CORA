@@ -1,17 +1,19 @@
-function d = dim(hyp)
-% isequal - returns the dimension of the given conHyperplane
+function n = dim(hyp)
+% dim - returns the dimension of the ambient space of a constrained
+%    hyperplane
 %
 % Syntax:  
-%    res = dim(hyp)
+%    n = dim(hyp)
 %
 % Inputs:
 %    hyp - conHyperplane object
 %
 % Outputs:
-%    d -  dimension
+%    n - dimension of the ambient space
 %
 % Example: 
-%    ---
+%    hyp = conHyperplane(halfspace([1;1],0),[1 0;-1 0],[2;2]);
+%    n = dim(hyp)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,5 +27,7 @@ function d = dim(hyp)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-d = max(length(hyp.h.c),size(hyp.C,2));
+
+n = max(length(hyp.h.c),size(hyp.C,2));
+
 %------------- END OF CODE --------------

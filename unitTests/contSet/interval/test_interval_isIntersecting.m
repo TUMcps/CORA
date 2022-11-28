@@ -51,12 +51,6 @@ end
 % combine results
 res = res_empty && res_mismatch;
 
-if res
-    disp('test_isIntersecting successful');
-else
-    disp('test_isIntersecting failed');
-end
-
 %------------- END OF CODE --------------
 
 

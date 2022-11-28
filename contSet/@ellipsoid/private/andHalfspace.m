@@ -1,23 +1,24 @@
 function E = andHalfspace(E,h,mode)
-% andHalfspace - Computes the inner or outer approximation of the
-% intersection between an ellipsoid and a halfspace
+% andHalfspace - Computes an inner-approximation or outer-approximation of
+%    the intersection between an ellipsoid and a halfspace
 %
 % Syntax:  
-%    E = andHalfspace(E,h)
 %    E = andHalfspace(E,h,mode)
 %
 % Inputs:
-%    E      - ellipsoid object
-%    h      - halfspace object
-%    mode   - mode ('i':inner approx; 'o': outer approx)
+%    E - ellipsoid object
+%    h - halfspace object
+%    mode - (optional) type of approximation
+%               'inner'
+%               'outer'
 %
 % Outputs:
 %    E - ellipsoid after intersection
 %
 % References:
-%   [1] Kurzhanskiy, A.A. and Varaiya, P., 2006, December. Ellipsoidal toolbox (ET).
-% In Proceedings of the 45th IEEE Conference on Decision and Control (pp. 1498-1503). IEEE.
-%
+%   [1] Kurzhanskiy, A.A. and Varaiya, P., 2006, December. Ellipsoidal
+%       toolbox (ET). In Proceedings of the 45th IEEE Conference o
+%       Decision and Control (pp. 1498-1503). IEEE.
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,21 +28,10 @@ function E = andHalfspace(E,h,mode)
 
 % Author:       Victor Gassmann
 % Written:      10-March-2021
-% Last update:  ---
+% Last update:  04-July-2022 (VG: input checks)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-if ~exist('mode','var')
-    mode = 'o';
-end
-if ~any(mode==['i','o'])
-   error('mode has to be either "i" (inner approx) or "o" (outer approx)');
-end
-%check if same dimension
-if length(E.q)~=length(h.c)
-    error('Ellipsoid and halfspace have to have matching dimensions');
-end
-
 % compute distance to hyperplane defined by halfspace
 hyp = conHyperplane(h.c,h.d);
 d = distance(E,hyp);
@@ -59,7 +49,7 @@ if d>=-E.TOL
             v = sign((xh-E.q)'*h.c)*h.c;
             % compute touching point
             [~,x] = supportFunc(E,v);
-            E = ellipsoid(zeros(E.dim),x);
+            E = ellipsoid(zeros(dim(E)),x);
         else 
             E = ellipsoid;
         end
@@ -75,12 +65,12 @@ n = dim(E);
 T = eye(n);
 x_rem = [];
 
-if E.isdegenerate
+if ~isFullDim(E)
     nt = rank(E);
     % check if E.Q all zero
     if nt==0
         % check if E in halfspace
-        if in(h,E.q)
+        if contains(h,E.q)
             E = ellipsoid(zeros(n),E.q);
         else
             E = ellipsoid;
@@ -111,43 +101,43 @@ n_rem = n-n_nd;
 % now non-degenerate
 W1 = inv(E.Q);
 q1 = E.q;
-[r_s,x] = supportFunc(ellipsoid(E.Q),I(:,1));
 
-% that is alternative; but only really works for outer approximations
-% place center in the middle
-% r_s = r_s-E_nd.q(1);
-% q2 = [-1/2*r_s;zeros(n_nd-1,1)];
-% W2 = diag([1/abs(1/2*r_s)^2;zeros(n_nd-1,1)]);
 
-% that is "ellipsoidal toolbox original"
-lb = max(eig(E.Q));
-q2 = -2*sqrt(lb)*h.c;
-W2 = 1/(4*lb)*h.c*h.c';
-
-if strcmp(mode,'o')
+if strcmp(mode,'outer')
+    [r_s,~] = supportFunc(E,I(:,1),'lower');
+    % makes more sense than ET original: define degenerate ellipsoid that
+    % covers the transformed ellipsoid "exactly"
+    q2 = [1/2*r_s;zeros(n_nd-1,1)];
+    W2 = diag([4/r_s^2;zeros(n_nd-1,1)]);
+    % also, ET original does not work?
+    
     p = compIntersectionParam(W1,q1,W2,q2);
     [~,Q_nd,q_nd] = rootfnc(p,W1,q1,W2,q2);
 else
-    % intersect hyperplane defined by halfspace with E_nd
+    % that is "ellipsoidal toolbox original" (not sure where why this
+    % works)
     E_hyp = E & conHyperplane(h);
-    x = -x+E.q;
-    b1 = (q1-E_hyp.q)'*W1*(q1-E_hyp.q);
-    b2 = (q2-x)'*W2*(q2-x);
+    q2 = E_hyp.q-2*sqrt(max(eig(E.Q)))*I(:,1);
+    W2 = (I(:,1)*I(:,1)')*1/(4*max(eig(E.Q)));
+    b1 = (E.q-E_hyp.q)'*W1*(E.q-E_hyp.q);
+    [~,xb] = supportFunc(E,-I(:,1));
+    b2 = (q2-xb)'*W2*(q2-xb);
+    %
+    b1 = min(1,b1);
+    b2 = min(1,b2);
+    assert(b2<1,'Cannot be =1, since then W is not invertible');
     t1 = (1-b2)/(1-b1*b2);
     t2 = (1-b1)/(1-b1*b2);
-    q_nd = inv(t1*W1+t2*W2)*(t1*W1*q1+t2*W2*q2);
+    q_nd = (t1*W1+t2*W2)\(t1*W1*q1+t2*W2*q2);
     W = t1*W1+t2*W2;
     Q_nd = (1-t1*q1'*W1*q1-t2*q2'*W2*q2+q_nd'*W*q_nd)*inv(W);
 end
-if any(eig(Q_nd)<0)
-    error('Something went wrong...');
-else
-    E_nd = ellipsoid(Q_nd,q_nd);
-    % revert S transform + shift
-    Et = S'*E_nd + d*c;
-end
+E_nd = ellipsoid(Q_nd,q_nd);
+% revert S transform + shift
+Et = S'*E_nd + d*c;
 
 % restore original dimensions & backtransform
 E_t = ellipsoid([Et.Q,zeros(n_nd,n_rem);zeros(n_rem,n)],[Et.q;x_rem]);
 E = T*E_t;
+
 %------------- END OF CODE --------------

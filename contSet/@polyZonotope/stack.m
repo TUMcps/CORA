@@ -1,21 +1,21 @@
 function pZ = stack(varargin)
-% stack - stacks polyZonotopes to retain dependencies
+% stack - stacks polynomial zonotopes to retain dependencies (in some sense
+%           a cartesian product which retains dependencies)
 %
 % Syntax:  
-%    PZ = stack(pZ1,pZ2,...)
-%    PZ = subs(pZ,[],...)
+%    pZ = stack(pZ1,pZ2,...)
 %
 % Inputs:
-%    pZi - polyZonotope object or []
+%    pZi1,pZ2,... - polyZonotope object or []
 %
 % Outputs:
-%    PZ - stacked polyZonotope object
+%    pZ - stacked polyZonotope object
 %
 % Example: 
 %    pZ1 = polyZonotope(0,[1,1],[],[1,0;2,1],[1;2]);
 %    pZ2 = polyZonotope([0;1],eye(2),zeros(2,0),[2,0;0,1],[1;3]);
-%    res = stack(pZ1,pZ2);
-%    print(res,{[1;2],3},{'b','r'});
+%    pZ = stack(pZ1,pZ2);
+%    print(pZ,'Ids',{[1;2],3},'Vars',{'b','r'});
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,30 +25,38 @@ function pZ = stack(varargin)
 
 % Author:       Victor Gassmann
 % Written:      12-January-2021
-% Last update:  ---
+% Last update:  04-July-2022 (VG: input checks)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-    pZ = [];
-    i = 1;
-    while i<=nargin
-        inp1 = varargin{i};
-        inp2 = [];
-        if i+1<=nargin
-            inp2 = varargin{i+1};
-        end
-        if (~isa(inp1,'polyZonotope') && ~isempty(inp1)) || ...
-           (~isa(inp2,'polyZonotope') && ~isempty(inp2))
-            error('Wrong input arguments');
-        end
-        if ~isempty(inp1) || ~isempty(inp2)
-            pZ = stack2(pZ,stack2(inp1,inp2));
-        end
-        i = i+2;
+
+pZ = [];
+% add [] at the end if not even
+if mod(nargin,2)>0
+    varargin{end+1} = [];
+end
+for i=1:2:nargin
+    % extract and check inputs (if not empty)
+    inp1 = varargin{i};
+    if ~isempty(inp1)
+        inputArgsCheck({{inp1,'att','polyZonotope'}});
+    end
+    inp2 = varargin{i+1};
+    if ~isempty(inp2)
+        inputArgsCheck({{inp2,'att','polyZonotope'}});
+    end
+
+    if ~isempty(inp1) || ~isempty(inp2)
+        % recursively build up pZ
+        pZ = stack2(pZ,stack2(inp1,inp2));
     end
 end
-%%------%%
+end
+
+
+% Auxiliary functions 
 function pZ = stack2(pZ1,pZ2)
+    % if either is empty, simply return the other
     if isempty(pZ1)
         pZ = pZ2;
         return;
@@ -56,8 +64,11 @@ function pZ = stack2(pZ1,pZ2)
         pZ = pZ1;
         return;
     end
-    n1 = size(pZ1.c,1);
-    n2 = size(pZ2.c,1);
+    
+    % extract dimensions
+    n1 = dim(pZ1);
+    n2 = dim(pZ2);
+    % extend both to final dimensions (n1+n2)
     pZ1t = polyZonotope([pZ1.c;zeros(n2,1)],...
                         [pZ1.G;zeros(n2,size(pZ1.G,2))],...
                         [pZ1.Grest;zeros(n2,size(pZ1.Grest,2))],...
@@ -66,6 +77,7 @@ function pZ = stack2(pZ1,pZ2)
                         [zeros(n1,size(pZ2.G,2));pZ2.G],...
                         [zeros(n1,size(pZ2.Grest,2));pZ2.Grest],...
                         pZ2.expMat,pZ2.id);
+
     % check if one of them is only a vertex
     if isempty(pZ1t.G)
         pZ = polyZonotope(pZ2t.c+pZ1t.c,pZ2t.G,pZ2t.Grest,pZ2t.expMat,pZ2t.id);
@@ -74,5 +86,7 @@ function pZ = stack2(pZ1,pZ2)
     else
         pZ = exactPlus(pZ1t,pZ2t);
     end
+
 end
+
 %------------- END OF CODE --------------

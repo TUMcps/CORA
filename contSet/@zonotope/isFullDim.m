@@ -1,5 +1,6 @@
 function res = isFullDim(Z)
-% isFullDim - check if a zonotope is full-dimensional
+% isFullDim - checks if the dimension of the affine hull of a zonotope is
+%    equal to the dimension of its ambient space
 %
 % Syntax:  
 %    res = isFullDim(Z)
@@ -8,14 +9,14 @@ function res = isFullDim(Z)
 %    Z - zonotope object
 %
 % Outputs:
-%    res - 1 if zonotope is full-dimensional, 0 else
+%    res - true/false
 %
 % Example:
-%    zono1 = zonotope([1 2 1;3 1 2]);
-%    zono2 = zonotope([1 2 1;3 4 2]);
+%    Z1 = zonotope([1 2 1;3 1 2]);
+%    Z2 = zonotope([1 2 1;3 4 2]);
 %
-%    isFullDim(zono1)
-%    isFullDim(zono2)
+%    isFullDim(Z1)
+%    isFullDim(Z2)
 %
 % Other m-files required: none
 % Subfunctions: none

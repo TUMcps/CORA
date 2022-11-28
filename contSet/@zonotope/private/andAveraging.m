@@ -23,8 +23,7 @@ function [Z] = andAveraging(zonolist,varargin)
 %
 %    res = andAveraging(zonol);
 %
-%    figure
-%    hold on
+%    figure; hold on;
 %    plot(zonol{1},[1,2],'r');
 %    plot(zonol{2},[1,2],'r-+');
 %    plot(zonol{3},[1,2],'r-*');
@@ -34,7 +33,6 @@ function [Z] = andAveraging(zonolist,varargin)
 %    res = andAveraging(zonol,'normGen',false);
 %    % sum of w's =0.9 for the closed form
 %    res = andAveraging(zonol,'normGen',true,0.9);
-%
 %
 % References:
 %    [1] Amr Alanwar, Jagat Jyoti Rath, Hazem Said, Matthias Althoff
@@ -146,3 +144,5 @@ Z = zonotope([cen,gen]);
     end
 
 end
+
+%------------- END OF CODE --------------

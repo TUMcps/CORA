@@ -73,9 +73,6 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 20;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 10;
 tic;
 simRes = simulateRandom(fiveDimSys, params, simOpt);
 tComp = toc;
@@ -113,7 +110,7 @@ if plotting
 
         if plotSim
             % plot simulation results
-            plot(simRes,projDims,'y');
+            plot(simRes,projDims);
         end
 
 
@@ -128,13 +125,7 @@ end
 % compare solutions numerically -------------------------------------------
 
 IH_reach = interval(R_fromStart.timeInterval.set{end});
-intTemp = interval(project(R_decomp(1).timeInterval.set{end},...
-    options.partition(1,1):options.partition(1,2)));
-for b=2:size(options.partition,1)
-	intTemp = [intTemp; interval(project(R_decomp(b).timeInterval.set{end},...
-       options.partition(b,1):options.partition(b,2)))];
-end
-IH_decomp = intTemp;
+IH_decomp = interval(R_decomp.timeInterval.set{end});
 
 % check if slightly bloated versions enclose each other
 res_1 = (IH_reach <= enlarge(IH_decomp,1+1e-8));
@@ -186,7 +177,7 @@ if plotting
     hold on
     
     % plot reachable sets - decomp
-    plot(R_decomp(1),projDims,'FaceColor',[.6 .6 .6],'EdgeColor','r');
+    plot(R_decomp,projDims,'FaceColor',[.6 .6 .6],'EdgeColor','r');
 
     % plot reachable sets - standard reach
     plot(R_fromStart,projDims,'FaceColor',[.8 .8 .8],'EdgeColor','b');
@@ -200,8 +191,7 @@ end
 % compare solutions numerically -------------------------------------------
 
 IH_reach = interval(R_fromStart.timeInterval.set{end});
-IH_decomp = interval(project(R_decomp(1).timeInterval.set{end},...
-    options.partition(1,1):options.partition(1,2))); % only two dimensions
+IH_decomp = interval(R_decomp.timeInterval.set{end});
 
 % check if slightly bloated versions enclose each other
 res_1 = (IH_reach <= enlarge(IH_decomp,1+1e-3));

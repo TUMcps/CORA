@@ -27,7 +27,7 @@ function res = testSpecial_carReach
 
 % set fileName and pathName
 fileName = 'fArray_unitTest.mat';
-pathName = [coraroot '/discrDynamics/ProbOccupancyPrediction'];
+pathName = [CORAROOT filesep 'discrDynamics' filesep 'ProbOccupancyPrediction'];
 modelInitialization = @initCar_unitTest;
 
 % compute probabilistic model

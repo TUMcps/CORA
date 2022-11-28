@@ -1,16 +1,17 @@
-function [Zbundle]=reduce(Zbundle,option,varargin)
-% reduce - Reduces the order of a zonotope bundle; see reduce zonotope
+function zB = reduce(zB,option,varargin)
+% reduce - Reduces the order of a zonotope bundle
 %
 % Syntax:  
-%    [ZbundleRed,t]=reduce(Zbundle,option,order,filterLength)
+%    zB = reduce(zB,option,order,filterLength)
 %
 % Inputs:
-%    Zbundle - zonotope bundle
+%    zB - zonotope bundle
 %    option - reduction method selector
 %    order - maximum order of reduced zonotope
+%    filterLength - ???
 %
 % Outputs:
-%    Zbundle - bundle of reduced zonotopes
+%    zB - bundle of reduced zonotopes
 %
 % Example: 
 %    ---
@@ -19,7 +20,7 @@ function [Zbundle]=reduce(Zbundle,option,varargin)
 % Subfunctions: ---
 % MAT-files required: none
 %
-% See also: none
+% See also: zonotope/reduce
 
 % Author:       Matthias Althoff
 % Written:      09-November-2010 
@@ -28,9 +29,9 @@ function [Zbundle]=reduce(Zbundle,option,varargin)
 
 %------------- BEGIN CODE --------------
 
-%reduce for each zonotope
-for i=1:Zbundle.parallelSets
-    Zbundle.Z{i}=reduce(Zbundle.Z{i},option,varargin{:});
+% reduce order of each zonotope
+for i=1:zB.parallelSets
+    zB.Z{i} = reduce(zB.Z{i},option,varargin{:});
 end
 
 %------------- END OF CODE --------------

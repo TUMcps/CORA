@@ -1,6 +1,6 @@
 function [Rnext,options] = reachAlternative(obj,R,options)
-% reachAlternative - computes the reachable continuous probabilistic set for one time 
-% step of a linear interval system
+% reachAlternative - computes the reachable continuous probabilistic set
+%    for one time step of a linear interval system
 %
 % Syntax:  
 %    [Rnext,options] = reachAlternative(obj,R,options)

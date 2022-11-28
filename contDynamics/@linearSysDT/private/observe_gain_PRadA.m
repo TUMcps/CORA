@@ -1,9 +1,9 @@
 function [OGain, tComp] = observe_gain_PRadA(obj,options)
-% observe_gain_PRadA - computes the gain for the guaranted state estimation
+% observe_gain_PRadA - computes the gain for the guaranteed state estimation
 % approach according to Sec. 4.1 of [1].
 %
 % Syntax:  
-%    [R,Rout] = observe_PRadA(obj,options)
+%    [R,Rout] = observe_gain_PRadA(obj,options)
 %
 % Inputs:
 %    obj - discrete-time linear system object
@@ -12,6 +12,9 @@ function [OGain, tComp] = observe_gain_PRadA(obj,options)
 % Outputs:
 %    OGain - observer gain
 %    tComp - computation time
+%
+% Example:
+%    -
 %
 % Reference:
 %    [1] V. T. H. Le, C. Stoica, T. Alamo, E. F. Camacho, and
@@ -22,8 +25,6 @@ function [OGain, tComp] = observe_gain_PRadA(obj,options)
 %        multi-output uncertain systems. In Proc. of the IEEE
 %        International Symposium on Intelligent Control (ISIC),
 %        pages 212–217, 2013.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -37,17 +38,16 @@ function [OGain, tComp] = observe_gain_PRadA(obj,options)
 %                25-Feb-2021
 % Last revision: ---
 
-
 %------------- BEGIN CODE --------------
 
-tic
+tic;
 
 % store full output matrix and noise set
 tmpC = obj.C;
 V = options.V;
 
 % obtain system dimension and nr of outputs
-nrOfOutputs = size(tmpC,1);
+nrOfOutputs = obj.nrOfOutputs;
 
 % find optimal gain for each output
 for i = 1:nrOfOutputs

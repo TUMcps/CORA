@@ -1,5 +1,5 @@
 classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) polyZonotope < contSet
-% polyZonotope - object constructor for polynomial zonotope object
+% polyZonotope - object constructor for polynomial zonotopes
 %
 % Definition: see CORA manual, Sec. 2.2.1.5.
 %
@@ -27,17 +27,17 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) polyZonotope < cont
 %         factors (dimension: [p,1])
 %
 % Outputs:
-%    obj - polynomial zonotope Object
+%    obj - polyZonotope object
 %
 % Example: 
 %    c = [0;0];
 %    G = [2 0 1;0 2 1];
 %    Grest = [0;0.5];
 %    expMat = [1 0 3;0 1 1];
-%
+% 
 %    pZ = polyZonotope(c,G,Grest,expMat);
-%
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');  
+% 
+%    plot(pZ,[1,2],'FaceColor','r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -48,7 +48,7 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) polyZonotope < cont
 % Author:        Niklas Kochdumper, Mark Wetzlinger
 % Written:       26-March-2018 
 % Last update:   02-May-2020 (MW, add property validation, def constructor)
-%                21-March-2021 (MW, errConstructor, size checks, restructuring)
+%                21-March-2021 (MW, error messages, size checks, restructuring)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -83,17 +83,15 @@ methods
             
             % check center for emptyness
             if isempty(c)
-                [id,msg] = errConstructor('Center is empty.');
-                error(id,msg);
+                throw(CORAerror('CORA:wrongInputInConstructor','Center is empty.'));
             end
             % assign center
             obj.c = c;
             
             % check sizes of c and G
             if ~isempty(G) && length(c) ~= size(G,1)
-                [id,msg] = errConstructor(...
-                    'Dimension mismatch between center and dependent generator matrix.');
-                error(id,msg);
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Dimension mismatch between center and dependent generator matrix.'));
             end
             % assign dependent generator matrix
             % note: later overwritten if expMat given (to avoid checking twice)
@@ -102,9 +100,8 @@ methods
             if nargin >= 3
                 % check sizes of c and Grest
                 if ~isempty(Grest) && length(c) ~= size(Grest,1)
-                    [id,msg] = errConstructor(...
-                        'Dimension mismatch between center and independent generator matrix.');
-                    error(id,msg);
+                     throw(CORAerror('CORA:wrongInputInConstructor',...
+                         'Dimension mismatch between center and independent generator matrix.'));
                 end
                 % assign independent generator matrix
                 obj.Grest = Grest;
@@ -121,8 +118,8 @@ methods
                 % check correctness of user input
                 if ~all(all(floor(expMat) == expMat)) || ~all(all(expMat >= 0)) ...
                         || size(expMat,2) ~= size(G,2)
-                    [id,msg] = errConstructor('Invalid exponent matrix.');
-                    error(id,msg);
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                        'Invalid exponent matrix'));
                 end
 
                 % remove redundant exponents
@@ -139,8 +136,8 @@ methods
 
                     % check for correctness
                     if length(id) ~= size(expMat,1)
-                        [errid,msg] = errConstructor('Invalid vector of identifiers.');
-                        error(errid,msg);
+                        throw(CORAerror('CORA:wrongInputInConstructor',...
+                            'Invalid vector of identifiers.'));
                     end
                     % assign value
                     obj.id = id;
@@ -156,8 +153,8 @@ methods
         elseif nargin > 5
             
             % too many input arguments
-            [id,msg] = errConstructor('Too many input arguments.');
-            error(id,msg);
+            throw(CORAerror('CORA:tooManyInputArgs',5));
+
         end
         
         % set parent object properties
@@ -171,4 +168,5 @@ end
 
 
 end
+
 %------------- END OF CODE --------------

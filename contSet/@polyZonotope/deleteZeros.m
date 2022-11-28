@@ -1,5 +1,6 @@
 function pZ = deleteZeros(pZ)
-% deleteZeros - deletes all generators of length 0
+% deleteZeros - deletes all dependent and independent generators with
+%    length zero
 %
 % Syntax:
 %    pZ = deleteZeros(pZ)
@@ -48,7 +49,5 @@ if ~( all(idxD) && all(idxI) )
 else
     return
 end
-
-
 
 %------------- END OF CODE --------------

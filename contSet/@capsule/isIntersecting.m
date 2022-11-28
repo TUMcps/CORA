@@ -1,17 +1,17 @@
-function res = isIntersecting(obj1,obj2,varargin)
-% isIntersecting - determines if capsule obj1 intersects obj2
+function res = isIntersecting(C,S,varargin)
+% isIntersecting - determines if a capsule intersects a set
 %
 % Syntax:  
-%    res = isIntersecting(obj1,obj2)
-%    res = isIntersecting(obj1,obj2,type)
+%    res = isIntersecting(C,S)
+%    res = isIntersecting(C,S,type)
 %
 % Inputs:
-%    obj1 - capsule object
-%    obj2 - conSet object
+%    C - capsule object
+%    S - contSet object
 %    type - type of check ('exact' or 'approx')
 %
 % Outputs:
-%    res - 1/0 if set is intersecting, or not
+%    res - true/false
 %
 % Example: 
 %    C1 = capsule([0;0],[-2;2],2);
@@ -21,13 +21,11 @@ function res = isIntersecting(obj1,obj2,varargin)
 %    isIntersecting(C1,C2)
 %    isIntersecting(C1,C3)
 %
-%    figure
-%    hold on
+%    figure; hold on
 %    plot(C1,[1,2],'b');
 %    plot(C2,[1,2],'g');
 %
-%    figure
-%    hold on
+%    figure; hold on
 %    plot(C1,[1,2],'b');
 %    plot(C3,[1,2],'r');
 %
@@ -44,39 +42,35 @@ function res = isIntersecting(obj1,obj2,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    type = 'exact';
-    
-    if nargin >= 3 && ~isempty(varargin{1}) 
-        type = varargin{1};
-    end
+    % pre-processing
+    [resFound,vars] = pre_isIntersecting('capsule',C,S,varargin{:});
 
-    % get capsule object
-    if ~isa(obj1,'capsule')
-        temp = obj1;
-        obj1 = obj2;
-        obj2 = temp;
+    % check premature exit
+    if resFound
+        % if result has been found, it is stored in the first entry of var
+        res = vars{1}; return
+    else
+        % assign values
+        C = vars{1}; S = vars{2}; type = vars{3};
     end
+    
     
     % check for intersection
-    if isa(obj2,'capsule')
-        % check for dimension mismatch
-        if dim(obj1) ~= dim(obj2)
-            [id,msg] = errDimMismatch();
-            error(id,msg);
-        end
-        res = intersectionCapsule(obj1,obj2);
-    elseif isa(obj2,'hyperplane')
-        res = isIntersecting(obj2,obj1,type); 
+    if isa(S,'capsule')
+        res = intersectionCapsule(C,S);
+
+    elseif isa(S,'conHyperplane')
+        res = isIntersecting(S,C,type);
+
     else
-       
-       % exact or over-approximative algorithm
-       if strcmp(type,'exact')
-           error('No exact algorithm implemented for this set representation!');
-       else
-           res = isIntersecting(zonotope(obj1),obj2); 
-       end     
+        % exact or over-approximative algorithm
+        if strcmp(type,'exact')
+            throw(CORAerror('CORA:noExactAlg',C,S));
+        else
+            res = isIntersecting(zonotope(C),S); 
+        end
     end
+
 end
 
 
@@ -119,16 +113,8 @@ function res = intersectionCapsule(C1,C2)
     dist = norm(p1-p2);
     
     % check for intersection
-    res = dist <= C1.r + C2.r;
-    
-    % additional check for closeness of distances
-    if ~res
-        dummy = C1.r + C2.r; dummy(dummy==0) = 1;
-        if abs(dist-dummy)/dummy < 1e-9
-            % tight enough -> intersection at one point
-            res = true;
-        end
-    end
+    tmp = C1.r + C2.r;
+    res = dist < tmp | withinTol(dist,tmp);
     
 end
 

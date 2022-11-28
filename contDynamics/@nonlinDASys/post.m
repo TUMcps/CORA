@@ -1,6 +1,7 @@
 function [Rnext,options] = post(obj,R,options)
 % post - computes the reachable continuous set for one time step of a
-% nonlinear differential-algebraic system by overapproximative abstraction
+%    nonlinear differential-algebraic system by over-approximative
+%    abstraction
 %
 % Syntax:  
 %    [Rnext,options] = post(obj,R,options)
@@ -35,8 +36,12 @@ function [Rnext,options] = post(obj,R,options)
 
 %reduce zonotopes
 for i=1:length(Rnext.tp)
-    Rnext.tp{i}.set = reduce(Rnext.tp{i}.set,options.reductionTechnique,options.zonotopeOrder);
-    Rnext.ti{i} = reduce(Rnext.ti{i},options.reductionTechnique,options.zonotopeOrder);
+    % time-point solution
+    Rnext.tp{i}.set = reduce(Rnext.tp{i}.set,...
+        options.reductionTechnique,options.zonotopeOrder);
+    % time-interval solution
+    Rnext.ti{i} = reduce(Rnext.ti{i},...
+        options.reductionTechnique,options.zonotopeOrder);
 end
 
 %delete redundant reachable sets

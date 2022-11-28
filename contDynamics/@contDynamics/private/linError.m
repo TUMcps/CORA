@@ -1,8 +1,8 @@
-function [error] = linError(obj,options,R)
+function err = linError(obj,options,R)
 % linError - computes the linearization error
 %
 % Syntax:  
-%    [error] = linError(obj,options)
+%    err = linError(obj,options)
 %
 % Inputs:
 %    obj - nonlinearSys or nonlinParamSys object
@@ -10,7 +10,7 @@ function [error] = linError(obj,options,R)
 %    R - actual reachable set
 %
 % Outputs:
-%    error - linearization error
+%    err - linearization error
 %
 % Example: 
 %
@@ -71,13 +71,13 @@ else
 end
 
 % over-approximate the Lagrange remainder acc. to Proposition 1 in [1]
-error = zeros(length(H),1);
+err = zeros(length(H),1);
 dz = [dx;du];
 
 for i = 1:length(H)
     H_ = abs(H{i});
     H_ = max(infimum(H_),supremum(H_));
-    error(i) = 0.5 * dz' * H_ * dz;
+    err(i) = 0.5 * dz' * H_ * dz;
 end
 
 %------------- END OF CODE --------------

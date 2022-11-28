@@ -1,7 +1,6 @@
 function PHA = lowpassFilter()
 % lowpassFilter - creates an instance of a parallel hybrid automaton from
-%                 the model of a lowpass filter with 2 components and 3 
-%                 invariants
+%    the model of a lowpass filter with 2 components and 3 invariants
 %
 % Syntax:  
 %    PHA = lowpassFilter()
@@ -34,11 +33,11 @@ linSys11  =  linearSys('linearSys',A11 ,B11, c11, C11);
 inv = interval(  [  -1.097840e+00 ; -2.698928e+00 ; ] ,  [   1.097840e+00 ;  2.698928e+00 ; ]  ) ; 
 
 guard1   = interval(  [  -1.107840e+00 ; -2.698928e+00 ; ] ,  [  -1.087840e+00 ;  2.698928e+00 ; ]  ) ; 
-reset.A = eye(2,2); reset.b =   [   1.071580e+00 ; -1.301798e+00 ; ] ; 
+reset.A = eye(2,2); reset.c =   [   1.071580e+00 ; -1.301798e+00 ; ] ; 
 tran = {transition( guard1, reset,2)};
 
 guard2   = interval(  [   1.087840e+00 ; -2.698928e+00 ; ] ,  [   1.107840e+00 ;  2.698928e+00 ; ]  ) ; 
-reset.A = eye(2,2); reset.b =   [  -1.071580e+00 ;  1.301798e+00 ; ] ; 
+reset.A = eye(2,2); reset.c =   [  -1.071580e+00 ;  1.301798e+00 ; ] ; 
 tran{ 2 } = transition( guard2, reset,3) ;
 
 loc{1}  =  location('loc11',inv,tran,linSys11); 
@@ -55,7 +54,7 @@ linSys21  =  linearSys('linearSys',A21 ,B21, c21, C21);
 inv = interval(  [  -1.629461e+00 ; -2.653899e+00 ; ] ,  [   3.718705e-01 ;  2.705073e+00 ; ]  ) ; 
  
 guard1   = interval(  [   3.618705e-01 ; -2.653899e+00 ; ] ,  [   3.818705e-01 ;  2.705073e+00 ; ]  ) ; 
-reset.A = eye(2,2); reset.b =   [  -0.000000e+00 ; -0.000000e+00 ; ] ; 
+reset.A = eye(2,2); reset.c =   [  -0.000000e+00 ; -0.000000e+00 ; ] ; 
 tran = {transition( guard1, reset,1)};
 
 loc{2}  =  location('loc21',inv,tran,linSys21);
@@ -72,7 +71,7 @@ linSys31  =  linearSys('linearSys',A31 ,B31, c31, C31);
 inv = interval(  [  -3.718705e-01 ; -2.705073e+00 ; ] ,  [   1.629461e+00 ;  2.653899e+00 ; ]  ) ; 
 
 guard1   = interval(  [  -3.818705e-01 ; -2.705073e+00 ; ] ,  [  -3.618705e-01 ;  2.653899e+00 ; ]  ) ; 
-reset.A = eye(2,2); reset.b =   [  -0.000000e+00 ; -0.000000e+00 ; ] ; 
+reset.A = eye(2,2); reset.c =   [  -0.000000e+00 ; -0.000000e+00 ; ] ; 
 tran = {transition( guard1, reset,1)};
 
 loc{3}  =  location('loc31',inv,tran,linSys31); 
@@ -96,7 +95,7 @@ linSys11  =  linearSys('linearSys',A11 ,B11, c11, C11);
 inv = interval(  [  -1.350712e+00 ; -2.504938e+00 ; ] ,  [   9.670362e-01 ;  1.562432e+00 ; ]  ) ; 
 
 guard1   = interval(  [   9.570362e-01 ; -2.504938e+00 ; ] ,  [   9.770362e-01 ;  1.562432e+00 ; ]  ) ; 
-reset.A = eye(2,2); reset.b =   [  -0.000000e+00 ; -0.000000e+00 ; ] ; 
+reset.A = eye(2,2); reset.c =   [  -0.000000e+00 ; -0.000000e+00 ; ] ; 
 tran = {transition( guard1, reset,3)};
 
 loc{1}  =  location('loc11',inv,tran,linSys11); 
@@ -113,7 +112,7 @@ linSys21  =  linearSys('linearSys',A21 ,B21, c21, C21);
 inv = interval(  [  -9.670362e-01 ; -1.562432e+00 ; ] ,  [   1.350712e+00 ;  2.504938e+00 ; ]  ) ; 
  
 guard1   = interval(  [  -9.770362e-01 ; -1.562432e+00 ; ] ,  [  -9.570362e-01 ;  2.504938e+00 ; ]  ) ; 
-reset.A = eye(2,2); reset.b =   [  -0.000000e+00 ; -0.000000e+00 ; ] ; 
+reset.A = eye(2,2); reset.c =   [  -0.000000e+00 ; -0.000000e+00 ; ] ; 
 tran = {transition( guard1, reset,3)};
 
 loc{2}  =  location('loc21',inv,tran,linSys21);  
@@ -130,11 +129,11 @@ linSys31  =  linearSys('linearSys',A31 ,B31, c31, C31);
 inv = interval(  [  -2.251641e+00 ; -2.580417e+00 ; ] ,  [   2.251641e+00 ;  2.580417e+00 ; ]  ) ; 
  
 guard1   = interval(  [  -2.261641e+00 ; -2.580417e+00 ; ] ,  [  -2.241641e+00 ;  2.580417e+00 ; ]  ) ; 
-reset.A = eye(2,2); reset.b =   [   2.089598e+00 ; -1.797423e+00 ; ] ; 
+reset.A = eye(2,2); reset.c =   [   2.089598e+00 ; -1.797423e+00 ; ] ; 
 tran = {transition( guard1, reset,1)};
 
 guard2   = interval(  [   2.241641e+00 ; -2.580417e+00 ; ] ,  [   2.261641e+00 ;  2.580417e+00 ; ]  ) ; 
-reset.A = eye(2,2); reset.b =   [  -2.089598e+00 ;  1.797423e+00 ; ] ; 
+reset.A = eye(2,2); reset.c =   [  -2.089598e+00 ;  1.797423e+00 ; ] ; 
 tran{ 2 } = transition( guard2, reset,2) ;
 
 loc{3}  =  location('loc31',inv,tran,linSys31); 

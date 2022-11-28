@@ -27,10 +27,10 @@ function poly = enclosePoints(points)
 %
 % See also: zonotope/enclosePoints, interval/enclosePoints
 
-% Author: Niklas Kochdumper, Victor Gassmann
-% Written: 05-May-2020
-% Last update: 17-March-2021 (now also works for degenerate point cloud)
-% Last revision: ---
+% Author:       Niklas Kochdumper, Victor Gassmann
+% Written:      05-May-2020
+% Last update:  17-March-2021 (now also works for degenerate point cloud)
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

@@ -154,8 +154,8 @@ function [Rin,Rout] = reachInnerProjection(sys,params,options)
     % Reachable Set Object ------------------------------------------------
     
     % inner-approximation
-    timePoint.set = Rset(2:end);
-    timePoint.time = time(2:end);
+    timePoint.set = Rset;
+    timePoint.time = time;
     
     timeInt.set = RsetCont;
     timeInt.time = timeCont;
@@ -163,8 +163,8 @@ function [Rin,Rout] = reachInnerProjection(sys,params,options)
     Rin = reachSet(timePoint,timeInt);
     
     % outer-approximation
-    timePoint.set = RsetOut(2:end);
-    timePoint.time = time(2:end);
+    timePoint.set = RsetOut;
+    timePoint.time = time;
     
     timeInt.set = RsetContOut;
     timeInt.time = timeCont;
@@ -180,10 +180,10 @@ function res = picardLindeloef(fun,z0,t,varargin)
     try
         res = picardLindeloefInt(fun,z0,t,varargin{:});
     catch ex
-        if strcmp(ex.identifier,'PLI:nonConvergent')
+        if strcmp(ex.identifier,'CORA:notConverged')
             res = picardLindeloefTaylm(fun,z0,t,varargin{:});
         else
-            error('Picard-Lindeloef-Iteration did not converge!');
+            throw(CORAerror('CORA:notConverged'));
         end
     end
 end
@@ -233,9 +233,9 @@ function res = picardLindeloefInt(fun,z0,t,varargin)
        end
        
        if counter > 100
-          error('PLI:nonConvergent','Picard-Lindeloef-Iteration did not converge');
+           throw(CORAerror('CORA:notConverged','Picard-Lindeloef iteration'));
        else
-          counter = counter + 1;
+           counter = counter + 1;
        end
     end
 end
@@ -290,7 +290,8 @@ function res = picardLindeloefTaylm(fun,z0,t,varargin)
        zInt_ = interval(z_);
        
        % check for convergence
-       if all(abs(supremum(zInt_) - supremum(zInt)) < 1e-12) && all(abs(infimum(zInt_) -infimum(zInt)) < 1e-12)
+       if all(abs(supremum(zInt_) - supremum(zInt)) < 1e-12) ...
+               && all(abs(infimum(zInt_) -infimum(zInt)) < 1e-12)
           res = zInt;
           break; 
        else
@@ -298,9 +299,9 @@ function res = picardLindeloefTaylm(fun,z0,t,varargin)
        end
        
        if counter > 1000
-          error('Picard-Lindeloef-Iteration did not converge!');
+           throw(CORAerror('CORA:notConverged','Picard-Lindeloef iteration'));
        else
-          counter = counter + 1;
+           counter = counter + 1;
        end
     end
 end
@@ -444,7 +445,7 @@ function [fun,funJ] = dynamicFunction(sys)
     J = sym('J',[n,n]);
 
     f_ = fun(x);
-    jac = jacobian(f_,x);
+    jac = jacobian(f_);
 
     Jfun = sym(zeros(n,n));
 

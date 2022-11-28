@@ -1,28 +1,28 @@
-function res = quadMap(varargin)
+function I = quadMap(varargin)
 % quadMap - computes the quadratic map of an interval
 %
 % Syntax:  
-%    res = quadMap(Int1,Q)
-%    res = quadMap(Int1,Int2,Q)
+%    res = quadMap(I1,Q)
+%    res = quadMap(I1,I2,Q)
 %
 % Inputs:
-%    Int1 - interval object
-%    Int2 - interval object
+%    I1 - interval object
+%    I2 - interval object
 %    Q - quadratic coefficients as a cell of matrices
 %
 % Outputs:
-%    res - interval object
+%    I - interval object
 %
 % Example: 
-%    zono = zonotope([0 1 1;0 1 0]);
-%    int = interval(zono);
+%    Z = zonotope([0 1 1;0 1 0]);
+%    I = interval(Z);
 %    Q{1} = [0.5 0.5; 0 -0.5];
 %    Q{2} = [-1 0; 1 1];
+% 
+%    res1 = quadMap(Z,Q); % zonotope quadMap (for comparison)
+%    res2 = quadMap(I,Q); % interval quadMap
 %
-%    res1 = quadMap(zono,Q);
-%    res2 = quadMap(int,Q);
-%
-%    figure; hold on
+%    figure; hold on;
 %    plot(res1,[1,2],'b');
 %    plot(res2,[1,2],'r');
 %
@@ -39,15 +39,18 @@ function res = quadMap(varargin)
 
 %------------- BEGIN CODE --------------
 
-    % compute quadratic map for zonotopes
-    if nargin == 2
-        res = quadMap(zonotope(varargin{1}),varargin{2});
-    else
-        res = quadMap(zonotope(varargin{1}),zonotope(varargin{2}), ...
-                      varargin{3});
-    end
-    
-    % enclose the result with an interval
-    res = interval(res);
+% compute quadratic map for zonotopes
+if nargin == 1
+    throw(CORAerror('CORAerror:notEnoughInputArgs',2));
+elseif nargin == 2
+    I = quadMap(zonotope(varargin{1}),varargin{2});
+elseif nargin == 3
+    I = quadMap(zonotope(varargin{1}),zonotope(varargin{2}),varargin{3});
+else
+    throw(CORAerror('CORA:tooManyInputArgs',3));
+end
+
+% enclose the result with an interval
+I = interval(I);
 
 %------------- END OF CODE --------------

@@ -5,13 +5,14 @@ function matPpower = mpower(matP,exponent)
 %    matPpower = mpower(matP,exponent)
 %
 % Inputs:
-%    matP - matrix polytope
+%    matP - matPolytope object
 %    exponent - exponent
 %
 % Outputs:
-%    matP - matrix polytope
+%    matPpower - ?
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,27 +27,26 @@ function matPpower = mpower(matP,exponent)
 
 %------------- BEGIN CODE --------------
 
+% check input arguments
+inputArgsCheck({{matP,'att','matPolytope'}, ...
+                {exponent,'att','numeric',{'integer','nonnegative','scalar'}}});
+
 %factor1 is a numeric matrix
-if exponent>=0
-    if exponent==0
-        %return identity matrix
-        matPpower=matPolytope();
-        matPpower.dim=matP.dim;
-        matPpower.verts=1;
-        matPpower.vertex{1}=eye(matP.dim);       
-    elseif exponent==1
-        %do nothing
-        matPpower=matP;
-    else
-        matPpower=matP*matP;
-        for i=3:exponent
-        %multiply matrix zonotope with itself
-            matPpower=matPpower*matP;
-        end
-    end
+if exponent==0
+    %return identity matrix
+    matPpower=matPolytope();
+    matPpower.dim=matP.dim;
+    matPpower.verts=1;
+    matPpower.vertex{1}=eye(matP.dim);       
+elseif exponent==1
+    %do nothing
+    matPpower=matP;
 else
-    matPpower=[];
-    error('no negative powers supported')
+    matPpower=matP*matP;
+    for i=3:exponent
+    %multiply matrix zonotope with itself
+        matPpower=matPpower*matP;
+    end
 end
 
 %------------- END OF CODE --------------

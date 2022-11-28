@@ -72,9 +72,6 @@ R = reach(sys, params, options);
 
 simOpt.points = 20;
 simOpt.fracVert = 0.1;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
-
 simRes = simulateRandom(sys, params, simOpt);
 
 
@@ -82,7 +79,7 @@ simRes = simulateRandom(sys, params, simOpt);
 
 % use pause() function to mimic video
 
-% set up figure
+% set up figure (label, title, axis)
 figure;
 subplot(1,2,1); hold on; box on;
 xlabel("Angle"); ylabel("Angular Velocity"); title("Phase Space");
@@ -128,36 +125,34 @@ for i=1:totalSets
     % phase space plot
     subplot(1,2,1);
     % plot reachable set
-    plot(Rphasespace{i},[1,2],'Filled',true,...
-        'FaceColor',grayscale,'EdgeColor','k');
+    plot(Rphasespace{i},[1,2],'FaceColor',grayscale);
     % plot simulation
     for r=1:simOpt.points
         % always plot until last index before current time
         % add idx below!
         plot(simRes.x{r}(idx{r}(i):idx{r}(i+1),1),...
-            simRes.x{r}(idx{r}(i):idx{r}(i+1),2),'b');
+            simRes.x{r}(idx{r}(i):idx{r}(i+1),2),'Color',colorblind('y'));
     end
     
     % xy space plot (additional over-approximation in conversion)
     subplot(1,2,2);
     % reachable set
-    plot(xyInt{i},[1,2],'FaceColor',grayscale,'EdgeColor','k',...
-        'Filled',true);
+    plot(xyInt{i},[1,2],'FaceColor',grayscale);
     % simulation
     for r=1:simOpt.points
         % take same indices as above
         plot(simX{r}(idx{r}(i):idx{r}(i+1)),...
-            simY{r}(idx{r}(i):idx{r}(i+1)),'b');
+            simY{r}(idx{r}(i):idx{r}(i+1)),'Color',colorblind('y'));
     end
     
     % pause for video effect
-%     pause(0.2);
+    pause(0.2);
 end
 
 
 
 % example completed
-res = 1;   
+res = true;   
 
 end
 

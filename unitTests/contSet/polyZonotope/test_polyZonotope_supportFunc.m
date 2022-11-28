@@ -1,6 +1,6 @@
 function res = test_polyZonotope_supportFunc
 % test_polyZonotope_supportFunc - unit test function for calculating bounds
-%    of the polynomial zontope along a specific direction 
+%    of the polynomial zonotope along a specific direction 
 %
 % Syntax:  
 %    res = test_polyZonotope_supportFunc
@@ -26,7 +26,7 @@ function res = test_polyZonotope_supportFunc
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
 
 %% ANALYTICAL TESTS
 
@@ -45,13 +45,16 @@ inter = interval(pZ,'bnb');
 % define ground truth
 inter_ = interval([0;1],[6;7]);
 
-% check for correctness
-if any(supremum(inter) ~= supremum(inter_)) || any(infimum(inter) ~= infimum(inter_))
-    error('test_polyZonotope_supportFunc: analytical test 1 failed!');
+% empty set
+pZ_e = polyZonotope();
+if supportFunc(pZ_e,[1;1],'upper') ~= -Inf || supportFunc(pZ_e,[1;1],'lower') ~= +Inf
+    res = false;
 end
 
+% check for correctness
+if ~isequal(inter,inter_)
+    res = false;
+end
 
-
-res = true;
 
 %------------- END OF CODE --------------

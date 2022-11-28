@@ -24,6 +24,7 @@ function res = test_ellipsoid_rank
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 res = true;
 load cases.mat E_c
 for i=1:length(E_c)
@@ -39,10 +40,4 @@ for i=1:length(E_c)
     
 end
 
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

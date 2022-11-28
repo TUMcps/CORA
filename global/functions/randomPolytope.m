@@ -1,17 +1,18 @@
-function [P]=randomPolytope(dim,points,type,maxLength)
+function P = randomPolytope(n,points,type,maxLength)
 % randomPolytope - generates a random polytope 
 %
 % Syntax:  
-%    [P]=randomPolytope(dim,points,type)
+%    P = randomPolytope(n,points,type,maxLength)
 %
 % Inputs:
-%    dim - dimension
+%    n - dimension
 %    points - number of points
 %    type - selector for different probability distributions of the
-%    point to center distance
+%           point to center distance
+%    maxLength - ???
 %
 % Outputs:
-%    P - polytope object
+%    P - mptPolytope object
 %
 % Example: 
 %
@@ -61,7 +62,7 @@ end
 %create generators
 for i=1:points
     %generate random point on sphere
-    gTmp=randomPointOnSphere(dim);
+    gTmp=randomPointOnSphere(n);
     %stretch
     V(i,:)=l(i)*gTmp;
 end
@@ -69,7 +70,5 @@ end
 %center is set to 0
 %create MPT polytope
 P = mptPolytope(V);
-
-
 
 %------------- END OF CODE --------------

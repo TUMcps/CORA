@@ -36,7 +36,7 @@ end
 
 %convert to halfspace representation
 for i=1:length(Z)
-    P{i}=polytope(Z{i});
+    P{i} = mptPolytope(Z{i});
 end
 
 %intersect parallelotopes

@@ -1,5 +1,5 @@
 function [R,tcomp] = observe_PRadC(obj,options)
-% observe_PRadC - computes the guaranted state estimation approach
+% observe_PRadC - computes the guaranteed state estimation approach
 % from [1] and [2]. In [3], two versions of PRadC exist; we have removed
 % PRadC-I since its performance is not as good as PRadC-II, which is now
 % simply called PRad-C.

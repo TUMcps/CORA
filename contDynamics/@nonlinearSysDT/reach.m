@@ -13,7 +13,7 @@ function R = reach(obj,params,options,varargin)
 %
 % Outputs:
 %    R - object of class reachSet storing the reachable set
-%    res  - 1 if specifications are satisfied, 0 if not
+%    res - true/false whether specifications are satisfied
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -24,61 +24,63 @@ function R = reach(obj,params,options,varargin)
 % Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      21-August-2012
 % Last update:  29-January-2018
+%               19-November-2022 (MW, integrate output equation)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    % options preprocessing
-    options = validateOptions(obj,mfilename,params,options);
-    
-    spec = [];
-    if nargin >= 4
-       spec = varargin{1}; 
-    end
+% options preprocessing
+options = validateOptions(obj,mfilename,params,options);
 
-    % compute symbolic derivatives
-    derivatives(obj,options);
-
-    % initialize cell array that stores the reachable sets
-    t = options.tStart:obj.dt:options.tFinal;
-
-    steps = length(t)-1;
-    R = cell(steps+1,1);
-    R{1} = params.R0;
-
-    % loop over all reachablity steps
-    for i = 1:steps
-
-        % if a trajectory should be tracked
-        if isfield(options,'uTransVec')
-            options.uTrans = options.uTransVec(:,i);
-        end  
-
-        % compute next reachable set
-        R{i+1} = linReach(obj,R{i},options);
-
-        % log information
-        verboseLog(i,t(i),options);
-        
-        % check specification
-        if ~isempty(spec)
-           if ~check(spec,R{i+1})
-               timePoint.set = R(2:i+1);
-               timePoint.time = num2cell(t(2:i+1)');
-               R = reachSet(timePoint);
-               return;
-           end
-        end
-    end
-
-    % create reachable set object
-    timePoint.set = R(2:end);
-    timePoint.time = num2cell(t(2:end)');
-    R = reachSet(timePoint);
-    
-    % log information
-    verboseLog(length(t),t(end),options);
-
+spec = [];
+if nargin >= 4
+   spec = varargin{1}; 
 end
+
+% compute symbolic derivatives
+derivatives(obj,options);
+
+% initialize cell array that stores the reachable sets
+t = options.tStart:obj.dt:options.tFinal;
+
+steps = length(t)-1;
+timePoint.set = cell(steps+1,1);
+timePoint.set{1} = outputSet(obj,options,params.R0);
+Rnext = params.R0;
+
+% loop over all reachablity steps
+for i = 1:steps
+
+    % if a trajectory should be tracked
+    if isfield(options,'uTransVec')
+        options.uTrans = options.uTransVec(:,i);
+    end  
+
+    options.i = i;
+    % compute next reachable set
+    [Rnext,options] = linReach(obj,Rnext,options);
+    % compute output set
+    timePoint.set{i+1} = outputSet(obj,options,Rnext);
+
+    % log information
+    verboseLog(i,t(i),options);
+    
+    % check specification
+    if ~isempty(spec)
+       if ~check(spec,timePoint.set{i+1},interval(t(i+1)))
+           timePoint.set = timePoint(1:i+1);
+           timePoint.time = num2cell(t(1:i+1)');
+           R = reachSet(timePoint);
+           return;
+       end
+    end
+end
+
+% create reachable set object
+timePoint.time = num2cell(t(1:end)');
+R = reachSet(timePoint);
+
+% log information
+verboseLog(length(t),t(end),options);
 
 %------------- END OF CODE --------------

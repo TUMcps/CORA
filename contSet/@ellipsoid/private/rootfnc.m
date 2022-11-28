@@ -9,8 +9,8 @@ function [y,Q,q] = rootfnc(p,W1,q1,W2,q2)
 %    W1,q1,W2,q2 - shape matrices and centers of E1,E2 (see 'and')
 %
 % Outputs:
-%    y  - current function value (should go to 0)
-%    Q,q- current solution, i.e. ellipsoid(Q,q)
+%    y - current function value (should go to 0)
+%    Q,q - current solution, i.e., ellipsoid(Q,q)
 %
 % Example: 
 %    -
@@ -31,6 +31,7 @@ function [y,Q,q] = rootfnc(p,W1,q1,W2,q2)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 n = size(W1,1);
 X = p*W1+(1-p)*W2;
 X_inv = inv(X);
@@ -41,5 +42,7 @@ Q = a*inv(X);
 detX = det(X);
 %y = a*detX*trace(detX*X_inv*(W1 - W2)) - n*detX^2* ...
 %      (2*q'*W1*q1 - 2*q'*W2*q2 + q'*(W2 - W1)*q - q1'*W1*q1 + q2'*W2*q2);
-y = a*detX^2*trace(X_inv*(W1-W2))-n*detX^2*(2*q'*(W1*q1-W2*q2)+q'*(W2-W1)*q-q1'*W1*q1+q2'*W2*q2);
+y = a*detX^2*trace(X_inv*(W1-W2)) - n*detX^2*(2*q'*(W1*q1-W2*q2) ...
+    + q'*(W2-W1)*q - q1'*W1*q1+q2'*W2*q2);
+
 %------------- END OF CODE --------------

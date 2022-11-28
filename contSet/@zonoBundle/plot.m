@@ -1,16 +1,18 @@
-function han = plot(obj,varargin)
-% plot - plots 2-dimensional over-approximative projection of a zonotope bundle
+function han = plot(zB,varargin)
+% plot - plots an over-approximative projection of a zonotope bundle
 %
-% Syntax:  
-%    han = plot(obj,dims,type)
+% Syntax:
+%    han = plot(zB)
+%    han = plot(zB,dims)
+%    han = plot(zB,dims,type)
 %
 % Inputs:
-%    obj - zonoBundle object
-%    dims - dimensions that should be projected (optional) 
-%    type - plot options (LineSpec and Name-Value pairs)
+%    zB - zonoBundle object
+%    dims - (optional) dimensions for projection
+%    type - (optional) plot settings (LineSpec and Name-Value pairs)
 %
 % Outputs:
-%    han - handle for the graphics object
+%    han - handle to the graphics object
 %
 % Example: 
 %    Z{1} = zonotope([0 1 1 -1;0 0 2 1]);
@@ -29,27 +31,33 @@ function han = plot(obj,varargin)
 % Written:      09-November-2010 
 % Last update:  13-February-2012
 %               19-October-2015 (NK, accelerate by using polyshape class)
+%               22-May-2022 (TL, 1D plots)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % default settings
-dims = [1,2];
-plotOptions{1} = 'b';
+dims = setDefaultValues({[1,2]},varargin{:});
 
-% parse input arguments
-if nargin >= 2 && ~isempty(varargin{1})
-   dims = varargin{1}; 
-end
-if nargin >= 3
-   plotOptions = varargin(2:end); 
-end
+% check input arguments
+inputArgsCheck({{zB,'att','zonoBundle'};
+                {dims,'att','numeric',{'nonempty','integer','positive','vector'}}});
+
+% process plot options
+NVpairs = readPlotOptions(varargin(2:end));
 
 % check dimension
-if length(dims) < 2
-    error('At least 2 dimensions have to be specified!');
+if length(dims) < 1
+    throw(CORAerror('CORA:plotProperties',1));
 elseif length(dims) > 3
-    error('Only up to 3 dimensions can be plotted!');
+    throw(CORAerror('CORA:plotProperties',3));
+end
+
+if length(dims) == 1
+    zB = project(zB,dims);
+    % add zeros to 2nd dimension
+    zB = zB.cartProd(0);
+    dims = [1;2];
 end
 
 % 2D vs. 3D plot
@@ -58,16 +66,26 @@ if length(dims) == 2
     w = warning;
     warning('off','all');
 
+    % eps Z
+    eps = 1e-7;
+    Z_eps = zonotope([0;0], eps * eye(2));
+
     % compute polytopes
-    for i = 1:obj.parallelSets
+    for i = 1:zB.parallelSets
 
         % delete zero generators
-        Z = deleteZeros(obj.Z{i});
+        Z = deleteZeros(zB.Z{i});
 
         % project zonotope
         Z = project(Z,dims);
 
-        % convert to polyshape (Matlab build in class)
+        % enlargen Z slightly:
+        % intersections with polyshapes are inconsistent
+        % if one polyshape is just a line. if we enlargen Z slightly, 
+        % we can ignore these edge cases during intersection
+        Z = Z + Z_eps;
+
+        % convert to polyshape (Matlab built-in class)
         temp = polygon(Z);
         V = temp(:,2:end);
         P{i} = polyshape(V(1,:),V(2,:));
@@ -75,29 +93,56 @@ if length(dims) == 2
 
     % intersect polytopes
     Pint = P{1};
-    for i = 2:obj.parallelSets
+    for i = 2:zB.parallelSets
         Pint = intersect(Pint,P{i});
     end
 
     % get vertices
     V = Pint.Vertices';
 
+    % remove eps to get tight enclosure
+    m = mean(V, 2);
+    V0 = V - m;
+    V0 = V0 - sign(V0) * eps;
+    V = V0 + m;
+    
+    % test if all points are identical within tolerance
+    inTol = all(all(withinTol(V(:,1),V,eps)));
+
+    Pint = polyshape(V(1,:),V(2,:));
+    if Pint.NumRegions > 0 && ~inTol
+        % plot polytope
+        han = plotPolygon(V,NVpairs{:});
+    else
+        if size(V, 2) > 0 && inTol
+            % plot point
+            [~, value] = readNameValuePair(NVpairs, 'Color');
+            NVpairs{end+1} = 'MarkerEdgeColor';
+            NVpairs{end+1} = value;
+            scatter(V(1, 1), V(2, 1), NVpairs{:})
+        else
+            % plot line
+            plot(V(1, :), V(2, :), NVpairs{:})
+        end
+    end
+
     % reset warning state to previous setting
     warning(w);
-
-    % plot polytope
-    han = plotPolygon(V,plotOptions{:});
-
+    
 else
     
     % project to plotted dimensions
-    obj = project(obj,dims);
+    zB = project(zB,dims);
     
     % compute vertices
-    V = vertices(obj);
+    V = vertices(zB);
     
     % plot 3D polytope
-    han = plotPolytope3D(V(dims,:),plotOptions{:}); 
+    han = plotPolytope3D(V(dims,:),NVpairs{:}); 
+end
+
+if nargout == 0
+    clear han;
 end
 
 %------------- END OF CODE --------------

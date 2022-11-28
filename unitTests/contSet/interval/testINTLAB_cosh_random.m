@@ -1,8 +1,8 @@
 function res = testINTLAB_cosh_random(~)
-% test_cosh_random - unit_test_function for comparing to IntLabV6
+% testINTLAB_cosh_random - unit_test_function for comparing to IntLabV6
 %
 % Syntax:  
-%    res = test_cosh_random (~)
+%    res = testINTLAB_cosh_random (~)
 %
 % Inputs:
 %    no 
@@ -23,6 +23,7 @@ function res = testINTLAB_cosh_random(~)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 tol = 1e-9;
 res = true;
 
@@ -77,7 +78,4 @@ if ( isempty(bad_ones_max) ~= true)
     res = false;
 end
 
-disp('test_cosh_random successful');
-disp(' ')
-
-return;
+%------------- END OF CODE --------------

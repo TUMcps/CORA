@@ -11,12 +11,10 @@ function res = testLongDuration_taylm_division
 % Outputs:
 %    res - boolean 
 %
-% Example: 
-%
 % Other m-files required: taylm, interval
 % Subfunctions: none
 % MAT-files required: none
-%
+
 % Author:       Dmitry Grebenyuk
 % Written:      06-August-2017
 % Last update:  ---
@@ -53,7 +51,7 @@ res = true;
             
             % make sure that the taylor polynomial does not contain 0
             temp = interval(poly);
-            if in(temp,0)
+            if contains(temp,0)
                r = 2*rand();
                if r > 1
                   poly = poly - 1.1*infimum(temp);  
@@ -80,9 +78,9 @@ res = true;
                 file_name = strcat('testLongDuration_taylm_division_5_', ...
                                    datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-                file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
+                file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', file_name);
                 save(file_path, 'poly')
-                error('test 1 is failed');
+                throw(CORAerror('CORA:testFailed'));
             end          
         end
     end

@@ -30,20 +30,8 @@ function [P] = mtimes(factor1,factor2)
 
 %------------- BEGIN CODE --------------
 
-%Find a zonotope object
-%Is factor1 a mptPolytope?
-if isa(factor1,'mptPolytope')
-    %initialize resulting polytope
-    P=factor1;
-    %initialize other summand
-    matrix=factor2;
-%Is factor2 a mptPolytope?    
-elseif isa(factor2,'mptPolytope')
-    %initialize resulting zonotope
-    P=factor2;
-    %initialize other summand
-    matrix=factor1;  
-end
+%Find a mptPolytope object
+[P,matrix] = findClassArg(factor1,factor2,'mptPolytope');
 
 %get dimension
 n = dim(P);

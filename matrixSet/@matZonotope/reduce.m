@@ -1,18 +1,18 @@
-function matZred = reduce(matZ,option,order,filterLength)
-% reduce - Reduces the order of a matrix zonotope
-% This is done by converting the matrix zonotope to a zonotope
+function matZ = reduce(matZ,option,order,filterLength)
+% reduce - Reduces the order of a matrix zonotope via conversion to
+%    zonotopes
 %
 % Syntax:  
 %    matZred = reduce(matZ,option,order)
 %
 % Inputs:
-%    matZ - matrix zonotope
+%    matZ - matZonotope object
 %    option - selects the reduction method
 %    order - order of reduced zonotope
-%    filterLength - #nodef
+%    filterLength - ?
 %
 % Outputs:
-%    matZred - reduced matrix zonotope
+%    matZ - reduced matrix zonotope
 %
 % Example: 
 %
@@ -36,6 +36,6 @@ Z=zonotope(matZ);
 Zred = reduce(Z, option, order, filterLength);
 
 %convert back to matrix zonotope
-matZred = matZonotope(Zred);
+matZ = matZonotope(Zred);
 
 %------------- END OF CODE --------------

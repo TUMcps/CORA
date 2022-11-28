@@ -32,11 +32,4 @@ if ~isempty(conZono)
     res_empty = false;
 end
 
-
-if res_empty
-    disp('test_conZonotope_conZonotope successful');
-else
-    disp('test_conZonotope_conZonotope failed');
-end
-
 %------------- END OF CODE --------------

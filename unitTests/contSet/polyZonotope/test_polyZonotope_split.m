@@ -26,8 +26,6 @@ function res = test_polyZonotope_split
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
 
 %% ANALYTICAL TESTS
 
@@ -55,8 +53,8 @@ G2 =  [1 1/4 -1/2 1/4; 1/2 9/4 -1/2 1/4];
 expMat2 = [1 0 1 2; 0 1 1 1];
 
 % check for correctness
-if any(c1-pZsplit{1}.c) || any(c2-pZsplit{2}.c)
-    error('test_polyZonotope_split: analytical test 1 failed!');
+if ~all(withinTol(c1,pZsplit{1}.c)) || ~all(withinTol(c2,pZsplit{2}.c))
+    throw(CORAerror('CORA:testFailed'));
 end
 
 for i = 1:size(expMat1,2)    
@@ -65,9 +63,9 @@ for i = 1:size(expMat1,2)
     ind_ = find(ind > 0);
     
     if isempty(ind_)
-        error('test_polyZonotope_split: analytical test failed!');        
+        throw(CORAerror('CORA:testFailed'));
     elseif ~all(pZsplit{1}.G(:,ind_(1)) == G1(:,i))
-        error('test_polyZonotope_split: analytical test failed!');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -77,9 +75,9 @@ for i = 1:size(expMat2,2)
     ind_ = find(ind > 0);
     
     if isempty(ind_)
-        error('test_polyZonotope_split: analytical test failed!');        
+        throw(CORAerror('CORA:testFailed'));
     elseif ~all(pZsplit{2}.G(:,ind_(1)) == G2(:,i))
-        error('test_polyZonotope_split: analytical test failed!');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 

@@ -100,11 +100,11 @@ for i = 1:N
 end
 
 % compare the results
-res = 1;
+res = true;
 
 for i = 1:N
     if abs(res_test(i)-res_real(i)) > 1e-14
-       res = 0;
+       res = false;
        break;
     end
 end

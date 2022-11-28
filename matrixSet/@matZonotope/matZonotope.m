@@ -2,21 +2,21 @@ classdef (InferiorClasses = {?mp}) matZonotope
 % matZonotope class 
 %
 % Syntax:  
-%   obj = matZonotope(C,G)
+%    obj = matZonotope(C,G)
 %
 % Inputs:
 %    C - center matrix
 %    G - cell-array storing the generator matrices
 %
 % Outputs:
-%    obj - generated object
+%    obj - generated matZonotope object
 %
 % Example:
 %    C = [0 0; 0 0];
 %    G{1} = [1 3; -1 2];
 %    G{2} = [2 0; 1 -1];
 %
-%    mz = matZonotope(C,G);
+%    matZ = matZonotope(C,G);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -71,6 +71,8 @@ methods
         elseif nargin==2
             matrixCenter = input1;
             matrixGenerator = input2;
+        else
+            throw(CORAerror('CORA:tooManyInputArgs',2));
         end
         %set parameters
         obj.dim = length(matrixCenter);
@@ -83,23 +85,23 @@ methods
     matZ = plus(summand1,summand2)
     matZ = mtimes(factor1,factor2)
     matZ = mpower(matZ,exponent)
-    matZ = powers(varargin)
+    matZ = powers(matZ,varargin)
     matZ = expmInd(matZ,maxOrder)
     [eZ,eI,zPow,iPow,E] = expmMixed(matZ,r,intermediateOrder,maxOrder)
     [eZ,eI,zPow,iPow,E] = expmIndMixed(matZ,intermediateOrder,maxOrder)
     [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,u)
-    intMat = intervalMatrix(varargin)
+    intMat = intervalMatrix(matZ,varargin)
     matZ = zonotope(matZ)
     dist = expmDist(matZ,intMat,maxOrder)
     matZred = reduce(matZ,option,order,filterLength)
-    vol = volume(matI)
+    vol = volume(matZ)
     matZ1 = concatenate(matZ1,matZ2)
-    res = norm(obj, varargin)
-    newObj = subsref(obj, S)
+    res = norm(matZ,varargin)
+    newObj = subsref(matZ,S)
         
     %display functions
-    plot(varargin)
-    display(obj)
+    plot(matZ,varargin)
+    display(matZ)
 
 end
 end

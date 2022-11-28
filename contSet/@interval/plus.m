@@ -5,15 +5,16 @@ function res = plus(summand1,summand2)
 %    res = plus(summand1,summand2)
 %
 % Inputs:
-%    summand1 - interval (for computational efficiency, no single value
-%               considered; does not require type checking)
-%    summand2 - interval (for computational efficiency, no single value
-%               considered; does not require type checking)
+%    summand1 - interval object
+%    summand2 - interval object
 %
 % Outputs:
 %    res - interval
 %
-% Example: 
+% Example:
+%    summand1 = interval([-2;1],[3;2]);
+%    summand2 = interval([0;1],[1;2]);
+%    summand1 + summand2
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,35 +33,55 @@ function res = plus(summand1,summand2)
 %------------- BEGIN CODE --------------
 
 % determine the interval object
-if isa(summand1,'interval')
-    res = summand1;
-    summand = summand2;
-elseif isa(summand2,'interval')
-    res = summand2;
-    summand = summand1; 
-end
+[res,summand] = findClassArg(summand1,summand2,'interval');
 
-% different cases depending on the class of the summand
-if isa(summand,'interval')
+try
 
-    res.inf = res.inf + summand.inf;
-    res.sup = res.sup + summand.sup;
+    % different cases depending on the class of the summand
+    if isa(summand,'interval')
+    
+        res.inf = res.inf + summand.inf;
+        res.sup = res.sup + summand.sup;
+    
+    elseif isnumeric(summand)
+    
+        res.inf = res.inf + summand;
+        res.sup = res.sup + summand;    
+    
+    elseif isa(summand,'zonotope') || isa(summand,'conZonotope') || ...
+           isa(summand,'zonoBundle') || isa(summand,'polyZonotope') || ...
+           isa(summand,'mptPolytope') || isa(summand,'conPolyZono')
+    
+        res = summand + res;
+    
+    else
+    
+        % throw error for given arguments
+        throw(CORAerror('CORA:noops',summand1,summand2));
+    end
 
-elseif isnumeric(summand)
+catch ME
+    % note: error has already occured, so the operations below don't have
+    % to be efficient
 
-    res.inf = res.inf + summand;
-    res.sup = res.sup + summand;    
+    % already know what's going on...
+    if startsWith(ME.identifier,'CORA')
+        rethrow(ME);
+    end
 
-elseif isa(summand,'zonotope') || isa(summand,'conZonotope') || ...
-       isa(summand,'zonoBundle') || isa(summand,'polyZonotope') || ...
-       isa(summand,'mptPolytope') || isa(summand,'conPolyZono')
+    % check for empty sets
+    if isempty(res)
+        return
+    elseif isemptyobject(summand)
+        res = interval(); return
+    end
 
-    res = summand + res;
+    % check whether different dimension of ambient space
+    equalDimCheck(res,summand);
 
-else
+    % other error...
+    rethrow(ME);
 
-    % throw error for given arguments
-    error(noops(summand1,summand2));
 end
 
 %------------- END OF CODE --------------

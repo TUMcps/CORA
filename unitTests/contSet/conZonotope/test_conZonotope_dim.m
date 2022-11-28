@@ -61,11 +61,4 @@ for i=1:nrOfTests
     end
 end
 
-
-if res
-    disp('test_conZonotope_dim successful');
-else
-    disp('test_conZonotope_dim failed');
-end
-
 %------------- END OF CODE --------------

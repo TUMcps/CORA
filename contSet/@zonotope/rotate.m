@@ -28,6 +28,11 @@ function Z = rotate(Z,dims,angle)
 
 %------------- BEGIN CODE --------------
 
+% check input arguments
+inputArgsCheck({{Z,'att','zonotope','nonempty'};
+                {dims,'att','numeric',{'nonnan','vector','nonnegative'}};
+                {angle,'att','numeric',{'nonnan','scalar'}}});
+
 %rotation matrix
 R = [cos(angle) -sin(angle); sin(angle) cos(angle)];
 

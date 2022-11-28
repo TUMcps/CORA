@@ -41,10 +41,4 @@ true_mat = [-4, -6, -4, -2; ...
 % check result
 res = all(all(Zmat == true_mat));
 
-if res
-    disp('test_enlarge successful');
-else
-    disp('test_enlarge failed');
-end
-
 %------------- END OF CODE --------------

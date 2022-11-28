@@ -50,14 +50,11 @@ res(3) = ~isFullDim(C);
 C = capsule(c,g,r);
 res(4) = isFullDim(C);
 
+% empty set
+C = capsule();
+res(5) = ~isFullDim(C);
 
 % combine results
 res = all(res);
-
-if res
-    disp('test_isFullDim successful');
-else
-    disp('test_isFullDim failed');
-end
 
 %------------- END OF CODE --------------

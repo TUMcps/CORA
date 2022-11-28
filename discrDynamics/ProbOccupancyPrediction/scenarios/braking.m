@@ -4,7 +4,7 @@ function braking()
 
 %set path
 global filePath
-filePath = [coraroot '/contDynamics/stateSpaceModels'];
+filePath = [CORAROOT filesep 'contDynamics' filesep 'stateSpaceModels'];
 
 %load Markov chain of car
 [FileName,PathName] = uigetfile('','Select the Markov chain model');

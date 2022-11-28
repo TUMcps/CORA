@@ -1,14 +1,14 @@
-function obj = guard2polytope(obj)
-% guard2polytope - convert the guard set to a mptPolytope
+function trans = guard2polytope(trans)
+% guard2polytope - convert the guard set of a transition to a mptPolytope
 %
 % Syntax:  
-%    obj = guard2polytope(obj)
+%    trans = guard2polytope(trans)
 %
 % Inputs:
-%    obj - transition object
+%    trans - transition object
 %
 % Outputs:
-%    obj - modified transition object
+%    trans - modified transition object
 %
 % Other m-files required: not specified
 % Subfunctions: none
@@ -22,10 +22,9 @@ function obj = guard2polytope(obj)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-    
-    if ~isa(obj.guard,'levelSet') && ~isa(obj.guard,'mptPolytope')
-        obj.guard = mptPolytope(obj.guard);
-    end
+
+if ~isa(trans.guard,'levelSet') && ~isa(trans.guard,'mptPolytope')
+    trans.guard = mptPolytope(trans.guard);
 end
 
 %------------- END OF CODE --------------

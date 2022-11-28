@@ -26,11 +26,7 @@ function res = testLongDuration_interval_asin
 
 %------------- BEGIN CODE --------------
 
-tol = 1e-9;
-res = true;
-
-% Random tests ---------------------------------------------------------
-
+% Random tests
 numberRandTests = 10000;
 
 % all x<1 or x>1 must return NaN
@@ -61,15 +57,12 @@ for i=1:numberRandTests
 end
 
 
-
-% final test result -------------------------------------------------------
-
+% final test result
 res = all(res_rand);
 
-if res
-    disp('test_asin successful');
-else
-    disp('test_asin failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'a','b');
 end
 
 end

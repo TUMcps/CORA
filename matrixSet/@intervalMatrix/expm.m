@@ -1,6 +1,6 @@
-function [eI, iPow, E] = expm(varargin)
-% expm - operator for the exponential matrix of an 
-% interval matrix, evaluated dependently
+function [eI,iPow,E] = expm(intMat,varargin)
+% expm - operator for the exponential matrix of an interval matrix,
+%    evaluated dependently
 %
 % Syntax:  
 %    eI = expm(intMat)
@@ -41,7 +41,6 @@ function [eI, iPow, E] = expm(varargin)
 
 if nargin == 1
     
-    intMat = varargin{1};
     maxOrder = 10;
     
     %compute exact terms
@@ -55,8 +54,7 @@ if nargin == 1
 
 elseif nargin == 2
     
-    intMat = varargin{1};
-    maxOrder = varargin{2};
+    maxOrder = varargin{1};
     
     %compute exact terms
     [sq,H] = dependentTerms(intMat,1);
@@ -69,9 +67,9 @@ elseif nargin == 2
     
 
 elseif nargin==3
-    intMat = varargin{1};
-    r = varargin{2};
-    maxOrder = varargin{3};
+    
+    r = varargin{1};
+    maxOrder = varargin{2};
     
     %compute exact terms
     [sq,H] = dependentTerms(intMat*(1/r),r);
@@ -83,11 +81,11 @@ elseif nargin==3
     eI = H;
     
 elseif nargin==5
-    intMat = varargin{1};
-    r = varargin{2};
-    maxOrder = varargin{3};
-    initialOrder = varargin{4};
-    initialPower = varargin{5};
+    
+    r = varargin{1};
+    maxOrder = varargin{2};
+    initialOrder = varargin{3};
+    initialPower = varargin{4};
     
     %init eI
     eI=initialPower*(1/factorial(initialOrder));

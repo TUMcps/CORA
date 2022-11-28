@@ -26,10 +26,6 @@ function res = test_polyZonotope_cubMap
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-%% ANALYTICAL TESTS
-
 % TEST cubic multiplication
 
 % define polynomial zonotope
@@ -54,8 +50,9 @@ expMat_ = [1 0 2 1 3 2 1 0;...
            0 1 0 1 0 1 2 3];
        
 % check for correctness
-if any(any(pZres.c-c_)) || any(size(pZres.G)-size(G_)) || any(size(pZres.expMat)-size(expMat_))
-    error('test_polyZonotope_cubMap: analytical test failed!'); 
+if ~all(withinTol(pZres.c,c_)) || any(size(pZres.G)-size(G_)) ...
+        || any(size(pZres.expMat)-size(expMat_))
+    throw(CORAerror('CORA:testFailed'));
 else
     for i = 1:size(expMat_,2)    
 
@@ -63,35 +60,13 @@ else
         ind_ = find(ind > 0);
 
         if isempty(ind_)
-            error('test_polyZonotope_cubMap: analytical test failed!');        
+            throw(CORAerror('CORA:testFailed'));
         elseif ~all(pZres.G(:,ind_(1)) == G_(:,i))
-            error('test_polyZonotope_cubMap: analytical test failed!');  
+            throw(CORAerror('CORA:testFailed'));
         end
     end
 end
 
-
-
-
 res = true;
-
-
-end
-
-% Auxiliary Functions -----------------------------------------------------
-
-function p = cubMulPoint(x1,x2,x3,T)
-
-    p = zeros(size(x1));
-    
-    % loop over all dimensions
-    for i = 1:length(p)
-       
-         % loop over all quadratic matrices for this dimension
-         for j = 1:size(T,2)
-            p(i) = p(i) + (x1' * T{i,j} * x2) * x3(j);
-         end
-    end
-end
 
 %------------- END OF CODE --------------

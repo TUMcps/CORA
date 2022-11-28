@@ -1,16 +1,18 @@
-function intVal = ctranspose(intVal)
+function I = ctranspose(I)
 % ctranspose - Overloaded ''' operator for single operand
 %
 % Syntax:  
-%    intVal = ctranspose(intVal)
+%    I = ctranspose(I)
 %
 % Inputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Outputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Example: 
+%    I = interval([-1;-2],[3;4]);
+%    I'
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,10 +27,7 @@ function intVal = ctranspose(intVal)
 
 %------------- BEGIN CODE --------------
 
-%infimum
-intVal.inf = intVal.inf.';
-
-%supremum
-intVal.sup = intVal.sup.';
+I.inf = I.inf.';
+I.sup = I.sup.';
 
 %------------- END OF CODE --------------

@@ -43,43 +43,55 @@ end
 
 % check types of name, status, and checkfuncs
 if ~ischar(name)
-    error("Name for parameter or option has to be a char array.");
+    throw(CORAerror('CORA:configFile',...
+        "Name for parameter or option has to be a char array."));
 elseif length(strfind(name,'.')) > 1
-    error("Name for parameter or options can contain at most one '.'");
+    throw(CORAerror('CORA:configFile',...
+        "Name for parameter or options can contain at most one '.'"));
 elseif ~ismember(admissiblestatus,status)
-    error(sprintf(['Status of parameter or options has to be: \n  ',...
-        strjoin(admissiblestatus,',\n  '),'.']));
+    throw(CORAerror('CORA:configFile',...
+        sprintf(['Status of parameter or options has to be: \n  ',...
+        strjoin(admissiblestatus,',\n  '),'.'])));
 elseif ~iscell(checkfuncs) || (~isempty(condfunc) && ~iscell(condfunc))
-    error("Validation functions have to be within a cell-array.");
+    throw(CORAerror('CORA:configFile',...
+        "Validation functions have to be within a cell-array."));
 elseif iscell(condfunc) && length(condfunc) > 1
-    error("There can only be one conditional validation function.");
+    throw(CORAerror('CORA:configFile',...
+        "There can only be one conditional validation function."));
 elseif ~iscell(errmsgs)
-    error("Error messages have to be within a cell-array.");
+    throw(CORAerror('CORA:configFile',...
+        "Error messages have to be within a cell-array."));
 end
 
 % check correctness of error message identifiers
 for i=1:length(errmsgs)
     if ~ischar(errmsgs{i})
-        error("Error Messages have to be char arrays.");
+        throw(CORAerror('CORA:configFile',...
+            "Error Messages have to be char arrays."));
     elseif isempty(getErrorMessage(errmsgs{i}))
-        % check if errmsgs{i} actually exists	
-        error("Error Message Identifier does not exist.");
+        % check if errmsgs{i} actually exists
+        throw(CORAerror('CORA:configFile',...
+            "Error Message Identifier does not exist."));
     end
 end
 
 % check correctness of input arguments for function handles
 for i=1:length(checkfuncs)
     if ~isa(checkfuncs{i},'function_handle')
-        error("Validation functions have to be function handles.");
+        throw(CORAerror('CORA:configFile',...
+            "Validation functions have to be function handles."));
     elseif nargin(checkfuncs{i}) ~= 1
-        error("Validation functions can only have one input argument.");
+        throw(CORAerror('CORA:configFile',...
+            "Validation functions can only have one input argument."));
     end
 end
 if ~isempty(condfunc)
     if ~isa(condfunc{1},'function_handle')
-        error("The conditional validation function has to be a function handle.");
+        throw(CORAerror('CORA:configFile',...
+            "The conditional validation function has to be a function handle."));
     elseif nargin(condfunc{1}) ~= 0
-        error("The conditional validation function has to have no input arguments.");
+        throw(CORAerror('CORA:configFile',...
+            "The conditional validation function has to have no input arguments."));
     end
 end
 

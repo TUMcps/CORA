@@ -1,6 +1,6 @@
 function names = genDefaultVarNames(mat,names,inputname)
-% genDefaultNames - generate default variable names for an taylm-, affine-
-%                   or zoo-object 
+% genDefaultVarNames - generate default variable names for an taylm-,
+%    affine- or zoo-object 
 %
 % Syntax:  
 %    names = genDefaultVarNames(mat,names,inputname)
@@ -12,10 +12,8 @@ function names = genDefaultVarNames(mat,names,inputname)
 %            argument
 %    inputname - name of the variable that contained the variable values
 %   
-%
 % Outputs:
 %    names - cell array containing the default variable names
-%
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -45,26 +43,28 @@ function names = genDefaultVarNames(mat,names,inputname)
 
        % input interval is a matrix => add indices to name 
        else                  
-           names = addMatIndizesToName(text,mat);
+           names = addMatIndicesToName(text,mat);
        end
 
    % names provided -> check for correctness
    else
        
-       % single string instead of cell-array => add matrix indizes
+       % single string instead of cell-array => add matrix indices
        if ~isscalar(mat) && ~iscell(names)
-          names = addMatIndizesToName(names,mat); 
+          names = addMatIndicesToName(names,mat); 
        end
 
        if iscell(names) && any(size(names) ~= size(mat))
-            error('Input argument ''names'' has to be a cell array with the same size as input argument ''int''!');
+           throw(CORAerror('CORA:wrongValue','second',...
+               ' has to be a cell array with the same size as input argument ''int''!'));
        end
    end
 end
 
+% Auxiliary Functions -----------------------------------------------------
 
-function nameMat = addMatIndizesToName(name,mat)
-% add the matrix indizes to the names of the variables
+function nameMat = addMatIndicesToName(name,mat)
+% add the matrix indices to the names of the variables
 
    x = 1:size(mat,1);
    y = 1:size(mat,2);

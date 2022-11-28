@@ -1,13 +1,13 @@
-function res = le(obj1,obj2)
-% le - Overloads the <= operator;
-%    here: Is one interval equal or the subset of another interval?
+function res = le(I1,I2)
+% le - Overloads the <= operator, checks whether one interval is a subset
+%    or equal to another interval
 %
 % Syntax:  
-%    res = le(obj1,obj2)
+%    res = le(I1,I2)
 %
 % Inputs:
-%    obj1 - interval object
-%    obj2 - another interval object
+%    I1 - interval object
+%    I2 - interval object
 %
 % Outputs:
 %    res - Boolean variable: 1 if obj1 is subset or equal to obj2
@@ -31,10 +31,10 @@ function res = le(obj1,obj2)
 %------------- BEGIN CODE --------------
 
 %all left borders of obj1 bigger than obj2?
-leftResult = all(infimum(obj1) >= infimum(obj2));
+leftResult = all(infimum(I1) >= infimum(I2));
 
 %all right borders of obj1 smaller than obj2?
-rightResult = all(supremum(obj1) <= supremum(obj2));
+rightResult = all(supremum(I1) <= supremum(I2));
 
 %left and right interval test must be true
 res = leftResult & rightResult;

@@ -26,9 +26,9 @@ function res = test_ellipsoid_project
 %------------- BEGIN CODE --------------
 
 % create a random psd Q matrix
-dim = 4;
-O = orth(randn(dim));
-D = diag(abs(randn(dim,1)) + 0.3);
+n = 4;
+O = orth(randn(n));
+D = diag(abs(randn(n,1)) + 0.3);
 Q = O*D*O';
 
 % generate ellipsoid
@@ -36,25 +36,23 @@ E = ellipsoid(Q);
 
 % project ellipsoid
 projDim = [2 3];
-E_proj = project(E,projDim);
+E_proj1 = project(E,projDim);
 
 % true solution
 Q_proj = Q(projDim(1):projDim(2),projDim(1):projDim(2));
 E_true = ellipsoid(Q_proj);
 
+% logical indexing
+projDim = [false true true];
+E_proj2 = project(E,projDim);
+
 % check properties
 tol = 1e-9;
-res(1) = all(all(abs(E_true.Q - E_proj.Q) < tol));
-res(2) = E_true.dim == E_proj.dim;
-res(3) = E_true.isdegenerate == E_proj.isdegenerate;
+res(1) = all(all(abs(E_true.Q - E_proj1.Q) < tol));
+res(2) = E_true.dim == E_proj1.dim;
+res(3) = all(all(abs(E_true.Q - E_proj2.Q) < tol));
+res(4) = E_true.dim == E_proj2.dim;
 % summary of checks
 res = all(res);
-
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 
 %------------- END OF CODE --------------

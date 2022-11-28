@@ -29,13 +29,10 @@ function res = test_interval_mpower
 tol = 1e-9;
 res = true;
 
-% 1. analytical tests -----------------------------------------------------
-
 a = interval(0, 2);
 c = a ^ 1;
 if abs( infimum(c) - 0.0 ) > tol || abs( supremum(c) - 2.0 ) > tol
 	res = false;
-	disp('test_mpower failed');
 	return;
 end
 
@@ -43,7 +40,6 @@ a = interval(0, 2);
 c = a ^ 2;
 if abs( infimum(c) - 0.0 ) > tol || abs( supremum(c) - 4.0 ) > tol
 	res = false;
-	disp('test_mpower failed');
 	return;
 end
 
@@ -51,7 +47,6 @@ a = interval(-2, 0);
 c = a ^ 2;
 if abs( infimum(c) - 0.0 ) > tol || abs( supremum(c) - 4.0 ) > tol
 	res = false;
-	disp('test_mpower failed');
 	return;
 end
 
@@ -59,7 +54,6 @@ a = interval(-2, 0);
 c = a ^ 3;
 if abs( infimum(c) + 8.0 ) > tol || abs( supremum(c) - 0.0 ) > tol
 	res = false;
-	disp('test_mpower failed');
 	return;
 end
 
@@ -67,7 +61,6 @@ a = interval(-3, 2);
 c = a ^ 2;
 if abs( infimum(c) - 0.0 ) > tol || abs( supremum(c) - 9.0 ) > tol
 	res = false;
-	disp('test_mpower failed');
 	return;
 end
 
@@ -75,7 +68,6 @@ a = interval(-3, 2);
 c = a ^ 3;
 if abs( infimum(c) + 27.0 ) > tol || abs( supremum(c) - 8.0 ) > tol
 	res = false;
-	disp('test_mpower failed');
 	return;
 end
 
@@ -83,7 +75,6 @@ a = interval(-3, -2);
 c = a ^ 2;
 if abs( infimum(c) - 4.0 ) > tol || abs( supremum(c) - 9.0 ) > tol
 	res = false;
-	disp('test_mpower failed');
 	return;
 end
 
@@ -91,7 +82,6 @@ a = interval(-3, -2);
 c = a ^ 3;
 if abs( infimum(c) + 27.0 ) > tol || abs( supremum(c) + 8.0 ) > tol
 	res = false;
-	disp('test_mpower failed');
 	return;
 end
 
@@ -99,7 +89,6 @@ a = interval(2, 3);
 c = a ^ 2;
 if abs( infimum(c) - 4.0 ) > tol || abs( supremum(c) - 9.0 ) > tol
 	res = false;
-	disp('test_mpower failed');
 	return;
 end
 
@@ -107,12 +96,7 @@ a = interval(2, 3);
 c = a ^ 3;
 if abs( infimum(c) - 8.0 ) > tol || abs( supremum(c) - 27.0 ) > tol
 	res = false;
-	disp('test_mpower failed');
 	return;
 end
-
-
-disp('test_mpower successful');
-return;
 
 %------------- END OF CODE --------------

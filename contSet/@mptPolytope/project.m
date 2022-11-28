@@ -1,23 +1,23 @@
-function obj = project(obj,dims)
-% project - projects a mptPolytope onto a set of dimensions
+function P = project(P,dims)
+% project - projects a polytope onto the specified dimensions
 %
 % Syntax:  
-%    res = project(obj,dims)
+%    res = project(P,dims)
 %
 % Inputs:
-%    obj - mptPolytope object
-%    dims - vector of dimensions
+%    P - (mptPolytope) polytope
+%    dims - dimensions for projection
 %
 % Outputs:
-%    res - projected mptPolytope object
+%    res - (mptPolytope) projected polytope
 %
 % Example: 
-%    poly = mptPolytope.generateRandom(3);
-%    poly_ = project(poly,[1,2]);
+%    P = mptPolytope.generateRandom('Dimension',3);
+%    P_ = project(P,[1,2]);
 %
 %    figure; hold on; grid on;
-%    plot(poly,[1,2,3],'r','FaceAlpha',0.5,'Filled',true);
-%    plot(poly_,[1,2],'b','LineWidth',2);
+%    plot(P,[1,2,3],'FaceColor','r','FaceAlpha',0.5);
+%    plot(P_,[1,2],'b','LineWidth',2);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,11 +32,17 @@ function obj = project(obj,dims)
 
 %------------- BEGIN CODE --------------
 
+    % if dimensions given as logical array, convert to numbers
+    if islogical(dims)
+        temp = 1:length(dims);
+        dims = temp(dims);
+    end
+
     % remove redundant halfspaces
-    obj = removeRedundancies(obj);
+    P = removeRedundancies(P);
     
     % determine dimensions that have to be projected away
-    n = dim(obj);
+    n = dim(P);
     remDims = setdiff(1:n,dims);
     
     % project away all unwanted dimensions by repeatadly applying the
@@ -44,21 +50,21 @@ function obj = project(obj,dims)
     for i = 1:length(remDims)
        
         % project away current dimension 
-        [A,b] = fourierMotzkinElimination(obj.P.A,obj.P.b,remDims(i));
+        [A,b] = fourierMotzkinElimination(P.P.A,P.P.b,remDims(i));
         
         % update indices to match projected polytope
         remDims = remDims - 1;
         
         % remove redundant halfspaces
-        obj = removeRedundancies(mptPolytope(A,b));
+        P = removeRedundancies(mptPolytope(A,b));
     end
     
     % shuffle dimensions of the remaining projected polytope
     [~,ind] = sort(dims);
-    A = obj.P.A;
+    A = P.P.A;
     A(:,ind) = A;
     
-    obj = mptPolytope(A,obj.P.b);
+    P = mptPolytope(A,P.P.b);
 end
 
 

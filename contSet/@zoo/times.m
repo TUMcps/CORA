@@ -26,25 +26,26 @@ function res = times(factor1,factor2)
     
     if isa(factor1,'zoo') && isa(factor2,'zoo')
             
-        res = arrayfun(@(a, b) s_times_zz(a, b), factor1, factor2, 'UniformOutput', 0);
+        res = arrayfun(@(a, b) s_times_zz(a, b), factor1, factor2, 'UniformOutput', false);
     
     elseif isa(factor1,'zoo') && (isa(factor2,'double') || isa(factor2,'interval'))
         
-        res = arrayfun(@(a) s_times_zd(a, factor2), factor1,  'UniformOutput', 0);
+        res = arrayfun(@(a) s_times_zd(a, factor2), factor1,  'UniformOutput', false);
         
     elseif (isa(factor1,'double') || isa(factor1,'interval')) && isa(factor2,'zoo') 
 
-        res = arrayfun(@(b) s_times_dz(factor1, b), factor2, 'UniformOutput', 0);
+        res = arrayfun(@(b) s_times_dz(factor1, b), factor2, 'UniformOutput', false);
         
     else
-        
-        error('Wrong input')
+         throw(CORAerror('CORA:wrongValue','first/second',...
+             "('zoo','zoo'), ('zoo','double'), ('double','zoo'), ('zoo','interval'), ('double','zoo'), or ('interval','zoo')"));
         
     end
     A = cat(1, res{:});
     res = reshape(A, size(res));
     
 end
+
 %% --------------- Implementation for a scalar --------------
 function res = s_times_zz(factor1, factor2)
 

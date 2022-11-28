@@ -1,13 +1,34 @@
-function [names_out] = applyRenames(names_in,keys,renames)
-% applies a list of name changes to a string array
-% INPUTS
-%   names_in (string): strings to be renamed
-%   renames (2xN string): string renamings to be applied
-%                 change from names in 1st column to names in 2nd column
-%                 (created by findRenames.m)
-% OUTPUTS
-%   names_out: names_in with applied renames
-%   (renames not to be applied recursively)
+function names_out = applyRenames(names_in,keys,renames)
+% applyRenames - applies a list of name changes to a string array
+%
+% Syntax:  
+%    names_out = applyRenames(names_in,keys,renames)
+%
+% Inputs:
+%    names_in (string) - strings to be renamed
+%    renames (2xN string) - string renamings to be applied
+%                           change from names in 1st column to names in
+%                           2nd column (created by findRenames.m)
+%
+% Outputs:
+%    names_out - names_in with applied renames
+%                (renames not to be applied recursively)
+%
+% Example: 
+%    ---
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
+
+% Author:       ???
+% Written:      ???
+% Last update:  ---
+% Last revision:---
+
+%------------- BEGIN CODE --------------
 
 names_out = names_in;
 % iterate over names_in and find the rename
@@ -20,4 +41,4 @@ for i = 1:numel(names_in)
     end
 end
 
-end
+%------------- END OF CODE --------------

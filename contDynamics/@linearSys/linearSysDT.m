@@ -41,39 +41,39 @@ function sys = linearSysDT(sys,dt)
 
 % Author:       Niklas Kochdumper
 % Written:      21-November-2020 
-% Last update:  ---
+% Last update:  19-November-2021 (MW, minor fixes)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    % convert system matrix A_ = e^A*dt
-    A = expm(sys.A*dt);
-    
-    % convert input matrix B_ = A^-1 * (e^A*dt - I) * B
-    temp1 = eye(size(sys.A,1)) * dt;
-    temp2 = temp1;
-    cnt = 2;
-    
-    while true
-       temp1 = temp1 * dt/cnt * A;
-       temp2 = temp2 + temp1;
-       cnt = cnt + 1;
-       if all(all(abs(temp1 < eps)))
-          break; 
-       end
-    end
+% convert system matrix A_ = e^A*dt
+A = expm(sys.A*dt);
 
-    B = temp2 * sys.B;
-    
-    % convert constant input c_ = A^-1 * (e^A*dt - I) * c
-    c = [];
-    
-    if ~isempty(sys.c)
-        c = temp2 * sys.c;
+% convert input matrix B_ = A^-1 * (e^A*dt - I) * B
+temp1 = eye(size(sys.A,1)) * dt;
+temp2 = temp1;
+cnt = 2;
+
+while true
+    temp1 = temp1 * dt/cnt * sys.A;
+    temp2 = temp2 + temp1;
+    cnt = cnt + 1;
+    if all(all(abs(temp1) < eps)) || cnt > 1000
+        break;
     end
+end
+
+B = temp2 * sys.B;
+
+% convert constant input c_ = A^-1 * (e^A*dt - I) * c
+c = zeros(sys.dim,1);
+if ~isempty(sys.c)
+    c = temp2 * sys.c;
+end
+
+% construct resulting discrete time system
+sys = linearSysDT(A,B,c,sys.C,sys.D,sys.k,dt);
     
-    % construct resulting discrete time system
-    sys = linearSysDT(A,B,c,sys.C,sys.D,sys.k,dt);
 end
 
 %------------- END OF CODE --------------

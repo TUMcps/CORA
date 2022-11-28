@@ -2,18 +2,19 @@ function [iAxis,relImpr] = evaluateRotations(V,deltaAngle)
 % evaluateRotations - check which rotation decreases the volume of an
 % enclosing bounding box
 %
-% Syntax:  
-%    V - matrix of points
-%    deltaAngle - increment value of the angles
+% Syntax:
+%    [iAxis,relImpr] = evaluateRotations(V,deltaAngle)
 %
 % Inputs:
-%    Z - zonotope object
+%    V - matrix of points
+%    deltaAngle - increment value of the angles
 %
 % Outputs:
 %    iAxis - indicates which axis has been rotated
 %    relImpr - computes the relative improvement of the rotation
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -21,10 +22,10 @@ function [iAxis,relImpr] = evaluateRotations(V,deltaAngle)
 %
 % See also: ---
 
-% Author: Matthias Althoff
-% Written: 06-October-2008
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      06-October-2008
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -72,5 +73,4 @@ else
     relImpr=(origVol-vol2(iAxis))/origVol;
 end
 
-    
 %------------- END OF CODE --------------

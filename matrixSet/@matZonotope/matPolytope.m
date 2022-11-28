@@ -1,15 +1,15 @@
 function matP = matPolytope(matZ)
 % matPolytope - Converts a matrix zonotope into a matrix polytope 
-% representation
+%    representation
 %
 % Syntax:  
 %    matP = matPolytope(matZ)
 %
 % Inputs:
-%    matZ - matrix zonotope
+%    matZ - matZonotope object
 %
 % Outputs:
-%    matP - matrix polytope
+%    matP - matPolytope object
 %
 % Example: 
 %

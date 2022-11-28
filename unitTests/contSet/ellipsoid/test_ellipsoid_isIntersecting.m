@@ -24,8 +24,13 @@ function res = test_ellipsoid_isIntersecting
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-res = true;
+
 load cases.mat E_c
+
+% empty set
+res = ~ isIntersecting(E_c{1}.E1,ellipsoid());
+
+% loop over cases
 for i=1:length(E_c)
     E1 = E_c{i}.E1;
     Ed1 = E_c{i}.E1;
@@ -46,14 +51,6 @@ for i=1:length(E_c)
         break;
     end
     
-    
-    
 end
 
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

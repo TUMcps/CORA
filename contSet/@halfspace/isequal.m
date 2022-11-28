@@ -1,21 +1,21 @@
-function res = isequal(h1,h2,tol)
-% isequal - checks if halfspaces are equal
+function res = isequal(hs1,hs2,varargin)
+% isequal - checks if two halfspaces are equal
 %
 % Syntax:  
-%    res = isequal(h1,h2,tol)
+%    res = isequal(hs1,hs2,tol)
 %
 % Inputs:
-%    h1 - halfspace object
-%    h2 - halfspace object
+%    hs1 - halfspace object
+%    hs2 - halfspace object
 %    tol - tolerance (optional)
 %
 % Outputs:
-%    res - boolean whether h1 and h2 are equal
+%    res - true/false
 %
 % Example: 
-%    h1 = halfspace([2;4], 4);
-%    h2 = halfspace([-3;5], 3);
-%    isequal(h1,h2);
+%    hs1 = halfspace([2;4], 4);
+%    hs2 = halfspace([-3;5], 3);
+%    isequal(hs1,hs2)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,12 +30,16 @@ function res = isequal(h1,h2,tol)
 
 %------------- BEGIN CODE --------------
 
-if nargin == 2
-    tol = eps;
-end
+% parse input arguments
+tol = setDefaultValues({eps},varargin{:});
 
-res = all(abs(h1.c - h2.c) < tol) && ... % normal vectors
-    abs(h1.d - h2.d) < tol; % distances to origin
-    
+% check input arguments
+inputArgsCheck({{hs1,'att','halfspace'};
+                {hs2,'att','halfspace'};
+                {tol,'att','numeric',{'nonnan','nonnegative','scalar'}}});
+
+% numerical comparison
+res = all(withinTol(hs1.c,hs2.c,tol)) && ... % normal vectors
+    withinTol(hs1.d,hs2.d,tol); % distances to origin
 
 %------------- END OF CODE --------------

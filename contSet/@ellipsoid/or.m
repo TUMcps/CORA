@@ -1,22 +1,24 @@
-function E = or(obj,S,mode)
-% or - overloads | operator to compute inner/outer approximation of the
-% union 
+function E = or(E,S,varargin)
+% or - overloads '|' operator to compute an inner-/outer-approximation of
+%    the union of an ellipsoid and another set representation
 %
 % Syntax:  
-%    E = or(obj,S)
-%    E = or(obj,S,mode)
+%    E = or(E,S)
+%    E = or(E,S,mode)
 %
 % Inputs:
-%    obj                - ellipsoid object
-%      S                - set (or cell array)
-%    mode (optional)    - 'i' (inner)/ 'o' (outer)
+%    E - ellipsoid object
+%    S - contSet object (or array)
+%    mode - type of approximation (optional):
+%               'inner' (inner-approximation)
+%               'outer' (outer-approximation)
 %
 % Outputs:
-%    E - resulting ellipsoid
+%    E - ellipsoid object
 %
 % Example: 
-%    E1 = ellipsoid.generateRandom(2,false);
-%    E2 = ellipsoid.generateRandom(2,false); 
+%    E1 = ellipsoid.generateRandom('Dimension',2);
+%    E2 = ellipsoid.generateRandom('Dimension',2);
 %    E = E1 | E2;
 %
 % References:
@@ -31,56 +33,72 @@ function E = or(obj,S,mode)
 % Author:       Victor Gassmann
 % Written:      09-March-2021 
 % Last update:  15-March-2021
+%               04-July-2022 (VG: class array; fixed small bug)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 %% parsing & checking
-if ~exist('mode','var')
-    mode = 'o';
-end
-if ~any(mode==['i','o'])
-   error('mode has to be either "i" (inner approx) or "o" (outer approx)');
+% make sure first argument is class argument 
+[E,S] = findClassArg(E,S,'ellipsoid');
+mode = setDefaultValues({'outer'},varargin{:});
+
+% check input arguments
+inputArgsCheck({{E,'att','ellipsoid','scalar'};
+                {S,'att',{'contSet','numeric'}};
+                {mode,'str',{'outer','inner'}}});
+
+% empty set case
+if all(isempty(S)) && ~isempty(E)
+    return;
 end
 
-if ~isa(obj,'ellipsoid')
-    error('First argument is not an ellipsoid!');
-end
+% check if equal dims
+equalDimCheck(E,S);
 
-S = prepareSetCellArray(S,obj);
-if isempty(S)
-    E = ellipsoid;
+
+if all(isempty(S))
     return;
 end
 
 %% different unions
-if isa(S{1},'double')
-    V = cell2mat(reshape(S,[1,numel(S)]));
-    if strcmp(mode,'o')
+if isa(S,'double')
+    V = S;
+    if strcmp(mode,'outer')
         E_p = ellipsoid.enclosePoints(V,'min-vol');
-        E = orEllipsoidOA(obj,{E_p});
+        E = orEllipsoidOA([E,E_p]);
         return;
     else
         P = mptPolytope.enclosePoints(V);
-        E = ellipsoid(P,'i');
+        E = or(E,P,'inner');
         return;
     end
 end
 
-if isa(S{1},'ellipsoid')
-    if strcmp(mode','o')
-        E = orEllipsoidOA(obj,S);
+if isa(S,'ellipsoid')
+    if strcmp(mode,'outer')
+        E = orEllipsoidOA([E;S(:)]);
         return;
     else
-        S_ = [{obj};S];
-        [~,ii] = max(cellfun(@(ss)volume(ss),S_));
-        E = S_{ii};
-        return;
+        throw(CORAerror('CORA:noops',E,S,'inner'));
     end
 end
 
-if isa(S{1},'mptPolytope')
-    error('Not implemented yet!');
+if isa(S,'mptPolytope')
+    if strcmp(mode,'outer')
+        E_S = ellipsoid.array(1,numel(S));
+        for i=1:numel(S)
+            E_S(i) = ellipsoid(S,'outer');
+        end
+        E = orEllipsoid([E,E_S]);
+    else
+        % not implemented
+        %E = orEllipsoidIA([E,ellipsoid(S,'inner')]);
+        throw(CORAerror('CORA:noops',E,S));
+    end
 end
 
-error('Type of S not supported');
+% throw error for all other combinations
+throw(CORAerror('CORA:noops',E,S));
+
 %------------- END OF CODE --------------

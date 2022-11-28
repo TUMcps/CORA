@@ -13,7 +13,11 @@ function rotMat = rotationMatrix(h, newDir)
 %    rotMat - rotation matrix
 %
 % Example: 
-%    ---
+%    hs = halfspace([1 -1],2);
+%    newDir = [1;1];
+%    rotPoint = [0;0];
+% 
+%    rotate(hs,newDir,rotPoint) % calls rotationMatrix
 %
 % Other m-files required: none
 % Subfunctions: none

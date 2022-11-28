@@ -1,8 +1,8 @@
-function [Gcells]=reorderingFilter(G)
+function Gcells = reorderingFilter(G)
 % reorderingFilter - saves combinations of generators to matrix cells
 %
 % Syntax:  
-%    [Gred]=volumeFilter(G)
+%    Gcells = reorderingFilter(G)
 %
 % Inputs:
 %    G - generator matrix

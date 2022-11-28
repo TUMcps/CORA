@@ -1,16 +1,16 @@
-function obj = mtimes(M,obj)
+function R = mtimes(M,R)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix or an
-%          with a reachSet object
+%    with a reachSet object
 %
 % Syntax:  
-%    obj = mtimes(M,obj)
+%    R = mtimes(M,R)
 %
 % Inputs:
 %    M - numerical matrix
-%    obj - reachSet object 
+%    R - reachSet object 
 %
 % Outputs:
-%    obj - resulting tranformed reachset object
+%    R - transformed reachSet object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -20,16 +20,20 @@ function obj = mtimes(M,obj)
 
 % Author:       Niklas Kochdumper
 % Written:      04-March-2021
-% Last update:  ---
+% Last update:  10-November-2022 (MW, add checks for empty structs)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    for i = 1:size(obj,1)
-       obj(i).timeInterval.set = cellfun(@(x) M*x, ...
-                            obj(i).timeInterval.set,'UniformOutput',false);
-       obj(i).timePoint.set = cellfun(@(x) M*x, ...
-                               obj(i).timePoint.set,'UniformOutput',false);             
+for i = 1:size(R,1)
+    if ~isempty(R(i).timeInterval.set)
+        R(i).timeInterval.set = cellfun(@(x) M*x, ...
+           R(i).timeInterval.set,'UniformOutput',false);
     end
+    if ~isempty(R(i).timePoint.set)
+        R(i).timePoint.set = cellfun(@(x) M*x, ...
+            R(i).timePoint.set,'UniformOutput',false);
+    end
+end
 
 %------------- END OF CODE --------------

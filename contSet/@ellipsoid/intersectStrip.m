@@ -1,6 +1,6 @@
 function [E,sigma_sq] = intersectStrip(E,C,phi,y,varargin)
 % intersectStrip - computes the intersection between an ellipsoid and a 
-% list of strips. A the strip is defined as | Cx-y | <= phi
+%    list of strips, where a strip is defined as | Cx-y | <= phi
 %
 % Syntax:  
 %    Eres = intersectStrip(E,C,phi,y,varargin)
@@ -35,9 +35,7 @@ function [E,sigma_sq] = intersectStrip(E,C,phi,y,varargin)
 %    plot(E,[1 2],'r');
 %    plot(P,[1 2],'k');
 %    plot(Eres,[1 2],'b');
-% 
 %    legend('ellipsoid','strip','enclosing ellipsoid');
-%
 %
 % References:
 %    [1] S. Gollamudi, S. Nagaraj, S. Kapoor, and Y. F. Huang.
@@ -58,10 +56,14 @@ function [E,sigma_sq] = intersectStrip(E,C,phi,y,varargin)
 
 % Author:       Matthias Althoff
 % Written:      06-Jan-2021
-% Last update:  ---
+% Last update:  04-July-2022 (VG: input checks)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+% inputArgsCheck({{E,'att','ellipsoid','scalar'};
+%                 {C,'att','numeric',{'ncols',dim(E)}};
+%                 {phi,'att','numeric',{'size',[size(C,1),1]}};
+%                 {y,'att','numeric',{'size',[size(C,1),1]}}});
 
 % init sigma_sq_prev
 sigma_sq = [];
@@ -123,12 +125,12 @@ if strcmp(method,'Gollamudi1996')
 
         % compute nu of Theorem 2 in [1]
         % order is important: first check delta == 0
-        if delta == 0
+        if withinTol(delta,0)
             nu = alpha;
         else
             % beta, eq. (18) of [1]
             beta = (phi - sigma_sq_prev)/(delta'*delta);
-            if g == 1
+            if withinTol(g,1)
                 nu = (1-beta)/2;
             else
                 %compute omega
@@ -190,7 +192,7 @@ elseif strcmp(method,'Liu2016')
         % compute lambda of Theorem 3 in [2]
         % beta, eq. (52) of [2]
         beta = (1 - sigma_sq_prev)/(delta'*delta);
-        if g == 1
+        if withinTol(g,1)
             %compute lambda
             lambda = (1-beta)/2;
         else
@@ -232,6 +234,5 @@ end
 
 
 end
-
 
 %------------- END OF CODE --------------

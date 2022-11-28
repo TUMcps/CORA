@@ -16,8 +16,8 @@ classdef linearSys < contDynamics
 % Description:
 %    Generates a linear system object according to the following first
 %    order differential equations:
-%       x' = A x + B u + c
-%       y = C x + D u + k
+%       x'(t) = A x(t) + B u(t) + c + w(t)
+%       y(t)  = C x(t) + D u(t) + k + v(t)
 %
 % Inputs:
 %    name - name of system
@@ -53,17 +53,18 @@ classdef linearSys < contDynamics
 %               07-November-2018 (MA, default values for B and C changed)
 %               04-March-2019 (MA, default IDs for inputs and outputs)
 %               20-May-2020 (NK, name now optional)
+%               19-November-2021 (MW, default values for c, D, k)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
-    A = [];             % system matrix
-    B = 1;              % input matrix
-    c = [];             % constant input
-    C = 1;              % output matrix
-    D = [];             % throughput matrix
-    k = [];             % output offset
+    A {mustBeNumeric} = [];     % system matrix: n x n
+    B {mustBeNumeric} = 1;      % input matrix: n x m
+    c {mustBeNumeric} = [];     % constant input: n x 1
+    C {mustBeNumeric} = [];     % output matrix: q x n
+    D {mustBeNumeric} = [];     % throughput matrix: q x m
+    k {mustBeNumeric} = [];     % output offset: q x 1
     taylor = [];
     krylov = [];
 end
@@ -73,57 +74,94 @@ methods
     % class constructor
     function obj = linearSys(varargin)
         
-        c = []; C = 1; D = []; k = [];
+        if nargin < 2
+            % not enough input arguments
+            throw(CORAerror('CORA:notEnoughInputArgs',2));
+        elseif nargin > 7
+            % too many input arguments
+            throw(CORAerror('CORA:tooManyInputArgs',7));
+        end
         
-        % parse input arguments
+        % parse name, system matrix, input matrix
         if ischar(varargin{1})
             name = varargin{1};
             A = varargin{2};
             B = varargin{3};
             cnt = 3;
         else
-            name = 'linearSys';
+            name = 'linearSys'; % default name
             A = varargin{1};
             B = varargin{2};
             cnt = 2;
         end
         
-        if nargin > cnt
-           cnt = cnt + 1;
-           c = varargin{cnt}; 
-        end
-        if nargin > cnt
-           cnt = cnt + 1;
-           C = varargin{cnt}; 
-        end
-        if nargin > cnt
-           cnt = cnt + 1;
-           D = varargin{cnt}; 
-        end
-        if nargin > cnt
-           cnt = cnt + 1;
-           k = varargin{cnt}; 
-        end
-        
         % number of states, inputs, and outputs
         states = size(A,1);
+        inputs = states;
+        outputs = states;
+        
+        % number of inputs
         if ~isscalar(B)
             inputs = size(B,2);
-        else
-            inputs = states; 
         end
-        outputs = 1;
-        if ~isempty(C)
-           outputs = size(C,1); 
+        
+        % for c, D, and k: overwrite empty entries by default zeros
+        % case C = [] is allowed: yields no output computation in code
+        
+        % constant input
+        c = zeros(states,1); % default value
+        if nargin > cnt
+        	cnt = cnt + 1;
+            if ~isempty(varargin{cnt})
+                c = varargin{cnt};
+            end
+        end
+        
+        % output matrix
+        C = 1; % default value
+        if nargin > cnt
+        	cnt = cnt + 1;
+            C = varargin{cnt};
+        end
+        % compute number of outputs
+        if ~isempty(C) && ~isscalar(C)
+            outputs = size(C,1);
+        end
+        
+        % throughput matrix
+        D = 0; % default value
+        if inputs ~= outputs
+            D = zeros(outputs,inputs); % default value
+        end
+        if nargin > cnt
+            cnt = cnt + 1;
+            if ~isempty(varargin{cnt})
+                D = varargin{cnt};
+            end
+        end
+        
+        % output offset
+        k = zeros(outputs,1); % default value
+        if nargin > cnt
+        	cnt = cnt + 1;
+            if ~isempty(varargin{cnt})
+                k = varargin{cnt};
+            end
         end
         
         % instantiate parent class
         obj@contDynamics(name,states,inputs,outputs); 
         
         % assign object properties
-        obj.A = A; obj.B = B; obj.c = c; obj.C = C; obj.D = D; obj.k = k;
+        obj.A = A; obj.B = B; obj.c = c;
+        obj.C = C; obj.D = D; obj.k = k;
     end
 end
+
+methods (Static = true)
+    linSys = generateRandom(varargin) % generates random linear system
+end
+
 end
 
 %------------- END OF CODE --------------

@@ -1,11 +1,11 @@
-function Z = zonotope(obj)
+function Z = zonotope(I)
 % zonotope - Converts an interval object into a zonotope object
 %
 % Syntax:  
-%    Z = zonotope(obj)
+%    Z = zonotope(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
 %    Z - zonotope object
@@ -27,13 +27,14 @@ function Z = zonotope(obj)
 
 %------------- BEGIN CODE --------------
 
-    % obtain center
-    c = center(obj);
+% obtain center
+c = center(I);
 
-    % construct generator matrix G
-    G = diag(rad(obj));
+% construct generator matrix G
+r = rad(I);
+G = diag(r);
 
-    % instantiate zonotope
-    Z = zonotope([c,G]);
+% instantiate zonotope
+Z = zonotope([c,G(:,r ~= 0)]);
 
 %------------- END OF CODE --------------

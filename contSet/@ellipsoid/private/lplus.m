@@ -1,83 +1,86 @@
-function E_cell = lplus(E_c,L,mode)
-% lplus - Computes the Minkowski sum of all ellipsoids contained in E_c such that resulting
-% overapproximation given by E is tight in directions L
+function E_L = lplus(E,L,mode)
+% lplus - Computes the Minkowski sum of a list of ellipsoids such that the
+%    resulting over-approximation is tight in given directions
 %
 % Syntax:
-%    E_cell = lplus(E_c,l)
+%    E_L = lplus(E,L,mode)
 %
 % Inputs:
-%    E_c - cell array containing ellipsoids
+%    E - ellipsoid object (array)
 %    L  - unit directions
-%    mode-"i": inner approx; "o"(default): outer approx
+%    mode - type of approximation: 'inner', 'outer'
 %
 % Outputs:
-%    E - Ellipsoid after minkowski addition
+%    E_L - Ellipsoid array after Minkowski addition (length(E_L)=size(L,2))
 %
 % Example: 
-%    E1=ellipsoid.generateRandom(2,false);
-%    E2=ellipsoid.generateRandom(2,false);
-%    l =[1;0];
-%    E =lplus({E1,E2},l);
+%    E1 = ellipsoid.generateRandom('Dimension',2);
+%    E2 = ellipsoid.generateRandom('Dimension',2);
+%    l = [1;0];
+%    E = lplus([E1,E2],l);
+%
+% References:
+%    [1] https://www2.eecs.berkeley.edu/Pubs/TechRpts/2006/EECS-2006-46.pdf
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: plus
-%
-% References:
-%    [1] https://www2.eecs.berkeley.edu/Pubs/TechRpts/2006/EECS-2006-46.pdf
-%
+
 % Author:       Victor Gassmann
 % Written:      15-March-2019
-% Last update:  ---
+% Last update:  05-July-2022 (VG: class array support)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-
-if length(E_c)==1
-    E_cell = E_c;
+if length(E)==1
+    E_L = E;
     return;
 end
 
-E_cell = cell(length(E_c),1);
-for i=1:size(L,2)
-    E_cell{i} = lplus_single(E_c,L(:,i),mode);
+% reverse order to avoid changing array size each iteration
+for i=size(L,2):-1:1
+    E_L(i) = lplus_single(E,L(:,i),mode);
 end
 
 end
 
 
-%--- helper
-function E = lplus_single(E_c,l,mode)
-n = length(E_c{1}.q);
-if strcmp(mode,'o')
-    % outer approximation
+% Auxiliary functions -----------------------------------------------------
+
+function E_l = lplus_single(E,l,mode)
+% see [1]
+n = dim(E(1));
+if strcmp(mode,'outer')
+    % outer-approximation
     q = zeros(n,1);
     c = 0;
     Q_ = zeros(n);
-    for i=1:length(E_c)
-        q = q + E_c{i}.q;
-        si = sqrt(l'*E_c{i}.Q*l);
+    for i=1:length(E)
+        q = q + E(i).q;
+        si = sqrt(l'*E(i).Q*l);
         c = c + si;
-        if ~withinTol(si,0,E_c{i}.TOL)
-            Q_ = Q_ + E_c{i}.Q/si;
+        if ~withinTol(si,0,E(i).TOL)
+            Q_ = Q_ + E(i).Q/si;
         end
     end
     Q = c*Q_;
-    E = ellipsoid(Q,q);
+    E_l = ellipsoid(Q,q);
 else
-    % inner approximation
-    x = sqrtm(E_c{1}.Q)*l;
+    % inner-approximation
+    x = sqrtm(E(1).Q)*l;
     q = zeros(n,1);
     Q = zeros(n);
-    for i=1:length(E_c)
-        q = q + E_c{i}.q;
-        Qs = sqrtm(E_c{i}.Q);
+    for i=1:length(E)
+        q = q + E(i).q;
+        Qs = sqrtm(E(i).Q);
         Q = Q + vecalign(x,Qs*l)*Qs;
     end
-    E = ellipsoid(Q'*Q,q);
+    E_l = ellipsoid(Q'*Q,q);
 end
+
 end
+
 %------------- END OF CODE --------------

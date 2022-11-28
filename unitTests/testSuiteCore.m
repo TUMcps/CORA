@@ -24,7 +24,7 @@ function [failed, numberOfTests] = testSuiteCore(varargin)
 
 %------------- BEGIN CODE --------------
 
-directory = [coraroot filesep 'unitTests'];
+directory = [CORAROOT filesep 'unitTests'];
 verbose = false;
 
 if nargin >= 1

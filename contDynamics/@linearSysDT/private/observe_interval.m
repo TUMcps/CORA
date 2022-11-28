@@ -1,5 +1,5 @@
 function R = observe_interval(obj,options)
-% observe_interval - computes the guaranted state estimation 
+% observe_interval - computes the guaranteed state estimation 
 % approach according to the interval approach, see Alg. 1 in [1].
 %
 %

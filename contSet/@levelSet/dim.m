@@ -1,14 +1,15 @@
-function d = dim(obj)
-% dim - Returns the dimension of a level set
+function n = dim(ls)
+% dim - returns the dimension of the ambient space of a level set; this
+%    corresponds to the number of different variables in its equation
 %
 % Syntax:  
-%    d = dim(obj)
+%    n = dim(ls)
 %
 % Inputs:
-%    obj - levelSet object
+%    ls - levelSet object
 %
 % Outputs:
-%    d - dimension of the level set
+%    n - dimension of the ambient space
 %
 % Example: 
 %   syms x y
@@ -17,11 +18,11 @@ function d = dim(obj)
 %
 %   dim(ls)
 %
-% Other m-files required: center.m
+% Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonootpe/dim, interval/dim, levelSet
+% See also: zonotope/dim, interval/dim, levelSet
 
 % Author:       Niklas Kochdumper
 % Written:      10-December-2021 
@@ -30,6 +31,6 @@ function d = dim(obj)
 
 %------------- BEGIN CODE --------------
 
-    d = obj.dim;
+n = ls.dim;
 
 %------------- END OF CODE --------------

@@ -1,21 +1,21 @@
 function han = plot(cPZ,varargin)
-% plot - plots enclosure of the 2D or 3D projection of a constrained 
-%        polynomial zonotope
+% plot - plots an over-approximative projection of a constrained polynomial
+%    zonotope
 %
 % Syntax:  
 %    han = plot(cPZ)
-%    han = plot(cPZ,dims,linespec)
-%    han = plot(cPZ,dims,linespec,'Splits',splits)
+%    han = plot(cPZ,dims)
+%    han = plot(cPZ,dims,type)
 %
 % Inputs:
 %    cPZ - conPolyZono object
-%    dims - dimensions that should be projected
-%    linespec - (optional) LineSpec properties
-%    splits - (optional) number of splits for refinement
-%    type - (optional) name-value pairs
+%    dims - (optional) dimensions for projection
+%    type - (optional) plot settings (LineSpec and Name-Value pairs)
+%           additional Name-Value pairs:
+%               <'Splits',splits> - number of splits for refinement (default: 8)
 %
 % Outputs:
-%    han - handle for the resulting graphics object
+%    han - handle to the graphics object
 %
 % Example: 
 %    c = [0;0];
@@ -42,51 +42,41 @@ function han = plot(cPZ,varargin)
 
 % Author:       Niklas Kochdumper
 % Written:      19-January-2020
-% Last update:  ---
+% Last update:  25-May-2022 (TL: 1D Plotting)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
     % default values for the optional input arguments
-    dims = [1,2];
-    linespec = 'b';
-    splits = 8;
-    NVpairs = {};
-    filled = 0;
+    dims = setDefaultValues({[1,2]},varargin{:});
 
-    % parse input arguments
-    if nargin > 1 && ~isempty(varargin{1})
-        dims = varargin{1}; 
-    end
-    if nargin > 2 && ~isempty(varargin{2})
-        % read additional name-value pairs
-        [linespec,NVpairs] = readPlotOptions(varargin(2:end));
-        [NVpairs,filled] = readNameValuePair(NVpairs,'Filled','islogical',filled);
-        [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar',splits);
-    end
+    % read additional name-value pairs
+    NVpairs = readPlotOptions(varargin(2:end));
+    [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar',8);
 
     % check dimension
-    if length(dims) < 2
-        error('At least 2 dimensions have to be specified!');
+    if length(dims) < 1
+        throw(CORAerror('CORA:plotProperties',1));
     elseif length(dims) > 3
-        error('Only up to 3 dimensions can be plotted!');
+        throw(CORAerror('CORA:plotProperties',3));
     end
 
     % project to desired dimensions
     cPZ = project(cPZ,dims);
 
-    % 2D vs 3D plot
+    if length(dims) == 1
+        % add zeros to 2nd dimension
+        cPZ = cPZ.cartProd(0);
+        dims = [1;2];
+    end
+
     if length(dims) == 2
 
         % compute enclosing polygon
         pgon = polygon(cPZ,splits);
 
         % plot the polygon
-        if filled
-            han = plot(pgon,[1,2],linespec,NVpairs{:},'Filled',true);
-        else
-            han = plot(pgon,[1,2],linespec,NVpairs{:});
-        end
+        han = plot(pgon,[1,2],NVpairs{:});
 
     else
 
@@ -117,7 +107,7 @@ function han = plot(cPZ,varargin)
 
         % check if set is empty
         if isempty(pZsplit)
-           error('Set is empty!'); 
+             throw(CORAerror('CORA:emptySet'));
         end
         
         % loop over all parallel sets
@@ -127,12 +117,12 @@ function han = plot(cPZ,varargin)
             zono = zonotope(project(pZsplit{i},[1,2,3]));
             zono = zonotope([zono.Z,cPZ.Grest]);
             
-            if filled
-                han = plot(zono,[1,2,3],linespec,NVpairs{:},'Filled',true); 
-            else
-                han = plot(zono,[1,2,3],linespec,NVpairs{:});  
-            end
+            han = plot(zono,[1,2,3],NVpairs{:});  
         end
+    end
+    
+    if nargout == 0
+        clear han;
     end
 end
 
@@ -142,7 +132,7 @@ function res = intersectsNullSpace(obj)
 % test if the split set violates the constraints (if it not intersects any
 % of the hyperplanes)
 
-    res = 1;
+    res = true;
     n = length(obj.c);
 
     % loop over all constraint dimensions
@@ -152,7 +142,7 @@ function res = intersectsNullSpace(obj)
         hs = conHyperplane(c,0);
         
         if ~isIntersecting(hs,zonotope(obj))
-           res = 0;
+           res = false;
            return;
         end
     end

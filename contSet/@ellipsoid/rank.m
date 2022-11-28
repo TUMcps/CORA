@@ -1,14 +1,14 @@
 function r = rank(E)
-% rank - returns the rank of E
+% rank - computes the dimension of the affine hull of an ellipsoid
 %
 % Syntax:  
-%    d = rank(E)
+%    r = rank(E)
 %
 % Inputs:
 %    E - ellipsoid object
 %
 % Outputs:
-%    r - rank of E
+%    r - dimension of the affine hull
 %
 % Example: 
 %    E = ellipsoid([1,0;0,1]);
@@ -22,13 +22,20 @@ function r = rank(E)
 
 % Author:       Victor Gassmann
 % Written:      16-March-2021
-% Last update:  ---
+% Last update:  04-July-2022 (VG: allow class array input)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-% Find minimum svd threshold using reciprocal
-% condition number
-d = svd(E.Q);
-mev_th = max(d)*E.TOL;
-r = sum(d>0 & d>=mev_th);
+if isempty(E)
+    r = 0;
+else
+    r = zeros(size(E));
+    for i=1:numel(E)
+        % Find minimum svd threshold using reciprocal
+        % condition number
+        d = svd(E(i).Q);
+        mev_th = d(1)*E(i).TOL;
+        r(i) = sum(d>0 & d>=mev_th);
+    end
+end
 %------------- END OF CODE --------------

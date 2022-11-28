@@ -1,19 +1,19 @@
-function obj = reshape(varargin)
+function I = reshape(I,varargin)
 % reshape - Overloads the operator 'reshape' for reshaping matrices
 %
 % Syntax:  
-%    obj = reshape(varargin)
+%    I = reshape(I,varargin)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %    sz1,...,szN - integers defining the reshaping
 %
 % Outputs:
-%    obj - interval object 
+%    I - interval object 
 %
 % Example: 
-%    a=interval([-1 -2; -3 -4], [1 2; 3 4]);
-%    b=reshape(a, 4, 1);
+%    I = interval([-1 -2; -3 -4], [1 2; 3 4]);
+%    I = reshape(I,4,1);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,10 +28,8 @@ function obj = reshape(varargin)
 
 %------------- BEGIN CODE --------------
 
-obj = varargin{1};
-
 %apply reshaping for infimum and supremum
-obj.inf = reshape(obj.inf, varargin{2:end});
-obj.sup = reshape(obj.sup, varargin{2:end});
+I.inf = reshape(I.inf, varargin{1:end});
+I.sup = reshape(I.sup, varargin{1:end});
 
 %------------- END OF CODE --------------

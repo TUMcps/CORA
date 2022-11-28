@@ -46,7 +46,7 @@ function HA = integrateAndFireNeuron()
     
     % transition
     guard = conHyperplane([1 0],u_fire);
-    reset.A = eye(2); reset.b = [0;0];
+    reset.A = eye(2); reset.c = [0;0];
     
     tran{1} = transition(guard,reset,2);
     
@@ -69,7 +69,7 @@ function HA = integrateAndFireNeuron()
     
     % transition
     guard = conHyperplane([1 0],u_out);
-    reset.A = eye(2); reset.b = [0;0];
+    reset.A = eye(2); reset.c = [0;0];
     
     tran{1} = transition(guard,reset,3);
     
@@ -92,7 +92,7 @@ function HA = integrateAndFireNeuron()
     
     % transition
     guard = conHyperplane([1 0],u_rest);
-    reset.A = eye(2); reset.b = [0;0];
+    reset.A = eye(2); reset.c = [0;0];
     
     tran{1} = transition(guard,reset,1);
     

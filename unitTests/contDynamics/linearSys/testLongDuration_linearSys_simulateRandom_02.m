@@ -71,15 +71,6 @@ k = rand(dim_y,1);
 sys = linearSys('fiveDimSys',A,B,c,C,D,k);
 
 
-% Simulation Options ------------------------------------------------------
-
-simOpt.points = 10;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 10;
-
-
-
 % Check for completion ----------------------------------------------------
 
 % loop over all R0 / U
@@ -88,7 +79,7 @@ for r=1:length(R0)
     params.R0 = R0{r};
     params.U = U{r};
     try
-        simRes = simulateRandom(sys, params, simOpt);
+        simRes = simulateRandom(sys, params);
         res(r,1) = true;
     catch ME
         % run-time error

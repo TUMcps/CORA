@@ -1,22 +1,31 @@
-function [t,x] = simulate(obj,params)
+function [t,x,ind,y] = simulate(obj,params)
 % simulate - simulates a linear discrete-time system
 %
-% Syntax:  
+% Syntax:
 %    [t,x] = simulate(obj,params)
+%    [t,x,ind,y] = simulate(obj,params)
 %
 % Inputs:
-%    obj - nonlinearSysDT object
+%    obj - linearSysDT object
 %    params - struct containing the parameters for the simulation
 %       .tStart: initial time
 %       .tFinal: final time
 %       .x0: initial point
-%       .u: piecewise constant input signal u(t) specified as a matrix
-%           for which the number of rows is identical to the number of
-%           system input
+%       .u: piecewise-constant input signal u(t) of dimension
+%               m x z, where
+%               m = number of system inputs, and
+%               z = 1 (fixed input) or
+%                   s (if no throughput matrix given)
+%                   s+1 (if throughput matrix given)
+%                   where s is the number of steps
+%       .w: disturbance of dimension n x s (n = system dimension)
+%       .v: sensor noise of dimension n_out x s+1 (n_out = output dimension)
 %
 % Outputs:
 %    t - time vector
 %    x - state vector
+%    ind - [] (argument exists only for syntax consistency)
+%    y - output vector
 %
 % Example:
 %    A = [1 2; -3 1];
@@ -38,81 +47,121 @@ function [t,x] = simulate(obj,params)
 %
 % See also: nonlinearSysDT/simulate
 
-% Author:       Matthias Althoff, Niklas Kochdumper
+% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
 % Written:      20-March-2020
 % Last update:  24-March-2020 (NK)
 %               08-May-2020 (MW, update interface)
-%               12-Jan-2021 (MA, disturbance input added; needs to be moved outside this function in the future)
-% Last revision:---
+%               12-Jan-2021 (MA, disturbance input added; needs to be moved
+%                                outside this function in the future)
+% Last revision:16-November-2021 (MW, simplify loop, rewrite handling of
+%                                     params.u|w|v, integrate output)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    if ~isfield(params,'tStart')
-       params.tStart = 0; 
+% parse input arguments
+if ~isfield(params,'tStart')
+	params.tStart = 0; 
+end
+
+% set default output arguments
+ind = [];
+y = [];
+
+% compute time vector and number of steps
+t = (params.tStart:obj.dt:params.tFinal)';
+steps = length(t)-1;
+
+% check end of time vector
+if t(end) ~= params.tFinal
+    throw(CORAerror('CORA:specialError',...
+        'Final time has to be a multiple of the sampling time!'));
+end
+
+% check u, w, and v; extend fixed vector to matrices for loop below
+params = aux_uwv(obj,params,steps);
+
+% initial state
+x = zeros(steps+1,obj.dim);
+x(1,:) = params.x0';
+
+% computation of output set desired / possible
+comp_y = nargout == 4 && ~isempty(obj.C);
+
+% initial output
+if comp_y
+	y = zeros(steps+1,obj.nrOfOutputs);
+    y(1,:) = obj.C * x(1,:)' + obj.D * params.u(:,1) + obj.k + params.v(:,1);
+end
+
+
+% loop over all time steps
+for i = 1:steps
+    
+    % compute successor state
+    temp = obj.A * x(i,:)' + obj.B * params.u(:,i) + obj.c + params.w(:,i);
+    x(i+1,:) = temp';
+
+    % compute output
+    if comp_y
+        y(i+1,:) = obj.C * x(i+1,:)' + obj.D * params.u(:,i+1) + obj.k + params.v(:,i+1);
     end
+    
+end
 
-    t = params.tStart:obj.dt:params.tFinal;
-    t = t';
+end
 
-    if t(end) ~= params.tFinal
-       error('Final time has to be a multiple of the sampling time!'); 
-    end
 
-    % consider changing inputs
-    change = 0;
+% Auxiliary function ------------------------------------------------------
 
-    if size(params.u,2) ~= 1
-        change = 1;
-        if size(params.u,2) ~= length(t)-1
-            error('Input signal "params.u" has the wrong dimension!'); 
-        end
-    end
+function params = aux_uwv(obj,params,steps)
 
-    % initialization
-    x = zeros(length(t),length(params.x0));
-    x(1,:) = params.x0';
-
-    % get constant offset
-    if isempty(obj.c)
-        c = zeros(size(obj.A,1),1); 
+% check input, set default
+if ~isfield(params,'u')
+    params.u = zeros(obj.nrOfInputs,steps);
+else
+    % length depends on whether throughput matrix is all-zero or not
+    if any(any(obj.D))
+        columns_u = steps+1;
     else
-        c = obj.c;
+        columns_u = steps;
     end
+	if size(params.u,2) == 1
+        % length always steps+1
+        params.u = repmat(params.u,1,steps+1);
+    elseif size(params.u,2) ~= columns_u
+        throw(CORAerror('CORA:wrongFieldValue','params.u',...
+            'has to be of size(2) of steps+1'));
+    elseif ~any(any(obj.D))
+        % extend by dummy value; note that this value should not have any
+        % effects on the result as D is all-zero
+        params.u = [params.u, zeros(size(params.u,1),1)];
+    end
+end
 
-    if change % changing input
-        if isfield(params,'w') && ~isempty(params.w) % disturbance exists
-            % loop over all time steps
-            for i = 1:length(t)-1
-                temp = obj.A*x(i,:)' + obj.B * params.u(:,i) + c + params.w;
-                x(i+1,:) = temp';
-            end
-        else % no disturbance
-            % loop over all time steps
-            for i = 1:length(t)-1
-                temp = obj.A*x(i,:)' + obj.B * params.u(:,i) + c;
-                x(i+1,:) = temp';
-            end
-        end
-    else % constant input
-        if isfield(params,'w') && ~isempty(params.w) % disturbance exists
-            % loop over all time steps
-            for i = 1:length(t)-1
-                temp = obj.A*x(i,:)' + obj.B * params.u + c + params.w;
-                x(i+1,:) = temp';
-            end
-        else % no disturbance
-            % loop over all time steps
-            for i = 1:length(t)-1
-                temp = obj.A*x(i,:)' + obj.B * params.u + c;
-                x(i+1,:) = temp';
-            end
-        end
+% check disturbance, set default
+if ~isfield(params,'w')
+    params.w = zeros(obj.dim,steps);
+else
+    if size(params.w,2) == 1
+        params.w = repmat(params.w,1,steps);
+    elseif size(params.w,2) ~= steps
+        throw(CORAerror('CORA:wrongFieldValue','params.w',...
+            'has to be of size(2) of steps+1'));
     end
-    
-    
-    % remove initial state and time
-    t(1,:) = [];
-    x(1,:) = [];
+end
+
+% check sensor noise, set default
+if ~isfield(params,'v')
+    params.v = zeros(obj.nrOfOutputs,steps+1);
+else
+    if size(params.v,2) == 1
+        params.v = repmat(params.v,1,steps+1);
+    elseif size(params.v,2) ~= steps+1
+        throw(CORAerror('CORA:wrongFieldValue','params.v',...
+            'has to be of size(2) of steps'));
+    end
+end
+
+end
     
 %------------- END OF CODE --------------

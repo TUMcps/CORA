@@ -63,13 +63,7 @@ for i=1:length(algs)
         % additional options when decomp called
         options.partition = [1, 2; 3, 4; 5, 5];
         Rs{i} = reach(fiveDimSys, params, options, spec);
-        intTemp = interval(project(Rs{i}(1).timeInterval.set{end},...
-            options.partition(1,1):options.partition(1,2)));
-        for b=2:size(options.partition,1)
-        	intTemp = [intTemp; interval(project(Rs{i}(b).timeInterval.set{end},...
-               options.partition(b,1):options.partition(b,2)))];
-        end
-        intHull{i} = intTemp;
+        intHull{i} = interval(Rs{i}.timeInterval.set{end});
         options = rmfield(options,'partition');
     else % 'standard', 'wrapping-free', 'fromStart'
         Rs{i} = reach(fiveDimSys, params, options, spec);
@@ -81,10 +75,6 @@ end
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 5;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 10;
-
 simRes = simulateRandom(fiveDimSys, params, simOpt);
 
 

@@ -30,10 +30,12 @@ bools = [false,true];
 for i=10:5:15
     for j=1:nRuns
         for k=1:2
-            E = ellipsoid.generateRandom(i,bools(k));
+            %%% generate all variables necessary to replicate results
+            E = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k));
             % generate a few random directions
+            V = randn(dim(E),2*dim(E));
+            %%%
             N = 2*dim(E);
-            V = randn(dim(E),N);
             % normalize
             V = V./sqrt(sum(V.^2,1));
             for m=1:N
@@ -47,7 +49,7 @@ for i=10:5:15
                     end
                     % check if x is a boundary point of E
                     % check not supported for degenerate ellipsoids
-                    if ~E.isdegenerate
+                    if isFullDim(E)
                         d_rel = ellipsoidNorm(E,x_u-E.center);
                         if d_rel>1+E.TOL
                             res = false;
@@ -85,10 +87,9 @@ for i=10:5:15
     end
 end
 
-if res
-    disp('testLongDuration_ellipsoid_supportFunc successful');
-else
-    disp('testLongDuration_ellipsoid_supportFunc failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'E','V');
 end
 
 %------------- END OF CODE --------------

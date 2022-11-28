@@ -25,6 +25,8 @@ function res = test_polyZonotope_isequal
 
 %------------- BEGIN CODE --------------
 
+res = true;
+
 % create polyZonotopes
 c = [2; -3];
 G1 = [2, 3;
@@ -41,12 +43,34 @@ G3rest = [1, 2, 0, 4;
 pZ3 = polyZonotope(c,G1,G3rest,expMat1);
 
 % check result
-res = isequal(pZ1,pZ3) && ~isequal(pZ1,pZ2);
-
-if res
-    disp('test_polyZonotope_isequal successful');
-else
-    disp('test_polyZonotope_isequal failed');
+if ~isequal(pZ1,pZ3) && ~isequal(pZ1,pZ2)
+   res = false;
 end
+
+% test random
+pZ_random = polyZonotope.generateRandom();
+if ~isequal(pZ_random, pZ_random)
+    res = false;
+end
+
+% test non equal polyZonotopes
+if isequal(pZ1, 1+pZ1)
+    res = false;
+end
+% but should work with increased tolerance
+tol = 0.001;
+if ~isequal(pZ1, tol/2+pZ1, tol)
+    res = false;
+end
+
+% slightly shrink polyZonotope
+if ~isequal(pZ1, (1-tol/2) * pZ1, tol)
+    res = false;
+end
+% slightly enlarge polyZonotope
+if ~isequal(pZ1, (1+tol/2) * pZ1, tol)
+    res = false;
+end
+
 
 %------------- END OF CODE --------------

@@ -3,7 +3,7 @@ function res = douglasPeucker(points,varargin)
 %
 % Syntax:  
 %    res = douglasPeucker(points)
-%    res = douglasPeucker(points, tol)
+%    res = douglasPeucker(points,tol)
 %
 % Inputs:
 %    points - points defining the line segment
@@ -41,10 +41,7 @@ function res = douglasPeucker(points,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    tol = 0.01;
-    if nargin >= 2 && ~isempty(varargin{1})
-       tol = varargin{1}; 
-    end
+    tol = setDefaultValues({0.01},varargin{:});
 
     % find point with the largest distance
     dmax = 0;
@@ -72,12 +69,13 @@ function res = douglasPeucker(points,varargin)
     end
 end
 
+
+% Auxiliary Functions -----------------------------------------------------
+
 function d = distance(x,p1,p2)
-% distance of the point x from the line-segment spanned by p1 and p2
-    
+% distance of the point x from the line segment spanned by p1 and p2
     B = gramSchmidt(p1-p2);
     x_ = B'*(x-p1);
-    
     d = abs(x_(2));
 end
 

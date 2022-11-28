@@ -21,7 +21,6 @@ function completed = example_nonlinearDA_reach_01_powerSystem_3bus()
 % Last update:  23-April-2020 (restructure params/options)
 % Last revision:---
 
-
 %------------- BEGIN CODE --------------
 
 % Parameter ---------------------------------------------------------------
@@ -42,6 +41,7 @@ options.timeStep = 0.05;
 options.taylorTerms = 6;
 options.zonotopeOrder = 200;
 options.tensorOrder = 2;
+options.errorOrder = 10;
 
 options.maxError_x = [0.5; 0];
 options.maxError_y = 0.005*[1; 1; 1; 1; 1; 1];
@@ -63,34 +63,30 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 60;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
-
 simRes = simulateRandom(powerDyn, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
 
-dim = [1 2];
+projDim = [1 2];
     
 figure; hold on; box on;
 
 % plot reachable sets
-plot(R,dim,'FaceColor',[.7 .7 .7],'EdgeColor','none');
+plot(R,projDim);
 
 % plot initial set
-plot(params.R0,dim,'w','Filled',true,'EdgeColor','k');
+plot(params.R0,projDim,'k','FaceColor','w');
 
 % plot simulation results      
-plot(simRes,dim);
+plot(simRes,projDim);
 
 % label plot
-xlabel(['x_{',num2str(dim(1)),'}']);
-ylabel(['x_{',num2str(dim(2)),'}']);
+xlabel(['x_{',num2str(projDim(1)),'}']);
+ylabel(['x_{',num2str(projDim(2)),'}']);
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------
         

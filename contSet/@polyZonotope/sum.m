@@ -2,14 +2,14 @@ function pZsum = sum(pZ,pZlist)
 % sum - computes the sum of multiple polynomial zonotopes
 %
 % Syntax:  
-%    pZsum = sum(pZlist)
+%    pZsum = sum(pZ,pZlist)
 %
 % Inputs:
 %    pZ - polyZonotope object (first part of the sum)
-%    pZlist - list of polynomial zonotope objects (cell-array)
+%    pZlist - list of polyZonotope objects (cell-array)
 %
 % Outputs:
-%    pZsum - resulting polyZonotope object representing the set of the sum
+%    pZsum - polyZonotope object representing the set of the sum
 %
 % Example: 
 %    pZ1 = polyZonotope([1;2],[1 -2 1; 2 3 1],[],[1 0 2;0 1 1]);
@@ -18,11 +18,11 @@ function pZsum = sum(pZ,pZlist)
 %    pZsum = sum(pZ1,{pZ2,pZ1});
 %
 %    figure
-%    plot(pZ1,[1,2],'r','Filled',true,'EdgeColor','none');
+%    plot(pZ1,[1,2],'FaceColor','r');
 %    figure
-%    plot(pZ2,[1,2],'b','Filled',true,'EdgeColor','none');
+%    plot(pZ2,[1,2],'FaceColor','b');
 %    figure
-%    plot(pZsum,[1,2],'g','Filled',true,'EdgeColor','none');
+%    plot(pZsum,[1,2],'FaceColor','g');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -37,39 +37,37 @@ function pZsum = sum(pZ,pZlist)
 
 %------------- BEGIN CODE --------------
 
-    % initialize variables
-    expMatList = cell(length(pZlist)+1,1);
-    G = pZ.G;
-    Grest = pZ.Grest;
-    c = pZ.c;
-    
-    % bring exponent matrices to a common representation
-    expMatList{1} = pZ.expMat;
-    id = pZ.id;
-    
-    for i = 1:length(pZlist)
-        [id,~,expMatList{i+1}] = mergeExpMatrix(id,pZlist{i}.id, ...
-                                        expMatList{i},pZlist{i}.expMat);
-    end
+% initialize variables
+expMatList = cell(length(pZlist)+1,1);
+G = pZ.G;
+Grest = pZ.Grest;
+c = pZ.c;
 
-    % concatenate exponent and generator matrices and sum up center
-    M = length(id);
-    expMat = [pZ.expMat;zeros(M-size(pZ.expMat,1),size(pZ.expMat,2))];
-    
-    for i = 1:length(pZlist)
-       G = [G,pZlist{i}.G];
-       Grest = [Grest,pZlist{i}.Grest];
-       eTemp = expMatList{i+1};
-       expMat = [expMat,[eTemp;zeros(M-size(eTemp,1),size(eTemp,2))]];
-       c = c + pZlist{1}.c;
-    end
+% bring exponent matrices to a common representation
+expMatList{1} = pZ.expMat;
+id = pZ.id;
 
-    % add up all generators that belong to identical exponents
-    [ExpNew,Gnew] = removeRedundantExponents(expMat,G);
-    
-    % construct the resulting polynomial zonotope
-    pZsum = polyZonotope(c,Gnew,Grest,ExpNew,id);
-
+for i = 1:length(pZlist)
+    [id,~,expMatList{i+1}] = mergeExpMatrix(id,pZlist{i}.id, ...
+                                    expMatList{i},pZlist{i}.expMat);
 end
+
+% concatenate exponent and generator matrices and sum up center
+M = length(id);
+expMat = [pZ.expMat;zeros(M-size(pZ.expMat,1),size(pZ.expMat,2))];
+
+for i = 1:length(pZlist)
+   G = [G,pZlist{i}.G];
+   Grest = [Grest,pZlist{i}.Grest];
+   eTemp = expMatList{i+1};
+   expMat = [expMat,[eTemp;zeros(M-size(eTemp,1),size(eTemp,2))]];
+   c = c + pZlist{1}.c;
+end
+
+% add up all generators that belong to identical exponents
+[ExpNew,Gnew] = removeRedundantExponents(expMat,G);
+
+% construct the resulting polynomial zonotope
+pZsum = polyZonotope(c,Gnew,Grest,ExpNew,id);
 
 %------------- END OF CODE --------------

@@ -1,10 +1,10 @@
 function res = testLongDuration_hybridAutomaton_reach_02_powerTrain
-% testLongDuration_hybridAutomaton_reach_02_powerTrain - unit test function for
-%    hybrid systems with linear continuous dynamics
+% testLongDuration_hybridAutomaton_reach_02_powerTrain - unit test function
+%    for hybrid systems with linear continuous dynamics
 %
-% Checks the solution of the hybrid system class for the powertrain example
-% in [1]. It is checked if the computed guard intersection encloses all
-% simulated trajectories.
+%    Checks the solution of the hybrid system class for the powertrain
+%    example in [1]. It is checked if the computed guard intersection
+%    encloses all simulated trajectories.
 %
 % Syntax:  
 %    res = testLongDuration_hybridAutomaton_reach_02_powerTrain
@@ -206,13 +206,13 @@ for i = 1:length(guardIntersect)
     points_ = points(2:end,:);
     
     for j = 1:size(points_,2)
-       if ~in(poly,points_(:,j),1e-10)
-          res = 0;
-          error('Guard intersection with method %s failed!',guardIntersect{i});
+       if ~contains(poly,points_(:,j),'exact',1e-10)
+          res = false;
+          throw(CORAerror('CORA:testFailed'));
        end
     end
 end
 
-res = 1;
+res = true;
 
 %------------- END OF CODE --------------

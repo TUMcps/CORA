@@ -28,12 +28,12 @@ function res = power(base,exponent)
 
     if isscalar(exponent)
 
-        res = arrayfun(@(a) s_power(a,exponent), base, 'UniformOutput', 0);
+        res = arrayfun(@(a) s_power(a,exponent),base,'UniformOutput',false);
         A = cat(1, res{:});
         res = reshape(A, size(res));
     
     elseif ~all(size(base) == size(exponent))
-        error('Dimensions must agree!');
+        throw(CORAerror('CORA:dimensionMismatch',base,exponent));
     else
         res = base;
         for i = 1:size(base,1)
@@ -71,7 +71,7 @@ function res = s_power(base,exponent)
             
         % positive real exponent
         else
-            error('Operation not implemented for class "taylm"!');
+            throw(CORAerror('CORA:noops'));
         end
         
     % negative exponent

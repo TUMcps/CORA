@@ -27,10 +27,10 @@ function res = testLongDuration_ellipsoid_norm
 
 tol = 1e-9;
 
-% empty case: norm = []
+% empty case: norm = -Inf
 res_empty = true;
 E = ellipsoid();
-if ~isempty(norm(E))
+if norm(E) ~= -Inf
     res_empty = false;
 end
 
@@ -59,10 +59,9 @@ end
 % combine results
 res = res_empty && res_rand;
 
-if res
-    disp('testLongDuration_ellipsoid_norm successful');
-else
-    disp('testLongDuration_ellipsoid_norm failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','E');
 end
 
 %------------- END OF CODE --------------

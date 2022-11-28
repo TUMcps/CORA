@@ -3,7 +3,7 @@ function res = testLongDuration_polyZonotope_mtimes
 %    multiplication between an interval matrix and a zonotope 
 %
 % Syntax:  
-%    res = test_polyZonotope_mtimes
+%    res = testLongDuration_polyZonotope_mtimes
 %
 % Inputs:
 %    -
@@ -26,9 +26,7 @@ function res = testLongDuration_polyZonotope_mtimes
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-%% RANDOM TESTS
+res = true;
 
 % TEST 2-dimensional
 
@@ -83,7 +81,7 @@ for i = 1:5
     suc = containsPointSet(pZres,points_,[],30);
     
     if ~suc
-       error('test_polyZonotope_mtimes: random test 2D failed!'); 
+       throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -141,10 +139,8 @@ for i = 1:5
     suc = containsPointSet(pZres,points_);
     
     if ~suc
-       error('test_polyZonotope_mtimes: random test 4D failed!'); 
+       throw(CORAerror('CORA:testFailed'));
     end
 end
-
-res = true;
 
 %------------- END OF CODE --------------

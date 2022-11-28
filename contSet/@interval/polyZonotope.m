@@ -1,27 +1,22 @@
-function pZ = polyZonotope(obj)
+function pZ = polyZonotope(I)
 % polyZonotope - convert an interval object to a polynomial zonotope 
 %
 % Syntax:  
-%    pZ = polyZonotope(obj)
+%    pZ = polyZonotope(I)
 %
 % Inputs:
-%    obj - interval object (class interval)
+%    I - interval object (class interval)
 %
 % Outputs:
 %    pZ - polynomial zonotope object (class polyZonotope)
 %
 % Example: 
-%    inter = interval([1;2],[3;5]);
-%    pZ = polyZonotope(inter);
+%    I = interval([1;2],[3;5]);
+%    pZ = polyZonotope(I);
 %    
-%    plot(inter,[1,2],'b','Filled',true,'EdgeColor','none');
-%    xlim([0,4]);
-%    ylim([1,6]);
-%
-%    figure
-%    plot(pZ, [1,2],'r','Filled',true,'EdgeColor','none');
-%    xlim([0,4]);
-%    ylim([1,6]);
+%    figure; hold on; xlim([0,4]); ylim([1,6]);
+%    plot(I,[1,2],'FaceColor','b');
+%    plot(pZ, [1,2],'FaceColor','r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -36,8 +31,8 @@ function pZ = polyZonotope(obj)
 
 %------------- BEGIN CODE --------------
 
-c = center(obj);
-G = diag(rad(obj));
+c = center(I);
+G = diag(rad(I));
 expMat = eye(length(c));
 
 pZ = polyZonotope(c,G,[],expMat);

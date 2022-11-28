@@ -34,41 +34,32 @@ c = abs( test );
 
 if abs( infimum(c(1)) - 2.0 ) > tol || abs( supremum(c(1)) - 5.0 ) > tol
 	res = false;
-	disp('test_abs failed');
 	return;
 end
 
 if abs( infimum(c(2)) - 0.0 ) > tol || abs( supremum(c(2)) - 4.0 ) > tol
 	res = false;
-	disp('test_abs failed');
 	return;
 end
 
 if abs( infimum(c(3)) - 0.0 ) > tol || abs( supremum(c(3)) - 3.0 ) > tol
 	res = false;
-	disp('test_abs failed');
 	return;
 end
 
 if abs( infimum(c(4)) - 0.0 ) > tol || abs( supremum(c(4)) - 0.0 ) > tol
 	res = false;
-	disp('test_abs failed');
 	return;
 end
 
 if abs( infimum(c(5)) - 0.0 ) > tol || abs( supremum(c(5)) - 5.0 ) > tol
 	res = false;
-	disp('test_abs failed');
 	return;
 end
 
 if abs( infimum(c(6)) - 5.0 ) > tol || abs( supremum(c(6)) - 8.0 ) > tol
 	res = false;
-	disp('test_abs failed');
 	return;
 end
-
-disp('test_abs successful');
-return;
 
 %------------- END OF CODE --------------

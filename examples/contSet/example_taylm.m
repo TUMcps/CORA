@@ -8,14 +8,14 @@ function completed = example_taylm()
 %    -
 %
 % Outputs:
-%    completed - boolean
+%    completed - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Matthias Althoff
 % Written:       29-June-2018
 % Last update:   ---
@@ -47,6 +47,6 @@ sin(B1)     % sine function
 sin(B1(1,1)) + B1(2,1).^2 - B1' * B2 % combination of functions
 
 
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

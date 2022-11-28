@@ -14,10 +14,7 @@ function res = testLongDuration_linParamSys_reach_01_rlc_const()
 %
 % Outputs:
 %    res - boolean 
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      05-August-2016
 % Last update:  23-April-2020 (restructure params/options)

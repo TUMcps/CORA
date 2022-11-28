@@ -12,12 +12,11 @@ function Z = zonotope(pZ)
 %
 % Example: 
 %    pZ = polyZonotope([0;0],[2 0 1 1;0 2 1 2],[0;0],[1 0 3 1;0 1 0 2]);
-%    zono = zonotope(pZ);
+%    Z = zonotope(pZ);
 %
-%    figure
-%    hold on
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
-%    plot(zono,[1,2],'b');
+%    figure; hold on;
+%    plot(pZ,[1,2],'Filled','r');
+%    plot(Z,[1,2],'b');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -43,11 +42,11 @@ if ~isempty(pZ.G)
     G = [pZ.G(:,temp == 0), 0.5*Gquad, pZ.Grest];
 
     % generate zonotope
-    Z = zonotope([c,G]);
+    Z = zonotope(c,G);
     
 else
     
-    Z = zonotope([pZ.c,pZ.Grest]);
+    Z = zonotope(pZ.c,pZ.Grest);
     
 end
 

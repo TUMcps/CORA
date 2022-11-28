@@ -1,21 +1,21 @@
-function [Zbundle] = replace(Zbundle,index,Z)
+function zB = replace(zB,index,Z)
 % replace - replaces a zonotope at an index position by another zonotope
 %
 % Syntax:  
-%    [Zbundle] = replace(Zbundle,index,Z)
+%    zB = replace(zB,index,Z)
 %
 % Inputs:
-%    Zbundle - zonotope bundle
+%    zB - zonoBundle object
 %    index - index where zonotope is replaced
-%    Z - zonotope
+%    Z - zonotope object
 %
 % Outputs:
-%    Zbundle - zonotope bundle
+%    zB - zonoBundle object
 %
 % Example: 
 %    ---
 %
-% Other m-files required: vertices, polytope
+% Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
@@ -29,7 +29,6 @@ function [Zbundle] = replace(Zbundle,index,Z)
 %------------- BEGIN CODE --------------
 
 %replace zonotope
-Zbundle.Z{index}=Z;
-
+zB.Z{index} = Z;
 
 %------------- END OF CODE --------------

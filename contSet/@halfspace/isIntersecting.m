@@ -1,45 +1,39 @@
-function res = isIntersecting(obj1,obj2,varargin)
-% isIntersecting - determines if halfspace obj1 intersects obj2
+function res = isIntersecting(hs,S,varargin)
+% isIntersecting - determines if a halfspace intersects a set
 %
 % Syntax:  
-%    res = isIntersecting(obj1,obj2)
-%    res = isIntersecting(obj1,obj2,type)
+%    res = isIntersecting(hs,S)
+%    res = isIntersecting(hs,S,type)
 %
 % Inputs:
-%    obj1 - halfspace object
-%    obj2 - conSet object
+%    hs - halfspace object
+%    S - contSet object
 %    type - type of check ('exact' or 'approx')
 %
 % Outputs:
-%    res - 1/0 if set is intersecting, or not
+%    res - true/false
 %
 % Example: 
 %    hs = halfspace([-1;-1],0);
-%    zono1 = zonotope([0 1 1 0; 0 1 0 1]);
-%    zono2 = zono1 - [3;3];
-%
-%    isIntersecting(hs,zono1)
-%    isIntersecting(hs,zono2)
+%    Z1 = zonotope([0 1 1 0; 0 1 0 1]);
+%    Z2 = Z1 - [3;3];
 % 
-%    figure
-%    hold on
-%    xlim([-6,6]);
-%    ylim([-6,6]);
-%    plot(hs,[1,2],'b');
-%    plot(zono1,[1,2],'g','Filled',true,'EdgeColor','none');
+%    isIntersecting(hs,Z1)
+%    isIntersecting(hs,Z2)
 % 
-%    figure
-%    hold on
-%    xlim([-6,6]);
-%    ylim([-6,6]);
+%    figure; hold on; xlim([-6,6]); ylim([-6,6]);
 %    plot(hs,[1,2],'b');
-%    plot(zono2,[1,2],'r','Filled',true,'EdgeColor','none');
+%    plot(Z1,[1,2],'FaceColor','g');
+% 
+%    figure; hold on; xlim([-6,6]); ylim([-6,6]);
+%    plot(hs,[1,2],'b');
+%    plot(Z2,[1,2],'FaceColor','r');
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conHyperplane/isIntersecing
+% See also: conHyperplane/isIntersecting
 
 % Author:       Niklas Kochdumper
 % Written:      16-May-2018
@@ -49,31 +43,29 @@ function res = isIntersecting(obj1,obj2,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    type = 'exact';
-    
-    if nargin >= 3 && ~isempty(varargin{1}) 
-        type = varargin{1};
+% pre-processing
+[resFound,vars] = pre_isIntersecting('halfspace',hs,S,varargin{:});
+
+% check premature exit
+if resFound
+    % if result has been found, it is stored in the first entry of var
+    res = vars{1}; return
+else
+    % assign values
+    hs = vars{1}; S = vars{2}; type = vars{3};
+end
+
+
+% check user input for correctness
+if strcmp(type,'exact')
+    if isa(S,'taylm') || isa(S,'polyZonotope') || ... 
+        isa(S,'ellipsoid') || isa(S,'capsule') 
+        throw(CORAerror('CORA:noops',hs,S));
     end
-    
-    % get halfspace object
-    if ~isa(obj1,'halfspace')
-       temp = obj1;
-       obj1 = obj2;
-       obj2 = temp;
-    end
-    
-    % check user input for correctness
-    if strcmp(type,'exact')
-       if isa(obj2,'taylm') || isa(obj2,'polyZonotope') || ... 
-          isa(obj2,'ellipsoid') || isa(obj2,'capsule') 
-      
-            error('No exact algorithm implemented for this set representation!');
-       end
-    end
-    
-    % check for intersection
-    bound = supportFunc(obj2,obj1.c,'lower');
-    res = bound <= obj1.d;
+end
+
+% check for intersection
+bound = supportFunc(S,hs.c,'lower');
+res = bound <= hs.d;
 
 %------------- END OF CODE --------------

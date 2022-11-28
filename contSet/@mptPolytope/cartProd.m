@@ -1,12 +1,12 @@
-function P = cartProd(P1,P2)
+function P = cartProd(P1,S)
 % cartProd - Returns the cartesian product of two mptPolytope objects
 % 
 % Syntax:  
-%    P = cartProd(P1,P2)
+%    P = cartProd(P1,S)
 %
 % Inputs:
 %    P1 - mptPolytope object
-%    P2 - mptPolytope object
+%    S - contSet object
 %
 % Outputs:
 %    P - resulting mptPolytope object
@@ -30,38 +30,51 @@ function P = cartProd(P1,P2)
 
 %------------- BEGIN CODE --------------
 
+    % pre-processing
+    [res,vars] = pre_cartProd('mptPolytope',P1,S);
+    
+    % check premature exit
+    if res
+        % if result has been found, it is stored in the first entry of var
+        P = vars{1}; return
+    else
+        % potential re-ordering
+        P1 = vars{1}; S = vars{2};
+    end
+
+
     % first or second set is polytope
     if isa(P1,'mptPolytope')
 
         % different cases for different set representations
-        if isa(P2,'mptPolytope')
+        if isa(S,'mptPolytope')
 
-            A = blkdiag(P1.P.A,P2.P.A);
-            b = [P1.P.b;P2.P.b];
+            A = blkdiag(P1.P.A,S.P.A);
+            b = [P1.P.b;S.P.b];
             
             P = mptPolytope(A,b);
             
-        elseif isnumeric(P2)
+        elseif isnumeric(S)
             
-            n = size(P2,1);
+            n = size(S,1);
             
             A = [eye(n);-eye(n)];
-            b = [P2;-P2];
+            b = [S;-S];
             
             P = cartProd(P1,mptPolytope(A,b));
 
-        elseif isa(P2,'zonoBundle') || isa(P2,'zonotope') || ...
-               isa(P2,'interval') || isa(P2,'conZonotope')              
+        elseif isa(S,'zonoBundle') || isa(S,'zonotope') || ...
+               isa(S,'interval') || isa(S,'conZonotope')              
 
-            P = cartProd(P1,mptPolytope(P2));
+            P = cartProd(P1,mptPolytope(S));
             
-        elseif isa(P2,'polyZonotope')
+        elseif isa(S,'polyZonotope')
             
-            P = cartProd(polyZonotope(P1),P2);
+            P = cartProd(polyZonotope(P1),S);
             
         else
             % throw error for given arguments
-            error(noops(P1,P2));
+            throw(CORAerror('CORA:noops',P1,S));
         end
 
     else
@@ -74,11 +87,11 @@ function P = cartProd(P1,P2)
             A = [eye(n);-eye(n)];
             b = [P1;-P1];
             
-            P = cartProd(mptPolytope(A,b),P2);
+            P = cartProd(mptPolytope(A,b),S);
 
         else
             % throw error for given arguments
-            error(noops(P1,P2));
+            throw(CORAerror('CORA:noops',P1,S));
         end  
     end
 end

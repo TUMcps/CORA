@@ -1,13 +1,13 @@
-function Z = and(Z1,Z2,varargin)
+function Z = and(Z,S,varargin)
 % and - overloads & operator, computes the intersection of two zonotopes
 %
 % Syntax:  
-%    Z = and(Z1,Z2)
-%    Z = and(Z1,Z2,method)
+%    Z = and(Z,S)
+%    Z = and(Z,S,method)
 %
 % Inputs:
-%    Z1 - zonotope object
-%    Z2 - zonotope-, halfspace-, or constrained hyperplane object
+%    Z - zonotope object
+%    S - contSet object
 %    method - (optional) algorithm used to compute the intersection
 %               - 'conZonotope' (default)
 %               - 'averaging'
@@ -16,14 +16,14 @@ function Z = and(Z1,Z2,varargin)
 %    Z - zonotope object enclosing the intersection 
 %
 % Example: 
-%    zono1 = zonotope([4 2 2;1 2 0]);
-%    zono2 = zonotope([3 1 -1 1;3 1 2 0]);
+%    Z1 = zonotope([4 2 2;1 2 0]);
+%    Z2 = zonotope([3 1 -1 1;3 1 2 0]);
 %
-%    res = zono1 & zono2
+%    res = Z1 & Z2;
 %
 %    figure; hold on;
-%    plot(zono1,[1,2],'r');
-%    plot(zono2,[1,2],'b');
+%    plot(Z1,[1,2],'r');
+%    plot(Z2,[1,2],'b');
 %    plot(res,[1,2],'g');
 %
 % Other m-files required: none
@@ -41,54 +41,54 @@ function Z = and(Z1,Z2,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    method = 'conZonotope';
-    
-    if nargin == 3
-        method = varargin{1};
-        if ~ismember(method,'conZonotope','averaging')
-           error('Wrong value for input argument "method"!'); 
-        end
-    end
-    
-    % quick check: simpler function for intervals
-    if isInterval(Z1) && isInterval(Z2)
-        % conversion to intervals exact
-        Z = zonotope(interval(Z1) & interval(Z2)); return
-    end
+% pre-processing
+[res,vars] = pre_and('zonotope',Z,S,varargin{:});
 
-    % call special algorithm if the two sets are two paralleloptoes with
-    % the same center
-    if isa(Z2,'levelSet') || isa(Z2,'conZonotope') || ...
-       isa(Z2,'zonoBundle') || isa(Z2,'conPolyZono')
-        
-        Z = Z2 & Z1;
-        
-    elseif strcmp(method,'conZonotope')
-        
-        % convert sets to constrained zonotopes
-        Z1 = conZonotope(Z1);
-        
-        if ~isa(Z2,'halfspace') && ~isa(Z2,'conHyperplane')
-            Z2 = conZonotope(Z2);
-        end
-        
-        % compute intersection
-        Z = Z1 & Z2;
-        
-        % conclose resulting constrained zonotope by a zonotope
-        Z = zonotope(Z);
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    Z = vars{1}; return
+else
+    Z = vars{1}; S = vars{2}; method = vars{3};
+end
+
+
+% quick check: simpler function for intervals
+if isInterval(Z) && isInterval(S)
+    % conversion to intervals exact
+    Z = zonotope(interval(Z) & interval(S)); return
+end
+
+% special algorithm for two parallelotopes with the same center
+if isa(S,'levelSet') || isa(S,'conZonotope') || ...
+   isa(S,'zonoBundle') || isa(S,'conPolyZono')
     
-    elseif strcmp(method,'averaging')
-        
-        zonol{1} = Z1;
-        zonol{2} = Z2;
-        Z = andAveraging(zonol);
-        
-    else
-        % throw error for given arguments
-        error(noops(Z1,Z2));
+    Z = S & Z;
+    
+elseif strcmp(method,'conZonotope')
+    
+    % convert sets to constrained zonotopes
+    Z = conZonotope(Z);
+    
+    if ~isa(S,'halfspace') && ~isa(S,'conHyperplane')
+        S = conZonotope(S);
     end
+    
+    % compute intersection
+    Z = Z & S;
+    
+    % conclose resulting constrained zonotope by a zonotope
+    Z = zonotope(Z);
+
+elseif strcmp(method,'averaging')
+    
+    list{1} = Z;
+    list{2} = S;
+    Z = andAveraging(list);
+    
+else
+    % throw error for given arguments
+    throw(CORAerror('CORA:noops',Z,S));
 end
 
 %------------- END OF CODE --------------

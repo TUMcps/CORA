@@ -29,6 +29,18 @@ function res = test_zonotope_cartProd
 Z1 = zonotope([1,2,3,4; 5 6 7 8]);
 Z2 = zonotope([9 10 11]);
 
+% empty set
+% try 
+%     cartProd(Z1,zonotope());
+%     res_e = false;
+% catch ME 
+%     if ~strcmp(ME.identifier,'CORA:notSupported')
+%         rethrow(ME);
+%     else
+%         res_e = true;
+%     end
+% end
+
 % compute Cartesian product
 Z3 = cartProd(Z1,Z2);
 
@@ -41,12 +53,6 @@ true_mat = [1, 2, 3, 4, 0, 0; ...
             9, 0, 0, 0, 10,11];
 
 % check result
-res = all(all(Zmat == true_mat));
-
-if res
-    disp('test_cartProd successful');
-else
-    disp('test_cartProd failed');
-end
+res = all(all(Zmat == true_mat)); % && res_e;
 
 %------------- END OF CODE --------------

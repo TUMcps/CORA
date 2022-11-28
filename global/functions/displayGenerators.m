@@ -1,8 +1,8 @@
 function displayGenerators(G,maxGens,varName)
-% display - Displays the center and generators of a zonotope
+% displayGenerators - Displays the center and generators of a zonotope
 %
 % Syntax:  
-%    display(G,maxGens,varName)
+%    displayGenerators(G,maxGens,varName)
 %
 % Inputs:
 %    G - generator matrix
@@ -21,7 +21,7 @@ function displayGenerators(G,maxGens,varName)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: contSet / display
+% See also: contSet/display
 
 % Author:       Mark Wetzlinger
 % Written:      09-June-2020

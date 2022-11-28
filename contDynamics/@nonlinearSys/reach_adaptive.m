@@ -2,7 +2,7 @@ function [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,params,option
 % reach_adaptive - computes the reachable continuous set
 %
 % Syntax:  
-%    [R,res,tVec,options] = reach_adaptive(obj,options)
+%    [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,params,options)
 %
 % Inputs:
 %    obj - continuous system object
@@ -34,8 +34,8 @@ function [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,params,option
 % initialize cell-arrays that store the reachable set
 timeInt.set = {};
 timeInt.time = {};
-timePoint.set = {};
-timePoint.time = {};
+timePoint.set = {options.R0};
+timePoint.time = {options.tStart};
 res = 0;
 tVec = 0;
 
@@ -49,28 +49,51 @@ end
 % iteration counter and time for main loop
 options.i = 1;
 options.t = options.tStart;
+% set linearization errors (separate values for Delta and optimal Delta t)
+options.error_adm_horizon = zeros(obj.dim,1);
+options.error_adm_Deltatopt = zeros(obj.dim,1);
+% init abortion flag
+abortAnalysis = false;
+
+% just for safety
+if ~isfield(options,'linReach_new')
+    options.linReach_new = true;
+end
+restr = [];
+
+% timePoint.set{1,1} = options.R0;
+% timePoint.time{1,1} = options.t;
 
 % MAIN LOOP
-while options.tFinal - options.t > 1e-12
+while options.tFinal - options.t > 1e-12 && ~abortAnalysis
     
     % log information
     verboseLog(options.i,options.t,options);
 
-
     % reduction of R via restructuring (only poly)
     if isa(options.R,'polyZonotope')
-        ratio = approxVolumeRatio(options.R,options.volApproxMethod);
-        if ratio > options.maxPolyZonoRatio
+        ratio = approxVolumeRatio(options.R,options.polyZono.volApproxMethod);
+        if ratio > options.polyZono.maxPolyZonoRatio
             options.R = restructure(options.R,...
-                options.restructureTechnique,options.maxDepGenOrder);
+                options.polyZono.restructureTechnique,options.polyZono.maxDepGenOrder);
+            restr(end+1,1) = options.i;
         end
     end
     
-    [Rnext.ti,Rnext.tp,options] = linReach_adaptive(obj,options,options.R);
+    % propagation of reachable set
+    if options.linReach_new
+        [Rnext.ti,Rnext.tp,options] = linReach_adaptive(obj,options,options.R);
+    else
+        [Rnext.ti,Rnext.tp,options] = linReach_adaptive_old(obj,options,options.R);
+    end
     
     % reduction for next step
     Rnext.ti = reduce(Rnext.ti,'adaptive',options.redFactor*5); % not reused
     Rnext.tp = reduce(Rnext.tp,'adaptive',options.redFactor);
+    % try: additional reduction for poly
+    if isa(Rnext.tp,'polyZonotope')
+        Rnext.tp = reduceOnlyDep(Rnext.tp,options.polyZono.maxDepGenOrder);
+    end
     % track zonotope orders
     if isa(Rnext.tp,'polyZonotope')
         options.zonordersRtp(options.i,1) = size(Rnext.tp.G,2) / obj.dim;
@@ -87,8 +110,8 @@ while options.tFinal - options.t > 1e-12
     % save reachable set in cell structure
     timeInt.set{options.i,1} = Rnext.ti; 
     timeInt.time{options.i,1} = interval(options.t,options.t+tVec(options.i));
-    timePoint.set{options.i,1} = Rnext.tp;
-    timePoint.time{options.i,1} = options.t+tVec(options.i);
+    timePoint.set{options.i+1,1} = Rnext.tp;
+    timePoint.time{options.i+1,1} = options.t+tVec(options.i);
     
     % increment time
     options.t = options.t + options.timeStep;
@@ -98,10 +121,78 @@ while options.tFinal - options.t > 1e-12
     
     % start set for next step (since always initReach called)
     options.R = Rnext.tp;
+    
+    % check for timeStep -> 0
+    abortAnalysis = checkForAbortion(tVec,options.t,options.tFinal);
 end
 
 % log information
 verboseLog(options.i,options.t,options);
+
+end
+
+
+function abortAnalysis = checkForAbortion(tVec,currt,tFinal)
+% check last N steps of time step vector: if those time steps are too small,
+% we expect this to continue so that the analysis will not terminate
+
+% init flag
+abortAnalysis = false;
+
+% remaining time
+remTime = tFinal - currt;
+% number of previous steps considered for criterion
+N = 10;
+% total steps until now
+k = length(tVec);
+
+% criterion: if sum of last N steps is smaller than a certain fraction of
+%            the remaining time, abort the analysis
+lastNsteps = sum(tVec(end-min(N,k)+1:end));
+if remTime / lastNsteps > 1e9
+    abortAnalysis = true;
+    warning(sprintf(['The analysis is aborted because the time step size converges to 0.\n'...
+        '         The reachable sets until t = ' num2str(currt) ' are returned.']));
+end
+
+end
+
+function Rnew = reduceOnlyDep(R,order)
+
+[n, Gsize] = size(R.G);
+if Gsize / n < order + 1
+    Rnew = R;
+    return;
+end
+
+% order generators by length
+h = vecnorm(R.G,2);
+
+% determine the smallest generators (= generators that are removed)
+[~,ind] = sort(h,'descend');
+ind = ind(order*n+1:end);
+
+% construct a zonotope from the generators that are removed
+Gred = R.G(:,ind);
+Ered = R.expMat(:,ind);
+pZtemp = polyZonotope(zeros(n,1),Gred,[],Ered);
+
+% zonotope over-approximation
+zono = zonotope(pZtemp);
+zono = zonotope(center(zono),diag(sum(abs(generators(zono)),2)));
+
+% remove the generators that got reduced from the generator matrices
+Grem = R.G;
+Grem(:,ind) = [];
+expMatrem = R.expMat;
+expMatrem(:,ind) = [];
+
+% add the reduced generators as new independent generators 
+newc = R.c + center(zono);
+Grestnew = [R.Grest, generators(zono)];
+
+% instantiate new R
+Rnew = polyZonotope(newc,Grem,Grestnew,expMatrem);
 
 end
 

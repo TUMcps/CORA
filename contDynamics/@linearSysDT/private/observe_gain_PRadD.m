@@ -1,5 +1,5 @@
 function [OGain,tComp]= observe_gain_PRadD(obj,options)
-% observe_gain_PRadD - computes the gain for the guaranted state estimation
+% observe_gain_PRadD - computes the gain for the guaranteed state estimation
 % approach from [1].
 %
 % Syntax:  
@@ -36,7 +36,7 @@ function [OGain,tComp]= observe_gain_PRadD(obj,options)
 %------------- BEGIN CODE --------------
 
 
-tic
+tic;
 
 % E and F in [1] are chosen such that they are multiplied with unit
 % uncertainties; thus, E and F can be seen as generators of zonotopes
@@ -45,8 +45,8 @@ E = generators(options.W);
 F = generators(options.V);
 
 % obtain system dimension and nr of outputs
-dim = size(obj.A,1); 
-nrOfOutputs = size(obj.C,1);
+n = obj.dim; 
+nrOfOutputs = obj.nrOfOutputs;
 
 % choice of alpha and beta depends on designer
 alpha = 0.5; % has to be in ]0,1[
@@ -58,9 +58,9 @@ F_new = [zeros(size(F,1), size(E,2)), F];
 
 %% define YALMIPs symbolic decision variables
 % state
-P = sdpvar(dim,dim,'symmetric'); 
+P = sdpvar(n,n,'symmetric'); 
 % gain matrix
-Y = sdpvar(dim,nrOfOutputs,'full'); 
+Y = sdpvar(n,nrOfOutputs,'full'); 
 % identity matrix
 I = eye(size(E_new,2));
 I2 = eye(size(F_new,2));
@@ -94,19 +94,19 @@ while(gamma_up-gamma_lo)> gamma_tol
     
     % implementation of the symmetric matrix SM in eq. (20) in [1]
     SM2 = blkvar;
-    SM2(1,1) = eye(dim);
+    SM2(1,1) = eye(n);
     SM2(2,1) = gamma_tst*P;
     SM2(2,2) = P;
     SM2 = sdpvar(SM2);
 
     % optimization criterion seems to not be specified in [1]
-    crit = -trace(P); 
+    objective = -trace(P); 
 
     % LMI problem to be solved
-    pblmi =  [(P>=0), (SM>=0), (SM2<=0)];
+    constraint =  [(P>=0), (SM>=0), (SM2<=0)];
 
     % Solve LMI conditions
-    solpb = optimize(pblmi,crit,options_sdp);
+    solpb = optimize(constraint, objective, options_sdp);
 
     % Check if LMI is feasible
     if solpb.problem == 1

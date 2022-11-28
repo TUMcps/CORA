@@ -1,20 +1,20 @@
-function res = projectHighDim(obj,N,proj)
+function Z = projectHighDim(Z,N,proj)
 % projectHighDim - project a zonotope to a higher-dimensional space
 %
 % Syntax:  
-%    res = projectHighDim(obj,N,dim)
+%    Z = projectHighDim(Z,N,proj)
 %
 % Inputs:
-%    obj - zonotope object
-%    N - dimension of the higher dimensional space
-%    proj - states of the high dimensional space that correspond to the
-%          states of the low dimensional mptPolytope object
+%    Z - zonotope object
+%    N - dimension of the higher-dimensional space
+%    proj - states of the high-dimensional space that correspond to the
+%          states of the low-dimensional mptPolytope object
 %
 % Outputs:
-%    res - zonotope object in the high dimensional space
+%    Z - zonotope object in the higher-dimensional space
 %
 % Example: 
-%    Z = zonotope.generateRandom(2);
+%    Z = zonotope([-1;1],[3 2 -1; 2 -1 2]);
 %    Z_ = projectHighDim(Z,5,[1,3])
 %
 % Other m-files required: none
@@ -30,8 +30,11 @@ function res = projectHighDim(obj,N,proj)
 
 %------------- BEGIN CODE --------------
 
-    Z = zeros(N,size(obj.Z,2));
-    Z(proj,:) = obj.Z;
-    res = zonotope(Z);
+% instantiate all-zero center/generator matrix in higher-dimensional space
+Znew = zeros(N,size(Z.Z,2));
+% insert input argument into desired dimensions of higher-dimensional space
+Znew(proj,:) = Z.Z;
+% instantiate zonotope object
+Z = zonotope(Znew);
 
 %------------- END OF CODE --------------

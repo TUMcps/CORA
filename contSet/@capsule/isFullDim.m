@@ -1,14 +1,19 @@
-function res = isFullDim(obj)
-% isFullDim - check if a capsule is full-dimensional
+function res = isFullDim(C)
+% isFullDim - checks if the dimension of the affine hull of a capsule is
+%    equal to the dimension of its ambient space
 %
 % Syntax:  
-%    res = isFullDim(obj)
+%    res = isFullDim(C)
 %
 % Inputs:
-%    obj - capsule object
+%    C - capsule object
 %
 % Outputs:
-%    res - true if capsule is full-dimensional, otherwise false
+%    res - true/false
+%
+% Example:
+%    C = capsule([2;1],[1;1],1);
+%    isFullDim(C)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -24,8 +29,8 @@ function res = isFullDim(obj)
 %------------- BEGIN CODE --------------
 
 res = true;
-if obj.r == 0
-    % just a line in this case
+if C.r == 0
+    % just a point/line in this case
     res = false;
 end
 

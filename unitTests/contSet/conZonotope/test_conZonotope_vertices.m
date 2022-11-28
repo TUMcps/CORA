@@ -30,7 +30,13 @@ function res = test_conZonotope_vertices
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
+
+% empty set
+vertEmptycZ = vertices(conZonotope());
+if ~isnumeric(vertEmptycZ) || ~isempty(vertEmptycZ)
+    res = false;
+end
 
 % TEST 1: Figure 1 in [1] -------------------------------------------------
 
@@ -49,10 +55,8 @@ V = vertices(cZono);
 % compare with ground-truth
 V_ = [-0.5 3.5 -2.5;2.5 -0.5 -1.5];
 
-for i = 1:size(V_,2)
-   if ~ismembertol(V_(:,i)',V','ByRows',true)
-      error('Test 1 failed!'); 
-   end
+if ~compareMatrices(V,V_)
+    res = false;
 end
 
 
@@ -74,10 +78,8 @@ V = vertices(cZono);
 % compare with ground-truth
 V_ = [-1 0 -2;3 0 -2];
 
-for i = 1:size(V_,2)
-   if ~ismembertol(V_(:,i)',V','ByRows',true)
-      error('Test 2 failed!'); 
-   end
+if ~compareMatrices(V,V_)
+    res = false;
 end
 
 
@@ -99,10 +101,8 @@ V = vertices(cZono);
 % compare with ground-truth
 V_ = [-4 -4 -2 4 4 2;-3 1 3 3 -1 -3] + [-1;0.5]*ones(1,6);
 
-for i = 1:size(V_,2)
-   if ~ismembertol(V_(:,i)',V','ByRows',true)
-      error('Test 3 failed!'); 
-   end
+if ~compareMatrices(V,V_)
+    res = false;
 end
 
 
@@ -123,15 +123,8 @@ V = vertices(cZono);
 % compare with ground-truth
 V_ = [1 1 3 3;3 -1 2 -2];
 
-for i = 1:size(V_,2)
-   if ~ismembertol(V_(:,i)',V','ByRows',true)
-      error('Test 4 failed!'); 
-   end
+if ~compareMatrices(V,V_)
+    res = false;
 end
-
-
-
-res = true;
-
 
 %------------- END OF CODE --------------

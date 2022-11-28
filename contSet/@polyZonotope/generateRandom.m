@@ -2,23 +2,26 @@ function pZ = generateRandom(varargin)
 % generateRandom - Generates a random polynomial zonotope
 %
 % Syntax:  
-%    pZ = generateRandom()
-%    pZ = generateRandom(dim)
-%    pZ = generateRandom(dim,gen)
-%    pZ = generateRandom(dim,gen,fac)
-%    pZ = generateRandom(dim,gen,fac,ind)
+%    pZ = polyZonotope.generateRandom()
+%    pZ = polyZonotope.generateRandom('Dimension',n)
+%    pZ = polyZonotope.generateRandom('Dimension',n,'NrGenerators',nrGens)
+%    pZ = polyZonotope.generateRandom('Dimension',n,'NrGenerators',nrGens,...
+%           'NrFactors',nrFac)
+%    pZ = polyZonotope.generateRandom('Dimension',n,'NrGenerators',nrGens,...
+%           'NrFactors',nrFac,'nrIndGenerators',nrIndGens)
 %
 % Inputs:
-%    dim - (optional) dimension
-%    gen - (optional) number of generators
-%    fac - (optional) number of factors
-%    ind - (optional) number of independent factors
+%    Name-Value pairs (all options, arbitrary order):
+%       <'Dimension',n> - dimension
+%       <'NrGenerators',nrGens> - number of generators
+%       <'NrFactors',nrFac> - number of dependent factors
+%       <'NrIndGenerators',nrIndGens> - number of independent generators
 %
 % Outputs:
 %    pZ - random polynomial zonotope
 %
 % Example: 
-%    pZ = polyZonotope.generateRandom(2);
+%    pZ = polyZonotope.generateRandom('Dimension',2);
 %    plot(pZ,[1,2],'r');
 %
 % Other m-files required: none
@@ -29,97 +32,107 @@ function pZ = generateRandom(varargin)
 
 % Author:       Niklas Kochdumper
 % Written:      29-December-2019
-% Last update:  ---
+% Last update:  19-May-2022 (MW, name-value syntax)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    % define bounds for random values
-    dim_low = 2; dim_up = 10;
-    orderGen_low = 1; orderGen_up = 10;
-    fac_low = 1; fac_up = 5;
-    gen_low = -2; gen_up = 2;
-    exp_low = 1; exp_up = 4;
+% name-value pairs -> number of input arguments is always a multiple of 2
+if mod(nargin,2) ~= 0
+    throw(CORAerror('CORA:evenNumberInputArgs'));
+else
+    % read input arguments
+    NVpairs = varargin(1:end);
+    % check list of name-value pairs
+    checkNameValuePairs(NVpairs,{'Dimension','NrGenerators','NrFactors','NrIndGenerators'});
+    % dimension given?
+    [NVpairs,n] = readNameValuePair(NVpairs,'Dimension');
+    % number of generators given?
+    [NVpairs,nrGens] = readNameValuePair(NVpairs,'NrGenerators');
+    % number of factors given?
+    [NVpairs,nrFac] = readNameValuePair(NVpairs,'NrFactors');
+    % number of independent generators given?
+    [NVpairs,nrIndGens] = readNameValuePair(NVpairs,'NrIndGenerators');
+end
 
-    % parse input arguments
-    if nargin >= 1 && ~isempty(varargin{1})
-        n = varargin{1};
-    else
-        n = dim_low + floor(rand(1) * (dim_up - dim_low + 1));
-    end
-    if nargin >= 2 && ~isempty(varargin{2})
-        gen = varargin{2};
-    else
-        numGen_low = floor(orderGen_low*n);
-        numGen_up = floor(orderGen_up*n);
-        gen = numGen_low + floor(rand(1) * (numGen_up - numGen_low));
-    end
-    if nargin >= 3 && ~isempty(varargin{3})
-        fac = varargin{3};
-    else
-        fac = floor(fac_low + rand(1)*(fac_up - fac_low));
-    end
-    if nargin >= 4 && ~isempty(varargin{4})
-        indGens = varargin{4};
-    else
-        temp = randi([0,1]);
-        if temp
-            indGens = round(rand()*(orderGen_up*n));
-        else
-            indGens = 0;
-        end
-    end
-    
-    % fix number of generators
-    if fac > gen
-        gen = fac + 1;
-    end
+% check input arguments
+inputArgsCheck({{n,'att','numeric','nonnan'};
+                {nrGens,'att','numeric','nonnan'};
+                {nrFac,'att','numeric','nonnan'};
+                {nrIndGens,'att','numeric','nonnan'}});
 
-    % center vector
-    c = gen_low + rand(n,1) * (gen_up - gen_low);
+% default computation for dimension
+if isempty(n)
+    nmax = 10;
+    n = randi(nmax);
+end
 
-    % generator matrix
-    G = gen_low + rand(n,gen) * (gen_up - gen_low);
+% default number of generators
+if isempty(nrGens)
+    nrGens = randi([3,10]);
+end
 
-    % exponent matrix
-    expMat = zeros(fac,gen);
-    
-    for i = 1:round(fac*gen/2)
-       
-        % select random matrix entry
-        ind1 = round(1 + rand()*(fac-1));
-        ind2 = round(1 + rand()*(gen-1));
-        
+% default number of factors
+if isempty(nrFac)
+    nrFac = Inf;
+    while nrFac > nrGens + 1
+        nrFac = randi([2,5]);
+    end
+end
+
+% default number of independent generators
+if isempty(nrGens)
+    nrIndGens = randi([2,5]);
+end
+
+% define bounds for random values
+gen_low = -2; gen_up = 2;
+exp_low = 1; exp_up = 4;
+
+% dependent generator matrix
+G = gen_low + rand(n,nrGens) * (gen_up - gen_low);
+
+% center vector
+c = gen_low + rand(n,1) * (gen_up - gen_low);
+
+% exponent matrix
+expMat = zeros(nrFac,nrGens);
+
+for j = 1:nrGens
+
+    % select number of factors affecting j-th generator
+    k = randi(nrFac);
+    % select affected entries
+    idxs = randperm(nrFac);
+    idxs = idxs(1:k);
+
+    for jj=1:k
         % select random value
-        expMat(ind1,ind2) = randomExponent(exp_low,exp_up);   
+        expMat(idxs(jj),j) = randomExponent(exp_low,exp_up);   
     end
     
-    ind = find(sum(expMat,2) == 0);
-    for i = 1:length(ind)
-       temp = floor(1 + rand()*(size(expMat,2)-1));
-       expMat(ind(i),temp) = randomExponent(exp_low,exp_up);
-    end
+end
 
-    % remove redundant exponents
-    [expMat,G] = removeRedundantExponents(expMat,G);
-    
-    ind = find(sum(expMat,1) == 0);
-    
-    if ~isempty(ind)
-       expMat(:,ind) = [];
-       G(:,ind) = [];
-    end
-    
-    % generate random independent generators
-    Grest = [];
-    
-    if indGens ~= 0
-       Grest =  gen_low + rand(n,indGens) * (gen_up - gen_low);
-    end
+ind = find(sum(expMat,2) == 0);
+for i = 1:length(ind)
+   temp = floor(1 + rand*(size(expMat,2)-1));
+   expMat(ind(i),temp) = randomExponent(exp_low,exp_up);
+end
 
-    % instantiate polyZonotope object
-    pZ = polyZonotope(c,G,Grest,expMat);
+% remove redundant exponents
+[expMat,G] = removeRedundantExponents(expMat,G);
+
+% generate random independent generators
+Grest = [];
+
+if nrIndGens > 0
+    Grest = gen_low + rand(n,nrIndGens) * (gen_up - gen_low);
+end
+
+% instantiate polyZonotope object
+pZ = polyZonotope(c,G,Grest,expMat);
     
+
 end
 
 % Auxiliary Functions -----------------------------------------------------

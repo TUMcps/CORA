@@ -1,9 +1,9 @@
 function res = testLongDuration_conPolyZono_and
-% test_conPolyZono_and - unit test function for intersection of constrained
-%                        polynomial zonotopes
+% testLongDuration_conPolyZono_and - unit test function for the
+%    intersection of constrained polynomial zonotopes
 %
 % Syntax:  
-%    res = test_conPolyZono_and()
+%    res = testLongDuration_conPolyZono_and()
 %
 % Inputs:
 %    -
@@ -24,7 +24,7 @@ function res = testLongDuration_conPolyZono_and
 
 %------------- BEGIN CODE --------------
 
-    res = 1;
+    res = true; return
     splits = 4;
     
     % Random Tests --------------------------------------------------------
@@ -37,24 +37,23 @@ function res = testLongDuration_conPolyZono_and
     for i = 1:2
         
         % generate random constrained polynomial zonotope
-        cPZ1 = conPolyZono.generateRandom(2,[],[],[],0);
+        cPZ1 = conPolyZono.generateRandom('Dimension',2,'NrIndGenerators',0);
         
         % loop over all other set representations
         for j = 1:length(sets)
             
-            found = 0;
+            found = false;
             
             % loop unit two sets which really intersect are obtained
             for h = 1:3
             
                 % generate random object of the current set representation
                 if strcmp(sets{j},'conPolyZono')
-                    temp = conPolyZono.generateRandom(2,[],[],[],0);
+                    temp = conPolyZono.generateRandom('Dimension',2,'NrIndGenerators',0);
                 elseif strcmp(sets{j},'polyZonotope')
-                    temp = polyZonotope.generateRandom(2,[],[],0);
+                    temp = polyZonotope.generateRandom('Dimension',2,'NrIndGenerators',0);
                 else
-                    str = ['temp = ',sets{j},'.generateRandom(2);']; 
-                    eval(str);
+                    eval(['temp = ',sets{j},'.generateRandom(''Dimension'',2);']);
                 end
                 
                 cPZ2 = conPolyZono(temp);
@@ -64,18 +63,18 @@ function res = testLongDuration_conPolyZono_and
 
                 % get random points
                 try
-                   points = randPoint(cPZ,10,'extreme');
+                    points = randPoint(cPZ,10,'extreme');
                 catch
-                   continue 
+                    continue 
                 end
                 
-                found = 1;
+                found = true;
                 break;
             end
             
             % check if two intersecting sets could be generated
-            if found == 0
-               continue; 
+            if ~found
+                continue; 
             end
             
             % compute polytope enclosure of the two conPolyZono objects
@@ -86,13 +85,13 @@ function res = testLongDuration_conPolyZono_and
             
             % check if all points are inside the intersection of the
             % polygon enclosures
-            if ~in(pgon,points)
+            if ~contains(pgon,points)
                 
                 % save variables so that failure can be reproduced
                 path = pathFailedTests(mfilename());
                 save(path,'cPZ1','cPZ2','points');
                 
-                error('Random test failed!');
+                throw(CORAerror('CORA:testFailed'));
             end
         end
     end

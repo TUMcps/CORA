@@ -61,34 +61,15 @@ if isequal(C,C_,tol)
     res = false;
 end
 
-% ... empty capsule -> dimension mismatch
-try
-    isequal(C,C_empty); % here: error should be thrown
+% ... empty capsule
+if isequal(C,C_empty)
     res = false;
-catch ME
-    if ~strcmp(ME.identifier,'CORA:dimensionMismatch')
-        % other error than expected
-        res = false;
-    end
 end
 
 % ... capsule of reduced dimension
 C_red = capsule(c1(1:end-1),g1(1:end-1),r1);
-try
-    isequal(C,C_red); % here: error should be thrown
+if isequal(C,C_red)
     res = false;
-catch ME
-    if ~strcmp(ME.identifier,'CORA:dimensionMismatch')
-        % other error than expected
-        res = false;
-    end
-end
-
-
-if res
-    disp('test_isequal successful');
-else
-    disp('test_isequal failed');
 end
 
 %------------- END OF CODE --------------

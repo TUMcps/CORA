@@ -61,10 +61,9 @@ end
 % add results
 res = all(all(res_randcomp)) && all(all(res_randorder));
 
-if res
-    disp('test_isequal successful');
-else
-    disp('test_isequal failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'Z1','Z2','nrOfGens','G3');
 end
 
 %------------- END OF CODE --------------

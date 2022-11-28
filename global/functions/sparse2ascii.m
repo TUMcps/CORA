@@ -1,5 +1,29 @@
 function sparse2ascii
-%last update: 28.08.08, MA
+% sparse2ascii - ???
+%
+% Syntax:  
+%    sparse2ascii
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    ???
+%
+% Example: 
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: ---
+
+% Author:       Matthias Althoff
+% Written:      ???
+% Last update:  28-August-2008
+% Last revision:---
+
+%------------- BEGIN CODE --------------
 
 %create dummy Markov chain to avoid errors while loading
 MCdummy=markovchain([],[]);
@@ -37,8 +61,11 @@ for carMode=1:nrOfModes
     status = fclose(fid)    
 end
 
+end
 
-%--------------------------------------------------------------------------
+
+% Auxiliary Functions -----------------------------------------------------
+
 function saveMatrix(fid,T)
 %1. value: nr of rows
 %2. value: nr of columns
@@ -62,3 +89,7 @@ for i=1:nrOfNonZeroElements
     val=T(nonZeroRow(i),nonZeroCol(i));
     fprintf(fid, '%3i %3i %0.4f \n', [nonZeroRow(i),nonZeroCol(i), val]);
 end
+
+end
+
+%------------- END OF CODE --------------

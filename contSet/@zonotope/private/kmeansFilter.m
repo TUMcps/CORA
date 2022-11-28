@@ -1,8 +1,8 @@
-function [Gred]=kmeansFilter(G,rem)
+function Gred = kmeansFilter(G,rem)
 % kmeansFilter - filters out generators by the k-means clustering algorithm
 %
 % Syntax:  
-%    [Gred]=kmeansFilter(G,rem)
+%    Gred = kmeansFilter(G,rem)
 %
 % Inputs:
 %    G - matrix of generators
@@ -17,10 +17,10 @@ function [Gred]=kmeansFilter(G,rem)
 %
 % See also: 
 
-% Author: Matthias Althoff
-% Written: 12-September-2008
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      12-September-2008
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

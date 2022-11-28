@@ -29,6 +29,11 @@ function res = test_interval_mtimes
 %init result vector
 resVec = [];
 
+% empty set
+a = interval();
+b = 3;
+resVec(end+1) = isempty(b*a);
+
 %SCALAR VALUES-------------------------------------------------------------
 %test 1: a: interval, b: numeric
 a = interval(-1,2);
@@ -123,12 +128,5 @@ resVec(end+1) = (c == c_true);
 
 % check result
 res = all(resVec);
-
-
-if res
-    disp('test_mtimes successful');
-else
-    disp('test_mtimes failed');
-end
 
 %------------- END OF CODE --------------

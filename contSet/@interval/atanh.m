@@ -1,4 +1,4 @@
-function res = atanh(intVal)
+function I = atanh(I)
 % atanh - Overloaded 'atanh()' operator for intervals
 %
 % x_ is x infimum, x-- is x supremum
@@ -10,15 +10,17 @@ function res = atanh(intVal)
 % [atanh(x_), atanh(x--)] if (x >= -1) and (x <= 1).
 %
 % Syntax:  
-%    res = atanh(intVal)
+%    I = atanh(I)
 %
 % Inputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - interval object
+%    I - interval object
 %
-% Example: 
+% Example:
+%    I = interval([-0.5;0.3]);
+%    res = atanh(I);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,58 +32,55 @@ function res = atanh(intVal)
 % Written:      12-February-2016
 % Last update:  21-February-2016 (DG, Errors are fixed, the matrix case is rewritten)
 %               05-May-2020 (MW, standardized error message)
+%               21-May-2022 (MW, remove new instantiation)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % scalar case
-if isnumeric(intVal)
-    
-    res = interval();
+if isnumeric(I)
 
-    if ((intVal.inf < -1) && (intVal.sup > 1)) || (intVal.inf > 1) || (intVal.sup < -1)
-        res.inf = NaN;
-        res.sup = NaN;
-    elseif (intVal.inf < -1) && (intVal.sup <= 1)
-        res.inf = NaN;
-        res.sup = atanh(intVal.sup);
-    elseif (intVal.inf >= -1) && (intVal.sup > 1)
-        res.inf = atanh(intVal.inf);
-        res.sup = NaN;
+    if ((I.inf < -1) && (I.sup > 1)) || (I.inf > 1) || (I.sup < -1)
+        I.inf = NaN;
+        I.sup = NaN;
+    elseif (I.inf < -1) && (I.sup <= 1)
+        I.inf = NaN;
+        I.sup = atanh(I.sup);
+    elseif (I.inf >= -1) && (I.sup > 1)
+        I.inf = atanh(I.inf);
+        I.sup = NaN;
     else
-        res.inf = atanh(intVal.inf);
-        res.sup = atanh(intVal.sup);
+        I.inf = atanh(I.inf);
+        I.sup = atanh(I.sup);
     end
         
 else
 
-    % to preserve the shape    
-    res = intVal;
+    lb = I.inf;
+    ub = I.sup;
     
     % find indices
+    ind1 = find((lb < -1 & ub > 1) | (lb > 1) | (ub < -1));   
+    I.inf(ind1) = NaN;
+    I.sup(ind1) = NaN;
     
-    ind1 = find((intVal.inf < -1 & intVal.sup > 1) | (intVal.inf > 1) | (intVal.sup < -1));   
-    res.inf(ind1) = NaN;
-    res.sup(ind1) = NaN;
+    ind2 = find(lb < -1 & ub >= -1 & ub <= 1);    
+    I.inf(ind2) = NaN;
+    I.sup(ind2) = atanh(I.sup(ind2));
     
-    ind2 = find(intVal.inf < -1 & intVal.sup >= -1 & intVal.sup <= 1);    
-    res.inf(ind2) = NaN;
-    res.sup(ind2) = atanh(intVal.sup(ind2));
+    ind3 = find(lb >= -1 & lb <= 1 & ub > 1);    
+    I.inf(ind3) = atanh(I.inf(ind3));
+    I.sup(ind3) = NaN;
     
-    ind3 = find(intVal.inf >= -1 & intVal.inf <= 1 & intVal.sup > 1);    
-    res.inf(ind3) = atanh(intVal.inf(ind3));
-    res.sup(ind3) = NaN;
-    
-    ind4 = find(intVal.inf >= -1 & intVal.sup <= 1);    
-    
-    res.inf(ind4) = atanh(intVal.inf(ind4));
-    res.sup(ind4) = atanh(intVal.sup(ind4));
+    ind4 = find(lb >= -1 & ub <= 1);    
+    I.inf(ind4) = atanh(I.inf(ind4));
+    I.sup(ind4) = atanh(I.sup(ind4));
        
 end
 
 % return error if NaN occures
-if any(any(isnan(res.inf))) || any(any(isnan(res.sup)))
-	error(resIntNaNInf()); 
+if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))
+    throw(CORAerror('CORA:outOfDomain','validDomain','>= -1 && <= 1'));
 end
 
 %------------- END OF CODE --------------

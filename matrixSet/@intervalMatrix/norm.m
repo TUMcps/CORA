@@ -1,12 +1,12 @@
-function res = norm(obj, varargin)
+function res = norm(intMat,varargin)
 % norm - computes exactly the maximum norm value of all possible matrices
 %
 % Syntax:  
-%    res = norm(obj, varargin)
+%    res = norm(intMat,varargin)
 %
 % Inputs:
-%    obj - interval matrix
-%    varargin - list of optional inputs
+%    intMat - intervalMatrix object
+%    type - (optional) p-norm
 %
 % Outputs:
 %    res - resulting maximum norm value
@@ -22,7 +22,7 @@ function res = norm(obj, varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: @zonotope/norm
+% See also: zonotope/norm
 
 % Author:       Matthias Althoff, Victor Gassmann
 % Written:      02-November-2017
@@ -30,20 +30,22 @@ function res = norm(obj, varargin)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-type = 2;
+
 if length(varargin)>1
-    error('Too many input arguments');
+    throw(CORAerror('CORA:tooManyInputArgs',2));
 end
-if ~isempty(varargin) 
-    type = varargin{1};
-end
+
+% set default values
+type = setDefaultValues({2},varargin{:});
+
 if isnumeric(type) && type==2
-    error('Euclidean matrix norm not implemented (exact computation NP hard)');
+    % Euclidean matrix norm not implemented (exact computation NP hard)
+    throw(CORAerror('CORA:wrongValue','second','1, >2, ''fro''.'));
 end
 
 % for type=1,>2; and type='fro' (absolute, see [1]), the matrix attaining
 % the maximum respective norm is given by
-A_max = abs(center(obj)) + rad(obj);
+A_max = abs(center(intMat)) + rad(intMat);
 res = norm(A_max,type);
 
 %------------- END OF CODE --------------

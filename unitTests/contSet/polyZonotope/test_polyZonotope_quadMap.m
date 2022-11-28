@@ -25,10 +25,6 @@ function res = test_polyZonotope_quadMap
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-%% ANALYTICAL TESTS
-
 % create polynomial matrices
 c = [1;2];
 G = [1 -2 1;2 3 -1];
@@ -49,8 +45,8 @@ c = [11;3];
 expMat = [1 0 2 2 1 3 0 2 4; 0 1 1 0 1 1 2 2 2];
 
 % check for correctness
-if ~all(pZres.c == c)
-    error('test_polyZonotope_quadMap: analytical test failed!');
+if ~all(withinTol(pZres.c,c))
+    throw(CORAerror('CORA:testFailed'));
 end
 
 for i = 1:size(expMat,2)
@@ -59,13 +55,12 @@ for i = 1:size(expMat,2)
     ind_ = find(ind > 0);
     
     if isempty(ind_)
-        error('test_polyZonotope_quadMap: analytical test failed!');        
+        throw(CORAerror('CORA:testFailed'));
     elseif ~all(pZres.G(:,ind_(1)) == G(:,i))
-        error('test_polyZonotope_quadMap: analytical test failed!');
+        throw(CORAerror('CORA:testFailed'));
     end
     
 end
-
 
 res = true;
 

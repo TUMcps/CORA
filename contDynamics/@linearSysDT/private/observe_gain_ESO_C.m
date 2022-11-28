@@ -1,5 +1,5 @@
 function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_C(obj,options)
-% observe_gain_ESO_C - computes the gain for the guaranted state estimation
+% observe_gain_ESO_C - computes the gain for the guaranteed state estimation
 % approach from [1]. 
 %
 %
@@ -41,7 +41,7 @@ function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_C(obj,options)
 tic
 
 % obtain system dimension and nr of outputs
-dim = length(obj.A); 
+n = obj.dim; 
 
 % set options of solver
 options_sdp = sdpsettings;
@@ -50,7 +50,7 @@ options_sdp.verbose = 1;
 
 %% Alg. 1 of [1] 
 % initialization of Alg. 1
-Q = eye(dim); 
+Q = eye(n); 
 
 % line 2-6 of Alg. 1 in [1]
 [~, ~, ~, ~, Ao] = compute_Q(obj,Q,options,options_sdp);
@@ -66,7 +66,7 @@ quantileFctValue = chi2inv(p,dim);
 W = options.W.Q/quantileFctValue;
 
 % Obtain the covariance matrix V using (26) in [1]
-V = sdpvar(dim, dim, 'symmetric');
+V = sdpvar(n, n, 'symmetric');
 Fa = [V>=0, Ao*V*Ao'-V<=-W];    
 optimize(Fa);    
 V = value(V);
@@ -107,7 +107,7 @@ function [Q, P, Y, gamma, Ao] = compute_Q(obj,Q,options,options_sdp)
     % of [1] and minimizes (− log(det(Q)))
     
     % obtain system dimension and nr of outputs
-    dim = size(obj.A,1); 
+    n = obj.dim; 
     nrOfOutputs = size(obj.C,1);
     nrOfDistGens = size(options.W.Q,2);
     
@@ -115,17 +115,17 @@ function [Q, P, Y, gamma, Ao] = compute_Q(obj,Q,options,options_sdp)
     I = eye(nrOfDistGens + nrOfOutputs);
     
     % create symmetric matrix SM of LMI problem
-    Q = sdpvar(dim,dim,'symmetric');
+    Q = sdpvar(n,n,'symmetric');
     SM = blkvar;
     SM(1,1) = Ao'*P*Ao-P+Q;
     SM(1,2) = Ao'*P*E;
     SM(2,1) = E'*P*obj.A;
     SM(2,2) = E'*P*E- gamma^2*I;
     SM = sdpvar(SM);
-    objFun= [Q>=0, SM<=0]; % objective function   
-    crit = -log(det(Q));   
+    constraint = [Q>=0, SM<=0]; % constraint   
+    objective = -log(det(Q));   % objective function
     ops_lmi = sdpsettings('solver','penlab','verbose',0,'warning',0);    
-    solpb = optimize(objFun,crit,ops_lmi); % optimze the LMIs
+    solpb = optimize(constraint, objective, ops_lmi); % optimze the LMIs
     % return Q
     Q = double(Q);
 end
@@ -139,15 +139,15 @@ function [P,Y,gamma] = solveLMI(obj,Q,options,options_sdp)
     E = options.V.Q;
     
     % obtain system dimension and nr of outputs
-    dim = size(obj.A,1); 
+    n = obj.dim;
     nrOfOutputs = size(obj.C,1);
     nrOfDistGens = size(F,2);
 
     %% define YALMIPs symbolic decision variables
     % state
-    P = sdpvar(dim,dim,'symmetric'); 
+    P = sdpvar(n,n,'symmetric'); 
     % gain matrix
-    Y = sdpvar(dim,nrOfOutputs,'full'); 
+    Y = sdpvar(n,nrOfOutputs,'full'); 
     % identity matrix
     I = eye(nrOfDistGens + nrOfOutputs);
 

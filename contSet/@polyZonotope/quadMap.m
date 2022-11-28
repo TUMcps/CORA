@@ -1,19 +1,19 @@
-function res = quadMap(varargin)
+function pZ = quadMap(pZ,varargin)
 % quadMap - computes the quadratic map of a polyZonotope
 %
 % Syntax:  
-%    res = quadMap(pZ,Q)
-%    res = quadMap(pZ1,pZ2,Q)
+%    pZ = quadMap(pZ,Q)
+%    pZ = quadMap(pZ,pZ2,Q)
 %
 % Inputs:
-%    pZ,pZ1,pZ2 - polyZonotope objects
+%    pZ, pZ2 - polyZonotope objects
 %    Q - quadratic coefficients as a cell of matrices
 %
 % Outputs:
-%    res - resulting set as a polyZonotope object
+%    pZ - polyZonotope object
 %
 % Example: 
-%    % quadrtic multiplication
+%    % quadratic multiplication
 %    pZ = polyZonotope([1;2],[1 -2 1; 2 3 1],[0;0],[1 0 2;0 1 1]);
 %    
 %    Q{1} = [1 2; -1 2];
@@ -21,11 +21,11 @@ function res = quadMap(varargin)
 %
 %    pZquad = quadMap(pZ,Q);
 %
-%    figure
+%    figure;
 %    subplot(1,2,1);
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
+%    plot(pZ,[1,2],'FaceColor','r');
 %    subplot(1,2,2);
-%    plot(pZquad,[1,2],'b','Filled',true,'EdgeColor','none');
+%    plot(pZquad,[1,2],'FaceColor','b');
 %
 %    % mixed quadratic multiplication
 %    pZ2 = polyZonotope([0;0],[2 0 1;0 2 1],[0;0],[0 0 0;0 0 0;1 0 3;0 1 1]);
@@ -34,11 +34,11 @@ function res = quadMap(varargin)
 %
 %    figure
 %    subplot(1,3,1);
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
+%    plot(pZ,[1,2],'FaceColor','r');
 %    subplot(1,3,2);
-%    plot(pZ2,[1,2],'b','Filled',true,'EdgeColor','none');
+%    plot(pZ2,[1,2],'FaceColor','b');
 %    subplot(1,3,3);
-%    plot(pZquadMixed,[1,2],'g','Filled',true,'EdgeColor','none','Splits',10);
+%    plot(pZquadMixed,[1,2],'FaceColor','g','Splits',10);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -53,10 +53,14 @@ function res = quadMap(varargin)
 
 %------------- BEGIN CODE --------------
 
-    if nargin == 2
-        res = quadMapSingle(varargin{1},varargin{2});
+    if nargin == 1
+        throw(CORAerror('CORAerror:notEnoughInputArgs',2));
+    elseif nargin == 2
+        pZ = quadMapSingle(pZ,varargin{1});
+    elseif nargin == 3
+        pZ = quadMapMixed(pZ,varargin{1},varargin{2});
     else
-        res = quadMapMixed(varargin{1},varargin{2},varargin{3});
+        throw(CORAerror('CORA:tooManyInputArgs',3));
     end
 end
 
@@ -72,11 +76,21 @@ function pZ = quadMapSingle(pZ,Q)
     % and a zonotope Zrem that contains the independent generators
     % (Z + Zrem)' Q (Z + Zrem) = ...
     %       Z' Q Z  +  Zrem' Q Z  +  Z' Q Zrem  +  Zrem' Q Zrem 
+    
     pZtemp = pZ;
     pZtemp.Grest = [];
 
     Z = zonotope(pZtemp);
     Zrem = zonotope([0*pZ.c, pZ.Grest]);
+    
+    % return directly if pZ is a zonotope (rest matrix only)
+    if isempty(pZ.G)
+        Zrem_ = zonotope([pZ.c, pZ.Grest]);
+        Zr = quadMap(Zrem_,Q);
+        pZ.c = center(Zr);
+        pZ.Grest = generators(Zr);
+        return;
+    end
 
     % extend generator and exponent matrix by center
     Gext = [pZ.c, pZ.G];
@@ -102,17 +116,18 @@ function pZ = quadMapSingle(pZ,Q)
 
     % loop over all dimensions
     for i = 1:dim
-
-        % quadratic evaluation
-        quadMat = Gext'*Q{i}*Gext;
-
-        % copy the result into the generator matrix
-        counter = 1;
-
-        for j = 1:N
-            Gquad(i,counter:counter+N-j) = ...
-                [quadMat(j,j), quadMat(j,j+1:N) + quadMat(j+1:N,j)'];
-            counter = counter + N - j + 1;
+        if ~isempty(Q{i})
+            % quadratic evaluation
+            quadMat = Gext'*Q{i}*Gext;
+    
+            % copy the result into the generator matrix
+            counter = 1;
+    
+            for j = 1:N
+                Gquad(i,counter:counter+N-j) = ...
+                    [quadMat(j,j), quadMat(j,j+1:N) + quadMat(j+1:N,j)'];
+                counter = counter + N - j + 1;
+            end
         end
     end
 
@@ -205,10 +220,11 @@ function pZ = quadMapMixed(pZ1,pZ2,Q)
     
     % loop over all dimensions
     for i = 1:length(Q)
-           
-        % quadratic evaluation
-        quadMat = Gext1'*Q{i}*Gext2;
-        Gquad(i,:) = reshape(quadMat,1,[]);        
+        if ~isempty(Q{i})
+            % quadratic evaluation
+            quadMat = Gext1'*Q{i}*Gext2;
+            Gquad(i,:) = reshape(quadMat,1,[]);
+        end
     end
 
     % add up all generators that belong to identical exponents

@@ -1,12 +1,12 @@
 function p = polygon(C)
 % polygon - Under-approximates a two-dimensional capsule by a polygon and 
-%           returns its vertices; mainly used for plotting reasons.
+%    returns its vertices; mainly used for plotting reasons.
 %
 % Syntax:  
 %    p = polygon(C)
 %
 % Inputs:
-%    C - capsule
+%    C - capsule object
 %
 % Outputs:
 %    p - ordered set of points of a polygon
@@ -28,7 +28,7 @@ function p = polygon(C)
 
 %------------- BEGIN CODE --------------
 
-% set number of points for half circles
+% fixed number of points for half circles
 nrOfPoints = 500;
 
 % center of first half circle
@@ -71,9 +71,7 @@ angle = linspace(startAngle2,finalAngle2,nrOfPoints);
 x2 = x2 + c2(1); % shift by c1
 y2 = y2 + c2(2); % shift by c1
 
-% concatenate results
-p = [[x1,x2,x1(1)];[y1,y2,y1(1)]]; % start point added to close polygon
-
-
+% concatenate results (start point added to close polygon)
+p = [[x1,x2,x1(1)];[y1,y2,y1(1)]];
 
 %------------- END OF CODE --------------

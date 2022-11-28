@@ -1,28 +1,25 @@
-function obj = and(obj,S)
+function S = and(hyp,S)
 % and - computes the intersection of a constrained hyperplane with a set
 %
 % Syntax:  
-%    obj = and(obj,S)
+%    S = and(hyp,S)
 %
 % Inputs:
-%    obj - conHyperplane object
-%    S - conSet object
+%    hyp - conHyperplane object
+%    S - contSet object
 %
 % Outputs:
-%    obj - conSet object
+%    S - contSet object
 %
 % Example: 
-%    poly = mptPolytope([-1 -1; 1 0;-1 0; 0 1; 0 -1],[2;3;2;3;2]);
-%    cH = conHyperplane([1 1],2,[-1 0],-1);
+%    P = mptPolytope([-1 -1; 1 0;-1 0; 0 1; 0 -1],[2;3;2;3;2]);
+%    hyp = conHyperplane([1 1],2,[-1 0],-1);
 %
-%    res = cH & poly;
+%    res = hyp & P;
 %
-%    figure
-%    hold on
-%    xlim([-2,4]);
-%    ylim([-4,4]);
-%    plot(cH,[1,2],'r','LineWidth',3);
-%    plot(poly,[1,2],'b');
+%    figure; hold on; xlim([-2,4]); ylim([-4,4]);
+%    plot(hyp,[1,2],'r','LineWidth',3);
+%    plot(P,[1,2],'b');
 %    plot(res,[1,2],'g');
 %
 % Other m-files required: none
@@ -38,6 +35,7 @@ function obj = and(obj,S)
 
 %------------- BEGIN CODE --------------
 
-    obj = S & obj;
+% input argument check happens there
+S = S & hyp;
 
 %------------- END OF CODE --------------

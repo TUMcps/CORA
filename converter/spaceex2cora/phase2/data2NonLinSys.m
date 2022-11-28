@@ -1,29 +1,29 @@
-function [functionName,sys] = data2NonLinSys(Data, path)
+function [functionName,sys] = data2NonLinSys(Data,path)
 % data2NonLinSys - converts Data into a linearSys or nonlinearSys object
 %
 % Syntax:  
-%    [functionName,sys] = data2NonLinSys(Data, path)
+%    [functionName,sys] = data2NonLinSys(Data,path)
 %
 % Input:
-%    Data: Automaton in structHA format
-%    path: folder from which to generate auxiliary files
+%    Data - Automaton in structHA format
+%    path - folder from which to generate auxiliary files
+%
 % Output:
-%     depending on system dynamics:
-%       linearSys object or nonlinearSys object
+%    functionName - name of function
+%    sys - linearSys object or nonlinearSys object (depending on dynamics)
 %
 % Other m-files required: none
-% Subfunctions: ADD IF NECESSARY
+% Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
 
-% Author: Mark Wetzlinger
-% Written: 11-January-2019
-% Last update: --- 
-% Last revision: ---
+% Author:       Mark Wetzlinger
+% Written:      11-January-2019
+% Last update:  --- 
+% Last revision:---
 
 %------------- BEGIN CODE --------------
-
 
 % Get Meta Information of the given Automaton
 Comp = Data.Components{1,1};
@@ -110,11 +110,11 @@ if isfield(State.Flow,'A')
             "sys = linearSys(dynA, dynB, dync);" + newlines(2);
     else
         % include output equation y = Cx + Du + k
-        linSysC = printMatrixConverter(State.Invariant.C);
+        linSysC = printMatrixConverter(State.Flow.C);
         linSysCStr = "dynC = ..." + newline + linSysC + ";" + newline;
-        linSysD = printMatrixConverter(State.Invariant.D);
+        linSysD = printMatrixConverter(State.Flow.D);
         linSysDStr = "dynD = ..." + newline + linSysD + ";" + newline;
-        linSysk = printMatrixConverter(State.Invariant.k);
+        linSysk = printMatrixConverter(State.Flow.k);
         linSyskStr = "dynk = ..." + newline + linSysk + ";" + newline;
         dynamicsStr = dynamicsC + linSysAStr + linSysBStr + linSyscStr + ...
             linSysCStr + linSysDStr + linSyskStr + newlines(2) + ...
@@ -129,7 +129,7 @@ else
     statedims = num2str(length(Comp.states));
     inputdims = num2str(length(Comp.inputs));
 
-    printDynamicsFile(path,nonlinName,State.Flow.FormalEqs);
+    printDynamicsFile(path,nonlinName,State.Flow.FormalEqs,'flow');
 
     dynamicsStr = dynamicsC + "sys = nonlinearSys(@" + nonlinName + ...
                   "," + statedims + "," + inputdims +"); " + newlines(2);
@@ -140,35 +140,32 @@ componentStr = componentStr + stateStr + dynamicsStr;
 
 %optionStr = padComment("Options");
 
-
 sys = automatonStr + componentStr + newline + "end";
 
 end
 
-%-----------STRING HELPER FUNCTIONS-------------
+% Auxiliary Functions -----------------------------------------------------
 
 function str = padComment(comment,maxLineLength)
-%pads comment left & right with dashes to desired length and prefixes "%"
-
-if(nargin<2)
-    maxLineLength = 75;
-end
-
-lenComment = strlength(comment);
-lenLeft = floor((maxLineLength - lenComment)/2) - 1;
-lenRight = maxLineLength - lenLeft - lenComment;
-
-str = "%" + repmat('-',1,lenLeft-1) + comment + repmat('-',1,lenRight);
-
+% pads comment left & right with dashes to desired length and prefixes "%"
+    if(nargin<2)
+        maxLineLength = 75;
+    end
+    
+    lenComment = strlength(comment);
+    lenLeft = floor((maxLineLength - lenComment)/2) - 1;
+    lenRight = maxLineLength - lenLeft - lenComment;
+    
+    str = "%" + repmat('-',1,lenLeft-1) + comment + repmat('-',1,lenRight);
 end
 
 function str = newlines(lines)
-% fast way to write newline() + newline() + ...
-str = string(repmat(newline(),1,lines));
+    % fast way to write newline() + newline() + ...
+    str = string(repmat(newline(),1,lines));
 end
 
-% transform possibly multi-line text to comment
 function str = text2comment(text)
+% transform possibly multi-line text to comment
 % format in:
 %   "line1
 %    line2
@@ -177,8 +174,7 @@ function str = text2comment(text)
 %   "%% line1
 %    %   line2
 %    %   line3"
-str = "%% " + strrep(text,newline,newline + "%   ");
-
+    str = "%% " + strrep(text,newline,newline + "%   ");
 end
 
 %------------- END OF CODE -------------

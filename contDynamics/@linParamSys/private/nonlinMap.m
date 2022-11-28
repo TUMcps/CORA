@@ -1,19 +1,19 @@
-function [obj] = nonlinMap(obj,options)
+function obj = nonlinMap(obj,options)
 % nonlinMap - computes the interval matrix which abstracts the nonlinear
-% map due to the higher order terms in the Taylor expansion
+%    map due to the higher order terms in the Taylor expansion
 %
 % Syntax:  
-%    [obj] = nonlinMap(obj,options)
+%    obj = nonlinMap(obj,options)
 %
 % Inputs:
-%    obj - linear interval system object
+%    obj - linParamSys object
 %    options - options struct
 %
 % Outputs:
-%    obj - linear interval system object
+%    obj - linParamSys object
 %
 % Example: 
-%    Text for example...
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -35,7 +35,7 @@ function [obj] = nonlinMap(obj,options)
 A=obj.A;
 taylorTerms=options.taylorTerms;
 r=options.timeStep;
-dim=dimension(obj);
+n=obj.dim;
 
 %compute exact A square
 Asquare=apprSquare(A);
@@ -53,7 +53,7 @@ for i=3:taylorTerms
     %compute sums
     Asum=Asum+Apower{i-2}*r^(i-2)/factorial(i);
 end
-Asum=Asquare*r^2*(0.5*eye(dim)+Asum);
+Asum=Asquare*r^2*(0.5*eye(n)+Asum);
 
 %add missing powers
 for i=(taylorTerms-1):taylorTerms
@@ -65,7 +65,7 @@ end
 alpha=infNorm(Aint);
 epsilon=alpha*r/(taylorTerms+2);
 phi=(alpha*r)^(taylorTerms+1)/factorial(taylorTerms+1)/(1-epsilon);
-E=interval(-ones(dim),ones(dim))*phi;
+E=interval(-ones(n),ones(n))*phi;
 
 %nonlinear map
 N=Asum+E;
@@ -75,6 +75,5 @@ obj.taylor.N=N; %nonlinear map N
 obj.taylor.powers=Apower;
 obj.taylor.error=E;    
 obj.taylor.sq=Asquare;
-
 
 %------------- END OF CODE --------------

@@ -26,10 +26,6 @@ function res = test_polyZonotope_mtimes
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-%% ANALYTICAL TESTS
-
 % TEST 1
 
 % create polynomial zonotope
@@ -51,13 +47,15 @@ G =  [2 4 2 -6; 2 1 3 -4];
 Grest = [11.5 0; 0 23];
 
 % check for correctness
-if any(c-pZres.c) || any(any(G-pZres.G)) || any(any(Grest-pZres.Grest))
-    error('test_polyZonotope_mtimes: analytical test 1 failed!');
+if ~all(withinTol(c,pZres.c)) || ~compareMatrices(G,pZres.G) ...
+        || ~compareMatrices(Grest,pZres.Grest)
+    throw(CORAerror('CORA:testFailed'));
 end
 
-
-
-
+% empty set
+% if ~isempty(matrix*polyZonotope())
+%     throw(CORAerror('CORA:testFailed'));
+% end
 
 res = true;
 

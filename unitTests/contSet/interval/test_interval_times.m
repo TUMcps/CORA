@@ -35,41 +35,32 @@ c = a .* b;
 
 if abs( infimum(c(1)) - 4.4 ) > tol || abs( supremum(c(1)) - 30.5 ) > tol
 	res = false;
-	disp('test_times failed');
 	return;
 end
 
 if abs( infimum(c(2)) - 0.0 ) > tol || abs( supremum(c(2)) - 18.0 ) > tol
 	res = false;
-	disp('test_times failed');
 	return;
 end
 
 if abs( infimum(c(3)) + 8.4 ) > tol || abs( supremum(c(3)) - 9.9 ) > tol
 	res = false;
-	disp('test_times failed');
 	return;
 end
 
 if abs( infimum(c(4)) - 0.0 ) > tol || abs( supremum(c(4)) - 0.0 ) > tol
 	res = false;
-	disp('test_times failed');
 	return;
 end
 
 if abs( infimum(c(5)) - 0.0 ) > tol || abs( supremum(c(5)) - 28.5 ) > tol
 	res = false;
-	disp('test_times failed');
 	return;
 end
 
 if abs( infimum(c(6)) - 25.0 ) > tol || abs( supremum(c(6)) - 65.6 ) > tol
 	res = false;
-	disp('test_times failed');
 	return;
 end
-
-disp('test_times successful');
-return;
 
 %------------- END OF CODE --------------

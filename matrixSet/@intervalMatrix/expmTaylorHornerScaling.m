@@ -1,7 +1,7 @@
 function result = expmTaylorHornerScaling(intMat,maxOrder,styleOfCalculation,varargin)
-% returns the approximation of e^intMat using different algorithms 
-%    with maxOrder iterations. It is used as a fassade to access the
-%    algorithms in the private directory
+% expmTaylorHornerScaling - returns the approximation of e^intMat using
+%    different algorithms with maxOrder iterations. It is used as a wrapper
+%    to access the algorithms in the private directory
 %
 % Syntax:  
 %     val = expmTaylorHornerScaling(intMat,maxOrder,StyleOfCalculation);
@@ -18,7 +18,8 @@ function result = expmTaylorHornerScaling(intMat,maxOrder,styleOfCalculation,var
 % Outputs:
 %    result - the exponentiation with the chosen algorithm
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: hornerTaylorSeries.m, taylorSeries.m,
 %           intervalMatrixRemainder.m, scalingSquaringHornerTaylorSeries

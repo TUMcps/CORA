@@ -14,10 +14,7 @@ function res = testLongDuration_linearSysDT_observe_03_tank()
 %
 % Outputs:
 %    res - boolean 
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      26-Mar-2021
 % Last update:  ---

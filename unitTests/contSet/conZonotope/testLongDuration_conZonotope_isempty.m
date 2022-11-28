@@ -81,10 +81,9 @@ for i=1:nrOfTests
 end
 
 
-if res
-    disp('testLongDuration_conZonotope_isempty successful');
-else
-    disp('testLongDuration_conZonotope_isempty failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'c','n','G','A');
 end
 
 %------------- END OF CODE --------------

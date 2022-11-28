@@ -1,16 +1,18 @@
-function intVal = uplus(intVal)
+function I = uplus(I)
 % uplus - Overloaded '+' operator for single operand (dummy function)
 %
 % Syntax:  
-%    intVal = uplus(intVal)
+%    I = uplus(I)
 %
 % Inputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Outputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Example: 
+%    I = interval([1;2],[3;4]);
+%    +I
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,7 +27,6 @@ function intVal = uplus(intVal)
 
 %------------- BEGIN CODE --------------
 
-
-%dummy function; input = output
+% +I = I
 
 %------------- END OF CODE --------------

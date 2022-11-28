@@ -1,6 +1,7 @@
 function res = testLongDuration_hybridAutomaton_reach_03_spacecraft
-% testLongDuration_hybridAutomaton_reach_03_spacecraft - unit test function for hybrid systems 
-%    with nonlinear dynamics based on the spacecraft rendezvous example [1]
+% testLongDuration_hybridAutomaton_reach_03_spacecraft - unit test function
+%    for hybrid systems  with nonlinear dynamics based on the spacecraft
+%    rendezvous example [1]
 %       
 % Syntax:
 %    res = testLongDuration_hybridAutomaton_reach_03_spacecraft
@@ -67,10 +68,10 @@ loc = HA.location{1};
 % Simulation --------------------------------------------------------------
 
 % settings for random simulation
-simOpt.points = 4;        % number of initial points
+simOpt.points = 4;         % number of initial points
 simOpt.fracVert = 0.5;     % fraction of vertices initial set
 simOpt.fracInpVert = 0.5;  % fraction of vertices input set
-simOpt.inpChanges = 2;     % changes of input over time horizon  
+simOpt.nrConstInp = 2;     % number of constant input over time horizon  
 
 % random simulation
 simRes = simulateRandom(HA,params,simOpt); 
@@ -84,7 +85,8 @@ for j = 1:length(simRes.x)
        points = [points,p];
    end
 end
-
+% for verification check
+points_ = points(2:end,:);
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -92,6 +94,7 @@ end
 guardIntersect = {'polytope','zonoGirard','conZonotope', ...
                   'hyperplaneMap','pancake','nondetGuard'};
 
+res = true(length(guardIntersect),1);
 for i = 1:length(guardIntersect)
 
     % set options for guard intersection 
@@ -124,16 +127,13 @@ for i = 1:length(guardIntersect)
     % intersection
     poly = mptPolytope(project(Rjump{1}.set,2:5));
     
-    points_ = points(2:end,:);
-    
     for j = 1:size(points_,2)
-       if ~in(poly,points_(:,j),1e-3)
-          res = false;
-          error('Guard intersection with method %s failed!',guardIntersect{i});
-       end
+        if ~contains(poly,points_(:,j),'exact',1e-3)
+            res(i) = false;
+        end
     end
 end
 
-res = true;
+res = all(res);
 
 %------------- END OF CODE --------------

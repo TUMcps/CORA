@@ -19,7 +19,7 @@ function res = zooComputation(fhandle, obj1, obj2)
 % MAT-files required: none
 %
 % See also: taylm, interval
-%
+
 % Author:       Dmitry Grebenyuk
 % Written:      11-November-2017
 % Last update:  ---
@@ -41,6 +41,8 @@ function res = zooComputation(fhandle, obj1, obj2)
 
 end
 
+
+% Auxiliary Functions -----------------------------------------------------
 function res = s_zooCmp1(fhandle, obj)
    
     res = obj;
@@ -59,3 +61,5 @@ function res = s_zooCmp2(fhandle, obj1, obj2)
     end
 
 end
+
+%------------- END OF CODE --------------

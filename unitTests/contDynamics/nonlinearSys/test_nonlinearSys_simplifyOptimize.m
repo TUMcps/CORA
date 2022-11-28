@@ -1,9 +1,8 @@
 function res = test_nonlinearSys_simplifyOptimize
 % test_nonlinearSys_simplifyOptimize - unit test function for the creation
-%    of tensors with setting options.simplify = 'optimize'
-%
-% Checks if the results with options.simplify = 'optimize' are identical to
-% the results without optimization
+%    of tensors with setting options.simplify = 'optimize'; Checks if the
+%    results with options.simplify = 'optimize' are identical to the
+%    results without optimization
 %
 % Syntax:  
 %    res = test_nonlinearSys_simplifyOptimize
@@ -12,7 +11,7 @@ function res = test_nonlinearSys_simplifyOptimize
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 
 % Author:       Niklas Kochdumper
 % Written:      12-March-2020
@@ -68,8 +67,8 @@ function res = test_nonlinearSys_simplifyOptimize
             temp1 = center(H1{j});
             temp2 = center(H2{j});
             
-            if max(max(abs(temp1-temp2))) > 1e-14
-               error('Test failed!'); 
+            if ~all(all(withinTol(temp1,temp2,1e-14)))
+                throw(CORAerror('CORA:testFailed'));
             end
         end
     end
@@ -111,8 +110,8 @@ function res = test_nonlinearSys_simplifyOptimize
                 temp1 = center(T1{j,k});
                 temp2 = center(T2{j,k});
 
-                if max(max(abs(temp1-temp2))) > 1e-14
-                   error('Test failed!'); 
+                if ~all(all(withinTol(temp1,temp2,1e-14)))
+                    throw(CORAerror('CORA:testFailed'));
                 end
             end
         end
@@ -137,6 +136,7 @@ function dx = testDyn1(x,u)
               0.008750586984672*x(3) - 19.2299766*x(4) - ...
               (1434960000000000000.0*x(2))/((x(1) + 42164000)^2 - x(2)^2)^(3/2);
     dx(5,1) = 1;
+    
 end
 
 function dx = testDyn2(x,u)
@@ -151,6 +151,7 @@ function dx = testDyn2(x,u)
               0.008750586984672*x(3) - 19.2299766*x(4) - ...
               (1434960000000000000.0*x(2))/((x(1) + 42164000)^2 - x(2)^2)^(3/2);
     dx(5,1) = 1;
+
 end
 
 %------------- END OF CODE --------------

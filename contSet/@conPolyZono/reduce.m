@@ -1,6 +1,6 @@
 function cPZ = reduce(cPZ,method,order)
 % reduce - reduces the number of generators of a constrained polynomial 
-%          zonotope
+%    zonotope, resulting in an outer-approximation
 %
 % Syntax:  
 %    cPZ = reduce(cPZ,method,order)
@@ -11,7 +11,7 @@ function cPZ = reduce(cPZ,method,order)
 %    order - desired order of reduced constrained polynomial zonotope
 %
 % Outputs:
-%    pZ - reduced polynomial zonotope
+%    cPZ - reduced conPolyZono object
 %
 % Example: 
 %    c = [0;0];
@@ -26,7 +26,7 @@ function cPZ = reduce(cPZ,method,order)
 %    cPZ_ = reduce(cPZ,'girard',6);
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'r','Filled',true,'Splits',15);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',15);
 %    plot(cPZ_,[1,2],'b','Splits',15);
 %
 % Other m-files required: none

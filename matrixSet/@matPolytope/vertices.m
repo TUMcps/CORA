@@ -5,7 +5,7 @@ function matV = vertices(matP)
 %    matV = vertices(matP)
 %
 % Inputs:
-%    matP - matrix polytope
+%    matP - matPolytope object
 %
 % Outputs:
 %    matV - cell array of matrix vertices

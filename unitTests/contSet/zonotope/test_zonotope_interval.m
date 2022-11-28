@@ -42,10 +42,4 @@ true_sup = [2; 10];
 % check result
 res = all(inf==true_inf) & all(sup==true_sup);
 
-if res
-    disp('test_zonotope_interval successful');
-else
-    disp('test_zonotope_interval failed');
-end
-
 %------------- END OF CODE --------------

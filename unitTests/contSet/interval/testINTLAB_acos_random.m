@@ -1,8 +1,8 @@
 function res = testINTLAB_acos_random(~)
-% test_acos_random - unit_test_function for comparing to IntLabV6
+% testINTLAB_acos_random - unit_test_function for comparing to IntLabV6
 %
 % Syntax:  
-%    res = test_acos_random (~)
+%    res = testINTLAB_acos_random (~)
 %
 % Inputs:
 %    no 
@@ -77,8 +77,4 @@ if ( isempty(bad_ones_max) ~= true)
     res = false;
 end
 
-disp('test_acos_random successful');
-disp(' ')
-
-return;
-
+%------------- END OF CODE --------------

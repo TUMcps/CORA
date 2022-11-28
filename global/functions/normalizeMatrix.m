@@ -1,8 +1,9 @@
-function [M]=normalizeMatrix(M)
-% normalize - normalizes a matrix M, such that its columns sum up to one.
+function M = normalizeMatrix(M)
+% normalizeMatrix - normalizes a matrix M, such that its columns sum up to
+%    one.
 %
 % Syntax:  
-%    [M] = normalizeMatrix(M)
+%    M = normalizeMatrix(M)
 %
 % Inputs:
 %    M - matrix
@@ -33,8 +34,5 @@ ind=find(colSum);
 
 %normalize matrix
 M(:,ind) = M(:,ind) ./ colSum(ind);
-
-
-end
 
 %------------- END OF CODE --------------

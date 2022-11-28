@@ -1,17 +1,17 @@
-function res = reduceConstraints(obj,varargin)
+function cPZ = reduceConstraints(cPZ,varargin)
 % reduceConstraints - reduce the number of constraints of a constrained 
 %                     polynomial zonotope
 %
 % Syntax:  
-%    res = reduceConstraints(obj)
-%    res = reduceConstraints(obj,nrCon)
+%    cPZ = reduceConstraints(cPZ)
+%    cPZ = reduceConstraints(cPZ,nrCon)
 %
 % Inputs:
-%    obj - conZonotope object
+%    cPZ - conPolyZono object
 %    nrCon - desired number of constraints
 %
 % Outputs:
-%    res - conZonotope object
+%    cPZ - conPolyZono object
 %
 % Example: 
 %    c = [0;0];
@@ -26,7 +26,7 @@ function res = reduceConstraints(obj,varargin)
 %    cPZ_ = reduceConstraints(cPZ,0);
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'r','Filled',true,'Splits',20);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',20);
 %    plot(cPZ_,[1,2],'b','Splits',10);
 %
 % Other m-files required: none
@@ -43,22 +43,22 @@ function res = reduceConstraints(obj,varargin)
 %------------- BEGIN CODE --------------
     
     % parse input arguments
-    nrCon = []; redOnly = 1;
+    nrCon = []; redOnly = true;
     if nargin > 1 && ~isempty(varargin{1})
         nrCon = varargin{1};
-        redOnly = 0;
+        redOnly = false;
     end
 
-    % check if reduction is required
-    if isempty(obj.A) || (~redOnly && size(obj.A,1) <= nrCon)
-        res = obj; return;
+    % check if reduction is actually required
+    if isempty(cPZ.A) || (~redOnly && size(cPZ.A,1) <= nrCon)
+        return;
     end
     
     % transform to equivalent higher-dimensional polynomial zonotope
-    n = dim(obj);
-    c = [obj.c; -obj.b];
-    G = blkdiag(obj.G,obj.A);
-    expMat = [obj.expMat,obj.expMat_];
+    n = dim(cPZ);
+    c = [cPZ.c; -cPZ.b];
+    G = blkdiag(cPZ.G,cPZ.A);
+    expMat = [cPZ.expMat,cPZ.expMat_];
     
     pZ = polyZonotope(c,G,[],expMat);
     
@@ -112,10 +112,10 @@ function res = reduceConstraints(obj,varargin)
         b = []; A = []; expMat_ = []; 
     end
     
-    cPZ = conPolyZono(c,G,pZ.expMat,A,b,expMat_,obj.Grest,pZ.id);
+    cPZ = conPolyZono(c,G,pZ.expMat,A,b,expMat_,cPZ.Grest,pZ.id);
     
     % remove redundancies from the representation
-    res = compact(cPZ);
+    cPZ = compact(cPZ);
 end
 
 
@@ -124,7 +124,7 @@ end
 function [res,ind,index,expo,exact] = selectMonomial(pZ,n,red)
 % select the monomial whos removal results in the least over-approximation
 
-    exact = 0; res = 1; index = []; expo = [];
+    exact = false; res = true; index = []; expo = [];
     
     % determine all momomials that appear in the state part of the
     % constrained polynomial zonotope -> can be used for con. reduction
@@ -203,12 +203,12 @@ function [res,ind,index,expo,exact] = selectMonomial(pZ,n,red)
         H = hausdorffError(A,G,r,ind');
         [~,temp] = sort(H(ind),'ascend');  
     else
-        exact = 1;
+        exact = true;
     end
     
     ind = ind(temp(1)); index = indList{temp(1)}; 
     expo = expoList{temp(1)};
-    res = 1;
+    res = true;
 end
 
 function cZ = conZonoEnclosure(pZ,n)
@@ -278,7 +278,7 @@ function r = rescaleIterative(cZ)
 
             % loop over all factors
             for j = 1:n
-                if ~isinf(iA(i,j))
+                if abs(iA(i,j)) < 1e10
 
                     % calculate new tighend domain for the current factor
                     temp = E;

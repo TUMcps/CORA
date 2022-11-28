@@ -14,7 +14,7 @@ function verboseLog(step,t,options)
 %                   'tFinal': time horizon (for end message)
 %
 % Outputs:
-%    - (to console)
+%    ---
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -24,12 +24,21 @@ function verboseLog(step,t,options)
 
 % Author:        Mark Wetzlinger
 % Written:       05-March-2021
-% Last update:   ---
+% Last update:   27-June-2022 (MW, add handling for hybrid systems)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 if options.verbose
+
+    % check if this is called from hybrid system
+    st = dbstack("-completenames");
+    for i=1:length(st)
+        if contains(st(i).file,['@location' filesep 'reach'])
+            % no log in contDynamics evaluation for hybrid systems
+            return;
+        end
+    end
     
     % start message
     if abs(t - options.tStart) < 1e-12
@@ -53,5 +62,4 @@ if options.verbose
     
 end
 
-end
-
+%------------- END OF CODE --------------

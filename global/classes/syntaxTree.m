@@ -2,21 +2,24 @@ classdef syntaxTree
 % interval class 
 %
 % Syntax:  
-%    object constructor: Obj = interval(varargin)
-%    copy constructor: Obj = otherObj
+%    obj = syntaxTree(value,id)
+%    obj = syntaxTree(value,id,operator,funHan,nodes)
 %
 % Inputs:
-%    input1 - left limit
-%    input2 - right limit
+%    value - ?
+%    id - ?
+%    operator - ?
+%    funHan - ?
+%    nodes - ?
 %
 % Outputs:
-%    Obj - Generated Object
+%    obj - generated syntaxTree object
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval,  polytope
+% See also: interval, polytope
 
 % Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      19-June-2015
@@ -40,12 +43,20 @@ methods
     
     % class constructor
     function obj = syntaxTree(value,id,varargin)
+        % check number of input arguments
+        if nargin < 2
+            throw(CORAerror('CORA:notEnoughInputArgs',2));
+        elseif nargin > 5
+            throw(CORAerror('CORA:tooManyInputArgs',5));
+        end
+
+        % assign values
         obj.value = value;
         obj.id = id;
         if nargin > 3
-           obj.operator = varargin{1};
-           obj.funHan = varargin{2};
-           obj.nodes = varargin{3};
+            obj.operator = varargin{1};
+            obj.funHan = varargin{2};
+            obj.nodes = varargin{3};
         end
     end
     
@@ -170,7 +181,7 @@ methods
                 obj2 = repmat(obj2,size(obj1)); 
             end
             if ~all(size(obj1) ==  size(obj2))
-                error('Dimensions must agree!');
+                throw(CORAerror('CORA:dimensionMismatch',obj1,obj2));
             end
             for i = 1:size(obj1,1)
                 for j = 1:size(obj1,2)
@@ -216,7 +227,7 @@ methods
             end
         elseif ~isscalar(obj1) && ~isscalar(obj2)
             if ~all(size(obj1) == size(obj2))
-               error('Dimensions must agree!'); 
+                throw(CORAerror('CORA:dimensionMismatch',obj1,obj2));
             end
             for i = 1:size(obj1,1)
                 for j = 1:size(obj1,2)
@@ -245,7 +256,7 @@ methods
             end
         else
             if size(obj1,2) ~= size(obj2,1) 
-               error('Dimensions must agree!'); 
+                throw(CORAerror('CORA:dimensionMismatch',obj1,obj2));
             end
             for i = 1:size(obj1,1)
                 for j = 1:size(obj2,2)
@@ -270,7 +281,7 @@ methods
         elseif n == 2
             S.subs = {':', 1};
         else
-            error('Wrong input');
+            throw(CORAerror('CORA:tooManyInputArgs',2));
         end
         res = subsref(obj,S);
         for i = 2:size(obj, n)
@@ -294,7 +305,7 @@ methods
         elseif n == 2
             S.subs = {':', 1};
         else
-            error('Wrong input');
+            throw(CORAerror('CORA:tooManyInputArgs',2));
         end
         res = subsref(obj,S);
         for i = 2:size(obj, n)
@@ -310,8 +321,7 @@ methods
         if ~isempty(obj.id)
             
             if ~isIntersecting(value,int(obj.id)) || isempty(value)
-                [msg,ID] = errEmptySet();
-                error(ID,msg);              
+                throw(CORAerror('CORA:emptySet'));        
             else
                 res = int;
                 res(obj.id) = value & int(obj.id);
@@ -383,8 +393,8 @@ function res = sin_(int,intPrev)
     ind1 = ceil((supremum(intPrev)-supremum(resTemp1))/(2*pi));    
     ind2 = ceil((supremum(intPrev)-supremum(resTemp2))/(2*pi));
 
-    if in(resTemp1 + ind1*2*pi,supremum(intPrev)) || ...
-       in(resTemp2 + ind2*2*pi,supremum(intPrev))
+    if contains(resTemp1 + ind1*2*pi,supremum(intPrev)) || ...
+       contains(resTemp2 + ind2*2*pi,supremum(intPrev))
    
         supNew = supremum(intPrev);
         
@@ -404,8 +414,8 @@ function res = sin_(int,intPrev)
     ind1 = floor((infimum(intPrev)-infimum(resTemp1))/(2*pi));
     ind2 = floor((infimum(intPrev)-infimum(resTemp2))/(2*pi));
 
-    if in(resTemp1 + ind1*2*pi,infimum(intPrev)) || ...
-       in(resTemp2 + ind2*2*pi,infimum(intPrev))
+    if contains(resTemp1 + ind1*2*pi,infimum(intPrev)) || ...
+       contains(resTemp2 + ind2*2*pi,infimum(intPrev))
    
         infiNew = infimum(intPrev);
         
@@ -438,8 +448,8 @@ function res = cos_(int,intPrev)
     ind1 = ceil((supremum(intPrev)-supremum(resTemp1))/(2*pi));    
     ind2 = ceil((supremum(intPrev)-supremum(resTemp2))/(2*pi));
 
-    if in(resTemp1 + ind1*2*pi,supremum(intPrev)) || ...
-       in(resTemp2 + ind2*2*pi,supremum(intPrev))
+    if contains(resTemp1 + ind1*2*pi,supremum(intPrev)) || ...
+       contains(resTemp2 + ind2*2*pi,supremum(intPrev))
    
         supNew = supremum(intPrev);
         
@@ -459,8 +469,8 @@ function res = cos_(int,intPrev)
     ind1 = floor((infimum(intPrev)-infimum(resTemp1))/(2*pi));
     ind2 = floor((infimum(intPrev)-infimum(resTemp2))/(2*pi));
 
-    if in(resTemp1 + ind1*2*pi,infimum(intPrev)) || ...
-       in(resTemp2 + ind2*2*pi,infimum(intPrev))
+    if contains(resTemp1 + ind1*2*pi,infimum(intPrev)) || ...
+       contains(resTemp2 + ind2*2*pi,infimum(intPrev))
    
         infiNew = infimum(intPrev);
         
@@ -493,7 +503,8 @@ function res = power_(int,exp,intPrev)
         % intersection with valid domain
         if infimum(int) < 0
             if supremum(int) < 0
-               error('Value outside the valid domain!'); 
+                throw(CORAerror('CORA:outOfDomain','validDomain',...
+                    'Interval has to contain 0.'));
             else
                int = interval(0,supremum(int));
             end
@@ -568,12 +579,12 @@ function [res1,res2] = times_(int,intPrev1,intPrev2)
 
     if isa(intPrev1,'interval')
         if isa(intPrev2,'interval')
-            if ~in(intPrev2,0)
+            if ~contains(intPrev2,0)
                 res1 = intPrev1 & (int/intPrev2);
             else
                 res1 = intPrev1;
             end
-            if ~in(intPrev1,0)
+            if ~contains(intPrev1,0)
                 res2 = intPrev2 & (int/intPrev1);
             else
                 res2 = intPrev2; 
@@ -606,8 +617,8 @@ function res = tan_(int,intPrev)
     ind1 = ceil((supremum(intPrev)-supremum(resTemp1))/(2*pi));    
     ind2 = ceil((supremum(intPrev)-supremum(resTemp2))/(2*pi));
 
-    if in(resTemp1 + ind1*2*pi,supremum(intPrev)) || ...
-       in(resTemp2 + ind2*2*pi,supremum(intPrev))
+    if contains(resTemp1 + ind1*2*pi,supremum(intPrev)) || ...
+       contains(resTemp2 + ind2*2*pi,supremum(intPrev))
    
         supNew = supremum(intPrev);
         
@@ -627,8 +638,8 @@ function res = tan_(int,intPrev)
     ind1 = floor((infimum(intPrev)-infimum(resTemp1))/(2*pi));
     ind2 = floor((infimum(intPrev)-infimum(resTemp2))/(2*pi));
 
-    if in(resTemp1 + ind1*2*pi,infimum(intPrev)) || ...
-       in(resTemp2 + ind2*2*pi,infimum(intPrev))
+    if contains(resTemp1 + ind1*2*pi,infimum(intPrev)) || ...
+       contains(resTemp2 + ind2*2*pi,infimum(intPrev))
    
         infiNew = infimum(intPrev);
         
@@ -654,7 +665,8 @@ function res = exp_(int,intPrev)
         % intersection with valid domain
         if infimum(int) < 0
             if supremum(int) < 0
-               error('Value outside the valid domain!'); 
+               throw(CORAerror('CORA:outOfDomain','validDomain',...
+                    'Interval has to contain 0.'));
             else
                int = interval(0,supremum(int));
             end
@@ -687,7 +699,8 @@ function res = sqrt_(int,intPrev)
         % intersection with valid domain
         if infimum(int) < 0
             if supremum(int) < 0
-               error('Value outside the valid domain!'); 
+               throw(CORAerror('CORA:outOfDomain','validDomain',...
+                    'Interval has to contain 0.'));
             else
                int = interval(0,supremum(int));
             end
@@ -708,7 +721,8 @@ function res = asin_(int,intPrev)
     % intersection with valid domain
     if infimum(int) < -pi/2
          if supremum(int) < -pi/2
-            error('Value outside the valid domain!'); 
+            throw(CORAerror('CORA:outOfDomain','validDomain',...
+                    'Interval has to contain -pi/2.'));
          else
             int = interval(-pi/2,pi/2);
          end
@@ -730,7 +744,8 @@ function res = acos_(int,intPrev)
     % intersection with valid domain
         if infimum(int) < 0
             if supremum(int) < 0
-               error('Value outside the valid domain!'); 
+               throw(CORAerror('CORA:outOfDomain','validDomain',...
+                    'Interval has to contain 0.'));
             else
                int = interval(0,supremum(int));
             end
@@ -752,7 +767,8 @@ function res = atan_(int,intPrev)
     % intersection with valid domain
     if infimum(int) < -pi/2
          if supremum(int) < -pi/2
-            error('Value outside the valid domain!'); 
+            throw(CORAerror('CORA:outOfDomain','validDomain',...
+                    'Interval has to contain -pi/2.'));
          else
             int = interval(-pi/2,pi/2);
          end
@@ -790,7 +806,8 @@ function res = cosh_(int,intPrev)
    % intersection with valid domain
         if infimum(int) < 1
             if supremum(int) < 1
-               error('Value outside the valid domain!'); 
+               throw(CORAerror('CORA:outOfDomain','validDomain',...
+                    'Interval has to contain 1.'));
             else
                int = interval(1,supremum(int));
             end
@@ -850,7 +867,8 @@ function res = acosh_(int,intPrev)
     % intersection with valid domain
         if infimum(int) < 0
             if supremum(int) < 0
-               error('Value outside the valid domain!'); 
+               throw(CORAerror('CORA:outOfDomain','validDomain',...
+                    'Interval has to contain 0.'));
             else
                int = interval(0,supremum(int));
             end
@@ -879,3 +897,5 @@ function res = atanh_(int,intPrev)
     res = intPrev & res;
 
 end
+
+%------------- END OF CODE --------------

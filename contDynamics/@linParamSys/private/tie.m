@@ -1,18 +1,19 @@
-function [obj]=tie(obj)
-% tie - tie: time interval error; computes the error done by 
-% building the convex hull of time point solutions
+function obj = tie(obj)
+% tie - tie: time interval error; computes the error done by building the
+%    convex hull of time point solutions
 %
 % Syntax:  
-%    [obj]=tie(obj)
+%    obj = tie(obj)
 %
 % Inputs:
-%    obj - linear interval system object
+%    obj - linParamSys object
 %    options - options struct
 %
 % Outputs:
-%    obj - linear interval system object
+%    obj - linParamSys object
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -82,11 +82,11 @@ res_2 = all(n_inf_sample <= n_inf*1+1e-8);
 res = res_1 && res_2;
 
 % save result if random test failed
-if res == 0
+if ~res
      file_name = strcat('test_intervalMatrix_norm_', ...
                              datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-     file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
+     file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', file_name);
      save(file_path, 'V');
 end
 

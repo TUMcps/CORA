@@ -23,7 +23,7 @@ function res = testSpecial_markovchain_carReach
 
 %set path
 global filePath
-filePath = [coraroot '/contDynamics/stateSpaceModels'];
+filePath = [CORAROOT filesep 'contDynamics' filesep 'stateSpaceModels'];
 
 %load car model
 [HA,params,params,stateField,inputField,changeSpeed] = testAuxiliaryFct_initCar;

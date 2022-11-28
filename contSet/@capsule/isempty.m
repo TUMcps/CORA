@@ -1,5 +1,5 @@
 function res = isempty(C)
-% isempty - checks if capsule is empty
+% isempty - checks if a capsule is the empty set
 %
 % Syntax:  
 %    res = isempty(C)
@@ -8,7 +8,7 @@ function res = isempty(C)
 %    C - capsule
 %
 % Outputs:
-%    res - boolean whether capsule is empty or not
+%    res - true/false
 %
 % Example: 
 %    C = capsule([1; 1; 0], [0.5; -1; 1], 0.5);

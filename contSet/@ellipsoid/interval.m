@@ -1,5 +1,5 @@
 function I = interval(E)
-% interval - Overapproximates an ellipsoid by an interval hull
+% interval - Over-approximates an ellipsoid by an interval
 %
 % Syntax:  
 %    I = interval(E)
@@ -11,11 +11,12 @@ function I = interval(E)
 %    I - interval object
 %
 % Example: 
-%    E = ellipsoid.generateRandom(0);
+%    E = ellipsoid.generateRandom();
 %    I = interval(E);
+%
+%    figure; hold on;
 %    plot(E);
-%    hold on
-%    plot(I);
+%    plot(I,[1,2],'r');
 %
 % Other m-files required: interval (zonotope)
 % Subfunctions: none
@@ -25,19 +26,24 @@ function I = interval(E)
 
 % Author:       Victor Gassmann
 % Written:      13-March-2019
-% Last update:  ---
+% Last update:  04-July-2022 (VG: input checks)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-n = E.dim;
+% check inputs
+inputArgsCheck({{E,'att','ellipsoid','scalar'}});
+
+n = dim(E);
 E0 = ellipsoid(E.Q,zeros(size(E.q)));
 dI = zeros(n,1);
 Idty = eye(n);
-% compute the width of the ellipsoid in each dimension 
-% using the support function
+
+% compute width of the ellipsoid in each dimension using support functions
 for i=1:n
     dI(i) = supportFunc(E0,Idty(:,i));
 end
+
 % construct the resulting interval
 I = interval(-dI,dI) + E.q;
+
 %------------- END OF CODE --------------

@@ -14,10 +14,7 @@ function res = testLongDuration_linearSysDT_observe_08_pedestrian()
 %
 % Outputs:
 %    res - boolean 
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      03-Mar-2021
 % Last update:  ---

@@ -1,23 +1,20 @@
 function completed = example_linearParam_reach_02_5dim_var()
 % example_linearParam_reach_02_5dim_var - example of linear parametric 
-%                                         reachability analysis with 
-%                                         time-varying
-%
-% This example is taken from [1]. 
+%    reachability analysis with time-varying parameters, taken from [1].
 %
 % Syntax:  
 %    completed - example_linearParam_reach_02_5dim_var()
 %
 % Inputs:
-%    none
+%    -
 %
 % Outputs:
-%    completed - boolean 
+%    completed - true/false 
 %
 % References:
 %    [1] Althoff, M.; Le Guernic, C. & Krogh, B. H. "Reachable Set
 %        Computation for Uncertain Time-Varying Linear Systems", HSCC 2011
-% 
+
 % Author:       Matthias Althoff
 % Written:      03-October-2017
 % Last update:  23-April-2020 (restructure params/options)
@@ -26,7 +23,7 @@ function completed = example_linearParam_reach_02_5dim_var()
 %------------- BEGIN CODE --------------
 
 
-% Parameter ---------------------------------------------------------------
+% Parameters --------------------------------------------------------------
 
 dim_x = 5;
 params.tFinal = 5;
@@ -71,10 +68,6 @@ disp(['computation time of reachable set for interval matrix: ',num2str(tComp)])
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 60;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
-
 simRes = simulateRandom(sys_zono, params, simOpt);
 
 
@@ -89,11 +82,11 @@ for k = 1:length(dims)
     projDims = dims{k};
     
     % plot reachable sets
-    hanInt = plot(Rint,projDims,'FaceColor',[.6 .6 .6],'EdgeColor','none');
-    hanZono = plot(Rzono,projDims,'FaceColor',[.8 .8 .8],'EdgeColor','none');
+    hanInt = plot(Rint,projDims);
+    hanZono = plot(Rzono,projDims,'FaceColor',colorblind('gray'));
     
     % plot initial set
-    plot(params.R0,projDims,'w-','lineWidth',2);
+    plot(params.R0,projDims,'k','FaceColor','w');
     
     % plot simulation results      
     plot(simRes,projDims);
@@ -105,6 +98,6 @@ for k = 1:length(dims)
 end
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

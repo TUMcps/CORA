@@ -1,14 +1,14 @@
-function res = getCoef( obj )
-% getCoef( obj ) - returns coefficients
+function res = getCoef(obj)
+% getCoef - returns coefficients
 %
 % Syntax:  
-%    res = coef = getCoef( obj )
+%    res = getCoef(obj)
 %
 % Inputs:
 %    obj - a Taylor model
 %
 % Outputs:
-%    coef - array of numbers 
+%    res - array of numbers 
 %
 % Example: 
 %
@@ -31,7 +31,6 @@ function res = getCoef( obj )
 %
 %function res = s_getCoef( obj )
 %
-    res = obj.coefficients;
+res = obj.coefficients;
 
-end
-
+%------------- END OF CODE --------------

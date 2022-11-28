@@ -20,10 +20,11 @@ function res = test_ellipsoid_distance
 
 % Author:       Victor Gassmann
 % Written:      26-July-2021
-% Last update:  ---
+% Last update:  07-July-2022
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 res = true;
 load cases.mat E_c
 for i=1:length(E_c)
@@ -38,21 +39,22 @@ for i=1:length(E_c)
     
     n = length(E1.q);
     % check conHyperplane: construct hyperplane through E1.q
-    l = randn(n,1);
-    H = conHyperplane(l,l'*E1.q);
+    l1 = randn(n,1);
+    H = conHyperplane(l1,l1'*E1.q);
     % check if distance is <0
     if distance(E1,H)>=0
         res = false;
         break;
     end
     
-    
+    % check mptPolytope: construct second hyperplane (also contains center
+    % of ellipsoid)
+    l2 = randn(n,1);
+    P = mptPolytope([l1';l2'],[l1'*E1.q;l2'*E1.q]);
+    if distance(E1,P)>1e-6
+        res = false;
+        break;
+    end
 end
 
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

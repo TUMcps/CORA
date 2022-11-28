@@ -1,8 +1,8 @@
-function tm = setName( tm, name )
+function tm = setName(tm,name)
 % setName - changes the name of a variable in a Taylor model
 %
 % Syntax:  
-%    tm = setName( tm, name )
+%    tm = setName(tm,name)
 %
 % Inputs:
 %    tm   - a taylm
@@ -21,7 +21,6 @@ function tm = setName( tm, name )
 
 % Author:       Dmitry Grebenyuk
 % Written:      31-July-2017
-%
 % Last update:  ---
 % Last revision:---
 
@@ -29,5 +28,4 @@ function tm = setName( tm, name )
 
 tm.names_of_var = {name};
 
-end
-
+%------------- END OF CODE --------------

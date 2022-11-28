@@ -27,32 +27,26 @@ function res = test_capsule_project
 
 % instantiate capsule
 dim = 5;
-cent = rand(dim,1);
-gen = rand(dim,1);
-rad = rand(1);
-C = capsule(cent, gen, rad);
+c = rand(dim,1);
+g = rand(dim,1);
+r = rand(1);
+C = capsule(c, g, r);
 
 % project to lower dimension
 projDim = [1 2 4];
-C_proj = project(C, projDim);
+C_proj1 = project(C, projDim);
 
 % true projection
-cent_true = cent(projDim);
-gen_true  = gen(projDim);
+cent_true = c(projDim);
+gen_true  = g(projDim);
 % radius stays the same
-C_true = capsule(cent_true, gen_true, rad);
+C_true = capsule(cent_true, gen_true, r);
+
+% projection using logical indices
+projDim = [true true false true false];
+C_proj2 = project(C, projDim);
 
 % compare results
-tol = 1e-9;
-res_center = all(abs(center(C_proj) - center(C_true)) < tol);
-res_generator = all(abs(C_proj.g - C_true.g) < tol);
-res_radius = abs(radius(C_proj) - radius(C_true)) < tol;
-res = res_center && res_generator && res_radius;
-
-if res
-    disp('test_project successful');
-else
-    disp('test_project failed');
-end
+res = isequal(C_proj1,C_true) && isequal(C_proj2,C_true);
 
 %------------- END OF CODE --------------

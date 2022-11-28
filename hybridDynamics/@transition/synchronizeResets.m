@@ -1,0 +1,174 @@
+function syncReset = synchronizeResets(transitionSet,n,m)
+% synchronizeResets - merge reset functions with the same synchronization
+%    labels; since the variables of the different subcomponents are
+%    considered disjoint in this implementation (i.e., the left-hand side
+%    of the reset function of one component is not influenced by any other
+%    component), we synchronize the resets by combining all reset functions
+%    into one function.
+% 
+%    Incoming reset functions have already been projected to the state
+%    dimension of the composed automaton; thereby, all internal input
+%    relations have been resolved so that the resulting reset functions
+%    only depend on the full state and global inputs.
+%
+%    In order to obtain the correct dimensions, all reset functions need to
+%    have the full state x as output dimension and the extended state [x;u]
+%    composed of the full state x and the global inputs u as input
+%    dimension.
+%
+% Syntax:  
+%    syncReset = synchronizeResets(transitionSet,dims,inputDims)
+%
+% Input:
+%    transitionSet (cell-array) - transitions to be synchronized
+%    n - full state dimension
+%    m - global input dimension
+%
+% Outputs:
+%    syncReset (struct) - synchronized reset function
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: ---
+
+% Author:       Maximilian Perschl, Mark Wetzlinger
+% Written:      04-April-2022
+% Last update:  01-July-2022
+% Last revision:---
+
+%------------- BEGIN CODE --------------
+
+% find out which reset functions are linear and which are nonlinear
+linearResets = false(size(transitionSet));
+for i = 1:length(transitionSet)
+    if isfield(transitionSet(i).reset,'A')
+        linearResets(i) = true;
+    end
+end
+
+% synchronize purely linear resets
+if all(linearResets)
+
+    % initialize state/input matrix and constant offset
+    A = zeros(n);
+    B = zeros(n,m);
+    c = zeros(n,1);
+
+    % since all resets have been projected to higher dimensions before,
+    % we can just add them here
+    for i = 1:length(transitionSet)
+        A = A + transitionSet(i).reset.A;
+        if isfield(transitionSet(i).reset,'B')
+            B = B + transitionSet(i).reset.B;
+        end
+        c = c + transitionSet(i).reset.c;
+    end
+
+    % assign matrices and vector to struct
+    syncReset.A = A;
+    syncReset.B = B;
+    syncReset.c = c;
+    return;
+    
+% convert linear resets to nonlinear resets
+else
+    % state dimension of all resulting nonlinear resets has to be that
+    % of the extended state [x;u]
+    % -> cf. evaluation in transition/reset/nonlinearReset
+
+    for i = 1:length(linearResets)
+        if linearResets(i)
+            % linear resets are already projected to the full state
+            % dimension -> the only remaining inputs are global inputs
+
+            % concatenate A and B matrices for extended state vector
+            if isfield(transitionSet(i).reset,'B')
+                AB = [transitionSet(i).reset.A transitionSet(i).reset.B];
+            else
+                AB = [transitionSet(i).reset.A zeros(n,m)];
+            end
+
+            % instantiate function handle using only extended state
+            % vector as input argument (note: we explicitly mention the
+            % length of the extended state vector x in the anonymous
+            % function to facilitate the usage of inputArgsLength in the
+            % constructor call of transition below)
+            if m > 0
+                % at least one global input
+                newReset.f = @(x,u) AB*[x(1:n);u(1:m)] + transitionSet(i).reset.c;
+                newReset.hasInput = true;
+            else
+                % no global inputs
+                newReset.f = @(x) transitionSet(i).reset.A*x(1:n) + transitionSet(i).reset.c;
+                newReset.hasInput = false;
+            end
+            newReset.inputDim = m;
+            newReset.stateDim = n;
+
+            % instantiate nonlinear transition
+            newTransition = transition(transitionSet(i).guard,newReset,...
+                transitionSet(i).target,transitionSet(i).syncLabel);
+            % overwrite linear transition
+            transitionSet(i) = newTransition;
+
+        end
+    end
+end
+
+% synchronize nonlinear resets
+    
+% instantiate the output of the evaluation of the reset function
+f_combined = @(x) zeros(n,1);
+% add the reset functions
+for j=1:length(transitionSet)
+    f_combined = @(x) f_combined(x) + transitionSet(j).reset.f(x);
+end
+syncReset.f = @(x) f_combined(x);
+
+% instantiate the output of the evaluation of the Jacobian
+J_combined = @(x) zeros(n,n+m); 
+% add the Jacobians
+for i = 1:length(transitionSet)
+    J_combined = @(x) J_combined(x) + transitionSet(i).reset.J(x);
+end
+syncReset.J = @(x) J_combined(x);
+
+% init variable for Hessians and third-order tensor
+temp = @(x) zeros(n+m,n+m);
+
+% Hessians
+syncReset.Q = repmat({temp},[n,1]);
+for i = 1:n
+    for j = 1:length(transitionSet)
+        if ~isempty(transitionSet(j).reset.Q{i})
+            syncReset.Q{i} = @(x) syncReset.Q{i}(x) ...
+                + transitionSet(j).reset.Q{i}(x);
+        end
+    end
+end
+
+% third-order tensors
+syncReset.T = repmat({temp},[n,n+m]);
+for i = 1:n
+    for j = 1:n
+        for k = 1:length(transitionSet)
+            if ~isempty(transitionSet(k).reset.T{i,j})
+                syncReset.T{i,j} = @(x) syncReset.T{i,j}(x) ...
+                    + transitionSet(k).reset.T{i,j}(x);
+            end
+        end
+    end
+end   
+
+% properties
+syncReset.stateDim = n;
+syncReset.inputDim = m;
+if m > 0
+    syncReset.hasInput = true;
+else
+    syncReset.hasInput = false;
+end
+
+%------------- END OF CODE --------------

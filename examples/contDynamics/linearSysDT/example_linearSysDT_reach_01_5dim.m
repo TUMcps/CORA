@@ -1,22 +1,20 @@
-function completed = example_linearDT_reach_01_5dim()
-% example_linearDT_reach_01_5dim - example of discrete-time linear 
-%                                  reachability analysis with uncertain 
-%                                  inputs
+function completed = example_linearSysDT_reach_01_5dim()
+% example_linearSysDT_reach_01_5dim - example of discrete-time linear 
+%    reachability analysis with uncertain inputs
 %
 % Syntax:  
-%    example_linearDT_reach_01_5dim
+%    example_linearSysDT_reach_01_5dim
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-% 
+%    res - true/false
+
 % Author:       Matthias Althoff
 % Written:      20-March-2020
 % Last update:  23-April-2020 (restructure params/options)
 % Last revision:---
-
 
 %------------- BEGIN CODE --------------
 
@@ -68,17 +66,8 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 25;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 10;
-
 simRes = simulateRandom(fiveDimSys, params, simOpt);
 
-% apply output equation y = Cx
-for i=1:simOpt.points
-    outputtraj{i,1} = (C*simRes.x{i}')';
-end
-simRes = simResult(outputtraj,simRes.t);
 
 % Visualization -----------------------------------------------------------
 
@@ -91,13 +80,13 @@ for k = 1:length(dims)
     projDims = dims{k};
 
     % plot reachable set
-    plot(R,projDims,'FaceColor',[.8 .8 .8],'EdgeColor','b');
+    plot(R,projDims);
     
-    % plot initial set
-    plot(C*params.R0,projDims,'w-','lineWidth',2);
+    % plot initial output set
+    plot(R.timePoint.set{1},projDims,'FaceColor','w','EdgeColor','k');
     
     % plot simulation results
-    plot(simRes,projDims,'.k');
+    plot(simRes,projDims,'Traj','y','Marker','.');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);
@@ -105,6 +94,6 @@ for k = 1:length(dims)
 end
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

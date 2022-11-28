@@ -1,17 +1,17 @@
-function  res = mergeFlows(obj, flowList, loc)
-% mergeFlows - Merge the continious dynamics of several subcomponents to 
-%              obtain the continous dynamic for the overall system
+function sys = mergeFlows(pHA,flowList,loc)
+% mergeFlows - merges the continuous dynamics of several subcomponents to 
+%    obtain the continous dynamics for the overall system
 %
 % Syntax:  
-%    res = mergeFlows(obj, flowList)
+%    sys = mergeFlows(pHA,flowList,loc)
 %
 % Inputs:
-%    obj - parallel hybrid automaton object
+%    pHA - parallelHybridAutomaton object
 %    flowList - continous dynamics object for each subcomponent
 %    loc - indices of the current location
 %
 % Outputs:
-%    res - constructed continous dynamics object
+%    sys - constructed continous dynamics object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,47 +26,51 @@ function  res = mergeFlows(obj, flowList, loc)
 
 %------------- BEGIN CODE --------------
 
+    % number of components
     numComps = length(flowList);
 
     % check user input
     isLinSys = false(numComps,1);
     isNonlinSys = false(numComps,1);
-    for i = 1:numComps
+    for i=1:numComps
         isLinSys(i) = isa(flowList{i},'linearSys');
         isNonlinSys(i) = isa(flowList{i},'nonlinearSys');
     end
 
     % merge flows according to the dynamics
     if all(isLinSys)
-        res = mergeFlowsLinearSys(obj, flowList);
+        sys = mergeFlowsLinearSys(pHA,flowList);
     elseif all(isNonlinSys)
-        res = mergeFlowsNonlinearSys(obj, flowList, loc);
+        sys = mergeFlowsNonlinearSys(pHA,flowList,loc);
     else
-        error(['Only "linearSys" and "nonlinearSys" objects are currently ', ...
-       'supported for parallel hybrid automata are currently supported!']);
+        throw(CORAerror('CORA:specialError',...
+            ['Only "linearSys" and "nonlinearSys" objects are currently ', ...
+            'supported for parallel hybrid automata are currently supported!']));
     end 
 end
 
 
 % Auxiliary Functions -----------------------------------------------------
 
-function res = mergeFlowsLinearSys(obj, flowList)
+function res = mergeFlowsLinearSys(pHA,flowList)
 
     numComps = length(flowList);
 
     % allocate merged dynamics
-    Amerged = zeros(obj.numStates,obj.numStates);
-    Bmerged = zeros(obj.numStates,obj.numInputs);
-    cMerged = zeros(obj.numStates,1);
+    Amerged = zeros(pHA.numStates,pHA.numStates);
+    Bmerged = zeros(pHA.numStates,pHA.numInputs);
+    cMerged = zeros(pHA.numStates,1);
+    name = cell(numComps,1);
 
     % loop over all subcomponents
     for i = 1:numComps
 
        % get object properties
        flow = flowList{i};
-       stateBinds = obj.bindsStates{i};
-       inputBinds = obj.bindsInputs{i};
+       stateBinds = pHA.bindsStates{i};
+       inputBinds = pHA.bindsInputs{i};
 
+       name{i,1} = flow.name;
        A = flow.A;
        B = flow.B;
        if isempty(flow.c)
@@ -92,13 +96,14 @@ function res = mergeFlowsLinearSys(obj, flowList)
 
               % equation y = C*x + D*u + k
               tempFlow = flowList{inputBinds(j,1)};
-              tempStateBinds = obj.bindsStates{inputBinds(j,1)};
-              tempInputBinds = obj.bindsInputs{inputBinds(j,1)};
+              tempStateBinds = pHA.bindsStates{inputBinds(j,1)};
+              tempInputBinds = pHA.bindsInputs{inputBinds(j,1)};
 
               % if a system has no matrices C/D/k, we assume the states are
               % given as outputs for parallelization (just as for nonlinear
               % systems)
-              if tempFlow.C == 1 && isempty(tempFlow.D) && isempty(tempFlow.k)
+              if isscalar(tempFlow.C) && tempFlow.C == 1 ...
+                      && isempty(tempFlow.D) && isempty(tempFlow.k)
                   C = eye(tempFlow.dim);
               else 
                   C = tempFlow.C;
@@ -123,10 +128,11 @@ function res = mergeFlowsLinearSys(obj, flowList)
 
                   % check if the D matrix is valid
                   if any(d(ind2))
-                      error(['It is not allowed for the throughput matrix D '...
+                      throw(CORAerror('CORA:specialError',...
+                          ['It is not allowed for the throughput matrix D '...
                              'to point to inputs that are defined by the '...
-                             'output of other subsystems, since it would '...
-                             'otherwise be able to construct infinite loops!']);
+                             'output of other subsystems, since this would '...
+                             'otherwise lead to infinite loops!']));
                   end
                   
                   % construct the merged B matrix from the throughput
@@ -138,28 +144,31 @@ function res = mergeFlowsLinearSys(obj, flowList)
        end
     end
 
-    % construct resulting continious dynamics object
-    res = linearSys(Amerged,Bmerged,cMerged);
+    % allocate merged name (remove all default names '')
+    namemerged = strjoin(name(cellfun(@(x)~isempty(x),name,'UniformOutput',true)),' x ');
+
+    % construct resulting continuous dynamics object
+    res = linearSys(namemerged,Amerged,Bmerged,cMerged);
 end
 
-function res = mergeFlowsNonlinearSys(obj, flowList, loc)
+function res = mergeFlowsNonlinearSys(pHA,flowList,loc)
 
     numComps = length(flowList);
 
     % construct symbolic state vector and input vector
-    x = sym('x',[obj.numStates,1]);
-    u = sym('u',[obj.numInputs,1]);
+    x = sym('x',[pHA.numStates,1]);
+    u = sym('u',[pHA.numInputs,1]);
     
     % initialize dynamic function
-    f = sym(zeros(obj.numStates,1));
+    f = sym(zeros(pHA.numStates,1));
     
     % loop over all subcomponents
     for i = 1:numComps
 
        % get object properties
        flow = flowList{i};
-       stateBinds = obj.bindsStates{i};
-       inputBinds = obj.bindsInputs{i};
+       stateBinds = pHA.bindsStates{i};
+       inputBinds = pHA.bindsInputs{i};
 
        % construct input vector for this subcomponent
        u_ = sym(zeros(size(inputBinds,1),1));
@@ -172,7 +181,7 @@ function res = mergeFlowsNonlinearSys(obj, flowList, loc)
 
            else                       % input = output of other component
            
-               tempStateBinds = obj.bindsStates{inputBinds(j,1)};
+               tempStateBinds = pHA.bindsStates{inputBinds(j,1)};
                u_(j) = x(tempStateBinds(inputBinds(j,2)));
                
            end
@@ -186,7 +195,7 @@ function res = mergeFlowsNonlinearSys(obj, flowList, loc)
     name = ['location',strrep(strcat(num2str(loc')),' ','')];
     funHan = matlabFunction(f,'Vars',{x,u});
     
-    res = nonlinearSys(name,funHan,obj.numStates,obj.numInputs);
+    res = nonlinearSys(name,funHan,pHA.numStates,pHA.numInputs);
 end
 
 %------------- END OF CODE --------------

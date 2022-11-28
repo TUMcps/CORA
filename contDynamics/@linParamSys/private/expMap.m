@@ -1,19 +1,21 @@
-function [obj,Zres] = mappingMatrix(obj,Z,options)
+function [obj,Zres] = expMap(obj,Z,options)
 % expMap - Computes the map of a zonotope with a matrix exponential whose
-% matrix contains uncertain matrices
+%    matrix contains uncertain matrices
 %
 % Syntax:  
-%    [Z] = expMap(Z,linIntSys,options)
+%    [obj,Zres] = expMap(obj,Z,options)
 %
 % Inputs:
-%    Z - zonotope object 
-%    linIntSys - linear interval system
+%    obj - linParamSys object
+%    Z - zonotope
 %    options - options struct
 %
 % Outputs:
+%    obj - linParamSys object
 %    Zres - resulting zonotope object
 %
 % Example: 
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -21,10 +23,10 @@ function [obj,Zres] = mappingMatrix(obj,Z,options)
 %
 % See also: plus
 
-% Author: Matthias Althoff
-% Written: 07-January-2009
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      07-January-2009
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

@@ -9,7 +9,7 @@ function res = example_nonlinear_reach_08_subset()
 %    -
 %
 % Outputs:
-%    res - 1 if example completed successfully, 0 otherwise
+%    res - true/false
 %
 % References: 
 %   [1] N. Kochdumper et al. "Utilizing Dependencies to Obtain Subsets of 
@@ -28,7 +28,7 @@ function res = example_nonlinear_reach_08_subset()
 
 %------------- BEGIN CODE --------------
 
-% Parameter ---------------------------------------------------------------
+% Parameters --------------------------------------------------------------
 
 R0 = interval([-0.2;-0.2],[0.2;0.2]) + [-1;1];
 params.R0 = polyZonotope(R0);
@@ -81,19 +81,18 @@ paramSim.tFinal = 1;
 % visualization of the time interval reachable set
 figure; hold on;
 
-plot(R,[1,2],'FaceColor',[.7 .7 .7],'EdgeColor','none','Splits',4); 
+plot(R,[1,2],'FaceColor',[.7 .7 .7],'Splits',4); 
 
 
 % visualization of the initial and final reachable set
-plot(R0,[1,2],'w','Filled',true,'EdgeColor','none');
-plot(R0,[1,2],'FaceColor',[30,119,255]./255,'Filled',true,'EdgeColor','none','FaceAlpha',0.7);
-plot(Rfin,[1,2],'w','Filled',true,'EdgeColor','none','Splits',10);
-plot(Rfin,[1,2],'FaceColor',[30,119,255]./255,'Filled',true,'EdgeColor','none', ...
-           'FaceAlpha',0.7,'Splits',10);
+plot(R0,[1,2],'FaceColor','w');
+plot(R0,[1,2],'FaceColor',[30,119,255]./255,'FaceAlpha',0.7);
+plot(Rfin,[1,2],'FaceColor','w','Splits',10);
+plot(Rfin,[1,2],'FaceColor',[30,119,255]./255,'FaceAlpha',0.7,'Splits',10);
 
 % visualization of the reachable subset
-plot(zonotope(Rsubset),[1,2],'w','Filled',true,'EdgeColor','none');
-plot(zonotope(Rsubset),[1,2],'FaceColor',[255,140,0]./255,'Filled',true,'EdgeColor','none');
+plot(zonotope(Rsubset),[1,2],'FaceColor','w');
+plot(zonotope(Rsubset),[1,2],'FaceColor',[255,140,0]./255,'EdgeColor','none');
 
 % visualization of the simulation results
 plot(x(end,1),x(end,2),'.k','MarkerSize',30);
@@ -160,18 +159,16 @@ hold on
 % visualize constraint
 xlim([-1.5,1.5]);
 ylim([0.5 3.5]);
-plot(hs,[1,2],'r','FaceAlpha',0.5,'EdgeColor','none');
+plot(hs,[1,2],'FaceColor','r','FaceAlpha',0.5);
 
 % visualize time interval reachable set
-plot(R,[1,2],'FaceColor',[.7 .7 .7],'EdgeColor','none','Splits',4); 
+plot(R,[1,2],'FaceColor',[.7 .7 .7],'Splits',4); 
 
 % visualize initial and final reachable set
-plot(params.R0,[1,2],'w','Filled',true,'EdgeColor','none');
-plot(Rfin,[1,2],'w','Filled',true,'EdgeColor','none','Splits',10);
-plot(params.R0,[1,2],'FaceColor',[255,140,0]./255,'Filled',true,'EdgeColor', ...
-                    'none','FaceAlpha',0.7);
-plot(Rfin,[1,2],'FaceColor',[30,119,255]./255,'Filled',true,'EdgeColor','none', ...
-                    'FaceAlpha',0.7,'Splits',10);
+plot(params.R0,[1,2],'FaceColor','w');
+plot(Rfin,[1,2],'FaceColor','w','Splits',10);
+plot(params.R0,[1,2],'FaceColor',[255,140,0]./255,'FaceAlpha',0.7);
+plot(Rfin,[1,2],'FaceColor',[30,119,255]./255,'FaceAlpha',0.7,'Splits',10);
 
 % visualize falsifying trajectory
 plot(xTraj(:,1),xTraj(:,2),'k');
@@ -217,23 +214,22 @@ hold on
 
 xlim([-1.5,1.5]);
 ylim([0.5 3.5]);
-plot(hs,[1,2],'r','FaceAlpha',0.5,'EdgeColor','none');
+plot(hs,[1,2],'FaceColor','r','FaceAlpha',0.5);
 
 % visualize time interval reachable set
-plot(R,[1,2],'FaceColor',[.7 .7 .7],'EdgeColor','none','Splits',4); 
+plot(R,[1,2],'FaceColor',[.7 .7 .7],'Splits',4); 
 
 % visualize initial and final reachable set
-plot(R0,[1,2],'w','Filled',true,'EdgeColor','none');
-plot(R0,[1,2],'FaceColor',[30,119,255]./255,'Filled',true,'EdgeColor','none','FaceAlpha',0.7);
-plot(Rfin,[1,2],'w','Filled',true,'EdgeColor','none','Splits',10);
-plot(Rfin,[1,2],'FaceColor',[30,119,255]./255,'Filled',true,'EdgeColor','none', ...
-           'FaceAlpha',0.7,'Splits',10);
+plot(R0,[1,2],'FaceColor','w');
+plot(R0,[1,2],'FaceColor',[30,119,255]./255,'FaceAlpha',0.7);
+plot(Rfin,[1,2],'FaceColor','w','Splits',10);
+plot(Rfin,[1,2],'FaceColor',[30,119,255]./255,'FaceAlpha',0.7,'Splits',10);
 
 % visualize optimized initial and final set
-plot(Rfin_,[1,2],'w','Filled',true,'EdgeColor','none');
-plot(Rfin_,[1,2],'FaceColor',[255,140,0]./255,'Filled',true,'EdgeColor','none','FaceAlpha',0.7);
-plot(R0_,[1,2],'w','Filled',true,'EdgeColor','none');
-plot(R0_,[1,2],'FaceColor',[255,140,0]./255,'Filled',true,'EdgeColor','none','FaceAlpha',0.7);
+plot(Rfin_,[1,2],'FaceColor','w');
+plot(Rfin_,[1,2],'FaceColor',[255,140,0]./255,'FaceAlpha',0.7);
+plot(R0_,[1,2],'FaceColor','w');
+plot(R0_,[1,2],'FaceColor',[255,140,0]./255,'FaceAlpha',0.7);
 
 
 % formatting

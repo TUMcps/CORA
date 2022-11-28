@@ -26,34 +26,11 @@ function res = test_halfspace_plus
 %------------- BEGIN CODE --------------
 
 % 1. empty case
-res_empty = true;
 h = halfspace();
 v = rand(2,1);
-try
-    h + v; % should throw error here
-    res_empty = false;
-catch ME
-    if ~strcmp(ME.identifier,'CORA:emptySet')
-        res_empty = false;
-    end
-end
+res_empty = isempty(h + v);
 
-
-% 2. wrong input
-res_input = true;
-h = halfspace(randn(2,1),1);
-v = rand(2,2);
-try
-    h + v; % should throw error here
-    res_input = false;
-catch ME
-    if ~strcmp(ME.identifier,'CORA:wrongValue')
-        res_input = false;
-    end
-end
-
-
-% 3. dimension mismatch
+% 2. dimension mismatch
 res_dim = true;
 h = halfspace(randn(2,1),1);
 v = rand(3,1);
@@ -66,15 +43,7 @@ catch ME
     end
 end
 
-
-
 % combine tests
-res = res_empty && res_input && res_dim;
-
-if res
-    disp('test_plus successful');
-else
-    disp('test_plus failed');
-end
+res = res_empty && res_dim;
 
 %------------- END OF CODE --------------

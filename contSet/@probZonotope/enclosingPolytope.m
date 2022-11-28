@@ -3,7 +3,7 @@ function P = enclosingPolytope(probZ)
 %    to a polytope representation
 %
 % Syntax:  
-%    P = polytope(probZ)
+%    P = enclosingPolytope(probZ)
 %
 % Inputs:
 %    probZ - probabilistic zonotope object

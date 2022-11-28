@@ -46,10 +46,4 @@ res(2) = dim(I) == 3;
 % combine results
 res = all(res);
 
-if res
-    disp('test_dim successful');
-else
-    disp('test_dim failed');
-end
-
 %------------- END OF CODE --------------

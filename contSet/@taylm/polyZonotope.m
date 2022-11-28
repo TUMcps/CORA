@@ -18,7 +18,7 @@ function res = polyZonotope(obj)
 %
 %    % convert to a polynomial zonotope and plot the result
 %    pZ = polyZonotope(t);
-%    plot(pZ,[1,2],'b','Filled',true,'EdgeColor','none');
+%    plot(pZ,[1,2],'FaceColor','b');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -46,7 +46,8 @@ function res = polyZonotope(obj)
 
     % check if the taylor model is valid
     if size(obj,2) > 1
-       error('taylm/polyZonotope: Invalid taylor model object that can not be converted!') 
+        throw(CORAerror('CORA:specialError',...
+            'Invalid taylor model object that can not be converted!'));
     end
     
     % initialize polynomial zonotope matrices

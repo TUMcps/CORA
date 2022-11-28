@@ -31,6 +31,8 @@ dims = 2:4;
 testsPerDim = 50;
 ptsPerLine = 10;
 
+res_rand = true(length(dims),testsPerDim);
+
 % box has to be the same as conversion to interval
 for d=1:length(dims)
     for test=1:testsPerDim
@@ -53,7 +55,7 @@ for d=1:length(dims)
         pts = p1 + (p2-p1) .* linspace(0,1,ptsPerLine);
 
         % random points have to be also in Zenc
-        res_rand(d,test) = in(Zenc,pts);
+        res_rand(d,test) = all(contains(Zenc,pts));
     end
 end
 
@@ -61,10 +63,9 @@ end
 % add results
 res = all(all(res_rand));
 
-if res
-    disp('test_enclose successful');
-else
-    disp('test_enclose failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'G1','G2','p1','p2');
 end
 
 %------------- END OF CODE --------------

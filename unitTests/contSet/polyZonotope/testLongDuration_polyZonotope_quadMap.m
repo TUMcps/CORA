@@ -25,9 +25,7 @@ function res = testLongDuration_polyZonotope_quadMap
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-%% RANDOM TESTS
+res = true;
 
 % TEST 2-dimensional (quadratic multiplication)
 
@@ -47,7 +45,7 @@ for i = 1:3
     % obtain result
     pZres = quadMap(pZ,Q);
 
-    % draw random points from zontope and approximately compute the
+    % draw random points from zonotope and approximately compute the
     % quadratic mapping
     N = 10000;
     points = zeros(2,N);
@@ -63,13 +61,13 @@ for i = 1:3
     end
 
 %     % visulaize result
-%     plot(pZ,[1,2],'FaceColor',[.5 .5 .5],'Filled',true,'Splits',5,'Order',30);
+%     plot(pZ,[1,2],'FaceColor',[.5 .5 .5],'Splits',5,'Order',30);
 %     hold on
 %     plot(initPoints(1,:),initPoints(2,:),'.k');
 %     plot(zonotope(pZ),[1,2],'r');
 % 
 %     figure
-%     plot(pZres,[1,2],'FaceColor',[.5 .5 .5],'Filled',true,'Splits',5,'Order',30)
+%     plot(pZres,[1,2],'FaceColor',[.5 .5 .5],'Splits',5,'Order',30)
 %     hold on
 %     plot(zonotope(pZres),[1,2],'r');
 %     plot(points(1,:),points(2,:),'.k');
@@ -79,7 +77,7 @@ for i = 1:3
     suc = containsPointSet(pZres,points,[],30);
    
     if ~suc
-        error('testLongDuration_polyZonotope_quadMap: random test 2D failed!');
+        throw(CORAerror('CORA:testFailed'));
     end  
 end
 
@@ -109,7 +107,7 @@ for i = 1:3
     % obtain result
     pZres = quadMap(pZ1,pZ2,Q);
 
-    % draw random points from zontope and approximately compute the
+    % draw random points from zonotope and approximately compute the
     % quadratic mapping
     N = 100;
 
@@ -134,7 +132,7 @@ for i = 1:3
 
 %     % visualize result
 %     figure
-%     plot(pZres,[1,2],'FaceColor',[.5 .5 .5],'Filled',true,'Splits',5,'Order',30)
+%     plot(pZres,[1,2],'FaceColor',[.5 .5 .5],'Splits',5,'Order',30)
 %     hold on
 %     plot(zonotope(pZres),[1,2],'r');
 %     plot(points(1,:),points(2,:),'.k');
@@ -144,7 +142,9 @@ for i = 1:3
     suc = containsPointSet(pZres,points,[],30);
    
     if ~suc
-        error('testLongDuration_polyZonotope_quadMap: random test 2D (mixed multiplication) failed!');
+        path = pathFailedTests(mfilename());
+        save(path,'pZres','points');
+        throw(CORAerror('CORA:testFailed'));
     end  
 end
 
@@ -170,7 +170,7 @@ for i = 1:3
     % obtain result
     pZres = quadMap(pZ,Q);
 
-    % draw random points from zontope and approximately compute the
+    % draw random points from zonotope and approximately compute the
     % quadratic mapping
     N = 10000;
     points = zeros(4,N);
@@ -192,11 +192,10 @@ for i = 1:3
     suc = containsPointSet(pZres,points,[],5);
    
     if ~suc
-        error('testLongDuration_polyZonotope_quadMap: random test 4D failed!');
+        path = pathFailedTests(mfilename());
+        save(path,'pZres','points');
+        throw(CORAerror('CORA:testFailed'));
     end  
 end
-    
-
-res = true;
 
 %------------- END OF CODE --------------

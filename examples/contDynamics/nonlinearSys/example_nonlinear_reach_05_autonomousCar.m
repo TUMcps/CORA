@@ -14,7 +14,7 @@ function completed = example_nonlinear_reach_05_autonomousCar()
 %    completed = example_nonlinear_reach_05_autonomousCar()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    completed - boolean 
@@ -58,7 +58,7 @@ options.tensorOrder = 2;
 
 % System Dynamics ---------------------------------------------------------
 
-vehicle = nonlinearSys(@vmodel_A_bicycle_linear_controlled);
+vehicle = nonlinearSys(@vmodel_A_bicycle_linear_controlled,8,26);
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -73,10 +73,6 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 
 % simulation settings
 simOpt.points = 60;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 400;
-
 % random simulation
 simRes = simulateRandom(vehicle, params, simOpt);
 
@@ -92,10 +88,10 @@ for k = 1:length(dims)
     projDims = dims{k}; projRef = ref{k};
 
     % plot reachable sets 
-    plot(R,projDims,'FaceColor',[.8 .8 .8],'EdgeColor','none','Order',3);
+    plot(R,projDims,'Order',3);
     
     % plot initial set
-    plot(params.R0,projDims,'w','Filled',true,'EdgeColor','k');
+    plot(params.R0,projDims,'k','FaceColor','w');
     
     % plot simulation results     
     plot(simRes,projDims);
@@ -109,6 +105,6 @@ for k = 1:length(dims)
 end
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

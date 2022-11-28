@@ -21,10 +21,10 @@ function [pChange,plotInfo]=laneChangeProbability...
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 30-October-2008
-% Last update: 27-March-2009
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      30-October-2008
+% Last update:  27-March-2009
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

@@ -5,7 +5,7 @@ function display(matP)
 %    display(matP)
 %
 % Inputs:
-%    matP - matrix polytope
+%    matP - matPolytope object
 %
 % Outputs:
 %    ---

@@ -1,15 +1,15 @@
-function [Z] = quadMap(Z,Q)
+function zB = quadMap(zB,Q)
 % quadMap - computes \{Q_{ijk}*x_j*x_k|x \in Z\}
 %
 % Syntax:  
-%    [Zquad] = quadMap(Z1,Q)
+%    zB = quadMap(zB,Q)
 %
 % Inputs:
-%    Z - zonoBundle object
+%    zB - zonoBundle object
 %    Q - quadratic coefficients as a cell of matrices
 %
 % Outputs:
-%    Z - zonoBundle object
+%    zB - zonoBundle object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -24,8 +24,12 @@ function [Z] = quadMap(Z,Q)
 
 %------------- BEGIN CODE --------------
 
-    for i=1:Z.parallelSets
-        Z.Z{i} = quadMap(Z.Z{i},Q);
-    end
+% check input arguments
+inputArgsCheck({{zB,'att','zonoBundle'}; ...
+                {Q,'att','cell'}});
+
+for i=1:zB.parallelSets
+    zB.Z{i} = quadMap(zB.Z{i},Q);
+end
 
 %------------- END OF CODE --------------

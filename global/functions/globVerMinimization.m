@@ -80,7 +80,7 @@ tolerance = 1e-8;
 
 % parse input arguments
 if nargin < 3
-   error('Wrong syntax!. Type "help globVerMinimization" for help.'); 
+    throw(CORAerror('CORA:notEnoughInputArgs',3));
 end
 if nargin >= 4 && ~isempty(varargin{1})
    max_order = varargin{1}; 
@@ -241,7 +241,7 @@ while ~isempty(domTay)
 
             % add the subdomain that contains the minimum of the linear
             % part at position 1 in the priority queue
-            if in(dom1,xMin)
+            if contains(dom1,xMin)
                domTay{1} = dom1;
                domReal{1} = domR1;
                tay{1} = t1;

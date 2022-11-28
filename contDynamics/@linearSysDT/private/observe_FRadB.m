@@ -1,5 +1,5 @@
 function [R,tcomp] = observe_FRadB(obj,options)
-% observe_FRadB - computes the guaranted state estimation approach
+% observe_FRadB - computes the guaranteed state estimation approach
 % from [1].
 %
 %
