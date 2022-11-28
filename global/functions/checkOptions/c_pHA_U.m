@@ -43,6 +43,7 @@ if ~iscell(val)
 
 else
     
+    % number of components in parallel hybrid automaton
     numComps = length(sys.components);
     
     if ~(all(size(val) == [numComps,1]) || all(size(val) == [1,numComps]))

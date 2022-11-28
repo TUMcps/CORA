@@ -1,12 +1,14 @@
-function defValue = getDefaultValue(field,sys,listname)
+function defValue = getDefaultValue(field,sys,params,options,listname)
 % getDefaultValue - contains list of default values for params / options
 %
 % Syntax:
-%    defValue = getDefaultValue(field,sys,listname)
+%    defValue = getDefaultValue(field,sys,params,options,listname)
 %
 % Inputs:
 %    field - struct field in params / options
 %    sys - object of system class
+%    params - struct containing model parameters
+%    options - struct containing algorithm parameters
 %    listname - 'params' or 'options'
 %
 % Outputs:
@@ -26,69 +28,104 @@ function defValue = getDefaultValue(field,sys,listname)
 %------------- BEGIN CODE --------------
 
 % split list for params / options for more transparency / readability
-
-% syntax:
-% {'name of param/option #1', default value #1;
-%  'name of param/option #2', default value #2;
-%    ..., ...};
-
-% define default value for params
-params_defFields = {'tStart', 0;
-             'finalLoc', def_finalLoc(sys);
-             'U', def_U(sys);
-             'u', def_u(sys);
-             'y', def_y(sys);
-             'inputCompMap', def_inputCompMap(sys)};
-
-% define default value for options
-options_defFields = {'reductionTechnique', 'girard';
-             'reductionTechniqueUnderApprox', 'sum';
-             'linAlg', 'standard';
-             'verbose', false;
-             'reductionInterval', Inf;
-             'maxError', def_maxError(sys);
-             'compTimePoint', true;
-             'polyZono.maxDepGenOrder', 20;
-             'polyZono.maxPolyZonoRatio', Inf;
-             'polyZono.restructureTechnique', 'reduceGirard';
-             'lagrangeRem.simplify', 'none';
-             'lagrangeRem.method', 'interval';
-             'lagrangeRem.tensorParallel', false;
-             'lagrangeRem.optMethod', 'int';
-             'linAlg', 'standard';
-             'contractor', 'linearize';
-             'iter', 2;
-             'splits', 8;
-             'orderInner', 5;
-             'scaleFac', 'auto';
-             'inpChanges', 0};
-         
-
-% search for default value in params
-if strcmp(listname,'params')
-
-    [row,~] = find(strcmp(params_defFields,field));
-    if ~isempty(row)
-        defValue = params_defFields{row,2}; return
-    else
-        error("There is no default value for params." + field + "!");
+switch listname
+    
+    % search for default value in params
+    case 'params'
+    
+    switch field
+        case 'tStart'
+            defValue = 0;
+        case 'finalLoc'
+            defValue = def_finalLoc(sys);
+        case 'U'
+            defValue = def_U(sys);
+        case 'u'
+            defValue = def_u(sys);
+        case 'tu'
+            defValue = def_tu(sys,params);
+        case 'y'
+            defValue = def_y(sys);
+        case 'W'
+            defValue = def_W(sys);
+        case 'V'
+            defValue = def_V(sys);
+        case 'inputCompMap'
+            defValue = def_inputCompMap(sys);
+        otherwise
+            throw(CORAerror('CORA:specialError',...
+                "There is no default value for params." + field + "."))
     end
     
-% search for default value in params
-elseif strcmp(listname,'options')
-    
-    [row,~] = find(strcmp(options_defFields,field));
-    if ~isempty(row)
-        defValue = options_defFields{row,2}; return
-    else
-        error("There is no default value for options." + field + "!");
-    end
-    
-else
-    
-    error("Not specified which list the field is part of.");
+    % search for default value in options
+    case 'options'
+        
+        switch field
+            case 'reductionTechnique'
+                defValue = 'girard';
+            case 'reductionTechniqueUnderApprox'
+                defValue = 'sum';
+            case 'linAlg'
+                defValue = 'standard';
+            case 'verbose'
+                defValue = false;
+            case 'reductionInterval'
+                defValue = Inf;
+            case 'maxError'
+                defValue = def_maxError(sys);
+            case 'maxError_x'
+                defValue = def_maxError_x(sys);
+            case 'maxError_y'
+                defValue = def_maxError_y(sys);
+            case 'compTimePoint'
+                defValue = true;
+            case 'polyZono.maxDepGenOrder'
+                defValue = 20;
+            case 'polyZono.maxPolyZonoRatio'
+                defValue = Inf;
+            case 'polyZono.restructureTechnique'
+                defValue = 'reduceGirard';
+            case 'lagrangeRem.simplify'
+                defValue = 'none';
+            case 'lagrangeRem.method'
+                defValue = 'interval';
+            case 'lagrangeRem.tensorParallel'
+                defValue = false;
+            case 'lagrangeRem.optMethod'
+                defValue = 'int';
+            case 'contractor'
+                defValue = 'linearize';
+            case 'iter'
+                defValue = 2;
+            case 'splits'
+                defValue = 8;
+            case 'orderInner'
+                defValue = 5;
+            case 'scaleFac'
+                defValue = 'auto';
+            case 'type'
+                defValue = 'standard';
+            case 'points'
+                defValue = 10;
+            case 'fracVert'
+                defValue = 0.5;
+            case 'fracInpVert'
+                defValue = 0.5;
+            case 'nrConstInp'
+                defValue = def_nrConstInp(sys,params);
+            case 'p_conf'
+                defValue = 0.8;
+            case 'inpChanges'
+                defValue = 1;
+            case 'alg'
+                defValue = def_alg(sys);
+            case 'tensorOrderOutput'
+                defValue = 2;
+            otherwise
+                throw(CORAerror('CORA:specialError',...
+                    "There is no default value for options." + field + "."))
+        end
 end
-
 
 end
 
@@ -102,24 +139,21 @@ if isa(sys,'hybridAutomaton')
 elseif isa(sys,'parallelHybridAutomaton')
     val = zeros(length(sys.components),1);
 end
+% no assignment for contDynamics
 
 end
 
 function val = def_U(sys)
 
 if isa(sys,'contDynamics')
-    if isa(sys,'linearSys') || isa(sys,'linearSysDT') || isa(sys,'linParamSys')
-        val = zonotope(zeros(size(sys.B,2),1));
-    else 
-        val = zonotope(zeros(sys.nrOfInputs,1));
-    end
+    val = zonotope(zeros(sys.nrOfInputs,1));
 elseif isa(sys,'hybridAutomaton')
     locations = sys.location;
     numLoc = length(locations);
     val = cell(numLoc,1);
     for i = 1:numLoc
-        subsys = locations{i}.contDynamics;
-        val{i} = zonotope(zeros(max(1,subsys.nrOfInputs),1));
+        nrInputs = locations{i}.contDynamics.nrOfInputs;
+        val{i} = zonotope(zeros(max(1,nrInputs),1));
     end
 elseif isa(sys,'parallelHybridAutomaton')
     numComps = length(sys.components);
@@ -128,7 +162,8 @@ elseif isa(sys,'parallelHybridAutomaton')
         numLoc = length(sys.components{i}.location);
         val{i} = cell(numLoc,1);
         for j = 1:numLoc
-            val{i}{j} = zonotope(zeros(sys.numInputs,1));
+            nrInputs = sys.components{i}.location{1}.contDynamics.nrOfInputs;
+            val{i}{j} = zonotope(zeros(nrInputs,1));
         end    
     end
 end
@@ -139,11 +174,7 @@ function val = def_u(sys)
 
 val = [];
 if isa(sys,'contDynamics')
-    if isa(sys,'linearSys') || isa(sys,'linearSysDT') || isa(sys,'linParamSys') || isa(sys,'linProbSys')
-        val = zeros(size(sys.B,2),1);
-    else 
-        val = zeros(sys.nrOfInputs,1);
-    end
+    val = zeros(sys.nrOfInputs,1);
 elseif isa(sys,'hybridAutomaton')
     locations = sys.location;
     numLoc = length(locations);
@@ -166,11 +197,69 @@ end
 
 end
 
+function val = def_tu(sys,params)
+
+if isa(sys,'contDynamics')
+    if isa(sys,'linearSysDT') || isa(sys,'nonlinearSysDT')
+        if size(params.u,2) == 1
+            val = params.tStart;
+        else
+            val = (params.tStart:sys.dt:params.tFinal-sys.dt)';
+            if isa(sys,'linearSysDT') && any(any(sys.D))
+                val = (params.tStart:sys.dt:params.tFinal)';
+            end
+        end
+    elseif isa(sys,'linearSys')
+        steps = size(params.u,2);
+        if any(any(sys.D)) && steps > 1
+            steps = steps - 1;
+        end
+        stepsize = (params.tFinal-params.tStart) / steps;
+        val = (params.tStart:stepsize:params.tFinal-stepsize)';
+        if steps > 1 && any(any(sys.D))
+            val = (params.tStart:stepsize:params.tFinal)';
+        end
+    else % isa(sys,'linParamSys') || isa(sys,'linProbSys')
+        if size(params.u,2) == 1
+            val = params.tStart;
+        else
+            steps = size(params.u,2);
+            stepsize = (params.tFinal-params.tStart) / steps;
+%             val = linspace(params.tStart,params.tFinal-stepsize,steps);
+            val = (params.tStart:stepsize:params.tFinal-stepsize)';
+        end
+    end
+        
+end
+% no assignment for hybridAutomaton / parallelHybridAutomaton
+
+end
+
 function val = def_y(sys)
 
 val = [];
 if isa(sys,'contDynamics')
     val = zeros(sys.nrOfOutputs,1);
+end
+% no assignment for hybridAutomaton / parallelHybridAutomaton
+
+end
+
+function val = def_W(sys)
+
+val = [];
+if isa(sys,'contDynamics')
+    val = zonotope(zeros(sys.dim,1));
+end
+% no assignment for hybridAutomaton / parallelHybridAutomaton
+
+end
+
+function val = def_V(sys)
+
+val = [];
+if isa(sys,'contDynamics')
+    val = zonotope(zeros(sys.nrOfOutputs,1));
 end
 % no assignment for hybridAutomaton / parallelHybridAutomaton
 
@@ -182,6 +271,7 @@ val = [];
 if isa(sys,'parallelHybridAutomaton')
     val = ones(sys.numInputs,1);
 end
+% no assignment for contDynamics
 
 end
 
@@ -191,8 +281,74 @@ val = [];
 if isa(sys,'contDynamics')
     val = Inf(sys.dim,1);
 end
+% no assignment for hybridAutomaton / parallelHybridAutomaton
 
 end
 
+function val = def_nrConstInp(sys,params)
+
+val = [];
+if isa(sys,'contDynamics')
+    if isa(sys,'linearSysDT') || isa(sys,'nonlinearSysDT') || ...
+                                                isa(sys,'neurNetContrSys')
+        steps = round((params.tFinal - params.tStart) / sys.dt);
+        % start at 10, go down to 1
+        for i=10:-1:1
+            if mod(steps,i) == 0
+                val = i; break
+            end
+        end
+    else
+        if size(params.u,2) > 1
+            if isa(sys,'linearSys') && any(any(sys.D))
+                val = size(params.u,2) - 1;
+            else
+                val = size(params.u,2);
+            end
+        else % no input trajectory
+            val = 10;
+        end
+    end
+elseif isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')
+    % this will most likely be changed in the future (e.g., different
+    % values for each location)
+    val = 10;
+end
+
+end
+
+function val = def_maxError_x(sys)
+% only DA systems
+
+val = [];
+if isa(sys,'nonlinDASys')
+    val = Inf(sys.dim,1);
+end
+
+end
+
+function val = def_maxError_y(sys)
+% only DA systems
+
+val = [];
+if isa(sys,'nonlinDASys')
+    val = Inf(sys.nrOfConstraints,1);
+end
+
+end
+
+function val = def_alg(sys)
+
+% default
+val = 'lin';
+
+% explicitly stated for the below classes
+if isa(sys,'nonlinearSysDT')
+    val = 'lin';
+elseif isa(sys,'nonlinDASys')
+    val = 'lin';
+end
+
+end
 
 %------------- END OF CODE --------------

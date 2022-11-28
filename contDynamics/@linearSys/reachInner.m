@@ -68,12 +68,10 @@ function Rin = reachInner(sys,params,options)
     end
     
     % compute output set
-    set = compOutputSet(sys,set,V_,options);
+    timePoint.set = compOutputSet(sys,set,V_,options);
+    timePoint.time = num2cell(t');
     
     % construct reachSet object
-    timePoint.set = set(2:end);
-    timePoint.time = num2cell(t(2:end)');
-    
     Rin = reachSet(timePoint);
     
 end
@@ -87,9 +85,9 @@ function set = compOutputSet(sys,set,V_,options)
     if ~isscalar(sys.C) || sys.C ~= 1 || ~isempty(sys.k) || ~isempty(sys.D)
 
         % construct output equation
-        if ~isempty(sys.D) && ~isempty(sys.k)
+        if any(any(sys.D)) && any(sys.k)
             f = @(x,u) sys.C * x + sys.D*u + sys.k;
-        elseif ~isempty(sys.D) && isempty(sys.k)
+        elseif any(any(sys.D)) && ~any(sys.k)
             f = @(x,u) sys.C * x + sys.D*u;
         else
             f = @(x,u) sys.C * x + sys.k;
@@ -97,8 +95,12 @@ function set = compOutputSet(sys,set,V_,options)
         
         % compute output set for all time steps
         for i = 2:length(set)
-            if isfield(options,'u')
-                V = V_ + options.u(:,i-1); 
+            if isfield(options,'u') 
+                if size(options.u,2) > 1
+                    V = V_ + options.u(:,i-1); 
+                else
+                    V = V_ + options.u; 
+                end
             else
                 V = V_; 
             end

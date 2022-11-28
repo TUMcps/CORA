@@ -35,8 +35,9 @@ if nargin == 1
 end
 
 % load data
-if ~isfile([coraroot filesep 'unitTests' filesep 'unitTestsStatus.mat'])
-    error("No data provided. Run '''runTestSuite''' to acquire data.");
+if ~isfile([CORAROOT filesep 'unitTests' filesep 'unitTestsStatus.mat'])
+    throw(CORAerror('CORA:specialError',...
+        "No data provided. Run '''runTestSuite''' to acquire data."));
 else
     data = load('unitTestsStatus.mat');
     testdata = data.overview;
@@ -82,7 +83,8 @@ elseif strcmp(format,'classes')
     elseif contains(testdata.fullList.func{1},'\')
         delim = '\';
     else
-        error("Issue with last test run.");
+        throw(CORAerror('CORA:specialError',...
+            'Issue with last test run.'));
     end        
     
     % truncate lists so that only functions within classes remain

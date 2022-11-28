@@ -56,7 +56,7 @@ inv = mptPolytope(1,T_off);
 guard = conHyperplane(1,T_off);
 
 reset.A = 1;
-reset.b = 0;
+reset.c = 0;
 
 trans = {transition(guard,reset,2)};
 
@@ -74,11 +74,11 @@ inv = mptPolytope(-1,-T_on);
 guard = conHyperplane(1,T_on);
 
 reset.A = 1;
-reset.b = 0;
+reset.c = 0;
 
 trans = {transition(guard,reset,1)};
 
-loc{2} = location('on',inv,trans,linSys);
+loc{2} = location('off',inv,trans,linSys);
 
 % Hybrid automaton
 HA1 = hybridAutomaton(loc);
@@ -100,7 +100,7 @@ inv = mptPolytope(1,T_off);
 guard = conHyperplane(1,T_off);
 
 reset.A = 1;
-reset.b = 0;
+reset.c = 0;
 
 trans = {transition(guard,reset,2)};
 
@@ -118,11 +118,11 @@ inv = mptPolytope(-1,-T_on);
 guard = conHyperplane(1,T_on);
 
 reset.A = 1;
-reset.b = 0;
+reset.c = 0;
 
 trans = {transition(guard,reset,1)};
 
-loc{2} = location('on',inv,trans,linSys);
+loc{2} = location('off',inv,trans,linSys);
 
 % Hybrid automaton
 HA2 = hybridAutomaton(loc);

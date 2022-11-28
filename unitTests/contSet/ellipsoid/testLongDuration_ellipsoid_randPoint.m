@@ -33,38 +33,31 @@ res = isempty(randPoint(ellipsoid()));
 
 % number of tests
 nrOfTests = 100;
+nrPts = 10;
 
 for i=1:nrOfTests
+    %%% generate all variables necessary to replicate results
     % random dimension
     n = randi([2,8]); % small because of containment checks
-    
     % random ellipsoid
-    E = ellipsoid.generateRandom(n);
-    
+    E = ellipsoid.generateRandom('Dimension',n);
     % random ellipsoid that is degenerate
-    Ed = ellipsoid.generateRandom(n,true); 
-    
+    Ed = ellipsoid.generateRandom('Dimension',n,'IsDegenerate',true); 
     % compute random points
-    nrPts = 10;
     pNormal = randPoint(E,nrPts,'standard');
     pExtreme = randPoint(E,nrPts,'extreme');
-    
     pNormal_d = randPoint(Ed,nrPts,'standard');
     pExtreme_d = randPoint(Ed,nrPts,'extreme');
+    %%%
     
     % check for containment in ellipsoid
-    if ~in(E,pNormal) || ~in(Ed,pNormal_d) || ...
-       ~in(enlarge(E,1+tol),pExtreme) || ~in(enlarge(Ed,1+tol),pExtreme_d)
+    if ~all(contains(E,pNormal)) || ~all(contains(Ed,pNormal_d)) || ...
+       ~all(contains(enlarge(E,1+tol),pExtreme)) || ~all(contains(enlarge(Ed,1+tol),pExtreme_d))
+        path = pathFailedTests(mfilename());
+        save(path,'n','E','Ed','pNormal','pExtreme','pNormal_d','pExtreme_d');
         res = false;
         break;
     end
-end
-
-
-if res
-    disp('test_zonotope_randPoint successful');
-else
-    disp('test_zonotope_randPoint failed');
 end
 
 %------------- END OF CODE --------------

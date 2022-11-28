@@ -22,10 +22,10 @@ function [P]=segPolytope(obj,segNumber,devNumber)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 13-March-2008 
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      13-March-2008 
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

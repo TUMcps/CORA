@@ -46,7 +46,7 @@ function res = s_asin( obj )
     % check if the input taylor model is admissible (> 0)
     temp = interval(obj);
     if infimum(temp) < -1 || supremum(temp) > 1
-       error('Function ''taylm/asin'' is not defined for values <-1 and >1!'); 
+        throw(CORAerror('CORA:outOfDomain','validDomain','>= -1 and <= 1'));
     end
     
     % producing T_tilda from the manual

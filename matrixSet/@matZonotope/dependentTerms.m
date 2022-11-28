@@ -1,17 +1,17 @@
-function [zSq,zH] = dependentTerms(obj,r)
-% dependentTerms - computes exact Taylor terms of a matrix zonotope square and
-% a matrix zonotope exponential
+function [zSq,zH] = dependentTerms(matZ,r)
+% dependentTerms - computes exact Taylor terms of a matrix zonotope square
+%    and a matrix zonotope exponential
 %
-% These different tasks are computed in one m-file to save computation
-% time: the for loop has to be executed only once and help functions do not
-% have to be called so often
+%    These different tasks are computed in one m-file to save computation
+%    time: the for loop has to be executed only once and help functions do
+%    not have to be called so often
 %
 % Syntax:  
-%    [zSq,zH] = dependentTerms(obj,r)
+%    [zSq,zH] = dependentTerms(matZ,r)
 %
 % Inputs:
-%    obj - linear interval system (linIntSys) object
-%    r - time step increment
+%    matZ - matZonotope object
+%    r - time step size
 %
 % Outputs:
 %    zSq - exact square matrix
@@ -33,10 +33,10 @@ function [zSq,zH] = dependentTerms(obj,r)
 %------------- BEGIN CODE --------------
 
 %load data from object structure
-C=obj.center;
-G=obj.generator;
-dim=obj.dim;
-gens=obj.gens;
+C=matZ.center;
+G=matZ.generator;
+n=matZ.dim;
+gens=matZ.gens;
 
 
 %square computation--------------------------------------------------------
@@ -68,7 +68,7 @@ end
 
 %H computation-------------------------------------------------------------
 %new center
-HC = eye(dim) + C*r + 0.5*sqC;
+HC = eye(n) + C*r + 0.5*sqC;
 
 %get generators
 HG = [];

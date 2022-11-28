@@ -1,38 +1,49 @@
-function H=circle(center,radius,NOP,style)
-%---------------------------------------------------------------------------------------------
-% H=CIRCLE(CENTER,RADIUS,NOP,STYLE)
-% This routine draws a circle with center defined as
-% a vector CENTER, radius as a scaler RADIS. NOP is 
-% the number of points on the circle. As to STYLE,
-% use it the same way as you use the rountine PLOT.
-% Since the handle of the object is returned, you
-% use routine SET to get the best result.
+function han = circle(center,radius,NOP,style)
+% circle - draws a circle
 %
-%   Usage Examples,
+% Syntax:  
+%    han = circle(center,radius,NOP,style)
 %
-%   circle([1,3],3,1000,':'); 
-%   circle([2,4],2,1000,'--');
+% Inputs:
+%    center - center of circle
+%    radius - radius of circle
+%    NOP - number of points on the circle
+%    style - LineSpec or Name-Value pairs (same as for plot)
 %
-%   Zhenhai Wang <zhenhai@ieee.org>
-%   Version 1.00
-%   December, 2002
-%---------------------------------------------------------------------------------------------
+% Outputs:
+%    han - handle to the graphics object
+%
+% Example:
+%     circle([1,3],3,1000,':'); 
+%     circle([2,4],2,1000,'--');
 
-if (nargin <3),
- error('Please see help for INPUT DATA.');
-elseif (nargin==3)
-    style='b-';
-end;
+% Author:        Zhenhai Wang <zhenhai@ieee.org>
+% Written:       December-2002
+% Last update:   17-June-2022 (MW, only formatting)
+% Last revision: ---
+
+%------------- BEGIN CODE --------------
+
+if nargin < 3
+    throw(CORAerror('CORA:notEnoughInputArgs',3));
+elseif nargin==3
+    style = 'b-';
+end
+
 THETA=linspace(0,2*pi,NOP);
 RHO=ones(1,NOP)*radius;
 [X,Y] = pol2cart(THETA,RHO);
 X=X+center(1);
 Y=Y+center(2);
+
 %H=plot(X,Y,style); %<-- modified
 if strcmp(style,'b-')
     %H=fill(X,Y,[.8 .8 .8],'EdgeColor','k'); %<-- modified
-    H=plot(X,Y,'k'); %<-- modified
+    han=plot(X,Y,'k'); %<-- modified
 else
-    H=fill(X,Y,[.95 .95 .95],'EdgeColor','k'); %<-- modified
+    han=fill(X,Y,[.95 .95 .95],'EdgeColor','k'); %<-- modified
 end
+
 %axis square;
+
+%------------- END OF CODE --------------

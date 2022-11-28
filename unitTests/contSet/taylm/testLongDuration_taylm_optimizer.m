@@ -27,10 +27,6 @@ function res = testLongDuration_taylm_optimizer
 
 %------------- BEGIN CODE --------------
 
-
-res = false;
-
-
 % Test 1: 1D-Function -----------------------------------------------------
 
 % function f(x) = 1 + x^5 - x^4, x \in [0,1]
@@ -232,7 +228,7 @@ end
 function checkOverapproximation(intReal,int)
     
     if any(infimum(int) > infimum(intReal)) || any(supremum(int) < supremum(intReal))
-        error('testLongDuration_taylm_optimizer failed!');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -241,7 +237,7 @@ function checkDiffToOpt(intReal,int,tol)
 % of the function
 
     if any(abs(infimum(intReal) - infimum(int)) > tol) || any(abs(supremum(int) - supremum(intReal)) > tol)
-        error('testLongDuration_taylm_optimizer failed!');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 

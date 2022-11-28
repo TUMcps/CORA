@@ -1,28 +1,24 @@
-function res = projectOnHyperplane(h, S)
+function S = projectOnHyperplane(hyp,S)
 % projectOnHyperplane - projects a set onto a hyperplane
 %
 % Syntax:  
-%    S = projectOnHyperplane(h, S)
+%    S = projectOnHyperplane(hyp, S)
 %
 % Inputs:
-%    h - conHyperplane object
+%    hyp - conHyperplane object
 %    S - contSet object
 %
 % Outputs:
-%    res - projected set
+%    S - projected set
 %
 % Example: 
-%    h = conHyperplane([1 1],1);
-%    zono = zonotope([2 1 -1;2 0 1]);
+%    hyp = conHyperplane([1 1],1);
+%    Z = zonotope([2 1 -1;2 0 1]);
+%    res = projectOnHyperplane(hyp,Z);
 %
-%    res = projectOnHyperplane(h,zono);
-%
-%    figure
-%    hold on
-%    xlim([-3,5]);
-%    ylim([-3,5]);
-%    plot(h,[1,2],'r');
-%    plot(zono,[1,2],'g');
+%    figure; hold on; xlim([-3,5]); ylim([-3,5]);
+%    plot(hyp,[1,2],'r');
+%    plot(Z,[1,2],'g');
 %    plot(res,[1,2],'b');
 %
 % Other m-files required: none
@@ -38,21 +34,21 @@ function res = projectOnHyperplane(h, S)
 
 %------------- BEGIN CODE --------------
 
-    % get object properties
-    c = h.h.c;
-    d = h.h.d;
+% get object properties
+c = hyp.h.c;
+d = hyp.h.d;
 
-    % normalization
-    temp = norm(c);
+% normalization
+temp = norm(c);
 
-    c = c./temp;
-    d = d/temp;
+c = c./temp;
+d = d/temp;
 
-    % linear map A*x + b for the projection
-    A = eye(length(c)) - c*c';
-    b = d*c;
+% linear map A*x + b for the projection
+A = eye(length(c)) - c*c';
+b = d*c;
 
-    % project the set
-    res = A*S + b;
+% project the set
+S = A*S + b;
 
-end
+%------------- END OF CODE --------------

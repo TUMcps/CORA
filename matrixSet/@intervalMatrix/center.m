@@ -1,14 +1,14 @@
-function c = center(obj)
+function c = center(intMat)
 % center - Returns the center of an intervalMatrix
 %
 % Syntax:  
-%    c = center(obj)
+%    c = center(intMat)
 %
 % Inputs:
-%    obj - intervalMatrix object
+%    intMat - intervalMatrix object
 %
 % Outputs:
-%    c - center of the intervalMatrix obj
+%    c - center of the interval matrix
 %
 % Example:
 %    M = intervalMatrix(eye(2),2*eye(2));
@@ -27,6 +27,6 @@ function c = center(obj)
 
 %------------- BEGIN CODE --------------
 
-c = center(obj.int);
+c = center(intMat.int);
 
 %------------- END OF CODE --------------

@@ -1,9 +1,9 @@
-function [obj] = exponential(obj,options)
-% expm - computes the overapproximation of the exponential of a system 
-% matrix up to a certain accuracy
+function obj = exponential(obj,options)
+% exponential - computes the overapproximation of the exponential of a system 
+%    matrix up to a certain accuracy
 %
 % Syntax:  
-%    [obj] = expm(obj)
+%    obj = exponential(obj)
 %
 % Inputs:
 %    obj - linearSys object
@@ -13,18 +13,18 @@ function [obj] = exponential(obj,options)
 %    obj - linearSys object
 %
 % Example: 
-%    Text for example...
+%    -
+%
+% References: 
+%   [1] M. Althoff, C. LeGuernic, and B. Krogh
+%       "Reachable Set Computation for Uncertain Time-Varying
+%           Linear Systems", HSCC'11.
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: ---
-%
-% References: 
-%   [1] M. Althoff, C. LeGuernic, and B. Krogh
-%       "Reachable Set Computation for Uncertain Time-Varying
-%           Linear Systems", HSCC'11.
 
 % Author:       Matthias Althoff
 % Written:      07-May-2007 
@@ -39,13 +39,13 @@ function [obj] = exponential(obj,options)
 A=obj.A;
 A_abs=abs(A);
 taylorTerms=options.taylorTerms;
-dim=dimension(obj);
+n=obj.dim;
 factors = options.factor;
 
 %initialize 
 Apower{1}=A;  
 Apower_abs{1}=A_abs; 
-M = eye(dim);
+M = eye(n);
     
 %compute powers for each term and sum of these
 for i=1:taylorTerms

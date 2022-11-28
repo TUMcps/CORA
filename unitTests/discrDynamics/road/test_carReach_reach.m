@@ -14,22 +14,17 @@ function res = test_carReach_reach(~)
 %
 % Outputs:
 %    res - boolean 
-%
-% Example: 
-%
-% 
+
 % Author:       Matthias Althoff
 % Written:      31-July-2016
 % Last update:  31-July-2017
 % Last revision:---
 
-
 %------------- BEGIN CODE --------------
-
 
 % set fileName and pathName
 fileName = 'fArray_unitTest.mat';
-pathName = [coraroot '/discrDynamics/ProbOccupancyPrediction'];
+pathName = [CORAROOT filesep 'discrDynamics' filesep 'ProbOccupancyPrediction'];
 modelInitialization = @initCar_unitTest;
 
 % compute probabilistic model

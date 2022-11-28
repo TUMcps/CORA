@@ -1,35 +1,61 @@
-function nc_out = ComputeNetworkComponent( nc_in , templateIDs )
-%INPUT:
-%   nc_in: component definition in SX format
-%   (xml element converted to matlab struct)
-%OUTPUT:
-%   nc_out: network component in structHA format
-%   contains:listOfVar (variable definitions, cont. states/inputs/params)
-%            binds (included component templates (has idx,id & local name)
-%               (also includes "mapping" for varialbe assignment)
-%   CONVENTION: only strings leave this functions (no char arrays)
+function nc_out = ComputeNetworkComponent(nc_in,templateIDs)
+% ComputeNetworkComponent - For a network component of the SpaceEx model,
+%    extract properties of the component (mapping of variables, connection
+%    between components etc.) from the struct and prepare them for later
+%    conversion to CORA format
+%    note: only strings leave this function (no char arrays)!
+%
+% Syntax:  
+%    nc_out = ComputeNetworkComponent(nc_in,templateIDs)
+%
+% Inputs:
+%    nc_in (struct) - component definition in SX format
+%                     (xml element converted to matlab struct)
+%    templateIDs - list of component names
+%
+% Outputs:
+%    nc_out (struct) - network component in structHA format, with fields
+%            .listOfVar (variable definitions, cont. states/inputs/params)
+%            .binds (included component templates (has idx,id & local name,
+%                    also includes "mapping" for variable assignment)
+%
+% Example: 
+%    ---
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-% Assign meta information.
+% Author:       ???
+% Written:      ???
+% Last update:  ---
+% Last revision:---
+
+%------------- BEGIN CODE --------------
+
+% Assign meta information
 nc_out.id = string(nc_in.Attributes.id);
 
-% Call the function CollectVariables to CollectVariables and Constants.
-% For internal use only, needed in function ComputeNetworkComponent and
-% AssignTemplate
-[listOfVar, listOfLabels] = CollectVariables(nc_in.param);
-nc_out.listOfVar = listOfVar;
-%nc_out.h_listOfLab = listOfLab; %unused since CORA doesn not support it
+% Call the function CollectVariables to collect variables and constants.
+[listOfVars, listOfLabels] = CollectVariables(nc_in.param);
+nc_out.listOfVar = listOfVars;
+%nc_out.h_listOfLab = listOfLabels; % unused
 
-%preallocate data structure
+% init data structure
 num_binds = length(nc_in.bind);
 nc_out.Binds = struct('idx',cell(1,num_binds));
 
+% loop over all binds (= base components that are instantiated in the given
+% network component)
 for i = 1:num_binds
     
-    % Find the id of the bound component template
+    % Find the id (= name) of the bound base component template
     boundID = string(nc_in.bind{i}.Attributes.component);
     
-    % search for this id in the list of already parsed templates
-    % store this index for easier referencing of the template
+    % search for this id in the list of already parsed templates and store
+    % this index for easier referencing of the template
     nc_out.Binds(i).idx = find(boundID == templateIDs,1);
     
     % store naming information
@@ -40,8 +66,8 @@ for i = 1:num_binds
     % parse variable mapping
     maps_in = nc_in.bind{i}.map;
     
-%     % delete labels from mapping before bind-generation
-%     % (labels here lead to errors due to indexing later)
+    % delete synchronization labels from mapping before bind-generation
+    % (sychronization labels here lead to errors due to indexing later)
     labelList = arrayfun(@(x) x.name,listOfLabels,'UniformOutput',false);
     j = 1;
     while j <= length(maps_in)
@@ -53,21 +79,20 @@ for i = 1:num_binds
     end
     
     
-    % preallocate arrays
+    % pre-allocate arrays
     num_maps = length(maps_in);
     keys = strings(num_maps,1);
     values = sym(zeros(num_maps,1));
     values_text = strings(num_maps,1);
     
-    
     for j = 1:num_maps
-        % access name of the mapped variable & the mapped expression
+        % name of the mapped variable & the mapped expression
         key_text = maps_in{j}.Attributes.key;
         value_text = maps_in{j}.Text;
         
-        % Unfortunately, the symbolic Toolbox interprets variables named "i","j",
-        % "I" or "J" as the imaginary number.
-        % We perform a transformation on all variable names to avoid this.
+        % Unfortunately, the Symbolic Toolbox interprets variables named
+        % "i","j", "I" or "J" as the imaginary number.
+        % -> transform all variable names to avoid this.
         keys(j) = replaceImagVarnames(key_text);
         values_text(j) = replaceImagVarnames(value_text);
         
@@ -78,9 +103,7 @@ for i = 1:num_binds
     nc_out.Binds(i).keys = keys;
     nc_out.Binds(i).values = values;
     nc_out.Binds(i).renames = values_text;
-end
-
 
 end
 
-
+%------------- END OF CODE --------------

@@ -41,44 +41,58 @@ function probZ = plus(summand1,summand2)
 
 %------------- BEGIN CODE --------------
 
-%Find a probabilistic zonotope object
-%Is summand1 a zonotope?
-if isa(summand1,'probZonotope')
-    %initialize resulting zonotope
-    probZ=summand1;
-    %initialize other summand
-    summand=summand2;
-%Is summand2 a zonotope?    
-elseif isa(summand2,'probZonotope')
-    %initialize resulting zonotope
-    probZ=summand2;
-    %initialize other summand
-    summand=summand1;  
-end
-
-%Is summand a probabilistic zonotope?
-if isa(summand,'probZonotope')
-    %Calculate minkowski sum
-    probZ.Z=[probZ.Z(:,1)+summand.Z(:,1),probZ.Z(:,2:end),summand.Z(:,2:end)];
-    %pZ.g=[pZ.g,summand.g];
-    %pZ.sigma=[pZ.sigma,summand.sigma];
-    probZ.cov=probZ.cov+summand.cov;
-
-%Is summand a zonotope?
-elseif isa(summand,'zonotope')
-    %Calculate minkowski sum
-    summandZ=summand.Z;
-    probZ.Z=[probZ.Z(:,1)+summandZ(:,1),probZ.Z(:,2:end),summandZ(:,2:end)];
+% determine probabilistic zonotope object
+[probZ,summand] = findClassArg(summand1,summand2,'probZonotope');
     
-%is summand a vector?
-elseif isnumeric(summand)
-    %Calculate minkowski sum
-    probZ.Z(:,1)=probZ.Z(:,1)+summand;
+try
+
+    %Is summand a probabilistic zonotope?
+    if isa(summand,'probZonotope')
+        %Calculate minkowski sum
+        probZ.Z=[probZ.Z(:,1)+summand.Z(:,1),probZ.Z(:,2:end),summand.Z(:,2:end)];
+        %pZ.g=[pZ.g,summand.g];
+        %pZ.sigma=[pZ.sigma,summand.sigma];
+        probZ.cov=probZ.cov+summand.cov;
     
-%something else?    
-else
-    % throw error for given arguments
-    error(noops(summand1,summand2));
+    %Is summand a zonotope?
+    elseif isa(summand,'zonotope')
+        %Calculate minkowski sum
+        summandZ=summand.Z;
+        probZ.Z=[probZ.Z(:,1)+summandZ(:,1),probZ.Z(:,2:end),summandZ(:,2:end)];
+        
+    %is summand a vector?
+    elseif isnumeric(summand)
+        %Calculate minkowski sum
+        probZ.Z(:,1)=probZ.Z(:,1)+summand;
+        
+    %something else?    
+    else
+        % throw error for given arguments
+        throw(CORAerror('CORA:noops',summand1,summand2));
+    end
+
+catch ME
+    % note: error has already occured, so the operations below don't have
+    % to be efficient
+
+    % already know what's going on...
+    if startsWith(ME.identifier,'CORA')
+        rethrow(ME);
+    end
+
+    % check for empty sets
+    if isempty(probZ)
+        return
+    elseif isemptyobject(summand)
+        probZ = probZonotope(); return
+    end
+
+    % check whether different dimension of ambient space
+    equalDimCheck(probZ,summand);
+
+    % other error...
+    rethrow(ME);
+
 end
 
 %------------- END OF CODE --------------

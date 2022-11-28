@@ -1,12 +1,12 @@
 function vol = volume(matZ)
 % volume - computes the volume of a matrix zonotope by computing the volume
-% of the corresponding zonotope
+%    of the corresponding zonotope
 %
 % Syntax:  
 %    vol = volume(matZ)
 %
 % Inputs:
-%    matZ - matrix zonotope
+%    matZ - matZonotope object
 %
 % Outputs:
 %    vol - volume

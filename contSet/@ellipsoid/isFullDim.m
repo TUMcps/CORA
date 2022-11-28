@@ -1,14 +1,22 @@
-function res = isFullDim(obj)
-% isFullDim - check if an ellipsoid is full-dimensional
+function res = isFullDim(E)
+% isFullDim - checks if the dimension of the affine hull of an ellipsoid is
+%    equal to the dimension of its ambient space
 %
 % Syntax:  
-%    res = isFullDim(obj)
+%    res = isFullDim(E)
 %
 % Inputs:
-%    obj - ellipsoid object
+%    E - ellipsoid object
 %
 % Outputs:
-%    res - 1 if ellipsoid is full-dimensional, 0 else
+%    res - true/false
+%
+% Example:
+%    E1 = ellipsoid(eye(2));
+%    isFullDim(E1)
+%
+%    E2 = ellipsoid([1 0; 0 0]);
+%    isFullDim(E2)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -16,13 +24,20 @@ function res = isFullDim(obj)
 %
 % See also: zonotope/isFullDim
 
-% Author:       Niklas Kochdumper
+% Author:       Niklas Kochdumper, Mark Wetzlinger
 % Written:      02-January-2020 
-% Last update:  ---
+% Last update:  24-March-2022 (remove dependency on object property)
+%               06-July-2022 (VG: support class array case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    res = ~obj.isdegenerate;
+inputArgsCheck({{E,'att','ellipsoid'}}); 
+
+if isempty(E)
+    res = false;
+else
+    res = rank(E) == dim(E);
+end
 
 %------------- END OF CODE --------------

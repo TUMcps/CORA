@@ -6,10 +6,10 @@ classdef (InferiorClasses = {?mp}) interval < contSet
 %    {x | a_i <= x <= b_i, \forall i = 1,...,n}.
 %
 % Syntax:
-%       obj = interval()
-%       obj = interval(I)
-%       obj = interval(a)
-%       obj = interval(a,b)
+%    obj = interval()
+%    obj = interval(I)
+%    obj = interval(a)
+%    obj = interval(a,b)
 %
 % Inputs:
 %    I - interval object
@@ -37,7 +37,7 @@ classdef (InferiorClasses = {?mp}) interval < contSet
 %               26-January-2016
 %               15-July-2017 (NK)
 %               01-May-2020 (MW, delete redundant if-else)
-%               20-March-2021 (MW, errConstructor)
+%               20-March-2021 (MW, error messages)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -61,7 +61,8 @@ methods
                 obj.inf = varargin{1};
                 obj.sup = varargin{1};
             else
-                [id,msg] = errConstructor(); error(id,msg);
+                throw(CORAerror('CORA:wrongValue','first',...
+                    "'interval' object or a vector"));
             end
         
         % two input arguments
@@ -69,20 +70,20 @@ methods
             
             % check sizes
             if any(any(size(varargin{1}) - size(varargin{2})))
-                [id,msg] = errConstructor('Limits are of different dimension.');
-                error(id,msg);
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Limits are of different dimension.'));
             elseif all(all(varargin{1} <= varargin{2}))
                 obj.inf = varargin{1};
                 obj.sup = varargin{2};
             else
-                [id,msg] = errConstructor('Lower limit larger than upper limit.');
-                error(id,msg);
+                 throw(CORAerror('CORA:wrongInputInConstructor',...
+                     'Lower limit larger than upper limit.'));
             end
         
         elseif nargin > 2
             
             % too many input arguments
-            [id,msg] = errConstructor('Too many input arguments.'); error(id,msg);
+            throw(CORAerror('CORA:tooManyInputArgs',2));
             
         end
         
@@ -94,68 +95,95 @@ methods
     % overloads the end operator for referencing elements, e.g. I(end,2),
         ind = size(obj,k);
     end
-     
-    %methods in seperate files 
-    res = plus(summand1,summand2)
-    res = minus(minuend,subtrahend)
-    res = mtimes(factor1,factor2)
-    res = mrdivide(numerator,denominator)
-    res = mpower(base,exponent)
-    intVal = uplus(intVal)
-    intVal = uminus(intVal) 
-    res = exp(exponent) %exponential function
-    res = abs(value) %absolute value function
-    res = sin(intVal) %sine function
-    res = cos(intVal) %cosine function
-    res = tan(intVal) %tangent function
-    newObj = subsref(obj, S) % retrieves values from arrays
-    obj = subsasgn(obj, S, value) % assigns values to arrays
-    obj = horzcat(varargin) % horizontal concatenation (a = [b,c])
-    obj = vertcat(varargin) % vertical concatenation (a = [b;c])
-    res = isscalar(intVal) % checks if interval is scalar
-    res = supremum(obj) % returns supremum
-    res = infimum(obj) % returns infimum
-    res = center(obj) % returns center
-    res = dim(obj) % return dimension
-    res = rad(obj) % returns radius
-    obj = and(obj,otherObj) % intersection
-    res = length(obj) % returns the length of the array
-    res = sqrt(obj) % returns the square root
-    varargout = size(obj, varargin) % returns size of object
-    res = sinh(intVal) %hyperbolic sine function
-    res = cosh(intVal) %hyperbolic cosine function
-    res = tanh(intVal) %hyperbolic tangent function
-    res = at(intVal, index) % a(i, j)
-    res = isIntersecting(obj1,obj2,varargin)
-    res = split(input, number) % devides an interval by two
-    coordinateMat = gridPoints(obj,segments) % compute uniformly distributed points
-    res = in(obj1,obj2) %determines if a set obj2 is entirely in an interval obj1
-    res = le(obj1,obj2) %Overloads the <= operator; here: Is one interval equal or the subset of another interval?
-    res = lt(obj1,obj2) %Overloads the < operator; here: Is one interval the subset of another interval?
-    P = polytope(obj,options) %Converts an interval object to a polytope object
-    Z = zonotope(obj) %Converts an interval object into a zonotope object
-    r = radius(obj) %Computes radius of enclosing hyperball of an interval 
-    V = vertices(obj) %Computes vertices of an interval object
-    V = volume(obj) % Computes volume of an interval
-    obj = reshape(varargin) %Overloads the opertor 'reshape' for reshaping matrices
-    res = sum(intVal) %Overloaded 'sum()' operator for intervals
-    h = plot(varargin) %Plots 2-dimensional projection of an interval
-    intVal = ctranspose(intVal) %Overloaded ''' operator for single operand
-    res = ne( int1, int2 ) % ' ~= ' overloading
-    res = prod( obj, dim ) % product of array elements
-    res = diag(obj) % create diagonal matrix or get diagonal elements of matrix
-    [value,isterminal,direction] = eventFcn(obj,x,direction)
-    val = get(obj, propName)
-    res = convHull(Int1,Int2) % convex hull of two intervals
-    pZ = polyZonotope(obj)
     
-    %display functions
-    disp(obj)
+    % methods in seperate files
+    res = abs(I) % absolute value function
+    I = acos(I) % inverse cosine function
+    I = acosh(I) % inverse hyperbolic cosine function
+    res = and(I,S) % intersection
+    I = asin(I) % inverse sine function
+    I = asinh(I) % inverse hyperbolic sine function
+    I = atan(I) % inverse tangent function
+    I = atanh(I) % inverse hyperbolic tangent function
+    C = capsule(I) % conversion to capsule object
+    res = cartProd(I,S) % Cartesian product
+    c = center(I) % center of interval
+    cPZ = conPolyZono(I) % conversion to conPolyZono object
+    res = contains(I,S) % containment check
+    res = convHull(I,varargin) % convex hull
+    cZ = conZonotope(I) % conversion to conZonotope object
+    res = cos(I) % cosine function
+    I = cosh(I) % hyperbolic cosine function
+    I = ctranspose(I) % overloaded ' operator
+    res = diag(I) % overloaded diag-function
+    n = dim(I) % dimension of interval
+    E = ellipsoid(I) % conversion to ellipsoid object
+    I = enlarge(I,factor) % enlargement by factor
+    res = eq(I1,I2) % equality check
+    I = exp(I) % overloaded exp-function
+    p = gridPoints(I,segments) % generate grid points
+    I = horzcat(varargin) % overloaded horizontal concatenation
+    res = infimum(I) % read lower limit
+    res = isempty(I) % empty object check
+    res = isequal(I1,I2,varargin) % equal objects check
+    res = isFullDim(I) % full dimensionality check
+    res = isIntersecting(I,S,varargin) % intersection check
+    res = isscalar(I) % one-dimensionality check
+    res = le(I1,I2) % subseteq check
+    l = length(I) % largest dimension of interval
+    I = log(I) % logarithm function
+    res = lt(I1,I2) % subset check
+    I = minkDiff(I,S,varargin) % Minkowski difference
+    res = minus(minuend,subtrahend) % overloaded - operator (binary)
+    res = mpower(base,exponent) % overloaded ^ operator
+    P = mptPolytope(I) % conversion to mptPolytope object
+    res = mrdivide(numerator,denominator) % overloaded / operator
+    res = mtimes(factor1,factor2) % overloaded * operator
+    res = ne(I1,I2) % overloaded ~= operator
+    val = norm(I,type) % norm function
+    res = or(I,S) % union
+    dzNew = partition(I, splits) % partition into subintervals
+    han = plot(I,varargin) % plot
+    res = plus(summand1,summand2) % overloaded + operator
+    pZ = polyZonotope(I) % conversion to polyZonotope object
+    res = power(base,exponent) % overloaded .^ operator
+    res = prod(I,varargin) % overloaded prod-function
+    I = project(I,dims) % projection onto subspace
+    I = quadMap(varargin) % quadratic map
+    r = rad(I) % radius (half of diameter)
+    r = radius(I) % radius of enclosing hyperball
+    p = randPoint(I,varargin) % random point
+    res = rdivide(numerator, denominator) % overloaded ./ operator
+    I = reshape(I,varargin) % overloaded reshape-function
+    res = sin(I) % sine function
+    I = sinh(I) % hyperbolic sine function
+    varargout = size(I, varargin) % overloaded size-function
+    res = split(I,n) % split along one dimension
+    I = sqrt(I) % square root
+    I = subsasgn(I,S,val) % value assignment
+    newObj = subsref(I,S) % read from object
+    res = sum(I,varargin) % overloaded sum-function
+    [val,x] = supportFunc(I,dir,varargin) % support function evaluation
+    res = supremum(I) % read upper limit
+    res = tan(I) % tangent function
+    I = tanh(I) % hyperbolic tangent function
+    res = times(factor1,factor2) % overloaded .* function
+    I = transpose(I) % overloaded .' function
+    I = uminus(I) % overloaded unary - operator
+    I = uplus(I) % overloaded unary + operator
+    I = vertcat(varargin) % vertical concantenation
+    V = vertices(I) % vertices
+    V = volume(I) % volume
+    zB = zonoBundle(I) % conversion to zonoBundle object
+    Z = zonotope(I) % conversion to zonotope object
+    
+    % display functions
+    display(I)
 end
 
 methods (Static = true)
-    Int = generateRandom(varargin) % generates random interval
-    Int = enclosePoints(points) % enclose point cloud with inteterval
+    I = generateRandom(varargin) % generates random interval
+    I = enclosePoints(points) % enclosure of point cloud
 end
 
 

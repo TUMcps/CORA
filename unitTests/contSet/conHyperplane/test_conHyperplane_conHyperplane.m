@@ -118,11 +118,4 @@ try
     res = false;
 end
 
-
-if res
-    disp('test_conHyperplane successful');
-else
-    disp('test_conHyperplane failed');
-end
-
 %------------- END OF CODE --------------

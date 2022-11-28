@@ -1,17 +1,15 @@
-function p = randPoint(obj,varargin)
+function p = randPoint(P,varargin)
 % randPoint - generates a random point within a polytope
 %
 % Syntax:  
-%    p = randPoint(obj)
-%    p = randPoint(obj,N)
-%    p = randPoint(obj,type)
-%    p = randPoint(obj,N,type)
-%    p = randPoint(obj,'all','extreme')
-%    p = randPoint(obj,N,'gaussian',pr)
-%    p = randPoint(obj,'gaussian',pr)
+%    p = randPoint(P)
+%    p = randPoint(P,N)
+%    p = randPoint(P,N,type)
+%    p = randPoint(P,'all','extreme')
+%    p = randPoint(P,N,'gaussian',pr)
 %
 % Inputs:
-%    obj - mptPolytope object
+%    P - mptPolytope object
 %    N - number of random points
 %    type - type of the random point ('standard', 'extreme', or 'gaussian')
 %    pr - probability that a value is within the set (only type = 'gaussian')
@@ -20,12 +18,11 @@ function p = randPoint(obj,varargin)
 %    p - random point in R^n
 %
 % Example: 
-%    poly = mptPolytope.generateRandom(2);
-%
-%    points = randPoint(poly,100);
+%    P = mptPolytope.generateRandom('Dimension',2);
+%    points = randPoint(P,100);
 %
 %    figure; hold on;
-%    plot(poly,[1,2],'r');
+%    plot(P,[1,2],'r');
 %    plot(points(1,:),points(2,:),'.k','MarkerSize',10);
 %
 % Other m-files required: none
@@ -37,70 +34,44 @@ function p = randPoint(obj,varargin)
 % Author:       Niklas Kochdumper
 % Written:      30-October-2020
 % Last update:  25-June-2021 (MP, add type gaussian)
+%               19-August-2022 (MW, integrate standardized pre-processing)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    N = 1;
-    type = 'standard';
-    types = {'standard','extreme','gaussian'};
+    % pre-processing
+    [res,vars] = pre_randPoint('mptPolytope',P,varargin{:});
     
-    if nargin > 1 && ~isempty(varargin{1})
-        if (isnumeric(varargin{1}) && isscalar(varargin{1})) || ...
-                (ischar(varargin{1}) && strcmp(varargin{1},'all'))
-            % second input argument is number of points
-            N = varargin{1};
-            
-            if nargin > 2
-                if ischar(varargin{2}) && any(strcmp(varargin{2},types))
-                    type = varargin{2};
-                    if nargin > 3  && strcmp(type,'gaussian')
-                        pr = varargin{3};
-                    end
-                end
-            end
-            
-        elseif ischar(varargin{1}) && any(strcmp(varargin{1},types))
-            % second input argument is type (sampling method)
-            type = varargin{1};
-            if nargin > 2 && strcmp(type,'gaussian')
-                pr = varargin{2};
-            end
-            
-        else
-            [msg,id] = errWrongInput('N or type');
-            error(id,msg);
+    % check premature exit
+    if res
+        % if result has been found, it is stored in the first entry of vars
+        p = vars{1}; return
+    else
+        % assign variables
+        P = vars{1}; N = vars{2}; type = vars{3}; pr = vars{4};
+        % sampling with 'gaussian' is done in contSet method
+        if strcmp(type,'gaussian')
+            p = randPoint@contSet(P,N,type,pr); return
         end
     end
     
     
     % return all extreme points 
     if ischar(N) && strcmp(N,'all')
-        p = vertices(obj); return;
+        p = vertices(P); return;
     end
     
     % generate random points
-    p = zeros(dim(obj),N);
+    p = zeros(dim(P),N);
     
-    
-    if strcmp(type,'gaussian')
-        if nargin == 3
-            p = randPoint@contSet(obj,type,pr);
-        else
-            p = randPoint@contSet(obj,N,type,pr);
-        end
-    elseif strcmp(type,'standard')
+    if strcmp(type,'standard')
         for i = 1:N
-            p(:,i) = randPointNormal(obj);
+            p(:,i) = randPointNormal(P);
         end
     elseif strcmp(type,'extreme')
         for i = 1:N
-            p(:,i) = randPointExtreme(obj);
+            p(:,i) = randPointExtreme(P);
         end
-    else
-        [msg,id] = errWrongInput('type');
-        error(id,msg);
     end
 end
 

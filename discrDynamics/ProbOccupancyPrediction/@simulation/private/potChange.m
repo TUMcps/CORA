@@ -22,10 +22,10 @@ function [pChange]=potChange(simOptions)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 19-July-2008 
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      19-July-2008 
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

@@ -25,8 +25,12 @@ function res = test_capsule_supportFunc
 
 %------------- BEGIN CODE --------------
 
-% 1. Analytical test: generator aligned on x_1, unit length; unit radius
-res(1) = true;
+% Analytical test: generator aligned on x_1, unit length; unit radius
+res = true;
+
+% empty set
+C_e = capsule();
+res = supportFunc(C_e,[1;1],'upper') == -Inf && supportFunc(C_e,[1;1],'lower') == Inf;
 
 % loop over different dimensions
 for n = 2:4:30
@@ -39,7 +43,7 @@ for n = 2:4:30
     
     % support function should return
     %    -2|2 for first basis vector (lower|upper)
-    %    -1|1 for all other basis vector (lower|upper)
+    %    -1|1 for all other basis vectors (lower|upper)
     
     % loop over basis vectors
     id = eye(n);
@@ -52,23 +56,13 @@ for n = 2:4:30
         % compare to analytical solution
         if e==1 && (val_lower ~= -2 || val_upper ~= 2 || ...
             	~all(vec_lower == [-2;zeros(n-1,1)]) || ~all(vec_upper == [2;zeros(n-1,1)]) )
-            res(1) = false; break
+            res = false; return
         elseif e~=1 && (val_lower ~= -1 || val_upper ~= 1 || ...
             	~all(vec_lower == -basisvector) || ~all(vec_upper == basisvector) )
-            res(1) = false; break
+            res = false; return
         end
     end
 
-    if ~res(1)
-        break;
-    end
-
-end
-
-if res
-    disp('test_supportFunc successful');
-else
-    disp('test_supportFunc failed');
 end
 
 %------------- END OF CODE --------------

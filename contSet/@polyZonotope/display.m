@@ -1,5 +1,7 @@
 function display(pZ)
-% display - displays a polyZonotope object to the console
+% display - displays the properties of a polyZonotope object (center,
+%    dependent generator matrix, exponent matrix, independent generator
+%    matrix, identifiers) on the command window
 %
 % Syntax:  
 %    display(pZ)
@@ -8,7 +10,7 @@ function display(pZ)
 %    pZ - polyZonotope object
 %
 % Outputs:
-%    -
+%    ---
 %
 % Example: 
 %    pZ = polyZonotope([2;1],[1 0; -2 1],[1; 0],[0 2; 1 0])
@@ -42,16 +44,15 @@ else
     
     % display dependent generators
     G = pZ.G;
-    maxGens = 10;
-    displayGenerators(G,maxGens,'G');
+    displayGenerators(G,DISPLAYDIM_MAX,'G');
     
     % display independent generators
     Grest = pZ.Grest;
-    displayGenerators(Grest,maxGens,'Grest');
+    displayGenerators(Grest,DISPLAYDIM_MAX,'Grest');
     
     % display exponential matrix
     expMat = pZ.expMat;
-    displayGenerators(expMat,maxGens,'expMat');
+    displayGenerators(expMat,DISPLAYDIM_MAX,'expMat');
     
     % display id
     disp('id:');
@@ -60,4 +61,3 @@ else
 end
 
 %------------- END OF CODE --------------
-

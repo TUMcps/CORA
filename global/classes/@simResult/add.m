@@ -1,15 +1,15 @@
-function obj = add(obj1,obj2)
+function simRes = add(simRes1,simRes2)
 % add - joins two simResult objects
 %
 % Syntax:  
-%    obj = add(obj1,obj2)
+%    simRes = add(simRes1,simRes2)
 %
 % Inputs:
-%    obj1 - simResult object
-%    obj2 - simResult object
+%    simRes1 - simResult object
+%    simRes2 - simResult object
 %
 % Outputs:
-%    obj - resulting simResult object
+%    simRes - resulting simResult object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -24,20 +24,27 @@ function obj = add(obj1,obj2)
 
 %------------- BEGIN CODE --------------
 
-    if isempty(obj1)
-         obj = obj2;
-    elseif isempty(obj2)
-         obj = obj1;
-    else
+% special case
+if isempty(simRes1)
+     simRes = simRes2;
+     return;
+elseif isempty(simRes2)
+     simRes = simRes1;
+     return;
+end
 
-        if isempty(obj1.loc) ~= isempty(obj2.loc)
-           error('Objects are not compatible!'); 
-        end
+% check input arguments
+inputArgsCheck({{simRes1,'att',{'simResult'}};
+                {simRes2,'att',{'simResult'}}});
 
-        obj = obj1;
-        obj.x = [obj1.x; obj2.x];
-        obj.t = [obj1.t; obj2.t];
-        obj.loc = [obj1.loc; obj2.loc];
-    end
+% general case
+if isempty(simRes1.loc) ~= isempty(simRes2.loc)
+    throw(CORAerror('CORA:specialError','Objects are not compatible!')); 
+end
+
+simRes = simRes1;
+simRes.x = [simRes1.x; simRes2.x];
+simRes.t = [simRes1.t; simRes2.t];
+simRes.loc = [simRes1.loc; simRes2.loc];
 
 %------------- END OF CODE --------------

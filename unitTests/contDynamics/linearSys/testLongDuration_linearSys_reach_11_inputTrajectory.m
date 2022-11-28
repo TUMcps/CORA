@@ -53,7 +53,6 @@ options.error = 0.05;
 simOpt.points = 2;
 simOpt.fracVert = 1;
 simOpt.fracInpVert = 1;
-simOpt.inpChanges = size(params.u,2);
 
 simRes = simulateRandom(sys, params, simOpt);
 

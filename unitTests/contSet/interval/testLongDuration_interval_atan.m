@@ -27,10 +27,8 @@ function res = testLongDuration_interval_atan
 %------------- BEGIN CODE --------------
 
 tol = 1e-9;
-res = true;
 
-% Random tests ---------------------------------------------------------
-
+% Random tests
 numberRandTests = 10000;
 
 % all values must be between -pi/2 and pi/2
@@ -57,14 +55,12 @@ end
 
 
 
-% final test result -------------------------------------------------------
-
+% final test result
 res = all(res_rand);
 
-if res
-    disp('test_atan successful');
-else
-    disp('test_atan failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'a','b');
 end
 
 end

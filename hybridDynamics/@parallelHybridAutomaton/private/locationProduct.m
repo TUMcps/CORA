@@ -1,19 +1,17 @@
-function res = locationProduct(obj, loc,labelOccs)
-% locationProduct - Construct a overall location object from the active 
-%                   loctions of the subcomponts with a local automaton
-%                   product
+function loc = locationProduct(pHA,locID,allLabels)
+% locationProduct - Constructs an overall location object from the active 
+%    loctions of the subcomponents with a local automaton product
 %
 % Syntax:  
-%    res = locationProduct(obj, loc)
+%    loc = locationProduct(pHA,locID,allLabels)
 %
 % Inputs:
-%    obj - parallel hybrid automaton object
-%    loc - ID's for the active location of each subcomponent
-%    labelOccs - map showing occurence of synchronization labels across
-%                components
+%    pHA - parallelHybridAutomaton object
+%    locID - IDs of the currently active locations
+%    allLabels - information about synchronization labels
 %
 % Outputs:
-%    res - constructed location object
+%    loc - constructed location object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,44 +21,38 @@ function res = locationProduct(obj, loc,labelOccs)
 
 % Author:       Johann Schoepfer, Niklas Kochdumper
 % Written:      08-June-2018  
-% Last update:  16-March-2022
+% Last update:  09-July-2018
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-    numComp = length(obj.components);
+% number of components in parallel hybrid automaton
+numComp = length(pHA.components);
 
-    % get active location objects
-    locList = cell(1,numComp);
+% preallocate arrays for merging of invariants, flows, and transition sets
+invList = cell(1,numComp); 
+flowList = cell(1,numComp);
+transList = cell(1,numComp);
 
-    for i = 1:numComp
-        locList{i} = obj.components{i}.location{loc(i)};
-    end
-
-    % preallocate arrays
-    invList = cell(1,numComp); 
-    flowList = cell(1,numComp);
-    transList = cell(1,numComp);
-
-    % get properties from all active components
-    for iLocation = 1:numComp
-        invList{iLocation} = locList{iLocation}.invariant;
-        flowList{iLocation} = locList{iLocation}.contDynamics;
-        transList{iLocation} = locList{iLocation}.transition;
-    end
-
-    % merge invariants
-    mergedInvSet = mergeInvariant(obj,invList);
-
-    % merge flows (= continuous dynamics)
-    mergedFlow = mergeFlows(obj,flowList,loc);
-
-    % merge transitions
-    mergedTransSets = mergeTransitionSets(obj,transList,loc,labelOccs);
-
-    % construct resulting location object
-    res = location(mergedInvSet,mergedTransSets,mergedFlow);
-
+for i=1:numComp
+    % read out active location of i-th subcomponent
+    curr_loc = pHA.components{i}.location{locID(i)};
+    % write invariant, flow, transition set into array for merge
+    invList{i} = curr_loc.invariant;
+    flowList{i} = curr_loc.contDynamics;
+    transList{i} = curr_loc.transition;
 end
+
+% merge invariants
+mergedInvSet = mergeInvariant(pHA,invList);
+
+% merge flows (= continuous dynamics)
+mergedFlow = mergeFlows(pHA,flowList,locID);
+
+% merge transition sets
+mergedTransSets = mergeTransitionSets(pHA,transList,locID,allLabels);
+
+% construct resulting location object
+loc = location(mergedInvSet,mergedTransSets,mergedFlow);
 
 %------------- END OF CODE --------------

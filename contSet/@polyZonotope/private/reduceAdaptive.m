@@ -4,20 +4,19 @@ function pZ = reduceAdaptive(pZ,diagpercent)
 %    original zonotope and the reduced zonotope; based on [Thm 3.2,1]
 %
 % Syntax:  
-%    Z = reduceAdaptive(Z,diagpercent)
+%    pZ = reduceAdaptive(pZ,diagpercent)
 %
 % Inputs:
-%    Z - zonotope object
+%    pZ - polyZonotope object
 %    diagpercent - percentage of diagonal of box over-approximation of
 %                  polyZonotope (used to compute dHmax)
 %
 % Outputs:
-%    Z - reduced zonotope
+%    pZ - reduced polyZonotope object
 %
 % Example: 
-%    pZ = polyZonotope.generateRandom(15);
-%    pZ = reduce(Z,'adaptive',0.05);
-%    
+%    pZ = polyZonotope.generateRandom('Dimension',15);
+%    pZ = reduce(pZ,'adaptive',0.05);
 %
 % References:
 %    [1] Wetzlinger et al. "Adaptive Parameter Tuning for Reachability 
@@ -128,3 +127,4 @@ pZ.id = pZ.id(temp);
 
 end
 
+%------------- END OF CODE --------------

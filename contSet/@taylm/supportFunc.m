@@ -1,19 +1,19 @@
-function val = supportFunc(obj,dir,varargin)
-% supportFunc - Calculate the upper or lower bound of a taylm object
-%               along a certain direction
+function val = supportFunc(tay,dir,varargin)
+% supportFunc - Calculate the upper or lower bound of a Taylor model along 
+%    a certain direction
 %
 % Syntax:  
-%    val = supportFunc(obj,dir)
-%    val = supportFunc(obj,dir,type)
+%    val = supportFunc(tay,dir)
+%    val = supportFunc(tay,dir,type)
 %
 % Inputs:
-%    obj - taylm object
+%    tay - taylm object
 %    dir - direction for which the bounds are calculated (vector of size
 %          (n,1) )
 %    type - upper or lower bound ('lower' or 'upper')
 %
 % Outputs:
-%    val - bound of the constraind zonotope in the specified direction
+%    val - bound of the Taylor model in the specified direction
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,25 +28,27 @@ function val = supportFunc(obj,dir,varargin)
 
 %------------- BEGIN CODE --------------
     
-    % parse input arguments
-    type = 'upper';
-    
-    if nargin >= 3 && ~isempty(varargin{1})
-        type = varargin{1};
-    end
+% pre-processing
+[res,vars] = pre_supportFunc('taylm',tay,dir,varargin{:});
 
-    % project Taylor model onto the direction
-    obj_ = dir'*obj;
-    
-    % compute enclosing interval
-    int = interval(obj_);
-    
-    % upper or lower bound
-    if strcmp(type,'lower')
-       val = infimum(int);
-    else        
-       val = supremum(int);
-    end
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    val = vars{1}; return
+else
+    tay = vars{1}; dir = vars{2}; type = vars{3};
+end
+
+% compute enclosing interval of Taylor model projeted onto the direction
+I = interval(dir'*tay);
+
+% upper or lower bound
+if strcmp(type,'lower')
+    val = infimum(I);
+elseif strcmp(type,'range')
+    val = supremum(I);
+else
+    throw(CORAerror('CORA:notSupported',type));
 end
 
 %------------- END OF CODE --------------

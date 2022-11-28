@@ -1,4 +1,4 @@
-function res = exp(intVal)
+function I = exp(I)
 % exp - Overloaded 'exp()' operator for intervals
 %
 % x_ is x infimum, x-- is x supremum
@@ -6,15 +6,17 @@ function res = exp(intVal)
 % [exp(x_), exp(x--)].
 %
 % Syntax:  
-%    res = exp(intVal)
+%    I = exp(I)
 %
 % Inputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - interval object
+%    I - interval object
 %
-% Example: 
+% Example:
+%    I = interval(-2,4);
+%    exp(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -29,7 +31,7 @@ function res = exp(intVal)
 
 %------------- BEGIN CODE --------------
 
-%exponential function is monotonic
-res = interval(exp(intVal.inf), exp(intVal.sup));
+%exponential function is monotonic -> apply exp to infima/suprema
+I = interval(exp(I.inf), exp(I.sup));
 
 %------------- END OF CODE --------------

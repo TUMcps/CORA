@@ -1,15 +1,15 @@
 function [eZ,eI,zPow,iPow,E] = expmIndMixed(matZ,intermediateOrder,maxOrder)
-% expmIndMixed - operator for the exponential matrix of a 
-% matrix zonotope, evaluated independently. Higher order terms are computed
-% via interval arithmetic.
+% expmIndMixed - operator for the exponential matrix of a matrix zonotope,
+%    evaluated independently. Higher order terms are computed via interval
+%    arithmetic.
 %
 % Syntax:  
 %    [eZ,eI,zPow,iPow,E] = expmIndMixed(matZ,intermediateOrder,maxOrder)
 %
 % Inputs:
-%    matZ - matrix zonotope
+%    matZ - matZonotope object
 %    intermediate Order - Taylor series order until computation is 
-%                           performed with matrix zonotopes
+%                         performed with matrix zonotopes
 %    maxOrder - maximum Taylor series order until remainder is computed
 %
 % Outputs:
@@ -49,8 +49,7 @@ end
 
 %compute interval part
 intMat = intervalMatrix(matZ);
-[eI,iPow,E] = expmInd(intMat, maxOrder, intermediateOrder+1, intMat*intervalMatrix(zPow{intermediateOrder}));
-
-
+[eI,iPow,E] = expmInd(intMat, maxOrder, intermediateOrder+1, ...
+    intMat*intervalMatrix(zPow{intermediateOrder}));
 
 %------------- END OF CODE --------------

@@ -8,7 +8,7 @@ function res = isPolytope(pZ)
 %    pZ - polyZonotope object
 %
 % Outputs:
-%    res - 1 if set is a polytope, 0 if not
+%    res - true/false
 %
 % Example: 
 %    pZ1 = polyZonotope([-0.5;0],[1.5 -0.5 -0.5;-0.5 -2 0.5],[],[1 0 1;0 1 1]);
@@ -17,13 +17,11 @@ function res = isPolytope(pZ)
 %    isPolytope(pZ1)
 %    isPolytope(pZ2)
 %
-%    figure
-%    hold on
-%    plot(pZ1,[1,2],'b','Filled',true,'EdgeColor','none','Splits',10);
+%    figure; hold on
+%    plot(pZ1,[1,2],'FaceColor','b','Splits',10);
 %
-%    figure
-%    hold on
-%    plot(pZ2,[1,2],'r','Filled',true,'EdgeColor','none','Splits',10);
+%    figure; hold on
+%    plot(pZ2,[1,2],'FaceColor','r','Splits',10);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,11 +36,11 @@ function res = isPolytope(pZ)
 
 %------------- BEGIN CODE --------------
 
-    res = 1;
+    res = true;
     
     % check if variable appears with exponent greater than 1
     if any(any(pZ.expMat >= 2))
-       res = 0;
+       res = false;
        return;
     end
 
@@ -59,12 +57,13 @@ function res = isPolytope(pZ)
         for j = 1:size(V,2)
            if i ~= j
                if ~inCone(N,V(:,i),V(:,j))
-                   res = 0;
+                   res = false;
                    return;
                end
            end
         end      
     end
+
 end
 
 
@@ -122,6 +121,7 @@ function Nall = normalCone(pZ,Ilist)
         N = N(:,sum(abs(N),1) > eps);
         Nall = [Nall,N];
     end
+    
 end
 
 function [V,Ilist] = polyVertices(pZ)

@@ -44,7 +44,7 @@ for i=1:nrOfRandPoints
     for d=1:dim(Z1)
         pQp(d,1) = p' * Q{d} * p;
     end
-    if ~in(Zres,pQp)
+    if ~contains(Zres,pQp)
         res(1) = false;
         break
     end
@@ -63,7 +63,7 @@ for i=1:nrOfRandPoints
     for d=1:dim(Z1)
         pQp(d,1) = p1' * Q{d} * p2;
     end
-    if ~in(Zres,pQp)
+    if ~contains(Zres,pQp)
         res(2) = false;
         break
     end
@@ -73,10 +73,9 @@ end
 % gather results
 res = all(res);
 
-if res
-    disp('testLongDuration_zonotope_quadMap successful');
-else
-    disp('testLongDuration_zonotope_quadMap failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'p','p1','p2');
 end
 
 %------------- END OF CODE --------------

@@ -1,5 +1,5 @@
 function [R,tcomp] = observe_ESO_A(obj,options)
-% observe_ESO_A - computes the guaranted state estimation approach
+% observe_ESO_A - computes the guaranteed state estimation approach
 % from [1] and [2]. From [1] we use the intersection with strips and from
 % [2] we use the prediction.
 %

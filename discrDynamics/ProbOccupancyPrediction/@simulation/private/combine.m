@@ -22,10 +22,10 @@ function [mTotal]=combine(resProb,freeProb)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 01-July-2008 
-% Last update: 04-November-2008
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      01-July-2008 
+% Last update:  04-November-2008
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

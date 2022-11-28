@@ -1,8 +1,8 @@
-function res = testINTLAB_tanh_random(~)
-% test_tanh_random - unit_test_function for comparing to IntLabV6
+function res = testINTLAB_tanh_random()
+% testINTLAB_tanh_random - unit_test_function for comparing to IntLabV6
 %
 % Syntax:  
-%    res = test_tanh_random (~)
+%    res = testINTLAB_tanh_random()
 %
 % Inputs:
 %    no 
@@ -23,6 +23,7 @@ function res = testINTLAB_tanh_random(~)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 tol = 1e-9;
 res = true;
 
@@ -77,8 +78,4 @@ if ( isempty(bad_ones_max) ~= true)
     res = false;
 end
 
-disp('test_tanh_random successful');
-disp(' ')
-
-return;
-
+%------------- END OF CODE --------------

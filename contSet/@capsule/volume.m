@@ -5,7 +5,7 @@ function vol = volume(C)
 %    vol = volume(C)
 %
 % Inputs:
-%    C - capsule
+%    C - capsule object
 %
 % Outputs:
 %    vol - volume
@@ -22,32 +22,35 @@ function vol = volume(C)
 
 % Author:       Matthias Althoff
 % Written:      05-March-2019
-% Last update:  ---
+% Last update:  18-August-2022 (MW, include standardized preprocessing)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% check empty set
-if isempty(C)
-    vol = []; return;
+% pre-processing
+[res,vars] = pre_volume('capsule',C);
+
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    vol = vars{1}; return
 end
 
 % the volume is obtained by the volume of an n-dimensional ball and an
 % n-dimensional cylinder
 
 % dimension
-d = length(C.c);
+n = dim(C);
 
 % volume of n-dimenional ball; requires Leonhard Euler's gamma function
-volBall = pi^(d/2)/gamma(d/2+1)*C.r^d;
+volBall = pi^(n/2)/gamma(n/2+1)*C.r^n;
 
 % volume of n-dimensional cylinder is volume of (n-1)-dimensional ball
 % times length
-volBall_minus1 = pi^((d-1)/2)/gamma((d-1)/2+1)*C.r^(d-1);
+volBall_minus1 = pi^((n-1)/2)/gamma((n-1)/2+1)*C.r^(n-1);
 volCylinder = volBall_minus1*(2*norm(C.g));
 
 % total volume
 vol = volBall + volCylinder;
-
 
 %------------- END OF CODE --------------

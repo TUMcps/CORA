@@ -1,5 +1,5 @@
 function [R,tcomp] = observe_HinfG(obj,options)
-% observe_HinfG - computes the guaranted state estimation approach
+% observe_HinfG - computes the guaranteed state estimation approach
 % from [1].
 %
 %

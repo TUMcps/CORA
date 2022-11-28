@@ -153,7 +153,7 @@ methods
                    names = genDefaultVarNames(int,varargin{3},inputname(1));
                end
            catch ex
-               error(ex.message);
+               rethrow(ex);
            end
            
 
@@ -201,7 +201,12 @@ methods
 
            % parse input arguments
            if nargin < 2 || nargin > 6
-               error('Wrong syntax. Type "help taylm" for more information.');
+               if nargin > 6
+                   throw(CORAerror('CORA:tooManyInputArgs',6));
+               end
+               if nargin < 2
+                   throw(CORAerror('CORA:notEnoughInputArgs',2));
+               end
            end
 
            func = varargin{1};
@@ -213,7 +218,7 @@ methods
            if nargin >= 4 && ~isempty(varargin{4})
                opt_method = varargin{4};
                if ~ischar(opt_method) || ~ismember(opt_method,{'int','bnb','bnbAdv','linQuad'})
-                  error('Wrong value for input argument "opt_method"!'); 
+                   throw(CORAerror('CORA:wrongValue','fourth',"'int', 'bnb', 'bnbAdv', or 'linQuad'"));
                end
            end
            if nargin >= 5 && ~isempty(varargin{5})
@@ -263,7 +268,9 @@ methods
                names = cellfun(@(x) char(x),num2cell(transpose(v)),'UniformOutput',false);
 
                if length(names) > length(int)
-                  error('The length of the input argument ''int'' has to be identical to the number of variables in the symbolic function!'); 
+                   throw(CORAerror('CORA:wrongInputInConstructor',...
+                       ['The length of the input argument ''int'' '...
+                       'has to be identical to the number of variables in the symbolic function!'])); 
                end
 
                % create taylor models for all variables
@@ -293,7 +300,7 @@ methods
            
             % check user input
             if nargin > 1
-                error('Wrong syntax. Type "help taylm" for more information.');
+                throw(CORAerror('CORA:tooManyInputArgs',1));
             end
             
             % copy all properties
@@ -312,7 +319,7 @@ methods
             obj = taylm(interval(varargin{1}),varargin{2:end});
             
         else
-           error('Wrong syntax. Type "help taylm" for more information.');
+            throw(CORAerror('CORA:specialError','Wrong syntax. Type "help taylm" for more information.'));
         end    
     end
          

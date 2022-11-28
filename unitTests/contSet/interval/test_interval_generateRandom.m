@@ -20,30 +20,23 @@ function res = test_interval_generateRandom
 
 % Author:       Mark Wetzlinger
 % Written:      27-Sep-2019
-% Last update:  ---
+% Last update:  19-May-2022 (name-value pair syntax)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% run through all possibilities
-try
-    % random dim and cen
-    I = interval.generateRandom();
-    % fixed dim, random cen
-    I = interval.generateRandom(3);
-    if dim(I) ~= 3
-        error("Fixed dimension not obeyed");
-    end
-    res = true;
-catch
-    res = false;
-end
+% empty call
+I = interval.generateRandom();
+
+% values for tests
+n = 3;
+
+% only dimension
+I = interval.generateRandom('Dimension',n);
+res = dim(I) == n;
 
 
-if res
-    disp('test_generateRandom successful');
-else
-    disp('test_generateRandom failed');
-end
+% unify results
+res = all(res);
 
 %------------- END OF CODE --------------

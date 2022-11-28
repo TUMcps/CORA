@@ -1,12 +1,12 @@
-function display(obj)
-% display - Displays the normal vector and distance to the origin of a
-% halfspace
+function display(hs)
+% display - Displays the properties of a halfspace object (normal vector
+%    and distance to the origin) on the command window
 %
 % Syntax:  
-%    display(h)
+%    display(hs)
 %
 % Inputs:
-%    h - halfspace object
+%    hs - halfspace object
 %
 % Outputs:
 %    ---
@@ -28,9 +28,9 @@ function display(obj)
 
 %------------- BEGIN CODE --------------
 
-if isempty(obj)
+if isemptyobject(hs)
     
-    dispEmptyObj(obj,inputname(1));
+    dispEmptyObj(hs,inputname(1));
     
 else
 
@@ -40,11 +40,11 @@ else
 
     %display normal vector
     disp('normal vector: ');
-    disp(obj.c);
+    disp(hs.c);
 
     %display distance to origin
     disp('distance to origin: ');
-    disp(obj.d);
+    disp(hs.d);
 
 end
 

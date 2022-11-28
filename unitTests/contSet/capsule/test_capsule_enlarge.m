@@ -39,10 +39,4 @@ C_true = capsule([1;1],[2;2],1);
 tol = 1e-9;
 res = isequal(C_true,C_enlarged,tol);
 
-if res
-    disp('test_enlarge successful');
-else
-    disp('test_enlarge failed');
-end
-
 %------------- END OF CODE --------------

@@ -25,6 +25,10 @@ function res = test_zonotope_vertices
 
 %------------- BEGIN CODE --------------
 
+% empty set
+Z_e = zonotope();
+res_e = isempty(vertices(Z_e)) && isnumeric(vertices(Z_e));
+
 % create zonotope
 Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
 
@@ -50,13 +54,6 @@ while pointExists && i<=length(Vmat(1,:))
 end
 
 % res
-res = pointExists;
-
-
-if res
-    disp('test_zonotope_vertices successful');
-else
-    disp('test_zonotope_vertices failed');
-end
+res = pointExists && res_e;
 
 %------------- END OF CODE --------------

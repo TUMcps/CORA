@@ -31,26 +31,25 @@ nrOfTests = 100;
 
 for i=1:nrOfTests
     
-    E = ellipsoid.generateRandom(false);
+    % random dimension
+    n = randi(15);
+    E = ellipsoid.generateRandom('IsDegenerate',false);
     if ~isFullDim(E)
         res = false; break;
     end
     % ellipsoid with random dimension, Q, and center, degenerate
-    E = ellipsoid.generateRandom(true);
+    E = ellipsoid.generateRandom('IsDegenerate',true);
     if isFullDim(E)
         res = false; break;
     end
     
-    % random dimension
-    n = randi(15);
-    
     % fixed dimension, non-degenerate
-    E = ellipsoid.generateRandom(n,false);
+    E = ellipsoid.generateRandom('Dimension',n,'IsDegenerate',false);
     if dim(E) ~= n || ~isFullDim(E)
         res = false; break;
     end
     % fixed dimension, degenerate
-    E = ellipsoid.generateRandom(n,true);
+    E = ellipsoid.generateRandom('Dimension',n,'IsDegenerate',true);
     if dim(E) ~= n || isFullDim(E)
         res = false; break;
     end
@@ -58,10 +57,9 @@ for i=1:nrOfTests
 end
 
 
-if res
-    disp('testLongDuration_ellipsoid_generateRandom successful');
-else
-    disp('testLongDuration_ellipsoid_generateRandom failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'E','n');
 end
 
 %------------- END OF CODE --------------

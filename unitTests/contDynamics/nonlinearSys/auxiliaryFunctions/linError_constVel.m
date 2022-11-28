@@ -1,16 +1,17 @@
-function [error] = linError_constVel(obj,w,IH,IH_y)
-% linError - computes the linearization error
+function err = linError_constVel(obj,w,IH,IH_y)
+% linError_constVel - ?
 %
 % Syntax:  
-%    [obj] = linError(obj,options)
+%    err = linError_constVel(obj,w,IH,IH_y)
 %
 % Inputs:
 %    obj - nonlinear system object
-%    options - options struct
-%    R - actual reachable set
+%    w - ?
+%    IH - interval hull
+%    IH_y - interval hull
 %
 % Outputs:
-%    obj - nonlinear system object
+%    err - linearization error
 %
 % Example: 
 %
@@ -125,24 +126,24 @@ dy=max(IHinf_y,IHsup_y);
 
 %compute linearization error by hand-derived Lagrange remainders
 %first coordinate
-error(1,1) = 2/(min_abs_x4^2)*(c_abs(2)*dx(1) + c_abs(5)*(dx(2) + dy(3)) ...
+err(1,1) = 2/(min_abs_x4^2)*(c_abs(2)*dx(1) + c_abs(5)*(dx(2) + dy(3)) ...
     + c_abs(3)*(dx(5) + dy(1)) + c_abs(4)*(dx(6) + dy(2)))*dx(4) ...
     + 2/(min_abs_x4^3)*(c_abs(2)*max_abs_x1 + c_abs(3)*tilde_IM_1 ...
     + c_abs(4)*tilde_IM_2 + c_abs(5)*tilde_IM_3 + c_abs(6)*tilde_IM_4)*dx(4)^2 ...
     + 4/(min_abs_x4^3)*c_abs(1)*dx(3)*dx(4) ...
     + 6/(min_abs_x4^4)*c_abs(1)*max_abs_x3*dx(4)^2;
 
-error(2,1) = 0;
+err(2,1) = 0;
 
-error(3,1) = 2/(min_abs_x4^2)*c_abs(7)*dx(3)*dx(4) ...
+err(3,1) = 2/(min_abs_x4^2)*c_abs(7)*dx(3)*dx(4) ...
     + 2/(min_abs_x4^3)*c_abs(7)*max_abs_x3*dx(4)^2;
 
-error(4,1) = max_abs_x4*Cm*(dx(1) + dx(2))^2 + 2*Sm*(dx(1) + dx(2))*dx(4);
-error(5,1) = max_abs_x4*Sm*(dx(1) + dx(2))^2 + 2*Cm*(dx(1) + dx(2))*dx(4);
+err(4,1) = max_abs_x4*Cm*(dx(1) + dx(2))^2 + 2*Sm*(dx(1) + dx(2))*dx(4);
+err(5,1) = max_abs_x4*Sm*(dx(1) + dx(2))^2 + 2*Cm*(dx(1) + dx(2))*dx(4);
 
-error(6,1) = 0;
+err(6,1) = 0;
 
 %divide by 2 since the second order Taylor term has factor 1/2!
-error = 0.5*error;
+err = 0.5*err;
 
 %------------- END OF CODE --------------

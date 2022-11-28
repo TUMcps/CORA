@@ -1,4 +1,4 @@
-function res = atan(intVal)
+function I = atan(I)
 % atan - Overloaded 'atan()' operator for intervals
 %
 % x_ is x infimum, x-- is x supremum
@@ -6,15 +6,17 @@ function res = atan(intVal)
 % [atan(x_), atan(x--)].
 %
 % Syntax:  
-%    res = atan(intVal)
+%    I = atan(I)
 %
 % Inputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - interval object
+%    I - interval object
 %
-% Example: 
+% Example:
+%    I = interval([-1;1]);
+%    res = atan(I);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,13 +27,12 @@ function res = atan(intVal)
 % Author:       Matthias Althoff
 % Written:      05-February-2016
 % Last update:  21-February-2016 (DG, the matrix case is rewritten)
+%               21-May-2022 (MW, remove new instantiation)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-res = interval();
-
-res.inf = atan(intVal.inf);
-res.sup = atan(intVal.sup);
+I.inf = atan(I.inf);
+I.sup = atan(I.sup);
 
 %------------- END OF CODE --------------

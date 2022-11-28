@@ -1,18 +1,18 @@
-function n = rank(Z)
-% rank - computes the rank of the generator matrix of a zonotope
+function r = rank(Z)
+% rank - computes the dimension of the affine hull of a zonotope
 %
 % Syntax:  
-%    n = rank(Z)
+%    r = rank(Z)
 %
 % Inputs:
 %    Z - zonotope object
 %
 % Outputs:
-%    n - rank of the zonotope Z
+%    r - dimension of the affine hull
 %
 % Example: 
 %    Z = zonotope([1 1 0; 0 0 1]);
-%    n = rank(Z) % n=2
+%    r = rank(Z)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,6 +27,6 @@ function n = rank(Z)
 
 %------------- BEGIN CODE --------------
 
-n = rank(generators(Z));
+r = rank(generators(Z));
 
 %------------- END OF CODE --------------

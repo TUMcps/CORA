@@ -3,19 +3,19 @@ function Z = mtimes(factor1,factor2)
 %    interval matrix with a zonotope
 %
 % Syntax:  
-%    Z = mtimes(matrix,Z)
+%    Z = mtimes(factor1,factor2)
 %
 % Inputs:
-%    matrix - numerical or interval matrix
-%    Z - zonotope object 
+%    factor1 - numerical or interval matrix
+%    factor2 - zonotope object 
 %
 % Outputs:
-%    Z - zonotope after multiplication of a matrix with a zonotope
+%    Z - zonotope object
 %
 % Example: 
-%    Z=zonotope([1 1 0; 0 0 1]);
-%    matrix=[0 1; 1 0];
-%    Zmat = matrix*Z;
+%    Z = zonotope([1 1 0; 0 0 1]);
+%    M = [0 1; 1 0];
+%    Zmat = M*Z;
 %
 %    figure; hold on;
 %    plot(Z,[1,2],'b');
@@ -46,66 +46,77 @@ function Z = mtimes(factor1,factor2)
 %------------- BEGIN CODE --------------
 
 %Find a zonotope object
-%Is factor1 a zonotope?
-if isa(factor1,'zonotope')
-    %initialize resulting zonotope
-    Z=factor1;
-    %initialize other summand
-    matrix=factor2;
-%Is factor2 a zonotope?    
-elseif isa(factor2,'zonotope')
-    %initialize resulting zonotope
-    Z=factor2;
-    %initialize other summand
-    matrix=factor1;  
-end
+[Z,M] = findClassArg(factor1,factor2,'zonotope');
 
-%numeric matrix
-if isnumeric(matrix)
-    Z.Z=matrix*Z.Z;
-    
-    
-% interval (see Theorem 3.3 in [1])
-elseif isa(matrix,'interval')
-    %get minimum and maximum
-    M_min=infimum(matrix);
-    M_max=supremum(matrix);
-    %get center of interval matrix
-    T=0.5*(M_max+M_min);
-    %get symmetric interval matrix
-    S=0.5*(M_max-M_min);
-    Zabssum=sum(abs(Z.Z),2);
-    %compute new zonotope
-    Z.Z=[T*Z.Z,diag(S*Zabssum)]; 
+try
 
+    %numeric matrix
+    if isnumeric(M)
+        Z.Z=M*Z.Z;
+        
+    % interval (see Theorem 3.3 in [1])
+    elseif isa(M,'interval')
+        %get minimum and maximum
+        M_min=infimum(M);
+        M_max=supremum(M);
+        %get center of interval matrix
+        T=0.5*(M_max+M_min);
+        %get symmetric interval matrix
+        S=0.5*(M_max-M_min);
+        Zabssum=sum(abs(Z.Z),2);
+        %compute new zonotope
+        Z.Z=[T*Z.Z,diag(S*Zabssum)]; 
     
-% interval matrix (see Theorem 3.3 in [1])
-elseif isa(matrix,'intervalMatrix')
-    %get minimum and maximum
-    M_min=infimum(matrix.int);
-    M_max=supremum(matrix.int); 
-    %get center of interval matrix
-    T=0.5*(M_max+M_min);
-    %get symmetric interval matrix
-    S=0.5*(M_max-M_min);
-    Zabssum=sum(abs(Z.Z),2);
-    %compute new zonotope
-    Z.Z=[T*Z.Z,diag(S*Zabssum)]; 
-
+    % interval matrix (see Theorem 3.3 in [1])
+    elseif isa(M,'intervalMatrix')
+        %get minimum and maximum
+        M_min=infimum(M.int);
+        M_max=supremum(M.int); 
+        %get center of interval matrix
+        T=0.5*(M_max+M_min);
+        %get symmetric interval matrix
+        S=0.5*(M_max-M_min);
+        Zabssum=sum(abs(Z.Z),2);
+        %compute new zonotope
+        Z.Z=[T*Z.Z,diag(S*Zabssum)]; 
     
-% matrix zonotope (see Sec. 4.4.1 in [2])
-elseif isa(matrix,'matZonotope')
-    %obtain first zonotope
-    Znew=matrix.center*Z.Z;
-    %compute further zonotopes and add them up
-    for i=1:matrix.gens
-        Zadd=matrix.generator{i}*Z.Z;
-        Znew(:,(end+1):(end+length(Z.Z(1,:))))=Zadd;
+    % matrix zonotope (see Sec. 4.4.1 in [2])
+    elseif isa(M,'matZonotope')
+        %obtain first zonotope
+        Znew=M.center*Z.Z;
+        %compute further zonotopes and add them up
+        for i=1:M.gens
+            Zadd=M.generator{i}*Z.Z;
+            Znew(:,(end+1):(end+length(Z.Z(1,:))))=Zadd;
+        end
+        %write to Z.Z
+        Z.Z=Znew;
+    
+    else
+        % throw error
+        throw(CORAerror('CORA:noops',M,Z));
     end
-    %write to Z.Z
-    Z.Z=Znew;
-end    
 
+catch ME
+    % note: error has already occured, so the operations below don't have
+    % to be efficient
 
+    % already know what's going on...
+    if startsWith(ME.identifier,'CORA')
+        rethrow(ME);
+    end
+
+    % check for empty sets
+    if isempty(Z)
+        return
+    end
+
+    % check whether different dimension of ambient space
+    equalDimCheck(Z,M);
+
+    % other error...
+    rethrow(ME);
+
+end
 
 %------------- END OF CODE --------------

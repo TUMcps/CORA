@@ -1,11 +1,11 @@
 function matrix2ascii(matrix)
-% matrix2ascii - 
+% matrix2ascii - ???
 %
 % Syntax:  
 %    matrix2ascii(matrix)
 %
 % Inputs:
-%    matrix - 
+%    matrix - ???
 %
 % Outputs:
 %    - 
@@ -47,3 +47,5 @@ end
 
 %close file
 status = fclose(fid);
+
+%------------- END OF CODE --------------

@@ -100,11 +100,4 @@ try
     res = false;
 end
 
-
-if res
-    disp('test_capsule successful');
-else
-    disp('test_capsule failed');
-end
-
 %------------- END OF CODE --------------

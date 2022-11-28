@@ -36,11 +36,11 @@ function res = plus(factor1, factor2)
 %------------- BEGIN CODE --------------
     
     if isscalar(factor1) && ~isscalar(factor2)
-        res = arrayfun(@(b) s_plus(factor1, b), factor2, 'UniformOutput', 0);
+        res = arrayfun(@(b) s_plus(factor1, b), factor2, 'UniformOutput', false);
     elseif ~isscalar(factor1) && isscalar(factor2)
-        res = arrayfun(@(a) s_plus(a, factor2), factor1, 'UniformOutput', 0);  
+        res = arrayfun(@(a) s_plus(a, factor2), factor1, 'UniformOutput', false);
     else
-        res = arrayfun(@(a, b) s_plus(a, b), factor1, factor2, 'UniformOutput', 0);  
+        res = arrayfun(@(a, b) s_plus(a, b), factor1, factor2, 'UniformOutput', false);
     end
     A = cat(1, res{:});
     res = reshape(A, size(res));
@@ -93,14 +93,15 @@ function res = s_plus(factor1, factor2)
         res.remainder = res.remainder + factor1;
         
     else
-        
-        error('Wrong input')
+        throw(CORAerror('CORA:wrongValue','first/second',...
+            "('taylm',double), ('double','taylm'), ('taylm','interval') or ('interval','taylm')"));
         
     end
 
 end
 
-%% Auxiliary functions
+
+% Auxiliary functions -----------------------------------------------------
 
 function res = addConst(obj,const)
 
@@ -114,3 +115,5 @@ function res = addConst(obj,const)
     end
 
 end
+
+%------------- END OF CODE --------------

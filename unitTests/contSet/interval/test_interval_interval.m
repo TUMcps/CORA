@@ -100,12 +100,4 @@ try
     res = false;
 end 
 
-
-
-if res
-    disp('test_interval successful');
-else
-    disp('test_interval failed');
-end
-
 %------------- END OF CODE --------------

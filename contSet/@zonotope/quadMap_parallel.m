@@ -1,15 +1,15 @@
-function Zquad = quadMap_parallel(Z,Q)
-% quadMap - computes \{Q_{ijk}*x_j*x_k|x \in Z\}
+function Z = quadMap_parallel(Z,Q)
+% quadMap_parallel - computes \{Q_{ijk}*x_j*x_k|x \in Z\} using parfor
 %
 % Syntax:  
-%    Zquad = quadMap(Z1,Q)
+%    Z = quadMap_parallel(Z,Q)
 %
 % Inputs:
 %    Z - zonotope object
 %    Q - quadratic coefficients as a cell of matrices
 %
 % Outputs:
-%    Zquad - zonotope object
+%    Z - zonotope object
 %
 % Example: 
 %    ---
@@ -66,7 +66,7 @@ for i = 1:dimQ
 end
 
 %generate new zonotope
-Zquad = zonotope([c, Gmat]);
+Z = zonotope([c, Gmat]);
 
 
 %------------- END OF CODE --------------

@@ -1,7 +1,6 @@
 function empty = writeSparseMatrixTaylorModel(M,var,fid)
 % writeSparseMatrixTaylorModel - write a sparse matrix in such a way that
-%                                the inputs are taylor models and the
-%                                output is a interval matrix
+%    the inputs are taylor models and the output is a interval matrix
 %
 % Syntax:  
 %    empty = writeSparseMatrixTaylorModel(M,var,fid)
@@ -12,7 +11,7 @@ function empty = writeSparseMatrixTaylorModel(M,var,fid)
 %    fid - identifier of the file to which the matrix is written
 %
 % Outputs:
-%    empty - 1 if matrix is empty, 0 if not
+%    empty - true if matrix is empty, false otherwise
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -33,7 +32,7 @@ function empty = writeSparseMatrixTaylorModel(M,var,fid)
 
 if ~isempty(row)
     
-    empty = 0;
+    empty = false;
 
     for i=1:length(row)
         iRow = row(i);
@@ -50,7 +49,7 @@ if ~isempty(row)
     end
 
 else
-    empty = 1;
+    empty = true;
 end
 
 %------------- END OF CODE --------------

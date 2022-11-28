@@ -1,17 +1,17 @@
-function pow = powers(varargin)
+function pow = powers(intMat,varargin)
 % powers - computes the powers of an interval matrix
 %
 % Syntax:  
-%    [intMat] = powers(varargin) 
+%    pow = powers(intMat,varargin)
 %
 % Inputs:
-%    intMat - interval matrix
+%    intMat - intervalMatrix object
 %    maxOrder - maximum Taylor series order until remainder is computed
 %    initialOrder - first Taylor series order 
 %    initialPower - initial power for mixed computations
 %
 % Outputs:
-%    eI - interval matrix exponential
+%    pow - powers of the interval matrix
 %
 % Example: 
 %
@@ -29,15 +29,13 @@ function pow = powers(varargin)
 %------------- BEGIN CODE --------------
 
 if nargin==2
-    intMat = varargin{1};
-    maxOrder = varargin{2};
+    maxOrder = varargin{1};
     initialOrder = 1;
     initialPower = intMat;
 elseif nargin==4
-    intMat = varargin{1};
-    maxOrder = varargin{2};
-    initialOrder = varargin{3};
-    initialPower = varargin{4};
+    maxOrder = varargin{1};
+    initialOrder = varargin{2};
+    initialPower = varargin{3};
 end
 
 %initialize power

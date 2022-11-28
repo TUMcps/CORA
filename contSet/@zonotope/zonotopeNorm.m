@@ -1,6 +1,6 @@
-function res = zonotopeNorm(Z, p)
+function res = zonotopeNorm(Z,p)
 % zonotopeNorm - computes the norm of the point p w.r.t. the zonotope-norm
-%   induced by the zonotope Z (see [1, Definition 4])
+%    induced by the zonotope Z (see [1, Definition 4])
 %
 % Syntax:  
 %    res = zonotopeNorm(Z,p)
@@ -18,14 +18,14 @@ function res = zonotopeNorm(Z, p)
 %    Z = zonotope(c, G);
 %    
 %    p = rand([2 1]);
-%    
+%
+%    % Set of points that have the same distance to the origin as p, with
+%    % respect to the zonotope norm of Z    
 %    d = zonotopeNorm(Z, p);
 %
-%    figure
-%    hold on
-%    plot(Z,[1,2],'b');   % This is the zonotope Z
-%    plot(d*Z,[1,2],'g'); % Set of points that have the same distance to
-%                         % the origin as p, w.r.t. the zonotope norm of Z
+%    figure; hold on;
+%    plot(Z,[1,2],'b');
+%    plot(d*Z,[1,2],'g');
 %    plot(p(1),p(2),'rx');
 %
 % References:
@@ -44,6 +44,10 @@ function res = zonotopeNorm(Z, p)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% check input arguments
+inputArgsCheck({{Z,'att','zonotope','nonempty'};
+                {p,'att','numeric','column'}});
 
 % Retrieve generator-representation of Z
 G = Z.generators;
@@ -79,6 +83,7 @@ if exitflag == -2
     res = inf;
 % In case anything else went wrong, throw out an error
 elseif exitflag ~= 1
-    error('The solver for the point-containment failed to find a solution. Check that your zonotope (circumbody) is not empty or ill-conditioned.');
+    throw(CORAerror('CORA:solverIssue'));
 end
-end
+
+%------------- END OF CODE --------------

@@ -32,15 +32,16 @@ function pgon = polygon(pZ,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    splits = 8;
+    splits = setDefaultValues({8},varargin{:});
 
-    if nargin > 1 && ~isempty(varargin{1})
-       splits = varargin{1}; 
-    end
+    % check input arguments
+    inputArgsCheck({{pZ,'att','polyZonotope'};
+                    {splits,'att','numeric','nonnan'}});
     
     % check if polynomial zonotope is two dimensional
     if dim(pZ) ~= 2
-       error('Method "polygon" is only applicable for 2D polyZonotopes!');
+        throw(CORAerror('CORA:noExactAlg',pZ,...
+            'Method "polygon" is only applicable for 2D polyZonotopes!'));
     end
 
     % split the polynomial zonotope multiple times to obtain a better 
@@ -65,8 +66,8 @@ function pgon = polygon(pZ,varargin)
     
     pZsplit = [pZsplit,pZfin];
 
-    % over-approximate all splitted sets with zonotopes, convert them to 2D
-    % polytopes (Matlab build-in) and compute the union
+    % over-approximate all split sets with zonotopes, convert them to 2D
+    % polyshape objects (Matlab built-in) and compute the union
     warOrig = warning;
     warning('off','all');
     pgon = [];
@@ -74,13 +75,13 @@ function pgon = polygon(pZ,varargin)
     for i = 1:length(pZsplit)
 
         % zonotope over-approximation
-        zono = zonotope(pZsplit{i});
+        Z = zonotope(pZsplit{i});
 
         % calculate vertices of zonotope
-        vert = vertices(zono);
+        V = vertices(Z);
 
-        % tranform to 2D polytope
-        pgonTemp = polygon(vert(1,:),vert(2,:));
+        % transform to 2D polytope
+        pgonTemp = polygon(V(1,:),V(2,:));
 
         % calculate union with previous sets
         pgon = pgonTemp | pgon; 

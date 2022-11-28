@@ -1,7 +1,16 @@
-function [ s ] = xml2struct( file )
-%Convert xml file into a MATLAB structure
-% [ s ] = xml2struct( file )
+function s = xml2struct(file)
+% xml2struct - converts .xml-file into a MATLAB struct
 %
+% Syntax:
+%    s = xml2struct(file)
+%
+% Inputs:
+%    file - .xml-file
+%
+% Outputs:
+%    s - struct
+%
+% Example:
 % A file containing:
 % <XMLname attrib1="Some value">
 %   <Element>Some text</Element>
@@ -20,45 +29,50 @@ function [ s ] = xml2struct( file )
 %
 % Please note that the following characters are substituted
 % '-' by '_dash_', ':' by '_colon_' and '.' by '_dot_'
-%
-% Written by W. Falkena, ASTI, TUDelft, 21-08-2010
-% Attribute parsing speed increased by 40% by A. Wanner, 14-6-2011
-% Added CDATA support by I. Smirnov, 20-3-2012
-%
-% Modified by X. Mo, University of Wisconsin, 12-5-2012
 
-    if (nargin < 1)
-        clc;
-        help xml2struct
-        return
-    end
-    
-    if isa(file, 'org.apache.xerces.dom.DeferredDocumentImpl') || isa(file, 'org.apache.xerces.dom.DeferredElementImpl')
-        % input is a java xml object
-        xDoc = file;
-    else
-        %check for existance
-        if (exist(file,'file') == 0)
-            %Perhaps the xml extension was omitted from the file name. Add the
-            %extension and try again.
-            if (isempty(strfind(file,'.xml')))
-                file = [file '.xml'];
-            end
-            
-            if (exist(file,'file') == 0)
-                error(['The file ' file ' could not be found']);
-            end
+% Author:        W. Falkena, ASTI, TUDelft
+% Written:       21-August-2010
+% Last update:   14-June-2011 (A. Wanner, increase parsing speed)
+%                20-March-2012 (I. Smirnow, added CDATA support)
+%                12-May-2012 (X. Mo)
+% Last revision: ---
+
+%------------- BEGIN CODE --------------
+
+if (nargin < 1)
+    clc;
+    help xml2struct
+    return
+end
+
+if isa(file, 'org.apache.xerces.dom.DeferredDocumentImpl') ...
+        || isa(file, 'org.apache.xerces.dom.DeferredElementImpl')
+    % input is a java xml object
+    xDoc = file;
+else
+    %check for existance
+    if (exist(file,'file') == 0)
+        %Perhaps the xml extension was omitted from the file name. Add the
+        %extension and try again.
+        if ~contains(file,'.xml')
+            file = [file '.xml'];
         end
-        %read the xml file
-        xDoc = xmlread(file);
+        
+        if (exist(file,'file') == 0)
+            throw(CORAerror('CORA:fileNotFound',file));
+        end
     end
-    xDoc = cleanXML(xDoc);
-    %parse xDoc into a MATLAB structure
-    s = parseChildNodes(xDoc);
+    %read the xml file
+    xDoc = xmlread(file);
+end
+xDoc = cleanXML(xDoc);
+%parse xDoc into a MATLAB structure
+s = parseChildNodes(xDoc);
     
 end
 
-% ----- Subfunction parseChildNodes -----
+% Auxiliary functions -----------------------------------------------------
+
 function [children,ptext,textflag] = parseChildNodes(theNode)
     % Recurse over node children.
     children = struct;
@@ -134,7 +148,6 @@ function [children,ptext,textflag] = parseChildNodes(theNode)
     end
 end
 
-% ----- Subfunction getNodeData -----
 function [text,name,attr,childs,textflag] = getNodeData(theNode)
     % Create structure of node info.
     
@@ -162,7 +175,6 @@ function [text,name,attr,childs,textflag] = getNodeData(theNode)
     
 end
 
-% ----- Subfunction parseAttributes -----
 function attributes = parseAttributes(theNode)
     % Create attributes structure.
 
@@ -190,7 +202,6 @@ function attributes = parseAttributes(theNode)
 end
 
 
-% -------- Clean XML function ---------
 function node = cleanXML(node)
 % removes the whitespace nodes from matlab xmlread
 for x = 1:node.getLength
@@ -208,3 +219,5 @@ for x = 1:node.getLength
     end
 end
 end
+
+%------------- END OF CODE --------------

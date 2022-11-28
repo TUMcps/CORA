@@ -1,11 +1,11 @@
-function E = ellipsoid(obj)
+function E = ellipsoid(I)
 % ellipsoid - Converts an interval object into an ellipsoid object
 %
 % Syntax:  
-%    Z = ellipsoid(obj)
+%    E = ellipsoid(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
 %    E - ellipsoid object
@@ -20,14 +20,15 @@ function E = ellipsoid(obj)
 %
 % See also: interval
 
-% Author:       Victor Gaﬂmann
+% Author:       Victor Gassmann
 % Written:      15-October-2019 
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-%convert interval to zonotope
-Z = zonotope(obj);
-%n==m, therefore exact computation very efficient
-E = ellipsoid(Z,'o:exact');
+
+% convert interval to zonotope (exact computation very efficient because
+% generator matrix is square)
+E = ellipsoid(zonotope(I),'outer:exact');
+
 %------------- END OF CODE --------------

@@ -24,6 +24,7 @@ function res = test_zonotope_sampleBox
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 res = true;
 for i=2:5:30
     G = randn(i,i);
@@ -33,15 +34,10 @@ for i=2:5:30
     Z = zonotope([zeros(i,1),G]);
     X = sampleBox(Z,100);
     %check if all samples are contained in Z
-    if ~in(Z,X)
+    if ~contains(Z,X)
         res = false;
         break;
     end
-end
-if res
-    disp('test_zonotope_sampleBox successful');
-else
-    disp('test_zonotope_sampleBox failed');
 end
 
 %------------- END OF CODE --------------

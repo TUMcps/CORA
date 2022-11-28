@@ -1,16 +1,20 @@
-function display(obj)
-% display - Displays a linProbSys object
+function display(sys)
+% display - Displays a linProbSys object on the command window
 %
 % Syntax:  
-%    display(obj)
+%    display(sys)
 %
 % Inputs:
-%    obj - linProbSys object
+%    sys - linProbSys object
 %
 % Outputs:
-%    ---
+%    -
 %
-% Example: 
+% Example:
+%    A = [-1 -4; 4 -1];
+%    B = eye(2);
+%    C = 0.7*eye(2);
+%    sys = linProbSys(A,B,C)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -18,29 +22,33 @@ function display(obj)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 06-October-2007
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff, Mark Wetzlinger
+% Written:      06-October-2007
+% Last update:  19-June-2022
+%               23-November-2022 (TL: dispInput)
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
-disp('-----------------------------------');
+% disp input if necessary
+dispInput(inputname(1))
 
 %display parent object
-display@contDynamics(obj);
+display@contDynamics(sys);
 
 %display type
-disp('type: Linear time continuous probabilistic system');
+disp('Type: Linear continuous-time probabilistic system');
 
-%display A-Matrix
-disp('System matrix: ');
-A=obj.A
+% display state matrix
+disp("System matrix:");
+displayMatrixVector(sys.A,"A");
 
-%display B-Matrix
-disp('Input matrix: ');
-B=obj.B
+% display input matrix
+disp("Input matrix:");
+displayMatrixVector(sys.B,"B");
 
-disp('-----------------------------------');
+% display noise matrix offset
+disp("Noise matrix:");
+displayMatrixVector(sys.C,"C");
 
 %------------- END OF CODE --------------

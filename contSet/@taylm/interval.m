@@ -46,25 +46,27 @@ function int = interval(obj,varargin)
 
 %------------- BEGIN CODE -------------
 
-    % parse input
-    option = obj.opt_method;
-    if nargin == 2
-       option = varargin{1};
-    end
+    % parse input arguments
+    option = setDefaultValues({obj.opt_method},varargin{:});
+
+    % check input arguments
+    inputArgsCheck({{obj,'att','taylm'};
+                    {option,'str',{'int','bnb','bnbAdv','linQuad','bernstein'}}});    
 
     % calculate the bounding interval
     if strcmp(option, 'int')
-        int = arrayfun(@(a) s_tayl2int(a), obj, 'UniformOutput', 0);
+        int = arrayfun(@(a) s_tayl2int(a), obj, 'UniformOutput', false);
     elseif strcmp(option, 'bernstein')
-        int = arrayfun(@(a) optBernstein(a), obj, 'UniformOutput', 0);
+        int = arrayfun(@(a) optBernstein(a), obj, 'UniformOutput', false);
     elseif strcmp(option, 'bnb')
-        int = arrayfun(@(a) optBnb(a), obj, 'UniformOutput', 0);
+        int = arrayfun(@(a) optBnb(a), obj, 'UniformOutput', false);
     elseif strcmp(option, 'bnbAdv')
-        int = arrayfun(@(a) optBnbAdv(a), obj, 'UniformOutput', 0);
+        int = arrayfun(@(a) optBnbAdv(a), obj, 'UniformOutput', false);
     elseif strcmp(option, 'linQuad')
-        int = arrayfun(@(a) optLinQuad(a), obj, 'UniformOutput', 0); 
+        int = arrayfun(@(a) optLinQuad(a), obj, 'UniformOutput', false);
     else
-        error('Only values ''int'', ''bnb'', ''bnbAdv'' and ''linQuad'' are valid for input argument ''option''!');
+        throw(CORAerror('CORA:wrongValue','second',...
+            'be ''int'', ''bnb'', ''bnbAdv'' and ''linQuad'''));
     end
     A = [int{:}];
     int = reshape(A, size(int));

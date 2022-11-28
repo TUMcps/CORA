@@ -1,5 +1,6 @@
 function Z = box(Z)
-% box - computes an enclosing axis-aligned box
+% box - computes an enclosing axis-aligned box; the result is equivalent to
+%    a conversion to intervals but yields a zonotope representation
 %
 % Syntax:  
 %    Z = box(Z)
@@ -11,17 +12,18 @@ function Z = box(Z)
 %    Z - zonotope object
 %
 % Example: 
-%    Z=zonotope(rand(2,5));
-%    B=box(Z);
+%    Z = zonotope([1;-1],[-3 2 1; -1 0 3]);
+%    B = box(Z);
+%    
+%    figure; hold on;
 %    plot(Z);
-%    hold on
-%    plot(B);
+%    plot(B,[1,2],'r');
 %
-% Other m-files required: ---
+% Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: vertices, polytope
+% See also: ---
 
 % Author:        Matthias Althoff
 % Written:       09-March-2009

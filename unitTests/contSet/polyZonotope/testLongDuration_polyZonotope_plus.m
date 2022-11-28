@@ -3,7 +3,7 @@ function res = testLongDuration_polyZonotope_plus
 %    of two polynomial zonotope objects
 %
 % Syntax:  
-%    res = test_polyZonotope_plus
+%    res = testLongDuration_polyZonotope_plus
 %
 % Inputs:
 %    -
@@ -26,10 +26,7 @@ function res = testLongDuration_polyZonotope_plus
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-%% RANDOM TESTS
-
+res = true;
 
 % TEST linear zonotopes
 
@@ -67,7 +64,9 @@ for i = 2:10
     G_ = zonoRes.Z(:,2:end);
     
     if any(abs(pZres.c-c_) > 1e-15) || any(any(abs(pZres.G-G_) > 1e-15))
-        error('test_polyZonotope_plus: random test linear zonotopes failed!'); 
+        path = pathFailedTests(mfilename());
+        save(path,'pZres','zonoRes');
+        throw(CORAerror('CORA:testFailed'));
     end
     
 end
@@ -90,7 +89,7 @@ for i = 1:5
     % create random transformation matrix
     matrix = rand(2) - 0.5*ones(2);
     
-    % add the polynomial zontope and the transformed polynomial zonotope
+    % add the polynomial zonotope and the transformed polynomial zonotope
     pZres = exactPlus(pZ,matrix * pZ);
 
     % determine random point and extreme points inside the original polynomial
@@ -113,7 +112,9 @@ for i = 1:5
     suc = containsPointSet(pZres,points,[],30);
     
     if ~suc
-       error('test_polyZonotope_plus: random test 2D failed!'); 
+       path = pathFailedTests(mfilename());
+       save(path,'pZres','points');
+       throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -134,7 +135,7 @@ for i = 1:5
     % create random transformation matrix
     matrix = rand(4) - 0.5*ones(4);
     
-    % add the polynomial zontope and the transformed polynomial zonotope
+    % add the polynomial zonotope and the transformed polynomial zonotope
     pZres = exactPlus(pZ, matrix * pZ);
 
     % determine random point and extreme points inside the original polynomial
@@ -157,10 +158,10 @@ for i = 1:5
     suc = containsPointSet(pZres,points);
     
     if ~suc
-       error('test_polyZonotope_plus: random test 4D failed!'); 
+       path = pathFailedTests(mfilename());
+       save(path,'pZres','points');
+       throw(CORAerror('CORA:testFailed'));
     end
 end
-
-res = true;
 
 %------------- END OF CODE --------------

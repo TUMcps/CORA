@@ -37,7 +37,7 @@ S = [diag(s),zeros(n,N-n)];
 V = U*S*W';
     
 
-%
+% enclose points
 E = ellipsoid.enclosePoints(V);
 
 % degenerate
@@ -46,14 +46,8 @@ s(randperm(n,randi([1,n]))) = 0;
 Vd = U*[diag(s),zeros(n,N-n)]*W';
 Ed = ellipsoid.enclosePoints(Vd);
 
-if ~in(E,V) || ~in(Ed,Vd)
+if ~all(contains(E,V)) || ~all(contains(Ed,Vd))
     res = false;
 end
 
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

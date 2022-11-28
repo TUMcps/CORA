@@ -1,18 +1,18 @@
-function res = isscalar(intVal)
-% isscalar - returns 1 if the interval is scalar and 0 otherwise
+function res = isscalar(I)
+% isscalar - check if an interval is one-dimensional
 %
 % Syntax:  
-%     res = isscalar(intVal)
+%    res = isscalar(I)
 %
 % Inputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - bool
+%    res - true/false
 %
 % Example: 
-%    a = interval(-1,2);
-%    res = isscalar(a)
+%    I = interval(-1,2);
+%    res = isscalar(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,7 +27,7 @@ function res = isscalar(intVal)
 
 %------------- BEGIN CODE --------------
 
-%obtain result; only infimum is checked for efficiency reasons
-res = isscalar(intVal.inf);
+% check of infimum sufficient
+res = isscalar(I.inf);
 
 %------------- END OF CODE --------------

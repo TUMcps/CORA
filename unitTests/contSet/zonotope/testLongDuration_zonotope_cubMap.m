@@ -48,7 +48,7 @@ for i = 1:10
     % obtain result
     Zres = cubMap(Z1,Z2,Z3,T);
 
-    % draw random points inside the zontopes 
+    % draw random points inside the zonotopes 
     N = 20;
     
     points1 = zeros(2,N);
@@ -97,9 +97,9 @@ for i = 1:10
           file_name = strcat('testLongDuration_zonotope_cubMap_1_', ...
                              datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-          file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
-          save(file_path, 'Z1', 'Z2', 'Z3', 'Zres')
-          error('zonotope/cubMap: random test (mixed mul.) failed!'); 
+          file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', file_name);
+          save(file_path, 'Z1', 'Z2', 'Z3', 'T')
+          throw(CORAerror('CORA:testFailed'));
        end
     end
 end
@@ -123,7 +123,7 @@ for i = 1:10
     % obtain result
     Zres = cubMap(Z,T);
 
-    % draw random points inside the zontopes 
+    % draw random points inside the zonotopes 
     N = 1000;
     
     points = zeros(2,N);
@@ -161,9 +161,9 @@ for i = 1:10
           file_name = strcat('testLongDuration_zonotope_cubMap_2_', ...
                              datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-          file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
-          save(file_path, 'Z', 'Zres')
-          error('zonotope/cubMap: random test failed!'); 
+          file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', file_name);
+          save(file_path, 'Z', 'T','points')
+          throw(CORAerror('CORA:testFailed'));
        end
     end
 end

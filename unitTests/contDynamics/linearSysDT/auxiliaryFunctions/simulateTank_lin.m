@@ -30,7 +30,7 @@ function simulateTank_lin(options)
 
 
 % set path
-savepath = [coraroot '/unitTests/contDynamics/linearSysDT/models'];
+savepath = [CORAROOT filesep 'unitTests' filesep 'contDynamics' filesep 'linearSysDT' filesep 'models'];
 close all
 
 %% Settings
@@ -118,9 +118,10 @@ params.u = u; %input transition
 
 options.points = 1;
 options.p_conf = 0.999; % probability that sample of normal distribution within specified set
+options.type = 'gaussian';
 
 % simulate result assuming Gaussian distributions
-simRes = simulateRandom(tank,params,options,'gaussian');
+simRes = simulateRandom(tank,params,options);
 
 %% obtain output values
 for i=1:length(simRes.t{1})

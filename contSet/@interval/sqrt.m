@@ -1,5 +1,6 @@
-function res = sqrt(intVal)
-% sqrt - Overloaded sqrt function for intervals 
+function I = sqrt(I)
+% sqrt - Overloaded 'sqrt'-function for intervals, computes the square root
+%    of the interval
 %
 % x_ is x infimum, x-- is x supremum
 %
@@ -8,15 +9,17 @@ function res = sqrt(intVal)
 % [sqrt(x_), sqrt(x--)] if (x_ >= 0).
 %
 % Syntax:  
-%    res = sqrt(intVal)
+%    res = sqrt(I)
 %
 % Inputs:
-%    intVal - argument of which square root should be obtained
+%    I - interval object
 %
 % Outputs:
-%    res - interval
+%    res - interval object
 %
-% Example: 
+% Example:
+%    I = interval(9,16);
+%    sqrt(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,50 +31,49 @@ function res = sqrt(intVal)
 % Written:      20-January-2016
 %               21-February-2016 (DG, the matrix case is rewritten)
 %               05-May-2020 (MW, standardized error message)
+% Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % scalar case
-if isnumeric(intVal)
+if isnumeric(I)
 
-    res = interval();
-
-    if intVal.inf >= 0 
-        res.inf = sqrt(intVal.inf);
-        res.sup = sqrt(intVal.sup);
-    elseif intVal.inf < 0 &&  intVal.sup >= 0
-        res.inf = NaN;
-        res.sup = sqrt(intVal.sup);
+    if I.inf >= 0 
+        I.inf = sqrt(I.inf);
+        I.sup = sqrt(I.sup);
+    elseif I.inf < 0 &&  I.sup >= 0
+        I.inf = NaN;
+        I.sup = sqrt(I.sup);
     else
-        res.inf = NaN;
-        res.sup = NaN;
+        I.inf = NaN;
+        I.sup = NaN;
     end
 
 else
 
     % to preserve the shape    
-    res = intVal;
+    lb = I.inf;
+    ub = I.sup;
     
     % find indices
+    ind1 = find(lb >= 0);
+    I.inf(ind1) = sqrt(lb(ind1));
+    I.sup(ind1) = sqrt(ub(ind1));
     
-    ind1 = find(intVal.inf >= 0);   
-    res.inf(ind1) = sqrt(intVal.inf(ind1));
-    res.sup(ind1) = sqrt(intVal.sup(ind1));
+    ind2 = find(lb < 0 & ub >= 0);
+    I.inf(ind2) = NaN;
+    I.sup(ind2) = sqrt(ub(ind2));
     
-    ind2 = find(intVal.inf < 0 & intVal.sup >= 0);    
-    res.inf(ind2) = NaN;
-    res.sup(ind2) = sqrt(intVal.sup(ind2));
-    
-    ind3 = find(intVal.sup < 0);    
-    res.inf(ind3) = NaN;
-    res.sup(ind3) = NaN;      
+    ind3 = find(ub < 0);
+    I.inf(ind3) = NaN;
+    I.sup(ind3) = NaN;      
 
 end
 
 % return error if NaN occures
-if any(any(isnan(res.inf))) || any(any(isnan(res.sup)))
-	error(resIntNaNInf()); 
+if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))
+	throw(CORAerror('CORA:outOfDomain','validDomain','>= 0'));
 end
 
 %------------- END OF CODE --------------

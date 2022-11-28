@@ -1,5 +1,7 @@
 function display(cPZ)
-% display - displays a conPolyZono object to the console
+% display - displays the properties of a conPolyZono object (center,
+%    generator matrices, exponent matrix, constraint system) on the 
+%    command window
 %
 % Syntax:  
 %    display(cPZ)
@@ -8,7 +10,7 @@ function display(cPZ)
 %    cPZ - conPolyZono object
 %
 % Outputs:
-%    -
+%    ---
 %
 % Example: 
 %    c = [0;0];
@@ -17,7 +19,7 @@ function display(cPZ)
 %    A = [1 -0.5 0.5];
 %    b = 0.5;
 %    expMat_ = [0 1 2; 1 0 0; 0 1 0];
-%
+% 
 %    cPZ = conPolyZono(c,G,expMat,A,b,expMat_)
 %
 % Other m-files required: none
@@ -32,7 +34,13 @@ function display(cPZ)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
+
+if isemptyobject(cPZ)
     
+    dispEmptyObj(cPZ,inputname(1));
+
+else
+
     fprintf(newline);
     disp(inputname(1) + " =");
     fprintf(newline);
@@ -43,12 +51,11 @@ function display(cPZ)
     
     % display generators
     G = cPZ.G;
-    maxGens = 10;
-    displayGenerators(G,maxGens,'G');
+    displayGenerators(G,DISPLAYDIM_MAX,'G');
     
     % display exponential matrix
     expMat = cPZ.expMat;
-    displayGenerators(expMat,maxGens,'expMat');
+    displayGenerators(expMat,DISPLAYDIM_MAX,'expMat');
     
     % display constraint offset
     disp('b:');
@@ -56,20 +63,20 @@ function display(cPZ)
     
     % display constraint generators
     A = cPZ.A;
-    displayGenerators(A,maxGens,'A');
+    displayGenerators(A,DISPLAYDIM_MAX,'A');
     
     % display constraint exponential matrix
     expMat_ = cPZ.expMat_;
-    displayGenerators(expMat_,maxGens,'expMat_');
+    displayGenerators(expMat_,DISPLAYDIM_MAX,'expMat_');
     
     % display independent generators
     Grest = cPZ.Grest;
-    displayGenerators(Grest,maxGens,'Grest');
+    displayGenerators(Grest,DISPLAYDIM_MAX,'Grest');
     
     % display id
     disp('id:');
     disp(cPZ.id);
-    
+
 end
 
 %------------- END OF CODE --------------

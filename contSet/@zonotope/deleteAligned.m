@@ -2,7 +2,7 @@ function Z = deleteAligned(Z)
 % deleteAligned - combines aligned generators to a single generator;
 %    a tolerance is used to determine alignment, so this function
 %    does not necessarily return an over-approximation of the original
-%    zonotope--for this, use reduce instead
+%    zonotope---for this, use zonotope/reduce instead
 %
 % Syntax:  
 %    Z = deleteAligned(Z)
@@ -17,14 +17,15 @@ function Z = deleteAligned(Z)
 %    Z1 = zonotope([1;0],[1 0 1 1 -2 0; 0 1 0 1 -2 -3]);
 %    Z2 = deleteAligned(Z1);
 % 
-%    plot(Z1); hold on;
-%    plot(Z2,[1,2],'r');
+%    figure; hold on;
+%    plot(Z1);
+%    plot(Z2,[1,2],'r--');
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: zonotope/reduce
 
 % Author:        Matthias Althoff
 % Written:       15-January-2009

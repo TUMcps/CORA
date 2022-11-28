@@ -40,18 +40,13 @@ for n=1:2:20
     end
 
     % check if all random points inside capsule
-    res = in(C,p);
+    res = all(contains(C,p));
     
     if ~res
+        path = pathFailedTests(mfilename());
+        save(path,'C','p');
         break;
     end
-end
-
-
-if res
-    disp('test_randPoint successful');
-else
-    disp('test_randPoint failed');
 end
 
 %------------- END OF CODE --------------

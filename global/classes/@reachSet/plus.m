@@ -1,16 +1,16 @@
-function obj = plus(obj,S)
+function R = plus(R,S)
 % plus - Overloaded '+' operator for the Minkowski addition of a set or a
-%        vector with a reachSet object
+%    vector with a reachSet object
 %
 % Syntax:  
-%    obj = plus(obj,S)
+%    R = plus(R,S)
 %
 % Inputs:
-%    obj - reachSet object 
+%    R - reachSet object 
 %    S - contSet object or numerical vector
 %
 % Outputs:
-%    obj - resulting tranformed reachset object
+%    R - resulting tranformed reachset object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,19 +25,23 @@ function obj = plus(obj,S)
 
 %------------- BEGIN CODE --------------
 
-    % get reachSet object
-    if ~isa(obj,'reachSet')
-       temp = obj;
-       obj = S;
-       S = temp;
-    end
+% get reachSet object
+if ~isa(R,'reachSet')
+    temp = R;
+    R = S;
+    S = temp;
+end
 
-    % compute Minkowski sum
-    for i = 1:size(obj,1)
-       obj(i).timeInterval.set = cellfun(@(x) S + x, ...
-                            obj(i).timeInterval.set,'UniformOutput',false);
-       obj(i).timePoint.set = cellfun(@(x) S + x, ...
-                               obj(i).timePoint.set,'UniformOutput',false);             
+% compute Minkowski sum
+for i = 1:size(R,1)
+    if ~isempty(R(i).timeInterval.set)
+        R(i).timeInterval.set = cellfun(@(x) S + x,...
+                        R(i).timeInterval.set,'UniformOutput',false);
     end
+    if ~isempty(R(i).timePoint.set)
+        R(i).timePoint.set = cellfun(@(x) S + x,...
+                        R(i).timePoint.set,'UniformOutput',false); 
+    end
+end
 
 %------------- END OF CODE --------------

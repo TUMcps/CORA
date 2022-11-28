@@ -1,5 +1,5 @@
 function Z = insc_parallelotope(E)
-% insc_parallelotope - underapproximates an ellipsoid by a parellelotope
+% insc_parallelotope - inner-approximates an ellipsoid by a parellelotope
 %
 % Syntax:  
 %    Z = insc_parallelotope(E)
@@ -11,11 +11,12 @@ function Z = insc_parallelotope(E)
 %    Z - zonotope object
 %
 % Example: 
-%    E = ellipsoid.generateRandom(0,2);
+%    E = ellipsoid.generateRandom('Dimension',2);
 %    Z = insc_parallelotope(E);
+%
+%    figure; hold on;
 %    plot(E);
-%    hold on
-%    plot(Z);
+%    plot(Z,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,10 +31,14 @@ function Z = insc_parallelotope(E)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-assert(~E.isdegenerate,'Degeneracy should be handled in main file!');
+
+if ~isFullDim(E)
+    throw(CORAerror('CORA:degenerateSet','Should be handled in main file'));
+end
 
 T = inv(sqrtm(E.Q));
 n = length(E.Q);
 %transform ellipsoid into sphere -> square into sphere -> back transform
 Z = zonotope([E.q,inv(T)*1/sqrt(n)*eye(n)]);
+
 %------------- END OF CODE --------------

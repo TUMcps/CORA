@@ -5,7 +5,7 @@ function intMatPower = mpower(intMat,exponent)
 %    intMatPower = mpower(intMat,exponent)
 %
 % Inputs:
-%    intMat - interval matrix 
+%    intMat - intervalMatrix object
 %    exponent - exponent
 %
 % Outputs:
@@ -26,25 +26,24 @@ function intMatPower = mpower(intMat,exponent)
 
 %------------- BEGIN CODE --------------
 
+% check input arguments
+inputArgsCheck({{intMat,'att','intervalMatrix'}, ...
+                {exponent,'att','numeric',{'nonnegative','integer','scalar'}}});
+
 %factor1 is a numeric matrix
-if exponent>=0
-    if exponent==0
-        %return identity matrix
-        intMatPower=intMat;
-        intMatPower.int=intMat.int^0;
-    elseif exponent==1
-        %do nothing
-        intMatPower=intMat;
-    else
-        intMatPower=intMat*intMat;
-        for i=3:exponent
-        %multiply matrix zonotope with itself
-            intMatPower=intMatPower*intMat;
-        end
-    end
-    
+if exponent==0
+    %return identity matrix
+    intMatPower=intMat;
+    intMatPower.int=intMat.int^0;
+elseif exponent==1
+    %do nothing
+    intMatPower=intMat;
 else
-    error('no negative powers supported')
+    intMatPower=intMat*intMat;
+    for i=3:exponent
+    %multiply matrix zonotope with itself
+        intMatPower=intMatPower*intMat;
+    end
 end
 
 %------------- END OF CODE --------------

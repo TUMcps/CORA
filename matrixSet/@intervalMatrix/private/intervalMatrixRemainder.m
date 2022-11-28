@@ -1,19 +1,21 @@
-function E = intervalMatrixRemainder(intMatr,matrixNorm,maxOrder)
-% function, which calculates the remainder for the exponantiation of an
-%    intervalMatrix depending on the order of the series
+function E = intervalMatrixRemainder(intMat,matrixNorm,maxOrder)
+% intervalMatrixRemainder - calculates the remainder for the exponantiation
+%    of an interval matrix depending on the order of the series
 %
 % Syntax:  
-%    E = intervalMatrixRemainder(intMatr,maxOrder)
+%    E = intervalMatrixRemainder(intMat,matrixNorm,maxOrder)
 %
 % Inputs:
-%    intMatrix - intervalMatrix 
+%    intMat - intervalMatrix object
+%    matrixNorm - ???
 %    maxOrder - maximum Taylor series order
 %
 % Outputs
-%    E = matrix or intervalMatrix with the remainder for the
-%         exponentiation of an intervalMatrix
+%    E - matrix or intervalMatrix with the remainder for the
+%        exponentiation of an intervalMatrix
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,9 +34,9 @@ function E = intervalMatrixRemainder(intMatr,matrixNorm,maxOrder)
 % it will be [1;1] or [-1;1]
 
 a = matrixNorm;
-n= length(intMatr.int.sup);
+n= length(intMat.int.sup);
 
-if(isequal(intMatr.int.sup,intMatr.int.inf))
+if(isequal(intMat.int.sup,intMat.int.inf))
     E=intervalMatrix(ones(n),0);
     % a= norm(intMatr.int.sup,inf);
 else
@@ -42,7 +44,7 @@ else
     % a= norm(intMatr,inf);
 end
 
-if(a>=maxOrder+2)
+if a >= maxOrder + 2
     E = [];
     return;
 end
@@ -71,3 +73,4 @@ end
 
 end
 
+%------------- END OF CODE --------------

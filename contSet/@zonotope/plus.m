@@ -7,7 +7,7 @@ function Z = plus(summand1,summand2)
 %
 % Inputs:
 %    summand1 - zonotope object or numerical vector
-%    summand2 - zonotope object or numerical vector
+%    summand2 - zonotope object, contSet object, or numerical vector
 %
 % Outputs:
 %    Z - zonotope after Minkowski addition
@@ -44,39 +44,60 @@ function Z = plus(summand1,summand2)
 
 %------------- BEGIN CODE --------------
 
-    % determine zonotope object
-    if isa(summand1,'zonotope')
-        Z = summand1;
-        summand = summand2;  
-    elseif isa(summand2,'zonotope')
-        Z = summand2;
-        summand = summand1;  
-    end
+% determine zonotope object
+[Z,summand] = findClassArg(summand1,summand2,'zonotope');
+
+try
 
     % different cases depending on the class of the second summand
     if isa(summand,'zonotope')
-
+    
         % see Equation 2.1 in [1]
         Z.Z(:,1) = Z.Z(:,1)+summand.Z(:,1);
         Z.Z(:,(end+1):(end+length(summand.Z(1,2:end)))) = summand.Z(:,2:end);
-
+    
     elseif isnumeric(summand)
-
+    
         Z.Z(:,1) = Z.Z(:,1)+summand;
-
+    
     elseif isa(summand,'interval')
-
+    
         Z = Z + zonotope(summand);
-
+    
     elseif isa(summand,'mptPolytope') || isa(summand,'conZonotope') || ...
            isa(summand,'zonoBundle') || isa(summand,'polyZonotope') || ...
            isa(summand,'conPolyZono')
-
+    
         Z = summand + Z;        
-
+    
     else
         % throw error for given arguments
-        error(noops(summand1,summand2));
+        throw(CORAerror('CORA:noops',summand1,summand2));
     end
+
+catch ME
+    % note: error has already occured, so the operations below don't have
+    % to be efficient
+
+    % already know what's going on...
+    if startsWith(ME.identifier,'CORA')
+        rethrow(ME);
+    end
+
+    % check for empty sets
+    if isempty(Z)
+        return
+    elseif (isnumeric(summand) && isempty(summand)) || ...
+            (isa(summand,'contSet') && isemptyobject(summand))
+        Z = zonotope(); return
+    end
+
+    % check whether different dimension of ambient space
+    equalDimCheck(Z,summand);
+
+    % other error...
+    rethrow(ME);
+
+end
 
 %------------- END OF CODE --------------

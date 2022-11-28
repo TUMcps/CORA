@@ -26,7 +26,7 @@ function runTestSuite(varargin)
 currentDirectory = pwd;
 
 % directory of unit tests
-directory = [coraroot filesep 'unitTests'];
+directory = [CORAROOT filesep 'unitTests'];
 verbose = true;
 
 if nargin >= 1
@@ -38,12 +38,13 @@ if nargin >= 2
     temp = strrep(temp,'/',filesep);
     directory = temp;
     if ~isfolder(directory)
-        error("Input given for directory is not a directory!");
+        throw(CORAerror('CORA:specialError',...
+            "Input given for directory is not a directory!"));
     end
 end
 
 % save start date and time (only full runs)
-if strcmp(directory,[coraroot filesep 'unitTests'])
+if strcmp(directory,[CORAROOT filesep 'unitTests'])
     timeStart = char(datetime(now,'ConvertFrom','datenum'));
 end
 
@@ -51,7 +52,7 @@ end
 [failed, numberOfTests] = testSuiteCore('test',verbose,directory);
 
 % save result (only full runs)
-if strcmp(directory,[coraroot filesep 'unitTests'])
+if strcmp(directory,[CORAROOT filesep 'unitTests'])
     timeEnd = char(datetime(now,'ConvertFrom','datenum'));
     % save end date and time, number (and names) of (failed) tests
     res_testrun.date = [timeStart ' - ' timeEnd(13:end)];

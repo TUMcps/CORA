@@ -1,16 +1,16 @@
-function [Zbundle] = plus(summand1,summand2)
+function zB = plus(summand1,summand2)
 % plus - Overloaded '+' operator for the Minkowski addition of a zonotope
 %        bundle with a zonotope or with a vector (see Prop. 2 in [1])
 %
 % Syntax:  
-%    [Zbundle] = plus(summand1,summand2)
+%    zB = plus(summand1,summand2)
 %
 % Inputs:
-%    summand1 - zonotope bundle or zonotope or numerical vector
-%    summand2 - zonotope bundle or zonotope or numerical vector
+%    summand1 - zonoBundle object, zonotope object, or numerical vector
+%    summand2 - zonoBundle object, zonotope object, or numerical vector
 %
 % Outputs:
-%    Zbundle - Zonotpe bundle after Minkowsi addition
+%    zB - zonoBundle object after Minkowski addition
 %
 % References:
 %    [1] M. Althoff. "Zonotope bundles for the efficient computation of 
@@ -29,40 +29,60 @@ function [Zbundle] = plus(summand1,summand2)
 
 %------------- BEGIN CODE --------------
 
-    % determine zonotope bundle object
-    if isa(summand1,'zonoBundle')
-        Zbundle=summand1;
-        summand=summand2; 
-    elseif isa(summand2,'zonoBundle')
-        Zbundle=summand2;
-        summand=summand1;  
-    end
+% determine zonotope bundle object
+[zB,summand] = findClassArg(summand1,summand2,'zonoBundle');
+
+try
 
     % over-approximate the set if the summand is a zonotope bundle
     if isa(summand,'zonoBundle')
        summand = zonotope(interval(summand)); 
     end
-
+    
     % different cases depending on the class of the second summand
     if isa(summand,'zonotope') || isnumeric(summand) || isa(summand,'interval')
-
-        for i = 1:Zbundle.parallelSets
-            Zbundle.Z{i} = Zbundle.Z{i} + summand;
+    
+        for i = 1:zB.parallelSets
+            zB.Z{i} = zB.Z{i} + summand;
         end
-
+    
     elseif isa(summand,'mptPolytope') || isa(summand,'conZonotope') 
-
-        for i = 1:Zbundle.parallelSets
-            Zbundle.Z{i} = Zbundle.Z{i} + zonoBundle(summand);
+    
+        for i = 1:zB.parallelSets
+            zB.Z{i} = zB.Z{i} + zonoBundle(summand);
         end        
-
+    
     elseif isa(summand,'polyZonotope') || isa(summand,'conPolyZono')
-
-        Zbundle = summand + Zbundle;
-
+    
+        zB = summand + zB;
+    
     else
         % throw error for given arguments
-        error(noops(summand1,summand2));
+        throw(CORAerror('CORA:noops',summand1,summand2));
     end
+
+catch ME
+    % note: error has already occured, so the operations below don't have
+    % to be efficient
+
+    % already know what's going on...
+    if startsWith(ME.identifier,'CORA')
+        rethrow(ME);
+    end
+
+    % check for empty sets
+    if isempty(zB)
+        return
+    elseif isemptyobject(summand)
+        zB = zonoBundle(); return
+    end
+
+    % check whether different dimension of ambient space
+    equalDimCheck(zB,summand);
+
+    % other error...
+    rethrow(ME);
+
+end
 
 %------------- END OF CODE --------------

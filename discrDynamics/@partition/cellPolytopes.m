@@ -41,7 +41,7 @@ polytopes = cell(length(intervals));
 % convert intervals to polytopes
 for i = 1:length(intervals)
     IH=intervals{i};
-    polytopes{i} = polytope(IH);
+    polytopes{i} = mptPolytope(IH);
 end
 
 %------------- END OF CODE --------------

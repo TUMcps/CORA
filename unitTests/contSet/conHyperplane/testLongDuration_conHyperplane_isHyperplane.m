@@ -1,5 +1,6 @@
 function res = testLongDuration_conHyperplane_isHyperplane
-% testLongDuration_conHyperplane_isHyperplane - unit test function of isHyperplane
+% testLongDuration_conHyperplane_isHyperplane - unit test function of
+%    isHyperplane
 %
 % Syntax:  
 %    res = testLongDuration_conHyperplane_isHyperplane
@@ -24,12 +25,20 @@ function res = testLongDuration_conHyperplane_isHyperplane
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% init result
 res = true;
-nTests = 100;
-for i=1:nTests
+
+% number of tests
+nrTests = 100;
+for i=1:nrTests
+
+    % random dimension
     n = randi(30);
+
     % empty constraint set
     hyp1 = conHyperplane(randn(1,n),randn,zeros(1,n),abs(randn));
+
     % constraint set not empty but still unconstrained hyperplane
     I = eye(n);
     a = abs(randn);
@@ -38,6 +47,7 @@ for i=1:nTests
         res = false;
         break;
     end
+
     % constraint set which actually constrains hyperplane
     % could be 1D and then not consistent (see "conHyperplane"
     % constructor); otherwise trivially always an unconstrained hyperplane
@@ -49,12 +59,12 @@ for i=1:nTests
             break;
         end
     end
+    
 end
 
-if res
-    disp('testLongDuration_conHyperplane_isHyperplane successful');
-else
-    disp('testLongDuration_conHyperplane_isHyperplane failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','d','hyp1');
 end
 
 %------------- END OF CODE --------------

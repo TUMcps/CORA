@@ -1,16 +1,16 @@
-function V = potVertices(obj)
-% potVertices - calculate all potential vertices of a constrained zonotope
-%               object. The points vertices are either real vertices or are
-%               located inside the constrained zonotope 
+function V = potVertices(cZ)
+% potVertices - calculate all potential vertices of a constrained zonotope;
+%    the points vertices are either real vertices or are located inside the
+%    constrained zonotope 
 %
 % Syntax:  
-%    res = potVertices(obj)
+%    V = potVertices(cZ)
 %
 % Inputs:
-%    obj - matrix of size (n,m) containing the m potential vertices
+%    cZ - conZonotope object
 %
 % Outputs:
-%    res - c-zonotope object
+%    V - vertices ((n,m) containing the m potential vertices)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,18 +32,18 @@ function V = potVertices(obj)
 %------------- BEGIN CODE --------------
     
 % Calculate extreme points for the zonotope factors ksi
-if isempty(obj.ksi)
+if isempty(cZ.ksi)
 
     % remove all constraints for which the elimination does not result
     % in an over-approximation (less ksi-dimensions -> speed-up)
-    obj = reduceConstraints(obj);
+    cZ = reduceConstraints(cZ);
     
     % remove all all-zero columns in the constraint matrix
-    temp = sum(abs(obj.A),1);
+    temp = sum(abs(cZ.A),1);
     ind1 = find(temp == 0);
-    ind2 = setdiff(1:size(obj.A,2),ind1);
+    ind2 = setdiff(1:size(cZ.A,2),ind1);
     
-    A_ = obj.A(:,ind2);
+    A_ = cZ.A(:,ind2);
     
     % bounding constraints
     n = length(ind2);
@@ -51,12 +51,12 @@ if isempty(obj.ksi)
     b = ones(2*n,1);
     
     % method for calculation depending on dimension of input
-    if size(obj.A,1) ~= 1
+    if size(cZ.A,1) ~= 1
         % calculate the extreme points in ksi-space (= polytope vertices)
         try
-            ksi_2 = lcon2vert(A,b,A_,obj.b);
+            ksi_2 = lcon2vert(A,b,A_,cZ.b);
         catch
-            poly = Polyhedron([A;A_;-A_],[b;obj.b;-obj.b]);
+            poly = Polyhedron([A;A_;-A_],[b;cZ.b;-cZ.b]);
             computeVRep(poly);
             ksi_2 = poly.V;
         end
@@ -65,13 +65,13 @@ if isempty(obj.ksi)
         hyperbox = zeros(n,2);
         hyperbox(:,1) = -b(n+1:end,1);
         hyperbox(:,2) = b(1:n,1);
-        ksi_2 = boxPlaneIntersectNaive(hyperbox,obj.b,A_);
+        ksi_2 = boxPlaneIntersectNaive(hyperbox,cZ.b,A_);
     else
         % calculate the intersection points via [2] proposed method
         hyperbox = zeros(n,2);
         hyperbox(:,1) = -b(n+1:end,1);
         hyperbox(:,2) = b(1:n,1);
-        ksi_2 = boxPlaneIntersect(hyperbox,obj.b,A_);
+        ksi_2 = boxPlaneIntersect(hyperbox,cZ.b,A_);
     end
     
     % combine factors for the potential vertices
@@ -94,11 +94,11 @@ if isempty(obj.ksi)
         ksi = ksi_2; 
     end
     
-    obj.ksi = ksi';
+    cZ.ksi = ksi';
 
 end
     
 % Calculate the corresponding zonotope points (ksi-space -> real space)
-V = obj.Z * [ones(1,size(obj.ksi,2)); obj.ksi];
+V = cZ.Z * [ones(1,size(cZ.ksi,2)); cZ.ksi];
 
 %------------- END OF CODE --------------

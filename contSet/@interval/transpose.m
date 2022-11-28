@@ -1,16 +1,18 @@
-function intVal = transpose(intVal)
+function I = transpose(I)
 % transpose - Overloaded '.'' operator for single operand
 %
 % Syntax:  
-%    intVal = transpose(intVal)
+%    I = transpose(I)
 %
 % Inputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Outputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Example: 
+%    I = interval([-2;-3;-4],[5;6;7]);
+%    I.'
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,10 +27,7 @@ function intVal = transpose(intVal)
 
 %------------- BEGIN CODE --------------
 
-%infimum
-intVal.inf = intVal.inf.';
-
-%supremum
-intVal.sup = intVal.sup.';
+I.inf = I.inf.';
+I.sup = I.sup.';
 
 %------------- END OF CODE --------------

@@ -85,10 +85,9 @@ for i=1:nrOfTests
 end
 
 
-if res
-    disp('test_halfspace successful');
-else
-    disp('test_halfspace failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','c','d','c_mat','d_vec','d_mat');
 end
 
 %------------- END OF CODE --------------

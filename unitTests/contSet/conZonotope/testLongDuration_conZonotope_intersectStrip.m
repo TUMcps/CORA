@@ -80,15 +80,19 @@ Z_tol = zonotope([zeros(2,1),tol*eye(2)]);
 resVec = zeros(length(cZ_over)+length(cZ_over_single),1);
 % case for multiple strips
 for i = 1:length(cZ_over)
-    resVec(i) = in(mptPolytope(cZ_over{i} + Z_tol),P_exact);
+    resVec(i) = contains(mptPolytope(cZ_over{i} + Z_tol),P_exact);
 end
 % case for single strip
 for i = 1:length(cZ_over_single)
-    resVec(i+length(cZ_over)) = in(mptPolytope(cZ_over_single{i} + Z_tol),P_exact_single);
+    resVec(i+length(cZ_over)) = contains(mptPolytope(cZ_over_single{i} + Z_tol),P_exact_single);
 end
 
 % all methods over-aproximative?
 res = all(resVec);
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'cZ','P_single');
+end
  
 % figure; hold on 
 % plot(cZ,[1 2],'r-+');

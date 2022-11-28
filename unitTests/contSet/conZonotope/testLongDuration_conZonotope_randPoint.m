@@ -58,11 +58,11 @@ for i=1:nrOfTests
     % compute random points
     nrPts = 10;
     pNormal = randPoint(conZono,nrPts,'standard');
-    pExtreme = randPoint(conZono,nrPts,'extreme');
+%     pExtreme = randPoint(conZono,nrPts,'extreme');
     
     % check for containment in zonotope
     Z = zonotope(c,G);
-    res = in(Z,pNormal,tol);
+    res = all(contains(Z,pNormal,'exact',tol));
     
     % random constraints so that conZonotope represents just a point
     % as A being diagional forces each independent factor to one value
@@ -84,7 +84,7 @@ for i=1:nrOfTests
         
         % check if beta_k in [-1,1]
         if abs(beta(k)) > 1
-            error("Check test function!");
+            throw(CORAerror('CORA:testFailed'));
         end
         
         % contribution of k-th generator
@@ -102,10 +102,9 @@ for i=1:nrOfTests
 end
 
 
-if res
-    disp('testLongDuration_conZonotope_randPoint successful');
-else
-    disp('testLongDuration_conZonotope_randPoint failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','p','G','c','Z');
 end
 
 %------------- END OF CODE --------------

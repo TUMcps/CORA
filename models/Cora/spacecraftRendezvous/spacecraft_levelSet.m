@@ -38,8 +38,8 @@ inv = levelSet(-x^2 - y^2 + 100^2,[x;y;vx;vy],'<=');
 
 % transition: x^2 + y^2 == 100^2
 resetA = eye(4);
-resetb = zeros(4,1);
-reset = struct('A', resetA, 'b', resetb);
+resetc = zeros(4,1);
+reset = struct('A', resetA, 'c', resetc);
 
 guard = levelSet(x^2 + y^2 - 100^2,[x;y;vx;vy],'==');
 

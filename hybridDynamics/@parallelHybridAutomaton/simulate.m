@@ -1,13 +1,12 @@
-function [t,x,loc] = simulate(obj,params)
+function [t,x,loc] = simulate(pHA,params)
 % simulate - simulates a parallel hybrid automaton
 %
 % Syntax:  
-%    [t,x,loc] = simulate(obj, options)
+%    [t,x,loc] = simulate(pHA,params)
 %
 % Inputs:
-%    obj - parallel hybrid automaton object
+%    pHA - parallelHybridAutomaton object
 %    params - system parameters
-%    options - simulation options
 %
 % Outputs:
 %    t - cell-array storing the time vectors
@@ -28,7 +27,7 @@ function [t,x,loc] = simulate(obj,params)
 %------------- BEGIN CODE --------------
 
     % new options preprocessing
-    options = validateOptions(obj,mfilename,params,struct([]));
+    options = validateOptions(pHA,mfilename,params,struct([]));
 
     % initialization
     tInter = options.tStart;         % intermediate time at transitions
@@ -37,12 +36,16 @@ function [t,x,loc] = simulate(obj,params)
 
     loc = {}; t = {}; x = {};
 
+    % create list of label occurences to check whether all labeled
+    % transitions are enabled at the same time
+    allLabels = labelOccurrences(pHA);
+
     % loop over the different locations 
     while tInter < options.tFinal && ~isempty(locCurr) && ...
            ~all(options.finalLoc == locCurr)
 
         % construct new location with local Automaton Product
-        currentLocation = locationProduct(obj,locCurr);
+        currentLocation = locationProduct(pHA,locCurr,allLabels);
 
         % construct system input for this location
         params.u = mergeInputVector(locCurr,options);

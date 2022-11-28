@@ -1,15 +1,14 @@
-function Zsplit = split(Zbundle,varargin)
+function Zsplit = split(zB,varargin)
 % split - Splits a zonotope bundle into two zonotope bundles. This is done 
-% for one or every generator resulting in n possible splits where n is the 
-% system dimension; it is also possible to use a splitting hyperplane
+%    for one or every generator resulting in n possible splits where n is
+%    the system dimension; it is also possible to use a splitting hyperplane
 %
 % Syntax:  
-%    Zsplit = split(Zbundle,varargin)
+%    Zsplit = split(zB,varargin)
 %
 % Inputs:
-%    Z - zonotope bundle
+%    zB - zonoBundle object
 %    N/hyperplane - splitting dimension in splitting hyperplane
-%    
 %
 % Outputs:
 %    Zsplit - one or many zonotope bundle pairs
@@ -36,14 +35,14 @@ function Zsplit = split(Zbundle,varargin)
 if nargin==1
     
     %obtain enclosing interval hull
-    IH = interval(Zbundle);
+    IH = interval(zB);
     %obtain limits
     leftLimit = infimum(IH);
     rightLimit = supremum(IH);
     
     for N = 1:length(leftLimit)
         %split one dimension of the interval hull
-        Zsplit{N} = splitOneDim(Zbundle,leftLimit,rightLimit,N); 
+        Zsplit{N} = splitOneDim(zB,leftLimit,rightLimit,N); 
     end
     
 elseif nargin==2
@@ -52,12 +51,12 @@ elseif nargin==2
     if isnumeric(varargin{1}) 
         N = varargin{1};
         %obtain enclosing interval hull
-        IH = interval(Zbundle);
+        IH = interval(zB);
         %obtain limits
         leftLimit = infimum(IH);
         rightLimit = supremum(IH);
         %split one dimension
-        Zsplit = splitOneDim(Zbundle,leftLimit,rightLimit,N); 
+        Zsplit = splitOneDim(zB,leftLimit,rightLimit,N); 
         
     %split using a halfspace
     elseif isa(varargin{1},'halfspace')
@@ -67,7 +66,7 @@ elseif nargin==2
         rotMat = rotationMatrix(h);
         invRotMat = rotMat.';
         %obtain enclosing interval hull of rotated zonotope
-        IH = interval(invRotMat*Zbundle);
+        IH = interval(invRotMat*zB);
         intervals = get(IH,'intervals'); % dead: no asset property called 'intervals'
         %rotate halfspace
         h_rot = invRotMat*h;
@@ -83,8 +82,8 @@ elseif nargin==2
         Znew{1} = rotMat*zonotope(intHull{1});
         Znew{2} = rotMat*zonotope(intHull{2});
         %splitted sets
-        Zsplit{1} = Zbundle & Znew{1};
-        Zsplit{2} = Zbundle & Znew{2};
+        Zsplit{1} = zB & Znew{1};
+        Zsplit{2} = zB & Znew{2};
     end
     
 elseif nargin==3
@@ -92,27 +91,27 @@ elseif nargin==3
     if strcmp(varargin{2},'bundle')
         %split halfway in a direction using a zonotope bundle
         dir = varargin{1};
-        Zsplit = directionSplitBundle(Zbundle,dir);
+        Zsplit = directionSplitBundle(zB,dir);
     end
     
 end
 
+end
 
 
+% Auxiliary Functions
 
-
-function Zsplit = splitOneDim(Zbundle,leftLimit,rightLimit,dim)
-
+function Zsplit = splitOneDim(Zbundle,lb,ub,dim)
 
 %split limits for a given dimension
-leftLimitMod = leftLimit;
-leftLimitMod(dim) = 0.5*(leftLimit(dim)+rightLimit(dim));
-rightLimitMod = rightLimit;
-rightLimitMod(dim) = 0.5*(leftLimit(dim)+rightLimit(dim));
+leftLimitMod = lb;
+leftLimitMod(dim) = 0.5*(lb(dim)+ub(dim));
+rightLimitMod = ub;
+rightLimitMod(dim) = 0.5*(lb(dim)+ub(dim));
 
 %construct zonotopes which are the left and right boxes
-Zleft = zonotope(interval(leftLimit,rightLimitMod));
-Zright = zonotope(interval(leftLimitMod,rightLimit));
+Zleft = zonotope(interval(lb,rightLimitMod));
+Zright = zonotope(interval(leftLimitMod,ub));
 
 %generate splitted zonotope bundles
 Zsplit{1} = Zbundle & Zleft;
@@ -130,6 +129,7 @@ Zsplit{2} = Zbundle & Zright;
 % Zsplit{1} = pinv(options.W)*shrink(options.W*Zsplit{1},options.filterLength);
 % Zsplit{2} = pinv(options.W)*shrink(options.W*Zsplit{2},options.filterLength);
 
+end
 
 function Zsplit = directionSplitBundle(Z,dir)
 
@@ -161,6 +161,7 @@ Z2{2} = rotMat.'*zonotope(IH2);
 Zsplit{1} = zonoBundle(Z1);
 Zsplit{2} = zonoBundle(Z2);
 
+end
 
 function rotMat = rotationMatrix(h)
 
@@ -194,11 +195,13 @@ if abs(h.c.'*newDir) ~= 1
     rotMat = B*R*inv(B);
     
 else
-    if h.c.'*newDir == 1
+    if withinTol(h.c.'*newDir,1)
         rotMat = eye(N);
     else
         rotMat = -eye(N);
     end
+end
+
 end
 
 function rotMat = rotationMatrixDir(dir, newDir)
@@ -233,12 +236,13 @@ if abs(dir.'*newDir) ~= 1
     rotMat = B*R*inv(B);
     
 else
-    if dir.'*newDir == 1
+     if withinTol(dir.'*newDir,1)
         rotMat = eye(N);
     else
         rotMat = -eye(N);
     end
 end
 
+end
 
 %------------- END OF CODE --------------

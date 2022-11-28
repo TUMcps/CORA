@@ -1,17 +1,19 @@
 function [Rnext,IH] = postReach(obj,Rinit,R_tp,c)
 % postReach - computes the reachable continuous set for the first time
-% interval as a postprocessing step
+%    interval as a postprocessing step
 %
 % Syntax:  
-%    [Rnext] = postReach(obj,Rinit,R_tp)
+%    [Rnext,IH] = postReach(obj,Rinit,R_tp,c)
 %
 % Inputs:
-%    obj - linearSys object
+%    obj - linParamSys object
 %    Rinit - initial reachable set
 %    R_tp - reachable set at the next point in time
+%    c - ?
 %
 % Outputs:
 %    Rnext - next reachable set 
+%    IH - 
 %
 % Example: 
 %
@@ -51,6 +53,5 @@ IH_err = interval(R_err+RV);
 IH = enclose(IH_init,IH_tp) + IH_err;
 
 %IH_alt = interval(R_ti);
-
 
 %------------- END OF CODE --------------

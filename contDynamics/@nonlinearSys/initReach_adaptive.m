@@ -10,7 +10,7 @@ function [Rnext,options] = initReach_adaptive(obj,options)
 %    options - struct containing the algorithm settings
 %
 % Outputs:
-%    Rfirst - first reachable set
+%    Rnext - reachable set
 %    options - struct containing the algorithm settings
 %
 % Other m-files required: none
@@ -32,9 +32,5 @@ function [Rnext,options] = initReach_adaptive(obj,options)
 Rnext.tp = Rtp;
 Rnext.ti = Rti;
 Rnext.R0 = options.R;
-    
-end
-
 
 %------------- END OF CODE --------------
-

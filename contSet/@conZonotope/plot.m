@@ -1,29 +1,32 @@
 function han = plot(cZ,varargin)
-% plot - Plot a 2D-projection of a constrained zonotope object
+% plot - plots a projection of a constrained zonotope
 %
 % Syntax:  
-%    plot(cZ)
-%    plot(cZ,dims,type)
+%    han = plot(cZ)
+%    han = plot(cZ,dims)
+%    han = plot(cZ,dims,type)
 %
 % Inputs:
-%    cZ - constrained zonotope object
-%    dims - (optional) dimensions of the projection
-%    plotOptions - (optional) plot settings (LineSpec and name-value pairs)
+%    cZ - conZonotope object
+%    dims - (optional) dimensions for projection
+%    type - (optional) plot settings (LineSpec and Name-Value pairs)
+%           additional Name-Value pairs:
+%               <'Splits',splits> - number of splits for refinement
+%               <'Template',dirs> - template directions
 %
 % Outputs:
-%    han - handle of figure
+%    han - handle to the graphics object
 %
 % Example: 
 %    Z = [0 1 0 1;0 1 2 -1];
-%    A = [-2 1 -1];
-%    b = 2;
+%    A = [-2 1 -1]; b = 2;
 %    cZ = conZonotope(Z,A,b);
 %
 %    figure;
 %    plot(cZ,[1,2],'r');
 %
 %    figure;
-%    plot(cZ,[1,2],'b','Filled',true,'Splits',4);
+%    plot(cZ,[1,2],'FaceColor','b','Splits',4);
 %
 %    figure;
 %    plot(cZ,[1,2],'r','Template',16);
@@ -37,56 +40,53 @@ function han = plot(cZ,varargin)
 % Author:       Niklas Kochdumper, Mark Wetzlinger
 % Written:      11-May-2018
 % Last update:  15-July-2020 (MW, merge with plotFilled|Template|Split)
+%               25-May-2022 (TL: 1D Plotting)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % default settings
-dims = [1,2];
-plotOptions{1} = 'b';
-mode = 1; % standard plot mode
+dims = setDefaultValues({[1,2]},varargin{:});
+% standard plot mode
+mode = 1;
 
-% parse input arguments
-if nargin >= 2 && ~isempty(varargin{1})
-	dims = varargin{1}; 
-end
-if nargin >= 3 && ~isempty(varargin{2})
-    plotOptions = varargin(2:end);
-    % process linespec and Name-Value pairs
-    [linespec,NVpairs] = readPlotOptions(plotOptions);
-    [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar');
-    [NVpairs,numDir] = readNameValuePair(NVpairs,'Template','isscalar');
-    
-    % error if both given
-    if ~isempty(splits) && ~isempty(numDir)
-        error("Choose either Splits or Template.");
-    elseif ~isempty(splits)
-        mode = 2;
-    elseif ~isempty(numDir)
-        mode = 3;
-    end
-    
-    % unify with linespec
-    plotOptions = [linespec,NVpairs];
+% process linespec and Name-Value pairs
+NVpairs = readPlotOptions(varargin(2:end));
+[NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar');
+[NVpairs,numDir] = readNameValuePair(NVpairs,'Template','isscalar');
+
+% error if both given
+if ~isempty(splits) && ~isempty(numDir)
+    throw(CORAerror('CORA:specialError','Choose either Splits or Template.'));
+elseif ~isempty(splits)
+    mode = 2;
+elseif ~isempty(numDir)
+    mode = 3;
 end
 
 % check dimension
-if length(dims) < 2
-    error('At least 2 dimensions have to be specified!');
+if length(dims) < 1
+    throw(CORAerror('CORA:plotProperties',1));
 elseif length(dims) > 3
-    error('Only up to 3 dimensions can be plotted!');
+    throw(CORAerror('CORA:plotProperties',3));
 end
 
 % project the object to the 2D-subspace
 cZ = project(cZ,dims);
 
+if length(dims) == 1
+    % add zeros to 2nd dimension
+    cZ = cZ.cartProd(0);
+    dims = [1;2];
+end
+
 % plot modes: standard (1), template (2), splits (3)
 if mode == 1
-    han = plotStandard(cZ,dims,plotOptions);
+    han = plotStandard(cZ,dims,NVpairs);
 elseif mode == 2
-    han = plotSplit(cZ,splits,dims,plotOptions);
+    han = plotSplit(cZ,splits,dims,NVpairs);
 elseif mode == 3
-    han = plotTemplate(cZ,numDir,dims,plotOptions);
+    han = plotTemplate(cZ,numDir,dims,NVpairs);
 end
 
 end
@@ -97,13 +97,9 @@ end
 function han = plotStandard(cZ,dims,plotOptions)
 
     % get dimensions after projection
-    if length(dims) == 2
-        dims = [1,2];
-    else
-        dims = [1,2,3];
-    end
+    dims = 1:length(dims);
 
-    if isempty(cZ.A)
+    if isempty(cZ.A) || ( ~any(any(cZ.A)) && ~any(cZ.b) )
         han = plot(zonotope(cZ.Z),dims,plotOptions{:});
     else
         
@@ -151,18 +147,24 @@ function han = plotSplit(cZ,splits,dims,plotOptions)
 
     for i = 1:length(list)
         % over-approximate the splitted sets with intervals
-        if length(dims) == 2
+        if length(dims) == 1
+             han = plot(interval(list{i}),1,plotOptions{:});
+        elseif length(dims) == 2
             han = plot(interval(list{i}),[1,2],plotOptions{:});
         else
             han = plot(interval(list{i}),[1,2,3],plotOptions{:});
         end
+    end
+    
+    if nargout == 0
+        clear han;
     end
 end
 
 
 function han = plotTemplate(cZ,numDir,dims,plotOptions)
 
-    % select directions for template polyhedron 
+    % select directions for template polyhedron
     if length(dims) == 2
         angles = linspace(0,360,numDir+1);
         angles = angles(1:end-1);

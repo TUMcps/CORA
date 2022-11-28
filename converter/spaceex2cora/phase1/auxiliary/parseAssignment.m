@@ -1,34 +1,59 @@
 function [varnames,exprs,warnings] = parseAssignment(str)
-%	INTPUTS:
-%   str (string): series of assignments seperated by "&"
-%               assignment syntax: <variable>' = <expr>
-%               operators = == := supported
-%   OUTPUTS:
-%   varnames (string array): names of assigned variables
-%   exprs (symbolic array): assigned expressions
-%       represent assignments "varnames(i)' = exprs(i)"
-%   warnings (struct) document failed operations in warnings.messages
- warnings = struct([]);
- warn_ct = 0;
- 
- % Unfortunately, the symbolic Toolbox interprets variables named "i","j",
- % "I" or "J" as the imaginary number.
- % We perform a transformation on all variable names to avoid this.
- str = replaceImagVarnames(str);
- 
- % if char array was passed, transform to string
- str = string(str);
- 
- % split into single equations at '&' signs
- equations = strsplit(str,"&");
- 
- % preallocate string arrays for left & right sides
- varnames = strings(length(equations),1);
- exprStrings = strings(length(equations),1);
- numExpr = 0;
- 
- % split equations into sides
- for i = 1:length(equations)
+% parseAssignment - Parses a list of assignments in spaceEx format (like
+%    they occur in, e.g., resets of transitions) into an array of symbolic
+%    expressions and a list of assigned variable names
+%
+% Syntax:  
+%    [varnames,exprs,warnings] = parseAssignment(str)
+%
+% Inputs:
+%    str (string) - series of assignments seperated by "&"
+%                   assignment syntax: <variable>' = <expr>
+%                   operators = == := supported
+%
+% Outputs:
+%    varnames (string array) - names of assigned variables
+%    exprs (symbolic array) - assigned expressions represent assignments
+%                             "varnames(i)' = exprs(i)"
+%    warnings (struct) - document failed operations in warnings.messages
+%
+% Example: 
+%    ---
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
+
+% Author:       ???
+% Written:      ???
+% Last update:  ---
+% Last revision:---
+
+%------------- BEGIN CODE --------------
+
+warnings = struct([]);
+warn_ct = 0;
+
+% Unfortunately, the symbolic Toolbox interprets variables named "i","j",
+% "I" or "J" as the imaginary number.
+% We perform a transformation on all variable names to avoid this.
+str = replaceImagVarnames(str);
+
+% if char array was passed, transform to string
+str = string(str);
+
+% split into single equations at '&' signs
+equations = strsplit(str,"&");
+
+% preallocate string arrays for left & right sides
+varnames = strings(length(equations),1);
+exprStrings = strings(length(equations),1);
+numExpr = 0;
+
+% split equations into sides
+for i = 1:length(equations)
     % split by assignment operators =, ==, or :=
     sides = strsplit(equations(i),"(=|:)?=","DelimiterType","RegularExpression");
     if length(sides) == 2
@@ -56,10 +81,11 @@ function [varnames,exprs,warnings] = parseAssignment(str)
             "Format Error: %i operators found in assignment ""%s"", skipping",...
             length(sides)-1,equations(i));
     end
- end
- 
- % shorten arrays, in case of invalid equations
- varnames = varnames(1:numExpr,1);
- % convert expressions to symbolic
- exprs = str2symbolic(exprStrings(1:numExpr,1));
 end
+
+% shorten arrays, in case of invalid equations
+varnames = varnames(1:numExpr,1);
+% convert expressions to symbolic
+exprs = str2symbolic(exprStrings(1:numExpr,1));
+
+%------------- END OF CODE --------------

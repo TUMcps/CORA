@@ -41,9 +41,7 @@ function Zres = intersectStrip(Z,C,phi,y,varargin)
 %    plot(poly,[1 2],'r-*');
 %    plot(Zpoly,[1 2],'b-+');
 %    plot(res_zono,[1 2],'b-*');
-% 
 %    legend('zonotope','strips','zono&poly','zonoStrips');
-%
 %
 % References:
 %    [1] V. T. H. Le, C. Stoica, T. Alamo, E. F. Camacho, and
@@ -119,7 +117,8 @@ if strcmp(method,'svd') || strcmp(method,'radius')
 elseif strcmp(method,'alamo-volume') 
     % warning if more than one strip is used
     if length(phi)>1
-        error('Alamo method should only be used for single strips to ensure convergence');
+        throw(CORAerror('CORA:specialError',...
+            'Alamo method should only be used for single strips to ensure convergence'));
     end
     % implement volume expression from [3], Vol(\hat{X}(lambda)) (last eq.
     % before Sec. 7); from now on referred to as (V)

@@ -1,6 +1,6 @@
 function obj = highOrderMappingMatrix(obj,intermediateTerms)
 % highOrderMappingMatrix - computes a mapping matrix set without the first
-% two orders
+%    two orders
 %
 % Syntax:  
 %    obj = highOrderMappingMatrix(obj,intermediateTerms)
@@ -8,12 +8,13 @@ function obj = highOrderMappingMatrix(obj,intermediateTerms)
 % Inputs:
 %    obj - linParamSys object 
 %    intermediateTerms - order until which the original matrix set
-%                           representation is used
+%                        representation is used
 %
 % Outputs:
 %    obj - resulting linParamSys object 
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -66,6 +67,5 @@ obj.mappingMatrixSet.highOrderInt = eI + (-eImid);
 
 obj.mappingMatrixSet.highOrderZonoInput = eZ_input + eImid_input;
 obj.mappingMatrixSet.highOrderIntInput = eI_input + (-eImid_input);
-
 
 %------------- END OF CODE --------------

@@ -2,15 +2,14 @@ function completed = example_nonlinear_reach_07_vanDerPol_linearRemainder()
 % example_nonlinear_reach_07_vanDerPol_linearRemainder - example of
 %    nonlinear reachability analysis;
 %
-%
 % Syntax:  
 %    example_nonlinear_reach_07_vanDerPol_linearRemainder()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
+%    completed - boolean 
 %
 % Example: 
 %
@@ -35,8 +34,6 @@ params.U = zonotope(0);
 options.timeStep=0.02; %time step size for reachable set computation
 options.taylorTerms=4; %number of taylor terms for reachable sets
 options.zonotopeOrder=10; %zonotope order
-options.intermediateOrder = 10;
-options.errorOrder = 5;
 
 options.tensorOrder=2;
 options.maxError=0.1*[1; 1];
@@ -56,38 +53,37 @@ tx1 = tic;
 options.alg = 'lin';
 R_wo_linear = reach(vanderPol, params, options);
 tComp1 = toc(tx1);
-disp(['computation time of reachable set with normal remainder: ',num2str(tComp1)]);
+disp(['computation time of reachable set with ' ...
+    'normal remainder: ',num2str(tComp1)]);
 
 tx2 = tic;
 %compute reachable set
 options.alg = 'linRem';
+options.intermediateOrder = 10;
 R_linRem = reach(vanderPol, params, options);
 tComp2 = toc(tx2);
-disp(['computation time of reachable set with remainder added to system matrices: ',num2str(tComp2)]);
+disp(['computation time of reachable set with '...
+    'remainder added to system matrices: ',num2str(tComp2)]);
 
 
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 60;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
 simRes = simulateRandom(vanderPol, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
 
 projectedDims = [1 2];
-plotOrder = 20;
     
 figure; hold on; box on;
 
 %plot reachable sets 
-plot(R_wo_linear,projectedDims,'b','Order',plotOrder,'EdgeColor','none');
-plot(R_linRem,projectedDims,'r','Order',plotOrder,'EdgeColor','none');
+plot(R_wo_linear);
+plot(R_linRem,projectedDims,'FaceColor',colorblind('gray'));
 
 %plot initial set
-plot(params.R0,projectedDims,'w','Filled',true,'EdgeColor','k');
+plot(params.R0,projectedDims,'k','FaceColor','w');
 
 %plot simulation results      
 plot(simRes,projectedDims,'k');
@@ -98,6 +94,6 @@ ylabel(['x_{',num2str(projectedDims(2)),'}']);
 
 
 %example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

@@ -1,10 +1,10 @@
 function absBound = expmAbsoluteBound(intMat,t)
 % expmAbsoluteBound - returns the over-approximation of the absolute bound
-% of the symmetric solution of the computation of the mapping mimicing the 
-% exponential
+%    of the symmetric solution of the computation of the mapping mimicing
+%    the exponential
 %
 % Syntax:  
-%     absBound = expmAbsoluteBound(intMat,t)
+%    absBound = expmAbsoluteBound(intMat,t)
 %
 % Inputs:
 %    intMat - interval matrix
@@ -41,9 +41,9 @@ j=2;
 absA = abs(A);
 
 %generate identity and zero matrices
-dim = intMat.dim;
-I = eye(dim);
-O = zeros(dim);
+n = intMat.dim;
+I = eye(n);
+O = zeros(n);
 
 %build G matrix
 G = [absA*t/j O O;...
@@ -68,8 +68,8 @@ ind_q = find(diag(eigvalQ)==1);
 %Q.'*Y
 
 %compute Ginf
-Ginf = zeros(3*dim);
-for i=1:dim
+Ginf = zeros(3*n);
+for i=1:n
     %get y and q^T
     y = Y(:,ind_y(i));
     qt = Q(:,ind_q(i)).';
@@ -83,6 +83,6 @@ auxMat = [absA*t; S*t; O];
 auxMat = Ginf*auxMat;
 
 %get absolue bound
-absBound = auxMat((2*dim+1):(3*dim),:);
+absBound = auxMat((2*n+1):(3*n),:);
 
 %------------- END OF CODE --------------

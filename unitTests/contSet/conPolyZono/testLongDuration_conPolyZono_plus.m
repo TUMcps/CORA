@@ -1,9 +1,9 @@
 function res = testLongDuration_conPolyZono_plus
-% test_conPolyZono_plus - unit test function for Minkowski addition of 
-%                         constrained polynomial zonotopes
+% testLongDuration_conPolyZono_plus - unit test function for 
+%    Minkowski addition of constrained polynomial zonotopes
 %
 % Syntax:  
-%    res = test_conPolyZono_plus()
+%    res = testLongDuration_conPolyZono_plus()
 %
 % Inputs:
 %    -
@@ -24,7 +24,7 @@ function res = testLongDuration_conPolyZono_plus
 
 %------------- BEGIN CODE --------------
 
-    res = 1;
+    res = true;
     splits = 4;
     
     % Random Tests --------------------------------------------------------
@@ -37,14 +37,13 @@ function res = testLongDuration_conPolyZono_plus
     for i = 1:2
         
         % generate random constrained polynomial zonotope
-        cPZ1 = conPolyZono.generateRandom(2);
+        cPZ1 = conPolyZono.generateRandom('Dimension',2);
         
         % loop over all other set representations
         for j = 1:length(sets)
             
             % generate random object of the current set representation
-            str = ['temp = ',sets{i},'.generateRandom(2);']; 
-            eval(str);
+            eval(['temp = ',sets{i},'.generateRandom(''Dimension'',2);']);
             cPZ2 = conPolyZono(temp);
 
             % compute union
@@ -69,13 +68,13 @@ function res = testLongDuration_conPolyZono_plus
             % check if all points are inside polygon enclosures
             pgon = polygon(cPZ,splits);
             
-            if ~in(pgon,points)
+            if ~contains(pgon,points)
                 
                 % save variables so that failure can be reproduced
                 path = pathFailedTests(mfilename());
-                save(path,'cPZ1','cPZ2','points');
+                save(path,'cPZ1','temp','points');
                 
-                error('Random test failed!');
+                throw(CORAerror('CORA:testFailed'));
             end
         end
     end

@@ -1,21 +1,22 @@
-function [automaton] = ProductMerge(instances)
+function mergedBC = ProductMerge(instances)
 % ProductMerge - Combines a tree of component instances into a single
 %    instance, by building the hybrid automaton product of all
 %    Base-Components.
-%    (NOTE: Function does not check, wether input is a tree structure.
-%       All contained Base-Components are assumed to be tree leaves.)
+%    note: Function does not check whether input is a tree structure.
+%          All contained Base Components are assumed to be tree leaves.
 %
 % Syntax:  
-%    automaton = ProductMerge(instances)
+%    mergedBC = ProductMerge(instances)
 %
 % Inputs:
 %    instances - cell array of instantiated components
 %        (output of InstantiateComponents)
 %
 % Outputs:
-%    automaton - Base-Component instance of the hybrid automaton product
+%    mergedBC - Base-Component instance of the hybrid automaton product
 %
-% Example: mergedInstance = ProductMerge(instanceArray)
+% Example:
+%    mergedInstance = ProductMerge(instanceArray)
 %
 % Other m-files required: none
 % Subfunctions: automatonProduct
@@ -30,22 +31,16 @@ function [automaton] = ProductMerge(instances)
 
 %------------- BEGIN CODE --------------
 
-disp("merge using ProductMerge...");
+% output on command window
+disp("merge components into flat automaton using automaton product...");
 
-% first find all Base Components
-isBC = false(size(instances));
-
-for i = 1:numel(instances)
-    isBC(i) = ~(instances{i}.isNetwork);
-end
-
+% read out all base components
+isBC = cellfun(@(x) ~x.isNetwork,instances,'UniformOutput',true);
 BCinstances = instances(isBC);
 
-% Since the automaton product is associative,
-% internal tree structures can be ingored.
-% compute (((BC1 X BC2) X BC3) X BC4) ...
+% Since the automaton product is associative, internal tree structures can
+% be ignored: compute (((BC1 X BC2) X BC3) X BC4) ...
 mergedBC = BCinstances{1};
-
 for i = 2:numel(BCinstances)
     mergedBC = automatonProduct(mergedBC,BCinstances{i});
 end
@@ -53,12 +48,8 @@ end
 % add the variable list of the root instance
 mergedBC.listOfVar = instances{1}.listOfVar;
 
-% return result
-automaton = mergedBC;
-
+% output on command window
 fprintf("done. %i BC instances merged into monolithic automaton instance.\n",...
         numel(BCinstances));
-
-end
 
 %------------- END OF CODE -------------

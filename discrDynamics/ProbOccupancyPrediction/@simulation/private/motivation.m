@@ -20,13 +20,12 @@ function [mot]=motivation(w,sel,p,simOptions)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 30-October-2008 
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      30-October-2008 
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
-
 
 %init pNew
 pNew=0*sel;

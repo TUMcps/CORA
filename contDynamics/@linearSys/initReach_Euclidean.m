@@ -1,6 +1,6 @@
 function [Rfirst,options] = initReach_Euclidean(obj,Rinit,options)
-% reach - computes the reachable continuous set for the first time step in
-% the untransformed space
+% initReach_Euclidean - computes the reachable continuous set for the first
+%    time step in the untransformed space
 %
 % Syntax:  
 %    [Rfirst,options] = initReach_Euclidean(obj,Rinit,options)
@@ -22,7 +22,7 @@ function [Rfirst,options] = initReach_Euclidean(obj,Rinit,options)
 %
 % See also: none
 
-% Author: Matthias Althoff
+% Author:       Matthias Althoff
 % Written:      07-May-2007 
 % Last update:  03-January-2008
 %               04-May-2009
@@ -32,7 +32,7 @@ function [Rfirst,options] = initReach_Euclidean(obj,Rinit,options)
 %               06-April-2017
 %               28-October-2017
 %               07-November-2018
-% Last revision: ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -101,4 +101,5 @@ end
 %write results to reachable set struct Rfirst
 Rfirst.tp=Rtotal_tp;
 Rfirst.ti=Rtotal;
+
 %------------- END OF CODE --------------

@@ -1,15 +1,15 @@
-function I = minkDiff(I1,I2,varargin)
+function I = minkDiff(I,S,varargin)
 % minkDiff - compute the Minkowski difference of two intervals:
 %            I1 - I2 = I <-> I + I2 \subseteq I1
 %
 % Syntax:  
-%    I = minus(I1,I2)
-%    I = minus(I1,I2,type)
+%    I = minkDiff(I,S)
+%    I = minkDiff(I,S,type)
 %
 % Inputs:
-%    I1 - interval object
-%    I2 - interval object, contSet object, or numerical vector
-%    type - type of computation ('exact' or 'approx')
+%    I - interval object
+%    S - interval object, contSet object, or numerical vector
+%    type - type of computation ('exact' or 'inner')
 %
 % Outputs:
 %    I - interval object after Minkowski difference
@@ -29,7 +29,7 @@ function I = minkDiff(I1,I2,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/minus
+% See also: zonotope/minkDiff
 
 % Author:       Niklas Kochdumper
 % Written:      10-February-2021
@@ -38,47 +38,54 @@ function I = minkDiff(I1,I2,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % different algorithms for different set representations
-    if isnumeric(I2)
-        
-       I = I1 + (-I2);
-       
-    elseif isa(I2,'interval')
-        try
-           I = interval(infimum(I1)-infimum(I2),supremum(I1)-supremum(I2)); 
-        catch
-           I = []; 
-        end
-        
-    else
-        
-        % parse input arguments
-        type = 'approx';
-        if nargin > 2 && ~isempty(varargin{1})
-            type = varargin{1};
-        end
-        
-        % check input arguments
-        if strcmp(type,'exact')
-           error(errNoExactAlg(I1,I2));
-        end
-        
-        % compute inner-approximation of the Minkowski difference
-        infi = infimum(I1); sup = supremum(I1); n = dim(I1);
-        
-        for i = 1:n
-           temp = zeros(n,1);
-           temp(i) = 1;
-           sup(i) = sup(i) - supportFunc(I2,temp,'upper');
-           infi(i) = infi(i) + supportFunc(I2,-temp,'upper');
-        end
-        
-        % construct resulting interval
-        try
-            I = interval(infi,sup);
-        catch
-            I = []; 
-        end
+% parse input arguments
+type = setDefaultValues({'exact'},varargin{:});
+
+% check input arguments
+inputArgsCheck({{I,'att','interval'};
+                {S,'att',{'interval','contSet','numeric'}};
+                {type,'str',{'exact','inner'}}});
+
+% different algorithms for different set representations
+if isnumeric(S)
+    
+   I = I + (-S);
+   
+elseif isa(S,'interval')
+    try
+       I = interval(infimum(I)-infimum(S),supremum(I)-supremum(S)); 
+    catch
+       I = []; 
+    end
+    
+else
+    
+    % parse input arguments
+    type = 'approx';
+    if nargin > 2 && ~isempty(varargin{1})
+        type = varargin{1};
+    end
+    
+    % check input arguments
+    if strcmp(type,'exact')
+        throw(CORAerror('CORA:noExactAlg',I,S));
+    end
+    
+    % compute inner-approximation of the Minkowski difference
+    infi = infimum(I); sup = supremum(I); n = dim(I);
+    
+    for i = 1:n
+       temp = zeros(n,1);
+       temp(i) = 1;
+       sup(i) = sup(i) - supportFunc(S,temp,'upper');
+       infi(i) = infi(i) + supportFunc(S,-temp,'upper');
+    end
+    
+    % construct resulting interval
+    try
+        I = interval(infi,sup);
+    catch
+        I = []; 
     end
 end
 

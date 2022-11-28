@@ -1,27 +1,27 @@
 function [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,varargin)
-% expmMixed - operator for the exponential matrix of a 
-% matrix zonotope, evaluated dependently. Higher order terms are computed
-% via interval arithmetic.
+% expmOneParam - operator for the exponential matrix of a matrix zonotope,
+%    evaluated dependently. Higher order terms are computed via interval
+%    arithmetic.
 %
 % Syntax:  
 %    [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,varargin)
 %
 % Inputs:
-%    matZ - matrix zonotope
-%    r - time increment
+%    matZ - matZonotope object
+%    r - time step size
 %    intermediate Order - Taylor series order until computation is 
-%                           performed with matrix zonotopes
+%                         performed with matrix zonotopes
 %    maxOrder - maximum Taylor series order until remainder is computed
 %    options - options struct
 %
 % Outputs:
 %    eZ - matrix zonotope exponential part
 %    eI - interval matrix exponential part
-%    zPow - #nodef
+%    zPow - ?
 %    iPow - cell array storing the powers of the matrix:
 %           A,A^2,...,A^(intermediateOrder)
 %    E - interval matrix for the remainder
-%    RconstInput - #nodef
+%    RconstInput - ???
 %
 % Example: 
 %
@@ -134,8 +134,7 @@ eI = E;
 RconstInput = zonotope(matZonotope(D_u_sum, E_u_sum));
 %RconstInput = zonotope(D_u_sum, E_u_sum);
 
-   
-iPow = []; %no powers based on interval matrix
-
+% no powers based on interval matrix
+iPow = [];
 
 %------------- END OF CODE --------------

@@ -1,5 +1,5 @@
 function cPZ = compact(cPZ)
-% compact - remove redundancies in the conPolyZono representation
+% compact - remove redundancies in the conPolyZono object representation
 %
 % Syntax:  
 %    cPZ = compact(cPZ)
@@ -8,7 +8,7 @@ function cPZ = compact(cPZ)
 %    cPZ - conPolyZono object
 %
 % Outputs:
-%    cPZ - corresponding conPolyZono object without redundancies
+%    cPZ - conPolyZono object
 %
 % Example:
 %    c = [-1;0];
@@ -33,7 +33,7 @@ function cPZ = compact(cPZ)
 % Last revision: ---
 
 %------------- BEGIN CODE -------------
-
+    
     % remove redundancies in states
     [c,G,expMat] = removeRedundancies(cPZ.c,cPZ.G,cPZ.expMat);
     
@@ -62,7 +62,8 @@ function cPZ = compact(cPZ)
     end
     
     % construct compacted constrained polynomial zonotope
-    cPZ = conPolyZono(c,G,expMat,A,b,expMat_,Grest,id);    
+    cPZ = conPolyZono(c,G,expMat,A,b,expMat_,Grest,id);
+
 end
 
 

@@ -2,17 +2,22 @@ function C = generateRandom(varargin)
 % generateRandom - Generates a random capsule
 %
 % Syntax:  
-%    C = generateRandom(varargin)
+%    C = capsule.generateRandom()
+%    C = capsule.generateRandom('Dimension',n)
+%    C = capsule.generateRandom('Dimension',n,'Center',c)
+%    C = capsule.generateRandom('Dimension',n,'Center',c,'Radius',r)
 %
 % Inputs:
-%    dim - (optional) dimension
-%    cen - (optional) center
+%    Name-Value pairs (all options, arbitrary order):
+%       <'Dimension',n> - dimension
+%       <'Center',c> - center
+%       <'Radius',r> - radius
 %
 % Outputs:
 %    C - random capsule
 %
 % Example: 
-%    C = capsule.generateRandom();
+%    C = capsule.generateRandom('Dimension',3);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -22,31 +27,58 @@ function C = generateRandom(varargin)
 
 % Author:       Mark Wetzlinger
 % Written:      17-Sep-2019
-% Last update:  ---
+% Last update:  19-May-2022 (name-value pairs syntax)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-dim_low = 1;
-dim_up  = 10;
-range_low = -10;
-range_up  = 10;
-totalrange = range_up - range_low;
-maxradius = 5;
-
-if nargin == 2
-    dim_x = varargin{1};
-    cen = varargin{2};
-elseif nargin == 1
-    dim_x = varargin{1};
-    cen = range_low + rand(dim_x,1)*totalrange;
+% name-value pairs -> number of input arguments is always a multiple of 2
+if mod(nargin,2) ~= 0
+    throw(CORAerror('CORA:evenNumberInputArgs'));
 else
-    dim_x = dim_low + floor(rand(1) * (dim_up - dim_low + 1));
-    cen = range_low + rand(dim_x,1)*totalrange;
+    % read input arguments
+    NVpairs = varargin(1:end);
+    % check list of name-value pairs
+    checkNameValuePairs(NVpairs,{'Dimension','Center','Radius'});
+    % dimension given?
+    [NVpairs,n] = readNameValuePair(NVpairs,'Dimension');
+    % center given?
+    [NVpairs,c] = readNameValuePair(NVpairs,'Center');
+    % radius given?
+    [NVpairs,r] = readNameValuePair(NVpairs,'Radius');
 end
 
+% check input arguments
+inputArgsCheck({{n,'att','numeric','nonnan'};
+                {c,'att','numeric','nonnan'};
+                {r,'att','numeric','nonnan'}});
 
-C = capsule(cen,range_low + rand(dim_x,1)*totalrange,rand(1)*maxradius);
+% default computation for dimension
+if isempty(n)
+    if isempty(c)
+        nmax = 10;
+        n = randi(nmax);
+    else
+        n = length(c);
+    end
+end
+
+% default computation for center
+if isempty(c)
+    c = 5*randn(n,1);
+end
+
+% default computation for radius
+if isempty(r)
+    r_max = 5;
+    r = rand * r_max;
+end
+
+% default computation for generator
+g = rand(n,1);
+
+% instantiate capsule
+C = capsule(c,g,r);
 
 
 %------------- END OF CODE --------------

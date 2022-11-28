@@ -38,17 +38,17 @@ function obj = and(obj,P)
 
 %------------- BEGIN CODE --------------
 
-    % convert second object to mptPolytope
-    if ~isa(P,'mptPolytope')
-        if isa(P,'levelSet')
-            obj = P & obj;
-            return;
-        else
-            P = mptPolytope(P); 
-        end
+% convert second object to mptPolytope
+if ~isa(P,'mptPolytope')
+    if isa(P,'levelSet')
+        obj = P & obj;
+        return;
+    else
+        P = mptPolytope(P); 
     end
+end
 
-    % compute intersection
-    obj.P = obj.P & P.P;
+% compute intersection
+obj.P = obj.P & P.P;
 
 %------------- END OF CODE --------------

@@ -25,9 +25,12 @@ function res = power(base,exponent)
 %    exponent - interval object or numerical value
 %
 % Outputs:
-%    res - interval
+%    res - interval object
 %
-% Example: 
+% Example:
+%    base = interval([-3;2],[5;4]);
+%    exponent = [2;3];
+%    base .^ exponent
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -217,7 +220,7 @@ if isnumeric(exponent)
                 end
                 
             else
-               error('interval/power: dimensions of base and exponent do not agree!'); 
+                throw(CORAerror('CORA:dimensionMismatch',base,exponent));
             end            
         end    
     end
@@ -260,5 +263,7 @@ end
 
 % return error if NaN occures
 if any(any(isnan(res.inf))) || any(any(isnan(res.sup)))
-	error(resIntNaNInf()); 
+    throw(CORAerror('CORA:outOfDomain','validDomain','base >= 0'));
 end
+
+%------------- END OF CODE --------------

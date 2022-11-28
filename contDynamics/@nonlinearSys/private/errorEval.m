@@ -20,16 +20,14 @@ function [perfInd] = errorEval(IHerrorActual,IHerrorAssume)
 %
 % See also: 
 
-% Author: Matthias Althoff
-% Written: 15-January-2008 
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      15-January-2008 
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
-
 %compute performance index 
 perfInd=max(edgeLength(IHerrorActual)./edgeLength(IHerrorAssume));
-
 
 %------------- END OF CODE --------------

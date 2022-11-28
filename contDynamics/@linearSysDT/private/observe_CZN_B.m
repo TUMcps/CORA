@@ -1,5 +1,5 @@
 function [R,tcomp] = observe_CZN_B(obj,options)
-% observe_CZN_B - computes the guaranted state estimation approach
+% observe_CZN_B - computes the guaranteed state estimation approach
 % from [1], [2], where the intersection method is from [1] and the
 % propagation is described in [2].
 %
@@ -41,7 +41,7 @@ function [R,tcomp] = observe_CZN_B(obj,options)
 
 %------------- BEGIN CODE --------------
 
-tic
+tic;
 
 % time period
 tVec = options.tStart:options.timeStep:options.tFinal-options.timeStep;
@@ -63,7 +63,7 @@ Pbar = G*G';
 Rbar = obj.A*Pbar*obj.A' +Qw; 
 S = obj.C*Rbar*obj.C' + Qv;
 L = Rbar*obj.C'; 
-Lambda = L*inv(S); 
+Lambda = L / S; %L*inv(S); 
 
 % Intersection of strips according to Theorem 6.3 of [1]
 y = options.y(:,1);
@@ -86,7 +86,7 @@ for k = 1:length(tVec)-1
     Rbar = obj.A*Pbar*obj.A' +Qw; 
     S = obj.C*Rbar*obj.C' + Qv;
     L = Rbar*obj.C'; 
-    Lambda = L*inv(S); 
+    Lambda = L / S; % L*inv(S); 
     
     % Intersection according to Theorem 6.3 of [1]
     y = options.y(:,k+1);

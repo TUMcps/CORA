@@ -51,8 +51,8 @@ temp = [2 3 1 4 7 1 0 -1 1 6 9 3 12 21 3 0 -3 3 -2 -3 -1 -4 -7 -1 0 1 -1];
 Z_ = [temp;temp];
 
 % check for correctness
-if any(any(Z_-Zres.Z))
-    error('zonotope/cubMap: analytical test (mixed mul.) failed!');
+if ~compareMatrices(Z_,Zres.Z)
+    throw(CORAerror('CORA:testFailed'));
 end
 
 
@@ -78,15 +78,10 @@ temp = [16 13 -1 14 -4 0 21 -7 3 -1];
 Z_ = [temp;temp];
 
 % check for correctness
-if any(any(Z_-Zres.Z))
-    error('zonotope/cubMap: analytical test failed!');
+if ~compareMatrices(Z_,Zres.Z)
+    throw(CORAerror('CORA:testFailed'));
 end
-
-
-
 
 res = true;
-
-end
 
 %------------- END OF CODE --------------

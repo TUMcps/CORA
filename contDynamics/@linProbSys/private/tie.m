@@ -1,17 +1,18 @@
-function [obj] = tie(obj,options)
-% tie - tie: time interval error; computes the error done by 
-% building the convex hull of time point solutions
+function obj = tie(obj,options)
+% tie - tie: time interval error; computes the error done by building the
+%    convex hull of time point solutions
 %
 % Syntax:  
-%    [obj]=tie(obj,options)
+%    obj = tie(obj,options)
 %
 % Inputs:
-%    obj - linearSys object
+%    obj - linProbSys object
 %
 % Outputs:
-%    obj - linearSys object
+%    obj - linProbSys object
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -19,10 +20,10 @@ function [obj] = tie(obj,options)
 %
 % See also: expm, inputSol
 
-% Author: Matthias Althoff
-% Written: 08-May-2007 
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      08-May-2007 
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -30,10 +31,10 @@ function [obj] = tie(obj,options)
 Apower=obj.taylor.powers;
 taylorTerms=options.taylorTerms;
 r=options.timeStep;
-dim=dimension(obj);
+n=obj.dim;
 
 %initialize Asum
-Asum=zeros(dim);
+Asum=zeros(n);
 
 for i=2:taylorTerms
     %compute factor

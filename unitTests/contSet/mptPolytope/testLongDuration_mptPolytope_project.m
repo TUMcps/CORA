@@ -26,17 +26,13 @@ function res = testLongDuration_mptPolytope_project
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-% Random Test -------------------------------------------------------------
-
 % compare projection with the projection of the polytope vertices and check
 % if the same result is obtained
 
 for i = 1:2
    
     % create random polytope
-    poly = mptPolytope.generateRandom(3);
+    poly = mptPolytope.generateRandom('Dimension',3);
     
     % create random projection dimensions
     dims = randperm(3);
@@ -60,10 +56,13 @@ for i = 1:2
     V_ = vertices(poly_);
     
     % compare the vertices
-    if ~all(ismembertol(V_',V','ByRows',true))
-       error('Random test for "mptPolytope/project" failed!'); 
+    if ~compareMatrices(V,V_,1e-12)
+        path = pathFailedTests(mfilename());
+        save(path,'poly','dims');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 
 res = true;
-    
+
+%------------- END OF CODE --------------

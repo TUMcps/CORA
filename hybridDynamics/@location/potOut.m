@@ -1,13 +1,14 @@
-function R = potOut(obj,R,minInd,maxInd,options)
+function R = potOut(loc,R,minInd,maxInd,options)
 % potOut - determines the reachable sets after intersection with the
-% invariant and obtains the fraction of the reachable set that must have
-% transitioned; the resulting reachable sets are all converted to polytopes
+%    invariant and obtains the fraction of the reachable set that must have
+%    transitioned; the resulting reachable sets are all converted to
+%    polytopes
 %
 % Syntax:  
-%    R = potOut(obj,R,minInd,maxInd,options)
+%    R = potOut(loc,R,minInd,maxInd,options)
 %
 % Inputs:
-%    obj - location object
+%    loc - location object
 %    R - reachSet object storing the reachable set
 %    minInd - vector containting the indices of the set which first
 %             intersected the guard set for each guard set 
@@ -16,7 +17,7 @@ function R = potOut(obj,R,minInd,maxInd,options)
 %    options - struct containing algorithm settings
 %
 % Outputs:
-%    R - cell array of reachable sets
+%    R - reachSet object
 %
 % Example: 
 %
@@ -36,40 +37,40 @@ function R = potOut(obj,R,minInd,maxInd,options)
 
 %------------- BEGIN CODE --------------
 
+% read out time-point and time-interval reachable sets
 timeInt = R.timeInterval;
 timePoint = R.timePoint;
-
 
 % determine all sets that intersected the guard sets -> sets that are
 % partially located outside the invariant
 minInd = max(minInd,ones(size(minInd)));
 ind = [];
 for i = 1:length(minInd)
-   temp = minInd(i):maxInd(i);
-   ind = [ind,temp];
+    temp = minInd(i):maxInd(i);
+    ind = [ind,temp];
 end
+% remove redundancies
 ind = unique(ind);
 
 % loop over all sets that intersect the guard sets
-for i = 1:length(ind)
-    
+for i=1:length(ind)
     iSet = ind(i);
         
     % overapproximate reachable set by a halfspace representation
-    timeInt.set{iSet} = enclosingPolytope(timeInt.set{iSet},options);
-    timePoint.set{iSet} = enclosingPolytope(timePoint.set{iSet},options);
+    timeInt.set{iSet} = mptPolytope(timeInt.set{iSet},options);
+    timePoint.set{iSet} = mptPolytope(timePoint.set{iSet},options);
         
     % intersect with invariant set
-    timeInt.set{iSet} = obj.invariant & timeInt.set{iSet};  
-    timePoint.set{iSet} = obj.invariant & timePoint.set{iSet};     
+    timeInt.set{iSet} = loc.invariant & timeInt.set{iSet};  
+    timePoint.set{iSet} = loc.invariant & timePoint.set{iSet};     
 end
 
 % remove last set if it is located outside the invariant
-if ~isIntersecting(obj.invariant,timeInt.set{end})
-   timeInt.set = timeInt.set(1:end-1); 
-   timeInt.time = timeInt.time(1:end-1); 
-   timePoint.set = timePoint.set(1:end-1); 
-   timePoint.time = timePoint.time(1:end-1); 
+if ~isIntersecting(loc.invariant,timeInt.set{end})
+    timeInt.set = timeInt.set(1:end-1); 
+    timeInt.time = timeInt.time(1:end-1); 
+    timePoint.set = timePoint.set(1:end-1); 
+    timePoint.time = timePoint.time(1:end-1); 
 end
 
 % construct modified reachSet object

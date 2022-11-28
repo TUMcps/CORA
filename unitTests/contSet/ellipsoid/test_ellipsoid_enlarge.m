@@ -38,10 +38,4 @@ E_true = ellipsoid([4 0;0 8],[0; 1]);
 % compare results
 res = isequal(E_true,E_enlarged);
 
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
-
 %------------- END OF CODE --------------

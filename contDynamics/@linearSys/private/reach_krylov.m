@@ -1,20 +1,25 @@
-function [Rout,Rout_tp,res] = reach_krylov(obj,options)
+function [timeInt,timePoint,res] = reach_krylov(obj,options)
 % reach_krylov - computes the reachable set for linear systems using
-%  the krylov reachability algorithm for linear systems
+% 	 the krylov reachability algorithm for linear systems [1]
 %
 % Syntax:  
-%    [Rout,Rout_tp,res] = reach_krylov(obj,options)
+%    [timeInt,timePoint,res] = reach_krylov(obj,options)
 %
 % Inputs:
-%    obj - continuous system object
+%    obj - linearSys object
 %    options - options for the computation of reachable sets
 %
 % Outputs:
-%    Rout - reachable set of time intervals
-%    Rout_tp - reachable set of time point
-%    res  - boolean (only if specification given)
+%    timeInt - array of time-interval output sets
+%    timePoint - array of time-point output sets
+%    res - true/false (only if specification given)
 %
 % Example: 
+%
+% References:
+%    [1] M. Althoff. "Reachability analysis of large linear systems with
+%        uncertain inputs in the Krylov subspace", IEEE Transactions on
+%        Automatic Control 65 (2), pp. 477-492, 2020.
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -22,11 +27,12 @@ function [Rout,Rout_tp,res] = reach_krylov(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff, Mark Wetzlinger
-% Written:       26-June-2019
-% Last update:   14-Aug-2019
-%                02-June-2020 (MA)
-% Last revision: ---
+% Author:       Matthias Althoff, Mark Wetzlinger
+% Written:      26-June-2019
+% Last update:  14-Aug-2019
+%               02-June-2020 (MA)
+%               19-November-2022 (MW, modularize specification check)
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -49,37 +55,31 @@ verboseLog(1,options.tStart,options);
 
 %time period
 tVec = options.tStart:options.timeStep:options.tFinal;
+steps = length(tVec)-1;
 
 %create options.t
 options.t = options.timeStep;
 
-% initialize parameter for the output equation
-Rout = cell(length(tVec)-1,1);
-Rout_tp = cell(length(tVec)-1,1);
+% initialize arguments for the output equation
+timeInt.set = cell(steps,1);
+timeInt.time = cell(steps,1);
+timePoint.set = cell(steps+1,1);
+timePoint.time = num2cell(tVec');
 
 
 % loop over all reachability steps
-for i=2:length(tVec)-1
+for i=2:steps
     
-    % calculate the set of system outputs   
-%     Z = Rnext.ti.Z;
-%     Rout{i-1} = zonotope(C*Z) + D * (options.uTrans + options.U) + k;
-%     Rout{i-1} = reduce(Rout{i-1},options.reductionTechnique,options.zonotopeOrder);
-    Rout{i-1} = Rnext.ti;
-%     Z_tp = Rnext.tp.Z;
-%     Rout_tp{i-1} = zonotope(C*Z_tp) + D * (options.uTrans + options.U) + k;
-%     Rout_tp{i-1} = reduce(Rout_tp{i-1},options.reductionTechnique,options.zonotopeOrder);
-    Rout_tp{i-1} = Rnext.tp;
+    % calculate the output set
+    timeInt.set{i-1} = Rnext.ti;
+    timeInt.time{i-1} = interval(tVec(i-1),tVec(i));
+    timePoint.set{i-1} = Rnext.tp;
     
     % safety property check
     if isfield(options,'specification')
-        if ~check(options.specification,Rout{i-1})
-            % violation
-            Rout = Rout(1:i-1);
-            Rout_tp = Rout_tp(1:i-1);
-            res = 0;
-            return
-        end
+        [res,timeInt,timePoint] = checkSpecification(...
+            options.specification,timeInt,timePoint,i-1);
+        if ~res; return; end
     end
     
     % log information
@@ -93,27 +93,20 @@ for i=2:length(tVec)-1
     %compute next reachable set
     [Rnext,options] = post_Krylov(obj,options);
     
+    % increment time
     options.t = options.t + options.timeStep;
 end
 
-
-% Z = Rnext.ti.Z;
-% Rout{end} = zonotope(C*Z) + D * (options.uTrans + options.U) + k;
-% Rout{end} = reduce(Rout{end},options.reductionTechnique,options.zonotopeOrder);
-Rout{end} = Rnext.ti;
-
-% Z_tp = Rnext.tp.Z;
-% Rout_tp{end} = zonotope(C*Z_tp) + D * (options.uTrans + options.U) + k;
-% Rout_tp{end} = reduce(Rout_tp{end},options.reductionTechnique,options.zonotopeOrder);
-Rout_tp{end} = Rnext.tp;
+% last set
+timeInt.set{end} = Rnext.ti;
+timeInt.time{end} = interval(tVec(end-1),tVec(end));
+timePoint.set{end} = Rnext.tp;
 
 % safety property check
 if isfield(options,'specification')
-    if ~check(options.specification,Rout{i-1})
-        % violation, no reduction in cell size of Rout, Rout_tp
-        res = 0;
-        return
-    end
+    [res,timeInt,timePoint] = checkSpecification(...
+        options.specification,timeInt,timePoint,steps);
+    if ~res; return; end
 end
 
 % log information
@@ -121,8 +114,5 @@ verboseLog(length(tVec),tVec(end),options);
 
 % specification fulfilled
 res = true;
-
-
-end
 
 %------------- END OF CODE --------------

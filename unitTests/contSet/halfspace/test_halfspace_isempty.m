@@ -32,10 +32,4 @@ h = halfspace([2;3;-1],3);
 % combine tests
 res = isempty(hempty) && ~isempty(h);
 
-if res
-    disp('test_isempty successful');
-else
-    disp('test_isempty failed');
-end
-
 %------------- END OF CODE --------------

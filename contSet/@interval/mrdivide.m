@@ -5,12 +5,16 @@ function res = mrdivide(numerator,denominator)
 %    res = mrdivide(numerator, denominator)
 %
 % Inputs:
-%    numerator, denominator - interval objects
+%    numerator - interval object
+%    denominator - interval object
 %
 % Outputs:
 %    res - interval object
 %
-% Example: 
+% Example:
+%    numerator = interval([-2;1],[3;2]);
+%    denominator = 2;
+%    numerator / denominator
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,7 +34,7 @@ function res = mrdivide(numerator,denominator)
 if isscalar(denominator)
     res = numerator ./ denominator;
 else
-    error('The function of mrdivide works only for an interval / a number case.')
+    throw(CORAerror('CORA:noops',numerator,denominator));
 end
 
 %------------- END OF CODE --------------

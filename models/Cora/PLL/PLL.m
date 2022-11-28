@@ -132,10 +132,10 @@ guard1Sim = interval([-dist; -dist; -dist; -dist; 1-thin; -dist],[dist; dist; di
 guard2Sim = interval([-dist; -dist; -dist; 1-thin; -dist; -dist],[dist; dist; dist; 1; dist; dist]);
 %reset 1
 reset1.A = eye(dim_x);
-reset1.b = [0; 0; 0; -1; -1; 0];
+reset1.c = [0; 0; 0; -1; -1; 0];
 %reset 2
 reset2.A = eye(dim_x);
-reset2.b = [0; 0; 0; -1; -1; 0];
+reset2.c = [0; 0; 0; -1; -1; 0];
 %transition 1 sim
 transSim{1} = transition(guard1Sim,reset1,2); %--> next loc: 2
 %transition 2 sim
@@ -154,7 +154,7 @@ guard1Sim = interval([-dist; -dist; -dist; -thin; -dist; -dist],[dist; dist; dis
 Atmp = eye(dim_x);
 Atmp(6,6) = 0;
 reset1.A = Atmp;
-reset1.b = zeros(dim_x,1);
+reset1.c = zeros(dim_x,1);
 %transition 1 sim
 transSim{1} = transition(guard1Sim,reset1,4); %--> next loc: 4
 %specify location
@@ -172,7 +172,7 @@ guard1Sim = interval([-dist; -dist; -dist; -dist; -thin; -dist],[dist; dist; dis
 Atmp = eye(dim_x);
 Atmp(6,6) = 0;
 reset1.A = Atmp;
-reset1.b = zeros(dim_x,1);
+reset1.c = zeros(dim_x,1);
 %transition 1 sim
 transSim{1} = transition(guard1Sim,reset1,4); %--> next loc: 4
 %specify location
@@ -188,7 +188,7 @@ inv = interval([-dist; -dist; -dist; -dist; -dist; -dist],[dist; dist; dist; dis
 guard1Sim = interval([-dist; -dist; -dist; -dist; -dist; 50e-6],[dist; dist; dist; dist; dist; 51e-6]);
 %reset 1
 reset1.A = eye(dim_x);
-reset1.b = zeros(dim_x,1);
+reset1.c = zeros(dim_x,1);
 %transition 1 sim
 transSim{1} = transition(guard1Sim,reset1,1); %--> next loc: 1
 %specify location

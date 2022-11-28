@@ -41,8 +41,6 @@ optionsLin.linAlg = 'wrapping-free';
 optionsNonLin.timeStep = optionsLin.timeStep;
 optionsNonLin.taylorTerms = optionsLin.taylorTerms;
 optionsNonLin.zonotopeOrder = optionsLin.zonotopeOrder;
-optionsNonLin.intermediateOrder = 100*optionsNonLin.zonotopeOrder;
-optionsNonLin.errorOrder = 1;
 
 
 % System Dynamics ---------------------------------------------------------
@@ -69,6 +67,8 @@ Rnonlin1 = reach(fiveDimSysNonlinear, params, optionsNonLin);
 % nonlinear system (conservative polynomialization)
 optionsNonLin.alg = 'poly';
 optionsNonLin.tensorOrder = 3;
+optionsNonLin.intermediateOrder = 100*optionsNonLin.zonotopeOrder;
+optionsNonLin.errorOrder = 1;
 
 Rnonlin2 = reach(fiveDimSysNonlinear, params, optionsNonLin);
 

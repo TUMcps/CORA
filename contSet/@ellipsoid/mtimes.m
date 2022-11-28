@@ -1,24 +1,24 @@
-function [E] = mtimes(A,E_in)
+function E = mtimes(A,E)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix with
-% an ellipsoid
+%    an ellipsoid
 %
 % Syntax:  
-%    [E] = mtimes(A,E)
+%    E = mtimes(A,E)
 %
 % Inputs:
 %    A - numerical matrix
-%    E - Ellipsoid object 
+%    E - ellipsoid object 
 %
 % Outputs:
-%    E - Ellipsoid 
+%    E - ellipsoid object
 %
 % Example: 
-%    E=ellipsoid([1 0; 0 1]);
-%    matrix=[1 1; 1 1];
+%    E = ellipsoid([2.7 -0.2;-0.2 2.4]);
+%    M = [1 0.5; 0.5 1];
+% 
+%    figure; hold on;
 %    plot(E);
-%    hold on
-%    E=A*E;
-%    plot(E);
+%    plot(M*E,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -29,22 +29,45 @@ function [E] = mtimes(A,E_in)
 % Author:       Victor Gassmann
 % Written:      13-March-2019 
 % Last update:  15-October-2019
+%               07-June-2022 (avoid construction of new ellipsoid object)
+%               04-July-2022 (VG: input checks, allow E to be class array)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-%Find an ellipsoid object
-%Is factor1 an ellipsoid?
-if ~isa(E_in,'ellipsoid')
-    error('Second factor has to be an ellipsoid object'); 
-elseif size(A,2)~=length(E_in.Q)
-     if all(size(A)==1)
-         A = A*eye(length(E_in.Q));
-     else
-        error('A must have same number of columns as Q has rows');
-     end
+% if A is scalar, transform to appropriate diagonal matrix
+if isnumeric(A) && numel(A)==1
+    A = A*eye(dim(E));
 end
-M = A*E_in.Q*A';
-% make sure result is symmetric and eigenvalues are real
-E=ellipsoid(1/2*(M+M'),A*E_in.q);
+
+% check input arguments
+inputArgsCheck({{A,'att','numeric',{'ncols',dim(E(1))}};
+                {E,'att','ellipsoid'}});
+
+% empty set: result is empty set
+if isempty(E)
+    return
+end
+
+% make sure all ellipsoids are of same dimension
+if ~all(dim(E)==dim(E(1)))
+    throw(CORAerror('CORA:wrongValue','second',...
+                        'All ellipsoids need same dimension.'));
+end
+
+% make sure A is a matrix
+if ~ismatrix(A)
+    throw(CORAerror('CORA:wrongValue','first','"A" needs to be a matrix.'));
+end
+
+for i=1:numel(E)
+    % compute auxiliary value for new shape matrix
+    M = A*E(i).Q*A';
+    % make sure it is symmetric
+    M = 1/2*(M+M');
+    
+    E(i).Q = M;
+    E(i).q = A*E(i).q;
+end
+
 %------------- END OF CODE --------------

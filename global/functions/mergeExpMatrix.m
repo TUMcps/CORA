@@ -29,39 +29,38 @@ function [id,expMat1,expMat2] = mergeExpMatrix(id1,id2,expMat1,expMat2)
 
 %------------- BEGIN CODE --------------
 
-    L1 = length(id1);
-    L2 = length(id2);
+L1 = length(id1);
+L2 = length(id2);
 
-    % ID vectors are identical
-    if L1 == L2 && all(id1 == id2)
-       
-        id = id1;
-        
-    % ID vectors not identical -> MERGE
-    else
-        
-        % merge the two sets
-        id = id1;
-        ind2 = zeros(size(id2));
-        for i = 1:length(id2)
-           ind = find(id == id2(i));
-           if isempty(ind)
-              id = [id;id2(i)];
-              ind2(i) = length(id);
-           else
-              ind2(i) = ind;
-           end
-        end
-        
-        % construct the new exponent matrices
-        L = length(id);
-        
-        expMat1 = [expMat1;zeros(L-L1,size(expMat1,2))];
-        
-        temp = zeros(L,size(expMat2,2));
-        temp(ind2,:) = expMat2;
-        expMat2 = temp;
+% ID vectors are identical
+if L1 == L2 && all(id1 == id2)
+   
+    id = id1;
+    
+% ID vectors not identical -> MERGE
+else
+    
+    % merge the two sets
+    id = id1;
+    ind2 = zeros(size(id2));
+    for i = 1:length(id2)
+       ind = find(id == id2(i));
+       if isempty(ind)
+          id = [id;id2(i)];
+          ind2(i) = length(id);
+       else
+          ind2(i) = ind;
+       end
     end
+    
+    % construct the new exponent matrices
+    L = length(id);
+    
+    expMat1 = [expMat1;zeros(L-L1,size(expMat1,2))];
+    
+    temp = zeros(L,size(expMat2,2));
+    temp(ind2,:) = expMat2;
+    expMat2 = temp;
 end
 
 %------------- END OF CODE --------------

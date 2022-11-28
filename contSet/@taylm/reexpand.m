@@ -73,7 +73,7 @@ function c = evalDiff(obj,x,diff)
     for i = 1:length(obj.coefficients)
        e = obj.monomials(i,2:end);
        e_ = e-diff;
-       if e_ >= 0
+       if all(e_ > 0 | withinTol(e_,0))
            cTemp = 1;
            for j = 1:length(e)
                cTemp = cTemp * prod(e_(j) + 1 : e(j));
@@ -95,8 +95,8 @@ function mon = monomials(M,N)
     % loop over all monomials up to a degree of N
     while sum(mon(end,:)) <= N
         
-       temp = nextMonomial(M,mon(end,:)); 
-       mon = [mon;temp];     
+        temp = nextMonomial(M,mon(end,:)); 
+        mon = [mon;temp];     
     end
     
     mon = mon(1:end-1,:);
@@ -104,32 +104,32 @@ function mon = monomials(M,N)
 end
 
 function x = nextMonomial(M,x)
-% calculte the next monomial according to the graded lexicographic order
+% calculate the next monomial according to the graded lexicographic order
 
-      j = 1;
-
-      for i = 2 : M
+    j = 1;
+    
+    for i = 2 : M
         if ( 0 < x(i) )
-          j = i;
-          break
+            j = i;
+            break
         end
-      end
-
-      if ( j == 1 )
+    end
+    
+    if j == 1
         t = x(1);
         x(1) = 0;
         x(M) = t + 1;
-      elseif ( j < M )
+    elseif j < M
         x(j) = x(j) - 1;
         t = x(1) + 1;
         x(1) = 0;
         x(j-1) = x(j-1) + t;
-      elseif ( j == M )
+    elseif j == M
         t = x(1);
         x(1) = 0;
         x(j-1) = t + 1;
         x(j) = x(j) - 1;
-      end
+    end
 end
 
 %------------- END OF CODE --------------

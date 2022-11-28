@@ -19,12 +19,12 @@ function [docNode,component] = headline_cora2spaceex()
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
-%
+
 %------------- BEGIN CODE --------------
 
 %Create the document node and root element (spaceex)

@@ -20,41 +20,57 @@ function res = test_zonotope_generateRandom
 
 % Author:       Mark Wetzlinger
 % Written:      27-Sep-2019
-% Last update:  ---
+% Last update:  19-May-2022 (name-value pair syntax)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% run through all possibilities
-try
-    % random dim and cen
-    Z = zonotope.generateRandom();
-    % fixed dim, random cen
-    Z = zonotope.generateRandom(3);
-    if dim(Z) ~= 3
-        error("Fixed dimension not obeyed");
-    end
-    % fixed dim and cen
-    Z = zonotope.generateRandom(2,[1;0]);
-    if dim(Z) ~= 2 && ~isequal(center(Z),[1;0])
-        error("Fixed dimension and center not obeyed");
-    end
-    % fixed dim, cen and gen
-    Z = zonotope.generateRandom(3,[1;0;-3],35);
-    if dim(Z) ~= 3 && ~isequal(center(Z),[1;0;-3]) && ...
-            length(generators(Z)) == 35
-        error("Fixed dimension, center and number of generators not obeyed");
-    end
-    res = true;
-catch
-    res = false;
-end
+% empty call
+Z = zonotope.generateRandom();
+
+% values for tests
+n = 3;
+c = [2;1;-1];
+nrGens = 10;
+type = 'exp';
+
+% only dimension
+Z = zonotope.generateRandom('Dimension',n);
+res = dim(Z) == n;
+
+% only center
+Z = zonotope.generateRandom('Center',c);
+res(end+1,1) = all(abs(center(Z) - c) < eps);
+
+% only number of generators
+Z = zonotope.generateRandom('NrGenerators',nrGens);
+res(end+1,1) = size(generators(Z),2) == nrGens;
+
+% only type (no check)
+Z = zonotope.generateRandom('Distribution',type);
+
+% dimension and number of generators
+Z = zonotope.generateRandom('Dimension',n,'NrGenerators',nrGens);
+res(end+1,1) = dim(Z) == n && size(generators(Z),2) == nrGens;
+
+% center and number of generators
+Z = zonotope.generateRandom('Center',c,'NrGenerators',nrGens);
+res(end+1,1) = all(abs(center(Z) - c) < eps) && size(generators(Z),2) == nrGens;
+
+% center and type
+Z = zonotope.generateRandom('Center',c,'Distribution',type);
+res(end+1,1) = all(abs(center(Z) - c) < eps);
+
+% number of generators and type
+Z = zonotope.generateRandom('NrGenerators',nrGens,'Distribution',type);
+res(end+1,1) = size(generators(Z),2) == nrGens;
+
+% center, number of generators, and type
+Z = zonotope.generateRandom('Center',c,'NrGenerators',nrGens,'Distribution',type);
+res(end+1,1) = all(abs(center(Z) - c) < eps) && size(generators(Z),2) == nrGens;
 
 
-if res
-    disp('test_generateRandom successful');
-else
-    disp('test_generateRandom failed');
-end
+% unify results
+res = all(res);
 
 %------------- END OF CODE --------------

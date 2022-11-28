@@ -1,6 +1,31 @@
-function [M]=matrixbuilder(rows,columns,type)
-% updated: 18-June-2009, MA
-% updated: 06-November-2009, MA
+function M = matrixbuilder(rows,columns,type)
+% matrixbuilder - ???
+%
+% Syntax:  
+%    M = matrixbuilder(rows,columns,type)
+%
+% Inputs:
+%    rows - ???
+%    columns - ???
+%    type - ???
+%
+% Outputs:
+%    M - ???
+%
+% Example: 
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: ---
+
+% Author:       Matthias Althoff
+% Written:      18-June-2009
+% Last update:  06-November-2009
+% Last revision:---
+
+%------------- BEGIN CODE --------------
 
 if type==0
     %init M
@@ -17,3 +42,5 @@ else
         M(iColumn,rows*(iColumn-1)+iRow+1)=1;
     end
 end
+
+%------------- END OF CODE --------------

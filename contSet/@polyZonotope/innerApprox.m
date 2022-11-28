@@ -1,19 +1,18 @@
 function S = innerApprox(pZ,varargin)
-% innerApprox - inner approximation of a polynomial zonotope with a
-%               union of zonotopes
+% innerApprox - returns an inner-approximation of a polynomial zonotope
+%    represented by a union of zonotopes
 %
 % Syntax:  
 %    S = innerApprox(pZ)
 %    S = innerApprox(pZ,tol)
 %
 % Inputs:
-%    f - function handle defining the nonlinear function
-%    X - domain for the function values (class: interval)
-%    tol - minimum width of the intervals representing the inner-approx.
+%    pZ - polyZonotope object
+%    tol - tolerance
 %
 % Outputs:
-%    L - cell-array storing the zonotopes whos union inner-approximates the
-%        polynomial zonotope
+%    L - cell-array storing the zonotopes whose union inner-approximates
+%        the polynomial zonotope
 %
 % Example:
 %   pZ = polyZonotope([0;0],[2 0 2;0 2 2],[0.5;0],[1 0 3;0 1 1]);
@@ -21,7 +20,7 @@ function S = innerApprox(pZ,varargin)
 %   S = innerApprox(pZ,1e-2);
 %
 %   figure; hold on;
-%   plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
+%   plot(pZ,[1,2],'FaceColor','r');
 %   for i = 1:length(S)
 %       plot(S{i}); 
 %   end
@@ -55,26 +54,27 @@ function S = innerApprox(pZ,varargin)
     
     % add independent part
     for i = 1:length(S)
-       if isempty(pZ.Grest)
-           S{i} = zonotope(S{i}); 
-       else
-           S{i} = zonotope(S{i}) + zonotope(zeros(dim(pZ),1),pZ.Grest); 
-       end
+        if isempty(pZ.Grest)
+            S{i} = zonotope(S{i}); 
+        else
+            S{i} = zonotope(S{i}) + zonotope(zeros(dim(pZ),1),pZ.Grest); 
+        end
     end
+
 end
 
 
 % Auxiliary Functions -----------------------------------------------------
 
 function val = funcPoly(x,pZ)
-% nonlinear function that defines the dependen tpart of polynomial zonotope
+% nonlinear function that defines the dependent part of polynomial zonotope
 
     % initialization
     val = pZ.c;
     
     % dependent generators
     for i = 1:size(pZ.G,2)
-       val = val + pZ.G(:,i) * prod(x.^pZ.expMat(:,i)); 
+        val = val + pZ.G(:,i) * prod(x.^pZ.expMat(:,i)); 
     end
 end
 

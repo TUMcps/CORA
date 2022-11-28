@@ -1,6 +1,6 @@
 function intMat = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of matrix or an 
-% interval matrix with an interval matrix
+%    interval matrix with an interval matrix
 %
 % Syntax:  
 %    intMat = mtimes(factor1,factor2)
@@ -10,7 +10,7 @@ function intMat = mtimes(factor1,factor2)
 %    factor2 - numerical matrix or interval matrix
 %
 % Outputs:
-%    intMatZ - interval matrix
+%    intMat - interval matrix
 %
 % Example: 
 %

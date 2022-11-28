@@ -1,7 +1,7 @@
 function result = expmDifferentAlgorithms(intMat,maxOrder,styleOfCalculation,varargin)
-% returns the approximation of e^intMat using different algorithms 
-%    with maxOrder iterations. It is used as a fassade to access the
-%    algorithms in the private directory
+% expmDifferentAlgorithms - returns the approximation of e^intMat using
+%    different algorithms with maxOrder iterations. It is used as a wrapper
+%    to access the algorithms in the private directory
 %
 % Syntax:  
 %    result = expmDifferentAlgorithms(intMat,maxOrder,styleOfCalculation,varargin);
@@ -70,5 +70,4 @@ catch
     result = [];
 end
 
-end
-
+%------------- END OF CODE --------------

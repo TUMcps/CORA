@@ -1,20 +1,20 @@
-function res = cartProd(Int1,Int2)
+function res = cartProd(I,S)
 % cartProd - returns the Cartesian product of two intervals
 %
 % Syntax:  
-%    res = cartProd(Int1,Int2)
+%    res = cartProd(I,S)
 %
 % Inputs:
-%    Int1 - interval object
-%    Int2 - interval object
+%    I - interval object
+%    S - interval object
 %
 % Outputs:
-%    res - Cartesian product of Int1 and Int2
+%    res - Cartesian product of intervals
 %
 % Example: 
-%    a = interval([-1;-3],[1;6]);
-%    b = interval([-2;1], [4;2]);
-%    c = cartProd(a,b)
+%    I1 = interval([-1;-3],[1;6]);
+%    I2 = interval([-2;1], [4;2]);
+%    res = cartProd(I1,I2)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,53 +30,66 @@ function res = cartProd(Int1,Int2)
 
 %------------- BEGIN CODE --------------
 
+% pre-processing
+[resFound,vars] = pre_cartProd('interval',I,S);
+
+% check premature exit
+if resFound
+    % if result has been found, it is stored in the first entry of var
+    res = vars{1}; return
+else
+    % potential re-ordering
+    I = vars{1}; S = vars{2};
+end
+
+
 % first or second set is interval
-if isa(Int1,'interval')
+if isa(I,'interval')
 
     % different cases for different set representations
-    if isa(Int2,'interval')
+    if isa(S,'interval')
 
-        if isempty(Int1)
-            res = Int2;
-        elseif isempty(Int2)
-            res = Int1;
-        elseif size(Int1,2) == 1 && size(Int2,2) == 1 % vertcat
-            res = interval([Int1.inf;Int2.inf],[Int1.sup;Int2.sup]);
-        elseif size(Int1,1) == 1 && size(Int2,1) == 1 % horzcat
-            res = interval([Int1.inf,Int2.inf],[Int1.sup,Int2.sup]);
+        if isempty(I)
+            res = S;
+        elseif isempty(S)
+            res = I;
+        elseif size(I,2) == 1 && size(S,2) == 1 % vertcat
+            res = interval([I.inf;S.inf],[I.sup;S.sup]);
+        elseif size(I,1) == 1 && size(S,1) == 1 % horzcat
+            res = interval([I.inf,S.inf],[I.sup,S.sup]);
         else
-            error("No Cartesian product possible");
+            throw(CORAerror('CORA:dimensionMismatch',I,S));
         end
 
-    elseif isnumeric(Int2)
+    elseif isnumeric(S)
 
-        res = interval([Int1.inf;Int2],[Int1.sup;Int2]);
+        res = interval([I.inf;S],[I.sup;S]);
 
     % different cases for different set representations
-    elseif isa(Int2,'zonotope') 
-        res = cartProd(zonotope(Int1),Int2);
-    elseif isa(Int2,'conZonotope')
-        res = cartProd(conZonotope(Int1),Int2);
-    elseif isa(Int2,'zonoBundle')
-        res = cartProd(zonoBundle(Int1),Int2);
-    elseif isa(Int2,'mptPolytope')
-        res = cartProd(mptPolytope(Int1),Int2);
-    elseif isa(Int2,'polyZonotope')
-        res = cartProd(polyZonotope(Int1),Int2);
-    elseif isa(Int2,'conPolyZono')
-        res = cartProd(conPolyZono(Int1),Int2);
+    elseif isa(S,'zonotope') 
+        res = cartProd(zonotope(I),S);
+    elseif isa(S,'conZonotope')
+        res = cartProd(conZonotope(I),S);
+    elseif isa(S,'zonoBundle')
+        res = cartProd(zonoBundle(I),S);
+    elseif isa(S,'mptPolytope')
+        res = cartProd(mptPolytope(I),S);
+    elseif isa(S,'polyZonotope')
+        res = cartProd(polyZonotope(I),S);
+    elseif isa(S,'conPolyZono')
+        res = cartProd(conPolyZono(I),S);
     else
         % throw error for given arguments
-        error(noops(Int1,Int2));
+        throw(CORAerror('CORA:noops',I,S));
     end
 
 else
 
-    if isnumeric(Int1)
-        res = interval([Int1;Int2.inf],[Int1;Int2.sup]);
+    if isnumeric(I)
+        res = interval([I;S.inf],[I;S.sup]);
     else
         % throw error for given arguments
-        error(noops(Int1,Int2));
+        throw(CORAerror('CORA:noops',I,S));
     end  
 end
 

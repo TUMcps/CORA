@@ -3,11 +3,11 @@ function ratio = volumeRatio(Z,P,dims)
 %    over-approximating polytope
 %
 % Syntax:  
-%    ratio = volumeRatio(varargin)
+%    ratio = volumeRatio(Z,P,dims)
 %
 % Inputs:
 %    Z - zonotope object
-%    P - polytope object
+%    P - mptPolytope object
 %    dims - considered dimensions for the approximation
 %
 % Outputs:
@@ -15,8 +15,8 @@ function ratio = volumeRatio(Z,P,dims)
 %
 % Example:
 %    Z = zonotope([1;0],rand(2,5));
-%    P = enclosingPolytope(Z);
-%    ratio = volumeRatio(Z,P,1);
+%    P = mptPolytope(Z);
+%    ratio = volumeRatio(Z,P,1)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -33,7 +33,7 @@ function ratio = volumeRatio(Z,P,dims)
 
 %write inputs to variables
 if nargin == 1
-    error("Not enough input values");
+    throw(CORAerror('CORA:notEnoughInputArgs',2));
 elseif nargin == 2
     dims=dim(Z);
 end
@@ -55,7 +55,7 @@ for i=1:iterations
     %project zonotope
     Zproj.Z=Z.Z(projDims,:);
     %project polytope
-    Pproj=projection(P,projDims);
+    Pproj=project(P,projDims);
     
     %compute volume of the projected zonotope and polytope
     volZ=volume(Zproj);

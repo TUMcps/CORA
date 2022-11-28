@@ -15,10 +15,7 @@ function res = testSDPT3_linearSysDT_observe_01_vehicle()
 %
 % Outputs:
 %    res - boolean 
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      07-Jul-2021
 % Last update:  ---
@@ -62,7 +59,7 @@ options.solver = 'sdpt3';
 %% perform evaluation
      
 % loop over estimators
-for iEst = 3:length(Estimator)
+for iEst = 7:length(Estimator)
 
     % set algorithm
     estName = Estimator{iEst};
@@ -73,9 +70,9 @@ for iEst = 3:length(Estimator)
     
     % if ellipsoids are required
     if any(strcmp(estName,{'ESO-A','ESO-B','ESO-C','ESO-D','ESO-E'}))
-        params.R0 = ellipsoid(params.R0,'i:norm'); % inscribe ellipsoid
-        params.W = ellipsoid(params.W,'i:norm'); % inscribe ellipsoid
-        params.V = ellipsoid(params.V,'i:norm'); % inscribe ellipsoid
+        params.R0 = ellipsoid(params.R0,'inner:norm'); % inscribe ellipsoid
+        params.W = ellipsoid(params.W,'inner:norm'); % inscribe ellipsoid
+        params.V = ellipsoid(params.V,'inner:norm'); % inscribe ellipsoid
     % if constrained zonotopes are required
     elseif any(strcmp(estName,{'CZN-A','CZN-B'}))
         params.R0 = conZonotope(params.R0);
@@ -143,8 +140,7 @@ for iEst = 3:length(Estimator)
     end
 
     %check if slightly bloated versions enclose each other
-    resPartial(end+1) = (IH <= enlarge(IH_saved,1+1e-6));
-    resPartial(end+1) = (IH_saved <= enlarge(IH,1+1e-6));
+    resPartial(end+1) = isequal(IH,IH_saved,1e-6);
 end
 
 % final result

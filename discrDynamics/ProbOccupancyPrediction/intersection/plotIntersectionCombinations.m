@@ -60,7 +60,7 @@ rCar=radius(IHcar);
 rCarComb=radius(IHcarComb);
 
 %compute polytope representation
-Pcar=polytope(IHcarOnly);
+Pcar=mptPolytope(IHcarOnly);
 P2=Pcar;
 
 %set number of x, y and angle segments

@@ -1,18 +1,18 @@
 function [obj,linSys,linOptions] = linearize(obj,options,R)
 % linearize - linearizes the nonlinear system with uncertain parameters;
-% linearization error is not included yet
+%    linearization error is not included yet
 %
 % Syntax:  
-%    [obj,linearIntSys,linOptions] = linearize(obj,options,R)
+%    [obj,linSys,linOptions] = linearize(obj,options,R)
 %
 % Inputs:
-%    obj - nonlinear interval system object
+%    obj - nonlinParamSys object
 %    options - options struct
 %    R - actual reachable set
 %
 % Outputs:
-%    obj - nonlinear interval system object
-%    linSys - linear interval system object
+%    obj - nonlinParamSys object
+%    linSys - linParamSys/linearSys object
 %    linOptions - options for the linearized system
 %
 % Example: 
@@ -104,14 +104,14 @@ if isa(options.paramInt,'interval')
         Z_B{end+1} = dB;
         zB = matZonotope(zB.center,Z_B);
         zf = zonotope([zf.Z,zeros(size(zf.Z,1),1)]);%needed for dependentHomoSol
-        linOptions.compTimePoint = 1;
+        linOptions.compTimePoint = true;
     end
     %set up otions for linearized system
     U = zB*(options.U + options.uTrans + (-p.u));
     Ucenter = center(U);
     linOptions.U = U + (-Ucenter);
     linOptions.Uconst = zf + Ucenter;
-    linOptions.originContained = 0;
+    linOptions.originContained = false;
 
     %set up linearized system
     if ~obj.constParam
@@ -139,7 +139,7 @@ elseif isnumeric(options.paramInt)
 
     linOptions.uTrans=f0; %B*Ucenter from linOptions.U not added as the system is linearized around center(U)
     linOptions.U=B*(options.U+(-center(options.U)));
-    linOptions.originContained=0;
+    linOptions.originContained=false;
 
     %set up linearized system
     linSys = linearSys('linSys',A,1); %B=1 as input matrix encountered in uncertain inputs

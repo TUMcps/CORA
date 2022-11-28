@@ -28,7 +28,7 @@ res = true;
 nTests = 50;
 for i=1:nTests
     n = randi(30);
-    pZ = noIndep(polyZonotope.generateRandom(n));
+    pZ = noIndep(polyZonotope.generateRandom('Dimension',n));
     ne = length(pZ.id);
     f = fhandle(pZ);
     N = 2*n;
@@ -49,8 +49,7 @@ for i=1:nTests
 end
 
 if ~res
-    disp('testLongDuration_polyZonotope_fhandle failed');
-else
-    disp('testLongDuration_polyZonotope_fhandle successful');
+    path = pathFailedTests(mfilename());
+    save(path,'pZ','fval');
 end
 %------------- END OF CODE --------------

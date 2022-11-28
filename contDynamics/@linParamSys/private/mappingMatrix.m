@@ -1,9 +1,9 @@
-function [obj] = mappingMatrix(obj,options)
+function obj = mappingMatrix(obj,options)
 % mappingMatrix - computes the set of matrices which map the states for the
-% next point in time.
+%    next point in time.
 %
 % Syntax:  
-%    [obj] = mappingMatrix(obj,options)
+%    obj = mappingMatrix(obj,options)
 %
 % Inputs:
 %    obj - linParamSys object 
@@ -12,7 +12,8 @@ function [obj] = mappingMatrix(obj,options)
 % Outputs:
 %    obj - resulting linParamSys object 
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -69,7 +70,5 @@ end
 
 %remainder
 obj.E = E;
-
-
 
 %------------- END OF CODE --------------

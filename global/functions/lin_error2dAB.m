@@ -1,17 +1,22 @@
 function [dA,dB] = lin_error2dAB(R,U,hessian,p,varargin)
-% linError - computes the uncertainty interval to be added to system matrix
-% set caused by lagrangian remainder of the linearization
+% lin_error2dAB - computes the uncertainty interval to be added to system
+%    matrix set caused by lagrangian remainder of the linearization
 %
 % Syntax:  
 %    [dA,dB] = lin_error2dAB(R,U,hessian,p,varargin)
 %
 % Inputs:
-%    -
+%    R - ???
+%    U - ???
+%    hessian - ???
+%    p - ???
+%    ???
 %
 % Outputs:
 %    dA,dB - deviations for A,B caused by lagrange remainder
 %
 % Example: 
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none

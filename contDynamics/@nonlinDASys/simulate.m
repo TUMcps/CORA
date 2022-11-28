@@ -4,6 +4,7 @@ function [t,z,ind] = simulate(obj,params,varargin)
 % Syntax:  
 %    [t,z] = simulate(obj,params)
 %    [t,z,ind] = simulate(obj,params,options)
+%    [t,z,ind,y] = simulate(obj,params,options)
 %
 % Inputs:
 %    obj - nonlinDASys object
@@ -19,8 +20,9 @@ function [t,z,ind] = simulate(obj,params,varargin)
 %
 % Outputs:
 %    t - time vector
-%    z - state vector (dynamic and algebraic state variables)
+%    z - extended state vector (dynamic and algebraic state variables)
 %    ind - returns the event which has been detected
+%    y - output vector
 %
 % Example: 
 %
@@ -38,6 +40,11 @@ function [t,z,ind] = simulate(obj,params,varargin)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+if nargout == 4
+    warning("Output trajectories not supported for class nonlinDASys!");
+    y = [];
+end
 
 % specify mass matrix
 M = diag([ones(1,obj.dim),zeros(1,obj.nrOfConstraints)]);

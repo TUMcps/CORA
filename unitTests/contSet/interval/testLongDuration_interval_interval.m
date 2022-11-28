@@ -103,10 +103,9 @@ for i=1:nrOfTests
 end
 
 
-if res
-    disp('testLongDuration_interval successful');
-else
-    disp('testLongDuration_interval failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'a','b','a_large','b_small','a_plus1','b_plus1');
 end
 
 %------------- END OF CODE --------------

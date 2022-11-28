@@ -9,10 +9,10 @@ function han = plotPolygon(V,varargin)
 %    varargin - plot settings specified as linespec and name-value pairs
 %
 % Outputs:
-%    han - handle of graphics object
+%    han - handle to the graphics object
 %
 % Example: 
-%    zono = zonotope.generateRandom(2);
+%    zono = zonotope.generateRandom('Dimension',2);
 %    V = vertices(zono);
 %
 %    plotPolygon(V,'r');
@@ -31,15 +31,14 @@ function han = plotPolygon(V,varargin)
 %------------- BEGIN CODE --------------
 
 % default
-linespec = 'b';
-filled = false;
-NVpairs = {};
+NVpairs = {'Color',colorblind('b')};
 
 % read plot options
 if ~isempty(varargin)
-    [linespec,NVpairs] = readPlotOptions(varargin);
-    [NVpairs,filled] = readNameValuePair(NVpairs,'Filled','islogical');
+    NVpairs = readPlotOptions(varargin);
 end
+% readout 'FaceColor' to decide plot/fill call where necessary
+[~,facecolor] = readNameValuePair(NVpairs,'FaceColor');
 
 % check if vertex array is not empty
 if ~isempty(V)
@@ -51,16 +50,30 @@ if ~isempty(V)
             ind = convhull(V(1,:),V(2,:));
             V = V(:,ind);
         catch
-            error('Plotting the set failed');
+            throw(CORAerror('CORA:specialError','Plotting the set failed'));
         end
     end
 
     % plot the constrained zonotope
-    if filled
-        han = fill(V(1,:), V(2,:), linespec, NVpairs{:});
+    if isempty(facecolor) || strcmp(facecolor,'none') 
+        % axis are reset even if they were set manually. Correct afterwards
+        xmode = xlim("mode");
+        x = xlim;
+        ymode = ylim("mode");
+        y = ylim;
+
+        han = plot(V(1,:), V(2,:), NVpairs{:});
+
+        if xmode == "manual"
+            xlim(x);
+        end
+        if ymode == "manual"
+            ylim(y);
+        end
     else
-        han = plot(V(1,:), V(2,:), linespec, NVpairs{:});
+        han = fill(V(1,:), V(2,:), facecolor, NVpairs{:});
     end
+    
 end
 
 %------------- END OF CODE --------------

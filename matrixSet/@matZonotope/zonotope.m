@@ -1,14 +1,14 @@
 function Z = zonotope(matZ)
-% zonotope - Converts a matrix zonotope into a zonotope 
+% zonotope - Converts a matrix zonotope to a zonotope 
 %
 % Syntax:  
 %    Z = zonotope(matZ)
 %
 % Inputs:
-%    matZ - matrix zonotope
+%    matZ - matZonotope object
 %
 % Outputs:
-%    Z - zonotope
+%    Z - zonotope object
 %
 % Example: 
 %

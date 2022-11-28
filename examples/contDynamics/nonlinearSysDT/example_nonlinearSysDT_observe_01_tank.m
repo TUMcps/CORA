@@ -1,9 +1,7 @@
 function completed = example_nonlinearSysDT_observe_01_tank()
-% example_nonlinearSysDT_observe_01_tank - example for guaranteed
-% state estimation of nonlinear discrete-time systems from a unit test.
-%
-% Shows the solution of the nonlinearSysDT class for a tank example
-% from [1].
+% example_nonlinearSysDT_observe_01_tank - example for guaranteed state
+%    estimation of nonlinear discrete-time systems from a unit test; shows
+%    the solution of the nonlinearSysDT class for a tank example from [1].
 %
 % Syntax:  
 %    completed = example_nonlinearSysDT_observe_01_tank
@@ -12,22 +10,16 @@ function completed = example_nonlinearSysDT_observe_01_tank()
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % Reference:
 %    [1] M. Althoff. Guaranteed State Estimation in CORA 2021. 
 %        Proc. of the 8th International Workshop on Applied Verification 
 %        for Continuous and Hybrid Systems, 2021.
 %
-% Outputs:
-%    res - boolean 
-%
-% Reference:
-%    [1] M. Althoff "Guaranteed State Estimation in CORA 2021", ARCH 2021
-%
 % Example: 
 %    -
- 
+
 % Author:       Matthias Althoff
 % Written:      14-Jun-2021
 % Last update:  ---
@@ -70,22 +62,22 @@ for iEst = 1:length(Estimator)
 
     % plot results
     if ~isempty(estSet)
-        for dim = 1:6
+        for n = 1:6
             figure; hold on;
             % plot time elapse
-            plotOverTime(estSet,dim,'FaceColor',[.6 .6 .6],'EdgeColor','none');
+            plotOverTime(estSet,n);
             % plot simulation
-            plotOverTime(simRes,dim);
+            plotOverTime(simRes,n);
 
             % label plot
             title(estName);
             xlabel('t');
-            ylabel(['x_{',num2str(dim),'}']);
+            ylabel(['x_{',num2str(n),'}']);
         end
     end
 end
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

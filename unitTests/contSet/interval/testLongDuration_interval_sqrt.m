@@ -63,10 +63,9 @@ end
 % add results
 res = all(res_rand);
 
-if res
-    disp('test_sqrt successful');
-else
-    disp('test_sqrt failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'a','randinf');
 end
 
 %------------- END OF CODE --------------

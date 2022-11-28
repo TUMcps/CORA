@@ -1,5 +1,5 @@
 function res = isempty(E)
-% isempty - checks if ellipsoid is empty
+% isempty - checks if an ellipsoid is the empty set
 %
 % Syntax:  
 %    res = isempty(E)
@@ -8,7 +8,7 @@ function res = isempty(E)
 %    E - ellipsoid
 %
 % Outputs:
-%    res - boolean whether ellipsoid is empty or not
+%    res - true/false
 %
 % Example: 
 %    E = ellipsoid([1 0; 0 1], [0.5; -1]);
@@ -20,13 +20,16 @@ function res = isempty(E)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
+% Author:       Mark Wetzlinger, Victor Gassmann
 % Written:      16-Sep-2019
-% Last update:  ---
+% Last update:  04-July-2022 (VG: added class-array support)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-res = isempty(E.Q) && isempty(E.q);
+res = false(size(E));
+for i=1:numel(E)
+    res(i) = isempty(E(i).Q) && isempty(E(i).q);
+end
 
 %------------- END OF CODE --------------

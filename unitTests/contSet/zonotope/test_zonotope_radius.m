@@ -42,10 +42,4 @@ r_true = 5;
 tol = 1e-9;
 res = abs(r - r_true) < tol;
 
-if res
-    disp('test_radius successful');
-else
-    disp('test_radius failed');
-end
-
 %------------- END OF CODE --------------

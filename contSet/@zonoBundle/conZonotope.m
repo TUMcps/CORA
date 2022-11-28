@@ -1,16 +1,14 @@
-function res = conZonotope(obj)
-% conZonotope - convert a zonoBundle object into a constrained 
-%               zonotope object
+function cZ = conZonotope(zB)
+% conZonotope - convert a zonotope bundle to a constrained zonotope
 %
 % Syntax:  
-%    res = conZonotope(obj)
+%    cZ = conZonotope(zB)
 %
 % Inputs:
-%    obj - zonoBundle object
+%    zB - zonoBundle object
 %
 % Outputs:
-%    res - conZonotope object
-%
+%    cZ - conZonotope object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,12 +24,12 @@ function res = conZonotope(obj)
 %------------- BEGIN CODE --------------
     
 % initialization
-res = conZonotope(obj.Z{1});
+cZ = conZonotope(zB.Z{1});
 
 % calculate the intersection of the parallel sets
-for i = 2:obj.parallelSets
-   temp = conZonotope(obj.Z{i});
-   res = res & temp;
+for i = 2:zB.parallelSets
+    temp = conZonotope(zB.Z{i});
+    cZ = cZ & temp;
 end
 
 %------------- END OF CODE --------------

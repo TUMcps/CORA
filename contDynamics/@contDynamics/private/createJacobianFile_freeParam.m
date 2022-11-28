@@ -1,6 +1,6 @@
 function createJacobianFile_freeParam(Jdyn,path,name)
-% createJacobianFile_freeParam - generates an mFile that allows to compute the
-% jacobian for a certain state, input, and parameter value
+% createJacobianFile_freeParam - generates an mFile that allows to compute
+%    the jacobian for a certain state, input, and parameter value
 %
 % Syntax:  
 %    createJacobianFile_freeParam(obj)
@@ -8,12 +8,13 @@ function createJacobianFile_freeParam(Jdyn,path,name)
 % Inputs:
 %    Jdyn - jacobians
 %    path - path where the function should be created
-%    name - name of the nonlinear function to which the jacobian should
-%    belong
+%    name - function name for the Jacobian computation
 %
 % Outputs:
+%    -
 %
 % Example: 
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -24,14 +25,12 @@ function createJacobianFile_freeParam(Jdyn,path,name)
 % Author:       Matthias Althoff
 % Written:      07-June-2017
 % Last update:  ---
-% Last revision: ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    
-
-fid = fopen([path filesep 'jacobian_freeParam_' name '.m'],'w');
-fprintf(fid, '%s\n\n', ['function [A,B]=jacobian_freeParam_',name,'(x,u,p)']);
+fid = fopen([path filesep name '.m'],'w');
+fprintf(fid, '%s\n\n', ['function [A,B]=',name,'(x,u,p)']);
 
 % SYSTEM MATRIX
 % write "A=["
@@ -47,6 +46,5 @@ writeMatrix(Jdyn.u,fid);
 
 %close file
 fclose(fid);
-
 
 %------------- END OF CODE --------------

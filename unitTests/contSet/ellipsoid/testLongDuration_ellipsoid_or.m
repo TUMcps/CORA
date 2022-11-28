@@ -32,10 +32,4 @@ res = res && testLongDuration_component_ellipsoid_orDouble();
 % ellipsoid
 res = res && testLongDuration_component_ellipsoid_orEllipsoid();
 
-
-if res
-    disp('testLongDuration_ellipsoid_or successful');
-else
-    disp('testLongDuration_ellipsoid_or failed');
-end
 %------------- END OF CODE --------------

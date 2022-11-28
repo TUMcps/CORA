@@ -27,54 +27,61 @@ function Verr = linError_thirdOrder(obj, options, R)
 
 %------------- BEGIN CODE --------------
 
-    obj = setHessian(obj,'standard');
-    obj = setThirdOrderTensor(obj,'int');
+% set correct tensor files
+obj = setHessian(obj,'standard');
+obj = setThirdOrderTensor(obj,'int');
 
-    % compute interval enclosure of reachable set
-    dx = interval(R);
-    du = interval(options.U);
-    dz = [dx; du];
+% compute interval enclosure of reachable set
+dx = interval(R);
+du = interval(options.U);
+dz = [dx;du];
 
-    Int_x = dx + obj.linError.p.x;
-    Int_u = du + obj.linError.p.u;
+Int_x = dx + obj.linError.p.x;
+Int_u = du + obj.linError.p.u;
 
-    % reduce order before quadMap to save computation time
+% reduce order before quadMap to save computation time
+if contains(options.alg,'adaptive')
+    Rred = reduce(R,'adaptive',options.redFactor);
+else
     Rred = reduce(R,options.reductionTechnique,options.errorOrder);
-    Z = cartProd(Rred,options.U);
+end
+Z = cartProd(Rred,options.U);
 
-    % calculate hessian tensor
-    H = obj.hessian(obj.linError.p.x, obj.linError.p.u);
+% calculate hessian tensor
+H = obj.hessian(obj.linError.p.x,obj.linError.p.u);
 
-    % evaluate third-order tensor with range bounding
-    if isfield(options,'lagrangeRem') && ...
-       isfield(options.lagrangeRem,'method') && ...
-       ~strcmp(options.lagrangeRem.method,'interval')
+% evaluate third-order tensor with range bounding
+if isfield(options,'lagrangeRem') && ...
+   isfield(options.lagrangeRem,'method') && ...
+   ~strcmp(options.lagrangeRem.method,'interval')
 
-        % create taylor models or zoo-objects
-        [objX,objU] = initRangeBoundingObjects(Int_x,Int_u,options);
+    % create taylor models or zoo-objects
+    [objX,objU] = initRangeBoundingObjects(Int_x,Int_u,options);
 
-        % evaluate third order tensor 
-        [T, ind] = obj.thirdOrderTensor(objX, objU);
+    % evaluate third order tensor 
+    [T,ind] = obj.thirdOrderTensor(objX,objU);
+else
+    [T,ind] = obj.thirdOrderTensor(Int_x,Int_u);
+end
 
-    else
-        [T, ind] = obj.thirdOrderTensor(Int_x, Int_u);
+% second order abstraction error
+error_secondOrder = 0.5*quadMap(Z,H);
+
+% Lagrange remainder
+rem = interval(zeros(obj.dim,1),zeros(obj.dim,1));
+for i=1:length(ind)
+    temp = interval(0,0);
+    for j=1:length(ind{i})
+        temp = temp + (dz.' * T{i,ind{i}(j)}*dz) * dz(ind{i}(j));
     end
+    rem(i,1) = 1/6*temp;
+end
 
-    % second order abstraction error
-    error_secondOrder = 0.5*quadMap(Z, H);
-
-    % Lagrange remainder
-    L = interval(zeros(obj.dim,1),zeros(obj.dim,1));
-    for i=1:length(ind)
-        temp = interval(0,0);
-        for j=1:length(ind{i})
-            temp = temp + (dz.' * T{i,ind{i}(j)}*dz) * dz(ind{i}(j));
-        end
-        L(i,1) = 1/6*temp;
-    end
-
-    % overall abstraction error 
-    Verr = error_secondOrder + L;
+% overall abstraction error
+Verr = error_secondOrder + rem;
+if contains(options.alg,'adaptive')
+    Verr = reduce(Verr,'adaptive',options.redFactor);    
+else
     Verr = reduce(Verr,options.reductionTechnique,options.zonotopeOrder);    
 end
 

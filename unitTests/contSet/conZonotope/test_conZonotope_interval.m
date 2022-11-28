@@ -30,7 +30,7 @@ function res = test_conZonotope_interval
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
 
 % TEST 1: Figure 1 in [1] -------------------------------------------------
 
@@ -41,7 +41,7 @@ b = 1;
 cZono = conZonotope(Z,A,b);
 
 % calculate interval
-int = interval(cZono);
+I = interval(cZono);
 
 % % plot the result
 % plot(cZono,[1,2],'r');
@@ -49,12 +49,10 @@ int = interval(cZono);
 % plot(int,[1,2],'b');
 
 % compare with ground-truth
-int_ = interval([-2.5;-1.5],[3.5;2.5]);
+I_ = interval([-2.5;-1.5],[3.5;2.5]);
 
-for i = 1:length(int)
-   if infimum(int_(i)) ~= infimum(int(i)) || supremum(int_(i)) ~= supremum(int(i))
-      error('Test 1 failed!'); 
-   end
+if ~isequal(I,I_)
+    res = false;
 end
 
 
@@ -68,7 +66,7 @@ b = 2;
 cZono = conZonotope(Z,A,b);
 
 % calculate interval
-int = interval(cZono);
+I = interval(cZono);
 
 % % plot the result
 % plot(cZono,[1,2],'r');
@@ -76,17 +74,11 @@ int = interval(cZono);
 % plot(int,[1,2],'b');
 
 % compare with ground-truth
-int_ = interval([-2;-2],[0;3]);
+I_ = interval([-2;-2],[0;3]);
 
-for i = 1:length(int)
-   if infimum(int_(i)) ~= infimum(int(i)) || supremum(int_(i)) ~= supremum(int(i))
-      error('Test 2 failed!'); 
-   end
+if ~isequal(I,I_)
+    res = false;
 end
-
-
-
-res = true;
 
 
 %------------- END OF CODE --------------

@@ -64,9 +64,9 @@ trans = {};
 %   
 resetA = ...
 [1,0,0,0,0;0,1,0,0,0;0,0,1,0,0;0,0,0,1,0;0,0,0,0,1];
-resetb = ...
+resetc = ...
 [0;0;0;0;0];
-reset = struct('A', resetA, 'b', resetb);
+reset = struct('A', resetA, 'c', resetc);
 
 %% equation:
 %   y>=-100 & x+y >=-141.1 & x>=-100 & y-x<=141.1 & y<=100 & x+y<=141.1 & x<=100 & y-x>=-141.1
@@ -80,9 +80,9 @@ trans{1} = transition(guard, reset, 2);
 %   
 resetA = ...
 [1,0,0,0,0;0,1,0,0,0;0,0,1,0,0;0,0,0,1,0;0,0,0,0,1];
-resetb = ...
+resetc = ...
 [0;0;0;0;0];
-reset = struct('A', resetA, 'b', resetb);
+reset = struct('A', resetA, 'c', resetc);
 
 %% equation:
 %   t>=240
@@ -127,9 +127,9 @@ trans = {};
 %   
 resetA = ...
 [1,0,0,0,0;0,1,0,0,0;0,0,1,0,0;0,0,0,1,0;0,0,0,0,1];
-resetb = ...
+resetc = ...
 [0;0;0;0;0];
-reset = struct('A', resetA, 'b', resetb);
+reset = struct('A', resetA, 'c', resetc);
 
 %% equation:
 %   t>=240

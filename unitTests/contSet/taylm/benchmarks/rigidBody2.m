@@ -4,18 +4,24 @@ function res = rigidBody2(x1, x2, x3)
 % Syntax:  
 %    res = rigidBody2(x1, x2, x3)
 %
-% Example: 
+% Inputs:
+%    x1, x2, x3 - see benchmark
+%
+% Output:
+%    res - result
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
-%
+
 % Author:       Dmitry Grebenyuk
 % Written:      10-October-2017
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-    res = 2*x1*x2*x3 + 3*x3*x3 - x2*x1*x2*x3 + 3*x3*x3 - x2;
+
+res = 2*x1*x2*x3 + 3*x3*x3 - x2*x1*x2*x3 + 3*x3*x3 - x2;
 end
+
 %------------- END OF CODE --------------

@@ -1,8 +1,10 @@
-function [t,x] = simulate(obj,options)
+function [t,x,ind,y] = simulate(obj,options)
 % simulate - simulates the linear interval system within a location
 %
-% Syntax:  
+% Syntax:
+%    [t,x] = simulate(obj,params,options)
 %    [t,x,ind] = simulate(obj,params,options)
+%    [t,x,ind,y] = simulate(obj,params,options)
 %
 % Inputs:
 %    obj - linProbSys object
@@ -18,6 +20,7 @@ function [t,x] = simulate(obj,options)
 %    t - time vector
 %    x - state vector
 %    ind - returns the event which has been detected
+%    y - output vector
 %
 % Example: 
 %
@@ -35,6 +38,14 @@ function [t,x] = simulate(obj,options)
 
 %------------- BEGIN CODE --------------
 
+if nargout == 3
+    ind = [];
+end
+if nargout == 4
+    warning("Output trajectories not supported for class linProbSys!");
+    y = [];
+end
+
 %self-programmed euler solver
 h = options.timeStep/5;
 nrOfTimeSteps = ceil((options.tFinal-options.tStart)/h);
@@ -42,18 +53,17 @@ t = linspace(options.tStart, options.tFinal, nrOfTimeSteps);
 x(:,1) = options.x0;
 
 %obtain dimension
-dim=length(obj.A);
+n = obj.dim;
 
 for i=1:nrOfTimeSteps-1
+    % compute random value from the noise signal
+    mu = zeros(n,1);
+    Sigma = 1/h*eye(n);
+    u = obj.C*mvnrnd(mu,Sigma)';
     
-    %compute random value from the noise signal
-    mu=zeros(dim,1);
-    Sigma=1/h*eye(dim);
-    u=obj.C*mvnrnd(mu,Sigma)';
-    
-    %next state
-    x(:,i+1)=expm(obj.A*h)*x(:,i)+... %initial solution
-        inv(obj.A)*(expm(obj.A*h)-eye(length(obj.A)))*(options.u+u); %input solution
+    % next state: initial solution + input solution
+    x(:,i+1) = expm(obj.A*h)*x(:,i) + ...
+        inv(obj.A)*(expm(obj.A*h) - eye(length(obj.A)))*(options.u+u);
 end
 x=x';
 

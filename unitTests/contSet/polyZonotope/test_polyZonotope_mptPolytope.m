@@ -26,7 +26,7 @@ function res = test_polyZonotope_mptPolytope
 
 %------------- BEGIN CODE --------------
 
-res = 0;
+res = true;
 
 %% ANALYTICAL TEST
 
@@ -52,16 +52,8 @@ V = vertices(poly);
 V_ = [-2 -2 0 1.5 2 2 0;-1 1 3 2.5 1 -1 -3];
 
 % check for correctness
-for i = 1:size(V,2)
-   if ~ismembertol(V(:,i)',V_',1e-12,'ByRows',true) 
-      error('test_polyZonotope_mptPolytope: analytical test failed!');
-   end
+if ~compareMatrices(V,V_,1e-12)
+    res = false;
 end
-
-
-
-
-
-res = 1;
 
 %------------- END OF CODE --------------

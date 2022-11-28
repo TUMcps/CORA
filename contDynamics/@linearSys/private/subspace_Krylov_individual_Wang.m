@@ -1,16 +1,10 @@
 function [V,H,krylovOrder] = subspace_Krylov_individual_Wang(A,nu_A,v,initKrylovOrder,options)
-% subspace_Krylov_individual - computes the Krylov subspace for a single
-% vector given the accuracy to be achieved; the a-posteriori approach in 
-% Theorem 3.1 of 
-%
-% Wang, H. & Ye, Q. Error Bounds for the Krylov Subspace Methods for 
-% Computations of Matrix Exponentials SIAM Journal on Matrix Analysis and 
-% Applications, 2017, 38, 155-187
-%
-% is used for tight error computation
+% subspace_Krylov_individual_Wang - computes the Krylov subspace for a
+%    single vector given the accuracy to be achieved; the a-posteriori
+%    approach in Theorem 3.1 of [1] is used for tight error computation
 %
 % Syntax:  
-%    [V,H] = subspace_Krylov_individual(obj,v,options)
+%    [V,H,KrylovOrder] = subspace_Krylov_individual_Wang(obj,v,options)
 %
 % Inputs:
 %    A - system matrix
@@ -26,6 +20,11 @@ function [V,H,krylovOrder] = subspace_Krylov_individual_Wang(A,nu_A,v,initKrylov
 %
 % Example: 
 %    -
+%
+% Reference:
+%    [1] Wang, H. & Ye, Q. Error Bounds for the Krylov Subspace Methods for 
+%        Computations of Matrix Exponentials SIAM Journal on Matrix
+%        Analysis and Applications, 2017, 38, 155-187
 %
 % Other m-files required: none
 % Subfunctions: none

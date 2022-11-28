@@ -1,24 +1,22 @@
-function [C, D, k] = outputMatrices(EqExprs, states, inputs, outputs)
-% Converts string equalities defining the output of a location
-% to the C, D and k matrices required for linearSys instantiation
-% WARNING: could produce incorrect results, if any variables are named 
-% "xL<number>R", "uL<number>R" or "yL<number>R"
+function [C,D,k] = outputMatrices(EqExprs,states,inputs,outputs)
+% outputMatrices - Converts string equalities defining the output of a
+%    location to the C, D matrices and k vector required for linearSys
+%    WARNING: could produce incorrect results, if any variables are named 
+%             "xL<number>R", "uL<number>R", or "yL<number>R"
 %
-% Remark: broadly copied syntax from eq2polytope.m
-%
+% Remark: broadly copied syntax from eq2polytope.m (now eq2set.m)
 %
 % Syntax:  
-%    [C, D, k] = outputMatrices(EqExprs, listOfVar, states, inputs, outputs)
+%    [C,D,k] = outputMatrices(EqExprs,states,inputs,outputs)
 %
 % Inputs:
-%    EqExprs   - equations defining outputs
-%      equation: string - rough format: <eq> ("&" <eq>)*
-%                  <eq> = <expr(states,constants)> <op> <expr(states,constants)>
-%                  <expr>: linear expressions only
-%                  <op> = "<"|">"|"<="|">="|==
-%    states    - all state variables
-%    inputs    - all input variables
-%    outputs   - all output variables
+%    EqExprs - equations defining outputs, rough format: <eq> ("&" <eq>)*
+%              <eq> = <expr(states,constants)> <op> <expr(states,constants)>
+%              <expr>: linear expressions only
+%              <op> = "<"|">"|"<="|">="|==
+%    states - all state variables
+%    inputs - all input variables
+%    outputs - all output variables
 %
 % Outputs:
 %    C - output matrix
@@ -26,24 +24,22 @@ function [C, D, k] = outputMatrices(EqExprs, states, inputs, outputs)
 %    k - output offset
 %
 % Other m-files required: none
-% Subfunctions: ADD IF NECESSARY
+% Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
 
-% Author: Mark Wetzlinger
-% Written: 26-December-2018 
-% Last update: --- 
-% Last revision: ---
+% Author:       Mark Wetzlinger
+% Written:      26-December-2018 
+% Last update:  --- 
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % if no outputs, then no equation y = Cx + Du + k
-%   hence, return empty matrices (different handling in data2parallelHA.m)
+% hence, return empty matrices (different handling in data2parallelHA.m)
 if isempty(outputs) || isempty(EqExprs)
-    C = [];
-    D = [];
-    k = [];
+    C = []; D = []; k = [];
     return
 end
 
@@ -113,14 +109,12 @@ if(~all(eqValidIdx))
     EqExprs = EqExprs(eqValidIdx);
 end
 
-% computing linear dependencies
-C_sym = jacobian(EqExprs,x);
-
 % computing constant components, by setting x = 0
 k = subs(EqExprs, x, zeros(length(x),1));
 k = double(k) * -1;
 
 % compute C matrix
+C_sym = jacobian(EqExprs,x);
 % assumption: always at least one state given -> no length check
 % find correct sequence of to-be-written rows of C
 % for the case when: y2 = x1 and y1 = x2 (rowsequence -> [2 1])
@@ -161,8 +155,6 @@ if ~isempty(inputs) && ~strcmp(inputs(1).name,'uDummy')
     end
 else
     D = 0;
-end
-
 end
 
 %------------- END OF CODE -------------

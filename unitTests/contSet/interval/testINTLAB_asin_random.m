@@ -1,8 +1,8 @@
 function res = testINTLAB_asin_random(~)
-% test_asin_random - unit_test_function for comparing to IntLabV6
+% testINTLAB_asin_random - unit_test_function for comparing to IntLabV6
 %
 % Syntax:  
-%    res = test_asin_random (~)
+%    res = testINTLAB_asin_random (~)
 %
 % Inputs:
 %    no 
@@ -77,9 +77,6 @@ if ( isempty(bad_ones_max) ~= true)
     res = false;
 end
 
-disp('test_asin_random successful');
-disp(' ')
-
-return;
+%------------- END OF CODE --------------
 
 

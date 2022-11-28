@@ -1,13 +1,13 @@
-function [value,isterminal,direction] = eventFcn(obj,x,direction)
+function [value,isterminal,direction] = eventFcn(ls,x,direction)
 % eventFcn - Returns the results of an event function that detects if a 
-% trajectory enters or leaves a interval;
-% this event function is needed, e.g. for matlab ode-solvers
+%    trajectory enters or leaves a interval; this event function is needed,
+%    e.g., for MATLAB ODE solvers
 %
 % Syntax:  
-%    [value,isterminal,direction] = eventFcn(obj,x,direction)
+%    [value,isterminal,direction] = eventFcn(ls,x,direction)
 %
 % Inputs:
-%    obj - levelSet object
+%    ls - levelSet object
 %    x - system state
 %    direction - event if the state enters or leaves the set
 %
@@ -15,7 +15,7 @@ function [value,isterminal,direction] = eventFcn(obj,x,direction)
 %    value - value of the event function
 %    isterminal - specifies if the simulation stops if an event turns zero
 %    direction - specifies if the value of the event function has to 
-%    turn from negative to positive or the other way round
+%                turn from negative to positive or the other way round
 %
 % Example: 
 %    ---
@@ -33,13 +33,13 @@ function [value,isterminal,direction] = eventFcn(obj,x,direction)
 
 %------------- BEGIN CODE --------------
 
-    % detect zero crossings
-    value = obj.funHan(x);
+% detect zero crossings
+value = ls.funHan(x);
 
-    % always stop the integration when event detected
-    isterminal = ones(length(value),1);   
+% always stop the integration when event detected
+isterminal = ones(length(value),1);   
 
-    % vectorize direction
-    direction = ones(length(value),1)*direction; 
+% vectorize direction
+direction = ones(length(value),1)*direction; 
 
 %------------- END OF CODE --------------

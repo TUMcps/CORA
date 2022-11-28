@@ -1,6 +1,6 @@
 function intMat = plus(summand1,summand2)
-% plus - Overloaded '+' operator for the Minkowski addition of two
-% interval matrices or a interval matrix with a matrix
+% plus - Overloaded '+' operator for the Minkowski addition of two interval
+%    matrices or a interval matrix with a matrix
 %
 % Syntax:  
 %    intMat = plus(summand1,summand2)
@@ -53,7 +53,4 @@ elseif isnumeric(summand)
     intMat.int = intMat.int + summand;
 end
 
-
 %------------- END OF CODE --------------
-
-

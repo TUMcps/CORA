@@ -1,8 +1,8 @@
-function res = getSyms( obj )
-% getSyms( obj ) - returns a polynomial in a sym form
+function res = getSyms(obj)
+% getSyms - returns a polynomial in a sym form
 %
 % Syntax:  
-%    res = getSyms( obj )
+%    res = getSyms(obj)
 %
 % Inputs:
 %    obj - a Taylor model
@@ -10,7 +10,8 @@ function res = getSyms( obj )
 % Outputs:
 %    res - sym 
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: taylm
 % Subfunctions: none
@@ -46,3 +47,4 @@ function res = s_getSyms( obj )
     
 end
 
+%------------- END OF CODE --------------

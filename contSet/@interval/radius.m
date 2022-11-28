@@ -1,21 +1,20 @@
-function r = radius(obj)
+function r = radius(I)
 % radius - Computes radius of enclosing hyperball of an interval 
 %
 % Syntax:  
-%    r = radius(obj)
+%    r = radius(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
 %    r - radius of enclosing hyperball
 %
 % Example: 
-%    I = interval.generateRandom(2);
+%    I = interval.generateRandom('Dimension',2);
 %    r = radius(I);
 %
-%    figure
-%    hold on
+%    figure; hold on;
 %    plot(I,[1,2],'r');
 %    E = ellipsoid(r^2 * eye(2),center(I));
 %    plot(E,[1,2],'b');
@@ -33,7 +32,6 @@ function r = radius(obj)
 
 %------------- BEGIN CODE --------------
 
-%compute radius
-r = sqrt(sum(rad(obj).^2));
+r = sqrt(sum(rad(I).^2));
 
 %------------- END OF CODE --------------

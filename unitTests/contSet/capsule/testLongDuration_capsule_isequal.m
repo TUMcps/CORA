@@ -66,38 +66,25 @@ for i=1:nrOfTests
         res = false; break;
     end
 
-    % ... empty capsule -> dimension mismatch
-    try
-        isequal(C,C_empty); % here: error should be thrown
+    % ... empty capsule
+    if isequal(C,C_empty)
         res = false; break;
-    catch ME
-        if ~strcmp(ME.identifier,'CORA:dimensionMismatch')
-            % other error than expected
-            res = false; break;
-        end
     end
 
     % ... capsule of reduced dimension
     if n > 1
         C_red = capsule(c1(1:n-1),g1(1:n-1),r1);
-        try
-        isequal(C,C_red); % here: error should be thrown
-        res = false; break;
-        catch ME
-            if ~strcmp(ME.identifier,'CORA:dimensionMismatch')
-                % other error than expected
-                res = false; break;
-            end
+        if isequal(C,C_red)
+            res = false; break;
         end
     end
 
 end
 
 
-if res
-    disp('test_isequal successful');
-else
-    disp('test_isequal failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','c1','c2','g1','g2','r1','r2');
 end
 
 %------------- END OF CODE --------------

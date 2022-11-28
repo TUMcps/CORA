@@ -1,8 +1,9 @@
-function res = testLongDuration_ellipsoid_distanceHyperplane
-% testLongDuration_ellipsoid_distanceHyperplane - unit test function of testLongDuration_ellipsoid_distanceHyperplane
+function res = testLongDuration_component_ellipsoid_distanceHyperplane
+% testLongDuration_component_ellipsoid_distanceHyperplane - unit test
+%    function of distanceHyperplane
 %
 % Syntax:  
-%    res = testLongDuration_ellipsoid_distanceHyperplane
+%    res = testLongDuration_component_ellipsoid_distanceHyperplane
 %
 % Inputs:
 %    -
@@ -30,12 +31,15 @@ bools = [false,true];
 for i=5:5:20
     for j=1:nRuns
         for k=1:2 
-            E = ellipsoid.generateRandom(i,bools(k));
+            %%% generate all variables necessary to replicate results
+            E = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k));
             N = 2*i;
             B = randPoint(E,N,'extreme');
             m = ceil(N*rand);
-            s = E.q + rand*(B(:,m)-E.q);
+            fac_s = rand;
             v = randn(i,1);
+            %%%
+            s = E.q + fac_s*(B(:,m)-E.q);
             v = v/norm(v);
             % guaranteed to intersect
             hyp1 = conHyperplane(v',v'*s);
@@ -62,6 +66,8 @@ for i=5:5:20
         end
     end
     if ~res
+        path = pathFailedTests(mfilename());
+        save(path,'E','N','B','m','fac_s','v');
         break;
     end
 end

@@ -1,5 +1,5 @@
 function S = getSubset(pZ,id,val)
-% getSubset - extract a subset by specifying new ranges for the factors
+% getSubset - extracts a subset by specifying new ranges for the factors
 %
 % Syntax:  
 %    S = getSubset(pZ,id,val)
@@ -17,10 +17,9 @@ function S = getSubset(pZ,id,val)
 %    
 %    S = getSubset(pZ,2,interval(-0.5,0.9));
 %
-%    figure
-%    hold on
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
-%    plot(S,[1,2],'b','Filled',true,'EdgeColor','none');
+%    figure; hold on;
+%    plot(pZ,[1,2],'FaceColor','r');
+%    plot(S,[1,2],'FaceColor','b');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -34,6 +33,11 @@ function S = getSubset(pZ,id,val)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+    % check input arguments
+    inputArgsCheck({{pZ,'att','polyZonotope'};
+                    {id,'att','numeric','vector'};
+                    {val,'att',{'numeric','interval'},'nonempty'}});
 
     % check if value is a vector an interval
     if isnumeric(val)
@@ -92,7 +96,8 @@ function pZ = getSubsetPoint(pZ,id,val)
     ind = find(pZ.id == id);
     
     if isempty(ind)
-       error('The specified "id" does not exist!'); 
+        throw(CORAerror('CORA:wrongValue','second',...
+            'be a vector containing the identifiers of the factors that are changed'));
     end
     
     % modify all generators that are affected by the variable
@@ -102,6 +107,7 @@ function pZ = getSubsetPoint(pZ,id,val)
            pZ.expMat(ind,i) = 0;
         end
     end
+
 end
 
 function pZ = getSubsetInterval(pZ,id,val)
@@ -110,7 +116,8 @@ function pZ = getSubsetInterval(pZ,id,val)
     ind = find(pZ.id == id);
     
     if isempty(ind)
-       error('The specified "id" does not exist!'); 
+        throw(CORAerror('CORA:wrongValue','second',...
+            'be a vector containing the identifiers of the factors that are changed'));
     end
     
     % compute coefficients of all required polynomials (a + b*x)^e
@@ -158,6 +165,7 @@ function pZ = getSubsetInterval(pZ,id,val)
     
     pZ.expMat = expMat;
     pZ.G = G;
+
 end
 
 %------------- END OF CODE --------------

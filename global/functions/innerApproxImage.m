@@ -71,7 +71,8 @@ function L = innerApproxImage(f,X,varargin)
     n = size(fsym,1);
     
     if n > length(X)
-        error('This function is only applicable for non-degenerate images!');
+        throw(CORAerror('CORA:specialError',...
+            'This function is only applicable for non-degenerate images!'));
     elseif n == length(X)               % use method from [1]
         Inner = @(f,df,X,X_,Y_) InnerSpecial(f,df,X,X_,Y_);
     else                                % use method from [2]
@@ -126,7 +127,7 @@ function res = InnerSpecial(f,df,X,X_,Y_)
     b = C*Y_ - C*f(x_);
     d = [inf,inf];
     
-    while d(2) <= mu*d(1) && in(X,X_)
+    while d(2) <= mu*d(1) && contains(X,X_)
        
         try
             u = Gamma(C*df(X_),X_-x_,b);
@@ -135,7 +136,7 @@ function res = InnerSpecial(f,df,X,X_,Y_)
             return;
         end
         
-        if in(X_,x_ + u)
+        if contains(X_,x_ + u)
             res = 1;
             return; 
         end
@@ -188,7 +189,7 @@ function res = InnerGeneral(f,df,X,X_,Y_,varargin)
     b = C*Y_ - C*f(x_); b = b(1:n);
     d = [inf,inf];
     
-    while d(2) <= mu*d(1) && in(U1,U1_)
+    while d(2) <= mu*d(1) && contains(U1,U1_)
        
         try
             t = InvDiag(J1) * (b - OffDiag(J1)*(U1_-u1_)) - J2*(U2_ - u2_);
@@ -196,7 +197,7 @@ function res = InnerGeneral(f,df,X,X_,Y_,varargin)
             break; 
         end
         
-        if in(U1_,u1_ + t)
+        if contains(U1_,u1_ + t)
             res = 1;
             return; 
         end
@@ -254,7 +255,7 @@ function ind = getSuitableSubmatrix(J,n)
     
     for i = 1:size(J,1)
         for j = 1:size(J,2)
-            nonZero(i,j) = ~in(J(i,j),0);
+            nonZero(i,j) = ~contains(J(i,j),0);
         end
     end
     
@@ -267,7 +268,7 @@ function ind = getSuitableSubmatrix(J,n)
     
     for i = 1:n
         for j = 1:size(J,2)
-            if ~ismember(j,ind) && ~in(J(index(i),j),0)
+            if ~ismember(j,ind) && ~contains(J(index(i),j),0)
                ind(index(i)) = j; 
             end
         end

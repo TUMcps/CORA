@@ -1,16 +1,16 @@
-function res = project(obj,dim)
-% projects - Projects a conPolyZonotope object onto a lower dimensional
-%            subspace
+function res = project(cPZ,dims)
+% projects - Projects a constrained polynomial zonotope onto the specified
+%    dimensions
 %
 % Syntax:  
-%    res = project(obj,dim)
+%    res = project(cPZ,dims)
 %
 % Inputs:
-%    obj - conPolyZonotope object
-%    dim - dimensions spanning the subspace
+%    cPZ - (conPolyZono) constrained polynomial zonotope
+%    dims - dimensions for projection
 %
 % Outputs:
-%    res - projected conPolyZonotope object
+%    res - (conPolyZono) projected constrained polynomial zonotope
 %
 % Example: 
 %    c = [0;0;0];
@@ -25,7 +25,7 @@ function res = project(obj,dim)
 %    cPZ_ = project(cPZ,[1,2]);
 %
 %    figure; hold on; box on; grid on;
-%    plot(cPZ,[1,2,3],'b','Splits',10,'Filled',true);
+%    plot(cPZ,[1,2,3],'FaceColor','b','Splits',10);
 %    plot(cPZ_,[1,2],'r','Splits',10);
 %
 % Other m-files required: none
@@ -41,13 +41,18 @@ function res = project(obj,dim)
 
 %------------- BEGIN CODE --------------
 
-    res = obj;
-    res.c = obj.c(dim);
-    res.G = obj.G(dim,:);
-    
-    if ~isempty(obj.Grest)
-       res.Grest = res.Grest(dim,:); 
-    end
+% check input arguments
+% inputArgsCheck({{cPZ,'att','conPolyZono'};
+%                 {dims,'att',{'numeric','logical'},{'vector','integer',...
+%                     'positive','nonnan'}}});
+
+% project set
+res = cPZ;
+res.c = cPZ.c(dims);
+res.G = cPZ.G(dims,:);
+
+if ~isempty(cPZ.Grest)
+    res.Grest = res.Grest(dims,:); 
 end
     
 %------------- END OF CODE --------------

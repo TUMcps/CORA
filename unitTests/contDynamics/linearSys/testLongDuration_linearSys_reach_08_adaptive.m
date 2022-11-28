@@ -1,8 +1,8 @@
 function res = testLongDuration_linearSys_reach_08_adaptive
-% test_linearSys_reach_08_adaptive - unit test for adaptive reachability analysis
+% testLongDuration_linearSys_reach_08_adaptive - unit test for adaptive reachability analysis
 %
 % Syntax:  
-%    res = test_linearSys_reach_08_adaptive
+%    res = testLongDuration_linearSys_reach_08_adaptive
 %
 % Inputs:
 %    -
@@ -37,7 +37,7 @@ sys = linearSys('sys',A,B);
 
 % Parameters and Reachability Settings ------------------------------------
 
-params.tFinal = log(0.005)/real(eigs(A,1,'smallestabs'));
+params.tFinal = 10;
 options.linAlg = 'adaptive';
 options.error = 0.01;
 
@@ -54,7 +54,7 @@ disp("Computation time (homogeneous case): " + tComp);
 
 
 % 2. inhomogeneous system
-params.U = zonotope(ones(dim_x,1),0.25*eye(dim_x));
+params.U = zonotope(ones(dim_x,1),0.02*eye(dim_x));
 tic
 R = reach(sys,params,options);
 tComp = toc;
@@ -63,7 +63,7 @@ disp("Computation time (inhomogeneous case): " + tComp);
 
 % 3. system with output matrix
 C = [2 -1];
-sys = linearSys('sys',A,B,[],C); %initialize system
+sys = linearSys('sys',A,B,[],C);
 tic
 R = reach(sys,params,options);
 tComp = toc;
@@ -71,14 +71,11 @@ disp("Computation time (output matrix case): " + tComp);
 
 
 % 4. with specification
-sys = linearSys('sys',A,B); %initialize system
+sys = linearSys('sys',A,B);
 spec = specification(halfspace([-1,0],-15));
 tic
 [R,res] = reach(sys,params,options,spec);
 tComp = toc;
 disp("Computation time (specification): " + tComp);
-
-
-end
 
 %------------- END OF CODE --------------

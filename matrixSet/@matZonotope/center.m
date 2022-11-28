@@ -1,14 +1,14 @@
-function c = center(obj)
+function c = center(matZ)
 % center - Returns the center of an matZonotope
 %
 % Syntax:  
-%    c = center(obj)
+%    c = center(matZ)
 %
 % Inputs:
-%    obj - matZonotope object
+%    matZ - matZonotope object
 %
 % Outputs:
-%    c - center of the matZonotope obj
+%    c - center of the matrix zonotope
 %
 % Example:
 %    M = matZonotope(eye(2),{eye(2),2*eye(2)});
@@ -27,6 +27,6 @@ function c = center(obj)
 
 %------------- BEGIN CODE --------------
 
-c = obj.center;
+c = matZ.center;
 
 %------------- END OF CODE --------------

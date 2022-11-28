@@ -1,15 +1,15 @@
-function res = isequal(Z1,Z2)
-% isequal - checks if two zonoBundles are equal
+function res = isequal(zB1,zB2)
+% isequal - checks if two zonotope bundles are equal
 %
 % Syntax:  
-%    res = isequal(Z1,Z2)
+%    res = isequal(zB1,zB2)
 %
 % Inputs:
-%    Z1 - zonoBundle object
-%    Z2 - zonoBundle object
+%    zB1 - zonoBundle object
+%    zB2 - zonoBundle object
 %
 % Outputs:
-%    res - boolean whether Z1 and Z2 are equal
+%    res - true/false
 %
 % Example: 
 %    ---
@@ -28,12 +28,12 @@ function res = isequal(Z1,Z2)
 %------------- BEGIN CODE --------------
 
 res = false;
-if Z1.parallelSets ~= Z2.parallelSets
+if zB1.parallelSets ~= zB2.parallelSets
     return
 end
 
-for z=1:Z1.parallelSets
-    if ~isequal(Z1.Z{z},Z2.Z{z})
+for z=1:zB1.parallelSets
+    if ~isequal(zB1.Z{z},zB2.Z{z})
         return
     end
 end

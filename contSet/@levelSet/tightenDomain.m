@@ -1,36 +1,33 @@
-function int = tightenDomain(obj,S,varargin)
+function I = tightenDomain(ls,S,varargin)
 % tightenDomain - Computes a tight interval enclosure of the intersection 
-%                 between the level set and the set S as described in 
-%                 Sec. 4.2 in [1]    
+%    between the level set and the set S as described in Sec. 4.2 in [1];
+%    this operation only works for level sets with '=='
 %
 % Syntax:  
-%    int = tightenDomain(obj,S)
+%    I = tightenDomain(ls,S)
 %
 % Inputs:
-%    obj - level set (class: levelSet)
+%    ls - levelSet object
 %    S - contSet object
 %
 % Outputs:
-%    int - over-approximation of the intersection (class: interval) 
+%    I - interval over-approximation of the intersection
 %
 % Example: 
 %    syms x y
 %    eq = y*sin(x)^2 + x*y^2 - 4;
 %    ls = levelSet(eq,[x;y],'==');
 %    
-%    zono = zonotope([0 0.5 0 0.5;2 0 0.5 0.5]);
-%
-%    int1 = tightenDomain(ls,zono,'forwardBackward');
-%    int2 = tightenDomain(ls,zono,'split');
-%
-%    figure
-%    hold on
-%    plot(zono,[1,2],'g','Filled',true,'EdgeColor','none');
-%    xlim([-4,4]);
-%    ylim([-4,4]);
-%    plot(ls,[1,2],'b');   
-%    plot(int1,[1,2],'r');
-%    plot(int2,[1,2],'k');
+%    Z = zonotope([0 0.5 0 0.5;2 0 0.5 0.5]);
+% 
+%    I1 = tightenDomain(ls,Z,'forwardBackward');
+%    I2 = tightenDomain(ls,Z,'split');
+% 
+%    figure; hold on; xlim([-4,4]); ylim([-4,4]);
+%    plot(Z,[1,2],'FaceColor','g');
+%    plot(ls,[1,2],'b');
+%    plot(I1,[1,2],'r');
+%    plot(I2,[1,2],'k');
 %
 % References:
 %   [1] N. Kochdumper et al. "Reachability Analysis for Hybrid Systems with 
@@ -42,37 +39,45 @@ function int = tightenDomain(obj,S,varargin)
 %
 % See also: and
 
-% Author: Niklas Kochdumper
-% Written: 25-July-2019
-% Last update: ---
+% Author:        Niklas Kochdumper
+% Written:       25-July-2019
+% Last update:   ---
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-    % initialization
-    maxIter = 8;
-    type = 'forwardBackward';
+% operations only if '=='
+if ~strcmp(ls.compOp,'==')
+    throw(CORAerror('CORA:noops',ls,S));
+end
+
+% default values
+maxIter = 8;
+type = setDefaultValues({'forwardBackward'},varargin{:});
+
+% check input arguments
+inputArgsCheck({{ls,'att','levelSet'};
+                {S,'att','contSet'};
+                {type,'str',{'forwardBackward','split','taylor','linear'}}});
+
+% enclose set by interval
+I = interval(S);
+
+% choose contractor algorithm 
+if strcmp(type,'split')
+    I = contractorSplit(ls,I,maxIter);
+elseif strcmp(type,'taylor')
+    I = contractorTaylor(ls,I,maxIter);
+elseif strcmp(type,'linear')
+    I = contractorLinear(ls,I,maxIter);
+elseif strcmp(type,'forwardBackward')
+    I = contractorForwardBackward(ls,I);
+end
     
-    if nargin >= 3
-       type = varargin{1}; 
-    end
-
-    % enclose set by interval
-    int = interval(S);
-
-    % choose contractor algorithm 
-    if strcmp(type,'split')
-        int = contractorSplit(obj,int,maxIter);
-    elseif strcmp(type,'taylor')
-        int = contractorTaylor(obj,int,maxIter);
-    elseif strcmp(type,'linear')
-        int = contractorLinear(obj,int,maxIter);
-    elseif strcmp(type,'forwardBackward')
-        int = contractorForwardBackward(obj,int);
-    end
 end
    
 
+% Auxiliary Functions -----------------------------------------------------
 function int = contractorForwardBackward(obj,int)
 
     % compute syntax tree nodes for all variables
@@ -131,14 +136,14 @@ function int = contractorTaylor(obj,int,maxIter)
             if obj.solved{j}.contained
 
                 % check if equaiton is solvable for the current variable
-                if obj.solved{j}.solveable
+                if obj.solved{j}.solvable
 
                     [infi,sup,fail] = scaleVarSolvable(obj,infi,sup,j);
 
                 end
 
                 % not solvable or evaluation failed
-                if ~obj.solved{j}.solveable || fail
+                if ~obj.solved{j}.solvable || fail
                     [infi,sup] = scaleVarUnsolvable(obj,infi,sup,j);
                 end
             end
@@ -171,14 +176,14 @@ function int = contractorSplit(obj,int,maxIter)
                 if obj.solved{j}.contained
 
                     % check if equaiton is solvable for the current variable
-                    if obj.solved{j}.solveable
+                    if obj.solved{j}.solvable
 
                         [infi,sup,fail] = scaleVarSolvable(obj,infi,sup,j);
                         
                     end
                         
                     % not solvable or evaluation failed
-                    if ~obj.solved{j}.solveable || fail
+                    if ~obj.solved{j}.solvable || fail
 
                         [infi,sup] = scaleVarUnsolvable(obj,infi,sup,j);
                         

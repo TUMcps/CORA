@@ -24,9 +24,9 @@ function res = testLongDuration_halfspace_dim
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-% Random cases
+
 nrTests = 1000;
-res_rand = true;
+res = true;
 
 for i=1:nrTests
     % random dimension
@@ -41,18 +41,13 @@ for i=1:nrTests
     
     % check result
     if dim(h) ~= n
-        res_rand = false; break;
+        res = false; break;
     end
 end
 
-
-% combine tests
-res = res_rand;
-
-if res_rand
-    disp('test_dim successful');
-else
-    disp('test_dim failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'c','d','n');
 end
 
 %------------- END OF CODE --------------

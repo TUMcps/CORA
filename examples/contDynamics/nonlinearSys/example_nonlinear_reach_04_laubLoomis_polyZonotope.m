@@ -9,7 +9,7 @@ function completed = example_nonlinear_reach_04_laubLoomis_polyZonotope()
 %    completed = example_nonlinear_reach_04_laubLoomis_polyZonotope()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    completed - boolean 
@@ -72,30 +72,25 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 
 % Simulation --------------------------------------------------------------
 
-% settings for random simulation
-simOpt.points = 60;        % number of initial points
-simOpt.fracVert = 0.5;     % fraction of vertices initial set
-simOpt.fracInpVert = 0.5;  % fraction of vertices input set
-simOpt.inpChanges = 10;    % changes of input over time horizon              
-
+% number of initial points
+simOpt.points = 60;
 % random simulation
 simRes = simulateRandom(sys,params,simOpt); 
 
 
 
-% Visualization -------------------------------------------------------
- 
+% Visualization -----------------------------------------------------------
 
 % PLOT 1: reachable set over time
 
 figure; hold on; box on
 
 % plot reachable set
-plotOverTime(R,4,'FaceColor',[0 0.8 0],'EdgeColor','none');
+plotOverTime(R,4,'FaceColor',[0 0.8 0]);
 
 % plot the unsafe set
-inter = interval([0;5],[params.tFinal;10]);
-plot(inter,[1,2],'FaceColor',[1 0.5 0],'Filled',true,'EdgeColor','none','FaceAlpha',0.6);
+I = interval([0;5],[params.tFinal;10]);
+plot(I,[1,2],'FaceColor',[1 0.5 0],'FaceAlpha',0.6);
 
 % plot simulation
 plotOverTime(simRes,4);
@@ -114,22 +109,22 @@ dims = {[1,2],[3,5],[6,7]};
 for i = 1:length(dims)
     
     figure; hold on; box on;
-    dim = dims{i};
+    projDim = dims{i};
     
     % plot reachable set
-    plot(R,dim,'FaceColor',[0 0.8 0],'EdgeColor','none');
+    plot(R,projDim,'FaceColor',[0 0.8 0]);
     
     % plot initial set
-    plot(R0,dim,'w','Filled',true);
+    plot(R0,projDim,'k','FaceColor','w');
     
     % plot simulation results
-    plot(simRes,dim);
+    plot(simRes,projDim);
     
     % formatting
-    xlabel(['x_',num2str(dim(1))]);
-    ylabel(['x_',num2str(dim(2))]);
+    xlabel(['x_',num2str(projDim(1))]);
+    ylabel(['x_',num2str(projDim(2))]);
 end
 
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

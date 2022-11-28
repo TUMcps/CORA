@@ -1,59 +1,53 @@
-function res = and(obj,S)
+function res = and(cZ,S)
 % and - Computes the intersection of a constrained zonotope with
-%             other set representations
+%    other set representations
 %
 % Syntax:  
-%    res = and(obj,S)
+%    res = and(cZ,S)
 %
 % Inputs:
-%    obj - constrained zonotope object
-%    S - second set (supported objects: conZonotope, halfspace, 
-%                    constrainedHyperlane)
+%    cZ - conZonotope object
+%    S - contSet object
 %
 % Outputs:
-%    res - constrained zonotope object
+%    res - conZonotope object
 %
 % Example: 
 %    % constrained zonotopes
 %    Z = [0 3 0 1;0 0 2 1];
-%    A = [1 0 1];
-%    b = 1;
-%    cZono1 = conZonotope(Z,A,b);
-%
+%    A = [1 0 1]; b = 1;
+%    cZ1 = conZonotope(Z,A,b);
 %    Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
-%    A = [1 1 1];
-%    b = 1;
-%    cZono2 = conZonotope(Z,A,b);
+%    A = [1 1 1]; b = 1;
+%    cZ2 = conZonotope(Z,A,b);
 %
 %    % halfspace and constrained hyperplane
 %    hs = halfspace([1,-2],1);
-%    ch = conHyperplane([1,-2],1,[-2 -0.5;1 0],[-4.25;2.5]);
+%    hyp = conHyperplane([1,-2],1,[-2 -0.5;1 0],[-4.25;2.5]);
 %
 %    % compute intersection
-%    res1 = cZono1 & cZono2;
-%    res2 = cZono2 & hs;
-%    res3 = cZono1 & ch;
+%    res1 = cZ1 & cZ2;
+%    res2 = cZ2 & hs;
+%    res3 = cZ1 & hyp;
 %
 %    % visualization
-%    figure; hold on
-%    plot(cZono1,[1,2],'r');
-%    plot(cZono2,[1,2],'b');
-%    plot(res1,[1,2],'g','Filled',true,'EdgeColor','none');
+%    figure; hold on;
+%    plot(cZ1,[1,2],'r');
+%    plot(cZ2,[1,2],'b');
+%    plot(res1,[1,2],'FaceColor','g');
 %    title('Constrained zonotope');
 %
-%    figure; hold on
-%    xlim([-4,4]); ylim([-4,4]);
+%    figure; hold on; xlim([-4,4]); ylim([-4,4]);
 %    plot(hs,[1,2],'r','FaceAlpha',0.5);
-%    plot(res2,[1,2],'g','Filled',true,'EdgeColor','none');
-%    plot(cZono2,[1,2],'b');
+%    plot(res2,[1,2],'FaceColor','g');
+%    plot(cZ2,[1,2],'b');
 %    title('halfspace');
 %
-%    figure; hold on
-%    xlim([0,4]); ylim([-3,4]);
-%    plot(ch,[1,2],'g');
-%    plot(cZono1,[1,2],'r');
+%    figure; hold on; xlim([0,4]); ylim([-3,4]);
+%    plot(hyp,[1,2],'g');
+%    plot(cZ1,[1,2],'r');
 %    plot(res3,[1,2],'b','LineWidth',2);
-%    title('Constrained hyperplane');    
+%    title('Constrained hyperplane'); 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -72,18 +66,24 @@ function res = and(obj,S)
 
 %------------- BEGIN CODE --------------
 
-    % get conZonotope object
-    if ~isa(obj,'conZonotope')
-       temp = obj;
-       obj = S;
-       S = temp;
+    % pre-processing
+    [resFound,vars] = pre_and('conZonotope',cZ,S);
+    
+    % check premature exit
+    if resFound
+        % if result has been found, it is stored in the first entry of var
+        res = vars{1}; return
+    else
+        % potential re-ordering
+        cZ = vars{1}; S = vars{2};
     end
+    
     
     % Add trivial constraint if the conZonotope object does not have
     % constraints (for easier implementation of the following operations)
-    if isempty(obj.A)
-       obj.A = zeros(1,size(obj.Z,2)-1);
-       obj.b = 0;
+    if isempty(cZ.A)
+       cZ.A = zeros(1,size(cZ.Z,2)-1);
+       cZ.b = 0;
     end
     
     % different cases depending on the set representation
@@ -96,10 +96,10 @@ function res = and(obj,S)
         
         % Calculate intersection according to equation (13) at Proposition 1 in
         % reference paper [1]
-        Z = [obj.Z, zeros(size(S.Z)-[0,1])];
-        A = blkdiag(obj.A,S.A);
-        A = [A; obj.Z(:,2:end), -S.Z(:,2:end)];
-        b = [obj.b; S.b; S.Z(:,1) - obj.Z(:,1)];
+        Z = [cZ.Z, zeros(size(S.Z)-[0,1])];
+        A = blkdiag(cZ.A,S.A);
+        A = [A; cZ.Z(:,2:end), -S.Z(:,2:end)];
+        b = [cZ.b; S.b; S.Z(:,1) - cZ.Z(:,1)];
 
         res = conZonotope(Z,A,b);
         
@@ -113,15 +113,15 @@ function res = and(obj,S)
         C = S.c';
         d = S.d;
 
-        G = obj.Z(:,2:end);
-        c = obj.Z(:,1);
+        G = cZ.Z(:,2:end);
+        c = cZ.Z(:,1);
 
         % compute lower bound
-        l = supportFunc(obj,C','lower');
+        l = supportFunc(cZ,C','lower');
         
         % Add additional constraints
-        A = [obj.A, zeros(size(obj.A,1),1); C*G, 0.5*(l-d)];
-        b = [obj.b; 0.5*(d+l)-C*c];
+        A = [cZ.A, zeros(size(cZ.A,1),1); C*G, 0.5*(l-d)];
+        b = [cZ.b; 0.5*(d+l)-C*c];
         G = [G,zeros(size(G,1),1)];
 
         res = conZonotope([c,G],A,b);
@@ -133,11 +133,11 @@ function res = and(obj,S)
         C = (S.h.c)';
         d = S.h.d;
 
-        G = obj.Z(:,2:end);
-        c = obj.Z(:,1);
+        G = cZ.Z(:,2:end);
+        c = cZ.Z(:,1);
 
-        A = [obj.A; C*G];
-        b = [obj.b; d - C*c];
+        A = [cZ.A; C*G];
+        b = [cZ.b; d - C*c];
 
         res = conZonotope([c,G],A,b); 
 
@@ -151,7 +151,7 @@ function res = and(obj,S)
            hs = halfspace(C(i,:)',d(i));
            
            % check if set is fully contained in halfspace
-           if ~in(hs,res)
+           if ~contains(hs,res)
               
                % intersect set with halfspace
                res = res & hs; 
@@ -164,7 +164,7 @@ function res = and(obj,S)
         A = S.P.A;
         b = S.P.b;
         
-        res = obj;
+        res = cZ;
         
         % loop over all constraints
         for i = 1:size(A,1)
@@ -173,7 +173,7 @@ function res = and(obj,S)
            hs = halfspace(A(i,:)',b(i));
            
            % check if set is fully contained in halfspace
-           if ~in(hs,res)
+           if ~contains(hs,res)
               
                % intersect set with halfspace
                res = res & hs; 
@@ -183,15 +183,15 @@ function res = and(obj,S)
     elseif isa(S,'zonotope') || isa(S,'interval') || isa(S,'zonoBundle')
 
         % convert to constrained zonotope
-        res = obj & conZonotope(S);
+        res = cZ & conZonotope(S);
         
     elseif isa(S,'levelSet') || isa(S,'conPolyZono')
         
-        res = S & obj;
+        res = S & cZ;
         
     else
         % throw error for given arguments
-        error(noops(obj,S));
+        throw(CORAerror('CORA:noops',cZ,S));
     end
 
 end

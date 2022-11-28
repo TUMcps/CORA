@@ -22,12 +22,12 @@ function location = location_cora2spaceex(Obj,component, docNode, name, idx)
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
-%
+
 %------------- BEGIN CODE --------------
 
 if isa(Obj,'hybridAutomaton')

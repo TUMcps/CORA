@@ -1,32 +1,33 @@
-function [E] = ellipsoid(Z,mode)
-% enc_ellipsoid - Overapproximates a zonotope by an ellipsoid
+function E = ellipsoid(Z,mode)
+% ellipsoid - Overapproximates a zonotope by an ellipsoid
 %
 % Syntax:  
-%    E = ellipsoid(Z,comptype)
+%    E = ellipsoid(Z,mode)
 %
 % Inputs:
 %    Z - zonotope object
 %    mode - (optional) specifies whether function uses a bound on the 
 %               respective zonotope norm or the exact value:
-%               - 'o:exact':   Uses MVEE(Z)
-%               - 'o:norm':    Uses enc_ellipsoid(E,'exact') with exact norm value
-%               - 'o:norm:bnd':Uses enc_ellipsoid(E) with upper bound for norm
-%                              value
-%               - 'i:exact':   Uses MVIE(Z)
-%               - 'i:norm'     Uses insc_ellipsoid(E,'exact') with exact norm
-%                              value
-%               - 'i:norm:bnd':Not implemented yet, throws error
-%               - default:     same as 'o:norm:bnd'
+%               - 'outer:exact':    Uses MVEE(Z)
+%               - 'outer:norm':     Uses enc_ellipsoid(E,'exact') with
+%                                   exact norm value
+%               - 'outer:norm_bnd': Uses enc_ellipsoid(E) with upper bound
+%                                   for norm value (default)
+%               - 'inner:exact':    Uses MVIE(Z)
+%               - 'inner:norm'      Uses insc_ellipsoid(E,'exact') with
+%                                   exact norm value
+%               - 'inner:norm_bnd': Not implemented yet, throws error
 %
 % Outputs:
 %    E - ellipsoid object
 %
 % Example: 
-%    Z = zonotope(rand(2,5));
-%    E = ellipsoid(Z);%same as ellipsoid(Z,'o:norm:bnd')
+%    Z = zonotope([1;-1],[2 -4 3 2 1; 3 2 -4 -2 1]);
+%    E = ellipsoid(Z);
+%
+%    figure; hold on;
 %    plot(Z);
-%    hold on
-%    plot(E);
+%    plot(E,[1,2],'r');
 %
 % References:
 %    [1] V. Gaßmann, M. Althoff. "Scalable Zonotope-Ellipsoid Conversions
@@ -44,20 +45,20 @@ function [E] = ellipsoid(Z,mode)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-default = 'o:norm:bnd';
+default = 'outer:norm_bnd';
 if ~exist('mode','var')
     mode = default;
 end
 
 % obtain rank of zonotope
-Zdim = dim(Z);
+n = dim(Z);
 G = generators(Z);
 c = center(Z);
 Grank = rank(G);
 
 
 % reduce dimension of zonotope if not full dimensional
-if ~(Zdim == Grank)
+if n ~= Grank
     
     % compute QR decomposition
     [Q, R] = qr(G);
@@ -69,37 +70,36 @@ if ~(Zdim == Grank)
     T = Q(:,1:Grank);
 end
 
-if size(generators(Z),2)==dim(Z)
-    n = dim(Z);
-    G = generators(Z);
+if size(generators(Z),2) == n
     fac = n;
-    if startsWith(mode,'i')
+    if startsWith(mode,'inner')
         fac = 1;
     end
     E = ellipsoid(fac*(G*G'),center(Z));
 else
     switch mode
-        case 'o:exact'
+        case 'outer:exact'
             E = MVEE(Z);
-        case 'o:norm'
+        case 'outer:norm'
             E = enc_ellipsoid(Z,'exact');
-        case 'o:norm:bnd'
+        case 'outer:norm_bnd'
             E = enc_ellipsoid(Z);
-        case 'i:exact'
+        case 'inner:exact'
             E = MVIE(Z);
-        case 'i:norm'
+        case 'inner:norm'
             E = insc_ellipsoid(Z,'exact');
-        %case 'i:norm:bnd' % we do not implement the test used to compute the
+        %case 'inner:norm_bnd' % we do not implement the test used to compute the
         %necessary lower bound on Z as in [1] since this test generally does
         %not result in a very good lower bound
         %    E = insc_ellipsoid(Z);
         otherwise
-            error('Wrong value for argument "mode"');
+             throw(CORAerror('CORA:wrongValue','second',...
+                 "'outer:exact','outer:norm','outer:norm_bnd','inner:exact' or 'inner:norm'"));
     end
 end
 
-% convert to original space if zonotope is not full dimensional
-if ~(Zdim == Grank)
+% convert to original space if zonotope is not full-dimensional
+if n ~= Grank
     E = T*E + c;
 end
 %------------- END OF CODE --------------

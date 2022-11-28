@@ -5,15 +5,14 @@ function v = ndimCross(Q)
 %    v = ndimCross(Q)
 %
 % Inputs:
-%    V - matrix of column vectors
+%    Q - matrix of column vectors
 %
 % Outputs:
-%    o - orthogonal vector
-%    Q - ???
+%    v - n-dimensional cross product 
 %
 % Example: 
 %    Z=zonotope(rand(2,5));
-%    P=polytope(Z);
+%    P=mptPolytope(Z);
 %    plot(P);
 %    hold on
 %    plot(Z);
@@ -31,8 +30,9 @@ function v = ndimCross(Q)
 
 %------------- BEGIN CODE --------------
 
-v = zeros(length(Q(:,1)),1);
-for i=1:length(Q(:,1))
+dim = length(Q(:,1));
+v = zeros(dim,1);
+for i=1:dim
     D=Q;
     D(i,:)=[];
     v(i,1)=(-1)^(i+1)*det(D);

@@ -32,10 +32,16 @@ elseif strcmp(fieldname,'U')
     memberlist = {'zonotope','interval'};
 
 elseif strcmp(fieldname,'V')
-    memberlist = {'zonotope','ellipsoid'};
+    memberlist = {'zonotope','ellipsoid','interval'};
     
 elseif strcmp(fieldname,'W')
-    memberlist = {'zonotope','ellipsoid'};
+    memberlist = {'zonotope','ellipsoid','interval'};
+
+elseif strcmp(fieldname,'safeSet')
+    memberlist = {'mptPolytope','halfspace'};
+
+elseif strcmp(fieldname,'unsafeSet')
+    memberlist = {'mptPolytope','halfspace'};
     
 elseif strcmp(fieldname,'Usim')
     memberlist = {'capsule','conPolyZono','conZonotope','ellipsoid','interval',...
@@ -44,6 +50,12 @@ elseif strcmp(fieldname,'Usim')
 elseif strcmp(fieldname,'alg')
     memberlist = {'lin','poly','linRem','lin-adaptive','poly-adaptive'};
 
+elseif strcmp(fieldname,'alg4DT')
+    memberlist = {'lin','lin-adaptive','poly-adaptive'};
+    
+elseif strcmp(fieldname,'alg4DA')
+    memberlist = {'lin','lin-adaptive'};
+    
 elseif strcmp(fieldname,'alg4param')
     memberlist = {'lin','poly','linRem'};
     
@@ -72,7 +84,7 @@ elseif strcmp(fieldname,'reductionTechniqueUnderApprox')
     
 elseif strcmp(fieldname,'linAlg')
     memberlist = {'standard','wrapping-free','fromStart',...
-        'decomp','krylov','adaptive'};
+        'decomp','krylov','adaptive','supportFunc'};
 
 elseif strcmp(fieldname,'linAlg4HA')
     memberlist = {'standard','wrapping-free','fromStart','adaptive'};
@@ -93,7 +105,7 @@ elseif strcmp(fieldname,'enclose')
     memberlist = {'box','pca','flow'};
     
 elseif strcmp(fieldname,'restructureTechnique')
-    prefix = {'zonotope','reduceFull','reduce'};
+    prefix = {'zonotope','reduceFull','reducePart','reduceDI','reduce'};
     redMethod = getMembers('reductionTechnique');
     memberlist = {};
     for i=1:length(redMethod)
@@ -121,8 +133,11 @@ elseif strcmp(fieldname,'lagrangeRem.optMethod')
 elseif strcmp(fieldname,'contractor')
     memberlist = {'linearize','forwardBackward','polyBox'};
     
+elseif strcmp(fieldname,'type')
+    memberlist = {'standard','gaussian','rrt'};
+    
 else
-    error("No list of admissible values provided.");
+    throw(CORAerror('CORA:wrongValue','first','Check file.'));
     
 end
 

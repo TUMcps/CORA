@@ -1,6 +1,5 @@
 function plot(varargin)
-% plot - Plots 2-dimensional projection of the zonotopes of the reachable
-% set
+% plot - Plots projections of a probabilistic zonotope
 %
 % Syntax:  
 %    plot(obj,dimensions)
@@ -10,10 +9,10 @@ function plot(varargin)
 %    dimensions - dimensions that should be projected (optional) 
 %
 % Outputs:
-%    none
+%    -
 %
 % Example: 
-%    ---
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -21,10 +20,10 @@ function plot(varargin)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 30-April-2007
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      30-April-2007
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -40,9 +39,7 @@ elseif nargin==2
     
 %If too many arguments are passed
 else
-    disp('Error: too many inputs');
-    obj=varargin{1};
-    dimensions=varargin{2};    
+    throw(CORAerror('CORA:plotProperties',3));   
 end
 
 %set maximum order of zonotopes that are plotted (otherwise, plot can be 

@@ -1,16 +1,16 @@
-function res = lt(obj1,obj2)
-% lt - Overloads the < operator;
-%    here: Is one interval the subset of another interval?
+function res = lt(I1,I2)
+% lt - Overloads the '<'-operator, checks whether one interval is the
+%    subset of another interval
 %
 % Syntax:  
-%    res = lt(obj1,obj2)
+%    res = lt(I1,I2)
 %
 % Inputs:
-%    obj1 - interval object
-%    obj2 - another interval object
+%    I1 - interval object
+%    I2 - interval object
 %
 % Outputs:
-%    res - Boolean variable: 1 if obj1 is subset of obj2
+%    res - true/false
 %
 % Example: 
 %    I1 = interval([1; -1], [2; 1]);
@@ -30,13 +30,13 @@ function res = lt(obj1,obj2)
 
 %------------- BEGIN CODE --------------
 
-%all left borders of obj1 bigger than obj2?
-leftResult = all(infimum(obj1) > infimum(obj2));
+% all infima of I1 bigger than I2?
+leftResult = all(infimum(I1) > infimum(I2));
 
-%all right borders of obj1 smaller than obj2?
-rightResult = all(supremum(obj1) < supremum(obj2));
+% all suprema of I1 smaller than I2?
+rightResult = all(supremum(I1) < supremum(I2));
 
-%left and right interval test must be true
+% both tests must be true
 res = leftResult & rightResult;
 
 %------------- END OF CODE --------------

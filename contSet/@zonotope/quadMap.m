@@ -1,4 +1,4 @@
-function Zquad = quadMap(varargin)
+function Zquad = quadMap(Z1,varargin)
 % quadMap - computes the quadratic map of a zonotope
 %
 % Syntax:  
@@ -43,14 +43,18 @@ function Zquad = quadMap(varargin)
 
 %------------- BEGIN CODE --------------
 
-    if nargin == 2
-        if isa(varargin{2}{1},'matZonotope')
-            Zquad = quadMapSingleMatZono(varargin{1},varargin{2});
+    if nargin == 1
+        throw(CORAerror('CORAerror:notEnoughInputArgs',2));
+    elseif nargin == 2
+        if isa(varargin{1}{1},'matZonotope')
+            Zquad = quadMapSingleMatZono(Z1,varargin{1});
         else
-            Zquad = quadMapSingle(varargin{1},varargin{2});
+            Zquad = quadMapSingle(Z1,varargin{1});
         end
+    elseif nargin == 3
+        Zquad = quadMapMixed(Z1,varargin{1},varargin{2});
     else
-        Zquad = quadMapMixed(varargin{1},varargin{2},varargin{3});
+        throw(CORAerror('CORA:tooManyInputArgs',3));
     end
 end
 
@@ -102,7 +106,8 @@ function Zquad = quadMapSingle(Z,Q)
     end
 
     % generate new zonotope
-    if sum(Qnonempty) <= 1
+    tmp_sum = sum(Qnonempty);
+    if tmp_sum < 1 || withinTol(tmp_sum,1)  %if sum(Qnonempty) <= 1
         Zquad = zonotope([c,sum(abs(G),2)]);
     else
         Zquad = zonotope([c,nonzeroFilter(G)]);
@@ -141,7 +146,8 @@ function Zquad = quadMapMixed(Z1,Z2,Q)
     end
 
     % generate new zonotope
-    if sum(Qnonempty) <= 1
+    tmp_sum = sum(Qnonempty);
+    if tmp_sum < 1 || withinTol(tmp_sum,1)  %if sum(Qnonempty) <= 1
         Zquad = zonotope([Z(:,1),sum(abs(Z(:,2:end)),2)]);
     else
         Zquad = zonotope([Z(:,1),nonzeroFilter(Z(:,2:end))]);

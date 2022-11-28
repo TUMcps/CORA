@@ -1,8 +1,9 @@
-function res = testLongDuration_ellipsoid_distanceDouble
-% testLongDuration_ellipsoid_distanceDouble - unit test function of testLongDuration_ellipsoid_distanceDouble
+function res = testLongDuration_component_ellipsoid_distancePoint
+% testLongDuration_component_ellipsoid_distancePoint - unit test function
+%    distancePoint
 %
 % Syntax:  
-%    res = testLongDuration_ellipsoid_distanceDouble
+%    res = testLongDuration_component_ellipsoid_distancePoint
 %
 % Inputs:
 %    -
@@ -31,22 +32,23 @@ bools = [false,true];
 for i=5:5:10
     for j=1:nRuns
         for k=1:2 
-            E = ellipsoid.generateRandom(i,bools(k));
+            %%% generate all variables necessary to replicate results
+            E = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k));
             N = 2*i;
             % generate random point cloud center around origin
             V = randn(i,N);
+            r = ceil(i*rand);
+            %%%
             for m=1:2
                 [Q,~] = qr(V);
                 V = Q'*V;
-                r = ceil(i*rand);
                 % for bools(m)=false, generate degenerate point cloud
                 V(r,:) = bools(m)*V(r,:);
                 V = Q*V;
-                V_c = mat2cell(V,E.dim,ones(1,N));
-                D = distance(E,V_c);
+                D = distance(E,V);
                 for i_d = 1:size(D,2)
                     % check if masks match
-                    if in(E,V(:,i_d)) ~= withinTol(D(i_d),0,E.TOL)
+                    if contains(E,V(:,i_d)) ~= (D(i_d)<=E.TOL)
                         res = false;
                         break;
                     end
@@ -64,6 +66,8 @@ for i=5:5:10
         end
     end
     if ~res
+        path = pathFailedTests(mfilename());
+        save(path,'E','N','V','r');
         break;
     end
 end

@@ -96,10 +96,9 @@ for i=1:nrOfTests
 end
 
 
-if res
-    disp('test_supportFunc successful');
-else
-    disp('test_supportFunc failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','lb','ub','randDim');
 end
 
 %------------- END OF CODE --------------

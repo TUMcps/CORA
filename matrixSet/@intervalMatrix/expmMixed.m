@@ -1,12 +1,12 @@
-function [eI,eI2,iPow,iPow2,E] = expmMixed(matI,r,intermediateOrder,maxOrder)
-% expmIndMixed - dummy function for interval matrices.
+function [eI,eI2,iPow,iPow2,E] = expmMixed(intMat,r,intermediateOrder,maxOrder)
+% expmMixed - ?
 %
 % Syntax:  
-%    [eI,eI2,iPow,iPow2,E] = expmMixed(matI,r,intermediateOrder,maxOrder)
+%    [eI,eI2,iPow,iPow2,E] = expmMixed(intMat,r,intermediateOrder,maxOrder)
 %
 % Inputs:
-%    matI - interval matrix object
-%    r - time-step size
+%    intMat - interval matrix object
+%    r - time step size
 %    intermediateOrder - max taylor order for the first part of evaluation
 %    maxOrder - max taylor order for the second part of evaluation
 %
@@ -34,19 +34,19 @@ function [eI,eI2,iPow,iPow2,E] = expmMixed(matI,r,intermediateOrder,maxOrder)
 
 %------------- BEGIN CODE --------------
 
-if (intermediateOrder>=2)
+if intermediateOrder >= 2
     
     %compute exact terms
-    [sq,H] = dependentTerms(matI*(1/r),r);
+    [sq,H] = dependentTerms(intMat*(1/r),r);
 
     %init eI
     eI = H;
 
     %compute powers
-    iPow=powers(matI,intermediateOrder,2,sq);
+    iPow=powers(intMat,intermediateOrder,2,sq);
     
     %add first power for input computatins
-    iPow{1}=matI;
+    iPow{1}=intMat;
 
     %compute finite Taylor sum
     for i=3:intermediateOrder
@@ -54,11 +54,11 @@ if (intermediateOrder>=2)
     end
 
     %compute interval part
-    [eI2,iPow2,E] = expm(matI, r, ...
-        maxOrder, intermediateOrder+1, matI*iPow{intermediateOrder});
+    [eI2,iPow2,E] = expm(intMat, r, ...
+        maxOrder, intermediateOrder+1, intMat*iPow{intermediateOrder});
 
 else
-    disp('intermediate order too low');
+    throw(CORAerror('CORA:wrongInput','third','Intermediate order too low'));
 end
 
 

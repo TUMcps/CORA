@@ -46,7 +46,6 @@ options.tensorOrder = 3;
 
 options.maxError = 0.05*[1; 1];
 options.reductionInterval = 100;
-options.verbose = true;
 
 
 % System Dynamics ---------------------------------------------------------
@@ -63,10 +62,10 @@ R = reach(vanderPol, params, options);
 
 % obtain array of enclosing polytopes of last reachable set
 Rfin = query(R,'finalSet');
-Premain = enclosingPolytope(Rfin{1},options);
+Premain = mptPolytope(Rfin{1});
 
 for i = 2:length(Rfin)
-    Premain = Premain | enclosingPolytope(Rfin{i},options);
+    Premain = Premain | mptPolytope(Rfin{i});
 end
 
 % remove previous reachable sets
@@ -75,7 +74,7 @@ t = 0;
 
 while ~isempty(Premain) && t < 0.4
     for iSet = 1:length(R(iStep).timeInterval.set)
-        Preach = polytope(R(iStep).timeInterval.set{iSet});
+        Preach = mptPolytope(R(iStep).timeInterval.set{iSet});
         Premain = Premain\Preach;
         t = R(iStep).timePoint.time{iSet};
         if t > 0.4

@@ -1,9 +1,9 @@
 function [Rnext,options] = post(obj,R,options)
-% reach - computes the reachable continuous set for one time step of a
-% nonlinear system by overapproximative linearization
+% post - computes the reachable continuous set for one time step of a
+%    nonlinear system by overapproximative linearization
 %
 % Syntax:  
-%    [Rnext] = reach(obj,R,options)
+%    [Rnext,options] = post(obj,R,options)
 %
 % Inputs:
 %    obj - nonlinearSys object
@@ -25,7 +25,8 @@ function [Rnext,options] = post(obj,R,options)
 % Author:       Matthias Althoff
 % Written:      03-January-2008
 % Last update:  29-June-2009
-%               16-August-2016 (identical to post of @nonlinearSys; solve in the future by inheritance)
+%               16-August-2016 (identical to post of @nonlinearSys;
+%                               solve in the future by inheritance)
 % Last revision:---
 
 %------------- BEGIN CODE --------------

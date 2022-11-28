@@ -1,5 +1,5 @@
 function [R,tcomp] = observe_FRadC(obj,options)
-% observe_FRadC - computes the guaranted state estimation approach
+% observe_FRadC - computes the guaranteed state estimation approach
 % from [1]; the approach is extended here for nonlinear systems.
 %
 %

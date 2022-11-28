@@ -1,24 +1,22 @@
-function int = enclosePoints(points)
+function I = enclosePoints(points)
 % enclosePoints - enclose a point cloud with an interval
 %
 % Syntax:  
-%    int = enclosePoints(points)
+%    I = enclosePoints(points)
 %
 % Inputs:
 %    points - matrix storing point cloud (dimension: [n,p] for p points)
 %
 % Outputs:
-%    int - interval object
+%    I - interval object
 %
 % Example: 
 %    points = -1 + 2*rand(2,10);
-%
-%    int = interval.enclosePoints(points);
+%    I = interval.enclosePoints(points);
 %    
-%    figure; hold on
+%    figure; hold on;
 %    plot(points(1,:),points(2,:),'.k');
 %    plot(int,[1,2],'r');
-%
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -33,9 +31,6 @@ function int = enclosePoints(points)
 
 %------------- BEGIN CODE --------------
 
-    infi = min(points,[],2);
-    sup = max(points,[],2);
-    
-    int = interval(infi,sup);
+I = interval(min(points,[],2),max(points,[],2));
 
 %------------- END OF CODE --------------

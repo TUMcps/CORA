@@ -1,13 +1,13 @@
 classdef intKaucher
 % intKaucher - implementation of Kaucher arithmetic [1]. For demonstration
-%              we consider Example 1 in [2]
+%    purposes, we consider Example 1 in [2]
 %
 % Syntax:  
-%    obj = intKaucher(inf,sup)
+%    obj = intKaucher(ll,rl)
 %
 % Inputs:
-%    inf - left limit
-%    sup - right limit
+%    ll - left limit
+%    rl - right limit
 %
 % Outputs:
 %    obj - generated object
@@ -22,9 +22,9 @@ classdef intKaucher
 %    df = matlabFunction(df);
 %
 %    % compute bounds for gradient
-%    int = interval(2,3);
-%    c = center(int);
-%    gr = df(int);
+%    I = interval(2,3);
+%    c = center(I);
+%    gr = df(I);
 % 
 %    % compute inner-approximation of the range
 %    x = intKaucher(3,2);
@@ -59,12 +59,13 @@ end
 methods 
     
     % class constructor
-    function obj = intKaucher(inf,sup)
-        if size(inf) ~= size(sup)
-            error('Arguments ''inf'' and ''sup'' must have identical dimensions!');
+    function obj = intKaucher(ll,rl)
+        if any(size(ll) ~= size(rl))
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Input arguments must have identical dimensions!'));
         end
-        obj.inf = inf;
-        obj.sup = sup;
+        obj.inf = ll;
+        obj.sup = rl;
     end
     
     
@@ -90,7 +91,7 @@ methods
             res.inf = res.inf + obj2;
             res.sup = res.sup + obj2;
         else
-           error('Not implemented yet!'); 
+            throw(CORAerror('CORA:notSupported','Desired sum not supported.'));
         end
     end
     
@@ -116,7 +117,8 @@ methods
                     res.inf = 0;
                     res.sup = 0;
                else
-                    error('Not implemented yet!'); 
+                    throw(CORAerror('CORA:notSupported',...
+                        'Desired multiplication not supported.'));
                end
 
            elseif isnumeric(obj2)
@@ -128,13 +130,15 @@ methods
                   res.sup = res.sup * obj2;
                end
            else
-               error('Not implemented yet!'); 
+                throw(CORAerror('CORA:notSupported',...
+                    'Desired multiplication not supported.'));
            end
         else
             if isnumeric(obj1)
                res = obj2 * obj1; 
             else
-               error('Not implemented yet!'); 
+                throw(CORAerror('CORA:notSupported',...
+                    'Desired multiplication not supported.'));
             end
         end     
     end

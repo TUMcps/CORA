@@ -1,13 +1,13 @@
-classdef (InferiorClasses = {?intervalMatrix, ?matZonotope})conPolyZono < contSet
+classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) conPolyZono < contSet
 % conPolyZono - class definition for constrained polynomial zonotopes 
 %
 % Syntax:  
-%    obj = conPolyZonotope(c,G,expMat)
-%    obj = conPolyZonotope(c,G,expMat,Grest)
-%    obj = conPolyZonotope(c,G,expMat,Grest,id)
-%    obj = conPolyZonotope(c,G,expMat,A,b,expMat_)
-%    obj = conPolyZonotope(c,G,expMat,A,b,expMat_,Grest)
-%    obj = conPolyZonotope(c,G,expMat,A,b,expMat_,Grest,id)
+%    obj = conPolyZono(c,G,expMat)
+%    obj = conPolyZono(c,G,expMat,Grest)
+%    obj = conPolyZono(c,G,expMat,Grest,id)
+%    obj = conPolyZono(c,G,expMat,A,b,expMat_)
+%    obj = conPolyZono(c,G,expMat,A,b,expMat_,Grest)
+%    obj = conPolyZono(c,G,expMat,A,b,expMat_,Grest,id)
 %
 % Inputs:
 %    c - constant offset (dimension: [n,1])
@@ -33,7 +33,7 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope})conPolyZono < contSe
 %
 %    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
 %
-%    plot(cPZ,[1,2],'r','Filled',true,'EdgeColor','none','Splits',20);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',20);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -67,9 +67,14 @@ methods
         % parse input arguments
         Grest = []; id = []; A = []; b = []; expMat_ = [];
         
-        if nargin == 1 && isa(c,'conPolyZono')
+        if nargin == 0
+            % empty set
+            return
+        elseif nargin == 1 && isa(c,'conPolyZono')
             % copy constructor
-           obj = c; return;
+            obj = c; return;
+        elseif nargin == 1 && isnumeric(c) && isvector(c)
+            obj.c = c; return;
         elseif nargin == 4
            Grest = varargin{1};
         elseif nargin == 5
@@ -91,40 +96,41 @@ methods
            Grest = varargin{4};
            id = varargin{5};
         elseif nargin ~= 3
-            [id,msg] = errConstructor(); error(id,msg);
+            throw(CORAerror('CORA:notEnoughInputArgs',3));
         end
         
         % call superclass method
         if isempty(id)
-           id = (1:size(expMat,1))'; 
+            id = (1:size(expMat,1))'; 
         end
         
         % check correctness of user input 
         if ~all(all(floor(expMat) == expMat)) || ~all(all(expMat >= 0)) || ...
             size(expMat,2) ~= size(G,2)
-            [id,msg] = errConstructor('Invalid exponent matrix.'); error(id,msg);
+             throw(CORAerror('CORA:wrongInputInConstructor',...
+                 'Invalid exponent matrix.'));
         end
         
         if ~isempty(expMat_)
             if size(expMat,1) ~= size(expMat_,1) 
-                [id,msg] = errConstructor('Input arguments "expMat" and "expMat_" are not compatible.');
-                error(id,msg);
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Input arguments "expMat" and "expMat_" are not compatible.'));
             end
             if ~all(all(floor(expMat_) == expMat_)) || ~all(all(expMat_ >= 0))
-                [id,msg] = errConstructor('Invalid constraint exponent matrix.');
-                error(id,msg);
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Invalid constraint exponent matrix.'));
             end
             if isempty(A) || size(A,2) ~= size(expMat_,2)
-                [id,msg] = errConstructor('Input arguments "A" and "expMat_" are not compatible.');
-                error(id,msg);
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Input arguments "A" and "expMat_" are not compatible.'));
             end
             if isempty(b) || size(b,2) > 1 || size(b,1) ~= size(A,1)
-                [id,msg] = errConstructor('Input arguments "A" and "b" are not compatible.');
-                error(id,msg);
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Input arguments "A" and "b" are not compatible.'));
             end
         elseif ~isempty(A) || ~isempty(b)
-            [id,msg] = errConstructor('Invalid constraint exponent matrix.');
-            error(id,msg);
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Invalid constraint exponent matrix.'));
         end
         
         % assign object properties
@@ -139,5 +145,7 @@ end
 methods (Static = true)
     cPZ = generateRandom(varargin) % generate random conPolyZono object
 end
+
 end
+
 %------------- END OF CODE --------------

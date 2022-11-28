@@ -1,6 +1,6 @@
 function res = testLongDuration_component_ellipsoid_isIntersectingMixed
 % testLongDuration_component_ellipsoid_isIntersectingMixed - unit test 
-% function of ellipsoid/isIntersectingMixed
+%    function of ellipsoid/isIntersectingMixed
 %
 % Syntax:  
 %    res = testLongDuration_component_ellipsoid_isIntersectingMixed
@@ -32,10 +32,12 @@ bools = [false,true];
 for i=5:5:10
     for j=1:nRuns
         for k=1:2 
-            E = ellipsoid.generateRandom(i,bools(k));
-            Z = zonotope.generateRandom(i);
-            pZ = polyZonotope.generateRandom(i);
+            %%% generate all variables necessary to replicate results
+            E = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k));
+            Z = zonotope.generateRandom('Dimension',i);
+            pZ = polyZonotope.generateRandom('Dimension',i);
             s = randPoint(E,1);
+            %%%
             Z1 = zonotope(s,generators(Z));
             pZ1 = polyZonotope(s,pZ.G,pZ.Grest,pZ.expMat,pZ.id);
             
@@ -51,6 +53,8 @@ for i=5:5:10
         end
     end
     if ~res
+        path = pathFailedTests(mfilename());
+        save(path,'E','Z','pZ','s');
         break;
     end
 end

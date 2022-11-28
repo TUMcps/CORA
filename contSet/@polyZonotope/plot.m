@@ -1,30 +1,30 @@
 function han = plot(pZ,varargin)
-% plot - Plots 2-dimensional over-approximation of a polynomial zonotope
+% plot - plots an over-approximative projection of a polynomial zonotope
 %
 % Syntax:  
 %    han = plot(pZ)
-%    han = plot(pZ,dims,linespec)
-%    han = plot(pZ,dims,linespec,'Splits',splits)
+%    han = plot(pZ,dims)
+%    han = plot(pZ,dims,type)
 %
 % Inputs:
 %    pZ - polyZonotope object
-%    dims - dimensions that should be projected
-%    linespec - (optional) LineSpec properties
-%    splits - (optional) number of splits for refinement
-%    type - (optional) name-value pairs
+%    dims - (optional) dimensions for projection
+%    type - (optional) plot settings (LineSpec and Name-Value pairs)
+%           additional Name-Value pairs:
+%               <'Splits',splits> - number of splits for refinement
 %
 % Outputs:
-%    han - handle for the resulting graphics object
+%    han - handle to the graphics object
 %
 % Example: 
 %    pZ = polyZonotope([0;0],[2 0 1;0 2 1],[0;0],[1 0 3;0 1 1]);
 %     
 %    figure; hold on;
-%    plotRandPoint(pZ,[1,2],100000,'.r');
+%    plotRandPoint(pZ);
 %    plot(pZ,[1,2],'b','Splits',3);
 %
 %    figure; hold on;
-%    plotRandPoint(pZ,[1,2],100000,'.r');
+%    plotRandPoint(pZ);
 %    plot(pZ,[1,2],'b','Splits',10);
 %
 % Other m-files required: none
@@ -37,33 +37,30 @@ function han = plot(pZ,varargin)
 % Written:      29-March-2018
 % Last update:  23-June-2020 (MW, harmonize with other plot functions)
 %               14-July-2020 (MW, merge with plotFilled)
+%               25-May-2022 (TL: 1D Plotting)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % default values for the optional input arguments
-dims = [1,2];
-linespec = 'b';
-splits = 10;
-NVpairs = {};
-filled = 0;
+dims = setDefaultValues({[1,2]},varargin{:});
 
-% parse input arguments
-if nargin > 1 && ~isempty(varargin{1})
-    dims = varargin{1}; 
-end
-if nargin > 2 && ~isempty(varargin{2})
-    % read additional name-value pairs
-    [linespec,NVpairs] = readPlotOptions(varargin(2:end));
-    [NVpairs,filled] = readNameValuePair(NVpairs,'Filled','islogical',filled);
-    [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar',splits);
-end
+% check input arguments
+inputArgsCheck({{pZ,'att','polyZonotope'};
+                {dims,'att','numeric',{'nonempty','integer','positive','vector'}}});
+
+% read additional name-value pairs
+NVpairs = readPlotOptions(varargin(2:end));
+% read out 'Splits', default value given
+[NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar',10);
+% read out 'FaceColor' to decide plot/fill call where necessary
+[~,facecolor] = readNameValuePair(NVpairs,'FaceColor');
 
 % check dimension
-if length(dims) < 2
-    error('At least 2 dimensions have to be specified!');
+if length(dims) < 1
+    throw(CORAerror('CORA:plotProperties',1));
 elseif length(dims) > 3
-    error('Only up to 3 dimensions can be plotted!');
+    throw(CORAerror('CORA:plotProperties',3));
 end
 
 % delete all zero-generators
@@ -71,6 +68,12 @@ pZ = deleteZeros(pZ);
 
 % project to desired dimensions
 pZ = project(pZ,dims);
+
+if length(dims) == 1
+    % add zeros to 2nd dimension
+    pZ = pZ.cartProd(0);
+    dims = [1;2];
+end
 
 % 2D vs 3D plot
 if length(dims) == 2
@@ -134,15 +137,22 @@ if length(dims) == 2
 
     warning(warOrig);
 
-    % add first point to end to close polygon
-    xVals = [polyAll.Vertices(:,1);polyAll.Vertices(1,1)];
-    yVals = [polyAll.Vertices(:,2);polyAll.Vertices(1,2)];
+    if size(polyAll.Vertices,1) > 0
+        % add first point to end to close polygon
+        xVals = [polyAll.Vertices(:,1);polyAll.Vertices(1,1)];
+        yVals = [polyAll.Vertices(:,2);polyAll.Vertices(1,2)];
+    else
+        % if e.g. all generators are collinear
+        V = cell2mat(Vlist);
+        xVals = V(1,:);
+        yVals = V(2,:);
+    end
     
     % plot the polygon
-    if filled
-        han = fill(xVals,yVals,linespec,NVpairs{:});
+    if isempty(facecolor) || strcmp(facecolor,'none')
+        han = plot(xVals,yVals,NVpairs{:});
     else
-        han = plot(xVals,yVals,linespec,NVpairs{:});
+        han = fill(xVals,yVals,facecolor,NVpairs{:});
     end
 
 else
@@ -164,14 +174,14 @@ else
     % loop over all parallel sets
     hold on;
     for i = 1:length(pZsplit{i})
-        if filled
-            han = plot(zonotope(pZsplit{i}),[1,2,3],linespec, ...
-                       NVpairs{:},'Filled',true); 
-        else
-            han = plot(zonotope(pZsplit{i}),[1,2,3],linespec,NVpairs{:});  
-        end
+        han = plot(zonotope(pZsplit{i}),[1,2,3],NVpairs{:}); 
     end
 end
+
+if nargout == 0
+    clear han;
+end
+
 end
 
 
@@ -181,10 +191,10 @@ function [poly,V] = getPolygon(pZ)
 % enclose polynomial zonotope with a polygon
 
     % zonotope over-approximation
-    zono = zonotope(pZ);
+    Z = zonotope(pZ);
 
     % calculate vertices of zonotope
-    V = vertices(zono);
+    V = vertices(Z);
 
     % transform to 2D polytope
     poly = polyshape(V(1,:),V(2,:));

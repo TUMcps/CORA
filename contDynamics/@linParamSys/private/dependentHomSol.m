@@ -1,9 +1,9 @@
-function Rhom_tp = dependentHomSol(obj, Rinit, Uconst)
+function Rhom_tp = dependentHomSol(obj,Rinit,Uconst)
 % dependentHomSol - computes the homogeneous solution when the parameters
-% of the system matrix and the input are dependent
+%    of the system matrix and the input are dependent
 %
 % Syntax:  
-%    [obj] = dependentHomSol(obj, Rinit, Uconst)
+%    Rhom_tp = dependentHomSol(obj,Rinit,Uconst)
 %
 % Inputs:
 %    obj - linParamSys object 
@@ -13,7 +13,8 @@ function Rhom_tp = dependentHomSol(obj, Rinit, Uconst)
 % Outputs:
 %    Rhom_tp - homogeneous reachable set
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -95,6 +96,5 @@ R_hom_state = obj.mappingMatrixSet.zono*Rinit_noCenter + obj.mappingMatrixSet.in
 
 %FINAL SOLUTION
 Rhom_tp = R_hom_state + R_lowOrder + R_rem;
-
 
 %------------- END OF CODE --------------

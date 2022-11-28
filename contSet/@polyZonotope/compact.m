@@ -1,5 +1,6 @@
 function res = compact(pZ)
-% compact - remove redundancies in the representation of a poly. zonotope 
+% compact - removes redundancies in the representation of a polynomial
+%    zonotope, such as zero-length generators or unused dependent factors
 %
 % Syntax:  
 %    res = compact(pZ)
@@ -28,36 +29,35 @@ function res = compact(pZ)
 
 %------------- BEGIN CODE --------------
     
-    % remove redudancies in the exponent matrix
-    [expMat,G] = removeRedundantExponents(pZ.expMat,pZ.G);
-    
-    % add all constant parts to the center
-    ind = find(sum(expMat,1) == 0);
-    
-    if ~isempty(ind)
-        c = pZ.c + sum(G(:,ind),2);
-        G(:,ind) = [];
-        expMat(:,ind) = [];
-    else
-        c = pZ.c;
-    end
-    
-    % remove empty generators
-    Grest = pZ.Grest;
-    if ~isempty(Grest)
-        Grest(:,sum(abs(Grest)) < eps) = [];
-    end
-    
-    % remove empty rows from the exponent matrix
-    id = pZ.id;
-    ind = find(sum(expMat,2) == 0);
-    if ~isempty(ind)
-        expMat(ind,:) = [];
-        id(ind) = [];
-    end
-    
-    % construct compacted polynomial zonotope
-    res = polyZonotope(c,G,Grest,expMat,id);
+% remove redudancies in the exponent matrix
+[expMat,G] = removeRedundantExponents(pZ.expMat,pZ.G);
+
+% add all constant parts to the center
+ind = find(sum(expMat,1) == 0);
+
+if ~isempty(ind)
+    c = pZ.c + sum(G(:,ind),2);
+    G(:,ind) = [];
+    expMat(:,ind) = [];
+else
+    c = pZ.c;
 end
-   
+
+% remove empty generators
+Grest = pZ.Grest;
+if ~isempty(Grest)
+    Grest(:,sum(abs(Grest)) < eps) = [];
+end
+
+% remove empty rows from the exponent matrix
+id = pZ.id;
+ind = find(sum(expMat,2) == 0);
+if ~isempty(ind)
+    expMat(ind,:) = [];
+    id(ind) = [];
+end
+
+% construct compacted polynomial zonotope
+res = polyZonotope(c,G,Grest,expMat,id);
+
 %------------- END OF CODE --------------

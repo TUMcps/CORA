@@ -1,14 +1,18 @@
-function res = zonoBundle(obj)
-% conZonotope - convert an interval into a zonotope bundle object
+function zB = zonoBundle(I)
+% conZonotope - converts an interval into a zonotope bundle
 %
 % Syntax:  
-%    res = zonoBundle(obj)
+%    zB = zonoBundle(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - zonoBundle object
+%    zB - zonoBundle object
+%
+% Example:
+%    I = interval([-2;-3;-4],[4;3;2]);
+%    zB = zonoBundle(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -22,8 +26,7 @@ function res = zonoBundle(obj)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-    
-obj = zonotope(obj);
-res = zonoBundle({obj});
+
+zB = zonoBundle({zonotope(I)});
 
 %------------- END OF CODE --------------

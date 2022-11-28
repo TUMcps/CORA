@@ -132,14 +132,12 @@ catch ME
     end
 end
 
+% 6. empty set
+C1 = capsule(1,1,1);
+C2 = capsule();
+res(6) = ~isIntersecting(C1,C2);
 
 % combine tests
 res = all(res);
-
-if res
-    disp('test_isIntersecting successful');
-else
-    disp('test_isIntersecting failed');
-end
 
 %------------- END OF CODE --------------

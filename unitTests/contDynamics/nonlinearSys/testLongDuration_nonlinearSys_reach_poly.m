@@ -1,11 +1,11 @@
 function res = testLongDuration_nonlinearSys_reach_poly
-% test_nonlinearSys_reach_poly - unit_test_function of nonlinear
+% testLongDuration_nonlinearSys_reach_poly - unit_test_function of nonlinear
 %    reachability analysis with the conservative polynomialization approach
 %
 % Checks if the reachable set contains all simulated points
 %
 % Syntax:  
-%    res = test_nonlinearSys_reach_poly
+%    res = testLongDuration_nonlinearSys_reach_poly
 %
 % Inputs:
 %    -
@@ -20,9 +20,9 @@ function res = testLongDuration_nonlinearSys_reach_poly
 
 %------------- BEGIN CODE --------------
 
-res = 0;
+res = true;
 
-% Parameter ---------------------------------------------------------------
+% Parameters --------------------------------------------------------------
 
 params.tFinal = 0.01;
 params.R0 = polyZonotope(zonotope([1.4; 2.3],[0.05 0; 0 0.05]));
@@ -69,7 +69,7 @@ R0{4} = zonotope(c - G(:,2),G(:,1));
 simOpt.points = 5000;
 simOpt.fracVert = 4e-4;
 simOpt.fracInpVert = 0.9;
-simOpt.inpChanges = 2;
+simOpt.nrConstInp = 2;
 
 % simulate the system
 points = [];
@@ -80,10 +80,9 @@ for i = 1:length(R0)
     simRes = simulateRandom(sys, params, simOpt);
     
     for j = 1:length(simRes.x)
-       points = [points, simRes.x{j}(end,:)']; 
+    	points = [points, simRes.x{j}(end,:)']; 
     end
 end
-
 
 
 % Verification ------------------------------------------------------------
@@ -92,8 +91,8 @@ end
 pgon = polygon(R.timePoint.set{end},12);
 
 for i = 1:size(points,2)
-   if ~in(pgon,points(:,i))
-      error('Unit test failed!');
+   if ~contains(pgon,points(:,i))
+       res = false; break
    end
 end
 
@@ -101,7 +100,5 @@ end
 % figure; hold on;
 % plot(R.timePoint.set{end},[1,2],'r','Splits',12);
 % plot(points(1,:),points(2,:),'.k');
-
-res = true;
 
 %------------- END OF CODE --------------

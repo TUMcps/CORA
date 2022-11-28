@@ -1,13 +1,13 @@
 function cPZ = updateConstraints(cPZ,cPZ1,cPZ2)
-% updateConstraints - Update constraints after combining two constraint
-%                     polynomial zonotopes
+% updateConstraints - Update constraints after combining two constrained
+%    polynomial zonotopes
 %
 % Syntax:  
 %    cPZ = updateConstraints(cPZ,cPZ1,cPZ2)
 %
 % Inputs:
-%    cPZ - conPolyZono object whos constraints are updated
-%    cPZ1,cPZ2 - conPolyZono objects whos constraints are combined to
+%    cPZ - conPolyZono object whose constraints are updated
+%    cPZ1,cPZ2 - conPolyZono objects whose constraints are combined to
 %                obtain the constraints of cPZ
 %
 % Outputs:
@@ -26,22 +26,21 @@ function cPZ = updateConstraints(cPZ,cPZ1,cPZ2)
 
 %------------- BEGIN CODE --------------     
 
-     cPZ.A = blkdiag(cPZ1.A,cPZ2.A);
-     cPZ.b = [cPZ1.b;cPZ2.b];
+cPZ.A = blkdiag(cPZ1.A,cPZ2.A);
+cPZ.b = [cPZ1.b;cPZ2.b];
 
-     if isempty(cPZ1.A)
-         if ~isempty(cPZ2.A)
-             temp = zeros(length(cPZ1.id),size(cPZ2.expMat_,2));
-             cPZ.expMat_ = [temp;cPZ2.expMat_];
-         end
-     else
-         if isempty(cPZ2.A)
-             temp = zeros(length(cPZ2.id),size(cPZ1.expMat_,2));
-             cPZ.expMat_ = [cPZ1.expMat_;temp];
-         else
-             cPZ.expMat_ = blkdiag(cPZ1.expMat_,cPZ2.expMat_);
-         end
-     end
+if isempty(cPZ1.A)
+    if ~isempty(cPZ2.A)
+        temp = zeros(length(cPZ1.id),size(cPZ2.expMat_,2));
+        cPZ.expMat_ = [temp;cPZ2.expMat_];
+    end
+else
+    if isempty(cPZ2.A)
+        temp = zeros(length(cPZ2.id),size(cPZ1.expMat_,2));
+        cPZ.expMat_ = [cPZ1.expMat_;temp];
+    else
+        cPZ.expMat_ = blkdiag(cPZ1.expMat_,cPZ2.expMat_);
+    end
 end
 
 %------------- END OF CODE --------------

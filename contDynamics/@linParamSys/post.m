@@ -1,12 +1,12 @@
 function [Rnext,options] = post(obj,R,options)
 % post - computes the reachable continuous set for one time step of a
-% linear interval system
+%    linear parametric system
 %
 % Syntax:  
 %    [Rnext] = post(obj,R,options)
 %
 % Inputs:
-%    obj - linIntSys object
+%    obj - linParamSys object
 %    R - reachable set of the previous time step
 %    options - options for the computation of the reachable set
 %
@@ -103,9 +103,8 @@ end
 % check for explosion
 if isa(R.ti,'zonotope')
     if max( sum(abs(generators(Rnext.ti)),2) ./ sizeRti ) > 100 % arbitary value
-        throw(printExplosionError());
+        throw(CORAerror('CORA:reachSetExplosion'));
     end
 end
-
 
 %------------- END OF CODE --------------

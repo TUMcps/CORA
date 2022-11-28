@@ -8,17 +8,17 @@ function completed = example_probOccupancyPrediction_road_01_braking()
 %    example_probOccupancyPrediction_road_01_braking
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false
 %
 % Example: 
 %
 % References:
 %    [1] M. Althoff, "Reachability analysis and its application to the
 %        safety assessment of autonomous cars", Dissertation, TUM 2010.
-% 
+
 % Author:       Matthias Althoff
 % Written:      14-October-2009
 % Last update:  01-August-2016
@@ -29,8 +29,8 @@ function completed = example_probOccupancyPrediction_road_01_braking()
 
 %set path
 global filePath
-filePath = [coraroot '/contDynamics/stateSpaceModels'];
-dataPath = [coraroot '/examples/discrDynamics/probOccupancyPrediction/data'];
+filePath = [CORAROOT filesep 'contDynamics' filesep 'stateSpaceModels'];
+dataPath = [CORAROOT filesep 'examples' filesep 'discrDynamics' filesep 'probOccupancyPrediction' filesep 'data'];
 curPath = pwd;
 
 %load Markov chain of car
@@ -294,13 +294,11 @@ completed = 1;
 
 
 
-function normalizePlot()
+function h = normalizePlot()
 
 %plot lowest and highest value for average probability
 %plot using own methods
 V=[0.1 0.2; 0.1 0.2];
-plotPolygon(V,'k','Filled',true);
-h = plotPolygon(V,'k','Filled',true);
-set(h,'FaceColor',[.5 .5 .5]);
+h = plotPolygon(V,'FaceColor',[.5 .5 .5]);
 
 %------------- END OF CODE --------------

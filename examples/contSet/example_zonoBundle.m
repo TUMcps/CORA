@@ -8,14 +8,14 @@ function completed = example_zonoBundle()
 %    -
 %
 % Outputs:
-%    completed - boolean
+%    completed - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Matthias Althoff
 % Written:       21-April-2018
 % Last update:   ---
@@ -29,11 +29,11 @@ Zb = zonoBundle(Z); % instantiate zonotope bundle from Z1, Z2
 vol = volume(Zb) % compute and display volume of zonotope bundle
 
 figure; hold on
+plot(Zb,[1 2],'FaceColor',colorblind('gray')); % plot Zb in gray
 plot(Z{1}); % plot Z1 
 plot(Z{2}); % plot Z2 
-plot(Zb,[1 2],'FaceColor',[.675 .675 .675],'Filled',true,'EdgeColor','none'); % plot Zb in gray
 
 %example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

@@ -30,9 +30,7 @@ function res = testLongDuration_conZonotope_interval
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-% TEST 1: Random Test 3D --------------------------------------------------
+res = true;
 
 % Generate random conZonotope object
 points = rand(3,100);
@@ -55,16 +53,14 @@ for i = 1:length(int)
       file_name = strcat('testLongDuration_conZonotope_interval_1_', ...
                          datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-      file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+      file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                            file_name);
                            
-      save(file_path, 'cZono')
-      error('Test 1 failed!'); 
+      save(file_path, 'points')
+      res = false;
+      break
    end
 end
-
-
-res = true;
 
 
 %------------- END OF CODE --------------

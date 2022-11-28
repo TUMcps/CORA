@@ -19,8 +19,8 @@ function [E] = insc_ellipsoid(Z,comptype)
 %    plot(E);
 %
 % References:
-%    [1] : M. Cerny, "Goffin’s algorithm for zonotopes" Kybernetika, 
-%          vol. 48, no. 5, pp. 890–906, 2012
+%    [1] : M. Cerny, "GoffinæŠ¯ algorithm for zonotopes" Kybernetika, 
+%          vol. 48, no. 5, pp. 890ï¿½906, 2012
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -60,7 +60,8 @@ if n<m
     if doExact
         l = minnorm(Zt);
     else
-        error('lower bound not implemented yet!');
+        throw(CORAerror('CORA:noops',doExact));
+%         error('lower bound not implemented yet!');
     end
     %since transf. ellipsoid Et has radius 1 and Et \in Zt, scaling with l 
     %results in Et touching Zt (for exact norm computation at least at some 

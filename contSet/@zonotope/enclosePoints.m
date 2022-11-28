@@ -17,13 +17,13 @@ function Z = enclosePoints(points,varargin)
 % Example: 
 %    points = -1 + 2*rand(2,10);
 %
-%    zono1 = zonotope.enclosePoints(points);
-%    zono2 = zonotope.enclosePoints(points,'maiga');
+%    Z1 = zonotope.enclosePoints(points);
+%    Z2 = zonotope.enclosePoints(points,'maiga');
 %    
 %    figure; hold on
 %    plot(points(1,:),points(2,:),'.k');
-%    plot(zono1,[1,2],'r');
-%    plot(zono2,[1,2],'b');
+%    plot(Z1,[1,2],'r');
+%    plot(Z2,[1,2],'b');
 %
 % References:
 %    [1] O. Stursberg et al. "Efficient representation and computation of 
@@ -35,7 +35,7 @@ function Z = enclosePoints(points,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval, polytope
+% See also: ---
 
 % Author:        Niklas Kochdumper
 % Written:       05-May-2020
@@ -44,22 +44,20 @@ function Z = enclosePoints(points,varargin)
 
 %------------- BEGIN CODE --------------
     
-    % default method
-    method = 'maiga';
-
     % parse input arguments
-    if nargin >= 2 && ~isempty(varargin{1})
-       method = varargin{1}; 
-    end
+    method = setDefaultValues({'maiga'},varargin{:});
+
+    % check input arguments
+    inputArgsCheck({{points,'att','numeric','nonempty'};
+                    {method,'str',{'maiga','stursberg'}}});
 
     % compute enclosing zonotope with the selected method
     if strcmp(method,'stursberg')
         Z = enclosePointsStursberg(points);
     elseif strcmp(method,'maiga')
         Z = enclosePointsMaiga(points);
-    else
-       error('Wrong value for input argument ''method''!'); 
     end
+
 end
 
 
@@ -102,7 +100,7 @@ function Zopt = enclosePointsMaiga(points)
 % Computes an enclosing zonotope using the method from [2]
 
     % initialization
-    minVol = inf;
+    minVol = Inf;
     Zopt = [];
     N = 100;
 
@@ -139,9 +137,9 @@ function Z = cloud2zonotope(X,ratio,s1)
     while (iter < s1) 
         %|| condition(s2,w,rad))
         iter = iter + 1;
-        int = interval.enclosePoints(X);
-        mid = center(int);
-        r = rad(int);
+        I = interval.enclosePoints(X);
+        mid = center(I);
+        r = rad(I);
         X = X - mid;
         if iter == 1
            w = r; 
@@ -153,9 +151,9 @@ function Z = cloud2zonotope(X,ratio,s1)
         c = c + mid;
         R = [R g];
     end
-    int = interval.enclosePoints(X);
-    mid = center(int);
-    r = rad(int);
+    I = interval.enclosePoints(X);
+    mid = center(I);
+    r = rad(I);
     c = c + mid;
     R = [R ,diag(r)];
     Z = zonotope([c,R]);

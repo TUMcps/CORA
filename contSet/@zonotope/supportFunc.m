@@ -1,18 +1,18 @@
-function [val,x,fac] = supportFunc(obj,dir,varargin)
-% supportFunc - calculates the upper or lower bound of a zonotope object
-%               along a certain direction
+function [val,x,fac] = supportFunc(Z,dir,varargin)
+% supportFunc - calculates the upper or lower bound of a zonotope along a
+%    certain direction
 %
 % Syntax:  
-%    val = supportFunc(obj,dir)
-%    val = supportFunc(obj,dir,type)
+%    val = supportFunc(Z,dir)
+%    val = supportFunc(Z,dir,type)
 %
 % Inputs:
-%    obj - zonotope object
+%    Z - zonotope object
 %    dir - direction for which the bounds are calculated (vector)
 %    type - upper or lower bound ('lower' or 'upper')
 %
 % Outputs:
-%    val - bound of the constraind zonotope in the specified direction
+%    val - bound of the zonotope in the specified direction
 %    x - support vector
 %    fac - factor values that correspond to the upper bound
 %
@@ -28,41 +28,41 @@ function [val,x,fac] = supportFunc(obj,dir,varargin)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-    
-    % parse input arguments
-    type = 'upper';
-    
-    if size(dir,1) == 1 && size(dir,2) >= 1
-        % transpose dir
-        dir = dir';
-    end
-    
-    if nargin >= 3 && ~isempty(varargin{1})
-        type = varargin{1};
-    end
 
-    % project zonotope onto the direction
-    obj_ = dir'*obj;
+% pre-processing
+[res,vars] = pre_supportFunc('zonotope',Z,dir,varargin{:});
 
-    % get object properties
-    c = center(obj_);
-    G = generators(obj_);
-    
-    % upper or lower bound
-    if strcmp(type,'lower')
-        
-       val = c - sum(abs(G));
-       fac = -sign(G)';
-        
-    else
-        
-       val = c + sum(abs(G));
-       fac = sign(G)';
-       
-    end
-    
-    % compute support vector
-    x = center(obj) + generators(obj)*fac;
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    val = vars{1}; x = []; fac = []; return
+else
+    Z = vars{1}; dir = vars{2}; type = vars{3};
 end
+
+% get object properties
+c = center(Z);
+G = generators(Z);
+
+% project zonotope onto the direction
+c_ = dir'*c;
+G_ = dir'*G;
+
+% upper or lower bound
+if strcmp(type,'lower')
+    val = c_ - sum(abs(G_));
+    fac = -sign(G_)';
+    
+elseif strcmp(type,'upper')
+    val = c_ + sum(abs(G_));
+    fac = sign(G_)';
+    
+elseif strcmp(type,'range')
+    throw(CORAerror('CORAerror:notSupported',type));
+
+end
+
+% compute support vector
+x = c + G*fac;
 
 %------------- END OF CODE --------------

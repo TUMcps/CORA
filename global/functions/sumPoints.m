@@ -5,13 +5,13 @@ function P = sumPoints(varargin)
 %    P = sumPoints(varargin)
 %
 % Inputs:
-%    ~ - any number of double matrices
+%    ~ - any number of double matrices with same number of rows
 %
 % Outputs:
 %    P - sum of points 
 %
 % Example: 
-%    P = sumPoints(randn(2,4),randn(4,5));
+%    P = sumPoints(randn(2,4),randn(2,5));
 %
 % Other m-files required: -
 % Subfunctions: none
@@ -21,22 +21,21 @@ function P = sumPoints(varargin)
 
 % Author:       Victor Gassmann
 % Written:      22-March-2021
-% Last update:  ---
+% Last update:  17-November-2022 (VG: reworked inputArgsCheck)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 if isempty(varargin)
-    error('No input arguments provided!');
+    throw(CORAerror('CORA:notEnoughInputArgs',1));
 end
 
-% check if all are doubles
-if ~all(cellfun(@(inp)isa(inp,'double'),varargin))
-    error('Some inputs are not of type double!');
+if ~ismatrix(varargin{1}) 
+    throw(CORAerror('CORA:wrongValue','first','Must be double matrix'));
 end
+n = size(varargin{1},1);
 
-% check if all inputs have same row-dimension
-if length(unique(cellfun(@(inp) size(inp,1),varargin)))~=1
-    error('Not all inputs have same row dimension!');
+for i=1:length(varargin)
+    inputArgsCheck({{varargin{i},'att',{'double'},{'nrows',n}}});
 end
 
 V = combineVec(varargin{:});
@@ -47,4 +46,5 @@ for i=1:n
     P(i,:) = sum(V(i:n:N*n,:),1);
 end
 P = unique(P','stable','rows')';
+
 %------------- END OF CODE --------------

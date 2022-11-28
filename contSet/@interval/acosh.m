@@ -1,4 +1,4 @@
-function res = acosh(intVal)
+function I = acosh(I)
 % acosh - Overloaded 'acosh()' operator for intervals
 %
 % x_ is x infimum, x-- is x supremum
@@ -8,15 +8,17 @@ function res = acosh(intVal)
 % [acosh(x_), acosh(x--)] if (x_ >= 1).
 %
 % Syntax:  
-%    res = acosh(intVal)
+%    I = acosh(I)
 %
 % Inputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - interval object
+%    I - interval object
 %
 % Example: 
+%    I = interval([2;4]);
+%    res = acosh(I);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,50 +30,49 @@ function res = acosh(intVal)
 % Written:      12-February-2016
 % Last update:  21-February-2016 (DG, the matrix case is rewritten)
 %               05-May-2020 (MW, standardized error message)
+%               21-May-2022 (MW, remove new instantiation)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % scalar case
-if isnumeric(intVal)
-    
-    res = interval();
+if isnumeric(I)
 
-    if intVal.inf >= 1
-        res.inf = acosh(intVal.inf);
-        res.sup = acosh(intVal.sup);
-    elseif intVal.sup >= 1
-        res.inf = NaN;
-        res.sup = acosh(intVal.sup);
+    if I.inf >= 1
+        I.inf = acosh(I.inf);
+        I.sup = acosh(I.sup);
+    elseif I.sup >= 1
+        I.inf = NaN;
+        I.sup = acosh(I.sup);
     else
-        res.inf = NaN;
-        res.sup = NaN;
+        I.inf = NaN;
+        I.sup = NaN;
     end
     
 else
 
-    % to preserve the shape    
-    res = intVal;
+    % to preserve the shape
+    lb = I.inf;
+    ub = I.sup;
     
     % find indices
+    ind1 = find(lb >= 1);
+    I.inf(ind1) = acosh(lb(ind1));
+    I.sup(ind1) = acosh(ub(ind1));
     
-    ind1 = find(intVal.inf >= 1);   
-    res.inf(ind1) = acosh(intVal.inf(ind1));
-    res.sup(ind1) = acosh(intVal.sup(ind1));
+    ind2 = find(lb < 1 & ub >= 1);
+    I.inf(ind2) = NaN;
+    I.sup(ind2) = acosh(I.sup(ind2));
     
-    ind2 = find(intVal.inf < 1 & intVal.sup >= 1);    
-    res.inf(ind2) = NaN;
-    res.sup(ind2) = acosh(intVal.sup(ind2));
-    
-    ind3 = find(intVal.sup < 1);    
-    res.inf(ind3) = NaN;
-    res.sup(ind3) = NaN;
+    ind3 = find(ub < 1);
+    I.inf(ind3) = NaN;
+    I.sup(ind3) = NaN;
        
 end
 
 % return error if NaN occures
-if any(any(isnan(res.inf))) || any(any(isnan(res.sup)))
-	error(resIntNaNInf()); 
+if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))
+    throw(CORAerror('CORA:outOfDomain','validDomain','>= -1 && <= 1'));
 end
 
 %------------- END OF CODE --------------

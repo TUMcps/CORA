@@ -1,18 +1,20 @@
-function display(obj)
-% display - Displays the center, generators and constraints of a conZonotope
+function display(cZ)
+% display - Displays the properties of a conZonotope object (center,
+%    generators, and constraints for the factors) on the command window
 %
 % Syntax:  
-%    display(obj)
+%    display(cZ)
 %
 % Inputs:
-%    obj - conZonotope object
+%    cZ - conZonotope object
 %
 % Outputs:
 %    ---
 %
 % Example: 
-%    Z = conZonotope(rand(2,6));
-%    display(Z);
+%    Z = [0 1 0 1;0 1 2 -1];
+%    A = [-2 1 -1]; b = 2;
+%    cZ = conZonotope(Z,A,b)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,9 +30,9 @@ function display(obj)
 
 %------------- BEGIN CODE --------------
 
-if isempty(obj)
+if isemptyobject(cZ)
     
-    dispEmptyObj(obj,inputname(1));
+    dispEmptyObj(cZ,inputname(1));
 
 else
     
@@ -40,28 +42,27 @@ else
 
     % display center and generators
     disp('c: ');
-    disp(obj.Z(:,1));
+    disp(cZ.Z(:,1));
 
-    G = obj.Z(:,2:end);
-    maxGens = 10;
-    displayGenerators(G,maxGens,'G');
+    G = cZ.Z(:,2:end);
+    displayGenerators(G,DISPLAYDIM_MAX,'G');
     
     %display constraint system
-    if isempty(obj.A) && isempty(obj.b)
+    if isempty(cZ.A) && isempty(cZ.b)
         disp('Constraint system (Cx <= d): no constraints.')
         fprintf(newline);
         
     else
         disp('Constraint system (Cx <= d):')
 
-        displayGenerators(obj.A,maxGens,'A');
+        displayGenerators(cZ.A,DISPLAYDIM_MAX,'A');
 
         disp('b: ');
-        disp(obj.b);
+        disp(cZ.b);
     end
     
 end
 
-
 end
+
 %------------- END OF CODE --------------

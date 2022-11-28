@@ -103,7 +103,7 @@ reset1.A = [a_11, a_12, 0, 0, 0; ...
     0, 0, 1, 0, 0; ...
     0, 0, 0, 1, 0; ...
     a_51, a_52, 0, 0, 1]; 
-reset1.b = zeros(dim_x,1);
+reset1.c = zeros(dim_x,1);
 
 % transition 
 trans{1} = transition(guard1,reset1,1);
@@ -142,7 +142,7 @@ reset2.A = [a_11, a_12, 0, 0, 0; ...
     0, 0, 1, 0, 0; ...
     0, 0, 0, 1, 0; ...
     a_51, a_52, 0, 0, 1]; 
-reset2.b = zeros(dim_x,1);
+reset2.c = zeros(dim_x,1);
 
 % transition
 trans{2} = transition(guard2,reset2,1);
@@ -162,7 +162,7 @@ reset3.A = [0, 0, 0, 0, 0; ...
     0, 0, 1, 0, 0; ...
     0, 0, 0, 1, 0; ...
     m_s, m_s, 0, 0, 1]; 
-reset3.b = zeros(dim_x,1);
+reset3.c = zeros(dim_x,1);
 
 % transition
 trans{3} = transition(guard3,reset3,2);
@@ -178,7 +178,9 @@ dinv = dinv + ones(length(dinv),1)*1e-3;
 inv = mptPolytope(Cinv,dinv);
 
 % location
-loc{1} = location('loc1',inv,trans,linSys); 
+loc{1} = location('loc1',inv,trans,linSys);
+
+loc{2} = location('loc2',inv,[],linearSys(zeros(5),zeros(5,1)));
 
 % hybrid automaton
 HA = hybridAutomaton(loc);

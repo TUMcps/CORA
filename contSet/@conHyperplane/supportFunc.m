@@ -1,14 +1,14 @@
-function [val,x] = supportFunc(obj,d,type)
-% supportFunc - computes support function of constrained hyperplane in
-% direction d
+function [val,x] = supportFunc(hyp,dir,varargin)
+% supportFunc - computes support function of constrained hyperplane in a 
+%    given direction
 %
 % Syntax:  
-%    [val,x] = supportFunc(obj,d)
-%    [val,x] = supportFunc(obj,d,type)
+%    [val,x] = supportFunc(hyp,dir)
+%    [val,x] = supportFunc(hyp,dir,type)
 %
 % Inputs:
-%    obj - conHyperplane object
-%    d   - direction for which the bounds are calculated (vector of size
+%    hyp - conHyperplane object
+%    dir - direction for which the bounds are calculated (vector of size
 %          (n,1) )
 %    type - upper or lower bound ('lower' or 'upper')
 %
@@ -17,7 +17,8 @@ function [val,x] = supportFunc(obj,d,type)
 %    x   - point for which holds: dir'*x=val
 %
 % Example: 
-%    ---
+%    hyp = conHyperplane(halfspace([1;1],0),[1 0;-1 0],[2;2]);
+%    supportFunc(hyp,[-1;1]/sqrt(2))
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,22 +32,12 @@ function [val,x] = supportFunc(obj,d,type)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-if ~exist('type','var')
-    type = 'upper';
+
+% convert to polytope and call support function for polytopes
+if nargout <= 1
+    val = supportFunc(mptPolytope(hyp),dir,varargin{:});
+elseif nargout == 2
+    [val,x] = supportFunc(mptPolytope(hyp),dir,varargin{:});
 end
 
-if ~strcmp(type,'upper') && ~strcmp(type,'lower')
-    error('Third argument can either be "upper" or "lower"!');
-end
-
-if ~isa(d,'double') || ~any(size(d)==1) || length(d)~=dim(obj)
-    error('Second argument has to be vector of appropriate dimension!');
-end
-
-obj = mptPolytope(obj);
-if nargout<=1
-    val = supportFunc(obj,d,type);
-elseif nargout==2
-    [val,x] = supportFunc(obj,d,type);
-end
 %------------- END OF CODE --------------

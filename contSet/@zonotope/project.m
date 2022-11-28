@@ -1,16 +1,15 @@
-function Z = project(Z,proj)
-% project - returns the projection of a zonotope onto the specified
-%    dimensions
+function Z = project(Z,dims)
+% project - projects a zonotope onto the specified dimensions
 %
 % Syntax:  
-%    Z = project(Z,proj)
+%    Z = project(Z,dims)
 %
 % Inputs:
-%    Z - zonotope object
-%    proj - projected dimensions
+%    Z - (zonotope) zonotope
+%    dims - dimensions for projection
 %
 % Outputs:
-%    Z - projected zonotope
+%    Z - (zonotope) projected zonotope
 %
 % Example: 
 %    Z = zonotope([1 -1 0; 0 0 -1; 1 0 1]);
@@ -29,6 +28,6 @@ function Z = project(Z,proj)
 
 %------------- BEGIN CODE --------------
 
-Z.Z = Z.Z(proj,:);
+Z.Z = Z.Z(dims,:);
 
 %------------- END OF CODE --------------

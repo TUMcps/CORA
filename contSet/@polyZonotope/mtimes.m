@@ -1,12 +1,12 @@
 function pZ = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix or an
-%          interval matrix with a polyZonotope
+%    interval matrix with a polynomial zonotope
 %
 % Syntax:  
 %    pZ = mtimes(matrix,pZ)
 %
 % Inputs:
-%    matrix - numerical or interval matrix
+%    matrix - numerical matrix or interval matrix
 %    pZ - polyZonotope object 
 %
 % Outputs:
@@ -21,11 +21,11 @@ function pZ = mtimes(factor1,factor2)
 %    pZresInt = intMatrix*pZ;
 %   
 %    figure
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
+%    plot(pZ,[1,2],'FaceColor','r');
 %    figure
-%    plot(pZres,[1,2],'b','Filled',true,'EdgeColor','none');
+%    plot(pZres,[1,2],'FaceColor','b');
 %    figure
-%    plot(pZresInt,[1,2],'g','Filled',true,'EdgeColor','none');
+%    plot(pZresInt,[1,2],'FaceColor','g');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -40,88 +40,102 @@ function pZ = mtimes(factor1,factor2)
 
 %------------- BEGIN CODE --------------
 
-% find a poly zonotope object
-if isa(factor1,'polyZonotope')
-    
-    pZ=factor1;
-    matrix=factor2;
+% find the polyZonotope object
+[pZ,matrix] = findClassArg(factor1,factor2,'polyZonotope');
 
-elseif isa(factor2,'polyZonotope')
+
+try
+
+    % numeric matrix
+    if isnumeric(matrix)
+        
+        pZ.c = matrix*pZ.c;
+        
+        if ~isempty(pZ.G)
+            pZ.G = matrix*pZ.G;
+        end
+        
+        if ~isempty(pZ.Grest)
+            pZ.Grest = matrix*pZ.Grest;
+        end
     
-    pZ=factor2;
-    matrix=factor1;  
+     
+    % interval matrix
+    elseif isa(matrix,'interval')
+        
+        m = center(matrix);
+        r = rad(matrix);
+        
+        % calculate interval over-approximation
+        inter = interval(pZ);
+        s = abs(center(inter)) + rad(inter);
+        
+        % compute new polyZonotope
+        pZ.c = m*pZ.c;
+        if ~isempty(pZ.G)
+            pZ.G = m*pZ.G;
+        end
+        if ~isempty(pZ.Grest)
+            pZ.Grest = [m*pZ.Grest, diag(r*s)];
+        else
+            pZ.Grest = diag(r*s);
+        end
+        
+        
+    % interval matrix 
+    elseif isa(matrix,'intervalMatrix')
+        
+        % get minimum and maximum
+        M_min=infimum(matrix.int);
+        M_max=supremum(matrix.int); 
+        
+        % get center and radius of interval matrix
+        m=0.5*(M_max+M_min);
+        r=0.5*(M_max-M_min);
+        
+        % calculate interval over-approximation
+        inter = interval(pZ);
+        s = abs(center(inter)) + rad(inter);
+        
+        % compute new polyZonotope
+        pZ.c = m*pZ.c;
+        if ~isempty(pZ.G)
+            pZ.G = m*pZ.G;
+        end
+        if ~isempty(pZ.Grest)
+            pZ.Grest = [m*pZ.Grest, diag(r*s)];
+        else
+            pZ.Grest = diag(r*s);
+        end
+    
+        
+    % matrix zonotope 
+    else
+    
+        throw(CORAerror('CORA:noops',factor1,factor2));
+    
+    end
+
+catch ME
+    % note: error has already occured, so the operations below don't have
+    % to be efficient
+
+    % already know what's going on...
+    if startsWith(ME.identifier,'CORA')
+        rethrow(ME);
+    end
+
+    % check for empty sets
+    if isempty(Z)
+        return
+    end
+
+    % check whether different dimension of ambient space
+    equalDimCheck(Z,matrix);
+
+    % other error...
+    rethrow(ME);
+
 end
 
-% numeric matrix
-if isnumeric(matrix)
-    
-    pZ.c = matrix*pZ.c;
-    
-    if ~isempty(pZ.G)
-        pZ.G = matrix*pZ.G;
-    end
-    
-    if ~isempty(pZ.Grest)
-        pZ.Grest = matrix*pZ.Grest;
-    end
-
- 
-% interval matrix
-elseif isa(matrix,'interval')
-    
-    m = center(matrix);
-    r = rad(matrix);
-    
-    % calculate interval over-approximation
-    inter = interval(pZ);
-    s = abs(center(inter)) + rad(inter);
-    
-    % compute new polyZonotope
-    pZ.c = m*pZ.c;
-    if ~isempty(pZ.G)
-        pZ.G = m*pZ.G;
-    end
-    if ~isempty(pZ.Grest)
-        pZ.Grest = [m*pZ.Grest, diag(r*s)];
-    else
-        pZ.Grest = diag(r*s);
-    end
-    
-    
-% interval matrix 
-elseif isa(matrix,'intervalMatrix')
-    
-    % get minimum and maximum
-    M_min=infimum(matrix.int);
-    M_max=supremum(matrix.int); 
-    
-    % get center and radius of interval matrix
-    m=0.5*(M_max+M_min);
-    r=0.5*(M_max-M_min);
-    
-    % calculate interval over-approximation
-    inter = interval(pZ);
-    s = abs(center(inter)) + rad(inter);
-    
-    % compute new polyZonotope
-    pZ.c = m*pZ.c;
-    if ~isempty(pZ.G)
-        pZ.G = m*pZ.G;
-    end
-    if ~isempty(pZ.Grest)
-        pZ.Grest = [m*pZ.Grest, diag(r*s)];
-    else
-        pZ.Grest = diag(r*s);
-    end
-
-    
-% matrix zonotope 
-else
-    
-    error('quadZonotope/mtimes: operation not yet implemented!')
-end    
-
-
-
-
-%-----------
+%------------- END OF CODE --------------

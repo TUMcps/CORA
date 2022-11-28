@@ -26,22 +26,25 @@ function obj = subsasgn(obj, S, value)
 
 %------------- BEGIN CODE --------------
 
+% check input arguments
+inputArgsCheck({{obj,'att','taylm'};
+                {S,'att',{'numeric','struct'}};
+                {value,'att','numeric','nonnan'}});
+
+% loop over all combined calls to subsref
+for j = 1:length(S)
     
-    % loop over all combined calls to subsref
-    for j = 1:length(S)
+    % override subsref for type obj(i,j)
+    if strcmp(S(j).type,'()')
         
-        % override subsref for type obj(i,j)
-        if strcmp(S(j).type,'()')
-            
-            % loop over all objects stored in the zoo
-            for i = 1:length(obj.method)
-                obj.objects{i} = subsasgn(obj.objects{i},S(j),value.objects{i});
-            end
-            
-        % for all other types, call the build in function
-        else
-            obj = builtin('subsasgn', obj, S(j), value);
+        % loop over all objects stored in the zoo
+        for i = 1:length(obj.method)
+            obj.objects{i} = subsasgn(obj.objects{i},S(j),value.objects{i});
         end
+        
+    % for all other types, call the build in function
+    else
+        obj = builtin('subsasgn', obj, S(j), value);
     end
 end
 

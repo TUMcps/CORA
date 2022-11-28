@@ -1,7 +1,6 @@
-function res = intervalMultiplication(obj,I)
+function cZ = intervalMultiplication(cZ,I)
 % intervalMultiplication - computes the multiplication of an interval with
-% a constrained zonotope. This function is called by the interval/mtimes
-% function
+%    a constrained zonotope
 %
 % Syntax:  
 %    res = intervalMultiplication(obj,I)
@@ -11,21 +10,19 @@ function res = intervalMultiplication(obj,I)
 %    I - interval object
 %
 % Outputs:
-%    res - conZonotope after multiplication of an interval with a 
-%         conZonotope
+%    res - conZonotope object
 %
 % Example: 
 %    Z = [0 1 0 1;0 1 2 -1];
-%    A = [-2 1 -1];
-%    b = 2;
-%    cZono = conZonotope(Z,A,b);
+%    A = [-2 1 -1]; b = 2;
+%    cZ = conZonotope(Z,A,b);
 %
 %    I = interval([0 1; 1 0], [1 2; 2 1]);
-%    cZonoRes = I * cZono;
+%    cZres = I * cZ;
 %
-%    hold on
-%    plot(cZono,[1,2],'r');
-%    plot(cZonoRes,[1,2],'b');
+%    figure; hold on;
+%    plot(cZ,[1,2],'r');
+%    plot(cZres,[1,2],'b');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -40,21 +37,18 @@ function res = intervalMultiplication(obj,I)
 
 %------------- BEGIN CODE --------------
 
+% center and radius of interval matrix
+m = center(I);
+r = rad(I);
 
-    % center and radius of interval matrix
-    m=center(I);
-    r=rad(I);
+% absolute value of zonotope center and generators
+Zabssum = sum(abs(cZ.Z),2);
 
-    % absolute value of zonotope center and generators
-    Zabssum=sum(abs(obj.Z),2);
+% construct resulting conZonotope object
+cZ.Z = [m*cZ.Z, diag(r*Zabssum)];
+cZ.A = [cZ.A, zeros(size(cZ.A,1),size(Zabssum,1))];
 
-    % construct resulting conZonotope object
-    res = obj;
-    res.Z = [m*obj.Z, diag(r*Zabssum)];
-    res.A = [obj.A, zeros(size(obj.A,1),size(Zabssum,1))];
-
-    res.ksi = [];
-    res.R = [];
- 
+cZ.ksi = [];
+cZ.R = [];
 
 %------------- END OF CODE --------------

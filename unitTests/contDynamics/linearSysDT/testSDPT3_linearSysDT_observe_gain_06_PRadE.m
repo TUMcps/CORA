@@ -21,10 +21,7 @@ function res = testSDPT3_linearSysDT_observe_gain_06_PRadE()
 %        Zhenhua Wang. Zonotopic fault detection observer with H −
 %        performance. In Proc. of the 36th IEEE Chinese Control
 %        Conference, pages 7230–7235, 2017.
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      01-March-2021
 % Last update:  ---
@@ -33,7 +30,7 @@ function res = testSDPT3_linearSysDT_observe_gain_06_PRadE()
 %------------- BEGIN CODE --------------
 
 % enable access to private function "observe_gain_PRadE"
-path = coraroot();
+path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSysDT','private','observe_gain_PRadE.m');
 target = fullfile(path,'contDynamics','@linearSysDT','observe_gain_PRadE.m');
 copyfile(source,target);

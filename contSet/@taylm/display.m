@@ -1,5 +1,5 @@
 function display(obj)
-% display - Displays the Taylor expression
+% display - Displays the properties of a taylm object on the command window
 %
 % Syntax:  
 %    display(obj)

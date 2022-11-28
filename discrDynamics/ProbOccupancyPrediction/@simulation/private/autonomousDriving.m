@@ -21,10 +21,10 @@ function [p,pTotal]=autonomousDriving(simOptions,markovChainSpec)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 12-March-2008
-% Last update: 17-June-2008
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      12-March-2008
+% Last update:  17-June-2008
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

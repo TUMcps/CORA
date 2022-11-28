@@ -30,7 +30,7 @@ function res = testLongDuration_conZonotope_quadMap
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
 
 
 % TEST 1: Random Test (quadratic multiplication) --------------------------
@@ -61,7 +61,7 @@ for k = 1:3
     
     points = [points,V];
 
-    % calculate points that have to be located inside the resuling 
+    % calculate points that have to be located inside the resulting 
     % conZonotope
     points_ = zeros(size(points));
 
@@ -93,11 +93,11 @@ for k = 1:3
            file_name = strcat('testLongDuration_conZonotope_quadMap_1_', ...
                               datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-           file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+           file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                                 file_name);
                            
-           save(file_path, 'cZono')
-           error('Test 1 failed!');
+           save(file_path, 'V','Q')
+           throw(CORAerror('CORA:testFailed'));
        end
     end
 end
@@ -129,11 +129,11 @@ for k = 2:5
         file_name = strcat('testLongDuration_conZonotope_quadMap_2_', ...
                            datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-        file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+        file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                              file_name);
                            
         save(file_path, 'zono', 'cZ')
-        error('Test 2 failed!');
+        throw(CORAerror('CORA:testFailed'));
     end  
 end
 
@@ -182,7 +182,7 @@ for k = 1:3
     points1 = [points1,V1];
     points2 = [points2,V2];
 
-    % calculate points that have to be located inside the resuling 
+    % calculate points that have to be located inside the resulting 
     % conZonotope
     points_ = zeros(2,N^2);
     counter = 1;
@@ -219,16 +219,13 @@ for k = 1:3
            file_name = strcat('testLongDuration_conZonotope_quadMap_3_', ...
                               datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-           file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+           file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                                 file_name);
                            
-           save(file_path, 'cZ1', 'cZ2')
-           error('Test 3 failed!');
+           save(file_path, 'temp')
+           throw(CORAerror('CORA:testFailed'));
        end
     end
 end
-
-res = true;
-
 
 %------------- END OF CODE --------------

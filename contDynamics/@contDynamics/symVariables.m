@@ -12,10 +12,12 @@ function [vars,vars_der] = symVariables(varargin)
 %    x - symbolic state variables
 %    u - symbolic input variables
 %    y - symbolic constraint variables
+%    o - symbolic output variables
 %    p - symbolic parameters
 %    dx - symbolic state deviation form linearization point
 %    du - symbolic input deviation form linearization point
 %    dy - symbolic constraint deviation form linearization point
+%    do - symbolic output deviation form linearization point
 %
 % Example: 
 %    Text for example...
@@ -31,6 +33,7 @@ function [vars,vars_der] = symVariables(varargin)
 % Last update:  06-July-2017
 %               05-November-2017
 %               14-January-2018
+%               19-November-2022 (MW, add outputs)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -82,6 +85,19 @@ if strcmp(type,'LRbrackets')
         y = [];
         dy = [];
     end
+
+    % generate symbolic outputs
+    if isprop(obj,'nrOfOutputs') && obj.nrOfOutputs>0
+        for i=1:obj.nrOfInputs 
+            command=['o(',num2str(i),',1)=sym(''oL',num2str(i),'R'');'];
+            eval(command);
+            command=['do(',num2str(i),',1)=sym(''doL',num2str(i),'R'');'];
+            eval(command);  
+        end  
+    else
+        o = [];
+        do = [];
+    end
     
     %generate symbolic parameters
     if isprop(obj,'nrOfParam') && obj.nrOfParam>0
@@ -119,6 +135,19 @@ else
         u = [];
         du = [];
     end
+
+    %generate symbolic outputs
+    if isprop(obj,'nrOfOutputs') && obj.nrOfOutputs>0
+        for i=1:obj.nrOfInputs
+            command=['o(',num2str(i),',1)=sym(''o',num2str(i),''');'];
+            eval(command);
+            command=['do(',num2str(i),',1)=sym(''do',num2str(i),''');'];
+            eval(command);
+        end
+    else
+        o = [];
+        do = [];
+    end
     
     %generate symbolic constraint states
     if isprop(obj,'nrOfConstraints') && obj.nrOfConstraints>0
@@ -148,10 +177,12 @@ end
 vars.x = x;
 vars.u = u;
 vars.y = y;
+vars.o = o;
 vars.p = p;
 
 vars_der.x = dx;
 vars_der.u = du;
 vars_der.y = dy;
+vars_der.o = do;
 
 %------------- END OF CODE --------------

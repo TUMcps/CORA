@@ -29,7 +29,7 @@ function res = testLongDuration_polyZonotope_plot
 
 res = true;
 
-% create random polyZonotope
+% instantiate polynomial zonotope
 c = rand(4,1)-0.5*ones(4,1);
 G = rand(4,6)-0.5*ones(4,6);
 ind = datasample(1:6,4,'Replace',false);
@@ -46,6 +46,7 @@ try
     plot(pZ);
     
     % two arguments: object, dimensions
+    plot(pZ,1);
     plot(pZ,[1,2]);
     plot(pZ,[2,3]);
     
@@ -56,19 +57,14 @@ try
     plot(pZ,[1,2],'LineWidth',2);
     plot(pZ,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
     
-    % three arguments: object, dimensions, NVpair 'Filled'
-    plot(pZ,[1,2],'Filled',true);
-    plot(pZ,[1,2],'Filled',true,'LineWidth',2);
-    plot(pZ,[1,2],'Filled',true,'EdgeColor','k','FaceColor',[.8 .8 .8]);
-    
     % three arguments: object, dimensions, NVpair 'Splits'
     plot(pZ,[1,2],'Splits',6);
     plot(pZ,[1,2],'Splits',6,'LineWidth',2);
-    plot(pZ,[1,2],'Splits',6,'Filled',true,'EdgeColor','k','FaceColor',[.8 .8 .8]);
+    plot(pZ,[1,2],'Splits',6,'EdgeColor','k','FaceColor',[.8 .8 .8]);
     
     % four arguments: object, dimensions, linespec, NVpairs
-    plot(pZ,[1,2],'r','Filled',true,'LineWidth',2);
-    plot(pZ,[1,2],'r','Filled',true,'LineWidth',2,'EdgeColor',[.6 .6 .6]);
+    plot(pZ,[1,2],'FaceColor','r','LineWidth',2);
+    plot(pZ,[1,2],'FaceColor','r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
     
     % close figure
     close;
@@ -77,10 +73,9 @@ catch
     res = false;
 end
 
-if res
-    disp('test_plot successful');
-else
-    disp('test_plot failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'pZ','G','Grest','expMat');
 end
 
 %------------- END OF CODE --------------

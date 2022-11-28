@@ -14,10 +14,7 @@ function res = testLongDuration_linearSysDT_observe_01_vehicle()
 %
 % Outputs:
 %    res - boolean 
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      08-Sep-2020
 % Last update:  16-Jan-2021
@@ -72,9 +69,9 @@ for iEst = 1:length(Estimator)
     
     % if ellipsoids are required
     if any(strcmp(estName,{'ESO-A','ESO-B','ESO-C','ESO-D','ESO-E'}))
-        params.R0 = ellipsoid(params.R0,'i:norm'); % inscribe ellipsoid
-        params.W = ellipsoid(params.W,'i:norm'); % inscribe ellipsoid
-        params.V = ellipsoid(params.V,'i:norm'); % inscribe ellipsoid
+        params.R0 = ellipsoid(params.R0,'inner:norm'); % inscribe ellipsoid
+        params.W = ellipsoid(params.W,'inner:norm'); % inscribe ellipsoid
+        params.V = ellipsoid(params.V,'inner:norm'); % inscribe ellipsoid
     % if constrained zonotopes are required
     elseif any(strcmp(estName,{'CZN-A','CZN-B'}))
         params.R0 = conZonotope(params.R0);

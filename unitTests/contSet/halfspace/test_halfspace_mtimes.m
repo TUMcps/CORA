@@ -26,17 +26,10 @@ function res = test_halfspace_mtimes
 %------------- BEGIN CODE --------------
 
 % 1. empty case
-res_empty = true;
+% res_empty = true;
 h = halfspace();
 A = rand(2,2);
-try
-    A * h; % should throw error here
-    res_empty = false;
-catch ME
-    if ~strcmp(ME.identifier,'CORA:emptySet')
-        res_empty = false;
-    end
-end
+res_empty = isempty(A*h);
 
 % 2. analytical test
 % instantiate halfspace
@@ -60,11 +53,5 @@ res_analytical = isequal(h_mapped,h_true);
 
 % combine tests
 res = res_empty && res_analytical;
-
-if res
-    disp('test_mtimes successful');
-else
-    disp('test_mtimes failed');
-end
 
 %------------- END OF CODE --------------

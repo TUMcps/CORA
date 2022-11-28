@@ -1,8 +1,8 @@
 function completed = test_nonlinParamSys_reach_03_tank_linearRemainder
-% example_nonlinParamSys_reach_03_tank_linearRemainder - example of
+% test_nonlinParamSys_reach_03_tank_linearRemainder - example of
 %    nonlinear reachability analysis with uncertain parameters.
 %
-% This example can be found in [1, Sec. 3.4.5] or in [2].
+%    This example can be found in [1, Sec. 3.4.5] or in [2].
 %
 % Syntax:  
 %    completed = test_nonlinParamSys_reach_03_tank_linearRemainder
@@ -73,10 +73,8 @@ disp(['computation time of reachable set with remainder added to system matrix: 
 
 % Simulation --------------------------------------------------------------
 
+params = rmfield(params,'paramInt');
 simOpt.points = 60;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
 simRes = simulateRandom(tank, params, simOpt);
 
 
@@ -101,14 +99,14 @@ if plotting
         figure; hold on; box on;
     
         % reachable set: standard lagrange remainder
-        plot(R_wo_linear,projectedDims,'b','EdgeColor','none','Order',plotOrder);
+        plot(R_wo_linear,projectedDims,'b','Order',plotOrder);
 
         % reachable set: lagrange remainder added to system matrices (A,B)
-        plot(R_Param,projectedDims,'r','EdgeColor','none','Order',plotOrder);
+        plot(R_Param,projectedDims,'r','Order',plotOrder);
 
 
         %plot initial set
-        plot(params.R0,projectedDims,'w','Filled',true,'EdgeColor','k');
+        plot(params.R0,projectedDims,'k','FaceColor','w');
 
         %plot simulation results
         plot(simRes,projectedDims,'k');

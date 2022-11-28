@@ -1,14 +1,14 @@
-function dimension = dim(obj)
-% dim - returns the dimension of the mptPolytope
+function n = dim(P)
+% dim - returns the dimension of the ambient space of a polytope
 %
 % Syntax:  
-%    dimension = dim(obj)
+%    n = dim(P)
 %
 % Inputs:
-%    obj - mptPolytope object
+%    P - mptPolytope object
 %
 % Outputs:
-%    dimension - dimension of the mptPolytope
+%    n - dimension of the ambient space
 %
 % Example: 
 %    ---
@@ -29,10 +29,10 @@ function dimension = dim(obj)
 
 %return dimension
 try %MPT3
-    dimension = length(obj.P.A(end,:));
+    n = P.P.Dim;
 catch
-    [H,~]=double(obj.P);
-    dimension = length(H(end,:));
+    [H,~] = double(P.P);
+    n = length(H(end,:));
 end
 
 %------------- END OF CODE --------------

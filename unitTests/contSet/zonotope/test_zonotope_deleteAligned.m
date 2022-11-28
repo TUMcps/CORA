@@ -41,13 +41,6 @@ Z_gens_true = [10 2 3 1;
 Z_true = zonotope([Z_cent,Z_gens_true]);
 
 % check results
-res = all(all(Z_del.Z == Z_true.Z));
-% false if generators are not ordered in the same way ...
-
-if res
-    disp('test_deleteAligned successful');
-else
-    disp('test_deleteAligned failed');
-end
+res = compareMatrices(Z_del.Z,Z_true.Z);
 
 %------------- END OF CODE --------------

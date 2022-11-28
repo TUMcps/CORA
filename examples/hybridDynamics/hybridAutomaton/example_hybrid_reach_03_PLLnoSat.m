@@ -7,12 +7,13 @@ function completed = example_hybrid_reach_03_PLLnoSat()
 %    completed = example_hybrid_reach_03_PLLnoSat()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    res - boolean 
 %
 % Example: 
+%    -
 %
 % References:
 %    [1] Althoff, M.; Rajhans, A.; Krogh, B. H.; Yaldiz, S.; Li, X. & Pileggi, L. 
@@ -22,12 +23,11 @@ function completed = example_hybrid_reach_03_PLLnoSat()
 %    [2] Althoff, M.; Rajhans, A.; Krogh, B. H.; Yaldiz, S.; Li, X. & Pileggi, L. 
 %        Formal Verification of Phase-Locked Loops Using Reachability Analysis 
 %        and Continuization Communications of the ACM, 2013, 56, 97-104
-% 
+
 % Author:       Matthias Althoff
 % Written:      20-January-2010
 % Last update:  26-May-2018
 % Last revision:---
-
 
 %------------- BEGIN CODE --------------
 
@@ -39,7 +39,8 @@ R0ih=interval([0.34; -0.01; -0.01; minPhase], [0.36; 0.01; 0.01; maxPhase]);
 % instantiate hybrid automaton for simulation
 [HAsim, A, U, U_delay, Uloc, c] = PLL();
 
-% Parameter ---------------------------------------------------------------
+
+% Parameters --------------------------------------------------------------
 
 params.R0 = zonotope(R0ih);
 params.U = U;
@@ -53,7 +54,8 @@ uTmp = center(params.Uloc{1});
 uTmp(1:3) = params.uLoc{2}(1:3) + params.uLoc{3}(1:3);
 params.uLoc{4} = uTmp;
 params.tStart = 0;
-params.tFinal = inf;
+params.tFinal = Inf;
+
 
 % Reachability Settings ---------------------------------------------------
 
@@ -61,11 +63,16 @@ options.taylorTerms = 10;
 %options.zonotopeOrder = 5; 
 options.Rlock=interval([-100; -100; -100; -1/3600],[100; 100; 100; 1/3600]);               
 
-%compute reachable set: no saturation
+
+% Reachability Analysis ---------------------------------------------------
+
+% no saturation
 tic
 R = reachPLL_general_noSat(A, c, params, options);
 tComp_reach = toc;
 
+
+% Simulation --------------------------------------------------------------
 
 plotRange = 1:200;
 %simCycles = length(R);
@@ -108,29 +115,31 @@ end
 tComp_sim = toc;
 
 
-Psim = [1 0 0 0 0 0; 0 1 0 0 0 0; 0 0 1 0 0 0; 0 0 0 1 -1 0];
-dims = [1 2; 2 3; 1 4; 3 4]; %for plotting only
+% Visualization -----------------------------------------------------------
 
+% projections for plotting
+Psim = [1 0 0 0 0 0; 0 1 0 0 0 0; 0 0 1 0 0 0; 0 0 0 1 -1 0];
+dims = [1 2; 2 3; 1 4; 3 4];
+
+% loop over all projections
 for i = 1:4
     
-    figure
-    hold on
+    figure; hold on;
     
+    %plot reachable set
     for iSet = plotRange
-        
-        %plot reachable set
-        Rproj = project(R{iSet},dims(i,:));
-        Rplot = reduce(Rproj,'girard',20);
-        plot(Rplot,[1 2],'w','Filled',true,'EdgeColor','b');
+        Rproj = reduce(project(R{iSet},dims(i,:)),'girard',20);
+        plot(Rproj,[1 2],'FaceColor',colorblind('b'));
     end
     
+    %plot simulation results
     for iSet = plotRange
-        %plot simulation results
         for n = plotRange
             %plot results
             try
                 xProj = Psim*simRes{n}(iSet,:)';
-                plot(xProj(dims(i,1)),xProj(dims(i,2)),'r.');
+                plot(xProj(dims(i,1)),xProj(dims(i,2)),...
+                    'Color',colorblind('y'),'Marker','.');
                 %plot(simRes{n}(iSet,dims(i,1)),simRes{n}(iSet,dims(i,2)),'ro');
             catch
             end
@@ -139,7 +148,7 @@ for i = 1:4
 end
 
 %example completed
-completed = 1;
+completed = true;
 
 end
 
@@ -383,7 +392,7 @@ E = intervalMatrix(zeros(dim),W);
 
 end
 
-function [E] = expMatRemainder(Apower, t, taylorTerms)
+function E = expMatRemainder(Apower, t, taylorTerms)
 
 %compute auxiliary matrix
 tmpMat = 1/factorial(4)*(t^4)*Apower{4};

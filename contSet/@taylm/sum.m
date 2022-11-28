@@ -39,6 +39,9 @@ else
     n = varargin{1};
 end
 
+inputArgsCheck({{obj,'att','taylm'};
+                {n,'att','numeric','nonnan'}});
+
 if n == 1 % reduce to a row 
     S.type='()'; % to avoid Matlab's bug
     S.subs={1,':'};

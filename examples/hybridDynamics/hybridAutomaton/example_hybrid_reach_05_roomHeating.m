@@ -52,12 +52,7 @@ options.guardIntersect = 'zonoGirard';
 
 % Simulation --------------------------------------------------------------
 
-simOpt.points = 10;        % number of initial points
-simOpt.fracVert = 0.5;     % fraction of vertices initial set
-simOpt.fracInpVert = 0.5;  % fraction of vertices input set
-simOpt.inpChanges = 20;    % changes of input over time horizon  
-
-simRes = simulateRandom(HA,params,simOpt);
+simRes = simulateRandom(HA,params);
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -67,24 +62,23 @@ R = reach(HA,params,options);
 
 % Visualization -----------------------------------------------------------
 
-% temperature room 1 over time
-figure; box on; hold on
-plotOverTime(R,1,'FaceColor',[.6 .6 .6],'EdgeColor','none');
-plotOverTime(simRes,1);
-xlabel('Time')
-ylabel('Temperature');
-title('Room 1');
-xlim([0,params.tFinal]);
+% temperature room k over time
+for k=1:2
+    figure; box on; hold on;
 
-% temperature room 2 over time
-figure; box on; hold on
-plotOverTime(R,2,'FaceColor',[.6 .6 .6],'EdgeColor','none');
-plotOverTime(simRes,2);
-xlabel('Time')
-ylabel('Temperature');
-title('Room 2');
-xlim([0,params.tFinal]);
+    % plot reachable set
+    plotOverTime(R,k);
 
-res = 1;
+    % plot simulation
+    plotOverTime(simRes,k);
+
+    % labels, title, and limitss
+    xlabel('Time')
+    ylabel('Temperature');
+    title(['Room ' num2str(k)]);
+    xlim([0,params.tFinal]);
+end
+
+res = true;
 
 %------------- END OF CODE --------------

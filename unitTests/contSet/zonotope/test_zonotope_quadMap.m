@@ -67,10 +67,4 @@ res(2) = all(all(Zmat == true_mat));
 % gather results
 res = all(res);
 
-if res
-    disp('test_zonotope_quadMap successful');
-else
-    disp('test_zonotope_quadMap failed');
-end
-
 %------------- END OF CODE --------------

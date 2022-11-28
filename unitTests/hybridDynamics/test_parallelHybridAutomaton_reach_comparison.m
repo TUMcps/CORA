@@ -83,6 +83,6 @@ res_1 = (I_HA <= enlarge(I_PHA,1+1e-10));
 res_2 = (I_PHA <= enlarge(I_HA,1+1e-10));
 
 % final result
-res = res_1*res_2;
+res = res_1 && res_2;
     
 %------------- END OF CODE --------------

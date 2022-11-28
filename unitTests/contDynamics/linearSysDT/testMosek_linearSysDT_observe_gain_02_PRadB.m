@@ -22,10 +22,7 @@ function res = testMosek_linearSysDT_observe_gain_02_PRadB()
 %        multi-output uncertain systems. In Proc. of the IEEE
 %        International Symposium on Intelligent Control (ISIC),
 %        pages 212–217, 2013.
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      01-March-2021
 % Last update:  ---
@@ -34,7 +31,7 @@ function res = testMosek_linearSysDT_observe_gain_02_PRadB()
 %------------- BEGIN CODE --------------
 
 % enable access to private function "observe_gain_PRadB"
-path = coraroot();
+path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSysDT','private','observe_gain_PRadB.m');
 target = fullfile(path,'contDynamics','@linearSysDT','observe_gain_PRadB.m');
 copyfile(source,target);

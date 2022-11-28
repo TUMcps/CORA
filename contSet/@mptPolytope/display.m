@@ -1,11 +1,12 @@
-function display(obj)
-% display - Displays the C matrix and d vector of a mptPolytope
+function display(P)
+% display - Displays the properties of a mptPolytope object (constraint
+%    matrix and offset vector) on the command window
 %
 % Syntax:  
-%    display(obj)
+%    display(P)
 %
 % Inputs:
-%    obj - pplPolytope object
+%    P - mptPolytope object
 %
 % Outputs:
 %    ---
@@ -30,8 +31,8 @@ fprintf(newline);
 disp(inputname(1) + " =");
 fprintf(newline);
 
-%display mpt polytope
-display(obj.P); 
+% display polytope
+display(P.P); 
 fprintf(newline);
 
 %------------- END OF CODE --------------

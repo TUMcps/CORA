@@ -58,13 +58,14 @@ function [Rnext,options] = initReach(obj,Rinit,options)
         
         % check if initial set has to be split
         if isempty(dimForSplit)
+            % no splitting
             Rtp{setCounter} = Rtemp_tp;
             Rtp{setCounter}.prev = i;
             Rti{setCounter} = Rtemp_ti;
             R0{setCounter} = Rinit{i};
             setCounter = setCounter + 1;
         else
-            disp(['split! ...number of parallel sets: ',num2str(length(Rinit)+1)]);
+            % splitting
 
             % split the initial set 
             Rtmp = split(Rinit{i}.set,dimForSplit);

@@ -10,7 +10,7 @@ function completed = example_nonlinear_reach_02_vanDerPol_polyZonotope()
 %    completed = example_nonlinear_reach_02_vanDerPol_polyZonotope()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    completed - boolean 
@@ -89,26 +89,25 @@ disp(['computation time (polynomial zonotope): ',num2str(tComp)]);
 
 % Visualization -----------------------------------------------------------
     
-figure; hold on;
+figure; hold on; box on;
 
 % plot reachable set (zonotope)
-handleLin = plot(R,[1,2],'FaceColor',[0 0.4 1],'EdgeColor','none');
+handleLin = plot(R,[1,2],'FaceColor',[0 0.4 1]);
 
 % plot reachable set (polynomial zonotope)
-handlePoly = plot(Rpoly,[1,2],'FaceColor',[0 0.8 0],'EdgeColor','none','Splits',2);
+handlePoly = plot(Rpoly,[1,2],'FaceColor',[0 0.8 0],'Splits',2);
 
 % plot initial set
-plot(R0,[1,2],'w','Filled',true,'EdgeColor','k');
+plot(R0,[1,2],'k','FaceColor','w');
 
 % label plot
 xlabel('x_1');
 ylabel('x_2');
 
 legend([handleLin,handlePoly],'zonotope','sparse polynomial zonotope');
-box on
 
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

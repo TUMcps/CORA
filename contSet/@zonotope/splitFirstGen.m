@@ -3,7 +3,7 @@ function Znew = splitFirstGen(Z)
 %    vector field
 %
 % Syntax:  
-%    Znew = firstSplitGen(Z)
+%    Znew = splitFirstGen(Z)
 %
 % Inputs:
 %    Z - cell array of zonotope objects

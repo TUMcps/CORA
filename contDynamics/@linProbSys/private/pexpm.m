@@ -1,19 +1,19 @@
-function [obj] = pexpm(obj,options)
-% expm - computes the overapproximation of the exponential of a system 
-% matrix up to a certain accuracy
+function obj = pexpm(obj,options)
+% pexpm - computes the overapproximation of the exponential of a system 
+%    matrix up to a certain accuracy
 %
 % Syntax:  
-%    [obj] = expm(obj)
+%    obj = pexpm(obj,options)
 %
 % Inputs:
-%    obj - linearSys object
+%    obj - linProbSys object
 %    options - reachability options
 %
 % Outputs:
-%    obj - linearSys object
+%    obj - linProbSys object
 %
 % Example: 
-%    Text for example...
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,8 +32,7 @@ function [obj] = pexpm(obj,options)
 A=obj.A;
 taylorTerms=options.taylorTerms;
 r=options.timeStep;
-dim=dimension(obj);
-
+n=obj.dim;
 
 %initialize 
 Apower{1}=A;  
@@ -47,7 +46,7 @@ end
 alpha=norm(A,inf);
 epsilon=alpha*r/(taylorTerms+2);
 phi=(alpha*r)^(taylorTerms+1)/factorial(taylorTerms+1)/(1-epsilon);  
-E=interval(-ones(dim),ones(dim))*phi;
+E=interval(-ones(n),ones(n))*phi;
     
 %write to object structure
 obj.taylor.eAt=expm(A*r);

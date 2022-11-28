@@ -36,13 +36,6 @@ normI_2 = norm(I,2);
 normI_Inf = norm(I,Inf);
 
 % check with correct result
-res = normI_1 == 7 && normI_2 == 5 && normI_Inf == 4;
-
-
-if res
-    disp('test_norm successful');
-else
-    disp('test_norm failed');
-end
+res = normI_1 == 7 && normI_2 == 5 && normI_Inf == 4 && norm(interval()) == -Inf;
 
 %------------- END OF CODE --------------

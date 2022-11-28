@@ -20,10 +20,7 @@ function res = testSDPT3_linearSysDT_observe_gain_01_PRadA()
 %    [1] V. T. H. Le, C. Stoica, T. Alamo, E. F. Camacho, and
 %        D. Dumur. Zonotopic guaranteed state estimation for
 %        uncertain systems. Automatica, 49(11):3418–3424, 2013.
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      18-September-2020
 % Last update:  ---
@@ -32,7 +29,7 @@ function res = testSDPT3_linearSysDT_observe_gain_01_PRadA()
 %------------- BEGIN CODE --------------
 
 % enable access to private function "observe_gain_PRadA"
-path = coraroot();
+path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSysDT','private','observe_gain_PRadA.m');
 target = fullfile(path,'contDynamics','@linearSysDT','observe_gain_PRadA.m');
 copyfile(source,target);

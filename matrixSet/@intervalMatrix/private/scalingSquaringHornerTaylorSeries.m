@@ -1,15 +1,16 @@
 function scaling = scalingSquaringHornerTaylorSeries(intMat,maxOrder,potentiation)
-% returns the approximation of e^intMat using different algorithms 
-%    with maxOrder iterations. It is used as an fassade to access the
-%    algorithms in the private directory
+% scalingSquaringHornerTaylorSeries - returns the approximation of e^intMat
+%    using different algorithms  with maxOrder iterations. It is used as a
+%    wrapper to access the algorithms in the private directory
 %
 % Syntax:  
 %    scaling = scalingSquaringHornerTaylorSeries(intMat,maxOrder,potentiation)
 %
 % Inputs:
-%    intMat - intervalMatrix (nxn)
-%    maxOrder - maximum order of the TaylorSeries, has to be > abs(intMat) +2
-%    potentiation - #nodef
+%    intMat - intervalMatrix object (nxn)
+%    maxOrder - maximum order of the TaylorSeries, has to be greater than
+%               abs(intMat) +2
+%    potentiation - ???
 %
 % Outputs:
 %    scaling - the exponentiation with the chosen algorithm
@@ -36,3 +37,4 @@ else
     scaling = mpower(hornerTaylorSeries(mtimes(intMat,potential^-1),maxOrder), potential);
 end
 
+%------------- END OF CODE --------------

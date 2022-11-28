@@ -1,6 +1,27 @@
 function uTransVec = uTRansVec4CASreach()
-% updated: 05-August-2013, MA
+% uTRansVec4CASreach - ???
+%
+% Syntax:
+%    uTransVec = uTRansVec4CASreach()
+%
+% Inputs:
+%    -
+%
+% Outputs:
+%    r - whether all files are valid
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
 
+% Author:        Matthias Althoff
+% Written:       05-August-2013
+% Last update:   ---
+% Last revision: ---
+
+%------------- BEGIN CODE --------------
 
 %load data
 load('linearized_controller_09_double_lane_change_jy(0)=0,jy(1)=0.mat');
@@ -39,6 +60,8 @@ for i = 1:length(R)
     uTransVec(25,i) = W{i}(1);
     uTransVec(26,i) = W{i}(2);
 end
+
+%------------- END OF CODE --------------
 
 
 

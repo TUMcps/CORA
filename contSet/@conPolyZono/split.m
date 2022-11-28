@@ -1,9 +1,5 @@
-function res = split(obj,varargin)
+function res = split(cPZ,varargin)
 % split - splits a constrained polynomial zonotope along one dimension
-%
-% Syntax:  
-%    res = split(obj)
-%    res = split(obj, splitDim)
 %
 % Description:
 %    If only one input is provided, all possible splits are calculated
@@ -11,12 +7,16 @@ function res = split(obj,varargin)
 %    second input argument, then the split at this specific dimension is
 %    calculated.
 %
+% Syntax:  
+%    res = split(cPZ)
+%    res = split(cPZ, splitDim)
+%
 % Inputs:
-%    obj - conPolyZono object
+%    cPZ - conPolyZono object
 %    splitDim - dimension of the dimension that is splitted
 %
 % Outputs:
-%    res- cell-array of containing the splitted objects
+%    res - cell-array containing the splitted objects
 %
 % Example: 
 %    c = [0;0];
@@ -30,8 +30,8 @@ function res = split(obj,varargin)
 %    res = split(cPZ,1);
 %
 %    figure; hold on;
-%    plot(res{1},[1,2],'b','Filled',true,'Splits',20);
-%    plot(res{2},[1,2],'g','Filled',true,'Splits',20);
+%    plot(res{1},[1,2],'FaceColor','b','Splits',20);
+%    plot(res{2},[1,2],'FaceColor','g','Splits',20);
 %    plot(cPZ,[1,2],'r','Splits',15,'LineWidth',2);
 %
 % Other m-files required: none
@@ -48,7 +48,7 @@ function res = split(obj,varargin)
 %------------- BEGIN CODE --------------
 
 % calculate an interval that encloses the constrained polynomial zonotope
-int = interval(obj);
+int = interval(cPZ);
 
 % Case 1: calculate all possible splits
 if nargin == 1
@@ -57,14 +57,14 @@ if nargin == 1
     res = cell(n,1);    
     
     for splitDim = 1:n
-        res{splitDim} = splitOneDim(obj,int,splitDim); 
+        res{splitDim} = splitOneDim(cPZ,int,splitDim); 
     end
     
 % Case 2: split at the specified dimension
 elseif nargin == 2
     
     splitDim = varargin{1};
-    res = splitOneDim(obj,int,splitDim);
+    res = splitOneDim(cPZ,int,splitDim);
     
 end
 

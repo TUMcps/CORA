@@ -39,14 +39,21 @@ add2params('tFinal','mandatory',{@isscalar,@(val)ge(val,params.tStart)},{'isscal
 add2params('u','default',{@isnumeric},{'isnumeric',''});
 
 % append entries to list of algorithm parameters
+add2options('alg','default',{@ischar,@(val)any(ismember(getMembers('alg4DT'),val))},{'ischar','memberalg4DT'});
 add2options('verbose','default',{@isscalar,@islogical},{'isscalar','islogical'});
-add2options('zonotopeOrder','mandatory',{@isscalar,@(val)ge(val,1)},{'isscalar','geone'});
+add2options('zonotopeOrder','mandatory',{@isscalar,@(val)ge(val,1)},{'isscalar','geone'},...
+    {@()~contains(options.alg,'adaptive')});
 add2options('reductionTechnique','default',...
     {@ischar,@(val)any(ismember(getMembers('reductionTechnique'),val))},...
     {'ischar','memberreductionTechnique'});
 add2options('tensorOrder','mandatory',...
-    {@isscalar,@(val)mod(val,1)==0,@(val)any(val==[2,3])},{'isscalar','integer','2or3'});
-add2options('errorOrder','mandatory',{@isscalar,@(val)ge(val,1)},{'isscalar','geone'});
+    {@isscalar,@(val)mod(val,1)==0,@(val)any(val==[2,3])},{'isscalar','integer','2or3'},...
+    {@()~contains(options.alg,'adaptive')});
+add2options('errorOrder','mandatory',{@isscalar,@(val)ge(val,1)},{'isscalar','geone'},...
+    {@()~contains(options.alg,'adaptive')});
+add2options('tensorOrderOutput','default',...
+    {@isscalar,@(val)mod(val,1)==0,@(val)any(val==[2,3])},...
+    {'isscalar','integer','2or3'});
 
 % polyZono
 add2options('polyZono.maxDepGenOrder','default',{@isscalar,@isnumeric,@(val)ge(val,1)},...
@@ -94,4 +101,3 @@ add2options('lagrangeRem.eps','optional',{@isscalar,@isnumeric,@(val)ge(val,0)},
 end
 
 %------------- END OF CODE --------------
-

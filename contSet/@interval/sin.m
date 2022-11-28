@@ -1,4 +1,4 @@
-function res = sin(intVal)
+function res = sin(I)
 % sin - Overloaded 'sin()' operator for intervals
 %
 % inf is x infimum, sup is x supremum
@@ -17,15 +17,17 @@ function res = sin(intVal)
 % [sin(inf), sin(sup)]          if (sup - inf) < 2*pi and inf > 3/2*pi and inf <= 2*pi and sup > 3/2*pi and sup >= inf.
 %
 % Syntax:  
-%    res = sin(intVal)
+%    res = sin(I)
 %
 % Inputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Outputs:
 %    res - interval object
 %
 % Example: 
+%    I = interval([-2;-1],[3;4]);
+%    sin(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -45,18 +47,18 @@ function res = sin(intVal)
 %------------- BEGIN CODE --------------
 
 % scalar case
-if isnumeric(intVal)
+if isnumeric(I)
     
     res = interval();
 
     %sup - inf >= 2pi
-    if intVal.sup - intVal.inf >= 2*pi
+    if I.sup - I.inf >= 2*pi
         res.inf = -1;
         res.sup = 1;
     else
         %remove multiples of 2*pi
-        inf = mod(intVal.inf, 2*pi);
-        sup = mod(intVal.sup, 2*pi);
+        inf = mod(I.inf, 2*pi);
+        sup = mod(I.sup, 2*pi);
 
         %inf in [0, pi/2]
         if inf <= pi/2
@@ -111,68 +113,68 @@ if isnumeric(intVal)
 else
 
     % to preserve the shape    
-    res = intVal;
+    res = I;
     
     % find indices
-    ind1 = find((intVal.sup - intVal.inf) >= 2*pi);   
+    ind1 = find((I.sup - I.inf) >= 2*pi);   
     res.inf(ind1) = -1;
     res.sup(ind1) = 1;
     
     %remove multiples of 2*pi
-    inf = mod(intVal.inf, 2*pi);
-    sup = mod(intVal.sup, 2*pi);
+    inf = mod(I.inf, 2*pi);
+    sup = mod(I.sup, 2*pi);
     
     % inf in [0, pi/2]
     
-    ind2 = find(((intVal.sup - intVal.inf) < 2*pi) & inf <= pi/2 & sup < inf);    
+    ind2 = find(((I.sup - I.inf) < 2*pi) & inf <= pi/2 & sup < inf);    
     res.inf(ind2) = -1;
     res.sup(ind2) = 1;
     
-    ind3 = find(((intVal.sup - intVal.inf) < 2*pi) & inf <= pi/2 & sup <= pi/2 & sup >= inf);    
+    ind3 = find(((I.sup - I.inf) < 2*pi) & inf <= pi/2 & sup <= pi/2 & sup >= inf);    
     res.inf(ind3) = sin(inf(ind3));
     res.sup(ind3) = sin(sup(ind3));
     
-    ind4 = find(((intVal.sup - intVal.inf) < 2*pi) & inf <= pi/2 & sup > pi/2 & sup <= 3/2*pi);
+    ind4 = find(((I.sup - I.inf) < 2*pi) & inf <= pi/2 & sup > pi/2 & sup <= 3/2*pi);
     res.inf(ind4) = min(sin(inf(ind4)), sin(sup(ind4)));
     res.sup(ind4) = 1;
     
-    ind5 = find(((intVal.sup - intVal.inf) < 2*pi) & inf <= pi/2 & sup > 3/2*pi);
+    ind5 = find(((I.sup - I.inf) < 2*pi) & inf <= pi/2 & sup > 3/2*pi);
     res.inf(ind5) = -1;
     res.sup(ind5) = 1;
     
     % inf in [pi/2, 3/2*pi]
     
-    ind6 = find(((intVal.sup - intVal.inf) < 2*pi) & inf > pi/2 & inf <= 3/2*pi & sup > pi/2 & sup < inf);    
+    ind6 = find(((I.sup - I.inf) < 2*pi) & inf > pi/2 & inf <= 3/2*pi & sup > pi/2 & sup < inf);    
     res.inf(ind6) = -1;
     res.sup(ind6) = 1;
     
-    ind7 = find(((intVal.sup - intVal.inf) < 2*pi) & inf > pi/2 & inf <= 3/2*pi & sup <= pi/2 );
+    ind7 = find(((I.sup - I.inf) < 2*pi) & inf > pi/2 & inf <= 3/2*pi & sup <= pi/2 );
     res.inf(ind7) = -1;
     res.sup(ind7) = max(sin(inf(ind7)), sin(sup(ind7)));
     
-    ind8 = find(((intVal.sup - intVal.inf) < 2*pi) & inf > pi/2 & inf <= 3/2*pi & sup > pi/2 & sup <= 3/2*pi & sup >= inf);    
+    ind8 = find(((I.sup - I.inf) < 2*pi) & inf > pi/2 & inf <= 3/2*pi & sup > pi/2 & sup <= 3/2*pi & sup >= inf);    
     res.inf(ind8) = sin(sup(ind8));
     res.sup(ind8) = sin(inf(ind8));
     
-    ind9 = find(((intVal.sup - intVal.inf) < 2*pi) & inf > pi/2 & inf <= 3/2*pi & sup > 3/2*pi & sup >= inf);    
+    ind9 = find(((I.sup - I.inf) < 2*pi) & inf > pi/2 & inf <= 3/2*pi & sup > 3/2*pi & sup >= inf);    
     res.inf(ind9) = -1;
     res.sup(ind9) = max(sin(inf(ind9)), sin(sup(ind9)));
     
     % inf in [3/2*pi, 2*pi]
     
-    ind10 = find(((intVal.sup - intVal.inf) < 2*pi) & inf > 3/2*pi & inf <= 2*pi & sup > 3/2*pi & sup < inf);    
+    ind10 = find(((I.sup - I.inf) < 2*pi) & inf > 3/2*pi & inf <= 2*pi & sup > 3/2*pi & sup < inf);    
     res.inf(ind10) = -1;
     res.sup(ind10) = 1;
     
-    ind11 = find(((intVal.sup - intVal.inf) < 2*pi) & inf > 3/2*pi & inf <= 2*pi & sup <= pi/2);    
+    ind11 = find(((I.sup - I.inf) < 2*pi) & inf > 3/2*pi & inf <= 2*pi & sup <= pi/2);    
     res.inf(ind11) = sin(inf(ind11));
     res.sup(ind11) = sin(sup(ind11));
     
-    ind12 = find(((intVal.sup - intVal.inf) < 2*pi) & inf > 3/2*pi & inf <= 2*pi & sup > pi/2 & sup <= 3/2*pi );
+    ind12 = find(((I.sup - I.inf) < 2*pi) & inf > 3/2*pi & inf <= 2*pi & sup > pi/2 & sup <= 3/2*pi );
     res.inf(ind12) = min(sin(inf(ind12)), sin(sup(ind12)));
     res.sup(ind12) = 1;
     
-    ind13 = find(((intVal.sup - intVal.inf) < 2*pi) & inf > 3/2*pi & inf <= 2*pi & sup > 3/2*pi & sup >= inf);    
+    ind13 = find(((I.sup - I.inf) < 2*pi) & inf > 3/2*pi & inf <= 2*pi & sup > 3/2*pi & sup >= inf);    
     res.inf(ind13) = sin(inf(ind13));
     res.sup(ind13) = sin(sup(ind13));
        

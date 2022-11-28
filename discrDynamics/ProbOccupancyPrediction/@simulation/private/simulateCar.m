@@ -31,10 +31,10 @@ function [pA,pTotal]=simulateCar(runs,T,Omega,pA0,pB,Tx,pX,RoW,led,qFree,xSegmen
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 16-November-2007 
-% Last update: 13-March-2007
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      16-November-2007 
+% Last update:  13-March-2007
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

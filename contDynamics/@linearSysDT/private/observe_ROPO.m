@@ -1,11 +1,10 @@
 function [R,tcomp] = observe_ROPO(obj,options)
-% observe_ROPOe - computes the guaranted state estimation approach
-% according to the set membership approach, see [1]. This is a strip
-% method.
-%
+% observe_ROPO - computes the guaranteed state estimation approach
+%    according to the set membership approach, see [1]. This is a strip
+%    method.
 %
 % Syntax:
-%    [R,tcomp] = observe_ROPOe(obj,options)
+%    [R,tcomp] = observe_ROPO(obj,options)
 %
 % Inputs:
 %    obj - discrete-time linear system object
@@ -21,6 +20,7 @@ function [R,tcomp] = observe_ROPO(obj,options)
 %        uncertainty. IEEE Transactions on Automatic Control, 41(6), 774-785.
 %
 % Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -33,7 +33,6 @@ function [R,tcomp] = observe_ROPO(obj,options)
 % Last update:   09-Mar-2021
 % Last revision: ---
 
-
 %------------- BEGIN CODE --------------
 tic
 %time period
@@ -44,6 +43,7 @@ R = cell(length(tVec),1);
 
 % width of strips
 options.sigma = supremum(abs(interval(options.V)));
+
 
 % Intersection
 y = options.y(:,1);
@@ -56,11 +56,7 @@ for k = 1:length(tVec)-1
     % Update uncertain input
     Uadd = obj.B*options.uTransVec(:,k) + options.W;
     % Prediction
-    if isempty(obj.c)
-        Rnext = obj.A*Rnext+Uadd;
-    else
-        Rnext = obj.A*Rnext+Uadd+obj.c;
-    end
+    Rnext = obj.A*Rnext+Uadd+obj.c;
     % Reduction to parallelotope
     Rnext=reduce(Rnext,options.reductionTechnique,1);
     % Strips Contruction
@@ -160,3 +156,5 @@ function [T, thetac,p0,c0]=Parallelotope(t,thetac,c0,p0)
         end
     end
 end
+
+%------------- END OF CODE -------------

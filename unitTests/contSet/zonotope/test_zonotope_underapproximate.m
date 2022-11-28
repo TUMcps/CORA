@@ -50,11 +50,4 @@ res_1 = all(all(V_1 == true_V_1));
 res_2 = all(all(V_2 == true_V_2));
 res = res_1 & res_2;
 
-
-if res
-    disp('test_zonotope_underapproximate successful');
-else
-    disp('test_zonotope_underapproximate failed');
-end
-
 %------------- END OF CODE --------------

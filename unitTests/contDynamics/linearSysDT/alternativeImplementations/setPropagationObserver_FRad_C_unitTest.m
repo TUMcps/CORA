@@ -1,10 +1,10 @@
 function estSet = setPropagationObserver_FRad_C_unitTest(obj,params,options)
-% setPropagationObserver - computes the guaranted state 
+% setPropagationObserver_FRad_C_unitTest - computes the guaranteed state 
 % estimation approach according to the intersection-free approach
 % when the gain changes in each iteration, see [1].
 %
 % Syntax:  
-%    estSet = setPropagationObserver(obj,params,options)
+%    estSet = setPropagationObserver_FRad_C_unitTest(obj,params,options)
 %
 % Inputs:
 %    obj - linear discrete-time system object
@@ -18,6 +18,11 @@ function estSet = setPropagationObserver_FRad_C_unitTest(obj,params,options)
 %    [1] C. Combastel. Zonotopes and Kalman observers:
 %        Gain optimality under distinct uncertainty paradigms and
 %        robust convergence. Automatica, 55:265-273, 2015.
+
+% Author:        ???
+% Written:       ???
+% Last update:   ---
+% Last revision: ---
 
 %------------- BEGIN CODE --------------
 
@@ -59,15 +64,13 @@ end
 
 %% create object of class reachSet
 % store sets
-timeInt.set = S;
+timePoint.set = S;
 
-% store time intervals
-timeInt.time = cell(length(S),1);
-for i = 1:length(S)
-    timeInt.time{i} = interval(tVec(i),tVec(i) + options.timeStep);
-end
+% store time point solutions
+timePoint.time = cell(length(S),1);
+timePoint.time = num2cell(tVec');
 
 % construct object of class reachSet
-estSet = reachSet([], timeInt);
+estSet = reachSet(timePoint);
 
 %------------- END OF CODE --------------

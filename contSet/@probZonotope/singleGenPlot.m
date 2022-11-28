@@ -1,9 +1,9 @@
 function singleGenPlot(probZ,varargin)
-% plot - Plots 2-dimensional projection of a probabilistic zonotope
-%    with a maximum of 5 generators
+% singleGenPlot - Plots 2-dimensional projection of a probabilistic
+%    zonotope with a maximum of 5 generators
 %
 % Syntax:  
-%    plot(probZ,dimensions)
+%    singleGenPlot(probZ,dimensions)
 %
 % Inputs:
 %    probZ - probabilistic zonotope object
@@ -33,29 +33,20 @@ function singleGenPlot(probZ,varargin)
 
 %------------- BEGIN CODE --------------
 
-%If only one argument is passed
-if nargin==1
-    type='solid';
-    m=probZ.gamma;
-    
-%If two arguments are passed    
-elseif nargin==2
-    type=varargin{1}; 
-    m=probZ.gamma;
-    
-%If three arguments are passed    
-elseif nargin==3
-    type=varargin{1}; 
-    m=varargin{2};     
-    
-%If too many arguments are passed
+if nargin <= 3
+    % parse input arguments
+    [type,m] = setDefaultValues({'solid',probZ.gamma},varargin{:});
+
+    % check input arguments
+    inputArgsCheck({{probZ,'att','probZonotope'};
+                    {type,'str',{'solid','mesh'}};
+                    {m,'att','numeric','nonnan'}});  
 else
-    disp('Error: too many inputs');
-    type=varargin{2};    
+    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
 %dimension of the single generator
-d=dim(probZ);
+n = dim(probZ);
 
 %init number of plotted points
 nrOfPoints=1e3;
@@ -63,7 +54,7 @@ nrOfPoints=1e3;
 %get center
 c = center(probZ);
 
-if d==1
+if n==1
     %compute Sigma
     Sigma=sigma(probZ);    
     
@@ -129,9 +120,5 @@ else
     end
     norm(probZ.g)*(l(2)-l(1))*sum(f)
 end
-
-
-    
-    
 
 %------------- END OF CODE --------------

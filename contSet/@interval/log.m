@@ -1,4 +1,4 @@
-function res = log(intVal)
+function I = log(I)
 % sqrt - Overloaded log (natural logorithm) function for intervals 
 %
 % x_ is x infimum, x-- is x supremum
@@ -8,15 +8,17 @@ function res = log(intVal)
 % [log(x_), log(x--)] if (x_ >= 0).
 %
 % Syntax:  
-%    res = sqrt(intVal)
+%    I = log(I)
 %
 % Inputs:
-%    intVal - argument of which square root should be obtained
+%    I - interval object
 %
 % Outputs:
-%    res - interval
+%    I - interval object
 %
 % Example: 
+%    I = interval([3;9]);
+%    res = log(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,49 +30,48 @@ function res = log(intVal)
 % Written:      07-February-2016
 % Last update:  21-February-2016 (DG, the matrix case is rewritten)
 %               05-May-2020 (MW, addition of error message)
+%               21-May-2022 (MW, remove new instantiation)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % scalar case
-if isnumeric(intVal)
+if isnumeric(I)
     
-    res = interval();
-
-    if intVal.inf >= 0 
-        res.inf = log(intVal.inf);
-        res.sup = log(intVal.sup);
-    elseif intVal.inf < 0 &&  intVal.sup >= 0
-        res.inf = NaN;
-        res.sup = log(intVal.sup);
+    if I.inf >= 0 
+        I.inf = log(I.inf);
+        I.sup = log(I.sup);
+    elseif I.inf < 0 &&  I.sup >= 0
+        I.inf = NaN;
+        I.sup = log(I.sup);
     else
-        res.inf = NaN;
-        res.sup = NaN;
+        I.inf = NaN;
+        I.sup = NaN;
     end
 
 else
 
-    % to preserve the shape    
-    res = intVal;
+    lb = I.inf;
+    ub = I.sup;
     
     % find indices
-    ind1 = find(intVal.inf >= 0);   
-    res.inf(ind1) = log(intVal.inf(ind1));
-    res.sup(ind1) = log(intVal.sup(ind1));
+    ind1 = find(lb >= 0);   
+    I.inf(ind1) = log(lb(ind1));
+    I.sup(ind1) = log(ub(ind1));
     
-    ind2 = find(intVal.inf < 0 & intVal.sup >= 0);    
-    res.inf(ind2) = NaN;
-    res.sup(ind2) = log(intVal.sup(ind2));
+    ind2 = find(lb < 0 & ub >= 0);    
+    I.inf(ind2) = NaN;
+    I.sup(ind2) = log(ub(ind2));
     
-    ind3 = find(intVal.sup < 0);    
-    res.inf(ind3) = NaN;
-    res.sup(ind3) = NaN;
+    ind3 = find(ub < 0);    
+    I.inf(ind3) = NaN;
+    I.sup(ind3) = NaN;
        
 end
 
 % return error if NaN occures
-if any(any(isnan(res.inf))) || any(any(isnan(res.sup)))
-	error(resIntNaNInf()); 
+if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))
+    throw(CORAerror('CORA:outOfDomain','validDomain','>= 0'));
 end
 
 %------------- END OF CODE --------------

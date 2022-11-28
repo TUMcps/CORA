@@ -26,23 +26,23 @@ function res = subsref(obj, S)
 
 %------------- BEGIN CODE --------------
 
-    res = obj;
+res = obj;
+
+% loop over all combined calls to subsref
+for j = 1:length(S)
     
-    % loop over all combined calls to subsref
-    for j = 1:length(S)
+    % override subsref for type obj(i,j)
+    if strcmp(S(j).type,'()')
         
-        % override subsref for type obj(i,j)
-        if strcmp(S(j).type,'()')
-            
-            % loop over all objects stored in the zoo
-            for i = 1:length(res.method)
-                res.objects{i} = subsref(res.objects{i}, S(j));
-            end
-            
-        % for all other types, call the build in function
-        else
-            res = builtin('subsref', res, S(j));
+        % loop over all objects stored in the zoo
+        for i = 1:length(res.method)
+            res.objects{i} = subsref(res.objects{i}, S(j));
         end
+        
+    % for all other types, call the build in function
+    else
+        res = builtin('subsref', res, S(j));
     end
 end
+
 %------------- END OF CODE --------------

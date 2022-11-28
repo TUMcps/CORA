@@ -1,18 +1,16 @@
 function completed = example_nonlinearParam_reach_03_tank_linearRemainder()
 % example_nonlinearParam_reach_03_tank_linearRemainder - example of
-%     nonlinear reachability analysis with uncertain parameters.
-%
-% This example can be found in [1, Sec. 3.4.5] or in [2].
-% 
+%     nonlinear reachability analysis with uncertain parameters, taken from
+%     [1, Sec. 3.4.5] or in [2].
 %
 % Syntax:  
-%    example_nonlinearParam_reach_03_tank_linearRemainder
+%    completed = example_nonlinearParam_reach_03_tank_linearRemainder
 %
 % Inputs:
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    completed - true/false 
 %
 % Example: 
 %
@@ -22,7 +20,7 @@ function completed = example_nonlinearParam_reach_03_tank_linearRemainder()
 %    [2] M. Althoff, O. Stursberg, and M. Buss. Reachability analysis
 %        of nonlinear systems with uncertain parameters using
 %        conservative linearization. CDC 2008
-% 
+
 % Author:       Victor Gassmann
 % Written:      23-May-2019
 % Last update:  23-April-2020 (restructure params/options)
@@ -38,6 +36,7 @@ params.R0=zonotope([[2; 4; 4; 2; 10; 4],1*eye(dim_x)]);
 params.U=zonotope([0,0.005]); %input for reachability analysis
 params.tFinal=20; %final time
 params.paramInt=interval(0.015,0.015); %parameter intervals for reachability analysis
+
 
 % Reachability Settings ---------------------------------------------------
 
@@ -74,9 +73,6 @@ disp(['computation time of reachable set with remainder added to system matrix: 
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 60;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
 params = rmfield(params,'paramInt');
 
 simRes = simulateRandom(tank, params, simOpt);
@@ -98,16 +94,16 @@ for plotRun=1:3
     figure; hold on; box on;
     
     % reachable set: normal lagrange remainder
-    plot(R_wo_linear,projectedDims,'b','Order',plotOrder,'EdgeColor','none');
+    plot(R_wo_linear,projectedDims,'Order',plotOrder);
     
     % reachable set: lagrange remainder added to system matrices (A,B)
-    plot(R_param,projectedDims,'r','Order',plotOrder,'EdgeColor','none');
+    plot(R_param,projectedDims,'FaceColor',colorblind('gray'),'Order',plotOrder);
     
     %plot initial set
-    plot(params.R0,projectedDims,'w','Filled',true,'EdgeColor','k');
+    plot(params.R0,projectedDims,'k','FaceColor','w');
   
     %plot simulation results      
-    plot(simRes,projectedDims,'k');
+    plot(simRes,projectedDims);
 
     %label plot
     xlabel(['x_{',num2str(projectedDims(1)),'}']);
@@ -116,6 +112,6 @@ end
 
 
 %example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

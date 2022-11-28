@@ -35,7 +35,7 @@ function ThetaC = interaction(fileName,pathName,modelInitialization)
 
 %set path
 global filePath
-filePath = [coraroot '/contDynamics/stateSpaceModels'];
+filePath = [CORAROOT '/contDynamics/stateSpaceModels'];
 
 %load fArray to determine segment length of road 
 cd(pathName);

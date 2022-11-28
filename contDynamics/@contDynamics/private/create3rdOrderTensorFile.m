@@ -1,6 +1,6 @@
 function create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,infsupFlag,options)
 % create3rdOrderTensorFile - generates an mFile that allows to compute the
-%    3rd-order terms 
+%    third-order terms 
 %
 % Syntax:  
 %    create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,infsupFlag,options)
@@ -9,7 +9,7 @@ function create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,infsupFlag,options)
 %    J3dyn - symbolic third-order tensor
 %    J3con - symbolic third-order tensor (constraints)
 %    path - path for saving the file
-%    name - name of the nonlinear function to which the 3rd order tensor belongs
+%    name - function name for the third-order tensor file
 %    vars - structure containing the symbolic variables
 %    infsupFlag - true if interval arithmetic, otherwise false
 %    options - structure containing the algorithm options
@@ -17,7 +17,8 @@ function create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,infsupFlag,options)
 % Outputs:
 %    -
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,18 +39,18 @@ function create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,infsupFlag,options)
 %------------- BEGIN CODE --------------
 
 % read out options
-taylMod = 0;
-replace = 0;
-parallel = 0;
-opt = 0;
+taylMod = false;
+replace = false;
+parallel = false;
+opt = false;
 
 if isfield(options,'lagrangeRem')
     temp = options.lagrangeRem;
     if isfield(temp,'method') && ~strcmp(temp.method,'interval')
-        taylMod = 1;
+        taylMod = true;
     end
     if isfield(temp,'replacements')
-        replace = 1;
+        replace = true;
         if ~isempty(vars.p)
             rep = temp.replacements(vars.x,vars.u,vars.p);
         else
@@ -57,10 +58,10 @@ if isfield(options,'lagrangeRem')
         end
     end
     if isfield(temp,'tensorParallel') && temp.tensorParallel == 1
-        parallel = 1; 
+        parallel = true; 
     end
     if isfield(temp,'simplify') && strcmp(temp.simplify,'optimize')
-        opt = 1; 
+        opt = true; 
     end
 end
 
@@ -72,38 +73,33 @@ for k=1:length(J3dyn(:,1,1,1))
 end
 
 % rearrange constraint part
-for k=1:length(J3con(:,1,1,1))
-    for l=1:length(J3con(1,:,1,1))
-        Tcon{k,l} = squeeze(J3con(k,l,:,:));
+if ~isempty(J3con)
+    for k=1:length(J3con(:,1,1,1))
+        for l=1:length(J3con(1,:,1,1))
+            Tcon{k,l} = squeeze(J3con(k,l,:,:));
+        end
     end
-end
-
-% different filename depending on whether interval arithmetic is used
-if infsupFlag
-    thirdordername = 'thirdOrderTensorInt_';
 else
-    thirdordername = 'thirdOrderTensor_';
+    Tcon = [];
 end
 
 % create the file
-fid = fopen([path filesep thirdordername name '.m'],'w');
+fid = fopen([path filesep name '.m'],'w');
 
 % function arguments depending on occurring variable types
-if isempty(vars.y)      % no constraints
-   strHead = ['function [Tf,ind] = ' thirdordername name]; 
-else                    % constraints
-   strHead = ['function [Tf,Tg,ind] = ' thirdordername name];
-end
-
-strHead = [strHead,'(x,u'];
-symVars = 'vars.x,vars.u';
-
-if ~isempty(vars.p)     % parameter system
-    strHead = [strHead,',p)'];
-    symVars = [symVars,',vars.p'];
+if isempty(vars.y) || isempty(Tcon)
+    % no constraints
+    strHead = ['function [Tf,ind] = ' name]; 
 else
-    strHead = [strHead,')']; 
+    % constraints
+    strHead = ['function [Tf,Tg,ind] = ' name];
 end
+
+symVars = {'vars.x','vars.y','vars.u','vars.p'};
+symVars = strjoin(symVars([~isempty(vars.x) ~isempty(vars.y) ...
+    ~isempty(vars.u) ~isempty(vars.p)]),',');
+argsIn = ['(' strrep(symVars,'vars.','') ')'];
+strHead = [strHead argsIn];
 
 fprintf(fid, '%s\n\n',strHead);
 
@@ -230,9 +226,9 @@ for k=1:length(Tdyn(:,1))
                 
                 if ~isempty(ind{k,l})
                     writeSparseMatrixOptimized(ind{k,l},['Tf{',num2str(k),',',num2str(l),'}'],fid,taylMod);
-                    empty = 0;
+                    empty = false;
                 else
-                    empty = 1;
+                    empty = true;
                 end
             else
                 if taylMod
@@ -270,7 +266,7 @@ if parallel
 end
 
 % constraint part
-if ~isempty(vars.y)
+if ~isempty(Tcon)
     for k=1:length(Tcon(:,1))
         for l=1:length(Tcon(1,:))
             %get matrix size
@@ -288,7 +284,7 @@ if ~isempty(vars.y)
     end
 end
 
-% indizes of non-zero elements
+% indices of non-zero elements
 fprintf(fid,'\n ind = cell(%i,1);',length(indNonZero));
 
 for i = 1:length(indNonZero)

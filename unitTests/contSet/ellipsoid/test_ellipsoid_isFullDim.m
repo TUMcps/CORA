@@ -24,8 +24,13 @@ function res = test_ellipsoid_isFullDim
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-res = true;
+
 load cases.mat E_c
+
+% empty set
+res = ~isFullDim(ellipsoid());
+
+% loop over cases
 for i=1:length(E_c)
     E1 = E_c{i}.E1; % non-deg
     Ed1 = E_c{i}.Ed1; % deg
@@ -38,10 +43,4 @@ for i=1:length(E_c)
     end
 end
 
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

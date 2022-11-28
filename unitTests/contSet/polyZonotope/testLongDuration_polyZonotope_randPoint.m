@@ -25,19 +25,11 @@ function res = testLongDuration_polyZonotope_randPoint
 
 %------------- BEGIN CODE --------------
 
-res = true;
+% tolerance
 tol = 1e-9;
 
 % check empty zonotope object -> error
-pZ = polyZonotope();
-try 
-    p = randPoint(pZ); % <- should throw error here
-    res = false;
-catch ME
-    if ~strcmp(ME.identifier,'CORA:emptySet')
-        res = false;
-    end
-end
+res = isempty(randPoint(polyZonotope()));
 
 
 % number of tests
@@ -73,8 +65,8 @@ for i=1:nrOfTests
     
     % center, dependent, independent generators, and exponent matrix
     pZ = polyZonotope(c,G,Grest,expMat);
-    if any(abs(center(pZ) - c) > tol) || any(any(abs(pZ.Grest - Grest) > tol)) ...
-            || ~sameGexpMat(G,expMat,pZ.G,pZ.expMat,tol)
+    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.Grest,Grest,tol) ...
+            || ~compareMatrices([G;expMat],[pZ.G;pZ.expMat],tol)
         res_rand = false; break;
     end
     
@@ -99,12 +91,12 @@ for i=1:nrOfTests
     % check for containment in polyZonotope
     % NOTE: add this to the test once point in pZ is implemented
 %     for j=1:nrPtsStandard
-%         if ~in(pZ,pNormal(:,j))
+%         if ~contains(pZ,pNormal(:,j))
 %             res = false; break;
 %         end
 %     end
 %     for j=1:nrPtsExtreme
-%         if ~in(enlarge(pZ,1+tol),pExtreme(:,j))
+%         if ~contains(enlarge(pZ,1+tol),pExtreme(:,j))
 %             % enlarging Z is required, otherwise wrong result!
 %             res = false; break;
 %         end
@@ -115,52 +107,9 @@ for i=1:nrOfTests
 %     end
 end
 
-
-if res
-    disp('testLongDuration_polyZonotope_randPoint successful');
-else
-    disp('testLongDuration_polyZonotope_randPoint failed');
-end
-
-end
-
-
-% Auxiliary Function ------------------------------------------------------
-function same = sameGexpMat(G,expMat,G_new,expMat_new,tol)
-% assumption: no redundancies removal in expMat -> expMat_new
-
-if any(size(G) ~= size(G_new)) || any(size(expMat) ~= size(expMat_new))
-    same = false; return;
-end
-
-% quick check (same order as before)
-if ~(any(any(abs(G_new - G) > tol)) || any(any(abs(expMat_new - expMat) > tol)))
-    same = true; return;
-end
-
-% init output argument
-same = true;
-% go through generators and exponent columns one by one
-nrGens = size(G,2);
-for k=1:nrGens
-    % select first generator
-    gk = G(:,1);
-    
-    % search for gk in G_new
-    idx = find(all(abs(G_new - gk) < tol,1),1,'first');
-    % generator not found
-    if isempty(idx)
-        same = false; break;
-    end
-    
-    % check equality of expMat columns
-    if any(abs(expMat(:,1) - expMat_new(:,idx)) > tol)
-        same = false; break;
-    end
-    
-    % remove columns in Gs and expMats
-    G(:,1) = []; expMat(:,1) = [];
-    G_new(:,idx) = []; expMat_new(:,idx) = [];
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'pZ','Grest','c');
 end
 
 end

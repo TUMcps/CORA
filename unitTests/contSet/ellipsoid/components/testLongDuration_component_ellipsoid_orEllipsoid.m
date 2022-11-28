@@ -1,6 +1,6 @@
 function res = testLongDuration_component_ellipsoid_orEllipsoid
 % testLongDuration_component_ellipsoid_orEllipsoid - unit test function of 
-% orEllipsoidIA
+%    orEllipsoidIA
 %
 % Syntax:  
 %    res = testLongDuration_component_ellipsoid_orEllipsoid
@@ -32,26 +32,27 @@ for i=10:5:15
     for j=1:nRuns
         for k=1:2
             try
-                E1 = ellipsoid.generateRandom(i,false);
-                E2 = ellipsoid.generateRandom(i,false);
-                E3 = ellipsoid.generateRandom(i,bools(k)); 
+                E1 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',false);
+                E2 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',false);
+                E3 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k)); 
                 % compute outer approx (check overloaded syntax)
-                Eo1 = E1|E2;
+                Eo1 = E1 | E2;
                 % check regular syntax
-                Eo2 = or(E1,{E2,E3},'o');
-                % compute inner approx
-                Ei1 = or(E1,E2,'i');
-                Ei2 = or(E1,{E2,E3},'i');
-                % check if inner contained in outer
-                if ~in(Eo1,Ei1) || ~in(Eo2,Ei2)
-                    res = false;
-                    break;
-                end
+                Eo2 = or(E1,[E2,E3],'outer');
+                % inner not implemented
+%                 % compute inner approx
+%                 Ei1 = or(E1,E2,'inner');
+%                 Ei2 = or(E1,[E2,E3],'inner');
+%                 % check if inner contained in outer
+%                 if ~contains(Eo1,Ei1) || ~contains(Eo2,Ei2)
+%                     res = false;
+%                     break;
+%                 end
                 Y1 = randPoint(E1,i,'extreme');
                 Y2 = randPoint(E2,i,'extreme');
                 Y3 = randPoint(E3,i,'extreme');
-                if ~in(Eo1,Y1) || ~in(Eo1,Y2) || ~in(Eo2,Y1) ||...
-                   ~in(Eo2,Y2) || ~in(Eo2,Y3)
+                if ~all(contains(Eo1,Y1)) || ~all(contains(Eo1,Y2)) || ~all(contains(Eo2,Y1)) ||...
+                   ~all(contains(Eo2,Y2)) || ~all(contains(Eo2,Y3))
                     res = false;
                     break;
                 end
@@ -68,6 +69,8 @@ for i=10:5:15
         end
     end
     if ~res
+        path = pathFailedTests(mfilename());
+        save(path,'E1','E2','E3','Y1','Y2','Y3');
         break;
     end
 end

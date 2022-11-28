@@ -32,20 +32,18 @@ Int = interval(lower, upper);
 
 % project interval
 dimensions = [1;3;4];
-Int_project = project(Int,dimensions);
+I_proj1 = project(Int,dimensions);
+
+% logical indexing
+dimensions = [true false true true false];
+I_proj2 = project(Int,dimensions);
 
 % true solution
 lower = [-3; -4; -7];
 upper = [ 4;  6;  3];
-Int_true = interval(lower, upper);
+I_true = interval(lower, upper);
 
 % check if all points are in interval
-res = isequal(Int_project,Int_true);
-
-if res
-    disp('test_project successful');
-else
-    disp('test_project failed');
-end
+res = isequal(I_proj1,I_true) && isequal(I_proj2,I_true);
 
 %------------- END OF CODE --------------

@@ -31,6 +31,8 @@ tol = 1e-9;
 dims = 5:5:100;
 testsPerDim = 1000;
 
+res = true(length(dims),testsPerDim);
+
 % box has to be the same as conversion to interval
 for d=1:length(dims)
     for test=1:testsPerDim
@@ -61,19 +63,15 @@ for d=1:length(dims)
             res(d,test) = false;
             continue
         end
-        
-        % both checks ok
-        res(d,test) = true;
     end
 end
 
 % combine results
 res = all(all(res));
 
-if res
-    disp('testLongDuration_zonotope_plus successful');
-else
-    disp('testLongDuration_zonotope_plus failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'c1','c2','G1','G2');
 end
 
 %------------- END OF CODE --------------

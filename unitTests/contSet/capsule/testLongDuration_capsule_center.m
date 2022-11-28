@@ -43,10 +43,9 @@ for n=1:50
     end
 end
 
-if res
-    disp('test_center successful');
-else
-    disp('test_center failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'c','C');
 end
 
 %------------- END OF CODE --------------

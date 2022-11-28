@@ -30,27 +30,19 @@ function res = test_zonotope_project
 % create zonotope
 Z = zonotope([-4, -3, -2, -1; 1, 2, 3, 4; 5, 5, 5, 5]);
 
-% obtain result
+% project zonotope
 Zres = project(Z,[1 3]);
+Zmat1 = Zres.Z;
 
-% obtain zonotope matrix
-Zmat = Zres.Z;
+% logical indexing
+Zres = project(Z,[true false true]);
+Zmat2 = Zres.Z;
 
 % true result
 true_mat = [-4, -3, -2, -1; ...
             5, 5, 5, 5];
 
 % check result
-res_val = all(all(Zmat == true_mat));
-
-
-% add results
-res = res_val;
-
-if res
-    disp('test_zonotope_project successful');
-else
-    disp('test_zonotope_project failed');
-end
+res = all(all(Zmat1 == true_mat)) && all(all(Zmat2 == true_mat));
 
 %------------- END OF CODE --------------

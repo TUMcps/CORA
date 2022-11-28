@@ -62,10 +62,4 @@ end
 % add results
 res = all(res_val);
 
-if res
-    disp('test_sqrt successful');
-else
-    disp('test_sqrt failed');
-end
-
 %------------- END OF CODE --------------

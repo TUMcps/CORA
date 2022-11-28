@@ -1,6 +1,6 @@
 function E = ellipsoid(cPZ,varargin)
 % ellipsoid - computes an enclosing ellipsoid of a constrained polynomial 
-%             zonotope
+%    zonotope
 %
 % Syntax:  
 %    E = ellipsoid(cPZ)
@@ -26,7 +26,7 @@ function E = ellipsoid(cPZ,varargin)
 %    E = ellipsoid(cPZ);
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'r','Filled',true,'EdgeColor','none','Splits',15);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',15);
 %    plot(E,[1,2],'b');
 %
 % Other m-files required: none
@@ -42,34 +42,34 @@ function E = ellipsoid(cPZ,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    method = 'split';
-    if nargin > 1
-       method = varargin{1}; 
-    end
+% parse input arguments
+method = setDefaultValues({'split'},varargin{:}); 
 
-    % compute basis with Principal Component Analysis
-    G = [cPZ.G,cPZ.Grest];
-    [B,~,~] = svd([-G,G]); 
-    
-    % compute interval enclosure in the transformed space
-    int = interval(B'*cPZ);
-    cPZ = cPZ + (-B*center(int));
-    
-    % compute Q matrix of the ellipsoid
-    E = ellipsoid(diag(rad(int).^2));
-    E = B * E;
-    
-    % comptue quadratic map of the polynomial zonotope
-    Q{1} = inv(E.Q);
-    cPZ_ = quadMap(cPZ,Q);
-    
-    % use range bounding to get radius of the ellipsoid
-    r = supportFunc(cPZ_,1,'upper',method);
-    
-    % construct final ellipsoid
-    E = ellipsoid((E.Q)*r,B*center(int));
-    
-end
+% check input arguments
+inputArgsCheck({{cPZ,'att','conPolyZono'};
+                {method,'str',{'interval','split','quadProg',...
+                    'conZonotope','interval'}}});
+
+% compute basis with Principal Component Analysis
+G = [cPZ.G,cPZ.Grest];
+[B,~,~] = svd([-G,G]); 
+
+% compute interval enclosure in the transformed space
+int = interval(B'*cPZ);
+cPZ = cPZ + (-B*center(int));
+
+% compute Q matrix of the ellipsoid
+E = ellipsoid(diag(rad(int).^2));
+E = B * E;
+
+% comptue quadratic map of the polynomial zonotope
+Q{1} = inv(E.Q);
+cPZ_ = quadMap(cPZ,Q);
+
+% use range bounding to get radius of the ellipsoid
+r = supportFunc(cPZ_,1,'upper',method);
+
+% construct final ellipsoid
+E = ellipsoid((E.Q)*r,B*center(int));
     
 %------------- END OF CODE --------------

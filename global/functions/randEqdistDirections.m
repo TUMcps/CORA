@@ -1,6 +1,6 @@
 function dirs = randEqdistDirections(dim,sections)
 % randEqdistDirections - computes evenly distributed directions in all
-% dimensions
+%    dimensions
 %
 % Syntax:  
 %    dirs = randEqdistDirections(dim,sections)
@@ -19,7 +19,7 @@ function dirs = randEqdistDirections(dim,sections)
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:       Matthias Althoff
 % Written:      19-September-2012
 % Last update:  04-May-2020 (MW, rename from "additionalGenerators")
@@ -55,7 +55,5 @@ for iDim = 1 : dim-1
         end
     end
 end
-
-
 
 %------------- END OF CODE --------------

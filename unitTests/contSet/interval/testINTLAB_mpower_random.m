@@ -1,8 +1,8 @@
 function res = testINTLAB_mpower_random(~)
-% test_mpower_random - unit_test_function for comparing to IntLabV6
+% testINTLAB_mpower_random - unit_test_function for comparing to IntLabV6
 %
 % Syntax:  
-%    res = test_mpower_random (~)
+%    res = testINTLAB_mpower_random (~)
 %
 % Inputs:
 %    no 
@@ -23,6 +23,7 @@ function res = testINTLAB_mpower_random(~)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 tol = 1e-7;
 res = true;
 
@@ -77,7 +78,4 @@ if ( isempty(bad_ones_max) ~= true)
     res = false;
 end
 
-disp('test_mpower_random successful');
-disp(' ')
-
-return;
+%------------- END OF CODE --------------

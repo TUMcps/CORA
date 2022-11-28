@@ -1,81 +1,58 @@
-function BC = FormalizeBaseComponent(comp,convtype)
-% splits variables into inputs,states & constants
-% applies equation-parsing scripts to fields given as string equations
-% eq2linSys to:     BC.States{*}.Flow,
-%                   BC.States{*}.Trans{*}.reset
-% eq2polytope to:   BC.States{*}.Invariant
-%                   BC.States{*}.Trans{*}.guard
-% convtype: parallelHA - 1; flatHA - 0
+function BC = FormalizeBaseComponent(BC,convtype)
+% FormalizeBaseComponent - splits variables into inputs, states, constants;
+%    applies equation-parsing scripts to fields given as string equations
+%
+% Description:
+%    eq2linSys to:     BC.States{*}.Flow,
+%                      BC.States{*}.Trans{*}.reset
+%    eq2polytope to:   BC.States{*}.Invariant
+%                      BC.States{*}.Trans{*}.guard
+%
+% Syntax:  
+%    BC = FormalizeBaseComponent(comp,convtype)
+%
+% Inputs:
+%    BC (struct) - base component to be formalized
+%    convtype - true if parallel hybrid automaton to be generated, false
+%               if flat hybrid automaton to be generated
+%
+% Outputs:
+%    BC - formalized based component containing the flow equation,
+%         invariant, guard set, and reset function as matrices
+%
+% Example: 
+%    ---
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-BC = comp;
+% Author:       ???
+% Written:      ???
+% Last update:  22-June-2022 (MW, empty sets for invariants, guards)
+% Last revision:---
 
-% split variables into states, inputs & others
-% this requires gathering the flow equations of all states
-% as well as the reset expressions of all transitions
-allStateNames = [];
-allFlowExprs = [];
-
-for i = 1:length(BC.States)
-    % reminder: assignment expressions are stored in column vectors
-    allStateNames = [allStateNames; BC.States(i).Flow.varNames];
-    
-    allFlowExprs = [allFlowExprs; BC.States(i).Flow.expressions];
-    
-    for j = 1:length(BC.States(i).Trans)
-        allStateNames = [allStateNames; BC.States(i).Trans(j).reset.varNames];
-        % If inputs/constants are ever changed within a reset (not sure if possible)
-        % this will lead to an error, in this case, make new variable
-        % "resetExpressions" and integrate it into classifyVariables.m
-        allFlowExprs = [allFlowExprs; BC.States(i).Trans(j).reset.expressions];
-    end
-end
-
-if isempty(allStateNames)
-    warning("No flow equations given, assuming all states to be occuring within location invariants!");
-    for i = 1:length(BC.States)
-        names = symvar([BC.States(i).Invariant.equalities;BC.States(i).Invariant.inequalities]);
-        allStateNames = [allStateNames;string(names)'];
-    end
-end
-
-% difference in conversion to flatHA / parallelHA
-if ~convtype
-    % flatHA:
-    InvExprsLeft = [];
-    InvExprsRight = [];
-    for i = 1:length(BC.States)
-        InvExprsLeft = [InvExprsLeft; BC.States(i).Invariant.exprLeft];
-        InvExprsRight = [InvExprsRight; BC.States(i).Invariant.exprRight];
-    end
-    [BC.states,BC.inputs,BC.outputsLocal,BC.outputsGlobal] = ...
-        classifyVariables(BC.listOfVar,allStateNames,allFlowExprs,InvExprsLeft,InvExprsRight);
-else
-    % parallelHA / (non-)linear:
-    [BC.states,BC.inputs,BC.outputsLocal,BC.outputsGlobal] = ...
-        classifyVariables(BC.listOfVar,allStateNames,allFlowExprs);
-end
-
-% variables that are assigned a derivative are states
-% variables that influence a derivative are inputs/parameters
-% other variables are currently being ignored
+%------------- BEGIN CODE --------------
 
 % Unfortunately, CORA does not support 0-input systems yet.
-% If the system is input-less, add a dummy input without effect.
+% If the system does not have inputs, we add a dummy input without effect.
 if isempty(BC.inputs)
-    % generate a dummy input "uDummy"
-    % (make sure dummy name is not used as a variable)
+    % generate a dummy input "uDummy" (with as many underscores at the end
+    % as necessary until it is unique; in principle uDummy could already be
+    % used in the model)
     maxlength = 0;
     for i = 1:length(BC.listOfVar)
         if regexp(BC.listOfVar(i).name,'^uDummy(_*)$')
             maxlength = max(maxlength,strlength(BC.listOfVar(i).name));
         end
     end
-    % build dummy name as char vector, add understrikes until it is unique
+    % build dummy name as char vector, add underscores until it is unique
     dummyName = 'uDummy';
     dummyName = [dummyName repmat('_',1,maxlength+1-length(dummyName))];
-    % this may be sliiiiight overkill, but it is 100% safe
     
-    % convert name to string & add dummy input variable
+    % convert name to string and add dummy input variable
     BC.inputs(1).name = string(dummyName);
 end
 
@@ -85,38 +62,61 @@ for i = 1:length(BC.States)
     
     % derive linear representation of flow equations
     if convtype
-        [isLin,A,B,c,eqs] = eq2linSys(State.Flow.varNames,State.Flow.expressions,BC.states,BC.inputs);
+        [isLin,A,B,c,eqs] = eq2linSys(State.Flow.varNames,...
+            State.Flow.expressions,BC.states,BC.inputs);
+        [C,D,k] = outputMatricesComp2Comp(BC.states,BC.inputs,BC.outputsLocal);
     else
         % what do outputsLocal map to in state vector
         if ~isempty(BC.outputsLocal)
-            map = string(State.Invariant.exprRight(strcmp(string(State.Invariant.exprLeft),BC.outputsLocal.name)));
+            map = string(State.Invariant.exprRight(...
+                strcmp(string(State.Invariant.exprLeft),BC.outputsLocal.name)));
         else
             map = "";
         end
         % derive linear representation of flow equations
-        [isLin,A,B,c,eqs] = eq2linSysFlat(State.Flow.varNames,State.Flow.expressions,...
-            BC.states,BC.inputs,BC.outputsLocal,map);
+        [isLin,A,B,c,eqs] = eq2linSysFlat(State.Flow.varNames,...
+            State.Flow.expressions,BC.states,BC.inputs,BC.outputsLocal,map);
     end
-    if(isLin)
+
+    % assign matrices for if system is linear
+    if isLin
         BC.States(i).Flow.A = A;
         BC.States(i).Flow.B = B;
         BC.States(i).Flow.c = c;
+        if convtype
+            % only parallel: assign output matrices (to be used as inputs
+            % in other components)
+            BC.States(i).Flow.C = C;
+            BC.States(i).Flow.D = D;
+            BC.States(i).Flow.k = k;
+        end
     end
-    
+    % save equations in format: dx(i,1) = ...
     BC.States(i).Flow.FormalEqs = eqs;
         
     % derive polytope for invariant
-    %[A,b,Ae,be] = eq2polytope(State.Invariant.inequalities,State.Invariant.equalities,BC.states,BC.outputs);
-    set = eq2set(State.Invariant.inequalities,State.Invariant.equalities,...
+    if State.Invariant.Text == ""
+        % empty invariant: short version to define full space as invariant
+        set = [];
+    else
+        % non-empty invariant
+        set = eq2set(State.Invariant.inequalities,State.Invariant.equalities,...
                  BC.states,[BC.outputsLocal BC.outputsGlobal]);
+    end
     BC.States(i).Invariant.set = set;
     
-    [C,D,k] = outputMatrices(State.Invariant.equalities,BC.states,BC.inputs,BC.outputsGlobal);
-    BC.States(i).Invariant.C = C;
-    BC.States(i).Invariant.D = D;
-    BC.States(i).Invariant.k = k;
+    % assign linear output matrices: only flat HA
+    % note: this might be overhauled in the future as it is not clear
+    % what is the relation between the invariant and the outputs
+    if ~convtype
+        [C,D,k] = outputMatrices(State.Invariant.equalities,...
+            BC.states,BC.inputs,BC.outputsGlobal);
+        BC.States(i).Flow.C = C;
+        BC.States(i).Flow.D = D;
+        BC.States(i).Flow.k = k;
+    end
     
-    %iterate over transitions starting in State
+    % iterate over outgoing transitions of current State
     if isfield(State,'Trans')
         numTrans = length(State.Trans);
     else
@@ -126,38 +126,36 @@ for i = 1:length(BC.States)
         Tran = State.Trans(j);
         
         %derive polytope for guard
-        if convtype
+        if strcmp(Tran.guard.Text,"")
+            % no guard set given -> immediate transition (guard = [])
+            set = [];
+        elseif convtype
+            % guard set given, pHA
             set = eq2set(Tran.guard.inequalities,Tran.guard.equalities, ...
                          BC.states,BC.outputsGlobal);
         else
+            % guard set given, flat HA
             set = eq2set(Tran.guard.inequalities,Tran.guard.equalities,...
                          BC.states,[BC.outputsLocal BC.outputsGlobal]);
         end
         BC.States(i).Trans(j).guard.set = set;
         
         % derive linear representation of assignment
-        [isLin,A,B,c,eqs,containsInput] = eq2linSys(Tran.reset.varNames,Tran.reset.expressions,...
-                                                    BC.states,BC.inputs,'assignment');
-        if(isLin)
+        [isLin,A,B,c,eqs,containsInput] = eq2linSys(Tran.reset.varNames,...
+            Tran.reset.expressions,BC.states,BC.inputs,'assignment');
+        if isLin
             BC.States(i).Trans(j).reset.A = A;
             BC.States(i).Trans(j).reset.c = c;
             if containsInput
-                % reset is input dependant
+                % reset is input-dependent
                 BC.States(i).Trans(j).reset.B = B;
-                BC.States(i).Trans(j).reset.hasInput = 1;
-                BC.States(i).Trans(j).reset.inputDim = size(B,2);
             end
         else
             if strlength(eqs) ~= 0
                 BC.States(i).Trans(j).reset.FormalEqs = eqs;
-                % check if reset is input dependant
-                if containsInput
-                    BC.States(i).Trans(j).reset.hasInput = 1;
-                    BC.States(i).Trans(j).reset.inputDim = length(BC.inputs);
-                end
             else
-                warning("Transition from ""%s"" to ""%s"" has a no reset function. Using identity...",...
-                    State.name, BC.States(Tran.destination).name);
+                warning("Transition from ""%s"" to ""%s"" does not have a reset function. " + ...
+                    "Using identity...",State.name,BC.States(Tran.destination).name);
                 BC.States(i).Trans(j).reset.A = diag(ones(size(BC.states)));
                 BC.States(i).Trans(j).reset.c = zeros(size(BC.states));
             end
@@ -165,4 +163,4 @@ for i = 1:length(BC.States)
     end
 end
 
-end
+%------------- END OF CODE --------------

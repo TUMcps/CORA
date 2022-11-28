@@ -35,7 +35,7 @@ function res = testLongDuration_bernsteinPoly
        for i = 1:M
           
            % generate random polynomial zonotope
-           pZ = polyZonotope.generateRandom(1,[],n);
+           pZ = polyZonotope.generateRandom('Dimension',1,'NrFactors',n);
            
            n_ = size(pZ.expMat,1);
            expMat = [zeros(n_,1),pZ.expMat];
@@ -55,13 +55,15 @@ function res = testLongDuration_bernsteinPoly
               val_ = bernsteinPolynom(p,B,expMat_);
               
               if abs(val-val_) > 1e-13
-                 error('Unit-test "testLongDuration_bernsteinPoly" failed!'); 
+                 path = pathFailedTests(mfilename());
+                 save(path,'pZ','p');
+                 throw(CORAerror('CORA:testFailed'));
               end
            end
        end
     end
     
-    res = 1;
+    res = true;
 end
 
 

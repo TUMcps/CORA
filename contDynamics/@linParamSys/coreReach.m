@@ -1,18 +1,20 @@
-function [Rfirst] = coreReach(obj,Rinit,options)
+function Rfirst = coreReach(obj,Rinit,options)
 % coreReach - computes the reachable continuous set for the next time step
-% without considering uncertain inputs
+%    without considering uncertain inputs
 %
 % Syntax:  
-%    [Rfirst] = coreReach(obj,Rinit,options)
+%    Rfirst = coreReach(obj,Rinit,options)
 %
 % Inputs:
+%    obj - linParamSys object
 %    Rinit - initial reachable set
+%    options - reachability options
 %
 % Outputs:
-%    obj - linearSys object
 %    Rfirst - first reachable set 
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none

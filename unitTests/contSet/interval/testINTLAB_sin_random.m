@@ -1,8 +1,8 @@
-function res = testINTLAB_sin_random(~)
-% test_sin_random - unit_test_function for comparing to IntLabV6
+function res = testINTLAB_sin_random()
+% testINTLAB_sin_random - unit_test_function for comparing to IntLabV6
 %
 % Syntax:  
-%    res = test_sin_random (~)
+%    res = testINTLAB_sin_random()
 %
 % Inputs:
 %    no 
@@ -99,7 +99,4 @@ if ( isempty(bad_ones_max) ~= true)
     res = false;
 end
 
-disp('test_sin_random successful');
-disp(' ')
-
-return;
+%------------- END OF CODE --------------

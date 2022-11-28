@@ -25,10 +25,7 @@ function res = testMosek_linearSysDT_observe_gain_04_PRadC()
 %        membership approach and kalman observer based on
 %        zonotopes for discrete-time descriptor systems. Automatica,
 %        93:435-443, 2018.
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      01-March-2021
 % Last update:  ---
@@ -37,7 +34,7 @@ function res = testMosek_linearSysDT_observe_gain_04_PRadC()
 %------------- BEGIN CODE --------------
 
 % enable access to private function "observe_gain_PRadB"
-path = coraroot();
+path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSysDT','private','observe_gain_PRadC.m');
 target = fullfile(path,'contDynamics','@linearSysDT','observe_gain_PRadC.m');
 copyfile(source,target);

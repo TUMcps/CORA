@@ -20,13 +20,12 @@ function [inputProb]=inputDist(p)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 24-April-2009
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      24-April-2009
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
-
 
 for iStep=1:length(p)
     %project

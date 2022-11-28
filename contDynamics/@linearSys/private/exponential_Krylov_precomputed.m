@@ -1,7 +1,7 @@
 function [R,R_Krylov] = exponential_Krylov_precomputed(obj,R0,options,stateFlag)
-% exponential_krylov_precomputed - computes the overapproximation of the 
-% exponential of a system matrix up to a certain accuracy using a Krylov 
-% subspace; the subspace is already precomputed
+% exponential_Krylov_precomputed - computes the overapproximation of the 
+%    exponential of a system matrix up to a certain accuracy using a Krylov 
+%    subspace; the subspace is already precomputed
 %
 % Syntax:  
 %    [R,R_Krylov] = exponential_Krylov_precomputed(obj,options)
@@ -87,11 +87,11 @@ if options.krylovError > 2*eps
     % Krylov error computation
     error_normalized = obj.krylov.errorBound_normalized;
     error = norm(Rinit)*error_normalized*options.t;
-    Krylov_interval = interval(-1,1)*ones(dimension(obj),1)*error;
+    Krylov_interval = interval(-1,1)*ones(obj.dim,1)*error;
     R_Krylov = zonotope(Krylov_interval);
 
     % initial-state-solution zonotope
-    R = zonotope([c_new,G_new,error*eye(dimension(obj))]);
+    R = zonotope([c_new,G_new,error*eye(obj.dim)]);
     %--------------------------------------------------------------------------
 else
     R_Krylov = 0;

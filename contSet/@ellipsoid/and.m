@@ -1,25 +1,29 @@
-function E = and(obj,S,mode)
-% and - overloads & operator to compute the intersection an ellipsoid and a
-% set representation
+function E = and(E,S,varargin)
+% and - overloads '&' operator to compute the intersection an ellipsoid and
+%    another set representation
 %
 % Syntax:  
-%    [E] = and(obj,S)
-%    [E] = and(obj,S,mode)
+%    E = and(E,S)
+%    E = and(E,S,mode)
 %
 % Inputs:
-%    obj            - Ellipsoid object
-%    S              - set representation (or cell array thereof)
-%    mode(optional) - approximation mode ('i':inner; 'o': outer)
+%    E              - ellipsoid object
+%    S              - set representation (array)
+%    mode(optional) - approximation mode ('inner','outer')
 %
 % Outputs:
 %    E - ellipsoid object
 %
 % Example: 
-%    E1= ellipsoid.generateRandom(2,false);
-%    E2= ellipsoid.generateRandom(2,false);
-%    E3 =ellipsoid.generateRandom(2,false);
-%    E = E1 & E2;
-%    E = and(E1,{E2,E3},'i');
+%    E1 = ellipsoid.generateRandom('Dimension',2);
+%    E2 = ellipsoid.generateRandom('Dimension',2);
+%    E3 = ellipsoid.generateRandom('Dimension',2);
+%    Eo = and(E1,[E2,E3],'outer');
+%    Ei = and(E1,[E2,E3],'inner');
+%    figure; hold on;
+%    plot(E1); plot(E2);plot(E3);
+%    plot(Eo,[1,2],'r');
+%    plot(Eo,[1,2],'b');
 %
 % References: 
 %   [1] A. Kurzhanski et al. "Ellipsoidal Toolbox Manual", 2006
@@ -35,33 +39,33 @@ function E = and(obj,S,mode)
 % Written:      13-March-2019
 % Last update:  15-October-2019
 %               15-March-2021
+%               04-July-2022 (VG: replaced cell arrays by class arrays)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-%% parsing and checking
-if ~exist('mode','var')
-    mode = 'o';
-end
-if ~any(mode==['i','o'])
-   error('mode has to be either "i" (inner approx) or "o" (outer approx)');
+
+% pre-processing
+[res,vars] = pre_and('ellipsoid',E,S,varargin{:});
+
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    E = vars{1}; return
+else
+    % potential re-ordering
+    E = vars{1}; S = vars{2}; mode = vars{3};
 end
 
-% handle empty cells, S not a cell etc
-S = prepareSetCellArray(S,obj);
-if isempty(obj) || isempty(S) 
-    E = ellipsoid;
-    return;
-end
 
 N = length(S);
 % if only center remains
-if rank(obj)==0
-    if ~ismethod(S{1},'in')
-        error(['Ellipsoid contains only 1 point, but second argument type ',...
-                'does not implement "in"!']);
+if rank(E)==0 && isa(S,'contSet')
+    % if double, already taken care if in 93
+    if ~ismethod(S,'in')
+        throw(CORAerror('CORA:noops',E,S{1}));
     end
-    if all(cellfun(@(s)in(s,obj.q),S))
-        E = ellipsoid(zeros(dim(obj)),obj.q);
+    if all(arrayfun(@(ii)contains(S(ii),E.q),1:N))
+        E = ellipsoid(zeros(dim(E)),E.q);
     else
         E = ellipsoid;
     end
@@ -71,75 +75,77 @@ end
 %% different intersections
 
 % ellipsoid and point
-if isa(S{1},'double')
-    S = cell2mat(reshape(S,[1,numel(S)]));
+if isa(S,'double')
     % if not all points are equal, overall intersection is empty
-    if ~all(all(withinTol(S,repmat(S(:,1),1,size(S,2)),obj.TOL))) ||...
-        ~in(obj,S(:,1),'exact')
+    if ~all(all(withinTol(S,repmat(S(:,1),1,size(S,2)),E.TOL))) || ...
+        ~contains(E,S(:,1),'exact')
         E = ellipsoid;
     else
-        E = ellipsoid(zeros(size(obj.Q)),S(:,1));
+        E = ellipsoid(zeros(size(E.Q)),S(:,1));
     end
     return;
 end
 
 % ellipsoid and conPolyZono
-if isa(S{1},'conPolyZono')
-    if strcmp(mode,'o')
-        E = S{1} & obj;
+if isa(S,'conPolyZono')
+    if strcmp(mode,'outer')
+        E = S(1) & E;
         for i=2:N
-            E = S{2} & E;
+            E = S(i) & E;
         end
     else
-        error('inner approximation of Ellipsoid and conPolyZono not implemented');
+        throw(CORAerror('CORA:noops',E,S));
     end
     return;
 end
 
 % ellipsoid and ellipsoid
-if isa(S{1},'ellipsoid')
-    if strcmp(mode,'o')
-        E = andEllipsoidOA(obj,S{1});
+if isa(S,'ellipsoid')
+    if strcmp(mode,'outer')
+        E = andEllipsoidOA(E,S(1));
         for i=2:N
             if isempty(E)
                 break;
             end
-            E = andEllipsoidOA(E,S{i});
+            E = andEllipsoidOA(E,S(i));
         end
     else
-        E = andEllipsoidIA(obj,S);
+        E = andEllipsoidIA(E,S);
     end
     return;
 end
 
 % ellipsoid and conHyperplane
-if isa(S{1},'conHyperplane')
-    E = obj;
+if isa(S,'conHyperplane')
     for i=1:N
-        if isHyperplane(S{i})
-            E = andHyperplane(E,S{i});
+        if isHyperplane(S(i))
+            E = andHyperplane(E,S(i));
         else
-            E = and(E,mptPolytope(S{i}),mode);
+            E = and(E,mptPolytope(S(i)),mode);
         end
     end
     return;
-    
 end
 
 % ellipsoid and mptPolytope
-if isa(S{1},'mptPolytope')
-    error('Not implemented yet');
-end
-
-% ellipsoid and halfspace
-if isa(S{1},'halfspace')
-    E = andHalfspace(obj,S{1},mode);
+if isa(S,'mptPolytope')
+    E = andMptPolytope(E,S(1),mode);
     for i=2:N
-        E = andHalfspace(E,S,mode);
+        E = andMptPolytope(E,S(i),mode);
     end
     return;
 end
 
-error('Wrong type of input arguments');
+% ellipsoid and halfspace
+if isa(S,'halfspace')
+    E = andHalfspace(E,S(1),mode);
+    for i=2:N
+        E = andHalfspace(E,S(i),mode);
+    end
+    return;
+end
+
+% throw error for remaining combinations
+throw(CORAerror('CORA:noops',E,S));
 
 %------------- END OF CODE --------------

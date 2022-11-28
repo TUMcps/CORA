@@ -59,10 +59,9 @@ for i=1:nrOfTests
 end
 
 
-if res
-    disp('test_isFullDim successful');
-else
-    disp('test_isFullDim failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'lb','ub','n');
 end
 
 %------------- END OF CODE --------------

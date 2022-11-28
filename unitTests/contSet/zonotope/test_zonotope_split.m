@@ -124,11 +124,4 @@ end
 % combined check
 res = res_1 & res_2 & res_3 & res_4;
 
-
-if res
-    disp('test_zonotope_split successful');
-else
-    disp('test_zonotope_split failed');
-end
-
 %------------- END OF CODE --------------

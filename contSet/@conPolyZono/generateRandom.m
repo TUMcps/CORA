@@ -2,25 +2,29 @@ function cPZ = generateRandom(varargin)
 % generateRandom - Generates a random constrained polynomial zonotope
 %
 % Syntax:  
-%    cPZ = generateRandom()
-%    cPZ = generateRandom(dim)
-%    cPZ = generateRandom(dim,gen)
-%    cPZ = generateRandom(dim,gen,fac)
-%    cPZ = generateRandom(dim,gen,fac,cons)
-%    cPZ = generateRandom(dim,gen,fac,cons,ind)
+%    cPZ = conPolyZono.generateRandom()
+%    cPZ = conPolyZono.generateRandom('Dimension',n)
+%    cPZ = conPolyZono.generateRandom('Dimension',n,'nrGenerators',nrGens)
+%    cPZ = conPolyZono.generateRandom('Dimension',n,'nrGenerators',nrGens,...
+%           'NrFactors',nrFac)
+%    cPZ = conPolyZono.generateRandom('Dimension',n,'nrGenerators',nrGens,...
+%           'NrFactors',nrFac,'NrConstraints',nrCons)
+%    cPZ = conPolyZono.generateRandom('Dimension',n,'nrGenerators',nrGens,...
+%           'NrFactors',nrFac,'NrConstraints',nrCons,'NrIndGenerators',nrIndGens)
 %
 % Inputs:
-%    dim - (optional) dimension
-%    gen - (optional) number of generators
-%    fac - (optional) number of factors
-%    cons - (optional) number of constraints
-%    ind - (optional) number of independent generators
+%    Name-Value pairs (all options, arbitrary order):
+%       <'Dimension',n> - dimension
+%       <'NrGenerators',nrGens> - number of generators
+%       <'NrConstraints',nrCons> - number of constraints
+%       <'NrFactors',nrFac> - number of dependent factors
+%       <'NrIndGenerators',nrIndGens> - number of independent generators
 %
 % Outputs:
-%    cPZ - random polynomial zonotope
+%    cPZ - random constrained polynomial zonotope
 %
 % Example: 
-%    cPZ = conPolyZono.generateRandom(2)
+%    cPZ = conPolyZono.generateRandom('Dimension',2,'NrGenerators',5)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,61 +34,69 @@ function cPZ = generateRandom(varargin)
 
 % Author:       Niklas Kochdumper
 % Written:      26-January-2020
-% Last update:  ---
+% Last update:  19-May-2022 (name-value pair syntax)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    n = []; gen = []; fac = []; cons = []; indGens = [];
-    
-    if nargin >= 1 && ~isempty(varargin{1})
-        n = varargin{1};
-    end
-    if nargin >= 2 && ~isempty(varargin{2})
-        gen = varargin{2};
-    end
-    if nargin >= 3 && ~isempty(varargin{3})
-        fac = varargin{3};
-    end
-    if nargin >= 4 && ~isempty(varargin{4})
-        cons = varargin{4}; 
-    end
-    if nargin >= 5 && ~isempty(varargin{5})
-        indGens = varargin{5}; 
-    end
-    
-    % generate random polynomial zonotope for the states
-    pZ = polyZonotope.generateRandom(n,gen,fac,indGens);
-    
-    % determine number of constraints
-    fac = length(pZ.id);
-    
-    if ~isempty(cons)
-        cons = max(0,min(cons,fac-1)); 
-    else
-        cons = randi([0 fac-1],1);
-    end
-    
-    % generate random polynomial constraints 
-    if cons ~= 0
-        pZcon = polyZonotope.generateRandom(cons,[],fac);
-    else
-        cPZ = conPolyZono(pZ); return;
-    end
-    
-    % adapt the constraints such that it is guaranteed that the resulting
-    % set is not empty
-    a = -1 + 2*rand(fac,1);
-    
-    b = sum(pZcon.G.*prod(a.^pZcon.expMat,1),2);
-    
-    % construct resulting conPolyZono object
-    try
-        cPZ = conPolyZono(pZ.c,pZ.G,pZ.expMat,pZcon.G,b,pZcon.expMat,pZ.Grest);
-    catch
-        cPZ = conPolyZono(pZ.c,pZ.G,pZ.expMat,pZ.Grest);
-    end   
+% name-value pairs -> number of input arguments is always a multiple of 2
+if mod(nargin,2) ~= 0
+    throw(CORAerror('CORA:evenNumberInputArgs'));
+else
+    % read input arguments
+    NVpairs = varargin(1:end);
+    % check list of name-value pairs
+    checkNameValuePairs(NVpairs,{'Dimension','NrGenerators',...
+        'NrConstraints','NrFactors','NrIndGenerators'});
+    % dimension given?
+    [NVpairs,n] = readNameValuePair(NVpairs,'Dimension');
+    % number of generators given?
+    [NVpairs,nrGens] = readNameValuePair(NVpairs,'NrGenerators');
+    % number of constraints given?
+    [NVpairs,nrCons] = readNameValuePair(NVpairs,'NrConstraints');
+    % number of factors given?
+    [NVpairs,nrFac] = readNameValuePair(NVpairs,'NrFactors');
+    % number of independent generators given?
+    [NVpairs,nrIndGens] = readNameValuePair(NVpairs,'NrIndGenerators');
 end
+
+% check input arguments
+inputArgsCheck({{n,'att','numeric','nonnan'};
+                {nrGens,'att','numeric','nonnan'};
+                {nrCons,'att','numeric','nonnan'};
+                {nrFac,'att','numeric','nonnan'};
+                {nrIndGens,'att','numeric','nonnan'}});
     
+% generate random polynomial zonotope for the states
+pZ = polyZonotope.generateRandom('Dimension',n,'NrGenerators',nrGens,...
+    'NrFactors',nrFac,'NrIndGenerators',nrIndGens);
+
+% determine number of constraints
+nrFac = length(pZ.id);
+
+if ~isempty(nrCons)
+    nrCons = max(0,min(nrCons,nrFac-1)); 
+else
+    nrCons = randi([0 nrFac-1],1);
+end
+
+% generate random polynomial constraints 
+if nrCons > 0
+    pZcon = polyZonotope.generateRandom('NrGenerators',nrCons,...
+        'NrFactors',nrFac);
+else
+    cPZ = conPolyZono(pZ); return;
+end
+
+% adapt the constraints to guarantee that the resulting set is non-empty
+a = -1 + 2*rand(nrFac,1);
+b = sum(pZcon.G.*prod(a.^pZcon.expMat,1),2);
+
+% instantiate constrained polynomial zonotope
+try
+    cPZ = conPolyZono(pZ.c,pZ.G,pZ.expMat,pZcon.G,b,pZcon.expMat,pZ.Grest);
+catch
+    cPZ = conPolyZono(pZ.c,pZ.G,pZ.expMat,pZ.Grest);
+end
+
 %------------- END OF CODE --------------

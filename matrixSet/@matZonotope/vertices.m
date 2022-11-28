@@ -5,7 +5,7 @@ function matV = vertices(matZ)
 %    matV = vertices(matZ)
 %
 % Inputs:
-%    matZ - matrix zonotope
+%    matZ - matZonotope object
 %
 % Outputs:
 %    matV - cell array of matrix vertices

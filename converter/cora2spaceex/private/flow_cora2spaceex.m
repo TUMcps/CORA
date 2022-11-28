@@ -20,12 +20,12 @@ function flow_cora2spaceex(Obj, location, docNode)
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
-%
+
 %------------- BEGIN CODE --------------
 
 x = sym('x',[Obj.dim,1]);

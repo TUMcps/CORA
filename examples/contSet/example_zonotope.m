@@ -8,14 +8,14 @@ function completed = example_zonotope()
 %    -
 %
 % Outputs:
-%    completed - boolean
+%    completed - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Matthias Althoff
 % Written:       21-April-2018
 % Last update:   ---
@@ -36,7 +36,7 @@ plot(Z2,[1 2],'g'); % plot Z2 in green
 plot(Z3,[1 2],'r'); % plot Z3 in red
 plot(Z4,[1 2],'k'); % plot Z4 in black
 
-P = polytope(Z4) % convert to and display halfspace representation
+P = mptPolytope(Z4) % convert to and display halfspace representation
 I = interval(Z4) % convert to and display interval
 
 figure; hold on

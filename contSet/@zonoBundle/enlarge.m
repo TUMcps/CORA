@@ -1,18 +1,28 @@
-function Zbundle = enlarge(Zbundle,factorVec)
-% enlarge - enlarges the generators of a zonotope bundle by a vector of factors
+function zB = enlarge(zB,factor)
+% enlarge - enlarges the generators of a zonotope bundle by a vector of
+%    scaling factors
 %
 % Syntax:  
-%    Zbundle = enlarge(Zbundle,factorVec)
+%    zB = enlarge(zB,factor)
 %
 % Inputs:
-%    Zbundle - zonotope bundle
-%    factorVec - vector of factors for the enlargement of each dimension
+%    zB - zonoBundle object
+%    factor - vector of factors for the enlargement of each dimension
 %
 % Outputs:
-%    Zbundle - zonotope bundle
+%    zB - enlarged zonotope bundle
 %
 % Example: 
-%    ---
+%    Z1 = zonotope(zeros(2,1),[1 0.5; -0.2 1]);
+%    Z2 = zonotope(ones(2,1),[1 -0.5; 0.2 1]);
+%    zB = zonoBundle({Z1,Z2});
+%    factor = [1.5;2];
+%
+%    res = enlarge(zB,factor);
+%
+%    figure; hold on;
+%    plot(zB,[1,2],'b');
+%    plot(res,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,8 +37,8 @@ function Zbundle = enlarge(Zbundle,factorVec)
 
 %------------- BEGIN CODE --------------
 
-for i=1:Zbundle.parallelSets
-    Zbundle.Z{i}=enlarge(Zbundle.Z{i},factorVec);
+for i=1:zB.parallelSets
+    zB.Z{i} = enlarge(zB.Z{i},factor);
 end
 
 %------------- END OF CODE --------------

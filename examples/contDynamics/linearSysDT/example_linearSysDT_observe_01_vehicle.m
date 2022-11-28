@@ -1,22 +1,21 @@
 function completed = example_linearSysDT_observe_01_vehicle()
-% example_linearSysDT_observe_01_vehicle - example for guaranteed
-% state estimation of linear discrete-time systems; a corresponding
-% unit test exists
-%
-% Shows the solution of the linearSysDT class for a vehicle example 
+% example_linearSysDT_observe_01_vehicle - example for guaranteed state
+%    estimation of linear discrete-time systems; a corresponding unit test
+%    function exists; shows the solution of the linearSysDT class for a
+%    vehicle example.
 %
 % Syntax:  
-%    res = test_linearSysDT_observe_01_vehicle()
+%    completed = example_linearSysDT_observe_01_vehicle()
 %
 % Inputs:
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    completed - true/false 
 %
 % Example: 
 %    -
- 
+
 % Author:       Matthias Althoff
 % Written:      30-Apr-2021
 % Last update:  13-July-2021
@@ -43,6 +42,10 @@ Estimator = {
 
 % set solver
 options.solver = 'sdpt3';
+% ensure that solver is on path
+if ~isSolverInstalled('sdpt3')
+    throw(CORAerror('CORA:noSuitableSolver','sdpt3'));
+end
 
 %% perform evaluation
 % loop over estimators
@@ -72,21 +75,21 @@ for iEst = 1:length(Estimator)
     %estSet = estSetAll.EstStates;
     
     % plot results
-    for idim = 1:2
+    for iDim = 1:2
         figure; hold on;
         % plot time elapse
-        plotOverTime(estSet,idim,'FaceColor',[.6 .6 .6],'EdgeColor','none');
+        plotOverTime(estSet,iDim);
         % plot simulation
-        plotOverTime(simRes,idim);
+        plotOverTime(simRes,iDim);
 
         % label plot
         xlabel('t');
-        ylabel(['x_{',num2str(idim),'}']);
+        ylabel(['x_{',num2str(iDim),'}']);
     end
 end
 
 % example completed
-completed = 1;
+completed = true;
 
 
 %------------- END OF CODE --------------

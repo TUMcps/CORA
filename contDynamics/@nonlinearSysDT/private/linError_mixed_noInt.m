@@ -1,8 +1,8 @@
-function errorZon = linError_mixed_noInt(obj, options, R)
+function error_zono = linError_mixed_noInt(obj,options,R)
 % linError_mixed_noInt - computes the linearization error
 %
 % Syntax:  
-%    error = linError_mixed_noInt(obj,options,R)
+%    error_zono = linError_mixed_noInt(obj,options,R)
 %
 % Inputs:
 %    obj - nonlinearSysDT system object
@@ -10,9 +10,10 @@ function errorZon = linError_mixed_noInt(obj, options, R)
 %    R - initial set
 %
 % Outputs:
-%    errorZon - zonotope overapproximating the linearization error
+%    error_zono - zonotope overapproximating the linearization error
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,6 +29,7 @@ function errorZon = linError_mixed_noInt(obj, options, R)
 
 %------------- BEGIN CODE --------------
 
+% use correct Hessian file
 obj = setHessian(obj,'int');
 
 %obtain intervals and combined interval z
@@ -42,8 +44,12 @@ totalInt_x = dx + obj.linError.p.x;
 totalInt_u = du + obj.linError.p.u;
 
 %compute zonotope of state and input
-Rred = reduce(R,options.reductionTechnique,options.errorOrder);
-Z=cartProd(Rred,options.U);
+if contains(options.alg,'adaptive')
+    Rred = reduce(R,'adaptive',options.redFactor);
+else
+    Rred = reduce(R,options.reductionTechnique,options.errorOrder);
+end
+Z = cartProd(Rred,options.U);
 
 %obtain hessian tensor
 if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ...
@@ -68,8 +74,7 @@ for i=1:obj.dim
     H_mid{i} = sparse(center(H{i}));
     H_rad{i} = sparse(rad(H{i}));
 end
-
-error_mid = 0.5*quadMap(Z, H_mid);
+error_mid = 0.5*quadMap(Z,H_mid);
 
 %interval evaluation
 error_rad = zeros(obj.dim,1);
@@ -78,9 +83,13 @@ for i=1:obj.dim
 end
 
 %combine results
-error_rad_zono = zonotope(interval(-error_rad, error_rad));
-errorZon = error_mid + error_rad_zono;
+error_rad_zono = zonotope(interval(-error_rad,error_rad));
+error_zono = error_mid + error_rad_zono;
 
-errorZon = reduce(errorZon,options.reductionTechnique,options.zonotopeOrder);
+if contains(options.alg,'adaptive')
+    error_zono = reduce(error_zono,'adaptive',options.redFactor);
+else
+    error_zono = reduce(error_zono,options.reductionTechnique,options.zonotopeOrder);
+end
 
 %------------- END OF CODE --------------

@@ -1,41 +1,41 @@
 function L = boxPlaneIntersectNaive(hyperbox,hyperplane,beta)
-% naive - naive method of determining the intersection points
-%       by the algorithm called Naive (Alg.1) provided in [1]
-%       going along every edge and checking for intersections
+% boxPlaneIntersectNaive - naive method of determining the intersection
+%     points by the algorithm called Naive (Alg.1) provided in [1] going
+%     along every edge and checking for intersections
 %
 % Mathematics:
-%   edge between two adjacent vertices v and u (both dim n)
-%   given by: e_uv(t) = v + t*(u-v) with t from 0 to 1
-%   when the edge intersects the hyperplane the components
-%   of e_uv sum up to alpha, hence t can be determined:
-%         alpha - sum(i=1,n) v_i
-%   t* = ------------------------
-%          sum(i=1,n) u_i - v_i
-%   if t* is between 0 and 1, there is an intersection
+%    edge between two adjacent vertices v and u (both dim n)
+%    given by: e_uv(t) = v + t*(u-v) with t from 0 to 1
+%    when the edge intersects the hyperplane the components
+%    of e_uv sum up to alpha, hence t can be determined:
+%          alpha - sum(i=1,n) v_i
+%    t* = ------------------------
+%           sum(i=1,n) u_i - v_i
+%    if t* is between 0 and 1, there is an intersection
 %
 % Extension:
-%   vector beta is not included above, hence:
-%   own extension of the formula to include beta:
-%         alpha - sum(i=1,n) beta_i * v_i
-%   t* = ---------------------------------
-%         sum(i=1,n) beta_i * (u_i - v_i)
-%   if t* is between 0 and 1, there is an intersection
+%    vector beta is not included above, hence:
+%    own extension of the formula to include beta:
+%          alpha - sum(i=1,n) beta_i * v_i
+%    t* = ---------------------------------
+%          sum(i=1,n) beta_i * (u_i - v_i)
+%    if t* is between 0 and 1, there is an intersection
 %
 % Pseudocode from [1]:
-%   INPUT:  hyperbox B and the hyperplane defined by alpha
-%   OUTPUT: L ... list of solutions for the intersection
-%   L <- {}
-%   compute all edges E(B)
-%   for all e_uv elem E(B) do
-%       compute t*
-%       if 0 <= t* <= 1 then
-%           L <- L u e_uv(t*)
-%       end if
-%   end for
-%   return L
+%    INPUT:  hyperbox B and the hyperplane defined by alpha
+%    OUTPUT: L ... list of solutions for the intersection
+%    L <- {}
+%    compute all edges E(B)
+%    for all e_uv elem E(B) do
+%        compute t*
+%        if 0 <= t* <= 1 then
+%            L <- L u e_uv(t*)
+%        end if
+%    end for
+%    return L
 %
 % Syntax:  
-%    L = naive(hyperbox,hyperplane,beta)
+%    L = boxPlaneIntersectNaive(hyperbox,hyperplane,beta)
 %
 % Inputs:
 %    hyperbox   - (n,2) with lower(:,1)/upper(:,2) bounds
@@ -56,7 +56,7 @@ function L = boxPlaneIntersectNaive(hyperbox,hyperplane,beta)
 %       "On the Hyperbox - Hyperplane Intersection Problem"
 
 % Author:       Mark Wetzlinger
-% Written:      08-Oct-2018
+% Written:      08-October-2018
 % Last update:  ---
 % Last revision:---
 
@@ -71,11 +71,12 @@ function L = boxPlaneIntersectNaive(hyperbox,hyperplane,beta)
     if size(hyperplane) == 1
         alpha = hyperplane;
     else
-        error('The hyperplane has to be defined by a scalar.');
+        throw(CORAerror('CORA:specialError',...
+            'The hyperplane has to be defined by a scalar.'));
     end   
 %   2nd check: beta has to be a line vector (not a matrix)    
     if size(beta,1) > 1
-        error('Beta has to be a vector.');
+        throw(CORAerror('CORA:specialError','Beta has to be a vector.'));
     end
 % 2 compute all edges of hyperbox B
     dim = size(hyperbox,1);

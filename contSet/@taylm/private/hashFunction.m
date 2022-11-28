@@ -1,8 +1,8 @@
-function res = hashFunction( monomials )
+function res = hashFunction(monomials)
 % hashFunction - adds the sum of all columns as the first column
 %
 % Syntax:  
-%    value = hashFunction( monomials )
+%    value = hashFunction(monomials)
 %
 % Inputs:
 %    monomials - vector with the multivariate monomials of one terms 
@@ -17,7 +17,7 @@ function res = hashFunction( monomials )
 % MAT-files required: none
 %
 % See also: taylm
-%
+
 % Author:       Niklas Kochdumper, Dmitry Grebenyuk
 % Written:      14-June-2017
 %               02-December-2017 (DG) New rank evaluation
@@ -26,8 +26,6 @@ function res = hashFunction( monomials )
 
 %------------- BEGIN CODE -------------
  
-    res = [sum(monomials, 2), monomials];
-
-end
+res = [sum(monomials, 2), monomials];
 
 %------------ END OF CODE ------------

@@ -4,13 +4,13 @@ function completed = example_nonlinear_reach_06_tank_linearRemainder
 %    This example can be found in [1, Sec. 3.4.5] or in [2]. 
 %
 % Syntax:  
-%    example_nonlinear_reach_01_tank
+%    completed = example_nonlinear_reach_06_tank_linearRemainder
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
+%    completed - true/false 
 %
 % Example: 
 %
@@ -20,7 +20,7 @@ function completed = example_nonlinear_reach_06_tank_linearRemainder
 %    [2] M. Althoff, O. Stursberg, and M. Buss. Reachability analysis 
 %        of nonlinear systems with uncertain parameters using 
 %        conservative linearization. CDC 2008.
-% 
+
 % Author:       Victor Gassmann
 % Written:      23-May-2019
 % Last update:  23-April-2020 (restructure params/options)
@@ -41,8 +41,6 @@ params.U = zonotope([0,0.005]);
 options.timeStep=1; %time step size for reachable set computation
 options.taylorTerms=4; %number of taylor terms for reachable sets
 options.zonotopeOrder=50; %zonotope order
-options.intermediateOrder=5;
-options.errorOrder=1;
 options.reductionInterval=1e3;
 options.maxError = ones(dim_x,1);
 
@@ -59,20 +57,21 @@ tank = nonlinearSys(@tank6Eq); %initialize tank system
 tx1 = tic;
 R_wo_linear = reach(tank, params, options); %with normal remainder
 tComp1 = toc(tx1);
-disp(['computation time of reachable set with normal lagrange remainder: ',num2str(tComp1)]);
+disp(['computation time of reachable set with ' ...
+    'normal lagrange remainder: ',num2str(tComp1)]);
+
 tx2 = tic;
 options.alg = 'linRem';
+options.intermediateOrder=5;
 R = reach(tank, params, options); %remainder added to system matrices
 tComp2 = toc(tx2);
-disp(['computation time of reachable set with remainder added to system matrix: ',num2str(tComp2)]);
+disp(['computation time of reachable set with ' ...
+    'remainder added to system matrix: ',num2str(tComp2)]);
 
 
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 60;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
 simRes = simulateRandom(tank, params, simOpt);
 
 
@@ -91,27 +90,24 @@ for plotRun=1:3
     figure; hold on; box on;
     
     % plot reachable set (normal lagrange remainder)
-    plot(R_wo_linear,projDims,'b','Filled',true,'EdgeColor','none');
+    plot(R_wo_linear,projDims);
     
-    % plot reachable sets (lagrange remainder added to system matrices
-    % (A,B))
-    plot(R,projDims,'r','Filled',true,'EdgeColor','none');
+    % plot reachable sets (lagrange remainder added to system matrices (A,B))
+    plot(R,projDims,'FaceColor',colorblind('gray'));
     
-    
-    %plot initial set
-    plot(params.R0,projDims,'w','Filled',true,'EdgeColor','k');
-    
+    % plot initial set
+    plot(params.R0,projDims,'k','FaceColor','w');
   
-    %plot simulation results      
-    plot(simRes,projDims,'k');
+    % plot simulation results      
+    plot(simRes,projDims);
 
-    %label plot
+    % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);
     ylabel(['x_{',num2str(projDims(2)),'}']);
 end
 
 
 %example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

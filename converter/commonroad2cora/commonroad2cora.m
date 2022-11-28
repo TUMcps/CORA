@@ -334,7 +334,8 @@ for i = 0:(lanelet_length-1)
                 break;
             end
         elseif laneletList.item(i).getElementsByTagName('adjacentLeft').getLength > 1
-            error('Error: More than one adjacentLeft lanelet. Violates assumptions; Road Boundary functionality fails.')
+            throw(CORAerror('CORA:converterIssue',...
+                'More than one adjacentLeft lanelet. Violates assumptions; Road Boundary functionality fails.'));
         end
         
         % retrieve all right neighbours of lane i
@@ -358,7 +359,8 @@ for i = 0:(lanelet_length-1)
                 break;
             end
         elseif laneletList.item(i).getElementsByTagName('adjacentRight').getLength > 1
-            error('Error: More than one adjacentRight lanelet. Violates assumptions; Road Boundary functionality fails.')
+            throw(CORAerror('CORA:converterIssue',...
+                'More than one adjacentRight lanelet. Violates assumptions; Road Boundary functionality fails.'));
         end
         
         overshoot_len = 4; % additional free space before and behind road ends (in m)
@@ -865,3 +867,5 @@ elseif ~isempty(XList.item(idx).getElementsByTagName('intervalStart').item(0))
 end
 
 end
+
+%------------- END OF CODE --------------

@@ -1,9 +1,35 @@
 function mergedBC = automatonProduct(BC1,BC2)
-% Compute the automaton product of two Base Component Instances
-% (The input BCs should be brought to the same variable space first)
-% RETURNS: a single Base Component Instance
+% automatonProduct - Computes the automaton product of two Base Component
+%    Instances (input Base Components should be brought to the same
+%    variable space first)
+%
+% Syntax:  
+%    mergedBC = automatonProduct(BC1,BC2)
+%
+% Inputs:
+%    BC1 - Base Component Instance
+%    BC2 - Base Component Instance
+%
+% Outputs:
+%    mergedBC - single Base Component Instance
+%
+% Example: 
+%    ---
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-% Meta-information are combined to stay informative & readable
+% Author:       ???
+% Written:      ???
+% Last update:  ---
+% Last revision:---
+
+%------------- BEGIN CODE --------------
+
+% Meta-information are combined to remain informative & readable
 mergedBC.id = BC1.id + " X " + BC2.id;
 mergedBC.name = BC1.name + " X " + BC2.name;
 
@@ -43,10 +69,10 @@ for i = 1:numS1
         exprleft = [S1(i).Invariant.exprLeft; S2(j).Invariant.exprLeft];
         exprright = [S1(i).Invariant.exprRight; S2(j).Invariant.exprRight];
         % combine equation Text, to keep it sensible and readable
-        text = S1(i).Invariant.Text +newline+"&&"+newline+ S2(j).Invariant.Text;
+        text = S1(i).Invariant.Text + newline + "&&" + newline + S2(j).Invariant.Text;
         
-        S1XS2(idx).Invariant = struct('inequalities',ineq,'equalities',eq,'Text',text,...
-            'exprLeft',exprleft,'exprRight',exprright);
+        S1XS2(idx).Invariant = struct('inequalities',ineq,'equalities',eq,...
+            'Text',text,'exprLeft',exprleft,'exprRight',exprright);
         
         % Combine Transition Sets of S1(i) & S2(j)
         T1 = S1(i).Trans;
@@ -70,9 +96,9 @@ for i = 1:numS1
             % compute index of new destination (S1_i,S2_x)
             T2(t).destination = (i-1)*numS2 + x;
             
-            % guard and reset function can be left identical,
-            % since polytopes naturally expand if new dimensions are added
-            % and reset functions are implicitly defined for unmentioned variables
+            % guard and reset function can be left identical, since
+            % polytopes naturally expand if new dimensions are added and
+            % reset functions are implicitly defined for unmentioned variables
         end
         
         % Concatenate tweaked Transition sets
@@ -84,4 +110,4 @@ end
 % add new state set to output component
 mergedBC.States = S1XS2;
 
-end
+%------------- END OF CODE --------------

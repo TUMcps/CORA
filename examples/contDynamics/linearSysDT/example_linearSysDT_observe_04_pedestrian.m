@@ -1,8 +1,7 @@
 function completed = example_linearSysDT_observe_04_pedestrian
-% example_linearSysDT_observe_04_pedestrian - example for guaranteed
-% state estimation of linear discrete-time systems from a unit test.
-%
-% Provides the solution of the linearSysDT class for a pedestrian example
+% example_linearSysDT_observe_04_pedestrian - example for guaranteed state
+%    estimation of linear discrete-time systems from a unit test; provides
+%    the solution of the linearSysDT class for a pedestrian example
 %
 % Syntax:  
 %    completed = example_linearSysDT_observe_04_pedestrian
@@ -11,11 +10,11 @@ function completed = example_linearSysDT_observe_04_pedestrian
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % Example: 
 %    -
- 
+
 % Author:       Matthias Althoff
 % Written:      03-Mar-2021
 % Last update:  ---
@@ -24,7 +23,7 @@ function completed = example_linearSysDT_observe_04_pedestrian
 %------------- BEGIN CODE --------------
 
 
-%% Load pedestrian model
+% load pedestrian model
 load pedestrianModel pedestrian params options simRes
 
 
@@ -48,6 +47,11 @@ Estimator = {
 
 % set solver
 options.solver = 'sdpt3';
+% ensure that solver is on path
+if ~isSolverInstalled('sdpt3')
+    throw(CORAerror('CORA:noSuitableSolver','sdpt3'));
+end
+
 
 
 %% perform evaluation
@@ -55,8 +59,9 @@ options.solver = 'sdpt3';
 for iEst = 1:length(Estimator)
 
     % set algorithm
-    estName = Estimator{iEst}
+    estName = Estimator{iEst};
     options.alg = estName;
+    disp("Running observer '" + estName + "'");
     
     % if constrained zonotopes or ellipsoids are used
     paramsNew = params;
@@ -73,21 +78,21 @@ for iEst = 1:length(Estimator)
 
     % plot results
     if ~isempty(estSet)
-        for dim = 1:4
+        for iDim = 1:4
             figure; hold on;
             % plot time elapse
-            plotOverTime(estSet,dim,'FaceColor',[.6 .6 .6],'EdgeColor','none');
+            plotOverTime(estSet,iDim);
             % plot simulation
-            plotOverTime(simRes,dim);
+            plotOverTime(simRes,iDim);
 
             % label plot
             xlabel('t');
-            ylabel(['x_{',num2str(dim),'}']);
+            ylabel(['x_{',num2str(iDim),'}']);
         end
     end
 end
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

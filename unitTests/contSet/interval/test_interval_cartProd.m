@@ -62,24 +62,25 @@ Int_cartProd_true = interval(lower_true, upper_true);
 % compare results
 res_horzcat = isequal(Int_cartProd,Int_cartProd_true);
 
-% 3. empty interval
-% create intervals
-Int1 = interval();
-Int2 = interval([-1; -5], ...
-                [7;  9]);
+% % 3. empty interval
+% % create intervals
+% Int1 = interval();
+% Int2 = interval([-1; -5], ...
+%                 [7;  9]);
+% 
+% % compute Cartesian product
+% try
+%     cartProd(Int1, Int2);
+%     res_empty = false;
+% catch ME
+%     if ~strcmp(ME.identifier,'CORA:notSupported')
+%         rethrow(ME);
+%     else
+%         res_empty = true;
+%     end
+% end
 
-% compute cartesian product
-Int_cartProd = cartProd(Int1, Int2);
-
-% true product
-lower_true = [-1; -5];
-upper_true = [ 7;  9];
-Int_cartProd_true = interval(lower_true, upper_true);
-
-% compare results
-res_empty = isequal(Int_cartProd,Int_cartProd_true);
-
-res_analytical = res_vertcat && res_horzcat && res_empty;
+res_analytical = res_vertcat && res_horzcat; % && res_empty;
 % -------------------------------------------------------------------------
 
 % TEST 2: Random ----------------------------------------------------------
@@ -105,11 +106,5 @@ res_rand = isequal(Int_cartProd,Int_cartProd_true);
 
 % add results
 res = res_analytical && res_rand;
-
-if res
-    disp('test_cartProd successful');
-else
-    disp('test_cartProd failed');
-end
 
 %------------- END OF CODE --------------

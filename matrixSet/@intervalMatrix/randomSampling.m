@@ -1,11 +1,11 @@
-function A = randomSampling(intA,varargin)
+function A = randomSampling(intMat,varargin)
 % randomSampling - creates random samples within a matrix zonotope.
 %
 % Syntax:  
-%    A = randomSampling(intA,samples)
+%    A = randomSampling(intMat,samples)
 %
 % Inputs:
-%    intA - interval matrix 
+%    intMat - interval matrix 
 %    samples - number of segments
 %    options - options struct
 %
@@ -31,38 +31,34 @@ function A = randomSampling(intA,varargin)
 % set default inputs
 if nargin == 1
     samples = 1;
-    extreme = 1;
+    extreme = true;
 elseif nargin == 2
     samples = varargin{1};
-    extreme = 1;
+    extreme = true;
 else
     samples = varargin{1};
     options = varargin{2};
     if isfield(options,'extremeSampling')
         extreme = options.extremeSampling;
     else
-        extreme = 1;
+        extreme = true;
     end
 end
 
-
 %obtain dim, minimum and difference matrix
-dim = intA.dim;
-midA = center(intA.int);
-minA = infimum(intA.int);
-diffA = supremum(intA.int)-infimum(intA.int);
+n = intMat.dim;
+midA = center(intMat.int);
+minA = infimum(intMat.int);
+diffA = supremum(intMat.int)-infimum(intMat.int);
 
 %generate sample matrices
 A=cell(samples,1);
 for i=1:samples
-    % extreme
-    if extreme
-        A{i}=midA + 0.5*sign(2*rand(dim)-1).*diffA;
-    % random
-    else
-        A{i}=minA + rand(dim).*diffA;
+    if extreme % extreme
+        A{i} = midA + 0.5*sign(2*rand(n)-1).*diffA;
+    else % random
+        A{i} = minA + rand(n).*diffA;
     end
 end
-
     
 %------------- END OF CODE --------------

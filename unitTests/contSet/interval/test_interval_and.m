@@ -34,23 +34,22 @@ b = interval([-11; 2; 11.0], [-6; 9; 12.0]);
 c = a & b;
 if abs( infimum(c(1)) + 10.0 ) > tol || abs( supremum(c(1)) + 6.0 ) > tol
 	res = false;
-	disp('test_and failed');
 	return;
 end
 
 if abs( infimum(c(2)) - 2.0 ) > tol || abs( supremum(c(2)) - 8.0 ) > tol
 	res = false;
-	disp('test_and failed');
 	return;
 end
 
 if abs( infimum(c(3)) - 11.0 ) > tol || abs( supremum(c(3)) - 12.0 ) > tol
 	res = false;
-	disp('test_and failed');
 	return;
 end
 
-disp('test_and successful');
-return;
+% if ~isempty(a & interval())
+%     res = false;
+%     disp('test_and_failed');
+% end
 
 %------------- END OF CODE --------------

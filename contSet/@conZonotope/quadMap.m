@@ -1,17 +1,17 @@
-function cZquad = quadMap(varargin)
+function cZ = quadMap(cZ,varargin)
 % quadMap - computes the quadratic map of a constrained zonotope
 %
 % Syntax:  
-%    cZquad = quadMap(cZ1, Q)
-%    cZquad = quadMap(cZ1, cZ2, Q)
+%    cZquad = quadMap(cZ,Q)
+%    cZquad = quadMap(cZ,cZ2,Q)
 %
 % Inputs:
-%    cZ1 - conZonotope object
+%    cZ - conZonotope object
 %    cZ2 - conZonotope object
 %    Q - quadratic coefficients as a cell of matrices
 %
 % Outputs:
-%    cZquad - conZonotope object
+%    cZ - conZonotope object
 %
 % Example: 
 %    Z = [0 1 0 1;0 1 2 -1];
@@ -23,9 +23,9 @@ function cZquad = quadMap(varargin)
 %    Q{2} = [-2 -1;0 1];
 %    cZquad = quadMap(cZ,Q);
 %
-%    figure;
-%    plot(cZ,[1,2],'r','Filled',true);
-%    plot(cZquad,[1,2],'b','Filled',true);
+%    figure; hold on;
+%    plot(cZ,[1,2],'FaceColor','r');
+%    plot(cZquad,[1,2],'FaceColor','b');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -40,11 +40,16 @@ function cZquad = quadMap(varargin)
 
 %------------- BEGIN CODE --------------
 
-    if nargin == 2
-        cZquad = quadMapSingle(varargin{1},varargin{2});
+    if nargin == 1
+        throw(CORAerror('CORAerror:notEnoughInputArgs',2));
+    elseif nargin == 2
+        cZ = quadMapSingle(cZ,varargin{1});
+    elseif nargin == 3
+        cZ = quadMapMixed(cZ,varargin{1},varargin{2});
     else
-        cZquad = quadMapMixed(varargin{1},varargin{2},varargin{3});
+        throw(CORAerror('CORAerror:tooManyInputArgs',3));
     end
+
 end
 
 
@@ -93,11 +98,11 @@ function cZquad = quadMapSingle(cZ,Q)
     end
 
     % construct the constrained matrices for the constrained zonotope that
-    % represents the resuling set for the quadratic map
+    % represents the resulting set for the quadratic map
     N_ = N - 2*gens;
     A = [zeros(size(cZ.A,1),gens), cZ.A, zeros(size(cZ.A,1),N_)];
 
-    % generate the resuling conZonotope object
+    % generate the resulting conZonotope object
     cZquad = conZonotope([c, G],A,cZ.b);
 end
 
@@ -157,7 +162,7 @@ function cZquad = quadMapMixed(cZ1,cZ2,Q)
         b = [cZ2.b;cZ1.b];
     end
 
-    % generate the resuling constrained zonotope
+    % generate the resulting constrained zonotope
     cZquad = conZonotope([c, G],A,b);
 
 end

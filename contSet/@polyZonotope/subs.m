@@ -1,16 +1,16 @@
-function PZ = subs(pZ,pZin,idu)
+function pZ = subs(pZ,pZin,varargin)
 % subs - computes substitution of pZin into pZ for elements of id idu
 %
 % Syntax:  
-%    PZ = subs(pZ,pZin)
-%    PZ = subs(pZ,pZin,idu)
+%    pZ = subs(pZ,pZin)
+%    pZ = subs(pZ,pZin,idu)
 %
 % Inputs:
 %    pZ,pZin - polyZonotope objects
-%    idu - ids in pZ to be substituted
+%    idu - (optional) ids in pZ to be substituted
 %
 % Outputs:
-%    PZ - resulting set as a polyZonotope object
+%    pZ - polyZonotope object
 %
 % Example: 
 %    % substitution
@@ -31,22 +31,41 @@ function PZ = subs(pZ,pZin,idu)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-if ~exist('idu','var')
-    idu = pZ.id;
+
+%% input argument check
+% default value
+idu = pZ.id;
+
+if nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
+
+% parse input arguments
+if nargin == 3 && ~isempty(varargin{1})
+    if ~isnumeric(varargin{1}) || ~isvector(varargin{1}) || any(mod(varargin{1},1) ~= 0)
+        throw(CORAerror('CORA:wrongValue','third','Identifiers have to be correct'));
+    end
+    idu = varargin{1};
+end
+
 nu = size(pZin.c,1);
 nbin = size(pZin.expMat,1);
 if length(idu)~=nu || ~all(ismember(idu,pZ.id))
-    error('Number of outputs of pZin must match number of dep. factors specified by id.');
+    throw(CORAerror('CORA:wrongValue','third',...
+        'Number of outputs of pZin must match number of dep. factors specified by id.'));
 end
 if ~isempty(pZin.Grest) && ~all(pZin.Grest==0,'all')
-    error('Rest matrix of pZin is not empty or zero');
+    throw(CORAerror('CORA:wrongValue','second',...
+        'Rest matrix of pZin is not empty or zero'));
 end
+
+%% trivial case
 if isempty(pZ.G) || isempty(pZ.expMat)
-    PZ = pZ;
     return;
 end
+
 %% sorting
+% sort to make sure that non-sorted input idu etc does not cause problems
 [Id,ind] = sort(pZ.id);
 [Idu,iuin] = sort(idu);
 Gin = pZin.G(iuin,:);
@@ -63,34 +82,46 @@ Idz = setdiff(Idr,Idx);
 % ids in pZin but not in pZ
 Idp = setdiff(Idin,Idx);
 %idnew = [Idx;Idz;Idp];
+
 %% compute substitution result
-iinx = ismember(Idin,Idx);
-iinp = ~iinx;
+% get masks of ids
+ind_inx = ismember(Idin,Idx);
+ind_inp = ~ind_inx;
 ix = ismember(Id,Idx);
 iz = ismember(Id,Idz);
 nu = length(Idu);
 n_mons = sum(Gin~=0,2);
 % check if pZin only 1 monomial per dimension
 if all(cin==0) && all(n_mons<=1)
+    % more efficient computation if all dimensions of pZin only contain one
+    % monomial
     m = size(eM,2);
     i_u = ismember(Id,Idu);
     eM_exp = eM(i_u,:);
     ind_mons = n_mons==1;
     i_emin = (Gin~=0)*(1:size(Gin,2))';
+    % always at most one entry ~=0, so sum used to get matrix to "vector"
+    % form
     G_subs = sum(Gin,2);
+    % compute resulting generator matrix
     G = pZ.G.*prod(G_subs.^eM_exp,1);
     % exponentiate
     eM_subs = zeros(length(Idin),nu);
     eM_subs(:,ind_mons) = eMin(:,i_emin(ind_mons));
     eMtmp = sum(reshape(reshape(eM_exp',[1,nu*m]).*repelem(eM_subs,1,m),...
                                 [length(Idin),m,nu]),3);
-    ExpMat = [eMtmp(iinx,:) + eM(ix,:);
+    % combine result
+    ExpMat = [eMtmp(ind_inx,:) + eM(ix,:);
               eM(iz,:);
-              eMtmp(iinp,:)];
+              eMtmp(ind_inp,:)];
     
 else
+    % extract max degree for each idu entry
     degs = max(eM(ismember(Id,Idu),:),[],2);
     d = max(degs);
+    % since we want to replace a dep. factor of pZ with the corresponding
+    % 1D polyZonotope from pZin, we need all solutions of
+    % project(pZin,i)^(0:d(i))
     Y = cell(nu,d+1);
     Gin0 = [cin,Gin];
     eMin0 = [zeros(nbin,1),eMin];
@@ -109,23 +140,30 @@ else
     % multiply old monomials with new eq from pZin substituted in
     G = [];
     ExpMat = [];
-
+    
     for i=1:size(pZ.G,2)
+        % extract the appropriate power
         Xprod = Y{1,eM(ismember(Id,Idu(1)),i)+1}; 
         for j=2:length(Idu)
+            % multiply the result of each separate idu entry
             [Xprod{:}] = multiply(Xprod{:},Y{j,eM(ismember(Id,Idu(j)),i)+1}{:});
         end
+        % the result of the monomial computation (so substituting the
+        % dimensions of pZin into dep. factors of pZ) still
+        % requires the computation with the coefficients of pZ, i.e., G
         G = [G,pZ.G(:,i).*Xprod{1}];
+        % construct exponent matrix
         eMtmp = Xprod{2};
-        eMtmp(iinx,:) = eMtmp(iinx,:) + eM(ix,i);
-        eMtmp_new = [eMtmp(iinx,:);
+        eMtmp(ind_inx,:) = eMtmp(ind_inx,:) + eM(ix,i);
+        eMtmp_new = [eMtmp(ind_inx,:);
                      repmat(eM(iz,i),1,size(eMtmp,2));
-                     eMtmp(iinp,:)];
+                     eMtmp(ind_inp,:)];
         ExpMat = [ExpMat,eMtmp_new];
     end
 end
 [ExpMat,G] = removeRedundantExponents(ExpMat,G);
 [ExpMat,G,c] = removeZeroExponents(ExpMat,G);
+
 %% reverse order to original
 % make sure that id order is reversed again: otherwise if s.o. has some ids
 % stored that are created before this function is executed, they might not 
@@ -147,5 +185,7 @@ idp = pZin.id(ismember(pZin.id,Idp));
 indr_rev(tmp_r) = 1:length(tmp_r);
 indp_rev(tmp_p) = 1:length(tmp_p);
 expMat = [expMat_r(indr_rev,:);expMat_p(indp_rev,:)];
-PZ = polyZonotope(c+pZ.c,G,pZ.Grest,expMat,[idr;idp]);
+% instantiate result
+pZ = polyZonotope(c+pZ.c,G,pZ.Grest,expMat,[idr;idp]);
+
 %------------- END OF CODE --------------

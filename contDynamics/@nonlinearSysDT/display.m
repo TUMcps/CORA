@@ -1,16 +1,19 @@
-function display(obj)
-% display - Displays a nonlinearSysDT object
+function display(sys)
+% display - Displays a nonlinearSysDT object on the command window
 %
 % Syntax:  
-%    display(obj)
+%    display(sys)
 %
 % Inputs:
-%    obj - nonlinearSysDT object
+%    sys - nonlinearSysDT object
 %
 % Outputs:
-%    ---
+%    -
 %
-% Example: 
+% Example:
+%    f = @(x,u) [x(1) + u(1); x(2) + u(2)*cos(x(1)); x(3) + u(2)*sin(x(1))];
+%    dt = 0.25;
+%    sys = nonlinearSysDT(f,dt)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -18,39 +21,51 @@ function display(obj)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Niklas Kochdumper
+% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
 % Written:      27-October-2011
 % Last update:  29-January-2018 (NK)
+%               19-June-2022 (MW)
+%               23-November-2022 (TL: dispInput)
+% Last revision:---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-disp('-----------------------------------');
+% disp input if necessary
+dispInput(inputname(1))
 
 %display parent object
-display@contDynamics(obj);
+display@contDynamics(sys);
 
 %display type
-disp('type: Nonlinear time discrete system');
+disp('Type: Nonlinear discrete-time system');
+
+% display sampling time
+disp("Sampling time: " + sys.dt);
+
+%create symbolic variables
+vars = symVariables(sys);
+
+%insert symbolic variables into the system equations
+f = sys.mFile(vars.x,vars.u);
 
 %display state space equations
-%generate symbolic states
-for i=1:obj.dim
-    command=['syms x',num2str(i)];
-    eval(command); 
-    command=['x(',num2str(i),')=x',num2str(i),';'];
-    eval(command);
-end
-%generate symbolic inputs
-for i=1:obj.nrOfInputs
-    command=['syms u',num2str(i)];
-    eval(command); 
-    command=['u(',num2str(i),')=u',num2str(i),';'];
-    eval(command);
+disp('State-space equations:')
+for i=1:length(f)
+    disp(['  f(',num2str(i),') = ',char(f(i))]);
 end
 
-dx=obj.mFile(x,u)
+fprintf(newline);
 
-disp('-----------------------------------');
+%insert symbolic variables into the system equations
+y = sys.out_mFile(vars.x,vars.u);
+
+%display state space equations
+disp('Output equations:')
+for i=1:length(y)
+    disp(['  y(',num2str(i),') = ',char(y(i))]);
+end
+
+fprintf(newline);
 
 %------------- END OF CODE --------------

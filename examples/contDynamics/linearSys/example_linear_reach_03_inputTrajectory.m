@@ -1,7 +1,6 @@
 function res = example_linear_reach_03_inputTrajectory()
 % example_linear_reach_03_inputTrajectory - example for linear reachability 
-%                                           analysis with an input 
-%                                           trajectory 
+%    analysis with an input trajectory 
 %
 % Syntax:  
 %    res = example_linear_reach_03_inputTrajectory()
@@ -22,9 +21,9 @@ function res = example_linear_reach_03_inputTrajectory()
 
 %------------- BEGIN CODE --------------
 
-% Parameter ---------------------------------------------------------------
+% Parameters --------------------------------------------------------------
 
-% load model parameter
+% load model parameters
 load data_Jean-MarcBiannic.mat A B uvec
 projDims = length(A);
 inputDim = length(B(1,:));
@@ -35,7 +34,7 @@ params.R0 = zonotope([zeros(projDims,1),0.1*eye(projDims,4)]);
 params.U = zonotope([zeros(inputDim,1),diag([0.05 1])]);
 
 % input trajectory
-params.u = uvec(:,2:end);
+params.u = uvec(:,1:end-1);
 
 
 % Reachability Settings ---------------------------------------------------
@@ -60,12 +59,7 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 
 % Simulation --------------------------------------------------------------
 
-simOpt.points = 20;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 10;
-
-simRes = simulateRandom(sys, params, simOpt);
+simRes = simulateRandom(sys, params);
 
 
 % Visualization -----------------------------------------------------------
@@ -78,10 +72,10 @@ for k = 1:length(dims)
     projDims = dims{k};
 
     % plot reachable sets 
-    plot(R,projDims,'FaceColor',[.8 .8 .8],'EdgeColor','none','Order',10);
+    plot(R,projDims,'Order',10);
     
     % plot initial set
-    plot(params.R0,projDims,'w-','LineWidth',2);
+    plot(params.R0,projDims,'k','FaceColor','w');
     
     % plot simulation results    
     plot(simRes,projDims);
@@ -92,6 +86,6 @@ for k = 1:length(dims)
 end
 
 % example completed
-res = 1;
+res = true;
 
 %------------- END OF CODE --------------

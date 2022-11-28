@@ -1,17 +1,17 @@
-function PZ = noIndep(pZ)
-% noIndep - removes Grest from pZ
+function pZ = noIndep(pZ)
+% noIndep - removes independent generator matrix from polynomial zonotope
 %
 % Syntax:  
-%    PZ = noIndep(pZ)
+%    pZ = noIndep(pZ)
 %
 % Inputs:
 %    pZ - polyZonotope object
 %
 % Outputs:
-%    PZ - polyZonotope object
+%    pZ - polyZonotope object
 %
 % Example: 
-%    pZ1 = polyZonotope([2;1],[1 0; -2 1],[1; 0],[0 2; 1 0]);
+%    pZ = polyZonotope([2;1],[1 0; -2 1],[1; 0],[0 2; 1 0]);
 %    noIndep(pZ)
 %
 % Other m-files required: none
@@ -26,5 +26,7 @@ function PZ = noIndep(pZ)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
-PZ = polyZonotope(pZ.c,pZ.G,zeros(length(pZ.c),0),pZ.expMat,pZ.id);
+
+pZ.Grest = zeros(dim(pZ),0);
+
 %------------- END OF CODE --------------

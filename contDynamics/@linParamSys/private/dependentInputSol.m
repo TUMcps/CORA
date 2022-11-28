@@ -1,18 +1,19 @@
-function obj = dependentInputSol(obj, options)
-% dependentInputSol - computes the solution when the parameters
-% of the system matrix and the constant input are dependent
+function Rhom_tp = dependentInputSol(obj,options)
+% dependentInputSol - computes the solution when the parameters of the
+%    system matrix and the constant input are dependent
 %
 % Syntax:  
-%    obj = dependentInputSol(obj, options)
+%    Rhom_tp = dependentInputSol(obj,options)
 %
 % Inputs:
 %    obj - linParamSys object 
 %    options - options struct
 %
 % Outputs:
-%    obj - linParamSys object 
+%    Rhom_tp - time-point solution
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -94,6 +95,5 @@ R_hom_state = obj.mappingMatrixSet.zono*Rinit_noCenter + obj.mappingMatrixSet.in
 
 %FINAL SOLUTION
 Rhom_tp = R_hom_state + R_lowOrder + R_rem;
-
 
 %------------- END OF CODE --------------

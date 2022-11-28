@@ -1,17 +1,17 @@
-function res = conZonotope(obj)
+function cZ = conZonotope(I)
 % conZonotope - Converts an interval object into a conZonotope object
 %
 % Syntax:  
-%    res = conZonotope(obj)
+%    cZ = conZonotope(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - conZonotope object
+%    cZ - conZonotope object
 %
 % Example: 
-%    I = interval([1;-1], [2; 1]);
+%    I = interval([1;-1], [2;1]);
 %    cZ = conZonotope(I);
 %
 % Other m-files required: none
@@ -27,6 +27,6 @@ function res = conZonotope(obj)
 
 %------------- BEGIN CODE --------------
 
-res = conZonotope(zonotope(obj));
+cZ = conZonotope(zonotope(I));
 
 %------------- END OF CODE --------------

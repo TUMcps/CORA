@@ -1,10 +1,10 @@
 function [Rti,Rtp,Rti_y,perfInd,dimForSplit,options] = linReach(obj,options,Rinit,Rinit_y,iter)
 % linReach - computes the reachable set after linearazation and returns if
-% the initial set has to be split in order to control the linearization
-% error
+%    the initial set has to be split in order to control the linearization
+%    error
 %
 % Syntax:  
-%    [Rti,Rtp,perfInd,nr,options] = linReach(obj,options,Rinit,iter)
+%    [Rti,Rtp,perfInd,dimForSplit,options] = linReach(obj,options,Rinit,Rinit_y,iter)
 %
 % Inputs:
 %    obj - nonlinear DAE system object
@@ -18,10 +18,11 @@ function [Rti,Rtp,Rti_y,perfInd,dimForSplit,options] = linReach(obj,options,Rini
 %    Rtp - reachable set for time point (diff. variables)
 %    Rti_y - reachable set for time interval (alg. variables)
 %    perfInd - performance index
-%    nr - number of generator that should be split
+%    dimForSplit - number of generator that should be split
 %    options - options struct to return f0
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -33,7 +34,10 @@ function [Rti,Rtp,Rti_y,perfInd,dimForSplit,options] = linReach(obj,options,Rini
 % Written:      21-November-2011
 % Last update:  28-May-2013
 %               19-May-2020 (MW, error handling for exploding sets)
-%               11-January-2021 (MW, syntax change for reachSet instantiation)
+%               11-January-2021 (MW, syntax change for reachSet
+%                                    instantiation)
+%               26-May-2022 (MA, explicit selection of linearization error
+%                                computation)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -81,21 +85,31 @@ while ((perfIndCurr_x > 1) || (perfIndCurr_y > 1)) && (perfInd <= 1)
     Rmax = Rti + RallError;
 
     % obtain linearization error
-%     [Verror, error, error_x, error_y, Rti_y] = ...
-%         linError_mixed_noInt(obj, options, Rmax, Verror_y);
-    [Verror, error, error_x, error_y, Rti_y] = linError(obj, options, Rmax, Verror_y);
-    %[Verror, error, error_x, error_y, Rti_y] = linError_thirdOrder(obj, options, Rmax, Verror_y);
-
+    if options.tensorOrder == 2
+%         [Verror, error, error_x, error_y, Rti_y] = ...
+%            linError(obj, options, Rmax, Verror_y);
+        if ~isfield(options,'index')
+            % conventional computation
+            [Verror, error, error_x, error_y, Rti_y] = ...
+                linError_mixed_noInt(obj, options, Rmax, Verror_y);
+        else
+            % compositional computation
+            [Verror, error, error_x, error_y, Rti_y] = ...
+                linError_mixed_noInt_comp(obj, options, Rmax, Verror_y);
+        end
+    elseif options.tensorOrder == 3
+        [Verror, error, error_x, error_y, Rti_y] = ...
+            linError_thirdOrder(obj, options, Rmax, Verror_y);
+    end
+    
+    
     %compute performance index of linearization error
     perfIndCurr_x = max(error_x ./ appliedError_x);
     perfInd_x = max(error_x ./ options.maxError_x);
     perfIndCurr_y = max(error_y ./ appliedError_y);
     perfInd_y = max(error_y ./ options.maxError_y);
-    
-    if (perfIndCurr_x > 1) || (perfIndCurr_y > 1)
-        disp('investigate');
-    end
 
+    % compute overall performance index
     perfInd = max(perfInd_x, perfInd_y);
     
     % store error
@@ -104,7 +118,7 @@ while ((perfIndCurr_x > 1) || (perfIndCurr_y > 1)) && (perfInd <= 1)
     
     % clean exit in case of set explosion
     if any(error > 1e+100)
-        throw(printExplosionError());
+        throw(CORAerror('CORA:reachSetExplosion'));
     end
 end
 
@@ -134,6 +148,5 @@ Rtp_.set = Rtp;
 Rtp_.error_x = error_x;
 Rtp_.error_y = error_y;
 Rtp = Rtp_;
-
 
 %------------- END OF CODE --------------

@@ -1,13 +1,13 @@
-function res = rescale(obj,varargin)
+function res = rescale(cPZ,varargin)
 % rescale - rescale a constrained polynomial zonotope object by computing 
-%           a shrinked factor domain resulting from the constraints
+%    a shrinked factor domain resulting from the constraints
 %
 % Syntax:  
-%    res = rescale(obj)
-%    res = rescale(obj,method)
+%    res = rescale(cPZ)
+%    res = rescale(cPZ,method)
 %
 % Inputs:
-%    obj - conPolyZono object
+%    cPZ - conPolyZono object
 %    method - algorithm used for contraction ('forwardBackward',
 %             'linearize', 'polynomial', 'interval', or 'all')
 %
@@ -23,7 +23,7 @@ function res = rescale(obj,varargin)
 %    cPZ_ = rescale(cPZ,'forwardBackward');
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'r','Filled',true,'EdgeColor','none','Splits',20);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',20);
 %    plot(polyZonotope(c,G,[],expMat),[1,2],'b','Splits',15);
 %    plot(polyZonotope(cPZ_.c,cPZ_.G,[],cPZ_.expMat),[1,2],'g','Splits',15);
 %
@@ -43,30 +43,28 @@ function res = rescale(obj,varargin)
 
 %------------- BEGIN CODE -------------
 
-    % parse input arguments
-    method = 'forwardBackward';
-    
-    if nargin > 1
-        method = varargin{1};
-    end
-    
-    % contract the domain for the factors based on polynomial constraints
-    temp = ones(length(obj.id),1);
-    dom = interval(-temp,temp);
-    
-    if ~isempty(obj.A)
-    	dom = contractPoly(-obj.b,obj.A,[],obj.expMat_,dom,method);
-    end
-    
-    if isempty(dom)
-       [msg,id] = errEmptySet();
-       error(id,msg); 
-    end
-    
-    % reexpand the conPolyZono object so that the range for the factors is
-    % again between [-1,1]
-    res = getSubset(obj,obj.id,dom);
-    
+% parse input arguments
+method = setDefaultValues({'forwardBackward'},varargin{:});
+
+% check input arguments
+inputArgsCheck({{cPZ,'att','conPolyZono'};
+                {method,'str',{'forwardBackward','linearize',...
+                    'polynomial','interval','all'}}});    
+
+% contract the domain for the factors based on polynomial constraints
+temp = ones(length(cPZ.id),1);
+dom = interval(-temp,temp);
+
+if ~isempty(cPZ.A)
+	dom = contractPoly(-cPZ.b,cPZ.A,[],cPZ.expMat_,dom,method);
 end
+
+if isempty(dom)
+    throw(CORAerror('CORA:emptySet'));
+end
+
+% reexpand the conPolyZono object so that the range for the factors is
+% again between [-1,1]
+res = getSubset(cPZ,cPZ.id,dom);
     
 %------------- END OF CODE --------------

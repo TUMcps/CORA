@@ -9,9 +9,12 @@ function res = mpower(base,exponent)
 %    exponent - interval object or numerical value
 %
 % Outputs:
-%    res - interval
+%    res - interval object
 %
-% Example: 
+% Example:
+%    base = interval([-2;1],[3;2]);
+%    exponent = 2;
+%    base^exponent
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -66,7 +69,7 @@ else
     elseif isscalar(exponent) && exponent == 0 && all(size(infimum(base)) == size(infimum(base)'))        
         res = eye(size(infimum(base),1));
     else
-        error('Matrix is not square')
+        throw(CORAerror('CORA:wrongValue','second','square matrix'));
     end
 end
 

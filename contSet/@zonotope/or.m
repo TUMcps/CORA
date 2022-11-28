@@ -1,13 +1,14 @@
-function Z = or(Z1, varargin)
+function Z = or(Z, varargin)
 % or - computes an over-approximation for the union of zonotopes
 %
 % Syntax:  
-%    Z = or(Z1, Z2)
-%    Z = or(Z1, ... , Zm)
-%    Z = or(Z1, ... , Zm, alg)
-%    Z = or(Z1, ... , Zm, alg, order)
+%    Z = or(Z, Z1)
+%    Z = or(Z, ... , Zm)
+%    Z = or(Z, ... , Zm, alg)
+%    Z = or(Z, ... , Zm, alg, order)
 %
 % Inputs:
+%    Z - zonotope object
 %    Z1,...,Zm - zonotope objects
 %    alg - algorithm used to compute the union
 %               - 'linProg' (default)
@@ -18,7 +19,7 @@ function Z = or(Z1, varargin)
 %    order - zonotope order of the enclosing zonotope
 %
 % Outputs:
-%    Z - resulting zonotope object enclosing the union
+%    Z - zonotope object enclosing the union
 %
 % Example: 
 %    zono1 = zonotope([4 2 2;1 2 0]);
@@ -57,20 +58,20 @@ function Z = or(Z1, varargin)
     if nargin == 2 || (nargin > 2 && ...
                       (isempty(varargin{2}) || ischar(varargin{2})))
                   
-        Z2 = varargin{1};
+        S = varargin{1};
 
         % determine zonotope object
-        if ~isa(Z1,'zonotope')
-            temp = Z1;
-            Z1 = Z2;
-            Z2 = temp;
+        if ~isa(Z,'zonotope')
+            temp = Z;
+            Z = S;
+            S = temp;
         end
 
         % different cases depending on the class of the second set
-        if isa(Z2,'zonotope') || isa(Z2,'interval') || isnumeric(Z2)
+        if isa(S,'zonotope') || isa(S,'interval') || isnumeric(S)
             
-            if ~isa(Z2,'zonotope')
-               Z2 = zonotope(Z2); 
+            if ~isa(S,'zonotope')
+               S = zonotope(S); 
             end
             
             % parse input arguments
@@ -81,31 +82,34 @@ function Z = or(Z1, varargin)
             if nargin > 3 && ~isempty(varargin{3})
                 order = varargin{3};
             end
-            
+            if isempty(S)
+                return;
+            end 
             % compute over-approximation of the union with the selected 
             % algorithm
             if strcmp(alg,'linProg')
-               Z = unionLinProg({Z1,Z2},order);
+               Z = unionLinProg({Z,S},order);
             elseif strcmp(alg,'althoff')
-               Z = unionAlthoff(Z1,{Z2},order);
+               Z = unionAlthoff(Z,{S},order);
             elseif strcmp(alg,'tedrake')
-               Z = unionTedrake({Z1,Z2},order);
+               Z = unionTedrake({Z,S},order);
             elseif strcmp(alg,'iterative')
-               Z = unionIterative({Z1,Z2},order);
+               Z = unionIterative({Z,S},order);
             elseif strcmp(alg,'parallelotope')
-               Z = unionParallelotope({Z1,Z2});
+               Z = unionParallelotope({Z,S});
             else
-               error('Wrong value for input argument ''alg''!'); 
+                throw(CORAerror('CORA:wrongValue','third',...
+                    "'linProg', 'tedrake', 'iterative', 'althoff', or 'parallelotope'"));
             end
 
-        elseif isa(Z2,'mptPolytope') || isa(Z2,'conZonotope') || ...
-               isa(Z2,'zonoBundle') || isa(Z2,'conPolyZono')
+        elseif isa(S,'mptPolytope') || isa(S,'conZonotope') || ...
+               isa(S,'zonoBundle') || isa(S,'conPolyZono')
 
-            Z = Z2 | Z1;     
+            Z = S | Z;     
 
         else
             % throw error for given arguments
-            error(noops(Z1,Z2));
+            throw(CORAerror('CORA:noops',Z,S));
         end
     
     else
@@ -134,17 +138,18 @@ function Z = or(Z1, varargin)
 
         % compute over-approximation of the union with the selected algorithm
         if strcmp(alg,'linProg')
-           Z = unionLinProg([{Z1};Zcell],order);
+           Z = unionLinProg([{Z};Zcell],order);
         elseif strcmp(alg,'althoff')
-           Z = unionAlthoff(Z1,Zcell,order);
+           Z = unionAlthoff(Z,Zcell,order);
         elseif strcmp(alg,'tedrake')
-           Z = unionTedrake([{Z1};Zcell],order);
+           Z = unionTedrake([{Z};Zcell],order);
         elseif strcmp(alg,'iterative')
-           Z = unionIterative([{Z1};Zcell],order);
+           Z = unionIterative([{Z};Zcell],order);
         elseif strcmp(alg,'parallelotope')
-           Z = unionParallelotope([{Z1};Zcell]);
+           Z = unionParallelotope([{Z};Zcell]);
         else
-           error('Wrong value for input argument ''alg''!'); 
+             throw(CORAerror('CORA:wrongValue','second last',...
+                 "'linProg', 'tedrake', 'iterative', 'althoff', or 'parallelotope'"));
         end
     end
 end

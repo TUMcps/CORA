@@ -1,18 +1,21 @@
-function val = distancePoint(H,x)
-% distancePoint - computes the distance from a conHyperplane to a point
+function val = distancePoint(hyp,p)
+% distancePoint - computes the distance from a constrained hyperplane to a
+%    single point
 %
 % Syntax:  
-%    res = distance(H,x)
+%    res = distance(hyp,p)
 %
 % Inputs:
-%    H - conHyperplane object
-%    x - point
+%    hyp - conHyperplane object
+%    p - point
 %
 % Outputs:
-%    val - distance between H and x
+%    val - distance
 %
-% Example: 
-%    ---
+% Example:
+%    hyp = conHyperplane(halfspace([1;1],0),[1 0;-1 0],[2;2])
+%    p = [1;1];
+%    distance(hyp,p) % calls distancePoint
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,12 +29,14 @@ function val = distancePoint(H,x)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 % if conHyperplane actually is a hyperplane => analytical solution
-if isempty(H.C) || all(all(H.C))
-    val = abs(H.h.d-H.h.c'*x)/(H.h.c'*H.h.c);
+if isempty(hyp.C) || all(all(hyp.C))
+    val = abs(hyp.h.d-hyp.h.c'*p)/(hyp.h.c'*hyp.h.c);
 else
-    n = length(x);
+    n = length(p);
     % solve optimization problem: ||x-y||_2^2, s.t. y\in{x|C*x<=d}
-    val = quadprog(2*eye(n),-2*x,H.C,H.d);
+    val = quadprog(2*eye(n),-2*p,hyp.C,hyp.d);
 end
+
 %------------- END OF CODE --------------

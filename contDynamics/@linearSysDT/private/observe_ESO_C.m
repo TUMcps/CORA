@@ -1,5 +1,5 @@
 function [R,tcomp] = observe_ESO_C(obj,options)
-% observe_ESO_C - computes the guaranted state estimation approach of [1].
+% observe_ESO_C - computes the guaranteed state estimation approach of [1].
 %
 %
 % Syntax:  
@@ -51,9 +51,9 @@ R{1} = Rnext.tp;
 x = Rnext.tp.center;
 
 % compute e_inf, eq. (50) in [1]
-dim = size(obj.A,1); 
+n = size(obj.A,1); 
 nrOfOutputs = size(obj.C,1);
-w_bar = ones(dim+nrOfOutputs,1); % without loss of generality, the disturbances are bounded by 1
+w_bar = ones(n+nrOfOutputs,1); % without loss of generality, the disturbances are bounded by 1
 c_bar = gamma^2/lambda*(w_bar'*w_bar);
 e_inf = diag((P/c_bar)^-0.5);
 
@@ -69,11 +69,7 @@ tic
 for k = 1:timeSteps-1
     
     % center, eq. (46) in [1]
-    if isempty(obj.c)
-        x = obj.A*x + obj.B*options.uTransVec(:,k) + L*(options.y(:,k) - obj.C*x);
-    else
-        x = obj.A*x + obj.B*options.uTransVec(:,k) + obj.c + L*(options.y(:,k) - obj.C*x);
-    end
+    x = obj.A*x + obj.B*options.uTransVec(:,k) + obj.c + L*(options.y(:,k) - obj.C*x);
     % update mu, eq. (47) in [1]
     mu = (1-lambda)*mu + lambda;
     

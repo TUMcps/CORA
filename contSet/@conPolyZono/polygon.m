@@ -1,5 +1,6 @@
 function pgon = polygon(cPZ,varargin)
-% polygon - compute polygon enclosure of a 2D constrained poly. zonotope
+% polygon - compute polygon enclosure of a two-dimensional constrained
+%    polynomial zonotope
 %
 % Syntax:  
 %    pgon = polygon(cPZ)
@@ -23,13 +24,13 @@ function pgon = polygon(cPZ,varargin)
 %
 %    pgon = polygon(cPZ,15);
 %    
-%    plot(pgon,[1,2],'b','Filled',true,'EdgeColor','none');
+%    plot(pgon,[1,2],'FaceColor','b');
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: polygon, conPolyZonotope, zonotope
+% See also: polygon, conPolyZono, zonotope
 
 % Author:       Niklas Kochdumper
 % Written:      19-January-2020
@@ -38,16 +39,16 @@ function pgon = polygon(cPZ,varargin)
 
 %------------- BEGIN CODE --------------
 
-     % parse input arguments
-    splits = 10;
-    
-    if nargin > 1 
-       splits = varargin{1}; 
-    end
+    % parse input arguments
+    splits = setDefaultValues({10},varargin{:});
+
+    % check input arguments
+    inputArgsCheck({{cPZ,'att','conPolyZono'};
+                    {splits,'att','numeric','nonnan'}});
 
     % check dimension of set
     if dim(cPZ) ~= 2
-       error('Method "conPolyZono/polygon" requires a 2D set!'); 
+        throw(CORAerror('CORA:wrongValue','first','be a 2D set'));
     end
     
     % remove analytical constraints
@@ -132,8 +133,9 @@ function pgon = polygon(cPZ,varargin)
     if ~isempty(polyAll)
         pgon = polyAll;
     else
-        error('Set is empty!');
+        throw(CORAerror('CORA:emptySet'));
     end
+
 end
 
 
@@ -143,32 +145,32 @@ function [poly,V] = getPolygon(set,Grest)
 % construct the polygon that corresponds to the splitted set
 
     % convert to zonotope
-    zono = zonotope(set);
-    zono = project(zono,[1,2]);
-    zono = zonotope([zono.Z,Grest]);
+    Z = zonotope(set);
+    Z = project(Z,[1,2]);
+    Z = zonotope([Z.Z,Grest]);
     
     % convert zonotope to polygon
-    V = vertices(zono);
+    V = vertices(Z);
     poly = polygon(V(1,:),V(2,:));
     
     % catch the case when the zonotope is degenerate
     if isempty(poly.set.Vertices)
-        zono = zono + zonotope([0;0],eye(2)*1e-5);
-        V = vertices(zono);
+        Z = Z + zonotope([0;0],eye(2)*1e-5);
+        V = vertices(Z);
         poly = polygon(V(1,:),V(2,:));
     end
 end
 
-function res = unite(set1,set2)
+function res = unite(S1,S2)
 % compute union of two polygons (also works for empty sets contrary to the
 % original polygon/union function)
 
-    if isempty(set1)
-        res = set2;
-    elseif isempty(set2)
-        res = set1;
+    if isempty(S1)
+        res = S2;
+    elseif isempty(S2)
+        res = S1;
     else
-        res = set1 | set2;
+        res = S1 | S2;
     end
 end
 
@@ -192,7 +194,7 @@ function res = intersectsNullSpace(obj)
 % test if the split set violates the constraints (if it not intersects any
 % of the hyperplanes)
 
-    res = 1;
+    res = true;
     n = length(obj.set.c);
 
     % loop over all constraint dimensions
@@ -202,7 +204,7 @@ function res = intersectsNullSpace(obj)
         hs = conHyperplane(c,0);
         
         if ~isIntersecting(hs,zonotope(obj.set))
-           res = 0;
+           res = false;
            return;
         end
     end

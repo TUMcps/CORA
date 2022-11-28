@@ -56,7 +56,7 @@ true_mat = [ ...
 3.200, 0.882, -4.621, -1.789, 2.607];
    
 % check result
-res(end+1) = all(all(Zmat == true_mat));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 % plot
 % figure; hold on; box on;
@@ -68,7 +68,6 @@ Zred = reduce(Zorig,'cluster',3,[],method);
 
 % obtain zonotope matrix
 Zmat = round(Zred.Z,3);
-Zmat_sorted = sortMat(Zmat);
 
 % true result
 true_mat = [ ...
@@ -76,10 +75,9 @@ true_mat = [ ...
 2.900, -0.693, 0.817, -0.209, 0.252, -0.436, 0.675, 0.037, -0.474, 2.714, -1.330, 0.665, -0.767; ...
 2.000, -0.157, -0.214, -0.760, -0.153, 0.259, 0.474, -0.637, -0.003, -1.267, -0.478, -1.431, 1.264; ...
 3.200, -0.644, 0.260, 0.371, 0.757, 0.589, -0.198, -0.317, 0.652, 0.196, 1.320, -1.912, -1.998];
-true_mat_sorted = sortMat(true_mat);
 
 % check result
-res(end+1) = all(all(Zmat_sorted == true_mat_sorted));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 %% Combastel - order 1
 Zred = reduce(Zorig,'combastel',1);
@@ -95,16 +93,13 @@ true_mat = [ ...
 3.200, 0.000, 0.000, 0.000, 5.451];
    
 % check result
-res(end+1) = all(all(Zmat == true_mat));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 %% Combastel - order 3
 Zred = reduce(Zorig,'combastel',3);
 
 % obtain zonotope matrix
 Zmat = round(Zred.Z,3);
-
-% sort Zmat
-Zmat_sorted = sortMat(Zmat);
 
 % true result
 true_mat = [ ...
@@ -113,11 +108,8 @@ true_mat = [ ...
 2.000, 0.474, -0.760, -0.636, -0.214, -0.003, -0.157, -0.153, -0.637, 0.000, 0.000, 1.871, 0.000; ...
 3.200, -0.198, 0.371, 0.058, 0.260, 0.652, -0.644, 0.757, -0.317, 0.000, 0.000, 0.000, 2.194];
 
-% sort true_mat
-true_mat_sorted = sortMat(true_mat);
-
 % check result
-res(end+1) = all(all(Zmat_sorted == true_mat_sorted));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 %% constOpt - order 1
 w = warning();
@@ -133,23 +125,21 @@ true_mat = [ ...
 2.900, -1.873, 1.611];
    
 % check result
-res(end+1) = all(all(Zmat == true_mat));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 %% constOpt - order 3
 Zred = reduce(Zorig_2D,'constOpt',3);
 
 % obtain zonotope matrix
 Zmat = round(Zred.Z,3);
-Zmat_sorted = sortMat(Zmat);
 
 % true result
 true_mat = [ ...
 -1.300, -0.521, 0.319, 0.335, -0.517, -2.043, -0.903; ...
 2.900, 0.252, 0.675, 0.340, -0.474, -1.873, 1.611];
-true_mat_sorted = sortMat(true_mat);
 
 % check result
-res(end+1) = all(all(Zmat_sorted == true_mat_sorted));
+res(end+1) = compareMatrices(Zmat,true_mat);
 warning(w);
 
 %% Girard - order 1
@@ -166,7 +156,7 @@ true_mat = [ ...
 3.200, 0.000, 0.000, 0.000, 5.451];
    
 % check result
-res(end+1) = all(all(Zmat == true_mat));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 
 %% Girard - order 3
@@ -174,7 +164,6 @@ Zred = reduce(Zorig,'girard',3);
 
 % obtain zonotope matrix
 Zmat = round(Zred.Z,3);
-Zmat_sorted = sortMat(Zmat);
 
 % true result
 true_mat = [ ...
@@ -182,10 +171,9 @@ true_mat = [ ...
 2.900, -0.693, 0.817, -0.209, 0.252, -0.436, 0.675, 0.037, -0.474, 0.000, 2.769, 0.000, 0.000; ...
 2.000, -0.157, -0.214, -0.760, -0.153, 0.259, 0.474, -0.637, -0.003, 0.000, 0.000, 2.248, 0.000; ...
 3.200, -0.644, 0.260, 0.371, 0.757, 0.589, -0.198, -0.317, 0.652, 0.000, 0.000, 0.000, 1.663];
-true_mat_sorted = sortMat(true_mat);
 
 % check result
-res(end+1) = all(all(Zmat_sorted == true_mat_sorted));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 %% MethA - order 1
 Zred = reduce(Zorig,'methA',1);
@@ -201,14 +189,13 @@ true_mat = [ ...
 3.200, -3.608, 2.836, -1.214, -1.733];
    
 % check result
-res(end+1) = all(all(Zmat == true_mat));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 %% MethA - order 3
 Zred = reduce(Zorig,'methA',3);
 
 % obtain zonotope matrix
 Zmat = round(Zred.Z,3);
-Zmat_sorted = sortMat(Zmat);
 
 % true result
 true_mat = [ ...
@@ -216,17 +203,15 @@ true_mat = [ ...
 2.900, -0.693, 0.817, -0.209, 0.252, -0.436, 0.675, 0.037, -0.474, -0.057, 2.581, 0.920, -1.750; ...
 2.000, -0.157, -0.214, -0.760, -0.153, 0.259, 0.474, -0.637, -0.003, -0.299, -0.667, -0.791, -1.722; ...
 3.200, -0.644, 0.260, 0.371, 0.757, 0.589, -0.198, -0.317, 0.652, 1.153, 0.189, -1.448, 0.157];
-true_mat_sorted = sortMat(true_mat);
 
 % check result
-res(end+1) = all(all(Zmat_sorted == true_mat_sorted));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 %% MethB - order 1
 Zred = reduce(Zorig,'methB',1,6);
 
 % obtain zonotope matrix
 Zmat = round(Zred.Z,3);
-Zmat_sorted = sortMat(Zmat);
 
 % true result
 true_mat = [ ...
@@ -234,17 +219,15 @@ true_mat = [ ...
 2.900, -4.343, 5.497, -3.095, -4.777; ...
 2.000, -4.276, -1.440, -0.020, -1.082; ...
 3.200, 0.390, 1.749, 4.258, -4.439];
-true_mat_sorted = sortMat(true_mat);
 
 % check result
-res(end+1) = all(all(Zmat_sorted == true_mat_sorted));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 %% MethB - order 3
 Zred = reduce(Zorig,'methB',3,6);
 
 % obtain zonotope matrix
 Zmat = round(Zred.Z,3);
-Zmat_sorted = sortMat(Zmat);
 
 % true result
 true_mat = [ ...
@@ -252,17 +235,15 @@ true_mat = [ ...
 2.900, -0.693, 0.817, -0.209, 0.252, -0.436, 0.675, 0.037, -0.474, 0.903, 1.713, -0.738, -1.515; ...
 2.000, -0.157, -0.214, -0.760, -0.153, 0.259, 0.474, -0.637, -0.003, -0.777, -1.335, 1.338, -1.492; ...
 3.200, -0.644, 0.260, 0.371, 0.757, 0.589, -0.198, -0.317, 0.652, -1.422, 0.121, -1.670, 0.136];
-true_mat_sorted = sortMat(true_mat);
 
 % check result
-res(end+1) = all(all(Zmat_sorted == true_mat_sorted));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 %% MethC - order 1
 Zred = reduce(Zorig,'methC',1,[12,6]);
 
 % obtain zonotope matrix
 Zmat = round(Zred.Z,3);
-Zmat_sorted = sortMat(Zmat);
 
 % true result
 true_mat = [ ...
@@ -270,17 +251,15 @@ true_mat = [ ...
 2.900, -2.093, 4.173, 1.656, 0.215; ...
 2.000, 1.244, 2.930, -1.005, -3.695; ...
 3.200, 2.828, -1.224, 4.974, -1.839];
-true_mat_sorted = sortMat(true_mat);
 
 % check result
-res(end+1) = all(all(Zmat_sorted == true_mat_sorted));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 %% MethC - order 3
 Zred = reduce(Zorig,'methC',3,[12,6]);
 
 % obtain zonotope matrix
 Zmat = round(Zred.Z,3);
-Zmat_sorted = sortMat(Zmat);
 
 % true result
 true_mat = [ ...
@@ -288,10 +267,9 @@ true_mat = [ ...
 2.900, -0.693, 0.817, -0.209, 0.252, -0.436, 0.675, 0.037, -0.474, 0.903, 1.713, -0.738, -1.515; ...
 2.000, -0.157, -0.214, -0.760, -0.153, 0.259, 0.474, -0.637, -0.003, -0.777, -1.335, 1.338, -1.492; ...
 3.200, -0.644, 0.260, 0.371, 0.757, 0.589, -0.198, -0.317, 0.652, -1.422, 0.121, -1.670, 0.136];
-true_mat_sorted = sortMat(true_mat);
 
 % check result
-res(end+1) = all(all(Zmat_sorted == true_mat_sorted));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 %% PCA - order 1
 Zred = reduce(Zorig,'pca',1);
@@ -307,14 +285,13 @@ true_mat = [ ...
 3.200, -0.757, -4.929, -0.037, 2.422];
    
 % check result
-res(end+1) = all(all(Zmat == true_mat));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 %% PCA - order 3
 Zred = reduce(Zorig,'pca',3);
 
 % obtain zonotope matrix
 Zmat = round(Zred.Z,3);
-Zmat_sorted = sortMat(Zmat);
 
 % true result
 true_mat = [ ...
@@ -322,17 +299,15 @@ true_mat = [ ...
 2.900, -0.693, 0.817, -0.209, 0.252, -0.436, 0.675, 0.037, -0.474, 2.574, -0.933, 0.021, -0.019; ...
 2.000, -0.157, -0.214, -0.760, -0.153, 0.259, 0.474, -0.637, -0.003, 0.616, 1.596, -1.322, 0.606; ...
 3.200, -0.644, 0.260, 0.371, 0.757, 0.589, -0.198, -0.317, 0.652, -0.214, -0.650, 0.525, 1.520];
-true_mat_sorted = sortMat(true_mat);
 
 % check result
-res(end+1) = all(all(Zmat_sorted == true_mat_sorted));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 %% redistribute - order 1
 Zred = reduce(Zorig,'redistribute',1);
 
 % obtain zonotope matrix
 Zmat = round(Zred.Z,3);
-Zmat_sorted = sortMat(Zmat);
 
 % true result
 true_mat = [ ...
@@ -340,10 +315,9 @@ true_mat = [ ...
 2.900, -5.090, -5.512, 3.077, 0.235; ...
 2.000, -0.032, -1.249, -1.868, -4.052; ...
 3.200, 7.001, -5.122, 9.243, -2.016];
-true_mat_sorted = sortMat(true_mat);
 
 % check result
-res(end+1) = all(all(Zmat_sorted == true_mat_sorted));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 %% redistribute - order 3
 Zred = reduce(Zorig,'redistribute',3);
@@ -362,7 +336,7 @@ true_mat = [ ...
 
 % check result
 % res(end+1) = all(all(Zmat_sorted == true_mat_sorted));
-res(end+1) = all(all(Zmat == true_mat));
+res(end+1) = compareMatrices(Zmat,true_mat);
 
 % plot
 % figure; hold on; box on;
@@ -370,24 +344,10 @@ res(end+1) = all(all(Zmat == true_mat));
 % close;
 
 res = all(res);
-if res
-    disp('testLongDuration_zonotope_reduce successful');
-else
-    disp('testLongDuration_zonotope_reduce failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'Zred','Zorig');
 end
-
-
-end
-
-
-% Auxiliary Function
-
-function mat_sorted = sortMat(mat)
-
-% sort zonotope matrix
-matG = mat(:,2:end);
-[~,idx] = sort(matG(1,:));
-mat_sorted = [mat(:,1), matG(:,idx)];
 
 end
 

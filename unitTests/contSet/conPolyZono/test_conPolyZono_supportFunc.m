@@ -25,9 +25,12 @@ function res = test_conPolyZono_supportFunc
 
 %------------- BEGIN CODE --------------
 	
-    res = 1;
+    res = true;
     tol = 1e-6;
 
+    % empty set
+    res = res && supportFunc(conPolyZono(),[1;1],'upper') == -Inf;
+    res = res && supportFunc(conPolyZono(),[1;1],'lower') == Inf;
     % Analytical Tests ----------------------------------------------------
 
     % define constrained polynomial zonotope
@@ -63,7 +66,10 @@ function res = test_conPolyZono_supportFunc
 
     % compare with exact solution
     if abs(val-val_) >= tol
-        error('Analytical test failed!');
+        res = false;
+    end
+    if ~res
+        throw(CORAerror('CORA:testFailed'));
     end
     
 end

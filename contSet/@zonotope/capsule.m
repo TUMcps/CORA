@@ -1,7 +1,7 @@
 function C = capsule(Z)
 % capsule - encloses a zonotope with a capsule
 %
-% Syntax:  
+% Syntax:
 %    C = capsule(Z)
 %
 % Inputs:
@@ -11,7 +11,7 @@ function C = capsule(Z)
 %    C - capsule object
 %
 % Example: 
-%    Z = zonotope.generateRandom(2);
+%    Z = zonotope([1;-1],[2 -3 1; 0.5 1 -2]);
 %    C = capsule(Z);
 %
 %    figure; hold on;
@@ -22,7 +22,7 @@ function C = capsule(Z)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: vertices, polytope
+% See also: ---
 
 % Author:       Niklas Kochdumper
 % Written:      23-December-2019
@@ -31,17 +31,17 @@ function C = capsule(Z)
 
 %------------- BEGIN CODE --------------
 
-    % compute orthogonal basis using PCA
-    G = generators(Z);
-    [B,~,~] = svd([-G,G]);
-    
-    % compute enclosing interval in the transformed space
-    int = interval(B'*Z);
-    
-    % enclose interval with a capsule
-    C = capsule(int);
-    
-    % back-transformation to original space
-    C = B*C;
+% compute orthogonal basis using PCA
+G = generators(Z);
+[B,~,~] = svd([-G,G]);
+
+% compute enclosing interval in the transformed space
+int = interval(B'*Z);
+
+% enclose interval with a capsule
+C = capsule(int);
+
+% back-transformation to original space
+C = B*C;
 
 %------------- END OF CODE --------------

@@ -1,10 +1,10 @@
-function [Zred]=reduceMethC(Z,order,filterLength)
+function Zred = reduceMethC(Z,order,filterLength)
 % reduceMethC - prefilters longest generators and generator sets that
-% maximize their spanned volume. Use exhaustive search on filtered
-% generators
+%    maximize their spanned volume. Use exhaustive search on filtered
+%    generators
 %
 % Syntax:  
-%    [Pred]=reduceMethD(Z)
+%    Zred = reduceMethC(Z)
 %
 % Inputs:
 %    Z - zonotope object
@@ -12,7 +12,7 @@ function [Zred]=reduceMethC(Z,order,filterLength)
 %    filterLength - parameter to pre-filter generators
 %
 % Outputs:
-%    Pred - polytope of reduced zonotope
+%    Zred - zonotope object
 %
 % Other m-files required: none
 % Subfunctions: none

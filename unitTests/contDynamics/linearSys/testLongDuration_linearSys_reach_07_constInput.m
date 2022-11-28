@@ -1,11 +1,11 @@
 function res = testLongDuration_linearSys_reach_07_constInput(~)
-% test_linearSys_reach_07_constInput - unit test to check if constant inputs c
+% testLongDuration_linearSys_reach_07_constInput - unit test to check if constant inputs c
 %  (cf. x' = Ax + Bu + c) are handled correctly
 % note: the simulation results may be not with absolute certainty correct,
 %       but should nonetheless remain inside the computed reachable sets
 %
 % Syntax:
-%    test_linearSys_reach_07_constInput(~)
+%    testLongDuration_linearSys_reach_07_constInput(~)
 %
 % Inputs:
 %    -
@@ -55,25 +55,20 @@ R = reach(linSys,params,options);
 
 % Simulation --------------------------------------------------------------
 
-simOpt.points = 5;        % number of initial points
-simOpt.fracVert = 0.5;     % fraction of vertices initial set
-simOpt.fracInpVert = 0.5;  % fraction of vertices input set
-simOpt.inpChanges = 10;    % changes of input over time horizon  
-
+% number of initial points
+simOpt.points = 5;
 simRes = simulateRandom(linSys,params,simOpt); 
 
 
 % Visualization -----------------------------------------------------------
 
 plotting = false;
-
 if plotting
-
     figure; hold on; box on;
-    plot(R,[1,2],'FaceColor',[.7 .7 .7],'EdgeColor','none');
-    plot(simRes,[1,2],'.k');
-
+    plot(R);
+    plot(simRes);
 end
+
 
 % Numerical check ---------------------------------------------------------
 
@@ -88,17 +83,17 @@ for i=1:simOpt.points
         
         for iSet=1:length(R.timeInterval.set)
             % check every time-interval set
-            if in(R.timeInterval.set{iSet},p_curr)
+            if contains(R.timeInterval.set{iSet},p_curr)
                 break
             end
             if iSet == length(R.timeInterval.set)
-                error("Simulated point not in computed reachable sets.");
+                % simulated point not in computed reachable sets
+                throw(CORAerror('CORA:testFailed'));
             end
         end
         
     end
 end
-
 
 
 end

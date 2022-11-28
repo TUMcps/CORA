@@ -127,10 +127,4 @@ res_intmat(end+1) = iscell(vals) && all(size(vals{1}) == size(I));
 % combine results
 res = res_empty && all(res_int) && all(res_intmat);
 
-if res
-    disp('test_gridPoints successful');
-else
-    disp('test_gridPoints failed');
-end
-
 %------------- END OF CODE --------------

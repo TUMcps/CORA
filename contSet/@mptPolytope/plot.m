@@ -1,19 +1,18 @@
-function han = plot(obj,varargin)
-% plot - Plots 2-dimensional projection of a mptPolytope
+function han = plot(P,varargin)
+% plot - plots a projection of a polytope
 %
 % Syntax:  
-%    han = plot(obj)
-%    han = plot(obj,dims)
-%    han = plot(obj,dims,type)
+%    han = plot(P)
+%    han = plot(P,dims)
+%    han = plot(P,dims,type)
 %
 % Inputs:
-%    obj - mptPolytope object
-%    dims - (optional) dimensions of the projection
-%    type - (optional) plot settings (LineSpec and name-value pairs)
+%    P - mptPolytope object
+%    dims - (optional) dimensions for projection
+%    type - (optional) plot settings (LineSpec and Name-Value pairs)
 %
 % Outputs:
-%    han - handle to the plotted graphics object
-%
+%    han - handle to the graphics object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -21,37 +20,43 @@ function han = plot(obj,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Tobias Ladner
 % Written:      19-October-2010
 % Last update:  24-March-2015
 %               17-March-2017
 %               20-April-2018 (exception for empty sets)
+%               25-May-2022 (TL: 1D Plotting)
+%               22-November-2022 (TL: redundant VRep)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % default settings
-dims = [1,2];
-plotOptions{1} = 'b';
+dims = setDefaultValues({[1,2]},varargin{:});
 
-% parse input arguments
-if nargin >= 2 && ~isempty(varargin{1})
-	dims = varargin{1}; 
-end
+% check input arguments
+inputArgsCheck({{P,'att','mptPolytope'};
+                {dims,'att','numeric',{'nonnan','vector','positive','integer'}}});
 
-if nargin >= 3
-	plotOptions = varargin(2:end); 
-end
+% process linespec and Name-Value pairs
+NVpairs = readPlotOptions(varargin(2:end));
 
 % check dimension
-if length(dims) < 2
-    error('At least 2 dimensions have to be specified!');
+if length(dims) < 1
+    throw(CORAerror('CORA:plotProperties',1));
 elseif length(dims) > 3
-    error('Only up to 3 dimensions can be plotted!');
+    throw(CORAerror('CORA:plotProperties',3));
+end
+
+% transform to 2D polytope if only 1D should be plotted
+if length(dims) == 1
+    P = project(P,dims);
+    P = P.cartProd(0);
+    dims = [1, 2];
 end
  
 % check if polyhedron is bounded
-if ~isBounded(obj.P)
+if ~isBounded(P.P)
     
     % get size of current plot
     xLim = get(gca,'Xlim');
@@ -59,25 +64,35 @@ if ~isBounded(obj.P)
     
     % intersect with the current polytope
     if length(dims) == 2
-        obj = project(obj,dims) & interval([xLim(1);yLim(1)], ...
+        P = project(P,dims) & interval([xLim(1);yLim(1)], ...
                                            [xLim(2);yLim(2)]);
         dims = [1,2];
     else
         zLim = get(gca,'Zlim');
-        obj = project(obj,dims) & interval([xLim(1);yLim(1);zLim(1)], ...
+        P = project(P,dims) & interval([xLim(1);yLim(1);zLim(1)], ...
                                            [xLim(2);yLim(2),zLim(2)]);
         dims = [1,2,3];
     end
 end
     
 % compute vertices
-V = vertices(obj);
+if ~P.P.irredundantVRep
+    % solves issues with collinear points and convHull in plotPolygon
+    P.P.computeHRep();
+end
+V = vertices(P);
+
+
 
 % plot projected vertices
 if length(dims) == 2
-    han = plotPolygon(V(dims,:),plotOptions{:});
+    han = plotPolygon(V(dims,:),NVpairs{:});
 elseif length(dims) == 3
-    han = plotPolytope3D(V(dims,:),plotOptions{:});
+    han = plotPolytope3D(V(dims,:),NVpairs{:});
+end
+
+if nargout == 0
+    clear han;
 end
 
 %------------- END OF CODE --------------

@@ -46,6 +46,9 @@ options.timeStep{2} = 5e-2;
 options.zonotopeOrder = 40; 
 options.taylorTerms = 3;
 
+options.intermediateOrder = 2;
+options.errorOrder = 5;
+
 options.tensorOrder = 2;
 options.alg = 'lin';
 
@@ -72,14 +75,7 @@ disp(['computation time: ',num2str(tComp)]);
 
 % Simulation --------------------------------------------------------------
 
-% settings for random simulation
-simOpt.points = 10;        % number of initial points
-simOpt.fracVert = 0.5;     % fraction of vertices initial set
-simOpt.fracInpVert = 0.5;  % fraction of vertices input set
-simOpt.inpChanges = 10;    % changes of input over time horizon  
-
-% random simulation
-simRes = simulateRandom(HA,params,simOpt); 
+simRes = simulateRandom(HA,params); 
 
 
 
@@ -96,19 +92,19 @@ y = 100*sin(phi);
 polyCirc = polyshape([x;y]');
 poly = polyshape([-100,-60;0,0;-100,60]);
 poly = intersect(poly,polyCirc);
-plot(poly,'FaceColor',[0 0.7 0],'EdgeColor','none','FaceAlpha',0.5);
+plot(poly,'FaceColor',colorblind('r'),'EdgeColor','none','FaceAlpha',0.5);
 
 % plot reachable set
-plot(R,[1,2],'FaceColor',[.5 .5 .5],'Filled',true,'EdgeColor','none');
+plot(R);
 
 % plot initial set
-plot(params.R0,[1,2],'w','Filled',true,'EdgeColor','k');
+plot(params.R0,[1,2],'k','FaceColor','w');
 
 % plot simulation
 plot(simRes,[1,2]);
 
 % plot guard set
-plot(x,y,'Color',[0 102 255]/255);
+plot(x,y,'k');
 
 % formatting
 xlabel('$x~[m]$','interpreter','latex','FontSize',15);
@@ -128,17 +124,17 @@ phi = [0:0.01:2*pi,0];
 x = 3.3*cos(phi);
 y = 3.3*sin(phi);
 poly = polyshape([x;y]');
-plot(poly,'FaceColor',[0 0.7 0],'EdgeColor','none','FaceAlpha',0.5);
+plot(poly,'FaceColor',colorblind('r'),'EdgeColor','none','FaceAlpha',0.5);
 
 % plot reachable set for location 2
 R2 = find(R,'location',2);
-plot(R2,[3,4],'FaceColor',[.5 .5 .5],'Filled',true,'EdgeColor','none');
+plot(R2,[3,4]);
 
 % plot simulation for location 2
 for i = 1:length(simRes.loc)
    if simRes.loc{i} == 2
        x = simRes.x{i};
-       plot(x(:,3),x(:,4),'k');
+       plot(x(:,3),x(:,4),'Color',colorblind('y'));
    end
 end
 
@@ -149,6 +145,6 @@ axis equal
 xlim([-4,4]);
 ylim([-4,4]);
 
-res = 1;
+res = true;
 
 %------------- END OF CODE --------------

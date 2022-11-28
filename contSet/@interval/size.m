@@ -1,18 +1,18 @@
-function [varargout] = size(obj, varargin)
+function varargout = size(I, varargin)
 % size - Overloads the operator that returns the size of the object
 %
 % Syntax:  
-%    varargout = size(obj)
+%    varargout = size(I)
 %
 % Inputs:
-%    obj - interval object 
+%    I - interval object
 %
 % Outputs:
 %    varargout - varying outputs, see 'doc size'
 %
 % Example: 
-%    a=interval([-1 1], [1 2]);
-%    size(a)
+%    I = interval([-1 1], [1 2]);
+%    size(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -29,9 +29,9 @@ function [varargout] = size(obj, varargin)
 
 %return size of infimum
 if nargin > 1
-    [varargout{1:nargout}] = size(obj.inf,varargin{1});
+    [varargout{1:nargout}] = size(I.inf,varargin{1});
 else
-    [varargout{1:nargout}] = size(obj.inf);
+    [varargout{1:nargout}] = size(I.inf);
 end
 
 %------------- END OF CODE --------------

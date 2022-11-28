@@ -15,7 +15,7 @@ function res = test_nonlinearSys_linearize
 %
 % Example: 
 %    -
- 
+
 % Author:       Matthias Althoff
 % Written:      30-July-2017
 % Last update:  12-September-2017

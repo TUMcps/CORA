@@ -1,11 +1,11 @@
-function res = rad(obj)
+function res = rad(intMat)
 % rad - returns the radius of an intervalMatrix
 %
 % Syntax:  
-%    res = rad(obj)
+%    res = rad(intMat)
 %
 % Inputs:
-%    obj - intervalMatrix object
+%    intMat - intervalMatrix object
 %
 % Outputs:
 %    res - numerical value (matrix)
@@ -27,6 +27,6 @@ function res = rad(obj)
 
 %------------- BEGIN CODE --------------
 
-res = rad(obj.int);
+res = rad(intMat.int);
 
 %------------- END OF CODE --------------

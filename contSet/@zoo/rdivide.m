@@ -26,15 +26,15 @@ function res = rdivide(numerator, denominator)
     
     if isa(numerator,'zoo') && isa(denominator,'zoo')
         
-        res = arrayfun(@(a, b) s_rdivide_zz(a, b), numerator, denominator, 'UniformOutput', 0);
+        res = arrayfun(@(a, b) s_rdivide_zz(a, b), numerator, denominator, 'UniformOutput', false);
         
     elseif isa(numerator,'zoo') && isa(denominator,'double')
         
-        res = arrayfun(@(a) s_rdivide_zd(a, denominator), numerator, 'UniformOutput', 0);
+        res = arrayfun(@(a) s_rdivide_zd(a, denominator), numerator, 'UniformOutput', false);
         
     elseif isa(denominator,'zoo') && isa(numerator,'double')
 
-        res = arrayfun(@(b) s_rdivide_dz(numerator, b), denominator, 'UniformOutput', 0);
+        res = arrayfun(@(b) s_rdivide_dz(numerator, b), denominator, 'UniformOutput', false);
         
     end
     
@@ -42,28 +42,32 @@ function res = rdivide(numerator, denominator)
     res = reshape(A, size(res));
 
 end
-%-------------------------------------------------
+
+
+% Auxiliary Functions -----------------------------------------------------
 function res = s_rdivide_zz(numerator, denominator)       
         
-        [numerator,denominator] = combineZooObjects(numerator,denominator);
-        res = numerator;
-        for i = 1:length(res.method)
-           res.objects{i} = numerator.objects{i} ./ denominator.objects{i}; 
-        end      
+    [numerator,denominator] = combineZooObjects(numerator,denominator);
+    res = numerator;
+    for i = 1:length(res.method)
+       res.objects{i} = numerator.objects{i} ./ denominator.objects{i}; 
+    end      
 end
+
 function res = s_rdivide_zd(numerator, denominator)
         
-        res = numerator;
-        for i = 1:length(res.method)
-           res.objects{i} = numerator.objects{i} ./ denominator; 
-        end           
+    res = numerator;
+    for i = 1:length(res.method)
+       res.objects{i} = numerator.objects{i} ./ denominator; 
+    end           
 end
+
 function res = s_rdivide_dz(numerator, denominator)
 
-        res = denominator;
-        for i = 1:length(res.method)
-           res.objects{i} = numerator ./ denominator.objects{i}; 
-        end       
+    res = denominator;
+    for i = 1:length(res.method)
+       res.objects{i} = numerator ./ denominator.objects{i}; 
+    end       
 end
 
 %------------ END OF CODE ------------

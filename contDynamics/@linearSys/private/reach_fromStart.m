@@ -1,20 +1,21 @@
-function [Rout,Rout_tp,res] = reach_fromStart(obj,options)
-% reach - computes the reachable set for linear systems using the
-%  propagation of the homogeneous solution from the start
+function [timeInt,timePoint,res] = reach_fromStart(obj,options)
+% reach_fromStart - computes the reachable set for linear systems using the
+%    propagation of the homogeneous solution from the start
 %
 % Syntax:  
-%    [Rout,Rout_tp,res] = reach_fromStart(obj,options)
+%    [timeInt,timePoint,res] = reach_fromStart(obj,options)
 %
 % Inputs:
-%    obj - continuous system object
+%    obj - linearSys object
 %    options - options for the computation of reachable sets
 %
 % Outputs:
-%    Rout - reachable set of time intervals
-%    Rout_tp - reachable set of time point
-%    res  - boolean (only if specification given)
+%    timeInt - array of time-interval reachable / output sets
+%    timePoint - array of time-point reachable / output sets
+%    res - true/false whether specification satisfied
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,6 +27,7 @@ function [Rout,Rout_tp,res] = reach_fromStart(obj,options)
 % Written:       26-June-2019
 % Last update:   14-Aug-2019
 %                16-February-2021 (MW, correct implementation of uTransVec)
+%                19-November-2022 (MW, modularize specification check)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -33,7 +35,7 @@ function [Rout,Rout_tp,res] = reach_fromStart(obj,options)
 % obtain factors for initial state and input solution
 for i=1:(options.taylorTerms+1)
     % compute initial state factor
-    options.factor(i)= options.timeStep^(i)/factorial(i);    
+    options.factor(i) = options.timeStep^(i)/factorial(i);    
 end
 
 % if a trajectory should be tracked
@@ -62,36 +64,36 @@ P = eye(obj.dim);
 Q = obj.taylor.eAt;
 
 
-% time period
+% time period, number of steps, step counter
 tVec = options.tStart:options.timeStep:options.tFinal;
+steps = length(tVec) - 1;
+options.i = 1;
 
-% initialize parameter for the output equation
-[C,D,k] = initOutputEquation(obj,options);
-Rout = cell(length(tVec)-1,1);
-Rout_tp = cell(length(tVec)-1,1);
+% initialize output variables for reachable sets and output sets
+timeInt.set = cell(steps,1);
+timeInt.time = cell(steps,1);
+timePoint.set = cell(steps+1,1);
+timePoint.time = num2cell(tVec');
+
+% compute output set of first step
+timePoint.set{1} = outputSet(obj,options,options.R0);
+timeInt.set{1} = outputSet(obj,options,Rnext.ti);
+timeInt.time{1} = interval(tVec(1),tVec(2));
+Rstart = Rnext.tp;
+
+% safety property check
+if isfield(options,'specification')
+    [res,timeInt,timePoint] = checkSpecification(...
+        options.specification,timeInt,timePoint,1);
+    if ~res; return; end
+end
 
 
-for i=2:length(tVec)-1
+for i = 2:steps
     
-    % calculate output
-    [Rout{i-1},Rout_tp{i-1}] = outputSet(C,D,k,Rnext,options);
-    
-    % safety property check (only time interval)
-    if isfield(options,'specification')
-        if ~check(options.specification,Rout{i-1})
-            % violation
-            Rout = Rout(1:i-1);
-            Rout_tp = Rout_tp(1:i-1);
-            res = false;
-            return
-        end
-    end
-    
+    options.i = i;
     
     % post --------------
-    
-    % log information
-    verboseLog(i,tVec(i),options);
     
     % if a trajectory should be tracked
     if isfield(options,'uTransVec')
@@ -122,24 +124,32 @@ for i=2:length(tVec)-1
     P = Q;
     Q = Q * eADelta;
     
-end
+    % --------------
 
-[Rout{end},Rout_tp{end}] = outputSet(C,D,k,Rnext,options);
-
-if isfield(options,'specification')
-    if ~check(options.specification,Rout{end})
-        % violation, but no reduction in cell size of Rout, Rout_tp
-        res = false;
-        return
+    % compute output set
+    timePoint.set{i} = outputSet(obj,options,Rstart);
+    timeInt.set{i} = outputSet(obj,options,Rnext.ti);
+    timeInt.time{i} = interval(tVec(i),tVec(i+1));
+    
+    % save reachable set
+    Rstart = Rnext.tp;
+    
+    % safety property check
+    if isfield(options,'specification')
+        [res,timeInt,timePoint] = checkSpecification(...
+            options.specification,timeInt,timePoint,i);
+        if ~res; return; end
     end
+    
+    % log information
+    verboseLog(i,tVec(i),options);
+    
 end
 
-% log information
-verboseLog(length(tVec),tVec(end),options);
+% compute output set of last set
+timePoint.set{end} = outputSet(obj,options,Rstart);
 
 % specification fulfilled
 res = true;
-
-end
 
 %------------- END OF CODE --------------

@@ -1,13 +1,13 @@
-function p = randPoint(obj,varargin)
+function p = randPoint(C,varargin)
 % randPoint - Returns a random point of a capsule
 %
 % Syntax:  
-%    p = randPoint(obj)
-%    p = randPoint(obj,N)
-%    p = randPoint(obj,N,type)
+%    p = randPoint(C)
+%    p = randPoint(C,N)
+%    p = randPoint(C,N,type)
 %
 % Inputs:
-%    obj - capsule object
+%    C - capsule object
 %    N - number of random points
 %    type - type of the random point ('standard' or 'extreme')
 %
@@ -26,61 +26,64 @@ function p = randPoint(obj,varargin)
 
 % Author:       Mark Wetzlinger
 % Written:      17-Sep-2019
-% Last update:  ---
+% Last update:  19-August-2022 (MW, integrate preprocessing)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    N = 1;
-    type = 'standard';
-    if nargin > 1 && ~isempty(varargin{1})
-       N = varargin{1}; 
-    end
-    if nargin > 2 && ~isempty(varargin{2})
-       type = varargin{2}; 
-    end
+% pre-processing
+[res,vars] = pre_randPoint('capsule',C,varargin{:});
 
-    % check for empty set
-    if isempty(obj)
-        [msg,id] = errEmptySet();
-        error(id,msg);
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of vars
+    p = vars{1}; return
+else
+    % assign variables
+    C = vars{1}; N = vars{2}; type = vars{3}; pr = vars{4};
+    % sampling with 'gaussian' is done in contSet method
+    if strcmp(type,'gaussian')
+        p = randPoint@contSet(C,N,type,pr); return
+    end
+end
+
+% 'all' vertices not supported
+if ischar(N) && strcmp(N,'all')
+    throw(CORAerror('CORA:notSupported',...
+        "Number of vertices 'all' is not supported for class probZonotope."));
+end
+
+% dimension of capsule
+n = dim(C);
+
+% initialize points
+p = zeros(n,N);
+
+% generate different types of points
+if strcmp(type,'standard')
+    
+    for i = 1:N
+        % sample a direction
+        dir = -1 + 2*rand(n,1);
+        % normalize the direction
+        dir = dir / norm(dir,2);
+        % randomly choose values for the generator and the radius
+        p(:,i) = C.c + (-1 + 2*rand)*C.g + dir * (rand*C.r); 
     end
     
-    % get object properties
-    n = dim(obj);
-
-    % generate different types of extreme points
-    if strcmp(type,'standard')
-        
-        p = zeros(n,N);
-        
-        for i = 1:N
-        
-            dir = -1 + 2*rand(n,1);
-            dir = dir / norm(dir,2);
-
-            p(:,i) = obj.c + (-1 + 2*rand())*obj.g + dir * (rand()*obj.r); 
-        end
-        
-    elseif strcmp(type,'extreme')
-        
-        p = zeros(n,N);
-        
-        for i = 1:N
-        
-            dir = -1 + 2*rand(n,1);
-            dir = dir / norm(dir,2);
-
-            [~,x] = supportFunc(obj,dir);
-            
-            p(:,i) = x; 
-        end
-        
-    else
-        [msg,id] = errWrongInput('type');
-        error(id,msg);
+elseif strcmp(type,'extreme')
+    
+    for i = 1:N
+        % sample a direction
+        dir = -1 + 2*rand(n,1);
+        % normalize the direction
+        dir = dir / norm(dir,2);
+        % evaluate the support function in that direction
+        [~,x] = supportFunc(C,dir);
+        % choose the point where the support function attains its maximum
+        p(:,i) = x; 
     end
+    
 end
 
 %------------- END OF CODE --------------

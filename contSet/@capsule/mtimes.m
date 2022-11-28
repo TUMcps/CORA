@@ -1,24 +1,23 @@
-function C = mtimes(factor1,factor2)
+function C = mtimes(arg1,arg2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix with 
-% a capsule
+%    a capsule
 %
 % Syntax:  
-%    C = mtimes(matrix,C)
+%    C = mtimes(arg1,arg2)
 %
 % Inputs:
-%    matrix - numerical matrix
-%    C - capsule object 
+%    arg1 - numerical matrix or capsule object
+%    arg2 - numerical matrix or capsule object
 %
 % Outputs:
 %    C - capsule after multiplication with a matrix
 %
 % Example: 
 %    C = capsule([1; 1], [0; 1], 0.5);
-%    matrix=[0 1; 1 0];
-%    plot(C);
-%    hold on
-%    C = matrix*C;
-%    plot(C);
+%    M = [0 1; 1 0];
+%    C_ = M*C;
+%    plot(C); hold on;
+%    plot(C_);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -34,34 +33,46 @@ function C = mtimes(factor1,factor2)
 %------------- BEGIN CODE --------------
 
 %Find a capsule object
-%Is factor1 a capsule?
-if isa(factor1,'capsule')
-    %initialize resulting zonotope
-    C = factor1;
-    %initialize other summand
-    matrix = factor2;
-%Is factor2 a zonotope?    
-elseif isa(factor2,'capsule')
-    %initialize resulting zonotope
-    C = factor2;
-    %initialize other summand
-    matrix = factor1;  
-end
+[C,matrix] = findClassArg(arg1,arg2,'capsule');
 
-%numeric matrix
-if isnumeric(matrix)
-    % new center
-    C.c = matrix*C.c;
-    % new generator
-    C.g = matrix*C.g;
-    % new axes of ellpsoid of transformed ball
-    newAxes = eig(matrix*matrix');
-    C.r = C.r*max(newAxes);
+try
+
+    %numeric matrix
+    if isnumeric(matrix)
+        % new center
+        C.c = matrix*C.c;
+        % new generator
+        C.g = matrix*C.g;
+        % new axes of ellipsoid of transformed ball
+        newAxes = eig(matrix*matrix');
+        C.r = C.r*max(newAxes);
     
-%something else?    
-else
-    % throw error for given arguments
-    error(noops(factor1,factor2));
+    %something else?
+    else
+        % throw error for given arguments
+        throw(CORAerror('CORA:noops',arg1,arg2));
+    end
+
+catch ME
+    % note: error has already occured, so the operations below don't have
+    % to be efficient
+
+    % already know what's going on...
+    if startsWith(ME.identifier,'CORA')
+        rethrow(ME);
+    end
+
+    % check for empty sets
+    if isempty(C)
+        return
+    end
+
+    % check whether different dimension of ambient space
+    equalDimCheck(C,matrix);
+
+    % other error...
+    rethrow(ME);
+
 end
 
 %------------- END OF CODE --------------

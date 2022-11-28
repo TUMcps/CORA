@@ -1,9 +1,9 @@
-function [P] = plus(summand1,summand2)
+function P = plus(summand1,summand2)
 % plus - overloaded '+' operator for the addition of a vector to a
 % mptPolytope; Minkowski addition is also supported
 %
 % Syntax:  
-%    [P] = plus(summand1,summand2)
+%    P = plus(summand1,summand2)
 %
 % Inputs:
 %    summand1 - mptPolytope object or numerical vector
@@ -29,41 +29,61 @@ function [P] = plus(summand1,summand2)
 
 %------------- BEGIN CODE --------------
 
-    % find a polytope object
-    if isa(summand1,'mptPolytope')
-        P=summand1;
-        summand=summand2;  
-    elseif isa(summand2,'mptPolytope')
-        P=summand2;
-        summand=summand1;  
-    end
+% determine zonotope object
+[P,summand] = findClassArg(summand1,summand2,'mptPolytope');
+
+try
 
     % different cases depending on the class of the summand
     if isnumeric(summand)
-
+    
         try % MPT V3
             P.P = P.P + summand;
         catch % MPT V2
             n = length(summand);
             P.P = range(P.P, eye(n), summand);
         end
-
+    
     elseif isa(summand,'mptPolytope')
-
+    
         P.P = P.P + summand.P;
-
+    
     elseif isa(summand,'zonotope') || isa(summand,'interval') || ...
            isa(summand,'conZonotope') || isa(summand,'zonoBundle')
-
+    
         P = P + mptPolytope(summand);
-
+    
     elseif isa(summand,'polyZonotope')
-
+    
         P = summand + P;
-
+    
     else
         % throw error for given arguments
-        error(noops(summand1,summand2));
+        throw(CORAerror('CORA:noops',summand1,summand2));
     end
+
+catch ME
+    % note: error has already occured, so the operations below don't have
+    % to be efficient
+
+    % already know what's going on...
+    if startsWith(ME.identifier,'CORA')
+        rethrow(ME);
+    end
+
+    % check for empty sets
+    if isempty(P)
+        return
+    elseif isemptyobject(summand)
+        P = mptPolytope(); return
+    end
+
+    % check whether different dimension of ambient space
+    equalDimCheck(P,summand);
+
+    % other error...
+    rethrow(ME);
+
+end
 
 %------------- END OF CODE --------------

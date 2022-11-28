@@ -1,16 +1,16 @@
-function cPZ = mtimes(matrix,cPZ)
-% mtimes - Overloaded '.*' operator for the multiplication of a matrix with 
-%          a constrained polynomial zonotope
+function cPZ = mtimes(M,cPZ)
+% mtimes - Overloaded '*' operator for the multiplication of a matrix (or
+%    interval matrix) with a constrained polynomial zonotope
 %
 % Syntax:  
-%    cPZ = mtimes(matrix,cPZ)
+%    cPZ = mtimes(M,cPZ)
 %
 % Inputs:
-%    matrix - numerical matrix
-%    cPZ - conPolyZonotope object 
+%    M - numerical matrix or interval matrix
+%    cPZ - conPolyZono object 
 %
 % Outputs:
-%    cPZ - conPolyZonotope object after multiplication with a matrix
+%    cPZ - conPolyZono object
 %
 % Example: 
 %    c = [0;0];
@@ -25,10 +25,10 @@ function cPZ = mtimes(matrix,cPZ)
 %    cPZ_ = M * cPZ;
 %
 %    figure, hold on;
-%    plot(cPZ,[1,2],'r','Filled',true,'EdgeColor','none','Splits',15);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',15);
 %
 %    figure; hold on;
-%    plot(cPZ_,[1,2],'b','Filled',true,'EdgeColor','none','Splits',15);
+%    plot(cPZ_,[1,2],'FaceColor','b','Splits',15);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -43,14 +43,19 @@ function cPZ = mtimes(matrix,cPZ)
 
 %------------- BEGIN CODE --------------
 
+% find the conPolyZono object
+[cPZ,M] = findClassArg(cPZ,M,'conPolyZono');
+
+try
+
     % normal matrix
-    if isnumeric(matrix)
+    if isnumeric(M)
         
-        cPZ.c = matrix*cPZ.c;
-        cPZ.G = matrix*cPZ.G;
+        cPZ.c = M*cPZ.c;
+        cPZ.G = M*cPZ.G;
     
         if ~isempty(cPZ.Grest)
-            cPZ.Grest = matrix*cPZ.Grest;
+            cPZ.Grest = M*cPZ.Grest;
         end
         
     % use polynomial zonotope method for interval matrices
@@ -58,11 +63,34 @@ function cPZ = mtimes(matrix,cPZ)
         
         pZ = polyZonotope(cPZ.c,cPZ.G,cPZ.Grest,cPZ.expMat);
         
-        temp = mtimes(matrix,pZ);
+        temp = mtimes(M,pZ);
         
         cPZ = conPolyZono(temp.c,temp.G,temp.expMat,cPZ.A,cPZ.b, ...
                           cPZ.expMat_,temp.Grest,cPZ.id);
+        
     end
+
+catch ME
+    % note: error has already occured, so the operations below don't have
+    % to be efficient
+
+    % already know what's going on...
+    if startsWith(ME.identifier,'CORA')
+        rethrow(ME);
+    end
+
+    % check for empty sets
+    if isempty(cPZ)
+        return
+    end
+
+    % check whether different dimension of ambient space
+    equalDimCheck(cPZ,M);
+
+    % other error...
+    rethrow(ME);
+
+
 end
 
 %------------- END OF CODE --------------

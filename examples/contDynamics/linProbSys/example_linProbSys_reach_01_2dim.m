@@ -1,35 +1,33 @@
 function completed = example_linProbSys_reach_01_2dim()
 % example_linProbSys_reach_01_2dim - example of probabilistic reachability 
-% analysis of a linear system with uncertain inputs
-%
-% This example can be found in [1, Sec. 4.2.8].
+%    analysis of a linear system with uncertain inputs, taken from 
+%    [1, Sec. 4.2.8].
 %
 % Syntax:  
 %    completed = example_linProbSys_reach_01_2dim()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    completed - boolean 
+%    completed - true/false 
 %
 % References:
 %    [1] M. Althoff, “Reachability analysis and its application to the 
 %        safety assessment of autonomous cars", Dissertation, TUM 2010
-% 
+
 % Author:       Matthias Althoff
 % Written:      16-July-2020
 % Last update:  ---
 % Last revision:---
 
-
 %------------- BEGIN CODE --------------
 
-
-% Parameter ---------------------------------------------------------------
+% Parameters --------------------------------------------------------------
 
 params.tFinal = 2.5;
-params.R0=probZonotope([[3; 3],0.1*eye(2)],[0.7 0; 0 0.7],4); %probabilistic set of initial states
+% probabilistic set of initial states
+params.R0 = probZonotope([[3; 3],0.1*eye(2)],[0.7 0; 0 0.7],4);
 params.U = zonotope([zeros(2,1),0.1*eye(2)]);
 
 
@@ -55,7 +53,7 @@ twoDimSys = linProbSys('twoDimSys',A,B,C);
 
 % Reachability Analysis ---------------------------------------------------
 
-tic
+tic;
 R = reach(twoDimSys, params, options);
 tComp = toc;
 disp(['computation time of reachable set: ',num2str(tComp)]);
@@ -64,9 +62,6 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 25;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 10;
 simOpt.timeStep = options.timeStep;
 
 simRes = simulateRandom(twoDimSys, params, simOpt);
@@ -84,7 +79,7 @@ for k = 1:length(dims)
     projDims = dims{k};
 
     % plot reachable sets 
-    plot(R,projDims,'b','m',2.5,'FaceColor','interp','EdgeColor','none');
+    plot(R,projDims,'b','m',2.5,'FaceColor','interp');
     
     % plot initial set
     plot(zonotope(params.R0,3),projDims,'k','Height',10); %change to 2D in 3D
@@ -120,9 +115,7 @@ for k = 1:length(dims)
 end
 
 % example completed
-completed = 1;
-
-
+completed = true;
 
 
 %------------- END OF CODE --------------

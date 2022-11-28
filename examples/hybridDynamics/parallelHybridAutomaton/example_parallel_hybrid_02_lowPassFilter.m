@@ -4,13 +4,19 @@ function res = example_parallel_hybrid_02_lowPassFilter()
 %    low-pass filters that are connected in series
 %
 % Syntax:  
-%    example_parallel_hybrid_02_lowPassFilter
+%    res = example_parallel_hybrid_02_lowPassFilter
 %
 % Inputs:
 %    -
 %
 % Outputs:
-%    res - boolean, true if completed
+%    res - true/false
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
 % Author:       Niklas Kochdumper
 % Written:      06-July-2018
@@ -23,7 +29,7 @@ function res = example_parallel_hybrid_02_lowPassFilter()
 
 % System Dynamics ---------------------------------------------------------
 
-PHA = lowpassFilter();
+pHA = lowpassFilter();
 
 
 % Parameter ---------------------------------------------------------------
@@ -48,37 +54,27 @@ options.guardOrder = 3;
 
 % Simulation --------------------------------------------------------------
 
-simOpt.points = 10;        % number of initial points
-simOpt.fracVert = 0.5;     % fraction of vertices initial set
-simOpt.fracInpVert = 0.5;  % fraction of vertices input set
-simOpt.inpChanges = 20;    % changes of input over time horizon  
-
-simRes = simulateRandom(PHA,params,simOpt);
+simRes = simulateRandom(pHA,params);
 
 
 % Reachability Analysis ---------------------------------------------------
 
-R = reach(PHA,params,options);
+R = reach(pHA,params,options);
 
 
 % Visualization -----------------------------------------------------------
 
-% plot filter 1
-figure; box on; hold on
-plot(R,[1,2],'FaceColor',[.6 .6 .6],'Filled',true,'EdgeColor','none');
-plot(simRes,[1,2]);
-xlabel('$x_{1}$','interpreter','latex','FontSize',20);
-ylabel('$x_{2}$','interpreter','latex','FontSize',20);
-title('Filter 1');
+% plot filter k
+projDim = {[1,2],[3,4]};
+for k=1:2
+    figure; box on; hold on;
+    plot(R,projDim{k});
+    plot(simRes,projDim{k});
+    xlabel(['$x_{' num2str(projDim{k}(1)) '}$'],'interpreter','latex','FontSize',20);
+    ylabel(['$x_{' num2str(projDim{k}(2)) '}$'],'interpreter','latex','FontSize',20);
+    title(['Filter ' num2str(k)]);
+end
 
-% plot filter 2
-figure; box on; hold on
-plot(R,[3,4],'FaceColor',[.6 .6 .6],'Filled',true,'EdgeColor','none');
-plot(simRes,[3,4]);
-xlabel('$x_{1}$','interpreter','latex','FontSize',20);
-ylabel('$x_{2}$','interpreter','latex','FontSize',20);
-title('Filter 2');
-
-res = 1;
+res = true;
 
 %------------- END OF CODE --------------

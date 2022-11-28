@@ -58,10 +58,4 @@ res(3) = res_rand == res_rand_true;
 % compare results
 res = all(res);
 
-if res
-    disp('test_eq successful');
-else
-    disp('test_eq failed');
-end
-
 %------------- END OF CODE --------------

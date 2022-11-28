@@ -27,17 +27,19 @@ function res = testLongDuration_ellipsoid_enclose
 
 %We need at least one non-degenerate ellipsoid to ensure
 %the union of E1,E2 is not the empty set.
-nRuns = 2;
+nRuns = 20;
 res = true;
 bools = [false,true];
 for i=10:5:15
     for j=1:nRuns
         for k=1:2
             try
-            E1 = ellipsoid.generateRandom(false,i);
-            E2 = ellipsoid.generateRandom(bools(k),i);
+            %%% generate all variables necessary to replicate results
+            E1 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',false);
+            E2 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k));
+            %%%
             E = enclose(E1,E2);
-            if ~in(E,E1) || ~in(E,E2)
+            if ~contains(E,E1) || ~contains(E,E2)
                 res = false;
                 break;
             end
@@ -57,11 +59,10 @@ for i=10:5:15
         break;
     end
 end
-if res
-    disp('testLongDuration_ellipsoid_enclose successful');
-else
-    disp('testLongDuration_ellipsoid_enclose failed');
-end
 
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'E1','E2');
+end
 
 %------------- END OF CODE --------------

@@ -1,20 +1,24 @@
-function h = rotate(h, newDir, rotPoint)
+function hs = rotate(hs, newDir, rotPoint)
 % rotate - rotates a halfspace around a rotation point rotPoint such that
-% the new normal vector is aligned with newDir
+%    the new normal vector is aligned with newDir
 %
 % Syntax:  
-%    h = rotate(h, newDir, rotPoint)
+%    hs = rotate(hs, newDir, rotPoint)
 %
 % Inputs:
-%    h - halfspace object
+%    hs - halfspace object
 %    newDir - vector pointing in the new direction
 %    rotPoint - rotation point
 %
 % Outputs:
-%    h - halfspace object
+%    hs - halfspace object
 %
 % Example: 
-%    ---
+%    hs = halfspace([1 -1],2);
+%    newDir = [1;1];
+%    rotPoint = [0;0];
+% 
+%    rotate(hs,newDir,rotPoint)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,10 +34,9 @@ function h = rotate(h, newDir, rotPoint)
 %------------- BEGIN CODE --------------
 
 %obtain rotation matrix
-rotMat = rotationMatrix(h, newDir);
+rotMat = rotationMatrix(hs, newDir);
 
 %translate and rotate halfspace
-h = rotMat*(h + (-rotPoint)) + rotPoint;
-
+hs = rotMat*(hs + (-rotPoint)) + rotPoint;
 
 %------------- END OF CODE --------------

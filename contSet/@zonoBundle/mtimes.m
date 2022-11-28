@@ -1,16 +1,16 @@
-function [Zbundle] = mtimes(factor1,factor2)
+function zB = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix or an
-%          interval matrix with a zonotope bundle (see Prop. 1 in [1])
+%    interval matrix with a zonotope bundle (see Prop. 1 in [1])
 %
 % Syntax:  
-%    [Zbundle] = mtimes(factor1,factor2)
+%    zB = mtimes(factor1,factor2)
 %
 % Inputs:
-%    factor1 - zonotope bundle or matrix set or matrix
-%    factor2 - zonotope bundle or matrix set or matrix 
+%    factor1 - zonoBundle object or matrix set or matrix
+%    factor2 - zonoBundle object or matrix set or matrix 
 %
 % Outputs:
-%    Zbundle - Zonotope bundle after multiplication
+%    zB - zonoBundle object
 %
 % References:
 %    [1] M. Althoff. "Zonotope bundles for the efficient computation of 
@@ -29,19 +29,36 @@ function [Zbundle] = mtimes(factor1,factor2)
 
 %------------- BEGIN CODE --------------
 
-    % determine zonotope bundle object
-    if isa(factor1,'zonoBundle')
-        Zbundle = factor1;
-        factor = factor2;
-    elseif isa(factor2,'zonoBundle')
-        Zbundle = factor2;
-        factor = factor1;  
+% determine zonotope bundle object
+[zB,factor] = findClassArg(factor1,factor2,'zonoBundle');
+
+try
+
+% calculate multiplication for each zonotope
+for i=1:zB.parallelSets
+    zB.Z{i} = factor*zB.Z{i};
+end
+
+catch ME
+    % note: error has already occured, so the operations below don't have
+    % to be efficient
+
+    % already know what's going on...
+    if startsWith(ME.identifier,'CORA')
+        rethrow(ME);
     end
 
-    % calculate multiplication for each zonotope
-    for i=1:Zbundle.parallelSets
-        Zbundle.Z{i} = factor*Zbundle.Z{i};
+    % check for empty sets
+    if isempty(zB)
+        return
     end
+
+    % check whether different dimension of ambient space
+    equalDimCheck(zB,factor);
+
+    % other error...
+    rethrow(ME);
+
 end
 
 %------------- END OF CODE --------------

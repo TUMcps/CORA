@@ -64,10 +64,9 @@ end
 % combine results
 res = res_empty && res_rand;
 
-if res
-    disp('test_isFullDim successful');
-else
-    disp('test_isFullDim failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','c','G','gamma');
 end
 
 %------------- END OF CODE --------------

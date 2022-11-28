@@ -24,7 +24,6 @@ function res = mrdivide(numerator,denominator)
 
 %------------- BEGIN CODE -------------
 
-    res = numerator ./ denominator;
-end
+res = numerator ./ denominator;
 
 %------------ END OF CODE ------------

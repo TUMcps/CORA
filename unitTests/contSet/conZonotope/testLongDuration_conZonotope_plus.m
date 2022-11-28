@@ -31,7 +31,7 @@ function res = testLongDuration_conZonotope_plus
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
 
 
 % TEST 1: Random Test (zonotope 2D) ---------------------------------------
@@ -51,7 +51,7 @@ zono = zonotope(rand(2,5)-0.5*ones(2,5));
 % Minkowski sum of constrained zonotope and zonotope object
 cZonoRes = cZono + zono;
 
-% calculate points that have to be located inside the resuling conZonotope
+% calculate points that have to be located inside the resulting conZonotope
 Vzono = vertices(zono);
 
 N = size(V,2) * size(Vzono,2);
@@ -88,11 +88,11 @@ for i = 1:size(points,2)
        file_name = strcat('testLongDuration_conZonotope_plus_1_', ...
                           datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-       file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+       file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                             file_name);
                            
        save(file_path, 'cZonoRes')
-       error('Test 1 failed!');
+       throw(CORAerror('CORA:testFailed'));
    end
 end
 
@@ -119,7 +119,7 @@ inter = interval(min(temp1,temp2),max(temp1,temp2));
 % Minkowski sum of constrained zonotope and zonotope object
 cZonoRes = cZono + inter;
 
-% calculate points that have to be located inside the resuling conZonotope
+% calculate points that have to be located inside the resulting conZonotope
 Vinter = vertices(inter);
 
 N = size(V,2) * size(Vinter,2);
@@ -156,11 +156,11 @@ for i = 1:size(points,2)
        file_name = strcat('testLongDuration_conZonotope_plus_2_', ...
                           datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-       file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+       file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                             file_name);
                            
-       save(file_path, 'cZonoRes')
-       error('Test 2 failed!');
+       save(file_path, 'points','temp1','temp2')
+       throw(CORAerror('CORA:testFailed'));
    end
 end
 
@@ -191,7 +191,7 @@ cZono2 = conZonotope(poly);
 % Minkowski sum of constrained zonotope and zonotope object
 cZonoRes = cZono + cZono2;
 
-% calculate points that have to be located inside the resuling conZonotope
+% calculate points that have to be located inside the resulting conZonotope
 N = size(V,2) * size(V2,2);
 points = zeros(2,N);
 
@@ -226,11 +226,11 @@ for i = 1:size(points,2)
        file_name = strcat('testLongDuration_conZonotope_plus_3_', ...
                           datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-       file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+       file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                             file_name);
                            
-       save(file_path, 'cZonoRes')
-       error('Test 3 failed!');
+       save(file_path, 'points')
+       throw(CORAerror('CORA:testFailed'));
    end
 end
 
@@ -254,7 +254,7 @@ vec = rand(2,1) - 0.5*ones(2,1);
 % Minkowski sum of constrained zonotope and zonotope object
 cZonoRes = cZono + vec;
 
-% calculate points that have to be located inside the resuling conZonotope
+% calculate points that have to be located inside the resulting conZonotope
 for i = 1:size(points,2)
    points(:,i) = points(:,i) + vec; 
 end
@@ -278,7 +278,7 @@ Tol = 1e-14;
 
 for i = 1:size(points,2)
    if any(A*points(:,i) - b > Tol)
-       error('Test 4 failed!');
+       throw(CORAerror('CORA:testFailed'));
    end
 end
 

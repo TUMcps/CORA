@@ -1,15 +1,16 @@
-function matI = intervalMatrix(varargin)
+function intMat = intervalMatrix(matZ,varargin)
 % intervalMatrix - computes an enclosing interval matrix of a matrix
-% zonotope
+%    zonotope
 %
 % Syntax:  
-%    matI = intervalMatrix(matZ)
+%    intMat = intervalMatrix(matZ)
+%    intMat = intervalMatrix(matZ,setting)
 %
 % Inputs:
-%    matZ - matrix zonotope
+%    matZ - matZonotope object
 %
 % Outputs:
-%    matI - intervalMatrix
+%    intMat - intervalMatrix object
 %
 % Example: 
 %
@@ -27,22 +28,20 @@ function matI = intervalMatrix(varargin)
 
 %------------- BEGIN CODE --------------
 
-if nargin==1
-    matZ=varargin{1};
-    setting=[];
-elseif nargin==2
-    matZ=varargin{1};
-    setting=varargin{2};
-end
+% set default values
+setting = setDefaultValues({[]},varargin{:});
 
-%delta
-delta = abs(matZ.generator{1});
+% center matrix
+C = center(matZ);
+
+% delta matrix
+D = abs(matZ.generator{1});
 for i=2:matZ.gens
-    delta = delta + abs(matZ.generator{i});
+    D = D + abs(matZ.generator{i});
 end
 
 %instantiate interval matrix
-matI = intervalMatrix(matZ.center, delta, setting);
+intMat = intervalMatrix(C, D, setting);
 
 
 %------------- END OF CODE --------------

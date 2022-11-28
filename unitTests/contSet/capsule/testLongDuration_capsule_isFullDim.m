@@ -64,16 +64,11 @@ for i=1:nrTests
 
     if CfullDim ~= fullDim
         res = false;
+        path = pathFailedTests(mfilename());
+        save(path,'n','randcase');
         break;
     end
 
-end
-
-
-if res
-    disp('test_isFullDim successful');
-else
-    disp('test_isFullDim failed');
 end
 
 %------------- END OF CODE --------------

@@ -1,19 +1,22 @@
-function E = cartProd(E1,E2)
-% dim - returns an overapproximation fo the cartesian product 
-% between two ellipsoids
+function E = cartProd(E,S,varargin)
+% cartProd - returns an over-approximation for the Cartesian product 
+%    between two ellipsoids
 %
 % Syntax:  
-%    d = cartProd(E1,E2)
+%    E = cartProd(E,S)
+%    E = cartProd(E,S,type)
 %
 % Inputs:
-%    E1,E2 - ellipsoid object
+%    E - ellipsoid object
+%    S - contSet object
+%    type - outer approximation ('outer') or inner approximation ('inner')
 %
 % Outputs:
-%    E - ellipsoid object (result of cartesian product)
+%    E - ellipsoid object
 %
 % Example: 
-%    E1 = ellipsoid.generateRandom(2);
-%    E2 = ellipsoid.generateRandom(2);
+%    E1 = ellipsoid.generateRandom('Dimension',2);
+%    E2 = ellipsoid.generateRandom('Dimension',2);
 %    E = cartProd(E1,E2); 
 %
 % Other m-files required: none
@@ -24,21 +27,41 @@ function E = cartProd(E1,E2)
 
 % Author:       Victor Gassmann
 % Written:      19-March-2021
-% Last update:  ---
+% Last update:  02-June-2022 (VG: handle empty case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-if ~isa(E1,'ellipsoid') || ~isa(E2,'ellipsoid')
-    error('Input arguments both need to be of type "ellipsoid"!');
-end
-IntE = cartProd(interval(E1),interval(E2));
-r = rad(IntE);
-q = center(IntE);
-TOL = min(E1.TOL,E2.TOL);
-% extract degenerate dimensions
-ind_d = withinTol(r,zeros(size(r)),TOL);
-n_nd = sum(~ind_d);
 
-% construct final ellipsoid
-E = ellipsoid(n_nd*diag(r.^2),q);
+% pre-processing
+[res,vars] = pre_cartProd('ellipsoid',E,S,varargin{:});
+
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    E = vars{1}; return
+else
+    % potential re-ordering
+    E = vars{1}; S = vars{2}; type = vars{3};
+end
+
+
+if strcmp(type,'outer') && isa(S,'ellipsoid')
+    % Cartesian product of interval over-approximations
+    IntE = cartProd(interval(E),interval(S));
+    r = rad(IntE);
+    q = center(IntE);
+    TOL = min(E.TOL,S.TOL);
+    
+    % extract degenerate dimensions
+    ind_d = withinTol(r,zeros(size(r)),TOL);
+    n_nd = sum(~ind_d);
+    
+    % construct final ellipsoid
+    E = ellipsoid(n_nd*diag(r.^2),q);
+
+elseif any(strcmp(type,{'exact','inner'}))
+    throw(CORAerror('CORA:noops',E,S,type));
+
+end
+
 %------------- END OF CODE --------------

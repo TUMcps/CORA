@@ -1,19 +1,20 @@
-function res = isempty(obj)
-% isempty - returns true if a zonotope is empty and false otherwise
+function res = isempty(Z)
+% isempty - checks if a zonotope is the empty set
 %
 % Syntax:  
-%    res = isempty(obj)
+%    res = isempty(Z)
 %
 % Inputs:
-%    obj - zonotope object
+%    Z - zonotope object
 %
 % Outputs:
-%    res - result in {0,1}
+%    res - true/false
 %
 % Example: 
-%    Z1 = zonotope([]);
+%    Z1 = zonotope();
 %    Z2 = zonotope([0;0]);
 %    Z3 = zonotope([1;0],[1 -2 1; 0 1 -2]);
+%
 %    isempty(Z1); % true
 %    isempty(Z2); % false
 %    isempty(Z3); % false
@@ -31,6 +32,6 @@ function res = isempty(obj)
 
 %------------- BEGIN CODE --------------
 
-res = isempty(obj.Z) && isempty(obj.halfspace);
+res = isempty(Z.Z) && isempty(Z.halfspace);
 
 %------------- END OF CODE --------------

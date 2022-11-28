@@ -1,17 +1,23 @@
-function han = plot(obj,varargin)
-% plot - plots a 2-dimensional projection of the simulated trajectories
+function han = plot(simRes,varargin)
+% plot - plots a projection of the simulated trajectories
 %
 % Syntax:  
-%    han = plot(obj)
-%    han = plot(obj,dim,color)
+%    han = plot(simRes)
+%    han = plot(simRes,dims)
+%    han = plot(simRes,dims,type)
 %
 % Inputs:
 %    obj - simResult object
-%    dim - dimensions that should be projected
-%    color - color of the plotted trajectory ('r','b','--b', etc.)
+%    dims - (optional) dimensions for projection
+%    type - (optional) plot settings (LineSpec and Name-Value pairs)
+%          'Height', <height> height of z-coordinate
+%          'Traj', <whichtraj> corresponding to
+%                   x ... state trajectory (default)
+%                   y ... output trajectory (default if no ti)
+%                   a ... algebraic trajectory
 %
 % Outputs:
-%    han - handle for the resulting graphic object
+%    han - handle to the graphics object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -21,50 +27,53 @@ function han = plot(obj,varargin)
 
 % Author:       Niklas Kochdumper, Matthias Althoff
 % Written:      06-June-2020
-% Last update:  28-July-2020 (3D plots added, MA)
+% Last update:  28-July-2020 (MA, 3D plots added)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% default values for the optional input arguments
-dims = [1,2];
-linespec = 'k';
-NVpairs = {};
-height = [];
+% set default input arguments
+dims = setDefaultValues({[1,2]},varargin{:});
 
-% parse input arguments
-if nargin > 1 && ~isempty(varargin{1})
-    dims = varargin{1};
-end
-if nargin > 2 && ~isempty(varargin{2})
-    plotOptions = varargin(2:end);
-    [linespec,NVpairs] = readPlotOptions(plotOptions);
-    [NVpairs,height] = readNameValuePair(NVpairs,'height','isscalar');
-end
+% check input arguments
+inputArgsCheck({{simRes,'att',{'simResult'},{''}};
+                {dims,'att',{'numeric'},{'positive','vector','integer'}}});
+
+% parse plotting options
+NVpairs = readPlotOptions(varargin(2:end),'simResult');
+[NVpairs,height] = readNameValuePair(NVpairs,'Height','isscalar');
+[NVpairs,whichtraj] = readNameValuePair(NVpairs,'Traj','ischar','x');
+
+% check redundancy
 
 % check dimension
 if length(dims) < 2
-    error('At least 2 dimensions have to be specified!');
+    throw(CORAerror('CORA:plotProperties',2));
 elseif length(dims) > 3
-    error('Only up to 3 dimensions can be plotted!');
+    throw(CORAerror('CORA:plotProperties',3));
 end
+
+% check which trajectory has to be plotted
+whichtraj = checkTraj(simRes,whichtraj);
 
 % loop over all simulated trajectories
 hold on
-for i = 1:length(obj.x)
+for i = 1:length(simRes.(whichtraj))
     if isempty(height) % no 3D plot
         if length(dims) == 2
-            han = plot(obj.x{i}(:,dims(1)),obj.x{i}(:,dims(2)), ...
-                       linespec,NVpairs{:});
+            han = plot(simRes.(whichtraj){i}(:,dims(1)),...
+                simRes.(whichtraj){i}(:,dims(2)),NVpairs{:});
         else
-            han = plot3(obj.x{i}(:,dims(1)),obj.x{i}(:,dims(2)), ...
-                        obj.x{i}(:,dims(3)),linespec,NVpairs{:});
+            han = plot3(simRes.(whichtraj){i}(:,dims(1)),...
+                simRes.(whichtraj){i}(:,dims(2)),...
+                simRes.(whichtraj){i}(:,dims(3)),NVpairs{:});
         end
     else
-         % z values normalized to [0,1] in other plots
-        zCoordinates = height*ones(length(obj.x{i}(:,dims(1))),1);
-        han = plot3(obj.x{i}(:,dims(1)),obj.x{i}(:,dims(2)), ...
-                    zCoordinates,linespec,NVpairs{:}); 
+        % z values normalized to [0,1] in other plots
+        zCoordinates = height*ones(length(simRes.(whichtraj){i}(:,dims(1))),1);
+        han = plot3(simRes.(whichtraj){i}(:,dims(1)),...
+            simRes.(whichtraj){i}(:,dims(2)),...
+            zCoordinates,NVpairs{:}); 
     end
 end
 
@@ -72,6 +81,44 @@ end
 %   to be shown if figure was not 3D before)
 if length(dims) == 3
     view(3);
+end
+
+if nargout == 0
+    clear han;
+end
+
+end
+
+
+% Auxiliary function ------------------------------------------------------
+
+function whichtraj = checkTraj(simRes,whichtraj)
+
+% must be character vector for switch-expression to work properly
+if isempty(whichtraj)
+    % default value
+    whichtraj = 'x';
+end
+
+switch whichtraj
+    case 'x'
+        % no issues (should always be there)
+        
+    case 'y'
+        if isempty(simRes(1).y)
+            throw(CORAerror('CORA:emptyProperty'));
+        end
+
+    case 'a'
+        if isempty(simRes(1).a)
+            throw(CORAerror('CORA:emptyProperty'));
+        end
+
+    otherwise
+        % error
+        throw(CORAerror('CORA:specialError','Wrong value for name-value pair'));
+end
+
 end
 
 %------------- END OF CODE --------------

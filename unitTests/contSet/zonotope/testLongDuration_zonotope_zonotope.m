@@ -62,12 +62,13 @@ for i=1:nrOfTests
     % wrong initializations
     c_plus1 = randn(n+1,1);
     G_plus1 = randn(n+1,nrGens);
-%     randIdx = ceil(n/3);
-%     randLogicals = randn(size(G)) > 0;
-%     c_Inf = c; c_Inf(randIdx) = Inf;
-%     c_NaN = c; c_NaN(randIdx) = Inf;
-%     G_Inf = G; G_Inf(randLogicals) = Inf;
-%     G_NaN = G; G_NaN(randLogicals) = NaN;
+    randIdx = ceil(n/3);
+    c_NaN = c; c_NaN(randIdx) = NaN;
+    G_NaN = G; 
+    while ~any(isnan(G_NaN))
+        randLogicals = randn(size(G)) > 0;
+        G_NaN(randLogicals) = NaN;
+    end
     
     % center and generator matrix do not match
     try
@@ -86,25 +87,17 @@ for i=1:nrOfTests
     end
     
     
-    % center has Inf/NaN entry
-%     try
-%         Z = zonotope(c_Inf,G); % <- should throw error here
-%         res = false; break;
-%     end
-%     try
-%         Z = zonotope(c_NaN,G); % <- should throw error here
-%         res = false; break;
-%     end
+    % center has NaN entry
+    try
+        Z = zonotope(c_NaN,G); % <- should throw error here
+        res = false; break;
+    end
     
-    % generator matrix has Inf/NaN entries
-%     try
-%         Z = zonotope(c,G_Inf); % <- should throw error here
-%         res = false; break;
-%     end
-%     try
-%         Z = zonotope(c,G_NaN); % <- should throw error here
-%         res = false; break;
-%     end
+    % generator matrix has NaN entries
+    try
+        Z = zonotope(c,G_NaN); % <- should throw error here
+        res = false; break;
+    end
     
     % too many input arguments
     try
@@ -114,10 +107,9 @@ for i=1:nrOfTests
 end
 
 
-if res
-    disp('testLongDuration_zonotope successful');
-else
-    disp('testLongDuration_zonotope failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','c','G','c_plus1','G_plus1');
 end
 
 %------------- END OF CODE --------------

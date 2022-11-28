@@ -1,6 +1,6 @@
-function [eI, iPow, E] = expmInd(varargin)
-% expmInd - operator for the exponential matrix of an 
-% interval matrix, evaluated independently
+function [eI, iPow, E] = expmInd(intMat,varargin)
+% expmInd - operator for the exponential matrix of an interval matrix,
+%    evaluated independently
 %
 % Syntax:  
 %    eI = expmInd(intMat,maxOrder)
@@ -8,6 +8,8 @@ function [eI, iPow, E] = expmInd(varargin)
 % Inputs:
 %    intMat - interval matrix
 %    maxOrder - maximum Taylor series order until remainder is computed
+%    initialOrder - ?
+%    initialPower - ?
 %
 % Outputs:
 %    eI - interval matrix exponential
@@ -32,18 +34,18 @@ function [eI, iPow, E] = expmInd(varargin)
 %------------- BEGIN CODE --------------
 
 if nargin==2
-    intMat = varargin{1};
-    maxOrder = varargin{2};
+    
+    maxOrder = varargin{1};
     initialOrder = 0;
     initialPower = intMat^0;
     
     %compute powers
     iPow=powers(intMat,maxOrder);
 elseif nargin==4
-    intMat = varargin{1};
-    maxOrder = varargin{2};
-    initialOrder = varargin{3};
-    initialPower = varargin{4};
+    
+    maxOrder = varargin{1};
+    initialOrder = varargin{2};
+    initialPower = varargin{3};
     
     %compute powers
     iPow=powers(intMat,maxOrder,initialOrder,initialPower);

@@ -1,9 +1,34 @@
 function str = printMatrixConverter(M,maxLineLength)
-% print matrix M in compact matlab-readable format
-% prints numbers with 32 digits of precision
+% printMatrixConverter - print matrix M in compact matlab-readable format;
+%    prints numbers with 32 digits of precision
+%    2nd function: ensure result string has no exessively long lines
+%    split into multiple lines via '...' if necessary
+%
+% Syntax:  
+%    str = printMatrixConverter(M,maxLineLength)
+%
+% Inputs:
+%    M - matrix
+%    maxLineLength - maximum length of one line before linebreak
+%
+% Outputs:
+%    str - text of matrix M
+%
+% Example: 
+%    ---
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-% 2nd function: ensure result string has no exessively long lines
-% split into multiple lines via ... if necessary
+% Author:       ???
+% Written:      ???
+% Last update:  ---
+% Last revision:---
+
+%------------- BEGIN CODE --------------
 
 if(nargin<2)
     maxLineLength = 75;
@@ -81,4 +106,4 @@ if strlength(str) > maxLineLength
    str = str + chars(chars_pointer:end);
 end
 
-end
+%------------- END OF CODE --------------

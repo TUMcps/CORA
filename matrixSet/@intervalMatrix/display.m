@@ -1,11 +1,11 @@
 function display(intMat)
-% display - Displays the interval matrix
+% display - Displays an intervalMatrix object on the command window
 %
 % Syntax:  
 %    display(intMat)
 %
 % Inputs:
-%    intMat - interval matrix
+%    intMat - intervalMatrix object
 %
 % Outputs:
 %    ---

@@ -1,24 +1,22 @@
-function res = interval(obj)
+function I = interval(C)
 % interval - Over-approximate a capsule by an interval
 %
 % Syntax:  
-%    res = interval(obj)
+%    I = interval(C)
 %
 % Inputs:
-%    obj - capsule object
+%    C - capsule object
 %
 % Outputs:
-%    res - interval object
+%    I - interval object
 %
 % Example: 
 %    C = capsule([0;0],[-2;2],2);
+%    I = interval(C);
 %
-%    int = interval(C);
-%
-%    figure
-%    hold on
+%    figure; hold on;
 %    plot(C,[1,2],'k');
-%    plot(int,[1,2],'r');
+%    plot(I,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -33,19 +31,19 @@ function res = interval(obj)
 
 %------------- BEGIN CODE --------------
 
-    % initialization
-    n = length(obj.c);
-    sup = zeros(n,1);
-    infi = zeros(n,1);
-    E = eye(n);
-    
-    % loop over all dimensions
-    for i = 1:n
-        sup(i) = supportFunc(obj,E(:,i),'upper');
-        infi(i) = supportFunc(obj,E(:,i),'lower');        
-    end
-    
-    % construct resulting interval
-    res = interval(infi,sup);
+% initialization
+n = length(C.c);
+ub = zeros(n,1);
+lb = zeros(n,1);
+E = eye(n);
+
+% loop over all dimensions
+for i = 1:n
+    ub(i) = supportFunc(C,E(:,i),'upper');
+    lb(i) = supportFunc(C,E(:,i),'lower');        
+end
+
+% instantiate interval
+I = interval(lb,ub);
 
 %------------- END OF CODE --------------

@@ -11,6 +11,7 @@ function res = contractPoly(c,G,Grest,expMat,dom,varargin)
 %    res = contract(c,G,Grest,expMat,dom,alg)
 %    res = contract(c,G,Grest,expMat,dom,alg,iter)
 %    res = contract(c,G,Grest,expMat,dom,alg,iter,splits)
+%    res = contract(c,G,Grest,expMat,dom,alg,iter,splits,jacHan)
 %
 % Inputs:
 %    c - constant offset of the polynomial constraint
@@ -24,6 +25,7 @@ function res = contractPoly(c,G,Grest,expMat,dom,varargin)
 %          'all' (all contractors together)
 %    iter - number of iteration (integer > 0 or 'fixpoint')
 %    splits - number of recursive splits (integer > 0)
+%    jacHan - handle for Jacobian
 %
 % Outputs:
 %    res - contracted domain (class: interval)
@@ -60,36 +62,18 @@ function res = contractPoly(c,G,Grest,expMat,dom,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    alg = 'forwardBackward';
-    iter = 1;
-    splits = [];
-    jacHan = [];
-    if nargin >= 6 && ~isempty(varargin{1})
-       alg = varargin{1}; 
-    end
-    if nargin >= 7 && ~isempty(varargin{2})
-       iter = varargin{2}; 
-    end
-    if nargin >= 8 && ~isempty(varargin{3})
-       splits = varargin{3}; 
-    end    
-    if nargin >= 9 && ~isempty(varargin{4})
-       jacHan = varargin{4}; 
-    end
-    
-    % check user input
-    if ischar(iter) 
-        if strcmp(iter,'fixpoint')
-            iter = 10000;
-        else
-            error('Wrong value for input argument "iter"!');
-        end
-    end
+    % set default values
+    [alg,iter,splits,jacHan] = setDefaultValues({'forwardBackward',...
+        1,[],[]},varargin{:});
 
-    if ~ismember(alg,{'forwardBackward','linearize','polynomial', ... 
-                      'interval','all'})
-        error('Wrong value for input argument "alg"!');           
+    inputArgsCheck({{alg,'str',{'forwardBackward','linearize',...
+        'polynomial','interval','all'}}});
+    % check input arguments
+    if ischar(iter)
+        inputArgsCheck({{iter,'str','fixpoint'}});
+        iter = 10000;
+    else
+        inputArgsCheck({{iter,'numeric',{'integer','>=','0'}}});
     end
     
     % function handle for polynomial constrained function
@@ -189,7 +173,7 @@ function res = contractPoly(c,G,Grest,expMat,dom,varargin)
                     
                     p = zeros(length(temp),1);
                     
-                    if ~in(temp,p)
+                    if ~contains(temp,p)
                        continue; 
                     end
                 

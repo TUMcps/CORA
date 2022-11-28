@@ -25,6 +25,10 @@ function res = test_interval_vertices
 
 %------------- BEGIN CODE --------------
 
+% empty set
+I_e = interval();
+res = isnumeric(vertices(I_e)) && isempty(vertices(I_e));
+
 % create interval
 lowerLimits = [-2; -4];
 upperLimits = [3; 1];
@@ -42,12 +46,6 @@ vert_true = sortrows(vert_true');
 
 % compare results
 tol = 1e-9;
-res = all(all(abs(vert_mat - vert_true) < tol));
-
-if res
-    disp('test_vertices successful');
-else
-    disp('test_vertices failed');
-end
+res = res && all(all(abs(vert_mat - vert_true) < tol));
 
 %------------- END OF CODE --------------

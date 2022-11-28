@@ -30,12 +30,6 @@ E1 = ellipsoid([1 0;0 2],[0; 1]);
 % empty ellipsoids cannot be instantiated...
 
 % compare results
-res = ~isempty(E1);
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
+res = ~isempty(E1) && isempty(ellipsoid());
 
 %------------- END OF CODE --------------

@@ -1,24 +1,24 @@
-function res = isempty(obj)
-% isempty - returns true if the interval is empty and false otherwise
+function res = isempty(I)
+% isempty - checks if an interval is the empty set
 %
-% Syntax:  
-%    res = isempty(obj)
+% Syntax:
+%    res = isempty(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - logical
+%    res - true/false
 %
 % Example: 
-%    I = interval([1 2; -1 1]);
+%    I = interval([-1;-2],[3;4]);
 %    res = isempty(I)
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: ---
 
 % Author:       Matthias Althoff
 % Written:      12-December-2010
@@ -28,6 +28,6 @@ function res = isempty(obj)
 %------------- BEGIN CODE --------------
 
 %return result
-res = isempty(obj.inf) || isempty(obj.sup);
+res = isempty(I.inf) || isempty(I.sup);
 
 %------------- END OF CODE --------------

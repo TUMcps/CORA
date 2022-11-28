@@ -1,14 +1,14 @@
-function res = dim(h)
-% dim - returns dimension of halfspace
+function n = dim(hs)
+% dim - returns the dimension of the ambient space of a halfspace
 %
 % Syntax:  
-%    res = dim(h)
+%    n = dim(hs)
 %
 % Inputs:
-%    h - halfspace object
+%    hs - halfspace object
 %
 % Outputs:
-%    res - dimension of halfspace
+%    n - dimension of the ambient space
 %
 % Example: 
 %    h = halfspace([1;1],3);
@@ -27,6 +27,6 @@ function res = dim(h)
 
 %------------- BEGIN CODE --------------
 
-res = length(h.c);
+n = length(hs.c);
 
 %------------- END OF CODE --------------

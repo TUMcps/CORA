@@ -1,20 +1,19 @@
-function zB = cartProd(zB1,zB2)
-% cartProd - Returns the cartesian product of a zonoBundle with
-%                    a zonotope
+function zB = cartProd(zB,S)
+% cartProd - Cartesian product of a zonotope bundle and a set
 %
 % Syntax:  
-%    zB = cartProd(zB1,zB2)
+%    zB = cartProd(zB,S)
 %
 % Inputs:
-%    zB1 - zonoBundle object
-%    zB2 - zonotope object
+%    zB - zonoBundle object
+%    S - contSet object
 %
 % Outputs:
 %    zB - zonoBundle object
 %
 % Example: 
-%    zB1 = zonoBundle.generateRandom(2,3);
-%    zB2 = zonoBundle.generateRandom(3,2);
+%    zB1 = zonoBundle.generateRandom('Dimension',2,'NrZonotopes',3);
+%    zB2 = zonoBundle.generateRandom('Dimension',3,'NrZonotopes',2);
 %
 %    zB = cartProd(zB1,zB2);
 %
@@ -32,64 +31,74 @@ function zB = cartProd(zB1,zB2)
 
 %------------- BEGIN CODE --------------
 
+    % pre-processing
+    [res,vars] = pre_cartProd('zonoBundle',zB,S);
+    
+    % check premature exit
+    if res
+        % if result has been found, it is stored in the first entry of var
+        zB = vars{1}; return
+    else
+        % potential re-ordering
+        zB = vars{1}; S = vars{2};
+    end
+
+
     % first or second set is zonotope
-    if isa(zB1,'zonoBundle')
+    if isa(zB,'zonoBundle')
 
         % different cases for different set representations
-        if isa(zB2,'zonoBundle')
+        if isa(S,'zonoBundle')
 
             % compute cartesian product
-            list = cell(zB1.parallelSets*zB2.parallelSets,1);
+            list = cell(zB.parallelSets*S.parallelSets,1);
             counter = 1;
 
-            for i = 1:zB1.parallelSets
-                for j = 1:zB2.parallelSets
-                    list{counter,1} = cartProd(zB1.Z{i},zB2.Z{j});
+            for i = 1:zB.parallelSets
+                for j = 1:S.parallelSets
+                    list{counter,1} = cartProd(zB.Z{i},S.Z{j});
                     counter = counter + 1;
                 end
             end
 
             zB = zonoBundle(list);
 
-        elseif isnumeric(zB2) || isa(zB2,'zonotope') || isa(zB2,'interval')
-
-            zB = zB1;
+        elseif isnumeric(S) || isa(S,'zonotope') || isa(S,'interval')
             
             for i = 1:zB.parallelSets
-               zB.Z{i} = cartProd(zB.Z{i},zB2); 
+                zB.Z{i} = cartProd(zB.Z{i},S); 
             end
 
-        elseif isa(zB2,'conZonotope') || isa(zB2,'mptPolytope')
+        elseif isa(S,'conZonotope') || isa(S,'mptPolytope')
             
-            zB = cartProd(zB1,zonoBundle(zB2));
+            zB = cartProd(zB,zonoBundle(S));
             
-        elseif isa(zB2,'polyZonotope')
+        elseif isa(S,'polyZonotope')
             
-            zB = cartProd(polyZonotope(zB1),zB2);
+            zB = cartProd(polyZonotope(zB),S);
             
-        elseif isa(zB2,'conPolyZono')
+        elseif isa(S,'conPolyZono')
             
-            zB = cartProd(conPolyZono(zB1),zB2);
+            zB = cartProd(conPolyZono(zB),S);
             
         else
             % throw error for given arguments
-            error(noops(zB1,zB2));
+            throw(CORAerror('CORA:noops',zB,S));
         end
 
     else
 
         % different cases for different set representations
-        if isnumeric(zB1)
+        if isnumeric(zB)
 
-            zB = zB2;
-            
-            for i = 1:zB2.parallelSets
-               zB.Z{i} = cartProd(zB1,zB.Z{i}); 
+            zB = S;
+            for i = 1:S.parallelSets
+                zB.Z{i} = cartProd(zB,zB.Z{i}); 
             end
 
         else
             % throw error for given arguments
-            error(noops(zB1,zB2));
+            throw(CORAerror('CORA:noops',zB,S));
         end  
     end
 end

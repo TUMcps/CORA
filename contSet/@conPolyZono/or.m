@@ -1,16 +1,16 @@
-function res = or(obj,S)
-% or - Computes the union of two conPolyZonotope objects
+function cPZ = or(cPZ,S)
+% or - Computes the union of a constrained polynomial zonotope and another
+%    set representation
 %
 % Syntax:  
-%    res = or(obj,S)
+%    cPZ = or(cPZ,S)
 %
 % Inputs:
-%    obj - conPolyZonotope object
-%    S - second set (supported objects: conPolyZonotope, halfspace, 
-%                    constrainedHyperlane)
+%    cPZ - conPolyZono object
+%    S - contSet object
 %
 % Outputs:
-%    res - conPolyZonotope object
+%    cPZ - conPolyZono object
 %
 % Example: 
 %    cPZ1 = conPolyZono([0;0],[2 0 2;0 2 2],[1 0 3;0 1 1]);
@@ -19,8 +19,7 @@ function res = or(obj,S)
 %    cPZ = cPZ1 | cPZ2;
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'FaceColor',[0 .5 0],'Filled',true, ...
-%         'EdgeColor','none','Splits',10);
+%    plot(cPZ,[1,2],'FaceColor',[0 .5 0],'Splits',10);
 %    plot(cPZ1,[1,2],'r','LineWidth',1.5,'Splits',10);
 %    plot(cPZ2,[1,2],'b','LineWidth',1.5,'Splits',10);
 %
@@ -30,17 +29,25 @@ function res = or(obj,S)
 %
 % See also: and, zonotope/or
 
-% Author:  Niklas Kochdumper
-% Written: 07-November-2018
-% Last update: ---
-% Last revision: ---
+% Author:       Niklas Kochdumper
+% Written:      07-November-2018
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
+    if isemptyobject(cPZ) 
+        cPZ = S; return
+    end
+    
+    if isemptyobject(S)
+        cPZ = cPZ; return
+    end
+    
     % determine which set is the conPolyZono object
-    if ~isa(obj,'conPolyZono')
-        temp = obj;
-        obj = S;
+    if ~isa(cPZ,'conPolyZono')
+        temp = cPZ;
+        cPZ = S;
         S = temp;
     end
     
@@ -55,25 +62,25 @@ function res = or(obj,S)
         S = conPolyZono(S);
         
         % extract number of factors
-        p1 = size(obj.expMat,1);
+        p1 = size(cPZ.expMat,1);
         p2 = size(S.expMat,1);
         p = p1 + p2 + 2;     
         
         % construct the overall constraint matrices
         [A_,b_,expMatTemp] = conMatrix(p1,p2);
         
-        A = blkdiag(1,A_,obj.A,S.A);
-        A = [A, [0;0;-0.5*obj.b;0.5*S.b]];
+        A = blkdiag(1,A_,cPZ.A,S.A);
+        A = [A, [0;0;-0.5*cPZ.b;0.5*S.b]];
         
-        b = [1;b_;0.5*obj.b;0.5*S.b];
+        b = [1;b_;0.5*cPZ.b;0.5*S.b];
                 
-        if ~isempty(obj.expMat_)
+        if ~isempty(cPZ.expMat_)
             if ~isempty(S.expMat_)
-                temp = blkdiag(obj.expMat_,S.expMat_);
+                temp = blkdiag(cPZ.expMat_,S.expMat_);
                 E1 = [zeros(2,size(temp,2));temp];
             else
-                temp = size(obj.expMat_,2);
-                E1 = [zeros(2,temp);obj.expMat_;zeros(p2,temp)];
+                temp = size(cPZ.expMat_,2);
+                E1 = [zeros(2,temp);cPZ.expMat_;zeros(p2,temp)];
             end
         else
             if ~isempty(S.expMat_)
@@ -87,8 +94,8 @@ function res = or(obj,S)
         expMat_ = [[1;1;zeros(p1+p2,1)],expMatTemp,E1,E2];
         
         % construct the overall state matrices
-        c = (obj.c + S.c)/2;     
-        G = [(obj.c - S.c)/2, zeros(length(c),1), obj.G, S.G];
+        c = (cPZ.c + S.c)/2;     
+        G = [(cPZ.c - S.c)/2, zeros(length(c),1), cPZ.G, S.G];
         
         temp1 = zeros(p,1);
         temp1(1) = 1;
@@ -96,9 +103,9 @@ function res = or(obj,S)
         temp2 = zeros(p,1);
         temp2(2) = 1;
         
-        if ~isempty(obj.expMat)
-            n = size(obj.expMat,2);
-            expMat1 = [zeros(2,n);obj.expMat;zeros(p2,n)];
+        if ~isempty(cPZ.expMat)
+            n = size(cPZ.expMat,2);
+            expMat1 = [zeros(2,n);cPZ.expMat;zeros(p2,n)];
         else
             expMat1 = []; 
         end
@@ -114,11 +121,11 @@ function res = or(obj,S)
 
         % construct new independent generators
         % compute independent part of the resulting set
-        if ~isempty(obj.Grest)
-            Grest = obj.Grest;
+        if ~isempty(cPZ.Grest)
+            Grest = cPZ.Grest;
             if ~isempty(S.Grest)
-               n = dim(obj); cen = zeros(n,1);
-               zono1 = zonotope(cen,obj.Grest);
+               n = dim(cPZ); cen = zeros(n,1);
+               zono1 = zonotope(cen,cPZ.Grest);
                zono2 = zonotope(cen,S.Grest);
                zono = enclose(zono1,zono2);
                Grest = generators(zono);
@@ -128,18 +135,18 @@ function res = or(obj,S)
         end
         
         % construct the combined id vector
-        m = max(obj.id);
-        id = [obj.id;(m+1:m+length(S.id)+2)'];
+        m = max(cPZ.id);
+        id = [cPZ.id;(m+1:m+length(S.id)+2)'];
         id = [id(end-1:end);id(1:end-2)];
         
-        % construct the resuling conPolyZonotope object
-        res = conPolyZono(c,G,expMat,A,b,expMat_,Grest,id);
+        % construct the resulting conPolyZono object
+        cPZ = conPolyZono(c,G,expMat,A,b,expMat_,Grest,id);
         
         % remove redundant monomials
-        res = compact(res);
+        cPZ = compact(cPZ);
         
     else
-        error(noops(obj,S));
+        throw(CORAerror('CORA:noops',cPZ,S));
     end
 end
 

@@ -1,22 +1,21 @@
-function res = reduceConstraints(obj,varargin)
+function cZ = reduceConstraints(cZ,varargin)
 % reduceConstraints - reduce the number of constraints of a constrained 
-%                     zonotope object
+%    zonotope object
 %
 % Syntax:  
-%    res = reduceConstraints(obj)
-%    res = reduceConstraints(obj,nrCon)
+%    cZ = reduceConstraints(cZ)
+%    cZ = reduceConstraints(cZ,nrCon)
 %
 % Inputs:
-%    obj - conZonotope object
+%    cZ - conZonotope object
 %    nrCon - desired number of constraints
 %
 % Outputs:
-%    res - conZonotope object
+%    cZ - conZonotope object
 %
 % Example: 
 %    Z = [0 1 0 1;0 1 2 -1];
-%    A = [-2 1 -1];
-%    b = 2;
+%    A = [-2 1 -1]; b = 2;
 %    cZ = conZonotope(Z,A,b);
 %
 %    cZ_ = reduceConstraints(cZ,0);
@@ -46,40 +45,37 @@ function res = reduceConstraints(obj,varargin)
     % strategy described in section 4.2 in reference paper [1]
 
     % parse input arguments
-    nrCon = [];
-    if nargin >= 2
-       nrCon = varargin{1}; 
-    end
+    nrCon = setDefaultValues({[]},varargin{:});
 
-    % remove the trivial constraints [0 0 ... 0]*ksi = 0
-    obj = deleteZeros(obj);
+    inputArgsCheck({{cZ,'att','conZonotope'};
+                    {nrCon,'att','numeric','nonnan'}});
+
+    % remove the trivial constraints [0 0 ... 0]*beta = 0
+    cZ = deleteZeros(cZ);
     
-    % If the constraint matrix is already empty, then we can simply stop
-    % the algorithm right away, since no further reduction can be done/is
-    % necessary
-    if isempty(obj.A)
-        res = obj;
+    % exit if the constraint matrix is already empty
+    if isempty(cZ.A)
         return
     end
 
     % if no desired number of constraints is specified, remove all 
     % redundant constraints
     if isempty(nrCon)
-        res = redConRed(obj);
+        cZ = redConRed(cZ);
     else
-        res = conRed(obj,nrCon);
+        cZ = conRed(cZ,nrCon);
     end
     
     % After the actual reduction has been performed, we can check again if
     % there are some resulting, trivial constraints as above:
-    res = deleteZeros(res);
+    cZ = deleteZeros(cZ);
 end
 
 
 % Auxiliary Functions -----------------------------------------------------
 
 function res = conRed(obj,nrCon)
-% Reduce the number of constrains A*ksi = b.
+% Reduce the number of constrains A*beta = b.
 
     % remove all constraints for which the elimination does not result in
     % an over-approximation
@@ -95,26 +91,25 @@ function res = conRed(obj,nrCon)
         A = obj.A; b = obj.b; c = obj.Z(:,1); G = obj.Z(:,2:end);
         
         % get measure for the over-approximation due to removal of factors
-        r = max(0, max(abs(obj.R),[],2) - 1 );
+        r = max(0, max(abs(obj.R),[],2) - 1);
         
         % find the minimal Hausdorff error
         H = hausdorffError(A,G,r);
         [~,ind] = sort(H,'ascend');            
            
         % try to eliminate one constraint 
-        found = 0;
+        found = false;
 
         for i = 1:length(ind)
 
-           suc = 0;
+           suc = false;
 
            if ~isinf(r(ind(i)))
               [G,c,A,b,suc] = eliminateConstraint(G,c,A,b,ind(i)); 
            end
 
            if suc
-              found = 1;
-              break;
+              found = true; break;
            end
         end
 
@@ -127,63 +122,60 @@ function res = conRed(obj,nrCon)
         end
     end
     
-    % remove the trivial constraints [0 0 ... 0]*ksi = 0
+    % remove the trivial constraints [0 0 ... 0]*beta = 0
     obj = deleteZeros(obj);
 
     % construct the reduced constrained zonotope object
     res = obj;
 end
 
-function res = redConRed(obj)
+function cZ = redConRed(cZ)
 % Remove all constraints for which the elimination does not result in an
 % overapproximation
 
     % rescale the constrained zonotope
-    obj = rescale(obj,'iter');
+    cZ = rescale(cZ,'iter');
 
     % find constraints whos removal does not result in a over-approximation
-    r = max(0, max(abs(obj.R),[],2) - 1 );
+    r = max(0, max(abs(cZ.R),[],2) - 1);
     ind = find(r == 0);
 
     % recursively repeat the removal
     while ~isempty(ind)
        
         % extract object properties
-        A = obj.A; b = obj.b; c = obj.Z(:,1); G = obj.Z(:,2:end);
+        A = cZ.A; b = cZ.b; c = cZ.Z(:,1); G = cZ.Z(:,2:end);
         
         % try to remove constraint
-        found = 0;
+        found = false;
 
         for i = 1:length(ind)
 
-           suc = 0;
+           suc = false;
 
            if ~isinf(r(ind(i)))
               [G,c,A,b,suc] = eliminateConstraint(G,c,A,b,ind(i)); 
            end
 
            if suc
-              found = 1;
-              break;
+              found = true; break;
            end
         end
         
         % rescale to find the constraints whos removal does not result in
         % an over-approximation
-        obj = conZonotope([c,G],A,b);
+        cZ = conZonotope([c,G],A,b);
         
         if ~isempty(A) && found
-            obj = rescale(obj,'iter');
+            cZ = rescale(cZ,'iter');
         else
             break; 
         end
         
-        r = max(0, max(abs(obj.R),[],2) - 1 );
+        r = max(0, max(abs(cZ.R),[],2) - 1 );
         ind = find(r == 0);       
     end
-    
-    % construct the reduced constrained zonotope object
-    res = obj;
+
 end
 
 function H = hausdorffError(A,G,r)
@@ -218,7 +210,7 @@ function [G,c,A,b,suc] = eliminateConstraint(G,c,A,b,ind)
 % reference paper [1]
 
     % construct transformation matrices 
-    suc = 0;
+    suc = false;
     [m,n] = size(A);
     ind1 = find(A(:,ind) ~= 0);
     
@@ -233,7 +225,7 @@ function [G,c,A,b,suc] = eliminateConstraint(G,c,A,b,ind)
         L_A = A * E ./a;
             
         if all(all(L_G ~= G * E ./A(ind1,ind),2)) || all(all(L_A ~= A * E ./A(ind1,ind),2))
-            error('L_G error') % to delite in future
+            throw(CORAerror('CORA:specialError','Constraint elimination unsuccessful.'));
         end
 
         % transform zonotope and constraints
@@ -247,7 +239,7 @@ function [G,c,A,b,suc] = eliminateConstraint(G,c,A,b,ind)
         A(:,ind) = [];
         A(ind1,:) = [];
         b(ind1) = [];
-        suc = 1;
+        suc = true;
         
     else
         % check if the corresponding generator is alos all-zero and remove
@@ -255,7 +247,7 @@ function [G,c,A,b,suc] = eliminateConstraint(G,c,A,b,ind)
         if ~any(G(:,ind))
            G(:,ind) = [];
            A(:,ind) = [];
-           suc = 1;
+           suc = true;
         end      
     end
 end

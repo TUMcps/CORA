@@ -1,5 +1,5 @@
 function res = testSDPT3_linearSysDT_observe_07_PRad_E()
-% testSDPT3_linearSysDT_observe_07_Prad_E - unit_test_function for 
+% testSDPT3_linearSysDT_observe_07_PRad_E - unit_test_function for 
 % guaranteed state estimation of linear discrete-time systems using the 
 % PRad-E method and the SDPT3 solver (version 4.0).
 %
@@ -21,10 +21,7 @@ function res = testSDPT3_linearSysDT_observe_07_PRad_E()
 %        Zhenhua Wang. Zonotopic fault detection observer with H −
 %        performance. In Proc. of the 36th IEEE Chinese Control
 %        Conference, pages 7230–7235, 2017.
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      25-Feb-2021
 % Last update:  ---
@@ -34,7 +31,7 @@ function res = testSDPT3_linearSysDT_observe_07_PRad_E()
 
 
 %% enable access to private function "observe_gain_Hinf"
-path = coraroot();
+path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSysDT','private','observe_gain_PRadE.m');
 target = fullfile(path,'contDynamics','@linearSysDT','observe_gain_PRadE.m');
 copyfile(source,target);
@@ -72,7 +69,7 @@ for iSet = 1:timeSteps
     res_encl = (IH <= enlarge(IH_alternative,1+accuracy));
     res_incl = (IH_alternative <= enlarge(IH,1+accuracy));
     % check if simulation is enclosed
-    res_sim = in(IH,simRes.x{1}(iSet,:)');
+    res_sim = contains(IH,simRes.x{1}(iSet,:)');
     % combine results
     resPartial(iSet) = res_encl*res_incl*res_sim;
 end

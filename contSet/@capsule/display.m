@@ -1,5 +1,6 @@
 function display(C)
-% display - Displays the center, generator, and radius of a capsule
+% display - Displays the properties of a capsule object (center, generator,
+%    radius) on the command window
 %
 % Syntax:  
 %    display(C)
@@ -27,7 +28,7 @@ function display(C)
 
 %------------- BEGIN CODE --------------
 
-if isempty(C)
+if isemptyobject(C)
     
     dispEmptyObj(C,inputname(1));
     

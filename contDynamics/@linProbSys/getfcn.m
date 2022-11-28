@@ -1,17 +1,19 @@
-function [handle] = getfcn(obj,options)
+function han = getfcn(obj,options)
 % getfcn - returns the function handle of the continuous function specified
-% by the linear probabilistic system object
+%    by the linear probabilistic system object
 %
 % Syntax:  
-%    [handle] = getfcn(obj)
+%    han = getfcn(obj,options)
 %
 % Inputs:
-%    obj - linearSys object
+%    obj - linProbSys object
+%    options - reachability settings
 %
 % Outputs:
-%    handle - function handle
+%    han - function handle
 %
 % Example: 
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -19,10 +21,10 @@ function [handle] = getfcn(obj,options)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 06-October-2007 
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      06-October-2007 
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -30,7 +32,8 @@ function dxdt = f(t,x)
     dxdt = obj.A*x+double(obj.B*options.u);
 end
 
-handle = @f;
+han = @f;
+
 end
 
 %------------- END OF CODE --------------

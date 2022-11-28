@@ -45,9 +45,10 @@ methods
 
         % If no argument is passed (default constructor)
         if nargin == 0
-            disp('mptPolytope needs more input values');
-            obj.P=[];
-            obj.halfspace=[];
+            obj.P = [];
+            obj.halfspace = [];
+            obj.dimension = 0;
+            return
 
         % If 1 argument is passed
         elseif nargin == 1
@@ -85,7 +86,7 @@ methods
         end
         
         % set parent object properties
-        obj.dimension = obj.P.Dim;
+        obj.dimension = dim(obj);
 
     end
 end

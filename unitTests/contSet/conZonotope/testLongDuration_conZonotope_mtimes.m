@@ -31,12 +31,12 @@ function res = testLongDuration_conZonotope_mtimes
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
 
 
 % TEST 1: Random Test (numerical matrix, zonotope) ------------------------
 
-% express a zonotope as a constrained zontope and compare the results of
+% express a zonotope as a constrained zonotope and compare the results of
 % the mtimes operation for linear zonotopes and constrained zonotopes
 
 for k = 1:5
@@ -59,11 +59,11 @@ for k = 1:5
       file_name = strcat('testLongDuration_conZonotope_mtimes_1_', ...
                          datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-      file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+      file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                            file_name);
                            
       save(file_path, 'zonoRes', 'cZonoRes')
-      error('Test 1 failed!');
+      throw(CORAerror('CORA:testFailed'));
     end   
 end
 
@@ -72,7 +72,7 @@ end
 
 % TEST 2: Random Test (interval matrix, zonotope) -------------------------
 
-% express a zonotope as a constrained zontope and compare the results of
+% express a zonotope as a constrained zonotope and compare the results of
 % the mtimes operation for linear zonotopes and constrained zonotopes
 
 for k = 1:5
@@ -97,11 +97,11 @@ for k = 1:5
        file_name = strcat('testLongDuration_conZonotope_mtimes_2_', ...
                           datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-       file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+       file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                             file_name);
                            
        save(file_path, 'zonoRes', 'cZonoRes')
-       error('Test 2 failed!');
+       throw(CORAerror('CORA:testFailed'));
     end   
 end
 
@@ -149,7 +149,7 @@ for k = 1:5
     end
 
 
-    % calculate points that have to be located inside the resuling conZonotope
+    % calculate points that have to be located inside the resulting conZonotope
     N = size(V,2) * length(matrices);
     points = zeros(2,N);
 
@@ -184,17 +184,13 @@ for k = 1:5
           file_name = strcat('testLongDuration_conZonotope_mtimes_3_', ...
                              datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-          file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+          file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                                file_name);
                            
           save(file_path, 'cZonoRes')
-          error('Test 3 failed!');
+          throw(CORAerror('CORA:testFailed'));
        end
     end
 end
-
-
-res = true;
-
 
 %------------- END OF CODE --------------

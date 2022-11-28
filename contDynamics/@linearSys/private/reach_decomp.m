@@ -1,20 +1,21 @@
-function [Rout,Rout_tp,res] = reach_decomp(obj,options)
+function [timeInt,timePoint,res] = reach_decomp(obj,options)
 % reach_decomp - implementation of decomposed approach for reachability
-% analysis of linear systems, cf. [1]
+%    analysis of linear systems, cf. [1]
 %
 % Syntax:  
-%    [Rout,Rout_tp,res] = reach_decomp(obj,options)
+%    [timeInt,timePoint,res] = reach_decomp(obj,options)
 %
 % Inputs:
-%    obj     - continuous system object
+%    obj - linearSys object
 %    options - options for the computation of reachable sets
 %
 % Outputs:
-%    Rout    - output set of time intervals
-%    Rout_tp - output set of time points
-%    res     - boolean (only if specification given)
+%    timeInt - array of time-interval output sets
+%    timePoint - array of time-point output sets
+%    res - boolean (only if specification given)
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -29,11 +30,11 @@ function [Rout,Rout_tp,res] = reach_decomp(obj,options)
 
 % Author:       Mark Wetzlinger
 % Written:      11-June-2019
-% Last update:  14-Aug-2019
+% Last update:  14-August-2019
+%               19-November-2022 (MW, modularize specification check)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
 
 % blocks and output matrix ------------------------------------------------
 options.blocks = length(options.partition);
@@ -51,20 +52,6 @@ end
 verboseLog(1,options.tStart,options);
 % init reach step
 [Yhat0, options] = initReach_Decomp(obj, options.R0, options);
-% quick exit if violation already
-if isfield(options,'specification')
-    % check safety property (only time interval)
-    for b=1:options.blocks
-        if options.Cno0(b)
-            if ~check(options.specification,Yhat0.ti{b})
-                Rout    = Yhat0.ti;
-                Rout_tp = Yhat0.tp;
-                res     = false;
-                return
-            end
-        end
-    end
-end
 % -------------------------------------------------------------------------
 
 
@@ -85,22 +72,39 @@ eAt   = obj.taylor.eAt; % used every step for update of P and Q
 P     = speye(obj.dim);
 Q     = obj.taylor.eAt;
 tVec  = options.tStart:options.timeStep:options.tFinal;
+steps = length(tVec) - 1;
 % -------------------------------------------------------------------------
 
 
 % init some variables -----------------------------------------------------
-Rout       = cell(length(tVec)-1,1);
-Rout{1}    = Yhat0.ti;
-Rout_tp    = cell(length(tVec)-1,1);
-Rout_tp{1} = Yhat0.tp;
-Yhatk      = cell(options.blocks,1);
-Yhatk_tp   = cell(options.blocks,1);
+timeInt.set = cell(steps,1);
+timeInt.time = cell(steps,1);
+timePoint.set = cell(steps+1,1);
+timePoint.time = num2cell(tVec');
+
+timeInt.set{1} = zeros(obj.nrOfOutputs,1);
+timePoint.set{1} = zeros(obj.nrOfOutputs,1);
+for bi=1:options.blocks
+    timeInt.set{1} = timeInt.set{1} + Yhat0.ti{bi};
+    timePoint.set{1} = timePoint.set{1} + Yhat0.tp{bi};
+end
+timeInt.time{1} = options.tStart + interval(0,options.timeStep);
+Yhatk = cell(options.blocks,1);
+Yhatk_tp = cell(options.blocks,1);
 % -------------------------------------------------------------------------
 
 
+% exit if violation already -----------------------------------------------
+if isfield(options,'specification')
+    [res,timeInt,timePoint] = checkSpecification(...
+        options.specification,timeInt,timePoint,1);
+    if ~res; return; end
+end
+% -------------------------------------------------------------------------
+
 tic;
 % loop over all further time steps of reachability analysis ---------------
-for k=2:length(tVec)-1
+for k=2:steps
     
     % log information
     verboseLog(k,tVec(k),options);
@@ -121,24 +125,29 @@ for k=2:length(tVec)-1
             end
             Yhatk{bi} = Ytemp + Yinhom{bi};
             Yhatk_tp{bi} = Ytemp_tp + Yinhom{bi};
-            
+        else
+            Yhatk{bi} = zeros(obj.nrOfOutputs,1);
+            Yhatk_tp{bi} = zeros(obj.nrOfOutputs,1);
         end
+        
     end
     
     % write to return variables
-    Rout{k} = Yhatk;
-    Rout_tp{k} = Yhatk_tp;
+    timeInt.set{k} = zeros(obj.nrOfOutputs,1); 
+    timePoint.set{k} = zeros(obj.nrOfOutputs,1);
+    for bi=1:options.blocks
+        timeInt.set{k} = timeInt.set{k} + Yhatk{bi};
+        timePoint.set{k} = timePoint.set{k} + Yhatk_tp{bi};
+    end
+    timeInt.time{k} = interval(tVec(k-1),tVec(k));
     
     if isfield(options,'specification')
         % check safety property (only time interval)
         for b=1:options.blocks
             if options.Cno0(b)
-                if ~check(options.specification,Rout{k}{b})
-                    Rout    = Rout(1:k);
-                    Rout_tp = Rout_tp(1:k);
-                    res     = false;
-                    return
-                end
+                [res,timeInt,timePoint] = checkSpecification(...
+                    options.specification,timeInt,timePoint,k);
+                if ~res; return; end
             end
         end
     end
@@ -210,11 +219,4 @@ verboseLog(length(tVec),tVec(end),options);
 % no violation of specification
 res = true;
 
-
-end
-
-
 %------------- END OF CODE --------------
-
-
-

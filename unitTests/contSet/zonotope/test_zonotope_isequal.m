@@ -54,10 +54,4 @@ res_val(2) = isequal(Z1,Z2);
 % add results
 res = all(res_val);
 
-if res
-    disp('test_isequal successful');
-else
-    disp('test_isequal failed');
-end
-
 %------------- END OF CODE --------------

@@ -1,6 +1,6 @@
 function path = pathFailedTests(file)
-% pathFailedTest - returns a filepath to the directory that stores all
-%                  failed unit tests
+% pathFailedTests - returns a filepath to the directory that stores all
+%    failed unit tests
 %
 % Syntax:  
 %    path = pathFailedTests(file)
@@ -9,7 +9,7 @@ function path = pathFailedTests(file)
 %    file - filename of the unit-test that failed
 %
 % Outputs:
-%    path - path to the corresponding file stroing data for the unit test
+%    path - path to the corresponding file storing data for the unit test
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -24,18 +24,17 @@ function path = pathFailedTests(file)
 
 %------------- BEGIN CODE --------------
     
-    % create file name
-    file_name = strcat(file,'_',datestr(now,'mm-dd-yyyy_HH-MM'));
-    
-    % create full path to the file
-    path = fullfile(coraroot(), 'unitTests', 'failedTests',file_name);
-    
-    % create directory if it does not exist yet
-    dirPath = fullfile(coraroot(),'unitTests','failedTests');
-    
-    if ~isdir(dirPath)
-       mkdir(dirPath); 
-    end
+% create file name
+file_name = strcat(file,'_',datestr(now,'mm-dd-yyyy_HH-MM'));
+
+% create full path to the file
+path = fullfile(CORAROOT,'unitTests','failedTests',file_name);
+
+% create directory if it does not exist yet
+dirPath = fullfile(CORAROOT,'unitTests','failedTests');
+
+if ~isfolder(dirPath)
+    mkdir(dirPath); 
 end
 
 %------------- END OF CODE --------------

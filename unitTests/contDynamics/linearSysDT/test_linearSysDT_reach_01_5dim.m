@@ -14,10 +14,7 @@ function res = test_linearSysDT_reach_01_5dim()
 %
 % Outputs:
 %    res - boolean 
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      24-March-2020
 % Last update:  23-April-2020 (restructure params/options)

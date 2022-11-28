@@ -55,10 +55,9 @@ for i=1:nrOfTests
 end
 
 
-if res
-    disp('test_dim successful');
-else
-    disp('test_dim failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'G','n','c');
 end
 
 %------------- END OF CODE --------------

@@ -1,24 +1,23 @@
-function d = dim(obj)
-% dim - Returns the defined dimension of a conZonotope
+function n = dim(cZ)
+% dim - returns the dimension of the ambient space of a constrained zonotope
 %
 % Syntax:  
-%    d = dim(obj)
+%    n = dim(cZ)
 %
 % Inputs:
-%    obj - conZonotope object
+%    cZ - conZonotope object
 %
 % Outputs:
-%    d - dimension of obj
+%    n - dimension of the ambient space
 %
 % Example: 
 %    Z = [0 1 0 1;0 1 2 -1];
-%    A = [-2 1 -1];
-%    b = 2;
-%    cZono = conZonotope(Z,A,b);
+%    A = [-2 1 -1]; b = 2;
+%    cZ = conZonotope(Z,A,b);
 % 
-%    d = dim(cZono)
+%    n = dim(cZ)
 %
-% Other m-files required: center.m
+% Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
@@ -31,10 +30,10 @@ function d = dim(obj)
 
 %------------- BEGIN CODE --------------
 
-if ~isempty(obj.Z)
-    d = size(obj.Z,1);
+if ~isempty(cZ.Z)
+    n = size(cZ.Z,1);
 else
-    d = 0;
+    n = 0;
 end
 
 %------------- END OF CODE --------------

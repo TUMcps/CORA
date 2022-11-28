@@ -8,14 +8,14 @@ function completed = example_conHyperplane()
 %    -
 %
 % Outputs:
-%    completed - boolean
+%    completed - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        ---
 % Written:       ---
 % Last update:   ---
@@ -23,27 +23,26 @@ function completed = example_conHyperplane()
 
 %------------- BEGIN CODE --------------
 
-
 % construct constrained hyperplane
 c = [1;1];
 d = 1;
 A = [1 0;-1 0;0 1;0 -1;1 1];
 b = [3;1;2;2;2];
 
-cH = conHyperplane(c,d,A,b);
+hyp = conHyperplane(c,d,A,b);
 
 % visualize the constrained hyperplane
-figure
-hold on
-xlim([-2,4]);
-ylim([-3,3]);
+figure; hold on;
+xlim([-2,4]); ylim([-3,3]);
 
-plot(conHyperplane(c,d),[1,2],'r');             % unconstrained hyperplane
-plot(mptPolytope(A,b),[1,2],'g');               % inequality constraints
-
-plot(cH,[1,2],'b');                             % constrained hyperplane
+% unconstrained hyperplane
+plot(conHyperplane(c,d));
+% inequality constraints
+plot(mptPolytope(A,b),[1,2],'FaceColor',colorblind('gray'));
+% constrained hyperplane
+plot(hyp,[1,2],'Color',colorblind('r'));
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

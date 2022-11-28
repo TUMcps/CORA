@@ -27,31 +27,34 @@ function res = testLongDuration_ellipsoid_plus
 res = true;
 nRuns = 2;
 rng(123456);
-for i=10:5:15
+for i=[2,10:5:15]
     for j=1:nRuns
         try
-            E1 = ellipsoid.generateRandom(i,false);
-            E2 = ellipsoid.generateRandom(i,true);
-            E3 = ellipsoid.generateRandom(i); 
-            % compute outer approx (check overloaded syntax)
-            Eo1 = E1+E2;
-            % check regular syntax
-            Eo2 = plus(E1,{E2,E3},'o');
-            % compute inner approx
-            Ei1 = plus(E1,E2,'i');
-            Ei2 = plus(E1,{E2,E3},'i');
-            % check if inner contained in outer
-            if ~in(Eo1,Ei1) || ~in(Eo2,Ei2)
-                res = false;
-                break;
-            end
+            %%% generate all variables necessary to replicate results
+            E1 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',false);
+            E2 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',true);
+            E3 = ellipsoid.generateRandom('Dimension',i); 
             Y1 = randPoint(E1,i,'extreme');
             Y2 = randPoint(E2,i,'extreme');
             Y3 = randPoint(E3,i,'extreme');
+            %%%
+            % compute outer approx (check overloaded syntax)
+            Eo1 = E1+E2;
+            % check regular syntax
+            Eo2 = plus(E1,[E2,E3],'outer');
+            % 'inner' only exists for 'L' syntax
+%             % compute inner approx
+%             Ei1 = plus(E1,E2,'inner');
+%             Ei2 = plus(E1,[E2,E3],'inner');
+%             % check if inner contained in outer
+%             if ~contains(Eo1,Ei1) || ~contains(Eo2,Ei2)
+%                 res = false;
+%                 break;
+%             end
             %check if Yi+Yj \in E
             Yres1 = sumPoints(Y1,Y2);
             Yres2 = sumPoints(Y1,Y2,Y3);
-            if ~in(Eo1,Yres1) || ~in(Eo2,Yres2)
+            if ~contains(Eo1,Yres1) || ~contains(Eo2,Yres2)
                 res = false;
                 break;
             end
@@ -68,9 +71,9 @@ for i=10:5:15
     end
 end
 
-if res
-    disp('testLongDuration_ellipsoid_plus successful');
-else
-    disp('testLongDuration_ellipsoid_plus failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'E1','E2','E3','Y1','Y2','Y3');
 end
+
 %------------- END OF CODE --------------

@@ -1,6 +1,6 @@
 function pZ = exactPlus(pZ1,pZ2)
-% exactPlus - compute the addition of two sets while preserving the
-%             dependencies between the two sets
+% exactPlus - computes the addition of two sets while preserving the
+%    dependencies between the two sets
 %
 % Syntax:  
 %    pZ = exactPlus(pZ1,pZ2)
@@ -10,7 +10,7 @@ function pZ = exactPlus(pZ1,pZ2)
 %    pZ2 - polyZonotope object
 %
 % Outputs:
-%    pZ - polyZonotope object after exact addition
+%    pZ - polyZonotope object
 %
 % Example: 
 %    pZ1 = polyZonotope([0;0],[2 1 2;0 2 2],[],[1 0 3;0 1 1]);
@@ -21,10 +21,10 @@ function pZ = exactPlus(pZ1,pZ2)
 %
 %    figure
 %    subplot(1,2,1);
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none','Splits',10);
+%    plot(pZ,[1,2],'FaceColor','r','Splits',10);
 %    title('Minkowski Sum');
 %    subplot(1,2,2);
-%    plot(pZ_,[1,2],'b','Filled',true,'EdgeColor','none');
+%    plot(pZ_,[1,2],'FaceColor','b');
 %    title('Exact Addition');
 %
 % Other m-files required: none
@@ -40,19 +40,19 @@ function pZ = exactPlus(pZ1,pZ2)
 
 %------------- BEGIN CODE --------------
     
-    % bring the exponent matrices to a common representation
-    [id,expMat1,expMat2] = mergeExpMatrix(pZ1.id,pZ2.id,pZ1.expMat,pZ2.expMat);
-    
-    % add up all generators that belong to identical exponents
-    [ExpNew,Gnew] = removeRedundantExponents([expMat1,expMat2],[pZ1.G,pZ2.G]);
-    
-    % assemble the properties of the resulting polynomial zonotope
-    pZ = pZ1;
-    pZ.G = Gnew;
-    pZ.expMat = ExpNew;
-    
-    pZ.c = pZ1.c + pZ2.c;
-    pZ.Grest = [pZ1.Grest,pZ2.Grest];
-    pZ.id = id;
+% bring the exponent matrices to a common representation
+[id,expMat1,expMat2] = mergeExpMatrix(pZ1.id,pZ2.id,pZ1.expMat,pZ2.expMat);
+
+% add up all generators that belong to identical exponents
+[ExpNew,Gnew] = removeRedundantExponents([expMat1,expMat2],[pZ1.G,pZ2.G]);
+
+% assemble the properties of the resulting polynomial zonotope
+pZ = pZ1;
+pZ.G = Gnew;
+pZ.expMat = ExpNew;
+
+pZ.c = pZ1.c + pZ2.c;
+pZ.Grest = [pZ1.Grest,pZ2.Grest];
+pZ.id = id;
 
 %------------- END OF CODE --------------

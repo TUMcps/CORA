@@ -1,5 +1,5 @@
 function interaction2ascii
-% interaction2ascii - 
+% interaction2ascii - ???
 %
 % Syntax:  
 %    interaction2ascii
@@ -48,22 +48,28 @@ for carAmode=1:nrOfAmodes
     end
 end
 
+end
 
-%--------------------------------------------------------------------------
+% Auxiliary Functions -----------------------------------------------------
+
 function saveMatrix(fid,Omega)
 %1. value: nr of rows
 %2. value: nr of columns
 %next values: elements values of the matrix
 
-%get nr of rows and columns
-[nrOfRows,nrOfColumns]=size(Omega);
-
-%save nr of rows, columns
-fprintf(fid, '%3i %3i \n', [nrOfRows, nrOfColumns]);
-
-%save nonzero elements: row, coulmn, value
-for iRow=1:nrOfRows
-    for iCol=1:nrOfColumns
-        fprintf(fid, '%0.4f \n', Omega(iRow,iCol));
+    %get nr of rows and columns
+    [nrOfRows,nrOfColumns]=size(Omega);
+    
+    %save nr of rows, columns
+    fprintf(fid, '%3i %3i \n', [nrOfRows, nrOfColumns]);
+    
+    %save nonzero elements: row, coulmn, value
+    for iRow=1:nrOfRows
+        for iCol=1:nrOfColumns
+            fprintf(fid, '%0.4f \n', Omega(iRow,iCol));
+        end
     end
+
 end
+
+%------------- END OF CODE --------------

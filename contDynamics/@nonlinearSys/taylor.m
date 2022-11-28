@@ -3,7 +3,8 @@ function taylor(obj,varargin)
 % system; the result is stored in a m-file and passed by a handle
 %
 % Syntax:  
-%    [obj] = taylor(obj)
+%    taylor(obj)
+%    taylor(obj,order,expPoint)
 %
 % Inputs:
 %    obj - nonlinear system object
@@ -11,10 +12,10 @@ function taylor(obj,varargin)
 %    expPoint - expansion point (optional)
 %
 % Outputs:
-%    ---
+%    -
 %
 % Example: 
-%    ---
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -45,7 +46,7 @@ else
 end
 
 % set path for reading and writing files
-path = [coraroot '/contDynamics/stateSpaceModels'];
+path = [CORAROOT 'contDynamics' filesep 'stateSpaceModels'];
 
 % insert symbolic variables into the system equations
 fdyn = obj.mFile(x,u);

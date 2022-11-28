@@ -20,10 +20,10 @@ function [velocity,input]=profile2(pos,acc)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 02-July-2008 
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      02-July-2008 
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

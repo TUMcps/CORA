@@ -1,27 +1,26 @@
 function cZ = mtimes(factor1,factor2)
-% mtimes - Overloaded '.*' operator for the multiplication of a matrix or an
-%          interval matrix with a constrained zonotope
+% mtimes - Overloaded '*' operator for the multiplication of a matrix or
+%    an interval matrix with a constrained zonotope
 %
 % Syntax:  
-%    cZ = times(matrix,cZ)
+%    cZ = mtimes(factor1,factor2)
 %
 % Inputs:
-%    matrix - numerical or interval matrix
-%    cZ - conZonotope object 
+%    factor1 - conZonotope object, numerical or interval matrix
+%    factor2 - conZonotope object, numerical or interval matrix 
 %
 % Outputs:
-%    cZ - constrained zonotpe after multiplication with a matrix
+%    cZ - conZonotope object
 %
 % Example: 
 %    Z = [0 1 0 1;0 1 2 -1];
-%    A = [-2 1 -1];
-%    b = 2;
-%    cZono = conZonotope(Z,A,b);
-%    cMul = [3 1;2 4] * cZono;
+%    A = [-2 1 -1]; b = 2;
+%    cZ = conZonotope(Z,A,b);
+%    res = [3 1;2 4] * cZ;
 %
-%    hold on
-%    plot(cZono,[1,2],'r');
-%    plot(cMul,[1,2],'b');
+%    figure; hold on;
+%    plot(cZ,[1,2],'r');
+%    plot(res,[1,2],'b');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -36,12 +35,14 @@ function cZ = mtimes(factor1,factor2)
 
 %------------- BEGIN CODE --------------
 
+% find the conZonotope object
+[cZ,factor2] = findClassArg(factor1,factor2,'conZonotope');
+
 % Call superclass method
-if ~isnumeric(factor1)
-    error('conZontope/mtimes: operation not implemented yet!')
+if ~isnumeric(factor2)
+    throw(CORAerror('CORA:noops',cZ,factor2));
 else
-    cZ = factor2;
-    cZ.Z = factor1*factor2.Z;
+    cZ.Z = factor2*cZ.Z;
 end
 
 %------------- END OF CODE --------------

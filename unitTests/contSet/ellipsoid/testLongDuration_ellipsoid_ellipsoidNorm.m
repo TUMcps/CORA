@@ -31,14 +31,16 @@ dims = [2 5 10]; % Dimensions to be tested
 Ntests = 10; % Number of tests in each case
 Npoints = 10; % Number of points to be tested
 
+res = false;
+
 %% Points inside
 for dim = dims
     for i = 1:Ntests
-        E = ellipsoid.generateRandom(dim,false);
+        E = ellipsoid.generateRandom('Dimension',dim,'IsDegenerate',false);
         P = randPoint(E,Npoints);
         for i_p = 1:size(P,2)
             if ellipsoidNorm(E,P(:,i_p)-E.center) > 1+tol
-                res = false; return;
+                saveFailedTests('E','P'); return;
             end
         end
     end
@@ -47,7 +49,7 @@ end
 %% Points outside
 for dim = dims
     for i = 1:Ntests
-        E = ellipsoid.generateRandom(dim,false);
+        E = ellipsoid.generateRandom('Dimension',dim,'IsDegenerate',false);
         
         max_d = norm(E-E.q); % Maximal Euclidean norm of any point in E; we
         % thus just have to dispalce any random point by 10*max_d, to make
@@ -57,7 +59,7 @@ for dim = dims
         
         for i_p = 1:size(P,2)
             if ellipsoidNorm(E, P(:,i_p)-E.q) <= 1-tol
-                res = false; return;
+                saveFailedTests('E','P'); return;
             end
         end
     end
@@ -66,28 +68,32 @@ end
 %% Check norm-properties
 for dim = dims
     for i=1:Ntests
-        E = ellipsoid.generateRandom(dim,false);
+        E = ellipsoid.generateRandom('Dimension',dim,'IsDegenerate',false);
         
         p1 = randPoint(E);
         p2 = randPoint(E);
         
         % Check triangle inequality
         if ~(ellipsoidNorm(E,p1+p2) <= ellipsoidNorm(E,p1)+ellipsoidNorm(E,p2)+tol)
-            res = false; return;
+            saveFailedTests('E','p1','p2'); return;
         end
         
         % Check symmetry
         if ~(ellipsoidNorm(E,p1) <= ellipsoidNorm(E,-p1) + tol && ellipsoidNorm(E,p1) >= ellipsoidNorm(E,-p1) - tol)
-            res = false; return;
+            saveFailedTests('E','p1','p2'); return;
         end
         
         % Check part of the positive definiteness
         if ~(ellipsoidNorm(E, zeros(dim,1)) <= tol)
-            res = false; return;
+            saveFailedTests('E','p1','p2'); return;
         end
     end
 end
-
 res = true;
+end
 
+function saveFailedTests(varargin)
+   path = pathFailedTests(mfilename());
+   save(path,varargin{:}); 
+end
 %------------- END OF CODE --------------

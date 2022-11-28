@@ -26,7 +26,7 @@ function res = testLongDuration_taylm_reexpand
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
 
 
 % Test 1: 1D-function -----------------------------------------------------
@@ -55,9 +55,9 @@ if any(abs(y-y_) > 1e-10)
     file_name = strcat('testLongDuration_taylm_reexpand_1_', ...
                       datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-   file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
+   file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', file_name);
    save(file_path, 'T')
-   error('Test 1 failed')
+   res = false;
 
 end
 
@@ -103,8 +103,8 @@ for i = 1:size(X1,1)
     end
 end
 
-if any(any(abs(Z1-Z2) > 1e-10))
-    error('Test 2 failed');
+if ~compareMatrices(Z1,Z2,1e-10)
+    res = false;
 end
 
 % % plot the function
@@ -167,14 +167,10 @@ if diffMax > 1e-8
     file_name = strcat('testLongDuration_taylm_reexpand_2_', ...
                        datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-    file_path = fullfile(coraroot(), 'unitTests', 'failedTests', file_name);
+    file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', file_name);
     save(file_path, 'T')
-    error('Test 3 failed');
+    res = false;
 end
-
-% If this code is reached, then there was no error and the test is
-% considered successful
-res = true;
 
 end
 

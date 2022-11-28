@@ -1,13 +1,13 @@
 function [eP,eI] = expmIndMixed(matP,intermediateOrder,maxOrder)
-% expmIndMixed - operator for the exponential matrix of a 
-% matrix polytope, evaluated independently.
-% Higher order terms are computed via interval arithmetic.
+% expmIndMixed - operator for the exponential matrix of a matrix polytope,
+%    evaluated independently; higher-order terms are computed via interval
+%    arithmetic.
 %
 % Syntax:  
 %    [eP,eI] = expmIndMixed(matP,intermediateOrder,maxOrder)
 %
 % Inputs:
-%    matP - matrix zonotope
+%    matP - matPolytope object
 %    intermediateOrder - Taylor series order until computation with interval arith.
 %    maxOrder - maximum Taylor series order until remainder is computed
 %

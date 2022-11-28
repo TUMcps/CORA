@@ -1,20 +1,21 @@
-function [Rout,Rout_tp,res] = reach_standard(obj,options)
-% reach - computes the reachable set for linear systems using
-%  the standard (non-wrapping-free) reachability algorithm for linear systems
+function [timeInt,timePoint,res] = reach_standard(obj,options)
+% reach_standard - computes the reachable set for linear systems using the
+%    standard (non-wrapping-free) reachability algorithm for linear systems
 %
 % Syntax:  
-%    [Rout,Rout_tp,res] = reach_standard(obj,options)
+%    [timeInt,timePoint,res] = reach_standard(obj,options)
 %
 % Inputs:
-%    obj - continuous system object
+%    obj - linearSys object
 %    options - options for the computation of reachable sets
 %
 % Outputs:
-%    Rout - reachable set of time intervals
-%    Rout_tp - reachable set of time point
-%    res - boolean (only if specification given)
+%    timeInt - array of time-interval reachable / output sets
+%    timePoint - array of time-point reachable / output sets
+%    res - true/false whether specification satisfied
 %
-% Example: 
+% Example:
+%    -
 %
 % References:
 %    [1] A. Girard, "Reachability of uncertain linear systems using 
@@ -29,7 +30,7 @@ function [Rout,Rout_tp,res] = reach_standard(obj,options)
 
 % Author:        Matthias Althoff, Mark Wetzlinger
 % Written:       26-June-2019 (from @contDynamics > reach.m)
-% Last update:   ---
+% Last update:   19-November-2022 (MW, modularize specification check)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -59,37 +60,37 @@ Rpar    = options.Rpar;
 Raux    = options.Raux;
 eAt     = obj.taylor.eAt;
 
-%time period
+% time period and number of steps
 tVec = options.tStart:options.timeStep:options.tFinal;
+steps = length(tVec) - 1;
+options.i = 1;
 
-% initialize parameter for the output equation
-[C,D,k] = initOutputEquation(obj,options);
-Rout = cell(length(tVec)-1,1);
-Rout_tp = cell(length(tVec)-1,1);
+% initialize output variables for reachable sets and output sets
+timeInt.set = cell(steps,1);
+timeInt.time = cell(steps,1);
+timePoint.set = cell(steps+1,1);
+timePoint.time = num2cell(tVec');
+
+% compute output set of first step
+timePoint.set{1} = outputSet(obj,options,options.R0);
+timeInt.set{1} = outputSet(obj,options,Rnext.ti);
+timeInt.time{1} = interval(tVec(1),tVec(2));
+Rstart = Rnext.tp;
+
+% safety property check
+if isfield(options,'specification')
+    [res,timeInt,timePoint] = checkSpecification(...
+        options.specification,timeInt,timePoint,1);
+    if ~res; return; end
+end
 
 
 % loop over all reachability steps
-for i = 2:length(tVec)-1
-
-    % compute output set
-    [Rout{i-1},Rout_tp{i-1}] = outputSet(C,D,k,Rnext,options);
+for i = 2:steps
     
-    % safety property check
-    if isfield(options,'specification')
-        if ~check(options.specification,Rout{i-1})
-            % violation
-            Rout = Rout(1:i-1);
-            Rout_tp = Rout_tp(1:i-1);
-            res = false;
-            return
-        end
-    end
-    
+    options.i = i;
     
     % post: ----------
-    
-    % log information
-    verboseLog(i,tVec(i),options);
 
     % method implemented from Algorithm 1 in [1]
     
@@ -115,26 +116,33 @@ for i = 2:length(tVec)-1
         Rnext.ti = Rhom + zonotope(Rpar) + inputCorr;
         Rnext.tp = Rhom_tp + zonotope(Rpar);
     end
-
-end
-
-[Rout{end},Rout_tp{end}] = outputSet(C,D,k,Rnext,options);
-
-% safety property check
-if isfield(options,'specification')
-    if ~check(options.specification,Rout{end})
-        % violation, but no reduction in cell size of Rout, Rout_tp
-        res = false;
-        return
+    
+    % ----------
+    
+    % compute output set
+    timePoint.set{i} = outputSet(obj,options,Rstart);
+    timeInt.set{i} = outputSet(obj,options,Rnext.ti);
+    timeInt.time{i} = interval(tVec(i),tVec(i+1));
+    
+    % save reachable set
+    Rstart = Rnext.tp;
+    
+    % safety property check
+    if isfield(options,'specification')
+        [res,timeInt,timePoint] = checkSpecification(...
+            options.specification,timeInt,timePoint,i);
+        if ~res; return; end
     end
+    
+    % log information
+    verboseLog(i,tVec(i),options);
+    
 end
 
-% log information
-verboseLog(length(tVec),tVec(end),options);
+% compute output set of last set
+timePoint.set{end} = outputSet(obj,options,Rstart);
 
 % specification fulfilled
 res = true;
-
-end
 
 %------------- END OF CODE --------------

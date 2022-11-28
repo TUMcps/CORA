@@ -1,17 +1,21 @@
 function res = isempty(hyp)
-% isempty - checks if conHyperplane is empty or not
+% isempty - checks if a constrained hyperplane is the empty set
 %
 % Syntax:  
-%    res = isempty(h)
+%    res = isempty(hyp)
 %
 % Inputs:
 %    hyp - conHyperplane object
 %
 % Outputs:
-%    res - boolean whether hyp is empty or not
+%    res - true/false
 %
 % Example: 
-%    ---
+%    hyp1 = conHyperplane(halfspace([1;1],0),[1 0;-1 0],[2;2])
+%    isempty(hyp1)
+%
+%    hyp2 = conHyperplane();
+%    isempty(hyp2)
 %
 % Other m-files required: none
 % Subfunctions: none

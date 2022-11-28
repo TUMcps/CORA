@@ -1,10 +1,9 @@
 function res = testLongDuration_conPolyZono_supportFunc
-% test_conPolyZono_supportFunc - unit test function for support function 
-%                                enclosure of constrained polynomial 
-%                                zonotopes
+% testLongDuration_conPolyZono_supportFunc - unit test function for 
+%    support function enclosure of constrained polynomial zonotopes
 %
 % Syntax:  
-%    test_conPolyZono_supportFunc
+%    testLongDuration_conPolyZono_supportFunc
 %
 % Inputs:
 %    -
@@ -25,7 +24,7 @@ function res = testLongDuration_conPolyZono_supportFunc
 
 %------------- BEGIN CODE --------------
 
-    res = 1;
+    res = true;
     tol = 1e-6;
     
     % Random Tests --------------------------------------------------------
@@ -72,7 +71,7 @@ function res = testLongDuration_conPolyZono_supportFunc
                 path = pathFailedTests(mfilename());
                 save(path,'cPZ','d');
                 
-                error('Random test failed!');
+                throw(CORAerror('CORA:testFailed'));
             end
         end
     end

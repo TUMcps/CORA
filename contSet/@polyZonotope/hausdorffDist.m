@@ -1,9 +1,9 @@
 function val = hausdorffDist(pZ,points,varargin)
 % hausdorffDist - Calculates an approximation of the Hausdorff distance
-%                 between a polynomial zonotope and a point cloud
+%    between a polynomial zonotope and a point cloud
 %
 % Syntax:  
-%    val = hausdorffDist(pZ,points,)
+%    val = hausdorffDist(pZ,points)
 %    val = hausdorffDist(pZ,points,splits)
 %
 % Inputs:
@@ -21,8 +21,8 @@ function val = hausdorffDist(pZ,points,varargin)
 %
 %    dist = hausdorffDist(pZ,points,8)
 %
-%    hold on
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
+%    figure; hold on;
+%    plot(pZ,[1,2],'FaceColor','r');
 %    plot(points(1,:),points(2,:),'.k');
 %
 % Other m-files required: none
@@ -39,10 +39,12 @@ function val = hausdorffDist(pZ,points,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    splits = 4;
-    if nargin >= 3
-       splits = varargin{1}; 
-    end
+    splits = setDefaultValues({4},varargin{:});
+
+    % check input arguments
+    inputArgsCheck({{pZ,'att','polyZonotope'};
+                    {points,'att','numeric','vector'};
+                    {splits,'att','numeric','nonempty'}});
     
     % split the polynomial zonotope multiple times to obtain a better 
     % over-approximation of the real shape

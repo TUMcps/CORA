@@ -43,9 +43,9 @@ auxOps = {'cubMap','enclose','enclosePoints','generateRandom','linComb',...
     'randPoint','reduce','supportFunc','plot','project'}';
 
 % content of contSet folder
-allContSet = listFolderContent([coraroot filesep 'contSet']);
+allContSet = listFolderContent([CORAROOT filesep 'contSet']);
 % content of unitTests/contSet folder
-allunitTestsContSet = listFolderContent([coraroot filesep 'unitTests' filesep 'contSet']);
+allunitTestsContSet = listFolderContent([CORAROOT filesep 'unitTests' filesep 'contSet']);
 
 % list classes in contSet
 nrClasses = length(allContSet.files);
@@ -71,17 +71,21 @@ end
 contSetclass = [];
 if nargin >= 1
     if ~ischar(varargin{1})
-        error("contSet class name must be a char array!");
+        throw(CORAerror('CORA:specialError',...
+            "contSet class name must be a char array!"));
     elseif ~ismember(varargin{1},classes)
-        error("Provided contSet class does not exist!");
+        throw(CORAerror('CORA:specialError',...
+            "Provided contSet class does not exist!"));
     end
     contSetclass = varargin{1};
     type = 'basic';
     if nargin == 2
         if ~ischar(varargin{2})
-            error("type specification name must be a char array!");
+            throw(CORAerror('CORA:specialError',...
+                "type specification name must be a char array!"));
         elseif ~ismember(varargin{2},{'basic','all'})
-            error("type specification name must be 'basic' or 'all'!");
+            throw(CORAerror('CORA:specialError',...
+                "type specification name must be 'basic' or 'all'!"));
         end
         type = varargin{2};
     end

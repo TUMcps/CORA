@@ -1,19 +1,17 @@
 function completed = example_nonlinear_reach_03_vanDerPol_splitting()
-% example_nonlinear_reach_03_vanDerPol - example of nonlinear reachability 
-%                                        analysis with splitting
-%
-% This example can be found in  [1, Sec. 3.4.5] or in [2].
-% A new technique for computing this example with less spliiting has been
-% published in [3].
+% example_nonlinear_reach_03_vanDerPol_splitting - example of nonlinear
+%    reachability analysis with splitting, can be found in [1, Sec. 3.4.5]
+%    or in [2]. A new technique for computing this example with less
+%    spliiting has been published in [3].
 %
 % Syntax:  
-%    completed = example_nonlinear_reach_03_vanDerPol()
+%    completed = example_nonlinear_reach_03_vanDerPol_splitting()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    completed - boolean 
+%    completed - true/false 
 %
 % References:
 %    [1] M. Althoff, “Reachability analysis and its application to the 
@@ -32,7 +30,7 @@ function completed = example_nonlinear_reach_03_vanDerPol_splitting()
 
 % Parameters --------------------------------------------------------------
 
-params.tFinal = 3.2;
+params.tFinal = 0.5;
 
 % specify initial set as zonotope bundle so that splitting sets is exact
 Z0{1} = zonotope([1.4 0.3 0; 2.3 0 0.05]);
@@ -72,36 +70,30 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 
 % simulation settings
 simOpt.points = 60;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
-
 % random simulation
 simRes = simulateRandom(vanderPol, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
 
-dim = [1 2];
-plotOrder = 20;
-    
-figure; hold on;
+projDim = [1 2];
+figure; hold on; box on;
 
 % plot reachable sets 
-plot(R,dim,'FaceColor',[.8 .8 .8],'EdgeColor','none','Order',plotOrder);
+plot(R);
 
 % plot initial set
-plot(params.R0,dim,'w','Filled',true,'EdgeColor','k');
+plot(params.R0,projDim,'k','FaceColor','w');
 
 % plot simulation results   
-plot(simRes,dim);
+plot(simRes,projDim);
 
 % label plot
-xlabel(['x_{',num2str(dim(1)),'}']);
-ylabel(['x_{',num2str(dim(2)),'}']);
+xlabel(['x_{',num2str(projDim(1)),'}']);
+ylabel(['x_{',num2str(projDim(2)),'}']);
 
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

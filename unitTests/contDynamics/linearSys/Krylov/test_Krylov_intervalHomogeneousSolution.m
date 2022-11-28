@@ -110,8 +110,10 @@ x_exact = expm(A*options.timeStep)*zonotope(x0);
 % Is exact solution in zonotope?
 res = (interval(x_exact) <= x_appr);
 
+end
 
 
+% Auxiliary functions -----------------------------------------------------
 function epsilon = computeEpsilon(linSys, redOrder, options)
     %obtain time step, rho_A
     tau = options.timeStep;
@@ -194,8 +196,6 @@ function err = errorBound_Wang_normalized(rho_A,tau,q,a,lambda,KrylovOrder)
     err = 2*Q*tau*rho_A*q^(KrylovOrder-1)/(1-q)*exp(exponent); % Corr 5.3, Wang 2016
     
     %err = 2*Rinit_norm*Q*tau*rho_A*q^(KrylovOrder-1)/(1-q); % Corr 5.3, Wang 2016
-end
-
 end
 
 %------------- END OF CODE --------------

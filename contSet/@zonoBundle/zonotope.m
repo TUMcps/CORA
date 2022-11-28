@@ -1,11 +1,11 @@
-function Z = zonotope(obj)
+function Z = zonotope(zB)
 % zonotope - encloses a zonotope bundle with a zonotope
 %
 % Syntax:  
-%    Z = zonotope(obj)
+%    Z = zonotope(zB)
 %
 % Inputs:
-%    obj - zonoBundle object
+%    zB - zonoBundle object
 %
 % Outputs:
 %    Z - zonotope object
@@ -15,12 +15,11 @@ function Z = zonotope(obj)
 %    Z{2} = zonotope([0 2 2; 0 2 -2]);
 %    zB = zonoBundle(Z);
 %
-%    zono = zonotope(zB);
+%    res = zonotope(zB);
 %
-%    figure
-%    hold on
+%    figure; hold on;
 %    plot(zB,[1,2],'r');
-%    plot(zono,[1,2],'b');
+%    plot(res,[1,2],'b');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -35,6 +34,6 @@ function Z = zonotope(obj)
 
 %------------- BEGIN CODE --------------
 
-    Z = obj.Z{1};
+Z = zB.Z{1};
 
 %------------- END OF CODE --------------

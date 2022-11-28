@@ -1,25 +1,25 @@
-function d = dim(pZ)
-% dim - return dimension of polyZonotope object
+function n = dim(pZ)
+% dim - returns the dimension of the ambient space of a polynomial zonotope
 %
 % Syntax:  
-%    d = dim(pZ)
+%    n = dim(pZ)
 %
 % Inputs:
 %    pZ - polyZonotope object
 %
 % Outputs:
-%    d - dimension of pZ
+%    n - dimension of the ambient space
 %
 % Example: 
-%    pZ = polyZonotope.generateRandom(4);
-%    d = dim(pZ)
+%    pZ = polyZonotope.generateRandom('Dimension',4);
+%    n = dim(pZ)
 %
 % Other m-files required: center.m
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: rank.m
-%
+
 % Author:        Niklas Kochdumper
 % Written:       26-December-2019
 % Last update:   ---
@@ -27,6 +27,6 @@ function d = dim(pZ)
 
 %------------- BEGIN CODE --------------
 
-    d = length(pZ.c);
+n = length(pZ.c);
 
 %------------- END OF CODE --------------

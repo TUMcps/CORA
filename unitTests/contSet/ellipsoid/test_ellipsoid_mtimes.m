@@ -30,13 +30,13 @@ function res = test_ellipsoid_mtimes
 
 res = false;
 % create ellipsoid
-E1 = ellipsoid.generateRandom(true);
+E1 = ellipsoid.generateRandom('IsDegenerate',true);
 %If actual dimension is ==1
 if E1.dim>1
     %Generate random points within E1
     N = 1000;
     samples = randPoint(E1,N);
-    if ~in(E1,samples)
+    if ~contains(E1,samples)
         disp('test_ellipsoid_mtimes failed');
         return;
     end
@@ -47,7 +47,7 @@ if E1.dim>1
     %Compute the linear transformation using the sample points
     samples_A = A*samples;
 
-    if ~in(EA,samples_A)
+    if ~contains(EA,samples_A)
         disp('test_ellipsoid_mtimes failed');
         return;
     end
@@ -59,12 +59,12 @@ E1 = ellipsoid(Q,q);
 A = [1,2,3;4,5,6];
 EA = A*E1;
 true_result=ellipsoid([87.2,193.7;193.7,433.4],[9;15]);
-if(isequal(EA,true_result))
-    disp('test_ellipsoid_mtimes successful');
-    res = true;
-else
-    disp('test_ellipsoid_mtimes failed');
-end
 
+% empty set
+% if ~isempty(mtimes(A,ellipsoid()))
+%     res = false; return
+% end
+
+res = isequal(EA,true_result);
 
 %------------- END OF CODE --------------

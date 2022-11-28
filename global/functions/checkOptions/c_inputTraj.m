@@ -26,7 +26,8 @@ function [res,msg] = c_inputTraj(val,sys,params,options)
 
 % Author:       Mark Wetzlinger
 % Written:      25-May-2021
-% Last update:  ---
+% Last update:  17-November-2021 (MW, different lengths allowed depending
+%                                     on existence of throughput matrix)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -39,13 +40,32 @@ msg = '';
 if ~isfield(params,'u') || (size(params.u,2) == 1 && ~any(params.u))
     % params.u not provided or default value (zero-vector)
     return;
-elseif size(params.u,2) ~= round((params.tFinal-params.tStart) / options.timeStep)
-    res = false;
-    msg = ['does not comply with params.u: \n'...
-        'The number of steps in the reachability analysis given by \n'...
-        '   (params.tFinal-params.tStart)/options.timeStep\n'...
-        'has to match the number of columns in params.u'];
-    return;
+else
+    steps = round((params.tFinal-params.tStart) / val);
+    if (isa(sys,'linearSys') || isa(sys,'linearSysDT')) && any(any(sys.D))
+        % throughput matrix given, for last output we require one more
+        % entry in params.u
+        if size(params.u,2) ~= steps + 1
+            res = false;
+            msg = ['does not comply with params.u:\n'...
+                'Case: Throughput matrix D provided\n'...
+                'The number of steps in the reachability analysis plus 1 given by\n'...
+                '   (params.tFinal-params.tStart)/options.timeStep + 1\n'...
+                'has to match the number of columns in params.u'];
+            return;
+        end
+    else
+        % throughput matrix is all-zero
+        if ~any(size(params.u,2) == [steps, steps+1])
+            res = false;
+            msg = ['does not comply with params.u:\n'...
+                'Case: Not a linear system / no throughput matrix provided\n'...
+                'The number of steps in the reachability analysis given by\n'...
+                '   (params.tFinal-params.tStart)/options.timeStep\n'...
+                'has to match the number of columns in params.u'];
+            return;
+        end
+    end
 end
 
 end

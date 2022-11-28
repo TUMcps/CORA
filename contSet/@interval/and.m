@@ -1,21 +1,20 @@
-function res = and(Int1,Int2)
-% and - computes intersection of intervals.
-%       Overloades '&' operator for intervals.
+function res = and(I,S)
+% and - computes intersection, overloades '&' operator of intervals
 %
 % Syntax:  
-%    res = and(Int1,Int2)
+%    res = and(I,S)
 %
 % Inputs:
-%    Int1 - first interval object
-%    Int2 - second interval object
+%    I - interval object
+%    S - contSet object
 %
 % Outputs:
-%    res - resulting interval object
+%    res - intersection of interval objects
 %
 % Example: 
-%    a = interval([1;-1], [2; 1]);
-%    b = interval([1.5; -2], [2.5; 0]);
-%    c = a & b
+%    I1 = interval([1; -1], [2; 1]);
+%    I2 = interval([1.5; -2], [2.5; 0]);
+%    res = I1 & I2
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,52 +29,59 @@ function res = and(Int1,Int2)
 
 %------------- BEGIN CODE --------------
 
-% determine the interval object
-if ~isa(Int1,'interval')
-    temp = Int1;
-    Int1 = Int2;
-    Int2 = temp;
+% pre-processing
+[resFound,vars] = pre_and('interval',I,S);
+
+% check premature exit
+if resFound
+    % if result has been found, it is stored in the first entry of var
+    res = vars{1}; return
+else
+    % potential re-ordering
+    I = vars{1}; S = vars{2};
 end
 
+
 % different cases depending on the class of the summand
-if isa(Int2,'interval')
+if isa(S,'interval')
 
     % compute intersection
-    inf = max(Int1.inf, Int2.inf);
-    sup = min(Int1.sup, Int2.sup);
+    lb = max(I.inf, S.inf);
+    ub = min(I.sup, S.sup);
 
     % check if result is empty
-    if all(all(inf - sup <= eps))
-        res = interval(min([inf,sup],[],2),max([inf,sup],[],2));
+    tmp = lb - ub;
+    if all(all(tmp < eps | withinTol(tmp,eps)))
+        res = interval(min([lb,ub],[],2),max([lb,ub],[],2));
     else
         res = [];
     end
 
-elseif isa(Int2,'halfspace') || isa(Int2,'conHyperplane')
+elseif isa(S,'halfspace') || isa(S,'conHyperplane')
 
     % convert to conZonotope
-    cZ = conZonotope(Int1);
+    cZ = conZonotope(I);
 
     % compute intersection
-    res = cZ & Int2;
+    res = cZ & S;
 
     % ecnlose intersection by interval
     res = interval(res);
 
-elseif isa(Int2,'levelSet')
+elseif isa(S,'levelSet')
 
-    res = Int2 & Int1;
+    res = S & I;
 
-elseif isa(Int2,'zonotope') || isa(Int2,'conZonotope') || ...
-       isa(Int2,'zonoBundle') || isa(Int2,'mptPolytope') || ...
-       isa(Int2,'conPolyZono')
+elseif isa(S,'zonotope') || isa(S,'conZonotope') || ...
+       isa(S,'zonoBundle') || isa(S,'mptPolytope') || ...
+       isa(S,'conPolyZono')
 
-    res = Int2 & Int1;
+    res = S & I;
 
 else
     
     % throw error for given arguments
-    error(noops(Int1,Int2));
+    throw(CORAerror('CORA:noops',I,S));
     
 end
 

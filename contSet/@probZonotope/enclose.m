@@ -1,24 +1,29 @@
 function probZ = enclose(probZ,Ar,varargin)
-% enclose - Generates a probabilistic zonotope that encloses two 
-%    probabilistic zonotopes probZ, A*probZ according to Sec. VI.A in [1]
+% enclose - encloses a probabilistic zonotope and its affine transformation
+%    according to Sec. VI.A in [1]
+%
+% Description:
+%    Computes the set
+%    { a x1 + (1 - a) * (Ar x1 + x2) | x1 \in probZ, x2 \in Z2, a \in [0,1] }
+%    where Z2 = Ar*probZ + v
 %
 % Syntax:  
-%    probZ = enclose(pZ,A)
+%    probZ = enclose(probZ,Ar)
 %
 % Inputs:
-%    probZ - first probabilistic zonotope object
+%    probZ - probZonotope object
 %    Ar - system matrix multiplied with time increment r
-%    Rtrans - (optional)
+%    Rtrans - (optional) point
 %
 % Outputs:
-%    probZ - probabilistic zonotope enclosing pZ and A*pZ
+%    probZ - probabilistic zonotope enclosing pZ and Ar*pZ
 %
 % Example:
 %    Z1 = [10 1 -2; 0 1 1];
 %    Z2 = [0.6 1.2; 0.6 -1.2];
 %    probZ = probZonotope(Z1,Z2);
-%    A = rand(2,2);
-%    enclose(probZ,A);
+%    Ar = rand(2,2);
+%    enclose(probZ,Ar);
 %
 % References:
 %    [1] M. Althoff et al. "Safety assessment for stochastic linear systems 
@@ -39,20 +44,22 @@ function probZ = enclose(probZ,Ar,varargin)
 
 %------------- BEGIN CODE --------------
 
-if nargin < 3
-    Rtrans = zeros(length(Ar),1);
-else
-    Rtrans = varargin{1};
-end
+% parse input arguments
+Rtrans = setDefaultValues({zeros(length(Ar),1)},varargin{:});
 
-%TO DO: change computation as it is in the dissertation!
+% check input arguments
+inputArgsCheck({{probZ,'att','probZonotope'};
+                {Ar,'att','numeric','nonnan'};
+                {Rtrans,'att','numeric','nonnan'}});
+
+%TODO: change computation as it is in the dissertation!
 
 %get dimension
-d = dim(probZ);
+n = dim(probZ);
 
 %retrieve uncertain zonotope deltaZ
-Zaux = (expm(Ar)-eye(d))*zonotope(probZ)+Rtrans;
-deltaZ = enclose(zonotope(zeros(d,1)),Zaux);
+Zaux = (expm(Ar)-eye(n))*zonotope(probZ)+Rtrans;
+deltaZ = enclose(zonotope(zeros(n,1)),Zaux);
 probZ = probZ+deltaZ;
 
 %change probabilistic generators if det(A)<1

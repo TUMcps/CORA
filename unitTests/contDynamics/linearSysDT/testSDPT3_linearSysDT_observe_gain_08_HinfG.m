@@ -23,8 +23,7 @@ function res = testSDPT3_linearSysDT_observe_gain_08_HinfG()
 %        64(11):4717-4724, 2019.
 %
 % Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      01-March-2021
 % Last update:  ---
@@ -33,7 +32,7 @@ function res = testSDPT3_linearSysDT_observe_gain_08_HinfG()
 %------------- BEGIN CODE --------------
 
 % enable access to private function "observe_gain_HinfG"
-path = coraroot();
+path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSysDT','private','observe_gain_HinfG.m');
 target = fullfile(path,'contDynamics','@linearSysDT','observe_gain_HinfG.m');
 copyfile(source,target);

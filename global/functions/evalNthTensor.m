@@ -68,6 +68,8 @@ function res = evalNthTensor(T,x,order)
 
 end
 
+% Auxiliary Functions -----------------------------------------------------
+
 function res = evalQuadratic(T,x)
 % recursive function that evaluates the value of the taylor term that
 % corresponds to the tensor T at the point x

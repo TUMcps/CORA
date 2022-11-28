@@ -59,14 +59,10 @@ vol_true = prod(upperLimits - lowerLimits);
 res_rand = abs(vol - vol_true) < tol;
 % -------------------------------------------------------------------------
 
+% empty set
+res_e = volume(interval()) == 0;
 
 % add results
-res = res_analytical && res_rand;
-
-if res
-    disp('test_volume successful');
-else
-    disp('test_volume failed');
-end
+res = res_analytical && res_rand && res_e;
 
 %------------- END OF CODE --------------

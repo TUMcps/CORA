@@ -1,14 +1,14 @@
-function p = randPoint(obj,varargin)
-% randPoint - generates a random point within a constrained polynomial 
-%             zonotope
+function p = randPoint(cPZ,varargin)
+% randPoint - generates a random point or point cloud within a constrained
+%    polynomial zonotope
 %
 % Syntax:  
-%    p = randPoint(obj)
-%    p = randPoint(obj,N)
-%    p = randPoint(obj,N,type)
+%    p = randPoint(cPZ)
+%    p = randPoint(cPZ,N)
+%    p = randPoint(cPZ,N,type)
 %
 % Inputs:
-%    obj - conPolyZono object
+%    cPZ - conPolyZono object
 %    N - number of random points
 %    type - type of the random point ('standard' or 'extreme')
 %
@@ -28,7 +28,7 @@ function p = randPoint(obj,varargin)
 %    points = randPoint(cPZ,10,'extreme');
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'r','Filled',true,'EdgeColor','none','Splits',15);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',15);
 %    plot(points(1,:),points(2,:),'.k','MarkerSize',20);
 %
 % Other m-files required: none
@@ -44,31 +44,51 @@ function p = randPoint(obj,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    N = 1;
-    type = 'standard';
-    if nargin > 1 && ~isempty(varargin{1})
-       N = varargin{1}; 
-    end
-    if nargin > 2 && ~isempty(varargin{2})
-       type = varargin{2}; 
-    end
+    % pre-processing
+    [res,vars] = pre_randPoint('conPolyZono',cPZ,varargin{:});
     
-    % generate random points
-    p = zeros(dim(obj),N);
+    % check premature exit
+    if res
+        % if result has been found, it is stored in the first entry of vars
+        p = vars{1}; return
+    else
+        % assign variables
+        cPZ = vars{1}; N = vars{2}; type = vars{3}; pr = vars{4};
+        % sampling with 'gaussian' is done in contSet method
+        if strcmp(type,'gaussian')
+            p = randPoint@contSet(cPZ,N,type,pr); return
+        end
+    end
+
+    % 'all' vertices not supported
+    if ischar(N) && strcmp(N,'all')
+        throw(CORAerror('CORA:notSupported',...
+            "Number of vertices 'all' is not supported for class conPolyZono."));
+    end
+        
+    % initialize random points
+    p = zeros(dim(cPZ),N);
     
     if strcmp(type,'standard')
-        for i = 1:N
-            p(:,i) = randPointStandard(obj);
+        i = 1;
+        while i <= N
+            temp = randPointStandard(cPZ);
+            if ~isempty(temp)
+                p(:,i) = temp;
+                i = i + 1;
+            end
         end
     elseif strcmp(type,'extreme')
-        for i = 1:N
-            p(:,i) = randPointExtreme(obj);
+        i = 1;
+        while i <= N
+            temp = randPointExtreme(cPZ);
+            if ~isempty(temp)
+                p(:,i) = temp;
+                i = i + 1;
+            end
         end
-    else
-        [msg,id] = errWrongInput('type');
-        error(id,msg);
     end
+    
 end
 
 
@@ -104,8 +124,8 @@ function p = randPointStandard(cPZ)
     end
     
     if res < 1
-        [msg,id] = errEmptySet();
-        error(id,msg); 
+        % set is empty
+        p = []; return
     end
     
     p = cPZ.c + sum(cPZ.G.*prod(a_.^cPZ.expMat,1),2);
@@ -172,13 +192,11 @@ function p = randPointExtreme(cPZ)
     
     % get corresponding point in state space
     if res <= 0
-        [msg,id] = errEmptySet();
-        error(id,msg); 
+        p = []; return
     else
         p = cPZ.c + sum(cPZ.G.*prod(x.^cPZ.expMat,1),2);
         if isempty(p)
-           [msg,id] = errEmptySet();
-            error(id,msg); 
+            return
         end
     end
     

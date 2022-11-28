@@ -34,10 +34,4 @@ C4 = capsule([1;1],[0;1],0);
 % compare results
 res = isempty(C1) && isempty(C2) && ~isempty(C3) && ~isempty(C4);
 
-if res
-    disp('test_isempty successful');
-else
-    disp('test_isempty failed');
-end
-
 %------------- END OF CODE --------------

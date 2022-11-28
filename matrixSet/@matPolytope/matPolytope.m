@@ -8,19 +8,18 @@ classdef matPolytope
 %    vert - cell-array storing the vertices
 %
 % Outputs:
-%    obj - generated object
+%    obj - generated matPolytope object
 %
 % Example:
 %    V{1} = [1 2; 0 1];
 %    V{2} = [1 3; -1 2];
-%
-%    mp = matPolytope(V);
+%    matP = matPolytope(V);
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: intervalMatrix
+% See also: intervalMatrix, matZonotope
 
 % Author:       Matthias Althoff
 % Written:      21-June-2010
@@ -39,6 +38,9 @@ methods
     
     % class constructor
     function obj = matPolytope(input)
+        if nargin > 1
+            throw(CORAerror('CORA:tooManyInputArgs',1));
+        end
         if nargin==1
             if isa(input, 'polytope')
                 %get vertices from polytope class
@@ -65,14 +67,13 @@ methods
     [eP,eI] = expmIndMixed(matP,intermediateOrder,maxOrder)
     intMat = intervalMatrix(matP)
     matZ = matZonotope(matP)
-    matP = polytope(matP)
-    dist = expmDist(matP,exactMat,maxOrder)
+    matP = mptPolytope(matP)
+    val = expmDist(matP,exactMat,maxOrder)
     matV = vertices(matP)
     
     %display functions
-    plot(varargin)
-    plotComb(varargin)
-    display(obj)
+    plot(matP,varargin)
+    display(matP)
 end
 end
 

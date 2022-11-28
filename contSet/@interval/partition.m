@@ -1,11 +1,11 @@
-function dzNew = partition(Int, splits)
+function dzNew = partition(I, splits)
 % partition - partitions a multidimensional interval into subintervals
 %
 % Syntax:  
-%    Int = partition(Int, splits)
+%    I = partition(I, splits)
 %
 % Inputs:
-%    Int - interval vector
+%    I - interval object
 %    splits - number of splits in each dimension
 %
 % Outputs:
@@ -14,12 +14,12 @@ function dzNew = partition(Int, splits)
 % Example:
 %    I = interval([2;3;4],[5;6;7]);
 %    Isplit = partition(I,2);
-%    figure; hold on;
+%    figure;
 %    for i=1:length(Isplit)
-%       subplot(1,2,1); hold on;
-%       plot(Isplit{i},[1,2]);
-%       subplot(1,2,2); hold on;
-%       plot(Isplit{i},[2,3]);
+%        subplot(1,2,1); hold on;
+%        plot(Isplit{i},[1,2]);
+%        subplot(1,2,2); hold on;
+%        plot(Isplit{i},[2,3]);
 %    end
 %
 % Other m-files required: none
@@ -35,12 +35,16 @@ function dzNew = partition(Int, splits)
 
 %------------- BEGIN CODE --------------
 
+% check input arguments
+inputArgsCheck({{I,'att','interval'};
+                {splits,'att','numeric',{'nonnan','scalar','positive'}}});
+
 %increment
-incr = (supremum(Int) - infimum(Int)) / splits;
-inf = infimum(Int);
+incr = (supremum(I) - infimum(I)) / splits;
+inf = infimum(I);
 
 %possible indices
-ind = combinator(splits,dim(Int),'p','r');
+ind = combinator(splits,dim(I),'p','r');
 
 nrOfComb = length(ind(:,1));
 dzNew = cell(nrOfComb,1);

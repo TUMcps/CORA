@@ -26,7 +26,6 @@ function res = test_polyZonotope_restructure
 
 %------------- BEGIN CODE --------------
 
-res = false;
 
 %% ANALYTICAL TESTS
 
@@ -45,14 +44,10 @@ G = [4 1 11 0 -1; 2 -1 0 19 -1];
 expMat = [1 0 0 0 3; 0 1 0 0 1; 0 0 1 0 0; 0 0 0 1 0];
 
 % check for correctness
-if any(c-pZres.c) || any(any(G-pZres.G)) || ...
-   any(any(expMat-pZres.expMat)) || ~isempty(pZres.Grest)
-    error('test_polyZonotope_restructure: analytical test 1 failed!');
+if ~all(withinTol(c,pZres.c)) || ~compareMatrices([G;expMat],[pZres.G;pZres.expMat]) ...
+        || ~isempty(pZres.Grest)
+    throw(CORAerror('CORA:testFailed'));
 end
-
-
-
-
 
 res = true;
 

@@ -1,12 +1,12 @@
 function eZ = expmInd(matZ,maxOrder)
-% expmInd - operator for the exponential matrix of a 
-% matrix zonotope, evaluated independently
+% expmInd - operator for the exponential matrix of a matrix zonotope,
+%    evaluated independently
 %
 % Syntax:  
 %    eZ = expmInd(matZ,maxOrder)
 %
 % Inputs:
-%    matZ - matrix zonotope
+%    matZ - matZonotope object
 %    maxOrder - maximum Taylor series order until remainder is computed
 %
 % Outputs:

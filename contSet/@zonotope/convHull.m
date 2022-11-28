@@ -1,26 +1,27 @@
-function res = convHull(Z1,varargin)
-% convHull - computes an enclosure for the convex hull of two zonotopes
+function Z = convHull(Z,S)
+% convHull - computes an enclosure for the convex hull of a zonotope and
+%    another set or a point
 %
 % Syntax:  
-%    res = convHull(Z1,Z2)
+%    Z = convHull(Z,S)
 %
 % Inputs:
-%    Z1 - first zonotope object
-%    Z2 - second zonotope object
+%    Z - zonotope object
+%    S - contSet object
 %
 % Outputs:
-%    res - zonotope enclosing the convex hull of Z1 and Z2
+%    Z - zonotope enclosing the convex hull
 %
 % Example: 
-%    zono1 = zonotope([2 1 0; 2 0 1]);
-%    zono2 = zonotope([-2 1 0; -2 0 1]);
+%    Z1 = zonotope([2 1 0; 2 0 1]);
+%    Z2 = zonotope([-2 1 0; -2 0 1]);
 %
-%    zono = convHull(zono1,zono2);
+%    Z = convHull(Z1,Z2);
 %
 %    figure; hold on;
-%    plot(zono1,[1,2],'r','Filled',true,'EdgeColor','none');
-%    plot(zono2,[1,2],'b','Filled',true,'EdgeColor','none');
-%    plot(zono,[1,2],'g','LineWidth',3);
+%    plot(Z1,[1,2],'FaceColor','r');
+%    plot(Z2,[1,2],'FaceColor','b');
+%    plot(Z,[1,2],'g','LineWidth',3);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -35,39 +36,36 @@ function res = convHull(Z1,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    if nargin == 1
-        res = Z1; return;
-    else
-        Z2 = varargin{1};
-    end 
+% parse input arguments
+if nargin == 1
+    return;
+end 
+if isempty(S)
+    return;
+end
+% determine zonotope object
+if ~isa(Z,'zonotope')
+    temp = Z;
+    Z = S;
+    S = temp;
+end
 
-    % determine zonotope object
-    if ~isa(Z1,'zonotope')
-        temp = Z1;
-        Z1 = Z2;
-        Z2 = temp;
-    end
+% different cases depending on the class of the second summand
+if isa(S,'zonotope') || isa(S,'interval') || isnumeric(S)
 
-    % different cases depending on the class of the second summand
-    if isa(Z2,'zonotope') || isa(Z2,'interval') || isnumeric(Z2)
+    Z = enclose(Z,zonotope(S));
 
-        % compute convex hull for constrained zonotopes
-        cZ = convHull(conZonotope(Z1),conZonotope(Z2));
-        
-        % enclose result with a zonotope
-        res = zonotope(cZ);
+elseif isa(S,'mptPolytope') || isa(S,'conZonotope') || ...
+       isa(S,'zonoBundle') || isa(S,'polyZonotope') || ...
+       isa(S,'conPolyZono')
 
-    elseif isa(summand,'mptPolytope') || isa(summand,'conZonotope') || ...
-           isa(summand,'zonoBundle') || isa(summand,'polyZonotope') || ...
-           isa(summand,'conPolyZono')
+    Z = convHull(S,Z);        
 
-        res = Z2 + Z1;        
+else
 
-    else
-        % throw error for given arguments
-        error(noops(Z1,Z2));
-    end
+    % throw error for given arguments
+    throw(CORAerror('CORA:noops',Z,S));
+
 end
 
 %------------- END OF CODE --------------

@@ -1,15 +1,17 @@
-function res = withinTol(a,b,TOL)
-% sumPoints - checks whether a,b are within a given tolerance
+function res = withinTol(a,b,varargin)
+% withinTol - checks whether two numeric values (scalars, vectors, arrays)
+%    are within a given tolerance
 %
 % Syntax:  
 %    res = withinTol(a,b)
 %    res = withinTol(a,b,TOL)
 %
 % Inputs:
-%    a,b - double to check tolerances for
+%    a,b - double (scalar, vector, matrix)
+%    tol - tolerance
 %
 % Outputs:
-%    res - boolean result
+%    res - true/false for each comparison
 %
 % Example: 
 %    res = withinTol(1,1+1e-12)
@@ -26,30 +28,31 @@ function res = withinTol(a,b,TOL)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-if ~exist('TOL','var')
-    TOL = 1e-8;
-end
+
+tol = setDefaultValues({1e-8},varargin{:});
 
 % allow scalar values to be expanded
-if ~all(size(a)==size(b)) 
-    if isscalar(a)
-        a = repmat(a,size(b));
-    elseif isscalar(b)
-        b = repmat(b,size(a));
-    else
-        error('First two arguments need to be of same size (or scalar)!');
-    end
+if ~all(size(a)==size(b)) && ~isscalar(a) && ~isscalar(b) && ...
+        ~(size(a,1) == size(b,1) && size(a,2) == 1) && ...
+        ~(size(a,2) == size(b,2) && size(a,1) == 1) && ...
+        ~(size(a,1) == size(b,1) && size(b,2) == 1) && ...
+        ~(size(a,2) == size(b,2) && size(b,1) == 1)
+    throw(CORAerror('CORA:dimensionMismatch',a,b));
 end
 
-if ~isa(a,'double') || ~isa(b,'double')
-    error('First two input arguments need to be doubles!');
+if ~isa(a,'double')
+    throw(CORAerror('CORA:wrongInput','first','double'));
+elseif ~isa(b,'double')
+    throw(CORAerror('CORA:wrongInput','second','double'));
 end
 
 % absolute tolerance
-res_abs = abs(a-b)<=TOL;
+res_abs = abs(a-b) <= tol;
 
 % relative tolerance
-res_rel = abs(a-b)./min(abs(a),abs(b))<=TOL;
+res_rel = abs(a-b) ./ min(abs(a),abs(b)) <= tol;
 
+% joint result
 res = res_abs | res_rel;
+
 %------------- END OF CODE --------------

@@ -1,5 +1,5 @@
 function R = observe_intersectionFreeAdaptive(obj,options)
-% observe_intersectionFreeAdaptive - computes the guaranted state
+% observe_intersectionFreeAdaptive - computes the guaranteed state
 % estimation approach according to the intersection-free approach
 % when the gain changes in each iteration, see [1], [2]; the approach is 
 % extended here for nonlinear systems.

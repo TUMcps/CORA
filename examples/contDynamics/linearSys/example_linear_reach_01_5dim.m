@@ -1,22 +1,20 @@
 function res = example_linear_reach_01_5dim()
-% example_linear_reach_01_5dim - example of linear reachability 
-%                                analysis with uncertain inputs
-%
-% This example can be found in [1, Sec. 3.2.3].
+% example_linear_reach_01_5dim - example of linear reachability analysis
+%   with uncertain inputs, can be found in [1, Sec. 3.2.3].
 %
 % Syntax:  
-%    completed = example_linear_reach_01_5dim()
+%    res = example_linear_reach_01_5dim()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % References:
 %    [1] M. Althoff, “Reachability analysis and its application to the 
 %        safety assessment of autonomous cars", Dissertation, TUM 2010
-% 
+
 % Author:       Matthias Althoff
 % Written:      17-August-2016
 % Last update:  23-April-2020 (restructure params/options)
@@ -24,7 +22,7 @@ function res = example_linear_reach_01_5dim()
 
 %------------- BEGIN CODE --------------
 
-% Parameter ---------------------------------------------------------------
+% Parameters --------------------------------------------------------------
 
 params.tFinal = 5;
 params.R0 = zonotope([ones(5,1),0.1*diag(ones(5,1))]);
@@ -59,10 +57,9 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 25;
-simOpt.inpChanges = 10;
-simOpt.p_conf = 0.8;
+simOpt.type = 'gaussian';
 
-simRes = simulateRandom(fiveDimSys, params, simOpt, 'gaussian');
+simRes = simulateRandom(fiveDimSys, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -75,14 +72,14 @@ for k = 1:length(dims)
     figure; hold on; box on
     projDims = dims{k};
 
-    % plot reachable sets 
-    plot(R,projDims,'FaceColor',[.8 .8 .8],'EdgeColor','b');
+    % plot reachable sets
+    plot(R,projDims);
 
     % plot initial set
-    plot(params.R0,projDims,'w-','lineWidth',2);
+    plot(params.R0,projDims,'k','FaceColor','w');
 
     % plot simulation results
-    plot(simRes,projDims,'y');
+    plot(simRes,projDims);
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);
@@ -90,6 +87,6 @@ for k = 1:length(dims)
 end
 
 % example completed
-res = 1;
+res = true;
 
 %------------- END OF CODE --------------

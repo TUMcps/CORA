@@ -1,17 +1,20 @@
-function pow = powers(varargin)
+function pow = powers(matZ,maxOrder,varargin)
 % powers - computes the powers of a matrix zonotope
 %
 % Syntax:  
 %    matZ = powers(matZ,maxOrder)
 %
 % Inputs:
-%    matZ - matrix zonotope
+%    matZ - matZonotope object
 %    maxOrder - maximum Taylor series order until remainder is computed
+%    initialOrder - ?
+%    initialPower - ?
 %
 % Outputs:
 %    matZ - matrix zonotope 
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,17 +29,8 @@ function pow = powers(varargin)
 
 %------------- BEGIN CODE --------------
 
-if nargin==2
-    matZ = varargin{1};
-    maxOrder = varargin{2};
-    initialOrder = 1;
-    initialPower = matZ;
-elseif nargin==4
-    matZ = varargin{1};
-    maxOrder = varargin{2};
-    initialOrder = varargin{3};
-    initialPower = varargin{4};
-end
+% set default values
+[initialOrder,initialPower] = setDefaultValues({1,matZ},varargin{:});
 
 %initialize power
 pow{initialOrder}=initialPower;
@@ -45,6 +39,5 @@ pow{initialOrder}=initialPower;
 for i=(initialOrder+1):maxOrder
     pow{i} = pow{i-1}*matZ;
 end
-
 
 %------------- END OF CODE --------------

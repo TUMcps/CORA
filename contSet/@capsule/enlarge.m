@@ -29,6 +29,11 @@ function C = enlarge(C,factor)
 
 %------------- BEGIN CODE --------------
 
+% check input arguments
+inputArgsCheck({{C,'att','capsule'};
+                {factor,'att','numeric',{'scalar','nonzero','nonnegative'}}});
+
+% enlarge capsule
 C = capsule(center(C),factor*C.g,factor*C.r);
 
 %------------- END OF CODE --------------

@@ -1,19 +1,20 @@
 function X = sampleBox(Z,N)
-% sampleBox - computes N samples uniformly distributed inside a parallelotope
+% sampleBox - computes N samples uniformly distributed inside a
+%    parallelotope
 %
 % Syntax:  
 %    X = sampleBox(Z,N)
 %
 % Inputs:
 %    Z - zonotope object
-%    N - #samples
+%    N - number of samples
 %
 % Outputs:
 %    X - samples (each sample a column vector)
 %
 % Example: 
-%    Z=zonotope([1 1 ; 0 1]);
-%    X=sampleBox(Z,1000);
+%    Z = zonotope([1 1 ; 0 1]);
+%    X = sampleBox(Z,1000);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,16 +28,20 @@ function X = sampleBox(Z,N)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 G = generators(Z);
-[n,m] = size(G);
-if n<m || rank(G)<n
-    error('This function only works for full-dimensional boxes (parallelotopes)');
+[n,nrGens] = size(G);
+if n<nrGens || rank(G)<n
+    throw(CORAerror('CORA:wrongValue','first',...
+        'The zonotope has to be a parallelotope'));
 end
 options.method = 'achr';
+
 %efficient since Z is box
 HS = halfspace(Z);
 A = HS.halfspace.H;
 b = HS.halfspace.K;
 X = cprnd(N,A,b,options);
 X = X';
+
 %------------- END OF CODE --------------

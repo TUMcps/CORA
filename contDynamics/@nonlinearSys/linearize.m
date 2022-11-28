@@ -1,22 +1,22 @@
 function [obj,linSys,linOptions] = linearize(obj,options,R)
 % linearize - linearizes the nonlinear system; linearization error is not
-% included yet
+%    included yet
 %
 % Syntax:  
 %    [obj,linSys,linOptions] = linearize(obj,options,R)
 %
 % Inputs:
-%    obj - nonlinear system object
+%    obj - nonlinearSys object
 %    options - options struct
-%    R - actual reachable set
+%    R - reachable set
 %
 % Outputs:
-%    obj - linear system object
-%    linSys - linear system object
+%    obj - nonlinearSys object
+%    linSys - linearSys object
 %    linOptions - options for the linearized system
 %
 % Example: 
-%    Text for example...
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -84,14 +84,12 @@ Ucenter = center(linOptions.U);
 linOptions.U = linOptions.U - Ucenter;
 linOptions.uTrans = zonotope([f0 + Ucenter,zeros(size(f0,1),1)]);
 %linOptions.uTrans = zonotope(f0 + Ucenter);
-linOptions.originContained = 0;
-
+linOptions.originContained = false;
 
 %save constant input
 obj.linError.f0=f0;
 
 %save linearization point
 obj.linError.p=p;
-
 
 %------------- END OF CODE --------------

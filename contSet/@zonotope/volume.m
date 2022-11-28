@@ -1,28 +1,29 @@
-function vol = volume(Z,type,o)
-% volume - computes the volume of a zonotope according to page 40 in [1]
+function vol = volume(Z,varargin)
+% volume - computes the volume of a zonotope
 %
 % Syntax:  
-%    vol = volume(Z,type,o)
+%    vol = volume(Z,method,order)
 %
 % Inputs:
 %    Z - zonotope object
-%    type - type of approximation 
-%           - 'none' (default)
+%    method - (optional) method for approximation 
+%           - 'exact' (default)
 %           - 'reduce' for reduced zonotope with order o
 %           - 'alamo', see [2]
+%    order - (optional) zonotope order for reduction before computation
 %
 % Outputs:
 %    vol - volume
 %
 % Example: 
-%    Z=zonotope([1 -1 0; 0 0 -1]);
-%    vol=volume(Z)
+%    Z = zonotope([1 -1 0; 0 0 -1]);
+%    vol = volume(Z)
 %
 % References:
 %    [1] E. Grover et al. "Determinants and the volumes of parallelotopes 
 %        and zonotopes", 2010 
 %    [2] Alamo et al. "Bounded error identification of systems with 
-%        time-varying parameters§, TAC 2006.
+%        time-varying parameters", TAC 2006.
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -36,55 +37,73 @@ function vol = volume(Z,type,o)
 %               02-September-2019 (incl. approx)
 %               04-May-2020 (MW, add vol=0 cases)
 %               09-September-2020 (MA, Alamo approx added, reduce changed)
+%               27-July-2022 (ME, included batchCombinator)
+%               18-August-2022 (MW, include standardized preprocessing)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-if nargin < 2
-    type = 'none';
-elseif nargin < 3
-    r = 0;   
+% pre-processing
+[res,vars] = pre_volume('zonotope',Z,varargin{:});
+
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    vol = vars{1}; return
+else
+    Z = vars{1}; method = vars{2}; order = vars{3};
 end
 
-%dimension and nrOfGenerators
-G=generators(Z);
-[n,nrOfGens]=size(G);
+% dimension and nrOfGenerators
+G = generators(Z);
+[n,nrOfGens] = size(G);
 
+% non full-dimensional set
 if nrOfGens < n || rank(G) < n
-    vol = 0;
-    return
+    vol = 0; return
 end
 
 % exact computation
-if strcmp(type,'none')
+if strcmp(method,'exact')
     % exact calculation
 
-    %possible combinations of n=dim generators from all generators
-    comb = combinator(nrOfGens,n,'c');
-    nrOfComb=length(comb(:,1));
+    % number of combinations processed at once
+    batch_size = 1e7;
+    comb_state = struct;
 
     accVol = 0;
 
-    for i=1:nrOfComb
-        try
-            currVol = abs(det(G(:,comb(i,:))));
-            accVol = accVol + currVol;
-        catch
-            currVol=0;
-            disp('parallelogram volume could not be computed');
+    while true
+        
+        [batch, comb_state] = batchCombinator(nrOfGens, int16(n), batch_size, comb_state);
+
+        for j=1:length(batch(:,1))
+            try
+                currVol = abs(det(G(:,batch(j,:))));
+                accVol = accVol + currVol;
+            catch
+                throw(CORAerror('CORA:specialError',...
+                'Parallelotope volume could not be computed.'));            
+            end
         end
+
+        if comb_state.done == true
+            break;
+        end
+
     end
 
+    % multiply result by factor
     vol=2^n*accVol;
 
 % over-approximative volume using order reduction
-elseif strcmp(type,'reduce')
+elseif strcmp(method,'reduce')
     % reduce zonotope
-    Zred = reduce(Z,'pca',o); 
+    Zred = reduce(Z,'pca',order); 
     vol = volume(Zred);
   
 % approximation according to [2]    
-elseif strcmp(type,'alamo')
+elseif strcmp(method,'alamo')
     vol = 2^n*sqrt(det(G*G')); 
 end
 

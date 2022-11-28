@@ -47,7 +47,7 @@ for i=1:nrOfTests
     CH = convHull(I_low,I_high);
 
     % original sets have to be contained
-    if ~in(CH,I_low) || ~in(CH,I_high)
+    if ~contains(CH,I_low) || ~contains(CH,I_high)
         res_rand = false; break;
     end
 
@@ -68,10 +68,9 @@ end
 % combine results
 res = res_rand;
 
-if res
-    disp('test_convHull successful');
-else
-    disp('test_convHull failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','lb','ub','I_low','I_high');
 end
 
 %------------- END OF CODE --------------

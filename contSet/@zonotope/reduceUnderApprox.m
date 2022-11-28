@@ -1,26 +1,26 @@
-function Zred = reduceUnderApprox(Z,option,order)
+function Z = reduceUnderApprox(Z,method,order)
 % reduceUnderApprox - reduces the order of a zonotope so that an
-%                     under-approximation of the original set is obtained
+%    under-approximation of the original set is obtained
 %
 % Syntax:  
-%    Zred = reduceUnderApprox(Z,option)
+%    Z = reduceUnderApprox(Z,method,order)
 %
 % Inputs:
 %    Z - zonotope object
-%    option - reduction method ('sum', 'scale', 'linProg' or 'wetzlinger')
+%    method - reduction method ('sum', 'scale', 'linProg', or 'wetzlinger')
 %    order - zonotope order
 %
 % Outputs:
-%    Zred - reduced zonotope
+%    Z - reduced zonotope
 %
 % Example: 
-%    Z = zonotope.generateRandom(2);
+%    Z = zonotope([1;-1],[3 2 -3 -1 2 4 -3 -2 1; 2 0 -2 -1 2 -2 1 0 -1]);
 %
 %    Zsum = reduceUnderApprox(Z,'sum',3); 
 %    Zscale = reduceUnderApprox(Z,'scale',3);
 %    ZlinProg = reduceUnderApprox(Z,'linProg',3);
 %   
-%    hold on
+%    figure; hold on;
 %    plot(Z,[1,2],'r','LineWidth',2);
 %    plot(Zsum,[1,2],'b');
 %    plot(Zscale,[1,2],'g');
@@ -46,6 +46,11 @@ function Zred = reduceUnderApprox(Z,option,order)
 
 %------------- BEGIN CODE --------------
 
+    % check input arguments
+    inputArgsCheck({{Z,'att','zonotope','nonempty'};
+                    {method,'str',{'sum','scale','linProg','wetzlinger'}};
+                    {order,'att','numeric','nonnan'}});
+    
     % remove all-zero generators
     Z = deleteZeros(Z);
 
@@ -55,20 +60,22 @@ function Zred = reduceUnderApprox(Z,option,order)
     if n*order < nrOfGens
         
         % reduce with the selected method
-        if strcmp(option,'sum')
-            Zred = reduceUnderApproxSum(Z,order);
-        elseif strcmp(option,'scale')
-            Zred = reduceUnderApproxScale(Z,order);
-        elseif strcmp(option,'linProg')
-            Zred = reduceUnderApproxLinProg(Z,order);
-        elseif strcmp(option,'wetzlinger')
-            Zred = reduceUnderApproxWetzlinger(Z,order);
+        if strcmp(method,'sum')
+            Z = reduceUnderApproxSum(Z,order);
+        elseif strcmp(method,'scale')
+            Z = reduceUnderApproxScale(Z,order);
+        elseif strcmp(method,'linProg')
+            Z = reduceUnderApproxLinProg(Z,order);
+        elseif strcmp(method,'wetzlinger')
+            Z = reduceUnderApproxWetzlinger(Z,order);
         else
-            error('Wrong value for input argument ''option''!');
+            throw(CORAerror('CORA:wrongValue','second',...
+                "'sum', 'scale', 'linProg', or 'wetzlinger'"));
         end
     else
-       Zred = Z; 
+         return;
     end
+
 end
 
 
@@ -101,7 +108,7 @@ function Zred = reduceUnderApproxLinProg(Z,order)
     [s,~,exitflag] = linprog(f',A,b,Aeq,beq,lb,ub,options);
     
     if exitflag < 0
-       error('Under-approximative reduction failed!'); 
+        throw(CORAerror('CORA:solverIssue'));
     end
     
     s = s(ind);
@@ -130,7 +137,7 @@ function Zred = reduceUnderApproxScale(Z,order)
     [s,~,exitflag] = linprog(f',A,b,Aeq,beq,lb,ub,options);
     
     if exitflag < 0
-       error('Under-approximative reduction failed!'); 
+        throw(CORAerror('CORA:solverIssue'));
     end
     
     s = s(ind);
@@ -235,7 +242,7 @@ function [A,b,Aeq,beq,lb,ub,f,ind] = contConstrPolytope(Zx,Zy)
 % construct inequality constraints for zonotope X in zonotope Y containment
 
     % get halfspace representation of the zonotope
-    poly = polytope(zonotope(Zy));
+    poly = mptPolytope(zonotope(Zy));
     C = get(poly,'A');
     d = get(poly,'b');
 

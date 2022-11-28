@@ -1,17 +1,18 @@
-function res = isempty(h)
-% isempty - checks if halfspace is empty or not
+function res = isempty(hs)
+% isempty - checks if a halfspace is the empty set
 %
 % Syntax:  
-%    res = isempty(h)
+%    res = isempty(hs)
 %
 % Inputs:
-%    h - halfspace object
+%    hs - halfspace object
 %
 % Outputs:
-%    res - boolean whether h is empty or not
+%    res - true/false
 %
 % Example: 
-%    ---
+%    hs = halfspace([1 1],2);
+%    isempty(hs)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,6 +27,6 @@ function res = isempty(h)
 
 %------------- BEGIN CODE --------------
 
-res = isempty(h.c) && (isempty(h.d) || h.d == 0);
+res = isempty(hs.c) && (isempty(hs.d) || hs.d == 0);
 
 %------------- END OF CODE --------------

@@ -46,8 +46,8 @@ function res = minus(factor1, factor2)
         res = arrayfun(@(b) s_minus_dz(factor1, b), factor2, 'UniformOutput', 0);
         
     else
-        
-        error('Wrong input')
+         throw(CORAerror('CORA:wrongValue','first/second',...
+             "('zoo','zoo'), ('zoo','double'), ('double','zoo'), ('zoo','interval'), or ('interval','zoo')"));
         
     end
     A = cat(1, res{:});
@@ -57,28 +57,30 @@ end
 
 %% --------------- Implementation for a scalar --------------
 function res = s_minus_zz(factor1, factor2)
-        
-        [factor1,factor2] = combineZooObjects(factor1,factor2);
-        res = factor1;
-        for i = 1:length(res.method)
-           res.objects{i} = factor1.objects{i} - factor2.objects{i}; 
-        end 
+
+    [factor1,factor2] = combineZooObjects(factor1,factor2);
+    res = factor1;
+    for i = 1:length(res.method)
+       res.objects{i} = factor1.objects{i} - factor2.objects{i}; 
+    end 
         
 end
+
 function res = s_minus_zd(factor1, factor2)
         
-        res = factor1;
-        for i = 1:length(res.method)
-           res.objects{i} = factor1.objects{i} - factor2; 
-        end  
+    res = factor1;
+    for i = 1:length(res.method)
+       res.objects{i} = factor1.objects{i} - factor2; 
+    end  
  
 end
+
 function res = s_minus_dz(factor1, factor2)
         
-        res = factor2;
-        for i = 1:length(res.method)
-           res.objects{i} = -factor2.objects{i} + factor1; 
-        end 
+    res = factor2;
+    for i = 1:length(res.method)
+       res.objects{i} = -factor2.objects{i} + factor1; 
+    end 
 
 end
 %------------ END OF CODE ------------

@@ -1,5 +1,5 @@
 function E = MVIE(Z)
-% MVEE - Computes the Maximum-Volume-inscribed ellipsoid (inscribed into Z)
+% MVIE - Computes the Maximum-Volume-inscribed ellipsoid (inscribed into Z)
 %
 % Syntax:  
 %    E = MVIE(Z)
@@ -35,10 +35,10 @@ function E = MVIE(Z)
 %------------- BEGIN CODE --------------
 
 %get halfspace representation
-P = polytope(Z);
+P = mptPolytope(Z);
 P = get(P,'P');
 A = P.A;
 b = P.b;
 
-E = ellipsoid(mptPolytope(A,b),'i');
+E = ellipsoid(mptPolytope(A,b),'inner');
 %------------- END OF CODE --------------

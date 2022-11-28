@@ -1,4 +1,4 @@
-function res_rand = testLongDuration_conZonotope_conZonotope
+function res = testLongDuration_conZonotope_conZonotope
 % testLongDuration_conZonotope_conZonotope - unit test function of
 %    conZonotope (constructor)
 %
@@ -27,7 +27,7 @@ function res_rand = testLongDuration_conZonotope_conZonotope
 %------------- BEGIN CODE --------------
 
 tol = 1e-12;
-res_rand = true;
+res = true;
 nrOfTests = 1000;
 for i=1:nrOfTests
 
@@ -50,13 +50,13 @@ for i=1:nrOfTests
     % only zonotope matrix
     conZono = conZonotope(Z);
     if any(any(abs(conZono.Z - Z) > tol))
-        res_rand = false; break;
+        res = false; break;
     end
 
     % center and generator matrix
     conZono = conZonotope(c,G);
     if any(any(abs(conZono.Z - Z) > tol))
-        res_rand = false; break;
+        res = false; break;
     end
 
     % zonotope matrix, constraint matrix, constraint vector
@@ -64,7 +64,7 @@ for i=1:nrOfTests
     if any(any(abs(conZono.Z - Z) > tol)) ...
             || any(any(abs(conZono.A - A) > tol)) ...
             || any(abs(conZono.b - b) > tol)
-        res_rand = false; break;
+        res = false; break;
     end
     
     % center, generator matrix, constraint matrix, constraint vector
@@ -72,7 +72,7 @@ for i=1:nrOfTests
     if any(any(abs(conZono.Z - Z) > tol)) ...
             || any(any(abs(conZono.A - A) > tol)) ...
             || any(abs(conZono.b - b) > tol)
-        res_rand = false; break;
+        res = false; break;
     end
     
     
@@ -87,47 +87,46 @@ for i=1:nrOfTests
     % center and generator matrix of different dimensions
     try
         conZono = conZonotope(c_plus1,G); % <- should throw error here
-        res_rand = false; break;
+        res = false; break;
     end
     
     % A does not fit Z
     try
         conZono = conZonotope(Z,A_plus1,b); % <- should throw error here
-        res_rand = false; break;
+        res = false; break;
     end
     try
         conZono = conZonotope(Z_plus1,A,b); % <- should throw error here
-        res_rand = false; break;
+        res = false; break;
     end
     
     % A does not fit b
     try
         conZono = conZonotope(Z,A,b_plus1); % <- should throw error here
-        res_rand = false; break;
+        res = false; break;
     end
     
     % center is a matrix
     if n ~= 1
         try
             conZono = conZonotope(c_mat,G); % <- should throw error here
-            res_rand = false; break;
+            res = false; break;
         end
     end
     
     % too many input arguments
     try
         conZono = conZonotope(c,G,A,b,b); % <- should throw error here
-        res_rand = false; break;
+        res = false; break;
     end
 end
 
 
 % combine results
 
-if res_rand
-    disp('testLongDuration_conZonotope_conZonotope successful');
-else
-    disp('testLongDuration_conZonotope_conZonotope failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','nrGens','nrCon','c','G','A','b','b_plus1','c_mat');
 end
 
 %------------- END OF CODE --------------

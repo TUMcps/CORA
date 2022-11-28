@@ -1,7 +1,6 @@
 function deltaRand = randomDelta(delta,varyingElements)
-% randomDelta - generates a random delta matrix with specified bounds. The 
-% number of elements of that matrix which are uncertain has can be
-% specified, too
+% randomDelta - generates a random delta matrix with specified bounds; the 
+%    number of uncertain elements of that matrix can also be specified
 %
 % Syntax:  
 %     deltaRand = randomDelta(delta,varyingElements)

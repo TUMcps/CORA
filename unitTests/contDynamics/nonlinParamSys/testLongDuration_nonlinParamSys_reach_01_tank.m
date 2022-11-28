@@ -1,6 +1,6 @@
-function res = test_nonlinParamSys_reach_01_tank
-% test_nonlinParamSys_reach_01_tank - unit_test_function of nonlinear
-%    reachability analysis with uncertain parameters
+function res = testLongDuration_nonlinParamSys_reach_01_tank
+% testLongDuration_nonlinParamSys_reach_01_tank - unit_test_function of
+%    nonlinear reachability analysis with uncertain parameters
 %
 % Checks the solution of the nonlinearSys class for the 6 tank example with 
 % uncertain parameters;
@@ -8,7 +8,7 @@ function res = test_nonlinParamSys_reach_01_tank
 % is close to an interval provided by a previous solution that has been saved
 %
 % Syntax:  
-%    res = test_nonlinParamSys_reach_01_tank
+%    res = testLongDuration_nonlinParamSys_reach_01_tank
 %
 % Inputs:
 %    -

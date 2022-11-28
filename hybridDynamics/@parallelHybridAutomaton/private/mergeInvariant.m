@@ -1,16 +1,17 @@
-function res = mergeInvariant(obj, invList)
-% mergeInvariant - Create the full dimensional invariant of the overall
-%                  system from the invariants fo the subcomponents
+function invSet = mergeInvariant(pHA,invList)
+% mergeInvariant - creates the full-dimensional invariant of the overall
+%    system from the invariants of the subcomponents; all subcomponents
+%    with an empty invariant (= full space) are skipped
 %
 % Syntax:  
-%    res = mergeInvariant(obj, invList)
+%    invSet = mergeInvariant(pHA,invList)
 %
 % Inputs:
-%    obj - parallel hybrid automaton object
+%    pHA - parallelHybridAutomaton object
 %    invList - list with the invariant sets for all subcomponents
 %
 % Outputs:
-%    res - resulting invariant set
+%    invSet - resulting invariant set
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -21,32 +22,37 @@ function res = mergeInvariant(obj, invList)
 % Author:       Johann Schoepfer, Niklas Kochdumper
 % Written:      08-June-2018  
 % Last update:  09-July-2018 (NK, use "projectHighDim" function)
-% Last revision: ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    % project invariant set of the first subcomponent to high dimensional space 
-    % of the overall automaton
-    res = projectHighDim(invList{1},obj.numStates,obj.bindsStates{1});
+% initialize resulting invariant set
+invSet = [];
 
-    % loop over the invariants of the remaining subcomponents
-    for i = 2:length(invList)
+% loop over the invariants of the remaining subcomponents
+for i=1:length(invList)
 
-       % project set to high dimensional space of the overall automaton
-       temp = projectHighDim(invList{i},obj.numStates,obj.bindsStates{i});
+    % project set to high dimensional space of the overall automaton
+    if ~(isnumeric(invList{i}) && isempty(invList{i}))
+        temp = projectHighDim(invList{i},pHA.numStates,pHA.bindsStates{i});
 
-       % compute intersection with the invariants of the remaining
-       % subcomponents
-       % if an invariant is empty, we assume it stems from a converted
-       % model which had no invariant set in the current location
-       if isempty(res)
-           if ~isempty(temp)
-               res = temp;
-           end
-       elseif ~isempty(temp)
-           res = res & temp;
-       end
+        % compute intersection with the invariants of the remaining
+        % subcomponents
+        % note: if an invariant is empty, we assume it stems from a
+        % converted model which had no invariant set (empty invariant)
+        % in the current location; this poses no problem for further
+        % analysis since it is only checked whether the reachable set fully
+        % exits the invariant set, for which the remaining full-dimensional
+        % invariants of the other subcomponents suffice
+        if isnumeric(invSet) && isempty(invSet)
+            % first full-dimensional invariant
+            invSet = temp;
+        else
+            invSet = invSet & temp;
+        end
+
     end
+
 end
 
 %------------- END OF CODE --------------

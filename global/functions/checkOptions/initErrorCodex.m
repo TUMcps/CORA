@@ -58,10 +58,12 @@ appendErrMsg('islogical','has to be a logical (true/false) value');
 appendErrMsg('ischar','has to be a char array');
 appendErrMsg('iscell','has to be a cell array');
 appendErrMsg('isvector','has to be a vector');
+appendErrMsg('isstruct','has to be a struct');
 % isa(...) checks
 appendErrMsg('isafunction_handle','has to be a function handle');
 appendErrMsg('isacontSet','has to be an object of class contSet');
 appendErrMsg('isazonotope','has to be an object of class zonotope');
+appendErrMsg('isareachSet','has to be an object of class reachSet');
 
 % absolute comparisons
 appendErrMsg('gtzero','has to be a value greater than 0');
@@ -73,6 +75,7 @@ appendErrMsg('normalized','has to be a value in [0,1]');
 appendErrMsg('integer','has to be an integer value');
 appendErrMsg('integerorInf','has to be an integer value or Inf');
 appendErrMsg('vectororinterval','has to be a vector or an object of class interval');
+appendErrMsg('startatzero','has to start at 0');
 % just tensorOrder
 appendErrMsg('2or3','has to be either 2 or 3');
 
@@ -84,10 +87,14 @@ appendErrMsg('memberU','...');
 appendErrMsg('memberUsim','...');
 appendErrMsg('memberV','...');
 appendErrMsg('memberW','...');
+appendErrMsg('membersafeSet','...');
+appendErrMsg('memberunsafeSet','...');
 appendErrMsg('memberlinAlg','...');
 appendErrMsg('memberlinAlg4HA','...');
 appendErrMsg('memberalg','...');
 appendErrMsg('memberalgInner','...');
+appendErrMsg('memberalg4DT','...');
+appendErrMsg('memberalg4DA','...');
 appendErrMsg('memberalg4param','...');
 appendErrMsg('memberalg4observe','...');
 appendErrMsg('memberreductionTechnique','...');
@@ -101,6 +108,7 @@ appendErrMsg('memberrestructureTechnique','...');
 appendErrMsg('membercontractor','...');
 appendErrMsg('memberguardIntersect','...');
 appendErrMsg('memberenclose','...');
+appendErrMsg('membertype','...');
 
 % comparisons to obj
 appendErrMsg('eqsysdim','has to be equal to the system dimension');
@@ -111,12 +119,14 @@ appendErrMsg('eqparam','has to be equal to the number of parameters');
 
 % comparisons to other params/options
 appendErrMsg('getStart','has to be greater than params.tStart');
+appendErrMsg('idx1eqtStart','has to be equal to params.tStart in the first index');
 appendErrMsg('intsteps','has to divide the time horizon into an integer number steps');
 appendErrMsg('letaylorTerms','has to be less or equal to options.taylorTerms');
 appendErrMsg('lecomp','has to be less or equal to the number of components');
 appendErrMsg('leloc','has to be less or equal to the number of locations');
 appendErrMsg('lelocplus1','has to be less or equal to the number of locations plus one');
 appendErrMsg('eqreachSteps','has to be equal to the number of time steps');
+appendErrMsg('equ','has to be equal to the length of the time-varying input vector');
 
 % note: global variable 'codex' cleared at the end of validateOptions
 

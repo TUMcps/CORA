@@ -1,14 +1,14 @@
-function [handle] = eventFcn(obj)
+function han = eventFcn(loc)
 % eventFcn - returns the handle of the event function for a location
 %
 % Syntax:  
-%    [handle] = eventFcn(obj)
+%    han = eventFcn(loc)
 %
 % Inputs:
-%    obj - location object
+%    loc - location object
 %
 % Outputs:
-%    handle - event function handle
+%    han - event function handle
 %
 % Example: 
 %
@@ -26,34 +26,33 @@ function [handle] = eventFcn(obj)
 
 %------------- BEGIN CODE --------------
 
-
 %standard syntax for event functions as needed in Matlab simulations
 function [value,isterminal,direction] = f(t,x)
     %get result of invariant events
-    if ~isempty(obj.invariant)
-        [value,isterminal,direction] = eventFcn(obj.invariant,x,1);
+    if ~isempty(loc.invariant)
+        [value,isterminal,direction] = eventFcn(loc.invariant,x,1);
     else
         value = [];
         isterminal = [];
         direction = [];
     end
     %retrieve system dimension
-    dim=length(value);
+    n=length(value);
     %get result of guard events
-        for i=1:length(obj.transition)
+        for i=1:length(loc.transition)
             %check if guard is a halfspace
-             [resValue,resIsterminal,resDirection] = eventFcn(obj.transition{i},x);
+             [resValue,resIsterminal,resDirection] = eventFcn(loc.transition{i},x);
              eventLength = length(resValue);
-             indices = dim+1:dim+eventLength;
+             indices = n+1:n+eventLength;
              value(indices,1) = resValue;
              isterminal(indices,1) = resIsterminal;
              direction(indices,1) = resDirection;       
-             dim = dim+eventLength;
+             n = n+eventLength;
         end
 end
 
 %return function handle
-handle = @f;
+han = @f;
 
 end
 

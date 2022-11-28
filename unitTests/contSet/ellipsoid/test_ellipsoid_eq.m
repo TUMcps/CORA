@@ -27,10 +27,4 @@ function res = test_ellipsoid_eq
 
 [~,res] = evalc('test_ellipsoid_isequal');
 
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

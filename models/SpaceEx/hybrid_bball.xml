@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sspaceex math="spaceex" version="2.0">
+   <component id="model">
+      <param d1="1" d2="1" dynamics="any" local="false" name="x1" type="real"/>
+      <param d1="1" d2="1" dynamics="any" local="false" name="x2" type="real"/>
+      <location id="1" name="loc1">
+         <invariant>-x1 &lt;= 0</invariant>
+         <flow>x1' == x2
+ &amp; x2' == -981/100</flow>
+      </location>
+      <transition source="1" target="1">
+         <guard>x1 == 0 &amp; 
+x2 &lt;= 0</guard>
+         <assignment>x1' := 0
+ &amp; x2' := -(3*x2)/4</assignment>
+      </transition>
+   </component>
+</sspaceex>

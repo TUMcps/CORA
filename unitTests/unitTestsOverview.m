@@ -3,7 +3,7 @@ function res = unitTestsOverview(varargin)
 %    do unit tests exist
 %
 % Syntax:  
-%    lastFullTestRun
+%    unitTestsOverview
 %
 % Inputs:
 %    testrun - (struct) result of full test suite
@@ -21,9 +21,6 @@ function res = unitTestsOverview(varargin)
 
 %------------- BEGIN CODE --------------
 
-% default output argument
-res = false;
-
 % default input argument
 newtestrun = false;
 if nargin == 1
@@ -36,12 +33,13 @@ end
 % get the original working directory
 currentDirectory = pwd;
 % switch to directory of unit tests
-directory = [coraroot filesep 'unitTests'];
+directory = [CORAROOT filesep 'unitTests'];
 cd(directory);
 
 % check if file available (as input argument or saved .mat file)
 if ~isfile('unitTestsStatus.mat') && ~newtestrun
-    error("No data provided. Run '''runTestSuite''' to acquire data.");
+    throw(CORAerror('CORA:specialError',...
+        "No data provided. Run '''runTestSuite''' to acquire data."));
 elseif newtestrun
     % new data
     overview.lastRun = testrun;
@@ -60,8 +58,8 @@ allfuncs = {};
 alltests = {};
 for i=1:length(foldernames)
     % list functions and unit tests
-    tempfiles = listFolderContent([coraroot filesep foldernames{i}]);
-    temptests = listFolderContent([coraroot filesep 'unitTests' filesep foldernames{i}]);
+    tempfiles = listFolderContent([CORAROOT filesep foldernames{i}]);
+    temptests = listFolderContent([CORAROOT filesep 'unitTests' filesep foldernames{i}]);
     % collapse lists into one list
     tempfiles = functionList(tempfiles);
     allfuncs = [allfuncs; tempfiles];
@@ -69,7 +67,7 @@ for i=1:length(foldernames)
     alltests = [alltests; temptests];
 end
 
-corarootlength = length(coraroot);
+corarootlength = length(CORAROOT);
 % crop coraroot from all function names
 for i=1:length(allfuncs)
     funcname = extractBetween(allfuncs{i},corarootlength+2,length(allfuncs{i}));

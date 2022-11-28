@@ -1,4 +1,4 @@
-function res = sinh(intVal)
+function I = sinh(I)
 % sinh - Overloaded 'sinh()' operator for intervals
 %
 % x_ is x infimum, x-- is x supremum
@@ -6,15 +6,17 @@ function res = sinh(intVal)
 % [sinh(x_), sinh(x--)].
 %
 % Syntax:  
-%    res = sinh(intVal)
+%    I = sinh(I)
 %
 % Inputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - interval object
+%    I - interval object
 %
 % Example: 
+%    I = interval([-2;-3],[5;6]);
+%    sinh(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,14 +27,12 @@ function res = sinh(intVal)
 % Author:       Matthias Althoff
 % Written:      05-February-2016
 % Last update:  21-February-2016 (DG, the matrix case is rewritten)
+%               21-May-2022 (MW, remove new instantiation)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-res = interval();
-
-res.inf = sinh(intVal.inf);
-res.sup = sinh(intVal.sup);
-
+I.inf = sinh(I.inf);
+I.sup = sinh(I.sup);
 
 %------------- END OF CODE --------------

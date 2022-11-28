@@ -31,13 +31,17 @@ dGen = 5;
 steps = 3;
 rndDirs = 100;
 for i=dims
-    n = i;
     
+    %%% generate all variables necessary to replicate results
+    n = i;
     %% random ellipsoids
     % normal case
-    E = ellipsoid.generateRandom(false,i);
+    E = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',false);
     % degenerate case
     T = rand(n+1,n);
+    %compute rndDirs random directions
+    cc = randn(n,rndDirs);
+    %%%
     E_deg = T*E;
   
     for j=1:steps
@@ -46,26 +50,24 @@ for i=dims
         %% overapproximations
         % normal case
         Zo_box = zonotope(E);
-        Zo_n = zonotope(E,m,'o:norm');
-        %Zo_nb = zonotope(E,m,'o:norm:bnd');
+        Zo_n = zonotope(E,m,'outer:norm');
+        %Zo_nb = zonotope(E,m,'outer:norm_bnd');
         % degenerate case
         Zo_box_deg = zonotope(E_deg);
-        Zo_n_deg = zonotope(E_deg,m,'o:norm');
-        %Zo_nb_deg = zonotope(E_deg,m,'o:norm:bnd');
+        Zo_n_deg = zonotope(E_deg,m,'outer:norm');
+        %Zo_nb_deg = zonotope(E_deg,m,'outer:norm_bnd');
         
         %% underapproximations
         % normal case
-        Zu_box = zonotope(E,[],'i:box');
-        Zu_n = zonotope(E,m,'i:norm');
-        Zu_nb = zonotope(E,m,'i:norm:bnd');
+        Zu_box = zonotope(E,[],'inner:box');
+        Zu_n = zonotope(E,m,'inner:norm');
+        Zu_nb = zonotope(E,m,'inner:norm_bnd');
         % degenerate case
-        Zu_box_deg = zonotope(E_deg,[],'i:box');
-        Zu_n_deg = zonotope(E_deg,m,'i:norm');
-        Zu_nb_deg = zonotope(E_deg,m,'i:norm:bnd');
+        Zu_box_deg = zonotope(E_deg,[],'inner:box');
+        Zu_n_deg = zonotope(E_deg,m,'inner:norm');
+        Zu_nb_deg = zonotope(E_deg,m,'inner:norm_bnd');
         
         
-        %compute rndDirs random unit directions
-        cc = randn(n,rndDirs);
         nn = cc./repmat(sqrt(sum(cc.^2,1)),n,1);
         %check if suppfnc(E)<=suppfnc(Z) (E in Z)
         for k=1:rndDirs
@@ -116,9 +118,9 @@ for i=dims
         break;
     end
 end
-if res
-    disp('testLongDuration_ellipsoid_zonotope successful');
-else
-    disp('testLongDuration_ellipsoid_zonotope failed');
+
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','E','T','cc');
 end
 %------------- END OF CODE --------------

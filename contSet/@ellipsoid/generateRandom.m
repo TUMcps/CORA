@@ -1,24 +1,23 @@
-function [E] = generateRandom(varargin)
+function E = generateRandom(varargin)
 % generateRandom - Generates a random ellipsoid
 %
 % Syntax:  
-%    E = generateRandom() Generates an ellipsoid with random orientation,
-%        center and dimension
-%    E = generateRandom(isdegenerate) Generates a random
-%        degenerate/non-degenerate ellipsoid based on given boolean
-%        isdegenerate
-%    E = generateRandom(isdegenerate,dim) Generates a random
-%        degenerate/non-degenerate ellipsoid with dimension dim
-%    E = generateRandom(dim,isdegenerate) see above
+%    E = ellipsoid.generateRandom()
+%    E = ellipsoid.generateRandom('Dimension',n)
+%    E = ellipsoid.generateRandom('Center',c)
+%    E = ellipsoid.generateRandom('IsDegenerate',true)
 %
 % Inputs:
-%   (opt.) isdegenerate - type of ellipsoid
+%    Name-Value pairs (all options, arbitrary order):
+%       <'Dimension',n> - dimension
+%       <'Center',c> - center
+%       <'IsDegenerate',isdegenerate> - degeneracy
 %
 % Outputs:
 %    E - random ellipsoid
 %
 % Example: 
-%    E = ellipsoid.generateRandom(true);
+%    E = ellipsoid.generateRandom('Dimension',2);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,41 +30,54 @@ function [E] = generateRandom(varargin)
 % Last update:  02-Sep-2019 (rename generate -> generateRandom)
 %               19-March-2021 (complete rewrite)
 %               30-July-2021 (removed "makedist" (to remove toolbox dep.))
+%               19-May-2022 (MW, name-value pair syntax)
 % Last revision:---
 %------------- BEGIN CODE --------------
-isdegenerate=[];
-maxdim = 30;
-% choose random state dimension (if not specified by function call)
-n = randi(maxdim);
-% check which calling syntax is used
-if nargin==1
-    if isa(varargin{1},'logical')
-        isdegenerate = varargin{1};
-    elseif floor(varargin{1})==varargin{1} && varargin{1}>0
-        n = varargin{1};
-    end
-elseif nargin==2
-    if isa(varargin{1},'logical') && floor(varargin{2})==varargin{2} && varargin{2}>0
-        isdegenerate = varargin{1};
-        n = varargin{2};
-    elseif isa(varargin{2},'logical') && floor(varargin{1})==varargin{1} && varargin{1}>0
-        isdegenerate = varargin{2};
-        n = varargin{1};
-    else
-        error('Wrong input arguments');
-    end
-elseif nargin>2
-    error('Too many input arguments');
+
+% name-value pairs -> number of input arguments is always a multiple of 2
+if mod(nargin,2) ~= 0
+    throw(CORAerror('CORA:evenNumberInputArgs'));
+else
+    % read input arguments
+    NVpairs = varargin(1:end);
+    % check list of name-value pairs
+    checkNameValuePairs(NVpairs,{'Dimension','IsDegenerate','Center'});
+    % dimension given?
+    [NVpairs,n] = readNameValuePair(NVpairs,'Dimension');
+    % degeneracy determined?
+    [NVpairs,isdegenerate] = readNameValuePair(NVpairs,'IsDegenerate');
+    % center given?
+    [NVpairs,q] = readNameValuePair(NVpairs,'Center');
 end
+
+% default computation for dimension
+if isempty(n)
+    if isempty(q)
+        maxdim = 30;
+        n = randi(maxdim);
+    else
+        n = length(q);
+    end
+end
+
+% default computation for center
+if isempty(q)
+    q = randn(n,1);
+end
+
+% default value for isdegenerate
+if isempty(isdegenerate)
+    isdegenerate = false;
+end
+
 % generate a n-by-n random matrix (normal distribution) 
 tmp = randn(n);
 Q = tmp'*tmp;
-% make sure Q is positive-semidefinite (i.e. a valid ellipsoid shape
-% matrix)
+% make sure Q is positive-semidefinite -> valid ellipsoid shape matrix
 Q = 1/2*(Q+Q');
 E = ellipsoid;
 TOL = E.TOL;
-% if user explicitely specified degeneracy, keep going; otherwise good
+% if user explicitly specified degeneracy, keep going; otherwise good
 % enough
 if ~isempty(isdegenerate)
     % to get a truly non-degenerate ellipsoid, we make sure to not
@@ -90,8 +102,10 @@ if ~isempty(isdegenerate)
     Q = U*diag(s)*U';
 end
 
-% choose random center 
-q = randn(n,1);
-% construct resulting ellipsoid
+% make sure shape matrix is symmetric
+Q = 1/2*(Q+Q');
+
+% instantiate ellipsoid
 E = ellipsoid(Q,q);
+
 %------------- END OF CODE --------------

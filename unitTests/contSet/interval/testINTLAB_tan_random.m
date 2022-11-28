@@ -1,8 +1,8 @@
-function res = testINTLAB_tan_random(~)
-% test_tan_random - unit_test_function for comparing to IntLabV6
+function res = testINTLAB_tan_random()
+% testINTLAB_tan_random - unit_test_function for comparing to IntLabV6
 %
 % Syntax:  
-%    res = test_tan_random (~)
+%    res = testINTLAB_tan_random()
 %
 % Inputs:
 %    no 

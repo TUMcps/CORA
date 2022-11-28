@@ -36,9 +36,10 @@ elseif exponent > 0 && all(size(base) == size(base'))
 elseif exponent == 0 && all(size(base) == size(base'))
     res = eye(size(base,1));
 else
-    error('Matrix is not square')
+    throw(CORAerror('CORA:wrongValue','first','be a square matrix'));
 end
 
 
 end
 
+%------------- END OF CODE --------------

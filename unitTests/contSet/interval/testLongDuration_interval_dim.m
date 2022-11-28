@@ -61,10 +61,9 @@ end
 % combine results
 res = res_empty && res_rand;
 
-if res
-    disp('test_dim successful');
-else
-    disp('test_dim failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','lb','ub');
 end
 
 %------------- END OF CODE --------------

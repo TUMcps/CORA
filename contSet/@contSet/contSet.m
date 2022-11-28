@@ -20,6 +20,7 @@ classdef contSet
 % Author:        Matthias Althoff, Mark Wetzlinger
 % Written:       02-May-2007 
 % Last update:   04-May-2020 (MW, transition to classdef)
+%                01-June-2022 (MW, add CORAerror)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -30,7 +31,7 @@ end
 
 methods
 
-    function Obj = contSet(varargin)
+    function obj = contSet(varargin)
         
         % (default constructor)
         if nargin == 0
@@ -40,15 +41,15 @@ methods
         elseif nargin == 1
             % (copy constructor)
             if isa(varargin{1}, 'contSet')
-                Obj = varargin{1};
+                obj = varargin{1};
             else
                 %List elements of the class
-                Obj.dimension = varargin{1};
+                obj.dimension = varargin{1};
             end
 
         % Else if not enough or too many inputs are passed    
         else
-            disp('This class takes at max. 1 inputs.');
+            throw(CORAerror('CORA:tooManyInputArgs',1));
         end
     end
 end

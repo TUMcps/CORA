@@ -31,8 +31,9 @@ for i=1:nTests
     %% analytic test
     n = randi(30);
     ng = randi([3,10]);
-    nf = randi([2,10]);
-    pZ = noIndep(polyZonotope.generateRandom(n,ng,nf));
+    nf = ng - 1;
+    pZ = noIndep(polyZonotope.generateRandom('Dimension',n,...
+        'NrGenerators',ng,'NrFactors',nf));
     x = sym('x',[size(pZ.expMat,1),1],'real');
     ne = length(pZ.id);
     ind_diff = ismember(pZ.id,unique(randi(ne-1,ne-1,1)));
@@ -43,7 +44,7 @@ for i=1:nTests
     jac_sym = jacobian(f_sym,x(ind_diff));
     
     % compute jacobian handle of pZ
-    f_jac = jacobianHandle(pZ,pZ.id(ind_diff));
+    f_jac = jacobianHandle(pZ,pZ.id(ind_diff),pZ.id(~ind_diff));
     F_val = simplify(jac_sym-f_jac(x(ind_diff),x(~ind_diff)));
     f_val = F_val(:);
     for j=1:length(f_val)
@@ -57,9 +58,9 @@ for i=1:nTests
         break;
     end
 end
+
 if ~res
-    disp('testLongDuration_polyZonotope_jacobianHandle failed');
-else
-    disp('testLongDuration_polyZonotope_jacobianHandle successful');
+    path = pathFailedTests(mfilename());
+    save(path,'pZ','f','f_val');
 end
 %------------- END OF CODE --------------

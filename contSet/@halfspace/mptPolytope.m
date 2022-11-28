@@ -1,17 +1,17 @@
-function P = mptPolytope(obj)
-% mptPolytope - Converts an halfspace object to a polytope object
+function P = mptPolytope(hs)
+% mptPolytope - Converts a halfspace to a polytope
 %
 % Syntax:  
-%    P = mptPolytope(obj)
+%    P = mptPolytope(hs)
 %
 % Inputs:
-%    obj - halfspace object
+%    hs - halfspace object
 %
 % Outputs:
 %    P - polytope object
 %
-% Example: 
-%    hs = halfspace(C,d);
+% Example:
+%    hs = halfspace([1 1],2);
 %    P = mptPolytope(hs);
 %
 % Other m-files required: none
@@ -21,18 +21,12 @@ function P = mptPolytope(obj)
 % See also: conHyperplane/mptPolytope
 
 % Author:       Victor Charlent
-% Written:      28/06/2016
+% Written:      28-June-2016
 % Last update:  17-March-2017, Matthias Althoff
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    A = obj.c';
-    b = obj.d;
-
-    P = mptPolytope(A,b);
-
-end
+P = mptPolytope(hs.c',hs.d);
 
 %------------- END OF CODE --------------
-

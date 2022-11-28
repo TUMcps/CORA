@@ -1,15 +1,17 @@
-function [velocity,input]=profileBrake(pos,acc)
-% profile1..n - returns the velocity for a given position and maximum 
-% accelerationof the velocity profile of the corresponding path.
+function [velocity,input] = profileBrake(pos,acc)
+% profileBrake - returns the velocity for a given position and maximum 
+%    acceleration of the velocity profile of the corresponding path.
 %
 % Syntax:  
-%    [velocity]=profile1(pos)
+%    [velocity,input] = profileBrake(pos,acc)
 %
 % Inputs:
 %    pos - position on the path
+%    acc - acceleration
 %
 % Outputs:
 %    velocity - velocity of the velocity profile
+%    input - ???
 %
 % Example: 
 %    ---
@@ -20,10 +22,10 @@ function [velocity,input]=profileBrake(pos,acc)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 02-July-2008 
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      02-July-2008 
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -31,6 +33,5 @@ initSpeed=12;
 
 %determine velocity
 velocity=sqrt(initSpeed^2-2*(pos)*acc);
-
 
 %------------- END OF CODE --------------

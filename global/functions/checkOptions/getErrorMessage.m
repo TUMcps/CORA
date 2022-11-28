@@ -24,9 +24,7 @@ function msg = getErrorMessage(id)
 %------------- BEGIN CODE --------------
 
 % input preprocessing
-if ~ischar(id)
-    error("Error message identifier has to be a char array.");
-end
+inputArgsCheck({{id,'att','char'}});
 
 % enable access to codex
 global codex;

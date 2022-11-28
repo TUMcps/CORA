@@ -1,8 +1,8 @@
-function [acceleration] = input2acceleration(input,velocity,type)
+function acceleration = input2acceleration(input,velocity,type)
 % input2acceleration - transforms the input (-1,1) to a physical acceleration. 
 %
 % Syntax:  
-%    [acceleration] = input2acceleration(input,velocity,type)
+%    acceleration = input2acceleration(input,velocity,type)
 %
 % Inputs:
 %    input - input of the vehicle ranging from (-1,1)
@@ -26,7 +26,6 @@ function [acceleration] = input2acceleration(input,velocity,type)
 
 %------------- BEGIN CODE --------------
 
-
 if strcmp(type,'car')
     vlong=7.32;
     af=9.1;
@@ -48,7 +47,6 @@ acceleration(velocity>vlong & input>=0)=input(velocity>vlong & input>=0).*k./vel
 %input<0 =>     a=af*u if v>0      a=0 if v<=0 
 acceleration(velocity>0 & input<0)=af.*input(velocity>0 & input<0);
 
-
 % if vectorization is not necessary you can comment the lines above and use
 % the following instead
 %
@@ -65,7 +63,5 @@ acceleration(velocity>0 & input<0)=af.*input(velocity>0 & input<0);
 %         acceleration=0;
 %     end 
 % end
-
-end
     
 %------------- END OF CODE --------------

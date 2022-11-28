@@ -1,18 +1,18 @@
-function obj = enlarge(obj,factor)
+function I = enlarge(I,factor)
 % enlarge - Enlarges an interval object around its center
 %
 % Syntax:  
-%    obj = enlarge(obj,factor)
+%    obj = enlarge(I,factor)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %    factor - enlarging factor (scalar or column vector)
 %
 % Outputs:
-%    obj - enlarged interval object
+%    I - enlarged interval object
 %
 % Example: 
-%    I = interval([1 2; -1 1]);
+%    I = interval([-1;-2],[3;4]);
 %    I = enlarge(I,2);
 %
 % Other m-files required: none
@@ -29,11 +29,11 @@ function obj = enlarge(obj,factor)
 %------------- BEGIN CODE --------------
 
 %get center and radius
-c = center(obj);
-r = rad(obj);
+c = center(I);
+r = rad(I);
 
 %enlarged intervals
-obj.inf = c-r.*factor; 
-obj.sup = c+r.*factor;
+I.inf = c-r.*factor; 
+I.sup = c+r.*factor;
 
 %------------- END OF CODE --------------

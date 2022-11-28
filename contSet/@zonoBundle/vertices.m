@@ -1,13 +1,13 @@
-function [V] = vertices(obj)
+function V = vertices(zB)
 % vertices - Returns potential vertices of a zonotope bundle
-% WARNING: Do not use this function for high order zonotope bundles -
-% computational complexity grows exponential!
+%    WARNING: Do not use this function for high order zonotope bundles as
+%    the computational complexity grows exponentially!
 %
 % Syntax:  
-%    [V] = vertices(Zbundle)
+%    V = vertices(zB)
 %
 % Inputs:
-%    Zbundle - zonotope bundle object
+%    zB - zonoBundle object
 %
 % Outputs:
 %    V - matrix storing the vertices 
@@ -19,7 +19,7 @@ function [V] = vertices(obj)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: intervallhull,  polytope
+% See also: polytope
 
 % Author:       Matthias Althoff
 % Written:      18-August-2016 
@@ -29,9 +29,9 @@ function [V] = vertices(obj)
 %------------- BEGIN CODE --------------
 
 %obtain polytope
-P = polytope(obj);
+P = mptPolytope(zB);
 
-%obtain vertices
+%obtain vertices (input check in polytope-function)
 V = vertices(P);
 
 %------------- END OF CODE --------------

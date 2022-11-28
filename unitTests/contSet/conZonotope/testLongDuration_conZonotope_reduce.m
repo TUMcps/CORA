@@ -30,7 +30,7 @@ function res = testLongDuration_conZonotope_reduce
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
 
 % TEST 1: 2D --------------------------------------------------------------
 
@@ -86,11 +86,11 @@ for j = 1:length(methods)
             file_name = strcat('testLongDuration_conZonotope_reduce_1_', ...
                                datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-            file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+            file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                                  file_name);
                            
             save(file_path, 'cZono')
-            error('Test 1 (test case %i) failed!',i); 
+            throw(CORAerror('CORA:testFailed'));
         end
     end
 end
@@ -146,11 +146,11 @@ for j = 1:length(methods)
             file_name = strcat('testLongDuration_conZonotope_reduce_2_', ...
                                datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-            file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+            file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                                  file_name);
                            
             save(file_path, 'cZono')
-            error('Test 2 (test case %i) failed!',i);
+            throw(CORAerror('CORA:testFailed'));
         end
     end
 end
@@ -168,12 +168,8 @@ V = vertices(cZ)';
 V_ = vertices(cZred)';
 
 % compare with the real vertices
-for i = 1:size(V_,2)
-   if ~ismembertol(V_(i,:),V,'ByRows',true)
-       error('Test 3 (remove redundant constraints)') 
-   end
+if ~compareMatrices(V,V_)
+    res = false;
 end
-
-res = true;
 
 %------------- END OF CODE --------------

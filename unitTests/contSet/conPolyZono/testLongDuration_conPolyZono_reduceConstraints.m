@@ -1,10 +1,9 @@
 function res = testLongDuration_conPolyZono_reduceConstraints
-% test_conPolyZono_reduceConstraints - unit test function for the
-%                                      constraint reduction of constrained 
-%                                      polynomial zonotopes
+% testLongDuration_conPolyZono_reduceConstraints - unit test function for
+%    the constraint reduction of constrained polynomial zonotopes
 %
 % Syntax:  
-%    res = test_conPolyZono_reduceConstraints()
+%    res = testLongDuration_conPolyZono_reduceConstraints()
 %
 % Inputs:
 %    -
@@ -25,7 +24,7 @@ function res = testLongDuration_conPolyZono_reduceConstraints
 
 %------------- BEGIN CODE --------------
 
-    res = 1;
+    res = true;
     splits = 4;
     
     % Random Tests --------------------------------------------------------
@@ -36,7 +35,7 @@ function res = testLongDuration_conPolyZono_reduceConstraints
         % generate random constrained polynomial zonotopes with constraints
         con = 0;
         while con < 1
-            cPZ1 = conPolyZono.generateRandom(2);
+            cPZ1 = conPolyZono.generateRandom('Dimension',2);
             con = size(cPZ1.A,1);
         end
 
@@ -50,13 +49,13 @@ function res = testLongDuration_conPolyZono_reduceConstraints
         % check if all points are inside polygon enclosures
         pgon = polygon(cPZ,splits);
 
-        if ~in(pgon,points)
+        if ~contains(pgon,points)
 
             % save variables so that failure can be reproduced
             path = pathFailedTests(mfilename());
             save(path,'cPZ1','nrCon','points');
 
-            error('Random test failed!');
+            throw(CORAerror('CORA:testFailed'));
         end
     end
 end

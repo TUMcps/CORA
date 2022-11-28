@@ -1,12 +1,12 @@
-function eP = expm(matPoly,varargin)
+function eP = expm(matP,varargin)
 % expm - operator for the exponential matrix of a matrix polytope
 %
 % Syntax:  
-%    eP = expm(matPoly)
-%    eP = expm(matPoly,maxOrder)
+%    eP = expm(matP)
+%    eP = expm(matP,maxOrder)
 %
 % Inputs:
-%    matPoly - matrix polytope
+%    matP - matPolytope object
 %    maxOrder - maximum Taylor series order until remainder is computed
 %
 % Outputs:
@@ -16,9 +16,9 @@ function eP = expm(matPoly,varargin)
 %    C = [0 1;0 -2.5];
 %    D = [0 0;0 0.5];
 %    intMat = intervalMatrix(C,D);
-%    matPoly = matPolytope(intMat);
+%    matP = matPolytope(intMat);
 %
-%    eP = expm(matPoly,3)
+%    eP = expm(matP,3)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -33,14 +33,14 @@ function eP = expm(matPoly,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    maxOrder = 10;
-    
-    if nargin > 1
-       maxOrder = varargin{1}; 
-    end
-    
-    % compute matrix exponential
-    eP = expmInd(matPoly,maxOrder);
+% parse input arguments
+maxOrder = 10;
+
+if nargin > 1
+    maxOrder = varargin{1}; 
+end
+
+% compute matrix exponential
+eP = expmInd(matP,maxOrder);
 
 %------------- END OF CODE --------------

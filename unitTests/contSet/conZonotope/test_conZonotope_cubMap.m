@@ -26,7 +26,7 @@ function res = test_conZonotope_cubMap
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
 
 %% ANALYTICAL TESTS
 
@@ -60,8 +60,9 @@ A_(3,8) = 1;
 b_ = [0;0;0];
 
 % check for correctness
-if any(any(Z_-cZres.Z)) || any(any(A_-cZres.A)) || any(b_-cZres.b)
-    error('conZonotope/cubMap: analytical test (mixed mul.) failed!');
+if ~compareMatrices(Z_,cZres.Z) || ...
+        ~compareMatrices(A_,cZres.A) || ~all(withinTol(b_,cZres.b))
+    res = false;
 end
 
 
@@ -91,30 +92,9 @@ A_ = [1 1 0 0 0 0 0 0];
 b_ = 0;
 
 % check for correctness
-if any(any(Z_-cZres.Z)) || any(any(A_-cZres.A)) || any(b_-cZres.b)
-    error('conZonotope/cubMap: analytical test failed!');
-end
-
-% no errors -> test successful
-res = true;
-
-end
-
-
-% Auxiliary Functions -----------------------------------------------------
-
-function p = cubMulPoint(x1,x2,x3,T)
-
-    p = zeros(size(x1));
-    
-    % loop over all dimensions
-    for i = 1:length(p)
-       
-         % loop over all quadratic matrices for this dimension
-         for j = 1:size(T,2)
-            p(i) = p(i) + (x1' * T{i,j} * x2) * x3(j);
-         end
-    end
+if ~compareMatrices(Z_,cZres.Z) || ...
+        ~compareMatrices(A_,cZres.A) || ~all(withinTol(b_,cZres.b))
+    res = false;
 end
 
 %------------- END OF CODE --------------

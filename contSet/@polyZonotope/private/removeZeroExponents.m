@@ -2,7 +2,7 @@ function [ExpMat,Gnew,c] = removeZeroExponents(ExpMat,G)
 % removeZeroExponents - add up all generators that belong to zero terms
 %
 % Syntax:  
-%    [ExpMatNew, Gnew, c] = removeZeroExponents(ExpMat, G)
+%    [ExpMatNew,Gnew,c] = removeZeroExponents(ExpMat,G)
 %
 % Inputs:
 %    ExpMat - matrix containing the exponent vectors
@@ -25,8 +25,14 @@ function [ExpMat,Gnew,c] = removeZeroExponents(ExpMat,G)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
+
+% all-zero columns in exponent matrix
 ind = sum(ExpMat,1)==0;
+% add corresponding columns in dependent generator matrix to the center
 c = sum(G(:,ind),2);
+% remove corresponding columns in dependent generator matrix
 Gnew = G(:,~ind);
+% remove all-zero columns in exponent matrix
 ExpMat(:,ind) = [];
+
 %------------- END OF CODE --------------

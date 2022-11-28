@@ -1,5 +1,5 @@
 function [OGain,tComp]= observe_gain_HinfG(obj,options)
-% observe_gain_HinfG - computes the gain for the guaranted state estimation
+% observe_gain_HinfG - computes the gain for the guaranteed state estimation
 % approach from [1].
 %
 % Syntax:  
@@ -44,8 +44,8 @@ E = generators(options.W);
 F = generators(options.V);
 
 % obtain system dimension and nr of outputs
-dim = size(obj.A,1); 
-nrOfOutputs = size(obj.C,1);
+n = obj.dim;
+nrOfOutputs = obj.nrOfOutputs;
 nw = size(E,2);
 nv = size(F,1);
 
@@ -56,9 +56,9 @@ options_sdp.verbose = 0;
 
 %% define YALMIPs symbolic decision variables
 % state
-P = sdpvar(dim,dim,'symmetric'); 
+P = sdpvar(n,n,'symmetric'); 
 % gain matrix
-Y = sdpvar(dim,nrOfOutputs,'full'); 
+Y = sdpvar(n,nrOfOutputs,'full'); 
         
 gamma = linspace(1,50,100); % todo: description
 
@@ -66,7 +66,7 @@ gamma = linspace(1,50,100); % todo: description
 for i = 1:length(gamma)
     % compute symmetric matrix SM of LMI
     SM= blkvar;
-    SM(1,1) = eye(dim)-P;
+    SM(1,1) = eye(n)-P;
     SM(2,1) = 0;
     SM(2,2) = -gamma(i)*gamma(i)*eye(nw);
     SM(3,1) = 0;
@@ -77,13 +77,13 @@ for i = 1:length(gamma)
     SM(4,3) = -Y*F;
     SM(4,4) = -P;
     SM= sdpvar(SM);
-    ObjR= [P>=0,SM<=0,gamma(i)>=0]; % The objective function    
-    solpb = optimize(ObjR,gamma(i)*gamma(i),options_sdp); % optimze the LMIs
+    constraint = [P>=0,SM<=0,gamma(i)>=0]; % constraint function    
+    objective = gamma(i)*gamma(i); % objective function
+    solpb = optimize(constraint, objective, options_sdp); % optimze the LMIs
     
     % Check if LMI is feasible
     if solpb.problem == 1
         disp('LMIs are infeasible');
-        OGain= zeros(dim,nrOfOutputs);
     else
         % extract values from YALMIP symbolic decision variables
         P = value(P);

@@ -19,10 +19,10 @@ function [obj]=simulate(obj)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 17-July-2008 
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      17-July-2008 
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

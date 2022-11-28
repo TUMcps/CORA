@@ -55,10 +55,4 @@ res_analytical = C_dim == true_dim;
 % combine tests
 res = res_empty && res_analytical;
 
-if res
-    disp('test_dim successful');
-else
-    disp('test_dim failed');
-end
-
 %------------- END OF CODE --------------

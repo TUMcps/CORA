@@ -15,7 +15,7 @@ function res = example_nonlinearDA_reach_03_LPVSMIB
 %   [1] A. El-Guindy "LPV control with formal gurantees for transient stability
 %       of power systems", 2017 IEEE Power & Energy Society General Meeting.
 
-% Author:       Ahmed ElGuindy, Mark Wetzlinger
+% Author:       Ahmed El-Guindy, Mark Wetzlinger
 % Written:      22-May-2020
 % Last update:  ---
 % Last revision:---
@@ -31,12 +31,11 @@ dim_y = 8;
 
 % Parameter ---------------------------------------------------------------
 
-params.x0 = x0;
 params.y0guess = y0.';
 Bound_x = [0.005 0 0; 0 0.5e-4 0; 0 0 0.005];
 
 % initial set
-params.R0 = zonotope([params.x0.',Bound_x]); % x0
+params.R0 = zonotope([x0.',Bound_x]); % x0
 
 % uncertain inputs
 u0 = [1.2242; 0; 1.0241];
@@ -50,6 +49,7 @@ options.timeStep = 0.005;    % Time step size for reachable set computation
 options.zonotopeOrder = 300; % Zonotope order
 options.taylorTerms = 4;
 options.tensorOrder = 2;
+options.errorOrder = 10;
 
 options.maxError_x = 0.01*ones(dim_x,1);
 options.maxError_y = 0.005*ones(dim_y,1);
@@ -123,7 +123,7 @@ end
 % Simulation --------------------------------------------------------------
 
 runs = 30;
-params.R0 = zonotope([params.x0.',Bound_x]);
+params.R0 = zonotope([x0.',Bound_x]);
 
 t = cell(runs,1); x = cell(runs,1);
 for r=1:runs
@@ -161,7 +161,7 @@ for p=1:size(theta,2)
         t1 = (i-1)*options.timeStep;
         t2 = i*options.timeStep;
         IH = interval([t1;infimum(IH(1))], [t2;supremum(IH(1))]);
-        plot(IH,[1 2],'FaceColor',[.2 .2 .2],'Filled',true,'EdgeColor','none');
+        plot(IH,[1 2],'FaceColor',colorblind('b'));
     end
 end
 
@@ -170,15 +170,15 @@ figure; hold on; box on;
 projDims=[1 2];
 
 % plot reachable set
-plot(R,projDims,'FaceColor',[.8 .8 .8],'EdgeColor','none');
+plot(R,projDims);
 
 % plot simulation results
 for r=1:runs
-    plot(x{r}(:,projDims(1)),x{r}(:,projDims(2)),'b');
+    plot(x{r}(:,projDims(1)),x{r}(:,projDims(2)),'Color',colorblind('y'));
 end
 
 % example completed
-res = 1;
+res = true;
 
 end
 

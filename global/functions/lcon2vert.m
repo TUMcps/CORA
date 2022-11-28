@@ -1,4 +1,4 @@
-function [V]=lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
+function V = lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
 % lcon2vert - compute the vertices of a polytope
 %
 % Syntax:  
@@ -39,8 +39,8 @@ function [V]=lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
   
   switch nargin 
       
-      case 0          
-            error('At least 1 input argument required');
+      case 0
+            throw(CORAerror('CORA:notEnoughInputArgs',1));
 
       case 1
             b=[]; Aeq=[]; beq=[]; 
@@ -48,24 +48,27 @@ function [V]=lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
       case 2       
             Aeq=[]; beq=[];
           
-      case 3      
-            error('Since argument Aeq specified, beq must also be specified');        
+      case 3
+          throw(CORAerror('CORA:specialError',...
+              'Since argument Aeq specified, beq must also be specified'));
   end
   
   b=b(:); beq=beq(:);
   
-  if xor(isempty(A), isempty(b)) 
-     error('Since argument A specified, b must also be specified');
+  if xor(isempty(A), isempty(b))
+      throw(CORAerror('CORA:specialError',...
+        'Since argument A specified, b must also be specified'));
   end
       
-  if xor(isempty(Aeq), isempty(beq)) 
-     error('Since argument Aeq specified, beq must also be specified');
+  if xor(isempty(Aeq), isempty(beq))
+      throw(CORAerror('CORA:specialError',...
+        'Since argument Aeq specified, beq must also be specified'));
   end
   
   nn=max(size(A,2)*~isempty(A),size(Aeq,2)*~isempty(Aeq));
   
-  if ~isempty(A) && ~isempty(Aeq) && ( size(A,2)~=nn || size(Aeq,2)~=nn)    
-     error('A and Aeq must have the same number of columns if both non-empty');  
+  if ~isempty(A) && ~isempty(Aeq) && ( size(A,2)~=nn || size(Aeq,2)~=nn)   
+      throw(CORAerror('CORA:dimensionMismatch',A,Aeq));
   end
   
   
@@ -118,7 +121,8 @@ function [V]=lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
     bbb=b;
    
  elseif equalityConstrained && ~inequalityConstrained
-       error('Non-bounding constraints detected. (Consider box constraints on variables.)')     
+     throw(CORAerror('CORA:specialError',...
+         'Non-bounding constraints detected. (Consider box constraints on variables.)'));
  end
   
  % remove redundant constraints
@@ -152,7 +156,8 @@ function [V]=lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
          return
          
      elseif ~isfinite(ub) || ~isfinite(lb)      
-         error('Non-bounding constraints detected. (Consider box constraints on variables.)')
+         throw(CORAerror('CORA:specialError',...
+            'Non-bounding constraints detected. (Consider box constraints on variables.)'));
      end
       
      Zt=[lb;ub];
@@ -229,7 +234,8 @@ function [V]=lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
         [~,bb,~,bbeq]=vert2lcon(A,TOL);
 
         if any(bb<=0) || ~isempty(bbeq)
-            error('Non-bounding constraints detected. (Consider box constraints on variables.)')
+            throw(CORAerror('CORA:specialError',...
+                'Non-bounding constraints detected. (Consider box constraints on variables.)'));
         end
 
         clear bb bbeq
@@ -281,8 +287,9 @@ function [V]=lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
         end
 
         % No point inside the polytope could be cound
-        if ~approxinpoly(s,TOL)            
-            error('Unable to locate a point near the interior of the feasible region.');
+        if ~approxinpoly(s,TOL)
+            throw(CORAerror('CORA:specialError',...
+                'Unable to locate a point near the interior of the feasible region.'));
         end
 
 
@@ -307,7 +314,8 @@ function [V]=lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
             faceVertices=lcon2vert(Amod,bmod,Aeq,beq,TOL,1);
             
             if isempty(faceVertices)
-               error('Something''s wrong. Couldn''t find face vertices. Possibly polyhedron is unbounded.');
+                throw(CORAerror('CORA:specialError',...
+                    'Could not find face vertices. Possibly polyhedron is unbounded.'));
             end
 
             % loop over all possible vertices (choose a feasible vertex)
@@ -334,7 +342,8 @@ function [V]=lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
                     [bmin,idx]=min(bb);
 
                      if bmin>=-TOL
-                       error('Something''s wrong. We should have found a recession vector (bb<0).');
+                         throw(CORAerror('CORA:specialError',...
+                             'We should have found a recession vector (bb<0).'));
                      end      
 
 
@@ -345,7 +354,8 @@ function [V]=lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
                     linetips = lcon2vert(A,b,Aeq2,beq2,TOL,1);
 
                     if size(linetips,1)<2
-                       error('Failed to identify line segment through interior. Possibly {x: Aeq*x=beq} has weak intersection with interior({x: Ax<=b}).');
+                        throw(CORAerror('CORA:specialError',...
+                            'Failed to identify line segment through interior. Possibly {x: Aeq*x=beq} has weak intersection with interior({x: Ax<=b}).'));
                     end
 
                     % Take midpoint to the line as the refined point
@@ -363,7 +373,8 @@ function [V]=lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
             end
 
             if ~foundSolution
-               error('Could not determine a point inside the polytope!'); 
+                throw(CORAerror('CORA:specialError',...
+                    'Could not determine a point inside the polytope!'));
             end
         end
 

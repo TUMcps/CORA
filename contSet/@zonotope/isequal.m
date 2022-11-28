@@ -1,5 +1,5 @@
-function res = isequal(Z1,Z2,tol)
-% isequal - checks if zonotopes are equal (note: no deletion of aligned
+function res = isequal(Z1,Z2,varargin)
+% isequal - checks if two zonotopes are equal (note: no deletion of aligned
 %    generators since this is quite costly)
 %
 % Syntax:  
@@ -8,14 +8,14 @@ function res = isequal(Z1,Z2,tol)
 % Inputs:
 %    Z1 - zonotope object
 %    Z2 - zonotope object
-%    tol - tolerance (optional)
+%    tol - (optional) tolerance
 %
 % Outputs:
-%    res - boolean whether Z1 and Z2 are equal
+%    res - true/false
 %
 % Example: 
-%    Z1 = zonotope([zeros(3,1),rand(3,5)]);
-%    Z2 = zonotope([zeros(3,1),rand(3,5)]);
+%    Z1 = zonotope(zeros(2,1),[1 0 2; 2 0 1]);
+%    Z2 = zonotope(zeros(2,1),[1 2 0; 2 1 0]);
 %    isequal(Z1,Z2);
 %
 % Other m-files required: none
@@ -25,16 +25,22 @@ function res = isequal(Z1,Z2,tol)
 % See also: none
 
 % Author:       Mark Wetzlinger
-% Written:      16-Sep-2019
+% Written:      16-September-2019
 % Last update:  09-June-2020 (include re-ordering of generators)
+%               13-November-2022 (MW, integrate modular check)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-if nargin == 2
-    tol = eps;
-end
+% parse input arguments
+tol = setDefaultValues({eps},varargin{:});
 
+% check input arguments
+inputArgsCheck({{Z1,'att','zonotope'};
+                {Z2,'att','zonotope'};
+                {tol,'att','numeric',{'nonnan','scalar','nonnegative'}}});
+
+% init result
 res = false;
 
 % compare dimensions (quick check)
@@ -43,48 +49,20 @@ if dim(Z1) ~= dim(Z2)
 end
 
 % compare centers (quick check)
-if any(abs(center(Z1) - center(Z2)) > tol)
+if ~all(withinTol(center(Z1),center(Z2),tol))
     return
 end
 
-% 1D case
-if dim(Z1) == 1 % equal to dim(Z2), see above
-    % reduce generator matrices to one generator
-    g1red = sum(abs(generators(Z1)));
-    g2red = sum(abs(generators(Z2)));
-    min_g = min(g1red,g2red);
-    tol = 1e-12;
-    if (min_g==0 && abs(g1red-g2red) < tol) || ...
-            (g1red-g2red == 0) || (g1red-g2red)/min(g1red,g2red) < tol
-        res = true;
-    end
-    return
-end
-
+% delete zeros from generator matrices
 G1 = generators(deleteZeros(Z1));
 G2 = generators(deleteZeros(Z2));
+
+% compare number of generators
+if size(G1,2) ~= size(G2,2)
+    return
+end
+
 % compare generator matrices
-nrOfGens = size(G1,2);
-if nrOfGens ~= size(G2,2)
-    return
-elseif all(all(abs(G1 - G2) < tol))
-    % both already ordered in the same way
-    res = true;
-    return
-else
-    % sort to obtain correct correspondances
-    [~,idx] = sortrows(G1',[1,2]);
-    G1 = G1(:,idx);
-    [~,idx] = sortrows(G2',[1,2]);
-    G2 = G2(:,idx);
-    if all(all(abs(G1 - G2) < tol))
-        res = true;
-        return
-    end
-end
-
-
-end
-
+res = compareMatrices(G1,G2,tol);
 
 %------------- END OF CODE --------------

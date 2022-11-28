@@ -1,8 +1,8 @@
 function estSet = stripBasedObserver_unitTest(obj,params,options)
-% stripBasedObserver - computes the strip-based observer according to [1].
+% stripBasedObserver_unitTest - computes the strip-based observer according to [1].
 %
 % Syntax:  
-%    estSet = stripBasedObserver(obj,params,options)
+%    estSet = stripBasedObserver_unitTest(obj,params,options)
 %
 % Inputs:
 %    obj - discrete-time linear system object
@@ -16,6 +16,11 @@ function estSet = stripBasedObserver_unitTest(obj,params,options)
 %    [1] T. Alamo, J. M. Bravo, and E. F. Camacho. Guaranteed
 %        state estimation by zonotopes. Automatica, 41(6):1035-1043,
 %        2005.
+
+% Author:        ???
+% Written:       ???
+% Last update:   ---
+% Last revision: ---
 
 %------------- BEGIN CODE --------------
 

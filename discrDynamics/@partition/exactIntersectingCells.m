@@ -39,7 +39,7 @@ function [iS, iProp] = exactIntersectingSegments(Obj,contSet)
 if isa(contSet,'mptPolytope')
     P = contSet;
 else
-    P = polytope(contSet);
+    P = mptPolytope(contSet);
 end
 
 

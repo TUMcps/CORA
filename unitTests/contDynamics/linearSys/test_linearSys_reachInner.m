@@ -18,8 +18,6 @@ function res = test_linearSys_reachInner()
 
 %------------- BEGIN CODE --------------
 
-res = true;
-
 % Parameter -----------------------------------------------------------
 
 params.tFinal = 1;
@@ -59,6 +57,7 @@ points = zeros(sys.dim,N);
 
 R0 = mptPolytope(params.R0);
 
+res1 = true;
 for i = 1:N
 
     % draw random point from inner-approximation
@@ -78,9 +77,10 @@ for i = 1:N
     p = x(end,:)';
     points(:,i) = p;
 
-    if ~in(R0,p,1e-4)
-       res = false;
-       error('Not a valid inner-approximation!')
+    if ~contains(R0,p,'exact',1e-4)
+        % not a valid inner-approximation
+        res1 = false;
+        break
     end
 end
 
@@ -95,7 +95,10 @@ I_saved = interval([-0.013937383819512;-0.570761541921580;0.061914997162599;-0.0
                    [0.089837441984412;-0.466986716117656;0.075673885420954;-0.008114861479455;0.148868811560274]);
 I = interval(R_i);
 
-res = in(enlarge(I_saved,1+1e-12),I) & in(enlarge(I,1+1e-12),I_saved);
+res2 = isequal(I,I_saved,1e-12);
+
+% combine results
+res = res1 && res2;
     
 end
     

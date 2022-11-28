@@ -33,41 +33,32 @@ c = interval([-5.0, -4.0, -3, 0, 0, 5], [-2, 0.0, 2.0, 0, 5, 8]);
 
 if abs( supremum(c(1)) + 2.0 ) > tol
 	res = false;
-	disp('test_supremum failed');
 	return;
 end
 
 if abs( supremum(c(2)) + 0.0 ) > tol
 	res = false;
-	disp('test_supremum failed');
 	return;
 end
 
 if abs( supremum(c(3)) - 2.0 ) > tol
 	res = false;
-	disp('test_supremum failed');
 	return;
 end
 
 if abs( supremum(c(4)) - 0.0 ) > tol
 	res = false;
-	disp('test_supremum failed');
 	return;
 end
 
 if abs( supremum(c(5)) - 5.0 ) > tol
 	res = false;
-	disp('test_supremum failed');
 	return;
 end
 
 if abs( supremum(c(6)) - 8.0 ) > tol
 	res = false;
-	disp('test_supremum failed');
 	return;
 end
-
-disp('test_supremum successful');
-return;
 
 %------------- END OF CODE --------------

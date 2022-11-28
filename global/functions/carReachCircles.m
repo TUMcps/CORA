@@ -1,5 +1,24 @@
 function carReachCircles()
-%written: 19.08.09, MA
+% carReachCircles - ???
+%
+% Syntax:  
+%    carReachCircles()
+%
+% Inputs:
+%    ---       
+%
+% Outputs:
+%    ---
+% 
+% Example:
+%    carReachCircles();
+
+% Author:        Matthias Althoff
+% Written:       19-August-2009
+% Last update:   ---
+% Last revision: ---
+
+%------------- BEGIN CODE --------------
 
 %unknown plan
 
@@ -111,3 +130,5 @@ axis equal
 % end
 % 
 % axis equal
+
+%------------- END OF CODE --------------

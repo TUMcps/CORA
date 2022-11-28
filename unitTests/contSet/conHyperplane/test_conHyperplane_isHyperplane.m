@@ -57,11 +57,4 @@ if isHyperplane(hyp3)
     res = false;
 end
 
-    
-if res
-    disp('test_conHyperplane_isHyperplane successful');
-else
-    disp('test_conHyperplane_isHyperplane failed');
-end
-
 %------------- END OF CODE --------------

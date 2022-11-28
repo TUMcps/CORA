@@ -1,12 +1,12 @@
-function R = guardIntersect_hyperplaneMap(obj,guard,R0,options)
+function R = guardIntersect_hyperplaneMap(loc,guard,R0,options)
 % guardIntersect_hyperplaneMap - implementation of the guard mapping
-%                                approach described in [1]
+%    approach described in [1]
 %
 % Syntax:  
-%    R = guardIntersect_hyperplaneMap(obj,guard,R0,options)
+%    R = guardIntersect_hyperplaneMap(loc,guard,R0,options)
 %
 % Inputs:
-%    obj - object of class location
+%    loc - location object
 %    guard - guard set (class: conHyperplane)
 %    R0 - initial set (last reachable set not intersecting the guard set)
 %    options - struct containing the algorithm settings
@@ -19,7 +19,7 @@ function R = guardIntersect_hyperplaneMap(obj,guard,R0,options)
 %       Reachability Analysis of Hybrid Systems"
 %   [2] M. Althoff et al. "Reachability Analysis of Nonlinear Systems with 
 %       Uncertain Parameters using Conservative Linearization"
-% 
+
 % Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      13-December-2019
 % Last update:  ---
@@ -28,14 +28,14 @@ function R = guardIntersect_hyperplaneMap(obj,guard,R0,options)
 %------------- BEGIN CODE --------------
 
     % refine the time interval at which the guard set is hit
-    [R0,tmin,tmax,Rcont] = refinedIntersectionTime(obj,guard,R0,options); 
+    [R0,tmin,tmax,Rcont] = refinedIntersectionTime(loc,guard,R0,options); 
     tmax = tmax - tmin;
 
     % average hitting time
     th = tmax/2;
     
     % system matrix A and set of uncertain inputs U
-    [A,U] = systemParams(obj.contDynamics,Rcont,options);
+    [A,U] = systemParams(loc.contDynamics,Rcont,options);
     
     % constant part b of the flow \dot y = A*y0 + b (see Prop. 1 in [1])
     b = constantFlow(A,R0,U,th,options.taylorTerms);
@@ -71,21 +71,21 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function [Rmin,tmin,tmax,int] = refinedIntersectionTime(obj,guard,R0,options)
+function [Rmin,tmin,tmax,int] = refinedIntersectionTime(loc,guard,R0,options)
 % this function computes the reachable set with a smaller times step to
 % refine the time at which the reachable set intersects the guard set
 
     % compute halfspace representing the region inside the invariant
     hs = halfspace(guard.h.c,guard.h.d);
     
-    if ~in(hs,center(R0))
+    if ~contains(hs,center(R0))
         hs = halfspace(-guard.h.c,-guard.h.d);
     end
     
     spec = specification(hs,'invariant');
     
     % adapt reachability options
-    [params,options] = adaptOptions(obj,options);
+    [params,options] = adaptOptions(loc,options);
     
     options.timeStep = 0.1*options.timeStep;
     params.R0 = R0;
@@ -94,7 +94,7 @@ function [Rmin,tmin,tmax,int] = refinedIntersectionTime(obj,guard,R0,options)
     end
     
     % compute reachable set until it fully crossed the hyperplane
-    R = reach(obj.contDynamics,params,options,spec);
+    R = reach(loc.contDynamics,params,options,spec);
     
     tmax = R.timePoint.time{end};
     
@@ -104,7 +104,7 @@ function [Rmin,tmin,tmax,int] = refinedIntersectionTime(obj,guard,R0,options)
     
     for i = 1:length(R.timePoint.set)
         
-       if ~found && in(hs,R.timePoint.set{i})
+       if ~found && contains(hs,R.timePoint.set{i})
           % update minimum time
           Rmin = R.timePoint.set{i};
           tmin = R.timePoint.time{i};
@@ -192,7 +192,7 @@ function [A,U] = systemParams(sys,Rcont,options)
         U = sys.B * options.U;
 
         if ~isempty(sys.c)
-           U = U + sys.c; 
+            U = U + sys.c; 
         end
         
     elseif isa(sys,'nonlinearSys')
@@ -232,8 +232,9 @@ function [A,U] = systemParams(sys,Rcont,options)
         
     else
         
-        error(['Hyperplane mapping is only implemented for the', ...
-               ' classes "linearSys" and "nonlinearSys".']);       
+        throw(CORAerror('CORA:specialError',...
+            ['Hyperplane mapping is only implemented for the', ...
+               ' classes "linearSys" and "nonlinearSys".'])); 
     end  
 end
 

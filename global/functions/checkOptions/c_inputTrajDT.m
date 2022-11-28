@@ -3,7 +3,7 @@ function [res,msg] = c_inputTrajDT(val,sys,params)
 %    and obj.dt match
 %
 % Syntax:
-%    [res,msg] = c_inputTraj(val,sys,params,options)
+%    [res,msg] = c_inputTrajDT(val,sys,params,options)
 %
 % Inputs:
 %    val - value for params.u
@@ -25,7 +25,8 @@ function [res,msg] = c_inputTrajDT(val,sys,params)
 
 % Author:       Mark Wetzlinger
 % Written:      25-May-2021
-% Last update:  ---
+% Last update:  17-November-2021 (MW, different lengths allowed depending
+%                                     on existence of throughput matrix)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -38,13 +39,32 @@ msg = '';
 if (size(val,2) == 1 && ~any(val))
     % params.u is default value (zero-vector)
     return;
-elseif size(val,2) ~= round((params.tFinal-params.tStart) / sys.dt)
-    res = false;
-    msg = ['does not comply with obj.dt: \n'...
-        'The number of steps in the reachability analysis given by \n'...
-        '   (params.tFinal-params.tStart)/obj.dt\n'...
-        'has to match the number of columns in params.u'];
-    return;
+else
+    steps = round((params.tFinal-params.tStart) / sys.dt);
+    if isa(sys,'linearSysDT') && any(any(sys.D))
+        % throughput matrix given, for last output we require one more
+        % entry in params.u
+        if size(val,2) ~= steps + 1
+            res = false;
+            msg = ['does not comply with obj.dt:\n'...
+                'Case: Throughput matrix D provided\n'...
+                'The number of steps in the reachability analysis plus 1 given by\n'...
+                '   (params.tFinal-params.tStart)/obj.dt + 1\n'...
+                'has to match the number of columns in params.u'];
+            return;
+        end
+    else
+        % throughput matrix is all-zero
+        if ~any(size(val,2) == [steps, steps+1])
+            res = false;
+            msg = ['does not comply with obj.dt:\n'...
+                'Case: No throughput matrix provided\n'...
+                'The number of steps in the reachability analysis given by\n'...
+                '   (params.tFinal-params.tStart)/obj.dt\n'...
+                'has to match the number of columns in params.u'];
+            return;
+        end
+    end
 end
 
 end

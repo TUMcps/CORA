@@ -1,4 +1,4 @@
-function res = tanh(intVal)
+function I = tanh(I)
 % tanh - Overloaded 'tanh()' operator for intervals
 %
 % x_ is x infimum, x-- is x supremum
@@ -6,15 +6,17 @@ function res = tanh(intVal)
 % [tanh(x_), tanh(x--)].
 %
 % Syntax:  
-%    res = tanh(intVal)
+%    I = tanh(I)
 %
 % Inputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Outputs:
-%    res - interval object
+%    I - interval object
 %
 % Example: 
+%    I = interval([-2;-3],[3;4]);
+%    tanh(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,13 +27,12 @@ function res = tanh(intVal)
 % Author:       Matthias Althoff
 % Written:      05-February-2016
 % Last update:  22-February-2016 (DG, the matrix case is rewritten)
+%               21-May-2022 (MW, remove new instantiation)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-res = interval();
-
-res.inf = tanh(intVal.inf);
-res.sup = tanh(intVal.sup);
+I.inf = tanh(I.inf);
+I.sup = tanh(I.sup);
 
 %------------- END OF CODE --------------

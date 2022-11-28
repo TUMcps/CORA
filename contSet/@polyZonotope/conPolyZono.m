@@ -1,6 +1,6 @@
 function cPZ = conPolyZono(pZ)
-% conPolyZono - convert a polynomial zonotope to a constrained polynomial
-%               zonotope
+% conPolyZono - converts a polynomial zonotope to a constrained polynomial
+%    zonotope (exactly)
 %
 % Syntax:  
 %    cPZ = conPolyZono(pZ)
@@ -12,7 +12,7 @@ function cPZ = conPolyZono(pZ)
 %    cPZ - conPolyZono object
 %
 % Example: 
-%    pZ = polyZonotope.generateRandom(2);
+%    pZ = polyZonotope.generateRandom('Dimension',2);
 %    cPZ = conPolyZono(pZ)
 %
 % Other m-files required: none
@@ -28,8 +28,6 @@ function cPZ = conPolyZono(pZ)
 
 %------------- BEGIN CODE --------------
 
-    cPZ = conPolyZono(pZ.c,pZ.G,pZ.expMat,pZ.Grest,pZ.id);
-    
-end
+cPZ = conPolyZono(pZ.c,pZ.G,pZ.expMat,pZ.Grest,pZ.id);
     
 %------------- END OF CODE --------------

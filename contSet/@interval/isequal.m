@@ -1,21 +1,21 @@
-function res = isequal(Int1,Int2,tol)
+function res = isequal(I1,I2,varargin)
 % isequal - checks if two intervals are equal
 %
 % Syntax:  
-%    res = isequal(Int1,Int2,tol)
+%    res = isequal(I1,I2,tol)
 %
 % Inputs:
-%    Int1 - interval
-%    Int2 - interval
-%    tol - tolerance (optional)
+%    I1 - interval object
+%    I2 - interval object
+%    tol - (optional) tolerance
 %
 % Outputs:
-%    res - boolean whether intervals are equal
+%    res - true/false
 %
 % Example: 
-%    Int1 = interval([1; -1; 0], [4; 2; 1]);
-%    Int2 = interval([1; 0; 0], [3.5; 2; 1]);
-%    res = isequal(Int1,Int2)
+%    I1 = interval([1; -1; 0], [4; 2; 1]);
+%    I2 = interval([1; 0; 0], [3.5; 2; 1]);
+%    res = isequal(I1,I2)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,20 +30,19 @@ function res = isequal(Int1,Int2,tol)
 
 %------------- BEGIN CODE --------------
 
-if nargin == 2
-    tol = eps;
-end
+% parse input arguments
+tol = setDefaultValues({eps},varargin{:});
 
-if dim(Int1) ~= dim(Int2)
-    
-    [id,msg] = errDimMismatch();
-    error(id,msg);
-    
+% input argument check
+inputArgsCheck({{I1,'att','interval'};
+                {I2,'att','interval'};
+                {tol,'att','numeric',{'nonnan','scalar','nonnegative'}}});
+
+if dim(I1) ~= dim(I2)
+    throw(CORAerror('CORA:dimensionMismatch',I1,I2));    
 else
-
-    res = all(abs(infimum(Int1) - infimum(Int2)) < tol) && ... % infima
-        all(abs(supremum(Int1) - supremum(Int2)) < tol); % suprema
-
+    res = all(abs(infimum(I1) - infimum(I2)) < tol) && ... % infima
+        all(abs(supremum(I1) - supremum(I2)) < tol); % suprema
 end
 
 %------------- END OF CODE --------------

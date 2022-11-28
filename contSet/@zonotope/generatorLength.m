@@ -11,7 +11,7 @@ function Glength = generatorLength(Z)
 %    Glength - vector of generator length
 %
 % Example:
-%    Z = zonotope([0;0],rand(2,10));
+%    Z = zonotope([0;0],[1 3 2 -2; 3 -2 0 1]);
 %    Glength = generatorLength(Z);
 %
 % Other m-files required: none

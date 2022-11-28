@@ -24,7 +24,7 @@ function res = testMP_Krylov_iss_initReach(~)
 %------------- BEGIN CODE --------------
 
 % enable access to private function "initReach_Krylov"
-path = coraroot();
+path = CORAROOT;
 source1 = fullfile(path,'contDynamics','@linearSys','private','initReach_Krylov.m');
 target1 = fullfile(path,'contDynamics','@linearSys','initReach_Krylov.m');
 copyfile(source1,target1);

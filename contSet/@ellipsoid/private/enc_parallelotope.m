@@ -1,5 +1,5 @@
 function Z = enc_parallelotope(E)
-% enc_parallelotope - overapproximates an ellipsoid by a parellelotope
+% enc_parallelotope - over-approximates an ellipsoid by a parallelotope
 %
 % Syntax:  
 %    Z = enc_parallelotope(E)
@@ -11,11 +11,12 @@ function Z = enc_parallelotope(E)
 %    Z - zonotope object
 %
 % Example: 
-%    E = ellipsoid.generateRandom(0,2);
+%    E = ellipsoid.generateRandom('Dimension',2);
 %    Z = enc_parallelotope(E);
-%    plot(E);
-%    hold on
-%    plot(Z);
+%
+%    figure; hold on;
+%    plot(E,[1,2],'b');
+%    plot(Z,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,13 +31,14 @@ function Z = enc_parallelotope(E)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-assert(~E.isdegenerate,'Degeneracy should be handled in main file!');
+
+if ~isFullDim(E)
+    throw(CORAerror('CORA:degenerateSet','Should be handled in main file'));
+end
 
 Tinv = sqrtm(E.Q);
 n = length(E.Q);
-%transform ellipsoid into sphere -> square around sphere -> back transform
+% transform ellipsoid into sphere -> square around sphere -> back transform
 Z = zonotope([E.q,Tinv*eye(n)]);
-
-
 
 %------------- END OF CODE --------------

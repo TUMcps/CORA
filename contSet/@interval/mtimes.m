@@ -5,15 +5,16 @@ function res = mtimes(factor1,factor2)
 %    res = mtimes(factor1,factor2)
 %
 % Inputs:
-%    factor1 - interval (for computational efficiency, no single value
-%              considered; does not require type checking)
-%    factor2 - interval (for computational efficiency, no single value
-%              considered; does not require type checking)
+%    factor1 - interval object
+%    factor2 - interval object
 %
 % Outputs:
 %    res - interval
 %
-% Example: 
+% Example:
+%    factor1 = interval(-2,0);
+%    factor2 = interval(1,2);
+%    factor1 * factor2
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,6 +33,8 @@ function res = mtimes(factor1,factor2)
 %               22-July-2016 (MA, case that factor1 is numeric has been added)
 %               26-July-2016 (multiplication with zonotope added)
 %               05-August-2016 (simplified some cases; matrix case corrected)
+%               23-June-2022 (VG: added support for appropriate empty
+%               matrices/intervals)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -118,7 +121,12 @@ elseif isa(factor1, 'interval') && ~isa(factor2, 'interval')
     [m, n] = size(I1);
     [m1, n1] = size(factor2);
     A = interval();
- 
+    
+    % allow appropriate empty cases (also faster)
+    Binf = zeros(m,n1);
+    Bsup = zeros(m,n1);
+    % initialize B as interval (size does not matter)
+    B = factor1;
     for i = 1:m
         A.inf = repmat(I1(i, :),n1, 1)';
         A.sup = repmat(S1(i, :),n1, 1)';
@@ -141,6 +149,11 @@ elseif ~isa(factor1, 'interval') && isa(factor2, 'interval')
     [m, n] = size(factor1);
     A = interval();
 
+    % allow appropriate empty cases (also faster)
+    Binf = zeros(m,n1);
+    Bsup = zeros(m,n1);
+    % initialize B as interval (size does not matter)
+    B = factor2;
     for i = 1:m
 %         A.inf = repmat(I1(i, :),n1, 1);
 %         A.sup = repmat(S1(i, :),n1, 1);
@@ -164,6 +177,12 @@ else
     [m, n] = size(I1);
     [m1, n1] = size(factor2.inf);
     A = interval();
+
+    % allow appropriate empty cases (also faster)
+    Binf = zeros(m,n1);
+    Bsup = zeros(m,n1);
+    % initialize B as interval (size does not matter)
+    B = factor1;
 
     for i = 1:m
         A.inf = repmat(I1(i, :),n1, 1)';

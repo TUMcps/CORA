@@ -32,7 +32,7 @@ nrOfTests = 1000;
 for i=1:nrOfTests
 
     % random dimension
-    n = randi(25);
+    n = randi([2,25]);
     
     % random center, generator, and radius
     c = randn(n,1);
@@ -111,11 +111,9 @@ for i=1:nrOfTests
     
 end
 
-
-if res
-    disp('testLongDuration_capsule successful');
-else
-    disp('testLongDuration_capsule failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','c','g','r','cn_1','gn_1');
 end
 
 %------------- END OF CODE --------------

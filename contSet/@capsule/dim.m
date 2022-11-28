@@ -1,18 +1,18 @@
-function d = dim(C)
-% dim - Returns the defined dimension of a capsule
+function n = dim(C)
+% dim - returns the dimension of the ambient space of a capsule
 %
 % Syntax:  
-%    d = dim(C)
+%    n = dim(C)
 %
 % Inputs:
-%    C - capsule
+%    C - capsule object
 %
 % Outputs:
-%    d - dimension of the capsule C
+%    n - dimension of the ambient space
 %
 % Example: 
 %    C = capsule([1; 1; 0], [0.5; -1; 1], 0.5);
-%    d = dim(C)
+%    n = dim(C)
 %
 % Other m-files required: center.m
 % Subfunctions: none
@@ -28,9 +28,9 @@ function d = dim(C)
 %------------- BEGIN CODE --------------
 
 if ~isempty(C)
-    d = length(center(C));
+    n = length(center(C));
 else
-    d = 0;
+    n = 0;
 end
 
 %------------- END OF CODE --------------

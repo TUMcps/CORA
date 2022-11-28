@@ -1,8 +1,9 @@
-function res = testLongDuration_ellipsoid_minusDouble
-% testLongDuration_ellipsoid_minusDouble - unit test function of testLongDuration_ellipsoid_minusDouble
+function res = testLongDuration_component_ellipsoid_minusDouble
+% testLongDuration_component_ellipsoid_minusDouble - unit test function of
+%    testLongDuration_ellipsoid_minusDouble
 %
 % Syntax:  
-%    res = testLongDuration_ellipsoid_minusDouble
+%    res = testLongDuration_component_ellipsoid_minusDouble
 %
 % Inputs:
 %    -
@@ -31,17 +32,17 @@ bools = [false,true];
 for i=10:5:15
     for j=1:nRuns
         for k=1:2 
-            E = ellipsoid.generateRandom(i,bools(k));
+            %%% generate all variables necessary to replicate results
+            E = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k));
             % generate points randomly
-            N = 2*dim(E);
-            V = randn(dim(E),N);
+            V = randn(dim(E),2*dim(E));
+            %%%
             for m=1:2
                 [U,S,V] = svd(V);
                 S(1,1) = bools(m)*S(1,1);
                 V = U*S*V';
-                V_c = mat2cell(V,E.dim,ones(1,N));
-                Eo = minus(E,V_c);
-                Ei = minus(E,V_c,'i');
+                Eo = minus(E,V);
+                Ei = minus(E,V,'inner');
                 Eres = ellipsoid(E.Q,E.q-sum(V,2));
                 % check if the same
                 if ~(Eres==Eo) || ~(Eres==Ei)
@@ -58,6 +59,8 @@ for i=10:5:15
         end
     end
     if ~res
+        path = pathFailedTests(mfilename());
+        save(path,'E','V');
         break;
     end
 end

@@ -26,7 +26,7 @@ function res = testLongDuration_halfspace_mtimes
 %------------- BEGIN CODE --------------
 
 % Random tests
-res_rand = true;
+res = true;
 nrTests = 1000;
 % turn warnings off due to singular matrices
 warning('off','all');
@@ -62,13 +62,13 @@ for i=1:nrTests
 
         % compare results
         if ~isequal(h_mapped,h_true)
-            res_rand = false; break;
+            res = false; break;
         end
         
     else
         try
             h_mapped = A*h;
-            res_rand = false; break; % should not reach here
+            res = false; break; % should not reach here
         catch ME
             % should throw error
         end
@@ -79,14 +79,9 @@ end
 % turn warnings back on
 warning('on','all');
 
-
-% combine tests
-res = res_rand;
-
-if res_rand
-    disp('test_mtimes successful');
-else
-    disp('test_mtimes failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','c','d');
 end
 
 %------------- END OF CODE --------------

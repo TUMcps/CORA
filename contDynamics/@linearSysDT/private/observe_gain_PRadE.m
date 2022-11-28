@@ -1,5 +1,5 @@
 function [OGain,tComp] = observe_gain_PRadE(obj,options)
-% observe_gain_PRadE - computes the gain for the guaranted state estimation
+% observe_gain_PRadE - computes the gain for the guaranteed state estimation
 % approach from [1].
 %
 %
@@ -45,14 +45,14 @@ sys.E = generators(options.W);
 sys.F = generators(options.V);
 
 % obtain system dimension and nr of outputs
-dim = size(obj.A,1); 
-nrOfOutputs = size(obj.C,1);
+n = obj.dim; 
+nrOfOutputs = obj.nrOfOutputs;
 
 %% define YALMIPs symbolic decision variables
 % state
-P = sdpvar(dim,dim,'symmetric'); 
+P = sdpvar(n,n,'symmetric'); 
 % gain matrix
-Y = sdpvar(dim,nrOfOutputs,'full'); 
+Y = sdpvar(n,nrOfOutputs,'full'); 
         
 
 %% optimization settings
@@ -81,13 +81,13 @@ while(beta_up-beta_lo)> beta_tol
     SM = sdpvar(SM);
 
     % optimization criterion seems to not be specified in [1]
-    crit = -trace(P); 
+    objective = -trace(P); 
 
     % LMI problem to be solved
-    pblmi =  [(P>=0), (SM<=0)];
+    constraint = [(P>=0), (SM<=0)];
 
     % Solve LMI conditions
-    solpb = optimize(pblmi,crit,options_sdp);
+    solpb = optimize(constraint, objective, options_sdp);
 
     % Check if LMI is feasible
     if solpb.problem == 1

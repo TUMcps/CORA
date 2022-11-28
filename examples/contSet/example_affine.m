@@ -8,14 +8,14 @@ function completed = example_affine()
 %    -
 %
 % Outputs:
-%    completed - boolean
+%    completed - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Matthias Althoff
 % Written:       29-June-2018
 % Last update:   ---
@@ -24,12 +24,12 @@ function completed = example_affine()
 %------------- BEGIN CODE --------------
 
 % create affine object
-int = interval(-1,1);
-aff = affine(int);
+I = interval(-1,1);
+aff = affine(I);
 
 % create taylor model object (for comparison)
 maxOrder = 1;
-tay = taylm(int,maxOrder,'x');
+tay = taylm(I,maxOrder,'x');
 
 % define function
 f = @(x) sin(x) * (x+1);
@@ -38,6 +38,6 @@ f = @(x) sin(x) * (x+1);
 intAff = interval(f(aff))
 intTay = interval(f(tay))
 
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

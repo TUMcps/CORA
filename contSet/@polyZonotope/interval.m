@@ -1,12 +1,12 @@
 function I = interval(pZ,varargin)
-% interval - Over-approximates a polynomial Zonotope by an interval
+% interval - Over-approximates a polynomial zonotope by an interval
 %
 % Syntax:  
 %    I = interval(pZ)
 %    I = interval(pZ,method)
 %
 % Inputs:
-%    qZ - polyZonotope object
+%    pZ - polyZonotope object
 %    method - method used to calculate the bounds for all dimensions
 %              'interval': interval arithmetic
 %              'split': split set multiple times
@@ -21,22 +21,16 @@ function I = interval(pZ,varargin)
 % Example: 
 %    pZ = polyZonotope([0;0],[2 -1 2;0 -2 -3],[],[1 0 1;0 1 3]);
 %
-%    int1 = interval(pZ);
-%    int2 = interval(pZ,'bernstein');
+%    I1 = interval(pZ);
+%    I2 = interval(pZ,'bernstein');
 %
-%    figure
-%    hold on
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
-%    plot(int1,[1,2],'b');
-%    xlim([-6,6]);
-%    ylim([-6,6]);
+%    figure; hold on; xlim([-6,6]); ylim([-6,6]);
+%    plot(pZ,[1,2],'FaceColor','r');
+%    plot(I1,[1,2],'b');
 %
-%    figure
-%    hold on
-%    plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
-%    plot(int2,[1,2],'g');
-%    xlim([-6,6]);
-%    ylim([-6,6]);
+%    figure; hold on; xlim([-6,6]); ylim([-6,6]);
+%    plot(pZ,[1,2],'FaceColor','r');
+%    plot(I2,[1,2],'g');
 %
 % Other m-files required: interval
 % Subfunctions: none
@@ -49,12 +43,15 @@ function I = interval(pZ,varargin)
 % Last update:  ---
 % Last revision:---
 
-%------------- BEGIN CODE --------------p
+%------------- BEGIN CODE --------------
+
 % parse input arguemnts
-method = 'interval';
-if nargin == 2
-   method = varargin{1}; 
-end
+method = setDefaultValues({'interval'},varargin{:});
+
+% check input arguments
+inputArgsCheck({{pZ,'att','polyZonotope'};
+                {method,'str',{'interval','split','bnb','bnbAdv',...
+                    'globOpt','bernstein'}}});
 
 % compute over-approximating interval with the selected method
 if strcmp(method,'interval')
@@ -72,26 +69,27 @@ elseif strcmp(method,'bernstein')
     infi = cellfun(@(x) min(min(x)),B);
     sup = cellfun(@(x) max(max(x)),B);
     
-    int1 = interval(infi,sup);
+    I1 = interval(infi,sup);
     
     % independent generators: enclose zonotope with interval
-    int2 = interval(zonotope([pZ.c,pZ.Grest]));
+    I2 = interval(zonotope([pZ.c,pZ.Grest]));
     
-    I = int1 + int2;
+    I = I1 + I2;
     
 else
    
-   % initialize variables 
-   n = length(pZ.c);
-   e = zeros(n,1);
-   I = interval(e,e);
-   
-   % loop over all system dimensions
-   for i = 1:n
-      e_ = e;
-      e_(i) = 1;
-      I(i) = supportFunc(pZ,e_,'range',method);
-   end
+    % initialize variables 
+    n = length(pZ.c);
+    e = zeros(n,1);
+    I = interval(e,e);
+    
+    % loop over all system dimensions
+    for i = 1:n
+        e_ = e;
+        e_(i) = 1;
+        I(i) = supportFunc(pZ,e_,'range',method);
+    end
+
 end
 
 %------------- END OF CODE --------------

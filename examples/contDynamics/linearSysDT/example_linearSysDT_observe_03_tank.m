@@ -1,9 +1,7 @@
 function completed = example_linearSysDT_observe_03_tank
-% example_linearSysDT_observe_03_tank - example for guaranteed
-% state estimation of linear discrete-time systems from a unit test.
-%
-% Shows the solution of the linearSysDT class for a linearized tank example
-% from [1].
+% example_linearSysDT_observe_03_tank - example for guaranteed state
+%    estimation of linear discrete-time systems from a unit test; shows the
+%    solution of the linearSysDT class for a linearized tank example from [1].
 %
 % Syntax:  
 %    completed = example_linearSysDT_observe_03_tank
@@ -12,7 +10,7 @@ function completed = example_linearSysDT_observe_03_tank
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    completed - true/false 
 %
 % Reference:
 %    [1] M. Althoff. Guaranteed State Estimation in CORA 2021. 
@@ -21,7 +19,7 @@ function completed = example_linearSysDT_observe_03_tank
 %
 % Example: 
 %    -
- 
+
 % Author:       Matthias Althoff
 % Written:      12-Jun-2021
 % Last update:  ---
@@ -29,8 +27,7 @@ function completed = example_linearSysDT_observe_03_tank
 
 %------------- BEGIN CODE --------------
 
-
-%% Load pedestrian model
+% load pedestrian model
 load tankModel_lin_dim30 tank params options simRes
 
 % observe
@@ -38,20 +35,20 @@ options.alg = 'FRad-C'; % observer approach
 estSet = observe(tank,params,options);
 
 % plot results
-for dim = 1:6
+for iDim = 1:6
     figure; hold on;
     % plot time elapse
-    plotOverTime(estSet,dim,'FaceColor',[.6 .6 .6],'EdgeColor','none');
+    plotOverTime(estSet,iDim);
     % plot simulation
-    plotOverTime(simRes,dim);
+    plotOverTime(simRes,iDim);
 
     % label plot
     title(options.alg);
     xlabel('t');
-    ylabel(['x_{',num2str(dim),'}']);
+    ylabel(['x_{',num2str(iDim),'}']);
 end
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

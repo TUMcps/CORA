@@ -1,16 +1,19 @@
-function display(obj)
-% display - Displays a nonlinearSys object
+function display(sys)
+% display - Displays a nonlinearSys object on the command window
 %
 % Syntax:  
-%    display(obj)
+%    display(sys)
 %
 % Inputs:
-%    obj - nonlinearSys object
+%    sys - nonlinearSys object
 %
 % Outputs:
 %    ---
 %
-% Example: 
+% Example:
+%    f = @(x,u) [x(2); ...
+%               (1-x(1)^2)*x(2)-x(1)];
+%    sys = nonlinearSys('vanDerPol',f)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -18,27 +21,46 @@ function display(obj)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 17-October-2007
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff, Mark Wetzlinger
+% Written:      17-October-2007
+% Last update:  19-June-2022
+%               23-November-2022 (TL: dispInput)
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
-disp('-----------------------------------');
+% disp input if necessary
+dispInput(inputname(1))
 
 %display parent object
-display@contDynamics(obj);
+display@contDynamics(sys);
 
 %display type
-disp('type: Nonlinear time continuous system');
+disp('Type: Nonlinear continuous-time system');
+
+%create symbolic variables
+vars = symVariables(sys);
+
+%insert symbolic variables into the system equations
+f = sys.mFile(vars.x,vars.u);
 
 %display state space equations
-x = sym('x',[obj.dim,1]);
-u = sym('u',[obj.nrOfInputs,1]);
+disp('State-space equations:')
+for i=1:length(f)
+    disp(['  f(',num2str(i),') = ',char(f(i))]);
+end
 
-dx = obj.mFile(x,u)
+fprintf(newline);
 
-disp('-----------------------------------');
+%insert symbolic variables into the system equations
+y = sys.out_mFile(vars.x,vars.u);
+
+% display output equation
+disp('Output equations:')
+for i=1:length(y)
+    disp(['  y(',num2str(i),') = ',char(y(i))]);
+end
+
+fprintf(newline);
 
 %------------- END OF CODE --------------

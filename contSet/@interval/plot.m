@@ -1,18 +1,18 @@
-function han = plot(obj,varargin)
-% plot - Plots 2-dimensional projection of an interval 
+function han = plot(I,varargin)
+% plot - plots a projection of an interval 
 %
 % Syntax:
-%    plot(obj)
-%    plot(obj,dims)
-%    plot(obj,dims,'r',...)
+%    han = plot(I)
+%    han = plot(I,dims)
+%    han = plot(I,dims,type)
 %
 % Inputs:
-%    obj - interval object
-%    dims - (optional) dimensions that should be projected
-%    type - (optional) plot type (LineSpec and Name-Value pairs)
+%    I - interval object
+%    dims - (optional) dimensions for projection
+%    type - (optional) plot settings (LineSpec and Name-Value pairs)
 %
 % Outputs:
-%    han - handle to the plotted object
+%    han - handle to the graphics object
 %
 % Example: 
 %    I = interval([1; -1], [2; 1]);
@@ -31,14 +31,26 @@ function han = plot(obj,varargin)
 
 %------------- BEGIN CODE --------------
 
-%convert to zonotope
-Z = zonotope(obj);
-
-%plot zonotope
+%plot interval via conversion to zonotope
 if nargin == 1
-    han = plot(Z);
+    han = plot(zonotope(I));
 else
-    han = plot(Z,varargin{:});
+    dims = varargin{1};
+    % we need to project the interval first since intervals with -Inf/Inf
+    % values exist which result in zonotopes with NaN centers...
+    Z = zonotope(project(I,dims));
+
+    if length(dims) == 1
+        han = plot(Z,1,varargin{2:end});
+    elseif length(dims) == 2
+        han = plot(Z,[1,2],varargin{2:end});
+    elseif length(dims) == 3
+        han = plot(Z,[1,2,3],varargin{2:end});
+    end
+end
+
+if nargout == 0
+    clear han;
 end
 
 %------------- END OF CODE --------------

@@ -1,21 +1,21 @@
-function obj = subsasgn(obj, S, value)
-% subsasgn - Overloads the opertor that writes elements, e.g. I(1,2)=value,
+function I = subsasgn(I,S,val)
+% subsasgn - Overloads the operator that writes elements, e.g., I(1,2)=val,
 %    where the element of the first row and second column is referred to.
 %
 % Syntax:  
-%    obj = subsasgn(obj, S, value)
+%    I = subsasgn(I,S,val)
 %
 % Inputs:
-%    obj - interval object 
+%    I - interval object 
 %    S - contains information of the type and content of element selections
-%    value - value to be written
+%    val - value to be inserted
 %
 % Outputs:
-%    obj - interval object 
+%    I - interval object 
 %
 % Example: 
-%    a=interval([-1 1], [1 2]);
-%    a(1,2) = interval(-10,10);
+%    I = interval([-1 1], [1 2]);
+%    I(1,2) = interval(-10,10);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,38 +31,38 @@ function obj = subsasgn(obj, S, value)
 %------------- BEGIN CODE --------------
 
 %check if value is an interval
-if ~isa(value,'interval')
-    value = interval(value,value);
+if ~isa(val,'interval')
+    val = interval(val,val);
 end
 
-if ~isa(obj,'interval')
-    obj = interval();
+if ~isa(I,'interval')
+    I = interval();
 end
 
 %check if parantheses are used to select elements
 if strcmp(S.type,'()')
     % only one index specified
     if length(S.subs)==1
-        obj.inf(S.subs{1}) = value.inf;
-        obj.sup(S.subs{1}) = value.sup;
+        I.inf(S.subs{1}) = val.inf;
+        I.sup(S.subs{1}) = val.sup;
     %two indices specified
     elseif length(S.subs)==2
         %Select column of obj
         if strcmp(S.subs{1},':')
             column=S.subs{2};
-            obj.inf(:,column) = value.inf;
-            obj.sup(:,column) = value.sup;
+            I.inf(:,column) = val.inf;
+            I.sup(:,column) = val.sup;
         %Select row of V    
         elseif strcmp(S.subs{2},':')
             row=S.subs{1};
-            obj.inf(row,:) = value.inf;
-            obj.sup(row,:) = value.sup;
+            I.inf(row,:) = val.inf;
+            I.sup(row,:) = val.sup;
         %Select single element of V    
-        elseif isnumeric(S.subs{1}) && isnumeric(S.subs{1})
+        elseif isnumeric(S.subs{1})
             row=S.subs{1};
             column=S.subs{2};
-            obj.inf(row,column) = value.inf;
-            obj.sup(row,column) = value.sup;
+            I.inf(row,column) = val.inf;
+            I.sup(row,column) = val.sup;
         end
     end
 end

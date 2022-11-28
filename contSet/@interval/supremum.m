@@ -1,18 +1,18 @@
-function res = supremum(obj)
+function res = supremum(I)
 % supremum - returns the supremum of an interval
 %
 % Syntax:  
-%    res = sup(obj)
+%    res = sup(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
 %    res - numerical value
 %
 % Example: 
-%    a = interval([-1 1], [1 2]);
-%    b = sup(a)
+%    I = interval([-1;1],[1;2]);
+%    res = supremum(I)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,6 +27,6 @@ function res = supremum(obj)
 
 %------------- BEGIN CODE --------------
 
-res = obj.sup;
+res = I.sup;
 
 %------------- END OF CODE --------------

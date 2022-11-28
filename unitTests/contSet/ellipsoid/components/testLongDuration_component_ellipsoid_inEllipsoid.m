@@ -1,5 +1,6 @@
 function res = testLongDuration_component_ellipsoid_inEllipsoid
-% testLongDuration_component_ellipsoid_inEllipsoid - unit test function of inEllipsoid
+% testLongDuration_component_ellipsoid_inEllipsoid - unit test function of
+%    inEllipsoid
 %
 % Syntax:  
 %    res = testLongDuration_component_ellipsoid_inEllipsoid
@@ -29,29 +30,35 @@ nRuns = 2;
 for i=10:5:15
     for j=1:nRuns
         try
-            E1 = ellipsoid.generateRandom(i,true);
-            E2 = ellipsoid.generateRandom(i,false);
+            %%% generate all variables necessary to replicate results
+            E1 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',true);
+            E2 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',false);
+            %%%
+            
             % check whether E1 dg, E2 non-d results in E2\subseteq E1 = false
-            if in(E1,E2)
+            if contains(E1,E2)
                 res = false;
                 break;
             end
             % E3 contains E2
-            E3 = ellipsoid(0.9*E2.Q,E2.q);
+            E3 = ellipsoid(0.5*E2.Q,(1+1e-4)*E2.q);
             % check if E3 contains E2
-            if ~in(E2,E3)
+            if ~contains(E2,E3)
                 res = false;
                 break;
             end
         catch ME
             if strcmp(ME.identifier,'CORA:solverIssue')
+
                 disp('Randomly generated ellipsoids caused solver issues! Ignoring...');
                 continue;
             end
             rethrow(ME);
         end
     end
-    if ~res
+    if ~res                
+        path = pathFailedTests(mfilename());
+        save(path,'E1','E2');
         break;
     end
 end

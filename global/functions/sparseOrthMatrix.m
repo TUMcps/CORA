@@ -1,27 +1,26 @@
-function Q = sparseOrthMatrix(d)
+function Q = sparseOrthMatrix(n)
 % sparseOrthMatrix - generates a sparse orthogonal matrix
 %
 % Syntax:  
-%    Q = sparseOrthMatrix(d)
+%    Q = sparseOrthMatrix(n)
 %
 % Inputs:
-%    d - dimension
+%    n - dimension
 %
 % Outputs:
-%    Q - sparse orthogonal matrix of dimension dim
+%    Q - sparse orthogonal matrix
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
-%
-% References: -
-% 
+
 % Author:       Mark Wetzlinger
-% Written:      07-Oct-2019
+% Written:      07-October-2019
 % Last update:  ---
 % Last revision:---
 
@@ -30,13 +29,13 @@ function Q = sparseOrthMatrix(d)
 % generate blocks
 min_block = 2;
 max_block = 4;
-remaining = d;
+remaining = n;
 i = 1;
 while true
     if i == 1
         % fix one block to size 2
-        if d <= 4
-            block(i) = d;
+        if n <= 4
+            block(i) = n;
             break
         end
         next = 2;
@@ -56,7 +55,7 @@ end
 
 % write Q in block structure
 blocks = length(block);
-Q = zeros(d);
+Q = zeros(n);
 curr_start = 1;
 curr_end = 0;
 for i=1:blocks
@@ -67,8 +66,8 @@ for i=1:blocks
 end
 
 % reorder columns and rows -> no more strict block structure
-reOrderCols = randperm(d);
-reOrderRows = randperm(d);
+reOrderCols = randperm(n);
+reOrderRows = randperm(n);
 Q = Q(reOrderRows,:);
 Q = Q(:,reOrderCols);
 
@@ -86,13 +85,8 @@ if nnz(Q(end,:)) ~= 2
 end
 
 % check if Q really orthogonal
-if ~(abs(abs(det(Q)) - 1) < 1e-9 && all(abs(vecnorm(Q)-1) < 1e-9))
-    error("Matrix not orthogonal!");
+if ~withinTol(abs(det(Q)),1,1e-9) || ~all(withinTol(vecnorm(Q,2),1,1e-9)
+    throw(CORAerror('CORA:specialError','Resulting matrix is not orthogonal'));
 end
-
-
-
-end
-
 
 %------------- END OF CODE --------------

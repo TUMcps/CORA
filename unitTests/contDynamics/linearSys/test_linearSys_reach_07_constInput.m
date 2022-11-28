@@ -56,11 +56,8 @@ R = reach(linSys,params,options);
 
 % Simulation --------------------------------------------------------------
 
-simOpt.points = 1;        % number of initial points
-simOpt.fracVert = 0.5;     % fraction of vertices initial set
-simOpt.fracInpVert = 0.5;  % fraction of vertices input set
-simOpt.inpChanges = 10;    % changes of input over time horizon  
-
+% number of initial points
+simOpt.points = 5;
 simRes = simulateRandom(linSys,params,simOpt); 
 
 
@@ -71,8 +68,8 @@ plotting = false;
 if plotting
 
     figure; hold on; box on;
-    plot(R,[1,2],'FaceColor',[.7 .7 .7],'EdgeColor','none');
-    plot(simRes,[1,2],'.k');
+    plot(R);
+    plot(simRes);
 
 end
 
@@ -89,11 +86,12 @@ for i=1:simOpt.points
         
         for iSet=1:length(R.timeInterval.set)
             % check every time-interval set
-            if in(R.timeInterval.set{iSet},p_curr)
+            if contains(R.timeInterval.set{iSet},p_curr)
                 break
             end
             if iSet == length(R.timeInterval.set)
-                error("Simulated point not in computed reachable sets.");
+                % simulated point not in computed reachable sets
+                throw(CORAerror('CORA:testFailed'));
             end
         end
         

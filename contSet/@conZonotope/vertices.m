@@ -1,27 +1,23 @@
-function V = vertices(obj)
+function V = vertices(cZ)
 % vertices - calculate the vertices of a constrained zonotope object
 %
 % Syntax:  
-%    V = vertices(obj)
+%    V = vertices(cZ)
 %
 % Inputs:
-%    obj - c-zonotope object
+%    cZ - conZonotope object
 %
 % Outputs:
 %    V - matrix storing the vertices (dimension: [n,p], with p vertices)
 %
 % Example: 
 %    Z = [0 3 0 1;0 0 2 1];
-%    A = [1 0 1];
-%    b = 1;
-%    cZono = conZonotope(Z,A,b);
+%    A = [1 0 1]; b = 1;
+%    cZ = conZonotope(Z,A,b);
+%    V = vertices(cZ);
 %
-%    % calculate vertices
-%    V = vertices(cZono);
-%
-%    % plot the result
-%    hold on
-%    plotZono(cZono);
+%    figure; hold on
+%    plotZono(cZ);
 %    plot(V(1,:),V(2,:),'.k','MarkerSize',15);
 %
 % Other m-files required: none
@@ -37,16 +33,26 @@ function V = vertices(obj)
 
 %------------- BEGIN CODE --------------
 
+% pre-processing
+[res,vars] = pre_vertices('conZonotope',cZ);
+
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    V = vars{1}; return
+end
+
+
 % First remove redundant constraints that will not overapproximate the
 % original constrained zonotope. Then we can check whether or not the
 % resulting set is, in fact, a zonotope
-obj = reduceConstraints(obj);
+cZ = reduceConstraints(cZ);
 
-if ~isempty(obj.A)
+if ~isempty(cZ.A)
     
     % Calculate potential vertices of the constrained zonotope (vertices + 
     % points inside the set)
-    V = potVertices(obj);
+    V = potVertices(cZ);
 
     % Compute the convex hull to eliminate points located in the interior of
     % the constrained zonotope
@@ -61,8 +67,8 @@ if ~isempty(obj.A)
 else
     
    % no constraints -> call zonotope/vertices
-   V = vertices(zonotope(obj.Z));
-end
+   V = vertices(zonotope(cZ.Z));
 
+end
 
 %------------- END OF CODE --------------

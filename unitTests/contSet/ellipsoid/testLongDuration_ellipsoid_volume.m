@@ -40,10 +40,13 @@ res_rand = true;
 nrOfTests = 100;
 
 for i=1:nrOfTests
-    
+    %%% generate all variables necessary to replicate results
     % random dimension
     n = randi(15);
-    
+    % degenerate case: ball of dim n in space (n+1)
+    E_d = ellipsoid.generateRandom('Dimension',n,'IsDegenerate',true);
+    %%%
+
     % ellipsoid is a ball
     Q = eye(n);
     q = zeros(n,1);
@@ -54,11 +57,9 @@ for i=1:nrOfTests
         res_rand = false; break;
     end
     
-    % degenerate case: ball of dim n in space (n+1)
-    E = ellipsoid.generateRandom(n,true);
     % check result
     try
-        volume(E);
+        volume(E_d);
     catch
         res_rand = false; break;
     end
@@ -68,10 +69,9 @@ end
 % combine results
 res = res_empty && res_rand;
 
-if res
-    disp('testLongDuration_ellipsoid_volume successful');
-else
-    disp('testLongDuration_ellipsoid_volume failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','E_d');
 end
 
 %------------- END OF CODE --------------

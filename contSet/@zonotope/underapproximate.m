@@ -21,7 +21,7 @@ function V = underapproximate(Z,S)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: vertices, polytope
+% See also: vertices
 
 % Author:       Matthias Althoff
 % Written:      19-July-2010

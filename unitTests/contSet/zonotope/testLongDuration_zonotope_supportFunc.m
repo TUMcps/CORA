@@ -24,6 +24,7 @@ function res = testLongDuration_zonotope_supportFunc
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 dims = 2:5;
 dGen = 5;
 steps = 3;
@@ -49,10 +50,10 @@ for i=dims
         break;
     end
 end
-if res
-    disp('testLongDuration_zonotope_supportFunc successful');
-else
-    disp('testLongDuration_zonotope_supportFunc failed');
+
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'Z');
 end
 
 %------------- END OF CODE --------------

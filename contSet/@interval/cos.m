@@ -1,4 +1,4 @@
-function res = cos(intVal)
+function res = cos(I)
 % cos - Overloaded 'cos()' operator for intervals
 %
 % inf is x infimum, sup is x supremum
@@ -12,15 +12,17 @@ function res = cos(intVal)
 % [cos(inf), cos(sup)]          if (sup - inf) < 2*pi and inf > pi and sup > pi and sup >= inf.
 %
 % Syntax:  
-%    res = cos(intVal)
+%    res = cos(I)
 %
 % Inputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Outputs:
 %    res - interval object
 %
-% Example: 
+% Example:
+%    I = interval([-2;3],[3;4]);
+%    res = cos(I);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,44 +40,44 @@ function res = cos(intVal)
 %------------- BEGIN CODE --------------
 
 % scalar case
-if isnumeric(intVal)
+if isnumeric(I)
     
     res = interval();
 
     %sup - inf >= 2pi
-    if intVal.sup - intVal.inf >= 2*pi
+    if I.sup - I.inf >= 2*pi
         res.inf = -1;
         res.sup = 1;
     else
         %remove multiples of 2*pi
-        inf = mod(intVal.inf, 2*pi);
-        sup = mod(intVal.sup, 2*pi);
+        lb = mod(I.inf, 2*pi);
+        ub = mod(I.sup, 2*pi);
 
         %inf in [0, pi]
-        if inf <= pi
-            if sup < inf
+        if lb <= pi
+            if ub < lb
                 %due to mod computation
                 %I changed <= to < to solve the sin[0, 0] = (-1, 1 ) problem. 06.01.2016 (DG)
                 res.inf = -1;
                 res.sup = 1;
-            elseif sup <= pi
-                res.inf = cos(sup);
-                res.sup = cos(inf);
+            elseif ub <= pi
+                res.inf = cos(ub);
+                res.sup = cos(lb);
             else 
                 res.inf = -1;
-                res.sup = max(cos(inf),cos(sup));
+                res.sup = max(cos(lb),cos(ub));
             end 
         %inf in [pi, 2*pi]
         else
-            if sup <= pi
-                res.inf = min(cos(inf),cos(sup));
+            if ub <= pi
+                res.inf = min(cos(lb),cos(ub));
                 res.sup = 1;
-            elseif sup < inf %due to mod computation
+            elseif ub < lb %due to mod computation
                 res.inf = -1;
                 res.sup = 1;
             else 
-                res.inf = cos(inf);
-                res.sup = cos(sup);
+                res.inf = cos(lb);
+                res.sup = cos(ub);
             end 
         end
     end
@@ -83,44 +85,44 @@ if isnumeric(intVal)
 else
 
     % to preserve the shape    
-    res = intVal;
+    res = I;
     
     % find indices
-    ind1 = find((intVal.sup - intVal.inf) >= 2*pi);   
+    ind1 = find((I.sup - I.inf) >= 2*pi);   
     res.inf(ind1) = -1;
     res.sup(ind1) = 1;
     
     %remove multiples of 2*pi
-    inf = mod(intVal.inf, 2*pi);
-    sup = mod(intVal.sup, 2*pi);
+    lb = mod(I.inf, 2*pi);
+    ub = mod(I.sup, 2*pi);
     
     % inf in [0, pi]
     
-    ind2 = find(((intVal.sup - intVal.inf) < 2*pi) & inf <= pi & sup < inf);    
+    ind2 = find(((I.sup - I.inf) < 2*pi) & lb <= pi & ub < lb);    
     res.inf(ind2) = -1;
     res.sup(ind2) = 1;
     
-    ind3 = find(((intVal.sup - intVal.inf) < 2*pi) & inf <= pi & sup <= pi & sup >= inf);    
-    res.inf(ind3) = cos(sup(ind3));
-    res.sup(ind3) = cos(inf(ind3));
+    ind3 = find(((I.sup - I.inf) < 2*pi) & lb <= pi & ub <= pi & ub >= lb);    
+    res.inf(ind3) = cos(ub(ind3));
+    res.sup(ind3) = cos(lb(ind3));
     
-    ind4 = find(((intVal.sup - intVal.inf) < 2*pi) & inf <= pi & sup > pi);
+    ind4 = find(((I.sup - I.inf) < 2*pi) & lb <= pi & ub > pi);
     res.inf(ind4) = -1;
-    res.sup(ind4) = max(cos(inf(ind4)), cos(sup(ind4)));
+    res.sup(ind4) = max(cos(lb(ind4)), cos(ub(ind4)));
     
     % inf in [pi, 2pi]
     
-    ind5 = find(((intVal.sup - intVal.inf) < 2*pi) & inf > pi & sup > pi & sup < inf);    
+    ind5 = find(((I.sup - I.inf) < 2*pi) & lb > pi & ub > pi & ub < lb);    
     res.inf(ind5) = -1;
     res.sup(ind5) = 1;
     
-    ind6 = find(((intVal.sup - intVal.inf) < 2*pi) & inf > pi & sup <= pi );
-    res.inf(ind6) = min(cos(inf(ind6)), cos(sup(ind6)));
+    ind6 = find(((I.sup - I.inf) < 2*pi) & lb > pi & ub <= pi );
+    res.inf(ind6) = min(cos(lb(ind6)), cos(ub(ind6)));
     res.sup(ind6) = 1;
     
-    ind7 = find(((intVal.sup - intVal.inf) < 2*pi) & inf > pi & sup > pi & sup >= inf);    
-    res.inf(ind7) = cos(inf(ind7));
-    res.sup(ind7) = cos(sup(ind7));
+    ind7 = find(((I.sup - I.inf) < 2*pi) & lb > pi & ub > pi & ub >= lb);    
+    res.inf(ind7) = cos(lb(ind7));
+    res.sup(ind7) = cos(ub(ind7));
        
 end
 

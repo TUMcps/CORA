@@ -27,7 +27,7 @@ function res = testLongDuration_ellipsoid_isIntersecting
 %------------- BEGIN CODE --------------
 
 % point
-[~,res] = evalc('testLongDuration_ellipsoid_in');
+[~,res] = evalc('testLongDuration_ellipsoid_contains');
 
 % all that implement distance
 [~,res_] = evalc('testLongDuration_ellipsoid_distance');
@@ -36,9 +36,4 @@ res = res && res_;
 % mixed
 res = res && testLongDuration_component_ellipsoid_isIntersectingMixed;
 
-if res
-    disp('testLongDuration_ellipsoid_isIntersecting successful');
-else
-    disp('testLongDuration_ellipsoid_isIntersecting failed');
-end
 %------------- END OF CODE --------------

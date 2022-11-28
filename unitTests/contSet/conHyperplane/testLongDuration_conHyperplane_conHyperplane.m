@@ -130,10 +130,9 @@ for i=1:nrOfTests
 end
 
 
-if res
-    disp('testLongDuration_conHyperplane successful');
-else
-    disp('testLongDuration_conHyperplane failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','nrCon','a','b','C','d');
 end
 
 %------------- END OF CODE --------------

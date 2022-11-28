@@ -1,16 +1,20 @@
-function res = ne( int1, int2 )
-% ne( int1, int2 ) - ' ~= ' overloading
+function res = ne(I1,I2)
+% ne - overloads '~='-operator for intervals
 %
 % Syntax:  
-%    res = ne( int1, int2 )
+%    res = ne(I1,I2)
 %
 % Inputs:
-%    int1, int2 - intervals
+%    I1 - interval object
+%    I2 - interval object
 %
 % Outputs:
 %    res - boolean 
 %
-% Example: 
+% Example:
+%    I1 = interval(-1,0);
+%    I2 = interval(-2,-1);
+%    I1 ~= I2
 %
 % Other m-files required: interval
 % Subfunctions: none
@@ -25,9 +29,7 @@ function res = ne( int1, int2 )
 
 %------------- BEGIN CODE --------------
 
-res = any(infimum(int1) ~= infimum(int2)) ||...
-    any(supremum(int1) ~= supremum(int2));
-
-end
+res = any(infimum(I1) ~= infimum(I2)) ||...
+    any(supremum(I1) ~= supremum(I2));
 
 %------------- END OF CODE --------------

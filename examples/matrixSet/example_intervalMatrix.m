@@ -8,14 +8,14 @@ function completed = example_intervalMatrix()
 %    -
 %
 % Outputs:
-%    completed - boolean
+%    completed - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: intervalMatrix
-%
+
 % Author:        Niklas Kochdumper
 % Written:       25-May-2020
 % Last update:   ---

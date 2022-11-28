@@ -1,28 +1,37 @@
-function [E] = plus(obj,S,varargin)
-% plus - Overloaded '+' operator for approximating the Minkowski sum of two
-% ellipsoids 
+function E = plus(E,S,varargin)
+% plus - Overloaded '+' operator for approximating the Minkowski sum of an
+%    ellipsoid and another set 
 %
 % Syntax:  
-%    E = plus(obj,S)
-%    E = plus(obj,S,mode)
-%    E = plus(obj,S,L)
-%    E = plus(obj,S,L,mode)
+%    E = plus(E,S)
+%    E = plus(E,S,mode)
+%    E = plus(E,S,L)
+%    E = plus(E,S,L,mode)
 %
 % Inputs:
-%    obj - ellipsoid object
-%    S  - set representation (or cell array thereof)
-%    L (opt)-directions to use for approximation
-%    mode(opt)- type of approximation ('i': inner; 'o': outer)
+%    E - ellipsoid object
+%    S - set representation/double matrix
+%    L - (optional) directions to use for approximation
+%    mode - (optional) type of approximation
+%               'inner'
+%               'outer':
+%               'outer:halder': available when L is empty
 %
 % Outputs:
-%    E - ellipsoid after Minkowski sum
+%    E - ellipsoid object after Minkowski sum
 %
 % Example: 
-%
+%    E1 = ellipsoid(eye(2),[1;-1]);
+%    E2 = ellipsoid(diag([1,2]));
+%    Ep = E1 + E2;
+%    figure; hold on
+%    plot(E1); plot(E2);
+%    plot(Ep,[1,2],'r');
 %
 % References:
-%   [1] Kurzhanskiy, A.A. and Varaiya, P., 2006, December. Ellipsoidal toolbox (ET).
-% In Proceedings of the 45th IEEE Conference on Decision and Control (pp. 1498-1503). IEEE.
+%   [1] Kurzhanskiy, A.A. and Varaiya, P., 2006, December. Ellipsoidal
+%       toolbox (ET). In Proceedings of the 45th IEEE Conference on
+%       Decision and Control (pp. 1498-1503). IEEE.
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,81 +41,99 @@ function [E] = plus(obj,S,varargin)
 
 % Author:       Victor Gassmann
 % Written:      09-March-2021
-% Last update:  ---
+% Last update:  04-July-2022 (VG: class array instead of cell array)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 %% parsing & checking
-% check if first or second argument is ellipsoid
-if ~isa(obj,'ellipsoid') 
-    tmp = obj;
-    obj = S;
-    S = tmp;
+% make sure first argument is class argument 
+[E,S] = findClassArg(E,S,'ellipsoid');
+
+% check input arguments
+inputArgsCheck({{E,'att','ellipsoid','scalar'};
+                {S,'att',{'contSet','numeric'}}});
+
+% Minkowski addition with empty set
+if isempty(E)
+    return;
+elseif (isnumeric(S) && isempty(S)) || (isa(S,'contSet') && any(isemptyobject(S)))
+    E = ellipsoid(); return
 end
+
+% dimension check
+equalDimCheck(E,S);
+
 % parse arguments
 if isempty(varargin)
-    L = zeros(length(obj.q),0);
-    mode = 'o';
-elseif length(varargin{1})==1
+    L = zeros(dim(E),0);
+    mode = 'outer';
+elseif length(varargin)==1
     if isa(varargin{1},'char')
         mode = varargin{1};
-        L = zeros(length(obj.q),0);
+        L = zeros(dim(E),0);
     elseif isa(varargin{1},'double')
         L = varargin{1};
-        mode = 'o';
+        mode = 'outer';
     else
-        error('Wrong type for 3. input argument!');
+        throw(CORAerror('CORA:wrongValue','third',"be of type 'double' or 'char'"));
     end
-elseif length(varargin{1})==2
+elseif length(varargin)==2
     if ~isa(varargin{1},'double')
-        error('Wrong type for 3. input argument!');
+        throw(CORAerror('CORA:wrongValue','third',"be of type 'double'"));
     end
-    if ~isa(varargin{1},'char')
-        error('Wrong type for 4. input argument!');
+    if ~isa(varargin{2},'char')
+        throw(CORAerror('CORA:wrongValue','fourth',"be of type 'char'"));
     end
     L = varargin{1};
     mode = varargin{2};
 else
-    error('Wrong number of input arguments!');
+    throw(CORAerror('CORA:tooManyInputArgs',4));
 end
 
-% handle empty cells, S not a cell etc
-S = prepareSetCellArray(S,obj);
-if isempty(S)
-    E = obj;
+
+if all(isempty(S))
     return;
 end
 
 % check arguments
-if ~any(mode==['i','o'])
-   error('mode has to be either "i" (inner approx) or "o" (outer approx)');
+if ~strcmp(mode,'outer') && ~strcmp(mode,'inner')
+    if length(varargin)==2
+        throw(CORAerror('CORA:wrongValue','fourth',"'inner' or 'outer'"));
+    else
+        if ~isa(S,'ellipsoid') || ~strcmp(mode,'outer:halder')
+            throw(CORAerror('CORA:wrongValue','third',"'inner' or 'outer'"));
+        end
+    end
 end
 
-if size(L,1)~=length(obj.q)
-    error('Dimensions of L do not match first argument!');
+if size(L,1)~=dim(E)
+    throw(CORAerror('CORA:dimensionMismatch',E,L));
 end
 
 N = length(S);
 
 %% different Minkowski additions
-if isa(S{1},'double')
-    s = sum(cell2mat(reshape(S,[1,numel(S)])),2);
-    E = ellipsoid(obj.Q,obj.q+s);
+if isa(S,'double')
+    s = sum(S,2);
+    E = ellipsoid(E.Q,E.q+s);
     return;
 end
 
-if isa(S{1},'conPolyZono')
-    E = S{1} + obj; 
+if isa(S,'conPolyZono')
+    E = S(1) + E; 
     for i=2:N
-        E = S{i} + E; 
+        E = S(i) + E; 
     end
     return; 
 end
 
-if isa(S{1},'ellipsoid')
-   E = plusEllipsoid(obj,S,L,mode);
+if isa(S,'ellipsoid')
+   E = plusEllipsoid([E;S(:)],L,mode);
    return;
 end
 
-error('Set representation is not implemented');
+% throw error for all other combinations
+throw(CORAerror('CORA:noops',E,S));
+
 %------------- END OF CODE --------------

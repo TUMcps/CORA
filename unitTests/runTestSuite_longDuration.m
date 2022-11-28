@@ -12,11 +12,7 @@ function runTestSuite_longDuration(varargin)
 %
 % Outputs:
 %    -
-%
-% Example: 
-%    -
-%
-% 
+
 % Author:       Matthias Althoff
 % Written:      31-August-2016
 % Last update:  ---
@@ -25,7 +21,7 @@ function runTestSuite_longDuration(varargin)
 
 %------------- BEGIN CODE --------------
 
-directory = [coraroot '/unitTests'];
+directory = [CORAROOT filesep 'unitTests'];
 verbose = 1;
 
 if nargin >= 1

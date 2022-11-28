@@ -1,12 +1,12 @@
 function eP = expmInd(matP,maxOrder)
-% expmInd - operator for the exponential matrix of a 
-% matrix polytope, evaluated independently
+% expmInd - operator for the exponential matrix of a matrix polytope,
+%    evaluated independently
 %
 % Syntax:  
 %    eP = expmInd(matP,maxOrder)
 %
 % Inputs:
-%    matP - matrix polytope
+%    matP - matPolytope object
 %    maxOrder - maximum Taylor series order until remainder is computed
 %
 % Outputs:

@@ -20,35 +20,49 @@ function res = test_capsule_generateRandom
 
 % Author:       Mark Wetzlinger
 % Written:      27-Sep-2019
-% Last update:  ---
+% Last update:  19-May-2022 (name-value pair syntax)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% run through all possibilities
-try
-    % random dim and cen
-    C = capsule.generateRandom();
-    % fixed dim, random cen
-    C = capsule.generateRandom(3);
-    if dim(C) ~= 3
-        error("Fixed dimension not obeyed");
-    end
-    % fixed dim and cen
-    C = capsule.generateRandom(2,[1;0]);
-    if dim(C) ~= 2 && ~isequal(center(C),[1;0])
-        error("Fixed dimension and center not obeyed");
-    end
-    res = true;
-catch
-    res = false;
-end
+% empty call
+C = capsule.generateRandom();
+
+% values for tests
+n = 3;
+c = [2;1;-1];
+r = 3.5;
+
+% only dimension
+C = capsule.generateRandom('Dimension',n);
+res = dim(C) == n;
+
+% only center
+C = capsule.generateRandom('Center',c);
+res(end+1,1) = all(abs(C.c - c) < eps);
+
+% only radius
+C = capsule.generateRandom('Radius',r);
+res(end+1,1) = abs(C.r - r) < eps;
+
+% dimension and center
+C = capsule.generateRandom('Dimension',n,'Center',c);
+res(end+1,1) = dim(C) == n && all(abs(C.c - c) < eps);
+
+% dimension and radius
+C = capsule.generateRandom('Dimension',n,'Radius',r);
+res(end+1,1) = dim(C) == n && abs(C.r - r) < eps;
+
+% center and radius
+C = capsule.generateRandom('Center',c,'Radius',r);
+res(end+1,1) = all(abs(C.c - c) < eps) && abs(C.r - r) < eps;
+
+% dimension, center, and radius
+C = capsule.generateRandom('Dimension',n,'Center',c,'Radius',r);
+res(end+1,1) = dim(C) == n && all(abs(C.c - c) < eps) && abs(C.r - r) < eps;
 
 
-if res
-    disp('test_generateRandom successful');
-else
-    disp('test_generateRandom failed');
-end
+% unify results
+res = all(res);
 
 %------------- END OF CODE --------------

@@ -1,157 +1,134 @@
-function res = simulateNormal(obj, params, options,varargin)
-% simulateNormal - performs several random simulation of the system. It 
-% can be set how many simulations should be performed, what percentage of 
-% initial states should start at vertices of the initial set, what 
-% percentage of inputs should be chosen from vertices of the input set, and 
-% how often the input should be changed.
+function res = simulateStandard(obj, options)
+% simulateStandard - performs several random simulation of the system. It 
+%    can be set how many simulations should be performed, what percentage
+%    of initial states should start at vertices of the initial set, what 
+%    percentage of inputs should be chosen from vertices of the input set,
+%    and of how many different constant inputs the input trajectory
+%    consists.
 %
 % Syntax:  
-%   res = simulateNormal(obj, params, options)
-%   res = simulateNormal(obj, params, options, type)
+%    res = simulateStandard(obj, options)
 %
 % Inputs:
 %    obj - contDynamics object
-%    params - system parameters
-%    options - settings for random simulation
-%       .points - nr of simulation runs
-%       .fracVert - fraction of initial states starting from vertices
-%       .fracInpVert - fraction of input values taken from the 
-%                       vertices of the input set
-%       .inpChanges - number of times the input is changed in a simulation run
-%    type - type of random sample generation ('standard', 'rrt' and 'gaussian')
+%    options - model parameters and settings for random simulation
 %
 % Outputs:
 %    res - object of class simResult storing time and states of the 
 %          simulated trajectories.
-%
-% 
-% Author:       Matthias Althoff
+
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      17-August-2016
 % Last update:  08-May-2020 (MW, update interface)
 %               28-June-2021 (MP, unify random simulation functions)
-% Last revision:---
-
+% Last revision:10-November-2021 (MW, input trajectory handling)
 
 %------------- BEGIN CODE --------------
 
-% parse inputs
-if nargin > 3 && ~isempty(varargin{1})
-    if isa(varargin{1},'char')
-        type = varargin{1};
-    else
-        error(errWrongInput('type'));
-    end
-end
+% trajectory tracking
+tracking = isfield(options,'uTransVec');
 
-% options preprocessing
-options = validateOptions(obj,mfilename,params,options);
-
-% check if trajectory tracking is required
-if isfield(options,'uTransVec')
-    trackingChanges = length(options.uTransVec(1,:));
-    temp = ceil(options.inpChanges/trackingChanges);
-    if temp > 1
-        totalInputChanges = temp*trackingChanges;
-        uTransVec = zeros(size(options.uTransVec,1),totalInputChanges);
-        for i = 1:trackingChanges
-           uTransVec(:,(i-1)*temp+1:i*temp) = options.uTransVec(:,i) * ...
-                                               ones(1,temp); 
-        end
-        options.uTransVec = uTransVec;
-    else
-        totalInputChanges = options.inpChanges;
-    end
-    tracking = true;
-    
-    % frac. of rand. input changes compared to forced changes from tracking
-    fractionInputChange = options.inpChanges/trackingChanges; 
-    if fractionInputChange > 1
-        fractionInputChange = 1; 
-    end
-else
-    % correct meaning of totalInputChanges according to its usage below:
-    % = number of time intervals with different input signals
-    % ... hence, we increase the user-defined value by 1
-    totalInputChanges = options.inpChanges + 1;
-    tracking = false;
-    fractionInputChange = 1;
-end
-
-% for discrete-time systems input changes have to be a multiple of the
-% sampling rate
-if isa(obj,'linearSysDT') || isa(obj,'nonlinearSysDT')
-   reachSteps = length(options.tStart:obj.dt:options.tFinal)-1;
-   if totalInputChanges > reachSteps
-       totalInputChanges = reachSteps;
-   else
-       temp = ceil(reachSteps / totalInputChanges);
-       for i = temp:-1:1
-          if mod(reachSteps/i,1) == 0
-             totalInputChanges = reachSteps/i;
-             break;
-          end
-       end
-   end
-end
-
-% extract final time
-finalTime = options.tFinal;
-startTime = options.tStart;
-
-% initialize results
+% initialize time and state
 t = cell(options.points,1);
 x = cell(options.points,1);
 
+% output equation only for linearSys and linearSysDT currently
+comp_y = (isa(obj,'linearSys') || isa(obj,'linearSysDT')) && ~isempty(obj.C);
+if comp_y; y = cell(options.points,1); end
+
 % generate random initial points
-nrEx = ceil(options.points*options.fracVert);
-nrNor = options.points - nrEx;
+nrExtreme = ceil(options.points*options.fracVert);
+nrStandard = options.points - nrExtreme;
 X0 = [];
-if nrEx > 0
-   X0 = [X0, randPoint(options.R0,nrEx,'extreme')]; 
+if nrExtreme > 0
+	X0 = [X0, randPoint(options.R0,nrExtreme,'extreme')]; 
 end
-if nrNor > 0
-   X0 = [X0, randPoint(options.R0,nrNor,'standard')];
+if nrStandard > 0
+	X0 = [X0, randPoint(options.R0,nrStandard,'standard')];
 end
 
-% loop over all runs
-for i = 1:options.points
-    
-    % set start and final time for partial simulation
-    options.tStart = 0;
-    options.tFinal = (finalTime-startTime)/totalInputChanges;
-    
-    randInputCounter = 0;
-    
-    % loop over input changes
-    for iChange = 1:totalInputChanges
 
-        % set initial state
-        if iChange == 1
-            options.x0 = X0(:,i);
-        else
-            options.tStart = options.tFinal;
-            options.tFinal = options.tFinal + (finalTime-startTime)/totalInputChanges;
-            options.x0 = xTemp(end,:);
+% the input trajectory for the given x0 is constructed as follows:
+% - options.uTrans given: no time-varying input vector
+%   length of options.nrConstInp (entries: all ones) represents number of
+%   different choices for input within options.uTrans + options.U;
+%   the switching times are equidistant [options.tStart, options.tFinal]
+% - options.uTransVec given: time-varying input vector
+%   options.uTransVec has k different input vectors, thus provides natural
+%   switching times for the input set options.uTransVec + options.U;
+%   options.nrConstInp is of the same length as options.uTransVec, entries
+%   in options.nrConstInp represent number of different choices within
+%   options.U + options.uTransVec(k); here, options.uTransVec(k) covers
+%   the time span [options.tu(k), options.tu(k+1)] which per default is
+%   an equidistant splitting of [options.tStart, options.tFinal] (done
+%   automatically in postProcessing of validateOptions)
+
+% loop over all starting points in X0
+for r = 1:options.points
+    
+    % initialize cells for current simulation run r
+    t{r} = 0;
+    if isa(obj,'nonlinDASys')
+        x{r} = zeros(1,obj.dim+obj.nrOfConstraints);
+    else
+        x{r} = zeros(1,obj.dim);
+    end
+    if comp_y; y{r} = zeros(1,obj.nrOfOutputs); end
+    
+    % start of trajectory
+    options.x0 = X0(:,r);
+    
+    % loop over number of constant inputs per partial simulation run r
+    for block = 1:length(options.nrConstInp)
+        
+        % update initial state
+        if block > 1
+            options.x0 = xTemp(end,:)';
         end
-
-        % set input (tracking)
+        
+        % update input
         if tracking
-            options.uTrans = options.uTransVec(:,iChange);
+            options.uTrans = options.uTransVec(:,block);
         end
         
-        % set input (random input from set of uncertainty)
-        if randInputCounter <= fractionInputChange*iChange
-            if i<=options.points*options.fracInpVert
-                uRand = randPoint(options.U,1,'extreme');
-            else
-                uRand = randPoint(options.U);
-            end
+        options.tStart = options.tu(block);
+        options.tFinal = options.tu(block+1);
 
-            randInputCounter = randInputCounter + 1;
+        % set input (random input from set of uncertainty)
+        if r <= options.points*options.fracInpVert
+            uRand = randPoint(options.U,options.nrConstInp(block),'extreme');
+        else
+            uRand = randPoint(options.U,options.nrConstInp(block));
         end
         
-        % combine inputs (random input + tracking) 
+        % combine inputs (random input + tracking)
         options.u = uRand + options.uTrans;
+
+        if comp_y
+            % sample from disturbance set and sensor noise set
+            if options.nrConstInp(block) == 1
+                options.w = randPoint(options.W);
+                options.v = randPoint(options.V);
+            else
+                options.w = randPoint(options.W,options.nrConstInp(block));
+                options.v = randPoint(options.V,options.nrConstInp(block)+1);
+            end
+        end
+        
+        % note: for correct vector lengths in simulate, we require an
+        % additional dummy entry in u and v (this is due to the evaluation
+        % of the output equation at the end of the current [tStart,tFinal])
+        % ONLY for linear systems, and only if there is a throughput matrix
+        if comp_y && any(any(obj.D))
+            if size(options.u) > 1
+                dummy_u = ones(obj.nrOfInputs,1) * pi/2;
+                options.u = [options.u, dummy_u];
+            end
+            if size(options.v) > 1
+                dummy_v = ones(obj.nrOfOutputs,1) * pi/2;
+                options.v = [options.v, dummy_v];
+            end
+        end
         
         % uncertain parameters
         if isfield(options,'paramInt')
@@ -162,16 +139,62 @@ for i = 1:options.points
                 options.p = pInt;
             end
         end
+
+        % simulate dynamical system
+        if comp_y
+            [tTemp,xTemp,~,yTemp] = simulate(obj,options);
+        else
+            [tTemp,xTemp] = simulate(obj,options);
+        end
+
+        % append to previous values, overwrite first one:
+        % - same for t and x
+        % - different for y (correct one is only the new one)
+        t{r}(end:end+length(tTemp)-1,1) = tTemp;
+        x{r}(end:end+length(tTemp)-1,:) = xTemp;
+        if comp_y; y{r}(end:end+length(tTemp)-1,:) = yTemp; end
         
-        % simulate dynamic system
-        [tTemp,xTemp] = simulate(obj,options); 
-        
-        t{i}(end+1:end+length(tTemp),1) = tTemp + startTime;
-        x{i}(end+1:end+length(tTemp),:) = xTemp;
     end
+    
+    if comp_y
+        % final point of output trajectory uses different input and sensor noise
+        ylast = aux_outputTrajectoryEnd(obj,options,x{r});
+        y{r}(end,:) = ylast';
+    end
+    
 end
 
 % construct object storing the simulation results
-res = simResult(x,t);
+if comp_y
+    res = simResult(x,t,{},y);
+elseif isa(obj,'nonlinDASys')
+    % special handling of algebraic variables
+    a = cell(r,1);
+    % dimensions of algebraic variables in extended state vector
+    dims_a = obj.dim+1:obj.dim+obj.nrOfConstraints;
+    for r = 1:options.points
+        a{r,1} = x{r}(:,dims_a);
+        x{r,1} = x{r}(:,1:obj.dim);
+    end
+    res = simResult(x,t,{},{},a);
+else
+    res = simResult(x,t);
+end
+
+
+end
+
+
+% Auxiliary function ------------------------------------------------------
+function ylast = aux_outputTrajectoryEnd(obj,options,xtraj)
+
+    if isfield(options,'uTransVec')
+        options.uTrans = options.uTransVec(:,end);
+    end
+    ulast = randPoint(options.U) + options.uTrans;
+    vlast = randPoint(options.V);
+    ylast = obj.C*xtraj(end,:)' + obj.D*ulast + obj.k + vlast;
+
+end
 
 %------------- END OF CODE --------------

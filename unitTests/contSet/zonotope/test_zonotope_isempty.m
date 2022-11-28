@@ -34,10 +34,4 @@ Z2 = zonotope([]);
 % check result
 res = ~isempty(Z1) && isempty(Z2);
 
-if res
-    disp('test_isempty successful');
-else
-    disp('test_isempty failed');
-end
-
 %------------- END OF CODE --------------

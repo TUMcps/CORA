@@ -28,7 +28,7 @@ function res = testLongDuration_interval_isIntersecting
 
 
 % Random cases
-res_rand = true;
+res = true;
 nrOfTests = 1000;
 
 for i=1:nrOfTests
@@ -48,7 +48,7 @@ for i=1:nrOfTests
 
     % check with correct solution
     if isIntersecting(I_low,I_high)
-        res_rand = false; break;
+        res = false; break;
     end
 
     % interval [-1,1]
@@ -59,7 +59,7 @@ for i=1:nrOfTests
 
     % check with correct solution
     if ~isIntersecting(I_low,I_high)
-        res_rand = false; break;
+        res = false; break;
     end
     
     % intervals meet at origin
@@ -69,20 +69,14 @@ for i=1:nrOfTests
     I_high = I + shift;
 
     if ~isIntersecting(I_low,I_high)
-        res_rand = false; break;
+        res = false; break;
     end
 
 end
 
-
-
-% combine results
-res = res_rand;
-
-if res
-    disp('test_isIntersecting successful');
-else
-    disp('test_isIntersecting failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'I_low','I_high','n');
 end
 
 %------------- END OF CODE --------------

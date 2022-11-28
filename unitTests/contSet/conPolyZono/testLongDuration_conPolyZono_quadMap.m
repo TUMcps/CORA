@@ -1,9 +1,9 @@
 function res = testLongDuration_conPolyZono_quadMap
-% test_conPolyZono_quadMap - unit test function for quadratic map of 
-%                            constrained polynomial zonotopes
+% testLongDuration_conPolyZono_quadMap - unit test function for 
+%    quadratic map of constrained polynomial zonotopes
 %
 % Syntax:  
-%    res = test_conPolyZono_quadMap()
+%    res = testLongDuration_conPolyZono_quadMap()
 %
 % Inputs:
 %    -
@@ -24,7 +24,7 @@ function res = testLongDuration_conPolyZono_quadMap
 
 %------------- BEGIN CODE --------------
 
-    res = 1;
+    res = true;
     splits = 4;
     
     % Random Tests --------------------------------------------------------
@@ -35,7 +35,7 @@ function res = testLongDuration_conPolyZono_quadMap
     for i = 1:10
         
         % generate random constrained polynomial zonotopes
-        cPZ1 = conPolyZono.generateRandom(2);
+        cPZ1 = conPolyZono.generateRandom('Dimension',2);
         
         % generate random matrices
         Q{1} = -2 + 4*rand(2);
@@ -56,13 +56,13 @@ function res = testLongDuration_conPolyZono_quadMap
         % check if all points are inside polygon enclosures
         pgon = polygon(cPZ,splits);
 
-        if ~in(pgon,points)
+        if ~contains(pgon,points)
 
             % save variables so that failure can be reproduced
             path = pathFailedTests(mfilename());
-            save(path,'cPZ1','Q','points');
+            save(path,'cPZ1','Q','p');
 
-            error('Random test failed!');
+            throw(CORAerror('CORA:testFailed'));
         end
     end
     
@@ -73,8 +73,8 @@ function res = testLongDuration_conPolyZono_quadMap
     for i = 1:10
         
         % generate random constrained polynomial zonotopes
-        cPZ1 = conPolyZono.generateRandom(2);
-        cPZ2 = conPolyZono.generateRandom(2);
+        cPZ1 = conPolyZono.generateRandom('Dimension',2);
+        cPZ2 = conPolyZono.generateRandom('Dimension',2);
         
         % generate random matrices
         Q{1} = -2 + 4*rand(2);
@@ -103,13 +103,13 @@ function res = testLongDuration_conPolyZono_quadMap
         % check if all points are inside polygon enclosures
         pgon = polygon(cPZ,splits);
 
-        if ~in(pgon,points)
+        if ~contains(pgon,points)
 
             % save variables so that failure can be reproduced
             path = pathFailedTests(mfilename());
-            save(path,'cPZ1','cPZ2','Q','points');
+            save(path,'cPZ1','cPZ2','Q','points1','points2');
 
-            error('Random test failed!');
+            throw(CORAerror('CORA:testFailed'));
         end
     end
 end

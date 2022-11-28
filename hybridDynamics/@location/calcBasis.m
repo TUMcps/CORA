@@ -1,11 +1,11 @@
-function B = calcBasis(obj,R,guard,options)
+function B = calcBasis(loc,R,guard,options)
 % calcBasis - calculate orthogonal basis with the methods from [1]
 %
 % Syntax:  
-%    B = calcBasis(obj,R,guard,options)
+%    B = calcBasis(loc,R,guard,options)
 %
 % Inputs:
-%    obj - object of class location
+%    loc - object of class location
 %    R - list of intersections between the reachable set and the guard
 %    guard - guard set (class: constrained hyperplane)
 %    options - struct containing the algorithm settings
@@ -31,7 +31,7 @@ function B = calcBasis(obj,R,guard,options)
 %------------- BEGIN CODE --------------
 
     % initialization
-    sys = obj.contDynamics;
+    sys = loc.contDynamics;
     m = length(options.enclose);
     B = cell(m,1);
     
@@ -91,7 +91,8 @@ function B = calcBasis(obj,R,guard,options)
                 B{i} = gramSchmidt(dir);
             
             otherwise
-                error('Wrong value for options.enclose!');
+                throw(CORAerror('CORA:wrongFieldValue','options.enclose',...
+                    {'box','pca','flow'}));
         end        
     end
 end

@@ -1,19 +1,21 @@
-function Zbundle = project(Zbundle,dims)
-% project - Returns a zonotope bundle which is projected onto the specified
-% dimensions
+function zB = project(zB,dims)
+% project - projects a zonotope bundle onto the specified dimensions
 %
 % Syntax:  
-%    Zbundle = project(Zbundle,dim)
+%    zB = project(zB,dims)
 %
 % Inputs:
-%    Zbundle - zonotope bundle
-%    dims - vector of two dimensions onto which one should project
+%    zB - (zonoBundle) zonotope bundle
+%    dims - dimensions for projection
 %
 % Outputs:
-%    Zbundle - zonotope bundle
+%    zB - (zonoBundle) projected zonotope bundle
 %
 % Example: 
-%    ---
+%    Z1 = zonotope(zeros(3,1),[1 0.5 0; -0.2 1 0.3; -1 0.4 -0.2]);
+%    Z2 = zonotope(ones(3,1),[1 -0.5 1; 0.2 1 -0.4; 0.5 -0.7 0.2]);
+%    zB = zonoBundle({Z1,Z2});
+%    res = project(zB,[1,2]);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,9 +30,9 @@ function Zbundle = project(Zbundle,dims)
 
 %------------- BEGIN CODE --------------
 
-%project for each zonotope
-for i=1:Zbundle.parallelSets
-    Zbundle.Z{i}=project(Zbundle.Z{i},dims);
+% project for each zonotope
+for i=1:zB.parallelSets
+    zB.Z{i} = project(zB.Z{i},dims);
 end
 
 %------------- END OF CODE --------------

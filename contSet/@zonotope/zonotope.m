@@ -21,14 +21,14 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonotope < contSet
 % Example: 
 %    c = [1;1];
 %    G = [1 1 1; 1 -1 0];
-%    zono = zonotope(c,G);
-%    plot(zono,[1,2],'r');
+%    Z = zonotope(c,G);
+%    plot(Z);
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval, polytope
+% See also: ---
 
 % Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      14-September-2006 
@@ -36,7 +36,7 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonotope < contSet
 %               04-June-2010
 %               08-February-2011
 %               18-November-2015
-%               05-December-2017 (DG) class is redefined in complience with
+%               05-December-2017 (DG) class is redefined in compliance with
 %               the new standard.
 %               28-April-2019 code shortened
 %               1-May-2020 (NK) new constructor + removed orientation prop.
@@ -45,18 +45,21 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonotope < contSet
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = protected, GetAccess = public)
-    Z (:,:) {mustBeNumeric} = []; % zonotope center and generator Z = [c,g_1,...,g_p]
-    halfspace = [];     % halfspace representation of the zonotope
+    % zonotope center and generator Z = [c,g_1,...,g_p]
+    Z (:,:) {mustBeNumeric,mustBeNonNan} = [];
+
+    % halfspace representation of the zonotope
+    halfspace = [];
 end
 
 methods
 
-    function Obj = zonotope(varargin)
+    function obj = zonotope(varargin)
         
         % If no argument is passed (default constructor)
         if nargin == 0
-            Obj.Z = [];
-            Obj.halfspace = [];
+            obj.Z = [];
+            obj.halfspace = [];
 
         % If 1 argument is passed
         else
@@ -65,11 +68,11 @@ methods
             
                 % input is a zonotope -> copy object
                 if isa(varargin{1},'zonotope')
-                    Obj = varargin{1};
+                    obj = varargin{1};
                 else
                     % List elements of the class
-                    Obj.Z = varargin{1}; 
-                    Obj.halfspace = [];
+                    obj.Z = varargin{1}; 
+                    obj.halfspace = [];
                 end
 
             % If 2 arguments are passed
@@ -77,26 +80,28 @@ methods
 
                 % wrong inputs
                 if isempty(varargin{1})
-                    [id,msg] = errConstructor('Center is empty.'); error(id,msg);
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                        'Center is empty.'));
                 elseif ~isvector(varargin{1})
-                    [id,msg] = errConstructor('Center is not a vector.'); error(id,msg);
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                        'Center is not a vector.'));
                 elseif ~isempty(varargin{2}) && size(varargin{1},1) ~= size(varargin{2},1)
-                    [id,msg] = errConstructor('Dimension mismatch between center and generator matrix.'); error(id,msg);
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                        'Dimension mismatch between center and generator matrix.'));                
                 else
-                    Obj.Z = [varargin{1},varargin{2}]; 
-                    Obj.halfspace = [];
+                    obj.Z = [varargin{1},varargin{2}]; 
+                    obj.halfspace = [];
                 end
             
             elseif nargin > 2
                 
                 % too many input arguments
-                [id,msg] = errConstructor('Too many input arguments.');
-                error(id,msg);
+                throw(CORAerror('CORA:tooManyInputArgs',2));
             end
         end
         
         % set parent object properties
-        Obj.dimension = size(Obj.Z,1);
+        obj.dimension = size(obj.Z,1);
     end
 end
 
@@ -105,6 +110,6 @@ methods (Static = true)
     Z = enclosePoints(points,varargin) % enclose point cloud with zonotope
 end
 
-
 end
+
 %------------- END OF CODE --------------

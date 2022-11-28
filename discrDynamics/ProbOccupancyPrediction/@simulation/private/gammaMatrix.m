@@ -19,10 +19,10 @@ function [Gamma]=gammaMatrix(markovChainSpec,simOptions)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 03-July-2008 
-% Last update: 22-August-2008
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      03-July-2008 
+% Last update:  22-August-2008
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

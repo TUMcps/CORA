@@ -1,5 +1,5 @@
 function R = observe_intersectionFreeAdaptive(obj,options)
-% observe_intersectionFreeAdaptive - computes the guaranted state
+% observe_intersectionFreeAdaptive - computes the guaranteed state
 % estimation approach according to the intersection-free approach
 % when the gain changes in each iteration, see [1], [2].
 %
@@ -60,7 +60,8 @@ for k = 1:length(tVec)-1
         % obtain generators
         G = generators(Rnext.tp);
         G_comb = G*G';
-        L = obj.A*G_comb*obj.C'*inv(obj.C*G_comb*obj.C' + F*F');
+%         L = obj.A * G_comb * obj.C' * inv(obj.C*G_comb*obj.C' + F*F');
+        L = obj.A * G_comb * obj.C' / (obj.C*G_comb*obj.C' + F*F');
     else
         disp('this observer type is not yet implemented')
     end

@@ -1,8 +1,8 @@
 function vertices = boxPlaneIntersect(hyperbox,hyperplane,beta)
-% intersection - implementation of the intersection algorithms
-%       called ExploreBN (Alg.2) and FindSolutions (Alg.3) from [1]
-%       calculating the intersection points of an n-dim. hyperbox
-%       with an (n-1)-dim. hyperplane
+% boxPlaneIntersect - implementation of the intersection algorithms called
+%    ExploreBN (Alg.2) and FindSolutions (Alg.3) from [1] calculating the
+%    intersection points of an n-dimensional hyperbox with an
+%    (n-1)-dimensional hyperplane
 %
 % Syntax:  
 %    vertices = boxPlaneIntersect(hyperbox,hyperplane,beta)
@@ -26,7 +26,7 @@ function vertices = boxPlaneIntersect(hyperbox,hyperplane,beta)
 %       "On the Hyperbox - Hyperplane Intersection Problem"
 
 % Author:       Mark Wetzlinger
-% Written:      08-Oct-2018
+% Written:      08-October-2018
 % Last update:  ---
 % Last revision:---
 
@@ -42,12 +42,13 @@ function vertices = boxPlaneIntersect(hyperbox,hyperplane,beta)
     if size(hyperplane) == 1
         alpha = hyperplane;
     else
-        error('The hyperplane has to be defined by a scalar.');
+        throw(CORAerror('CORA:specialError',...
+            'The hyperplane has to be defined by a scalar.'));
     end
     
 %   beta has to be a line vector (not a matrix)    
     if size(beta,1) > 1
-        error('Beta has to be a vector.');
+        throw(CORAerror('CORA:specialError','Beta has to be a vector.'));
     end
     
     B = hyperbox;

@@ -21,10 +21,10 @@ function [p,pTotal,lcEvolProb]=laneChanging(simOptions,markovChainSpec)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 29-October-2008
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      29-October-2008
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

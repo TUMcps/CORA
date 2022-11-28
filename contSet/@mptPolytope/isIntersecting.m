@@ -1,35 +1,33 @@
-function res = isIntersecting(obj1,obj2,varargin)
-% isIntersecting - determines if a the sets obj1 and obj2 intersect
+function res = isIntersecting(P,S,varargin)
+% isIntersecting - determines if a polytope intersects a set
 %
 % Syntax:  
-%    res = isIntersecting(obj1,obj2,type)
-%    res = isIntersecting(obj1,obj2)
+%    res = isIntersecting(P,S,type)
+%    res = isIntersecting(P,S)
 %
 % Inputs:
-%    obj1 - contSet object
-%    obj2 - contSet object
+%    P - mptPolytope object
+%    S - contSet object
 %    type - type of check ('exact' or 'approx')
 %
 % Outputs:
-%    res - 1/0 if set is intersecting, or not
+%    res - true/false
 %
 % Example: 
-%    poly1 = mptPolytope([-1 -1; 1 0;-1 0; 0 1; 0 -1],[2;3;2;3;2]);
-%    poly2 = mptPolytope([-1 -1; -1 1; 1 1;0 -1],[0;2;2;0]) + [2;0];
-%    poly3 = poly2 + [3;0];
+%    P1 = mptPolytope([-1 -1; 1 0;-1 0; 0 1; 0 -1],[2;3;2;3;2]);
+%    P2 = mptPolytope([-1 -1; -1 1; 1 1;0 -1],[0;2;2;0]) + [2;0];
+%    P3 = P2 + [3;0];
 %
-%    isIntersecting(poly1,poly2)
-%    isIntersecting(poly1,poly3)
+%    isIntersecting(P1,P2)
+%    isIntersecting(P1,P3)
 %
-%    figure
-%    hold on
-%    plot(poly1,[1,2],'b');
-%    plot(poly2,[1,2],'g');
+%    figure; hold on;
+%    plot(P1,[1,2],'b');
+%    plot(P2,[1,2],'g');
 %
-%    figure
-%    hold on
-%    plot(poly1,[1,2],'b');
-%    plot(poly3,[1,2],'r');
+%    figure; hold on;
+%    plot(P1,[1,2],'b');
+%    plot(P3,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -44,64 +42,63 @@ function res = isIntersecting(obj1,obj2,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    type = 'exact';
-    
-    if nargin >= 3 && ~isempty(varargin{1}) 
-        type = varargin{1};
+    % pre-processing
+    [resFound,vars] = pre_isIntersecting('mptPolytope',P,S,varargin{:});
+
+    % check premature exit
+    if resFound
+        % if result has been found, it is stored in the first entry of var
+        res = vars{1}; return
+    else
+        % assign values
+        P = vars{1}; S = vars{2}; type = vars{3};
     end
     
-    % get mptPolytope object
-    if ~isa(obj1,'mptPolytope')
-       temp = obj1;
-       obj1 = obj2;
-       obj2 = temp;
-    end
     
     % polytope and polytope
-    if isa(obj2,'mptPolytope')
+    if isa(S,'mptPolytope')
         
-        res = intersectPolyPoly(obj1,obj2);
+        res = intersectPolyPoly(P,S);
          
     else
         
         % exact check for intersection
         if strcmp(type,'exact')
             
-            if isa(obj2,'interval') || isa(obj2,'zonotope')
-                res = intersectPolyConZono(obj1,conZonotope(obj2));
-            elseif isa(obj2,'conZonotope')
-                res = intersectPolyConZono(obj1,obj2);
-            elseif isa(obj2,'zonoBundle')
-                res = intersectPolyZonoBundle(obj1,obj2);  
-            elseif isa(obj2,'halfspace') || isa(obj2,'conHyperplane')
-                res = isIntersecting(obj2,obj1);
+            if isa(S,'interval') || isa(S,'zonotope')
+                res = intersectPolyConZono(P,conZonotope(S));
+            elseif isa(S,'conZonotope')
+                res = intersectPolyConZono(P,S);
+            elseif isa(S,'zonoBundle')
+                res = intersectPolyZonoBundle(P,S);  
+            elseif isa(S,'halfspace') || isa(S,'conHyperplane')
+                res = isIntersecting(S,P);
             else
-                error('No exact algorithm implemented for this set representation!');
+                throw(CORAerror('CORA:noops',P,S));
             end
             
         % over-approximative check for intersection    
         else
             
-            res = 1;
-            A = obj1.P.A;
-            b = obj1.P.b;
+            res = true;
+            A = P.P.A;
+            b = P.P.b;
             
             % special 'approx' algorithm for zonotope bundles
-            if isa(obj2,'zonoBundle')
+            if isa(S,'zonoBundle')
 
                 % loop over all parallel zonotopes
-                for j = 1:length(obj2.Z)
+                for j = 1:length(S.Z)
                     
-                    zono = zonotope(obj2.Z{j});
+                    zono = zonotope(S.Z{j});
                     
                     % loop over all halfspaces
-                    for i = 1:size(obj1.P.A,1)
+                    for i = 1:size(P.P.A,1)
 
                         val = supportFunc(zono,A(i,:)','lower');
 
                         if val > b(i)
-                           res = 0;
+                           res = false;
                            return;
                         end
                     end
@@ -110,12 +107,12 @@ function res = isIntersecting(obj1,obj2,varargin)
             else
                 
                 % loop over all halfspaces
-                for i = 1:size(obj1.P.A,1)
+                for i = 1:size(P.P.A,1)
 
-                    val = supportFunc(obj2,A(i,:)','lower');
+                    val = supportFunc(S,A(i,:)','lower');
 
                     if val > b(i)
-                       res = 0;
+                       res = false;
                        return;
                     end
                 end
@@ -152,10 +149,10 @@ function res = intersectPolyPoly(obj1,obj2)
     [~,val,exitflag] = linprog(f,A,b,[],[],[],[],options);
 
     % check if intersection between the two polytopes is empty
-    res = 1;
+    res = true;
     
     if exitflag < 0 || val > eps
-       res = 0; 
+       res = false; 
     end
 end
 
@@ -208,10 +205,10 @@ function res = intersectPolyConZono(obj1,obj2)
     [~,val,exitflag] = linprog(f,A,b,Aeq,beq,[],[],options);
 
     % check if intersection between the two polytopes is empty
-    res = 1;
+    res = true;
     
     if exitflag < 0 || val > eps
-       res = 0; 
+        res = false; 
     end
 end
     
@@ -274,10 +271,10 @@ function res = intersectPolyZonoBundle(obj1,obj2)
     [~,val,exitflag] = linprog(f,A,b,Aeq,beq,[],[],options);
 
     % check if intersection between the two polytopes is empty
-    res = 1;
+    res = true;
     
     if exitflag < 0 || val > eps
-       res = 0; 
+        res = false; 
     end
 end
 

@@ -4,18 +4,24 @@ function res = turbine2(v, w, r)
 % Syntax:  
 %    res = turbine2(v, w, r)
 %
-% Example: 
+% Inputs:
+%    v, w, r - see benchmark
+%
+% Output:
+%    res - result
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
-%
+
 % Author:       Dmitry Grebenyuk
 % Written:      10-October-2017
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-    res = 6*v - 0.5 * v * (w*w*r*r) / (1-v) - 2.5;
+
+res = 6*v - 0.5 * v * (w*w*r*r) / (1-v) - 2.5;
 end
+
 %------------- END OF CODE --------------

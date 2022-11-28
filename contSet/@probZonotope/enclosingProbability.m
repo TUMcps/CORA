@@ -3,7 +3,7 @@ function eP = enclosingProbability(probZ,m,dimensions)
 %    probabilistic zonotope
 %
 % Syntax:  
-%    eP = enclosingProbability(probZ,m)
+%    eP = enclosingProbability(probZ,m,dimensions)
 %
 % Inputs:
 %    probZ - probabilistic zonotope object
@@ -47,13 +47,18 @@ Sigma(1,2)=origSigma(dimensions(1),dimensions(2));
 Sigma(2,1)=origSigma(dimensions(2),dimensions(1));
 Sigma(2,2)=origSigma(dimensions(2),dimensions(2));
 
+% fix Sigma for 1D probZ
+if all(Sigma(2:4) == 0) && all(probZ.Z(2, :) == 0)
+    Sigma(4) = 1;
+end
+    
 %determine mesh size by n-sigma hyperbox
-Z=zonotope(probZ,m);
-Int=interval(Z);
-inf=infimum(Int);
-sup=supremum(Int);
-x=linspace(inf(dimensions(1)),sup(dimensions(1)),gridpoints);
-y=linspace(inf(dimensions(2)),sup(dimensions(2)),gridpoints);
+Z = zonotope(probZ,m);
+I = interval(Z);
+lb = infimum(I);
+ub = supremum(I);
+x = linspace(lb(dimensions(1)),ub(dimensions(1)),gridpoints);
+y = linspace(lb(dimensions(2)),ub(dimensions(2)),gridpoints);
 
 %initialize x-,y- and prob-vector for the mesh
 ind=full_fact(1:length(x),1:length(y));
@@ -80,11 +85,20 @@ else
 
     %determine vertex indices for convex hull vertices from potential
     %vertices 
-    vertexIndices=convhull(xPotential,yPotential);
+    try
+        vertexIndices=convhull(xPotential,yPotential);
+    
+        %Select convex hull vertices
+        xCoordinates=xPotential(vertexIndices);
+        yCoordinates=yPotential(vertexIndices);
+    catch ME
+        % ME is thrown if points are collinear (1D)
+        [~, max_idx] = max(xPotential);
+        [~, min_idx] = min(xPotential);
 
-    %Select convex hull vertices
-    xCoordinates=xPotential(vertexIndices);
-    yCoordinates=yPotential(vertexIndices);
+        xCoordinates=xPotential([min_idx, max_idx]);
+        yCoordinates=yPotential([min_idx, max_idx]);
+    end
 
     %points for mean values
     points=[];

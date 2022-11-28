@@ -1,10 +1,10 @@
-function [obj,Rfirst,options] = initReach_inputDependence(obj, Rinit, options)
+function [obj,Rfirst,options] = initReach_inputDependence(obj,Rinit,options)
 % initReach_inputDependence - computes the continuous reachable continuous 
-% for the first time step when the constant input is parameterized and
-% correlated to the parameters of the system
+%    for the first time step when the constant input is parameterized and
+%    correlated to the parameters of the system
 %
 % Syntax:  
-%    [obj,Rfirst,options] = initReach_inputDependence(obj, Rinit, options)
+%    [obj,Rfirst,options] = initReach_inputDependence(obj,Rinit,options)
 %
 % Inputs:
 %    obj - linParamSys object
@@ -14,6 +14,7 @@ function [obj,Rfirst,options] = initReach_inputDependence(obj, Rinit, options)
 % Outputs:
 %    obj - linParamSys object
 %    Rfirst - first reachable set 
+%    options - options for the computation of the reachable set
 %
 % Example: 
 %
@@ -58,6 +59,5 @@ Rtotal_tp = Rhom_tp + obj.RV;
 %write results to reachable set struct Rfirst
 Rfirst.tp = reduce(Rtotal_tp,options.reductionTechnique,options.zonotopeOrder);
 Rfirst.ti = reduce(Rtotal,options.reductionTechnique,options.zonotopeOrder);
-
 
 %------------- END OF CODE --------------

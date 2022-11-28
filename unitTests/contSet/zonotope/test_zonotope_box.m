@@ -28,8 +28,6 @@ function res = test_zonotope_box
 % set tolerance
 tol = 1e-9;
 
-% 1. Analytical Test ------------------------------------------------------
-
 % init zonotope
 Z = zonotope([1;0],[2 -1; 4 1]);
 
@@ -40,14 +38,6 @@ Zbox = box(Z);
 Ztrue = zonotope([1;0],[3 0; 0 5]);
 
 % check if axis-aligned box same as interval
-res_val = all(all(abs(Zbox.Z - Ztrue.Z) < tol));
-% add results
-res = res_val;
-
-if res
-    disp('test_box successful');
-else
-    disp('test_box failed');
-end
+res = compareMatrices(Zbox.Z,Ztrue.Z,tol);
 
 %------------- END OF CODE --------------

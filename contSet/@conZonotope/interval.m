@@ -1,26 +1,25 @@
-function res = interval(obj)
+function I = interval(cZ)
 % interval - over-approximate a constrained zonotope object with an
-%            axis-aligned interval (bounding box)
+%    axis-aligned interval (bounding box)
 %
 % Syntax:  
-%    res = interval(obj)
+%    I = interval(cZ)
 %
 % Inputs:
-%    obj - c-zonotope object
+%    cZ - conZonotope object
 %
 % Outputs:
-%    res - interval object
+%    I - interval object
 %
 % Example: 
 %    Z = [0 1 0 1;0 1 2 -1];
-%    A = [-2 1 -1];
-%    b = 2;
-%    cZono = conZonotope(Z,A,b);
-%    int = interval(cZono);
+%    A = [-2 1 -1]; b = 2;
+%    cZ = conZonotope(Z,A,b);
+%    I = interval(cZ);
 %
-%    hold on
-%    plot(cZono,[1,2],'r','Filled',true,'EdgeColor','none')
-%    plot(int,[1,2],'g');
+%    figure; hold on;
+%    plot(cZono,[1,2],'FaceColor','r');
+%    plot(I,[1,2],'g');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -35,17 +34,17 @@ function res = interval(obj)
 
 %------------- BEGIN CODE --------------
 
-if isempty(obj.A)       % no constraints -> call zonotope method
+if isempty(cZ.A)       % no constraints -> call zonotope method
     
-    res = interval(zonotope(obj.Z));
+    I = interval(zonotope(cZ.Z));
     
 else                    % constraints 
     
-    n = size(obj.Z,1);
-    res = interval(zeros(n,1));
+    n = size(cZ.Z,1);
+    I = interval(zeros(n,1));
 
-    % remove the trivial constraint 0*ksi = 0
-    obj = deleteZeros(obj);
+    % remove the trivial constraint 0*beta = 0
+    cZ = deleteZeros(cZ);
 
     % loop over all dimensions
     for i = 1:n
@@ -53,10 +52,10 @@ else                    % constraints
         temp(i) = 1;
 
         % calculate exact bounds by solving a linear program
-        lb = supportFunc(obj,temp,'lower');
-        ub = supportFunc(obj,temp,'upper');
+        lb = supportFunc(cZ,temp,'lower');
+        ub = supportFunc(cZ,temp,'upper');
 
-        res(i) = interval(lb,ub);
+        I(i) = interval(lb,ub);
     end
 end
 

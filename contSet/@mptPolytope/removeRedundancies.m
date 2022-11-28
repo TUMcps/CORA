@@ -39,11 +39,11 @@ function obj = removeRedundancies(obj,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    method = 'all';
-    
-    if nargin > 1
-       method = varargin{1}; 
-    end
+    method = setDefaultValues({'all'},varargin{:});
+
+    % check input arguments
+    inputArgsCheck({{obj,'att','mptPolytope'};
+                    {method,'str',{'all','aligned'}}});
     
     % remove redundancies
     if strcmp(method,'all')
@@ -57,8 +57,14 @@ function obj = removeRedundancies(obj,varargin)
         % remove halfspaces with aligned normal vectors
         obj = removeAligned(obj);
         
-    else
-        error('Wrong value for input argument "method"!');
+    elseif strcmp(method,'linprog')
+        
+        % remove halfspaces with aligned normal vectors
+        obj = removeAligned(obj);
+        
+        % remove halfspaces using linear programming
+        obj = removeLinProg(obj);
+        
     end
 end
 
@@ -77,6 +83,9 @@ function obj = removeAligned(obj)
     
     A = temp*A;
     b = temp*b;
+    
+    A = A(len > 0,:); 
+    b = b(len > 0);
     
     % sort the marix rows to detect aligned normal vectors
     [A,ind] = sortrows(A);
@@ -131,6 +140,33 @@ function obj = removeAligned(obj)
     
     % construct final polytope
     obj = mptPolytope(A_(1:cTemp-1,:),b_(1:cTemp-1));
+end
+
+function obj = removeLinProg(obj)
+% remove redundant halfspaces using linear programming
+
+    A = obj.P.A; b = obj.P.b;
+    ind = []; cnt = 1;
+    
+    options = optimoptions('linprog','display','off');
+    
+    while cnt <= size(A,1)
+       
+        tmp2 = setdiff(1:size(A,1),cnt);
+        try
+            [~,val] = linprog(-A(cnt,:),A(tmp2,:),b(tmp2),[],[],[],[],options);
+        catch
+            val = [];
+        end
+            
+        if isempty(val) || ~(-val < b(cnt) + eps)
+           cnt = cnt + 1;
+        else
+            A(cnt,:) = []; b(cnt) = [];
+        end
+    end
+
+    obj = mptPolytope(A,b);
 end
 
 %------------- END OF CODE --------------

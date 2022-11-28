@@ -1,4 +1,4 @@
-function [f,fvec,fGrest] = fhandle(pZ,ids)
+function [f,fvec,fGrest] = fhandle(pZ,varargin)
 % fhandle - returns the function handle for a given polyZonotope
 %
 % Syntax:  
@@ -6,13 +6,13 @@ function [f,fvec,fGrest] = fhandle(pZ,ids)
 %    [f,fvec,fGrest] = fhandle(pZ,ids)
 %
 % Inputs:
-%    pZ     - polynomial zonotope 
-%    ids    - cell array of ids
+%    pZ - polyZonotope object
+%    ids - cell array of ids
 %
 % Outputs:
-%    f      - function handle for dependent generators (+ center), where f has
+%    f - function handle for dependent generators (+ center), where f has
 %             length(ids) number of arguments
-%    fvec   - same as f, but only has one argument sorted according to
+%    fvec - same as f, but only has one argument sorted according to
 %             vertcat(ids{:})
 %    fGrest - function handle for rest zonotope
 %
@@ -29,31 +29,59 @@ function [f,fvec,fGrest] = fhandle(pZ,ids)
 
 % Author:       Victor Gassmann
 % Written:      12-January-2021
-% Last update:  ---
+% Last update:  11-March-2022
+%               04-July-2022 (VG: update input check)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-if nargin==1
+% parse input arguments
+if isempty(varargin)
     id = pZ.id;
-elseif nargin==2
-    id = vertcat(ids{:});
-    if numel(unique(id))~=numel(id)
-        error('No ids can occur twice');
+elseif length(varargin)==1
+    if iscell(varargin{1})
+        for i=1:length(varargin{1})
+            inputArgsCheck({{varargin{1}{i},'att','double',{'integer','ncols',1}}});
+        end
+        id = vertcat(varargin{1}{:});
+    else
+        inputArgsCheck({{varargin{1},'att','double',{'integer','ncols',1}}});
+        id = varargin{1};
     end
-    if numel(pZ.id)~=numel(id) || ~isempty(setdiff(pZ.id,id))
-        error('pZ.id and ids must contain the same ids');
-    end
+else
+    throw(CORAerror('CORA:tooManyInputArgs',2));
 end
+
+% make sure all ids are unique
+if length(unique(id))<length(id)
+    throw(CORAerror('CORA:wrongValue','second','ids need to be unique!'));
+end
+% make sure id contains all ids of pZ (and only those)
+if ~isempty(setdiff(id,pZ.id)) || ~isempty(setdiff(pZ.id,id))
+    throw(CORAerror('CORA:wrongValue','second','ids need to contain all ids!'));
+end
+
+% extract center
 fc = pZ.c;
+% bring to some order (by sorting)
 [~,indpz] = sort(pZ.id);
 [~,indid] = sort(id);
 
 if isempty(pZ.G)
     fGt = @(x) fc;
 else
+    % compute function handle
     fGt = @(x) fc + sum(pZ.G.*prod(x(indid).^pZ.expMat(indpz,:),1),2);
 end
+
+% return from single id vector to number of specified inputs for function
+% handle (as many as in original cell array)
 fG = @(varargin) fGt(vertcat(varargin{:}));
 f = @(varargin) fG(varargin{:}); 
+% return alternatively single-id-vector version
 fvec = @(x) fGt(x);
+% return function handle for rest zonotope
 fGrest = @(r) pZ.Grest*r;
+
+end
+
+%------------- END OF CODE --------------

@@ -26,10 +26,10 @@ function [T] = roadTransitionCopying(tp,T,field)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 27-March-2008
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      27-March-2008
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

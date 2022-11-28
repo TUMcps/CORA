@@ -1,16 +1,17 @@
-function [Zbundle] = encloseTight(Zbundle1,Zbundle2,W)
-% encloseTight - Generates a zonotope bundle that encloses two zonotopes bundles
-% in a tighter way than 'enclose'
+function zB = encloseTight(zB1,zB2,W)
+% encloseTight - Generates a zonotope bundle that encloses two zonotopes
+%    bundles in a tighter way than standard enclose operation
 %
 % Syntax:  
-%    [Zbundle1] = enclose(Zbundle1,Zbundle2)
+%    zB = encloseTight(zB1,zB2)
 %
 % Inputs:
-%    Zbundle1 - first zonotope bundle
-%    Zbundle2 - second zonotope bundle
+%    zB1 - zonoBundle object
+%    zB2 - zonoBundle object
+%    W - ???
 %
 % Outputs:
-%    Zbundle1 - zonotope bundle, that encloses both bundles
+%    zB - zonotope bundle that encloses both bundles
 %
 % Example: 
 %    ---
@@ -30,8 +31,8 @@ function [Zbundle] = encloseTight(Zbundle1,Zbundle2,W)
 %------------- BEGIN CODE --------------
 
 %compute vertices
-V1 = vertices(polytope(Zbundle1));
-V2 = vertices(polytope(Zbundle2));
+V1 = vertices(mptPolytope(zB1));
+V2 = vertices(mptPolytope(zB2));
 
 %unify vertices
 V = vertices([V1, V2]);
@@ -43,8 +44,6 @@ end
 Z{end+1} = zonotope.enclosePoints(V,'stursberg');
 
 %instantiate zonotope bundle
-Zbundle=zonoBundle(Z);
-
-
+zB = zonoBundle(Z);
 
 %------------- END OF CODE --------------

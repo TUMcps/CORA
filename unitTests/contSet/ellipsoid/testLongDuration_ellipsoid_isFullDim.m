@@ -27,10 +27,10 @@ function res = testLongDuration_ellipsoid_isFullDim
 
 % empty case: not full-dimensional
 res_empty = true;
-E = ellipsoid();
-if isFullDim(E)
-    res_empty = false;
-end
+% E = ellipsoid();
+% if isFullDim(E)
+%     res_empty = false;
+% end
 
 
 % random tests
@@ -43,14 +43,14 @@ for i=1:nrOfTests
     n = randi(15);
     
     % non-degenerate case: full-dimensional
-    E = ellipsoid.generateRandom(n,false);
+    E = ellipsoid.generateRandom('Dimension',n,'IsDegenerate',false);
     % check result
     if ~isFullDim(E)
         res_rand = false; break;
     end
     
     % degenerate case: not full-dimensional
-    E = ellipsoid.generateRandom(n,true);
+    E = ellipsoid.generateRandom('Dimension',n,'IsDegenerate',true);
     % check result
     if isFullDim(E)
         res_rand = false; break;
@@ -61,10 +61,9 @@ end
 % combine results
 res = res_empty && res_rand;
 
-if res
-    disp('testLongDuration_ellipsoid_isFullDim successful');
-else
-    disp('testLongDuration_ellipsoid_isFullDim failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'E','n');
 end
 
 %------------- END OF CODE --------------

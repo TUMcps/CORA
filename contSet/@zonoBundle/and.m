@@ -1,34 +1,27 @@
-function zB = and(zB1,zB2)
-% and - returns the intersection of two zonotope bundles
+function zB = and(zB,S)
+% and - returns the intersection of a zonotope bundle and another set
 %
 % Syntax: 
-%    zB = and(zB1,zB2)
+%    zB = and(zB,S)
 %
 % Inputs:
-%    zB1 - zonotope bundle
-%    zB2 - zonotope bundle or zonotope
+%    zB - zonoBundle object
+%    S - contSet object
 %
 % Outputs:
 %    zB - zonotope bundle after intersection
 %
 % Example: 
-%    % define sets
-%    zono1 = zonotope([0 1 2 0;0 1 0 2]);
-%    zono2 = zonotope([3 -0.5 3 0;-1 0.5 0 3]);
-%    zB = zonoBundle({zono1,zono2});
-%
+%    Z1 = zonotope([0 1 2 0;0 1 0 2]);
+%    Z2 = zonotope([3 -0.5 3 0;-1 0.5 0 3]);
+%    zB = zonoBundle({Z1,Z2});
 %    hs = halfspace([1 1],2);
 %
-%    % intersection
-%    res1 = zB & hs;
+%    res = zB & hs;
 %
-%    % visualization
-%    figure
-%    hold on
-%    xlim([-1,4]);
-%    ylim([-4,4]);
+%    figure; hold on; xlim([-1,4]); ylim([-4,4]);
 %    plot(hs,[1,2],'r','FaceAlpha',0.5);
-%    plot(res1,[1,2],'g','Filled',true,'EdgeColor','none');
+%    plot(res,[1,2],'FaceColor','g');
 %    plot(zB,[1,2],'b','LineWidth',3);
 %
 % Other m-files required: none
@@ -44,97 +37,100 @@ function zB = and(zB1,zB2)
 
 %------------- BEGIN CODE --------------
 
-% determine zonotope bundle object
-if ~isa(zB1,'zonoBundle')
-   temp = zB1;
-   zB1 = zB2;
-   zB2 = temp;
+% pre-processing
+[res,vars] = pre_and('zonoBundle',zB,S);
+
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    zB = vars{1}; return
+else
+    % potential re-ordering
+    zB = vars{1}; S = vars{2};
 end
 
+
 % different cases for the different types of objects
-if isa(zB2,'zonotope')
+if isa(S,'zonotope')
     
-    zB = zB1;
-    zB.Z{end+1} = zB2;
+    zB.Z{end+1} = S;
     zB.parallelSets = zB.parallelSets + 1;
     
-elseif isa(zB2,'zonoBundle')
+elseif isa(S,'zonoBundle')
     
-    zB = zB1;
-    
-    for i = 1:zB2.parallelSets
-        zB.Z{end+1} = zB2.Z{i};
+    % append to list of parallel sets
+    for i = 1:S.parallelSets
+        zB.Z{end+1} = S.Z{i};
     end
     
-    zB.parallelSets = zB.parallelSets + zB2.parallelSets;
+    zB.parallelSets = zB.parallelSets + S.parallelSets;
     
-elseif isa(zB2,'interval')
+elseif isa(S,'interval')
     
-    zB = zB1;
-    zB.Z{end+1} = zonotope(zB2);
+    zB.Z{end+1} = zonotope(S);
     zB.parallelSets = zB.parallelSets + 1;
     
-elseif isa(zB2,'mptPolytope') || isa(zB2,'conZonotope')
+elseif isa(S,'mptPolytope') || isa(S,'conZonotope')
     
-    zB = zB1 & zonoBundle(zB2);
+    zB = zB & zonoBundle(S);
     
-elseif isa(zB2,'halfspace')
+elseif isa(S,'halfspace')
     
     % construct basis orthogonal to halfspace normal vector
-    B = gramSchmidt(zB2.c);
+    B = gramSchmidt(S.c);
     
     % compute enclosing interval in transformed space
-    zono_ = B' * zB1.Z{1};
-    int_ = interval(zono_);
+    Z_ = B' * zB.Z{1};
+    I_ = interval(Z_);
     
     % consider upper bound applied by halfspace constraint c*x <= d
-    infi = infimum(int_);
-    sup = supremum(int_);
+    lb = infimum(I_);
+    ub = supremum(I_);
     
-    sup(1) = zB2.d/norm(zB2.c);
+    ub(1) = S.d/norm(S.c);
     
-    int_ = interval(infi,sup);
+    I_ = interval(lb,ub);
     
     % backtransformation to orginal space
-    zono = B * zonotope(int_);
+    zono = B * zonotope(I_);
     
     % intersection
-    zB = zB1 & zono;
+    zB = zB & zono;
     
     
-elseif isa(zB2,'conHyperplane')
+elseif isa(S,'conHyperplane')
     
     % Part 1: intersection with the hyperplane ----------------------------
     
     % construct basis orthogonal to halfspace normal vector
-    B = gramSchmidt(zB2.h.c);
+    B = gramSchmidt(S.h.c);
     
     % compute enclosing interval in transformed space
-    zono_ = B' * zB1.Z{1};
-    int_ = interval(zono_);
+    Z_ = B' * zB.Z{1};
+    I_ = interval(Z_);
     
     % consider upper bound applied by halfspace constraint c*x <= d
-    infi = infimum(int_);
-    sup = supremum(int_);
+    lb = infimum(I_);
+    ub = supremum(I_);
     
-    temp = zB2.h.d/norm(zB2.h.c);
-    sup(1) = temp;
-    infi(1) = temp;
+    temp = S.h.d/norm(S.h.c);
+    ub(1) = temp;
+    lb(1) = temp;
     
-    int_ = interval(infi,sup);
+    I_ = interval(lb,ub);
     
     % backtransformation to orginal space
-    zono = B * zonotope(int_);
+    zono = B * zonotope(I_);
     
     % intersection
-    zB = zB1 & zono;
+    zB = zB & zono;
     
    
     % Part 2: intersection with the constraints ---------------------------
     
     % loop over all constraints
-    C = zB2.C;
-    d = zB2.d;
+    C = S.C;
+    d = S.d;
 
     for i = 1:size(C,1)
 
@@ -142,21 +138,21 @@ elseif isa(zB2,'conHyperplane')
        hs = halfspace(C(i,:)',d(i));
 
        % check if set is fully contained in halfspace
-       if ~in(hs,zB)
+       if ~contains(hs,zB)
 
            % intersect set with halfspace
            zB = zB & hs; 
        end
     end
     
-elseif isa(zB2,'levelSet') || isa(zB2,'conPolyZono')
+elseif isa(S,'levelSet') || isa(S,'conPolyZono')
     
-    zB = zB2 & zB1;
+    zB = S & zB;
     
 else
     
     % throw error for given arguments
-    error(noops(zB1,zB2));
+    throw(CORAerror('CORA:noops',zB,S));
     
 end
 

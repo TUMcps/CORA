@@ -11,25 +11,23 @@ function str = bracketSubs(str)
 %    str - string
 %
 % Example:
-%    -
+%    ---
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
-%
-% Author:       ---
-% Written:      ---
+
+% Author:       ???
+% Written:      ???
 % Last update:  01-May-2020 (MW, added header)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-%generate left and right brackets
-str=strrep(str,'L','(');
-str=strrep(str,'R',')');
-
-end
+% generate left and right brackets
+str = strrep(str,'L','(');
+str = strrep(str,'R',')');
 
 %------------- END OF CODE --------------

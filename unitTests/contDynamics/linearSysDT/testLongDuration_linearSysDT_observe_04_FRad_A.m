@@ -19,10 +19,7 @@ function res = testLongDuration_linearSysDT_observe_04_FRad_A()
 %    [1] T. Alamo, J. M. Bravo, and E. F. Camacho. Guaranteed
 %        state estimation by zonotopes. Automatica, 41(6):1035-1043,
 %        2005.
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      25-Feb-2021
 % Last update:  ---
@@ -45,21 +42,20 @@ estSet_alternative = stripBasedObserver_unitTest(vehicle,params,options);
 
 %% compare whether enclosing hulls of the estimated sets match
 % init
-timeSteps = length(estSet.timeInterval.set);
+timeSteps = length(estSet.timePoint.set);
 resPartial = zeros(timeSteps,1);
 accuracy = 1e-8;
 % loop over set
 for iSet = 1:timeSteps
     % obtain interval hulls
-    IH = interval(estSet.timeInterval.set{iSet});
+    IH = interval(estSet.timePoint.set{iSet});
     IH_alternative = interval(estSet_alternative.timeInterval.set{iSet});
     % check if slightly bloated versions enclose each other
-    res_encl = (IH <= enlarge(IH_alternative,1+accuracy));
-    res_incl = (IH_alternative <= enlarge(IH,1+accuracy));
+    res_incl = isequal(IH,IH_alternative,1+accuracy);
     % check if simulation is enclosed
-    res_sim = in(IH,simRes.x{1}(iSet,:)');
+    res_sim = contains(IH,simRes.x{1}(iSet,:)');
     % combine results
-    resPartial(iSet) = res_encl*res_incl*res_sim;
+    resPartial(iSet) = res_incl & res_sim;
 end
 % Are all sets matching?
 res = all(resPartial);

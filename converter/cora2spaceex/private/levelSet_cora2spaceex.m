@@ -23,12 +23,12 @@ function eqs = levelSet_cora2spaceex(obj)
 % MAT-files required: none
 %
 % See also: cora2spaceex
-%
+
 % Author:        Niklas Kochdumper
 % Written:       18-May-2020
 % Last update:   ---
 % Last revision: ---
-%
+
 %------------- BEGIN CODE --------------
 
     eqs = [];

@@ -33,41 +33,32 @@ c(6,1) = interval(-15, 20);
 
 if abs( infimum(c(1,1)) + 5.0 ) > tol || abs( supremum(c(1,1)) + 2.0 ) > tol
 	res = false;
-	disp('test_subsasgn failed');
 	return;
 end
 
 if abs( infimum(c(2,1)) + 2.0 ) > tol || abs( supremum(c(2,1)) - 8.0 ) > tol
 	res = false;
-	disp('test_subsasgn failed');
 	return;
 end
 
 if abs( infimum(c(3,1)) + 3.0 ) > tol || abs( supremum(c(3,1)) - 2.0 ) > tol
 	res = false;
-	disp('test_subsasgn failed');
 	return;
 end
 
 if abs( infimum(c(4,1)) - 0.0 ) > tol || abs( supremum(c(4,1)) - 0.0 ) > tol
 	res = false;
-	disp('test_subsasgn failed');
 	return;
 end
 
 if abs( infimum(c(5,1)) - 0.0 ) > tol || abs( supremum(c(5,1)) - 5.0 ) > tol
 	res = false;
-	disp('test_subsasgn failed');
 	return;
 end
 
 if abs( infimum(c(6,1)) + 15.0 ) > tol || abs( supremum(c(6,1)) - 20.0 ) > tol
 	res = false;
-	disp('test_subsasgn failed');
 	return;
 end
-
-disp('test_subsasgn successful');
-return;
 
 %------------- END OF CODE --------------

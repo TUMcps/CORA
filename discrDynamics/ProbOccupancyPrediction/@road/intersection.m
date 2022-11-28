@@ -24,7 +24,7 @@ function [p]=intersection(R1,R2,p1,p2,devProb1,devProb2,fArray,type)
 %
 % See also: none
 
-% Author: Matthias Althoff
+% Author:       Matthias Althoff
 % Written:      13-March-2008 
 % Last update:  01-April-2008
 %               22-April-2008

@@ -26,6 +26,9 @@ function res = test_zonotope_volume
 
 %------------- BEGIN CODE --------------
 
+% empty set
+res_e = (volume(zonotope()) == 0);
+
 % create zonotope
 Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
 
@@ -59,13 +62,6 @@ true_vol_approx_red = 48.9897948556635612;
 res_int(5) = (abs(volApprox_red - true_vol_approx_red)<1e-10);
 
 %% final result
-res = all(res_int);
-
-
-if res
-    disp('test_zonotope_volume successful');
-else
-    disp('test_zonotope_volume failed');
-end
+res = all(res_int) && res_e;
 
 %------------- END OF CODE --------------

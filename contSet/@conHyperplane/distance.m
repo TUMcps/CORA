@@ -1,18 +1,21 @@
-function val = distance(obj,S)
-% distance - computes the distance from a conHyperplane object to the set S
+function val = distance(hyp,S)
+% distance - computes the distance from a constrained hyperplane to a set
+%    or a point
 %
 % Syntax:  
-%    res = distance(obj,S)
+%    val = distance(hyp,S)
 %
 % Inputs:
 %    obj - conHyperplane object
-%    S   - set
+%    S - contSet object or single point
 %
 % Outputs:
-%    val - distance between obj and S
+%    val - distance between constrained hyperplane and set
 %
 % Example: 
-%    ---
+%    hyp = conHyperplane(halfspace([1;1],0),[1 0;-1 0],[2;2])
+%    p = [1;1];
+%    distance(hyp,p)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,9 +29,12 @@ function val = distance(obj,S)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% compute distance
 if isa(S,'double')
-    val = distancePoint(obj,S);
+    val = distancePoint(hyp,S);
 else
-    error('Second argument type not supported');
+    throw(CORAerror('CORA:noops',hyp,S));
 end
+
 %------------- END OF CODE --------------

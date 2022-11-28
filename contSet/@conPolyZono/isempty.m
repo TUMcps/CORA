@@ -1,5 +1,5 @@
 function res = isempty(cPZ,varargin)
-% isempty - check if a constrained polynomial zonotope is empty
+% isempty - checks if a constrained polynomial zonotope is the empty set
 %
 % Syntax:  
 %    res = isempty(cPZ)
@@ -15,7 +15,7 @@ function res = isempty(cPZ,varargin)
 %    splits - number of recursive splits (integer > 0)
 %
 % Outputs:
-%   res - true is set is empty, false otherwise
+%    res - true/false
 %
 % Example:
 %    c = [0;0];
@@ -43,38 +43,32 @@ function res = isempty(cPZ,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % check if independent generators are empty 
-    if ~isempty(cPZ.Grest)
-       res = false; return; 
-    end
-    
-    % check if constraints exist
-    if isempty(cPZ.A)
-       res = false; return; 
-    end
-    
-    % parse input arguments
-    method = 'linearize';
-    splits = 0; 
-    iter = 1;
-    
-    if nargin > 1 && ~isempty(varargin{1})
-       method = varargin{1}; 
-    end
-    if nargin > 2 && ~isempty(varargin{2})
-       iter = varargin{2};
-    end
-    if nargin > 3 && ~isempty(varargin{3})
-       splits = varargin{3};
-    end
-    
-    % try to contract the domain to the empty set -> set is empty
-    temp = ones(length(cPZ.id),1);
-    dom = interval(-temp,temp);
-    
-    D = contractPoly(-cPZ.b,cPZ.A,[],cPZ.expMat_,dom,method,iter,splits);
-    
-    res = isempty(D);
+% check if independent generators are empty 
+if ~isempty(cPZ.Grest)
+   res = false; return; 
 end
+
+% check if constraints exist
+if isempty(cPZ.A)
+   res = false; return; 
+end
+
+% parse input arguments
+[method,splits,iter] = setDefaultValues({'linearize',0,1},varargin{:});
+
+% check input arguments
+inputArgsCheck({{cPZ,'att','conPolyZono'};
+                {method,'str',{'forwardBackward','linearize',...
+                    'polynomial','interval','all'}};
+                {splits,'att','numeric',{'scalar','integer'}};
+                {iter,'att','numeric',{'scalar','integer'}}});
+    
+% try to contract the domain to the empty set -> set is empty
+temp = ones(length(cPZ.id),1);
+dom = interval(-temp,temp);
+
+D = contractPoly(-cPZ.b,cPZ.A,[],cPZ.expMat_,dom,method,iter,splits);
+
+res = isempty(D);
 
 %------------- END OF CODE --------------

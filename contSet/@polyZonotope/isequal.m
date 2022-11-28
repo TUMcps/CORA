@@ -1,5 +1,5 @@
-function res = isequal(pZ1,pZ2,tol)
-% isequal - checks if two polyZonotopes are equal
+function res = isequal(pZ1,pZ2,varargin)
+% isequal - checks if two polynomial zonotopes are equal
 %
 % Syntax:  
 %    res = isequal(pZ1,pZ2)
@@ -8,10 +8,10 @@ function res = isequal(pZ1,pZ2,tol)
 % Inputs:
 %    pZ1 - polyZonotope object
 %    pZ2 - polyZonotope object
-%    tol - tolerance (optional)
+%    tol - (optional) tolerance
 %
 % Outputs:
-%    res - boolean whether pZ1 and pZ2 are equal
+%    res - true/false
 %
 % Example: 
 %    pZ1 = polyZonotope([0;0],[1 0 1;0 -1 1],[0.4 0;0.1 1],[1 0 2;0 1 1]);
@@ -31,13 +31,21 @@ function res = isequal(pZ1,pZ2,tol)
 
 %------------- BEGIN CODE --------------
 
-if nargin == 2
-    tol = eps;
-end
+% parse input arguments
+tol = setDefaultValues({eps},varargin{:});
 
+% check input arguments
+inputArgsCheck({{pZ1,'att','polyZonotope'};
+                {pZ2,'att','polyZonotope'};
+                {tol,'att','numeric',{'nonnan','scalar','nonnegative'}}});
+
+% init result
 res = false;
-pZ1 = removeRedundancies(pZ1);
-pZ2 = removeRedundancies(pZ2);
+
+% remove redundancies in representation
+pZ1 = compact(pZ1);
+pZ2 = compact(pZ2);
+
 % compare dimensions (quick check)
 if dim(pZ1) ~= dim(pZ2)
     return
@@ -62,19 +70,18 @@ else
    E1 = pZ1.expMat; E2 = pZ2.expMat;
 end
 
-% compare exponent matrices
-if ~(all(all(abs(E1 - E2) < tol)))
+% jointly compare dependent generators and exponent matrices
+if ~compareMatrices([pZ1.G;E1],[pZ2.G;E2], tol)
+    return
+end
+if ~compareMatrices(pZ1.Grest,pZ2.Grest, tol)
+    return
+end
+if ~all(withinTol(pZ1.c, pZ2.c, tol))
     return
 end
 
-% compare dependent generators
-if ~(all(all(abs(pZ1.G - pZ2.G) < tol)))
-    return
-end
-
-% compare center and independent generators
-Z1 = zonotope(pZ1.c,pZ1.Grest);
-Z2 = zonotope(pZ2.c,pZ2.Grest);
-res = isequal(Z1,Z2);
+% all checks ok
+res = true;
 
 %------------- END OF CODE --------------

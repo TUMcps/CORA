@@ -26,10 +26,7 @@ function res = testLongDuration_polyZonotope_restructure
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-
-%% RANDOM TESTS
+res = true;
 
 % TEST 2-dimensional
 
@@ -73,13 +70,15 @@ for j = 1:length(methods)
         suc = containsPointSet(pZres,points,[],30);
 
 %         % visualization
-%         plot(pZres,[1,2],'FaceColor',[.5 .5 .5],'Filled',true,'Splits',5,'Order',30)
+%         plot(pZres,[1,2],'FaceColor',[.5 .5 .5],'Splits',5,'Order',30)
 %         hold on
 %         plot(zonotope(pZres),[1,2],'r');
 %         plot(points(1,:),points(2,:),'.k');
 
         if ~suc
-           error('testLongDuration_polyZonotope_restructure: random test 2D failed!'); 
+           path = pathFailedTests(mfilename());
+           save(path,'pZres','points');
+           throw(CORAerror('CORA:testFailed'));
         end
     end
 end
@@ -115,11 +114,11 @@ for j = 1:length(methods)
         suc = containsPointSet(pZres,points,[],30);
 
         if ~suc
-           error('testLongDuration_polyZonotope_restructure: random test 4D failed!'); 
+           path = pathFailedTests(mfilename());
+           save(path,'pZres','points');
+           throw(CORAerror('CORA:testFailed'));
         end
     end
 end
-
-res = true;
 
 %------------- END OF CODE --------------

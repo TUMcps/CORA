@@ -15,10 +15,7 @@ function res = testSDPT3_linearSysDT_observe_08_pedestrian()
 %
 % Outputs:
 %    res - boolean 
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      07-Jul-2021
 % Last update:  ---

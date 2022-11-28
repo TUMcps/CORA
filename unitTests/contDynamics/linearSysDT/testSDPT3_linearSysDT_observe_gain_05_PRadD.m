@@ -21,10 +21,7 @@ function res = testSDPT3_linearSysDT_observe_gain_05_PRadD()
 %        Cembrano. Zonotopic set-membership state estimation for
 %        discrete-time descriptor LPV systems. IEEE Transactions
 %        on Automatic Control, 64(5):2092-2099, 2019.
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      01-March-2021
 % Last update:  ---
@@ -33,7 +30,7 @@ function res = testSDPT3_linearSysDT_observe_gain_05_PRadD()
 %------------- BEGIN CODE --------------
 
 % enable access to private function "observe_gain_PRadD"
-path = coraroot();
+path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSysDT','private','observe_gain_PRadD.m');
 target = fullfile(path,'contDynamics','@linearSysDT','observe_gain_PRadD.m');
 copyfile(source,target);

@@ -24,7 +24,7 @@ function createModelFactors(c)
 
 %------------- BEGIN CODE --------------
 
-path = [coraroot '/models/auxiliary'];
+path = [CORAROOT filesep 'models' filesep 'auxiliary'];
 cd(path);
 
 fid = fopen('modelFactors.m','w');

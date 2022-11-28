@@ -70,18 +70,21 @@ function [Rin,Rout] = reachInnerParallelotope(sys,params,options)
 
     % compute inner-approximation using Theorem 3 in [1]
     list = cell(length(R.timePoint.set),1);
-    listCont = list; listOuter = list; listContOuter = list;
+    list{1} = params.R0;
+    listOuter = list;
+    listCont = cell(length(R.timeInterval.set),1);
+    listContOuter = cell(length(R.timeInterval.set),1);
     
-    for i = 1:length(R.timePoint.set)
+    for i = 1:length(R.timeInterval.set)
        
         % compute inner-approximation of the time-point reachable set
-        f0 = R.timePoint.set{i};
-        J = taylm(project(Rjac.timePoint.set{i},n+1:n+n^2));
+        f0 = R.timePoint.set{i+1};
+        J = taylm(project(Rjac.timePoint.set{i+1},n+1:n+n^2));
         J = reshape(J,[n,n]);
         
-        listOuter{i} = project(Rjac.timePoint.set{i},1:n);
+        listOuter{i+1} = project(Rjac.timePoint.set{i+1},1:n);
         
-        list{i} = innerApproxPrecond(f0,J,options.R0);
+        list{i+1} = innerApproxPrecond(f0,J,options.R0);
         
         % compute inner-approximation of the time-interval reachable set
         f0 = R.timeInterval.set{i};
@@ -210,7 +213,7 @@ function fun = dynamicFunctionJacobian(sys)
     u = sym('u',[1,1]);
 
     f_ = fun(x,u);
-    jac = jacobian(f_,x);
+    jac = jacobian(f_);
 
     Jfun = sym(zeros(n,n));
 

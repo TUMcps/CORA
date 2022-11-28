@@ -1,21 +1,20 @@
-function C = capsule(obj)
+function C = capsule(I)
 % capsule - Encloses an interval with a capsule
 %
 % Syntax:  
-%    C = capsule(obj)
+%    C = capsule(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
 %    C - capsule object
 %
 % Example: 
-%    I = interval.generateRandom(2);
+%    I = interval([-2;-1],[3;4]);
 %    C = capsule(I);
 %
-%    figure
-%    hold on
+%    figure; hold on;
 %    plot(I,[1,2],'r');
 %    plot(C,[1,2],'b');
 %    axis equal
@@ -34,17 +33,17 @@ function C = capsule(obj)
 %------------- BEGIN CODE --------------
     
 % dimension with largest width -> generator of capsule
-width = rad(obj);
+width = rad(I);
 [~,ind] = sort(width,'descend');
 
-g = zeros(dim(obj),1);
+g = zeros(dim(I),1);
 g(ind(1)) = width(ind(1));
 
 % radius of capsule = enclosing radius of remaining interval
-int_ = project(obj,ind(2:end));
+int_ = project(I,ind(2:end));
 r = radius(int_);
 
 % construct capsule object
-C = capsule(center(obj),g,r);
+C = capsule(center(I),g,r);
 
 %------------- END OF CODE --------------

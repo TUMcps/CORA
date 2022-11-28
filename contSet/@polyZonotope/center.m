@@ -1,7 +1,7 @@
-function [c] = center(pZ)
-% center - returns the starting point of a polynomial zonotope,
-%    please note that this does not correspond to the geometric
-%    center of the polynomial zonotope in general
+function c = center(pZ)
+% center - returns the starting point of a polynomial zonotope, which does
+%    not correspond to the geometric center of the polynomial zonotope
+%    in general
 %
 % Syntax:  
 %    c = center(pZ)
@@ -29,6 +29,6 @@ function [c] = center(pZ)
 
 %------------- BEGIN CODE --------------
 
-    c = pZ.c;
+c = pZ.c;
 
 %------------- END OF CODE --------------

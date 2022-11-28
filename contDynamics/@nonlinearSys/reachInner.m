@@ -2,6 +2,7 @@ function [Rin,Rout] = reachInner(sys,params,options)
 % reachInner - compute an inner-approximation of the reachable set
 %
 % Syntax:  
+%    Rin = reachInner(sys,params,options)
 %    [Rin,Rout] = reachInner(sys,params,options)
 %
 % Inputs:
@@ -38,30 +39,30 @@ function [Rin,Rout] = reachInner(sys,params,options)
 
 %------------- BEGIN CODE --------------
 
-    % options preprocessing in reachInner* functions
+% note: options preprocessing in reachInner* functions
 
-    % compute inner-approximation with the selected algorithm
-    switch options.algInner
+% compute inner-approximation with the selected algorithm
+switch options.algInner
 
-        % compute inner-approximation with the algorithm in [1]
-        case 'scale'
-            if nargout > 1
-                [Rin,Rout] = reachInnerScaling(sys,params,options);
-            else
-                Rin = reachInnerScaling(sys,params,options);
-            end
+    % compute inner-approximation with the algorithm in [1]
+    case 'scale'
+        if nargout > 1
+            [Rin,Rout] = reachInnerScaling(sys,params,options);
+        else
+            Rin = reachInnerScaling(sys,params,options);
+        end
 
-        % compute inner-approximation with the algorithm in [2]
-        case 'proj'
-            [Rin,Rout] = reachInnerProjection(sys,params,options);
-            
-        % compute inner-approximation with the algorithm in [3]    
-        case 'parallelo'
-            [Rin,Rout] = reachInnerParallelotope(sys,params,options);
+    % compute inner-approximation with the algorithm in [2]
+    case 'proj'
+        [Rin,Rout] = reachInnerProjection(sys,params,options);
+        
+    % compute inner-approximation with the algorithm in [3]    
+    case 'parallelo'
+        [Rin,Rout] = reachInnerParallelotope(sys,params,options);
 
-        otherwise
-            error('Wrong value for "options.algInner"!');
-    end
+    otherwise
+        throw(CORAerror('CORA:wrongFieldValue',...
+            'options.algInner',{'scale','proj','parallelo'}));
 end
 
 %------------- END OF CODE -------------

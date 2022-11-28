@@ -44,22 +44,19 @@ function dH = dH2box(Z,varargin)
 
 %------------- BEGIN CODE --------------
 
-
 % input arguments
-methods = {'exact','naive','ell','wgreedy','wopt'};
-if nargin == 2
-    if ischar(varargin{1}) && ismember(varargin{1},methods)
-        method = varargin{1};
-    end
+if dim(Z) <= 3
+    dV = 'exact';
 else
-    % choose default method depending on dimension of Z
-    if dim(Z) <= 3
-        method = 'exact';
-    else
-        method = 'naive';
-    end
+    dV = 'naive';
 end
 
+% parse input arguments
+method = setDefaultValues({dV},varargin{:});
+
+% check input arguments
+inputArgsCheck({{Z,'att','zonotope','nonempty'};
+                {method,'str',{'exact','naive','ell','wgreedy','wopt'}}});
 
 % methods
 if strcmp(method,'exact')

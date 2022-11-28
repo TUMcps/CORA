@@ -1,43 +1,37 @@
-function res = isIntersecting(obj1,obj2,varargin)
-% isIntersecting - determines if levelSet obj1 intersects obj2 with the
-%                  method described in Sec. 4.1 in [1]
+function res = isIntersecting(ls,S,varargin)
+% isIntersecting - determines if a level set intersects a set using
+%    the method described in Sec. 4.1 in [1]
 %
 % Syntax:  
-%    res = isIntersecting(obj1,obj2)
-%    res = isIntersecting(obj1,obj2,type)
+%    res = isIntersecting(ls,S)
+%    res = isIntersecting(ls,S,type)
 %
 % Inputs:
-%    obj1 - halfspace object
-%    obj2 - conSet object
+%    ls - levelSet object
+%    S - contSet object
 %    type - type of check ('exact' or 'approx')
 %
 % Outputs:
-%    res - 1/0 if set is intersecting, or not
+%    res - true/false
 %
 % Example: 
 %    syms x y
 %    eq = sin(x) + y;
 %    ls = levelSet(eq,[x;y],'<=');
 %
-%    int1 = interval([0.7;-0.3],[1.3;0.3]);
-%    int2 = interval([0.2;-0.3],[0.8;0.3]);
+%    I1 = interval([0.7;-0.3],[1.3;0.3]);
+%    I2 = interval([0.2;-0.3],[0.8;0.3]);
 %
-%    isIntersecting(ls,int1,'approx')
-%    isIntersecting(ls,int2,'approx')
+%    isIntersecting(ls,I1,'approx')
+%    isIntersecting(ls,I2,'approx')
 %
-%    figure
-%    hold on
-%    xlim([-1.5,1.5]);
-%    ylim([-1,1]);
+%    figure; hold on; xlim([-1.5,1.5]); ylim([-1,1]);
 %    plot(ls,[1,2],'b');
-%    plot(int1,[1,2],'r','Filled',true,'EdgeColor','none');
+%    plot(I1,[1,2],'FaceColor','r');
 %
-%    figure
-%    hold on
-%    xlim([-1.5,1.5]);
-%    ylim([-1,1]);
+%    figure; hold on; xlim([-1.5,1.5]); ylim([-1,1]);
 %    plot(ls,[1,2],'b');
-%    plot(int2,[1,2],'g','Filled',true,'EdgeColor','none');
+%    plot(I2,[1,2],'FaceColor','g');
 %
 % References:
 %   [1] N. Kochdumper et al. "Reachability Analysis for Hybrid Systems with 
@@ -56,53 +50,61 @@ function res = isIntersecting(obj1,obj2,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    type = 'exact';
-    
-    if nargin > 2 && ~isempty(varargin{1})
-       type = varargin{1};
-    end
-    
-    if strcmp(type,'exact')
-       error('No exact algorithm implemented for this set representation!');
-    end
+% pre-processing
+[resFound,vars] = pre_isIntersecting('levelSet',ls,S,varargin{:});
 
-    % interval over-approximation
-    int = interval(obj2);
+% check premature exit
+if resFound
+    % if result has been found, it is stored in the first entry of var
+    res = vars{1}; return
+else
+    % assign values
+    ls = vars{1}; S = vars{2}; type = vars{3};
+end
 
-    % evaluate non-linear function with interval arithmetic
-    intRes = obj1.funHan(int);
 
-    sup = supremum(intRes);
-    infi = infimum(intRes);
+% currently, no exact method
+if strcmp(type,'exact')
+    throw(CORAerror('CORA:noops',ls,S));
+end
 
-    % multiple inequality constraints or not
-    if ~iscell(obj1.compOp)
+% interval over-approximation
+I = interval(S);
 
-        % switch case for the different types of level sets
-        if strcmp(obj1.compOp,'==')
-            res = (sup >= 0) & (infi <= 0); 
-        elseif strcmp(obj1.compOp,'<=')
-            res = (infi <= 0);
-        else
-            res = (infi < 0);
-        end
+% evaluate non-linear function with interval arithmetic
+I = ls.funHan(I);
 
+% read infimum and supremum
+ub = supremum(I);
+lb = infimum(I);
+
+% multiple inequality constraints or not
+if ~iscell(ls.compOp)
+
+    % switch case for the different types of level sets
+    if strcmp(ls.compOp,'==')
+        res = (ub > 0 | withinTol(ub,0)) & (lb < 0 | withinTol(lb,0)); 
+    elseif strcmp(ls.compOp,'<=')
+         res = lb < 0 | withinTol(lb,0);
     else
-
-        resVec = zeros(length(obj1.compOp),1);
-
-        % loop over all inequality constraints
-        for i = 1:length(obj1.compOp)
-
-            if strcmp(obj1.compOp{i},'<=')
-                resVec(i) = (infi(i) <= 0);
-            else
-                resVec(i) = (infi(i) < 0);
-            end
-        end
-
-        res = all(resVec == 1);
+        res = lb < 0;
     end
+
+else
+
+    resVec = false(length(ls.compOp),1);
+
+    % loop over all inequality constraints
+    for i = 1:length(ls.compOp)
+
+        if strcmp(ls.compOp{i},'<=')
+            resVec(i) = lb(i) < 0 | withinTol(lb(i),0);
+        else
+            resVec(i) = lb(i) < 0;
+        end
+    end
+
+    res = all(resVec);
+end
 
 %------------- END OF CODE --------------

@@ -2,7 +2,7 @@ function GSEstimation = evaluateSingleObserver(obj,params,options)
 % evaluateSingleObserver - evaluates a specified observer
 %
 % Syntax:  
-%    evaluateObservers()
+%    evaluateSingleObserver()
 %
 % Inputs:
 %    -
@@ -49,5 +49,6 @@ GSEstimation.SampleStepSize = options.timeStep;
 GSEstimation.Performance = perf;
 GSEstimation.tIteration = tcomp/length(perf.volBox);
 
-
 end
+
+%------------- END OF CODE --------------

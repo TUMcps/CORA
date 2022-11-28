@@ -1,9 +1,9 @@
 function res = test_nonlinearSysDT_reach_01_cstrDisc
-% test_nonlinearSysDT_reach_cstrDisc - unit test for nonlinear discrete time
-%    reachability analysis from [1, Sec.6]. 
+% test_nonlinearSysDT_reach_01_cstrDisc - unit test for nonlinear 
+%    discrete time reachability analysis from [1, Sec.6]. 
 %
 % Syntax:  
-%    res = test_nonlinearSysDT_reach_cstr
+%    res = test_nonlinearSysDT_reach_01_cstrDisc
 %
 % Inputs:
 %    -
@@ -57,9 +57,7 @@ R = reach(sysDisc,params,options);
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 50;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 0;
+simOpt.nrConstInp = 1;
 
 simRes = simulateRandom(sysDisc, params, simOpt);
 
@@ -69,12 +67,12 @@ simRes = simulateRandom(sysDisc, params, simOpt);
 res = true;
 
 for i = 1:simOpt.points
-   for j = 1:length(R.timePoint.set)
-      if ~in(R.timePoint.set{j},simRes.x{i}(j,:)')
+   for j = 1:length(R.timePoint.set)-1
+      if ~contains(R.timePoint.set{j+1},simRes.x{i}(j,:)')
           res = false;
           path = pathFailedTests(mfilename());
           save(path,'simRes');       
-          error('Test failed!');
+          return
       end
    end
 end

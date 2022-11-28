@@ -1,26 +1,27 @@
-function res = conIntersect(Z,Y,R)
-% conIntersect - Adds the constraint that the linear transformation R*Z of
-%                a constrained zonotope Z has to intersect the constrained 
-%                zonotope Y (see Eq. (13) in [1])
+function res = conIntersect(cZ1,cZ2,M)
+% conIntersect - Adds the constraint that the linear transformation M*cZ1
+%    of a constrained zonotope cZ1 has to intersect the constrained 
+%    zonotope cZ2 (see Eq. (13) in [1] with cZ1=Z, cZ2=Y, M=R)
 %
 % Syntax:  
-%    res = conIntersect(Z,Y,R)
+%    res = conIntersect(cZ1,cZ1,M)
 %
 % Inputs:
-%    Z,Y - constrained zonotope object
-%    R - transformation matrix for the linear transformation R*Z
+%    cZ1 - conZonotope object
+%    cZ2 - conZonotope object
+%    M - transformation matrix for the linear transformation M*cZ1
 %
 % Outputs:
-%    res - resulting constrained zonotope object
+%    res - conZonotope object
 %
 % Example: 
-%    Z = conZonotope([0 1.5 -1.5 0.5;0 1 0.5 -1],[1 1 1],-1);
-%    Y = conZonotope([6 2 0;-2 0 1]);
-%    R = [2 1;-1 0];
+%    cZ1 = conZonotope([0 1.5 -1.5 0.5;0 1 0.5 -1],[1 1 1],-1);
+%    cZ2 = conZonotope([6 2 0;-2 0 1]);
+%    M = [2 1;-1 0];
 %
-%    res = conIntersect(Z,Y,R);
+%    res = conIntersect(cZ1,cZ2,M);
 %
-%    figure; hold on
+%    figure; hold on;
 %    plot(Z);
 %    plot(res,[1,2],'r');
 %
@@ -41,32 +42,32 @@ function res = conIntersect(Z,Y,R)
 
 %------------- BEGIN CODE --------------
        
-    % get object properties
-    cz = Z.Z(:,1); cy = Y.Z(:,1); Gz = Z.Z(:,2:end); Gy = Y.Z(:,2:end);
-    
-    % construct resulting set according to Eq. (13) in [1]
-    c = cz;
-    G = [Gz, zeros(size(Gz,1),size(Gy,2))];
-    
-    if ~isempty(Z.A)
-       if ~isempty(Y.A)
-           A = [blkdiag(Z.A,Y.A);[R*Gz -Gy]];
-           b = [Z.b; Y.b; cy - R*cz];
-       else
-           A = [[Z.A,zeros(size(Z.A,1),size(Gy,2))];[R*Gz -Gy]];
-           b = [Z.b; cy - R*cz];
-       end
-    else
-       if ~isempty(Y.A)
-           A = [[zeros(size(Y.A,1),size(Gz,2)) Y.A];[R*Gz -Gy]];
-           b = [Y.b; cy - R*cz];
-       else
-           A = [R*Gz -Gy];
-           b = cy - R*cz;
-       end
-    end
+% get object properties
+cz = cZ1.Z(:,1); cy = cZ2.Z(:,1); Gz = cZ1.Z(:,2:end); Gy = cZ2.Z(:,2:end);
 
-    res = conZonotope(c,G,A,b);
+% construct resulting set according to Eq. (13) in [1]
+c = cz;
+G = [Gz, zeros(size(Gz,1),size(Gy,2))];
+
+if ~isempty(cZ1.A)
+   if ~isempty(cZ2.A)
+       A = [blkdiag(cZ1.A,cZ2.A);[M*Gz -Gy]];
+       b = [cZ1.b; cZ2.b; cy - M*cz];
+   else
+       A = [[cZ1.A,zeros(size(cZ1.A,1),size(Gy,2))];[M*Gz -Gy]];
+       b = [cZ1.b; cy - M*cz];
+   end
+else
+   if ~isempty(cZ2.A)
+       A = [[zeros(size(cZ2.A,1),size(Gz,2)) cZ2.A];[M*Gz -Gy]];
+       b = [cZ2.b; cy - M*cz];
+   else
+       A = [M*Gz -Gy];
+       b = cy - M*cz;
+   end
 end
+
+% instantiate intersection
+res = conZonotope(c,G,A,b);
 
 %------------- END OF CODE --------------

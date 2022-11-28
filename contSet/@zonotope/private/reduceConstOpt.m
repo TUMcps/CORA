@@ -108,4 +108,4 @@ C_inv = V * diag(diag(1 ./S)) * U';
 c = sum(abs(C_inv * G), 2) - ones(n,1);
 ceq = [U*U' - diag(ones(1,n)); V*V' - diag(ones(1,n))];
 
-%-------------------- END CODE --------------------
+%------------- END OF CODE --------------

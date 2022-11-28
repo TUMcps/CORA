@@ -1,48 +1,46 @@
 function res = cubMap(cZ,varargin)
 % cubMap - computes an enclosure of the set corresponding to the cubic 
-%          multiplication of a constrained zonotope with a third-order tensor
+%    multiplication of a constrained zonotope with a third-order tensor
 %
 % Description:
-%   Calculates the following set:
-%   { z = (x' T x) * x | x \in cZ }
+%    Calculates the following set:
+%    { z = (x' T x) * x | x \in cZ }
 %
-%   If three conZonotopes are provided, the function calculates the set:
-%   { z = (x1' T x2) * x3 | x1 \in cZ1, x2 \in cZ2, x3 \in cZ3 }
+%    If three conZonotopes are provided, the function calculates the set:
+%    { z = (x1' T x2) * x3 | x1 \in cZ1, x2 \in cZ2, x3 \in cZ3 }
 %
 % Syntax:  
 %    res = cubMap(cZ,T)
+%    res = cubMap(cZ,T,ind)
 %    res = cubMap(cZ1,cZ2,cZ3,T)
-%    res = cubMap(cZ,T,ind)     
 %    res = cubMap(cZ1,cZ2,cZ3,T,ind)
 %
 % Inputs:
 %    cZ,cZ1,cZ2,cZ3 - conZonotope objects
 %    T - third-order tensor
-%    ind - cell-array containing the non-zero indizes of the tensor
+%    ind - cell-array containing the non-zero indices of the tensor
 %
 % Outputs:
 %    res - conZonotope object representing the set of the cubic mapping
 %
 % Example: 
 %    % cubic multiplication
-%    cZ = conZonotope.generateRandom(2,[],4);
+%    cZ = conZonotope.generateRandom('Dimension',2,'NrGenerators',4);
 %    
-%    T{1,1} = rand(2);
-%    T{1,2} = rand(2);
-%    T{2,1} = rand(2);
-%    T{2,2} = rand(2);
+%    T{1,1} = rand(2); T{1,2} = rand(2);
+%    T{2,1} = rand(2); T{2,2} = rand(2);
 %
 %    cZcub = cubMap(cZ,T);
 %
-%    figure 
-%    subplot(1,2,1)
-%    plot(cZ,[1,2],'r','Filled',true,'EdgeColor','none');
-%    subplot(1,2,2)
-%    plot(cZcub,[1,2],'b','Filled',true,'EdgeColor','none','Template',50);
+%    figure;
+%    subplot(1,2,1);
+%    plot(cZ,[1,2],'FaceColor','r');
+%    subplot(1,2,2);
+%    plot(cZcub,[1,2],'FaceColor','b','Template',50);
 %
 %    % mixed cubic multiplication
-%    Z2 = zonotope.generateRandom(2,[],5);
-%    Z3 = zonotope.generateRandom(2,[],3);
+%    Z2 = zonotope.generateRandom('Dimension',2,'NrGenerators',5);
+%    Z3 = zonotope.generateRandom('Dimension',2,'NrGenerators',3);
 %
 %    ZcubMixed = cubMap(Z,Z2,Z3,T);
 %
@@ -59,46 +57,61 @@ function res = cubMap(cZ,varargin)
 
 %------------- BEGIN CODE --------------
 
+    % check number of input arguments
+    if nargin < 2
+        throw(CORAerror('CORA:notEnoughInputArgs',2));
+    elseif nargin > 5
+        throw(CORAerror('CORA:tooManyInputArgs',5));
+    end
+
     % cubic multiplication or mixed cubic multiplication
-    if isa(varargin{1},'conZonotope')
+    if nargin == 4 || nargin == 5
+        % res = cubMap(cZ1,cZ2,cZ3,T)
+        % res = cubMap(cZ1,cZ2,cZ3,T,ind)
         
-        % check user input
-        if nargin < 4
-           error('Wrong syntax for function cubMap!'); 
-        end
-        
+        % assign input arguments
         cZ2 = varargin{1};
         cZ3 = varargin{2};
         T = varargin{3};
         
         % parse optional input arguments
         if nargin > 4
-           ind = varargin{4}; 
+            ind = varargin{4}; 
         else
-           temp = 1:size(T,2);
-           ind = repmat({temp},[size(T,1),1]);
-        end 
+            temp = 1:size(T,2);
+            ind = repmat({temp},[size(T,1),1]);
+        end
+
+        % check input arguments
+        inputArgsCheck({{cZ,'att','conZonotope'};
+                        {cZ2,'att','conZonotope'};
+                        {cZ3,'att','conZonotope'};
+                        {T,'att','cell'};
+                        {ind,'att','cell'}});
         
         % mixed cubic multiplication
         res = cubMapMixed(cZ,cZ2,cZ3,T,ind);
         
-    else
+    elseif nargin == 2 || nargin == 3
+        % res = cubMap(cZ,T)
+        % res = cubMap(cZ,T,ind)
         
-        % check user input
-        if nargin < 2
-           error('Wrong syntax for function cubMap!'); 
-        end
-        
+        % assign input argument
         T = varargin{1};
         
         % parse optional input arguments
         if nargin > 2
-           ind = varargin{2}; 
+            ind = varargin{2}; 
         else
-           temp = 1:size(T,2);
-           ind = repmat({temp},[size(T,1),1]);
+            temp = 1:size(T,2);
+            ind = repmat({temp},[size(T,1),1]);
         end 
         
+        % check input arguments
+        inputArgsCheck({{cZ,'att',{'conZonotope'},{''}};
+                        {T,'att',{'cell'},{''}};
+                        {ind,'att',{'cell'},{''}}});
+
         % cubic multiplication
         res = cubMapSingle(cZ,T,ind);       
     end
@@ -108,7 +121,7 @@ end
 % Auxiliary Functions -----------------------------------------------------
 
 function res = cubMapSingle(cZ,T,ind)
-% calulates the following set:      { z = (x' T x) * x | x \in cZ }
+% calculates the following set:      { z = (x' T x) * x | x \in cZ }
 
     if isempty(cZ.A) 
 
@@ -127,7 +140,8 @@ function res = cubMapSingle(cZ,T,ind)
         pZ = polyZonotope(zonotope(cZ.Z));
         temp = cubMap(pZ,T,ind);
 
-        % compute constraint matrix from con. mat. of original conZonotope
+        % compute constraint matrix from constraint matrix of original
+        % constrained zonotope
         index = find(sum(temp.expMat,1) == 1);
         A = zeros(size(cZ.A,1),size(temp.G,2));
         b = cZ.b;
@@ -161,7 +175,7 @@ function res = cubMapSingle(cZ,T,ind)
 end
 
 function res = cubMapMixed(cZ1,cZ2,cZ3,T,ind)
-% calulates the following set:
+% calculates the following set:
 % { z = (x1' T x2) * x3 | x1 \in cZ1, x2 \in cZ2, x3 \in cZ3 }
 
     % rescale constrained zonotope to reduce over-approximation
@@ -233,3 +247,5 @@ function res = cubMapMixed(cZ1,cZ2,cZ3,T,ind)
     res = conZonotope(c,G,A,b);
 
 end
+
+%------------- END OF CODE --------------

@@ -1,15 +1,16 @@
-function han = plot(obj,varargin)
-% plot - Plots 2-dimensional projection of a halfspace
+function han = plot(hs,varargin)
+% plot - plots a projection of a halfspace
 %
 % Syntax:  
-%    han = plot(obj)
-%    han = plot(obj,dims,type)
+%    han = plot(hs)
+%    han = plot(hs,dims)
+%    han = plot(hs,dims,type)
 %
 % Inputs:
-%    obj - halfspace object
-%    dims - (optional) dimensions that should be projected (optional);
-%          assume that other entries of the normal vector are zeros
-%    type - (optional) plot settings (LineSpec and name-value pairs)
+%    hs - halfspace object
+%    dims - (optional) dimensions for projection
+%           (assumption: other entries of the normal vector are zeros)
+%    type - (optional) plot settings (LineSpec and Name-Value pairs)
 %
 % Outputs:
 %    han - handle to the graphics object
@@ -17,8 +18,7 @@ function han = plot(obj,varargin)
 % Example: 
 %    hs = halfspace([1;1],0);
 % 
-%    xlim([-4,4]);
-%    ylim([-4,4]);
+%    figure; hold on; xlim([-4,4]); ylim([-4,4]);
 %    plot(hs,[1,2],'r');
 %
 % Other m-files required: none
@@ -30,47 +30,56 @@ function han = plot(obj,varargin)
 % Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      23-August-2013
 % Last update:  19-November-2019 (NK, plot area instead of line)
+%               25-May-2022 (TL: 1D Plotting)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    dims = [1,2];
-    type{1} = 'b';
+% parse input arguments
+dims = setDefaultValues({[1,2]},varargin{:});
 
-    if nargin >= 2 && ~isempty(varargin{1})
-        dims = varargin{1};
-    end
+% check input arguments
+inputArgsCheck({{hs,'att','halfspace'};
+                {dims,'att','numeric',{'nonnan','vector','positive','integer'}}});
 
-    if nargin >= 3 && ~isempty(varargin{2})
-        type = varargin(2:end); 
-    end
-    type = [type,'Filled',true];
+% read out plot options
+if size(dims) == 1
+    NVpairs = readPlotOptions(varargin(2:end),'contour');
+else
+    NVpairs = readPlotOptions(varargin(2:end),'fill');
+end
 
-    % check dimension
-    if length(dims) < 2
-        error('At least 2 dimensions have to be specified!');
-    elseif length(dims) > 3
-        error('Only up to 3 dimensions can be plotted!');
-    end
-    
-    % get size of current plot
-    xLim = get(gca,'Xlim');
-    yLim = get(gca,'Ylim');
+% check dimension
+if length(dims) < 1
+    throw(CORAerror('CORA:plotProperties',1));
+elseif length(dims) > 3
+    throw(CORAerror('CORA:plotProperties',3));
+end
 
-    % convert to mptPolytope
-    if length(dims) == 2
-        C = [obj.c(dims)';eye(2);-eye(2)];
-        d = [obj.d;xLim(2);yLim(2);-xLim(1);-yLim(1)];
-    else
-        zLim = get(gca,'Zlim');
-        C = [obj.c(dims)';eye(3);-eye(3)];
-        d = [obj.d;xLim(2);yLim(2);zLim(2);-xLim(1);-yLim(1);-zLim(1)];
-    end
+% get size of current plot
+xLim = get(gca,'Xlim');
+yLim = get(gca,'Ylim');
 
-    poly = mptPolytope(C,d);
+% convert to mptPolytope
+if length(dims) == 1
+    C = [hs.c(dims)';1;-1];
+    d = [hs.d;xLim(2);-xLim(1)];
+elseif length(dims) == 2
+    C = [hs.c(dims)';eye(2);-eye(2)];
+    d = [hs.d;xLim(2);yLim(2);-xLim(1);-yLim(1)];
+else
+    zLim = get(gca,'Zlim');
+    C = [hs.c(dims)';eye(3);-eye(3)];
+    d = [hs.d;xLim(2);yLim(2);zLim(2);-xLim(1);-yLim(1);-zLim(1)];
+end
 
-    % plot mptPolytope
-    han = plot(poly,dims,type{:});
+poly = mptPolytope(C,d);
+
+% plot mptPolytope
+han = plot(poly,dims,NVpairs{:});
+
+if nargout == 0
+    clear han;
+end
 
 %------------- END OF CODE --------------

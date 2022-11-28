@@ -24,8 +24,23 @@ function res = test_ellipsoid_cartProd
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 res = true;
-load cases.mat E_c
+load cases.mat E_c 
+
+% empty set
+% try 
+%     cartProd(E_c{1}.E1,ellipsoid());
+%     res = false;
+% catch ME 
+%     if ~strcmp(ME.identifier,'CORA:notSupported')
+%         rethrow(ME);
+%     else
+%         res = true;
+%     end
+% end
+
+% loop over cases
 for i=1:length(E_c)
     E1 = E_c{i}.E1; % non-deg
     E2 = E_c{i}.E2; % non-deg
@@ -35,7 +50,7 @@ for i=1:length(E_c)
     % test non-deg
     Eres_nd = cartProd(E1,E2);
     Y_nd = combineVec(randPoint(E1,2*i),randPoint(E2,2*i));
-    if ~in(Eres_nd,Y_nd)
+    if ~contains(Eres_nd,Y_nd)
         res = false;
         break;
     end
@@ -43,7 +58,7 @@ for i=1:length(E_c)
     % test deg
     Eres_d = cartProd(E1,Ed1);
     Y_d = combineVec(randPoint(E1,2*i),randPoint(Ed1,2*i));
-    if ~in(Eres_d,Y_d)
+    if ~contains(Eres_d,Y_d)
         res = false;
         break;
     end
@@ -51,18 +66,10 @@ for i=1:length(E_c)
     % test zero rank ellipsoid
     Eres_0 = cartProd(E1,E0);
     Y_0 = combineVec(randPoint(E1,2*i),randPoint(E0,2*i));
-    if ~in(Eres_0,Y_0)
+    if ~contains(Eres_0,Y_0)
         res = false;
         break;
     end
-    
-    
 end
 
-
-if res
-    disp([mfilename,' successful']);
-else
-    disp([mfilename,' failed']);
-end
 %------------- END OF CODE --------------

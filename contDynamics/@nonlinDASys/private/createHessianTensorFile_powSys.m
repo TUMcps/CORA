@@ -1,17 +1,21 @@
 function createHessianTensorFile_powSys(J2dyn,path,name,Ycomplex)
-% createHessianTensorFile - generates an mFile that allows to compute the
+% createHessianTensorFile_powSys - generates an mFile that allows to compute the
 % hessian tensor
 %
 % Syntax:  
-%    createHessianTensorFile(obj,path)
+%    createHessianTensorFile_powSys(J2dyn,path,name,Ycomplex)
 %
 % Inputs:
-%    obj - nonlinear system object
+%    J2dyn - Hessian matrix of dynamic equation
 %    path - path for saving the file
+%    name - ???
+%    Ycomplex - ???
 %
 % Outputs:
+%    -
 %
 % Example: 
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -149,9 +153,11 @@ end
 %close file
 fclose(fid);
 
+end
 
+
+% Auxiliary functions -----------------------------------------------------
 function writeSparseMatrix(M,var,fid)
-
 
 %write each row
 [row,col] = find(M~=0);
@@ -165,6 +171,8 @@ for i=1:length(row)
     fprintf(fid, '%s\n', str);
 end
 
+end
+
 function writeAlgebraicHessian(k)
 
 %sector x-x
@@ -174,13 +182,15 @@ for i = 1:nrOfGenerators
     end
 end
 
+end
 
 
-
-function [str]=bracketSubs(str)
+function str = bracketSubs(str)
 
 %generate left and right brackets
 str=strrep(str,'L','(');
 str=strrep(str,'R',')');
+
+end
 
 %------------- END OF CODE --------------

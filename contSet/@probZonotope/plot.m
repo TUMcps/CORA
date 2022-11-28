@@ -1,28 +1,26 @@
 function han = plot(probZ,varargin)
-% plot - Plots 2-dimensional projection of a zonotope with a maximum
-%    of 5 generators
+% plot - plots a projection of a probabilistic zonotope
 %
 % Syntax:  
-%    h = plot(probZ) plots the probabilistic zonotope probZ for the first two dimensions
-%    h = plot(probZ,dims) plots the probabilistic  zonotope probZ for the two dimensions i,j:
-%        "dims=[i,j]" and returns handle to line-plot object
-%    h = plot(probZ,dims,'Color','red',...) adds the standard plotting preferences
+%    han = plot(probZ)
+%    han = plot(probZ,dims)
+%    han = plot(probZ,dims,type)
 %
 % Inputs:
-%    probZ - probabilistic zonotope object
-%    dims - (optional) dimensions that should be projected
-%    type - (optional) plot settings (LineSpec and name-value pairs)
-%    m - (optional) m-sigma value, default: probZ.gamma
+%    probZ - probZonotope object
+%    dims - (optional) dimensions for projection
+%    type - (optional) plot settings (LineSpec and Name-Value pairs)
+%           additional Name-Value pairs:
+%               <'m',m> - m-sigma value (default: probZ.gamma)
 %
 % Outputs:
-%    han - handle of graphics object
-%    maxVal - maximum probabilistic value
+%    han - handle to the graphics object
 %
 % Example:
 %    Z1 = [10 1 -2; 0 1 1];
 %    Z2 = [0.6 1.2; 0.6 -1.2];
 %    probZ = probZonotope(Z1,Z2);
-%    plot(pZ,'dark');
+%    plot(probZ,[1, 2], 'FaceColor','red');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,41 +28,47 @@ function han = plot(probZ,varargin)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       03-August-2007
-% Last update:   17-July-2020
+% Author:       Matthias Althoff
+% Written:      03-August-2007
+% Last update:  17-July-2020
+%               25-May-2022 (TL: 1D Plotting)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 % default values
-dims = [1,2];
-filled = false; % coresponds to mesh/surf for prob. zonotopes
-NVpairs = {};
+dims = setDefaultValues({[1,2]},varargin{:});
 m = probZ.gamma;
 
-%If two arguments are passed    
-if nargin==2
-    dims=varargin{1};
-    
-%If three or more arguments are passed
-elseif nargin>=3
-    dims = varargin{1};
-    % parse plot options
-    [~,NVpairs] = readPlotOptions(varargin(2:end));
-    [NVpairs,filled] = readNameValuePair(NVpairs,'Filled','islogical');
-    [NVpairs,m] = readNameValuePair(NVpairs,'m','isscalar',m);
-end 
+% check input arguments
+inputArgsCheck({{probZ,'att','probZonotope'};
+                {dims,'att','numeric',{'nonempty','integer','positive','vector'}}});
+
+% parse plot options
+NVpairs = readPlotOptions(varargin(2:end),'surf');
+[NVpairs,m] = readNameValuePair(NVpairs,'m','isscalar',m);
+% readout 'FaceColor' to decide plot/fill call where necessary
+[~,facecolor] = readNameValuePair(NVpairs,'FaceColor');
+
+% one-dimensional case
+if length(dims) == 1
+    probZ = project(probZ, dims);
+    probZ = [1;0] * probZ;
+    dims = [1,2];
+end
 
 %compute enclosing probability
 eP = enclosingProbability(probZ,m,dims);
 
 %plot and output the handle
-if ~filled
+if isempty(facecolor) || strcmp(facecolor,'none')
     han = mesh(eP.X,eP.Y,eP.P,NVpairs{:});
 else
     han = surf(eP.X,eP.Y,eP.P,NVpairs{:});
 end
-  
+
+if nargout == 0
+    clear han;
+end
 
 %------------- END OF CODE --------------

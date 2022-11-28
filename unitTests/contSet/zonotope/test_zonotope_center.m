@@ -40,13 +40,10 @@ true_vec = [1; 5];
 % check result
 res_val = all(c == true_vec);
 
-% add results
-res = res_val;
+% empty set
+res_e = isempty(center(zonotope())) && isnumeric(center(zonotope()));
 
-if res
-    disp('test_center successful');
-else
-    disp('test_center failed');
-end
+% add results
+res = res_val && res_e;
 
 %------------- END OF CODE --------------

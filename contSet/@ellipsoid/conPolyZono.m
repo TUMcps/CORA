@@ -1,5 +1,5 @@
 function cPZ = conPolyZono(E)
-% conPolyZono - Convert an ellipsoid to a conPolyZono object
+% conPolyZono - Converts an ellipsoid to a constrained polynomial zonotope
 %
 % Syntax:  
 %    cPZ = conPolyZono(E)
@@ -14,13 +14,9 @@ function cPZ = conPolyZono(E)
 %    E = ellipsoid([4 2;2 4],[1;1]);
 %    cPZ = conPolyZono(E);
 % 
-%    figure; hold on;
-%    plot(E,[1,2],'r','Filled',true,'EdgeColor','none');
-%    xlim([-2,4]); ylim([-2,4]);
-% 
-%    figure; hold on;
-%    plot(cPZ,[1,2],'b','Splits',20,'Filled',true,'EdgeColor','none');
-%    xlim([-2,4]); ylim([-2,4]);
+%    figure; hold on; xlim([-2,4]); ylim([-2,4]);
+%    plot(E,[1,2],'FaceColor','r');
+%    plot(cPZ,[1,2],'b','Splits',20);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,27 +26,33 @@ function cPZ = conPolyZono(E)
 
 % Author:       Niklas Kochdumper
 % Written:      12-August-2019 
-% Last update:  ---
+% Last update:  04-July-2022 (VG: avoid class array problems)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
-    % eigenvalue decomposition of the ellipsoid matrix
-    [V,D] = eig(E.Q);
-    
-    % construct constrained polynomial zonotopes
-    n = E.dim;
-    
-    c = E.q;
-    G = V*sqrt(D);
-    expMat = [eye(n);zeros(1,n)];
-    A = [-0.5 ones(1,n)];
-    b = 0.5;
-    expMat_ = [[zeros(n,1);1],[2*eye(n); zeros(1,n)]];
-    id = (1:n+1)';
-    
-    cPZ = conPolyZono(c,G,expMat,A,b,expMat_,[],id);
-    
-end
+% check input arguments
+inputArgsCheck({{E,'att','ellipsoid','scalar'}});
+
+% eigenvalue decomposition of the ellipsoid matrix
+[V,D] = eig(E.Q);
+
+% dimension
+n = dim(E);
+% starting point
+c = E.q;
+% dependent generator matrix and exponent matrix
+G = V*sqrt(D);
+expMat = [eye(n);zeros(1,n)];
+
+% constraints
+A = [-0.5 ones(1,n)];
+b = 0.5;
+expMat_ = [[zeros(n,1);1],[2*eye(n); zeros(1,n)]];
+% identifiers
+id = (1:n+1)';
+
+% instantiate the constrained polynomial zonotope
+cPZ = conPolyZono(c,G,expMat,A,b,expMat_,[],id);
     
 %------------- END OF CODE --------------

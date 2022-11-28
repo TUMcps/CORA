@@ -1,4 +1,4 @@
-function Z = reduceAdaptive(Z,diagpercent)
+function [Z,dHerror,gredIdx] = reduceAdaptive(Z,diagpercent,varargin)
 % reduceAdaptive - reduces the zonotope order until a maximum amount of
 %    over-approximation defined by the Hausdorff distance between the
 %    original zonotope and the reduced zonotope; based on [Thm 3.2,1]
@@ -9,10 +9,12 @@ function Z = reduceAdaptive(Z,diagpercent)
 % Inputs:
 %    Z - zonotope object
 %    diagpercent - percentage of diagonal of box over-approximation of
-%               zonotope (used to compute dHmax)
+%               zonotope (used to compute dHmax) [0,1]
 %
 % Outputs:
 %    Z - reduced zonotope
+%    dHerror - Hausdorff distance between Z and reduced Z
+%    gredIdx - index of reduced generators
 %
 % Example: 
 %    Z = zonotope.generateRandom(2);
@@ -36,8 +38,19 @@ function Z = reduceAdaptive(Z,diagpercent)
 
 %------------- BEGIN CODE --------------
 
+% default type
+type = 'girard';
+if nargin == 3
+    if ischar(varargin{1}) && any(ismember(varargin{1},{'penven','girard'}))
+        type = varargin{1};
+    end
+end
+
+dHerror = 0;
 G = generators(Z);
 if isempty(G)
+    dHerror = 0;
+    gredIdx = [];
     return;
 end
 Gabs = abs(G);
@@ -46,41 +59,95 @@ Gabs = abs(G);
 Gbox = sum(Gabs,2);
 dHmax = (diagpercent * 2) * sqrt(sum(Gbox.^2));
 
-
 [n,nrG] = size(G);
-% select generators using 'girard'
-norminf = max(Gabs,[],1);               % faster than: vecnorm(G,Inf);
-normsum = sum(Gabs,1);                  % faster than: vecnorm(G,1);
-[h,idx] = mink(normsum - norminf,nrG);
 
-if ~any(h)
-    % no generators or all are h=0
-    newG = diag(Gbox);
-    Z.Z = [center(Z),newG(:,any(newG,1))];
-    return
+if strcmp(type, 'penven')
+    % dummy value (plz fix Adri)
+    gredIdx = 42;
+    
+    % Compute spherical (naive) bound for each generator
+    naive = sqrt(sum(Gabs.^2,1));
+    % Compute Le Penven bound for each generator, by multiplying the last bit to the spherical bound
+    penven = naive .* sqrt(2*(abs(1-  sum(Gabs.^4,1)./sum(Gabs.^2,1).^2 )  ));
+    % Compare them
+    resulting = min([naive;penven]);
+
+    % Sort them
+    [h,idx] = mink(resulting,nrG);
+
+    if ~any(h)
+        % no generators or all are h=0
+        newG = diag(Gbox);
+        Z.Z = [center(Z),newG(:,any(newG,1))];
+        return
+    end
+
+    % box generators with h = 0
+    hzeroIdx = idx(h==0);
+    Gzeros = sum(Gabs(:,hzeroIdx),2);
+    last0Idx = numel(hzeroIdx);
+    gensred = Gabs(:,idx(last0Idx+1:end));
+
+    % Take cumsum of the bounds for each generator, take the first few
+    s = cumsum(h);
+    redIdx = find(s(last0Idx+1:end) <= dHmax, 1, 'last');
+    if isempty(redIdx)
+        redIdx = 0;
+        dHerror = 0;
+        gredIdx = hzeroIdx;
+    else
+        dHerror = h(redIdx);
+        gredIdx = idx(1:length(hzeroIdx)+redIdx);
+    end
+    
+else % 'girard'
+    % select generators using 'girard'
+    norminf = max(Gabs,[],1);               % faster than: vecnorm(G,Inf);
+    normsum = sum(Gabs,1);                  % faster than: vecnorm(G,1);
+    [h,idx] = mink(normsum - norminf,nrG);
+
+    if ~any(h)
+        % no generators or all are h=0
+        newG = diag(Gbox);
+        Z.Z = [center(Z),newG(:,any(newG,1))];
+        % no over-approximation
+        dHerror = 0;
+        gredIdx = idx;
+        return
+    end
+
+    % box generators with h = 0
+    hzeroIdx = idx(h==0);
+    Gzeros = sum(Gabs(:,hzeroIdx),2);
+    last0Idx = numel(hzeroIdx);
+    gensred = Gabs(:,idx(last0Idx+1:end));
+
+    [maxval,maxidx] = max(gensred,[],1);
+    % use linear indexing
+    mugensred = zeros(n,nrG-last0Idx);
+    cols = n*(0:nrG-last0Idx-1);
+    mugensred(cols+maxidx) = maxval;
+    % compute new over-approximation of dH
+    gensdiag = cumsum(gensred-mugensred,2);
+    h = 2 * vecnorm(gensdiag,2); %sqrt(sum(gensdiag.^2,1))
+    % index until which gens are reduced
+    redIdx = find(h <= dHmax,1,'last');
+    if isempty(redIdx)
+        redIdx = 0;
+        dHerror = 0;
+        gredIdx = hzeroIdx;
+    else
+        dHerror = h(redIdx);
+        gredIdx = idx(1:length(hzeroIdx)+redIdx);
+    end
 end
 
-% box generators with h = 0
-hzeroIdx = idx(h==0);
-Gzeros = sum(Gabs(:,hzeroIdx),2);
-last0Idx = numel(hzeroIdx);
-gensred = Gabs(:,idx(last0Idx+1:end));
 
-[maxval,maxidx] = max(gensred,[],1);
-% use linear indexing
-mugensred = zeros(n,nrG-last0Idx);
-cols = n*(0:nrG-last0Idx-1);
-mugensred(cols+maxidx) = maxval;
-% compute new over-approximation of dH
-gensdiag = cumsum(gensred-mugensred,2);
-h = 2 * vecnorm(gensdiag,2); %sqrt(sum(gensdiag.^2,1))
-% index until which gens are reduced
-redIdx = find(h <= dHmax,1,'last');
-if isempty(redIdx)
-	redIdx = 0;
-end
 Gred = sum(gensred(:,1:redIdx),2);
-Gunred = G(:,idx(last0Idx+redIdx+1:end));
+% prior version: no sorting
+% Gunred = G(:,idx(last0Idx+redIdx+1:end));
+% sort to keep correspondances!
+Gunred = G(:,sort(idx(last0Idx+redIdx+1:end)));
 
 Z.Z = [center(Z),[Gunred,diag(Gred+Gzeros)]];
 
@@ -96,3 +163,5 @@ Z.Z = [center(Z),[Gunred,diag(Gred+Gzeros)]];
 % [realdH,hcomp] = hausdorffBox(Ztest);
 
 end
+
+%------------- END OF CODE --------------

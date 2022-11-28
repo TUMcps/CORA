@@ -29,25 +29,27 @@ function res = testLongDuration_ellipsoid_enclosePoints
 runs = 5;
 res = true;
 bools = [false,true];
-for i=5:5:10
+for i=3:5:10
     for j=1:runs
         N = 10*i;
         for k=1:2
             try
+                %%% generate all variables necessary to replicate results
                 % generate point cloud
                 V = randn(i,N);
+                r = ceil(i*rand);
+                %%%
                 % generate non-degenerate and degenerate point clouds
                 for m=1:2
                     [Q,~] = qr(V);
                     V = Q'*V;
-                    r = ceil(i*rand);
                     % for bools(m)=false, generate degenerate point cloud
                     V(r,:) = bools(m)*V(r,:);
                     V = Q*V;
                     % test both methods
                     E_cov = ellipsoid.enclosePoints(V,'cov');
                     E_mv = ellipsoid.enclosePoints(V,'min-vol');
-                    if ~in(E_cov,V) || ~in(E_mv,V)
+                    if ~all(contains(E_cov,V)) || ~all(contains(E_mv,V))
                         res = false;
                         break;
                     end
@@ -72,9 +74,8 @@ for i=5:5:10
     end
 end
 if ~res
-    disp('testLongDuration_ellipsoid_enclosePoints failed');
-else
-    disp('testLongDuration_ellipsoid_enclosePoints successful');
+    path = pathFailedTests(mfilename());
+    save(path,'V','r');
 end
 
 %------------- END OF CODE --------------

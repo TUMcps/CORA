@@ -20,17 +20,17 @@ function cora2spaceex(Obj,filename,filepath)
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        Farah Atour
 % Written:       24-February-2020
 % Last update:   08-June-2020 (MW, add filepath)
 % Last revision: ---
-%
+
 %------------- BEGIN CODE --------------
 
 if nargin < 3
     % if no resultpath is given, use default: "cora/models/CoraConverted"
-    filepath = strcat(coraroot,'/models/CoraConverted/');
+    filepath = [CORAROOT filesep 'models' filesep 'CoraConverted' filesep];
 end
 
 % Headline of the xml-file
@@ -53,7 +53,7 @@ elseif isa(Obj,'linearSys') || isa(Obj,'nonlinearSys')
     flow_cora2spaceex(Obj, location, docNode);
     
 else
-    error('This type of objects are not yet supported for conversion!');
+    throw(CORAerror('CORA:notSupported','Given contDynamics class not supported.'));
 end
 
 % make directory if it does not exist

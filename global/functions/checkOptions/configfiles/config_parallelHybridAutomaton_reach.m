@@ -1,9 +1,10 @@
 function [paramsList,optionsList] = config_parallelHybridAutomaton_reach(sys,params,options)
-% config_parallelhybridAutomaton_reach - configuration file for validation of
-%    model parameters and algorithm parameters
+% config_parallelHybridAutomaton_reach - configuration file for validation
+%    of model parameters and algorithm parameters
 %
 % Syntax:
-%    [paramsList,optionsList] = config_parallelhybridAutomaton_reach
+%    [paramsList,optionsList] = ...
+%       config_parallelHybridAutomaton_reach(sys,params,options)
 %
 % Inputs:
 %    sys - parallelHybridAutomaton object
@@ -44,6 +45,7 @@ add2params('U','default',{@(val)c_pHA_U(val,sys,params)},{''});
 
 
 % append entries to list of algorithm parameters
+add2options('verbose','default',{@isscalar,@islogical},{'isscalar','islogical'});
 add2options('timeStep','mandatory',{@(val)c_HA_timeStep(val,sys,options)},{''});
 add2options('guardIntersect','mandatory',{@ischar,@(val)any(ismember(getMembers('guardIntersect'),val))},...
     {'ischar','memberguardIntersect'});
@@ -56,10 +58,10 @@ add2options('guardOrder','mandatory',{@isscalar,@isnumeric,@(val)ge(val,1)},...
     {'isscalar','isnumeric','geone'},{@()any(ismember(getMembers('guardIntersect4guardOrder'),options.guardIntersect))});
 add2options('intersectInvariant','optional',{@isscalar,@islogical},{'isscalar','islogical'});
 
+
 % 3. prepare lists for output args
 [paramsList,optionsList] = outputParamsOptionsLists();
 
 end
 
 %------------- END OF CODE --------------
-

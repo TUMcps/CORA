@@ -1,10 +1,9 @@
 function res = test_linearSysDT_observe_05_FRad_C()
 % test_linearSysDT_observe_05_FRad_C - unit_test_function for guaranteed
-% state estimation of linear discrete-time systems using the FRad-C method.
-%
-% Checks the solution of the linearSysDT class for a four-dimensional 
-% vehicle model against an alternative implementation of the FRad-C method
-% published in [1].
+%    state estimation of linear discrete-time systems (FRad-C method);
+%    Checks the solution of the linearSysDT class for a four-dimensional 
+%    vehicle model against an alternative implementation of the FRad-C
+%    method published in [1].
 %
 % Syntax:  
 %    res = test_linearSysDT_observe_05_FRad_C
@@ -13,16 +12,13 @@ function res = test_linearSysDT_observe_05_FRad_C()
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % Reference:
 %    [1] C. Combastel. Zonotopes and Kalman observers:
 %        Gain optimality under distinct uncertainty paradigms and
 %        robust convergence. Automatica, 55:265-273, 2015.
-%
-% Example: 
-%    -
- 
+
 % Author:       Matthias Althoff
 % Written:      25-Feb-2021
 % Last update:  ---
@@ -45,21 +41,20 @@ estSet_alternative = setPropagationObserver_FRad_C_unitTest(vehicle,params,optio
 
 %% compare whether enclosing hulls of the estimated sets match
 % init
-timeSteps = length(estSet.timeInterval.set);
+timeSteps = length(estSet.timePoint.set);
 resPartial = zeros(timeSteps,1);
 accuracy = 1e-8;
 % loop over set
 for iSet = 1:timeSteps
     % obtain interval hulls
-    IH = interval(estSet.timeInterval.set{iSet});
-    IH_alternative = interval(estSet_alternative.timeInterval.set{iSet});
+    IH = interval(estSet.timePoint.set{iSet});
+    IH_alternative = interval(estSet_alternative.timePoint.set{iSet});
     % check if slightly bloated versions enclose each other
-    res_encl = (IH <= enlarge(IH_alternative,1+accuracy));
-    res_incl = (IH_alternative <= enlarge(IH,1+accuracy));
+    res_incl = isequal(IH,IH_alternative,1+accuracy);
     % check if simulation is enclosed
-    res_sim = in(IH,simRes.x{1}(iSet,:)');
+    res_sim = contains(IH,simRes.x{1}(iSet,:)');
     % combine results
-    resPartial(iSet) = res_encl*res_incl*res_sim;
+    resPartial(iSet) = res_incl && res_sim;
 end
 % Are all sets matching?
 res = all(resPartial);
@@ -75,7 +70,7 @@ res = all(resPartial);
 %     figure
 %     hold on
 %     % plot estimated sets over time
-%     h = plotOverTime(estSet,iDim,'FaceColor',[.6 .6 .6],'EdgeColor','none');
+%     h = plotOverTime(estSet,iDim,'FaceColor',[.6 .6 .6]);
 %     % plot true state
 %     p = plot(t(1:length(simRes.x{1}(:,iDim))),simRes.x{1}(:,iDim),'k.');
 %     legend([h(end),p(end)],'Set of possible states','True state');

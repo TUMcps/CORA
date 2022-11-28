@@ -8,10 +8,16 @@ function res = example_parallel_hybrid_01_neuralNetwork()
 %    res = example_parallel_hybrid_01_neuralNetwork()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean, true if completed
+%    res - true/false
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
 % Author:       Niklas Kochdumper
 % Written:      15-June-2020
@@ -34,7 +40,7 @@ inputBinds{2} = [1,1;3 1];     % neuron 1 -> neuron 2, neuron 3 -> neuron 2
 inputBinds{3} = [1,1;0,1];     % neuron 1 -> neuron 3, input 1 -> neuron 3
 
 % parallel hybrid automaton
-PHA = parallelHybridAutomaton(comp,inputBinds);
+pHA = parallelHybridAutomaton(comp,inputBinds);
 
 
 % Parameter ---------------------------------------------------------------
@@ -65,7 +71,7 @@ options.enclose = {'box','pca'};
 
 % Reachability Analysis ---------------------------------------------------
 
-R = reach(PHA,params,options);
+R = reach(pHA,params,options);
 
 
 % Simulation --------------------------------------------------------------
@@ -77,36 +83,23 @@ simOpt.startLoc = params.startLoc;
 simOpt.tFinal = params.tFinal;
 
 % simulate the system
-[t,x,loc] = simulate(PHA,simOpt);
+[t,x,loc] = simulate(pHA,simOpt);
 simRes = simResult(x,t,loc);
 
 
 % Visualization -----------------------------------------------------------
 
-% neuron 1
-figure; hold on; box on;
-plot(R,[2,1],'FaceColor',[.6 .6 .6],'Filled',true,'EdgeColor','none');
-plotOverTime(simRes,1);
-xlabel('time');
-ylabel('output');
-title('Neuron 1');
+% neuron k
+projDim = {[2,1],[4,3],[6,5]};
+for k=1:3
+    figure; hold on; box on;
+    plot(R,projDim{k});
+    plotOverTime(simRes,projDim{k}(2));
+    xlabel('Time');
+    ylabel('Output');
+    title(['Neuron ' num2str(k)]);
+end
 
-% neuron 2
-figure; hold on; box on;
-plot(R,[4,3],'FaceColor',[.6 .6 .6],'Filled',true,'EdgeColor','none');
-plotOverTime(simRes,3);
-xlabel('time');
-ylabel('output');
-title('Neuron 2');
-
-% neuron 3
-figure; hold on; box on;
-plot(R,[6,5],'FaceColor',[.6 .6 .6],'Filled',true,'EdgeColor','none');
-plotOverTime(simRes,5);
-xlabel('time');
-ylabel('output');
-title('Neuron 3');
-
-res = 1;
+res = true;
 
 %------------- END OF CODE --------------

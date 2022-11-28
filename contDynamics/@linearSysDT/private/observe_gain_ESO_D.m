@@ -1,5 +1,5 @@
 function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_D(obj,options)
-% observe_gain_ESO_D - computes the gain for the guaranted state estimation
+% observe_gain_ESO_D - computes the gain for the guaranteed state estimation
 % approach from [1]. 
 %
 %
@@ -42,8 +42,8 @@ function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_D(obj,options)
 tic
 
 % essential values
-dim = size(obj.A,1); 
-nrOfOutputs = size(obj.C,1);
+n = obj.dim;
+nrOfOutputs = obj.nrOfOutputs;
 
 % set options of solver
 options_sdp = sdpsettings;
@@ -52,7 +52,7 @@ options_sdp.verbose = 0;
 
 %% Alg. 1 of [1] 
 % initialization of Alg. 1
-Q = eye(length(obj.A)); 
+Q = eye(n); 
 % solve LMI, line 1 of Alg. 1
 [P,Y] = solveLMI(obj,Q,options,options_sdp);
 % compute L, line 2 of Alg. 1
@@ -62,9 +62,9 @@ Ao = obj.A-L*obj.C;
 % Compute E, line 4 of Alg. 1
 E = [options.W.Q, -L*options.V.Q];
 % Estimate the expected steady-state covariance matrix V, line 5 of Alg. 1
-D_w = diag(ones(1,dim+nrOfOutputs)); % without loss of generality, the disturbances are bounded by 1
+D_w = diag(ones(1,n+nrOfOutputs)); % without loss of generality, the disturbances are bounded by 1
 W = (1/3)*D_w; % eq. (64)
-V = sdpvar(dim,dim,'symmetric');
+V = sdpvar(n,n,'symmetric');
 Fa = [V>=0, Ao*V*Ao'-V<=-E*W*E']; % eq. (63)
 optimize(Fa);    
 V = value(V);
@@ -80,25 +80,26 @@ lambda = min(eigs(Q,P));
 
 % computation time
 tComp = toc;
+
 end
 
 
 function [P,Y,gamma] = solveLMI(obj,Q,options,options_sdp)
     
-% shape matrices of the disturbance and porcess noise sets
+% shape matrices of the disturbance and process noise sets
 F = options.W.Q;
 E = options.V.Q;
 
 % obtain system dimension and nr of outputs
-dim = size(obj.A,1); 
-nrOfOutputs = size(obj.C,1);
+n = obj.dim;
+nrOfOutputs = obj.nrOfOutputs;
 nrOfDistGens = size(F,2);
 
 %% define YALMIPs symbolic decision variables
 % state
-P = sdpvar(dim,dim,'symmetric'); 
+P = sdpvar(n,n,'symmetric'); 
 % gain matrix
-Y = sdpvar(dim,nrOfOutputs,'full'); 
+Y = sdpvar(n,nrOfOutputs,'full'); 
 % identity matrix
 I = eye(nrOfDistGens + nrOfOutputs);
 
@@ -120,10 +121,13 @@ for k = 1:length(gam)
     SM = sdpvar(SM);
 
     % LMI problem to be solved
-    pblmi =  [P>=0 , SM<=0]; 
+    constraint =  [P>=0 , SM<=0]; 
+    
+    % objective
+    objective = gam(k);
 
     % Solve LMI conditions
-    solpb = optimize(pblmi,gam(k),options_sdp);
+    solpb = optimize(constraint, objective, options_sdp);
 
     % Check if LMI is feasible
     if solpb.problem ~= 1

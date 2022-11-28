@@ -1,5 +1,5 @@
 function res = testLongDuration_capsule_isIntersecting
-% testLongDuration_capsule_in - unit test function of isIntersecting
+% testLongDuration_capsule_isIntersecting - unit test function of isIntersecting
 %    note: only capsule-to-capsule tested
 %
 % Syntax:  
@@ -155,10 +155,9 @@ end
 % combine tests
 res = all(res);
 
-if res
-    disp('test_isIntersecting successful');
-else
-    disp('test_isIntersecting failed');
+if ~res
+    path = pathFailedTests(mfilename());
+    save(path,'n','c','r','g1','g2');
 end
 
 %------------- END OF CODE --------------

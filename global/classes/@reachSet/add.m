@@ -1,17 +1,17 @@
-function obj = add(obj1,obj2,varargin)
+function R = add(R1,R2,varargin)
 % add - joins two reachSet objects
 %
 % Syntax:  
-%    obj = add(obj1,obj2)
-%    obj = add(obj1,obj2,parent)
+%    R = add(R1,R2)
+%    R = add(R1,R2,parent)
 %
 % Inputs:
-%    obj1 - reachSet object
-%    obj2 - reachSet object
+%    R1 - reachSet object
+%    R2 - reachSet object
 %    parent - index of the parent for the root of the reachSet object obj2
 %
 % Outputs:
-%    obj - resulting reachSet object
+%    R - resulting reachSet object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,36 +26,40 @@ function obj = add(obj1,obj2,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    parent = 0;
-    if nargin >= 3
-       parent = varargin{1}; 
-    end
+% one of the objects is empty
+if isempty(R1)
+    R = R2;
+    return
+elseif isempty(R2)
+    R = R1;
+    return
+end
 
-    % add objects together
-    if isempty(obj1)
-        obj = obj2;
-    elseif isempty(obj2)
-        obj = obj1;
+% parse input arguments
+parent = setDefaultValues({0},varargin{:});
+
+% check input arguments
+inputArgsCheck({{R1,'att',{'reachSet'},{''}};
+                {R2,'att',{'reachSet'},{''}};
+                {parent,'att',{'numeric'},{'integer','nonnegative','scalar'}}});
+
+% add objects together
+R = repelem(R1(1,1),size(R1,1)+size(R2,1),1);
+cnt = 1;
+
+for i = 1:size(R1,1)
+    R(cnt,1) = R1(i,1);
+    cnt = cnt + 1;
+end
+
+for i = 1:size(R2,1)
+    R(cnt,1) = R2(i,1);
+    if R(cnt,1).parent == 0
+        R(cnt,1).parent = parent;
     else
-        
-        obj = repelem(obj1(1,1),size(obj1,1)+size(obj2,1),1);
-        cnt = 1;
-
-        for i = 1:size(obj1,1)
-            obj(cnt,1) = obj1(i,1);
-            cnt = cnt + 1;
-        end
-
-        for i = 1:size(obj2,1)
-            obj(cnt,1) = obj2(i,1);
-            if obj(cnt,1).parent == 0
-                obj(cnt,1).parent = parent;
-            else
-                obj(cnt,1).parent = obj(cnt,1).parent + size(obj1,1);
-            end
-            cnt = cnt + 1;
-        end
+        R(cnt,1).parent = R(cnt,1).parent + size(R1,1);
     end
+    cnt = cnt + 1;
+end
 
 %------------- END OF CODE --------------

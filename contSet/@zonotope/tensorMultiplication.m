@@ -77,6 +77,10 @@ end
 %generate zonotope
 Zres = zonotope(zeros(n,1), H);
 
+end
+
+
+% Auxiliary functions
 
 function res = generatorMultiplication_2d(M,genComb)
 
@@ -93,6 +97,7 @@ for iDim = 1:n
     end
 end
 
+end
 
 function res = generatorMultiplication_3d(M,genComb)
 
@@ -110,6 +115,8 @@ for iDim = 1:n
             end
         end
     end
+end
+
 end
 
 %------------- END OF CODE --------------

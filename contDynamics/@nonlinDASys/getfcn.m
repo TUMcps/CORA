@@ -1,15 +1,15 @@
-function [handle] = getfcn(obj,options)
+function han = getfcn(obj,options)
 % getfcn - returns the function handle of the continuous function specified
-% by the DAE system object
+%    by the DAE system object
 %
 % Syntax:  
-%    [handle] = getfcn(obj,options)
+%    han = getfcn(obj,options)
 %
 % Inputs:
 %    obj - nonlinDASys object
 %
 % Outputs:
-%    handle - function handle
+%    han - function handle
 %
 % Example: 
 %
@@ -36,8 +36,8 @@ function dxdt = f(t, z)
     dxdt((obj.dim+1):(obj.dim+obj.nrOfConstraints),1) = obj.conFile(x, y, options.u);
 end
 
-handle = @f;
-end
+han = @f;
 
+end
 
 %------------- END OF CODE --------------

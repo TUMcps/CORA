@@ -1,40 +1,43 @@
-function Z = zonotope(E,m,mode)
-% zonotope - overapproximates an ellipsoid by a zonotope
+function Z = zonotope(E,varargin)
+% zonotope - over-approximates an ellipsoid by a zonotope
 %
 % Syntax:  
-%    E = enc_zonotope(Z,m,mode)
+%    E = zonotope(E)
+%    E = zonotope(E,m)
+%    E = zonotope(E,m,mode)
 %
 % Inputs:
-%    E       - ellipsoid object
-%    m       - number of generators
-%    mode    - (Optional) Specifies whether function uses a lower bound on the 
-%               minimum zonotope norm or the exact value:
-%               * 'o:box':     overapprox. parallelotope using
-%                              enc_parallelotope
-%               * 'o:norm':    Uses enc_zonotope(E,m,'exact') with exact norm value
-%               * 'o:norm:bnd':Not implemented yet, throws error
-%               * 'i:box':     inner approx. parallelotope using
-%                              insc_parallelotope
-%               * 'i:norm'     Uses insc_zonotope(E,m,'exact') with exact norm
-%                              value
-%               * 'i:norm:bnd':Uses insc_zonotope(E,m) with an bound on the
-%                              norm value
-%               * default:     same as 'o:norm:bnd'
-%
+%    E - ellipsoid object
+%    m - (optional) number of generators
+%    mode - (optional) Specifies whether function uses a lower bound on the 
+%           minimum zonotope norm or the exact value:
+%           * 'outer:box':      overapprox. parallelotope using
+%                               enc_parallelotope
+%           * 'outer:norm':     uses enc_zonotope(E,m,'exact') with exact
+%                               norm value
+%           * 'outer:norm_bnd': not implemented yet (throws error)
+%           * 'inner:box':      inner approx. parallelotope using
+%                               insc_parallelotope
+%           * 'inner:norm'      uses insc_zonotope(E,m,'exact') with exact
+%                               norm value
+%           * 'inner:norm_bnd': uses insc_zonotope(E,m) with an bound on
+%                               the norm value
+%           * default:          same as 'outer:norm_bnd'
 %
 % Outputs:
 %    Z - zonotope object
 %
 % Example: 
-%    E = ellipsoid.generateRandom(0,2);
-%    Zenc = zonotope(E,10,'o:norm');
-%    Zinsc = zonotope(E,10,'i:norm');
+%    E = ellipsoid.generateRandom('Dimension',2);
+%    Zenc = zonotope(E,10,'outer:norm');
+%    Zinsc = zonotope(E,10,'inner:norm');
 %    Zbox = zonotope(E);
+%
+%    figure; hold on;
 %    plot(E);
-%    hold on
-%    plot(Zinsc);
-%    plot(Zenc);
-%    plot(Zbox);
+%    plot(Zinsc,[1,2],'r');
+%    plot(Zenc,[1,2],'k');
+%    plot(Zbox,[1,2],'m');
 %
 % References:
 %    [1] V. Gaßmann, M. Althoff. "Scalable Zonotope-Ellipsoid Conversions
@@ -50,17 +53,42 @@ function Z = zonotope(E,m,mode)
 % Written:      11-October-2019
 % Last update:  08-June-2021 (handle degenerate case here, remove from
 %                             sub-files)
+%               04-July-2022 (VG: class array cases)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-default = 'o:norm:bnd';
-if ~exist('m','var')
-    if ~exist('mode','var')
-        mode = 'o:box';
-    else
-        mode = default;
-    end
+
+% check input arguments
+if isempty(varargin)
+    mode = 'outer:box';
+    % does not matter, set to any positive integer
+    m = 1;
+elseif length(varargin)==1
+    m = varargin{1};
+    % default
+    mode = 'outer:norm';
+elseif length(varargin)==2
+    m = varargin{1};
+    mode = varargin{2};
+else
+    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
+
+inputArgsCheck({{E,'att','ellipsoid','scalar'};
+                {mode,'str',{'outer:box','outer:norm','outer:norm_bnd',...
+                        'inner:box','inner:norm','inner:norm_bnd'}}});
+
+if isempty(m)
+    % only allow if mode is 'outer:box' or 'inner:box'
+    if ~strcmp(mode,'inner:box') && ~strcmp(mode,'outer:box')
+        throw(CORAerror('CORA:wrongValue','second','integer > 0'));
+    end
+    % set m to 1 to pass test below
+    m = 1;
+end
+
+inputArgsCheck({{m,'att',{'numeric'},{'scalar','positive','integer'}}});
+
 
 % compute rank and dimension of ellipsoid
 rankE = rank(E);
@@ -86,25 +114,27 @@ end
 
 
 switch mode
-    case 'o:box'
+    case 'outer:box'
         Z = enc_parallelotope(E);
-    case 'o:norm'
+    case 'outer:norm'
         Z = enc_zonotope(E,m,'exact');
-    %case 'o:norm:bnd'% we do not implement the test used to compute the
+    %case 'outer:norm:bnd'% we do not implement the test used to compute the
     %necessary lower bound on Z as in [1] since this test generally does
     %not result in a very good lower bound
     %    Z = enc_zonotope(E,m);
-    case 'i:box'
+    case 'inner:box'
         Z = insc_parallelotope(E);
-    case 'i:norm'
+    case 'inner:norm'
         Z = insc_zonotope(E,m,'exact');
-    case 'i:norm:bnd'
+    case 'inner:norm_bnd'
         Z = insc_zonotope(E,m);
     otherwise
-        error('Wrong value for argument "mode"');
+        throw(CORAerror('CORA:wrongValue','third',...
+            "be 'outer:box', 'outer:norm', 'inner:box', 'inner:norm', or 'inner:norm_bnd'"));
 end
 
 if ~(rankE == dimE)
     Z = T*Z + c;
 end
+
 %------------- END OF CODE --------------

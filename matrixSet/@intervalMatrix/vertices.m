@@ -1,11 +1,11 @@
-function matV = vertices(matI)
+function matV = vertices(intMat)
 % vertices - computes the vertices of an interval matrix
 %
 % Syntax:  
-%    matV = vertices(matI)
+%    matV = vertices(intMat)
 %
 % Inputs:
-%    matI - interval matrix
+%    intMat - intervalMatrix object
 %
 % Outputs:
 %    matV - cell array of matrix vertices
@@ -26,7 +26,7 @@ function matV = vertices(matI)
 %------------- BEGIN CODE --------------
 
 %conversion to an interval
-V = vertices(interval(matI));
+V = vertices(interval(intMat));
 
 %compute vertices
 V = unique(V', 'rows')'; %eliminate vectors that occur multiple times

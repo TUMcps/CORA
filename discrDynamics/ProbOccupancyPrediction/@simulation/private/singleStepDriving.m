@@ -21,10 +21,10 @@ function [pNew,pTotal]=singleStepDriving(simOptions,markovChainSpec,p)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 30-October-2008
-% Last update: ---
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      30-October-2008
+% Last update:  ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

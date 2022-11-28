@@ -1,11 +1,11 @@
-function matP = matPolytope(matI)
-% matPolytopes - converts an interval matrix to a matrix polytope
+function matP = matPolytope(intMat)
+% matPolytope - converts an interval matrix to a matrix polytope
 %
 % Syntax:  
-%    matP = matPolytope(matI)
+%    matP = matPolytope(intMat)
 %
 % Inputs:
-%    matI - interval matrix 
+%    intMat - intervalMatrix object
 %
 % Outputs:
 %    matP - polytope matrix
@@ -26,7 +26,7 @@ function matP = matPolytope(matI)
 %------------- BEGIN CODE --------------
 
 %obtain vertices
-V = vertices(matI);
+V = vertices(intMat);
 
 %instantiate matrix polytope
 matP=matPolytope(V);

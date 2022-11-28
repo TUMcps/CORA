@@ -1,15 +1,16 @@
-function res = containsPoint(Int,p)
-% containsPoint - determines if the point p is inside the interval Int
+function res = containsPoint(I,p)
+% containsPoint - determines if an interval contains a point cloud p, where
+%    the result is evaluated for each point
 %
 % Syntax:  
-%    result = containsPoint(Int,p)
+%    result = containsPoint(I,p)
 %
 % Inputs:
-%    Int - interval object
+%    I - interval object
 %    p - point(s) specified as a column vector (array)
 %
 % Outputs:
-%    result - boolean (array) whether point is inside the interval or not
+%    result - true/false (array)
 %
 % Example: 
 %    ---
@@ -27,14 +28,18 @@ function res = containsPoint(Int,p)
 
 %------------- BEGIN CODE --------------
 
+% check input arguments
+inputArgsCheck({{I,'att','interval'};
+                {p,'att','numeric','column'}});
+
 numPoints = size(p,2);
 res = false(numPoints,1);
-infi = infimum(Int);
-supr = supremum(Int);
+lb = infimum(I);
+ub = supremum(I);
 
 for iPoint = 1:numPoints
     p_curr = p(:,iPoint);
-    res(iPoint) = all(infi <= p_curr) && all(supr >= p_curr);
+    res(iPoint) = all(lb <= p_curr) && all(ub >= p_curr);
 end
 
 %------------- END OF CODE --------------

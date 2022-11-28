@@ -29,24 +29,19 @@ res = true;
 Int = interval([-5.0, -4.0, -3, 0, 0, 5], [-2, 0.0, 2.0, 0, 5, 8]);
 if isempty(Int)
 	res = false;
-	disp('test_isempty failed');
 	return;
 end
 
 Int = interval();
 if ~isempty(Int)
 	res = false;
-	disp('test_isempty failed');
 	return;
 end
 
 Int = interval(-5.0, 2);
 if isempty(Int)
 	res = false;
-	disp('test_isempty failed');
 	return;
 end
-
-disp('test_isempty successful');
 
 %------------- END OF CODE --------------

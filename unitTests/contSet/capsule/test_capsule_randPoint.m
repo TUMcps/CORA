@@ -27,15 +27,7 @@ function res = test_capsule_randPoint
 
 % empty case
 C = capsule();
-res(1) = true;
-try
-    p = randPoint(C); % <- should throw error here
-    res(1) = false;
-catch ME
-    if ~strcmp(ME.identifier,'CORA:emptySet')
-        res(1) = false;
-    end
-end
+res(1) = isnumeric(randPoint(C)) && isempty(randPoint(C));
 
 % degenerate capsule
 c = [1; -1; 2];
@@ -63,15 +55,9 @@ for i=1:numPoints
 end
 
 % check if all random points inside capsule
-res(3) = in(C,p);
+res(3) = all(contains(C,p));
 
 % combine results
 res = all(res);
-
-if res
-    disp('test_randPoint successful');
-else
-    disp('test_randPoint failed');
-end
 
 %------------- END OF CODE --------------

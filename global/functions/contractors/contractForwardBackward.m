@@ -63,7 +63,7 @@ function res = contractForwardBackward(f,dom)
                 res = [];
                 return
             else
-                error(ex.message);
+                rethrow(ex);
             end
         end
     end

@@ -1,13 +1,14 @@
-function [Rguard,actGuards,minInd,maxInd] = guardIntersect(obj,guards,setInd,Rcont,options)
-% guardIntersect - computes and enclosure of the intersection between the
-%                  reachable set and the guard sets
+function [Rguard,actGuards,minInd,maxInd] = ...
+    guardIntersect(loc,guards,setInd,Rcont,options)
+% guardIntersect - computes an enclosure of the intersection between the
+%    reachable set and the guard sets
 %
 % Syntax:  
 %    [Rguard,actGuards,minInd,maxInd] = 
-%                           guardIntersect(obj,guards,setInd,Rcont,options)
+%       guardIntersect(loc,guards,setInd,Rcont,options)
 %
 % Inputs:
-%    obj - location object
+%    loc - location object
 %    guards - cell array containing the guard sets that have been hit
 %    setInd - cell array containing the indices of intersecting sets
 %    Rcont - reachSet object storing the reachable set
@@ -48,7 +49,7 @@ function [Rguard,actGuards,minInd,maxInd] = guardIntersect(obj,guards,setInd,Rco
 
 %------------- BEGIN CODE --------------
 
-    % check if the there exist guard intersections
+    % check if there exist guard intersections
     relIndex = unique(setInd);
 
     if isempty(relIndex)
@@ -58,10 +59,10 @@ function [Rguard,actGuards,minInd,maxInd] = guardIntersect(obj,guards,setInd,Rco
 
     % extract the guard sets that got hit
     guardInd = unique(guards);
-    Pguard = cell(length(obj.transition),1);
+    Pguard = cell(length(loc.transition),1);
 
     for i=1:length(guardInd)
-        Pguard{guardInd(i)} = obj.transition{guardInd(i)}.guard;
+        Pguard{guardInd(i)} = loc.transition{guardInd(i)}.guard;
     end
 
     % extract time interval and time point reachable set
@@ -83,7 +84,7 @@ function [Rguard,actGuards,minInd,maxInd] = guardIntersect(obj,guards,setInd,Rco
         % remove all intersections where the flow does not point in the
         % direction of the guard set
         if isa(guard,'conHyperplane') || isa(guard,'levelSet')
-            [res,P{i}] = checkFlow(obj,guard,P{i},options);
+            [res,P{i}] = checkFlow(loc,guard,P{i},options);
             if ~res
                 continue;
             end
@@ -95,57 +96,62 @@ function [Rguard,actGuards,minInd,maxInd] = guardIntersect(obj,guards,setInd,Rco
             % compute intersection with the method in [1]
             case 'polytope'
 
-                Rguard{i} = guardIntersect_polytope(obj,P{i},guard,options);
+                Rguard{i} = guardIntersect_polytope(loc,P{i},guard,options);
 
             % compute intersection using constrained zonotopes
             case 'conZonotope'
 
-                Rguard{i} = guardIntersect_conZonotope(obj,P{i},guard,options);
+                Rguard{i} = guardIntersect_conZonotope(loc,P{i},guard,options);
                
             % compute intersection with the method in [2]
             case 'zonoGirard'
                 
-                Rguard{i} = guardIntersect_zonoGirard(obj,P{i},guard,options);
+                Rguard{i} = guardIntersect_zonoGirard(loc,P{i},guard,options);
                 
             % compute intersection with the method in [3]
             case 'hyperplaneMap'
                 
                 R0 = getInitialSet(Rtp,minInd(i));
-                Rguard{i} = guardIntersect_hyperplaneMap(obj,guard,R0,options);   
+                Rguard{i} = guardIntersect_hyperplaneMap(loc,guard,R0,options);   
 
             % compute intersection with the method in [4]
             case 'pancake'
                 
                 R0 = getInitialSet(Rtp,minInd(i));
-                Rguard{i} = guardIntersect_pancake(obj,R0,guard,actGuards(i),options);
+                Rguard{i} = guardIntersect_pancake(loc,R0,guard,actGuards(i),options);
                 
             % compute intersection with method for nondeterministic guards
             case 'nondetGuard'
                 
-                Rguard{i} = guardIntersect_nondetGuard(obj,P{i},guard,options);
+                Rguard{i} = guardIntersect_nondetGuard(loc,P{i},guard,options);
                 
             % compute intersection with the metohd in [5]    
             case 'levelSet'
                 
-                Rguard{i} = guardIntersect_levelSet(obj,P{i},guard);
+                if isa(guard,'conHyperplane')
+                    guard = levelSet(guard);
+                end
+                Rguard{i} = guardIntersect_levelSet(loc,P{i},guard);
                 
             otherwise
-                error('Wrong value for "options.guardIntersect"!');
+                throw(CORAerror('CORA:wrongFieldValue','options.guardIntersect',...
+                    {'polytope','conZonotope','zonoGirard',...
+                    'hyperplaneMap','pancake','nondetGuard','levelSet'}));
 
         end
     end
     
     % remove all empty intersections
-    [Rguard,minInd,maxInd,actGuards] = removeEmptySets(Rguard,minInd, ...
+    [Rguard,minInd,maxInd,actGuards] = removeEmptySets(Rguard,minInd,...
                                                        maxInd,actGuards);
                                                    
     % convert sets back to polynomial zonotopes
     if isa(options.R0,'polyZonotope')
-       for i = 1:length(Rguard)
-          if isa(Rguard{i},'zonotope')
-             Rguard{i} = polyZonotope(Rguard{i}); 
-          end
-       end
+        for i = 1:length(Rguard)
+            if isa(Rguard{i},'zonotope')
+                Rguard{i} = polyZonotope(Rguard{i}); 
+            end
+        end
     end
     
 end
@@ -163,7 +169,7 @@ function [minInd,maxInd,P,guards] = groupSets(Pset,guards,setIndices)
     setIndicesGuards = cell(length(guardInd),1);
     P = cell(length(guardInd),1);
     
-    % Step 1: group accoring to hitted guard sets 
+    % Step 1: group according to hit guard sets 
     for i = 1:length(guardInd)
         ind = find(guards == guardInd(i));
         setIndicesGuards{i} = setIndices(ind);
@@ -249,9 +255,10 @@ function R0 = getInitialSet(Rtp,minInd)
 % get the initial set
 
     if minInd == 1
-       error('The initial set already intersects the guard set!'); 
+        throw(CORAerror('CORA:specialError',...
+            'The initial set already intersects the guard set!')); 
     else
-       R0 = Rtp{minInd-1};
+        R0 = Rtp{minInd-1};
     end
 end
 

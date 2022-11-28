@@ -1,6 +1,6 @@
 function [trueError,VerrorDyn] = abstrerr_lin(obj,options,R)
-% abstrerr_lin - computes the abstraction error for linearization approach
-% to enter, options.alg = 'lin' and options.tensorOrder = 2|3
+% abstrerr_lin - computes the abstraction error for linearization approach;
+%    to enter, options.alg = 'lin' and options.tensorOrder = 2|3
 %
 % Syntax:  
 %    [trueError,VerrorDyn] = abstrerr_lin(obj,options,R)
@@ -15,7 +15,8 @@ function [trueError,VerrorDyn] = abstrerr_lin(obj,options,R)
 %    trueError - abstraction error (interval)
 %    Verrordyn - abstraction error (zonotope)
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -52,10 +53,6 @@ if options.tensorOrder == 2
     % assign correct hessian (using interval arithmetic)
     obj = setHessian(obj,'int');
 
-    % obtain maximum absolute values within IHx, IHu
-    dx = max(abs(infimum(IHx)),abs(supremum(IHx)));
-    du = max(abs(infimum(IHu)),abs(supremum(IHu)));
-
     % evaluate the hessian matrix with the selected range-bounding technique
     if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ...
        ~strcmp(options.lagrangeRem.method,'interval')
@@ -77,19 +74,64 @@ if options.tensorOrder == 2
         end
     end
 
-    % calculate the Lagrange remainder (second-order error)
-    % ...acc. to Proposition 1 in [1]
-    errorLagr = zeros(length(H),1);
-    dz = [dx;du];
+    if true
+        % standard method using interval arithmetic
 
-    for i = 1:length(H)
-        H_ = abs(H{i});
-        H_ = max(infimum(H_),supremum(H_));
-        errorLagr(i) = 0.5 * dz' * H_ * dz;
-    end
+        % obtain maximum absolute values within IHx, IHu
+        dx = max(abs(infimum(IHx)),abs(supremum(IHx)));
+        du = max(abs(infimum(IHu)),abs(supremum(IHu)));
     
-    trueError = errorLagr;
-    VerrorDyn = zonotope([0*trueError,diag(trueError)]);
+        % calculate the Lagrange remainder (second-order error)
+        % ...acc. to Proposition 1 in [1]
+        errorLagr = zeros(length(H),1);
+        dz = [dx;du];
+    
+        for i = 1:length(H)
+            H_ = abs(H{i});
+            H_ = max(infimum(H_),supremum(H_));
+            errorLagr(i) = 0.5 * dz' * H_ * dz;
+        end
+        
+        trueError = errorLagr;
+        VerrorDyn = zonotope([0*trueError,diag(trueError)]);
+
+    else
+        % no interval arithmetic (?)
+        % attention: requires options.errorOrder|intermediateOrder!
+%         options.errorOrder = 20;
+%         options.intermediateOrder = 10;
+
+        %compute zonotope of state and input
+        Rred = reduce(zonotope(R),options.reductionTechnique,options.errorOrder);
+        Z = cartProd(Rred,options.U);
+
+        %obtain combined interval z and absolute values
+        dz = [IHx; IHu];
+        dz_abs = max(abs(infimum(dz)),abs(supremum(dz)));
+        
+        %separate evaluation
+        H_mid = cell(obj.dim,1);
+        H_rad = cell(obj.dim,1);
+        for i=1:obj.dim
+            H_mid{i} = sparse(center(H{i}));
+            H_rad{i} = sparse(rad(H{i}));
+        end
+        error_mid = 0.5*quadMap(Z,H_mid);
+        
+        %interval evaluation
+        error_rad = zeros(obj.dim,1);
+        for i=1:obj.dim
+            error_rad(i,1) = 0.5*dz_abs'*H_rad{i}*dz_abs;
+        end
+        
+        %combine results
+        VerrorDyn = error_mid + zonotope(interval(-error_rad,error_rad));
+        VerrorDyn = reduce(VerrorDyn,options.reductionTechnique,options.intermediateOrder);
+        
+        % interval for containment check of subsequent Lagrange remainders
+        trueError = supremum(abs(interval(VerrorDyn)));
+
+    end    
 
 elseif options.tensorOrder == 3
 
@@ -163,8 +205,8 @@ elseif options.tensorOrder == 3
     trueError = supremum(abs(interval(VerrorDyn)));
     
 else
-    
-    error("No abstraction error computation for chosen tensor order!");
+    throw(CORAerror('CORA:notSupported',...
+        "No abstraction error computation for chosen tensor order!"));
 end
 
 %------------- END OF CODE --------------

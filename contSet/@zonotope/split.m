@@ -91,8 +91,10 @@ elseif nargin==3
     end
 end
 
+end
 
 
+% Auxiliary functions
 
 function Zsplit = splitOneDim(Z,dim)
 
@@ -112,6 +114,7 @@ Gnew(:,dim)=Gnew(:,dim)/2;
 Zsplit{1}=zonotope([c1,Gnew]);
 Zsplit{2}=zonotope([c2,Gnew]);   
 
+end
 
 function Zsplit = directionSplit(Z,dir)
 
@@ -157,6 +160,7 @@ else
     Zsplit = Z; 
 end
 
+end
 
 function Zsplit = directionSplitBundle(Z,dir)
 
@@ -188,6 +192,7 @@ Z2{2} = rotMat.'*zonotope(IH2);
 Zsplit{1} = zonoBundle(Z1);
 Zsplit{2} = zonoBundle(Z2);
 
+end
 
 function Zsplit = halfspaceSplit(Z,h)
 
@@ -236,6 +241,8 @@ else
     Zsplit = Z; 
 end
 
+end
+
 
 function rotMat = rotationMatrix(dir, newDir)
 
@@ -269,13 +276,13 @@ if abs(dir.'*newDir) ~= 1
     rotMat = B*R*inv(B);
     
 else
-    if dir.'*newDir == 1
+    if withinTol(dir.'*newDir,1)  %if dir.'*newDir == 1
         rotMat = eye(N);
     else
         rotMat = -eye(N);
     end
 end
 
-
+end
 
 %------------- END OF CODE --------------

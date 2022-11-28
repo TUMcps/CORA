@@ -40,10 +40,4 @@ pZ3 = polyZonotope();
 % check result
 res = ~isempty(pZ1) && ~isempty(pZ2) && isempty(pZ3);
 
-if res
-    disp('test_polyZonotope_isempty successful');
-else
-    disp('test_polyZonotope_isempty failed');
-end
-
 %------------- END OF CODE --------------

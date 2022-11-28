@@ -1,18 +1,18 @@
-function [guards,setIndices] = potInt(obj,R,options)
-% potInt - determines which reachable sets potentially intersect with guard
-%          sets
+function [guards,setIndices] = potInt(loc,R,options)
+% potInt - determines which reachable sets potentially intersect with which
+%    guard sets
 %
 % Syntax:  
-%    [guards,setIndices] = potInt(obj,R,options)
+%    [guards,setIndices] = potInt(loc,R,options)
 %
 % Inputs:
-%    obj - location object
+%    loc - location object
 %    R - cell-array of reachable sets
+%    options - struct containing the algorithm settings
 %
 % Outputs:
 %    guards - guards that are potentially intersected
 %    setIndices - indices of the reachable sets that intersect the guards
-%    options - struct containing the algorithm settings
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,39 +31,44 @@ function [guards,setIndices] = potInt(obj,R,options)
 
 %------------- BEGIN CODE --------------
 
-    % initialization
-    N = length(R);
-    M = length(obj.transition);
+% number of reachable sets
+nrSets = length(R);
+% number of transitions in the location = number of guard sets
+nrTrans = length(loc.transition);
 
-    guards = zeros(M*N,1);
-    setIndices = zeros(M*N,1);
-    
-    counter = 1;
-    
-    % loop over all transitions
-    for i = 1:M
-       
-        guardSet = obj.transition{i}.guard;
-        target = obj.transition{i}.target;
-        
-        % check if terminal location is reached
-        if ~all(target == options.finalLoc)
-        
-            % loop over all reachable sets
-            for j = 1:N
+% preallocate variables for output arguments (upper bound of entries)
+guards = zeros(nrTrans*nrSets,1);
+setIndices = zeros(nrTrans*nrSets,1);
 
-                % check if reachable set intersects the guard set
-                if isIntersecting(guardSet,R{j},'approx')
-                    guards(counter) = i;
-                    setIndices(counter) = j;
-                    counter = counter + 1;
-                end
+% initialize number of intersections
+counter = 1;
+
+% loop over all guards
+for i = 1:nrTrans
+    
+    % read out guard set and target location
+    guardSet = loc.transition{i}.guard;
+    target = loc.transition{i}.target;
+    
+    % only check if target location is not one of the terminal locations
+    if ~all(target == options.finalLoc)
+    
+        % loop over all reachable sets
+        for j = 1:nrSets
+
+            % check if reachable set intersects the guard set
+            if isIntersecting(guardSet,R{j},'approx')
+                guards(counter) = i;
+                setIndices(counter) = j;
+                counter = counter + 1;
             end
+
         end
     end
-    
-    % truncate the resuling lists
-    guards = guards(1:counter-1);
-    setIndices = setIndices(1:counter-1);
+end
+
+% remove zeros from resulting lists
+guards = guards(1:counter-1);
+setIndices = setIndices(1:counter-1);
 
 %------------- END OF CODE --------------

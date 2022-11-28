@@ -21,13 +21,11 @@ function [R,tcomp] = executeObserver(obj,options)
 % See also: none
 
 % Author:        Matthias Althoff
-% Written:       25-Mar-2021
+% Written:       25-March-2021
 % Last update:   ---
 % Last revision: ---
 
-
 %------------- BEGIN CODE --------------
-
 
 % decide which observer to execute by options.alg
 if strcmp(options.alg,'VolMin-A') 
@@ -41,6 +39,5 @@ elseif strcmp(options.alg,'FRad-B')
 elseif strcmp(options.alg,'FRad-C') 
     [R,tcomp] = observe_FRadC(obj, options);
 end
-
 
 %------------- END OF CODE --------------

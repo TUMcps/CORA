@@ -1,18 +1,23 @@
 function print(pZ,varargin)
-% print - print polynomial zonotope
+% print - prints a polynomial zonotope on the command window
 %
 % Syntax:  
 %    print(pZ)
-%    print(pZ,digits)
-%    print(pZ,ids,chars)
-%    print(pZ,ids,chars,digits)
+%    print(pZ,'Digits',digits)
+%    print(pZ,'Ids',ids,'Vars',vars)
+%    print(pZ,'Ids',ids,'Vars',vars,'Digits',digits)
 %
 % Inputs:
-%    pZ     - polyZonotope to print
-%    digits - number of printed digits
-%    ids    - cell array where each vector member represents ids to be
-%             printed with char given in chars
-%    chars  - cell array of same length as ids containing variable "names"
+%    pZ - polyZonotope object
+%    Name-Value pairs (all options, arbitrary order):
+%       <'Digits',digits> - number of printed digits
+%       <'Ids',ids> - cell array where each vector member represents ids to
+%                     be printed with char given in chars
+%       <'Vars',vars> - cell array of same length as ids containing
+%                         variable "names"
+%
+% Outputs:
+%    -
 %
 % Example: 
 %    pZ = polyZonotope([pi;-1],[2,0;1,1],zeros(2,0),[1,2;2,3;0,1],[1;2;3]);
@@ -26,37 +31,41 @@ function print(pZ,varargin)
 
 % Author:       Victor Gassmann
 % Written:      12-January-2021 
-% Last update:  ---
-% Last revision: ---
+% Last update:  07-June-2022 (MW, switch to name-value syntax)
+% Last revision:---
 
 %------------- BEGIN CODE --------------
-digits = 2;
-if nargin==0
-    error('Argument required');
-end
-if nargin<=2
-    ids = {pZ.id};
-    vars = {'b'};
-    id = pZ.id;
-    if nargin==2
-        digits = varargin{1};
-    end
-elseif nargin<=4
-    ids = varargin{1};
-    vars = varargin{2};
-    if length(ids)~=length(vars)
-        error('ids and vars have to have same length');
-    end
-    id = vertcat(ids{:});
-    if numel(pZ.id)~=numel(id) || ~isempty(setdiff(pZ.id,id))
-        error('pZ.id and ids must contain the same ids');
-    end
-    if nargin==4
-        digits = varargin{3};
-    end
+
+% name-value pairs -> number of input arguments is always uneven
+if mod(nargin,2) ~= 1
+    throw(CORAerror('CORA:evenNumberInputArgs'));
 else
-    error('Wrong number of arguments');
+    % read input arguments
+    NVpairs = varargin(1:end);
+    % check for redundant name-value pairs
+    checkNameValuePairs(NVpairs,{'Digits','Ids','Vars'});
+    % dimension given?
+    [NVpairs,digits] = readNameValuePair(NVpairs,'Digits','isscalar',2);
+    % center given?
+    [NVpairs,ids] = readNameValuePair(NVpairs,'Ids',{},{pZ.id});
+    % number of generators given?
+    [NVpairs,vars] = readNameValuePair(NVpairs,'Vars',{},{'b'});
 end
+
+% compute id
+id = vertcat(ids{:});
+
+% check input arguments
+if length(ids)~=length(vars)
+     throw(CORAerror('CORA:wrongValue',"name-value pair 'Ids','Vars'",...
+         "Values for 'Ids' and 'Vars' have to have same length."));
+end
+if numel(pZ.id) ~= numel(id) || ~isempty(setdiff(pZ.id,id))
+    throw(CORAerror('CORA:wrongValue',"name-value pair 'Ids'",...
+        "Vector for 'Ids' should contain same identifiers as in polynomial zonotope."));
+end
+
+
 [~,f] = fhandle(pZ,ids);
 x = sym('x',[length(id),1]);
 % fill symbolic placeholder with variables of specified name
@@ -65,11 +74,15 @@ for i=1:length(ids)
     x(k+1:k+numel(ids{i})) = sym(vars{i},size(ids{i}));
 end
 res = f(x);
+
 % check if pZ has Grest
 if ~isempty(pZ.Grest) && ~all(pZ.Grest==0,'all')
     ind_zero = all(pZ.Grest==0,2);
     Zrest = sym('Zrest',[sum(~ind_zero),1]);
     res(~ind_zero) = res(~ind_zero) + Zrest;
 end
+
+% display object
 disp(vpa(res,digits));
+
 %------------- END OF CODE --------------

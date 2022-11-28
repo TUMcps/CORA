@@ -1,8 +1,8 @@
-function [mat]=vec2mat(varargin)
+function mat = vec2mat(varargin)
 % vec2mat - Stores entries of a vector in a matrix
 %
 % Syntax:  
-%    [mat]=vec2mat(varargin)
+%    mat = vec2mat(varargin)
 %
 % Inputs:
 %    vec - vector
@@ -27,7 +27,6 @@ function [mat]=vec2mat(varargin)
 
 %------------- BEGIN CODE -------------
 
-
 if nargin==1
     vec = varargin{1};
     %get columns
@@ -44,6 +43,5 @@ for i=1:cols
     mat(:,i)=vec(1:rows);
     vec(1:cols)=[];
 end
-
 
 %------------- END OF CODE --------------

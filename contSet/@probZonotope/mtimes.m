@@ -38,19 +38,9 @@ function probZ = mtimes(factor1,factor2)
 %------------- BEGIN CODE --------------
 
 %Find a probabilistic zonotope object
-%Is factor1 a probabilistic zonotope?
-if isa(factor1,'probZonotope')
-    %initialize resulting probabilistic zonotope
-    probZ=factor1;
-    %initialize other summand
-    matrix=factor2;
-%Is factor2 a probabilistic zonotope?    
-elseif isa(factor2,'probZonotope')
-    %initialize resulting probabilistic zonotope
-    probZ=factor2;
-    %initialize other summand
-    matrix=factor1;  
-end
+[probZ,matrix] = findClassArg(factor1,factor2,'probZonotope');
+
+try
 
 %numeric matrix
 if isnumeric(matrix)
@@ -76,6 +66,28 @@ elseif isa(matrix,'interval')
     %compute new zonotope
     probZ.Z=[T*probZ.Z,diag(S*Zsum)]; 
     probZ.g=T*probZ.g;
+end
+
+catch ME
+    % note: error has already occured, so the operations below don't have
+    % to be efficient
+
+    % already know what's going on...
+    if startsWith(ME.identifier,'CORA')
+        rethrow(ME);
+    end
+
+    % check for empty sets
+    if isempty(probZ)
+        return
+    end
+
+    % check whether different dimension of ambient space
+    equalDimCheck(probZ,matrix);
+
+    % other error...
+    rethrow(ME);
+
 end
 
 %------------- END OF CODE --------------

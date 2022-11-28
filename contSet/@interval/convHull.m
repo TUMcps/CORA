@@ -1,15 +1,25 @@
-function res = convHull(Int1,varargin)
+function res = convHull(I,varargin)
 % convHull - computes an enclosure for the convex hull of two intervals
 %
 % Syntax:  
-%    res = convHull(Int1,Int2)
+%    res = convHull(I,S)
 %
 % Inputs:
-%    Int1 - first interval object
-%    Int2 - second interval object
+%    I - interval object
+%    S - contSet object
 %
 % Outputs:
-%    res - interval enclosing the convex hull of Int1 and Int2
+%    res - interval enclosing the convex hull
+%
+% Example:
+%    I = interval([-1;-2],[3;4]);
+%    Z = zonotope(ones(2,1),[1 0.5; -0.2 -2]);
+%    res = convHull(I,Z);
+%
+%    figure; hold on;
+%    plot(I,[1,2],'b');
+%    plot(Z,[1,2],'b');
+%    plot(res,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,38 +37,38 @@ function res = convHull(Int1,varargin)
 
 % parse input arguments
 if nargin == 1
-    res = Int1; return;
+    res = I; return;
 else
-    Int2 = varargin{1}; 
+    S = varargin{1}; 
 end
 
 % determine the interval object
-if ~isa(Int1,'interval')
-    temp = Int1;
-    Int1 = Int2;
-    Int2 = temp;
+if ~isa(I,'interval')
+    temp = I;
+    I = S;
+    S = temp;
 end
 
 % different cases depending on the class of the summand
-if isa(Int2,'interval') && isempty(Int2)
+if isa(S,'interval') && isempty(S)
     % actually holds for all sets, but other checks might be costly
     
     res = interval();
     
-elseif isa(Int2,'interval') || isnumeric(Int2)
+elseif isa(S,'interval') || isnumeric(S)
 
-    res = Int1 | Int2;
+    res = I | S;
 
-elseif isa(Int2,'zonotope') || isa(Int2,'conZonotope') || ...
-       isa(Int2,'zonoBundle') || isa(Int2,'polyZonotope') || ...
-       isa(Int2,'mptPolytope') || isa(Int2,'conPolyZono')
+elseif isa(S,'zonotope') || isa(S,'conZonotope') || ...
+       isa(S,'zonoBundle') || isa(S,'polyZonotope') || ...
+       isa(S,'mptPolytope') || isa(S,'conPolyZono')
 
-    res = convHull(Int2,Int1);
+    res = convHull(S,I);
 
 else
     
     % throw error for given arguments
-    error(noops(Int1,Int2));
+    throw(CORAerror('CORA:noops',I,S));
         
 end
 

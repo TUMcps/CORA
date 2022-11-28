@@ -1,8 +1,8 @@
-function res = testINTLAB_sinh_random(~)
-% test_sinh_random - unit_test_function for comparing to IntLabV6
+function res = testINTLAB_sinh_random()
+% testINTLAB_sinh_random - unit_test_function for comparing to IntLabV6
 %
 % Syntax:  
-%    res = test_sinh_random (~)
+%    res = testINTLAB_sinh_random()
 %
 % Inputs:
 %    no 
@@ -77,7 +77,4 @@ if ( isempty(bad_ones_max) ~= true)
     res = false;
 end
 
-disp('test_sinh_random successful');
-disp(' ')
-
-return;
+%------------- END OF CODE --------------

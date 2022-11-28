@@ -30,9 +30,19 @@ function S=dominantDirections(Z,varargin)
 
 %------------- BEGIN CODE --------------
 
+% dimension
+n = dim(Z);
+
+% parse input arguments
+[filterLength1,filterLength2] = setDefaultValues({n+5,n+3},varargin{:});
+
+% check input arguments
+inputArgsCheck({{Z,'att','zonotope','nonempty'};
+                {filterLength1,'att','numeric',{'nonnan','scalar','positive'}};
+                {filterLength2,'att','numeric',{'nonnan','scalar','positive'}}});
+
 %extract generator matrix
-d = dim(Z);
-G=generators(Z);
+G = generators(Z);
 
 %Delete zero-generators
 G=nonzeroFilter(G);
@@ -40,13 +50,13 @@ G=nonzeroFilter(G);
 % number of generators
 nrOfGens = size(G,2);
 
-if nargin==1
-    filterLength1 = d+5;
-    filterLength2 = d+3;
-elseif nargin==3
-    filterLength1 = varargin{1};
-    filterLength2 = varargin{2};
-end
+% if nargin==1
+%     filterLength1 = d+5;
+%     filterLength2 = d+3;
+% elseif nargin==3
+%     filterLength1 = varargin{1};
+%     filterLength2 = varargin{2};
+% end
 
 %correct filter length if necessary
 if filterLength1 > nrOfGens
@@ -68,7 +78,6 @@ Gtemp=volumeFilter(Gcells,Z);
 Gpicked=Gtemp{1};
 
 %Select dominant directions S
-S(:,1:d)=Gpicked(:,1:d);
-
+S(:,1:n)=Gpicked(:,1:n);
 
 %------------- END OF CODE --------------

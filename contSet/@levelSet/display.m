@@ -1,5 +1,6 @@
 function display(ls)
-% display - Displays the levelSet object
+% display - Displays the properties of a levelSet object on the command
+%    window
 %
 % Syntax:  
 %    display(ls)
@@ -8,7 +9,7 @@ function display(ls)
 %    ls - levelSet object
 %
 % Outputs:
-%    (to console)
+%    ---
 %
 % Example: 
 %    syms x y
@@ -24,33 +25,45 @@ function display(ls)
 
 % Author:       Mark Wetzlinger
 % Written:      09-June-2020
-% Last update:  ---
+% Last update:  03-March-2022 (MP, add functionality for levelSets with
+%                                 multiple equations)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-fprintf(newline);
-disp(inputname(1) + " =");
-fprintf(newline);
+if isemptyobject(ls)
+    
+    dispEmptyObj(ls,inputname(1));
 
-varsStr = string(ls.vars);
-nrVars = length(varsStr);
-varsPrintStr = "";
-for i=1:nrVars-1
-    varsPrintStr = varsPrintStr + varsStr(i) + ",";
-end
-varsPrintStr = varsPrintStr + varsStr(nrVars);
-
-if length(ls.compOp) == 1
-    disp("  eq: f(" + varsPrintStr + ") " + ls.compOp + " " + string(ls.eq) + newline);
 else
-    for i = 1:length(ls.compOp)
-        andStr = "";
-        if i ~= length(ls.compOp)
-            andStr = " & ";
+
+    fprintf(newline);
+    disp(inputname(1) + " =");
+    fprintf(newline);
+    
+    % string of variables in level set
+    varsPrintStr = strjoin(string(ls.vars),",");
+
+    % number of concatenated level sets
+    numSets = length(ls.eq);
+    
+    if numSets == 1
+        disp("  eq: f(" + varsPrintStr + ") " + ls.compOp + " " ...
+            + string(ls.eq) + newline);
+    else
+        % loop over all level sets
+        for i=1:numSets
+            % only use & sign for all but last equation
+            andStr = "";
+            if i ~= numSets
+                andStr = " & ";
+            end
+            % display i-th equation
+            disp("  eq. #" + i + ": f(" + varsPrintStr + ") " + ls.compOp(i) ...
+                + " " + string(vpa(ls.eq(i),3)) + andStr);
         end
-        disp("  eq_"+i+": f(" + varsPrintStr + ") " + ls.compOp(i) + " " + string(vpa(ls.eq(i),3)) + andStr + newline);
     end
+
 end
 
 %------------- END OF CODE --------------

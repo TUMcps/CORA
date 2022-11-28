@@ -1,13 +1,13 @@
-function [Dksi, R] = ksi_iterative(obj,varargin)
+function [Dksi,R] = ksi_iterative(cZ,varargin)
 % ksi_iterative - determine the tighend domains for the zonotope factors
 %                 with an iterative method based on interval arithmetic
 %
 % Syntax:  
-%    Dksi = ksi_iterative(obj)
-%    Dksi = ksi_iterative(obj,iter)
+%    Dksi = ksi_iterative(cZ)
+%    Dksi = ksi_iterative(cZ,iter)
 %
 % Inputs:
-%    obj - constrained zonotope object
+%    cZ - conZonotope object
 %    iter - number of performed iterations 
 %
 % Outputs:
@@ -34,18 +34,19 @@ function [Dksi, R] = ksi_iterative(obj,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-iter = 1;
-if nargin == 2 
-   iter = varargin{1}; 
-end
+iter = setDefaultValues({1},varargin{:});
+
+% check input arguments
+inputArgsCheck({{cZ,'att','conZonotope'};
+                {iter,'att','numeric','nonnan'}});
 
 % initialization
-[m,n] = size(obj.A);
+[m,n] = size(cZ.A);
 E = interval(-ones(n,1), ones(n,1));
 R = interval(-Inf(n,1), Inf(n,1));
 
-A = obj.A;
-b = obj.b;
+A = cZ.A;
+b = cZ.b;
 iA = A.^-1;
 
 % loop over all iterations
@@ -72,7 +73,5 @@ for k = 1:iter
 end
 
 Dksi = E;
-
-end
 
 %------------- END OF CODE --------------

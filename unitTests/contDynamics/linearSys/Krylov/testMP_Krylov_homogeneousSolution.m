@@ -13,7 +13,7 @@ function res = testMP_Krylov_homogeneousSolution(~)
 %    res - boolean 
 %
 % Example: 
-%
+
 % Author:       Matthias Althoff
 % Written:      23-August-2017
 % Last update:  ---
@@ -22,7 +22,7 @@ function res = testMP_Krylov_homogeneousSolution(~)
 %------------- BEGIN CODE --------------
 
 % enable access to private function "initReach_Krylov"
-path = coraroot();
+path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSys','private','initReach_Krylov.m');
 target = fullfile(path,'contDynamics','@linearSys','initReach_Krylov.m');
 copyfile(source,target);
@@ -90,6 +90,6 @@ rmpath(genpath(path));
 addpath(genpath(path));
 
 % Is exact solution in zonotope?
-res = in(Rnext.tp,R_exact);
+res = contains(Rnext.tp,R_exact);
 
 %------------- END OF CODE --------------

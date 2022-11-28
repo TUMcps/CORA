@@ -1,33 +1,33 @@
-function res = isIntersecting(Z,obj,varargin)
-% isIntersecting - determines if zonotope Z intersects obj
+function res = isIntersecting(Z,S,varargin)
+% isIntersecting - determines if zonotope intersects a set
 %
 % Syntax:  
-%    res = isIntersecting(Z,obj)
-%    res = isIntersecting(Z,obj,type)
+%    res = isIntersecting(Z,S)
+%    res = isIntersecting(Z,S,type)
 %
 % Inputs:
 %    Z - zonotope object
-%    obj - contSet object
+%    S - contSet object
 %    type - type of check ('exact' or 'approx')
 %
 % Outputs:
-%    res - 1/0 if set is intersecting, or not
+%    res - true/false
 %
 % Example: 
-%    zono1 = zonotope([0 1 1 0;0 1 0 1]);
-%    zono2 = zonotope([2 -1 1 0;2 1 0 1]);
-%    zono3 = zonotope([3.5 -1 1 0;3 1 0 1]);
-%
-%    isIntersecting(zono1,zono2)
-%    isIntersecting(zono1,zono3)
-%
+%    Z1 = zonotope([0 1 1 0;0 1 0 1]);
+%    Z2 = zonotope([2 -1 1 0;2 1 0 1]);
+%    Z3 = zonotope([3.5 -1 1 0;3 1 0 1]);
+% 
+%    isIntersecting(Z1,Z2)
+%    isIntersecting(Z1,Z3)
+% 
 %    figure; hold on;
-%    plot(zono1,[1,2],'b');
-%    plot(zono2,[1,2],'g');
-%
+%    plot(Z1,[1,2],'b');
+%    plot(Z2,[1,2],'g');
+% 
 %    figure; hold on;
-%    plot(zono1,[1,2],'b');
-%    plot(zono3,[1,2],'r');
+%    plot(Z1,[1,2],'b');
+%    plot(Z3,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -42,25 +42,29 @@ function res = isIntersecting(Z,obj,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % get zonotope object
-    if ~isa(Z,'zonotope')
-        % switch variables
-        temp = Z;
-        Z = obj;
-        obj = temp;
-    end
+% pre-processing
+[resFound,vars] = pre_isIntersecting('zonotope',Z,S,varargin{:});
+
+% check premature exit
+if resFound
+    % if result has been found, it is stored in the first entry of var
+    res = vars{1}; return
+else
+    % assign values
+    Z = vars{1}; S = vars{2};
+end
+
+
+% call function for other set representations
+if isa(S,'halfspace') || isa(S,'conHyperplane') || ...
+   isa(S,'mptPolytope') || isa(S,'ellipsoid')
+
+    res = isIntersecting(S,Z,varargin{:});
+
+else
     
-    % call function for other set representations
-    if isa(obj,'halfspace') || isa(obj,'conHyperplane') || ...
-       isa(obj,'mptPolytope') || isa(obj,'ellipsoid')
-   
-        res = isIntersecting(obj,Z,varargin{:});
-   
-    else
-        
-        res = isIntersecting(conZonotope(Z),obj,varargin{:});
-        
-    end     
+    res = isIntersecting(conZonotope(Z),S,varargin{:});
+    
 end
 
 %------------- END OF CODE --------------

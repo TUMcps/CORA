@@ -43,7 +43,8 @@ switch propName
     case 'be'
         val = obj.P.be; %MPT V3 ONLY
     otherwise
-        error([propName,' is not a valid asset property'])
+        throw(CORAerror('CORA:wrongValue','second',"'P',{'H',A'},{'K','b'},'Ae'or 'be'"));
+%         error([propName,' is not a valid asset property'])
 end
 
 %------------- END OF CODE --------------

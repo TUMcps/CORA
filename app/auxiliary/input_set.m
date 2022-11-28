@@ -491,7 +491,7 @@ function pb_zonotope_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_zonotope (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im = 'Info_zonotope.png';
 infoBox({[path_im, im]});
 uiwait;
@@ -501,7 +501,7 @@ function pb_interval_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_interval (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-path_im= [coraroot, filesep, 'app', filesep, 'images', filesep];
+path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im = 'Info_Interval.png';
 infoBox({[path_im, im]});
 uiwait;

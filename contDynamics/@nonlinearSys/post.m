@@ -1,6 +1,6 @@
 function [Rnext,options] = post(obj,R,options)
 % post - computes the reachable continuous set for one time step of a
-% nonlinear system by overapproximative linearization
+%    nonlinear system by overapproximative linearization
 %
 % Syntax:  
 %    [Rnext] = post(obj,R,options)

@@ -60,7 +60,7 @@ function [Rin,Rout] = reachInnerScaling(sys,params,options)
     end
 
     % loop over all time steps for the inner-approximation
-    set = {}; time = {};
+    set = {options.R0}; time = {options.tStart};
     
     for i = options.N:options.N:length(Rout_.timePoint.set)
        
@@ -161,7 +161,7 @@ function [Rin,Rout] = reachInnerScaling(sys,params,options)
         else
             set{end+1} = R;
         end
-        time{end+1} = Rout_.timePoint.time{i};
+        time{end+1} = Rout_.timePoint.time{i+1};
     end
     
     % construct reachSet object for inner-approximation

@@ -9,14 +9,14 @@ function completed = example_polyZonotope()
 %    -
 %
 % Outputs:
-%    completed - boolean
+%    completed - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
-%
+
 % Author:        ---
 % Written:       ---
 % Last update:   ---
@@ -43,10 +43,10 @@ resPolyZono = quadMap(pZ,Q);
 
 % visualization
 figure; hold on;
-plot(resZono,[1,2],'r');
-plot(resPolyZono,[1,2],'b');
+plot(resZono,[1,2],'Color',colorblind('r'));
+plot(resPolyZono);
 
 % example completed
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

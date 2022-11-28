@@ -1,16 +1,18 @@
-function intVal = uminus(intVal)
+function I = uminus(I)
 % uminus - Overloaded '-' operator for single operand
 %
 % Syntax:  
-%    intVal = uplus(intVal)
+%    I = uminus(I)
 %
 % Inputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Outputs:
-%    intVal - interval object
+%    I - interval object
 %
 % Example: 
+%    I = interval([-2;-3],[5;6]);
+%    -I
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -20,19 +22,16 @@ function intVal = uminus(intVal)
 
 % Author:       Matthias Althoff
 % Written:      25-June-2015
-% Last update:  ---
+% Last update:  21-May-2022 (MW, simpler computation)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-%store values
-inf = intVal.inf;
-sup = intVal.sup;
+% store value
+temp = I.inf;
 
-%infimum
-intVal.inf = -sup;
-
-%supremum
-intVal.sup = -inf;
+% rewrite infimum and supremum
+I.inf = -I.sup;
+I.sup = -temp;
 
 %------------- END OF CODE --------------

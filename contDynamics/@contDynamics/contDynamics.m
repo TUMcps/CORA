@@ -1,17 +1,24 @@
 classdef contDynamics < matlab.mixin.Copyable
-% contDynamics class - basic class for continuous dynamics
+% contDynamics - basic class for continuous dynamics
 %
 % Syntax:  
+%    obj = contDynamics()
+%    obj = contDynamics(name)
+%    obj = contDynamics(name,states)
+%    obj = contDynamics(name,states,inputs)
 %    obj = contDynamics(name,states,inputs,outputs)
 %
 % Inputs:
-%    name - name of the continuous dynamics: char array
+%    name - system name
 %    states - number of states
 %    inputs - number of inputs
 %    outputs - number of outputs
 %
 % Outputs:
-%    obj - Generated Object
+%    obj - generated contDynamics object
+%
+% Example:
+%    obj = contDynamics('system',2,1,1);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,10 +38,17 @@ classdef contDynamics < matlab.mixin.Copyable
   
 
 properties (SetAccess = private, GetAccess = public)
-    name = [];
-    dim = [];
-    nrOfInputs = [];
-    nrOfOutputs = [];
+    % name of the system
+    name (1,:) = '';
+
+    % state dimension
+    dim (1,1) {mustBeInteger,mustBeNonnegative} = 0;
+
+    % input dimension
+    nrOfInputs (1,1) {mustBeInteger,mustBeNonnegative} = 0;
+
+    % output dimension
+    nrOfOutputs (1,1) {mustBeInteger,mustBeNonnegative} = 0;
 end
     
 methods
@@ -42,15 +56,24 @@ methods
     % class constructor
     function obj = contDynamics(varargin)
         
-        if nargin==1
+        if nargin == 0
+            % empty
+        elseif nargin == 1
             obj.name = varargin{1};
-        elseif nargin==4
+        elseif nargin == 2
+            obj.name = varargin{1};
+            obj.dim = varargin{2};
+        elseif nargin == 3
+            obj.name = varargin{1};
+            obj.dim = varargin{2};
+            obj.nrOfInputs = varargin{3};
+        elseif nargin == 4
             obj.name = varargin{1};
             obj.dim = varargin{2};
             obj.nrOfInputs = varargin{3};
             obj.nrOfOutputs = varargin{4};
         else
-            error('Wrong number of input arguments');
+            throw(CORAerror('CORA:tooManyInputArgs',4));
         end
     end
 end

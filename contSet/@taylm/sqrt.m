@@ -59,7 +59,7 @@ function res = s_sqrt( obj )
         rem = interval(T);
         temp = rem + c_f;
         if infimum(temp) < 0
-           error('Function ''taylm/sqrt'' is not defined for negative inputs!'); 
+            throw(CORAerror('CORA:outOfDomain','validDomain','>= 0'));
         end
     
         % sum initialisation

@@ -1,29 +1,31 @@
 function Z = enc_zonotope(E,m,comptype)
-% enc_zonotope - overapproximates an ellipsoid by a zonotope
+% enc_zonotope - over-approximates an ellipsoid by a zonotope
 %
 % Syntax:  
-%    E = enc_zonotope(Z,m,comptype)
+%    Z = enc_zonotope(E,m,comptype)
 %
 % Inputs:
-%    E       - ellipsoid object
-%    comptype- (Optional) Specifies whether function uses a lower bound on the 
-%              minimum zonotope norm or the exact value
+%    E - ellipsoid object
+%    m - ???
+%    comptype - (optional) Specifies whether function uses a lower bound on
+%               the minimum zonotope norm or the exact value
 %
 % Outputs:
 %    Z - zonotope object
 %
 % Example: 
-%    E = ellipsoid.generateRandom(0,2);
+%    E = ellipsoid.generateRandom('Dimension',2);
 %    Z = enc_zonotope(E,10,'exact');
+%
+%    figure; hold on;
 %    plot(E);
-%    hold on
-%    plot(Z);
+%    plot(Z,[1,2],'r');
 %
 % References:
-%    [1] : P. Leopardi, "Distributing points on the sphere," School of Mathematics
-%          and Statistics. PhD thesis. University of New South Wales, 2007
-%    [2] : The Recursive Zonal Equal Area (EQ) Sphere Partitioning Toolbox,
-%          https://de.mathworks.com/matlabcentral/fileexchange/13356-eq_sphere_partitions
+%    [1] P. Leopardi, "Distributing points on the sphere," School of Mathematics
+%        and Statistics. PhD thesis. University of New South Wales, 2007
+%    [2] The Recursive Zonal Equal Area (EQ) Sphere Partitioning Toolbox,
+%        https://de.mathworks.com/matlabcentral/fileexchange/13356-eq_sphere_partitions
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,7 +40,10 @@ function Z = enc_zonotope(E,m,comptype)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-assert(~E.isdegenerate,'Degeneracy should be handled in main file!');
+
+if ~isFullDim(E)
+    throw(CORAerror('CORA:degenerateSet','Should be handled in main file'));
+end
 
 %check if respective norm should be bounded or computed exactly
 if exist('comptype','var') && strcmp(comptype,'exact')
@@ -62,7 +67,7 @@ end
 if doExact
     L = minnorm(zonotope([zeros(n,1),G]));
 else
-    error('lower bound on minimum norm not implemented yet!');
+    throw(CORAerror('CORA:noops',E,m));
 end
 %we want E \in Z, thus scale zonotope([.,G]) s.t. it touches E (for exact
 %norm computation) and apply retransform

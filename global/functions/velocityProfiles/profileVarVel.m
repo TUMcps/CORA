@@ -1,15 +1,17 @@
 function [velocity,input]=profileVarVel(pos,acc)
-% profile1..n - returns the velocity for a given position and maximum 
-% accelerationof the velocity profile of the corresponding path.
+% profileVarVel - returns the velocity for a given position and maximum 
+%    acceleration of the velocity profile of the corresponding path.
 %
 % Syntax:  
-%    [velocity]=profile1(pos)
+%    [velocity,input] = profileVarVel(pos,acc)
 %
 % Inputs:
 %    pos - position on the path
+%    acc - acceleration
 %
 % Outputs:
 %    velocity - velocity of the velocity profile
+%    input - ???
 %
 % Example: 
 %    ---
@@ -31,6 +33,5 @@ function [velocity,input]=profileVarVel(pos,acc)
 velocity=20;
 
 input=0;
-
 
 %------------- END OF CODE --------------

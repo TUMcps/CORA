@@ -29,34 +29,31 @@ function res = test_interval_plot
 
 res = true;
 
-Int = interval([1;1;2],[3;4;7]);
+I = interval([1;1;2],[3;4;7]);
 
 try
     % try all variations in plotting
     figure;
     
     % one argument: object
-    plot(Int);
+    plot(I);
     
     % two arguments: object, dimensions
-    plot(Int,[1,2]);
-    plot(Int,[2,3]);
+    plot(I,1);
+    plot(I,[1,2]);
+    plot(I,[2,3]);
     
     % three arguments: object, dimensions, linespec
-    plot(Int,[1,2],'r+');
+    plot(I,[1,2],'r+');
     
     % three arguments: object, dimensions, NVpairs
-    plot(Int,[1,2],'LineWidth',2);
-    plot(Int,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
-    
-    % three arguments: object, dimensions, NVpair 'Filled'
-    plot(Int,[1,2],'Filled',true);
-    plot(Int,[1,2],'Filled',true,'LineWidth',2);
-    plot(Int,[1,2],'Filled',true,'EdgeColor','k','FaceColor',[.8 .8 .8]);
+    plot(I,[1,2],'LineWidth',2);
+    plot(I,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
+    plot(I,[1,2],'EdgeColor','k','FaceColor',[.8 .8 .8]);
     
     % four arguments: object, dimensions, linespec, NVpairs
-    plot(Int,[1,2],'r','Filled',true,'LineWidth',2);
-    plot(Int,[1,2],'r','Filled',true,'LineWidth',2,'EdgeColor',[.6 .6 .6]);
+    plot(I,[1,2],'r','LineWidth',2);
+    plot(I,[1,2],'r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
     
     % close figure
     close;
@@ -65,11 +62,4 @@ catch
     res = false;
 end
 
-if res
-    disp('test_plot successful');
-else
-    disp('test_plot failed');
-end
-
 %------------- END OF CODE --------------
-

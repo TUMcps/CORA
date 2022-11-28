@@ -34,6 +34,11 @@ function res = projectHighDim(obj,N,dim)
 
 %------------- BEGIN CODE --------------
 
+    % check input arguments
+    inputArgsCheck({{obj,'att','mptPolytope'};
+                    {N,'att','numeric','nonnan'};
+                    {dim,'att','numeric','nonnan'}});
+    
     % initialize variables
     A = zeros(size(obj.P.A,1),N);
     b = obj.P.b;

@@ -1,5 +1,5 @@
 function R = observe_intersectionFree(obj,options)
-% observe_intersectionFree - computes the guaranted state estimation 
+% observe_intersectionFree - computes the guaranteed state estimation 
 % approach according to the intersection-free approach, see [1].
 %
 %

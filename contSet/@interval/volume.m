@@ -1,18 +1,18 @@
-function V = volume(obj)
+function vol = volume(I)
 % volume - Computes volume of an interval
 %
 % Syntax:  
-%    V = volume(obj)
+%    vol = volume(I)
 %
 % Inputs:
-%    obj - interval object
+%    I - interval object
 %
 % Outputs:
-%    V - volume
+%    vol - volume
 %
 % Example: 
 %    I = interval([1; -1], [2; 1]);
-%    V = volume(I);
+%    vol = volume(I);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -22,15 +22,21 @@ function V = volume(obj)
 
 % Author:       Matthias Althoff
 % Written:      24-July-2016 
-% Last update:  ---
+% Last update:  18-August-2022 (MW, include standardized preprocessing)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-if ~isempty(obj)
-    V = prod(2*rad(obj));
-else
-    V = 0;
+% pre-processing
+[res,vars] = pre_volume('interval',I);
+
+% check premature exit
+if res
+    % if result has been found, it is stored in the first entry of var
+    vol = vars{1}; return
 end
+
+% simple volume formula
+vol = prod(2*rad(I));
 
 %------------- END OF CODE --------------

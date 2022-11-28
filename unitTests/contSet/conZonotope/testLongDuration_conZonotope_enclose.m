@@ -31,7 +31,7 @@ function res = testLongDuration_conZonotope_enclose
 
 %------------- BEGIN CODE --------------
 
-res = false;
+res = true;
 
 
 % TEST 1: Random Test (linear transformation 2D) --------------------------
@@ -57,7 +57,7 @@ for h = 1:5
     % calculate convex hull
     cZonoRes = enclose(cZono,cZono2);
 
-    % calculate points that have to be located inside the resuling conZonotope
+    % calculate points that have to be located inside the resulting conZonotope
     V2 = vertices(cZono2);
 
     N = size(V,2) * size(V2,2) * 10;
@@ -98,11 +98,11 @@ for h = 1:5
           file_name = strcat('testLongDuration_conZonotope_enclose_1_', ...
                       datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-          file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+          file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                                file_name);
                            
-          save(file_path, 'cZonoRes')
-          error('Test 1 failed!');
+          save(file_path, 'points','T','t')
+          throw(CORAerror('CORA:testFailed'));
        end
     end
 end
@@ -137,7 +137,7 @@ for h = 1:5
     % calculate convex hull
     cZonoRes = enclose(cZono,cZono2);
 
-    % calculate points that have to be located inside the resuling conZonotope
+    % calculate points that have to be located inside the resulting conZonotope
     V2 = vertices(cZono2);
 
     N = size(V,2) * size(V2,2) * 10;
@@ -178,16 +178,13 @@ for h = 1:5
           file_name = strcat('testLongDuration_conZonotope_enclose_2_', ...
                              datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-          file_path = fullfile(coraroot(), 'unitTests', 'failedTests', ...
+          file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                                file_name);
                            
-          save(file_path, 'cZonoRes')
-          error('Test 1 failed!');
+          save(file_path, 'points','T','t')
+          throw(CORAerror('CORA:testFailed'));
        end
     end
 end
-
-res = true;
-
 
 %------------- END OF CODE --------------

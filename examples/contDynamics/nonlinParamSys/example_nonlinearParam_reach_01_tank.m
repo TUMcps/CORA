@@ -1,15 +1,13 @@
 function completed = example_nonlinearParam_reach_01_tank()
 % example_nonlinearParam_reach_01_tank - example of nonlinear reachability 
-%                                        analysis with uncertain parameters
-%
-% This file implements the example from [1], which can also be found in 
-% Sec. 3.4.5 of [2].
+%    analysis with uncertain parameters, taken from [1], which can also be
+%    found in Sec. 3.4.5 of [2].
 %
 % Syntax:  
-%    example_nonlinearParam_reach_01_tank
+%    completed = example_nonlinearParam_reach_01_tank()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    res - boolean 
@@ -28,7 +26,7 @@ function completed = example_nonlinearParam_reach_01_tank()
 
 %------------- BEGIN CODE --------------
 
-% Parameter ---------------------------------------------------------------
+% Parameters --------------------------------------------------------------
 
 params.tFinal = 400;                                     % final time
 params.R0 = zonotope([[2; 4; 4; 2; 10; 4],0.2*eye(6)]);  % initial set
@@ -40,9 +38,9 @@ params_.paramInt = interval(0.0148,0.015);          % uncertain paramters
 
 % Reachability Settings ---------------------------------------------------
 
-options.timeStep=0.5;
-options.taylorTerms=4;
-options.zonotopeOrder=10;
+options.timeStep = 0.5;
+options.taylorTerms = 4;
+options.zonotopeOrder = 10;
 options.tensorOrder = 2;
 options.alg = 'lin';
 
@@ -74,11 +72,8 @@ disp(['computation time of reachable set with uncertain parameters: ',num2str(tC
 
 % Simulation --------------------------------------------------------------
 
-% settings for random simulation 
-simOpt.points = 60;        % number of initial points
-simOpt.fracVert = 0.5;     % fraction of vertices initial set
-simOpt.fracInpVert = 0.5;  % fraction of vertices input set
-simOpt.inpChanges = 6;     % changes of input over time horizon
+% number of initial points
+simOpt.points = 60;
 
 % random simulation
 simRes = simulateRandom(tank,params,simOpt);
@@ -95,11 +90,11 @@ for i = 1:length(dims)
     projDims = dims{i};
 
     % plot reachable sets
-    hanParam = plot(RcontParam,projDims,'FaceColor',[.7 .7 .7],'EdgeColor','none');
-    hanNoParam = plot(RcontNoParam,projDims,'FaceColor',[.5 .5 .5],'EdgeColor','none');
+    hanParam = plot(RcontParam,projDims);
+    hanNoParam = plot(RcontNoParam,projDims,'FaceColor',colorblind('gray'));
     
     % plot initial set
-    plot(params.R0,projDims,'w','Filled',true,'EdgeColor','k');
+    plot(params.R0,projDims,'k','FaceColor','w');
   
     % plot simulation results
     plot(simRes,projDims);
@@ -110,6 +105,6 @@ for i = 1:length(dims)
     legend([hanParam,hanNoParam],'parametric','non-parametric');
 end
 
-completed = 1;
+completed = true;
 
 %------------- END OF CODE --------------

@@ -1,16 +1,21 @@
-function display(obj)
-% display - Displays a linVarSys object
+function display(sys)
+% display - Displays a linParamSys object on the command window
 %
 % Syntax:  
-%    display(obj)
+%    display(sys)
 %
 % Inputs:
-%    obj - linVarSys object
+%    sys - linParamSys object
 %
 % Outputs:
 %    ---
 %
-% Example: 
+% Example:
+%    Ac = [-2 0; 1.5 -3];
+%    Aw = [0 0; 0.5 0];
+%    A = intervalMatrix(Ac,Aw);
+%    B = [1; 1];
+%    sys = linParamSys(A,B,'varParam')
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -18,36 +23,37 @@ function display(obj)
 %
 % See also: none
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      05-Aug-2010
-% Last update:  ---
+% Last update:  19-June-2022
+%               23-November-2022 (TL: dispInput)
+% Last revision:---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-disp('-----------------------------------');
+% disp input if necessary
+dispInput(inputname(1))
 
 %display parent object
-display@contDynamics(obj);
+display@contDynamics(sys);
 
 %display type
-disp('type: Linear parametric system');
+disp('Type: Linear continuous-time parametric system');
 
-% display paraemter type
-if obj.constParam
-    disp('parameter: constant'); 
+% display parameter type
+if sys.constParam
+    disp('  parameter: constant'); 
 else
-    disp('parameter: time-varying');
+    disp('  parameter: time-varying');
 end
 
-%display A-Matrix
-disp('System matrix: ');
-display(obj.A);
+% display state matrix
+disp("System matrix:");
+displayMatrixVector(sys.A,"A");
 
-%display B-Matrix
-disp('Input matrix: ');
-display(obj.B);
-
-disp('-----------------------------------');
+% display input matrix
+disp("Input matrix:");
+displayMatrixVector(sys.B,"B");
 
 %------------- END OF CODE --------------

@@ -60,14 +60,14 @@ params.U = zonotope([uTrans,Bound_u]);
 
 % Reachability Settings ---------------------------------------------------
 
-options.timeStep = 1;   % Time step size for reachable set computation
+options.timeStep      = 1;   % Time step size for reachable set computation
 options.taylorTerms   = 20;
 options.zonotopeOrder = 500; % Zonotope order
 
 % Linearization options
-options.tensorOrder          = 2;
-options.alg                  = 'lin';
-options.maxError             = 1.0e+02 * ones(12,1);
+options.tensorOrder   = 2;
+options.alg           = 'lin';
+options.maxError      = 1.0e+02 * ones(12,1);
 
 
 % System Dynamics ---------------------------------------------------------
@@ -92,10 +92,6 @@ end
 
 %random simulations
 simOpt.points = 60;
-simOpt.fracVert = 0.5;
-simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
-
 simRes = simulateRandom(drumSys, params, simOpt);
 
 % obtain level from states
@@ -117,11 +113,11 @@ subplot(2,2,1); hold on;
 for i=1:length(RcontY)    
     ZprojY = project(RcontY{i},[2 4]);
     ZprojY = reduce(ZprojY,'girard',10);
-    plot(ZprojY,[1 2],'FaceColor',[.8 .8 .8],'Filled',true,'EdgeColor','none');  
+    plot(ZprojY,[1 2],'FaceColor',colorblind('b'));
 end
-plot(R0Level,[2 4],'w','Filled',true,'EdgeColor','k');
+plot(R0Level,[2 4],'k','FaceColor','w');
 for i=1:length(simRes.t)
-    plot(simRes.x{i}(:,7)*4.75e-6,level{i},'k');
+    plot(simRes.x{i}(:,7)*4.75e-6,level{i},'Color',colorblind('y'));
 end
 
 % Pressure vs level
@@ -129,11 +125,11 @@ subplot(2,2,2); hold on;
 for i=1:length(RcontY)    
     ZprojY = project(RcontY{i},[1 4]);
     ZprojY = reduce(ZprojY,'girard',10);
-    plot(ZprojY,[1 2],'FaceColor',[.8 .8 .8],'Filled',true,'EdgeColor','none');   
+    plot(ZprojY,[1 2],'FaceColor',colorblind('b'));
 end
-plot(R0Level,[1 4],'w','Filled',true,'EdgeColor','k');
+plot(R0Level,[1 4],'k','FaceColor','w');
 for i=1:length(simRes.t)
-    plot(simRes.x{i}(:,1)*1e-5,level{i},'k');
+    plot(simRes.x{i}(:,1)*1e-5,level{i},'Color',colorblind('y'));
 end
 
 % Power demand vs Pressure
@@ -141,27 +137,27 @@ subplot(2,2,3); hold on;
 for i=1:length(RcontY)    
     ZprojY = project(RcontY{i},[2 1]);
     ZprojY = reduce(ZprojY,'girard',10);
-    plot(ZprojY,[1 2],'FaceColor',[.8 .8 .8],'Filled',true,'EdgeColor','none');   
+    plot(ZprojY,[1 2],'FaceColor',colorblind('b'));
 end
-plot(R0Level,[2 1],'w','Filled',true,'EdgeColor','k');
+plot(R0Level,[2 1],'k','FaceColor','w');
 for i=1:length(simRes.t)
-    plot(simRes.x{i}(:,7)*4.75e-6,simRes.x{i}(:,1)*1e-5,'k');
+    plot(simRes.x{i}(:,7)*4.75e-6,simRes.x{i}(:,1)*1e-5,...
+        'Color',colorblind('y'));
 end
 
 % Steam quality vs Steam volume
 subplot(2,2,4); hold on;
 projDims=[3 4];
-plot(Rcont,projDims,'FaceColor',[.8 .8 .8],'Filled',true,'EdgeColor','none','Order',10);
-plot(params.R0,projDims,'w','Filled',true,'EdgeColor','k');
+plot(Rcont,projDims,'FaceColor',colorblind('b'));
+plot(params.R0,projDims,'k','FaceColor','w');
 for i=1:length(simRes.t)
-    plot(simRes.x{i}(:,projDims(1)),simRes.x{i}(:,projDims(2)),'k');
+    plot(simRes.x{i}(:,projDims(1)),simRes.x{i}(:,projDims(2)),...
+        'Color',colorblind('y'));
 end
 xlabel("x_" + projDims(1)); ylabel("x_" + projDims(2));
 
     
 % example completed
-res = 1;   
-
-end
+res = true;
 
 %------------- END OF CODE --------------

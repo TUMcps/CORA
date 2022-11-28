@@ -1,12 +1,32 @@
-function [functionName,HA] = data2ParallelHA(Data, path)
-
-%INPUT :
-%    Data : Automaton in structHA formate
-%    path: folder from which to generate auxillary files
-%OUTPUT :
-%     HA: Automaton in CORA format as a string
+function [functionName,HA] = data2ParallelHA(Data,path)
+% data2ParallelHA - write text for hybrid automaton file
 %
+% Syntax:  
+%    [functionName,HA] = data2ParallelHA(Data,path)
+%
+% Inputs:
+%    Data - Automaton in structHA format
+%    path - folder from which to generate auxillary files
+%
+% Outputs:
+%    functionName - name of function
+%    HA - text for hybridAutomaton instantiation
+%
+% Example: 
+%    ---
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
+% Author:       ???
+% Written:      ???
+% Last update:  ---
+% Last revision:---
+
+%------------- BEGIN CODE --------------
 
 % Get Meta Information of the given Automaton
 Components = Data.Components;
@@ -35,7 +55,7 @@ for comp = 1:numberOfComp
     stateNames = [Comp.states.name];
     % print to comment
     stateStr = "%  state x := [" + stateNames(1);
-    if(length(stateNames) > 1)
+    if length(stateNames) > 1
         stateStr = stateStr + sprintf("; %s",stateNames(2:end));
     end
     stateStr = stateStr + "]" + newline;
@@ -44,22 +64,38 @@ for comp = 1:numberOfComp
     inputNames = [Comp.inputs.name];
     % print to comment
     inputStr = "%  input u := [" + inputNames(1);
-    if(length(inputNames) > 1)
+    if length(inputNames) > 1
         inputStr = inputStr + sprintf("; %s",inputNames(2:end));
     end
     inputStr = inputStr + "]" + newline;
 
-    if ~isempty(Comp.outputsGlobal)
-        % gather output names in string array
-        outputNames = [Comp.outputsGlobal.name];
-        % print to comment
-        outputStr = "%  output y := [" + outputNames(1);
-        if(length(outputNames) > 1)
-            outputStr = outputStr + sprintf("; %s",outputNames(2:end));
+    % gather output names in string array
+    if numberOfComp > 1
+        % parallel
+        outputStr = "%  output y := [";
+        if ~isempty(Comp.outputsLocal)
+            outputNames = [Comp.outputsLocal.name];
+            % print to comment
+            outputStr = outputStr + outputNames(1);
+            if length(outputNames) > 1
+                outputStr = outputStr + sprintf("; %s",outputNames(2:end));
+            end
         end
         outputStr = outputStr + "]" + newlines(2);
     else
-        outputStr = newline;
+        % flat
+        if ~isempty(Comp.outputsGlobal)
+            % gather output names in string array
+            outputNames = [Comp.outputsGlobal.name];
+            % print to comment
+            outputStr = "%  output y := [" + outputNames(1);
+            if(length(outputNames) > 1)
+                outputStr = outputStr + sprintf("; %s",outputNames(2:end));
+            end
+            outputStr = outputStr + "]" + newlines(2);
+        else
+            outputStr = newline;
+        end
     end
     
     infoStr = infoStr + compInfoStr + stateStr + inputStr + outputStr;
@@ -83,6 +119,11 @@ for comp = 1:numberOfComp
     cCommentStr = padComment("Component " + component_id) + newlines(2);
     % Append it to component String
     componentStr = componentStr + cCommentStr;
+
+    % re-initialize 'loc' variable, append to component string
+    if comp > 1
+        componentStr = componentStr + "loc = {};" + newlines(2);
+    end
     
     
     % For each state in component
@@ -95,7 +136,7 @@ for comp = 1:numberOfComp
         stateStr = sCommentStr;
         
         % Give original equation as comment
-        dynamicsC = text2comment("equation:" + newline + State.Flow.Text) + newline;
+        dynamicsC = text2comment("flow equation:" + newline + State.Flow.Text) + newline;
         if isfield(State.Flow,'A')
             % Get information for linear system
             linSysA = printMatrixConverter(State.Flow.A);
@@ -105,17 +146,18 @@ for comp = 1:numberOfComp
             linSysc = printMatrixConverter(State.Flow.c);
             linSyscStr = "dync = ..." + newline + linSysc + ";" + newline;
             % Get information about outputs from Invariant of linear system
-            if isempty(Comp.outputsGlobal)
+            if (numberOfComp == 1 && isempty(Comp.outputsGlobal)) || ...
+                (numberOfComp > 1 && isempty(Comp.outputsLocal))
                 % no outputs, no equation of the form y = Cx + Du + k
                 dynamicsStr = dynamicsC + linSysAStr + linSysBStr + linSyscStr + ...
                     "dynamics = linearSys(dynA, dynB, dync);" + newlines(2);
             else
                 % include output equation y = Cx + Du + k
-                linSysC = printMatrixConverter(State.Invariant.C);
+                linSysC = printMatrixConverter(State.Flow.C);
                 linSysCStr = "dynC = ..." + newline + linSysC + ";" + newline;
-                linSysD = printMatrixConverter(State.Invariant.D);
+                linSysD = printMatrixConverter(State.Flow.D);
                 linSysDStr = "dynD = ..." + newline + linSysD + ";" + newline;
-                linSysk = printMatrixConverter(State.Invariant.k);
+                linSysk = printMatrixConverter(State.Flow.k);
                 linSyskStr = "dynk = ..." + newline + linSysk + ";" + newline;
                 dynamicsStr = dynamicsC + linSysAStr + linSysBStr + linSyscStr + ...
                     linSysCStr + linSysDStr + linSyskStr + ...
@@ -125,9 +167,9 @@ for comp = 1:numberOfComp
             % choose name for dynamics function
             if numberOfComp==1
                 % simplify names for monolithic automata
-                nonlinName = sprintf("%s_St%d_FlowEq",functionName,state);
+                nonlinName = sprintf("%s_Loc%d_FlowEq",functionName,state);
             else
-                nonlinName = sprintf("%s_C%d_St%d_FlowEq",functionName,comp,state);
+                nonlinName = sprintf("%s_Comp%d_Loc%d_FlowEq",functionName,comp,state);
             end
             
             % find dynamics of system
@@ -142,16 +184,22 @@ for comp = 1:numberOfComp
         end
         
         % Get information for Invariant
-        if isa(State.Invariant.set,'mptPolytope')
+        InvText = State.Invariant.Text;
+        if isnumeric(State.Invariant.set) && isempty(State.Invariant.set)
+            str1 = "";
+            str2 = "[];";
+            InvText = "no invariant given";
+        elseif isa(State.Invariant.set,'mptPolytope')
             [str1,str2] = mptPolytopeString(State.Invariant.set);
         elseif isa(State.Invariant.set,'levelSet')
             [str1,str2] = levelSetString(State.Invariant.set);
         else
-            error('Something went wrong!'); 
+            throw(CORAerror('CORA:converterIssue',...
+                'Invariant has to be either empty, an mptPolytope, or a levelSet'));
         end
-        
+
         % Write String for Invariant
-        invariantC = text2comment("equation:" + newline + State.Invariant.Text) + newline;
+        invariantC = text2comment("invariant equation:" + newline + InvText) + newline;
         invariantStr = invariantC + str1 + "inv = " + str2 + newlines(2);
         
         transitionStr = "trans = {};" + newline;
@@ -171,10 +219,9 @@ for comp = 1:numberOfComp
                 resetAStr = "resetA = ..." + newline + resetA + ";" + newline;
                 resetc = printMatrixConverter(Tran.reset.c);
                 resetcStr = "resetc = ..." + newline + resetc + ";" + newline;
-                if isfield(Tran.reset,'hasInput') && Tran.reset.hasInput
+                if isfield(Tran.reset,'B')
                     resetB = printMatrixConverter(Tran.reset.B);
                     resetBStr = "resetB = ..." + newline + resetB + ";" + newline;
-                    resetInputDimStr = "resetInputDim = " + num2str(Tran.reset.inputDim)+";"+newline;
                 end
                 
                 % Write Reset String
@@ -182,26 +229,27 @@ for comp = 1:numberOfComp
                 if tranResetText == ""
                     tranResetText = "no reset equation given";
                 end
-                resetComment = text2comment("equation:" + newline + tranResetText) + newline;
-                if isfield(Tran.reset,'hasInput') && Tran.reset.hasInput
-                    resetStr = resetComment + resetAStr +resetBStr + resetcStr + resetInputDimStr + ...
-                        "reset = struct('A', resetA, 'B', resetB,'c', resetc," + ...
-                    "'hasInput',1,'inputDim',resetInputDim);" + newlines(2);
+                resetComment = text2comment("reset equation:" + newline + tranResetText) + newline;
+                if isfield(Tran.reset,'B')
+                    resetStr = resetComment + resetAStr + resetBStr + resetcStr + ...
+                        "reset = struct('A', resetA, 'B', resetB, 'c', resetc);" + newlines(2);
                 else
                     resetStr = resetComment + resetAStr + resetcStr + ...
-                        "reset = struct('A', resetA, 'c', resetc,'hasInput',0);" + newlines(2);
+                        "reset = struct('A', resetA, 'c', resetc);" + newlines(2);
                 end
             else
                 % nonlinear reset
                                
                 % choose name of function
                 if numberOfComp == 1
-                    resetFuncName = sprintf("%s_St%d_Tra%d_ResetEq%d",functionName,state,trans);
+                    resetFuncName = sprintf("%s_Loc%d_Trans%d_ResetEq%d",...
+                        functionName,state,trans);
                 else
-                    resetFuncName = sprintf("%s_C%d_St%d_Tra%d_ResetEq%d",functionName,comp,state,trans);
+                    resetFuncName = sprintf("%s_Comp%d_Loc%d_Trans%d_ResetEq%d",...
+                        functionName,comp,state,trans);
                 end
 
-                % generate function file for nonlinear reset                
+                % generate function file for nonlinear reset
                 printDynamicsFile(path,resetFuncName,Tran.reset.FormalEqs,"reset");
                 tranResetText = Tran.reset.Text;
                 if tranResetText == ""
@@ -209,67 +257,77 @@ for comp = 1:numberOfComp
                 end
                 
                 % Write Reset String
-                resetComment = text2comment("equation:" + newline + tranResetText) + newline;
-                if isfield(Tran.reset,'hasInput') && Tran.reset.hasInput
-                    resetStr = resetComment + "reset = struct('f', @" + ...
-                        resetFuncName + ",'hasInput'," + num2str(Tran.reset.hasInput) + ...
-                        ",'inputDim',"+ num2str(Tran.reset.inputDim) + ");" + newlines(2);
-                else
-                    resetStr = resetComment + "reset = struct('f', @" + ...
-                        resetFuncName +  ",'hasInput',0);" + newlines(2);
-                end
+                resetComment = text2comment("reset equation:" + ...
+                    newline + tranResetText) + newline;
+                resetStr = resetComment + "reset = struct('f', @" + ...
+                        resetFuncName + ");" + newlines(2);
             end
             
             % Get Information for Guards for Transition "trans"
-            if isa(Tran.guard.set,'mptPolytope')
-                
+            tranGuardText = Tran.guard.Text;
+            if tranGuardText == ""
+                tranGuardText = "no guard set given";
+            end
+            if isnumeric(Tran.guard.set) && isempty(Tran.guard.set)
+                % empty guard set -> immediate transition
+                str1 = "";
+                str2 = "[];";
+
+            elseif isa(Tran.guard.set,'mptPolytope')
                 % intersect guard with invariant
-                if ~isempty(Tran.guard.set)
-                    poly = State.Invariant.set & Tran.guard.set;
-                    poly = removeRedundancies(poly,'all');
-                    % check if guard can be represented as hyperplane
-                    [res,ch] = isConHyperplane(poly);
-                else
-                    res = 0;
-                    poly = Tran.guard.set;
+                try
+                    G = State.Invariant.set & Tran.guard.set;                    
+                catch
+                    G = Tran.guard.set;
+                end
+
+                % check if guard can be represented as hyperplane
+                res = false;
+                if isa(G,'mptPolytope')
+                    G = removeRedundancies(G,'all');
+                    [res,ch] = isConHyperplane(G);
                 end
                 
-                if res
-                    [str1,str2] = conHyperplaneString(ch);
+                if isa(G,'levelSet')
+                    [str1,str2] = levelSetString(G);
+                elseif isa(G,'mptPolytope')
+                    if res
+                        [str1,str2] = conHyperplaneString(ch);
+                    else
+                        [str1,str2] = mptPolytopeString(G);
+                    end
                 else
-                    [str1,str2] = mptPolytopeString(poly);
+                    throw(CORAerror('CORA:converterIssue',...
+                        'Unexpected set representation in conversion of guard set.'));
                 end
             elseif isa(Tran.guard.set,'levelSet')
-                [str1,str2] = levelSetString(Tran.guard.set);
+                % intersect guard with invariant
+                try
+                    G = State.Invariant.set & Tran.guard.set;                    
+                catch
+                    G = Tran.guard.set;
+                end
+                [str1,str2] = levelSetString(G);
             else
-                error('Something went wrong!'); 
+                throw(CORAerror('CORA:converterIssue',...
+                    ['Guard set has to be empty, a conHyperplane, '...
+                    'an mptPolytope or a levelSet.'])); 
             end
             
             % Write Guard String
-            guardC = text2comment("equation:" + newline + Tran.guard.Text) + newline;
+            guardC = text2comment("guard equation:" + newline + tranGuardText) + newline;
             guardStr = guardC + str1 + "guard = " + str2 + newlines(2);
             
-            % in case of empty guard, also specify state dimension
-            stateDimString = "";
-            if isempty(Tran.guard.set)
-                stateDimString = ", ";
-                if isfield(Tran.reset,'A')
-                    stateDims = num2str(size(Tran.reset.A,1));
-                else
-                    stateDims = num2str(length(Tran.reset.FormalEqs));
-                end
-                stateDimString = stateDimString + stateDims;
-            end
             
-            
-            % Write Transition String, include label only if it is
-            % non-empty
+            % Write Transition String, include only non-empty labels
             if strlength(Tran.label) > 0
-                transStr = "trans{" + num2str(trans) + "} = transition(guard, reset, " +...
-                    transDestination + ","""+ Tran.label +""""+ stateDimString +");" + newlines(2);
+                transStr = "trans{" + num2str(trans) + ...
+                    "} = transition(guard, reset, " + ...
+                    transDestination + ", '" + Tran.label + "');" + newlines(2);
             else
-                transStr = "trans{" + num2str(trans) + "} = transition(guard, reset, " +...
-                    transDestination + ",[]"+ stateDimString + ");" + newlines(2);
+                transStr = "trans{" + num2str(trans) + ...
+                    "} = transition(guard, reset, " + ...
+                    transDestination + ");" + newlines(2);
             end
             % Append Transition string
             transitionStr = transitionStr + resetStr + guardStr + transStr;
@@ -277,8 +335,13 @@ for comp = 1:numberOfComp
         end
         
         % Write State String
-        locStr = "loc{" + num2str(state) + "} = location('S" + num2str(state) +...
-                    "', inv, trans, dynamics);" + newlines(4);
+        if States(state).name == ""
+            locName = "S" + state;
+        else
+            locName = States(state).name;
+        end
+        locStr = "loc{" + num2str(state) + "} = location('" + locName + ...
+            "', inv, trans, dynamics);" + newlines(4);
         % Append State String
         stateStr = stateStr + dynamicsStr + invariantStr + transitionStr + locStr;
         % Append State String to Component String
@@ -287,17 +350,31 @@ for comp = 1:numberOfComp
     end
     
     if numberOfComp > 1
-        parallelCompStr = "comp{" + num2str(comp) + "} = hybridAutomaton(loc);" + newlines(2);
+        % only parallel hybrid automata here...
+        parallelCompStr = text2comment("composition: hybrid automaton and input binds") + ...
+            newline + "comp{" + num2str(comp) + "} = hybridAutomaton(loc);" + newlines(2);
         
         % declare inputBinds
         % default string for comp without inputs
         inputBindStr = "iBinds{" + comp + "} = [];" + newlines(2);
-        % syntax of inputBinds: [[origin,#output-of-origin];[x,x];[y,y];...];
+        % syntax of inputBinds: mx2 array, where
+        %   m - number of input arguments to current component
+        % with (m,1) being either 0 (global) or the component of origin
+        % and (m,2) being the number of the global input (if (m,1) = 0)
+        %           or the number of output of the component of origin
+
         if strcmp(Comp.inputs(1).name,'uDummy')
-            inputBindStr = "iBinds{" + comp + "} = [0 1];" + newline;
-        end
-        if ~isempty(Comp.inputs) && ~strcmp(Comp.inputs(1).name,'uDummy')
-            inputBindStr = "iBinds{" + comp + "} = [[";
+            % only dummy input generated by conversion... use first global
+            % input as input bind (no effect as all input matrices are 0)
+            inputBindStr = "% only dummy input" + newline + ...
+                "iBinds{" + comp + "} = [0 1];" + newlines(2);
+
+        else
+            % actual (meaningful) inputs given
+
+            inputBindStr = "% input names: " + strjoin([Comp.inputs.name],", ") + newline + ...
+                "iBinds{" + comp + "} = [[";
+
             % loop over all inputs
             for inp=1:length(Comp.inputs)
                 if inp > 1
@@ -309,30 +386,19 @@ for comp = 1:numberOfComp
                 outputOfOrigin = 1;
                 % search for inputName in all other components
                 for c=1:length(Components)
-                    % exception: same as current component
-                    if c ~= comp
-                        for zzz=1:size(Components{c}.outputsGlobal,2)
-                            if contains(inputName,Components{c}.outputsGlobal(zzz).name)
-                                origin = c;
-                                % BUGNOTE - This 1 might be wrong?
-                                % Instead zzz?
-                                outputOfOrigin = 1;
-                                break;
-                            end
+                    idx = strcmp([Components{c}.outputsLocal.name],inputName);
+                    if any(idx)
+                        origin = c;
+                        % name should only occur only once
+                        if nnz(idx) > 1
+                            throw(CORAerror('CORA:converterIssue',...
+                                ['The input name of an input bind could not be resolved '...
+                                'because the name occurs twice in another component.']));
                         end
-                        % if the input is not an output, it might be a
-                        % state
-                        for zzz=1:length(Components{c}.states)
-                            if contains(inputName,Components{c}.states(zzz).name)
-                                origin = c;
-                                outputOfOrigin = zzz;
-                                break;
-                            end
-                        end
-                    end
-                    if origin
-                        % end loop if input source found
-                        break;
+                        % index in list of outputs of other component
+                        outputOfOrigin = find(idx,1,'first');
+                        % continue with next row in input binds
+                        break
                     end
                 end
                 % write bind
@@ -372,30 +438,31 @@ HA = automatonStr + componentStr + aStr + newline + "end";
 
 end
 
-%-----------STRING HELPER FUNCTIONS-------------
+
+% Auxiliary Functions -----------------------------------------------------
 
 function str = padComment(comment,maxLineLength)
 %pads comment left & right with dashes to desired length and prefixes "%"
 
-if(nargin<2)
-    maxLineLength = 75;
-end
-
-lenComment = strlength(comment);
-lenLeft = floor((maxLineLength - lenComment)/2) - 1;
-lenRight = maxLineLength - lenLeft - lenComment;
-
-str = "%" + repmat('-',1,lenLeft-1) + comment + repmat('-',1,lenRight);
+    if nargin < 2
+        maxLineLength = 75;
+    end
+    
+    lenComment = strlength(comment);
+    lenLeft = floor((maxLineLength - lenComment)/2) - 1;
+    lenRight = maxLineLength - lenLeft - lenComment;
+    
+    str = "%" + repmat('-',1,lenLeft-1) + comment + repmat('-',1,lenRight);
 
 end
 
 function str = newlines(lines)
 % fast way to write newline() + newline() + ...
-str = string(repmat(newline(),1,lines));
+    str = string(repmat(newline(),1,lines));
 end
 
-% transform possibly multi-line text to comment
 function str = text2comment(text)
+% transform possibly multi-line text to comment
 % format in:
 %   "line1
 %    line2
@@ -404,7 +471,7 @@ function str = text2comment(text)
 %   "%% line1
 %    %   line2
 %    %   line3"
-str = "%% " + strrep(text,newline,newline + "%   ");
+    str = "%% " + strrep(text,newline,newline + "%   ");
 end
 
 function [str1,str2] = mptPolytopeString(set)
@@ -481,7 +548,7 @@ function [str1,str2] = levelSetString(set)
     
     % generate overall string
     str1 = varStr + newline + eqStr + newline + compStr + newlines(2);
-    str2 = 'levelSet(eq,vars,compOp);';
+    str2 = "levelSet(eq,vars,compOp);";
 
 end
 
@@ -507,3 +574,5 @@ function [str1,str2] = conHyperplaneString(set)
         str2 = "conHyperplane(c,d);";
     end
 end
+
+%------------- END OF CODE --------------

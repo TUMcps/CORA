@@ -44,13 +44,10 @@ true_mat = [-3, -3, -2, -1, 10; ...
 % check result
 res_val = all(all(Zmat == true_mat));
 
-% add results
-res = res_val;
+% empty set
+res_e = isempty(Z1+zonotope());
 
-if res
-    disp('test_zonotope_plus successful');
-else
-    disp('test_zonotope_plus failed');
-end
+% add results
+res = res_val && res_e;
 
 %------------- END OF CODE --------------

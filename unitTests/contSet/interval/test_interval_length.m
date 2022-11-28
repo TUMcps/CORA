@@ -31,7 +31,6 @@ c = length(a);
 
 if c ~= 6
 	res = false;
-	disp('test_length failed');
 	return;
 end
 
@@ -40,7 +39,6 @@ c = length(a);
 
 if c ~= 6
 	res = false;
-	disp('test_length failed');
 	return;
 end
 
@@ -49,11 +47,7 @@ c = length(a);
 
 if c ~= 0
 	res = false;
-	disp('test_length failed');
 	return;
 end
-
-disp('test_length successful');
-return;
 
 %------------- END OF CODE --------------

@@ -37,12 +37,4 @@ C_rad_true = 1.5;
 tol = 1e-9;
 res = abs(C_rad - C_rad_true) < tol;
 
-
-% combine results
-if res
-    disp('test_radius successful');
-else
-    disp('test_radius failed');
-end
-
 %------------- END OF CODE --------------

@@ -71,7 +71,12 @@ methods
         
         % parse input arguments
         if nargin < 2 || nargin > 6
-           error('Wrong syntax! Type "help zoo" for more information.'); 
+               if nargin > 6
+                   throw(CORAerror('CORA:tooManyInputArgs',6));
+               end
+               if nargin < 2
+                   throw(CORAerror('CORA:notEnoughInputArgs',2));
+               end
         end
         
         if nargin >= 4 && ~isempty(varargin{2})
@@ -92,13 +97,13 @@ methods
                names = genDefaultVarNames(int,varargin{1},inputname(1));
            end
         catch ex
-           error(ex.message);
+            rethrow(ex);
         end
         
         
         % check user input
         if ~all(cell2mat(cellfun(@ischar,methods,'UniformOutput',false))) || ~isa(int,'interval')
-            error('Wrong syntax! Type "help zoo" for more information.');
+            throw(CORAerror('CORA:wrongValue','first/second',"check documents"));
         else
             temp = ismember(methods,{'taylm(int)','taylm(bnb)','taylm(bnbAdv)', ...
                     'taylm(linQuad)','affine(int)','affine(bnb)','affine(bnbAdv)', ...
@@ -106,7 +111,9 @@ methods
             if ~all(temp)
                ind = find(temp == 0);
                str = methods{ind(1)};
-               error('The string %s is not a valid value for input argument name!',str);
+               throw(CORAerror('CORA:wrongValue','second',...
+                   "'taylm(int)', 'taylm(bnb)', 'taylm(bnbAdv)', 'taylm(linQuad)', " + ...
+                   "'affine(int)', 'affine(bnb)', 'affine(bnbAdv)', 'interval'"));
             end 
         end
         
@@ -150,20 +157,20 @@ methods
     end
     
     % class methods
-    function res = acos(obj); res = zooComputation(@acos, obj); end
-    function res = asin(obj); res = zooComputation(@asin, obj); end
-    function res = atan(obj); res = zooComputation(@atan, obj); end
-    function res = cos(obj); res = zooComputation(@cos, obj); end
-    function res = cosh(obj); res = zooComputation(@cosh, obj); end
-    function res = exp(obj); res = zooComputation(@exp, obj); end
-    function res = log(obj); res = zooComputation(@log, obj); end
-    function res = sin(obj); res = zooComputation(@sin, obj); end
-    function res = sinh(obj); res = zooComputation(@sinh, obj); end
-    function res = sqrt(obj); res = zooComputation(@sqrt, obj); end
-    function res = tan(obj); res = zooComputation(@tan, obj); end
-    function res = tanh(obj); res = zooComputation(@tanh, obj); end
-    function res = mpower(obj1, obj2); res = zooComputation(@mpower, obj1, obj2); end
-    function res = power(obj1, obj2); res = zooComputation(@power, obj1, obj2); end
+    function res = acos(obj); res = zooComputation(@acos,obj); end
+    function res = asin(obj); res = zooComputation(@asin,obj); end
+    function res = atan(obj); res = zooComputation(@atan,obj); end
+    function res = cos(obj); res = zooComputation(@cos,obj); end
+    function res = cosh(obj); res = zooComputation(@cosh,obj); end
+    function res = exp(obj); res = zooComputation(@exp,obj); end
+    function res = log(obj); res = zooComputation(@log,obj); end
+    function res = sin(obj); res = zooComputation(@sin,obj); end
+    function res = sinh(obj); res = zooComputation(@sinh,obj); end
+    function res = sqrt(obj); res = zooComputation(@sqrt,obj); end
+    function res = tan(obj); res = zooComputation(@tan,obj); end
+    function res = tanh(obj); res = zooComputation(@tanh,obj); end
+    function res = mpower(obj1,obj2); res = zooComputation(@mpower,obj1,obj2); end
+    function res = power(obj1,obj2); res = zooComputation(@power,obj1,obj2); end
              
 end
 end

@@ -20,10 +20,10 @@ function p0=initialProbability(obj)
 %
 % See also: none
 
-% Author: Matthias Althoff
-% Written: 09-October-2006
-% Last update: 17-June-2008 
-% Last revision: ---
+% Author:       Matthias Althoff
+% Written:      09-October-2006
+% Last update:  17-June-2008 
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 

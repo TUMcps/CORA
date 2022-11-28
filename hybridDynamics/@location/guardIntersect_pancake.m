@@ -1,12 +1,12 @@
-function R = guardIntersect_pancake(obj,R0,guard,guardID,options)
+function R = guardIntersect_pancake(loc,R0,guard,guardID,options)
 % guardIntersect_pancake - implementation of the time scaling approach
-%                          described in [1]
+%    described in [1]
 %
 % Syntax:  
-%    R = guardIntersect_pancake(obj,R0,guard,options)
+%    R = guardIntersect_pancake(loc,R0,guard,options)
 %
 % Inputs:
-%    obj - object of class location
+%    loc - location object
 %    R - list of intersections between the reachable set and the guard
 %    guard - guard set (class: constrained hyperplane)
 %    guardID - ID of the guard set
@@ -33,12 +33,13 @@ function R = guardIntersect_pancake(obj,R0,guard,guardID,options)
 %------------- BEGIN CODE --------------
 
     % initialization
-    sys = obj.contDynamics;
-    [params,options_] = adaptOptions(obj,options);
+    sys = loc.contDynamics;
+    [params,options_] = adaptOptions(loc,options);
 
     % check if guard set is a constrained hyperplane
     if ~isa(guard,'conHyperplane')
-       error('The method ''pancake'' only supports guards given as conHyperplane objects!'); 
+        throw(CORAerror('CORA:specialError',...
+            "The method 'pancake' only supports guards given as conHyperplane objects!")); 
     end
     
     % convert hyperplane to a halfspace that represents the outside of the
@@ -46,7 +47,7 @@ function R = guardIntersect_pancake(obj,R0,guard,guardID,options)
     c = center(R0);
     hs = halfspace(guard.h.c,guard.h.d);
 
-    if in(hs,c)
+    if contains(hs,c)
         hs = halfspace(-guard.h.c,-guard.h.d);
     end
 
@@ -105,7 +106,7 @@ function [sys,params] = scaledSystem(sys,hs,R0,guardID,params)
 
     % create file path
     name = ['generated_',sys.name,'_',num2str(guardID),'_timeScaled'];
-    path = [coraroot filesep 'models' filesep 'auxiliary' filesep name];
+    path = [CORAROOT filesep 'models' filesep 'auxiliary' filesep name];
 
     % create file for time scaled dynamics
     func = F(xSym,uSym,pSym);
@@ -207,7 +208,7 @@ function Rcont = jump(sys,hs,R0,options)
                 Rcont = R.timeInterval.set{end};
                 break;
             elseif dist > dist_
-                error('Pancake approach failed!'); 
+                throw(CORAerror('CORA:specialError','Pancake approach failed!'));
             else
                 dist_ = dist;
             end
