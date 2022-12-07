@@ -109,7 +109,7 @@ methods
     res = cartProd(I,S) % Cartesian product
     c = center(I) % center of interval
     cPZ = conPolyZono(I) % conversion to conPolyZono object
-    res = contains(I,S) % containment check
+    res = contains(I,S,varargin) % containment check
     res = convHull(I,varargin) % convex hull
     cZ = conZonotope(I) % conversion to conZonotope object
     res = cos(I) % cosine function

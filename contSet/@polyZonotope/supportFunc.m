@@ -58,9 +58,10 @@ function val = supportFunc(pZ,dir,varargin)
 %
 % See also: interval, conZonotope/supportFunc
 
-% Author:       Niklas Kochdumper
+% Author:       Niklas Kochdumper, Tobias Ladner
 % Written:      29-July-2018
-% Last update:  ---
+% Last update:  17-October-2022  (NK: improve 'split' method)
+%               06-December-2022 (TL: fix: 'split' considers splitted sets)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -180,8 +181,8 @@ function val = supportFuncSplit(pZ,dir,type,splits)
     val_min = -inf; val_max = -inf;
 
     for i = 1:splits
-        
         qZnew = [];
+        val_max = -inf;
         
         for j = 1:length(pZsplit)
             
@@ -219,13 +220,16 @@ function val = supportFuncSplit(pZ,dir,type,splits)
                 end
                 
                 % add new set to queue (if not smaller than lower bound)
-                if val > val_min
+                if val >= val_min
                    qZnew{end+1} = res{k}; 
                 end
             end
         end
         
         pZsplit = qZnew;
+        if isempty(pZsplit)
+            break;
+        end
     end
     
     val = val_max;
