@@ -70,7 +70,14 @@ if ~isIntersecting(loc.invariant,timeInt.set{end})
     timeInt.set = timeInt.set(1:end-1); 
     timeInt.time = timeInt.time(1:end-1); 
     timePoint.set = timePoint.set(1:end-1); 
-    timePoint.time = timePoint.time(1:end-1); 
+    timePoint.time = timePoint.time(1:end-1);
+    % field 'error' currently only supported in linearSys analysis
+    if isfield(timeInt,'error')
+        timeInt.error = timeInt.error(1:end-1);
+    end
+    if isfield(timePoint,'error')
+        timePoint.error = timePoint.error(1:end-1);
+    end
 end
 
 % construct modified reachSet object

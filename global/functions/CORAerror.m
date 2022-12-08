@@ -56,8 +56,13 @@ st = dbstack("-completenames");
 [filename,classname,functionname,sprintfFilesep] = readInfo(st);
 
 % standard help message
-helpmsg = sprintf("  Type 'help %s%s%s' for more information.",...
-    classname,sprintfFilesep,functionname);
+if ~strcmp(classname,functionname)
+    helpmsg = sprintf("  Type 'help %s%s%s' for more information.",...
+        classname,sprintfFilesep,functionname);
+else
+    % different call for constructors
+    helpmsg = sprintf("  Type 'help %s' for more information.",classname);
+end
 
 % copy to name-value pairs for processing in some errors
 NVpairs = varargin;

@@ -143,8 +143,11 @@ function [R,res] = reach(HA,params,options,varargin)
 
         % store the computed reachable set
         for i=1:size(Rtemp,1)
-            temp = reachSet(Rtemp.timePoint,Rtemp.timeInterval,...
-                            Rtemp.parent,locID);
+            % compute output set
+            Ytemp = aux_outputSet(Rtemp(i),HA.location{locID},options);
+            % store in reachSet object
+            temp = reachSet(Ytemp.timePoint,Ytemp.timeInterval,...
+                            Ytemp.parent,locID);
             R = add(R,temp,parent);
         end
     end
@@ -223,6 +226,39 @@ function options = check_flatHA_specification(options,HA,spec)
 
         options.specificationLoc = spec;
     end
+end
+
+function Ytemp = aux_outputSet(Rtemp,loc,options)
+% since we require the reachable set in the entire computation due to guard
+% intersections and the preparation of the start set for the next location,
+% we only compute the output set at the end of the analysis of each
+% location (using the outputSet-functions in contDynamics)
+
+% adapt options (as in location/reach)
+[params,options_] = adaptOptions(loc,options);
+% dummy value for R0...
+params.R0 = zonotope(zeros(loc.contDynamics.dim,1));
+options_ = validateOptions(loc.contDynamics,'reach',params,options_);
+
+% time-point solution
+nrTimePointSets = length(Rtemp.timePoint.set);
+Ytemp.timePoint.set = cell(nrTimePointSets,1);
+Ytemp.timePoint.time = Rtemp.timePoint.time;
+for i=1:length(Rtemp.timePoint.set)
+    Ytemp.timePoint.set{i} = outputSet(loc.contDynamics,options_,Rtemp.timePoint.set{i});
+end
+
+% time-interval solution
+nrTimeIntervalSets = length(Rtemp.timeInterval.set);
+Ytemp.timeInterval.set = cell(nrTimeIntervalSets,1);
+Ytemp.timeInterval.time = Rtemp.timeInterval.time;
+for i=1:length(Rtemp.timeInterval.set)
+    Ytemp.timeInterval.set{i} = outputSet(loc.contDynamics,options_,Rtemp.timeInterval.set{i});
+end
+
+% parent
+Ytemp.parent = Rtemp.parent;
+
 end
 
 %------------- END OF CODE --------------

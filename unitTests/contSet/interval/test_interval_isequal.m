@@ -19,21 +19,36 @@ function res = test_interval_isequal
 % See also: -
 
 % Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
-% Last update:  ---
+% Written:      17-September-2019
+% Last update:  03-December-2022 (MW, add Inf case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% create interval
-lower = [-3; -9; -4; -7; -1];
-upper = [4;   2;  6;  3;  8];
-Int1 = interval(lower, upper);
-upper = [4;   2;  6;  2;  8];
-Int2 = interval(lower, upper);
-Int3 = Int1;
+% assume true
+res = true;
 
-% check if all points are in interval
-res = ~isequal(Int1,Int2) && isequal(Int1,Int3);
+% create interval
+lb = [-3; -9; -4; -7; -1];
+ub = [4;   2;  6;  3;  8];
+I1 = interval(lb, ub);
+ub = [4;   2;  6;  2;  8];
+I2 = interval(lb, ub);
+
+% check equality
+if ~isequal(I1,I1) || isequal(I1,I2)
+    res = false;
+end
+
+% interval with Inf values
+lb = [-Inf; -9; -4; -7; -1];
+ub = [4;   2;  6;  Inf;  8];
+I1 = interval(lb, ub);
+ub = [4;   2;  Inf;  2;  8];
+I2 = interval(lb, ub);
+
+if ~isequal(I1,I1) || isequal(I1,I2)
+    res = false;
+end
 
 %------------- END OF CODE --------------

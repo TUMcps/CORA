@@ -92,43 +92,4 @@ function [R,res] = reach(obj,params,varargin)
     end
 end
 
-
-% Auxiliary Functions -----------------------------------------------------
-
-function R = createReachSetObject(Rout,Rout_tp,tVec,Rout_error,Rout_tp_error)
-% create and object of class reachSet that stores the reachable set
-
-    if ~isempty(Rout_tp)
-        % time-point reachable set
-        timePoint.set = Rout_tp;
-        timePoint.time = num2cell(tVec);
-
-        if length(timePoint.time) ~= length(timePoint.set)
-            timePoint.time = timePoint.time(1:length(timePoint.set)); 
-        end
-        % only adaptive:
-        if ~isnan(Rout_tp_error)
-            timePoint.error = Rout_tp_error;
-        end
-    end
-    
-    if ~isempty(Rout)
-        % time-interval reachable set
-        timeInt.set = Rout;
-        timeInt.time = cell(length(Rout),1);
-
-        for i = 1:length(Rout)
-            timeInt.time{i} = interval(tVec(i),tVec(i+1));
-        end
-        % only adaptive:
-        if ~isnan(Rout_error)
-            timeInt.error = Rout_error;
-        end
-    end
-    
-    % construct object of class reachSet
-    R = reachSet(timePoint,timeInt);
-    
-end
-
 %------------- END OF CODE --------------

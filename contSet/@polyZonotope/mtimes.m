@@ -3,11 +3,11 @@ function pZ = mtimes(factor1,factor2)
 %    interval matrix with a polynomial zonotope
 %
 % Syntax:  
-%    pZ = mtimes(matrix,pZ)
+%    pZ = mtimes(factor1,factor2)
 %
 % Inputs:
-%    matrix - numerical matrix or interval matrix
-%    pZ - polyZonotope object 
+%    factor1 - numerical matrix or interval matrix
+%    factor2 - polyZonotope object 
 %
 % Outputs:
 %    pZ - polyZonotpe after multiplication of a matrix with a polyZonotope
@@ -131,7 +131,7 @@ catch ME
     end
 
     % check whether different dimension of ambient space
-    equalDimCheck(Z,matrix);
+    equalDimCheck(factor1,factor2);
 
     % other error...
     rethrow(ME);

@@ -56,6 +56,9 @@ add2options('taylorTerms','mandatory',{@isscalar,@(val)mod(val,1)==0,@(val)ge(va
 add2options('zonotopeOrder','mandatory',{@isscalar,@isnumeric,@(val)ge(val,1)},...
     {'isscalar','isnumeric','geone'});
 
+add2options('compOutputSet','default',{@isscalar,@islogical},...
+    {'isscalar','islogical'});
+
 % 3. prepare lists for output args
 [paramsList,optionsList] = outputParamsOptionsLists();
 

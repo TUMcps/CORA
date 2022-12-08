@@ -44,6 +44,12 @@ if ~isempty(options.specification)
     spec = add(options.specification,spec);
 end
 
+% since we require the reachable set for the guard intersection and not the
+% output set, we set the internal option 'compOutputSet' to false; the
+% output set will then be computed in hybridAutomaton/reach after all
+% computation in the location are finished
+options_.compOutputSet = false;
+
 % compute reachable set for the continuous dynamics until the reachable
 % set is fully located outside the invariant set
 R = reach(loc.contDynamics,params,options_,spec);

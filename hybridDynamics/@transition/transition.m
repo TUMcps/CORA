@@ -9,7 +9,9 @@ classdef transition
 %    guard - guard set (contSet object)
 %    reset - reset function (struct)
 %            - linear (without inputs): fields 'A','c'
+%                x_ = Ax + c, where x_ is the state after reset
 %            - linear (with inputs): fields 'A','B','c'
+%                x_ = Ax + Bu + c, where x_ is the state after reset
 %            - nonlinear (with/without inputs): field 'f' (function handle)
 %    target - number of target location
 %    syncLabel - synchronization label (only for use in parallel hybrid

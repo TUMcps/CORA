@@ -54,6 +54,9 @@ add2options('reductionTechnique','default',...
     {@ischar,@(val)any(ismember(getMembers('reductionTechnique'),val))},...
     {'ischar','memberreductionTechnique'});
 
+add2options('compOutputSet','default',{@isscalar,@islogical},...
+    {'isscalar','islogical'});
+
 % 3. prepare lists for output args
 [paramsList,optionsList] = outputParamsOptionsLists();
 

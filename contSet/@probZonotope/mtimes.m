@@ -3,11 +3,11 @@ function probZ = mtimes(factor1,factor2)
 %    interval matrix with a probabilistic zonotope according to [1,(4)]
 %
 % Syntax:  
-%    probZ = mtimes(matrix,probZ)
+%    probZ = mtimes(factor1,factor2)
 %
 % Inputs:
-%    matrix - numerical or interval matrix
-%    probZ - probabilistic zonotope
+%    factor1 - numerical or interval matrix
+%    factor2 - probabilistic zonotope
 %
 % Outputs:
 %    probZ - probZonotope after multiplication of a matrix with a zonotope
@@ -83,7 +83,7 @@ catch ME
     end
 
     % check whether different dimension of ambient space
-    equalDimCheck(probZ,matrix);
+    equalDimCheck(factor1,factor2);
 
     % other error...
     rethrow(ME);

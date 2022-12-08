@@ -26,14 +26,20 @@ function Y = outputSet(obj,options,R)
 % See also: none
 
 % Author:       Mark Wetzlinger
-% Written:      12-Aug-2019
-% Last update:  20-Aug-2019
+% Written:      12-August-2019
+% Last update:  20-August-2019
 %               16-November-2021 (MW, add sensor noise V)
 %               19-November-2021 (MW, shift index of time-point solution)
 %               19-November-2022 (MW, remove double computation)
+%               07-December-2022 (MW, allow to skip output set)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% skip computation of output set
+if ~options.compOutputSet
+    Y = R; return
+end
 
 % output equation is not provided or y = x
 if isempty(obj.C) || ...

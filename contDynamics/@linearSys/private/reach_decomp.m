@@ -97,7 +97,7 @@ Yhatk_tp = cell(options.blocks,1);
 % exit if violation already -----------------------------------------------
 if isfield(options,'specification')
     [res,timeInt,timePoint] = checkSpecification(...
-        options.specification,timeInt,timePoint,1);
+        options.specification,[],timeInt,timePoint,1);
     if ~res; return; end
 end
 % -------------------------------------------------------------------------
@@ -146,7 +146,7 @@ for k=2:steps
         for b=1:options.blocks
             if options.Cno0(b)
                 [res,timeInt,timePoint] = checkSpecification(...
-                    options.specification,timeInt,timePoint,k);
+                    options.specification,[],timeInt,timePoint,k);
                 if ~res; return; end
             end
         end
