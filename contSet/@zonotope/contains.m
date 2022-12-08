@@ -432,10 +432,7 @@ Aeq.col = [Aeq.col, repelem(idxVars.beta,1,n)];
 Aeq.val = [Aeq.val, G_l(:)'];
 beq.row = [beq.row, nCon+(1:n)];
 beq.val = [beq.val, (c_l-c_s)'];
-nCon = nCon + n;
-
-Aeq = sparse(Aeq.row,Aeq.col,Aeq.val,nCon,nVars);
-beq = sparse(beq.row,ones(1,length(beq.row)),beq.val,nCon,1);
+Aeq.nCon = nCon + n;
 
 % inequality constraint A x <= b -----------------------------------------
 A.row = []; A.col = []; A.val = []; nCon = 0;
@@ -473,18 +470,47 @@ A.col = [A.col, tmp(:)'];
 A.val = [A.val, ones(1,n_l*(n_s+1))];
 b.row = [b.row, nCon+(1:n_l)];
 b.val = [b.val, ones(1,n_l)*(1+tol)];
-nCon = nCon + n_l;
+A.nCon = nCon + n_l;
 
-A = sparse(A.row,A.col,A.val,nCon,nVars);
-b = sparse(b.row,ones(1,length(b.row)),b.val,nCon,1);
+% cost can be set arbitrarily --------------------------------------------
+cost = ones(nVars,1);
 
-% f can be set arbitrarily -----------------------------------------------
-f = ones(nVars,1);
+% setup solver-specific problem data & solve -----------------------------
 
-% solve linear programming problem ---------------------------------------
-[~,~,exitflag] = linprog(f,A,b,Aeq,beq);
+if isSolverInstalled('mosek')
+    % merge constraint matrices
+    prob.a = sparse([Aeq.row, Aeq.nCon+A.row],[Aeq.col, A.col], ...
+        [Aeq.val, A.val],Aeq.nCon+A.nCon,nVars);
+    % merge constraint boundaries
+    prob.blc = [zeros(Aeq.nCon,1);-inf(A.nCon,1)];
+    prob.blc(beq.row) = beq.val;
+    prob.buc = zeros(Aeq.nCon+A.nCon,1);
+    prob.buc(beq.row) = beq.val;
+    prob.buc(Aeq.nCon+b.row) = b.val;
+    % cost
+    prob.c = cost';
+    
+    % solve linear programming problem
+    [~,res] = mosekopt('minimize echo(0)',prob);
+    if strcmp(res.sol.itr.prosta,'PRIMAL_AND_DUAL_FEASIBLE') || ...
+            strcmp(res.sol.bas.prosta,'PRIMAL_AND_DUAL_FEASIBLE')
+        isIn = true;
+    else
+        isIn = false;
+    end
 
-isIn = (exitflag == 1);
+else
+    % constraint matrices
+    beq = sparse(beq.row,ones(1,length(beq.row)),beq.val,Aeq.nCon,1);
+    Aeq = sparse(Aeq.row,Aeq.col,Aeq.val,Aeq.nCon,nVars);
+    b = sparse(b.row,ones(1,length(b.row)),b.val,A.nCon,1);
+    A = sparse(A.row,A.col,A.val,A.nCon,nVars);
+    
+    % solve linear programming problem
+    [~,~,exitflag] = linprog(cost,A,b,Aeq,beq);
+    
+    isIn = (exitflag == 1);
+end
 
 end
 
