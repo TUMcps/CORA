@@ -1,13 +1,13 @@
-function C = mtimes(arg1,arg2)
+function C = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix with 
 %    a capsule
 %
 % Syntax:  
-%    C = mtimes(arg1,arg2)
+%    C = mtimes(factor1,factor2)
 %
 % Inputs:
-%    arg1 - numerical matrix or capsule object
-%    arg2 - numerical matrix or capsule object
+%    factor1 - numerical matrix or capsule object
+%    factor2 - numerical matrix or capsule object
 %
 % Outputs:
 %    C - capsule after multiplication with a matrix
@@ -33,7 +33,7 @@ function C = mtimes(arg1,arg2)
 %------------- BEGIN CODE --------------
 
 %Find a capsule object
-[C,matrix] = findClassArg(arg1,arg2,'capsule');
+[C,matrix] = findClassArg(factor1,factor2,'capsule');
 
 try
 
@@ -50,7 +50,7 @@ try
     %something else?
     else
         % throw error for given arguments
-        throw(CORAerror('CORA:noops',arg1,arg2));
+        throw(CORAerror('CORA:noops',factor1,factor2));
     end
 
 catch ME
@@ -68,7 +68,7 @@ catch ME
     end
 
     % check whether different dimension of ambient space
-    equalDimCheck(C,matrix);
+    equalDimCheck(factor1,factor2);
 
     % other error...
     rethrow(ME);

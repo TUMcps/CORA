@@ -1,4 +1,4 @@
-function [res,timeInt,timePoint] = checkSpecification(spec,timeInt,timePoint,idx)
+function [res,YtimeInt,YtimePoint] = checkSpecification(spec,XtimeInt,YtimeInt,YtimePoint,idx)
 % checkSpecification - check safety properties for current time-interval
 %    reachable set; if a violation occurs, return truncated structs
 %
@@ -7,14 +7,17 @@ function [res,timeInt,timePoint] = checkSpecification(spec,timeInt,timePoint,idx
 %
 % Inputs:
 %    spec - object of class specification
-%    timeInt - struct about time-interval reachable set
-%    timePoint - struct about time-point reachable set
+%    XtimeInt - struct about time-interval reachable set
+%    YtimeInt - struct about time-interval output set
+%    YtimePoint - struct about time-point output set
 %    idx - index of current time interval 
 %
 % Outputs:
 %    res - true if specifications are satisfied, otherwise false
-%    timeInt - (truncated) struct about time-interval reachable set
-%    timePoint - (truncated) struct about time-point reachable set
+%    YtimeInt - (truncated) struct about time-interval output set
+%               (only required if a violation was detected)
+%    YtimePoint - (truncated) struct about time-point output set
+%               (only required if a violation was detected)
 %
 % Example: 
 %    -
@@ -27,7 +30,8 @@ function [res,timeInt,timePoint] = checkSpecification(spec,timeInt,timePoint,idx
 
 % Author:       Mark Wetzlinger
 % Written:      19-November-2022
-% Last update:  ---
+% Last update:  07-December-2022 (MW, if spec.type = 'invariant', check
+%                                     state set, not output set)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -35,15 +39,42 @@ function [res,timeInt,timePoint] = checkSpecification(spec,timeInt,timePoint,idx
 % init satisfaction
 res = true;
 
-if ~check(spec,timeInt.set{idx},timeInt.time{idx})
-    % violation
-    res = false;
-    % truncate reachable set until current time interval
-    timeInt.set = timeInt.set(1:idx);
-    timeInt.time = timeInt.time(1:idx);
-    % index for time-point shifted by one as initial set at index 1
-    timePoint.set = timePoint.set(1:idx+1);
-    timePoint.time = timePoint.time(1:idx+1);
+if strcmp(spec.type,'invariant')
+    % specification is an invariant -> called in hybrid system analysis to
+    % check if the reachable set has left the invariant, therefore we use
+    % the reachable set instead of the output set
+    
+    % the linearSys algorithms 'decomp', 'krylov', and 'adaptive' cannot
+    % be used in conjunction with hybrid system analysis; thus, the call to
+    % this function has XtimeInt = []
+    if isnumeric(XtimeInt) && isempty(XtimeInt)
+        throw(CORAerror('CORA:notSupported',...
+            sprintf(['The chosen algorithm for linear systems (options.linAlg)\n',...
+            'cannot be used for the analysis of hybrid systems.'])));
+    end
+
+    if ~check(spec,XtimeInt,YtimeInt.time{idx})
+        % violation
+        res = false;
+        % truncate reachable set until current time interval
+        YtimeInt.set = YtimeInt.set(1:idx);
+        YtimeInt.time = YtimeInt.time(1:idx);
+        % index for time-point shifted by one as initial set at index 1
+        YtimePoint.set = YtimePoint.set(1:idx+1);
+        YtimePoint.time = YtimePoint.time(1:idx+1);
+    end
+else
+    % specification on the output set
+    if ~check(spec,YtimeInt.set{idx},YtimeInt.time{idx})
+        % violation
+        res = false;
+        % truncate output set until current time interval
+        YtimeInt.set = YtimeInt.set(1:idx);
+        YtimeInt.time = YtimeInt.time(1:idx);
+        % index for time-point shifted by one as initial set at index 1
+        YtimePoint.set = YtimePoint.set(1:idx+1);
+        YtimePoint.time = YtimePoint.time(1:idx+1);
+    end
 end
 
 %------------- END OF CODE --------------

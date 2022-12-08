@@ -1,13 +1,13 @@
-function cPZ = mtimes(M,cPZ)
+function cPZ = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix (or
 %    interval matrix) with a constrained polynomial zonotope
 %
 % Syntax:  
-%    cPZ = mtimes(M,cPZ)
+%    cPZ = mtimes(factor1,factor2)
 %
 % Inputs:
-%    M - numerical matrix or interval matrix
-%    cPZ - conPolyZono object 
+%    factor1 - numerical matrix or interval matrix
+%    factor2 - conPolyZono object 
 %
 % Outputs:
 %    cPZ - conPolyZono object
@@ -44,7 +44,7 @@ function cPZ = mtimes(M,cPZ)
 %------------- BEGIN CODE --------------
 
 % find the conPolyZono object
-[cPZ,M] = findClassArg(cPZ,M,'conPolyZono');
+[cPZ,M] = findClassArg(factor1,factor2,'conPolyZono');
 
 try
 
@@ -85,7 +85,7 @@ catch ME
     end
 
     % check whether different dimension of ambient space
-    equalDimCheck(cPZ,M);
+    equalDimCheck(factor1,factor2);
 
     % other error...
     rethrow(ME);

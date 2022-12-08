@@ -1,22 +1,24 @@
-function equalDimCheck(obj,S)
-% equalDimCheck - checks if two objects (second argument can be class
-%   array or numeric matrix) have the same dimension
+function equalDimCheck(S1,S2)
+% equalDimCheck - checks if two objects are compatible, i.e., whether they
+%    can execute a set-based operation
 %
 % Syntax:  
-%    equalDimCheck(obj,S)
+%    equalDimCheck(S1,S2)
 %
 % Inputs:
-%    obj - contSet object
-%    S   - contSet array or numeric matrix
+%    S1 - contSet array or numeric matrix
+%    S2 - contSet array or numeric matrix
 %
 % Outputs:
 %    -
 %
 % Example:
-%    obj1 = ellipsoid.generateRandom('Dimension',2);
-%    obj2 = zonotope.generateRandom('Dimension',2);
-%    obj3 = zonotope.generateRandom('Dimension',3);
-%    equalDimCheck(obj1,[obj2,obj3]); % throws error
+%    M = [2 3; -1 -2];
+%    C = capsule([1;1],[1;-1],0.5);
+%    Z = zonotope([0;0;1],[1 -0.5 0; 0.4 0.6 1; 0 0.5 -1]);
+%
+%    equalDimCheck(M,C);
+%    equalDimCheck(C,Z);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -24,9 +26,9 @@ function equalDimCheck(obj,S)
 %
 % See also: ---
 
-% Author:       Victor Gassmann
+% Author:       Victor Gassmann, Mark Wetzlinger
 % Written:      05-July-2022
-% Last update:  ---
+% Last update:  05-December-2022 (MW, fix matrix-case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -35,22 +37,34 @@ function equalDimCheck(obj,S)
 if CHECKS_ENABLED
 
     % check if dimensions match
-    if isnumeric(S)
-        if dim(obj) ~= size(S,1) && ~isscalar(S)
-            throw(CORAerror('CORA:dimensionMismatch',obj,S));
+    if isnumeric(S1)
+        % operation between matrix/vector/scalar and set
+        % column dimension of matrix has to fit set dimension
+        if size(S1,2) ~= dim(S2) && ~isscalar(S1)
+            throw(CORAerror('CORA:dimensionMismatch',S1,S2));
+        end
+
+    elseif isnumeric(S2)
+        % operation between set and matrix/vector/scalar
+        % row dimension of matrix has to fit set dimension
+        if dim(S1) ~= size(S2,1) && ~isscalar(S2)
+            throw(CORAerror('CORA:dimensionMismatch',S1,S2));
         end
     
-    elseif isa(obj,'interval') || isa(obj,'taylm') || isa(S,'interval') || isa(S,'taylm')
+    elseif isa(S1,'interval') || isa(S1,'taylm') || isa(S1,'affine') || isa(S1,'zoo') ...
+        || isa(S2,'interval') || isa(S2,'taylm') || isa(S2,'affine') || isa(S2,'zoo')
     
-        if dim(obj) ~= dim(S)
-            throw(CORAerror('CORA:dimensionMismatch',obj,S));
+        % no class arrays for these classes
+        if dim(S1) ~= dim(S2)
+            throw(CORAerror('CORA:dimensionMismatch',S1,S2));
         end
     
     else
-        ind_dim = dim(obj)==dim(S);
+        % operation between set and set
+        ind_dim = dim(S1)==dim(S2);
         if ~all(ind_dim)
-            S_i = S(find(~ind_dim,1));
-            throw(CORAerror('CORA:dimensionMismatch',obj,S_i));
+            S_i = S2(find(~ind_dim,1));
+            throw(CORAerror('CORA:dimensionMismatch',S1,S_i));
         end
     
     end

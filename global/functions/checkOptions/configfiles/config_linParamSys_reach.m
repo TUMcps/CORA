@@ -58,6 +58,9 @@ add2options('intermediateTerms','mandatory',{@isscalar,@isnumeric,...
 add2options('zonotopeOrder','mandatory',{@isscalar,@isnumeric,@(val)ge(val,1)},...
     {'isscalar','isnumeric','geone'});
 
+add2options('compOutputSet','default',{@isscalar,@islogical},...
+    {'isscalar','islogical'});
+
 % 3. prepare lists for output args
 [paramsList,optionsList] = outputParamsOptionsLists();
 

@@ -59,6 +59,9 @@ add2options('reductionTechnique','default',...
     {@ischar,@(val)any(ismember(getMembers('reductionTechnique4nlsys'),val))},...
     {'ischar','memberreductionTechnique4nlsys'});
 
+add2options('compOutputSet','default',{@isscalar,@islogical},...
+    {'isscalar','islogical'});
+
 % only dep. factor reachSet options (parameters/options used from AROC)
 add2options('approxDepOnly','optional',{@isscalar,@islogical},{'isscalar','islogical'});
 

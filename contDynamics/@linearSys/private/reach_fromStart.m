@@ -84,7 +84,7 @@ Rstart = Rnext.tp;
 % safety property check
 if isfield(options,'specification')
     [res,timeInt,timePoint] = checkSpecification(...
-        options.specification,timeInt,timePoint,1);
+        options.specification,Rnext.ti,timeInt,timePoint,1);
     if ~res; return; end
 end
 
@@ -137,7 +137,7 @@ for i = 2:steps
     % safety property check
     if isfield(options,'specification')
         [res,timeInt,timePoint] = checkSpecification(...
-            options.specification,timeInt,timePoint,i);
+            options.specification,Rnext.ti,timeInt,timePoint,i);
         if ~res; return; end
     end
     

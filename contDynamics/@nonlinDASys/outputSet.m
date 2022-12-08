@@ -28,10 +28,15 @@ function Y = outputSet(obj,options,R,R_y)
 
 % Author:       Mark Wetzlinger
 % Written:      19-November-2022
-% Last update:  ---
+% Last update:  07-December-2022 (MW, allow to skip output set)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% skip computation of output set
+if ~options.compOutputSet
+    Y = R; return
+end
 
 % check tensor order
 if ~any(options.tensorOrderOutput == [2,3])

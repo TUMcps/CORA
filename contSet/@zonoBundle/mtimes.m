@@ -54,7 +54,7 @@ catch ME
     end
 
     % check whether different dimension of ambient space
-    equalDimCheck(zB,factor);
+    equalDimCheck(factor1,factor2);
 
     % other error...
     rethrow(ME);

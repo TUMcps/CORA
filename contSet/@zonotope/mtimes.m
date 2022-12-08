@@ -112,7 +112,7 @@ catch ME
     end
 
     % check whether different dimension of ambient space
-    equalDimCheck(Z,M);
+    equalDimCheck(factor1,factor2);
 
     % other error...
     rethrow(ME);

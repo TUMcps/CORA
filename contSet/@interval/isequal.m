@@ -24,8 +24,9 @@ function res = isequal(I1,I2,varargin)
 % See also: none
 
 % Author:       Mark Wetzlinger
-% Written:      16-Sep-2019
+% Written:      16-September-2019
 % Last update:  12-March-2021 (MW, add dimension mismatch)
+%               03-December-2022 (MW, add check for infinity)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -38,11 +39,31 @@ inputArgsCheck({{I1,'att','interval'};
                 {I2,'att','interval'};
                 {tol,'att','numeric',{'nonnan','scalar','nonnegative'}}});
 
-if dim(I1) ~= dim(I2)
-    throw(CORAerror('CORA:dimensionMismatch',I1,I2));    
-else
-    res = all(abs(infimum(I1) - infimum(I2)) < tol) && ... % infima
-        all(abs(supremum(I1) - supremum(I2)) < tol); % suprema
+% check for equal dimensions
+equalDimCheck(I1,I2);
+
+% read infima and suprema
+lb1 = infimum(I1); ub1 = supremum(I1);
+lb2 = infimum(I2); ub2 = supremum(I2);
+
+% indices with infinity values
+idxInf_lb1 = isinf(lb1); idxInf_ub1 = isinf(ub1);
+idxInf_lb2 = isinf(lb2); idxInf_ub2 = isinf(ub2);
+
+% assume true
+res = true;
+
+% checks
+if ~all(idxInf_lb1 == idxInf_lb2) || ~all(idxInf_ub1 == idxInf_ub2)
+    % if same entries are minus/plus infinity
+    res = false;
+elseif any(lb1(idxInf_lb1) ~= lb2(idxInf_lb2)) || any(ub1(idxInf_ub1) ~= ub2(idxInf_ub2))
+    % if infinity entries are equal
+    res = false;
+elseif ~all(withinTol(lb1(~idxInf_lb1),lb2(~idxInf_lb2),tol)) ...
+        || ~all(withinTol(ub1(~idxInf_ub1),ub2(~idxInf_ub2),tol)) ...
+    % if other values are equal
+    res = false;
 end
 
 %------------- END OF CODE --------------

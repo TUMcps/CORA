@@ -121,6 +121,8 @@ switch listname
                 defValue = def_alg(sys);
             case 'tensorOrderOutput'
                 defValue = 2;
+            case 'compOutputSet'
+                defValue = true;
             otherwise
                 throw(CORAerror('CORA:specialError',...
                     "There is no default value for options." + field + "."))
