@@ -41,9 +41,9 @@ if ~all(size(a)==size(b)) && ~isscalar(a) && ~isscalar(b) && ...
 end
 
 if ~isa(a,'double')
-    throw(CORAerror('CORA:wrongInput','first','double'));
+    throw(CORAerror('CORA:wrongValue','first','double'));
 elseif ~isa(b,'double')
-    throw(CORAerror('CORA:wrongInput','second','double'));
+    throw(CORAerror('CORA:wrongValue','second','double'));
 end
 
 % absolute tolerance

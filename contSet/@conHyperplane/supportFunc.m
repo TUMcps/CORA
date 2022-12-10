@@ -10,11 +10,12 @@ function [val,x] = supportFunc(hyp,dir,varargin)
 %    hyp - conHyperplane object
 %    dir - direction for which the bounds are calculated (vector of size
 %          (n,1) )
-%    type - upper or lower bound ('lower' or 'upper')
+%    type - upper bound, lower bound, or both ('upper','lower','range')
 %
 % Outputs:
-%    val - bound of H in the specified direction
-%    x   - point for which holds: dir'*x=val
+%    val - bound of the hyperplane in the specified direction or interval
+%          containing both bounds
+%    x - point(s) for which holds: dir'*x=val
 %
 % Example: 
 %    hyp = conHyperplane(halfspace([1;1],0),[1 0;-1 0],[2;2]);

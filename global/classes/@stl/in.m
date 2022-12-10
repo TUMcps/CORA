@@ -37,7 +37,7 @@ if ~isa(obj,'stl') || ~strcmp(obj.type,'variable')
 end
 
 if dim(S) ~= length(obj.variables)
-    throw(CORAerror('CORA:wrongInput','second', ...
+    throw(CORAerror('CORA:wrongValue','second', ...
                   'dimensions of set and stl object have to match"!'));
 end
 

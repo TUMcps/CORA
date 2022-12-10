@@ -4,12 +4,12 @@ function [val,x] = supportFunc(I,dir,varargin)
 %
 % Syntax:  
 %    val = supportFunc(I,dir)
-%    val = supportFunc(I,dir,type)
+%    [val,x] = supportFunc(I,dir,type)
 %
 % Inputs:
 %    I - interval object
 %    dir - direction for which the bounds are calculated (vector)
-%    type - upper or lower bound ('lower' or 'upper')
+%    type - upper bound, lower bound, or both ('upper','lower','range)
 %
 % Outputs:
 %    val - bound of the interval in the specified direction
@@ -34,6 +34,10 @@ function [val,x] = supportFunc(I,dir,varargin)
 %------------- BEGIN CODE --------------
 
 % compute support function (call there contains input check)
-[val,x] = supportFunc(zonotope(I),dir,varargin{:});
+if nargout == 1
+    val = supportFunc(zonotope(I),dir,varargin{:});
+else
+    [val,x] = supportFunc(zonotope(I),dir,varargin{:});
+end
 
 %------------- END OF CODE --------------

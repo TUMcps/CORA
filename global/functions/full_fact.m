@@ -47,7 +47,7 @@ if nargin<2
     throw(CORAerror('CORA:notEnoughInputArgs',2));
 end
 if ~all(levels >1)
-    throw(CORAerror('CORA:wrongInput','first',...
+    throw(CORAerror('CORA:wrongValue','first',...
         'Each variable should have minimum 2 levels'));
 end
 

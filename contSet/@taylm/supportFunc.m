@@ -48,7 +48,7 @@ if strcmp(type,'lower')
 elseif strcmp(type,'range')
     val = supremum(I);
 else
-    throw(CORAerror('CORA:notSupported',type));
+    % 'val' is already the desired result
 end
 
 %------------- END OF CODE --------------

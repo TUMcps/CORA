@@ -85,7 +85,7 @@ if nnz(Q(end,:)) ~= 2
 end
 
 % check if Q really orthogonal
-if ~withinTol(abs(det(Q)),1,1e-9) || ~all(withinTol(vecnorm(Q,2),1,1e-9)
+if ~withinTol(abs(det(Q)),1,1e-9) || ~all(withinTol(vecnorm(Q,2),1,1e-9))
     throw(CORAerror('CORA:specialError','Resulting matrix is not orthogonal'));
 end
 

@@ -9,7 +9,7 @@ function [val,x,fac] = supportFunc(Z,dir,varargin)
 % Inputs:
 %    Z - zonotope object
 %    dir - direction for which the bounds are calculated (vector)
-%    type - upper or lower bound ('lower' or 'upper')
+%    type - upper bound, lower bound, or both ('upper','lower','range')
 %
 % Outputs:
 %    val - bound of the zonotope in the specified direction
@@ -24,7 +24,7 @@ function [val,x,fac] = supportFunc(Z,dir,varargin)
 
 % Author:       Niklas Kochdumper
 % Written:      19-November-2019
-% Last update:  ---
+% Last update:  10-December-2022 (MW, add type = 'range')
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -58,7 +58,8 @@ elseif strcmp(type,'upper')
     fac = sign(G_)';
     
 elseif strcmp(type,'range')
-    throw(CORAerror('CORAerror:notSupported',type));
+    val = interval(c_ - sum(abs(G_)), c_ + sum(abs(G_)));
+    fac = [-sign(G_)' sign(G_)'];
 
 end
 
