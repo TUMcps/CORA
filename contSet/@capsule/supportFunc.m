@@ -10,11 +10,12 @@ function [val,x] = supportFunc(C,dir,varargin)
 %    C - capsule object
 %    dir - direction for which the bounds are calculated (vector of size
 %          (n,1) )
-%    type - upper or lower bound ('lower' or 'upper')
+%    type - upper bound, lower bound, or both ('upper','lower','range')
 %
 % Outputs:
-%    val - bound of the capsule in the specified direction
-%    x - support vector
+%    val - bound of the capsule in the specified direction (if type =
+%          'upper' or 'lower'), or interval with both (type = 'range')
+%    x - support vector(s)
 %
 % Example: 
 %    C = capsule([1; 1], [0.5; -1], 0.5);
@@ -32,7 +33,7 @@ function [val,x] = supportFunc(C,dir,varargin)
 
 % Author:       Niklas Kochdumper
 % Written:      19-November-2019
-% Last update:  ---
+% Last update:  10-December-2022 (MW, add type = 'range')
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -65,9 +66,11 @@ if strcmp(type,'upper')
     x = c + g*sign(dir'*g) + r*dir;
 elseif strcmp(type,'lower')
     val = dir'*c - abs(dir'*g) - r*norm(dir);  
-    x = C.c - g*sign(dir'*g) - r*dir;
+    x = c - g*sign(dir'*g) - r*dir;
 elseif strcmp(type,'range')
-    throw(CORAerror('CORA:notSupported',type));
+    val = interval(dir'*c - abs(dir'*g) - r*norm(dir),...
+        dir'*c + abs(dir'*g) + r*norm(dir));
+    x = [c - g*sign(dir'*g) - r*dir, c + g*sign(dir'*g) + r*dir];
 end
 
 %------------- END OF CODE --------------

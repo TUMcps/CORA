@@ -34,7 +34,7 @@ function des_mat = full_fact_mod(levels)
 %------------- BEGIN CODE --------------
 
 if ~all(levels > 1)
-    throw(CORAerror('CORA:wrongInput','first',...
+    throw(CORAerror('CORA:wrongValue','first',...
         'Each variable should have minimum 2 levels'));
 end
 

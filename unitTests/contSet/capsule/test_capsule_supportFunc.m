@@ -30,7 +30,9 @@ res = true;
 
 % empty set
 C_e = capsule();
-res = supportFunc(C_e,[1;1],'upper') == -Inf && supportFunc(C_e,[1;1],'lower') == Inf;
+if supportFunc(C_e,[1;1],'upper') ~= -Inf || supportFunc(C_e,[1;1],'lower') ~= Inf
+    res = false;
+end
 
 % loop over different dimensions
 for n = 2:4:30
@@ -52,13 +54,18 @@ for n = 2:4:30
         basisvector = id(:,e);
         [val_upper,vec_upper] = supportFunc(C,basisvector,'upper');
         [val_lower,vec_lower] = supportFunc(C,basisvector,'lower');
+        [vals,vecs] = supportFunc(C,basisvector,'range');
         
         % compare to analytical solution
-        if e==1 && (val_lower ~= -2 || val_upper ~= 2 || ...
-            	~all(vec_lower == [-2;zeros(n-1,1)]) || ~all(vec_upper == [2;zeros(n-1,1)]) )
+        if e==1 && ( ~withinTol(val_lower,-2) || ~withinTol(val_upper,2) ...
+                || ~isequal(vals,interval(-2,2)) ...
+                || ~compareMatrices([vec_lower,vec_upper],[[-2;zeros(n-1,1)],[2;zeros(n-1,1)]]) ...
+                || ~compareMatrices(vecs,[[-2;zeros(n-1,1)],[2;zeros(n-1,1)]]) )
             res = false; return
-        elseif e~=1 && (val_lower ~= -1 || val_upper ~= 1 || ...
-            	~all(vec_lower == -basisvector) || ~all(vec_upper == basisvector) )
+        elseif e~=1 && (~withinTol(val_lower,-1) || ~withinTol(val_upper,1) ...
+                || ~isequal(vals,interval(-1,1)) ...
+                || ~compareMatrices([vec_lower,vec_upper],[-basisvector,basisvector]) ...
+                || ~compareMatrices(vecs,[-basisvector,basisvector]) )
             res = false; return
         end
     end

@@ -3,14 +3,14 @@ function [val,x] = supportFunc(zB,dir,varargin)
 %    along a certain direction
 %
 % Syntax:  
-%    [val,x] = supportFunc(zB,dir)
+%    val = supportFunc(zB,dir)
 %    [val,x] = supportFunc(zB,dir,type)
 %
 % Inputs:
 %    zB - zonoBundle object
 %    dir - direction for which the bounds are calculated (vector of size
 %          (n,1) )
-%    type - upper or lower bound ('lower' or 'upper')
+%    type - upper bound, lower bound, or both ('upper','lower','range')
 %
 % Outputs:
 %    val - bound of the zonotope bundle in the specified direction
@@ -92,22 +92,36 @@ options = optimoptions('linprog','display','off');
 % upper or lower bound
 if strcmp(type,'lower')
     
-   % solve linear program
-   [x,val] = linprog(f',A,b,Aeq,beq,[],[],options);
+    % solve linear program
+    [x,val] = linprog(f',A,b,Aeq,beq,[],[],options);
     
 elseif strcmp(type,'upper')
     
-   % solve linear program
-   [x,val] = linprog(-f',A,b,Aeq,beq,[],[],options);
-   val = -val;
+    % solve linear program
+    [x,val] = linprog(-f',A,b,Aeq,beq,[],[],options);
+    val = -val;
    
 elseif strcmp(type,'range')
 
-    throw(CORAerror('CORA:notSupported',type));
+    % solve linear program for upper bound
+    [x_upper,val_upper] = linprog(-f',A,b,Aeq,beq,[],[],options);
+    val_upper = -val_upper;
+    % solve linear program for lower bound
+    [x_lower,val_lower] = linprog(f',A,b,Aeq,beq,[],[],options);
+
+    % combine results for output args
+    val = interval(val_lower,val_upper);
 
 end
 
-% truncate support vector
-x = x(1:n);
+
+if nargout > 1
+    % truncate support vector
+    if strcmp(type,'range')
+        x = [x_lower(1:n), x_upper(1:n)];
+    else
+        x = x(1:n);
+    end
+end
 
 %------------- END OF CODE --------------

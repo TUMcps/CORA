@@ -58,7 +58,7 @@ if intermediateOrder >= 2
         maxOrder, intermediateOrder+1, intMat*iPow{intermediateOrder});
 
 else
-    throw(CORAerror('CORA:wrongInput','third','Intermediate order too low'));
+    throw(CORAerror('CORA:wrongValue','third','Intermediate order too low'));
 end
 
 

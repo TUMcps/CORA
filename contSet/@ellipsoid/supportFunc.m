@@ -3,7 +3,7 @@ function [val,x] = supportFunc(E,dir,varargin)
 %    certain direction (see Def. 2.1.2 in [1]) 
 %
 % Syntax:  
-%    [val,x] = supportFunc(E,dir)
+%    val = supportFunc(E,dir)
 %    [val,x] = supportFunc(E,dir,type)
 %
 % Inputs:
@@ -59,15 +59,32 @@ end
       
 
 if strcmp(type,'upper')
-    s = 1;
+    val = dir'*E.q + 1*sqrt(dir'*E.Q*dir);
 elseif strcmp(type,'lower')
-    s = -1;
+    val = dir'*E.q + (-1)*sqrt(dir'*E.Q*dir);
 elseif strcmp(type,'range')
-    throw(CORAerror('CORA:notSupported',type));
+    val = interval(dir'*E.q + (-1)*sqrt(dir'*E.Q*dir),...
+        dir'*E.q + 1*sqrt(dir'*E.Q*dir));
 end
 
-val = dir'*E.q + s*sqrt(dir'*E.Q*dir);
+% compute support vector
 if nargout > 1
+    if strcmp(type,'range')
+        x = [aux_supportVector(E,dir,infimum(val)), ...
+             aux_supportVector(E,dir,supremum(val))];
+    else
+        x = aux_supportVector(E,dir,val);
+    end
+end
+
+end
+
+
+% Auxiliary function ------------------------------------------------------
+
+function x = aux_supportVector(E,dir,val)
+% computes the support vector for a given value of the support function
+
     H = conHyperplane(dir',val);
     n_nd = rank(E);
     n = dim(E);
@@ -105,6 +122,7 @@ if nargout > 1
     end
     % basically contains only 1 point
     x = T*[E_res.q;qt_rem];
+
 end
 
 %------------- END OF CODE --------------

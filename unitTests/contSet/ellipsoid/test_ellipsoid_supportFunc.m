@@ -40,6 +40,18 @@ for i=1:length(E_c)
     res = checkSuppFunc(E1) && checkSuppFunc(Ed1) && checkSuppFunc(E0);
 end
 
+% check type = 'range'
+E = ellipsoid([5 7;7 13],[1;2]);
+dir = [1;1];
+
+[val_upper,x_upper] = supportFunc(E,dir);
+[val_lower,x_lower] = supportFunc(E,dir,'lower');
+[val_int,x_both] = supportFunc(E,dir,'range');
+if ~isequal(interval(val_lower,val_upper),val_int) ...
+        || ~compareMatrices([x_upper, x_lower],x_both)
+    res = false;
+end
+
 end
 
 

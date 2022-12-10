@@ -65,7 +65,7 @@ inputArgsCheck({{S,'att',classname};
 
 % if N = 'all', then type has to be 'extreme'
 if ischar(N) && strcmp(N,'all') && ~strcmp(type,'extreme')
-    throw(CORAerror('CORA:wrongInput','third',...
+    throw(CORAerror('CORA:wrongValue','third',...
         "If the number of points is 'all', the type has to be 'extreme'."));
 end
 

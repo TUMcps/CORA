@@ -2,7 +2,8 @@ function [val,x,ksi] = supportFunc(cZ,dir,varargin)
 % supportFunc - Calculate the upper or lower bound of a constrained 
 %    zonotope along a certain direction
 %
-% Syntax:  
+% Syntax:
+%    val = supportFunc(cZ,dir)
 %    [val,x,ksi] = supportFunc(cZ,dir)
 %    [val,x,ksi] = supportFunc(cZ,dir,type)
 %
@@ -10,12 +11,13 @@ function [val,x,ksi] = supportFunc(cZ,dir,varargin)
 %    cZ - conZonotope object
 %    dir - direction for which the bounds are calculated (vector of size
 %          (n,1) )
-%    type - upper or lower bound ('lower' or 'upper')
+%    type - upper bound, lower bound, or both ('upper','lower','range')
 %
 % Outputs:
 %    val - bound of the constrained zonotope in the specified direction
-%    x - support vector
-%    ksi - factor values that correspond to the bound
+%    x - support vector (column vectors if type = 'range')
+%    ksi - factor values that correspond to the bound (column vectors if
+%          type = 'range')
 %
 % Example:
 %    Z = [0 1 0 1;0 1 2 -1];
@@ -37,7 +39,7 @@ function [val,x,ksi] = supportFunc(cZ,dir,varargin)
 
 % Author:       Niklas Kochdumper
 % Written:      22-May-2018
-% Last update:  ---
+% Last update:  10-December-2022 (MW, add type = 'range')
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -53,26 +55,24 @@ else
     cZ = vars{1}; dir = vars{2}; type = vars{3};
 end
 
-% range not supported
-if strcmp(type,'range')
-    throw(CORAerror('CORA:notSupported',type));
-end
-
 
 % constrained vs. non-constrained case
 if isempty(cZ.A) || all(all(cZ.A == 0)) 
     
     % project zonotope onto the direction
     temp = dir'*cZ;
-    inter = interval(temp);
+    I = interval(temp);
     
     % determine upper or lower bound
-    if strcmp(type,'lower')
-       val = infimum(inter); 
-       ksi = -sign(temp.Z(2:end))';
-    else
-       val = supremum(inter);
-       ksi = sign(temp.Z(2:end))';
+    if strcmp(type,'upper')
+        val = supremum(I);
+        ksi = sign(temp.Z(2:end))';
+    elseif strcmp(type,'lower')
+        val = infimum(I); 
+        ksi = -sign(temp.Z(2:end))';
+    elseif strcmp(type,'range')
+        val = I;
+        ksi = [-sign(temp.Z(2:end))', sign(temp.Z(2:end))'];
     end
     
 else
@@ -102,11 +102,21 @@ else
 
         % determine lower bound along the specified direction
         try
-            if strcmp(type,'lower')
-                [ksi, fval,exitflag] = linprog(f',[],[],A,b,lb,ub,options);
-            else
-                [ksi, fval,exitflag] = linprog(-f',[],[],A,b,lb,ub,options);
+            if strcmp(type,'upper')
+                [ksi,fval,exitflag] = linprog(-f',[],[],A,b,lb,ub,options);
                 fval = -fval;
+            elseif strcmp(type,'lower')
+                [ksi,fval,exitflag] = linprog(f',[],[],A,b,lb,ub,options);
+            elseif strcmp(type,'range')
+                [ksi_upper,fval_upper,exitflag_upper] = ...
+                    linprog(-f',[],[],A,b,lb,ub,options);
+                fval_upper = -fval_upper;
+                [ksi_lower,fval_lower,exitflag_lower] = ...
+                    linprog(f',[],[],A,b,lb,ub,options);
+                % combine factors
+                ksi = [ksi_lower, ksi_upper];
+                % combine exitflags
+                exitflag = [exitflag_lower exitflag_upper];
             end
         catch
             exitflag = 0;
@@ -114,10 +124,10 @@ else
         end
 
         % check if a solution could be found
-        if exitflag <= 0
+        if any(exitflag <= 0)
 
-            % check if the objective function is identical to the normal vector
-            % of a constraint -> only one solution
+            % check if the objective function is identical to the normal
+            % vector of a constraint -> only one solution
             for i = 1:size(A,1)
                if sum(abs(f-A(i,:))) < 1e-15 
                   fval = b(i); 
@@ -136,15 +146,25 @@ else
                                        'MaxIterations',10000,'display','off');
 
                 % determine lower bound along the specified direction
-                if strcmp(type,'lower')
-                    [ksi,fval,exitflag] = linprog(f',[],[],A,b,lb,ub,options);
-                else
+                if strcmp(type,'upper')
                     [ksi,fval,exitflag] = linprog(-f',[],[],A,b,lb,ub,options);
                     fval = -fval;
-                end  
+                elseif strcmp(type,'lower')
+                    [ksi,fval,exitflag] = linprog(f',[],[],A,b,lb,ub,options);
+                elseif strcmp(type,'range')
+                    [ksi_upper,fval_upper,exitflag_upper] = ...
+                        linprog(-f',[],[],A,b,lb,ub,options);
+                    fval_upper = -fval_upper;
+                    [ksi_lower,fval_lower,exitflag_lower] = ...
+                        linprog(f',[],[],A,b,lb,ub,options);
+                    % combine factors
+                    ksi = [ksi_lower, ksi_upper];
+                    % combine exitflags
+                    exitflag = [exitflag_lower exitflag_upper];
+                end
 
                 % error message if still no solution
-                if exitflag <= 0
+                if any(exitflag <= 0)
                     throw(CORAerror('CORA:solverIssue'));
                 end
             end
@@ -152,7 +172,11 @@ else
     end
 
     % calculate bound by adding the zonotope center
-    val = dir' * cZ.Z(:,1) + fval;
+    if strcmp(type,'range')
+        val = interval(dir' * cZ.Z(:,1) + fval_lower, dir' * cZ.Z(:,1) + fval_upper);
+    elseif any(strcmp(type,{'upper','lower'}))
+        val = dir' * cZ.Z(:,1) + fval;
+    end
 end
 
 % calculate support vector

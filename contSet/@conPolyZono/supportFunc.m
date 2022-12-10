@@ -92,12 +92,11 @@ function val = supportFunc(cPZ,dir,varargin)
         elseif strcmp(type,'upper')
             val = supremum(val);
         elseif strcmp(type,'range')
-            throw(CORAerror('CORA:notSupported',type));
+            % val = val
         end
         
     elseif strcmp(method,'split')
         
-        % copute support function
         val = supportFuncSplit(cPZ,dir,type,splits);
         
     elseif strcmp(method,'conZonotope')
@@ -161,7 +160,7 @@ function val = supportFuncSplit(cPZ,dir,type,splits)
        val = Min; 
     elseif strcmp(type,'upper')
        val = Max;
-    else
+    elseif strcmp(type,'range')
        val = interval(Min,Max);
     end
 end
