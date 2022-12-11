@@ -74,10 +74,5 @@ catch
     res = false;
 end
 
-if ~res
-    path = pathFailedTests(mfilename());
-    save(path,'cZ');
-end
-
 %------------- END OF CODE --------------
 

@@ -50,14 +50,14 @@ else
 end
 
 % 'type' standard supported
-if ~strcmp(N,'standard')
+if ~strcmp(type,'standard')
     throw(CORAerror('CORA:notSupported',...
         "Only type = 'standard' supported for class conHyperplane."));
 end
 
 % parse input arguments
 if ~(isempty(hyp.C) && all(hyp.d==0))
-    throw(CORAerror('CORA:noops',...
+    throw(CORAerror('CORA:notSupported',...
         'Only implemented for hyperplanes without constraints.'));
 end
 
