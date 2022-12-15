@@ -54,17 +54,18 @@ classdef linearSys < contDynamics
 %               04-March-2019 (MA, default IDs for inputs and outputs)
 %               20-May-2020 (NK, name now optional)
 %               19-November-2021 (MW, default values for c, D, k)
+%               14-December-2022 (TL, property check in inputArgsCheck)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
-    A {mustBeNumeric} = [];     % system matrix: n x n
-    B {mustBeNumeric} = 1;      % input matrix: n x m
-    c {mustBeNumeric} = [];     % constant input: n x 1
-    C {mustBeNumeric} = [];     % output matrix: q x n
-    D {mustBeNumeric} = [];     % throughput matrix: q x m
-    k {mustBeNumeric} = [];     % output offset: q x 1
+    A     % system matrix: n x n
+    B     % input matrix: n x m
+    c     % constant input: n x 1
+    C     % output matrix: q x n
+    D     % throughput matrix: q x m
+    k     % output offset: q x 1
     taylor = [];
     krylov = [];
 end
@@ -75,25 +76,21 @@ methods
     function obj = linearSys(varargin)
         
         if nargin < 2
-            % not enough input arguments
             throw(CORAerror('CORA:notEnoughInputArgs',2));
         elseif nargin > 7
-            % too many input arguments
             throw(CORAerror('CORA:tooManyInputArgs',7));
         end
         
         % parse name, system matrix, input matrix
         if ischar(varargin{1})
             name = varargin{1};
-            A = varargin{2};
-            B = varargin{3};
-            cnt = 3;
+            varargin = varargin(2:end);
         else
             name = 'linearSys'; % default name
-            A = varargin{1};
-            B = varargin{2};
-            cnt = 2;
         end
+        A = varargin{1};
+        B = varargin{2};
+        varargin = varargin(3:end);
         
         % number of states, inputs, and outputs
         states = size(A,1);
@@ -104,50 +101,29 @@ methods
         if ~isscalar(B)
             inputs = size(B,2);
         end
-        
+
         % for c, D, and k: overwrite empty entries by default zeros
         % case C = [] is allowed: yields no output computation in code
-        
-        % constant input
-        c = zeros(states,1); % default value
-        if nargin > cnt
-        	cnt = cnt + 1;
-            if ~isempty(varargin{cnt})
-                c = varargin{cnt};
-            end
+        [c, C] = setDefaultValues({[], 1}, varargin{:});
+        if isempty(c)
+            c = zeros(states, 1);
         end
-        
-        % output matrix
-        C = 1; % default value
-        if nargin > cnt
-        	cnt = cnt + 1;
-            C = varargin{cnt};
-        end
-        % compute number of outputs
+        varargin = varargin(3:end);
         if ~isempty(C) && ~isscalar(C)
             outputs = size(C,1);
         end
-        
-        % throughput matrix
-        D = 0; % default value
-        if inputs ~= outputs
-            D = zeros(outputs,inputs); % default value
-        end
-        if nargin > cnt
-            cnt = cnt + 1;
-            if ~isempty(varargin{cnt})
-                D = varargin{cnt};
-            end
-        end
-        
-        % output offset
-        k = zeros(outputs,1); % default value
-        if nargin > cnt
-        	cnt = cnt + 1;
-            if ~isempty(varargin{cnt})
-                k = varargin{cnt};
-            end
-        end
+
+        [D, k] = setDefaultValues( ...
+            {zeros(outputs,inputs), zeros(outputs,1)}, varargin{:});
+
+        inputArgsCheck({ ...
+            {A, 'att', 'numeric', 'matrix'}
+            {B, 'att', 'numeric', 'matrix'}
+            {c, 'att', 'numeric'} % c can be empty
+            {C, 'att', 'numeric', 'matrix'}
+            {D, 'att', 'numeric', 'matrix'}
+            {k, 'att', 'numeric', 'column'}
+        });
         
         % instantiate parent class
         obj@contDynamics(name,states,inputs,outputs); 

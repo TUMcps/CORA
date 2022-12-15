@@ -10,15 +10,11 @@ classdef ellipsoid < contSet
 %    case.
 %
 % Syntax:  
-%    object constructor: Obj = ellipsoids(varargin)
-%    copy constructor: Obj = otherObj
-%
-% (Overloaded) Methods:
-%    - ellipsoid:           Empty set
-%    - ellipsoid(E):        E-ellipsoids object
-%    - ellipsoid(Q):        Q positive semidefinite, symmetric matrix
-%    - ellipsoid(Q,q):      Q, q center of ellipsoid
-%    - ellipsoid(Q,q,TOL):  Q, q, TOL is tolerance for psd check
+%    ellipsoid:           Empty set
+%    ellipsoid(E):        E-ellipsoids object
+%    ellipsoid(Q):        Q positive semidefinite, symmetric matrix
+%    ellipsoid(Q,q):      Q, q center of ellipsoid
+%    ellipsoid(Q,q,TOL):  Q, q, TOL is tolerance for psd check
 %
 % Inputs:
 %    E - ellipsoid object
@@ -44,69 +40,66 @@ classdef ellipsoid < contSet
 % Last update:  16-October-2019
 %               02-May-2020 (MW, add property validation)
 %               29-Mar-2021 (MA, faster eigenvalue computation)
+%               14-December-2022 (TL, property check in inputArgsCheck)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = protected, GetAccess = public)
-    Q (:,:) {mustBeNumeric,mustBeFinite} = [];
-    q (:,1) {mustBeNumeric,mustBeFinite} = [];
-    TOL (1,1) double {mustBeNonnegative} = 1e-6;
+    Q;
+    q;
+    TOL;
 end
    
 methods
 
     function obj = ellipsoid(varargin)
-        
-        if nargin >= 1
-        % (copy constructor)
-            if nargin == 1 && isa(varargin{1},'ellipsoid')
-                obj = varargin{1};
-            
-            % If 1-3 arguments are passed
-            elseif nargin >=1 && nargin<=3
-                %check TOL first as needed later
-                if nargin==3
-                    obj.TOL = varargin{3};
-                end
-                
-
-                obj.Q = varargin{1};
-                if nargin==1
-                    obj.q = zeros(size(obj.Q,1),1);
-                else
-                    if length(obj.Q)~=length(varargin{2})
-                        throw(CORAerror('CORA:wrongInputInConstructor',...
-                            'Q and q dimensions are not matching.'));
-                    end
-                    obj.q=varargin{2};
-                end
-
-                % if Q and q have correct dimensions, but are empty use
-                % default constructor
-                if isempty(obj.Q) && isempty(obj.q)
-                    obj = ellipsoid;
-                    return;
-                end
-
-                %Check psd and symmetry of Q
-                %mev = eigs(varargin{1},1,'smallestreal'); % throws warning
-                %for ill-conditioned matrix as gives NaN
-                mev = min(eig(obj.Q));
-                if ~isApproxSymmetric(obj.Q,obj.TOL) || mev<-obj.TOL
-                    throw(CORAerror('CORA:wrongInputInConstructor',...
-                        'Q needs to be positive semidefinite/symmetric.'));
-                end
-                
-            % Else: too many inputs are passed    
-            else
-                throw(CORAerror('CORA:tooManyInputArgs',3));
-            end 
+        if nargin > 3
+            % too many input arguments
+            throw(CORAerror('CORA:tooManyInputArgs',3));
         end
+        
+        % parse input
+        if nargin == 1 && isa(varargin{1},'ellipsoid')
+            % (copy constructor)
+            obj = varargin{1};
+            return
+        end
+        
+        if nargin == 0
+            Q = [];
+        else
+            Q = varargin{1};
+            varargin = varargin(2:end);
+        end
+
+        [q, TOL] = setDefaultValues( ...
+            {zeros(size(Q,1),1), 1e-6}, varargin{:});
+
+        inputArgsCheck({ ...
+            {Q, 'att', 'numeric', {'finite', 'matrix'}}; ...
+            {q, 'att', 'numeric', {'finite', 'column'}}; ...
+            {TOL, 'att', 'numeric', {'nonnegative', 'scalar'}}; ...
+        })
+
+        % check dimensions
+        if length(Q)~=length(q)
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Q and q dimensions are not matching.'));
+        end
+        mev = min(eig(Q));
+        if ~isempty(Q) && (~isApproxSymmetric(Q,TOL) || mev<-TOL)
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Q needs to be positive semidefinite/symmetric.'));
+        end
+
+        % assign properties
+        obj.Q = Q;
+        obj.q = q;
+        obj.TOL = TOL;
         
         % set parent object properties
         obj.dimension = dim(obj);
-        
     end
 end
 

@@ -33,15 +33,16 @@ classdef conHyperplane < contSet
 %               02-May-2020 (MW, added property validation)
 %               19-March-2021 (MW, error messages)
 %               22-March-2021 (VG, added 1D case)
+%               14-December-2022 (TL, property check in inputArgsCheck)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 
 properties (SetAccess = private, GetAccess = public)
-    h = []; % halfspace obj
-    C (:,:) {mustBeNumeric,mustBeFinite} = [];
-    d (:,1) {mustBeNumeric,mustBeFinite} = 0;
+    h; % halfspace obj
+    C;
+    d;
 end
     
 methods
@@ -49,70 +50,71 @@ methods
     % class constructor
     function obj = conHyperplane(varargin)
         
-        if nargin == 0
-            obj.h = halfspace();
-        
-        elseif nargin == 1
-            % copy constructor
-            if isa(varargin{1},'conHyperplane')
-                obj = varargin{1};
-            elseif isa(varargin{1},'halfspace')
-                obj.h = varargin{1};
-            else
-                throw(CORAerror('CORA:wrongValue','first',...
-                    "'conHyperplane' object or 'halfspace' object"));
-            end
-            
-        elseif nargin == 2
-            obj.h = halfspace(varargin{1},varargin{2});
-            
-        elseif nargin == 3
-            if ~isa(varargin{1},'halfspace') 
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                     'If three input arguments are given, the first one has to be a ''halfspace'' object'));
-            elseif dim(varargin{1}) ~= size(varargin{2},2)
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'The dimension of the constraint matrix does not match the dimension of the halfspace.'));
-            elseif size(varargin{2},1) ~= length(varargin{3})
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'The length of the constraint offset does not match the dimension of the constraint matrix.'));
-            else
-                obj.h = varargin{1};
-                obj.C = varargin{2};
-                obj.d = varargin{3};
-            end
-            
-        elseif nargin == 4
-            if length(varargin{1}) ~= size(varargin{3},2)
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'The dimension of the constraint matrix does not match the dimension of the halfspace.'));
-            elseif size(varargin{3},1) ~= length(varargin{4})
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'The length of the constraint offset does not match the dimension of the constraint matrix.'));
-            else
-                obj.h = halfspace(varargin{1},varargin{2});
-                obj.C = varargin{3};
-                obj.d = varargin{4};
-            end
-            
-        elseif nargin > 4
+        % parse input
+        if nargin > 4
             % too many input arguments
             throw(CORAerror('CORA:tooManyInputArgs',4));
         end
+
+        % default values
+        h = [];
+        C = [];
+        d = 0;
+        
+        if nargin == 0
+            h = halfspace();
+            
+        elseif nargin == 1 || nargin == 3
+            if isa(varargin{1},'conHyperplane')
+                % copy constructor
+                obj = varargin{1};
+                return
+            end
+
+            h = varargin{1};
+            varargin = varargin(2:end);
+            [C, d] = setDefaultValues({[], 0}, varargin{:});
+            
+        elseif nargin == 2 || nargin == 4
+            h = halfspace(varargin{1},varargin{2});
+            varargin = varargin(3:end);
+            [C, d] = setDefaultValues({[], 0}, varargin{:});
+        end
+
+        inputArgsCheck({ ...
+            {h, 'att', 'halfspace'}; ...
+            {C, 'att', 'numeric', {'finite', 'matrix'}}; ...
+            {d, 'att', 'numeric', {'finite', 'column'}}; ...
+        })
+
+        if ~isempty(C)
+            if length(h.c) ~= size(C,2)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'The dimension of the constraint matrix does not match the dimension of the halfspace.'));
+            elseif size(C,1) ~= length(d)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'The length of the constraint offset does not match the dimension of the constraint matrix.'));
+            end
+        end
         
         % handle 1D case
-        if dim(obj)==1 && obj.h.c~=0 && ~isempty(obj.C)
-            x = obj.h.d/obj.h.c;
+        if dim(h)==1 && h.c~=0 && ~isempty(C)
+            x = h.d/h.c;
             % check if x is in {x|Cx\leq d}
-            X = mptPolytope(obj.C,obj.d);
+            X = mptPolytope(C,d);
             if ~contains(X,x)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'Assignment not consistent: implicit value for x given by hyperplane not contained in {x | C*x <= d}!'));
             end         
         end
+
+        % set properties
+        obj.h = h;
+        obj.C = C;
+        obj.d = d;
         
         % set parent object properties
-        obj.dimension = dim(obj.h);
+        obj.dimension = dim(h);
         
     end
          

@@ -38,49 +38,50 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonoBundle  < contS
 
 % Author:       Matthias Althoff
 % Written:      09-November-2010
-% Last update:  ---
+% Last update:  14-December-2022 (TL, property check in inputArgsCheck)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 
 properties (SetAccess = private, GetAccess = public)
-    Z (:,1) cell;
-    parallelSets {mustBeNonnegative} = 0;
+    Z;
+    parallelSets;
 end
     
 methods
     %class constructor
     function obj = zonoBundle(varargin)
         
-        if nargin == 0
-            % empty object
-            obj.Z = {};
-            obj.parallelSets = 0;
-
-        elseif nargin == 1
-            if isa(varargin{1},'zonoBundle')
-                % copy constructor
-                obj = varargin{1};
-            else
-                % set zonotope cell array
-                if ~all(cellfun(@(x) isa(x,'zonotope'),varargin{1},'UniformOutput',true))
-                    throw(CORAerror('CORA:wrongInputInConstructor',...
-                        'First input argument has to be a list of zonotope objects.'));
-                end
-                % all zonotopes have to be of the same dimension
-                if any(diff(cellfun(@(x) dim(x),varargin{1},'UniformOutput',true)))
-                    throw(CORAerror('CORA:wrongInputInConstructor',...
-                        'Zonotopes have to be embedded in the same affine space.'));
-                end
-                obj.Z = varargin{1};
-                % get number of parallel sets
-                obj.parallelSets = length(varargin{1});
-            end
-
-        else
-            throw(CORAerror('CORA:tooManyInputArgs',1));
+        if nargin > 1
+            throw(CORAerror('CORA:tooManyInputArgs', 1));
         end
+
+        % parse input
+        Z = setDefaultValues({{}}, varargin{:});
+
+        if isa(Z, 'zonoBundle')
+            % copy contructor
+            obj = Z;
+            return
+        end
+
+        inputArgsCheck({{Z, 'att', 'cell'}})
+
+        % check dimensions
+        if ~all(cellfun(@(x) isa(x,'zonotope'), Z,'UniformOutput',true))
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'First input argument has to be a list of zonotope objects.'));
+        end
+        % all zonotopes have to be of the same dimension
+        if any(diff(cellfun(@(x) dim(x), Z,'UniformOutput',true)))
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Zonotopes have to be embedded in the same affine space.'));
+        end
+
+        % assign properties
+        obj.Z = Z;
+        obj.parallelSets = length(Z);
         
         % set parent object properties
         if isempty(obj.Z)

@@ -12,7 +12,7 @@ classdef (InferiorClasses = {?interval, ?zonotope}) probZonotope < contSet
 %            where sigma is the variance
 %
 % Outputs:
-%    Obj - Generated Object
+%    obj - Generated object
 %
 % Example:
 %    Z = [10 1 -2; 0 1 1];
@@ -32,70 +32,62 @@ classdef (InferiorClasses = {?interval, ?zonotope}) probZonotope < contSet
 % Last update:  26-February-2008
 %               20-March-2015
 %               04-May-2020 (MW, transition to classdef)
+%               14-December-2022 (TL, property check in inputArgsCheck)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = protected, GetAccess = public)
     % Z ... zonotope matrix
-    Z (:,:) {mustBeNumeric,mustBeFinite} = [];
+    Z;
     % g ... probabilistic generators
-    g (:,:) {mustBeNumeric,mustBeFinite} = [];
+    g;
     % cov ... covariance matrix 
-    cov (:,:) {mustBeNumeric,mustBeFinite} = [];
+    cov;
     % gauss ... determining if Obj.cov is updated
-    gauss (1,1) {mustBeNumericOrLogical} = false;
+    gauss;
     % gamma ... cut-off mSigma value
-    gamma = 2;
+    gamma;
 end
 
 methods
 
-    function Obj = probZonotope(varargin)
-        
-        % default constructor
-        if nargin == 0
+    function obj = probZonotope(varargin)
 
-        % copy constructor  
-        elseif nargin == 1 && isa(varargin{1}, 'probZonotope')
-            Obj = varargin{1};
-
-        % 2 input arguments
-        elseif nargin == 2
-            
-            % list elements of the class
-            Obj.Z = varargin{1}; 
-            Obj.g = varargin{2}; 
-            Obj.cov = []; 
-            Obj.gauss = false; 
-            Obj.gamma = 2;      % default value
-
-            % update covariance matrix
-            Obj.cov = sigma(Obj);
-            Obj.gauss = true;
-            
-            
-        % 3 input arguments
-        elseif nargin == 3
-            
-            % list elements of the class
-            Obj.Z = varargin{1}; 
-            Obj.g = varargin{2}; 
-            Obj.cov = []; 
-            Obj.gauss = false; 
-            Obj.gamma = varargin{3};
-
-            % update covariance matrix
-            Obj.cov = sigma(Obj);
-            Obj.gauss = true;
-
-        % error if too many inputs are passed    
-        else
+        % parse input
+        if nargin > 3
             throw(CORAerror('CORA:tooManyInputArgs',3));
         end
         
+        if nargin == 1 && isa(varargin{1}, 'probZonotope')
+            % copy constructor  
+            obj = varargin{1};
+            return
+        end
+
+        [Z, g, gamma] = setDefaultValues({[], [], 2}, varargin{:});
+        inputArgsCheck({ ...
+            {Z, 'att', 'numeric', 'finite'}; ...
+            {g, 'att', 'numeric', 'finite'}; ...
+            {gamma, 'att', 'numeric'}; ...
+        })
+
+        % assign properties
+        obj.Z = Z;
+        obj.g = g;
+        obj.gamma = gamma;
+        
+        obj.cov = [];
+        obj.gauss = false;
+        
         % set parent object properties
-        Obj.dimension = size(Obj.Z,1);
+        obj.dimension = size(obj.Z,1);
+        
+        if nargin >= 2
+            % update covariance matrix
+            obj.cov = sigma(obj);
+            obj.gauss = true;
+        end
         
     end
 end

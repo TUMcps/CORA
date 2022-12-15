@@ -28,43 +28,50 @@ classdef halfspace < contSet
 % Last update:  14-Aug-2019
 %               02-May-2020 (add property validation)
 %               19-March-2021 (MW, error messages)
+%               14-December-2022 (TL, property check in inputArgsCheck)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 
 properties (SetAccess = private, GetAccess = public)
-    c (:,1) {mustBeNumeric,mustBeFinite} = [];
-    d (1,1) {mustBeNumeric,mustBeFinite} = 0;
+    c = [];
+    d = 0;
 end
     
 methods
     %class constructor
     function obj = halfspace(varargin)
         
-        if nargin == 0
-            % default constructor (empty object)
-        
-        elseif nargin==1
-            % copy constructor
-            if isa(varargin{1},'halfspace')
-                obj = varargin{1};     
-            else
-                throw(CORAerror('CORA:wrongValue','first',"'halfspace' object or normal vector"));
-            end
-        %one input
-        elseif nargin==2
-            % set normal vector
-            obj.c = varargin{1};
-            % set distance to origin
-            obj.d = varargin{2};
-        elseif nargin > 2
-            % too many input arguments
+        % parse input
+        if nargin > 2
             throw(CORAerror('CORA:tooManyInputArgs',2));
         end
+
+        if nargin==1
+            hs = varargin{1};
+            inputArgsCheck({{hs, 'att', 'halfspace'}})
+            obj = hs;
+            return
+        end
+
+        [c, d] = setDefaultValues({[], 0}, varargin{:});
         
+
+        if nargin > 0
+            inputArgsCheck({ ...
+                {c, 'att', 'numeric', {'finite', 'vector'}}; ...
+                {d, 'att', 'numeric', {'finite', 'scalar'}}; ...
+            })
+            c = reshape(c, [], 1); % column vector
+        end
+
+        % assign properties
+        obj.c = c;
+        obj.d = d;
+
         % set parent object properties
-        obj.dimension = length(obj.c);
+        obj.dimension = length(c);
     end
 end
 

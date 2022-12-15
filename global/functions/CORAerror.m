@@ -191,6 +191,7 @@ switch identifier
 
     
     % solver used within operation is not working properly
+    % - (char/string) name of solver
     case 'CORA:solverIssue'
         solver = '';
         if ~isempty(varargin)
@@ -403,8 +404,13 @@ for i=1:stlength
     end
 end
 
-% name of file where error occured
-filename = [st(errIdx).name '.m'];
+% name of file where error occurred
+filename = st(errIdx).name;
+if contains(filename,'.')
+    % likely a constructor -> remove part until dot
+    filename = filename(strfind(filename,'.')+1:end);
+end
+filename = [filename '.m'];
 
 % position of all file separators
 filesepPos = strfind(st(errIdx).file,filesep);

@@ -40,7 +40,7 @@ function inputArgsCheck(inputArgs)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: validateattributes
 
 % Author:       Mingrui Wang, Mark Wetzlinger
 % Written:      30-May-2022

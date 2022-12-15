@@ -44,7 +44,8 @@ classdef neurNetContrSys < contDynamics
 
 % Author:       Niklas Kochdumper, Tobias Ladner
 % Written:      17-September-2021
-%               23-November-2022 (polish)
+%               23-November-2022 (TL, polish)
+%               14-December-2022 (TL, property check in inputArgsCheck)
 % Last update:  ---
 % Last revision:---
 
@@ -52,10 +53,9 @@ classdef neurNetContrSys < contDynamics
 
 properties (SetAccess = private, GetAccess = public)
 
-    sys contDynamics; % system dynamics
-    nn neuralNetwork; % neural network controller
-    dt(1, 1) {mustBeNumeric, mustBeFinite, ...
-        mustBeNonnegative} = 0; % sampling time
+    sys; % system dynamics
+    nn; % neural network controller
+    dt; % sampling time
 end
 
 methods
@@ -69,39 +69,28 @@ methods
         elseif nargin > 3
             throw(CORAerror('CORA:tooManyInputArgs',3));
         end
-        if ~isa(sys, 'contDynamics')
-            throw(CORAerror('CORA:wrongInputInConstructor', ...
-               'Parameter sys should be of type contDynamics.'));
-        end
         if isa(nn, "neuralNetworkOld")
             nn = neuralNetwork.getFromOldNeuralNetwork(nn);
         end
-        if ~isa(nn, 'neuralNetwork')
-            throw(CORAerror('CORA:wrongInputInConstructor', ...
-               'Parameter nn should be of type neuralNetwork.'));
-        end
-        if sys.dim ~= nn.neurons_in
+
+        inputArgsCheck({ ...
+            {sys, 'att', 'contDynamics'}; ...
+            {nn, 'att', 'neuralNetwork'}; ...
+            {dt, 'att', 'numeric', {'finite', 'nonnegative', 'scalar'}};
+        });
+
+        % check dimensions
+        n = sys.dim;
+        m = nn.neurons_out;
+
+        if n ~= nn.neurons_in
             throw(CORAerror('CORA:wrongInputInConstructor', ...
                'Dimension of sys and input of nn should match.'));
         end
-        if ~isa(dt, 'double') && length(dt) == 1
-            throw(CORAerror('CORA:wrongInputInConstructor', ...
-               'Parameter dt should be a scalar value.'));
-        end
-
-        n = sys.dim;
-        m = nn.neurons_out;
-        w = sys.nrOfInputs;
-
-        if w < m
+        if sys.nrOfInputs < m
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 ['Dimensions of open-loop system and neural network', ...
                 'are not consistent!']));
-        end
-
-        if nn.neurons_in ~= n
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                'System dynamics and neural network are not consistent!'));
         end
 
         % construct closed-loop system

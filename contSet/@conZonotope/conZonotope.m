@@ -38,10 +38,11 @@ classdef conZonotope < contSet
 %
 % See also: interval
 
-% Author:        Dmitry Grebenyuk, Mark Wetzlinger
-% Written:       03-September-2017
-% Last update:   19-March-2021 (MW, error messages)
-% Last revision: 02-May-2020 (MW, methods list, rewrite methods(hidden),
+% Author:       Dmitry Grebenyuk, Mark Wetzlinger
+% Written:      03-September-2017
+% Last update:  19-March-2021 (MW, error messages)
+%               14-December-2022 (TL, property check in inputArgsCheck)
+% Last revision:02-May-2020 (MW, methods list, rewrite methods(hidden),
 %                                 add property validation)
 
 %------------- BEGIN CODE --------------
@@ -50,14 +51,14 @@ properties (SetAccess = private, GetAccess = public)
     
     % center and generators  x = Z(:,1) + Z(:,2:end)*beta; |beta| <= 1
     % format:       matrix
-    Z (:,:) {mustBeNumeric,mustBeFinite} = [];
+    Z = [];
     
     % constraint A*beta = b; |beta| <= 1
     % format:       matrix
-    A (:,:) {mustBeNumeric,mustBeFinite} = [];
+    A = [];
     
     % format:       column vector
-    b (:,1) {mustBeNumeric,mustBeFinite} = [];
+    b = [];
     
     % the value of beta at vertexes
     % format:       column vector
@@ -73,53 +74,53 @@ methods
     
     % class constructor
     function obj = conZonotope(varargin)
-        
-        Z = []; A = []; b = [];
-        
-        if nargin == 1
-            % copy constructor
-            if isa(varargin{1},'conZonotope')
-                obj = varargin{1};
-                return;
-            elseif isnumeric(varargin{1})
-                Z = varargin{1};
-            else
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'If only one input argument is given, it has to be a matrix.')); 
-            end
-        
-        elseif nargin == 2
-            if ~isvector(varargin{1})
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'If two input arguments are given, the first input argument has to be a column vector.')); 
-            elseif length(varargin{1}) ~= size(varargin{2},1)
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'The dimensions of the center and the generator matrix do not match.')); 
-            end
-            Z = [varargin{1},varargin{2}];
-            
-        elseif nargin == 3
-            Z = varargin{1};
-            A = varargin{2};
-            b = varargin{3};
-            % input arguments are checked below (saves copying code)
-            
-        elseif nargin == 4
-            if ~isvector(varargin{1})
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'If two input arguments are given, the first input argument has to be a column vector.')); 
-            elseif length(varargin{1}) ~= size(varargin{2},1)
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'The dimensions of the center and the generator matrix do not match.')); 
-            end
-            Z = [varargin{1},varargin{2}];
-            A = varargin{3};
-            b = varargin{4};
-            
-        elseif nargin > 4
-            % too many input arguments
+
+        % parse input
+        if nargin > 4
             throw(CORAerror('CORA:tooManyInputArgs',4));
         end
+        
+        Z = []; A = []; b = [];
+        inputChecks = {};
+        
+        if nargin == 1 && isa(varargin{1},'conZonotope')
+                % copy constructor
+                obj = varargin{1};
+                return;
+            
+        elseif nargin == 1 || nargin == 3
+            Z = varargin{1};
+            varargin = varargin(2:end);
+
+            inputChecks = {{Z, 'att', 'numeric', 'matrix'}};
+        
+        elseif nargin == 2 || nargin == 4
+            c = varargin{1};
+            G = varargin{2};
+            varargin = varargin(3:end);
+
+            inputChecks = { ...
+                {c, 'att', 'numeric', {'finite', 'column'}};
+                {G, 'att', 'numeric', {'finite', 'matrix'}};
+            };
+            inputArgsCheck(inputChecks);
+
+            % check dimensions
+            if length(c) ~= size(G,1)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'The dimensions of the center and the generator matrix do not match.')); 
+            end
+            Z = [c,G];
+        end
+
+        [A, b] = setDefaultValues({[], []}, varargin{:});
+
+        % check dimensions
+        inputArgsCheck([ ...
+            inputChecks; ...
+            {{A, 'att', 'numeric', {'finite', 'matrix'}}};
+            {{b, 'att', 'numeric', {'finite'}}};
+        ])
         
         if ~isempty(A) && ~isempty(b)
             % check correctness of A and b and w.r.t Z

@@ -43,28 +43,39 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) conPolyZono < contS
 
 % Author:       Niklas Kochdumper
 % Written:      06-November-2018 
-% Last update:  ---
+% Last update:  14-December-2022 (TL, property check in inputArgsCheck)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = protected, GetAccess = public)
-    c (:,1) {mustBeNumeric,mustBeFinite} = [];        % center
-    G (:,:) {mustBeNumeric,mustBeFinite} = [];        % generator matrix
-    expMat (:,:) {mustBeInteger} = [];                % exponent matrix
-    A (:,:) {mustBeNumeric,mustBeFinite} = [];        % constraint gens.
-    b (:,:) {mustBeNumeric,mustBeFinite} = [];        % constraint offset
-    expMat_ (:,:) {mustBeNumeric,mustBeFinite} = [];  % constraint exponent
-    Grest (:,:) {mustBeNumeric,mustBeFinite} = [];    % indep. generators
-    id (:,1) {mustBeInteger} = [];                    % identifier vector
+    c;        % center
+    G;        % generator matrix
+    expMat;   % exponent matrix
+    A;        % constraint generators
+    b;        % constraint offset
+    expMat_;  % constraint exponent
+    Grest;    % independent generators
+    id;       % identifier vector
 end
    
 methods
-
     % object constructor
     function obj = conPolyZono(c,G,expMat,varargin)
         
         % parse input arguments
+        if nargin == 2 % at least 3; 0 = empty set, 1 = copy
+            % not enough input arguments
+            throw(CORAerror('CORA:notEnoughInputArgs',3));
+        elseif nargin > 8
+            % too many input arguments
+            throw(CORAerror('CORA:tooManyInputArgs',8));
+        end
+
+        if nargin == 0
+            c = []; G = []; expMat = [];
+        end
+    
         Grest = []; id = []; A = []; b = []; expMat_ = [];
         
         if nargin == 0
@@ -95,22 +106,43 @@ methods
            expMat_ = varargin{3};
            Grest = varargin{4};
            id = varargin{5};
-        elseif nargin ~= 3
-            throw(CORAerror('CORA:notEnoughInputArgs',3));
         end
         
         % call superclass method
         if isempty(id)
             id = (1:size(expMat,1))'; 
         end
-        
+
+
         % check correctness of user input 
-        if ~all(all(floor(expMat) == expMat)) || ~all(all(expMat >= 0)) || ...
-            size(expMat,2) ~= size(G,2)
+        inputChecks = { ...
+            {c, 'att', 'numeric', {'finite', 'column'}}; ...
+            {G, 'att', 'numeric', {'finite', 'matrix'}}; ...
+            {expMat, 'att', 'numeric', {'integer', 'matrix'}}; ...
+        };
+        if nargin > 5
+            % only add constraints checks if they were in the input
+            % to correctly indicate the position of the wrong input
+            inputChecks = [
+                inputChecks;
+                {{A, 'att', 'numeric', {'finite', 'matrix'}}; ...
+                {b, 'att', 'numeric', {'finite', 'matrix'}}; ...
+                {expMat_, 'att', 'numeric', {'finite', 'matrix'}}}; ...
+            ];
+        end
+        inputChecks = [
+            inputChecks
+            {{Grest, 'att', 'numeric', {'finite', 'matrix'}}; ...
+            {id, 'att', 'numeric', {'finite'}}};
+        ];
+        inputArgsCheck(inputChecks)
+
+
+        % check dimensions
+        if size(expMat,2) ~= size(G,2)
              throw(CORAerror('CORA:wrongInputInConstructor',...
                  'Invalid exponent matrix.'));
         end
-        
         if ~isempty(expMat_)
             if size(expMat,1) ~= size(expMat_,1) 
                 throw(CORAerror('CORA:wrongInputInConstructor',...

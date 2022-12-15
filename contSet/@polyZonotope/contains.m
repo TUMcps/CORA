@@ -99,7 +99,7 @@ function res = contains(pZ,S,varargin)
            isa(S,'polyZonotope') || isa(S,'conPolyZono')
         
         % convert set to polynomial zonotope
-        if ~isa(S,'conPolyZono')
+        if ~isa(S,'polyZonotope')
             S = polyZonotope(S);
         end
         

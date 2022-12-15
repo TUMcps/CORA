@@ -50,6 +50,14 @@ h_true = halfspace(c_true,d);
 % compare results
 res_analytical = isequal(h_mapped,h_true);
 
+% test singular matrix multiplication
+try 
+    A = [1 0; 0 0];
+    h = A * h; % should throw an error
+    res = false;
+    return
+end
+
 
 % combine tests
 res = res_empty && res_analytical;

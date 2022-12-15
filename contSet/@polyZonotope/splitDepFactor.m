@@ -24,6 +24,11 @@ function pZsplit = splitDepFactor(pZ,ind,varargin)
 %    plot(pZsplit{1},[1,2],'FaceColor','b');
 %    plot(pZsplit{2},[1,2],'FaceColor','g');
 %
+% Reference:
+%   [1] Kochdumper, Niklas. Extensions of Polynomial Zonotopes and their 
+%       Application to Verification of Cyber-Physical Systems. Diss. 
+%       Technische Universität München, 2022.
+%
 % Other m-files required: reduce
 % Subfunctions: none
 % MAT-files required: none
@@ -38,122 +43,103 @@ function pZsplit = splitDepFactor(pZ,ind,varargin)
 %------------- BEGIN CODE --------------
 
 % find selected dependent factor
-index = find(pZ.id == ind);
-if isempty(index)
+ind = pZ.id == ind; % 
+if sum(ind) ~= 1
     throw(CORAerror('CORA:wrongValue','second',...
         "Given value for 'ind' should contained in identifiers of polynomial zonotope"));
 end
 
-% determine all generators in which the selected dependent factor occurs
-ind = find(pZ.expMat(index,:) > 0);
+expMat = pZ.expMat;
+expMat_ind = expMat(ind, :);
 
 % parse input arguments
 if nargin == 3
     polyOrd = varargin{1}; 
 else
-    polyOrd = max(pZ.expMat(index,ind));
+    polyOrd = max(expMat_ind);
 end
 
-% create pascal triangle
-A = {[1, 1]};
-for i=2:polyOrd
-    A{i} = [1 sum(A{i-1}([1:(i-1); 2:i])) 1];
-end
+% determine all generators in which the selected dependent factor occurs
+genInd = 0 < expMat_ind & expMat_ind <= polyOrd;
 
-% create coeffs for (0.5 + 0.5x)^p and (-0.5 + 0.5x)^p
+% [1, Prop 3.1.43/44] using bounds [0,1] and [-1,0]
+% create coeffs for i=1...polyOrd:
+% (0.5 + 0.5 * a_ind)^i and (-0.5 + 0.5 * a_ind)^i
 polyCoeff1 = cell(max(2,polyOrd),1);
 polyCoeff2 = cell(max(2,polyOrd),1);
+hout = sum(~genInd);
+
+% create pascal triangle
+P = {[1, 1]};
+for i=2:polyOrd
+    P{i} = [1 sum(P{i-1}([1:(i-1); 2:i])) 1];
+end
 
 for i=1:polyOrd
-    Ai = A{i};
-    polyCoeff1{i} = 0.5^i * Ai;
-    polyCoeff2{i} = 0.5^i * Ai .* (-mod(i:-1:0, 2)*2+1);
+    Pi = P{i};
+    polyCoeff1{i} = 0.5^i * Pi;
+    polyCoeff2{i} = 0.5^i * Pi .* (-mod(i:-1:0, 2)*2+1);
+
+    numExpi = sum(expMat_ind == i);
+    hout = hout + length(Pi) * numExpi;
 end
 
 % construct the modified generators for the splitted zonotopes
-expMat1 = pZ.expMat;
-% expMat2 = pZ.expMat; % equal to expMat1!
-G1 = pZ.G;
-G2 = pZ.G;
 c1 = pZ.c;
 c2 = pZ.c;
+
+G1 = nan(length(c1), hout);
+G2 = nan(length(c2), hout);
+Eout = nan(size(expMat, 1), hout); % identical for splitted sets
+
+h = 1;
+dh = sum(~genInd);
+G1(:, h:h+dh-1) = pZ.G(:, ~genInd);
+G2(:, h:h+dh-1) = pZ.G(:, ~genInd);
+Eout(:, h:h+dh-1) = expMat(:, ~genInd);
+h = h + dh;
 
 for i = 1:polyOrd
     coef1 = polyCoeff1{i};
     coef2 = polyCoeff2{i};
 
-    indTemp = find(pZ.expMat(index,ind) == i);
-    n = length(indTemp);
-    adv = length(coef1)-1;
+    expi = expMat_ind == i;
 
-    G1_ = zeros(size(G1, 1), n*adv);
-    G2_ = zeros(size(G2, 1), n*adv);
-    E_ = zeros(size(expMat1, 1), n*adv);
-
-    idx = 1;
-
-    for j = 1:length(indTemp)
-       
-        g = pZ.G(:,ind(indTemp(j)));
-        e = pZ.expMat(:,ind(indTemp(j)));
-       
-        % first splitted zonotope
-        G1(:,ind(indTemp(j))) = coef1(1) * g;
-        G1_(:, idx:idx+adv-1) = g*coef1(2:end);
-
-        % expMat is equal for both
-        expMat1(index,ind(indTemp(j))) = 0;
-        Ej_ = e* ones(1,length(coef1)-1);
-        Ej_(index,:) = 1:length(coef1)-1;
-        E_(:, idx:idx+adv-1) = Ej_;
-        
-        % second splitted zonotope
-        G2(:,ind(indTemp(j))) = coef2(1) * g;
-        G2_(:, idx:idx+adv-1) = g*coef2(2:end);
-
-        idx = idx + adv;
-    end
-
-    G1 = [G1, G1_];
-    G2 = [G2, G2_];
-    expMat1 = [expMat1, E_];
+    dh = length(coef1) * sum(expi);
     
-    % remove the finished indices from the list
-    ind(indTemp) = [];
-    
-    if isempty(ind)
-       break; 
-    end
+    G1(:, h:h+dh-1) = kron(coef1, pZ.G(:, expi));
+    G2(:, h:h+dh-1) = kron(coef2, pZ.G(:, expi));
+
+    Eout(:, h:h+dh-1) = kron(ones(1, i+1), expMat(:, expi));
+    Eout(ind, h:h+dh-1) = kron(0:i, ones(1, sum(expi))); % fix a_ind
+
+    h = h + dh;
+
+    genInd = xor(genInd, expi);
 end
 
 % over-approximate all selected generators that did not get splitted
-if ~isempty(ind)
-
-    expMat1 = [expMat1;zeros(1,size(expMat1,2))];
+if sum(genInd) > 0
+    Eout = [Eout;zeros(1,size(Eout,2))];
     
-    for i = 1:length(ind)
-        expMat1(end,ind(i)) = expMat1(index,ind(i));
-        expMat1(index,ind(i)) = 0;
-    end
+    Eout(end, genInd) = Eout(ind, genInd);
+    Eout(ind, genInd) = 0;
 end
 
-expMat2 = expMat1;
-
 % add every generator with all-zero exponent matrix to the zonotope center
-temp = sum(expMat1,1);
-ind = find(temp == 0);
-c1 = c1 + sum(G1(:,ind),2);
-G1(:,ind) = [];
-expMat1(:,ind) = [];
+temp = sum(Eout,1);
+genInd = temp == 0;
 
-temp = sum(expMat2,1);
-ind = find(temp == 0);
-c2 = c2 + sum(G2(:,ind),2);
-G2(:,ind) = [];
-expMat2(:,ind) = [];
+c1 = c1 + sum(G1(:,genInd),2);
+G1(:,genInd) = [];
+Eout(:,genInd) = [];
+
+c2 = c2 + sum(G2(:,genInd),2);
+G2(:,genInd) = [];
 
 % construct the resulting polynomial zonotopes
-pZsplit{1} = polyZonotope(c1,G1,pZ.Grest,expMat1);
-pZsplit{2} = polyZonotope(c2,G2,pZ.Grest,expMat2);
+pZsplit = cell(1, 2);
+pZsplit{1} = polyZonotope(c1,G1,pZ.Grest,Eout);
+pZsplit{2} = polyZonotope(c2,G2,pZ.Grest,Eout);
 
 %------------- END OF CODE --------------
