@@ -49,12 +49,10 @@ if ~all(idxD)
     end
 end
 
-% add hash value of the exponent vectors to the exponent matrix
-r = rng;
-rng(1); % deterministic random hash vector
-hashVec = rand(1, size(ExpMat, 1));
+% create a deterministic random hash vector
+rs = RandStream('mt19937ar', 'Seed', 0); % to not interfer with the outside
+hashVec = rs.rand(1, size(ExpMat, 1));
 hashMat = (hashVec*ExpMat)';
-rng(r) % restore rng
 
 % sort the exponent vectors according to the hash value
 [hashes, ind] = sortrows(hashMat);

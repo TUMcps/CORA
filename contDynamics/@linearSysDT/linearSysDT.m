@@ -49,18 +49,19 @@ classdef linearSysDT < contDynamics
 % Written:      20-Mar-2020 
 % Last update:  14-Jun-2021 (MA, invoke observe from superclass)
 %               19-November-2021 (MW, default values for C, D, k)
+%               14-December-2022 (TL, property check in inputArgsCheck)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
-    A {mustBeNumeric} = [];                         % system matrix: n x n
-    B {mustBeNumeric} = 1;                          % input matrix: n x m
-    c {mustBeNumeric} = [];                     	% constant input: n x 1
-    C {mustBeNumeric} = [];                         % output matrix: q x n
-    D {mustBeNumeric} = [];                         % throughput matrix: q x m
-    k {mustBeNumeric} = [];                         % output offset: q x 1
-    dt {mustBeNumeric} = [];                        % sampling time
+    A   % system matrix: n x n
+    B   % input matrix: n x m
+    c   % constant input: n x 1
+    C   % output matrix: q x n
+    D   % throughput matrix: q x m
+    k   % output offset: q x 1
+    dt  % sampling time
 end
 
 methods
@@ -78,18 +79,24 @@ methods
         % parse name, system matrix, input matrix
         if ischar(varargin{1})
             name = varargin{1};
-            A = varargin{2};
-            B = varargin{3};
-            cnt = 3;
+            varargin = varargin(2:end);
         else
             name = 'linearSysDT'; % default name
-            A = varargin{1};
-            B = varargin{2};
-            cnt = 2;
         end
+        
+        A = varargin{1};
+        B = varargin{2};
+        
+        % sampling time (always last input argument)
+        dt = varargin{end};
+
+        % update varargin to remaining parameters
+        varargin = varargin(3:end-1);
+
+
         % note that cnt is +1 compared to linearSys due to dt-arguments
         
-        % get number of states, inputs, and outputs
+        % number of states, inputs, and outputs
         states = size(A,1);
         inputs = states;
         outputs = states;
@@ -98,53 +105,27 @@ methods
         if ~isscalar(B)
             inputs = size(B,2);
         end
-        
+
         % for c, D, and k: overwrite empty entries by default zeros
         % case C = [] is allowed: yields no output computation in code
-        
-        % constant input
-        c = zeros(states,1); % default value
-        if nargin > cnt + 1
-        	cnt = cnt + 1;
-            if ~isempty(varargin{cnt})
-                c = varargin{cnt};
-            end 
-        end
-        
-        % output matrix
-        C = 1; % default value
-        if nargin > cnt + 1
-        	cnt = cnt + 1;
-            C = varargin{cnt};
-        end
-        % compute number of outputs
+        [c, C] = setDefaultValues({zeros(states, 1), 1}, varargin{:});
+        varargin = varargin(3:end);
         if ~isempty(C) && ~isscalar(C)
-            outputs = size(C,1); 
+            outputs = size(C,1);
         end
-        
-        % throughput matrix
-        D = 0; % default value
-        if inputs ~= outputs
-            D = zeros(outputs,inputs); % default value
-        end
-        if nargin > cnt + 1
-        	cnt = cnt + 1;
-            if ~isempty(varargin{cnt})
-                D = varargin{cnt};
-            end 
-        end
-        
-        % output offset
-        k = zeros(outputs,1); % default value
-        if nargin > cnt + 1
-        	cnt = cnt + 1;
-            if ~isempty(varargin{cnt})
-                k = varargin{cnt};
-            end
-        end
-        
-        % sampling time (always last input argument)
-        dt = varargin{end};
+
+        [D, k] = setDefaultValues( ...
+            {zeros(outputs,inputs), zeros(outputs,1)}, varargin{:});
+
+        inputArgsCheck({ ...
+            {A, 'att', 'numeric', 'matrix'}
+            {B, 'att', 'numeric', 'matrix'}
+            {c, 'att', 'numeric'} % c can be empty
+            {C, 'att', 'numeric', 'matrix'}
+            {D, 'att', 'numeric', 'matrix'}
+            {k, 'att', 'numeric', 'column'}
+            {dt, 'att', 'numeric', 'scalar'}
+        });
         
         % instantiate parent class
         obj@contDynamics(name,states,inputs,outputs); 

@@ -38,7 +38,16 @@ end
 try
     %assume that factor is an invertible matrix
     invMat = inv(M);
-    hs.c = invMat.'*hs.c;
+    c = invMat.'*hs.c;
+    
+    if ~all(isfinite(c), 'all')
+        % might be due to singular matrix; is checked in catch block
+        throw(CORAerror('CORA:wrongValue', 'first', ...
+            ['Matrix multiplication lead to an invalid center vector ' ...
+            '(center has to be finite).']))
+    end
+
+    hs.c = c;
     
 catch ME
     
@@ -48,7 +57,7 @@ catch ME
         throw(CORAerror('CORA:dimensionMismatch',M,hs));
     elseif abs(det(M)) < eps
         throw(CORAerror('CORA:specialError',...
-            'Linear transformation with near-singular matrix'));
+            'Linear transformation with (near-)singular matrix.'));
     else
         rethrow(ME);
     end

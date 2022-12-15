@@ -33,14 +33,15 @@ classdef linProbSys < contDynamics
 % Last update:  26-February-2008
 %               05-August-2016 (changed to new OO format)
 %               19-June-2022 (MW, update syntax)
+%               14-December-2022 (TL, property check in inputArgsCheck)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
-    A {mustBeNumeric} = []; % state matrix
-    B {mustBeNumeric} = []; % input matrix
-    C {mustBeNumeric} = []; % noise matrix
+    A; % state matrix
+    B; % input matrix
+    C; % noise matrix
     taylor = [];
 end
 
@@ -58,28 +59,25 @@ methods
         % parse name, set index for other input arguments
         if ischar(varargin{1})
             name = varargin{1};
-            cnt = 2;
+            varargin = varargin(2:end);
         else
             % default name
             name = 'linProbSys';
-            cnt = 1;
         end
 
-        % parse state matrix
-        A = varargin{cnt};
-        if nargin == 2 && ischar(varargin{1})
+        if length(varargin) < 3
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 ['If the first input argument is the name of the system, '...
                 'there have to be either 3 or 4 input arguments.']));
         end
 
-        % parse input matrix
-        B = varargin{cnt+1};
+        [A, B, C] = setDefaultValues({[], [], []}, varargin{:});
 
-        % parse noise matrix
-        if nargin == cnt+2
-            C = varargin{cnt+2};
-        end
+        inputArgsCheck({ ...
+            {A, 'att', 'numeric'}
+            {B, 'att', 'numeric'}
+            {C, 'att', 'numeric'}
+        });
 
         % instantiate parent class (never any outputs)
         obj@contDynamics(name,size(A,1),size(B,2),0);
@@ -87,10 +85,7 @@ methods
         % assign properties
         obj.A = A;
         obj.B = B;
-        if nargin == cnt+2
-            obj.C = C;
-        end
-
+        obj.C = C;
     end
 end
 end

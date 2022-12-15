@@ -32,6 +32,7 @@ classdef contDynamics < matlab.mixin.Copyable
 %               04-August-2016 (changed to new OO format)
 %               04-March-2019 (number of outputs added)
 %               22-May-2020 (NK, deleted stateID, inputID, etc. properties)
+%               14-December-2022 (TL, property check in inputArgsCheck)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -39,42 +40,45 @@ classdef contDynamics < matlab.mixin.Copyable
 
 properties (SetAccess = private, GetAccess = public)
     % name of the system
-    name (1,:) = '';
+    name;
 
     % state dimension
-    dim (1,1) {mustBeInteger,mustBeNonnegative} = 0;
+    dim;
 
     % input dimension
-    nrOfInputs (1,1) {mustBeInteger,mustBeNonnegative} = 0;
+    nrOfInputs;
 
     % output dimension
-    nrOfOutputs (1,1) {mustBeInteger,mustBeNonnegative} = 0;
+    nrOfOutputs;
 end
     
 methods
     
     % class constructor
     function obj = contDynamics(varargin)
-        
-        if nargin == 0
-            % empty
-        elseif nargin == 1
-            obj.name = varargin{1};
-        elseif nargin == 2
-            obj.name = varargin{1};
-            obj.dim = varargin{2};
-        elseif nargin == 3
-            obj.name = varargin{1};
-            obj.dim = varargin{2};
-            obj.nrOfInputs = varargin{3};
-        elseif nargin == 4
-            obj.name = varargin{1};
-            obj.dim = varargin{2};
-            obj.nrOfInputs = varargin{3};
-            obj.nrOfOutputs = varargin{4};
-        else
-            throw(CORAerror('CORA:tooManyInputArgs',4));
+
+        % parse input
+        maxArgs = 4; % max input args
+        if nargin > maxArgs
+            throw(CORAerror('CORA:tooManyInputArgs',maxArgs));
         end
+        [name, dim, nrOfInputs, nrOfOutputs] = setDefaultValues( ...
+            {'',0,0,0}, varargin{:});
+        inputArgsCheck({ ...
+            {name, 'att', {'char', 'string'}}; ...
+            {dim, 'att', 'numeric', ...
+                {'integer', 'nonnegative', 'scalar'}}; ...
+            {nrOfInputs, 'att', 'numeric', ...
+                {'integer', 'nonnegative', 'scalar'}}; ...
+            {nrOfOutputs, 'att', 'numeric', ...
+                {'integer', 'nonnegative', 'scalar'}}; ...
+        })
+
+        % set properties
+        obj.name = name;
+        obj.dim = dim;
+        obj.nrOfInputs = nrOfInputs;
+        obj.nrOfOutputs = nrOfOutputs;
     end
 end
 

@@ -129,7 +129,7 @@ function val = supportFunc(pZ,dir,varargin)
 end
 
 
-% Auxlilary functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function val = supportFuncBernstein(pZ,dir,type)
 % compute the support function using Bernstein polynomials
@@ -156,83 +156,6 @@ function val = supportFuncBernstein(pZ,dir,type)
     elseif strcmp(type,'upper')
        val = supremum(val);
     end
-end
-
-function val = supportFuncSplit(pZ,dir,type,splits)
-% compute support function by recursively splitting the set
-
-    % handle different types
-    if strcmp(type,'lower')
-       val = -supportFuncSplit(pZ,-dir,'upper',splits);
-       return;
-    elseif strcmp(type,'range')
-       up = supportFuncSplit(pZ,dir,'upper',splits);
-       low = -supportFuncSplit(pZ,-dir,'upper',splits);
-       val = interval(low,up);
-       return;
-    end
-
-    % project the polynomial zonotope onto the direction
-    pZ_ = dir' * pZ;
-
-    % split the polynomial zonotope multiple times to obtain a better 
-    % over-approximation of the real shape
-    pZsplit{1} = pZ_;
-    val_min = -inf; val_max = -inf;
-
-    for i = 1:splits
-        qZnew = [];
-        val_max = -inf;
-        
-        for j = 1:length(pZsplit)
-            
-            res = splitLongestGen(pZsplit{j});
-            
-            for k = 1:length(res)
-                
-                % compute support function for enclosing zonotope
-                [val,~,alpha] = supportFunc(zonotope(res{k}),1);
-                
-                % update upper and lower bound
-                if val > val_max
-                   
-                    % update upper bound
-                    val_max = val;
-                    
-                    % update lower bound by determining most critical point
-                    ind1 = find(sum(res{k}.expMat,1) == 1);
-                    ind2 = find(sum(res{k}.expMat(:,ind1),2) == 1);
-                    
-                    beta = alpha(size(res{k}.expMat,2)+1:end);
-                    alpha_ = zeros(size(res{k}.expMat,1),1);
-                    alpha_(ind2) = alpha(ind1);
-                    
-                    tmp = res{k}.c + sum(res{k}.G .*  ...
-                                            prod(alpha_.^res{k}.expMat,1)); 
-                    
-                    if ~isempty(beta)
-                        tmp = tmp + res{k}.Grest*beta;
-                    end
-                    
-                    if tmp > val_min
-                       val_min = tmp; 
-                    end
-                end
-                
-                % add new set to queue (if not smaller than lower bound)
-                if val >= val_min
-                   qZnew{end+1} = res{k}; 
-                end
-            end
-        end
-        
-        pZsplit = qZnew;
-        if isempty(pZsplit)
-            break;
-        end
-    end
-    
-    val = val_max;
 end
 
 function val = supportFuncBnB(pZ,dir,type,method,maxOrder)

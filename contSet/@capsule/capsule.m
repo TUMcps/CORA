@@ -38,67 +38,76 @@ classdef capsule < contSet
 % Written:      04-March-2019
 % Last update:  02-May-2020 (MW, add property validation)
 %               19-March-2021 (MW, error messages, remove capsule(r) case)
+%               14-December-2022 (TL, property check in inputArgsCheck)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = protected, GetAccess = public)
-    c (:,1) {mustBeNumeric,mustBeFinite} = []; % center
-    g (:,1) {mustBeNumeric,mustBeFinite} = []; % generator
-    r (1,1) {mustBeNonnegative,mustBeFinite} = 0; % radius
+    c; % center
+    g; % generator
+    r; % radius
 end
    
 methods
 
-    function Obj = capsule(varargin)
+    function obj = capsule(varargin)
+        if nargin > 3
+            % too many input arguments
+            throw(CORAerror('CORA:tooManyInputArgs',3));
+        end
+
+        % parse input
+        if nargin == 1 && isa(varargin{1},'capsule')
+            % copy constructor
+             obj = varargin{1};
+             return;
+        end
         
-        % default constructor
         if nargin == 0
-            
-            Obj.dimension = 0;
+            obj.c = [];
+            obj.g = [];
+            obj.r = 0;
+
+            obj.dimension = 0;
             
         else
-            
-            % If 1 argument is passed
-            if nargin == 1
-                if isa(varargin{1},'capsule')
-                    % copy constructor
-                    Obj = varargin{1};
-                else
-                    % set center
-                    Obj.c = varargin{1}; 
-                    Obj.g = zeros(length(Obj.c),1);
-                end
-            elseif nargin == 2
-                Obj.c = varargin{1};
-                if isscalar(varargin{2})
-                    Obj.r = varargin{2};
-                    Obj.g = zeros(length(Obj.c),1);
-                elseif isvector(varargin{2}) && length(Obj.c) ~= length(varargin{2})
-                    % dimension mismatch
-                    throw(CORAerror('CORA:wrongInputInConstructor',...
-                        'Dimension mismatch between center and generator.'));
-                else
-                    Obj.g = varargin{2};
-                end
-            elseif nargin == 3
-                % set all values
-                Obj.c = varargin{1};
-                if isvector(varargin{2}) && length(Obj.c) ~= length(varargin{2})
+            c = varargin{1};
+            g = zeros(length(obj.c),1);
+            r = 0;
+
+            if nargin == 2
+                v2 = varargin{2};
+                if isscalar(v2)
+                    r = v2;
+                elseif isvector(v2) && length(c) == length(v2)
+                    g = v2;
+                elseif ~isempty(v2)
                     % dimension mismatch
                     throw(CORAerror('CORA:wrongInputInConstructor',...
                         'Dimension mismatch between center and generator.'));
                 end
-                Obj.g = varargin{2};
-                Obj.r = varargin{3};
-                
-            elseif nargin > 3
-                % too many input arguments
-                throw(CORAerror('CORA:tooManyInputArgs',3));
             end
 
+            if nargin == 3
+               g = varargin{2};
+               r = varargin{3};
+            end
+
+            inputArgsCheck({ ...
+                {c, 'att', 'numeric', {'finite', 'column'}}; ...
+                {g, 'att', 'numeric', {'finite', 'column'}}; ...
+                {r, 'att', 'numeric', ...
+                    {'finite', 'nonnegative', 'scalar'}};
+            })
+
+            % set properties
+            obj.c = c;
+            obj.g = g;
+            obj.r = r;
+
             % set parent object properties
-            Obj.dimension = length(Obj.c);
+            obj.dimension = length(c);
         end
     end
 end

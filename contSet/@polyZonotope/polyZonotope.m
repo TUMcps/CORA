@@ -45,120 +45,108 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) polyZonotope < cont
 %
 % See also: zonotope
 
-% Author:        Niklas Kochdumper, Mark Wetzlinger
+% Author:        Niklas Kochdumper, Mark Wetzlinger, Tobias Ladner
 % Written:       26-March-2018 
 % Last update:   02-May-2020 (MW, add property validation, def constructor)
 %                21-March-2021 (MW, error messages, size checks, restructuring)
+%                14-December-2022 (TL, restructuring)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = protected, GetAccess = public)
-    c (:,1) {mustBeNumeric,mustBeFinite} = [];
-    G (:,:) {mustBeNumeric,mustBeFinite} = [];
-    Grest (:,:) {mustBeNumeric,mustBeFinite} = [];
-    expMat (:,:) {mustBeInteger} = [];
-    id (:,1) {mustBeInteger} = [];
+    c = [];
+    G = [];
+    Grest = [];
+    expMat = [];
+    id = [];
 end
    
 methods
 
     function obj = polyZonotope(c,G,Grest,expMat,id)
-        
-        if nargin == 0
-            % return empty set
-            obj.c = [];
-            c = []; % for contSet / dimension
-        
-        elseif nargin == 1 
-            % Copy Constructor
-            if isa(c,'polyZonotope')
-                obj = c;
-            % Single point
-            else
-                obj.c = c;
-            end
-        
-        elseif nargin >= 2 && nargin <= 5
-            
-            % check center for emptyness
-            if isempty(c)
-                throw(CORAerror('CORA:wrongInputInConstructor','Center is empty.'));
-            end
-            % assign center
-            obj.c = c;
-            
-            % check sizes of c and G
-            if ~isempty(G) && length(c) ~= size(G,1)
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Dimension mismatch between center and dependent generator matrix.'));
-            end
-            % assign dependent generator matrix
-            % note: later overwritten if expMat given (to avoid checking twice)
-            obj.G = G;
-            
-            if nargin >= 3
-                % check sizes of c and Grest
-                if ~isempty(Grest) && length(c) ~= size(Grest,1)
-                     throw(CORAerror('CORA:wrongInputInConstructor',...
-                         'Dimension mismatch between center and independent generator matrix.'));
-                end
-                % assign independent generator matrix
-                obj.Grest = Grest;
-            end
-            
-            if nargin <= 3
-                % construct exponent matrix and identifiers under
-                % the assumption that all generators are independent
-                obj.expMat = eye(size(G,2));
-                obj.id = (1:size(G,2))';
-            
-            else
 
-                % check correctness of user input
-                if ~all(all(floor(expMat) == expMat)) || ~all(all(expMat >= 0)) ...
-                        || size(expMat,2) ~= size(G,2)
-                    throw(CORAerror('CORA:wrongInputInConstructor',...
-                        'Invalid exponent matrix'));
-                end
-
-                % remove redundant exponents
-                if ~isempty(expMat)
-                    [expMat,G] = removeRedundantExponents(expMat,G);
-                end
-
-                % assign properties
-                obj.G = G; % this overwrites the former assignment
-                obj.expMat = expMat;
-
-                % vector of integer identifiers
-                if nargin == 5
-
-                    % check for correctness
-                    if length(id) ~= size(expMat,1)
-                        throw(CORAerror('CORA:wrongInputInConstructor',...
-                            'Invalid vector of identifiers.'));
-                    end
-                    % assign value
-                    obj.id = id;
-
-                else
-                    % no identifiers provided
-                    obj.id = (1:size(expMat,1))';
-                end
-                
-            end
-
-        % Too many inputs are passed    
-        elseif nargin > 5
-            
+        % parse input
+        if nargin > 5
             % too many input arguments
             throw(CORAerror('CORA:tooManyInputArgs',5));
-
         end
+
+        if nargin == 0
+            c = [];
+        end
+        if nargin == 1 && isa(c, 'polyZonotope')
+            % Copy Constructor
+            obj = c;
+            return
+        end
+        n = length(c);
+        if nargin < 2
+            G = [];
+        end
+        h = size(G, 2);
+        if nargin < 3
+            Grest = [];
+        end
+        if nargin < 4
+            expMat = eye(h);
+        end
+        p = size(expMat, 1);
+        if nargin < 5
+            id = (1:p)'; % column vector
+        end
+
+        inputArgsCheck({ ...
+            {c, 'att', {'double'}, {'finite'}};
+            {G, 'att', {'double'}, {'finite', 'matrix'}};
+            {Grest, 'att', {'double'}, {'finite', 'matrix'}};
+            {expMat, 'att', {'double'}, ...
+                {'integer', 'nonnegative', 'matrix'}};
+            {id, 'att', {'double'}, {'integer'}};
+        })
+
+        % check dimensions
+        if ~isempty(c) && size(c, 2) ~= 1
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Center should be a column vector.'));
+        end
+        if size(id, 2) ~= 1
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Identifier vector should be a column vector.'));
+        end
+
+        % check dimensions
+        if ~isempty(G) && size(G,1) ~= n
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Dimension mismatch between center and dependent generator matrix.'));
+        end
+        if ~isempty(Grest) && size(Grest,1) ~= n
+             throw(CORAerror('CORA:wrongInputInConstructor',...
+                 'Dimension mismatch between center and dependent generator matrix.'));
+        end
+        if size(expMat,2) ~= h
+             throw(CORAerror('CORA:wrongInputInConstructor',...
+                 'Dimension mismatch between dependent generator matrix and exponent matrix.'));
+        end
+        if size(id, 1) ~= p
+             throw(CORAerror('CORA:wrongInputInConstructor',...
+                 'Dimension mismatch between exponent matrix and identifier vector.'));
+        end
+
+        % remove redundancies
+        if ~isempty(expMat)
+            [expMat,G] = removeRedundantExponents(expMat,G);
+        end
+
+        % set properties
+        obj.c = c;
+        obj.G = G;
+        obj.Grest = Grest;
+        obj.expMat = expMat;
+        obj.id = id;
         
         % set parent object properties
-        obj.dimension = length(c);
+        obj.dimension = n;
     end
 end
 

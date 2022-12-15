@@ -23,13 +23,15 @@ function I = reshape(I,varargin)
 
 % Author:       Matthias Althoff
 % Written:      05-August-2015 
-% Last update:  ---
+% Last update:  14-December-2022 (TL, use constructor)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 %apply reshaping for infimum and supremum
-I.inf = reshape(I.inf, varargin{1:end});
-I.sup = reshape(I.sup, varargin{1:end});
+inf = reshape(I.inf, varargin{1:end});
+sup = reshape(I.sup, varargin{1:end});
+
+I = interval(inf, sup);
 
 %------------- END OF CODE --------------

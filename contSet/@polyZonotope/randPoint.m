@@ -29,9 +29,10 @@ function p = randPoint(pZ,varargin)
 %
 % See also: zonotope/randPoint
 
-% Author:       Niklas Kochdumper
+% Author:       Niklas Kochdumper, Tobias Ladner
 % Written:      23-March-2018
 % Last update:  19-August-2022 (MW, integrate standardized pre-processing)
+%               09-December-2022 (TL: vectorized computation)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -53,26 +54,36 @@ else
 end
 
 % get object properties
-m = length(pZ.id); q = size(pZ.Grest,2); 
+n = dim(pZ);
+m = length(pZ.id); 
+q = size(pZ.Grest,2); 
 
 % compute random points for factor domain interval \alpha \in [-1,1]
 dom = interval(-ones(m+q,1),ones(m+q,1));
 
 fac = randPoint(dom,N,type);
+N = size(fac, 2); % in case N = 'all'
 
 % center
-p = pZ.c * ones(1,size(fac,2));
+p = pZ.c;
 
-% Part 1: dependent generators
+% dependent generators
 if ~isempty(pZ.G)
-    for i = 1:size(fac,2)
-        p(:,i) = p(:,i) + pZ.G * prod(fac(1:m,i).^pZ.expMat,1)';
-    end
+    fac_dep = fac(1:m, :);
+    fac_dep = reshape(fac_dep, m, 1, N);
+    fac_dep = prod(fac_dep .^ pZ.expMat, 1);
+    dep = sum(pZ.G .* fac_dep, 2);
+    dep = reshape(dep, n, N);
+    p = p + dep;
 end
 
-% Part 2: independent generators
+% independent generators
 if ~isempty(pZ.Grest)
-    p = p + pZ.Grest * fac(m+1:end,:);
+    fac_ind = fac(m+1:end, :);
+    fac_ind = reshape(fac_ind, 1, [], N);
+    ind = sum(pZ.Grest .* fac_ind, 2);
+    ind = reshape(ind, n, N);
+    p = p + ind;
 end
 
 %------------- END OF CODE --------------

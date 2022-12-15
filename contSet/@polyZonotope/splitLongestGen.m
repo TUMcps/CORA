@@ -52,10 +52,6 @@ len = sum(pZ.G.^2,1);
 factor = pZ.id(factor);
 
 % split the zonotope at the determined generator
-if nargin == 2
-   pZsplit = splitDepFactor(pZ,factor,varargin{1}); 
-else
-   pZsplit = splitDepFactor(pZ,factor); 
-end
+pZsplit = splitDepFactor(pZ,factor, varargin{:}); 
 
 %------------- END OF CODE --------------

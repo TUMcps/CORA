@@ -38,57 +38,58 @@ classdef (InferiorClasses = {?mp}) interval < contSet
 %               15-July-2017 (NK)
 %               01-May-2020 (MW, delete redundant if-else)
 %               20-March-2021 (MW, error messages)
+%               14-December-2022 (TL, property check in inputArgsCheck)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
-    inf (:,:) double {mustBeNumeric} = [];
-    sup (:,:) double {mustBeNumeric} = [];
+    inf;
+    sup;
 end
 
 methods
     %class constructor
     function obj = interval(varargin)
         
-        % one input argument
-        if nargin==1
-            
-            if isa(varargin{1},'interval')
-                % copy constructor
-                obj = varargin{1};
-            elseif isnumeric(varargin{1})
-                obj.inf = varargin{1};
-                obj.sup = varargin{1};
-            else
-                throw(CORAerror('CORA:wrongValue','first',...
-                    "'interval' object or a vector"));
-            end
-        
-        % two input arguments
-        elseif nargin==2
-            
-            % check sizes
-            if any(any(size(varargin{1}) - size(varargin{2})))
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Limits are of different dimension.'));
-            elseif all(all(varargin{1} <= varargin{2}))
-                obj.inf = varargin{1};
-                obj.sup = varargin{2};
-            else
-                 throw(CORAerror('CORA:wrongInputInConstructor',...
-                     'Lower limit larger than upper limit.'));
-            end
-        
+        % parse input
+        if nargin < 0
+            throw(CORAerror('CORA:notEnoughInputArgs',1));
         elseif nargin > 2
-            
-            % too many input arguments
             throw(CORAerror('CORA:tooManyInputArgs',2));
-            
         end
         
+        if nargin==1 && isa(varargin{1},'interval')
+            % copy constructor
+            obj = varargin{1};
+            return;
+        end
+
+        inf = setDefaultValues({[]}, varargin{1:end});
+        sup = setDefaultValues({inf}, varargin{2:end});
+
+        inputArgsCheck({ ...
+            {inf, 'att', 'numeric'}; ...
+            {sup, 'att', 'numeric'}; ...
+        })
+
+        if ~all(size(inf) == size(sup))
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Limits are of different dimension.'));
+        elseif length(size(inf)) > 2
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Only 1d and 2d intervals are supported.'));
+        elseif ~all(inf <= sup, "all")
+             throw(CORAerror('CORA:wrongInputInConstructor',...
+                 'Lower limit larger than upper limit.'));
+        end
+        
+        % assign properties;
+        obj.inf = inf;
+        obj.sup = sup;
+        
         % set parent object properties
-        obj.dimension = size(obj.inf,1);
+        obj.dimension = size(inf,1);
     end
     
     function ind = end(obj,k,n)
