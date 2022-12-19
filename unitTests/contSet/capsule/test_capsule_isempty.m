@@ -19,7 +19,7 @@ function res = test_capsule_isempty
 % See also: -
 
 % Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
+% Written:      17-September-2019
 % Last update:  ---
 % Last revision:---
 
