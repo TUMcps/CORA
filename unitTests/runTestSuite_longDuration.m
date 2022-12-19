@@ -18,25 +18,21 @@ function runTestSuite_longDuration(varargin)
 % Last update:  ---
 % Last revision:---
 
-
 %------------- BEGIN CODE --------------
 
-directory = [CORAROOT filesep 'unitTests'];
-verbose = 1;
-
-if nargin >= 1
-    directory = varargin{1};
+% too many input arguments
+if nargin > 2
+    throw(CORAerror('CORA:tooManyInputArgs',2));
 end
 
-if nargin >= 2
-    verbose = varargin{2};
-end
+% set default values
+[directory,verbose] = setDefaultValues({[CORAROOT filesep 'unitTests'],true},varargin{:});
 
 % run main program performing the tests
 [failed, numberOfTests] = testSuiteCore('testLongDuration',verbose,directory);
 
 disp('----------------------------------------------------------------------------');
-disp(['run ' int2str(numberOfTests) ' tests, ' int2str(size(failed, 2)) ' failed.']);
+disp(['run ' int2str(numberOfTests) ' tests, ' int2str(size(failed,1)) ' failed.']);
 disp(strjoin(failed, ',\n'));
 
 %------------- END OF CODE --------------

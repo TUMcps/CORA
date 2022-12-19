@@ -1,0 +1,145 @@
+{
+  "_schemaVersion": "1.0.0",
+
+  "_comment": "capsule --------------------------------------------------", 
+  "capsule.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"},
+        {"name":"Center", "kind":"namevalue", "type":["numeric"],"purpose":"center"},
+        {"name":"Radius", "kind":"namevalue", "type":["numeric"],"purpose":"radius"}
+     ],
+     "outputs": [
+         {"name":"C", "type":"capsule"}
+     ]
+  },
+
+  "_comment": "conPolyZono ----------------------------------------------", 
+  "conPolyZono.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"},
+        {"name":"NrGenerators", "kind":"namevalue", "type":["numeric"],"purpose":"number of generators"},
+        {"name":"NrConstraints", "kind":"namevalue", "type":["numeric"],"purpose":"number of constraints"},
+        {"name":"NrFactors", "kind":"namevalue", "type":["numeric"],"purpose":"number of dependent factors"},
+        {"name":"NrIndGenerators", "kind":"namevalue", "type":["numeric"],"purpose":"number of independent generators"}
+     ],
+     "outputs": [
+         {"name":"cPZ", "type":"conPolyZono"}
+     ]
+  },
+
+  "_comment": "conZonotope ----------------------------------------------", 
+  "conZonotope.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"},
+        {"name":"Center", "kind":"namevalue", "type":["numeric"],"purpose":"center of the zonotope"},
+        {"name":"NrGenerators", "kind":"namevalue", "type":["numeric"],"purpose":"number of generators"},
+        {"name":"NrConstraints", "kind":"namevalue", "type":["numeric"],"purpose":"number of constraints"}
+     ],
+     "outputs": [
+         {"name":"cZ", "type":"conZonotope"}
+     ]
+  },
+
+  "_comment": "ellipsoid ------------------------------------------------", 
+  "ellipsoid.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"},
+        {"name":"Center", "kind":"namevalue", "type":["numeric"],"purpose":"center"},
+        {"name":"IsDegenerate", "kind":"namevalue", "type":["logical"],"purpose":"degeneracy"}
+     ],
+     "outputs": [
+         {"name":"E", "type":"ellipsoid"}
+     ]
+  },
+
+  "_comment": "halfspace ------------------------------------------------", 
+  "halfspace.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"},
+        {"name":"NormalVector", "kind":"namevalue", "type":["numeric"],"purpose":"normal vector of halfspace"},
+        {"name":"Offset", "kind":"namevalue", "type":["numeric"],"purpose":"offset of halfspace"}
+     ],
+     "outputs": [
+         {"name":"hs", "type":"halfspace"}
+     ]
+  },
+
+  "_comment": "interval -------------------------------------------------", 
+  "interval.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"}
+     ],
+     "outputs": [
+         {"name":"I", "type":"interval"}
+     ]
+  },
+
+  "_comment": "mptPolytope ----------------------------------------------", 
+  "mptPolytope.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"},
+        {"name":"Center", "kind":"namevalue", "type":["numeric"],"purpose":"center"}
+     ],
+     "outputs": [
+         {"name":"P", "type":"mptPolytope"}
+     ]
+  },
+
+  "_comment": "polyZonotope ---------------------------------------------", 
+  "polyZonotope.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"},
+        {"name":"NrGenerators", "kind":"namevalue", "type":["numeric"],"purpose":"number of generators"},
+        {"name":"NrFactors", "kind":"namevalue", "type":["numeric"],"purpose":"number of dependent factors"},
+        {"name":"NrIndGenerators", "kind":"namevalue", "type":["numeric"],"purpose":"number of independent generators"}
+     ],
+     "outputs": [
+         {"name":"pZ", "type":"polyZonotope"}
+     ]
+  },
+
+  "_comment": "zonoBundle -----------------------------------------------", 
+  "zonoBundle.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"},
+        {"name":"NrZonotopes", "kind":"namevalue", "type":["numeric"],"purpose":"number of zonotopes in bundle"}
+     ],
+     "outputs": [
+         {"name":"zB", "type":"zonoBundle"}
+     ]
+  },
+
+  "_comment": "zonotope -------------------------------------------------", 
+  "zonotope.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"},
+        {"name":"Center", "kind":"namevalue", "type":["numeric"],"purpose":"static center"},
+        {"name":"NrGenerators", "kind":"namevalue", "type":["numeric"],"purpose":"number of generators"},
+        {"name":"Distribution", "kind":"namevalue", "type":["char", "choices={'uniform', 'exp', 'gamma'}"],"purpose":"distribution for generators"}
+     ],
+     "outputs": [
+         {"name":"Z", "type":"zonotope"}
+     ]
+  }
+
+}

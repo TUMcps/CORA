@@ -211,7 +211,8 @@
   {
      "inputs":
      [
-        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:noops'}"], "purpose":"ID of error"}
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:noops'}"], "purpose":"ID of error"},
+        {"name":"varargin", "kind":"required", "repeating":true, "purpose":"specify input arguments"}
      ]
   }
 }
