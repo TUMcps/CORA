@@ -66,6 +66,19 @@ if ~compareMatrices([x1,x2,x3],[-0.5 2.5; -2.5 -1.5; 3.5 -0.5]')
     res = false;
 end
 
+% check direction with special handling
+dir = [1;1];
+a = dir' * cZ.Z(:,2:end);
+A = [A; a]; b = [b; 0];
+cZ = conZonotope(Z,A,b);
+
+% evaluate support function
+val = supportFunc(cZ,dir);
+
+if ~withinTol(val,b(2))
+    res = false;
+end
+
 
 % TEST 2: Figure 2 in [1] -------------------------------------------------
 
@@ -94,7 +107,7 @@ end
 
 % TEST 3 ------------------------------------------------------------------
 
-% construct zonotope
+% construct constrained zonotope
 Z = [0 3 0 1 -2;0 0 2 1 1];
 A = [0 0 0 1];
 b = 0.5;
@@ -116,5 +129,25 @@ if ~compareMatrices([x1,x2,x3],[3 3.5; 1 -2.5; -3 3.5]')
     res = false;
 end
 
+
+% TEST 4 ------------------------------------------------------------------
+
+% degenerate constrained zonotope
+c = ones(2,1);
+G = [1 0.5 -2; 0 0 0];
+A = [-2 1 -1];
+b = 2;
+cZ = conZonotope(c,G,A,b);
+
+% direction normal to a direction with zero extension
+dir = [0;1];
+
+% compute support function
+[~,x] = supportFunc(cZ,dir);
+
+% x2 direction not changed by generators
+if ~withinTol(x(2),c(2))
+    res = false;
+end
 
 %------------- END OF CODE --------------

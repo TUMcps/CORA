@@ -1,4 +1,4 @@
-function res = convHull(I,varargin)
+function I = convHull(I,S)
 % convHull - computes an enclosure for the convex hull of two intervals
 %
 % Syntax:  
@@ -9,7 +9,7 @@ function res = convHull(I,varargin)
 %    S - contSet object
 %
 % Outputs:
-%    res - interval enclosing the convex hull
+%    I - interval enclosing the convex hull of I and S
 %
 % Example:
 %    I = interval([-1;-2],[3;4]);
@@ -37,33 +37,27 @@ function res = convHull(I,varargin)
 
 % parse input arguments
 if nargin == 1
-    res = I; return;
-else
-    S = varargin{1}; 
+    return;
 end
 
 % determine the interval object
-if ~isa(I,'interval')
-    temp = I;
-    I = S;
-    S = temp;
-end
+[I,S] = findClassArg(I,S,'interval');
 
 % different cases depending on the class of the summand
 if isa(S,'interval') && isempty(S)
     % actually holds for all sets, but other checks might be costly
     
-    res = interval();
+    I = interval();
     
 elseif isa(S,'interval') || isnumeric(S)
 
-    res = I | S;
+    I = I | S;
 
 elseif isa(S,'zonotope') || isa(S,'conZonotope') || ...
        isa(S,'zonoBundle') || isa(S,'polyZonotope') || ...
        isa(S,'mptPolytope') || isa(S,'conPolyZono')
 
-    res = convHull(S,I);
+    I = convHull(S,I);
 
 else
     

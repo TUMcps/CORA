@@ -1,27 +1,26 @@
-function res = convHull(P1,varargin)
+function P = convHull(P,S)
 % convHull - computes the convex hull of two polytopes
 %
 % Syntax:  
-%    res = convHull(P1,P2)
+%    P = convHull(P1,S)
 %
 % Inputs:
-%    P1 - first mptPolytope object
-%    P2 - second mptPolytope object
+%    P - mptPolytope object
+%    S - contSet object
 %
 % Outputs:
-%    res - mptPolytope enclosing the convex hull of P1 and P2
+%    P - mptPolytope enclosing the convex hull of P and S
 %
 % Example: 
-%    poly1 = mptPolytope([-1 -1; 1 0;-1 0; 0 1; 0 -1],[2;3;2;3;2]);
-%    poly2 = mptPolytope([-1 -1; -1 1; 1 1;0 -1],[0;2;2;0]) + [4;3];
+%    P1 = mptPolytope([-1 -1; 1 0;-1 0; 0 1; 0 -1],[2;3;2;3;2]);
+%    P2 = mptPolytope([-1 -1; -1 1; 1 1;0 -1],[0;2;2;0]) + [4;3];
 %
-%    poly = convHull(poly1,poly2);
+%    P = convHull(P1,P2);
 %
-%    figure
-%    hold on
-%    plot(poly1,[1,2],'r','Filled',true,'EdgeColor','none');
-%    plot(poly2,[1,2],'b','Filled',true,'EdgeColor','none');
-%    plot(poly,[1,2],'g');
+%    figure; hold on;
+%    plot(P1,[1,2],'FaceColor'.'r');
+%    plot(P2,[1,2],'FaceColor','b');
+%    plot(P,[1,2],'g');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -36,53 +35,40 @@ function res = convHull(P1,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    if nargin == 1
-       res = P1; return; 
-    else
-       P2 = varargin{1}; 
-    end
-
-    % find a polytope object
-    if ~isa(P1,'mptPolytope')
-        temp = P1;
-        P1 = P2;
-        P2 = temp;
-    end
-
-    % different cases depending on the class of the summand
-    if isnumeric(P2)
-        
-        V2 = P2;
-
-    elseif isa(P2,'mptPolytope') || isa(P2,'interval') || ...
-           isa(P2,'conZonotope') || isa(P2,'zonoBundle') || ...
-           isa(P2,'zonotope')
-
-        % compute vertices
-        V2 = vertices(P2);
-
-    elseif isa(summand,'polyZonotope')
-
-        res = P2 + P1;
-        return;
-
-    else
-        % throw error for given arguments
-        throw(CORAerror('CORA:noops',P1,P2));
-    end
-    
-    % comptue vertices of first polytope
-    V1 = vertices(P1);
-    
-    % compute convex hull
-    V = [V1,V2];
-    
-    K = convhulln(V');
-    indices = unique(K);
-    
-    res = mptPolytope(V(:,indices)');
-
+% parse input arguments
+if nargin == 1
+    return;
 end
+
+% find a polytope object
+[P,S] = findClassArg(P,S,'mptPolytope');
+
+% different cases depending on the class of the summand
+if isnumeric(S)
+    
+    V2 = S;
+
+elseif isa(S,'mptPolytope') || isa(S,'interval') || ...
+       isa(S,'conZonotope') || isa(S,'zonoBundle') || ...
+       isa(S,'zonotope')
+
+    % compute vertices
+    V2 = vertices(S);
+
+else
+    % throw error for given arguments
+    throw(CORAerror('CORA:noops',P,S));
+end
+
+% comptue vertices of first polytope
+V1 = vertices(P);
+
+% compute convex hull
+V = [V1,V2];
+K = convhulln(V');
+indices = unique(K);
+
+% instantiate resulting polytope
+P = mptPolytope(V(:,indices)');
 
 %------------- END OF CODE --------------

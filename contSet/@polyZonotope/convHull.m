@@ -1,4 +1,4 @@
-function pZ = convHull(pZ,varargin)
+function pZ = convHull(pZ,S)
 % convHull - Computes the convex hull of a polynomial zonotope and another
 %    set representation
 %
@@ -37,7 +37,7 @@ function pZ = convHull(pZ,varargin)
 
     % parse input arguments
     if nargin > 1
-        pZ = convHullMult(pZ,varargin{1});
+        pZ = convHullMult(pZ,S);
     else
         pZ = linComb(pZ,pZ);
     end
@@ -48,15 +48,13 @@ end
 
 function pZ = convHullMult(pZ1,S)
 % compute the convex hull of two polynomial zonotopes
+
     if isempty(S)
         pZ = pZ1; return;
     end
+
     % determine polyZonotope object
-    if ~isa(pZ1,'polyZonotope')
-        temp = pZ1;
-        pZ1 = S;
-        S = temp;
-    end
+    [pZ1,S] = findClassArg(pZ1,S,'polyZonotope');
     
     % convert other set representations to polynomial zonotopes
     if ~isa(S,'polyZonotope')
@@ -91,11 +89,11 @@ function pZ = convHullMult(pZ1,S)
     % compute convex hull of the independent part using the convex hull for
     % zonotopes
     temp = zeros(length(pZ1.c),1);
-    zono1 = zonotope([temp, pZ1.Grest]);
-    zono2 = zonotope([temp, S.Grest]);
+    Z1 = zonotope([temp, pZ1.Grest]);
+    Z2 = zonotope([temp, S.Grest]);
 
-    zono = enclose(zono1,zono2);
-    Grest = generators(zono);
+    Z = enclose(Z1,Z2);
+    Grest = generators(Z);
 
     % construct the resulting set
     pZ.Grest = Grest;
