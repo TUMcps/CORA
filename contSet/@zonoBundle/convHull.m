@@ -1,4 +1,4 @@
-function zB = convHull(zB,varargin)
+function zB = convHull(zB,S)
 % convHull - computes the convex hull of two zonotope bundles
 %
 % Syntax:  
@@ -37,52 +37,40 @@ function zB = convHull(zB,varargin)
 
 %------------- BEGIN CODE --------------
 
-    % parse input arguments
-    if nargin == 1
-        return;
-    else
-        S = varargin{1}; 
-    end
-
-    % find a zonoBundle object
-    if ~isa(zB,'zonoBundle')
-        temp = zB;
-        zB = S;
-        S = temp;
-    end
-
-    % different cases depending on the class of the second summand
-    if isa(S,'zonoBundle') || isa(S,'interval') || ...
-        isa(S,'zonotope') || isa(S,'conZonotope')
-
-        P2 = mptPolytope(S);
-
-    elseif isa(S,'mptPolytope')
-
-        P2 = S;
-        
-    elseif isnumeric(S)
-        
-        P2 = mptPolytope(S');
-
-    elseif isa(summand,'polyZonotope') || isa(summand,'conPolyZono')
-
-        zB = S + zB; return;
-
-    else
-        % throw error for given arguments
-        throw(CORAerror('CORA:noops',zB,S));
-    end
-    
-    % convert first zonoBundle to mptPolytope
-    P1 = mptPolytope(zB);
-    
-    % compute convex hull
-    P = convHull(P1,P2);
-    
-    % convert to a zonotope bundle
-    zB = zonoBundle(P);
-
+% parse input arguments
+if nargin == 1
+    return;
 end
+
+% find a zonoBundle object
+[zB,S] = findClassArg(zB,S,'zonoBundle');
+
+% different cases depending on the class of the second set
+if isa(S,'zonoBundle') || isa(S,'interval') || ...
+    isa(S,'zonotope') || isa(S,'conZonotope')
+
+    P2 = mptPolytope(S);
+
+elseif isa(S,'mptPolytope')
+
+    P2 = S;
+    
+elseif isnumeric(S)
+    
+    P2 = mptPolytope(S');
+
+else
+    % throw error for given arguments
+    throw(CORAerror('CORA:noops',zB,S));
+end
+
+% convert first zonoBundle to mptPolytope
+P1 = mptPolytope(zB);
+
+% compute convex hull
+P = convHull(P1,P2);
+
+% convert to a zonotope bundle
+zB = zonoBundle(P);
 
 %------------- END OF CODE --------------

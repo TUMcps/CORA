@@ -75,6 +75,11 @@ if isempty(cZ.A) || all(all(cZ.A == 0))
         val = I;
         ksi = [-sign(temp.Z(2:end))', sign(temp.Z(2:end))'];
     end
+
+    % calculate support vector
+    if nargout >= 2
+        x = cZ.Z(:,1) + cZ.Z(:,2:end)*ksi;
+    end
     return
 
 end
@@ -101,8 +106,9 @@ if ~any(f)
     % projection of the zonotope equals 0 -> no extension of the set in
     % this direction
     fval = 0;
+    ksi = zeros(n,1);
 
-else
+elseif nargout == 1
 
     % check if the objective function is identical to the normal vector of
     % a constraint -> only one solution
@@ -112,6 +118,9 @@ else
         fval = b(idxPos);
     elseif any(idxNeg)
         fval = -b(idxNeg);
+    end
+    if strcmp(type,'range')
+        fval = [fval fval];
     end
 end
 

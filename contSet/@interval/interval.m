@@ -53,9 +53,7 @@ methods
     function obj = interval(varargin)
         
         % parse input
-        if nargin < 0
-            throw(CORAerror('CORA:notEnoughInputArgs',1));
-        elseif nargin > 2
+        if nargin > 2
             throw(CORAerror('CORA:tooManyInputArgs',2));
         end
         

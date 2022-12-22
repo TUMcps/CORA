@@ -43,12 +43,9 @@ end
 if isempty(S)
     return;
 end
+
 % determine zonotope object
-if ~isa(Z,'zonotope')
-    temp = Z;
-    Z = S;
-    S = temp;
-end
+[Z,S] = findClassArg(Z,S,'zonotope');
 
 % different cases depending on the class of the second summand
 if isa(S,'zonotope') || isa(S,'interval') || isnumeric(S)

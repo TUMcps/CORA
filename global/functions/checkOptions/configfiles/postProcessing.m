@@ -39,7 +39,7 @@ if isa(sys,'contDynamics')
     end
     
     % set linAlg option for nonlinear system classes (calling linSys)
-    if ~isa(sys,'linearSys')
+    if ~isa(sys,'linearSys') && ~isa(sys,'linearSysDT')
         [params,options] = set_linAlg(sys,params,options);
     end
     

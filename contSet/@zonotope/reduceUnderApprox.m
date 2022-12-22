@@ -7,7 +7,7 @@ function Z = reduceUnderApprox(Z,method,order)
 %
 % Inputs:
 %    Z - zonotope object
-%    method - reduction method ('sum', 'scale', 'linProg', or 'wetzlinger')
+%    method - reduction method ('sum','scale','linProg','wetzlinger')
 %    order - zonotope order
 %
 % Outputs:
@@ -42,7 +42,7 @@ function Z = reduceUnderApprox(Z,method,order)
 % Written:      19-November-2018
 % Last update:  29-Aug-2019
 %               15-April-2020 (added additional reduction techniques)
-% Last revision: ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------
 
@@ -68,12 +68,9 @@ function Z = reduceUnderApprox(Z,method,order)
             Z = reduceUnderApproxLinProg(Z,order);
         elseif strcmp(method,'wetzlinger')
             Z = reduceUnderApproxWetzlinger(Z,order);
-        else
-            throw(CORAerror('CORA:wrongValue','second',...
-                "'sum', 'scale', 'linProg', or 'wetzlinger'"));
         end
     else
-         return;
+        return;
     end
 
 end

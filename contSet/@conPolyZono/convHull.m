@@ -1,4 +1,4 @@
-function cPZ = convHull(cPZ,varargin)
+function cPZ = convHull(cPZ,S)
 % convHull - Computes the convex hull of a constrained polynomial zonotope
 %    and another set representation or point
 %
@@ -7,7 +7,7 @@ function cPZ = convHull(cPZ,varargin)
 %    cPZ = convHull(cPZ,S)
 %
 % Inputs:
-%    cPZ1 - conPolyZono object
+%    cPZ - conPolyZono object
 %    S - conPolyZono object, contSet object, or numerical vector
 %
 % Outputs:
@@ -45,9 +45,9 @@ function cPZ = convHull(cPZ,varargin)
     % parse input arguments
     if nargin > 1
         if isemptyobject(cPZ)
-            cPZ = varargin{1}; return;
+            cPZ = S; return;
         end
-        cPZ = convHullMult(cPZ,varargin{1});
+        cPZ = convHullMult(cPZ,S);
     else
         cPZ = convHullSingle(cPZ);
     end
@@ -61,11 +61,7 @@ function res = convHullMult(cPZ,S)
 % set representation
 
     % determine conPolyZono object
-    if ~isa(cPZ,'conPolyZono')
-        temp = cPZ;
-        cPZ = S;
-        S = temp;
-    end
+    [cPZ,S] = findClassArg(cPZ,S,'conPolyZono');
     
     % convert other set representations to constrained polynomial zonotope
     if ~isa(S,'conPolyZono')

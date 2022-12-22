@@ -108,7 +108,23 @@ function han = plotStandard(cZ,dims,plotOptions)
         han = plot(zonotope(cZ.Z),dims,plotOptions{:});
     elseif length(dims) == 2
         % 2D projection can be computed efficiently using support functions
-        han = aux_plotStandard2D(cZ,dims,plotOptions);
+        
+        % compute vertices in projected dimensions
+        V = projVertices(cZ,dims);
+
+        if size(V,2) == 2
+            % just a line... (does not work well with polygon/polyshape
+            % class) -> instantiate zonotope and plot it
+            c = 0.5*(V(:,1) + V(:,2)); G = 0.5*(V(:,2) - V(:,1));
+            han = plot(zonotope(c,G),dims,plotOptions{:});
+        else
+            % init polygon for plotting (vertices are already ordered
+            % correctly)
+            poly = polygon(V(1,:),V(2,:));
+            
+            % plot the template polygon
+            han = plot(poly,dims,plotOptions{:});
+        end
 
     else
         % other projections
@@ -119,92 +135,6 @@ function han = plotStandard(cZ,dims,plotOptions)
         % plot the polytope
         han = plot(poly,dims,plotOptions{:});        
     end
-end
-
-function han = aux_plotStandard2D(cZ,dims,plotOptions)
-    % use support function evaluations until no more vertices can be found
-    % to plot an exact projection of a constrained zonotope without using
-    % polytopes
-    
-    % init vertices
-    sol.V = [];
-    
-    % use directions ordered by angle
-    sol.dir = [1 0; -1 0]';
-    sol.angle = [0, 180];
-
-    % compute support vectors of first two directions
-    [~,sol.V(:,1)] = supportFunc(cZ,sol.dir(:,1));
-    [~,sol.V(:,2)] = supportFunc(cZ,sol.dir(:,2));
-    % add first point as third point with angle 360 for convenience
-    sol.dir(:,3) = [1;0];
-    sol.angle(3) = 360;
-    sol.V(:,3) = sol.V(:,1);
-
-    % start with two open sections
-    sections = {[0 180],[180 360]};
-
-    % split angles between neighboring directions until no new information
-    while ~isempty(sections)
-
-        % analyze first section in the list of sections
-        section = sections{1};
-        sections = sections(2:end);
-
-        % logical indices for start and end of current section
-        startIdx = withinTol(sol.angle,section(1));
-        endIdx = withinTol(sol.angle,section(2));
-
-        % split in half and append to list
-
-        % compute angle
-        new_angle = 0.5 * (section(1) + section(2));
-        % compute vector
-        angle_pi = new_angle * pi / 180;
-        new_dir = [cos(angle_pi) -sin(angle_pi); sin(angle_pi) cos(angle_pi)] * [1; 0];
-        % compute support vector for the new direction
-        [~,new_V] = supportFunc(cZ,new_dir);
-
-        % compute vectors:
-        % - from start vertex to computed vertex
-        % - from computed vertex to end vertex
-        ptsStartMidEnd = [new_V-sol.V(:,startIdx), sol.V(:,endIdx)-new_V];
-
-        % check whether sections is completed
-        if compareMatrices(new_V,sol.V,1e-6,'subset') ...
-                || rank(ptsStartMidEnd,1e-12) < 2
-            % new vertex is on a line with start and end points of the
-            % current section -> discard vertex, section completed
-        else
-            % vertices are not on a line
-            
-            % add vertex to list
-            sol.angle(end+1) = new_angle;
-            sol.dir(:,end+1) = new_dir;
-            sol.V(:,end+1) = new_V;
-
-            % open new sections
-            sections = [sections, ...
-                [section(1), sol.angle(end)], [sol.angle(end), section(2)]];
-
-            % re-order data according to angle
-            [sol.angle,order] = sort(sol.angle);
-            % use same order for directions and vertices
-            sol.dir = sol.dir(:,order);
-            sol.V = sol.V(:,order);
-        end
-
-    end
-    
-    % remove last vertex (only here for convenience)
-    V = sol.V(:,1:end-1);
-
-    % init polygon for plotting (vertices are already ordered correctly)
-    poly = polygon(V(1,:),V(2,:));
-
-    % plot the template polygon
-    han = plot(poly,dims,plotOptions{:});
-
 end
 
 function han = plotSplit(cZ,splits,dims,plotOptions)
