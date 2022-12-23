@@ -24,6 +24,7 @@ function res = test_zonotope_ellipsoid
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 res = true;
 
 % create zonotopes

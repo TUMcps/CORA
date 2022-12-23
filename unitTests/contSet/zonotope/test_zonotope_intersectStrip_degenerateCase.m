@@ -57,7 +57,6 @@ box = interval(Z_over);
 box_encl = interval([-1;-1],[1;1]);
 
 % check enclosure
-res = (box < box_encl);
-
+res = contains(box_encl,box);
 
 %------------- END OF CODE --------------

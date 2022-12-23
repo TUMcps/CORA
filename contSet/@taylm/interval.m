@@ -47,7 +47,7 @@ function int = interval(obj,varargin)
 %------------- BEGIN CODE -------------
 
     % parse input arguments
-    option = setDefaultValues({obj.opt_method},varargin{:});
+    option = setDefaultValues({obj.opt_method},varargin);
 
     % check input arguments
     inputArgsCheck({{obj,'att','taylm'};

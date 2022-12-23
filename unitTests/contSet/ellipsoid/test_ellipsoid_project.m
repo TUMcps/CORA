@@ -47,10 +47,9 @@ projDim = [false true true];
 E_proj2 = project(E,projDim);
 
 % check properties
-tol = 1e-9;
-res(1) = all(all(abs(E_true.Q - E_proj1.Q) < tol));
+res(1) = all(all(withinTol(E_true.Q,E_proj1.Q)));
 res(2) = E_true.dim == E_proj1.dim;
-res(3) = all(all(abs(E_true.Q - E_proj2.Q) < tol));
+res(3) = all(all(withinTol(E_true.Q,E_proj2.Q)));
 res(4) = E_true.dim == E_proj2.dim;
 % summary of checks
 res = all(res);

@@ -26,19 +26,23 @@ function res = test_zonotope_enlarge
 %------------- BEGIN CODE --------------
 
 % create zonotope
-Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
+c = [-4; 1];
+G = [-3, -2, -1; 2, 3, 4];
+Z = zonotope(c,G);
 
-% obtain enlarged zonotope
-Z2 = enlarge(Z1,[2;1.5]);
+% compute enlarged zonotope
+Z_ = enlarge(Z,[2;1.5]);
 
-% obtain zonotope matrix
-Zmat = Z2.Z;
+% obtain center and generator matrix
+c_ = center(Z_);
+G_ = generators(Z_);
 
 % true result
-true_mat = [-4, -6, -4, -2; ...
-            1, 3, 4.5, 6];
+true_c = [-4; 1];
+true_G = [-6, -4, -2; ...
+            3, 4.5, 6];
 
 % check result
-res = all(all(Zmat == true_mat));
+res = compareMatrices(c_,true_c) && compareMatrices(G_,true_G);
 
 %------------- END OF CODE --------------

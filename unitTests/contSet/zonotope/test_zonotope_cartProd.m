@@ -45,14 +45,16 @@ Z2 = zonotope([9 10 11]);
 Z3 = cartProd(Z1,Z2);
 
 % obtain zonotope matrix
-Zmat = Z3.Z;
+c = center(Z3);
+G = generators(Z3);
 
 % true result
-true_mat = [1, 2, 3, 4, 0, 0; ...
-            5, 6, 7, 8, 0, 0; ...
-            9, 0, 0, 0, 10,11];
+true_c = [1; 5; 9];
+true_G = [2, 3, 4, 0, 0; ...
+          6, 7, 8, 0, 0; ...
+          0, 0, 0, 10,11];
 
 % check result
-res = all(all(Zmat == true_mat)); % && res_e;
+res = compareMatrices(c,true_c) && compareMatrices(G,true_G); % && res_e;
 
 %------------- END OF CODE --------------

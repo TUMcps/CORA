@@ -25,9 +25,6 @@ function res = test_zonotope_center
 
 %------------- BEGIN CODE --------------
 
-
-% 1. Analytical Test ------------------------------------------------------
-
 % create zonotope
 Z = zonotope([1,2,3,4; 5 6 7 8]);
 

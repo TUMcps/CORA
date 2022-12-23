@@ -24,35 +24,31 @@ function res = testLongDuration_zonotope_center
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-% 1. Random Tests ---------------------------------------------------------
 
-dims = 2:8;
-testsPerDim = 1000;
+% assume true
+res = true;
+
+% number of tests
+nrTests = 1000;
 
 % box has to be the same as conversion to interval
-for d=1:length(dims)
-    for test=1:testsPerDim
-        % create a random zonotope
-        nrOfGens = randi([10,25],1,1);
-        c = rand(dims(d),1);
-        Z = zonotope(c,-1+2*rand(dims(d),nrOfGens));
+for i=1:nrTests
 
-        % compute center
-        Zcenter = center(Z);
+    % random dimension
+    n = randi(20);
 
-        % check if centers are the same
-        res_rand(d,test) = ~any(abs(Zcenter - c));
+    % create a random zonotope
+    nrOfGens = randi([2*n,5*n]);
+    c = rand(n,1);
+    Z = zonotope(c,-1+2*rand(n,nrOfGens));
+
+    % compute center
+    Zcenter = center(Z);
+
+    % check if centers are the same
+    if ~compareMatrices(c,Zcenter)
+        res = false; return
     end
-end
-
-
-
-% add results
-res = all(all(res_rand));
-
-if ~res
-    path = pathFailedTests(mfilename());
-    save(path,'c','Z');
 end
 
 %------------- END OF CODE --------------

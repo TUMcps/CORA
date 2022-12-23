@@ -25,50 +25,42 @@ function res = testLongDuration_zonotope_isInterval
 
 %------------- BEGIN CODE --------------
 
+% assume true
+res = true;
 
-% 1. Random Tests ---------------------------------------------------------
-
-dims = 5:5:100;
-testsPerDim = 1000;
-
-res_randcomp = false(length(dims),testsPerDim);
+% number of tests
+nrTests = 1000;
 
 % compare randomly generated zonotopes
-for d=1:length(dims)
-    for test=1:testsPerDim
-        % create two random zonotopes
-        nrOfGens = randi([10,25],1,1);
-        
-        c = zeros(dims(d),1);
-        GnonInt = -1+2*rand(dims(d),nrOfGens);
-        ZnonInt = zonotope(c,GnonInt);
-        
-        % generate random matrix with only one non-negative entry per column
-        GInt = zeros(dims(d),nrOfGens);
-        % non-negative row for each generator
-        idx = randi([1,dims(d)],1,nrOfGens);
-        % linear indexing
-        idx = idx + [0:dims(d):dims(d)*(nrOfGens-1)];
-        % random values
-        vals = -1+2*rand(1,nrOfGens);
-        % write random values in matrix
-        GInt(idx) = vals;
-        % init zonotope
-        ZInt = zonotope(c,GInt);
+for i=1:nrTests
+    % random dimension
+    n = randi(10);
 
-        % check zonotopes
-        res_randcomp(d,test) = isInterval(ZInt) && ~isInterval(ZnonInt);
-        
+    % create two random zonotopes
+    nrOfGens = randi([2*n,5*n]);
+    
+    c = zeros(n,1);
+    GnonInt = -1+2*rand(n,nrOfGens);
+    ZnonInt = zonotope(c,GnonInt);
+    
+    % generate random matrix with only one non-negative entry per column
+    GInt = zeros(n,nrOfGens);
+    % non-negative row for each generator
+    idx = randi([1,n],1,nrOfGens);
+    % linear indexing
+    idx = idx + [0:n:n*(nrOfGens-1)];
+    % random values
+    vals = -1+2*rand(1,nrOfGens);
+    % write random values in matrix
+    GInt(idx) = vals;
+    % init zonotope
+    ZInt = zonotope(c,GInt);
+
+    % check zonotopes
+    if ~(isInterval(ZInt) && (n == 1 || ~isInterval(ZnonInt)))
+        res = false; return
     end
-end
-
-
-% add results
-res = all(all(res_randcomp));
-
-if ~res
-    path = pathFailedTests(mfilename());
-    save(path,'idx','nrOfGens','GnonInt','vals');
+    
 end
 
 %------------- END OF CODE --------------

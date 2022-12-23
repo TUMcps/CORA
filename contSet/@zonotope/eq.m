@@ -1,26 +1,29 @@
-function res = eq(Z1,Z2)
+function res = eq(Z1,Z2,varargin)
 % eq - overloaded '==' operator for exact comparison of two zonotopes
 %
-% Syntax:  
+% Syntax:
+%    res = Z1 == Z2
 %    res = eq(Z1,Z2)
+%    res = eq(Z1,Z2,tol)
 %
 % Inputs:
 %    Z1 - zonotope object
 %    Z2 - zonotope object
+%    tol - (optional) tolerance
 %
 % Outputs:
 %    res - true/false
 %
 % Example: 
-%    Z1 = zonotope(zeros(3,1),rand(3,5));
-%    Z2 = zonotope(zeros(3,1),rand(3,5));
+%    Z1 = zonotope([1;0],[1 0 1 0; -1 1 0 1]);
+%    Z2 = zonotope([1;0],[1 0 1; -1 2 0]);
 %    Z1 == Z2
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: zonotope/isequal
 
 % Author:       Mark Wetzlinger
 % Written:      20-June-2022
@@ -29,6 +32,6 @@ function res = eq(Z1,Z2)
 
 %------------- BEGIN CODE --------------
 
-res = isequal(Z1,Z2);
+res = isequal(Z1,Z2,varargin{:});
 
 %------------- END OF CODE --------------

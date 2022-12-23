@@ -32,7 +32,7 @@ function val = supportFuncSplit(pZ,dir,type, varargin)
 
 %------------- BEGIN CODE --------------
 
-splits = setDefaultValues({8}, varargin{:});
+splits = setDefaultValues({8}, varargin);
 
 inputArgsCheck({ ...
     {pZ, 'att', {'cell', 'polyZonotope'}}; ...

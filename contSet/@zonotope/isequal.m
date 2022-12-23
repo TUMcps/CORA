@@ -3,6 +3,7 @@ function res = isequal(Z1,Z2,varargin)
 %    generators since this is quite costly)
 %
 % Syntax:  
+%    res = isequal(Z1,Z2)
 %    res = isequal(Z1,Z2,tol)
 %
 % Inputs:
@@ -32,8 +33,13 @@ function res = isequal(Z1,Z2,varargin)
 
 %------------- BEGIN CODE --------------
 
+% too many input arguments
+if nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs',3));
+end
+
 % parse input arguments
-tol = setDefaultValues({eps},varargin{:});
+tol = setDefaultValues({eps},varargin);
 
 % check input arguments
 inputArgsCheck({{Z1,'att','zonotope'};

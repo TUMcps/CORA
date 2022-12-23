@@ -25,47 +25,40 @@ function res = testLongDuration_zonotope_enclose
 
 %------------- BEGIN CODE --------------
 
-% 1. Random Tests ---------------------------------------------------------
+% assume true
+res = true;
 
-dims = 2:4;
-testsPerDim = 50;
+% number of tests
+nrTests = 100;
 ptsPerLine = 10;
 
-res_rand = true(length(dims),testsPerDim);
+for i=1:nrTests
 
-% box has to be the same as conversion to interval
-for d=1:length(dims)
-    for test=1:testsPerDim
-        % create two random zonotopes
-        nrOfGens = randi([5,15],1,1);
-        c1 = -20*ones(dims(d),1);
-        G1 = -1+2*rand(dims(d),nrOfGens);
-        Z1 = zonotope(c1,G1);
-        c2 = 20*ones(dims(d),1);
-        G2 = -1+2*rand(dims(d),nrOfGens);
-        Z2 = zonotope(c2,G2);
-        
-        % compute enclosure
-        Zenc = enclose(Z1,Z2);
+    % random dimension
+    n = randi([2,4]);
 
-        % random points in Z1 or Z2
-        p1 = randPoint(Z1);
-        p2 = randPoint(Z2);
-        % connect points by line, all have to be in enclosure
-        pts = p1 + (p2-p1) .* linspace(0,1,ptsPerLine);
+    % create two random zonotopes
+    nrOfGens = randi([5,15],1,1);
+    c1 = -20*ones(n,1);
+    G1 = -1+2*rand(n,nrOfGens);
+    Z1 = zonotope(c1,G1);
+    c2 = 20*ones(n,1);
+    G2 = -1+2*rand(n,nrOfGens);
+    Z2 = zonotope(c2,G2);
+    
+    % compute enclosure
+    Zenc = enclose(Z1,Z2);
 
-        % random points have to be also in Zenc
-        res_rand(d,test) = all(contains(Zenc,pts));
+    % random points in Z1 or Z2
+    p1 = randPoint(Z1);
+    p2 = randPoint(Z2);
+    % connect points by line, all have to be in enclosure
+    pts = p1 + (p2-p1) .* linspace(0,1,ptsPerLine);
+
+    % random points have to be also in Zenc
+    if ~all(contains(Zenc,pts))
+        res = false; return
     end
-end
-
-
-% add results
-res = all(all(res_rand));
-
-if ~res
-    path = pathFailedTests(mfilename());
-    save(path,'G1','G2','p1','p2');
 end
 
 %------------- END OF CODE --------------

@@ -76,9 +76,9 @@ for j = 1:length(methods)
 %         plot(points(1,:),points(2,:),'.k');
 
         if ~suc
-           path = pathFailedTests(mfilename());
-           save(path,'pZres','points');
-           throw(CORAerror('CORA:testFailed'));
+            path = pathFailedTests(mfilename());
+            save(path,'pZres','points');
+            throw(CORAerror('CORA:testFailed'));
         end
     end
 end
@@ -114,9 +114,9 @@ for j = 1:length(methods)
         suc = containsPointSet(pZres,points,[],30);
 
         if ~suc
-           path = pathFailedTests(mfilename());
-           save(path,'pZres','points');
-           throw(CORAerror('CORA:testFailed'));
+            path = pathFailedTests(mfilename());
+            save(path,'pZres','points');
+            throw(CORAerror('CORA:testFailed'));
         end
     end
 end

@@ -40,7 +40,7 @@ vol_true = (pi^(n/2) / gamma(1+n/2)) * r^n;
 
 % compare results
 tol = 1e-9;
-res = abs(vol_true - vol) < tol;
+res = withinTol(vol_true,vol);
 res = res && (volume(capsule()) == 0);
 
 %------------- END OF CODE --------------

@@ -45,7 +45,7 @@ function E = enclosePoints(points,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-method = setDefaultValues({'cov'},varargin{:});
+method = setDefaultValues({'cov'},varargin);
 
 % check input arguments
 inputArgsCheck({{points,'att','numeric','nonempty'};

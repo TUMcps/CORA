@@ -80,6 +80,5 @@ for i = 1:3
         end
     end
 end
-end
 
 %------------- END OF CODE --------------

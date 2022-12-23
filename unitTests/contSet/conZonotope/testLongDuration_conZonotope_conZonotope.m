@@ -48,30 +48,28 @@ for i=1:nrOfTests
     
     % admissible initializations
     % only zonotope matrix
-    conZono = conZonotope(Z);
-    if any(any(abs(conZono.Z - Z) > tol))
+    cZ = conZonotope(Z);
+    if ~compareMatrices(cZ.Z,Z)
         res = false; break;
     end
 
     % center and generator matrix
-    conZono = conZonotope(c,G);
-    if any(any(abs(conZono.Z - Z) > tol))
+    cZ = conZonotope(c,G);
+    if ~all(all(withinTol(cZ.Z,Z)))
         res = false; break;
     end
 
     % zonotope matrix, constraint matrix, constraint vector
-    conZono = conZonotope(Z,A,b);
-    if any(any(abs(conZono.Z - Z) > tol)) ...
-            || any(any(abs(conZono.A - A) > tol)) ...
-            || any(abs(conZono.b - b) > tol)
+    cZ = conZonotope(Z,A,b);
+    if ~all(all(withinTol(cZ.Z,Z))) || ~all(all(withinTol(cZ.A,A))) ...
+            || ~all(withinTol(cZ.b,b))
         res = false; break;
     end
     
     % center, generator matrix, constraint matrix, constraint vector
-    conZono = conZonotope(c,G,A,b);
-    if any(any(abs(conZono.Z - Z) > tol)) ...
-            || any(any(abs(conZono.A - A) > tol)) ...
-            || any(abs(conZono.b - b) > tol)
+    cZ = conZonotope(c,G,A,b);
+    if ~all(all(withinTol(cZ.Z,Z))) || ~all(all(withinTol(cZ.A,A))) ...
+            || ~all(withinTol(cZ.b,b))
         res = false; break;
     end
     
@@ -86,37 +84,37 @@ for i=1:nrOfTests
     
     % center and generator matrix of different dimensions
     try
-        conZono = conZonotope(c_plus1,G); % <- should throw error here
+        cZ = conZonotope(c_plus1,G); % <- should throw error here
         res = false; break;
     end
     
     % A does not fit Z
     try
-        conZono = conZonotope(Z,A_plus1,b); % <- should throw error here
+        cZ = conZonotope(Z,A_plus1,b); % <- should throw error here
         res = false; break;
     end
     try
-        conZono = conZonotope(Z_plus1,A,b); % <- should throw error here
+        cZ = conZonotope(Z_plus1,A,b); % <- should throw error here
         res = false; break;
     end
     
     % A does not fit b
     try
-        conZono = conZonotope(Z,A,b_plus1); % <- should throw error here
+        cZ = conZonotope(Z,A,b_plus1); % <- should throw error here
         res = false; break;
     end
     
     % center is a matrix
     if n ~= 1
         try
-            conZono = conZonotope(c_mat,G); % <- should throw error here
+            cZ = conZonotope(c_mat,G); % <- should throw error here
             res = false; break;
         end
     end
     
     % too many input arguments
     try
-        conZono = conZonotope(c,G,A,b,b); % <- should throw error here
+        cZ = conZonotope(c,G,A,b,b); % <- should throw error here
         res = false; break;
     end
 end

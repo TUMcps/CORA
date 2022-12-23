@@ -26,53 +26,49 @@ function res = testLongDuration_zonotope_deleteZeros
 
 %------------- BEGIN CODE --------------
 
-% 1. Random Tests ---------------------------------------------------------
+% assume true
+res = true;
 
-tol = 1e-9;
-dims = 5:5:25;
-testsPerDim = 1000;
-
-res_rand = false(length(dims),testsPerDim);
+% number of tests
+nrTests = 1000;
 
 % compare randomly generated zonotopes
-for d=1:length(dims)
-    for test=1:testsPerDim
-        % create random zonotope
-        nrOfGens = randi([10,100],1,1);
-        
-        c = zeros(dims(d),1);
-        Gnozeros = -1+2*rand(dims(d),nrOfGens);
-        Znozeros = zonotope(c,Gnozeros);
-        
-        Zdel1 = deleteZeros(Znozeros);
-        
-        % since no zero generators, results has to be the same as before
-        res_rand1 = all(all(abs(Znozeros.Z - Zdel1.Z) < tol));
-        
-        % insert zero generators in matrix at random position
-        Gzeros = [Gnozeros,zeros(dims(d),randi([5,25],1,1))];
-        Gzeros = Gzeros(:,randperm(size(Gzeros,2)));
-        Zzeros = zonotope(c,Gzeros);
-        
-        % delete zero generators
-        Zdel2 = deleteZeros(Zzeros);
-        
-        % result has to be the same as original zonotope
-        res_rand2 = isequal(Znozeros,Zdel2);
+for test=1:nrTests
 
-        % add results
-        res_rand(d,test) = res_rand1 && res_rand2;
-        
+    % random dimension
+    n = randi(10);
+
+    % random number of generators
+    nrOfGens = randi([2*n,5*n]);
+    
+    % center
+    c = zeros(n,1);
+    % generator matrix without any all-zero generators
+    Gnozeros = -1+2*rand(n,nrOfGens);
+    Znozeros = zonotope(c,Gnozeros);
+    
+    Zdel1 = deleteZeros(Znozeros);
+    
+    % since no zero generators, results has to be the same as before
+    res1 = compareMatrices(c,center(Zdel1)) ...
+        && compareMatrices(generators(Zdel1),Gnozeros);
+    
+    % insert zero generators in matrix at random position
+    Gzeros = [Gnozeros,zeros(n,randi([5,25],1,1))];
+    Gzeros = Gzeros(:,randperm(size(Gzeros,2)));
+    Zzeros = zonotope(c,Gzeros);
+    
+    % delete zero generators
+    Zdel2 = deleteZeros(Zzeros);
+    
+    % result has to be the same as original zonotope
+    res2 = isequal(Znozeros,Zdel2);
+
+    % add results
+    if ~(res1 && res2)
+        res = false; return
     end
-end
-
-
-% add results
-res = all(all(res_rand));
-
-if ~res
-    path = pathFailedTests(mfilename());
-    save(path,'nrOfGens','Gnozeros','Gzeros');
+    
 end
 
 %------------- END OF CODE --------------

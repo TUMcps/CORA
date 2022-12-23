@@ -48,7 +48,7 @@ function han = plot(cPZ,varargin)
 %------------- BEGIN CODE --------------
 
     % default values for the optional input arguments
-    dims = setDefaultValues({[1,2]},varargin{:});
+    dims = setDefaultValues({[1,2]},varargin);
 
     % read additional name-value pairs
     NVpairs = readPlotOptions(varargin(2:end));

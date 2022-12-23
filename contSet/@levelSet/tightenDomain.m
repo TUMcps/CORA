@@ -53,7 +53,7 @@ end
 
 % default values
 maxIter = 8;
-type = setDefaultValues({'forwardBackward'},varargin{:});
+type = setDefaultValues({'forwardBackward'},varargin);
 
 % check input arguments
 inputArgsCheck({{ls,'att','levelSet'};

@@ -39,15 +39,15 @@ for k = 1:3
     
     % Generate random conZonotope object
     V = rand(2,3)-0.5*ones(2,3);
-    poly = mptPolytope(V');
-    cZono = conZonotope(poly);
+    P = mptPolytope(V');
+    cZ = conZonotope(P);
 
     % generate quadratic mapping matrices
     Q{1} = rand(2)-0.5*ones(2);
     Q{2} = rand(2)-0.5*ones(2);
 
     % quadratic multiplication 
-    cZquad = quadMap(cZono,Q);
+    cZquad = quadMap(cZ,Q);
     
     % create random points inside the original constrained zonotope
     N = 1000;
@@ -73,10 +73,10 @@ for k = 1:3
 
     % convert the resulting conZonotope to a mptPolytope (to easily check if
     % a point is located inside the conZonotope)
-    poly = mptPolytope(cZquad);
+    P = mptPolytope(cZquad);
 
     % extract inequality constraints
-    temp = get(poly,'P');
+    temp = get(P,'P');
     A = temp.A;
     b = temp.b;
 
@@ -86,10 +86,8 @@ for k = 1:3
 %     plot(cZquad,[1,2],'r');
 
     % check if all points are located inside the resulting conZonotope
-    Tol = 1e-14;
-
     for i = 1:size(points_,2)
-       if any(A*points_(:,i) - b > Tol)
+       if ~all(A*points_(:,i) < b | withinTol(A*points_(:,i),b))
            file_name = strcat('testLongDuration_conZonotope_quadMap_1_', ...
                               datestr(now,'mm-dd-yyyy_HH-MM'));
                   
@@ -112,27 +110,27 @@ end
 for k = 2:5
    
     % create random zonotope
-    zono = zonotope(rand(k,10)-0.5*ones(k,10));
-    cZ = conZonotope(zono.Z);
+    Z = zonotope(rand(k,10)-0.5*ones(k,10));
+    cZ = conZonotope(Z.Z);
     
     % generate random quadratic mapping matrices
     Q{1} = rand(k)-0.5*ones(k);
     Q{2} = rand(k)-0.5*ones(k);
     
     % compute quadratic map
-    zonoQuad = quadMap(zono,Q);
+    Zquad = quadMap(Z,Q);
     cZquad = quadMap(cZ,Q);
     
     % compare the results
-    if max(max(abs(zonoQuad.Z - cZquad.Z))) > 1e-18 || ...
-       ~isempty(cZquad.A) || ~isempty(cZquad.b)
+    if ~compareMatrices(Zquad.Z,cZquad.Z) || ...
+        ~isempty(cZquad.A) || ~isempty(cZquad.b)
         file_name = strcat('testLongDuration_conZonotope_quadMap_2_', ...
                            datestr(now,'mm-dd-yyyy_HH-MM'));
                   
         file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                              file_name);
                            
-        save(file_path, 'zono', 'cZ')
+        save(file_path, 'Z', 'cZ')
         throw(CORAerror('CORA:testFailed'));
     end  
 end
@@ -145,13 +143,13 @@ for k = 1:3
     
     % Generate first random conZonotope object
     V1 = rand(2,3)-0.5*ones(2,3);
-    poly = mptPolytope(V1');
-    cZ1 = conZonotope(poly);
+    P = mptPolytope(V1');
+    cZ1 = conZonotope(P);
     
     % Generate first random conZonotope object
     V2 = rand(2,2)-0.5*ones(2,2);
-    zono = zonotope(interval(min(V2,[],2),max(V2,[],2)));
-    cZ2 = conZonotope(zono.Z,[1 -1],0);
+    Z = zonotope(interval(min(V2,[],2),max(V2,[],2)));
+    cZ2 = conZonotope(Z.Z,[1 -1],0);
     V2 = [max(V2,[],2),min(V2,[],2)];
 
     % generate random quadratic mapping matrices
@@ -199,10 +197,10 @@ for k = 1:3
 
     % convert the resulting conZonotope to a mptPolytope (to easily check if
     % a point is located inside the conZonotope)
-    poly = mptPolytope(cZquad);
+    P = mptPolytope(cZquad);
 
     % extract inequality constraints
-    temp = get(poly,'P');
+    temp = get(P,'P');
     A = temp.A;
     b = temp.b;
 
@@ -212,10 +210,8 @@ for k = 1:3
 %     plot(cZquad,[1,2],'r');
 
     % check if all points are located inside the resulting conZonotope
-    Tol = 1e-14;
-
     for i = 1:size(points_,2)
-       if any(A*points_(:,i) - b > Tol)
+       if ~all(A*points_(:,i) < b | withinTol(A*points_(:,i),b))
            file_name = strcat('testLongDuration_conZonotope_quadMap_3_', ...
                               datestr(now,'mm-dd-yyyy_HH-MM'));
                   

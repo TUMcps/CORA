@@ -26,10 +26,7 @@ function res = test_polyZonotope_restructure
 
 %------------- BEGIN CODE --------------
 
-
-%% ANALYTICAL TESTS
-
-% TEST 1
+res = true;
 
 % create polynomial zonotope
 % pZ = polyZonotope([0;0],[0 4 1 -1; 1 2 -1 -1],[-7 1 1;15 1 -1],[1 0 0 1;0 1 3 2]);
@@ -46,9 +43,7 @@ expMat = [1 0 0 0 3; 0 1 0 0 1; 0 0 1 0 0; 0 0 0 1 0];
 % check for correctness
 if ~all(withinTol(c,pZres.c)) || ~compareMatrices([G;expMat],[pZres.G;pZres.expMat]) ...
         || ~isempty(pZres.Grest)
-    throw(CORAerror('CORA:testFailed'));
+    res = false;
 end
-
-res = true;
 
 %------------- END OF CODE --------------

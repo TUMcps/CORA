@@ -32,7 +32,7 @@ function pgon = polygon(pZ,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    splits = setDefaultValues({8},varargin{:});
+    splits = setDefaultValues({8},varargin);
 
     % check input arguments
     inputArgsCheck({{pZ,'att','polyZonotope'};

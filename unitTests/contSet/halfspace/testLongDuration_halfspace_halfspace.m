@@ -25,10 +25,12 @@ function res = testLongDuration_halfspace_halfspace
 
 %------------- BEGIN CODE --------------
 
-tol = 1e-12;
-
+% assume true
 res = true;
+
+% number of tests
 nrOfTests = 1000;
+
 for i=1:nrOfTests
 
     % random dimension
@@ -40,11 +42,11 @@ for i=1:nrOfTests
     
     % admissible initialization
     hs = halfspace(c,d);
-    if any(abs(hs.c - c) > tol) || abs(hs.d - d) > tol
+    if ~compareMatrices(hs.c,c) || ~withinTol(hs.d,d)
         res = false; break;
     end
     hs = halfspace(c',d);
-    if any(abs(hs.c - c) > tol) || abs(hs.d - d) > tol
+    if ~compareMatrices(hs.c,c) || ~withinTol(hs.d,d)
         res = false; break;
     end
     

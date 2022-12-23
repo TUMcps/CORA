@@ -41,7 +41,7 @@ function cZ = rescale(cZ,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    method = setDefaultValues({'exact'},varargin{:});
+    method = setDefaultValues({'exact'},varargin);
 
     % check input arguments
     inputArgsCheck({{cZ,'att','conZonotope'};

@@ -53,7 +53,7 @@ for i=1:nrOfTests
     E = ellipsoid(Q,q);
     vol_ball = (pi^(n/2) / gamma(1+n/2)) * 1^n;
     % check result
-    if abs(vol_ball - volume(E)) > tol
+    if ~withinTol(vol_ball,volume(E))
         res_rand = false; break;
     end
     

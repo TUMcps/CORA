@@ -26,8 +26,6 @@ function res = test_polyZonotope_mtimes
 
 %------------- BEGIN CODE --------------
 
-% TEST 1
-
 % create polynomial zonotope
 c = [1;2];
 G = [1 2 1 -3; 1 -1 2 -1];

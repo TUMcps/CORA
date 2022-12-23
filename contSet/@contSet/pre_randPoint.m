@@ -49,7 +49,7 @@ elseif nargin > 5
 end
 
 % set default values for number of samples, method, and probability
-[N,type,pr] = setDefaultValues({1,'standard',0.7},varargin{:});
+[N,type,pr] = setDefaultValues({1,'standard',0.7},varargin);
 
 % N can be numeric or 'all'
 if isnumeric(N)

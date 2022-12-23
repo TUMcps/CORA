@@ -35,7 +35,7 @@ function res = containsPointSet(pZ,points,varargin)
 %------------- BEGIN CODE --------------
 
 % default values
-[splits,order] = setDefaultValues({4,10},varargin{:});
+[splits,order] = setDefaultValues({4,10},varargin);
 
 % check input arguments
 inputArgsCheck({{pZ,'att','polyZonotope'};

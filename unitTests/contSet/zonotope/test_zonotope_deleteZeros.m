@@ -27,21 +27,18 @@ function res = test_zonotope_deleteZeros
 %------------- BEGIN CODE --------------
 
 % create zonotope
-Z1 = zonotope([1,2,0,4; 5 6 0 0]);
+c = [1;5];
+G = [2,0,4; 6 0 0];
+Z = zonotope(c,G);
 
 % obtain zonotope without zeros
-Z2 = deleteZeros(Z1);
-
-% obtain zonotope matrix
-Zmat = Z2.Z;
+Z_ = deleteZeros(Z);
+G_ = generators(Z_);
 
 % true result
-true_mat = [1, 2, 4; 5, 6, 0];
+true_mat = [2, 4; 6, 0];
 
 % check result
-res_val = all(all(Zmat == true_mat));
-
-% add results
-res = res_val;
+res = compareMatrices(G_,true_mat);
 
 %------------- END OF CODE --------------

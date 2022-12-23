@@ -26,7 +26,6 @@ function res = test_conHyperplane_conHyperplane
 %------------- BEGIN CODE --------------
 
 res = true;
-tol = 1e-12;
 
 % empty conHyperplane
 hyp = conHyperplane();
@@ -57,15 +56,15 @@ end
 
 % halfspace and constraint matrix, constraint vector
 hyp = conHyperplane(hs,C,d);
-if ~isequal(hyp.h,hs) || any(any(abs(hyp.C - C) > tol)) || ...
-        any(abs(hyp.d - d) > tol)
+if ~isequal(hyp.h,hs) || ~compareMatrices(hyp.C,C) ...
+        || ~compareMatrices(hyp.d,d)
     res = false;
 end
 
 % normal vector, offset, and constraint matrix, constraint vector
 hyp = conHyperplane(a,b,C,d);
-if ~isequal(hyp.h,halfspace(a,b)) || ...
-        any(any(abs(hyp.C - C) > tol)) || any(abs(hyp.d - d) > tol)
+if ~isequal(hyp.h,halfspace(a,b)) ...
+        || ~compareMatrices(hyp.C,C) || ~compareMatrices(hyp.d,d)
     res = false;
 end
 

@@ -25,10 +25,12 @@ function res = testLongDuration_zonotope_zonotope
 
 %------------- BEGIN CODE --------------
 
-tol = 1e-12;
+% assume true
 res = true;
 
+% number of tests
 nrOfTests = 1000;
+
 for i=1:nrOfTests
 
     % random dimension
@@ -44,18 +46,18 @@ for i=1:nrOfTests
     
     % admissible initializations
     Z = zonotope(c,G);
-    if any(abs(center(Z) - c) > tol) || any(any(abs(generators(Z) - G) > tol))
+    if ~compareMatrices(center(Z),c) || ~compareMatrices(generators(Z),G)
         res = false; break;
     end
     
     Z = zonotope(c,Gempty);
-    if any(abs(center(Z) - c) > tol) || ~isempty(generators(Z))
+    if ~compareMatrices(center(Z),c) || ~isempty(generators(Z))
         res = false; break;
     end
     
     Z = zonotope(Zmat);
-    if any(abs(center(Z) - Zmat(:,1)) > tol) ...
-            || any(any(abs(generators(Z) - Zmat(:,2:end)) > tol))
+    if ~compareMatrices(center(Z),Zmat(:,1)) ...
+            || ~compareMatrices(generators(Z),Zmat(:,2:end))
         res = false; break;
     end
     

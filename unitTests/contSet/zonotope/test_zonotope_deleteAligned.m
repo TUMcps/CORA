@@ -30,7 +30,7 @@ Z_cent = zeros(2,1);
 % aligned generators differ by scaling, sign
 Z_gens = [4 2 2 3 1 -4;
           2 3 1 0 2 -2];
-Z = zonotope([Z_cent, Z_gens]);
+Z = zonotope(Z_cent, Z_gens);
 
 % delete aligned generators
 Z_del = deleteAligned(Z);
@@ -38,9 +38,8 @@ Z_del = deleteAligned(Z);
 % true matrix
 Z_gens_true = [10 2 3 1;
                5  3 0 2];
-Z_true = zonotope([Z_cent,Z_gens_true]);
 
 % check results
-res = compareMatrices(Z_del.Z,Z_true.Z);
+res = compareMatrices(Z_gens_true,generators(Z_del));
 
 %------------- END OF CODE --------------

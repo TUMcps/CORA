@@ -2,6 +2,7 @@ function res = isequal(hs1,hs2,varargin)
 % isequal - checks if two halfspaces are equal
 %
 % Syntax:  
+%    res = isequal(hs1,hs2)
 %    res = isequal(hs1,hs2,tol)
 %
 % Inputs:
@@ -30,8 +31,13 @@ function res = isequal(hs1,hs2,varargin)
 
 %------------- BEGIN CODE --------------
 
+% too many input arguments
+if nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs',3));
+end
+
 % parse input arguments
-tol = setDefaultValues({eps},varargin{:});
+tol = setDefaultValues({eps},varargin);
 
 % check input arguments
 inputArgsCheck({{hs1,'att','halfspace'};

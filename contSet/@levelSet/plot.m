@@ -37,7 +37,7 @@ function han = plot(ls,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    dims = setDefaultValues({[1,2]},varargin{:});
+    dims = setDefaultValues({[1,2]},varargin);
 
     % check input arguments
     inputArgsCheck({{ls,'att','levelSet'};

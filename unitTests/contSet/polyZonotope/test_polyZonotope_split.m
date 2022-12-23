@@ -26,11 +26,6 @@ function res = test_polyZonotope_split
 
 %------------- BEGIN CODE --------------
 
-
-%% ANALYTICAL TESTS
-
-% TEST 1
-
 % create polynomial zonotopes
 c = [-1;3];
 G = [2 0 1; 1 2 1];

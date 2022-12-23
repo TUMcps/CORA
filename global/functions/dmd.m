@@ -61,7 +61,7 @@ function [A,B,c] = dmd(X,dt,varargin)
 %------------- BEGIN CODE --------------
 
     % default values
-    [U,type,alg,rank] = setDefaultValues({[],'disc','svd',[]},varargin{:});
+    [U,type,alg,rank] = setDefaultValues({[],'disc','svd',[]},varargin);
 
     % check input arguments
     inputArgsCheck({{type,'str',{'disc','cont'}},...

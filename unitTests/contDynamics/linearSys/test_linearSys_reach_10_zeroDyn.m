@@ -67,16 +67,13 @@ IH_fromStart = interval(R_fromStart.timeInterval.set{end});
 accuracy = 1e-8;
 
 % standard approach
-res_partial(1) = (IH_standard <= enlarge(IH_init,1+accuracy));
-res_partial(2) = (IH_init <= enlarge(IH_standard,1+accuracy));
+res_partial(1) = isequal(IH_standard,IH_init,accuracy);
 
 % wrapping-free approach
-res_partial(3) = (IH_noWrapping <= enlarge(IH_init,1+accuracy));
-res_partial(4) = (IH_init <= enlarge(IH_noWrapping,1+accuracy));
+res_partial(2) = isequal(IH_noWrapping,IH_init,accuracy);
 
 % fromStart approach
-res_partial(5) = (IH_fromStart <= enlarge(IH_init,1+accuracy));
-res_partial(6) = (IH_init <= enlarge(IH_fromStart,1+accuracy));
+res_partial(2) = isequal(IH_fromStart,IH_init,accuracy);
 
 % final result 
 res = all(res_partial);

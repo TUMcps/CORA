@@ -50,7 +50,7 @@ function cZ = conZonotope(cPZ,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    [type,method] = setDefaultValues({'all','linearize'},varargin{:}); 
+    [type,method] = setDefaultValues({'all','linearize'},varargin); 
 
     % check input arguments
     inputArgsCheck({{cPZ,'att','conPolyZono'};

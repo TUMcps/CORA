@@ -24,7 +24,9 @@ function res = testLongDuration_zonotope_zonotopeNorm
 % Last revision:---
 
 %------------- BEGIN CODE ---------------
-tol = 1e-10; % Tolerance to make sure that all comparisons run smoothly
+
+% assume true
+res = true;
 
 dims = [2 5 10]; % Dimensions to be tested
 Ntests = 10; % Number of tests in each case
@@ -36,7 +38,8 @@ for dim = dims
         Z = zonotope.generateRandom('Dimension',dim);
         P = randPoint(Z,Npoints);
         for i_p = 1:size(P,2)
-            if zonotopeNorm(Z,P(:,i_p)-Z.center) > 1+tol
+            zN = zonotopeNorm(Z,P(:,i_p)-Z.center);
+            if zN > 1 && ~withinTol(zN,1)
                 path = pathFailedTests(mfilename());
                 save(path,'Z','P');
                 throw(CORAerror('CORA:testFailed'));
@@ -59,7 +62,8 @@ for dim = dims
         P_lift = [P;zeros(1,size(P,2))] + [zeros(dim,1);10];
         
         for i_p = 1:size(P_lift,2)
-            if zonotopeNorm(Z_lift, P_lift(:,i_p)-Z_lift.center) <= 1-tol
+            zN = zonotopeNorm(Z_lift, P_lift(:,i_p)-Z_lift.center);
+            if zN < 1 && ~withinTol(zN,1)
                 path = pathFailedTests(mfilename());
                 save(path,'Z','P');
                 throw(CORAerror('CORA:testFailed'));
@@ -73,33 +77,37 @@ for dim = dims
     for i=1:Ntests
         Z = zonotope.generateRandom('Dimension',dim);
         
+        % sample random points
         p1 = randPoint(Z);
         p2 = randPoint(Z);
         
         % Check triangle inequality
-        if ~(zonotopeNorm(Z,p1+p2) <= zonotopeNorm(Z,p1)+zonotopeNorm(Z,p2)+tol)
+        zN12 = zonotopeNorm(Z,p1+p2);
+        zN1 = zonotopeNorm(Z,p1);
+        zN2 = zonotopeNorm(Z,p2);
+        if ~( zN12 < zN1+zN2 || withinTol(zN12,zN1+zN2) )
             path = pathFailedTests(mfilename());
             save(path,'p1','p2','Z');
             throw(CORAerror('CORA:testFailed'));
         end
         
         % Check symmetry
-        if ~(zonotopeNorm(Z,p1) <= zonotopeNorm(Z,-p1) + tol ...
-                && zonotopeNorm(Z,p1) >= zonotopeNorm(Z,-p1) - tol)
+        zN1 = zonotopeNorm(Z,p1);
+        zN1_ = zonotopeNorm(Z,-p1);
+        if ~withinTol(zN1,zN1_)
             path = pathFailedTests(mfilename());
             save(path,'Z','p1','p2');
             throw(CORAerror('CORA:testFailed'));
         end
         
         % Check part of the positive definiteness
-        if ~(zonotopeNorm(Z, zeros(dim,1)) <= tol)
+        zN = zonotopeNorm(Z, zeros(dim,1));
+        if ~( zN < 0 || withinTol(zN,0) )
             path = pathFailedTests(mfilename());
             save(path,'Z','p1','p2');
             throw(CORAerror('CORA:testFailed'));
         end
     end
 end
-
-res = true;
 
 %------------- END OF CODE --------------

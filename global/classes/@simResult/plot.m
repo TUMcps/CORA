@@ -33,7 +33,7 @@ function han = plot(simRes,varargin)
 %------------- BEGIN CODE --------------
 
 % set default input arguments
-dims = setDefaultValues({[1,2]},varargin{:});
+dims = setDefaultValues({[1,2]},varargin);
 
 % check input arguments
 inputArgsCheck({{simRes,'att',{'simResult'},{''}};

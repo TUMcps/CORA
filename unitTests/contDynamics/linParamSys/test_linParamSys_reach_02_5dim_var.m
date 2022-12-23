@@ -83,15 +83,7 @@ IH_saved_int = interval( ...
         [  -0.258708023885910; -0.246551871520107; -0.054033103506035; -0.054079269389896; -0.058822997090575], ...
         [0.253670265974255; 0.265394513562644; 0.054032634687992; 0.054080076731048; 0.058918625877829]);
 
-%check if slightly bloated versions enclose each other for IH
-res_11 = (IH_zono <= enlarge(IH_saved_zono, 1+1e-8));
-res_12 = (IH_saved_zono <= enlarge(IH_zono, 1+1e-8));
-
-%check if slightly bloated versions enclose each other for IH2
-res_21 = (IH_int <= enlarge(IH_saved_int, 1+1e-8));
-res_22 = (IH_saved_int <= enlarge(IH_int, 1+1e-8));
-
 %final result
-res = res_11 && res_12 && res_21 && res_22;
+res = isequal(IH_zono,IH_saved_zono,1e-8) && isequal(IH_int,IH_saved_int,1e-8);
 
 %------------- END OF CODE --------------

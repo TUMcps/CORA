@@ -27,7 +27,7 @@ function res = isequal(R1,R2,varargin)
 %------------- BEGIN CODE --------------
 
 % set default values
-tol = setDefaultValues({1e-12},varargin{:});
+tol = setDefaultValues({1e-12},varargin);
 
 % check input arguments (only first two)
 inputArgsCheck({{R1,'att','reachSet'};

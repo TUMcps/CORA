@@ -95,23 +95,23 @@ for i=1:nrOfTests
         res = false; break;
     end
     % full G, no A,b
-    if size(cZ_noAb_,2) ~= nrGens || any(any(abs(G-cZ_noAb_) > eps))
+    if size(cZ_noAb_,2) ~= nrGens || ~compareMatrices(G,cZ_noAb_)
         res = false; break;
     end
     % full G,A,b
-    if size(cZ_,2) ~= nrGens || any(any(abs(G-cZ_) > eps))
+    if size(cZ_,2) ~= nrGens || ~compareMatrices(G,cZ_)
         res = false; break;
     end
     % G with zeros, no A,b
-    if size(cZ_Gzeros_noAb_,2) ~= nrGens || any(any(abs(Gzeros-cZ_Gzeros_noAb_) > eps))
+    if size(cZ_Gzeros_noAb_,2) ~= nrGens || ~compareMatrices(Gzeros,cZ_Gzeros_noAb_)
         res = false; break;
     end
     % full G, A,b with zeros
-    if size(cZ_Abzeros_,2) ~= nrGens || any(any(abs(G-cZ_Abzeros_) > eps))
+    if size(cZ_Abzeros_,2) ~= nrGens || ~compareMatrices(G,cZ_Abzeros_)
         res = false; break;
     end
     % G,A,b with zeros
-    if size(cZ_GAbzeros_,2) ~= nrGens || any(any(abs(Gzeros-cZ_GAbzeros_) > eps))
+    if size(cZ_GAbzeros_,2) ~= nrGens || ~compareMatrices(Gzeros,cZ_GAbzeros_)
         res = false; break;
     end
 

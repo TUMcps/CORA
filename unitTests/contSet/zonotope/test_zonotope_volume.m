@@ -8,9 +8,7 @@ function res = test_zonotope_volume
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,7 +36,7 @@ vol = volume(Z1);
 % true result 1
 true_vol = 80;
 
-res_int(1) = vol == true_vol;
+res_int(1) = withinTol(vol,true_vol);
 
 %% compare to interval
 I1 = interval(Z1);
@@ -48,18 +46,18 @@ IZ1 = zonotope(I1);
 volIntZon = volume(IZ1); % has to be equal to interval volume
 
 res_int(2) = vol < volInt;
-res_int(3) = volIntZon == volInt;
+res_int(3) = withinTol(volIntZon,volInt);
 
 %% approximate computation
 % order reduction
 volApprox_red = volume(Z1, 'reduce', 1);
 true_vol_approx_red = 122.8162136821466106;
-res_int(4) = (abs(volApprox_red - true_vol_approx_red)<1e-10);
+res_int(4) = withinTol(volApprox_red,true_vol_approx_red);
 
 % Alamo technique
 volApprox_red = volume(Z1, 'alamo');
 true_vol_approx_red = 48.9897948556635612;
-res_int(5) = (abs(volApprox_red - true_vol_approx_red)<1e-10);
+res_int(5) = withinTol(volApprox_red,true_vol_approx_red);
 
 %% final result
 res = all(res_int) && res_e;

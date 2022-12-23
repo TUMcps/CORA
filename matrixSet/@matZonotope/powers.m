@@ -30,7 +30,7 @@ function pow = powers(matZ,maxOrder,varargin)
 %------------- BEGIN CODE --------------
 
 % set default values
-[initialOrder,initialPower] = setDefaultValues({1,matZ},varargin{:});
+[initialOrder,initialPower] = setDefaultValues({1,matZ},varargin);
 
 %initialize power
 pow{initialOrder}=initialPower;

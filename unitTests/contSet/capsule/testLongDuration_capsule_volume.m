@@ -46,8 +46,7 @@ for i=1:nrOfTests
     vol_true = (pi^(n/2) / gamma(1+n/2)) * r^n;
 
     % compare results
-    tol = 1e-9;
-    if abs(vol_true - vol) > tol
+    if ~withinTol(vol_true,vol)
         res = false;
         path = pathFailedTests(mfilename());
         save(path,'n','c','r');

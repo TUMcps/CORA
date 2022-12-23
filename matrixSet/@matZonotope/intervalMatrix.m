@@ -29,7 +29,7 @@ function intMat = intervalMatrix(matZ,varargin)
 %------------- BEGIN CODE --------------
 
 % set default values
-setting = setDefaultValues({[]},varargin{:});
+setting = setDefaultValues({[]},varargin);
 
 % center matrix
 C = center(matZ);

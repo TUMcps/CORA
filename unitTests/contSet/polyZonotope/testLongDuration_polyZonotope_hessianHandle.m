@@ -28,12 +28,20 @@ res = true;
 nTests = 10;
 
 for i=1:nTests
-    %% analytic test
+
+    % random dimension
     n = randi(1);
+
+    % random number of generators
     ng = randi([3,10]);
+
+    % number of factors
     nf = ng - 1;
+
+    % instantiate polynomial zonotope
     pZ = noIndep(polyZonotope.generateRandom('Dimension',n,...
         'NrGenerators',ng,'NrFactors',nf));
+    
     x = sym('x',[size(pZ.expMat,1),1],'real');
     ne = length(pZ.id);
     ind_diff = ismember(pZ.id,unique(randi(ne-1,ne-1,1)));
@@ -60,7 +68,7 @@ for i=1:nTests
     f_val = F_val(:);
     for j=1:length(f_val)
         cj = abs(double(coeffs(f_val(j),x)));
-        if any(cj>1e-8)
+        if any(cj > 0 & ~withinTol(cj,0,1e-8))
             res = false;
             break;
         end

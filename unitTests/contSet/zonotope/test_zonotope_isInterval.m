@@ -25,9 +25,6 @@ function res = test_zonotope_isInterval
 
 %------------- BEGIN CODE --------------
 
-
-% 1. Analytical Tests -----------------------------------------------------
-
 % create zonotopes
 c1 = [0; 0];
 G1 = [2 0; 0 1];
@@ -38,10 +35,6 @@ G2 = [2 1; -1 4];
 Z2 = zonotope(c2,G2);
 
 % check result
-res_val = isInterval(Z1) && ~isInterval(Z2);
-
-
-% add results
-res = all(res_val);
+res = isInterval(Z1) && ~isInterval(Z2);
 
 %------------- END OF CODE --------------

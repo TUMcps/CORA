@@ -64,7 +64,7 @@ function res = contractPoly(c,G,Grest,expMat,dom,varargin)
 
     % set default values
     [alg,iter,splits,jacHan] = setDefaultValues({'forwardBackward',...
-        1,[],[]},varargin{:});
+        1,[],[]},varargin);
 
     inputArgsCheck({{alg,'str',{'forwardBackward','linearize',...
         'polynomial','interval','all'}}});

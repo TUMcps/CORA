@@ -45,7 +45,7 @@ function cZ = reduceConstraints(cZ,varargin)
     % strategy described in section 4.2 in reference paper [1]
 
     % parse input arguments
-    nrCon = setDefaultValues({[]},varargin{:});
+    nrCon = setDefaultValues({[]},varargin);
 
     inputArgsCheck({{cZ,'att','conZonotope'};
                     {nrCon,'att','numeric','nonnan'}});

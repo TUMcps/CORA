@@ -41,13 +41,12 @@ C_vect_true = capsule([2; 1], [-4; 3], 1);
 C_caps_true = capsule([1; 1], [-4; 3], 4);
 
 % compare solutions
-tol = 1e-9;
-res_vect(1) = all(abs(center(C_vect) - center(C_vect_true)) < tol);
-res_vect(2) = all(abs(C_vect.g - C_vect_true.g) < tol);
-res_vect(3) = abs(radius(C_vect) - radius(C_vect_true)) < tol;
-res_caps(1) = all(abs(center(C_caps) - center(C_caps_true)) < tol);
-res_caps(2) = all(abs(C_caps.g - C_caps_true.g) < tol);
-res_caps(3) = abs(radius(C_caps) - radius(C_caps_true)) < tol;
+res_vect(1) = compareMatrices(C_vect.c,C_vect_true.c);
+res_vect(2) = compareMatrices(C_vect.g,C_vect_true.g);
+res_vect(3) = withinTol(C_vect.r,C_vect_true.r);
+res_caps(1) = compareMatrices(C_caps.c,C_caps_true.c);
+res_caps(2) = compareMatrices(C_caps.g,C_caps_true.g);
+res_caps(3) = withinTol(C_caps.r,C_caps_true.r);
 
 % empty set
 res_e = isempty(C_add + capsule());

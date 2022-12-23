@@ -28,10 +28,6 @@ function res = test_polyZonotope_zonotope
 
 res = true;
 
-%% ANALYTICAL TESTS
-
-% TEST 1
-
 % create polynomial zonotope
 c = [1;2];
 G = [1 2 1 -3; 1 -1 2 -1];
@@ -40,16 +36,15 @@ Grest = [];
 pZ = polyZonotope(c,G,Grest,expMat);
 
 % reduce the polynomial zonotope
-zono = zonotope(pZ);
-c_ = zono.Z(:,1);
-G_ = zono.Z(:,2:end);
+Z = zonotope(pZ);
 
 % define ground truth
 c = [1.5; 3];
 G =  [1 2 0.5 -3; 1 -1 1 -1];
+Z_true = zonotope(c,G);
 
 % check for correctness
-if ~all(withinTol(c,c_)) || ~compareMatrices(G,G_)
+if ~isequal(Z,Z_true)
     res = false;
 end
 

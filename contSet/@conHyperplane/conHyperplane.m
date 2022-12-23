@@ -73,12 +73,12 @@ methods
 
             h = varargin{1};
             varargin = varargin(2:end);
-            [C, d] = setDefaultValues({[], 0}, varargin{:});
+            [C, d] = setDefaultValues({[], 0}, varargin);
             
         elseif nargin == 2 || nargin == 4
             h = halfspace(varargin{1},varargin{2});
             varargin = varargin(3:end);
-            [C, d] = setDefaultValues({[], 0}, varargin{:});
+            [C, d] = setDefaultValues({[], 0}, varargin);
         end
 
         inputArgsCheck({ ...

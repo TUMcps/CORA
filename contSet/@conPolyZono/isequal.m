@@ -33,16 +33,21 @@ function res = isequal(cPZ1,cPZ2,varargin)
 
 %------------- BEGIN CODE --------------
 
-% initialize result
-res = false;
+% too many input arguments
+if nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs',3));
+end
 
 % parse input arguments
-tol = setDefaultValues({eps},varargin{:});
+tol = setDefaultValues({eps},varargin);
 
 % check input arguments
 inputArgsCheck({{cPZ1,'att','conPolyZono'};
                 {cPZ2,'att','conPolyZono'};
                 {tol,'att','numeric',{'nonnan','scalar','nonnegative'}}});
+
+% initialize result
+res = false;
 
 % remove redundancies
 cPZ1 = compact(cPZ1);

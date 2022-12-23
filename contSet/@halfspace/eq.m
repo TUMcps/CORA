@@ -1,12 +1,15 @@
-function res = eq(hs1,hs2)
+function res = eq(hs1,hs2,varargin)
 % eq - overloaded '==' operator for exact comparison of two halfspaces
 %
-% Syntax:  
+% Syntax:
+%    res = hs1 == hs2
 %    res = eq(hs1,hs2)
+%    res = eq(hs1,hs2,tol)
 %
 % Inputs:
 %    hs1 - halfspace object
 %    hs2 - halfspace object
+%    tol - (optional) tolerance
 %
 % Outputs:
 %    res - true/false
@@ -20,7 +23,7 @@ function res = eq(hs1,hs2)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: halfspace/isequal
 
 % Author:       Mingrui Wang
 % Written:      21-June-2022
@@ -29,6 +32,6 @@ function res = eq(hs1,hs2)
 
 %------------- BEGIN CODE --------------
 
-res = isequal(hs1,hs2);
+res = isequal(hs1,hs2,varargin{:});
 
 %------------- END OF CODE --------------

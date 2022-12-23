@@ -35,7 +35,7 @@ function han = plot(Z,varargin)
 %------------- BEGIN CODE --------------
 
 % default values
-dims = setDefaultValues({[1,2]},varargin{:});
+dims = setDefaultValues({[1,2]},varargin);
 
 % parse plot options
 NVpairs = readPlotOptions(varargin(2:end));

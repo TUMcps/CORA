@@ -29,7 +29,7 @@ function res = containsSimResult(R,simRes,varargin)
 %------------- BEGIN CODE --------------
 
 % set default values
-verbose = setDefaultValues({false},varargin{:});
+verbose = setDefaultValues({false},varargin);
 
 % check input arguments
 inputArgsCheck({{R,'att',{'reachSet'},{''}};

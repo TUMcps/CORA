@@ -44,7 +44,7 @@ function res = rescale(cPZ,varargin)
 %------------- BEGIN CODE -------------
 
 % parse input arguments
-method = setDefaultValues({'forwardBackward'},varargin{:});
+method = setDefaultValues({'forwardBackward'},varargin);
 
 % check input arguments
 inputArgsCheck({{cPZ,'att','conPolyZono'};

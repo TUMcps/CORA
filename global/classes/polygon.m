@@ -368,7 +368,7 @@ methods
     % draw random points within the polygon
         
         % parse input arguments
-        [N,type] = setDefaultValues({1,'standard'},varargin{:});
+        [N,type] = setDefaultValues({1,'standard'},varargin);
         
         % different types of random points
         if strcmp(type,'standard')
@@ -466,7 +466,7 @@ methods
             throw(CORAerror('CORA:tooManyInputArgs',2));
         end
         % default values
-        tol = setDefaultValues({0.01},varargin{:});
+        tol = setDefaultValues({0.01},varargin);
         % check input arguments
         inputArgsCheck({{pgon,'att','polygon'},...
                         {tol,'att','numeric',{'scalar','nonnegative'}}});

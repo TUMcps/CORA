@@ -43,11 +43,11 @@ for i = 2:10
     G2 = rand(i,7);
     c2 = rand(i,1);
 
-    zono1 = zonotope([c1,G1]);
-    zono2 = zonotope([c2,G2]);
+    Z1 = zonotope(c1,G1);
+    Z2 = zonotope(c2,G2);
 
     % addition of the linear zonotopes
-    zonoRes = zono1 + zono2;
+    Z_ = Z1 + Z2;
 
     % express lienar zonotopes as polynomial zonotopes
     expMat1 = eye(size(G1,2));
@@ -60,12 +60,12 @@ for i = 2:10
     pZres = pZ1 + pZ2;
     
     % check for correctness of the result
-    c_ = zonoRes.Z(:,1);
-    G_ = zonoRes.Z(:,2:end);
+    c_ = Z_.Z(:,1);
+    G_ = Z_.Z(:,2:end);
     
-    if any(abs(pZres.c-c_) > 1e-15) || any(any(abs(pZres.G-G_) > 1e-15))
+    if ~compareMatrices(pZres.c,c_) || ~compareMatrices(pZres.G,G_)
         path = pathFailedTests(mfilename());
-        save(path,'pZres','zonoRes');
+        save(path,'pZres','Z_');
         throw(CORAerror('CORA:testFailed'));
     end
     
@@ -112,9 +112,9 @@ for i = 1:5
     suc = containsPointSet(pZres,points,[],30);
     
     if ~suc
-       path = pathFailedTests(mfilename());
-       save(path,'pZres','points');
-       throw(CORAerror('CORA:testFailed'));
+        path = pathFailedTests(mfilename());
+        save(path,'pZres','points');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -150,7 +150,7 @@ for i = 1:5
     N = size(points,2);
     
     for j = 1:N
-       points(:,j) = points(:,j) + matrix * points(:,j); 
+        points(:,j) = points(:,j) + matrix * points(:,j); 
     end
     
     % check if the all transformed random points are located inside the

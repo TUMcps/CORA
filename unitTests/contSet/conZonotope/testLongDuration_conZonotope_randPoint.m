@@ -95,7 +95,7 @@ for i=1:nrOfTests
     p = p_analytical;
     
     % compare results
-    if any(abs(p - p_analytical) > tol)
+    if ~compareMatrices(p,p_analytical)
         res = false; break;
     end
     

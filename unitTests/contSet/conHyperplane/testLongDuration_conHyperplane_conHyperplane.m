@@ -26,10 +26,12 @@ function res = testLongDuration_conHyperplane_conHyperplane
 
 %------------- BEGIN CODE --------------
 
-tol = 1e-12;
-
+% assume true
 res = true;
+
+% number of tests
 nrOfTests = 1000;
+
 for i=1:nrOfTests
 
     % random dimension
@@ -60,8 +62,8 @@ for i=1:nrOfTests
     % halfspace and constraint matrix, constraint vector
     try
         hyp = conHyperplane(hs,C,d);
-        if ~isequal(hyp.h,hs) || any(any(abs(hyp.C - C) > tol)) || ...
-                any(abs(hyp.d - d) > tol)
+        if ~isequal(hyp.h,hs) || ~compareMatrices(hyp.C,C) ...
+                || ~compareMatrices(hyp.d,d)
             res = false; break;
         end
     catch ME
@@ -75,8 +77,8 @@ for i=1:nrOfTests
         
     % normal vector, offset, and constraint matrix, constraint vector
     hyp = conHyperplane(a,b,C,d);
-    if ~isequal(hyp.h,halfspace(a,b)) || ...
-            any(any(abs(hyp.C - C) > tol)) || any(abs(hyp.d - d) > tol)
+    if ~isequal(hyp.h,halfspace(a,b)) ...
+            || ~compareMatrices(hyp.C,C) || ~compareMatrices(hyp.d,d)
         res = false; break;
     end
     

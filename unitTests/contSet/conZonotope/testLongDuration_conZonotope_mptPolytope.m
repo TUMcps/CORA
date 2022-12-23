@@ -42,19 +42,19 @@ for j = 1:5
     V = points(:,ind);
 
     % Construct a mptPolytope object from the vertices
-    poly = mptPolytope(V');
+    P = mptPolytope(V');
 
     % Convert to constrained zonotope object
-    cZono = conZonotope(poly);
+    cZ = conZonotope(P);
 
     % Calculate vertices
-    V1 = vertices(cZono);
+    V1 = vertices(cZ);
 
     % Convert back to a mptPolytope
-    poly = mptPolytope(cZono);
+    P = mptPolytope(cZ);
 
     % Calculate vertices
-    V2 = vertices(poly);
+    V2 = vertices(P);
 
     % plot the result
 %     plot(cZono,[1,2],'FaceColor','b');
@@ -71,7 +71,7 @@ for j = 1:5
        file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                             file_name);
                        
-       save(file_path, 'cZono')
+       save(file_path, 'cZ')
        throw(CORAerror('CORA:testFailed'));
     end
 
@@ -82,7 +82,7 @@ for j = 1:5
        file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                             file_name);
                        
-       save(file_path, 'poly')
+       save(file_path, 'P')
        throw(CORAerror('CORA:testFailed'));
     end
 end
@@ -98,19 +98,19 @@ for j = 1:5
     V = points(:,ind);
 
     % Construct a mptPolytope object from the vertices
-    poly = mptPolytope(V');
+    P = mptPolytope(V');
 
     % Convert to constrained zonotope object
-    cZono = conZonotope(poly);
+    cZ = conZonotope(P);
 
     % Calculate vertices
-    V1 = vertices(cZono);
+    V1 = vertices(cZ);
 
     % Convert back to a mptPolytope
-    poly = mptPolytope(cZono);
+    P = mptPolytope(cZ);
 
     % Calculate vertices
-    V2 = vertices(poly);
+    V2 = vertices(P);
 
     % Check for correctness
     if ~compareMatrices(V,V1,1e-10)
@@ -120,18 +120,18 @@ for j = 1:5
        file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                             file_name);
                        
-       save(file_path, 'cZono')
+       save(file_path, 'cZ')
        throw(CORAerror('CORA:testFailed'));
     end
 
-    if ~compareMatrices(V,V1,1e-10)
+    if ~compareMatrices(V,V2,1e-10)
        file_name = strcat('testLongDuration_conZonotope_polytope_1_', ...
                           datestr(now,'mm-dd-yyyy_HH-MM'));
               
        file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                             file_name);
                        
-       save(file_path, 'poly')
+       save(file_path, 'P')
        throw(CORAerror('CORA:testFailed'));
     end
 end

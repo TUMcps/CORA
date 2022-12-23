@@ -45,7 +45,7 @@ elseif nargin > 4
 end
 
 % set default values: type (2) and mode ('ub')
-[type,mode] = setDefaultValues({2,'ub'},varargin{:});
+[type,mode] = setDefaultValues({2,'ub'},varargin);
 
 % check input arguments: two tries depending on value for type
 try

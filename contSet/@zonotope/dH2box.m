@@ -52,7 +52,7 @@ else
 end
 
 % parse input arguments
-method = setDefaultValues({dV},varargin{:});
+method = setDefaultValues({dV},varargin);
 
 % check input arguments
 inputArgsCheck({{Z,'att','zonotope','nonempty'};

@@ -67,7 +67,7 @@ for i=1:nrOfTests
     pZ = polyZonotope(c,G,Grest,expMat);
     if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.Grest,Grest,tol) ...
             || ~compareMatrices([G;expMat],[pZ.G;pZ.expMat],tol)
-        res_rand = false; break;
+        res = false; break;
     end
     
     
@@ -110,8 +110,6 @@ end
 if ~res
     path = pathFailedTests(mfilename());
     save(path,'pZ','Grest','c');
-end
-
 end
 
 %------------- END OF CODE --------------

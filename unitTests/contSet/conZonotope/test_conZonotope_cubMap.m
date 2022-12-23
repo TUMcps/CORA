@@ -1,6 +1,6 @@
 function res = test_conZonotope_cubMap
 % test_conZonotope_cubMap - unit test function for cubic multiplication of 
-%                           constrained zonotopes
+%    constrained zonotopes
 %
 % Syntax:  
 %    res = test_conZonotope_cubMap
@@ -9,9 +9,7 @@ function res = test_conZonotope_cubMap
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -58,10 +56,10 @@ A_(2,3) = 1;
 A_(3,5) = 1;
 A_(3,8) = 1;
 b_ = [0;0;0];
+cZ = conZonotope(Z_,A_,b_);
 
 % check for correctness
-if ~compareMatrices(Z_,cZres.Z) || ...
-        ~compareMatrices(A_,cZres.A) || ~all(withinTol(b_,cZres.b))
+if ~isequal(cZres,cZ)
     res = false;
 end
 
@@ -90,10 +88,10 @@ temp = [16 13 -1 14 -4 21 -7 3 -1];
 Z_ = [temp;temp];
 A_ = [1 1 0 0 0 0 0 0];
 b_ = 0;
+cZ = conZonotope(Z_,A_,b_);
 
 % check for correctness
-if ~compareMatrices(Z_,cZres.Z) || ...
-        ~compareMatrices(A_,cZres.A) || ~all(withinTol(b_,cZres.b))
+if ~isequal(cZres,cZ)
     res = false;
 end
 

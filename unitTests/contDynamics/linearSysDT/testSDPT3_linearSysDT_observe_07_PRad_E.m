@@ -66,12 +66,11 @@ for iSet = 1:timeSteps
     IH = interval(estSet.timeInterval.set{iSet});
     IH_alternative = interval(estSet_alternative.timeInterval.set{iSet});
     % check if slightly bloated versions enclose each other
-    res_encl = (IH <= enlarge(IH_alternative,1+accuracy));
-    res_incl = (IH_alternative <= enlarge(IH,1+accuracy));
+    res_cont = isequal(IH,IH_alternative,accuracy);
     % check if simulation is enclosed
     res_sim = contains(IH,simRes.x{1}(iSet,:)');
     % combine results
-    resPartial(iSet) = res_encl*res_incl*res_sim;
+    resPartial(iSet) = res_cont && res_sim;
 end
 % Are all sets matching?
 res = all(resPartial);

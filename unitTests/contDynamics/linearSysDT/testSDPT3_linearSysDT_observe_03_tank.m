@@ -124,8 +124,7 @@ for iEst = 1:length(Estimator)
     end
 
     %check if slightly bloated versions enclose each other
-    resPartial(end+1) = (IH <= enlarge(IH_saved,1+1e-6));
-    resPartial(end+1) = (IH_saved <= enlarge(IH,1+1e-6));
+    resPartial(end+1) = isequal(IH,IH_saved,1e-6);
 end
 
 % final result

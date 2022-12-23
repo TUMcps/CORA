@@ -31,15 +31,20 @@ function res = isequal(pZ1,pZ2,varargin)
 
 %------------- BEGIN CODE --------------
 
+% too many input arguments
+if nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs',3));
+end
+
 % parse input arguments
-tol = setDefaultValues({eps},varargin{:});
+tol = setDefaultValues({eps},varargin);
 
 % check input arguments
 inputArgsCheck({{pZ1,'att','polyZonotope'};
                 {pZ2,'att','polyZonotope'};
                 {tol,'att','numeric',{'nonnan','scalar','nonnegative'}}});
 
-% init result
+% assume false
 res = false;
 
 % remove redundancies in representation
@@ -57,17 +62,17 @@ pZ2 = compact(pZ2);
 
 % compare number of generators (quick check)
 if size(pZ1.G,2) ~= size(pZ2.G,2) || size(pZ1.Grest,2) ~= size(pZ2.Grest,2)
-   return 
+    return 
 end
 
 % compare identifier vectors
 temp1 = sort(pZ1.id); temp2 = sort(unique([pZ1.id;pZ2.id]));
 if length(temp1) ~= length(temp2) || ~all(temp1 == temp2)
-   return;
+    return;
 elseif ~all(pZ1.id == pZ2.id)
-   [~,E1,E2] = mergeExpMatrix(pZ1.id,pZ2.id,pZ1.expMat,pZ2.expMat);
+    [~,E1,E2] = mergeExpMatrix(pZ1.id,pZ2.id,pZ1.expMat,pZ2.expMat);
 else
-   E1 = pZ1.expMat; E2 = pZ2.expMat;
+    E1 = pZ1.expMat; E2 = pZ2.expMat;
 end
 
 % jointly compare dependent generators and exponent matrices

@@ -45,7 +45,7 @@ function I = interval(cPZ,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-method = setDefaultValues({'conZonotope'},varargin{:});  
+method = setDefaultValues({'conZonotope'},varargin);  
 
 % check input arguments
 inputArgsCheck({{cPZ,'att','conPolyZono'};

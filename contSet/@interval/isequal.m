@@ -2,6 +2,7 @@ function res = isequal(I1,I2,varargin)
 % isequal - checks if two intervals are equal
 %
 % Syntax:  
+%    res = isequal(I1,I2)
 %    res = isequal(I1,I2,tol)
 %
 % Inputs:
@@ -31,16 +32,26 @@ function res = isequal(I1,I2,varargin)
 
 %------------- BEGIN CODE --------------
 
+% too many input arguments
+if nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs',3));
+end
+
 % parse input arguments
-tol = setDefaultValues({eps},varargin{:});
+tol = setDefaultValues({eps},varargin);
 
 % input argument check
 inputArgsCheck({{I1,'att','interval'};
                 {I2,'att','interval'};
                 {tol,'att','numeric',{'nonnan','scalar','nonnegative'}}});
 
+% assume false
+res = false;
+
 % check for equal dimensions
-equalDimCheck(I1,I2);
+if any(dim(I1) ~= dim(I2))
+    return
+end
 
 % read infima and suprema
 lb1 = infimum(I1); ub1 = supremum(I1);
@@ -50,20 +61,20 @@ lb2 = infimum(I2); ub2 = supremum(I2);
 idxInf_lb1 = isinf(lb1); idxInf_ub1 = isinf(ub1);
 idxInf_lb2 = isinf(lb2); idxInf_ub2 = isinf(ub2);
 
-% assume true
-res = true;
-
 % checks
-if ~all(idxInf_lb1 == idxInf_lb2) || ~all(idxInf_ub1 == idxInf_ub2)
+if ~all(all(idxInf_lb1 == idxInf_lb2)) || ~all(all(idxInf_ub1 == idxInf_ub2))
     % if same entries are minus/plus infinity
-    res = false;
+    return
 elseif any(lb1(idxInf_lb1) ~= lb2(idxInf_lb2)) || any(ub1(idxInf_ub1) ~= ub2(idxInf_ub2))
     % if infinity entries are equal
-    res = false;
+    return
 elseif ~all(withinTol(lb1(~idxInf_lb1),lb2(~idxInf_lb2),tol)) ...
-        || ~all(withinTol(ub1(~idxInf_ub1),ub2(~idxInf_ub2),tol)) ...
+        || ~all(withinTol(ub1(~idxInf_ub1),ub2(~idxInf_ub2),tol))
     % if other values are equal
-    res = false;
+    return
 end
+
+% assume true
+res = true;
 
 %------------- END OF CODE --------------

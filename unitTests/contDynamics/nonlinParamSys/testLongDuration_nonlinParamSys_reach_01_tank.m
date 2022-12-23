@@ -67,12 +67,7 @@ IH_saved = interval( ...
     [2.2951563475236298; 2.1634660130913415; 2.0001713162063837; 1.8382964545932126; 1.6357089163639560; 1.3070344587514788], ...
     [3.8928903890554940; 3.7300482565925814; 3.4909185224659325; 3.2377181952313689; 3.1029347886879859; 3.2768262662390524]);
 
-%check if slightly bloated versions enclose each other
-res_1 = (IH <= enlarge(IH_saved,1+1e-8));
-res_2 = (IH_saved <= enlarge(IH,1+1e-8));
-
 %final result
-res = res_1 && res_2;
-
+res = isequal(IH,IH_saved,1e-8);
 
 %------------- END OF CODE --------------

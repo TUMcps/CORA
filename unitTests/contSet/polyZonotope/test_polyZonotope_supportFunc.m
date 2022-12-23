@@ -28,8 +28,6 @@ function res = test_polyZonotope_supportFunc
 
 res = true;
 
-%% ANALYTICAL TESTS
-
 % TEST 1
 
 % create polynomial zonotope
@@ -40,22 +38,21 @@ Grest = [0;0];
 pZ = polyZonotope(c,G,Grest,expMat);
 
 % calculate enclosing interval
-inter = interval(pZ,'bnb');
+I = interval(pZ,'bnb');
 
 % define ground truth
-inter_ = interval([0;1],[6;7]);
+I_ = interval([0;1],[6;7]);
 
 % check for correctness
-if ~isequal(inter,inter_)
-    res = false;
-    return;
+if ~isequal(I,I_)
+    res = false; return
 end
 
 % test empty set
 pZ_e = polyZonotope();
-if supportFunc(pZ_e,[1;1],'upper') ~= -Inf || supportFunc(pZ_e,[1;1],'lower') ~= +Inf
-    res = false;
-    return;
+if supportFunc(pZ_e,[1;1],'upper') ~= -Inf ...
+        || supportFunc(pZ_e,[1;1],'lower') ~= +Inf
+    res = false; return
 end
 
 % test [lower, upper] = range
@@ -65,8 +62,7 @@ lower = supportFunc(pZ, dir, 'lower');
 upper = supportFunc(pZ, dir, 'upper');
 
 if ~isequal(range, interval(lower, upper))
-    res = false;
-    return;
+    res = false; return
 end
 
 
@@ -89,11 +85,8 @@ for method = methods
     );
 
     if ~I.contains(ground_truth, 'exact', 1e-15)
-        res = false;
-        return;
+        res = false; return
     end
 end
-
-
 
 %------------- END OF CODE --------------

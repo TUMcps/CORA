@@ -37,7 +37,7 @@ function han = plot(R,varargin)
 %------------- BEGIN CODE --------------
 
 % default values for the optional input arguments
-dims = setDefaultValues({[1,2]},varargin{:});
+dims = setDefaultValues({[1,2]},varargin);
 
 % check input arguments
 inputArgsCheck({{R,'att',{'reachSet'},{''}};

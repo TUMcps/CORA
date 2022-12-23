@@ -1,15 +1,18 @@
-function res = ne(I1,I2)
+function res = ne(I1,I2,varargin)
 % ne - overloads '~='-operator for intervals
 %
-% Syntax:  
+% Syntax:
+%    res = I1 ~= I2
 %    res = ne(I1,I2)
+%    res = ne(I1,I2,tol)
 %
 % Inputs:
 %    I1 - interval object
 %    I2 - interval object
+%    tol - (optional) tolerance
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false
 %
 % Example:
 %    I1 = interval(-1,0);
@@ -20,16 +23,15 @@ function res = ne(I1,I2)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: interval/isequal
 
 % Author:       Dmitry Grebenyuk
 % Written:      06-August-2017
-% Last update:  ---
+% Last update:  23-December-2022 (MW, call isequal)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-res = any(infimum(I1) ~= infimum(I2)) ||...
-    any(supremum(I1) ~= supremum(I2));
+res = ~isequal(I1,I2,varargin{:});
 
 %------------- END OF CODE --------------

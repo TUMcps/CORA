@@ -36,7 +36,8 @@ for i=1:length(E_c)
     %% Points inside
     P = randPoint(E,2*n);
     for i_p = 1:size(P,2)
-        if ellipsoidNorm(E,P(:,i_p)-E.center) > 1+tol
+        eN = ellipsoidNorm(E,P(:,i_p)-E.center);
+        if eN > 1 && ~withinTol(eN,1,tol)
             res = false; break;
         end
     end
@@ -50,7 +51,8 @@ for i=1:length(E_c)
     P = randPoint(E,2*n) + 10*max_d;
 
     for i_p = 1:size(P,2)
-        if ellipsoidNorm(E, P(:,i_p)-E.q) <= 1-tol
+        eN = ellipsoidNorm(E, P(:,i_p)-E.q);
+        if eN < 1 && ~withinTol(eN,1,tol)
             res = false; break;
         end
     end

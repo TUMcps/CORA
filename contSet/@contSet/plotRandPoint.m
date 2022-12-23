@@ -35,7 +35,7 @@ function han = plotRandPoint(S,varargin)
 %------------- BEGIN CODE --------------
 
 % default values for the optional input arguments
-[dims,N,type] = setDefaultValues({[1,2],1000,'.k'},varargin{:});
+[dims,N,type] = setDefaultValues({[1,2],1000,'.k'},varargin);
 
 % check input arguments
 inputArgsCheck({{S,'att','contSet'};

@@ -37,7 +37,7 @@ function dispUpToLength(strList,maxLength,varargin)
 %------------- BEGIN CODE --------------
 
 % set default value
-initString = setDefaultValues({""},varargin{:});
+initString = setDefaultValues({""},varargin);
 
 % check input arguments
 inputArgsCheck({{strList,'att',{'string'},{'vector'}}; ...

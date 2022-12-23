@@ -34,7 +34,7 @@ function ratio = approxVolumeRatio(pZ,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-type = setDefaultValues({'interval'},varargin{:});
+type = setDefaultValues({'interval'},varargin);
 
 % check input arguments
 inputArgsCheck({{pZ,'att','polyZonotope'};

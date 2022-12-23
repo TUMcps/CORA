@@ -1,12 +1,15 @@
-function res = eq(E1,E2)
+function res = eq(E1,E2,varargin)
 % eq - Overloaded '==' operator for the comparison of ellipsoids
 %
-% Syntax:  
+% Syntax:
+%    res = E1 == E2
 %    res = eq(E1,E2)
+%    res = eq(E1,E2,tol)
 %
 % Inputs:
 %    E1 - ellipsoid object 
 %    E2 - ellipsoid object 
+%    tol - (optional) tolerance
 %
 % Outputs:
 %    res - true/false
@@ -20,39 +23,17 @@ function res = eq(E1,E2)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: plus
+% See also: ellipsoid/isequal
 
 % Author:       Victor Gassmann
 % Written:      14-October-2019 
 % Last update:  16-March-2021 (relative TOL)
 %               04-July-2022 (VG: input checks)
+%               23-December-2022 (MW, move code to isequal)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% check input arguments
-inputArgsCheck({{E1,'att','ellipsoid','scalar'};
-                {E2,'att','ellipsoid','scalar'}});
-
-% check if dimensions are equal
-if dim(E1) ~= dim(E2)
-    res = false;
-    return;
-end
-
-% check for emptyness
-if (isempty(E1) && ~isempty(E2)) || (~isempty(E1) && isempty(E2))
-    res = false;
-    return;
-elseif isempty(E1) && isempty(E2)
-    res = true;
-    return;
-end
-    
-% set tolerance for numerical comparsion
-TOL = min(E1.TOL,E2.TOL);
-
-% compare shape matrix and center numerically
-res = all(all(withinTol(E1.Q,E2.Q,TOL))) && all(withinTol(E1.q,E2.q,TOL));
+res = isequal(E1,E2,varargin{:});
 
 %------------- END OF CODE --------------

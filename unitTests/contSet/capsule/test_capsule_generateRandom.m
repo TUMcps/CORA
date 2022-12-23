@@ -39,27 +39,27 @@ res = dim(C) == n;
 
 % only center
 C = capsule.generateRandom('Center',c);
-res(end+1,1) = all(abs(C.c - c) < eps);
+res(end+1,1) = compareMatrices(C.c,c);
 
 % only radius
 C = capsule.generateRandom('Radius',r);
-res(end+1,1) = abs(C.r - r) < eps;
+res(end+1,1) = withinTol(C.r,r);
 
 % dimension and center
 C = capsule.generateRandom('Dimension',n,'Center',c);
-res(end+1,1) = dim(C) == n && all(abs(C.c - c) < eps);
+res(end+1,1) = dim(C) == n && compareMatrices(C.c,c);
 
 % dimension and radius
 C = capsule.generateRandom('Dimension',n,'Radius',r);
-res(end+1,1) = dim(C) == n && abs(C.r - r) < eps;
+res(end+1,1) = dim(C) == n && withinTol(C.r,r);
 
 % center and radius
 C = capsule.generateRandom('Center',c,'Radius',r);
-res(end+1,1) = all(abs(C.c - c) < eps) && abs(C.r - r) < eps;
+res(end+1,1) = compareMatrices(C.c,c) && withinTol(C.r,r);
 
 % dimension, center, and radius
 C = capsule.generateRandom('Dimension',n,'Center',c,'Radius',r);
-res(end+1,1) = dim(C) == n && all(abs(C.c - c) < eps) && abs(C.r - r) < eps;
+res(end+1,1) = dim(C) == n && compareMatrices(C.c,c) && withinTol(C.r,r);
 
 
 % unify results

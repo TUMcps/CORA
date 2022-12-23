@@ -24,39 +24,36 @@ function res = testLongDuration_conPolyZono_zonotope
 
 %------------- BEGIN CODE --------------
 
-    res = true;
-    tol = 1e-5;
+res = true;
+tol = 1e-5;
+
+% define range bounding methods that are tested
+methods = {'forwardBackward','linearize','polynomial', ...
+           'interval','all'};
+
+% loop over all test cases
+for i = 1:5
     
-    % Random Tests --------------------------------------------------------
+    % generate random constrained polynomial zonotope
+    cPZ = conPolyZono.generateRandom();
     
-    % define range bounding methods that are tested
-    methods = {'forwardBackward','linearize','polynomial', ...
-               'interval','all'};
+    % get random points
+    points = randPoint(cPZ,50,'extreme');
     
-    % loop over all test cases
-    for i = 1:5
+    % loop over all methods
+    for j = 1:length(methods)
         
-        % generate random constrained polynomial zonotope
-        cPZ = conPolyZono.generateRandom();
+        % compute zonotope enclosure
+        Z = zonotope(cPZ,methods{j});
         
-        % get random points
-        points = randPoint(cPZ,50,'extreme');
-        
-        % loop over all methods
-        for j = 1:length(methods)
+        % check for correctness
+        if ~contains(Z,points,'exact',tol)
             
-            % compute zonotope enclosure
-            Z = zonotope(cPZ,methods{j});
+            % save variables so that failure can be reproduced
+            path = pathFailedTests(mfilename());
+            save(path,'cPZ','points');
             
-            % check for correctness
-            if ~contains(Z,points,'exact',tol)
-                
-                % save variables so that failure can be reproduced
-                path = pathFailedTests(mfilename());
-                save(path,'cPZ','points');
-                
-                throw(CORAerror('CORA:testFailed'));
-            end
+            throw(CORAerror('CORA:testFailed'));
         end
     end
 end

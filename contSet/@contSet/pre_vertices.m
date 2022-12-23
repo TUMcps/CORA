@@ -43,7 +43,7 @@ elseif nargin > 3
 end
 
 % parse input arguments
-method = setDefaultValues({'convHull'},varargin{:}); 
+method = setDefaultValues({'convHull'},varargin); 
 
 % check input arguments
 inputArgsCheck({{S,'att',classname};

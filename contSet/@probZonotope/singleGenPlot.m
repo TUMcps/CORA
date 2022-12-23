@@ -35,7 +35,7 @@ function singleGenPlot(probZ,varargin)
 
 if nargin <= 3
     % parse input arguments
-    [type,m] = setDefaultValues({'solid',probZ.gamma},varargin{:});
+    [type,m] = setDefaultValues({'solid',probZ.gamma},varargin);
 
     % check input arguments
     inputArgsCheck({{probZ,'att','probZonotope'};

@@ -81,17 +81,8 @@ IH_ti_true = interval( ...
 linErrors_true = 1e-3*[0.206863683556226; 0.314066832661960; 0.161658399976593; 0.353255589312750; 0.358487165091235; 0.209190685436450];
 % -------------------------------------------------------------------------
 
-%compare with obtained values
-%check if slightly bloated versions enclose each other
-res_tp_1 = (IH_tp <= enlarge(IH_tp_true,1+1e-8));
-res_tp_2 = (IH_tp_true <= enlarge(IH_tp,1+1e-8));
-
-res_ti_1 = (IH_ti <= enlarge(IH_ti_true,1+1e-8));
-res_ti_2 = (IH_ti_true <= enlarge(IH_ti,1+1e-8));
-
-res_error = (max(abs(linErrors - linErrors_true)) <= 1e-12);
-
 %final result
-res = res_tp_1 && res_tp_2 && res_ti_1 && res_ti_2 && res_error;
+res = isequal(IH_tp,IH_tp_true,1e-8) && isequal(IH_ti,IH_ti_true,1e-8) ...
+    && compareMatrices(linErrors,linErrors_true,1e-12);
 
 %------------- END OF CODE --------------

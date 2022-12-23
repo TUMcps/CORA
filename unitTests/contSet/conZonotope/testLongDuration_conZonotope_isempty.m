@@ -28,8 +28,8 @@ function res = testLongDuration_conZonotope_isempty
 res = true;
 
 % check empty conZonotope object
-conZono = conZonotope();
-if ~isempty(conZono)
+cZ = conZonotope();
+if ~isempty(cZ)
     res = false;
 end
 
@@ -47,10 +47,10 @@ for i=1:nrOfTests
     nrGens = size(G,2);
     
     % instantiate conZonotope without constraints
-    conZono = conZonotope(c,G);
+    cZ = conZonotope(c,G);
     
     % assert correctness
-    if isempty(conZono)
+    if isempty(cZ)
         res = false; break;
     end
     
@@ -59,10 +59,10 @@ for i=1:nrOfTests
     A = diag(1+rand(nrGens,1));
     b = sign(randn(nrGens,1));
     % instantiate conZonotope with constraints
-    conZono = conZonotope(c,G,A,b);
+    cZ = conZonotope(c,G,A,b);
     
     % assert correctness
-    if isempty(conZono)
+    if isempty(cZ)
         res = false; break;
     end
 
@@ -71,10 +71,10 @@ for i=1:nrOfTests
     A = diag(0.5*ones(nrGens,1));
     b = sign(randn(nrGens,1));
     % instantiate empty conZonotope
-    conZono = conZonotope(c,G,A,b);
+    cZ = conZonotope(c,G,A,b);
     
     % assert correctness
-    if ~isempty(conZono)
+    if ~isempty(cZ)
         res = false; break;
     end
     

@@ -28,8 +28,6 @@ function res = test_polyZonotope_mptPolytope
 
 res = true;
 
-%% ANALYTICAL TEST
-
 % construct a polytope by computation of the convex hull between a zonotope
 % and one point
 pZ1 = polyZonotope([0;0],[1 0 -1;1 1 1],[],eye(3));
@@ -38,15 +36,15 @@ pZ2 = polyZonotope([1.5;2.5],[],[],[]);
 pZ = enclose(pZ1,pZ2);
 
 % convert the polynomial zonotope to a mptPolytope
-poly = mptPolytope(pZ);
+P = mptPolytope(pZ);
 
 % % visualize the result
 % hold on
 % plot(pZ,[1,2],'r','Splits',12,'EdgeColor','none');
-% plot(poly,[1,2],'b');
+% plot(P,[1,2],'b');
 
 % calculate the vertices
-V = vertices(poly);
+V = vertices(P);
 
 % define the ground truth
 V_ = [-2 -2 0 1.5 2 2 0;-1 1 3 2.5 1 -1 -3];

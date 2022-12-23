@@ -1,7 +1,7 @@
 function runTestSuite_MP(varargin)
 % runTestSuite_MP - runs the test suite with test that require the 
-% multiple precision toolbox; all functions starting with the prefix 
-% 'testMP_' are executed
+%    multiple precision toolbox; all functions starting with the prefix 
+%    'testMP_' are executed
 %
 % Syntax:  
 %    runTestSuite_MP(varargin)
@@ -18,25 +18,22 @@ function runTestSuite_MP(varargin)
 % Last update:  ---
 % Last revision:---
 
-
 %------------- BEGIN CODE --------------
 
-directory = [CORAROOT filesep 'unitTests'];
-verbose = 1;
-
-if nargin >= 1
-    directory = varargin{1};
+% too many input arguments
+if nargin > 2
+    throw(CORAerror('CORA:tooManyInputArgs',2));
 end
 
-if nargin >= 2
-    verbose = varargin{2};
-end
+% set default values
+[directory,verbose] = setDefaultValues({[CORAROOT filesep 'unitTests'],true},varargin);
+
 
 % run main program performing the tests
 [failed, numberOfTests] = testSuiteCore('testMP',verbose,directory);
 
 disp('----------------------------------------------------------------------------');
-disp(['run ' int2str(numberOfTests) ' tests, ' int2str(size(failed, 2)) ' failed.']);
+disp(['run ' int2str(numberOfTests) ' tests, ' int2str(size(failed,1)) ' failed.']);
 disp(strjoin(failed, ',\n'));
 
 %------------- END OF CODE --------------

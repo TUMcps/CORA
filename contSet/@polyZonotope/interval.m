@@ -46,7 +46,7 @@ function I = interval(pZ,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguemnts
-method = setDefaultValues({'interval'},varargin{:});
+method = setDefaultValues({'interval'},varargin);
 
 % check input arguments
 inputArgsCheck({{pZ,'att','polyZonotope'};

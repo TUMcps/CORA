@@ -21,6 +21,7 @@ function res = test_interval_isequal
 % Author:       Mark Wetzlinger
 % Written:      17-September-2019
 % Last update:  03-December-2022 (MW, add Inf case)
+%               23-December-2022 (MW, add matrix case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -28,7 +29,7 @@ function res = test_interval_isequal
 % assume true
 res = true;
 
-% create interval
+% instantiate interval
 lb = [-3; -9; -4; -7; -1];
 ub = [4;   2;  6;  3;  8];
 I1 = interval(lb, ub);
@@ -48,6 +49,18 @@ ub = [4;   2;  Inf;  2;  8];
 I2 = interval(lb, ub);
 
 if ~isequal(I1,I1) || isequal(I1,I2)
+    res = false;
+end
+
+% instantiate matrix interval
+lb = [-2 -3   -Inf; -4 -Inf -1];
+ub = [ 2  Inf 5;    Inf 3    0];
+I1 = interval(lb,ub);
+ub = [ 2  Inf Inf;  Inf 3    0];
+I2 = interval(lb,ub);
+I3 = I1([1,2],[1,2]);
+
+if ~isequal(I1,I1) || isequal(I1,I2) || isequal(I1,I3)
     res = false;
 end
 

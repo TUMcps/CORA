@@ -34,7 +34,6 @@ C_rad = radius(C);
 C_rad_true = 1.5;
 
 % compare results
-tol = 1e-9;
-res = abs(C_rad - C_rad_true) < tol;
+res = withinTol(C_rad,C_rad_true);
 
 %------------- END OF CODE --------------

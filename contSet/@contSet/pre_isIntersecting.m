@@ -44,7 +44,7 @@ elseif nargin > 4
 end
 
 % set default values: type ('exact')
-type = setDefaultValues({'exact'},varargin{:});
+type = setDefaultValues({'exact'},varargin);
 
 % right order of objects
 [S1,S2] = findClassArg(S1,S2,classname);

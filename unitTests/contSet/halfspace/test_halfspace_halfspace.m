@@ -25,8 +25,8 @@ function res = test_halfspace_halfspace
 
 %------------- BEGIN CODE --------------
 
+% assume true
 res = true;
-tol = 1e-12;
 
 % empty halfspace
 hs = halfspace();
@@ -40,11 +40,11 @@ d = 1;
 
 % admissible initialization
 hs = halfspace(c,d);
-if any(abs(hs.c - c) > tol) || abs(hs.d - d) > tol
+if ~compareMatrices(hs.c,c) || ~withinTol(hs.d,d)
     res = false;
 end
 hs = halfspace(c',d);
-if any(abs(hs.c - c) > tol) || abs(hs.d - d) > tol
+if ~compareMatrices(hs.c,c) || ~withinTol(hs.d,d)
     res = false;
 end
 

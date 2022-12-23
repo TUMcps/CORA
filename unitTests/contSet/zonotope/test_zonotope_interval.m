@@ -32,14 +32,14 @@ Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
 I1 = interval(Z1);
 
 % obtain results
-inf = infimum(I1);
-sup = supremum(I1);
+lb = infimum(I1);
+ub = supremum(I1);
 
 % true results
-true_inf = [-10; -8];
-true_sup = [2; 10];   
+true_lb = [-10; -8];
+true_ub = [2; 10];   
 
 % check result
-res = all(inf==true_inf) & all(sup==true_sup);
+res = compareMatrices(lb,true_lb) && compareMatrices(ub,true_ub);
 
 %------------- END OF CODE --------------

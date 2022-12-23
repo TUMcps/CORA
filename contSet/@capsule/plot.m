@@ -32,7 +32,7 @@ function han = plot(C,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-dims = setDefaultValues({[1,2]},varargin{:});
+dims = setDefaultValues({[1,2]},varargin);
 % check input arguments
 inputArgsCheck({{C,'att','capsule','nonempty'};
                 {dims,'att','numeric',{'nonempty','vector','integer','positive'}} });

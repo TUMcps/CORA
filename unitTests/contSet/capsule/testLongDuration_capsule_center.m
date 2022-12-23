@@ -38,7 +38,7 @@ for n=1:50
     c = center(C);
     
     % check result
-    if ~all(c == c_true)
+    if ~compareMatrices(c,c_true)
         res = false; break;
     end
 end

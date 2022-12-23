@@ -36,7 +36,7 @@ if length(varargin)>1
 end
 
 % set default values
-type = setDefaultValues({2},varargin{:});
+type = setDefaultValues({2},varargin);
 
 if isnumeric(type) && type==2
     % Euclidean matrix norm not implemented (exact computation NP hard)

@@ -45,7 +45,7 @@ function pZ = restructure(pZ,method,order,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-genOrder = setDefaultValues({Inf},varargin{:});
+genOrder = setDefaultValues({Inf},varargin);
 
 % check input arguments
 inputArgsCheck({{pZ,'att','polyZonotope'};

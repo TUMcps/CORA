@@ -24,47 +24,44 @@ function res = testLongDuration_conPolyZono_or
 
 %------------- BEGIN CODE --------------
 
-    res = true;
-    splits = 4;
-    
-    % Random Tests --------------------------------------------------------
-    
-    % define set representations that are tested
-    sets = {'conPolyZono','polyZonotope','zonotope','conZonotope', ...
-            'ellipsoid','capsule'};
-    
-    % loop over all test cases
-    for i = 1:2
-        
-        % generate random constrained polynomial zonotope
-        cPZ1 = conPolyZono.generateRandom('Dimension',2);
-        
-        % loop over all other set representations
-        for j = 1:length(sets)
-            
-            % generate random object of the current set representation
-            str = ['temp = ',sets{i},'.generateRandom(''Dimension'',2);']; 
-            eval(str);
-            cPZ2 = conPolyZono(temp);
+res = true;
+splits = 4;
 
-            % compute union
-            cPZ = cPZ1 | temp;
+% define set representations that are tested
+sets = {'conPolyZono','polyZonotope','zonotope','conZonotope', ...
+        'ellipsoid','capsule'};
 
-            % get random points inside the two conPolyZono objects
-            points = [randPoint(cPZ1,5,'extreme'), ...
-                      randPoint(cPZ2,5,'extreme')];
+% loop over all test cases
+for i = 1:2
+    
+    % generate random constrained polynomial zonotope
+    cPZ1 = conPolyZono.generateRandom('Dimension',2);
+    
+    % loop over all other set representations
+    for j = 1:length(sets)
+        
+        % generate random object of the current set representation
+        str = ['temp = ',sets{i},'.generateRandom(''Dimension'',2);']; 
+        eval(str);
+        cPZ2 = conPolyZono(temp);
+
+        % compute union
+        cPZ = cPZ1 | temp;
+
+        % get random points inside the two conPolyZono objects
+        points = [randPoint(cPZ1,5,'extreme'), ...
+                  randPoint(cPZ2,5,'extreme')];
+        
+        % check if all points are inside polygon enclosures
+        pgon = polygon(cPZ,splits);
+        
+        if ~contains(pgon,points)
             
-            % check if all points are inside polygon enclosures
-            pgon = polygon(cPZ,splits);
+            % save variables so that failure can be reproduced
+            path = pathFailedTests(mfilename());
+            save(path,'cPZ1','temp','points');
             
-            if ~contains(pgon,points)
-                
-                % save variables so that failure can be reproduced
-                path = pathFailedTests(mfilename());
-                save(path,'cPZ1','temp','points');
-                
-                throw(CORAerror('CORA:testFailed'));
-            end
+            throw(CORAerror('CORA:testFailed'));
         end
     end
 end

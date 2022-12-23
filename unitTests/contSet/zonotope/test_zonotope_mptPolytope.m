@@ -25,10 +25,6 @@ function res = test_zonotope_mptPolytope
 
 %------------- BEGIN CODE --------------
 
-res = true;
-
-% Analytical Test ---------------------------------------------------------
-
 % create zonotope
 Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
 
@@ -55,8 +51,6 @@ true_C = [ 0.554700196225229   0.832050294337844; ...
 true_d =  [2.773500981126146; 0; 0; 5.547001962252290; 5.547001962252290; 7.276068751089989];
 
 % check result
-if ~compareMatrices([C,d],[true_C,true_d],1e-13)
-    throw(CORAerror('CORA:testFailed'));
-end
+res = compareMatrices([C,d],[true_C,true_d],1e-13);
 
 %------------- END OF CODE --------------

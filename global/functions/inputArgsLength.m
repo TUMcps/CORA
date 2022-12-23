@@ -32,7 +32,7 @@ function [count,out] = inputArgsLength(f,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments: number of input arguments to function handle
-narginf = setDefaultValues({nargin(f)},varargin{:});
+narginf = setDefaultValues({nargin(f)},varargin);
 
 % try fast way to determine number of inputs (does not work if
 % statements like "length(x)" occur in the dynamic function

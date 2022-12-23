@@ -29,9 +29,9 @@ res = true;
 tol = 1e-9;
 
 % check empty conZonotope object: projection should return error
-conZono = conZonotope();
+cZ = conZonotope();
 try 
-    project(conZono,[1,2])
+    project(cZ,[1,2])
     res = false;
 catch ME
     if ~strcmp(ME.identifier,'CORA:emptySet')
@@ -67,18 +67,16 @@ for i=1:nrOfTests
     nrGens = size(G,2);
     
     % instantiate conZonotope without constraints
-    conZono = conZonotope(c,G);
+    cZ = conZonotope(c,G);
     
     % projected conZonotope
-    conZonoProj = project(conZono,projDim);
+    cZ_proj = project(cZ,projDim);
     
     % instantiate projection
-    conZonoProj_true = conZonotope(c(selectedDims),G(selectedDims,:));
+    cZ_proj_true = conZonotope(c(selectedDims),G(selectedDims,:));
        
     % compare results
-    if any(any(abs(conZonoProj.Z - conZonoProj_true.Z) > tol)) || ...
-            any(any(abs(conZonoProj.A - conZonoProj_true.A) > tol)) || ...
-            any(any(abs(conZonoProj.b - conZonoProj_true.b) > tol))
+    if ~isequal(cZ_proj,cZ_proj_true)
         res = false; break;
     end
     
@@ -87,18 +85,16 @@ for i=1:nrOfTests
     A = diag(1+rand(nrGens,1));
     b = sign(randn(nrGens,1));
     % instantiate conZonotope with constraints
-    conZono = conZonotope(c,G,A,b);
+    cZ = conZonotope(c,G,A,b);
     
     % project to subspace
-    conZonoProj = project(conZono,projDim);
+    cZ_proj = project(cZ,projDim);
     
     % instantiate projection
-    conZonoProj_true = conZonotope(c(selectedDims),G(selectedDims,:),A,b);
+    cZ_proj_true = conZonotope(c(selectedDims),G(selectedDims,:),A,b);
     
     % compare results
-    if any(any(abs(conZonoProj.Z - conZonoProj_true.Z) > tol)) || ...
-            any(any(abs(conZonoProj.A - conZonoProj_true.A) > tol)) || ...
-            any(any(abs(conZonoProj.b - conZonoProj_true.b) > tol))
+    if ~isequal(cZ_proj,cZ_proj_true)
         res = false; break;
     end
     

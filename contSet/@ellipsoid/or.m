@@ -41,7 +41,7 @@ function E = or(E,S,varargin)
 %% parsing & checking
 % make sure first argument is class argument 
 [E,S] = findClassArg(E,S,'ellipsoid');
-mode = setDefaultValues({'outer'},varargin{:});
+mode = setDefaultValues({'outer'},varargin);
 
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'};

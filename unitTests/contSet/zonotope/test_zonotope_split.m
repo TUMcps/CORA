@@ -8,9 +8,7 @@ function res = test_zonotope_split
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -24,6 +22,9 @@ function res = test_zonotope_split
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% tolerance
+tol = 1e-14;
 
 % create zonotope
 Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
@@ -48,77 +49,89 @@ Zsplit_4 = split(Z1,h);
 % obtain zonotope matrix -- split 1
 for i=1:length(Zsplit_1)
     for j=1:length(Zsplit_1{1})
-        Zmat_1{i}{j} = Zsplit_1{i}{j}.Z;
+        c_1{i}{j} = center(Zsplit_1{i}{j});
+        G_1{i}{j} = generators(Zsplit_1{i}{j});
     end
 end
 
 % obtain zonotope matrix -- split 2
 for i=1:length(Zsplit_2)
-    Zmat_2{i} = Zsplit_2{i}.Z;
+    c_2{i} = center(Zsplit_2{i});
+    G_2{i} = generators(Zsplit_2{i});
 end
 
 % obtain zonotope matrix -- split 3
 for i=1:length(Zsplit_3)
-    Zmat_3{i} = Zsplit_3{i}.Z;
+    c_3{i} = center(Zsplit_3{i});
+    G_3{i} = generators(Zsplit_3{i});
 end
 
 % obtain zonotope matrix -- split 4
 for i=1:length(Zsplit_4)
-    Zmat_4{i} = Zsplit_4{i}.Z;
+    c_4{i} = center(Zsplit_4{i});
+    G_4{i} = generators(Zsplit_4{i});
 end
 
 % true result -- split 1
-true_mat_1{1}{1} = [-7, 3, 0; ...
-            1, 0, 9];
-true_mat_1{1}{2} = [-1, 3, 0; ...
-            1, 0, 9];
-true_mat_1{2}{1} = [-4, 6, 0; ...
-            -3.5, 0, 4.5];
-true_mat_1{2}{2} = [-4, 6, 0; ...
-            5.5, 0, 4.5];
+true_c_1{1}{1} = [-7; 1];
+true_G_1{1}{1} = [3, 0; 0, 9];
+true_c_1{1}{2} = [-1; 1];
+true_G_1{1}{2} = [3, 0; 0, 9];
+true_c_1{2}{1} = [-4; -3.5];
+true_G_1{2}{1} = [6, 0; 0, 4.5];
+true_c_1{2}{2} = [-4; 5.5];
+true_G_1{2}{2} = [6, 0; 0, 4.5];
         
 % true result -- split 2
-true_mat_2{1} = [-4, 6, 0; ...
-            -3.5, 0, 4.5];
-true_mat_2{2} = [-4, 6, 0; ...
-            5.5, 0, 4.5];
+true_c_2{1} = [-4; -3.5];
+true_G_2{1} = [6, 0; 0, 4.5];
+true_c_2{2} = [-4; 5.5];
+true_G_2{2} = [6, 0; 0, 4.5];
         
 % true result -- split 3
-true_mat_3{1} = [-5.25, 1.25, -2.5, -2.5, -2.5; ...
-            -0.25, 1.25, 2.5, 2.5, 2.5];
-true_mat_3{2} = [-2.75, -1.25, -2.5, -2.5, -2.5; ...
-            2.25, -1.25, 2.5, 2.5, 2.5];
+true_c_3{1} = [-5.25; -0.25];
+true_G_3{1} = [1.25, -2.5, -2.5, -2.5; ...
+            1.25, 2.5, 2.5, 2.5];
+true_c_3{2} = [-2.75; 2.25];
+true_G_3{2} = [-1.25, -2.5, -2.5, -2.5; ...
+            -1.25, 2.5, 2.5, 2.5];
         
 % true result -- split 4
-true_mat_4{1} = [-7, 4.5, -0.5, 0.5, 1.5; ...
-            4, -4.5, -0.5, 0.5, 1.5];
-true_mat_4{2} = [0.5, -3, -0.5, 0.5, 1.5; ...
-            -3.5, 3, -0.5, 0.5, 1.5];
+true_c_4{1} = [-7; 4];
+true_G_4{1} = [4.5, -0.5, 0.5, 1.5; ...
+            -4.5, -0.5, 0.5, 1.5];
+true_c_4{2} = [0.5; -3.5];
+true_G_4{2} = [-3, -0.5, 0.5, 1.5; ...
+            3, -0.5, 0.5, 1.5];
 
 % check result --split 1
-res_1 = 1;
-for i=1:length(Zmat_1)
-    for j=1:length(Zmat_1{1})
-        res_1 = res_1 & all(all(Zmat_1{i}{j} == true_mat_1{i}{j}));
+res_1 = true;
+for i=1:length(G_1)
+    for j=1:length(G_1{1})
+        res_1 = res_1 && compareMatrices(true_c_1{i}{j},c_1{i}{j},tol) ...
+            && compareMatrices(true_G_1{i}{j},G_1{i}{j},tol);
     end
 end
 
 % check result --split 2
-res_2 = 1;
-for i=1:length(Zmat_2)
-    res_2 = res_2 & all(all(Zmat_2{i} == true_mat_2{i}));
+res_2 = true;
+for i=1:length(G_2)
+    res_2 = res_2 && compareMatrices(true_c_2{i},c_2{i},tol) ...
+            && compareMatrices(true_G_2{i},G_2{i},tol);
 end
 
 % check result --split 3
-res_3 = 1;
-for i=1:length(Zmat_3)
-    res_3 = res_3 & all(all(abs(Zmat_3{i}-true_mat_3{i}) < 1e-15));
+res_3 = true;
+for i=1:length(G_3)
+    res_3 = res_3 && compareMatrices(true_c_3{i},c_3{i},tol) ...
+            && compareMatrices(true_G_3{i},G_3{i},tol);
 end
 
 % check result --split 4
-res_4 = 1;
-for i=1:length(Zmat_4)
-    res_4 = res_4 & all(all(abs(Zmat_4{i}-true_mat_4{i}) < 1e-15));
+res_4 = true;
+for i=1:length(G_4)
+    res_4 = res_4 && compareMatrices(true_c_4{i},c_4{i},tol) ...
+            && compareMatrices(true_G_4{i},G_4{i},tol);
 end
 
 % combined check
