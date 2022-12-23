@@ -50,7 +50,7 @@ function Z = zonotope(cZ,varargin)
     end
     
     % parse input arguments
-    alg = setDefaultValues({'nullSpace'},varargin{:});
+    alg = setDefaultValues({'nullSpace'},varargin);
 
     % check input arguments
     inputArgsCheck({{cZ,'att','conZonotope'};

@@ -66,12 +66,8 @@ IH_saved = interval( ...
            [-0.1283222186855075; -0.1231839187600670; -0.0409825827512041; -0.0585969262587082; -0.0749684720882265], ...
            [0.1331532444946742; 0.1451671122132107; 0.0409897108679144; 0.0585982732675874; 0.0750331447277620]);
 
-%check if slightly bloated versions enclose each other
-res_1 = (IH <= enlarge(IH_saved,1+1e-8));
-res_2 = (IH_saved <= enlarge(IH,1+1e-8));
-
 %final result
-res_zono = res_1 && res_2;
+res_zono = isequal(IH,IH_saved,1e-8);
 
 
 % Reachability Analysis (zonotope bundles) --------------------------------
@@ -92,15 +88,10 @@ IH_saved = interval( ...
     [-0.1283222186855075; -0.1231839187600670; -0.0409823708730643; -0.0585969262587082; -0.0749684720882265], ...
     [0.1324828890131164; 0.1447383080221113; 0.0409897108679144; 0.0585981287398916; 0.0750331447277620]);
 
-%check if slightly bloated versions enclose each other
-res_1 = (IH <= enlarge(IH_saved,1+1e-8));
-res_2 = (IH_saved <= enlarge(IH,1+1e-8));
-
 %final result
-res_zonoBundles = res_1 && res_2;
+res_zonoBundles = isequal(IH,IH_saved,1e-8);
 
 %result of different set representations
 res = res_zono && res_zonoBundles;
-
 
 %------------- END OF CODE --------------

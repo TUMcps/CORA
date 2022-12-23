@@ -48,7 +48,7 @@ if isempty(M1) && isempty(M2)
 end
 
 % parse input arguments
-[tol,type] = setDefaultValues({eps,'equal'},varargin{:});
+[tol,type] = setDefaultValues({eps,'equal'},varargin);
 
 % check input arguments
 inputArgsCheck({{M1,'att','numeric',{'nonnan','nonempty','finite'}};

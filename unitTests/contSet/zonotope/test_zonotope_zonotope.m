@@ -8,9 +8,7 @@ function res = test_zonotope_zonotope
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -35,23 +33,22 @@ res = isempty(Z);
 % random center, random generator matrix
 c = [3; 3; 2];
 G = [2 -4 -6 3 5; 1 -7 3 -5 2; 0 4 -7 3 2];
-Gempty = [];
 Zmat = [c,G];
 
 % admissible initializations
 Z = zonotope(c,G);
-if any(abs(center(Z) - c) > tol) || any(any(abs(generators(Z) - G) > tol))
+if ~compareMatrices(center(Z),c) || ~compareMatrices(generators(Z),G)
     res = false;
 end
 
-Z = zonotope(c,Gempty);
-if any(abs(center(Z) - c) > tol) || ~isempty(generators(Z))
+Z = zonotope(c);
+if ~compareMatrices(center(Z),c) || ~isempty(generators(Z))
     res = false;
 end
 
 Z = zonotope(Zmat);
-if any(abs(center(Z) - Zmat(:,1)) > tol) ...
-        || any(any(abs(generators(Z) - Zmat(:,2:end)) > tol))
+if ~compareMatrices(center(Z),Zmat(:,1)) ...
+        || ~compareMatrices(generators(Z),Zmat(:,2:end))
     res = false;
 end
 

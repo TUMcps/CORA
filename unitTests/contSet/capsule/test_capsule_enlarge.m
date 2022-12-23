@@ -36,7 +36,6 @@ C_enlarged = enlarge(C,factor);
 C_true = capsule([1;1],[2;2],1);
 
 % compare results
-tol = 1e-9;
-res = isequal(C_true,C_enlarged,tol);
+res = isequal(C_true,C_enlarged);
 
 %------------- END OF CODE --------------

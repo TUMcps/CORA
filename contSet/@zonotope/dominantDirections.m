@@ -34,7 +34,7 @@ function S=dominantDirections(Z,varargin)
 n = dim(Z);
 
 % parse input arguments
-[filterLength1,filterLength2] = setDefaultValues({n+5,n+3},varargin{:});
+[filterLength1,filterLength2] = setDefaultValues({n+5,n+3},varargin);
 
 % check input arguments
 inputArgsCheck({{Z,'att','zonotope','nonempty'};

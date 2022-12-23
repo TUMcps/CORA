@@ -26,7 +26,7 @@ if nargin > 2
 end
 
 % set default values
-[directory,verbose] = setDefaultValues({[CORAROOT filesep 'unitTests'],true},varargin{:});
+[directory,verbose] = setDefaultValues({[CORAROOT filesep 'unitTests'],true},varargin);
 
 % run main program performing the tests
 [failed, numberOfTests] = testSuiteCore('testLongDuration',verbose,directory);

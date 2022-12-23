@@ -39,7 +39,7 @@ function han = plot(hyp,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-dims = setDefaultValues({[1,2]},varargin{:});
+dims = setDefaultValues({[1,2]},varargin);
 
 % check input arguments
 inputArgsCheck({{hyp,'att','conHyperplane'};

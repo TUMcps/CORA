@@ -1,12 +1,15 @@
-function res = eq(C1,C2)
+function res = eq(C1,C2,varargin)
 % eq - overloaded '==' operator for exact comparison of two capsules
 %
-% Syntax:  
+% Syntax:
+%    res = C1 == C2
 %    res = eq(C1,C2)
+%    res = eq(C1,C2,tol)
 %
 % Inputs:
 %    C1 - capsule object
 %    C2 - capsule object
+%    tol - (optional) tolerance
 %
 % Outputs:
 %    res - true/false
@@ -20,7 +23,7 @@ function res = eq(C1,C2)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: capsule/isequal
 
 % Author:       Mingrui Wang
 % Written:      21-June-2022
@@ -29,6 +32,6 @@ function res = eq(C1,C2)
 
 %------------- BEGIN CODE --------------
 
-res = isequal(C1,C2);
+res = isequal(C1,C2,varargin{:});
 
 %------------- END OF CODE --------------

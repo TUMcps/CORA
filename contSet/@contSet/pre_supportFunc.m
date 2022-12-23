@@ -56,7 +56,7 @@ end
 
 % parse input arguments
 [type,method,maxOrderOrSplits,tol] = ...
-    setDefaultValues({'upper','interval',8,1e-3},varargin{:});
+    setDefaultValues({'upper','interval',8,1e-3},varargin);
 
 if strcmp(classname,'polyZonotope')
     % polyZonotope: set, direction, type, method, vals, tol    

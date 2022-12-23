@@ -25,24 +25,26 @@ function res = test_zonotope_project
 
 %------------- BEGIN CODE --------------
 
-% 1. Analytical Test ------------------------------------------------------
-
 % create zonotope
 Z = zonotope([-4, -3, -2, -1; 1, 2, 3, 4; 5, 5, 5, 5]);
 
 % project zonotope
-Zres = project(Z,[1 3]);
-Zmat1 = Zres.Z;
+Z1 = project(Z,[1 3]);
+c1 = center(Z1);
+G1 = generators(Z1);
 
 % logical indexing
-Zres = project(Z,[true false true]);
-Zmat2 = Zres.Z;
+Z2 = project(Z,[true false true]);
+c2 = center(Z2);
+G2 = generators(Z2);
 
 % true result
-true_mat = [-4, -3, -2, -1; ...
-            5, 5, 5, 5];
+true_c = [-4; 5];
+true_G = [-3, -2, -1; ...
+           5, 5, 5];
 
 % check result
-res = all(all(Zmat1 == true_mat)) && all(all(Zmat2 == true_mat));
+res = compareMatrices(c1,true_c) && compareMatrices(G1,true_G) ...
+    && compareMatrices(c2,true_c) && compareMatrices(G2,true_G);
 
 %------------- END OF CODE --------------

@@ -36,7 +36,7 @@ function Z = zonotope(C,varargin)
 %------------- BEGIN CODE --------------
 
 % default input arguments
-order = setDefaultValues({5},varargin{:});
+order = setDefaultValues({5},varargin);
 
 % parse input arguments
 if nargin >= 2

@@ -37,7 +37,7 @@ function han = plot(zB,varargin)
 %------------- BEGIN CODE --------------
 
 % default settings
-dims = setDefaultValues({[1,2]},varargin{:});
+dims = setDefaultValues({[1,2]},varargin);
 
 % check input arguments
 inputArgsCheck({{zB,'att','zonoBundle'};

@@ -25,9 +25,7 @@ function res = test_polyZonotope_reduce
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-%% ANALYTICAL TESTS
+res = true;
 
 % TEST 1
 
@@ -48,7 +46,7 @@ c = [0;0];
 % check for correctness
 if ~all(withinTol(c,pZred.c)) || ~compareMatrices(Grest,pZred.Grest) ...
         || ~isempty(pZred.G) || ~isempty(pZred.expMat) || ~isempty(pZred.id)
-    throw(CORAerror('CORA:testFailed'));
+    res = false;
 end
 
 
@@ -74,9 +72,7 @@ expMat = 1;
 % check for correctness
 if ~all(withinTol(c,pZred.c)) || ~compareMatrices(G,pZred.G) ...
         || ~compareMatrices(Grest,pZred.Grest)
-    throw(CORAerror('CORA:testFailed'));
+    res = false;
 end
-
-res = true;
 
 %------------- END OF CODE --------------

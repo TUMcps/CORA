@@ -108,14 +108,14 @@ methods
 
         % for c, D, and k: overwrite empty entries by default zeros
         % case C = [] is allowed: yields no output computation in code
-        [c, C] = setDefaultValues({zeros(states, 1), 1}, varargin{:});
+        [c, C] = setDefaultValues({zeros(states, 1), 1}, varargin);
         varargin = varargin(3:end);
         if ~isempty(C) && ~isscalar(C)
             outputs = size(C,1);
         end
 
         [D, k] = setDefaultValues( ...
-            {zeros(outputs,inputs), zeros(outputs,1)}, varargin{:});
+            {zeros(outputs,inputs), zeros(outputs,1)}, varargin);
 
         inputArgsCheck({ ...
             {A, 'att', 'numeric', 'matrix'}

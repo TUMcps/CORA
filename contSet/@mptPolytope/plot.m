@@ -32,7 +32,7 @@ function han = plot(P,varargin)
 %------------- BEGIN CODE --------------
 
 % default settings
-dims = setDefaultValues({[1,2]},varargin{:});
+dims = setDefaultValues({[1,2]},varargin);
 
 % check input arguments
 inputArgsCheck({{P,'att','mptPolytope'};

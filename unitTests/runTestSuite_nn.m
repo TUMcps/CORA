@@ -1,6 +1,6 @@
 function runTestSuite_nn(varargin)
 % runTestSuite_nn - runs the standard test suite by executing all functions
-% starting with the prefix 'test_nn'
+%    starting with the prefix 'test_nn'
 %
 % Syntax:  
 %    runTestSuite_nn(varargin)
@@ -17,19 +17,16 @@ function runTestSuite_nn(varargin)
 % Last update:  28-November-2022 (testnn)
 % Last revision:---
 
-
 %------------- BEGIN CODE --------------
 
-directory = [CORAROOT filesep 'unitTests'];
-verbose = 1;
-
-if nargin >= 1
-    directory = varargin{1};
+% too many input arguments
+if nargin > 2
+    throw(CORAerror('CORA:tooManyInputArgs',2));
 end
 
-if nargin >= 2
-    verbose = varargin{2};
-end
+% set default values
+[directory,verbose] = setDefaultValues({[CORAROOT filesep 'unitTests'],true},varargin);
+
 
 % run main program performing the tests
 % all 'neuralNetwork' nn tests  without additional toolboxes

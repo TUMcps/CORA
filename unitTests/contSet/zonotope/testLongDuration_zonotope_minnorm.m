@@ -1,14 +1,14 @@
-function res = test_zonotope_minnorm
-% test_zonotope_minnorm - unit test function of minnorm
+function res = testLongDuration_zonotope_minnorm
+% testLongDuration_zonotope_minnorm - unit test function of minnorm
 %
 % Syntax:  
-%    res = test_zonotope_minnorm
+%    res = testLongDuration_zonotope_minnorm
 %
 % Inputs:
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % Example: 
 %
@@ -25,26 +25,29 @@ function res = test_zonotope_minnorm
 
 %------------- BEGIN CODE --------------
 
-TOL = 1e-12;
 res = true;
+
+% loop over dimension
 for i=2:7
+
+    % loop over number of generators
     for j=i:5:20
+
+        % init random zonotope
         Z = zonotope([zeros(i,1),randn(i,j)]);
+
+        % compute minnorm
         val = minnorm(Z);
-        %check for random unit directions if val<=suppfnc(Z,l)
+
+        % evaluate support function for random unit directions
         L = eq_point_set(i-1,2*j);
         for k=1:length(L)
-            if (val-supportFunc(Z,L(:,k)))>TOL
-                res = false;
-                break;
+            sF = supportFunc(Z,L(:,k));
+            % ensure that val <= suppfnc(Z,l)
+            if val > sF && ~withinTol(val,sF)
+                throw(CORAerror('CORA:testFailed'));
             end
         end
-        if ~res
-            break;
-        end
-    end
-    if ~res
-        break;
     end
 end
 

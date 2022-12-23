@@ -35,7 +35,7 @@ function han = plot(E,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-dims = setDefaultValues({[1,2]},varargin{:});
+dims = setDefaultValues({[1,2]},varargin);
 
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'};

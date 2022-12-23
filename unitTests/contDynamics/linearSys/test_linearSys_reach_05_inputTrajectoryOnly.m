@@ -54,12 +54,8 @@ IH = interval(Rcont.timeInterval.set{end});
 IH_true = interval( ...
 [3.7035909068940835; 2.0587487720830868; 0.9218120355943664; 2.0792489149905693; -0.9222005200165104], ...
 [4.2545447422606566; 2.6163966074240355; 0.9494850143887323; 2.3899927521345345; -0.8505317877218803]);
-        
-% check if slightly bloated versions enclose each other
-res_1 = (IH <= enlarge(IH_true,1+1e-8));
-res_2 = (IH_true <= enlarge(IH,1+1e-8));
 
 % final result
-res = res_1 && res_2;
+res = isequal(IH,IH_true,1e-8);
 
 %------------- END OF CODE --------------

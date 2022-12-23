@@ -19,7 +19,7 @@ function res = test_zonotope_isempty
 % See also: -
 
 % Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
+% Written:      17-September-2019
 % Last update:  ---
 % Last revision:---
 
@@ -29,7 +29,7 @@ function res = test_zonotope_isempty
 Z1 = zonotope([1, 2, 4;
                5, 6, 0;
               -1, 4, 8]);
-Z2 = zonotope([]);
+Z2 = zonotope();
 
 % check result
 res = ~isempty(Z1) && isempty(Z2);

@@ -38,7 +38,7 @@ function NVpairs = readPlotOptions(plotOptions,varargin)
 %------------- BEGIN CODE --------------
 
 % input argument validation
-purpose = setDefaultValues({'none'},varargin{:});
+purpose = setDefaultValues({'none'},varargin);
 
 % check input arguments
 inputArgsCheck({{purpose,'str',{'simResult','reachSet','polygon',...

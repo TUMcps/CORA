@@ -43,7 +43,7 @@ function han = plot(pZ,varargin)
 %------------- BEGIN CODE --------------
 
 % default values for the optional input arguments
-dims = setDefaultValues({[1,2]},varargin{:});
+dims = setDefaultValues({[1,2]},varargin);
 
 % check input arguments
 inputArgsCheck({{pZ,'att','polyZonotope'};

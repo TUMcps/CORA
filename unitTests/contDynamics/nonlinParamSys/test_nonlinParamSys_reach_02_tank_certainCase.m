@@ -74,11 +74,7 @@ R_Param = reach(tankParam,params,options); %with uncertain parameters
 IHcontParam = interval(R_Param.timeInterval.set{end});
 IHcontNoParam = interval(R_NoParam.timeInterval.set{end});
 
-%check if slightly bloated versions enclose each other
-res_1 = (IHcontParam <= enlarge(IHcontNoParam,1+1e-8));
-res_2 = (IHcontNoParam <= enlarge(IHcontParam,1+1e-8));
-
 %final result
-res = res_1 && res_2;
+res = isequal(IHcontParam,IHcontNoParam,1e-8);
 
 %------------- END OF CODE --------------

@@ -48,7 +48,7 @@ function [P,varargout] = mptPolytope(Z,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-[type,method] = setDefaultValues({'exact','tight'},varargin{:});
+[type,method] = setDefaultValues({'exact','tight'},varargin);
 
 % check input arguments
 inputArgsCheck({{Z,'att','zonotope','nonempty'};

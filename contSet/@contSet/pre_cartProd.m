@@ -47,9 +47,9 @@ end
 
 % parse input arguments
 if strcmp(classname,'ellipsoid')
-    type = setDefaultValues({'outer'},varargin{:});
+    type = setDefaultValues({'outer'},varargin);
 else
-    type = setDefaultValues({'exact'},varargin{:});
+    type = setDefaultValues({'exact'},varargin);
 end
 
 % check input arguments

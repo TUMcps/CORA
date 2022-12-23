@@ -29,7 +29,7 @@ function res = isZero(pZ,varargin)
 %------------- BEGIN CODE --------------
 
 % default value
-tol = setDefaultValues({0},varargin{:});
+tol = setDefaultValues({0},varargin);
 
 % parse input arguments
 inputArgsCheck({{pZ,'att','polyZonotope'};

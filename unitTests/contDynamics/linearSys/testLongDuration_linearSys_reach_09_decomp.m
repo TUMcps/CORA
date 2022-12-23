@@ -127,16 +127,11 @@ end
 IH_reach = interval(R_fromStart.timeInterval.set{end});
 IH_decomp = interval(R_decomp.timeInterval.set{end});
 
-% check if slightly bloated versions enclose each other
-res_1 = (IH_reach <= enlarge(IH_decomp,1+1e-8));
-res_2 = (IH_decomp <= enlarge(IH_reach,1+1e-8));
-
 % final result
-res_zono = res_1 && res_2;
+res_zono = isequal(IH_reach,IH_decomp,1e-8);
 
-if nnz(~res_zono)
-    res = false;
-    return
+if ~res_zono
+    res = false; return
 end
 % -------------------------------------------------------------------------
 
@@ -193,12 +188,8 @@ end
 IH_reach = interval(R_fromStart.timeInterval.set{end});
 IH_decomp = interval(R_decomp.timeInterval.set{end});
 
-% check if slightly bloated versions enclose each other
-res_1 = (IH_reach <= enlarge(IH_decomp,1+1e-3));
-res_2 = (IH_decomp <= enlarge(IH_reach,1+1e-3));
-
 % final result
-res_zono = res_1 && res_2;
+res_zono = isequal(IH_reach,IH_decomp,1e-3);
 
 if ~res_zono
     res = false;

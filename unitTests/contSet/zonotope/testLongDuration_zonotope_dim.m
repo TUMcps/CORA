@@ -54,10 +54,4 @@ for i=1:nrOfTests
     end
 end
 
-
-if ~res
-    path = pathFailedTests(mfilename());
-    save(path,'G','n','c');
-end
-
 %------------- END OF CODE --------------

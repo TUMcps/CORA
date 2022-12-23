@@ -37,10 +37,9 @@ C_mtimes = R * C;
 C_mtimes_true = capsule([0; 1], [1; 1], 2);
 
 % compare results
-tol = 1e-9;
-res(1) = all(abs(center(C_mtimes) - center(C_mtimes_true)) < tol);
-res(2) = all(abs(C_mtimes.g - C_mtimes_true.g) < tol);
-res(3) = abs(radius(C_mtimes) - radius(C_mtimes_true)) < tol;
+res(1) = compareMatrices(C_mtimes.c,C_mtimes_true.c);
+res(2) = compareMatrices(C_mtimes.g,C_mtimes_true.g);
+res(3) = withinTol(C_mtimes.r,C_mtimes_true.r);
 
 % empty set
 res(4) = isempty(R * capsule());

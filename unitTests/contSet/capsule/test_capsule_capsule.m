@@ -25,9 +25,8 @@ function res = test_capsule_capsule
 
 %------------- BEGIN CODE --------------
 
-
+% assume true
 res = true;
-tol = 1e-12;
 
 % empty capsule
 C_empty = capsule();
@@ -44,25 +43,25 @@ r = 0.5;
 % admissible initializations
 % only center
 C = capsule(c);
-if any(abs(C.c - c) > tol)
+if ~compareMatrices(C.c,c)
     res = false;
 end
 
 % center and generator
 C = capsule(c,g);
-if any(abs(C.c - c) > tol) || any(abs(C.g - g) > tol)
+if ~compareMatrices(C.c,c) || ~compareMatrices(C.g,g)
     res = false;
 end
 
 % center and radius:
 C = capsule(c,r);
-if any(abs(C.c - c) > tol) || abs(C.r - r) > tol
+if ~compareMatrices(C.c,c) || ~withinTol(C.r,r)
 	res = false;
 end
 
 % center, generator, and radius
 C = capsule(c,g,r);
-if any(abs(C.c - c) > tol) || any(abs(C.g - g) > tol) || abs(C.r - r) > tol
+if ~compareMatrices(C.c,c) || ~compareMatrices(C.g,g) || ~withinTol(C.r,r)
     res = false;
 end
 

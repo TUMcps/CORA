@@ -71,7 +71,7 @@ methods
                 'there have to be either 3 or 4 input arguments.']));
         end
 
-        [A, B, C] = setDefaultValues({[], [], []}, varargin{:});
+        [A, B, C] = setDefaultValues({[], [], []}, varargin);
 
         inputArgsCheck({ ...
             {A, 'att', 'numeric'}

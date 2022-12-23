@@ -36,18 +36,21 @@ function [val,x] = minnorm(Z)
 
 %------------- BEGIN CODE --------------
 
-%extract zonotope info
+% extract zonotope info
 G = generators(Z);
 c = center(Z);
 n = dim(Z);
-%get halfspace rep
+
+% get halfspace rep
 P = mptPolytope(zonotope([zeros(n,1),G]));
 P = get(P,'P');
 A = P.A;
 b = P.b;
-%compute min norm (obtained by rewriting OP in [1], Sec. 8.4.2, using
-%||a_i||_2=1 and argmin -log(det(scalarVar))=argmax scalarVar
+
+% compute min norm (obtained by rewriting OP in [1], Sec. 8.4.2, using
+% ||a_i||_2 = 1 and argmin -log(det(scalarVar))=argmax scalarVar
 [val2,ind] = min(b.^2);
 x = A(ind,:)'*b(ind) + c;
 val = sqrt(val2);
+
 %------------- END OF CODE --------------

@@ -26,11 +26,7 @@ function res = test_zonotope_radius
 %------------- BEGIN CODE --------------
 
 % create a zonotope
-Z_cent = zeros(2,1);
-Z_gens = [1 3;
-          2 1];
-Z = zonotope([Z_cent, Z_gens]);
-% plot(Z);
+Z = zonotope(zeros(2,1),[1 3; 2 1]);
 
 % compute radius
 r = radius(Z);
@@ -39,7 +35,6 @@ r = radius(Z);
 r_true = 5;
 
 % check results
-tol = 1e-9;
-res = abs(r - r_true) < tol;
+res = withinTol(r,r_true);
 
 %------------- END OF CODE --------------

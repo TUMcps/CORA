@@ -91,10 +91,8 @@ for h = 1:5
 %     plot(cZonoRes,[1,2],'r');
 
     % check if all points are located inside the resulting conZonotope
-    Tol = 1e-14;
-
     for i = 1:size(points,2)
-       if any(A*points(:,i) - b > Tol)
+       if ~all(A*points(:,i) < b | withinTol(A*points(:,i),b))
           file_name = strcat('testLongDuration_conZonotope_enclose_1_', ...
                       datestr(now,'mm-dd-yyyy_HH-MM'));
                   
@@ -171,10 +169,8 @@ for h = 1:5
 %     plot(cZonoRes,[1,2],'r');
 
     % check if all points are located inside the resulting conZonotope
-    Tol = 1e-14;
-
     for i = 1:size(points,2)
-       if any(A*points(:,i) - b > Tol)
+       if ~all(A*points(:,i) < b | withinTol(A*points(:,i),b))
           file_name = strcat('testLongDuration_conZonotope_enclose_2_', ...
                              datestr(now,'mm-dd-yyyy_HH-MM'));
                   

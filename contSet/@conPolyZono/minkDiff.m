@@ -41,7 +41,7 @@ function cPZ = minkDiff(cPZ1,cPZ2,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    type = setDefaultValues({'exact'},varargin{:});
+    type = setDefaultValues({'exact'},varargin);
 
     % check input arguments
     inputArgsCheck({{cPZ1,'att','conPolyZono'};

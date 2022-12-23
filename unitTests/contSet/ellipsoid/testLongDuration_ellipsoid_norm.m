@@ -50,7 +50,7 @@ for i=1:nrOfTests
     E = ellipsoid(Q,q);
     
     % check result
-    if abs(1 - norm(E)) > tol
+    if ~withinTol(norm(E),1)
         res_rand = false; break;
     end
 

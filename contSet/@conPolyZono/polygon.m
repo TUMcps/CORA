@@ -40,7 +40,7 @@ function pgon = polygon(cPZ,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    splits = setDefaultValues({10},varargin{:});
+    splits = setDefaultValues({10},varargin);
 
     % check input arguments
     inputArgsCheck({{cPZ,'att','conPolyZono'};

@@ -41,7 +41,7 @@ if nargin > 3
 end
 
 % set default tolerance
-tol = setDefaultValues({1e-12},varargin{:});
+tol = setDefaultValues({1e-12},varargin);
 
 % check input arguments
 inputArgsCheck({ {cZ,'att','conZonotope'}, ...

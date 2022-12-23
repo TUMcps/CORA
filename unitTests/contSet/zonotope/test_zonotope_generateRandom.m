@@ -40,7 +40,7 @@ res = dim(Z) == n;
 
 % only center
 Z = zonotope.generateRandom('Center',c);
-res(end+1,1) = all(abs(center(Z) - c) < eps);
+res(end+1,1) = compareMatrices(c,center(Z));
 
 % only number of generators
 Z = zonotope.generateRandom('NrGenerators',nrGens);
@@ -55,11 +55,11 @@ res(end+1,1) = dim(Z) == n && size(generators(Z),2) == nrGens;
 
 % center and number of generators
 Z = zonotope.generateRandom('Center',c,'NrGenerators',nrGens);
-res(end+1,1) = all(abs(center(Z) - c) < eps) && size(generators(Z),2) == nrGens;
+res(end+1,1) = compareMatrices(c,center(Z)) && size(generators(Z),2) == nrGens;
 
 % center and type
 Z = zonotope.generateRandom('Center',c,'Distribution',type);
-res(end+1,1) = all(abs(center(Z) - c) < eps);
+res(end+1,1) = compareMatrices(c,center(Z));
 
 % number of generators and type
 Z = zonotope.generateRandom('NrGenerators',nrGens,'Distribution',type);
@@ -67,7 +67,7 @@ res(end+1,1) = size(generators(Z),2) == nrGens;
 
 % center, number of generators, and type
 Z = zonotope.generateRandom('Center',c,'NrGenerators',nrGens,'Distribution',type);
-res(end+1,1) = all(abs(center(Z) - c) < eps) && size(generators(Z),2) == nrGens;
+res(end+1,1) = compareMatrices(c,center(Z)) && size(generators(Z),2) == nrGens;
 
 
 % unify results

@@ -26,10 +26,6 @@ function res = testLongDuration_zonotope_cubMap
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-%% RANDOM TESTS
-
 % TEST 1: Mixed Multiplication
 
 for i = 1:10
@@ -92,8 +88,7 @@ for i = 1:10
     for j = 1:size(pointsRes,2)
         
        p = pointsRes(:,j);
-        
-       if any(C*p -d > 1e-12)
+       if ~all(C*p - d < 0 | withinTol(C*p - d,0,1e-12))
           file_name = strcat('testLongDuration_zonotope_cubMap_1_', ...
                              datestr(now,'mm-dd-yyyy_HH-MM'));
                   
@@ -157,7 +152,7 @@ for i = 1:10
         
        p = pointsRes(:,j);
         
-       if any(C*p -d > 1e-12)
+       if ~all(C*p - d < 0 | withinTol(C*p - d,0,1e-12))
           file_name = strcat('testLongDuration_zonotope_cubMap_2_', ...
                              datestr(now,'mm-dd-yyyy_HH-MM'));
                   

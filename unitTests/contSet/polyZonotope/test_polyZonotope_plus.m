@@ -26,8 +26,6 @@ function res = test_polyZonotope_plus
 
 %------------- BEGIN CODE --------------
 
-% TEST 1
-
 % create polynomial zonotopes
 c = [-1;3];
 G = [-1 -1 3 2; 2 -1 -1 0];

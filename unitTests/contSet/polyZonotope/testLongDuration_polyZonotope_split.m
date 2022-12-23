@@ -66,9 +66,9 @@ for i = 1:5
     suc = containsPointSet(pZ,points,[],30);
     
     if ~suc
-       path = pathFailedTests(mfilename());
-       save(path,'pZ','points');
-       throw(CORAerror('CORA:testFailed'));
+        path = pathFailedTests(mfilename());
+        save(path,'pZ','points');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -111,9 +111,9 @@ for i = 1:5
     suc = containsPointSet(pZ,points);
     
     if ~suc
-       path = pathFailedTests(mfilename());
-       save(path,'pZ','points');
-       throw(CORAerror('CORA:testFailed'));
+        path = pathFailedTests(mfilename());
+        save(path,'pZ','points');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 

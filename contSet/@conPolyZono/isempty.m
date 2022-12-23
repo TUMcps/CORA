@@ -54,7 +54,7 @@ if isempty(cPZ.A)
 end
 
 % parse input arguments
-[method,splits,iter] = setDefaultValues({'linearize',0,1},varargin{:});
+[method,splits,iter] = setDefaultValues({'linearize',0,1},varargin);
 
 % check input arguments
 inputArgsCheck({{cPZ,'att','conPolyZono'};

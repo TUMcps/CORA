@@ -37,7 +37,7 @@ function r = radius(E,varargin)
 %------------- BEGIN CODE --------------
 
 % default: only largest radius considered
-i = setDefaultValues({1},varargin{:});
+i = setDefaultValues({1},varargin);
 
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'};

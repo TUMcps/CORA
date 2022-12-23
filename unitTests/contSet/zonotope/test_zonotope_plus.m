@@ -25,24 +25,24 @@ function res = test_zonotope_plus
 
 %------------- BEGIN CODE --------------
 
-% 1. Analytical Test ------------------------------------------------------
-
 % create zonotopes
 Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
 Z2 = zonotope([1 10; -1 -10]);
 
 % obtain results
-Z3 = Z1+Z2;
+Z_ = Z1+Z2;
 
-% obtain zonotope matrix
-Zmat = Z3.Z;
+% obtain center and generator matrix
+c_ = center(Z_);
+G_ = generators(Z_);
 
 % true result
-true_mat = [-3, -3, -2, -1, 10; ...
-            0, 2, 3, 4, -10];
+true_c = [-3; 0];
+true_G = [-3, -2, -1, 10; ...
+            2, 3, 4, -10];
 
 % check result
-res_val = all(all(Zmat == true_mat));
+res_val = compareMatrices(c_,true_c) && compareMatrices(G_,true_G);
 
 % empty set
 res_e = isempty(Z1+zonotope());

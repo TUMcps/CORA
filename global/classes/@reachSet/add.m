@@ -36,7 +36,7 @@ elseif isempty(R2)
 end
 
 % parse input arguments
-parent = setDefaultValues({0},varargin{:});
+parent = setDefaultValues({0},varargin);
 
 % check input arguments
 inputArgsCheck({{R1,'att',{'reachSet'},{''}};

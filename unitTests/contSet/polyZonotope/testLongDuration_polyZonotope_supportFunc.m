@@ -27,7 +27,7 @@ function res = testLongDuration_polyZonotope_supportFunc
 
 %------------- BEGIN CODE --------------
 
-%% RANDOM TESTS
+res = true;
 
 % TEST 2-dimensional
 methods = {'interval','bnb','globOpt'};
@@ -65,9 +65,9 @@ for j = 1:length(methods)
             || ( max(points_) < supremum(I) || withinTol(max(points_) - supremum(I),0,1e-10) );
 
         if ~suc
-           path = pathFailedTests(mfilename());
-           save(path,'points','pZ','I');
-           throw(CORAerror('CORA:testFailed'));
+            path = pathFailedTests(mfilename());
+            save(path,'points','pZ','I');
+            throw(CORAerror('CORA:testFailed'));
         end
     end
 end
@@ -107,13 +107,11 @@ for j = 1:length(methods)
         suc = infimum(I) - min(points_) < 1e-10 && max(points_) - supremum(I) < 1e-10;
 
         if ~suc
-           path = pathFailedTests(mfilename());
-           save(path,'points','I','pZ');
-           throw(CORAerror('CORA:testFailed'));
+            path = pathFailedTests(mfilename());
+            save(path,'points','I','pZ');
+            throw(CORAerror('CORA:testFailed'));
         end
     end
 end
-
-res = true;
 
 %------------- END OF CODE --------------

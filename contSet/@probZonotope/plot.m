@@ -37,7 +37,7 @@ function han = plot(probZ,varargin)
 %------------- BEGIN CODE --------------
 
 % default values
-dims = setDefaultValues({[1,2]},varargin{:});
+dims = setDefaultValues({[1,2]},varargin);
 m = probZ.gamma;
 
 % check input arguments

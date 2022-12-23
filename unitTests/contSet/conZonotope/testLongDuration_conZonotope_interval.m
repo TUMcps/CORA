@@ -38,29 +38,26 @@ ind = convhulln(points');
 ind = unique(ind(:,1),'stable');
 V = points(:,ind);
 
-poly = mptPolytope(V');
-cZono = conZonotope(poly);
+P = mptPolytope(V');
+cZ = conZonotope(P);
 
 % calculate interval
-int = interval(cZono);
+I = interval(cZ);
 
 % compare with ground-truth for the vertices
-V = vertices(cZono);
-int_ = interval(min(V,[],2),max(V,[],2));
+V = vertices(cZ);
+I_ = interval(min(V,[],2),max(V,[],2));
 
-for i = 1:length(int)
-   if abs(infimum(int_(i)) - infimum(int(i))) > 1e-10 || abs(supremum(int_(i)) - supremum(int(i))) > 1e-10
-      file_name = strcat('testLongDuration_conZonotope_interval_1_', ...
-                         datestr(now,'mm-dd-yyyy_HH-MM'));
-                  
-      file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
-                           file_name);
-                           
-      save(file_path, 'points')
-      res = false;
-      break
-   end
+for i = 1:length(I)
+    if ~isequal(I,I_,1e-10)
+        file_name = strcat('testLongDuration_conZonotope_interval_1_', ...
+                        datestr(now,'mm-dd-yyyy_HH-MM'));
+        file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
+                        file_name);
+        save(file_path, 'points')
+        res = false;
+        break
+    end
 end
-
 
 %------------- END OF CODE --------------

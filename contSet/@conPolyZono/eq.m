@@ -1,12 +1,16 @@
-function res = eq(cPZ1,cPZ2)
-% eq - overloaded '==' operator for exact comparison of two constrained polynomial zonotopes
+function res = eq(cPZ1,cPZ2,varargin)
+% eq - overloaded '==' operator for exact comparison of two constrained
+%    polynomial zonotopes
 %
-% Syntax:  
+% Syntax:
+%    res = cPZ1 == cPZ2
 %    res = eq(cPZ1,cPZ2)
+%    res = eq(cPZ1,cPZ2,tol)
 %
 % Inputs:
 %    cPZ1 - conPolyZono object
 %    cPZ2 - conPolyZono object
+%    tol - (optional) tolerance
 %
 % Outputs:
 %    res - true/false
@@ -22,7 +26,7 @@ function res = eq(cPZ1,cPZ2)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: conPolyZono/isequal
 
 % Author:       Mingrui Wang
 % Written:      21-June-2022
@@ -31,6 +35,6 @@ function res = eq(cPZ1,cPZ2)
 
 %------------- BEGIN CODE --------------
 
-res = isequal(cPZ1,cPZ2);
+res = isequal(cPZ1,cPZ2,varargin{:});
 
 %------------- END OF CODE --------------

@@ -8,9 +8,7 @@ function res = test_zonotope_rank
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -20,21 +18,21 @@ function res = test_zonotope_rank
 
 % Author:       Matthias Althoff
 % Written:      26-July-2016
-% Last update:  15-Sep-2019
+% Last update:  15-September-2019
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % create zonotope
-Z1 = zonotope([1, 2, 0, 4; 5, 6, 0, 0; -1, 4, 0, 8]);
+Z = zonotope([1, 2, 0, 4; 5, 6, 0, 0; -1, 4, 0, 8]);
 
 % obtain zonotope without zeros
-d = rank(Z1);
+d = rank(Z);
 
 % true result
 true_val = 2;
 
 % check result
-res = (d==true_val) && (rank(zonotope())==0);
+res = withinTol(d,true_val) && rank(zonotope()) == 0;
 
 %------------- END OF CODE --------------

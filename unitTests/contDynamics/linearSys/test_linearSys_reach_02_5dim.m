@@ -59,13 +59,9 @@ IH = interval(R.timeInterval.set{end});
 IH_saved = interval( ...
            [-0.186078149456309; -0.004994826957236; -0.010811262167507; 0.053366186432215; -0.385353029993981], ...
            [0.300725848257715; 0.491957694383420; 0.110810877781333; 0.246634559097104; -0.114528793200091]);
-        
-% check if slightly bloated versions enclose each other
-res_1 = (IH <= enlarge(IH_saved,1+1e-8));
-res_2 = (IH_saved <= enlarge(IH,1+1e-8));
 
 % final result
-res_zono = res_1 && res_2;
+res_zono = isequal(IH,IH_saved,1e-8);
 
 
 % Reachability Analysis (zonotope bundles) --------------------------------
@@ -83,13 +79,9 @@ IH = interval(R.timeInterval.set{end});
 IH_saved = interval( ...
     [-0.1860781494563091; -0.0049948269572356; -0.0108112537143071; 0.0533662157659313; -0.3853530299939805], ...
     [0.3003413164189264; 0.4913712245778811; 0.1108108777813331; 0.2466345590971040; -0.1145287932000914]);
-        
-% check if slightly bloated versions enclose each other
-res_1 = (IH <= enlarge(IH_saved,1+1e-8));
-res_2 = (IH_saved <= enlarge(IH,1+1e-8));
 
 % final result
-res_zonoBundles = res_1 && res_2;
+res_zonoBundles = isequal(IH,IH_saved,1e-8);
 
 % result of different set representations
 res = res_zono && res_zonoBundles;

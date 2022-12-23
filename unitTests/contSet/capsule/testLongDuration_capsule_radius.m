@@ -34,7 +34,7 @@ for n=1:2:30
     C = capsule(randn(n,1),zeros(n,1),r);
     
     % since capsule is a ball, enclosing radius is radius
-    if radius(C) ~= r
+    if ~withinTol(radius(C),r)
         res = false;
         path = pathFailedTests(mfilename());
         save(path,'C','r');

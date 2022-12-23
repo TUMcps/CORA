@@ -34,7 +34,7 @@ function eZ = expm(matZ,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-maxOrder = setDefaultValues({10},varargin{:});
+maxOrder = setDefaultValues({10},varargin);
 
 % compute matrix exponential
 eZ = expmInd(matZ,maxOrder);

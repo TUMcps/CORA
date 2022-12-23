@@ -54,12 +54,8 @@ IH = interval(Rcont.timeInterval.set{end});
 
 % saved result
 IH_true = ones(dim_x,1)*interval(1.76, 2.2);
-        
-% check if slightly bloated versions enclose each other
-res_1 = (IH <= enlarge(IH_true,1+1e-8));
-res_2 = (IH_true <= enlarge(IH,1+1e-8));
 
 % final result
-res = res_1 && res_2;
+res = isequal(IH,IH_true,1e-8);
 
 %------------- END OF CODE --------------

@@ -25,53 +25,42 @@ function res = testLongDuration_zonotope_plus
 
 %------------- BEGIN CODE --------------
 
-% 1. Random Tests ---------------------------------------------------------
+% assume true
+res = true;
 
-tol = 1e-9;
-dims = 5:5:100;
-testsPerDim = 1000;
+% number of tests
+nrTests = 1000;
 
-res = true(length(dims),testsPerDim);
+for i=1:nrTests
 
-% box has to be the same as conversion to interval
-for d=1:length(dims)
-    for test=1:testsPerDim
-        % create a random zonotope
-        nrOfGens = randi([10,25],1,1);
-        c1 = -1+2*rand(dims(d),1);
-        G1 = -1+2*rand(dims(d),nrOfGens);
-        Z1 = zonotope(c1,G1);
-        c2 = -1+2*rand(dims(d),1);
-        G2 = -1+2*rand(dims(d),nrOfGens);
-        Z2 = zonotope(c2,G2);
-        
-        % add zonotopes
-        Zres = Z1 + Z2;
+    % random dimension
+    n = randi(10);
 
-        % check center
-        if ~all(abs(c1+c2 - center(Zres)) < tol)
-            res(d,test) = false;
-            continue
-        end
-        
-        % check generators
-        Gres = generators(Zres);
-        G1inGres = nnz(all(ismember(Gres,G1),1));
-        G2inGres = nnz(all(ismember(Gres,G2),1));
-        
-        if size(Gres,2) ~= G1inGres+G2inGres
-            res(d,test) = false;
-            continue
-        end
+    % create a random zonotope
+    nrOfGens = randi([10,25],1,1);
+    c1 = -1+2*rand(n,1);
+    G1 = -1+2*rand(n,nrOfGens);
+    Z1 = zonotope(c1,G1);
+    c2 = -1+2*rand(n,1);
+    G2 = -1+2*rand(n,nrOfGens);
+    Z2 = zonotope(c2,G2);
+    
+    % add zonotopes
+    Zres = Z1 + Z2;
+
+    % check center
+    if ~compareMatrices(c1+c2,center(Zres))
+        res = false; return
     end
-end
-
-% combine results
-res = all(all(res));
-
-if ~res
-    path = pathFailedTests(mfilename());
-    save(path,'c1','c2','G1','G2');
+    
+    % check generators
+    Gres = generators(Zres);
+    G1inGres = nnz(all(ismember(Gres,G1),1));
+    G2inGres = nnz(all(ismember(Gres,G2),1));
+    
+    if size(Gres,2) ~= G1inGres+G2inGres
+        res = false; return
+    end
 end
 
 %------------- END OF CODE --------------

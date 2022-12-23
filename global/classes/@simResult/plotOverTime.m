@@ -32,7 +32,7 @@ function han = plotOverTime(simRes,varargin)
 %------------- BEGIN CODE --------------
 
 % default values for the optional input arguments
-dims = setDefaultValues({1},varargin{:});
+dims = setDefaultValues({1},varargin);
 
 % parse input arguments
 NVpairs = readPlotOptions(varargin(2:end),'simResult');

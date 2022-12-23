@@ -43,27 +43,26 @@ for k = 1:5
    
     % generate a random zonotope object
     G = rand(2,10) - 0.5 * ones(2,10);
-    zono = zonotope(G);
-    cZono = conZonotope(G);
+    Z = zonotope(G);
+    cZ = conZonotope(G);
     
     % generate a random numerical matrix
-    mat = rand(2);
+    M = rand(2);
     
     % multiplication of matrix and zonotope
-    zonoRes = mat * zono;
-    cZonoRes = mat * cZono;
+    Z_ = M * Z;
+    cZ_ = M * cZ;
     
     % check if the results are equal
-    
-    if max(max(abs(zonoRes.Z - cZonoRes.Z))) > 1e-18
-      file_name = strcat('testLongDuration_conZonotope_mtimes_1_', ...
+    if ~compareMatrices(Z_.Z,cZ_.Z)
+        file_name = strcat('testLongDuration_conZonotope_mtimes_1_', ...
                          datestr(now,'mm-dd-yyyy_HH-MM'));
                   
-      file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
+        file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                            file_name);
                            
-      save(file_path, 'zonoRes', 'cZonoRes')
-      throw(CORAerror('CORA:testFailed'));
+        save(file_path, 'Z_', 'cZ_')
+        throw(CORAerror('CORA:testFailed'));
     end   
 end
 
@@ -79,8 +78,8 @@ for k = 1:5
    
     % generate a random zonotope object
     G = rand(2,10) - 0.5 * ones(2,10);
-    zono = zonotope(G);
-    cZono = conZonotope(G);
+    Z = zonotope(G);
+    cZ = conZonotope(G);
     
     % generate a random interval matrix
     m = rand(2) - 0.5*ones(2);
@@ -88,19 +87,18 @@ for k = 1:5
     I = interval(m-r,m+r);
     
     % multiplication of interval matrix and zonotope
-    zonoRes = I * zono;
-    cZonoRes = I * cZono;
+    Z_ = I * Z;
+    cZ_ = I * cZ;
     
     % check if the results are equal
-    
-    if max(max(abs(zonoRes.Z - cZonoRes.Z))) > 1e-18
+    if ~compareMatrices(Z_.Z,cZ_.Z)
        file_name = strcat('testLongDuration_conZonotope_mtimes_2_', ...
                           datestr(now,'mm-dd-yyyy_HH-MM'));
                   
        file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                             file_name);
                            
-       save(file_path, 'zonoRes', 'cZonoRes')
+       save(file_path, 'Z_', 'cZ_')
        throw(CORAerror('CORA:testFailed'));
     end   
 end
@@ -118,8 +116,8 @@ for k = 1:5
     ind = unique(ind(:,1),'stable');
     V = points(:,ind);
 
-    poly = mptPolytope(V');
-    cZono = conZonotope(poly);
+    P = mptPolytope(V');
+    cZ = conZonotope(P);
 
     % generate random interval matrix
     m = rand(2) - 0.5*ones(2);
@@ -127,7 +125,7 @@ for k = 1:5
     I = interval(m-r,m+r);
 
     % Multiplication of interval matrix with constrained zonotope
-    cZonoRes = I * cZono;
+    cZ_ = I * cZ;
 
     % calculate extrem matrices + random matrices from the interval matrix
     ind = combinator(2,4);
@@ -164,10 +162,10 @@ for k = 1:5
 
     % convert the resulting conZonotope to a mptPolytope (to easily check if
     % a point is located inside the conZonotope)
-    poly = mptPolytope(cZonoRes);
+    P = mptPolytope(cZ_);
 
     % extract inequality constraints
-    temp = get(poly,'P');
+    temp = get(P,'P');
     A = temp.A;
     b = temp.b;
 
@@ -177,17 +175,15 @@ for k = 1:5
 %     plot(cZonoRes,[1,2],'r');
 
     % check if all points are located inside the resulting conZonotope
-    Tol = 1e-14;
-
     for i = 1:size(points,2)
-       if any(A*points(:,i) - b > Tol)
+       if ~all(A*points(:,i) < b | withinTol(A*points(:,i),b))
           file_name = strcat('testLongDuration_conZonotope_mtimes_3_', ...
                              datestr(now,'mm-dd-yyyy_HH-MM'));
                   
           file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                                file_name);
                            
-          save(file_path, 'cZonoRes')
+          save(file_path, 'cZ_')
           throw(CORAerror('CORA:testFailed'));
        end
     end

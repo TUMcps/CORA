@@ -2,7 +2,8 @@ function res = eq(cZ,S,varargin)
 % eq - overloaded '==' operator for exact comparison of a constrained
 %    zonotope and another set
 %
-% Syntax:  
+% Syntax:
+%    res = cZ == S
 %    res = eq(cZ,S)
 %    res = eq(cZ,S,tol)
 %
@@ -14,16 +15,22 @@ function res = eq(cZ,S,varargin)
 % Outputs:
 %    res - true/false
 %
-% Example: 
-%    Z1 = zonotope(zeros(3,1),rand(3,5));
-%    Z2 = zonotope(zeros(3,1),rand(3,5));
-%    Z1 == Z2
+% Example:
+%    Z = [0 3 0 1;0 0 2 1];
+%    A = [1 0 1]; b = 1;
+%    cZ1 = conZonotope(Z,A,b);
+%
+%    Z = [0 3 0 1;0 0 2 1];
+%    A = [1 0 1]; b = 0;
+%    cZ2 = conZonotope(Z,A,b);
+%
+%    cZ1 == cZ2
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: conZonotope/isequal
 
 % Author:       Mark Wetzlinger
 % Written:      19-December-2022

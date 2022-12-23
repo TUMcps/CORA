@@ -29,7 +29,7 @@ function res = withinTol(a,b,varargin)
 
 %------------- BEGIN CODE --------------
 
-tol = setDefaultValues({1e-8},varargin{:});
+tol = setDefaultValues({1e-8},varargin);
 
 % allow scalar values to be expanded
 if ~all(size(a)==size(b)) && ~isscalar(a) && ~isscalar(b) && ...

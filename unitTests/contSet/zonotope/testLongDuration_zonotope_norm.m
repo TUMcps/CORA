@@ -24,30 +24,47 @@ function res = testLongDuration_zonotope_norm
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-TOL = 1e-6;
+
+% assume true
 res = true;
+
+TOL = 1e-6;
+
+% loop over dimensions
 for i=2:4
+
+    % loop over number of generators
     for j=i:2:10
+
+        % instantiate random zonotope
         Z = zonotope([zeros(i,1),10*randn(i,j)]);
+
         % 2 norm test
         val2_exact = norm(Z,2,'exact');
         val2_ub = norm(Z,2,'ub');
         val2_ubc = norm(Z,2,'ub_convex');
+
+        % compute vertices
         V = vertices(Z);
-        if (val2_exact-val2_ub)>TOL || (val2_exact-val2_ubc)>TOL ...
-                || abs(val2_exact-max(sqrt(sum(V.^2))))/val2_exact>TOL
+
+        % check exact vs. upper bound
+        if val2_exact > val2_ub && ~withinTol(val2_exact,val2_ub,TOL)
             res = false;
         end
-        % rest case are simply norm of interval
-    end
-    if ~res
-        break;
-    end
-end
+        
+        % check exact vs. upper bound (convex)
+        if val2_exact > val2_ubc && ~withinTol(val2_exact,val2_ubc,TOL)
+            res = false;
+        end
+        
+        % check exact vs. norm of all vertices
+        temp = abs(val2_exact-max(sqrt(sum(V.^2))))/val2_exact;
+        if temp > 0 && ~withinTol(temp,0,TOL)
+            res = false;
+        end
 
-if ~res
-    path = pathFailedTests(mfilename());
-    save(path,'Z');
+    end
+
 end
 
 %------------- END OF CODE --------------

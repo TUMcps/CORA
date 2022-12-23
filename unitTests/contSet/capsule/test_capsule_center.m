@@ -41,7 +41,7 @@ C = capsule(c_true, [1; -1; 2], 0.5);
 c = center(C);
 
 % check result
-if ~all(c == c_true)
+if ~withinTol(c,c_true)
     res = false;
 end
 

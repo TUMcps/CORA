@@ -8,9 +8,7 @@ function res = test_zonotope_underapproximate
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -39,15 +37,13 @@ V_2 = underapproximate(Z1,S);
 
 % true result 1
 true_V_1 = [-10, 2, -10, 2; ...
-    10, -8, 10, -8];
+            10, -8, 10, -8];
         
 % true result 2
 true_V_2 = [2, -10, -4, -4; ...
     -8, 10, 6, -4];
 
 % check results
-res_1 = all(all(V_1 == true_V_1));
-res_2 = all(all(V_2 == true_V_2));
-res = res_1 & res_2;
+res = compareMatrices(V_1,true_V_1) && compareMatrices(V_2,true_V_2);
 
 %------------- END OF CODE --------------

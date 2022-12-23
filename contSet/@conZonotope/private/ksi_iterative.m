@@ -34,7 +34,7 @@ function [Dksi,R] = ksi_iterative(cZ,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-iter = setDefaultValues({1},varargin{:});
+iter = setDefaultValues({1},varargin);
 
 % check input arguments
 inputArgsCheck({{cZ,'att','conZonotope'};

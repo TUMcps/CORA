@@ -41,7 +41,7 @@ function pZ = restructureReduce(pZ, order, method, varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-genOrder = setDefaultValues({Inf},varargin{:});
+genOrder = setDefaultValues({Inf},varargin);
 
 % check if the maximum zonotope order is exceeded
 dim_x = length(pZ.c);

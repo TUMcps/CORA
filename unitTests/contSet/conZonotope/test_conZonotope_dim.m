@@ -28,8 +28,8 @@ function res = test_conZonotope_dim
 res = true;
 
 % check empty conZonotope
-conZono = conZonotope();
-if dim(conZono) ~= 0
+cZ = conZonotope();
+if dim(cZ) ~= 0
     res = false;
 end
 
@@ -50,10 +50,10 @@ for i=1:nrOfTests
     b = randn(nrGens,1);
     
     % instantiate conZonotope
-    conZono = conZonotope(c,G,A,b);
+    cZ = conZonotope(c,G,A,b);
     
     % get dimension
-    Zdim = dim(conZono);
+    Zdim = dim(cZ);
     
     % assert correctness
     if Zdim ~= n

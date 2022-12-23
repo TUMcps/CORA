@@ -44,7 +44,7 @@ if nargin > 2
 end
 
 % set default values
-dims = setDefaultValues({[1,2]},varargin{:});
+dims = setDefaultValues({[1,2]},varargin);
 
 % check input arguments (only supported for convex sets with edges)
 inputArgsCheck({ {S,'att',{'conZonotope','interval','zonoBundle','zonotope'}} ...

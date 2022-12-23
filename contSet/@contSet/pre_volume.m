@@ -50,7 +50,7 @@ inputArgsCheck({{S,'att',classname}});
 % check input arguments: two tries depending on value for type
 if strcmp(classname,'zonotope')
     % only zonotopes: set default values method ('exact') and order (5)
-    [method,order] = setDefaultValues({'exact',5},varargin{:});
+    [method,order] = setDefaultValues({'exact',5},varargin);
     % check input arguments
     inputArgsCheck({{method,'str',{'exact','reduce','alamo'}},...
                     {order,'att','numeric',{'integer','positive'}}});

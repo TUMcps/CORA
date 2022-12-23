@@ -44,7 +44,7 @@ function Z = zonotope(cPZ,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-method = setDefaultValues({'linearize'},varargin{:});
+method = setDefaultValues({'linearize'},varargin);
 
 % check input arguments
 inputArgsCheck({{cPZ,'att','conPolyZono'};

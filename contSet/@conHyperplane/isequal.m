@@ -2,6 +2,7 @@ function res = isequal(hyp1,hyp2,varargin)
 % isequal - checks if two constrained hyperplanes are equal
 %
 % Syntax:  
+%    res = isequal(hyp1,hyp2)
 %    res = isequal(hyp1,hyp2,tol)
 %
 % Inputs:
@@ -33,8 +34,13 @@ function res = isequal(hyp1,hyp2,varargin)
 
 %------------- BEGIN CODE --------------
 
+% too many input arguments
+if nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs',3));
+end
+
 % set default value
-tol = setDefaultValues({eps},varargin{:});
+tol = setDefaultValues({eps},varargin);
 
 % check input arguments
 inputArgsCheck({{hyp1,'att','conHyperplane'};

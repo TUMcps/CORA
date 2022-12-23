@@ -26,9 +26,8 @@ function res = test_zonotope_cubMap
 
 %------------- BEGIN CODE --------------
 
-res = false;
-
-%% ANALYTICAL TESTS
+% assume true
+res = true;
 
 % TEST 1: Mixed Multiplication
 
@@ -52,7 +51,7 @@ Z_ = [temp;temp];
 
 % check for correctness
 if ~compareMatrices(Z_,Zres.Z)
-    throw(CORAerror('CORA:testFailed'));
+    res = false;
 end
 
 
@@ -79,9 +78,7 @@ Z_ = [temp;temp];
 
 % check for correctness
 if ~compareMatrices(Z_,Zres.Z)
-    throw(CORAerror('CORA:testFailed'));
+    res = false;
 end
-
-res = true;
 
 %------------- END OF CODE --------------

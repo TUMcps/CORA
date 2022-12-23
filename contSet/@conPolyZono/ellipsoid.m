@@ -43,7 +43,7 @@ function E = ellipsoid(cPZ,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-method = setDefaultValues({'split'},varargin{:}); 
+method = setDefaultValues({'split'},varargin); 
 
 % check input arguments
 inputArgsCheck({{cPZ,'att','conPolyZono'};

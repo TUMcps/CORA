@@ -25,7 +25,7 @@ function res = test_zonotope_isFullDim
 
 %------------- BEGIN CODE --------------
 
-% 1. Empty case
+% empty case
 Z = zonotope();
 res(1) = ~isFullDim(Z);
 

@@ -51,7 +51,7 @@ function [isLinear,A,B,c,formalEqs,containsInput] = ...
 %------------- BEGIN CODE --------------
 
 % set default value
-parseMode = setDefaultValues({'flow'},varargin{:});
+parseMode = setDefaultValues({'flow'},varargin);
 
 if ~strcmp(parseMode,'flow') && ~strcmp(parseMode,'assignment')
     throw(CORAerror('CORA:converterIssue',...

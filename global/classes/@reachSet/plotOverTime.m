@@ -35,7 +35,7 @@ function han = plotOverTime(R,varargin)
 %------------- BEGIN CODE --------------
 
 % default values for the optional input arguments
-dims = setDefaultValues({1},varargin{:});
+dims = setDefaultValues({1},varargin);
 
 % check input arguments
 inputArgsCheck({{R,'att',{'reachSet'},{''}};

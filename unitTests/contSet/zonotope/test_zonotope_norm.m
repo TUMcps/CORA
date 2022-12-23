@@ -26,9 +26,12 @@ function res = test_zonotope_norm
 %------------- BEGIN CODE --------------
 
 TOL = 1e-6;
-% res = true;
-res = (norm(zonotope()) == -Inf);
-% instantiate zonotope
+
+% empty case
+Z_empty = zonotope();
+res = norm(Z_empty) == -Inf;
+
+% full-dimensional case
 c = zeros(2,1);
 G = [2 5 4 3; -4 -6 2 3];
 Z = zonotope(c,G);
@@ -38,9 +41,23 @@ Z = zonotope(c,G);
 val2_exact = norm(Z,2,'exact');
 val2_ub = norm(Z,2,'ub');
 val2_ubc = norm(Z,2,'ub_convex');
+
+% compute vertices
 V = vertices(Z);
-if (val2_exact-val2_ub) > TOL || (val2_exact-val2_ubc) > TOL ...
-        || abs(val2_exact-max(sqrt(sum(V.^2))))/val2_exact > TOL
+
+% check exact vs. upper bound
+if val2_exact > val2_ub && ~withinTol(val2_exact,val2_ub,TOL)
+    res = false;
+end
+
+% check exact vs. upper bound (convex)
+if val2_exact > val2_ubc && ~withinTol(val2_exact,val2_ubc,TOL)
+    res = false;
+end
+
+% check exact vs. norm of all vertices
+temp = abs(val2_exact-max(sqrt(sum(V.^2))))/val2_exact;
+if temp > 0 && ~withinTol(temp,0,TOL)
     res = false;
 end
 

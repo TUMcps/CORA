@@ -63,7 +63,7 @@ function cZ = convHull(cZ,S,varargin)
     end
 
     % set default values
-    method = setDefaultValues({'exact:Raghuraman'},varargin{:});
+    method = setDefaultValues({'exact:Raghuraman'},varargin);
 
     % use different algorithms for the case with only one or two sets
     if ~iscell(S)

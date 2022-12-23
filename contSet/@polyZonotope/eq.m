@@ -1,12 +1,16 @@
-function res = eq(pZ1,pZ2)
-% eq - overloaded '==' operator for exact comparison of two polynomial zonotopes
+function res = eq(pZ1,pZ2,varargin)
+% eq - overloaded '==' operator for exact comparison of two polynomial
+%    zonotopes
 %
-% Syntax:  
+% Syntax:
+%    res = pZ1 == pZ2
 %    res = eq(pZ1,pZ2)
+%    res = eq(pZ1,pZ2,tol)
 %
 % Inputs:
 %    pZ1 - polyZonotope object
 %    pZ2 - polyZonotope object
+%    tol - (optional) tolerance
 %
 % Outputs:
 %    res - true/false
@@ -20,7 +24,7 @@ function res = eq(pZ1,pZ2)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: polyZonotope/isequal
 
 % Author:       Mingrui Wang
 % Written:      21-June-2022
@@ -29,6 +33,6 @@ function res = eq(pZ1,pZ2)
 
 %------------- BEGIN CODE --------------
 
-res = isequal(pZ1,pZ2);
+res = isequal(pZ1,pZ2,varargin{:});
 
 %------------- END OF CODE --------------

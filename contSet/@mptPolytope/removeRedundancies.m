@@ -39,7 +39,7 @@ function obj = removeRedundancies(obj,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    method = setDefaultValues({'all'},varargin{:});
+    method = setDefaultValues({'all'},varargin);
 
     % check input arguments
     inputArgsCheck({{obj,'att','mptPolytope'};

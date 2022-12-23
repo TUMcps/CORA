@@ -36,13 +36,13 @@ for i=1:length(E_c)
     
     % only shape matrix
     E = ellipsoid(Q);
-    if any(any(abs(E.Q - Q) > tol))
+    if ~all(all(withinTol(E.Q,Q,tol)))
         res = false; break;
     end
 
     % shape matrix and center
     E = ellipsoid(Q,q);
-    if any(any(abs(E.Q - Q) > tol)) || any(abs(E.q - q) > tol)
+    if ~all(all(withinTol(E.Q,Q,tol))) || ~all(all(withinTol(E.q,q,tol)))
         res = false; break;
     end
     

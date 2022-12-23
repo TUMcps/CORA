@@ -39,7 +39,8 @@ for dim = dims
         E = ellipsoid.generateRandom('Dimension',dim,'IsDegenerate',false);
         P = randPoint(E,Npoints);
         for i_p = 1:size(P,2)
-            if ellipsoidNorm(E,P(:,i_p)-E.center) > 1+tol
+            eN = ellipsoidNorm(E,P(:,i_p)-E.center);
+            if eN > 1 && ~withinTol(eN,1,tol)
                 saveFailedTests('E','P'); return;
             end
         end
@@ -58,7 +59,8 @@ for dim = dims
         P = randPoint(E,Npoints) + 10*max_d;
         
         for i_p = 1:size(P,2)
-            if ellipsoidNorm(E, P(:,i_p)-E.q) <= 1-tol
+            eN = ellipsoidNorm(E, P(:,i_p)-E.q);
+            if eN < 1 && ~withinTol(eN,1,tol)
                 saveFailedTests('E','P'); return;
             end
         end

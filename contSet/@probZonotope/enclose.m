@@ -45,7 +45,7 @@ function probZ = enclose(probZ,Ar,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-Rtrans = setDefaultValues({zeros(length(Ar),1)},varargin{:});
+Rtrans = setDefaultValues({zeros(length(Ar),1)},varargin);
 
 % check input arguments
 inputArgsCheck({{probZ,'att','probZonotope'};

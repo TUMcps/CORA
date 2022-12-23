@@ -44,52 +44,52 @@ for j = 1:length(methods)
     V = points(:,ind);
 
     % Construct a mptPolytope object from the vertices
-    poly = mptPolytope(V');
+    P = mptPolytope(V');
 
     % Convert to constrained zonotope object
-    cZono = conZonotope(poly);
+    cZ = conZonotope(P);
 
     % Calculate vertices
-    V = vertices(cZono);
+    V = vertices(cZ);
     
     % Reduce all constraints for which the elimination does not result in
     % an over-approximation
-    cZono = reduceConstraints(cZono);
+    cZ = reduceConstraints(cZ);
 
     % Reduce the constrained zonotope
-    nc = size(cZono.A,1);
-    ng = size(cZono.Z,2)-1;
-    n = size(cZono.Z,1);
+    nc = size(cZ.A,1);
+    ng = size(cZ.Z,2)-1;
+    n = size(cZ.Z,1);
     o = floor((ng-nc)/n)+1;
     
-    cRed{1} = reduceConstraints(cZono,nc-1);   % reduce 1 constraint
-    cRed{2} = reduceConstraints(cZono,nc-2);   % reduce 2 constraints
-    cRed{3} = reduce(cZono,methods{j},o-1);    % reduce 1 generator
-    cRed{4} = reduce(cZono,methods{j},o-4);    % reduce 2 generators
+    cRed{1} = reduceConstraints(cZ,nc-1);   % reduce 1 constraint
+    cRed{2} = reduceConstraints(cZ,nc-2);   % reduce 2 constraints
+    cRed{3} = reduce(cZ,methods{j},o-1);    % reduce 1 generator
+    cRed{4} = reduce(cZ,methods{j},o-4);    % reduce 2 generators
     
     % Check if the vertices of the original constrained zonotope are
     % located inside the reduced constrained zonotope
     for i = 1:length(cRed)
        
         % convert to polytope (for easy checks if point is inside set)
-        poly = mptPolytope(cRed{i});
-        P = get(poly,'P');
+        P = mptPolytope(cRed{i});
+        P = get(P,'P');
         
 %         % plot the result
 %         hold on
-%         plot(cZono,[1,2],'r');
+%         plot(cZ,[1,2],'r');
 %         plot(cRed{i},[1,2],'b');
         
         % check if all vertices are located inside the set
-        temp = P.A*V-P.b*ones(1,size(V,2));
-        if any(any(temp > 1e-10))
+        temp = P.A*V - P.b*ones(1,size(V,2));
+        if ~all(all( temp < 0 | withinTol(temp,1e-10) ))
             file_name = strcat('testLongDuration_conZonotope_reduce_1_', ...
                                datestr(now,'mm-dd-yyyy_HH-MM'));
                   
             file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                                  file_name);
                            
-            save(file_path, 'cZono')
+            save(file_path, 'cZ')
             throw(CORAerror('CORA:testFailed'));
         end
     end
@@ -109,47 +109,47 @@ for j = 1:length(methods)
     V = points(:,ind);
 
     % Construct a mptPolytope object from the vertices
-    poly = mptPolytope(V');
+    P = mptPolytope(V');
 
     % Convert to constrained zonotope object
-    cZono = conZonotope(poly);
+    cZ = conZonotope(P);
 
     % Calculate vertices
-    V = vertices(cZono);
+    V = vertices(cZ);
     
     % Reduce all constraints for which the elimination does not result in
     % an over-approximation
-    cZono = reduceConstraints(cZono);
+    cZ = reduceConstraints(cZ);
 
     % Reduce the constrained zonotope
-    nc = size(cZono.A,1);
-    ng = size(cZono.Z,2)-1;
-    n = size(cZono.Z,1);
+    nc = size(cZ.A,1);
+    ng = size(cZ.Z,2)-1;
+    n = size(cZ.Z,1);
     o = floor((ng-nc)/n)+1;
     
-    cRed{1} = reduceConstraints(cZono,nc-1);    % reduce 1 constraint
-    cRed{2} = reduceConstraints(cZono,nc-2);    % reduce 2 constraints
-    cRed{3} = reduce(cZono,methods{j},o-1);     % reduce 1 generator
-    cRed{4} = reduce(cZono,methods{j},o-2);     % reduce 2 generators
+    cRed{1} = reduceConstraints(cZ,nc-1);    % reduce 1 constraint
+    cRed{2} = reduceConstraints(cZ,nc-2);    % reduce 2 constraints
+    cRed{3} = reduce(cZ,methods{j},o-1);     % reduce 1 generator
+    cRed{4} = reduce(cZ,methods{j},o-2);     % reduce 2 generators
     
     % Chech if the vertices of the original constrained zonotope are
     % located inside the reduced constrained zonotope
     for i = 1:length(cRed)
        
         % convert to polytope (for easy checks if point is inside set)
-        poly = mptPolytope(cRed{i});
-        P = get(poly,'P');
+        P = mptPolytope(cRed{i});
+        P = get(P,'P');
         
         % check if all vertices are located inside the set
-        temp = P.A*V-P.b*ones(1,size(V,2));
-        if any(any(temp > 1e-10))
+        temp = P.A*V - P.b*ones(1,size(V,2));
+        if ~all(all( temp < 0 | withinTol(temp,1e-10) ))
             file_name = strcat('testLongDuration_conZonotope_reduce_2_', ...
                                datestr(now,'mm-dd-yyyy_HH-MM'));
                   
             file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
                                  file_name);
                            
-            save(file_path, 'cZono')
+            save(file_path, 'cZ')
             throw(CORAerror('CORA:testFailed'));
         end
     end

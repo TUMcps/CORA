@@ -31,7 +31,7 @@ function E = ellipsoid(obj,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-mode = setDefaultValues({'outer'},varargin{:});
+mode = setDefaultValues({'outer'},varargin);
 
 % check input arguments
 inputArgsCheck({{obj,'att','mptPolytope','scalar'};

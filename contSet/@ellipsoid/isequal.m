@@ -1,12 +1,14 @@
-function res = isequal(E,S)
+function res = isequal(E1,E2,varargin)
 % isequal - checks if two ellipsoids are equal
 %
 % Syntax:  
-%    res = isequal(E,S)
+%    res = isequal(E1,E2)
+%    res = isequal(E1,E2,tol)
 %
 % Inputs:
-%    E - ellipsoid object
-%    S - ellipsoid object
+%    E1 - ellipsoid object
+%    E2 - ellipsoid object
+%    tol - (optional) tolerance
 %
 % Outputs:
 %    res - true/false
@@ -31,9 +33,36 @@ function res = isequal(E,S)
 
 %------------- BEGIN CODE --------------
 
-inputArgsCheck({{E,'att','ellipsoid','scalar'};
-                {S,'att','ellipsoid','scalar'}});
+% too many input arguments
+if nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs',3));
+end
 
-res = E==S;
+% parse input arguments
+tol = setDefaultValues({min(E1.TOL,E2.TOL)},varargin);
+
+% check input arguments
+inputArgsCheck({{E1,'att','ellipsoid','scalar'};
+                {E2,'att','ellipsoid','scalar'};
+                {tol,'att','numeric',{'nonnan','nonnegative','scalar'}}});
+
+% assume false
+res = false;
+
+% check if dimensions are equal
+if dim(E1) ~= dim(E2)
+    return;
+end
+
+% check for emptyness
+if (isempty(E1) && ~isempty(E2)) || (~isempty(E1) && isempty(E2))
+    return;
+elseif isempty(E1) && isempty(E2)
+    res = true;
+    return;
+end
+
+% compare shape matrix and center numerically
+res = all(all(withinTol(E1.Q,E2.Q,tol))) && all(withinTol(E1.q,E2.q,tol));
 
 %------------- END OF CODE --------------

@@ -30,20 +30,18 @@ Z1 = zonotope([1,2,3,4; 5 6 7 8]);
 Z2 = zonotope([9, 10, 11; 12, 13, 14]);
 
 % obtain enclosing zonotope
-Z3 = enclose(Z1,Z2);
+Z_ = enclose(Z1,Z2);
 
 % obtain zonotope matrix
-Zmat = Z3.Z;
+c_ = center(Z_);
+G_ = generators(Z_);
 
 % true result
-true_mat = [5, 6, 7, -4, -4, -4, 4; ...
-            8.5, 9.5, 10.5, -3.5, -3.5, -3.5, 8];
+true_c = [5; 8.5];
+true_G = [6, 7, -4, -4, -4, 4; ...
+            9.5, 10.5, -3.5, -3.5, -3.5, 8];
 
 % check result
-res_val = all(all(Zmat == true_mat));
-
-
-% add results
-res = res_val;
+res = compareMatrices(c_,true_c) && compareMatrices(G_,true_G);
 
 %------------- END OF CODE --------------

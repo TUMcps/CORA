@@ -3,6 +3,7 @@ function res = isequal(C1,C2,varargin)
 %
 % Syntax:  
 %    res = isequal(C1,C2)
+%    res = isequal(C1,C2,tol)
 %
 % Inputs:
 %    C1 - capsule object
@@ -31,8 +32,13 @@ function res = isequal(C1,C2,varargin)
 
 %------------- BEGIN CODE --------------
 
+% too many input arguments
+if nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs',3));
+end
+
 % default values
-tol = setDefaultValues({eps},varargin{:});
+tol = setDefaultValues({eps},varargin);
 
 % check input arguments
 inputArgsCheck({{C1,'att','capsule'};

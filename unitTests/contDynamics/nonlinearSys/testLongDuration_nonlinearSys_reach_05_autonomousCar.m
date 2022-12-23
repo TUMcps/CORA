@@ -67,13 +67,9 @@ IH = interval(R.timeInterval.set{end});
 IH_saved = interval( ...
     [1.9113165970926538; -0.1763919452055745; -0.0628054832382009; 21.7144766634198660; -0.1081824122890472; -0.2077292973551603; -2.5375737849902964; -0.0418129344907171], ...
     [2.2486917068056300; 0.1775907109675143; 0.0638901159110268; 21.8628568504537739; 0.1329959480608928; 0.2499135775758194; -1.9819546806525596; 0.0646318796537233]);
-        
-%check if slightly bloated versions enclose each other
-res_1 = (IH <= enlarge(IH_saved,1+1e-8));
-res_2 = (IH_saved <= enlarge(IH,1+1e-8));
 
 %final result
-res = res_1 && res_2;
+res = isequal(IH,IH_saved,1e-8);
 
 % %simulate
 % stepsizeOptions = odeset('MaxStep',0.2*(options.tFinal-options.tStart));

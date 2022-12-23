@@ -47,7 +47,7 @@ function han = plot(cZ,varargin)
 %------------- BEGIN CODE --------------
 
 % default settings
-dims = setDefaultValues({[1,2]},varargin{:});
+dims = setDefaultValues({[1,2]},varargin);
 % standard plot mode
 mode = 1;
 

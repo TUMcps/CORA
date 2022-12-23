@@ -25,26 +25,28 @@ function res = test_zonotope_mtimes
 
 %------------- BEGIN CODE --------------
 
-% create zonotope
-Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
+% instantiate zonotopes
+Z_empty = zonotope();
+Z = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
 
 % create parallelotopes
 M = [-1 2; 3 -4];
 
-% obtain results
-Z2 = M*Z1;
+% compute linear maps
+Z_empty_ = M*Z_empty;
+Z_ = M*Z;
 
-% obtain zonotope matrix
-Zmat = Z2.Z;
+% obtain center and generator matrix
+c_ = center(Z_);
+G_ = generators(Z_);
 
 % true result
-true_mat = [6, 7, 8, 9; ...
-            -16, -17, -18, -19];
-
-% empty set
-res_e = isempty(M*zonotope());
+true_c = [6; -16];
+true_G = [7, 8, 9; ...
+         -17, -18, -19];
 
 % check result
-res = all(all(Zmat == true_mat)) && res_e;
+res = isempty(Z_empty_) && compareMatrices(c_,true_c) ...
+    && compareMatrices(G_,true_G);
 
 %------------- END OF CODE --------------

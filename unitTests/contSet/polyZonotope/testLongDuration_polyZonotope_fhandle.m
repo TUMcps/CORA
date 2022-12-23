@@ -24,12 +24,23 @@ function res = testLongDuration_polyZonotope_fhandle
 
 %------------- BEGIN CODE --------------
 
+% assume true
 res = true;
+
+% number of tests
 nTests = 50;
+
 for i=1:nTests
+
+    % random dimension
     n = randi(30);
+
+    % init polynomial zonotope
     pZ = noIndep(polyZonotope.generateRandom('Dimension',n));
+
+    % number of identifiers
     ne = length(pZ.id);
+
     f = fhandle(pZ);
     N = 2*n;
     B = 2*rand(ne,N)-1;
@@ -38,18 +49,15 @@ for i=1:nTests
         fval = f(B(:,j));
         f_abs = max(abs(fval_res),abs(fval));
         f_abs(f_abs==0) = 1;
-        if any(abs(fval_res-fval)./f_abs>1e-6)
+
+        % check result
+        if ~all(withinTol(fval_res./f_abs, fval./f_abs, 1e-6))
+            path = pathFailedTests(mfilename());
+            save(path,'pZ','fval');
             res = false;
-            break;
+            return
         end
-    end
-    if ~res
-        break;
     end
 end
 
-if ~res
-    path = pathFailedTests(mfilename());
-    save(path,'pZ','fval');
-end
 %------------- END OF CODE --------------

@@ -25,26 +25,23 @@ function res = testLongDuration_zonotope_isFullDim
 
 %------------- BEGIN CODE --------------
 
-% 1. Empty case
-res_empty = true;
+% assume true
+res = true;
 
-Z = zonotope();
-if isFullDim(Z)
-    res_empty = false;
-end
+% number of tests
+nrTests = 1000;
 
+for i=1:nrTests
 
-% random tests
-res_rand = true;
-nrOfTests = 1000;
-
-for i=1:nrOfTests
     % random dimension
     n = randi([2,50]);
+
     % random center
     c = randn(n,1);
+
     % random number of generators
     gamma = randi([n,100]);
+
     % random full-rank generator matrix
     G = randn(n,gamma);
     while rank(G) < n
@@ -56,17 +53,8 @@ for i=1:nrOfTests
     
     % check if full-dimensional
     if ~isFullDim(Z)
-        res_rand = false; break
+        res = false; return
     end
-end
-
-
-% combine results
-res = res_empty && res_rand;
-
-if ~res
-    path = pathFailedTests(mfilename());
-    save(path,'n','c','G','gamma');
 end
 
 %------------- END OF CODE --------------

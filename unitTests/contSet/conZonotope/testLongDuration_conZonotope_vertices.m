@@ -30,6 +30,8 @@ function res = testLongDuration_conZonotope_vertices
 
 %------------- BEGIN CODE --------------
 
+res = true;
+
 % loop over all test cases
 for i = 1:100
     
@@ -46,10 +48,8 @@ for i = 1:100
     if ~contains(mptPolytope(V'), p)
         path = pathFailedTests(mfilename());
         save(path,'cZ');
-        disp('testLongDuration_conZonotope_vertices failed');
+        res = false;
     end
 end
-
-res = true;
 
 %------------- END OF CODE --------------

@@ -55,7 +55,7 @@ methods
             return
         end
 
-        [c, d] = setDefaultValues({[], 0}, varargin{:});
+        [c, d] = setDefaultValues({[], 0}, varargin);
         
 
         if nargin > 0

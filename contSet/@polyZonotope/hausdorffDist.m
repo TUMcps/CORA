@@ -39,7 +39,7 @@ function val = hausdorffDist(pZ,points,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    splits = setDefaultValues({4},varargin{:});
+    splits = setDefaultValues({4},varargin);
 
     % check input arguments
     inputArgsCheck({{pZ,'att','polyZonotope'};

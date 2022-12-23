@@ -25,38 +25,36 @@ function res = testLongDuration_zonotope_box
 
 %------------- BEGIN CODE --------------
 
-% set tolerance
-tol = 1e-9;
+% assume true
+res = true;
 
-dims = 2:8;
-testsPerDim = 1000;
-
-res_rand = false(length(dims),testsPerDim);
+% number of tests
+nrTests = 100;
 
 % box has to be the same as conversion to interval
-for d=1:length(dims)
-    for test=1:testsPerDim
-        % create a random zonotope
-        nrOfGens = 10;
-        Z = zonotope(-1+2*rand(dims(d),nrOfGens+1));
+for i=1:nrTests
 
-        % compute axis-aligned box
-        Zbox = box(Z);
+    % random dimension
+    n = randi(20);
 
-        % convert to interval and back to zonotope
-        ZInt = zonotope(interval(Z));
+    % create a random zonotope
+    nrOfGens = 5*n;
+    Z = zonotope(-1+2*rand(n,nrOfGens+1));
 
-        % check if axis-aligned box same as interval
-        res_rand(d,test) = all(all(abs(Zbox.Z - ZInt.Z) < tol));
+    % compute axis-aligned box
+    Zbox = box(Z);
+    cbox = center(Zbox);
+    Gbox = generators(Zbox);
+
+    % convert to interval and back to zonotope
+    Zint = zonotope(interval(Z));
+    cint = center(Zint);
+    Gint = generators(Zint);
+
+    % check if axis-aligned box same as interval
+    if ~compareMatrices(cbox,cint,1e-14) || ~compareMatrices(Gbox,Gint,1e-14)
+        res = false; return
     end
-end
-
-% add results
-res = all(all(res_rand));
-
-if ~res
-    path = pathFailedTests(mfilename());
-    save(path,'Z');
 end
 
 %------------- END OF CODE --------------

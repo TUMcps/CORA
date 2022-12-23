@@ -50,7 +50,7 @@ end
 [S1,S2] = findClassArg(S1,S2,classname);
 
 % parse input arguments (dummy value for maxEval)
-[type,tol,maxEval] = setDefaultValues({'exact',100*eps,0},varargin{:}); 
+[type,tol,maxEval] = setDefaultValues({'exact',100*eps,0},varargin); 
 
 if strcmp(classname,'zonotope')
     % check input arguments

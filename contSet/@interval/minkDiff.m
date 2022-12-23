@@ -39,7 +39,7 @@ function I = minkDiff(I,S,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-type = setDefaultValues({'exact'},varargin{:});
+type = setDefaultValues({'exact'},varargin);
 
 % check input arguments
 inputArgsCheck({{I,'att','interval'};

@@ -63,31 +63,31 @@ methods
             return;
         end
 
-        inf = setDefaultValues({[]}, varargin{1:end});
-        sup = setDefaultValues({inf}, varargin{2:end});
+        lb = setDefaultValues({[]}, varargin);
+        ub = setDefaultValues({lb}, varargin(2:end));
 
         inputArgsCheck({ ...
-            {inf, 'att', 'numeric'}; ...
-            {sup, 'att', 'numeric'}; ...
+            {lb, 'att', 'numeric'}; ...
+            {ub, 'att', 'numeric'}; ...
         })
 
-        if ~all(size(inf) == size(sup))
+        if ~all(size(lb) == size(ub))
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 'Limits are of different dimension.'));
-        elseif length(size(inf)) > 2
+        elseif length(size(lb)) > 2
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 'Only 1d and 2d intervals are supported.'));
-        elseif ~all(inf <= sup, "all")
+        elseif ~all(lb <= ub, "all")
              throw(CORAerror('CORA:wrongInputInConstructor',...
                  'Lower limit larger than upper limit.'));
         end
         
         % assign properties;
-        obj.inf = inf;
-        obj.sup = sup;
+        obj.inf = lb;
+        obj.sup = ub;
         
         % set parent object properties
-        obj.dimension = size(inf,1);
+        obj.dimension = size(lb,1);
     end
     
     function ind = end(obj,k,n)

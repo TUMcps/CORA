@@ -8,9 +8,7 @@ function res = test_zonotope_supportFunc
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,12 +23,14 @@ function res = test_zonotope_supportFunc
 
 %------------- BEGIN CODE --------------
 
-res = false;
+% assume true
+res = true;
+
 % empty set
-Z_e = polyZonotope();
-if supportFunc(Z_e,[1;1],'upper') == -Inf ...
-        && supportFunc(Z_e,[1;1],'lower') == Inf
-    res = true;
+Z_empty = zonotope();
+if supportFunc(Z_empty,[1;1],'upper') ~= -Inf ...
+        || supportFunc(Z_empty,[1;1],'lower') ~= Inf
+    res = false;
 end
 
 % instantiate zonotope
@@ -39,8 +39,8 @@ G = [4 2 -2; 1 3 7];
 Z = zonotope(c,G);
 
 % check a couple of evaluations
-if ~withinTol(supportFunc(Z,[1;0]),10) || ~withinTol(supportFunc(Z,[-1;0]),-6) ...
-        || ~withinTol(supportFunc(Z,[0;1]),12) || ~withinTol(supportFunc(Z,[0;-1]),-10)
+if ~withinTol(supportFunc(Z,[1;0]),10) || ~withinTol(supportFunc(Z,[-1;0]),6) ...
+        || ~withinTol(supportFunc(Z,[0;1]),12) || ~withinTol(supportFunc(Z,[0;-1]),10)
     res = false;
 end
 
@@ -59,14 +59,16 @@ if ~compareMatrices([x1 x2 x3],[6 12; -2 10; -2 -10]')
     res = false;
 end
 
-TOL = 1e-8;
+% TOL = 1e-8;
 %check if [~,x]=minnorm(Z)^2==supportFunc(Z,x)
 %check if [~,x]=norm(Z,2,'exact')^2==supportFunc(Z,x)
-[val_min,x_min] = minnorm(Z);
-[val_max,x_max] = norm(Z,2,'exact');
-if abs(supportFunc(Z,x_min)-val_min^2)>TOL || ...
-        abs(supportFunc(Z,x_max)-val_max^2)>TOL
-    res = true;
-end
+% [val_min,x_min] = minnorm(Z);
+% [val_max,x_max] = norm(Z,2,'exact');
+% sF_min = supportFunc(Z,x_min);
+% sF_max = supportFunc(Z,x_max);
+% if ~withinTol(sF_min,val_min^2,TOL) ...
+%         || ~withinTol(sF_max,val_max^2,TOL)
+%     res = true;
+% end
 
 %------------- END OF CODE --------------

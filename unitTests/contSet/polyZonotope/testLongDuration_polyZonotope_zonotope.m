@@ -28,9 +28,6 @@ function res = testLongDuration_polyZonotope_zonotope
 
 res = true;
 
-
-%% RANDOM TESTS
-
 % TEST 2-dimensional
 for i = 1:5
     
@@ -44,8 +41,8 @@ for i = 1:5
     pZ = polyZonotope(c,G,Grest,expMat);
 
     % calculate zonotope over-approximation
-    zono = zonotope(pZ);
-    zono = halfspace(zono);
+    Z = zonotope(pZ);
+    Z = halfspace(Z);
 
     % determine random point and extreme points inside the original polynomial
     % zonotope
@@ -57,12 +54,12 @@ for i = 1:5
 
     % check if the all points from the original polynomial zonotope are
     % enclosed by the reduced polynomial zonotope
-    suc = contains(zono, points);
+    suc = contains(Z, points);
     
     if ~suc
-       path = pathFailedTests(mfilename());
-       save(path,'zono','points','pZ');
-       throw(CORAerror('CORA:testFailed'));
+        path = pathFailedTests(mfilename());
+        save(path,'Z','points','pZ');
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -81,11 +78,11 @@ for i = 1:5
     pZ = polyZonotope(c,G,Grest,expMat);
 
     % calculate zonotope over-approximation
-    zono = zonotope(pZ);
-    zono = halfspace(zono);
+    Z = zonotope(pZ);
+    Z = halfspace(Z);
 
-    % determine random point and extreme points inside the original polynomial
-    % zonotope
+    % determine random point and extreme points inside the original
+    % polynomial zonotope
     N = 10000;
     points = randPoint(pZ,N);
     pointsExt = randPoint(pZ,'all','extreme');
@@ -94,7 +91,7 @@ for i = 1:5
 
     % check if the all points from the original polynomial zonotope are
     % enclosed by the reduced polynomial zonotope
-    suc = contains(zono, points);
+    suc = contains(Z, points);
     
     if ~suc
         throw(CORAerror('CORA:testFailed'));

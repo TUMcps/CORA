@@ -113,7 +113,7 @@ methods
             Z = [c,G];
         end
 
-        [A, b] = setDefaultValues({[], []}, varargin{:});
+        [A, b] = setDefaultValues({[], []}, varargin);
 
         % check dimensions
         inputArgsCheck([ ...

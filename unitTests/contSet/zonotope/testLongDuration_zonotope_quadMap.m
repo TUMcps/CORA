@@ -25,6 +25,9 @@ function res = testLongDuration_zonotope_quadMap
 
 %------------- BEGIN CODE --------------
 
+% assume true
+res = true;
+
 % create zonotopes
 Z1 = zonotope([-4, -3, -2; 1, 2, 3]);
 Z2 = zonotope([1, 4, 2; -3, 2, -1]);
@@ -38,15 +41,13 @@ Q{2} = [0.5 0; 2 -1];
 Zres = quadMap(Z1,Q);
 
 % map random points in zonotope and check if they are inside the result
-res(1) = true;
 for i=1:nrOfRandPoints
     p = randPoint(Z1);
     for d=1:dim(Z1)
         pQp(d,1) = p' * Q{d} * p;
     end
     if ~contains(Zres,pQp)
-        res(1) = false;
-        break
+        res = false; return
     end
 end
 
@@ -56,7 +57,6 @@ end
 Zres = quadMap(Z1,Z2,Q);
 
 % map random points in zonotope and check if they are inside the result
-res(2) = true;
 for i=1:nrOfRandPoints
     p1 = randPoint(Z1);
     p2 = randPoint(Z2);
@@ -64,18 +64,8 @@ for i=1:nrOfRandPoints
         pQp(d,1) = p1' * Q{d} * p2;
     end
     if ~contains(Zres,pQp)
-        res(2) = false;
-        break
+        res = false; return
     end
-end
-
-
-% gather results
-res = all(res);
-
-if ~res
-    path = pathFailedTests(mfilename());
-    save(path,'p','p1','p2');
 end
 
 %------------- END OF CODE --------------

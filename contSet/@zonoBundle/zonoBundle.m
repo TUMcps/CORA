@@ -58,7 +58,7 @@ methods
         end
 
         % parse input
-        Z = setDefaultValues({{}}, varargin{:});
+        Z = setDefaultValues({{}}, varargin);
 
         if isa(Z, 'zonoBundle')
             % copy contructor

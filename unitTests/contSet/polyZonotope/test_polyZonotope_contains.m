@@ -24,6 +24,9 @@ function res = test_polyZonotope_contains
 
 %------------- BEGIN CODE --------------
 
+% assume true
+res = true;
+
 % define polynomial zonotopes and points
 pZ = polyZonotope([0;0],[2 0 1;0 2 1],[0.5;0],[1 0 3;0 1 1]);
 p1 = [1;1];
@@ -43,9 +46,7 @@ res4 = contains(pZ,obj2,'approx');
 
 % check if the result is correct
 if ~res1 || res2 || ~res3 || res4 || ~res_e
-    throw(CORAerror('CORA:testFailed'));
+    res = false;
 end
-
-res = true;
 
 %------------- END OF CODE --------------

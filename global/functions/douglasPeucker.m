@@ -41,7 +41,7 @@ function res = douglasPeucker(points,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    tol = setDefaultValues({0.01},varargin{:});
+    tol = setDefaultValues({0.01},varargin;
 
     % find point with the largest distance
     dmax = 0;

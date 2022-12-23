@@ -79,16 +79,8 @@ Rnonlin2 = reach(fiveDimSysNonlinear, params, optionsNonLin);
 IH = interval(Rlin.timePoint.set{end});
 IH_nonlinear_T1 = interval(Rnonlin1.timePoint.set{end});
 IH_nonlinear_T2 = interval(Rnonlin2.timePoint.set{end});
-        
-% check if slightly bloated versions enclose each other (linear vs T2)
-res_T1_1 = (IH <= enlarge(IH_nonlinear_T1,1+1e-8));
-res_T1_2 = (IH_nonlinear_T1 <= enlarge(IH,1+1e-8));
-
-% check if slightly bloated versions enclose each other (linear vs T3)
-res_T2_1 = (IH <= enlarge(IH_nonlinear_T2,1+1e-8));
-res_T2_2 = (IH_nonlinear_T2 <= enlarge(IH,1+1e-8));
 
 % final result
-res = res_T1_1 && res_T1_2 && res_T2_1 && res_T2_2;
+res = isequal(IH,IH_nonlinear_T1,1e-8) && isequal(IH,IH_nonlinear_T2,1e-8);
 
 %------------- END OF CODE --------------

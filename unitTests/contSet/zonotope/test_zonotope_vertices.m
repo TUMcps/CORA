@@ -8,9 +8,7 @@ function res = test_zonotope_vertices
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -37,23 +35,9 @@ Vmat = vertices(Z1);
 
 % true result
 true_Vmat = [-8, 0, 2, -4, -4, -10; ...
-   2, 0, -8, -4, 6, 10];   
-
-% check results; order of vectors does not matter
-pointExists = true;
-i = 1;
-while pointExists && i<=length(Vmat(1,:))
-    pointExists = false;
-    for j = 1:length(true_Vmat(1,:))
-        if all(abs(Vmat(:,i)-true_Vmat(:,j)) < 1e-13)
-            pointExists = true;
-        end
-    end
-    % increment counter i
-    i = i+1;
-end
+              2, 0, -8, -4, 6, 10];
 
 % res
-res = pointExists && res_e;
+res = compareMatrices(Vmat,true_Vmat) && res_e;
 
 %------------- END OF CODE --------------

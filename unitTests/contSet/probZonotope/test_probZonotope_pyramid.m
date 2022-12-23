@@ -10,7 +10,7 @@ function res = test_probZonotope_pyramid
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % Example: 
 %
@@ -26,9 +26,6 @@ function res = test_probZonotope_pyramid
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
-res = false;
-
 
 % generate probabilistic zonotope
 Z1 = [0 1 0; 0 0 1];
@@ -52,7 +49,6 @@ intersectionProb = pyramid(pZ3,mArray,P);
 % saved result
 intersectionProb_saved = 0.4867005538850111;
 
-res = ((intersectionProb - intersectionProb_saved) <= 1e-8);
-
+res = withinTol(intersectionProb,intersectionProb_saved,1e-8);
 
 %------------- END OF CODE --------------

@@ -25,7 +25,7 @@ function res = test_polyZonotope_quadMap
 
 %------------- BEGIN CODE --------------
 
-% create polynomial matrices
+% instantiate polynomial zonotope
 c = [1;2];
 G = [1 -2 1;2 3 -1];
 Grest = [0;0];

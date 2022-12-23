@@ -35,7 +35,7 @@ function E = ellipsoid(pZ,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-method = setDefaultValues({'bernstein'},varargin{:});
+method = setDefaultValues({'bernstein'},varargin);
 
 % check input arguments
 inputArgsCheck({{pZ,'att','polyZonotope'};

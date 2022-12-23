@@ -1,12 +1,16 @@
-function res = eq(zB1,zB2)
-% eq - overloaded '==' operator for exact comparison of two zonotope bundles
+function res = eq(zB1,zB2,varargin)
+% eq - overloaded '==' operator for exact comparison of two zonotope
+%    bundles
 %
-% Syntax:  
+% Syntax:
+%    res = zB1 == zB2
 %    res = eq(zB1,zB2)
+%    res = eq(zB1,zB2,tol)
 %
 % Inputs:
 %    zB1 - zonoBundle object
 %    zB2 - zonoBundle object
+%    tol - (optional) tolerance
 %
 % Outputs:
 %    res - true/false
@@ -19,13 +23,13 @@ function res = eq(zB1,zB2)
 %    zB1 = zonoBundle({zonotope(I1),zonotope(I2)});
 %    zB2 = zonoBundle({zonotope(I1),zonotope(I3)});
 %
-%    zB1 = zB2
+%    zB1 == zB2
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: zonoBundle/isequal
 
 % Author:       Mingrui Wang
 % Written:      21-June-2022
@@ -34,6 +38,6 @@ function res = eq(zB1,zB2)
 
 %------------- BEGIN CODE --------------
 
-res = isequal(zB1,zB2);
+res = isequal(zB1,zB2,varargin{:});
 
 %------------- END OF CODE --------------

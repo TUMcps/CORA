@@ -1,12 +1,15 @@
-function res = eq(I1,I2)
-% eq - Overloads the == operator; here: Are both intervals equal?
+function res = eq(I1,I2,varargin)
+% eq - Overloads the == operator for exact comparison of two intervals
 %
-% Syntax:  
+% Syntax:
+%    res = I1 == I2
 %    res = eq(I1,I2)
+%    res = eq(I1,I2,tol)
 %
 % Inputs:
 %    I1 - interval object
 %    I2 - interval object
+%    tol - (optional) tolerance
 %
 % Outputs:
 %    res - true/false whether intervals are equal
@@ -20,22 +23,15 @@ function res = eq(I1,I2)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: interval/isequal
 
 % Author:       Matthias Althoff
 % Written:      05-August-2016 
-% Last update:  ---
+% Last update:  23-December-2022 (MW, call isequal)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% check equality of infima
-leftResult = all(all(infimum(I1) == infimum(I2)));
-
-% check equalify of suprema
-rightResult = all(all(supremum(I1) == supremum(I2)));
-
-% combine checks
-res = leftResult & rightResult;
+res = isequal(I1,I2,varargin{:});
 
 %------------- END OF CODE --------------

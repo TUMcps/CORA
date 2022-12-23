@@ -51,14 +51,14 @@ inputArgsCheck({{S1,'att',classname};
 
 if strcmp(classname,'ellipsoid')
     % parse input arguments (dummy value for maxEval)
-    type = setDefaultValues({'outer'},varargin{:});
+    type = setDefaultValues({'outer'},varargin);
 
     % check additional input arguments
     inputArgsCheck({{type,'str',{'inner','outer'}}});
 
 elseif strcmp(classname,'zonotope')
     % parse input arguments (dummy value for maxEval)
-    type = setDefaultValues({'conZonotope'},varargin{:}); 
+    type = setDefaultValues({'conZonotope'},varargin); 
 
     % check additional input arguments
     inputArgsCheck({{type,'str',{'conZonotope','averaging'}}});

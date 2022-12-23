@@ -25,9 +25,12 @@ function res = testLongDuration_zonotope_and
 
 %------------- BEGIN CODE --------------
 
+% assume true
 res = true;
 
+% dimensions
 dims = 2:2:8;
+% number of tests
 testsPerDim = 10;
 
 % box has to be the same as conversion to interval
@@ -46,7 +49,6 @@ for d=1:length(dims)
             res = false;
             path = pathFailedTests(mfilename());
             save(path,'Z1','Z2','Z3');
-            disp('test_and failed');
             return
         end
     end

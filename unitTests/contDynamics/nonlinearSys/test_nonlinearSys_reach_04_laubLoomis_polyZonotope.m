@@ -69,13 +69,8 @@ IH = interval(R.timeInterval.set{end});
 IH_saved = interval( ...
     [1.014907148632731;0.800824936891000;0.926007014302413;1.609688394869659;0.493165360530853;-0.069670995159681;0.004173997644759], ...
     [1.699421020453211;1.510058578698442;1.682651563264945;2.418233929718181;1.102350758408782;0.292485092031139;0.709958453161779]);
-      
-        
-% check if slightly bloated versions enclose each other
-res_1 = (IH <= enlarge(IH_saved,1+1e-8));
-res_2 = (IH_saved <= enlarge(IH,1+1e-8));
 
 % final result
-res = res_1 && res_2;
+res = isequal(IH,IH_saved,1e-8);
 
 %------------- END OF CODE --------------

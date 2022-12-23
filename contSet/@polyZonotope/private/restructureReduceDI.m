@@ -42,7 +42,7 @@ function pZ = restructureReduceDI(pZ, dfOrder, method, varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    genOrder = setDefaultValues({Inf},varargin{:});
+    genOrder = setDefaultValues({Inf},varargin);
     
     % make sure that polyZonotope is irreducible
     pZ = deleteZeros(pZ);

@@ -36,7 +36,7 @@ function han = plot(hs,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-dims = setDefaultValues({[1,2]},varargin{:});
+dims = setDefaultValues({[1,2]},varargin);
 
 % check input arguments
 inputArgsCheck({{hs,'att','halfspace'};

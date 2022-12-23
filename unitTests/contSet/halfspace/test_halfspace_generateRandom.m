@@ -39,27 +39,27 @@ res = dim(h) == n;
 
 % only normal vector
 h = halfspace.generateRandom('NormalVector',c);
-res(end+1,1) = all(abs(h.c - c) < eps);
+res(end+1,1) = compareMatrices(h.c,c);
 
 % only offset
 h = halfspace.generateRandom('Offset',d);
-res(end+1,1) = abs(h.d - d) < eps;
+res(end+1,1) = withinTol(h.d,d);
 
 % dimension and normal vector
 h = halfspace.generateRandom('Dimension',n,'NormalVector',c);
-res(end+1,1) = dim(h) == n && all(abs(h.c - c) < eps);
+res(end+1,1) = dim(h) == n && compareMatrices(h.c,c);
 
 % dimension and offset
 h = halfspace.generateRandom('Dimension',n,'Offset',d);
-res(end+1,1) = dim(h) == n && abs(h.d - d) < eps;
+res(end+1,1) = dim(h) == n && withinTol(h.d,d);
 
 % normal vector and offset
 h = halfspace.generateRandom('NormalVector',c,'Offset',d);
-res(end+1,1) = all(abs(h.c - c) < eps) && abs(h.d - d) < eps;
+res(end+1,1) = compareMatrices(h.c,c) && withinTol(h.d,d);
 
 % dimension, normal vector, and offset
 h = halfspace.generateRandom('Dimension',n,'NormalVector',c,'Offset',d);
-res(end+1,1) = dim(h) == n && all(abs(h.c - c) < eps) && abs(h.d - d) < eps;
+res(end+1,1) = dim(h) == n && compareMatrices(h.c,c) && withinTol(h.d,d);
 
 
 % unify results

@@ -1,12 +1,14 @@
-function res = isequal(zB1,zB2)
+function res = isequal(zB1,zB2,varargin)
 % isequal - checks if two zonotope bundles are equal
 %
 % Syntax:  
 %    res = isequal(zB1,zB2)
+%    res = isequal(zB1,zB2,tol)
 %
 % Inputs:
 %    zB1 - zonoBundle object
 %    zB2 - zonoBundle object
+%    tol - (optional) tolerance
 %
 % Outputs:
 %    res - true/false
@@ -21,23 +23,41 @@ function res = isequal(zB1,zB2)
 % See also: none
 
 % Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
+% Written:      17-September-2019
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
+% too many input arguments
+if nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs',3));
+end
+
+% parse input arguments
+tol = setDefaultValues({eps},varargin);
+
+% check input arguments
+inputArgsCheck({{zB1,'att','zonoBundle'};
+                {zB2,'att','zonoBundle'};
+                {tol,'att','numeric',{'nonnan','scalar','nonnegative'}}});
+
+% assume false
 res = false;
+
+% check number of parallelSets
 if zB1.parallelSets ~= zB2.parallelSets
     return
 end
 
+% compare individual zonotopes
 for z=1:zB1.parallelSets
     if ~isequal(zB1.Z{z},zB2.Z{z})
         return
     end
 end
 
+% all comparisons ok
 res = true;
 
 %------------- END OF CODE --------------

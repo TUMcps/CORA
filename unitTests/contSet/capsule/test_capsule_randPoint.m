@@ -39,7 +39,7 @@ C = capsule(c,g,r);
 p = randPoint(C);
 
 % check
-res(2) = all(abs(p - c) < 5*eps);
+res(2) = compareMatrices(p,c);
 
 % instantiate full-dimensional capsule
 c = [3; 0; 0];

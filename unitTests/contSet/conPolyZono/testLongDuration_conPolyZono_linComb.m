@@ -81,6 +81,5 @@ for i = 1:2
         end
     end
 end
-end
 
 %------------- END OF CODE --------------
