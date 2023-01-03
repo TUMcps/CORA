@@ -8,61 +8,86 @@ function res = test_interval_cartProd
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: see below
+%    res - true/false 
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Author:       Mark Wetzlinger
-% Written:      19-Sep-2019
-% Last update:  24-Sep-2019
+% Written:      19-September-2019
+% Last update:  24-September-2019
+%               03-January-2023 (MW, add interval-numeric cases)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% TEST 1: Analytical ------------------------------------------------------
 % 1. vertcat:
 % create intervals
-Int1 = interval([-2; -4; -3], ...
-                [2;  6;  1]);
-Int2 = interval([-1; -5], ...
-                [7;  9]);
+I1 = interval([-2; -4; -3], ...
+              [2;  6;  1]);
+I2 = interval([-1; -5], ...
+              [7;  9]);
 
 % compute cartesian product
-Int_cartProd = cartProd(Int1, Int2);
+I_ = cartProd(I1, I2);
 
 % true product
-lower_true = [-2; -4; -3; -1; -5];
-upper_true = [ 2;  6;  1;  7;  9];
-Int_cartProd_true = interval(lower_true, upper_true);
+lb_true = [-2; -4; -3; -1; -5];
+ub_true = [ 2;  6;  1;  7;  9];
+I_true = interval(lb_true, ub_true);
 
 % compare results
-res_vertcat = isequal(Int_cartProd,Int_cartProd_true);
+res_vertcat = isequal(I_,I_true);
 
 % 2. horzcat:
 % create intervals
-Int1 = interval([-1, -5], ...
+I1 = interval([-1, -5], ...
                 [7,  9]);
-Int2 = interval([-2, -4, -3], ...
+I2 = interval([-2, -4, -3], ...
                 [2,  6,  1]);
 
 % compute cartesian product
-Int_cartProd = cartProd(Int1, Int2);
+I_ = cartProd(I1, I2);
 
 % true product
-lower_true = [-1,-5,-2,-4,-3];
-upper_true = [ 7, 9, 2, 6, 1];
-Int_cartProd_true = interval(lower_true, upper_true);
+lb_true = [-1,-5,-2,-4,-3];
+ub_true = [ 7, 9, 2, 6, 1];
+I_true = interval(lb_true, ub_true);
 
 % compare results
-res_horzcat = isequal(Int_cartProd,Int_cartProd_true);
+res_horzcat = isequal(I_,I_true);
 
-% % 3. empty interval
+% 3. interval-numeric case
+I1 = interval([-2; -4; -3], ...
+              [2;  6;  1]);
+num = [2;1];
+
+% compute cartesian product
+I_ = cartProd(I1,num);
+
+% true product
+lb_true = [-2; -4; -3; 2; 1];
+ub_true = [ 2;  6;  1; 2; 1];
+I_true = interval(lb_true,ub_true);
+
+% compare results
+res_num1 = isequal(I_,I_true);
+
+% compute cartesian product
+I_ = cartProd(num,I1);
+
+% true product
+lb_true = [2; 1; -2; -4; -3];
+ub_true = [2; 1; 2;  6;  1];
+I_true = interval(lb_true,ub_true);
+
+% compare results
+res_num2 = isequal(I_,I_true);
+
+% % 4. empty interval
 % % create intervals
 % Int1 = interval();
 % Int2 = interval([-1; -5], ...
@@ -80,31 +105,6 @@ res_horzcat = isequal(Int_cartProd,Int_cartProd_true);
 %     end
 % end
 
-res_analytical = res_vertcat && res_horzcat; % && res_empty;
-% -------------------------------------------------------------------------
-
-% TEST 2: Random ----------------------------------------------------------
-% create random interval
-dim1 = floor(1 + 9*rand(1));
-lower1 = -10*rand(dim1,1);
-upper1 = 10*rand(dim1,1);
-Int1 = interval(lower1, upper1);
-dim2 = floor(1 + 9*rand(1));
-lower2 = -10*rand(dim2,1);
-upper2 = 10*rand(dim2,1);
-Int2 = interval(lower2, upper2);
-
-% compute cartesian product
-Int_cartProd = cartProd(Int1, Int2);
-
-% true product
-Int_cartProd_true = interval([lower1; lower2], [upper1; upper2]);
-
-% compare results
-res_rand = isequal(Int_cartProd,Int_cartProd_true);
-% -------------------------------------------------------------------------
-
-% add results
-res = res_analytical && res_rand;
+res = res_vertcat && res_horzcat && res_num1 && res_num2; % && res_empty;
 
 %------------- END OF CODE --------------

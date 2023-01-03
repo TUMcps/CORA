@@ -38,7 +38,7 @@ if res
     % if result has been found, it is stored in the first entry of var
     Z = zonotope(vars{1}); return
 else
-    % potential re-ordering
+    % assign variables
     Z = vars{1}; S = vars{2};
 end
 
@@ -72,7 +72,7 @@ elseif isa(S,'zonotope')
 
     % first argument is a vector
     if isnumeric(Z)
-        Z.Z = [[Z;center(S)],[zeros(size(Z,1),size(S.Z,2)-1);generators(S)]];
+        Z = zonotope([Z;center(S)],[zeros(size(Z,1),size(S.Z,2)-1);generators(S)]);
     else
         % throw error for given arguments
         throw(CORAerror('CORA:noops',Z,S));
@@ -82,10 +82,6 @@ else
     
     % throw error for given arguments
     throw(CORAerror('CORA:noops',Z,S));
-    
-end  
-    
-    
     
 end
 

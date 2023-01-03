@@ -8,9 +8,7 @@ function res = test_ellipsoid_cartProd
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -20,7 +18,7 @@ function res = test_ellipsoid_cartProd
 
 % Author:       Victor Gassmann
 % Written:      26-July-2021
-% Last update:  ---
+% Last update:  03-January-2023 (MW, add ellipsoid-numeric case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -70,6 +68,22 @@ for i=1:length(E_c)
         res = false;
         break;
     end
+end
+
+% ellipsoid-numeric case
+E = ellipsoid(eye(2),[1;2]);
+num = -1;
+
+% compute Cartesian product
+E_ = cartProd(E,num);
+E__ = cartProd(num,E);
+
+% check result
+if ~compareMatrices(E_.Q,[1 0 0; 0 1 0; 0 0 0]) ...
+        || ~compareMatrices(E_.q,[1;2;-1]) ...
+        || ~compareMatrices(E__.Q,[0 0 0; 0 1 0; 0 0 1]) ...
+        || ~compareMatrices(E__.q,[-1;1;2])
+    res = false;
 end
 
 %------------- END OF CODE --------------

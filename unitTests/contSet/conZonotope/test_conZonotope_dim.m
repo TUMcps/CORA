@@ -8,19 +8,17 @@ function res = test_conZonotope_dim
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Author:       Mark Wetzlinger
 % Written:      14-March-2021
-% Last update:  ---
+% Last update:  03-January-2023 (MW, moved random tests to testLongDuration)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -33,32 +31,13 @@ if dim(cZ) ~= 0
     res = false;
 end
 
+% simple case
+Z = [0 3 0 1;0 0 2 1];
+A = [1 0 1]; b = 1;
+cZ = conZonotope(Z,A,b);
 
-% number of tests
-nrOfTests = 1000;
-
-for i=1:nrOfTests
-    % random dimension
-    n = randi([1,50]);
-    % random center
-    c = randn(n,1);
-    % random generator matrix
-    G = 5*randn(n,randi(10));
-    nrGens = size(G,2);
-    % random constraints
-    A = diag(randn(nrGens,1));
-    b = randn(nrGens,1);
-    
-    % instantiate conZonotope
-    cZ = conZonotope(c,G,A,b);
-    
-    % get dimension
-    Zdim = dim(cZ);
-    
-    % assert correctness
-    if Zdim ~= n
-        res = false; break
-    end
+if dim(cZ) ~= 2
+    res = false;
 end
 
 %------------- END OF CODE --------------

@@ -40,28 +40,56 @@ if res
     % if result has been found, it is stored in the first entry of var
     E = vars{1}; return
 else
-    % potential re-ordering
+    % assign variables
     E = vars{1}; S = vars{2}; type = vars{3};
 end
 
-
-if strcmp(type,'outer') && isa(S,'ellipsoid')
-    % Cartesian product of interval over-approximations
-    IntE = cartProd(interval(E),interval(S));
-    r = rad(IntE);
-    q = center(IntE);
-    TOL = min(E.TOL,S.TOL);
-    
-    % extract degenerate dimensions
-    ind_d = withinTol(r,zeros(size(r)),TOL);
-    n_nd = sum(~ind_d);
-    
-    % construct final ellipsoid
-    E = ellipsoid(n_nd*diag(r.^2),q);
-
-elseif any(strcmp(type,{'exact','inner'}))
-    throw(CORAerror('CORA:noops',E,S,type));
-
+% currently only 'outer' supported
+if any(strcmp(type,{'inner','exact'}))
+    throw(CORAerror('CORA:notSupported',...
+        'The function ''cartProd'' supports only type = ''outer'' for ellipsoid objects.'));
 end
+
+
+if strcmp(type,'outer')
+    
+    if isa(E,'ellipsoid')
+        
+        if isa(S,'ellipsoid')
+            % ellipsoid-ellipsoid case
+
+            % Cartesian product of interval over-approximations
+            IntE = cartProd(interval(E),interval(S));
+            r = rad(IntE);
+            q = center(IntE);
+            TOL = min(E.TOL,S.TOL);
+            
+            % extract degenerate dimensions
+            ind_d = withinTol(r,zeros(size(r)),TOL);
+            n_nd = sum(~ind_d);
+            
+            % construct final ellipsoid
+            E = ellipsoid(n_nd*diag(r.^2),q);
+            return
+
+        elseif isnumeric(S)
+            % ellipsoid-numeric case
+    
+            E = ellipsoid(blkdiag(E.Q,zeros(length(S))), [E.q;S]);
+            return
+    
+        end
+
+    elseif isnumeric(E) && isa(S,'ellipsoid')
+        % numeric-ellipsoid case
+
+        E = ellipsoid(blkdiag(zeros(length(E)),S.Q), [E;S.q]);
+        return
+
+    end
+end
+
+% all other cases: throw error
+throw(CORAerror('CORA:noops',E,S,type));
 
 %------------- END OF CODE --------------

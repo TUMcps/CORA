@@ -39,7 +39,7 @@ function zB = cartProd(zB,S)
         % if result has been found, it is stored in the first entry of var
         zB = vars{1}; return
     else
-        % potential re-ordering
+        % assign variables
         zB = vars{1}; S = vars{2};
     end
 

@@ -38,7 +38,7 @@ if resFound
     % if result has been found, it is stored in the first entry of var
     res = vars{1}; return
 else
-    % potential re-ordering
+    % assign variables
     I = vars{1}; S = vars{2};
 end
 
@@ -91,9 +91,6 @@ else
         % throw error for given arguments
         throw(CORAerror('CORA:noops',I,S));
     end  
-end
-
-    
 end
 
 %------------- END OF CODE --------------
