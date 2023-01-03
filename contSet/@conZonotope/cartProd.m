@@ -43,7 +43,7 @@ if res
     % if result has been found, it is stored in the first entry of var
     cZ = vars{1}; return
 else
-    % potential re-ordering
+    % assign variables
     cZ = vars{1}; S = vars{2};
 end
 

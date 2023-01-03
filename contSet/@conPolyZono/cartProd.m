@@ -50,7 +50,7 @@ if res
     % if result has been found, it is stored in the first entry of var
     cPZ = vars{1}; return
 else
-    % potential re-ordering
+    % assign variables
     cPZ = vars{1}; S = vars{2};
 end
 

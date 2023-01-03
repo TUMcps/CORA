@@ -38,7 +38,7 @@ function P = cartProd(P1,S)
         % if result has been found, it is stored in the first entry of var
         P = vars{1}; return
     else
-        % potential re-ordering
+        % assign variables
         P1 = vars{1}; S = vars{2};
     end
 

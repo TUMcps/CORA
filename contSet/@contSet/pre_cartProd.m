@@ -31,6 +31,7 @@ function [res,vars] = pre_cartProd(classname,S1,S2,varargin)
 % Author:       Mark Wetzlinger
 % Written:      18-August-2022
 % Last update:  23-November-2022 (MW, add classname as input argument)
+%               03-January-2023 (MW, fix bug regarding reordering of args)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -42,9 +43,6 @@ elseif nargin > 4
     throw(CORAerror('CORA:tooManyInputArgs',4));
 end
 
-% right order of objects
-[S1,S2] = findClassArg(S1,S2,classname);
-
 % parse input arguments
 if strcmp(classname,'ellipsoid')
     type = setDefaultValues({'outer'},varargin);
@@ -52,11 +50,16 @@ else
     type = setDefaultValues({'exact'},varargin);
 end
 
-% check input arguments
-inputArgsCheck({{S1,'att',classname};
-                {S2,'att',{'contSet','numeric'},'vector'};
-                {type,'str',{'outer','inner','exact'}}});
-
+% check input arguments: two versions as order of input arguments matters
+try
+    inputArgsCheck({{S1,'att',classname};
+                    {S2,'att',{'contSet','numeric'},'vector'};
+                    {type,'str',{'outer','inner','exact'}}});
+catch
+    inputArgsCheck({{S1,'att',{'contSet','numeric'},'vector'};
+                    {S2,'att',classname};
+                    {type,'str',{'outer','inner','exact'}}});
+end
 
 % empty set cases (current handling not entirely mathematically correct)
 if isemptyobject(S1)

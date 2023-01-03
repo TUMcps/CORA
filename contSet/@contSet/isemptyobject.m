@@ -6,7 +6,7 @@ function res = isemptyobject(S)
 %    res = isemptyobject(S)
 %
 % Inputs:
-%    S - contSet object (or numeric vector, matrix)
+%    S - contSet object
 %
 % Outputs:
 %    res - true/false
@@ -30,15 +30,6 @@ function res = isemptyobject(S)
 
 % read class of contSet object
 classname = class(S);
-
-% numeric (point instead of set)
-if isnumeric(S)
-    if isempty(S)
-        res = true; return
-    else
-        res = false; return
-    end
-end
 
 % differentiate between interval, taylm, affine, zoo (range-bounding) and
 % more 'standard' contSet classes

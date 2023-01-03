@@ -1,6 +1,6 @@
 function res = test_conZonotope_and
 % test_conZonotope_and - unit test function for intersection of a
-%                        constrained zonotope with other sets
+%    constrained zonotope with other sets
 %
 % Syntax:  
 %    res = test_conZonotope_and
@@ -9,19 +9,17 @@ function res = test_conZonotope_and
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
-% Example: 
+% References: 
+%   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
+%       estimation and fault detection"
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
-%
-% References: 
-%   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
-%       estimation and fault detection"
+% See also: none
 
 % Author:       Niklas Kochdumper
 % Written:      11-May-2018
