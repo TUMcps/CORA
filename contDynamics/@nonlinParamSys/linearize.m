@@ -110,16 +110,19 @@ if isa(options.paramInt,'interval')
     U = zB*(options.U + options.uTrans + (-p.u));
     Ucenter = center(U);
     linOptions.U = U + (-Ucenter);
+    linOptions.uTrans = Ucenter;
     linOptions.Uconst = zf + Ucenter;
     linOptions.originContained = false;
 
-    %set up linearized system
+    % instantiate linearized system
     if ~obj.constParam
-        %time-variant linear parametric system
-        linSys = linParamSys(zA,1,'varParam'); %B=1 as input matrix encountered in uncertain inputs
+        % time-variant linear parametric system
+        % B=1 as input matrix encountered in uncertain inputs
+        linSys = linParamSys(zA,1,'varParam');
     else
-        %time-invariant linear parametric system
-        linSys = linParamSys(zA,1,'constParam'); %B=1 as input matrix encountered in uncertain inputs
+        % time-invariant linear parametric system
+        % B=1 as input matrix encountered in uncertain inputs
+        linSys = linParamSys(zA,1,'constParam');
     end
 
     %save constant input

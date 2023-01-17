@@ -1,5 +1,5 @@
 function res = eq(I1,I2,varargin)
-% eq - Overloads the == operator for exact comparison of two intervals
+% eq - Overloads the '==' operator for exact comparison of two intervals
 %
 % Syntax:
 %    res = I1 == I2

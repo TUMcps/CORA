@@ -59,16 +59,4 @@ if ~compareMatrices([x1 x2 x3],[6 12; -2 10; -2 -10]')
     res = false;
 end
 
-% TOL = 1e-8;
-%check if [~,x]=minnorm(Z)^2==supportFunc(Z,x)
-%check if [~,x]=norm(Z,2,'exact')^2==supportFunc(Z,x)
-% [val_min,x_min] = minnorm(Z);
-% [val_max,x_max] = norm(Z,2,'exact');
-% sF_min = supportFunc(Z,x_min);
-% sF_max = supportFunc(Z,x_max);
-% if ~withinTol(sF_min,val_min^2,TOL) ...
-%         || ~withinTol(sF_max,val_max^2,TOL)
-%     res = true;
-% end
-
 %------------- END OF CODE --------------

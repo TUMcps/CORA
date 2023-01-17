@@ -37,9 +37,11 @@ if isemptyobject(ls)
 
 else
 
-    fprintf(newline);
-    disp(inputname(1) + " =");
-    fprintf(newline);
+    if ~isempty(inputname(1))
+        fprintf(newline);
+        disp(inputname(1) + " =");
+        fprintf(newline);
+    end
     
     % string of variables in level set
     varsPrintStr = strjoin(string(ls.vars),",");

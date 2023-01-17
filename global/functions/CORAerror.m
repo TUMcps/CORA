@@ -433,8 +433,7 @@ if ~isempty(atPos)
     functionname = functionname{1};
 else
     % classname now name of folder (starting from within coraroot)
-    CORAPos = strfind(st(errIdx).file,'cora');
-    fileSepAfterCORA = filesepPos(filesepPos > CORAPos(1));
+    fileSepAfterCORA = filesepPos(filesepPos > length(CORAROOT));
     classname = extractBetween(st(errIdx).file,fileSepAfterCORA(1)+1,fileSepAfterCORA(end)-1);
     classname = classname{1};
 
@@ -466,7 +465,7 @@ function convertername = readConverter(st)
 temp = st(2).file;
 
 % read out name of converter
-if contains(temp,['cora' filesep 'converter'])
+if contains(temp,[CORAROOT filesep 'converter'])
     convPos = strfind(temp,'converter');
     temp = temp(convPos+10:end);
     filesepPos = strfind(temp,filesep);
