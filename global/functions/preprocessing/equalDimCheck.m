@@ -37,7 +37,7 @@ function equalDimCheck(S1,S2)
 if CHECKS_ENABLED
 
     % check if dimensions match
-    if isnumeric(S1)
+    if isnumeric(S1) || ismatrixset(S1)
         % operation between matrix/vector/scalar and set
         % column dimension of matrix has to fit set dimension
         if size(S1,2) ~= dim(S2) && ~isscalar(S1)

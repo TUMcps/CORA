@@ -14,7 +14,8 @@ classdef levelSet < contSet
 % Outputs:
 %    obj - generated levelSet object
 %
-% Example 1: single equation
+% Example:
+%    % single equation
 %    syms x y
 %    eq = x^2 + y^2 - 4;
 %    ls = levelSet(eq,[x;y],'==');
@@ -22,7 +23,7 @@ classdef levelSet < contSet
 %    figure; hold on; xlim([-3,3]); ylim([-3,3]);
 %    plot(ls,[1,2],'r');
 %
-% Example 2: multiple equations
+%    % multiple equations
 %    syms x y
 %    eq1 = x^2 + y^2 - 4;
 %    eq2 = x + y;
