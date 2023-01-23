@@ -43,6 +43,8 @@ for i=1:numel(BCinstances)
     BClist(i).name = BCinstances{i}.name;
     BClist(i).States = BCinstances{i}.States;
     BClist(i).listOfVar = BCinstances{i}.listOfVar;
+    BClist(i).listOfLabels = BCinstances{i}.listOfLabels;
+    BClist(i).listOfConstants = BCinstances{i}.listOfConstants;
 end
 
 % output on command window

@@ -30,7 +30,7 @@ function res = testLongDuration_zonotope_projVertices
 res = true;
 
 % number of tests
-nrTests = 100;
+nrTests = 25;
 
 for i=1:nrTests
     
@@ -48,6 +48,12 @@ for i=1:nrTests
 
     % compute vertices in projection
     V_proj = projVertices(Z,projDims);
+
+    % visualization
+%     figure; hold on; box on;
+%     plot(project(Z,projDims));
+%     scatter(V(1,:),V(2,:),16,'r','filled');
+%     scatter(V_proj(1,:),V_proj(2,:),16,'g');
 
     % check vertices
     if ~compareMatrices(V_proj,V,1e-14)

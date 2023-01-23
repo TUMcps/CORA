@@ -105,6 +105,14 @@ end
 % if "branches" is empty, no more nodes need to be expanded
 % -> BFS traversal complete
 
+% resolve binds in listOfVar: since constants can be inherited over
+% multiple levels, we need to track every variable's bind from the base
+% level to the highest network component to find out if any bind along the
+% way leads to a constant; the heritage can be tracked using the field
+% instances.children
+instances = resolveBinds(instances);
+
+
 disp("traversal complete!");
 fprintf("  tree depth: %i\n",depth);
 fprintf("  total instances: %i\n",num_instances);

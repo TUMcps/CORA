@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="comp1">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="switch12" type="label" local="false" />
+    <param name="switch21" type="label" local="false" />
+    <location id="1" name="loc1" x="384.0" y="181.0" width="290.0" height="136.0">
+      <invariant>x2 &lt;= 0</invariant>
+      <flow>x1' = 0 &amp;&amp; x2' = 1</flow>
+    </location>
+    <location id="2" name="loc2" x="950.0" y="177.0" width="282.0" height="136.0">
+      <invariant>x2 &gt;= 0</invariant>
+      <flow>x1' = 0 &amp;&amp; x2' = -1</flow>
+    </location>
+    <transition source="1" target="2">
+      <label>switch12</label>
+      <guard>x2 &gt;= 0</guard>
+      <assignment>x1' := x1 + 1 &amp;&amp; x2' := x2 + 5</assignment>
+      <labelposition x="-91.0" y="-91.0" width="194.0" height="82.0" />
+      <middlepoint x="663.5" y="124.0" />
+    </transition>
+    <transition source="2" target="1">
+      <label>switch21</label>
+      <guard>x2 &lt;= 0</guard>
+      <assignment>x1' := x1 + 1 &amp;&amp; x2' := x2 - 5</assignment>
+      <labelposition x="-96.0" y="13.0" width="214.0" height="102.0" />
+      <middlepoint x="655.5" y="235.0" />
+    </transition>
+  </component>
+  <component id="comp2">
+    <param name="switch12" type="label" local="false" />
+    <param name="switch21" type="label" local="false" />
+    <location id="1" name="loc1" x="356.0" y="205.0" width="240.0" height="128.0" />
+    <location id="2" name="loc2" x="821.0" y="198.0" width="252.0" height="122.0" />
+    <transition source="1" target="2">
+      <label>switch12</label>
+      <labelposition x="-102.0" y="-40.0" width="206.0" height="72.0" />
+      <middlepoint x="588.0" y="141.0" />
+    </transition>
+    <transition source="2" target="1">
+      <label>switch21</label>
+      <labelposition x="-61.0" y="16.0" width="130.0" height="60.0" />
+      <middlepoint x="588.5" y="248.5" />
+    </transition>
+  </component>
+  <component id="system">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="772.0" y="270.0" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="773.0" y="322.0" />
+    <param name="switch12" type="label" local="false" x="370.0" y="203.0" />
+    <param name="switch21" type="label" local="false" x="279.0" y="204.0" />
+    <bind component="comp1" as="comp1_1" x="550.0" y="296.0" width="180.0" height="104.0">
+      <map key="x1">x1</map>
+      <map key="x2">x2</map>
+      <map key="switch12">switch12</map>
+      <map key="switch21">switch21</map>
+    </bind>
+    <bind component="comp2" as="comp2_1" x="555.0" y="122.0" width="134.0" height="64.0">
+      <map key="switch12">switch12</map>
+      <map key="switch21">switch21</map>
+    </bind>
+  </component>
+</sspaceex>
+

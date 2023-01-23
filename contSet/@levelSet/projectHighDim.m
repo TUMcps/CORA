@@ -21,18 +21,26 @@ function ls = projectHighDim(ls,N,dims)
 
 % Author:       Maximilian Perschl
 % Written:      25-February-2022
-% Last update:  ---
+% Last update:  21-January-2023 (MW, add sanity check for easier debugging)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
+% check input arguments
+if length(ls.vars) ~= length(dims)
+    throw(CORAerror('CORA:specialError',...
+        'Number of projected dimensions do not match dimension of object.'));
+end
+
+% old symbolic variable names
 oldVars = ls.vars;
+% new symbolic variable names
 newVars = sym('x',[N,1]);
 
-newEq = ls.eq;
+% substitute variable names
+newEq = subs(ls.eq,oldVars,newVars(dims));
 
-newEq = subs(newEq,oldVars,newVars(dims));
-
+% instantiate projected level set
 ls = levelSet(newEq,newVars,ls.compOp);
 
 %------------- END OF CODE ----------------

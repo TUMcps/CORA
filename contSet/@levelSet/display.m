@@ -64,6 +64,7 @@ else
             disp("  eq. #" + i + ": f(" + varsPrintStr + ") " + ls.compOp(i) ...
                 + " " + string(vpa(ls.eq(i),3)) + andStr);
         end
+        fprintf(newline);
     end
 
 end

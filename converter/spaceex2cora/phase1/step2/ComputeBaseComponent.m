@@ -28,9 +28,9 @@ function [bc_out,warnings] = ComputeBaseComponent(bc_in)
 %
 % See also: none
 
-% Author:       ???
+% Author:       Mark Wetzlinger
 % Written:      ???
-% Last update:  ---
+% Last update:  12-January-2023 (MW, add read-out of output equations)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -44,7 +44,7 @@ bc_out.id = string(bc_in.Attributes.id);
 % Collect Variables and Constants
 [listOfVars, listOfLabels] = CollectVariables(bc_in.param);
 bc_out.listOfVar = listOfVars;
-%bc_out.listOfLabels = listOfLabels; % unused
+bc_out.listOfLabels = listOfLabels;
 
 % go over each discrete state aka location: assign
 % - the meta-data (name, id)
@@ -92,6 +92,9 @@ for j = 1:num_states
     [ineqs,eqs,expLeft,expRight,warn] = parseCondition(text);
     % store text (as written in SpaceEx editor)
     bc_out.States(j).Invariant.Text = string(text);
+    % store text of output equations
+    bc_out.States(j).Invariant.Text_output = ...
+        aux_readOutputEqFromInvariant(string(text));
     % store symbolic inequalities
     bc_out.States(j).Invariant.inequalities = ineqs;
     % store symbolic equalities
@@ -182,16 +185,95 @@ for k = 1:h_numTrans
     warnings = [warnings,warn];
     
     
-    % synchronization labels
+    % store synchronization labels
     if isfield(bc_in.transition{k},'label')
-        syncLabel = bc_in.transition{k}.label{1}.Text;
+        bc_out.States(h_source).Trans(h_trans).label = ...
+            bc_in.transition{k}.label{1}.Text;
     else
-        % no label => transition is not synchronized
-        syncLabel = "";
+        % no label => transition is not synchronized with any other
+        bc_out.States(h_source).Trans(h_trans).label = "";
     end
-    % Store label in data structure
-    bc_out.States(h_source).Trans(h_trans).label = string(syncLabel);
     
+end
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function outputEqStr = aux_readOutputEqFromInvariant(str)
+
+% check whether there are any output equations at all
+if ~contains(str,"==")
+    outputEqStr = ""; return
+end
+
+% only one equation
+if ~contains(str,"&&")
+    outputEqStr = str; return
+end
+
+% we have some (actual) invariants with comparison operators other than
+% "==" and output equations using the comparison operator "=="
+
+% indices indicating output equations
+idxEq = strfind(str,"==");
+% indices where equations are separated
+idxAnd = strfind(str,"&&");
+
+% container for output equations
+outputEqs = {};
+% go over equations one by one
+nrEqs = length(idxAnd)+1;
+for i=1:nrEqs
+    if i == 1
+        eq = extractBefore(str,idxAnd(1));
+        % first equation is an output equation
+        if contains(eq,"==")
+            outputEqs = [outputEqs; {eq}];
+        end
+    elseif i < nrEqs
+        eq = extractAfter(str,idxAnd(i-1)+1);
+        shift = strlength(str) - strlength(eq);
+        eq = extractBefore(eq,idxAnd(i)-shift);
+        if contains(eq,"==")
+            outputEqs = [outputEqs; {eq}];
+        end
+    else % last equation
+        eq = extractAfter(str,idxAnd(end)+1);
+        if contains(eq,"==")
+            outputEqs = [outputEqs; {eq}];
+        end
+    end
+end
+
+% put equations into nicely readable form (note: due to the removal of
+% invariant inequalities, the original format has already been changed)
+for i=1:length(outputEqs)
+    % truncate whitespaces at the beginning and at the end
+    while true
+        % logical array of whitespaces
+        whitespaces = isstrprop(outputEqs{i},'wspace');
+        if ~whitespaces(1)
+            break
+        else
+            outputEqs{i} = extractAfter(outputEqs{i},1);
+        end
+    end
+    while true
+        % logical array of whitespaces
+        whitespaces = isstrprop(outputEqs{i},'wspace');
+        if ~whitespaces(end)
+            break
+        else
+            outputEqs{i} = extractBefore(outputEqs{i},strlength(outputEqs{i}));
+        end
+    end
+    % convert to char to enable call of strjoin with a cell-array
+    outputEqs{i} = char(outputEqs{i});
+end
+outputEqStr = string(strjoin(outputEqs," && "));
+
 end
 
 %------------- END OF CODE --------------

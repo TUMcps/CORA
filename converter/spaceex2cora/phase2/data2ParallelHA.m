@@ -1,15 +1,15 @@
-function [functionName,HA] = data2ParallelHA(Data,path)
+function HA = data2ParallelHA(data,functionName,resultpath)
 % data2ParallelHA - write text for hybrid automaton file
 %
 % Syntax:  
-%    [functionName,HA] = data2ParallelHA(Data,path)
+%    HA = data2ParallelHA(data,functionName,resultpath)
 %
 % Inputs:
-%    Data - Automaton in structHA format
-%    path - folder from which to generate auxillary files
+%    data - automaton in structHA format
+%    functionName - name of CORA model file
+%    resultpath - folder from which to generate auxiliary files
 %
 % Outputs:
-%    functionName - name of function
 %    HA - text for hybridAutomaton instantiation
 %
 % Example: 
@@ -21,78 +21,206 @@ function [functionName,HA] = data2ParallelHA(Data,path)
 %
 % See also: none
 
-% Author:       ???
+% Author:       ???, Mark Wetzlinger
 % Written:      ???
 % Last update:  ---
-% Last revision:---
+% Last revision:11-January-2023 (MW, restructure code)
 
 %------------- BEGIN CODE --------------
 
-% Get Meta Information of the given Automaton
-Components = Data.Components;
-functionName = Data.name;
-automaton_id = Data.componentID;
+% get meta information of the given automaton
+components = data.components;
+automaton_id = data.componentID;
 
-% Create main comments
+% create main comments
 functionStr = "function HA = " + functionName + "(~)";
-dateComment = "%% Generated on " + datestr(date);
-aCommentStr = padComment("Automaton created from Component '" + automaton_id + "'");
-automatonStr = functionStr + newlines(3) + dateComment + newlines(2) + aCommentStr + newlines(2);
+dateComment = "%% Generated on " + datestr(datetime);
+createdStr = padComment("Automaton created from Component '" + automaton_id + "'");
+automatonStr = functionStr + newlines(3) + dateComment + newlines(2) + createdStr + newlines(2);
 
-% Create Interface information comment
+% create interface information comment
 infoCommentStr = "%% Interface Specification:" + newline +...
     "%   This section clarifies the meaning of state, input & output dimensions" + newline +...
     "%   by showing their mapping to SpaceEx variable names. " + newlines(2);
 
-% For each component list variable names of state & input space
-numberOfComp = length(Components);
+% number of components
+nrComp = length(components);
+% resulting automaton: flat or parallel?
+isFlatHA = nrComp == 1;
+
+
+% init information string (names of states, inputs, outputs for every
+% component of the resulting automaton)
+infoStr = aux_infoStr(components);
+
+% expand full string
+automatonStr = automatonStr + infoCommentStr + infoStr;
+
+% init component string
+componentStr = "";
+
+% loop over each component in automaton
+for iComp = 1:nrComp
+    % read out i-th component
+    comp = components{iComp};
+    
+    % write comment for component "comp"
+    cCommentStr = padComment("Component " + comp.name) + newlines(2);
+    % Append it to component String
+    componentStr = componentStr + cCommentStr;
+
+    % initialize 'loc' variable, (technically, we only need this for
+    % iComp > 1, but add it everywhere for consistency)
+    componentStr = componentStr + "loc = {};" + newlines(2);
+    
+    % shorter access to locations of i-th component
+    locs = comp.States;
+    
+    % loop over each location
+    nrLocs = length(locs);
+    for iLoc = 1:nrLocs
+        % shorter access to i-th location
+        loc = locs(iLoc);
+        
+        % general information about i-th location
+        locStr = padComment("Location " + loc.name) + newlines(2);
+        
+        % describe flow dynamics
+        dynamicsStr = aux_dynamicsStr(loc,iLoc,comp,iComp,isFlatHA,resultpath,functionName);
+        
+        % describe invariant
+        invariantStr = aux_invariantStr(loc);
+        
+        % init transition string
+        transitionStr = "trans = {};" + newline;
+
+        % loop over all outgoing transitions
+        allTrans = loc.Trans;
+
+        for iTrans = 1:length(allTrans)
+            % shorter access to i-th transition
+            trans = allTrans(iTrans);
+            
+            % read out target location
+            target = num2str(trans.destination);
+
+            % describe reset equation
+            resetStr = aux_resetStr(trans,iComp,iLoc,iTrans,isFlatHA,resultpath,functionName);
+            
+            % describe guard set
+            guardStr = aux_guardStr(trans,loc);
+
+            % concatenate transition string incl. synchronization labels
+            if strlength(trans.label) > 0
+                transStr = "trans{" + num2str(iTrans) + ...
+                    "} = transition(guard, reset, " + ...
+                    target + ", '" + trans.label + "');" + newlines(2);
+            else
+                transStr = "trans{" + num2str(iTrans) + ...
+                    "} = transition(guard, reset, " + ...
+                    target + ");" + newlines(2);
+            end
+            % full transition string
+            transitionStr = transitionStr + resetStr + guardStr + transStr;
+            
+        end
+        
+        % name of location
+        if locs(iLoc).name == ""
+            locName = "S" + iLoc;
+        else
+            locName = locs(iLoc).name;
+        end
+        locNameStr = "loc{" + num2str(iLoc) + "} = location('" + locName + ...
+            "', inv, trans, dynamics);" + newlines(4);
+
+        % append location/dynamics/invariant/transition/location name
+        locStr = locStr + dynamicsStr + invariantStr + transitionStr + locNameStr;
+        % append to component string
+        componentStr = componentStr + locStr;
+        
+    end
+    
+    % append input binds string (only for parallel hybrid automata)
+    if ~isFlatHA
+        inputBindsStr = aux_inputBindsStr(comp,iComp,components);
+        componentStr = componentStr + inputBindsStr;
+    end
+    
+end
+
+% string to instantiate flat/parallel automaton
+if isFlatHA
+    % instantiate hybridAutomaton object
+    objectStr = "HA = hybridAutomaton(loc);";
+else
+    % instantiate parallelHybridAutomaton object
+    objectStr = "HA = parallelHybridAutomaton(comp,iBinds);";
+    
+    % likely redundant:
+%     if all(strcmp(cellfun(@(comp) comp.inputs.name,components),'uDummy'))
+%         % if no inputs in system, CORA needs an input
+%         % generate a global input on the first component
+%         % this will have no effect as the input matrices should all be 0
+%         componentStr = componentStr + ...
+%             "% no inputs given, global input for CORA, no effect as B = 0" + ...
+%             newline + "iBinds{1} = [0,1];" + newlines(2);
+%     end
+end
+
+% concatenate all strings
+HA = automatonStr + componentStr + objectStr + newlines(2) + "end";
+
+end
+
+
+% Auxiliary Functions -----------------------------------------------------
+
+% main auxiliary functions
+function infoStr = aux_infoStr(components)
+    
+% number of components
+nrComp = length(components);
+% flat or parallel conversion
+isFlatHA = nrComp == 1;
+
+% init string
 infoStr = "";
-for comp = 1:numberOfComp
-    Comp = Components{comp};
-    compInfoStr = "% Component " + int2str(comp) + " (" + Comp.name + "):" + newline;
+
+% loop over all components
+for iComp = 1:nrComp
+
+    % read out i-th component for quicker access
+    comp = components{iComp};
+    % read out name of component
+    compInfoStr = "% Component " + int2str(iComp) + " (" + comp.name + "):" + newline;
     
     % gather state names in string array
-    stateNames = [Comp.states.name];
-    % print to comment
-    stateStr = "%  state x := [" + stateNames(1);
-    if length(stateNames) > 1
-        stateStr = stateStr + sprintf("; %s",stateNames(2:end));
+    if ~isempty(comp.states)
+        stateStr = "%  state x := [" + strjoin([comp.states.name],"; ") + "]" + newline;
+    else
+        stateStr = "%  state x := [];" + newline;
     end
-    stateStr = stateStr + "]" + newline;
     
     % gather input names in string array
-    inputNames = [Comp.inputs.name];
-    % print to comment
-    inputStr = "%  input u := [" + inputNames(1);
-    if length(inputNames) > 1
-        inputStr = inputStr + sprintf("; %s",inputNames(2:end));
+    if ~isempty(comp.inputs)
+        inputStr = "%  input u := [" + strjoin([comp.inputs.name],"; ") + "]" + newline;
+    else
+        stateStr = "%  input u := [];" + newline;
     end
-    inputStr = inputStr + "]" + newline;
 
     % gather output names in string array
-    if numberOfComp > 1
-        % parallel
-        outputStr = "%  output y := [";
-        if ~isempty(Comp.outputsLocal)
-            outputNames = [Comp.outputsLocal.name];
-            % print to comment
-            outputStr = outputStr + outputNames(1);
-            if length(outputNames) > 1
-                outputStr = outputStr + sprintf("; %s",outputNames(2:end));
-            end
+    if isFlatHA
+        % flat: accesses outputsGlobal
+        if ~isempty(comp.outputsGlobal)
+            outputStr = "%  output y := [" + strjoin([comp.outputsGlobal.name],"; ") + "]" + newlines(2);
+        else
+            outputStr = newline;
         end
-        outputStr = outputStr + "]" + newlines(2);
     else
-        % flat
-        if ~isempty(Comp.outputsGlobal)
-            % gather output names in string array
-            outputNames = [Comp.outputsGlobal.name];
-            % print to comment
-            outputStr = "%  output y := [" + outputNames(1);
-            if(length(outputNames) > 1)
-                outputStr = outputStr + sprintf("; %s",outputNames(2:end));
-            end
-            outputStr = outputStr + "]" + newlines(2);
+        % parallel: accesses outputsLocal
+        if ~isempty(comp.outputsLocal)
+            outputStr = "%  output y := [" + strjoin([comp.outputsLocal.name],"; ") + "]" + newlines(2);
         else
             outputStr = newline;
         end
@@ -101,379 +229,293 @@ for comp = 1:numberOfComp
     infoStr = infoStr + compInfoStr + stateStr + inputStr + outputStr;
 end
 
-automatonStr = automatonStr + infoCommentStr + infoStr;
-
-componentStr = "";
-% for stateBinds of pHA
-totalStates = 0;
-
-% For each component in automaton
-for comp = 1:numberOfComp
-    Comp = Components{comp};
-    
-    %Get Meta Information for the Component "comp"
-    component_id = Comp.name;
-    States = Comp.States;
-    
-    % Write Comment for Component "comp"
-    cCommentStr = padComment("Component " + component_id) + newlines(2);
-    % Append it to component String
-    componentStr = componentStr + cCommentStr;
-
-    % re-initialize 'loc' variable, append to component string
-    if comp > 1
-        componentStr = componentStr + "loc = {};" + newlines(2);
-    end
-    
-    
-    % For each state in component
-    numberOfStates = length(States);
-    for state = 1:numberOfStates
-        State = States(state);
-        
-        % Write Comment for State "state"
-        sCommentStr = padComment("State " + State.name) + newlines(2);
-        stateStr = sCommentStr;
-        
-        % Give original equation as comment
-        dynamicsC = text2comment("flow equation:" + newline + State.Flow.Text) + newline;
-        if isfield(State.Flow,'A')
-            % Get information for linear system
-            linSysA = printMatrixConverter(State.Flow.A);
-            linSysAStr = "dynA = ..." + newline + linSysA + ";" + newline;
-            linSysB = printMatrixConverter(State.Flow.B);
-            linSysBStr = "dynB = ..." + newline + linSysB + ";" + newline;
-            linSysc = printMatrixConverter(State.Flow.c);
-            linSyscStr = "dync = ..." + newline + linSysc + ";" + newline;
-            % Get information about outputs from Invariant of linear system
-            if (numberOfComp == 1 && isempty(Comp.outputsGlobal)) || ...
-                (numberOfComp > 1 && isempty(Comp.outputsLocal))
-                % no outputs, no equation of the form y = Cx + Du + k
-                dynamicsStr = dynamicsC + linSysAStr + linSysBStr + linSyscStr + ...
-                    "dynamics = linearSys(dynA, dynB, dync);" + newlines(2);
-            else
-                % include output equation y = Cx + Du + k
-                linSysC = printMatrixConverter(State.Flow.C);
-                linSysCStr = "dynC = ..." + newline + linSysC + ";" + newline;
-                linSysD = printMatrixConverter(State.Flow.D);
-                linSysDStr = "dynD = ..." + newline + linSysD + ";" + newline;
-                linSysk = printMatrixConverter(State.Flow.k);
-                linSyskStr = "dynk = ..." + newline + linSysk + ";" + newline;
-                dynamicsStr = dynamicsC + linSysAStr + linSysBStr + linSyscStr + ...
-                    linSysCStr + linSysDStr + linSyskStr + ...
-                    "dynamics = linearSys(dynA, dynB, dync, dynC, dynD, dynk);" + newlines(2);
-            end
-        else
-            % choose name for dynamics function
-            if numberOfComp==1
-                % simplify names for monolithic automata
-                nonlinName = sprintf("%s_Loc%d_FlowEq",functionName,state);
-            else
-                nonlinName = sprintf("%s_Comp%d_Loc%d_FlowEq",functionName,comp,state);
-            end
-            
-            % find dynamics of system
-            statedims = num2str(length(Comp.states));
-            inputdims = num2str(length(Comp.inputs));
-            
-            printDynamicsFile(path,nonlinName,State.Flow.FormalEqs,"flow");
-            
-            dynamicsStr = dynamicsC + "dynamics = nonlinearSys(@" + ...
-                          nonlinName + "," + statedims + "," + ...
-                          inputdims + "); " + newlines(2);
-        end
-        
-        % Get information for Invariant
-        InvText = State.Invariant.Text;
-        if isnumeric(State.Invariant.set) && isempty(State.Invariant.set)
-            str1 = "";
-            str2 = "[];";
-            InvText = "no invariant given";
-        elseif isa(State.Invariant.set,'mptPolytope')
-            [str1,str2] = mptPolytopeString(State.Invariant.set);
-        elseif isa(State.Invariant.set,'levelSet')
-            [str1,str2] = levelSetString(State.Invariant.set);
-        else
-            throw(CORAerror('CORA:converterIssue',...
-                'Invariant has to be either empty, an mptPolytope, or a levelSet'));
-        end
-
-        % Write String for Invariant
-        invariantC = text2comment("invariant equation:" + newline + InvText) + newline;
-        invariantStr = invariantC + str1 + "inv = " + str2 + newlines(2);
-        
-        transitionStr = "trans = {};" + newline;
-        % For each Transition
-        Trans = State.Trans;
-        numberOfTrans = length(Trans);
-        for trans = 1:numberOfTrans
-            Tran = Trans(trans);
-            
-            % Get information for destination for Transition "trans"
-            transDestination = num2str(Tran.destination);
-            
-            % Get Information for Reset for Transition "trans"
-            if isfield(Tran.reset,'A')
-                % linear reset
-                resetA = printMatrixConverter(Tran.reset.A);
-                resetAStr = "resetA = ..." + newline + resetA + ";" + newline;
-                resetc = printMatrixConverter(Tran.reset.c);
-                resetcStr = "resetc = ..." + newline + resetc + ";" + newline;
-                if isfield(Tran.reset,'B')
-                    resetB = printMatrixConverter(Tran.reset.B);
-                    resetBStr = "resetB = ..." + newline + resetB + ";" + newline;
-                end
-                
-                % Write Reset String
-                tranResetText = Tran.reset.Text;
-                if tranResetText == ""
-                    tranResetText = "no reset equation given";
-                end
-                resetComment = text2comment("reset equation:" + newline + tranResetText) + newline;
-                if isfield(Tran.reset,'B')
-                    resetStr = resetComment + resetAStr + resetBStr + resetcStr + ...
-                        "reset = struct('A', resetA, 'B', resetB, 'c', resetc);" + newlines(2);
-                else
-                    resetStr = resetComment + resetAStr + resetcStr + ...
-                        "reset = struct('A', resetA, 'c', resetc);" + newlines(2);
-                end
-            else
-                % nonlinear reset
-                               
-                % choose name of function
-                if numberOfComp == 1
-                    resetFuncName = sprintf("%s_Loc%d_Trans%d_ResetEq%d",...
-                        functionName,state,trans);
-                else
-                    resetFuncName = sprintf("%s_Comp%d_Loc%d_Trans%d_ResetEq%d",...
-                        functionName,comp,state,trans);
-                end
-
-                % generate function file for nonlinear reset
-                printDynamicsFile(path,resetFuncName,Tran.reset.FormalEqs,"reset");
-                tranResetText = Tran.reset.Text;
-                if tranResetText == ""
-                    tranResetText = "no reset equation given";
-                end
-                
-                % Write Reset String
-                resetComment = text2comment("reset equation:" + ...
-                    newline + tranResetText) + newline;
-                resetStr = resetComment + "reset = struct('f', @" + ...
-                        resetFuncName + ");" + newlines(2);
-            end
-            
-            % Get Information for Guards for Transition "trans"
-            tranGuardText = Tran.guard.Text;
-            if tranGuardText == ""
-                tranGuardText = "no guard set given";
-            end
-            if isnumeric(Tran.guard.set) && isempty(Tran.guard.set)
-                % empty guard set -> immediate transition
-                str1 = "";
-                str2 = "[];";
-
-            elseif isa(Tran.guard.set,'mptPolytope')
-                % intersect guard with invariant
-                try
-                    G = State.Invariant.set & Tran.guard.set;                    
-                catch
-                    G = Tran.guard.set;
-                end
-
-                % check if guard can be represented as hyperplane
-                res = false;
-                if isa(G,'mptPolytope')
-                    G = removeRedundancies(G,'all');
-                    [res,ch] = isConHyperplane(G);
-                end
-                
-                if isa(G,'levelSet')
-                    [str1,str2] = levelSetString(G);
-                elseif isa(G,'mptPolytope')
-                    if res
-                        [str1,str2] = conHyperplaneString(ch);
-                    else
-                        [str1,str2] = mptPolytopeString(G);
-                    end
-                else
-                    throw(CORAerror('CORA:converterIssue',...
-                        'Unexpected set representation in conversion of guard set.'));
-                end
-            elseif isa(Tran.guard.set,'levelSet')
-                % intersect guard with invariant
-                try
-                    G = State.Invariant.set & Tran.guard.set;                    
-                catch
-                    G = Tran.guard.set;
-                end
-                [str1,str2] = levelSetString(G);
-            else
-                throw(CORAerror('CORA:converterIssue',...
-                    ['Guard set has to be empty, a conHyperplane, '...
-                    'an mptPolytope or a levelSet.'])); 
-            end
-            
-            % Write Guard String
-            guardC = text2comment("guard equation:" + newline + tranGuardText) + newline;
-            guardStr = guardC + str1 + "guard = " + str2 + newlines(2);
-            
-            
-            % Write Transition String, include only non-empty labels
-            if strlength(Tran.label) > 0
-                transStr = "trans{" + num2str(trans) + ...
-                    "} = transition(guard, reset, " + ...
-                    transDestination + ", '" + Tran.label + "');" + newlines(2);
-            else
-                transStr = "trans{" + num2str(trans) + ...
-                    "} = transition(guard, reset, " + ...
-                    transDestination + ");" + newlines(2);
-            end
-            % Append Transition string
-            transitionStr = transitionStr + resetStr + guardStr + transStr;
-            
-        end
-        
-        % Write State String
-        if States(state).name == ""
-            locName = "S" + state;
-        else
-            locName = States(state).name;
-        end
-        locStr = "loc{" + num2str(state) + "} = location('" + locName + ...
-            "', inv, trans, dynamics);" + newlines(4);
-        % Append State String
-        stateStr = stateStr + dynamicsStr + invariantStr + transitionStr + locStr;
-        % Append State String to Component String
-        componentStr = componentStr + stateStr;
-        
-    end
-    
-    if numberOfComp > 1
-        % only parallel hybrid automata here...
-        parallelCompStr = text2comment("composition: hybrid automaton and input binds") + ...
-            newline + "comp{" + num2str(comp) + "} = hybridAutomaton(loc);" + newlines(2);
-        
-        % declare inputBinds
-        % default string for comp without inputs
-        inputBindStr = "iBinds{" + comp + "} = [];" + newlines(2);
-        % syntax of inputBinds: mx2 array, where
-        %   m - number of input arguments to current component
-        % with (m,1) being either 0 (global) or the component of origin
-        % and (m,2) being the number of the global input (if (m,1) = 0)
-        %           or the number of output of the component of origin
-
-        if strcmp(Comp.inputs(1).name,'uDummy')
-            % only dummy input generated by conversion... use first global
-            % input as input bind (no effect as all input matrices are 0)
-            inputBindStr = "% only dummy input" + newline + ...
-                "iBinds{" + comp + "} = [0 1];" + newlines(2);
-
-        else
-            % actual (meaningful) inputs given
-
-            inputBindStr = "% input names: " + strjoin([Comp.inputs.name],", ") + newline + ...
-                "iBinds{" + comp + "} = [[";
-
-            % loop over all inputs
-            for inp=1:length(Comp.inputs)
-                if inp > 1
-                    inputBindStr = inputBindStr + ";[";
-                end
-                inputName = Comp.inputs(inp).name;
-                % default: input comes from composed system ('global')
-                origin = 0;
-                outputOfOrigin = 1;
-                % search for inputName in all other components
-                for c=1:length(Components)
-                    idx = strcmp([Components{c}.outputsLocal.name],inputName);
-                    if any(idx)
-                        origin = c;
-                        % name should only occur only once
-                        if nnz(idx) > 1
-                            throw(CORAerror('CORA:converterIssue',...
-                                ['The input name of an input bind could not be resolved '...
-                                'because the name occurs twice in another component.']));
-                        end
-                        % index in list of outputs of other component
-                        outputOfOrigin = find(idx,1,'first');
-                        % continue with next row in input binds
-                        break
-                    end
-                end
-                % write bind
-                inputBindStr = inputBindStr + num2str(origin) + "," +...
-                    num2str(outputOfOrigin) + "]";
-            end
-            inputBindStr = inputBindStr + "];" + newlines(2);
-        end
-        
-        % put all together
-        componentStr = componentStr + parallelCompStr + inputBindStr;
-    end
-    
 end
 
+function dynamicsStr = aux_dynamicsStr(loc,iLoc,comp,iComp,isFlatHA,resultpath,functionName)
 
-if numberOfComp == 1
-    % If the number of Components is 1, we have a flat automaton   
-    aStr = "HA = hybridAutomaton(loc);" + newlines(2);
+% write original equation as a comment
+dynamicsCommFlow = text2comment("flow equation:" + newline + loc.Flow.Text) + newline;
+dynamicsCommOutput = text2comment("output equation:" + newline + loc.Invariant.Text_output) + newline;
+
+% linear of nonlinear flow/output?
+if isfield(loc.Flow,'A')
+    % only enters here if both flow equation and output equation are linear
+
+    % read out state equation of linear system
+    linSys_A = printMatrixConverter(loc.Flow.A);
+    linSys_AStr = "dynA = ..." + newline + linSys_A + ";" + newline;
+    linSys_B = printMatrixConverter(loc.Flow.B);
+    linSys_BStr = "dynB = ..." + newline + linSys_B + ";" + newline;
+    linSys_c = printMatrixConverter(loc.Flow.c);
+    linSys_cStr = "dync = ..." + newline + linSys_c + ";" + newline;
+    
+    % outputs (which can only be inputs to other components) are
+    % defined in the invariant of the location
+    if (isFlatHA && isempty(comp.outputsGlobal)) || ...
+        (~isFlatHA && isempty(comp.outputsLocal) && isempty(comp.outputsGlobal))
+        % no outputs -> only state equation x' = Ax + Bu + c
+        dynamicsStr = dynamicsCommFlow + linSys_AStr + linSys_BStr + linSys_cStr + ...
+            "dynamics = linearSys(dynA, dynB, dync);" + newlines(2);
+    else
+        % read out output equation of linear system
+        linSys_C = printMatrixConverter(loc.Flow.C);
+        linSys_CStr = "dynC = ..." + newline + linSys_C + ";" + newline;
+        linSys_D = printMatrixConverter(loc.Flow.D);
+        linSys_DStr = "dynD = ..." + newline + linSys_D + ";" + newline;
+        linSys_k = printMatrixConverter(loc.Flow.k);
+        linSys_kStr = "dynk = ..." + newline + linSys_k + ";" + newline;
+        % two equations: x' = Ax + Bu + c and y = Cx + Du + k
+        dynamicsStr = dynamicsCommFlow + linSys_AStr + linSys_BStr + linSys_cStr + ...
+            newline + dynamicsCommOutput + linSys_CStr + linSys_DStr + linSys_kStr + ...
+            "dynamics = linearSys(dynA, dynB, dync, dynC, dynD, dynk);" + newlines(2);
+    end
 else
-    % If the number of Components is > 1, we have a parallel hybrid automaton
-    aStr = "HA = parallelHybridAutomaton(comp,iBinds);" + newlines(2);
+    % choose name for dynamics function
+    if isFlatHA
+        % simpler name for flat automata
+        nonlinName = sprintf("%s_Loc%d_FlowEq",functionName,iLoc);
+        nonlinName_out = sprintf("%s_Loc%d_OutputEq",functionName,iLoc);
+    else
+        nonlinName = sprintf("%s_Comp%d_Loc%d_FlowEq",functionName,iComp,iLoc);
+        nonlinName_out = sprintf("%s_Comp%d_Loc%d_OutputEq",functionName,iComp,iLoc);
+    end
     
-    if all(strcmp(cellfun(@(cpnt) cpnt.inputs.name, Components), 'uDummy'))
-    % if no inputs in system, CORA needs an input
-    % generate a global input on the first component
-    % this will have no effect as the input matrices should all be 0
-        componentStr = componentStr + ...
-            "% no inputs given, global input for CORA, no effect as B = 0" + ...
-            newline + "iBinds{1} = [0,1];" + newlines(2);
+    % number of states x and inputs u of the flow and output equation
+    statedims = num2str(length(comp.states));
+    inputdims = num2str(length(comp.inputs));
+    
+    % write file for nonlinear flow
+    printDynamicsFile(resultpath,nonlinName,loc.Flow.FormalEqs,"flow");
+    
+    if isFlatHA || strlength(loc.Invariant.Text_output) == 0
+        % no output equation (always in conversion to flat HA)
+        dynamicsStr = dynamicsCommFlow + "dynamics = nonlinearSys(@" + ...
+            nonlinName + "," + statedims + "," + inputdims + "); " + newline;
+
+    else
+        % output equation -> write file
+        printDynamicsFile(resultpath,nonlinName_out,loc.Flow.FormalEqs_out,"flow");
+
+        % number of outputs
+        outputdims = num2str(length(comp.outputsLocal));
+        
+        % write string for nonlinear flow equation
+        dynamicsStr = dynamicsCommFlow + dynamicsCommOutput + ...
+            "dynamics = nonlinearSys(@" + nonlinName + "," + statedims + ...
+            "," + inputdims + ",..." + newline + "    " + ...
+            "@" + nonlinName_out + "," + outputdims + "); " + newlines(2);
     end
 end
 
-%optionStr = padComment("Options");
+end
 
-HA = automatonStr + componentStr + aStr + newline + "end";
+function invariantStr = aux_invariantStr(loc)
+
+% Get information for Invariant
+InvText = loc.Invariant.Text;
+if isnumeric(loc.Invariant.set) && isempty(loc.Invariant.set)
+    str1 = "";
+    str2 = "[];";
+    InvText = "no invariant given";
+elseif isa(loc.Invariant.set,'mptPolytope')
+    [str1,str2] = mptPolytopeString(loc.Invariant.set);
+elseif isa(loc.Invariant.set,'levelSet')
+    [str1,str2] = levelSetString(loc.Invariant.set);
+else
+    throw(CORAerror('CORA:converterIssue',...
+        'Invariant has to be either empty, an mptPolytope, or a levelSet'));
+end
+
+% Write String for Invariant
+invariantComm = text2comment("invariant equation:" + newline + InvText) + newline;
+invariantStr = invariantComm + str1 + "inv = " + str2 + newlines(2);
 
 end
 
+function resetStr = aux_resetStr(trans,iComp,iLoc,iTrans,isFlatHA,resultpath,functionName)
 
-% Auxiliary Functions -----------------------------------------------------
+% linear or nonlinear reset function?
+if isfield(trans.reset,'A')
+    % linear reset
+    reset_A = printMatrixConverter(trans.reset.A);
+    reset_AStr = "resetA = ..." + newline + reset_A + ";" + newline;
+    if isfield(trans.reset,'B')
+        reset_B = printMatrixConverter(trans.reset.B);
+        reset_BStr = "resetB = ..." + newline + reset_B + ";" + newline;
+    end
+    reset_c = printMatrixConverter(trans.reset.c);
+    reset_cStr = "resetc = ..." + newline + reset_c + ";" + newline;
+    
+    % Write Reset String
+    tranResetText = trans.reset.Text;
+    if tranResetText == ""
+        tranResetText = "no reset equation given";
+    end
+    resetComm = text2comment("reset equation:" + newline + tranResetText) + newline;
+    if isfield(trans.reset,'B')
+        resetStr = resetComm + reset_AStr + reset_BStr + reset_cStr + ...
+            "reset = struct('A', resetA, 'B', resetB, 'c', resetc);" + newlines(2);
+    else
+        resetStr = resetComm + reset_AStr + reset_cStr + ...
+            "reset = struct('A', resetA, 'c', resetc);" + newlines(2);
+    end
+else
+    % nonlinear reset
+                   
+    % choose name of function
+    if isFlatHA
+        % flat hybrid automaton
+        resetFuncName = sprintf("%s_Loc%d_Trans%d_ResetEq%d",...
+            functionName,iLoc,iTrans);
+    else
+        % parallel hybrid automaton
+        resetFuncName = sprintf("%s_Comp%d_Loc%d_Trans%d_ResetEq%d",...
+            functionName,iComp,iLoc,iTrans);
+    end
 
-function str = padComment(comment,maxLineLength)
-%pads comment left & right with dashes to desired length and prefixes "%"
-
-    if nargin < 2
-        maxLineLength = 75;
+    % generate function file for nonlinear reset
+    printDynamicsFile(resultpath,resetFuncName,trans.reset.FormalEqs,"reset");
+    tranResetText = trans.reset.Text;
+    if tranResetText == ""
+        tranResetText = "no reset equation given";
     end
     
-    lenComment = strlength(comment);
-    lenLeft = floor((maxLineLength - lenComment)/2) - 1;
-    lenRight = maxLineLength - lenLeft - lenComment;
+    % Write Reset String
+    resetComm = text2comment("reset equation:" + ...
+        newline + tranResetText) + newline;
+    resetStr = resetComm + "reset = struct('f', @" + ...
+            resetFuncName + ");" + newlines(2);
+end
+
+end
+
+function guardStr = aux_guardStr(trans,loc)
+
+% general information about guard set
+tranGuardText = trans.guard.Text;
+if tranGuardText == ""
+    tranGuardText = "no guard set given";
+end
+
+% different set representations for guard set
+if isnumeric(trans.guard.set) && isempty(trans.guard.set)
+    % empty guard set -> immediate transition
+    str1 = "";
+    str2 = "[];";
+
+elseif isa(trans.guard.set,'mptPolytope')
+    % intersect guard with invariant
+    try
+        G = loc.Invariant.set & trans.guard.set;                    
+    catch
+        G = trans.guard.set;
+    end
+
+    % check if guard can be represented as hyperplane
+    res = false;
+    if isa(G,'mptPolytope')
+        G = removeRedundancies(G,'all');
+        [res,hyp] = isConHyperplane(G);
+    end
     
-    str = "%" + repmat('-',1,lenLeft-1) + comment + repmat('-',1,lenRight);
+    if isa(G,'levelSet')
+        [str1,str2] = levelSetString(G);
+    elseif isa(G,'mptPolytope')
+        if res
+            [str1,str2] = conHyperplaneString(hyp);
+        else
+            [str1,str2] = mptPolytopeString(G);
+        end
+    else
+        throw(CORAerror('CORA:converterIssue',...
+            'Unexpected set representation in conversion of guard set.'));
+    end
+
+elseif isa(trans.guard.set,'levelSet')
+    % intersect guard with invariant
+    try
+        G = loc.Invariant.set & trans.guard.set;                    
+    catch
+        G = trans.guard.set;
+    end
+    [str1,str2] = levelSetString(G);
+
+else
+    % throw error in case unexpected set representation comes up
+    throw(CORAerror('CORA:converterIssue',...
+        ['Guard set has to be empty, a conHyperplane, '...
+        'an mptPolytope or a levelSet.'])); 
+end
+
+% write guard string
+guardComm = text2comment("guard equation:" + newline + tranGuardText) + newline;
+guardStr = guardComm + str1 + "guard = " + str2 + newlines(2);
 
 end
 
-function str = newlines(lines)
-% fast way to write newline() + newline() + ...
-    str = string(repmat(newline(),1,lines));
+function inputBindsStr = aux_inputBindsStr(comp,iComp,components)
+
+% general information about input binds
+parallelComm = text2comment("composition: hybrid automaton and input binds") + ...
+    newline + "comp{" + num2str(iComp) + "} = hybridAutomaton(loc);" + newlines(2);
+
+% syntax of inputBinds: mx2 array, where
+%   m - number of input arguments to current component
+% with (m,1) being either 0 (global) or the component of origin
+% and (m,2) being the number of the global input (if (m,1) = 0)
+%           or the number of output of the component of origin
+
+if strcmp(comp.inputs(1).name,'uDummy')
+    % only dummy input generated by conversion... use first global
+    % input as input bind (no effect as all input matrices are 0)
+    inputBindsStr = "% only dummy input" + newline + ...
+        "iBinds{" + iComp + "} = [0 1];" + newlines(2);
+
+else
+    % actual (meaningful) inputs given
+
+    inputBindsStr = "% input names: " + strjoin([comp.inputs.name],", ") ...
+        + newline + "iBinds{" + iComp + "} = [[";
+
+    % loop over all inputs
+    for inp=1:length(comp.inputs)
+        if inp > 1
+            inputBindsStr = inputBindsStr + ";[";
+        end
+        inputName = comp.inputs(inp).name;
+        % default: input comes from composed system ('global')
+        origin = 0;
+        outputOfOrigin = 1;
+        % search for inputName in all other components
+        for c=1:length(components)
+            idx = strcmp([components{c}.outputsLocal.name],inputName);
+            if any(idx)
+                origin = c;
+                % name should only occur only once
+                if nnz(idx) > 1
+                    throw(CORAerror('CORA:converterIssue',...
+                        ['The input name of an input bind could not be resolved '...
+                        'because the name occurs twice in another component.']));
+                end
+                % index in list of outputs of other component
+                outputOfOrigin = find(idx,1,'first');
+                % continue with next row in input binds
+                break
+            end
+        end
+        % write bind
+        inputBindsStr = inputBindsStr + num2str(origin) + "," +...
+            num2str(outputOfOrigin) + "]";
+    end
+    inputBindsStr = inputBindsStr + "];" + newlines(2);
 end
 
-function str = text2comment(text)
-% transform possibly multi-line text to comment
-% format in:
-%   "line1
-%    line2
-%    line3"
-% format out:
-%   "%% line1
-%    %   line2
-%    %   line3"
-    str = "%% " + strrep(text,newline,newline + "%   ");
+inputBindsStr = parallelComm + inputBindsStr;
+
 end
 
+
+% writing sets as string
 function [str1,str2] = mptPolytopeString(set)
 % generates the string that constructs the mptPolytope
 
@@ -573,6 +615,41 @@ function [str1,str2] = conHyperplaneString(set)
         str1 = cStr + dStr + newlines(2);
         str2 = "conHyperplane(c,d);";
     end
+end
+
+
+% helper functions for formatting
+function str = padComment(comment,maxLineLength)
+%pads comment left & right with dashes to desired length and prefixes "%"
+
+    if nargin < 2
+        maxLineLength = 75;
+    end
+    
+    lenComment = strlength(comment);
+    lenLeft = floor((maxLineLength - lenComment)/2) - 1;
+    lenRight = maxLineLength - lenLeft - lenComment;
+    
+    str = "%" + repmat('-',1,lenLeft-1) + comment + repmat('-',1,lenRight);
+
+end
+
+function str = newlines(lines)
+% fast way to write newline() + newline() + ...
+    str = string(repmat(newline(),1,lines));
+end
+
+function str = text2comment(text)
+% transform possibly multi-line text to comment
+% format in:
+%   "line1
+%    line2
+%    line3"
+% format out:
+%   "%% line1
+%    %   line2
+%    %   line3"
+    str = "%% " + strrep(text,newline,newline + "%   ");
 end
 
 %------------- END OF CODE --------------

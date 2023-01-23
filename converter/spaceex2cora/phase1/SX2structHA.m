@@ -142,9 +142,8 @@ if ~convtype
     % determine states, inputs, and outputs from merged base component
     mergedComponent = classifyVariablesFlat(mergedComponent);
     % flat hybrid automaton: only one component to be formalized
-    formalizedComponent = FormalizeBaseComponent(mergedComponent,convtype);
-    % Package the automaton in the StructHA format
-    automaton.Components = {formalizedComponent};
+    % package the automaton in the StructHA format
+    automaton.components = {FormalizeBaseComponent(mergedComponent,convtype)};
 else    
     % parallel hybrid automaton
     % go over all base components to check which variables are states,
@@ -152,9 +151,8 @@ else
     componentList = classifyVariablesParallel(componentList);
     % loop over parallel (base) components
     for i=1:length(componentList)
-        formalizedComponents(i) = FormalizeBaseComponent(componentList(i),convtype);
-        % Package the automaton in the StructHA format
-        automaton.Components(i) = {formalizedComponents(i)};
+        % package the automaton in the StructHA format
+        automaton.components(i) = {FormalizeBaseComponent(componentList(i),convtype)};
     end
 end
 

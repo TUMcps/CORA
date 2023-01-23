@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="cont">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="u1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="u2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <location id="1" name="always" x="316.0" y="146.0" width="236.0" height="108.0">
+      <flow>x1' = 2*x1^2 + x2^(1/2) - cos(u1) &amp;&amp;
+x2' = 4*exp(x1) - 3*sin(x2) + log(u2)</flow>
+    </location>
+  </component>
+  <component id="system">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="u1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="u2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <bind component="cont" as="cont_1" x="359.0" y="216.0" width="90.0" height="92.0">
+      <map key="x1">x1</map>
+      <map key="x2">x2</map>
+      <map key="u1">u1</map>
+      <map key="u2">u2</map>
+    </bind>
+  </component>
+</sspaceex>
+

@@ -55,9 +55,14 @@ for i=1:nrTests
     % compute vertices
     V = vertices(project(cZ,projDims));
     V_proj = projVertices(cZ,projDims);
+
+    % visualization
+%     figure; hold on; box on;
+%     scatter(V(1,:),V(2,:),16,'r','filled');
+%     scatter(V_proj(1,:),V_proj(2,:),16,'g');
     
-    % check vertices
-    if ~compareMatrices(V,V_proj,1e-14)
+    % check vertices (large tolerance since linear programs are used)
+    if ~compareMatrices(V,V_proj,1e-8)
         res = false;
     end
 

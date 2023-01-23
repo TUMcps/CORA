@@ -21,14 +21,16 @@ function res = test_linearSys_linearSys
 
 % Author:       Mark Wetzlinger
 % Written:      19-November-2021
-% Last update:  ---
+% Last update:  15-January-2023 (MW, include new syntax)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 res = false;
 
-% define linearSys --------------------------------------------------------
+% empty case
+sys = linearSys();
+
 
 % stable system matrix: n x n
 A = [-0.3780    0.2839    0.5403   -0.2962
@@ -65,7 +67,7 @@ k_def_n = zeros(n,1);
 k_def_y = zeros(y,1);
 
 % initialize different linearSys-objects
-sys_A = linearSys(A,1);
+sys_A = linearSys(A);
 sys_AB = linearSys(A,B);
 sys_ABC = linearSys(A,B,[],C);
 sys_ABCD = linearSys(A,B,[],C,D);
@@ -82,7 +84,7 @@ errmsg_y = 'Output dimension wrong';
 
 % correct solutions
 sys_n = [n, n, n, n, n];
-sys_m = [n, m, m, m, m];
+sys_m = [1, m, m, m, m];
 sys_y = [n, n, y, y, y];
 is_c_def = [true, true, false, false, false];
 is_C_def = [true, true, false, false, false];
@@ -123,7 +125,5 @@ end
 
 % all checks ok
 res = true;
-
-end
 
 %------------- END OF CODE --------------

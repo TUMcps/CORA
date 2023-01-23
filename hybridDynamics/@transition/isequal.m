@@ -1,19 +1,21 @@
-function res = isequal(trans1,trans2)
+function res = isequal(trans1,trans2,varargin)
 % isequal - checks if two transitions are equal by comparing the guard
 %    sets, reset functions, target locations, and synchronization labels
 %
 % Syntax:  
 %    res = isequal(trans1,trans2)
+%    res = isequal(trans1,trans2,tol)
 %
 % Inputs:
 %    trans1 - transition object
 %    trans2 - transition object
+%    tol - tolerance (optional)
 %
 % Outputs:
 %    res - true/false
 %
 % Example: 
-%    % transition
+%    % guard set
 %    c = [-1;0]; d = 0; C = [0,1]; D = 0;
 %    guard = conHyperplane(c,d,C,D);
 %
@@ -40,6 +42,19 @@ function res = isequal(trans1,trans2)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% too many input arguments
+if nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs',3));
+end
+
+% default values
+tol = setDefaultValues({eps},varargin);
+
+% check input arguments
+inputArgsCheck({{trans1,'att','transition'};
+                {trans2,'att','transition'};
+                {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
 
 % easy checks first to facilitate quick exits
 res = true;
@@ -80,24 +95,26 @@ for i=1:length(reset1fields)
         case 'A'
             % state mapping
             if any(size(trans1.reset.A) ~= size(trans2.reset.A)) ...
-                    || ~all(all(trans1.reset.A == trans2.reset.A))
+                    || ~all(all(withinTol(trans1.reset.A,trans2.reset.A,tol)))
                 res = false; return
             end
         case 'B'
             % input mapping
             if any(size(trans1.reset.B) ~= size(trans2.reset.B)) ...
-                    || ~all(all(trans1.reset.B == trans2.reset.B))
+                    || ~all(all(withinTol(trans1.reset.B,trans2.reset.B,tol)))
                 res = false; return
             end
         case 'c'
             % constant offset
             if any(size(trans1.reset.c) ~= size(trans2.reset.c)) ...
-                    || ~all(all(trans1.reset.c == trans2.reset.c))
+                    || ~all(all(withinTol(trans1.reset.c,trans2.reset.c,tol)))
                 res = false; return
             end
         case 'f'
-            % function handle for nonlinear reset function
-            if ~isequal(trans1.reset.f,trans2.reset.f)
+            % function handle for nonlinear reset function: instantiate
+            % nonlinearSys object for comparison
+            if ~isequal(nonlinearSys(@(x,u) trans1.reset.f([x;u])),...
+                    nonlinearSys(@(x,u) trans1.reset.f([x;u])))
                 res = false; return
             end
         case 'stateDim'
@@ -117,8 +134,14 @@ for i=1:length(reset1fields)
 end
 
 % guard set
-if ~isequal(trans1.guard,trans2.guard)
-    res = false; return
+if ~(isnumeric(trans1.guard) && isempty(trans1.guard) ...
+        && isnumeric(trans2.guard) && isempty(trans2.guard))
+    if xor(isnumeric(trans1.guard),isnumeric(trans2.guard)) ...
+            || ( isnumeric(trans1.guard) ...
+                && ~all(isempty(trans1.guard),isempty(trans2.guard)) ) ...
+            || ~isequal(trans1.guard,trans2.guard,tol)
+        res = false; return
+    end
 end
 
 %------------- END OF CODE --------------

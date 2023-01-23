@@ -44,7 +44,7 @@ for i=1:numComp
 end
 
 % merge invariants
-mergedInvSet = mergeInvariant(pHA,invList);
+mergedInvSet = mergeInvariants(pHA,invList);
 
 % merge flows (= continuous dynamics)
 mergedFlow = mergeFlows(pHA,flowList,locID);

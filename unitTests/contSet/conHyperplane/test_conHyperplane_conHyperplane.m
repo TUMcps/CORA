@@ -54,6 +54,12 @@ if ~isequal(hyp.h,halfspace(a,b))
     res = false;
 end
 
+% empty constraint matrix/vector
+hyp = conHyperplane(a,b,[],0);
+if ~isequal(hyp.h,halfspace(a,b))
+    res = false;
+end
+
 % halfspace and constraint matrix, constraint vector
 hyp = conHyperplane(hs,C,d);
 if ~isequal(hyp.h,hs) || ~compareMatrices(hyp.C,C) ...

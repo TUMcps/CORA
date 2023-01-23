@@ -69,36 +69,39 @@ function y = reset(trans,x,varargin)
             if isnumeric(x)
                 y = trans.reset.f(x);
             else
-                y = nonlinearReset(trans,x);
+                y = aux_nonlinearReset(trans,x);
             end
         end
 
     else
+        % output of reset fucntion
         y = cell(length(x));
+        % extended state (only for nonlinear reset functions)
+        z = cell(length(x));
+
         for i=1:length(x)
             if ~isempty(x{i})
                 if isfield(trans.reset,'A')
                     % linear reset
                     if isfield(trans.reset,'B')
                         % with input
-                        y{i} = trans.reset.A*x{i} + trans.reset*B + trans.reset.c;
+                        y{i} = trans.reset.A*x{i} + trans.reset.B*u + trans.reset.c;
                     else
                         % without input
                         y{i} = trans.reset.A*x{i} + trans.reset.c;
                     end
-                
                 else
                     % nonlinear reset
-                    x{i} = cartProd(x{i},u{i});
+                    z{i} = cartProd(x{i},u{i});
                     if isnumeric(y{i})
-                        y{i} = trans.reset.f(x{i});
+                        y{i} = trans.reset.f(z{i});
                     else
-                        y{i} = nonlinearReset(trans,x{i});
+                        y{i} = aux_nonlinearReset(trans,z{i});
                     end
                 end
-
             end
         end
+
     end
 
 end
@@ -106,7 +109,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function Y = nonlinearReset(trans,X)
+function Y = aux_nonlinearReset(trans,Z)
 % compute the resulting set for a nonlinear reset function using the
 % approach described in Sec. 4.4 in [1]
 
@@ -116,10 +119,10 @@ function Y = nonlinearReset(trans,X)
 
     % Taylor series expansion point
     % (length: number of states + number of global inputs)
-    p = center(X);
+    p = center(Z);
     
     % interval enclosure of set
-    I = interval(X);
+    I = interval(Z);
     
     % evaluate reset function at expansion point
     f = trans.reset.f(p);
@@ -163,7 +166,7 @@ function Y = nonlinearReset(trans,X)
     rem = zonotope(1/6*rem);
 
     % compute over-approximation using a Taylor series of order 2
-    Y = f + J * (X + (-p)) + 0.5*quadMap((X + (-p)),Q) + rem;
+    Y = f + J * (Z + (-p)) + 0.5*quadMap((Z + (-p)),Q) + rem;
 end
 
 %------------- END OF CODE --------------

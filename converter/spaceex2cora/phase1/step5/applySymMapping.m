@@ -51,6 +51,5 @@ end
 
 % use symbolic kit substitution function
 sym_out = subs(sym_in,keys_c,values_c);
-% that was easy
 
 %------------- END OF CODE -------------

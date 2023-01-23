@@ -51,10 +51,14 @@ for i = 1:length(BC.States)
         allFlowExprs = [allFlowExprs; BC.States(i).Trans(j).reset.expressions];
     end
 end
+% remove duplicates
+allStateNames = unique(allStateNames);
+allFlowExprs = unique(allFlowExprs);
 
 if isempty(allStateNames)
-    warning("No flow equations given; assumption: all states occur in location invariants!");
-    for i = 1:length(BC.States)
+    warning("No flow equations given; assumption: " + ...
+        "all states occur in location invariants!");
+    for i=1:length(BC.States)
         names = symvar([BC.States(i).Invariant.equalities;...
             BC.States(i).Invariant.inequalities]);
         allStateNames = [allStateNames;string(names)'];
@@ -64,7 +68,7 @@ end
 % difference in conversion to flatHA / parallelHA
 invExprsLeft = [];
 invExprsRight = [];
-for i = 1:length(BC.States)
+for i=1:length(BC.States)
     invExprsLeft = [invExprsLeft; BC.States(i).Invariant.exprLeft];
     invExprsRight = [invExprsRight; BC.States(i).Invariant.exprRight];
 end
@@ -83,7 +87,7 @@ flowleftIdx = false(1,num_vars);
 % check whether variables appear in right flow sides (flowexprs)
 flowrightIdx = false(1,num_vars);
 
-for i = 1:num_vars
+for i=1:num_vars
     flowleftIdx(i) = any(allStateNames == BC.listOfVar(i).name);
     flowrightIdx(i) = any(flow_expr_varnames == BC.listOfVar(i).name);
 end

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="cont1">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="u1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="u2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="y1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <location id="1" name="loc1" x="451.0" y="224.0" width="224.0" height="144.0">
+      <invariant>x1 + x2 &lt;= 0 &amp;&amp;
+y1 == 0.05*(x1+x2)</invariant>
+      <flow>x1' = -x2 + u1 &amp;&amp;
+x2' = x1 + u2</flow>
+    </location>
+    <location id="2" name="loc2" x="938.0" y="534.0" width="256.0" height="136.0">
+      <invariant>x1 + x2 &gt;= 0 &amp;&amp;
+y1 == 0.05*(x1-x2)</invariant>
+      <flow>x1' = -x2 + u2 &amp;&amp;
+x2' = -x1 + u1</flow>
+    </location>
+    <transition source="1" target="2">
+      <guard>x1 + x2 &gt;= 0</guard>
+      <assignment>x1' := x1 + 3 &amp;&amp; x2' := x2 + 3</assignment>
+      <labelposition x="-123.0" y="-111.0" width="250.0" height="110.0" />
+      <middlepoint x="937.5" y="223.0" />
+    </transition>
+    <transition source="2" target="1">
+      <guard>x1 + x2 &lt;= 0</guard>
+      <assignment>x1' := x1 - 3  &amp;&amp; x2' := x2 + 3</assignment>
+      <labelposition x="-180.0" y="-25.0" width="206.0" height="114.0" />
+      <middlepoint x="456.5" y="534.0" />
+    </transition>
+  </component>
+  <component id="cont2">
+    <param name="x3" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x4" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x5" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="u3" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="y2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <param name="y3" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="false" />
+    <location id="1" name="loc1" x="468.0" y="544.0" width="282.0" height="156.0">
+      <invariant>x3 + x4 + x5 &lt;= 1 &amp;&amp;
+y2 == 0.05*x5 &amp;&amp;
+y3 == 0.05*(x3 + x4)</invariant>
+      <flow>x3' = x4-x5 &amp;&amp; x4' = x3 - u3 &amp;&amp; x5' = x4</flow>
+    </location>
+    <location id="2" name="loc2" x="1021.0" y="230.0" width="316.0" height="180.0">
+      <invariant>x3 + x4 + x5 &gt;= 1 &amp;&amp;
+y2 == 0.05*x3 &amp;&amp;
+y3 == 0.05*(x4 - x5)</invariant>
+      <flow>x3' = -x4+x5 &amp;&amp; x4' = x3 &amp;&amp; x5' = x4 + u3</flow>
+    </location>
+    <transition source="2" target="1">
+      <guard>x3 + x4 + x5 &lt; 1</guard>
+      <assignment>x3' := x3 - 1 &amp;&amp; x4' := x4 - 1 &amp;&amp; x5' := x5 - 1</assignment>
+      <labelposition x="-165.0" y="-102.0" width="336.0" height="102.0" />
+      <middlepoint x="465.0" y="227.5" />
+    </transition>
+    <transition source="1" target="2">
+      <guard>x3 + x4 + x5 &gt; 1</guard>
+      <assignment>x3' := x3 + 1 &amp;&amp; x4' := x4 + 1 &amp;&amp; x5' := x5 + 1</assignment>
+      <labelposition x="-65.0" y="-5.0" width="320.0" height="98.0" />
+      <middlepoint x="1019.5" y="539.0" />
+    </transition>
+  </component>
+  <component id="system">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="1097.0" y="99.0" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="1138.0" y="127.0" />
+    <param name="y1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="647.0" y="423.0" />
+    <param name="x3" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="792.0" y="475.0" />
+    <param name="x4" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="838.0" y="441.0" />
+    <param name="x5" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="886.0" y="403.0" />
+    <param name="y2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="306.0" y="410.0" />
+    <param name="y3" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" x="237.0" y="503.0" />
+    <bind component="cont1" as="cont1_1" x="793.0" y="231.0" width="182.0" height="104.0">
+      <map key="x1">x1</map>
+      <map key="x2">x2</map>
+      <map key="u1">y2</map>
+      <map key="u2">y3</map>
+      <map key="y1">y1</map>
+    </bind>
+    <bind component="cont2" as="cont2_1" x="490.0" y="579.0" width="202.0" height="116.0">
+      <map key="x3">x3</map>
+      <map key="x4">x4</map>
+      <map key="x5">x5</map>
+      <map key="u3">y1</map>
+      <map key="y2">y2</map>
+      <map key="y3">y3</map>
+    </bind>
+  </component>
+</sspaceex>
+

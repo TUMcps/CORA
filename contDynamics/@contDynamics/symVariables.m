@@ -88,7 +88,7 @@ if strcmp(type,'LRbrackets')
 
     % generate symbolic outputs
     if isprop(obj,'nrOfOutputs') && obj.nrOfOutputs>0
-        for i=1:obj.nrOfInputs 
+        for i=1:obj.nrOfOutputs 
             command=['o(',num2str(i),',1)=sym(''oL',num2str(i),'R'');'];
             eval(command);
             command=['do(',num2str(i),',1)=sym(''doL',num2str(i),'R'');'];
@@ -138,7 +138,7 @@ else
 
     %generate symbolic outputs
     if isprop(obj,'nrOfOutputs') && obj.nrOfOutputs>0
-        for i=1:obj.nrOfInputs
+        for i=1:obj.nrOfOutputs
             command=['o(',num2str(i),',1)=sym(''o',num2str(i),''');'];
             eval(command);
             command=['do(',num2str(i),',1)=sym(''do',num2str(i),''');'];

@@ -13,15 +13,15 @@ function [isLinear,A,B,c,formalEqs,containsInput] = ...
 %
 % Inputs:
 %    exprNames (symbolic) - Ordered list specifing which expression
-%                           defines which state, used to order the equations needed for a
-%                           non-linear system correctly
+%                           defines which state, used to correctly order
+%                           the equations needed for a non-linear system
 %    exprs (string) - flow equation in SX form
 %              rough format := <eq>("&" <eq>)*
 %                      <eq> := <state>' "==" <expr(states,inputs,constants)>
 %              (permitting '=', '==', or ':=' for assignment)
 %    states (struct) - states of LTI system
 %    inputs (struct) - input signals
-%    parseMode - affects default outputs ('flow'(default), 'assignment')
+%    parseMode - affects default outputs ('flow' (default), 'assignment')
 %
 % Outputs:
 %    isLinear - equations successfully linearized? (logical)

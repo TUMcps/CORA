@@ -156,7 +156,7 @@ methods
     
     % auxiliary functions
     function trans = compDerivatives(trans)
-    % precompute all derivatives required for the enclosure of the 
+    % pre-compute all derivatives required for the enclosure of the 
     % nonlinear reset function by a Taylor series expansion of order 2
     % additional fields: .J (Jacobian), .Q (Hessian), .T (third-order tensor)
 
@@ -165,31 +165,31 @@ methods
         m = trans.reset.inputDim;
 
         % create symbolic variables for reset function
-        x = sym('x',[n,1]);
+        z = sym('x',[n,1]);
         u = sym('u',[m,1]);
 
         % if reset function depends on inputs, we create the substitute
-        % state x' = [x;u] which is used for the rest of this function
+        % state z = [x;u] which is used for the rest of this function
         if trans.reset.hasInput
-            % substitute state x for extended state x' = [x;u]
-            x = [x;u];
-            % alter reset function to accept single input x'
-            trans.reset.f = @(x) trans.reset.f(x(1:n),x(n+1:end));
+            % extended state z = [x;u]
+            z = [z;u];
+            % alter reset function to accept single input z
+            trans.reset.f = @(z) trans.reset.f(z(1:n),z(n+1:n+m));
         end
         
         % evaluate f symbolically
-        f = trans.reset.f(x);
+        f = trans.reset.f(z);
         
         % first-order derivative
-        J = jacobian(f,x);
-        trans.reset.J = matlabFunction(J,'Vars',{x});
+        J = jacobian(f,z);
+        trans.reset.J = matlabFunction(J,'Vars',{z});
         
         
         % second-order derivative
         trans.reset.Q = cell(n,1);
         for i = 1:n
             % compute Hessian of f
-            trans.reset.Q{i,1} = matlabFunction(hessian(f(i),x),'Vars',{x});
+            trans.reset.Q{i,1} = matlabFunction(hessian(f(i),z),'Vars',{z});
         end
         
         % third-order derivative
@@ -198,7 +198,7 @@ methods
             % skip linear Jacobians
             for j = 1:n+m
                 % third-order tensor = Hessian of Jacobian
-                trans.reset.T{i,j} = matlabFunction(hessian(J(i,j),x),'Vars',{x});
+                trans.reset.T{i,j} = matlabFunction(hessian(J(i,j),z),'Vars',{z});
             end
         end
     end

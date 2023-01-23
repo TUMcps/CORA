@@ -28,7 +28,7 @@ res = true;
 
 % guard set
 guard1 = conHyperplane([-1;0],0,[0,1],0);
-guard2 = conHyperplane([-2;0],0,[0,1],0);
+guard2 = conHyperplane([-1;1],0,[0,1],0);
 
 % reset function
 reset1 = struct('A',[1,0;0,-0.75],'c',[0;0]);

@@ -69,7 +69,7 @@ function res = and(ls,S)
         % use vars from ls (should be irrelevant which ones are used)
         vars = ls.vars;
         newEqs = [ls.eq;subs(S.eq,S.vars,vars)];
-        newCompOp = uniteCompOp(ls.compOp,S.compOp);
+        newCompOp = aux_uniteCompOp(ls.compOp,S.compOp);
         res = levelSet(newEqs,vars,newCompOp);
         return;
     end
@@ -369,16 +369,20 @@ function res = quadEval(Q,I)
     end
 end
 
-function compOp = uniteCompOp(compOp1,compOp2)
+function compOp = aux_uniteCompOp(compOp1,compOp2)
 
 % make all cells and vertical
-if iscell(compOp1) && size(compOp1,1) > 1
-    compOp1 = compOp1';
+if iscell(compOp1)
+    if size(compOp1,2) > 1
+        compOp1 = compOp1';
+    end
 else
     compOp1 = {compOp1};
 end
-if iscell(compOp2) && size(compOp2,1) > 1
-    compOp2 = compOp2';
+if iscell(compOp2)
+    if size(compOp2,2) > 1
+        compOp2 = compOp2';
+    end
 else
     compOp2 = {compOp2};
 end

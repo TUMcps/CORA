@@ -1,12 +1,12 @@
-function child = InstantiateNC(parent,template,bind)
+function child = InstantiateNC(parent,child,bind)
 % InstantiateNC - Apply a bind to a Network-Component template
 %
 % Syntax:
-%    child = InstantiateNC(parent,template,bind)
+%    child = InstantiateNC(parent,child,bind)
 %
 % Inputs:
 %    parent (struct) - instantiated parent component
-%    template (struct) - template of NC to instantiate
+%    child (struct) - template of NC to instantiate
 %    bind (struct) - bind to be used for instantiation
 %
 % Outputs:
@@ -28,9 +28,6 @@ function child = InstantiateNC(parent,template,bind)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
-% instantiate child from template
-child = template;
 
 % save global name for new instance
 child.name = parent.name + "." + bind.localName;
@@ -54,22 +51,21 @@ for v=1:numel(child.listOfVar)
     % read out variable name
     var = child.listOfVar(v).name;
 
-    % assert that there is a bind for this variable name
-    if isempty(bind.renames(bind.keys==var))
-        throw(CORAerror('CORA:converterIssue','Renaming error of variables'));
-    end
-
-    % rename variable name according to bind
-    var_rename = bind.renames(bind.keys == var);
-    child.listOfVar(v).name = var_rename;
-
-    % loop over number of instantiated components in given network
-    % component; overwrite renamed variable in bind
-    for b=1:numBinds
-        % index of variable to be renamed
-        renameIdx = child.Binds(b).renames == var;
-        if ~isempty(renameIdx)
-            child.Binds(b).renames(renameIdx) = var_rename;
+    % assert that there is a bind for this variable name (if there is no
+    % bind, then the variable is local and does not require rewriting)
+    var_rename = bind.renames(bind.keys==var);
+    if ~isempty(var_rename)
+        % rename variable name according to bind
+        child.listOfVar(v).name = var_rename;
+    
+        % loop over number of instantiated components in given network
+        % component; overwrite renamed variable in bind
+        for b=1:numBinds
+            % index of variable to be renamed
+            renameIdx = child.Binds(b).renames == var;
+            if ~isempty(renameIdx)
+                child.Binds(b).renames(renameIdx) = var_rename;
+            end
         end
     end
 

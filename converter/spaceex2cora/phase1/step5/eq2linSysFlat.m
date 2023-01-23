@@ -13,8 +13,8 @@ function [isLinear,A,B,c,formalEqs] = ...
 %
 % Inputs:
 %    exprNames (symbolic) - Ordered list specifing which expression
-%                           defines which state, used to order the equations needed for a
-%                           non-linear system correctly
+%                           defines which state, used to correctly order
+%                           the equations needed for a nonlinear system
 %    exprs (string) - flow equation in SX form
 %              rough format := <eq>("&" <eq>)*
 %                      <eq> := <state>' "==" <expr(states,inputs,constants)>

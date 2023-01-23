@@ -1,4 +1,5 @@
-function [C,D,k] = outputMatrices(EqExprs,states,inputs,outputs)
+function [isLin_out,C,D,k,eqs_out] = ...
+    outputMatrices(EqExprs,states,inputs,outputsLocal,map,outputsGlobal)
 % outputMatrices - Converts string equalities defining the output of a
 %    location to the C, D matrices and k vector required for linearSys
 %    WARNING: could produce incorrect results, if any variables are named 
@@ -7,7 +8,8 @@ function [C,D,k] = outputMatrices(EqExprs,states,inputs,outputs)
 % Remark: broadly copied syntax from eq2polytope.m (now eq2set.m)
 %
 % Syntax:  
-%    [C,D,k] = outputMatrices(EqExprs,states,inputs,outputs)
+%    [isLin_out,C,D,k,eqs_out] = ...
+%       outputMatrices(EqExprs,states,inputs,outputsLocal,map,outputsGlobal)
 %
 % Inputs:
 %    EqExprs - equations defining outputs, rough format: <eq> ("&" <eq>)*
@@ -16,12 +18,17 @@ function [C,D,k] = outputMatrices(EqExprs,states,inputs,outputs)
 %              <op> = "<"|">"|"<="|">="|==
 %    states - all state variables
 %    inputs - all input variables
-%    outputs - all output variables
+%    outputsLocal - output variables that can be resolved to states/inputs
+%    map - where outputsLocal maps to
+%    outputsGlobal - global outputs (for which the output equations are
+%                    computed)
 %
 % Outputs:
+%    isLin_out - true/false whether output equation linear
 %    C - output matrix
 %    D - throughput matrix
 %    k - output offset
+%    eqs_out - output equation in text form
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,130 +38,156 @@ function [C,D,k] = outputMatrices(EqExprs,states,inputs,outputs)
 
 % Author:       Mark Wetzlinger
 % Written:      26-December-2018 
-% Last update:  --- 
-% Last revision:---
+% Last update:  ---
+% Last revision:22-January-2023 (MW, rewrite & additional output arguments)
 
 %------------- BEGIN CODE --------------
 
 % if no outputs, then no equation y = Cx + Du + k
-% hence, return empty matrices (different handling in data2parallelHA.m)
-if isempty(outputs) || isempty(EqExprs)
-    C = []; D = []; k = [];
+% hence, return empty matrices (see processing in data2parallelHA.m)
+if isempty(outputsGlobal) || isempty(EqExprs)
+    C = []; D = []; k = []; isLin_out = true; eqs_out = "";
     return
 end
 
-% size init
-sizeC = length(states);
-sizeD = length(inputs);
-sizek = length(outputs);
-C = zeros(sizek,sizeC);
-D = zeros(sizek,sizeD);
-k = zeros(sizek,1);
+% momentarily not done...
+eqs_out = "";
 
-% create symbolic variables for all variables
-numvars = length(states) + length(inputs) + length(outputs);
-% remark: cannot take listOfVar because of uDummy
-varnames = cell(numvars,1);
-listOfVarNames = strings(numvars,1);
+% number of states, inputs, and global outputs
+nrStates = length(states);
+nrInputs = length(inputs);
+nrOutputs = length(outputsGlobal);
+% initialize matrices C, D, and k
+C = zeros(nrOutputs,nrStates);
+D = zeros(nrOutputs,nrInputs);
+k = zeros(nrOutputs,1);
 
-for i=1:sizeC
-    listOfVarNames(i) = states(i).name;
-    varnames{i} = strcat('xL',num2str(i),'R');
+% create symbolic variables for states
+stateNames = strings(nrStates,1);
+varnames = cell(nrStates,1);
+for i=1:nrStates
+     stateNames(i) = states(i).name;
+     varnames{i} = strcat('xL',num2str(i),'R');
 end
-
-j = i+1;
-for i=1:sizeD
-    listOfVarNames(j) = inputs(i).name;
-    varnames{j} = strcat('uL',num2str(i),'R');
-    j = j+1;
-end
-
-for i=1:sizek
-    listOfVarNames(j) = outputs(i).name;
-    varnames{j} = strcat('yL',num2str(i),'R');
-    j = j+1;
-end
-
 x = sym(varnames);
 
-% substitute variables into equations
-EqExprs = applySymMapping(EqExprs,listOfVarNames,x);
+% create symbolic variables for inputs
+inputNames = strings(nrInputs,1);
+varnames = cell(nrInputs,1);
+for i=1:nrInputs
+    inputNames(i) = inputs(i).name;
+    varnames{i} = strcat('uL',num2str(i),'R');
+end
+u = sym(varnames);
 
-% check whether any expressions include non-state variables
-% (compute a logical index for this)
-eqValidIdx = false(size(EqExprs));
-for i=1:length(eqValidIdx)
-    eqValidIdx(i) = all(ismember(symvar(EqExprs(i)), x));
+% create symbolic variables for global outputs
+outputNames = strings(nrOutputs,1);
+varnames = cell(nrOutputs,1);
+for i=1:nrOutputs
+    outputNames(i) = outputsGlobal(i).name;
+    varnames{i} = strcat('yL',num2str(i),'R');
+end
+yGlobal = sym(varnames);
+
+% all variables
+allVars = [x;u;yGlobal];
+
+% copy EqExprs to keep original
+EqExprsSym = EqExprs;
+
+% substitute local outputs into equations
+if ~isempty(outputsLocal)
+    yLocal = sym([]);
+    % map to states?
+    for i=1:length(states)
+        if strcmp(map,stateNames(i))
+            yLocal(end+1,1) = x(i);
+        end
+    end
+    % map to inputs?
+    for i=1:length(inputs)
+        if strcmp(map,inputNames(i))
+            yLocal(end+1,1) = u(i);
+        end
+    end
+    EqExprsSym = applySymMapping(EqExprsSym,[outputsLocal.name],yLocal);
 end
 
-% if any expressions fail the test, print warnings then remove them
+% substitute remaining variables into equations
+EqExprsSym = applySymMapping(EqExprsSym,...
+    [stateNames;inputNames;outputNames],allVars);
+
+% logical index whether any expressions include non-state/input variables
+eqValidIdx = false(size(EqExprsSym));
+for i=1:length(eqValidIdx)
+    eqValidIdx(i) = all(ismember(symvar(EqExprsSym(i)), allVars));
+end
+
+% if any expression fails the test, print warnings and remove them
 if(~all(eqValidIdx))
     % print warnings
     for i=1:length(eqValidIdx)
         if ~eqValidIdx(i)
             % detect, which variables caused the error
-            diff = setdiff(symvar(EqExprs(i)), x);
+            diff = setdiff(symvar(EqExprsSym(i)), x);
             % print detailed warning message
             varstr = "(" + string(diff(1));
             if(length(diff) > 1)
                 varstr = varstr + sprintf(", %s",diff(2:end));
             end
             varstr = varstr + ")";
-            warning("A CONDITION CONTAINS NON-STATE VARIABLES %s AND IS IGNORED!"+...
+            warning("A CONDITION CONTAINS NON-STATE/INPUT VARIABLES %s AND IS IGNORED!"+...
                 newline + "Condition: ""%s == 0"" (after arithmetic transformation)",...
-                varstr,string(EqExprs(i)));
+                varstr,string(EqExprsSym(i)));
         end
     end
     % remove invalid expressions from arrays
-    EqExprs = EqExprs(eqValidIdx);
+    EqExprsSym = EqExprsSym(eqValidIdx);
 end
+
+% remove all equations that do not contain any global output variable
+isOutputEq = false(size(EqExprsSym));
+for i=1:length(isOutputEq)
+    for j=1:length(outputNames)
+        if has(EqExprsSym(i),yGlobal(j))
+            isOutputEq(i) = true; break
+        end
+    end
+end
+% remove all non-output equation
+EqExprsSym = EqExprsSym(isOutputEq);
 
 % computing constant components, by setting x = 0
-k = subs(EqExprs, x, zeros(length(x),1));
+k = subs(EqExprsSym, allVars, zeros(length(allVars),1));
 k = double(k) * -1;
 
-% compute C matrix
-C_sym = jacobian(EqExprs,x);
-% assumption: always at least one state given -> no length check
-% find correct sequence of to-be-written rows of C
-% for the case when: y2 = x1 and y1 = x2 (rowsequence -> [2 1])
-% equations get switched (only if more than one output)
-for r=1:size(C_sym,1)
-    temp = find(C_sym(r,:));
-    posinC = temp(find(C_sym(r,:)) > length(states) + length(inputs));
-    rowsequence(r) = posinC - length(states) - length(inputs);
-end
-
-xIdx = strfind(varnames,'x');
-for row=1:size(C_sym,1)
-    CIdx = 1;
-    for i=1:numvars
-        if xIdx{i}
-            C(rowsequence(row),CIdx) = - C_sym(row,i);
-            CIdx = CIdx + 1;
-        end
-    end
-end
-
-
+% compute C and D matrices via Jacobian
+C_sym = jacobian(EqExprsSym,x);
 % compute D matrix
-if ~isempty(inputs) && ~strcmp(inputs(1).name,'uDummy')
-    % D ~= 0
-    % find all entries in varnames which contain a 'u' -> input!
-    uIdx = strfind(varnames,'u');
-    for row=1:size(C_sym,1)
-        % counter for position in D matrix
-        DIdx = 1;
-        for i=1:numvars
-            if uIdx{i}
-                % index in varnames corresponds to input and to position in D
-                D(rowsequence(row),DIdx) = -C_sym(row,i);
-                DIdx = DIdx + 1;
-            end
+D_sym = jacobian(EqExprsSym,u);
+
+
+% convert Jacobian to double arrays
+try
+    % switch sign since equations are given in the form, e.g.,
+    %    y1 - x1 (= 0)  <=>  y1 = x1
+    C = -double(C_sym);
+    D = -double(D_sym);
+    % text for comment in model file
+    EqStr = cell(0);
+    for i=1:length(EqExprs)
+        if isOutputEq(i)
+            % substitute 0 for global outputs and invert sign
+            EqStr{end+1,1} = char("y" + i + " = " ...
+                + string(-subs(EqExprs(i),outputNames,zeros(nrOutputs,1))));
         end
     end
-else
-    D = 0;
+    % concatenate text of individual output equations
+    eqs_out = strjoin(EqStr," & ");
+    % output equations are linear
+    isLin_out = true;
+catch
+    isLin_out = false; C = []; D = []; k = [];
 end
 
 %------------- END OF CODE -------------

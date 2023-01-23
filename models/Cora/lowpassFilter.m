@@ -1,15 +1,15 @@
-function PHA = lowpassFilter()
+function pHA = lowpassFilter()
 % lowpassFilter - creates an instance of a parallel hybrid automaton from
-%    the model of a lowpass filter with 2 components and 3 invariants
+%    the model of a lowpass filter with 2 components and 3 locations each
 %
 % Syntax:  
 %    PHA = lowpassFilter()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    PHA - object of parallelHybridAutomaton class
+%    pHA - object of parallelHybridAutomaton class
 
 % Author:       Mark Wetzlinger
 % Written:      16-December-2018
@@ -156,7 +156,7 @@ inputBinds{1} = [0,1];
 inputBinds{2} = [1,1];
 
 % construct parallel hybrd automaton
-PHA = parallelHybridAutomaton(comp,inputBinds);
+pHA = parallelHybridAutomaton(comp,inputBinds);
 
 end
 
