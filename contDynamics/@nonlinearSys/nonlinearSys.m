@@ -239,14 +239,16 @@ function aux_checkInputArgs(name,fun,states,inputs,out_fun,outputs)
             'Output function has to be a function handle with two input arguments.'));
     end
 
-    % states, inputs, and outputs have to be numeric, scalar integer > 0
+    % states and outputs have to be numeric, scalar integer > 0,
+    % inputs can be 0 (e.g., in parallel hybrid automata with only local
+    % outputs = inputs and no global inputs)
     if ~isempty(states)
         inputArgsCheck({{states,'att','numeric',...
             {'positive','integer','scalar'}}});
     end
     if ~isempty(inputs)
         inputArgsCheck({{inputs,'att','numeric',...
-            {'positive','integer','scalar'}}});
+            {'nonnegative','integer','scalar'}}});
     end
     if ~isempty(outputs)
         inputArgsCheck({{outputs,'att','numeric',...

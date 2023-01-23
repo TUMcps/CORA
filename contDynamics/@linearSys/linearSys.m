@@ -1,7 +1,15 @@
 classdef linearSys < contDynamics
-% linearSys class (linSys: linear system)
+% linearSys - object constructor for linearSys objects
 %
-% Syntax:  
+% Description:
+%    Generates a linear system object according to the following first
+%    order differential equations:
+%       x'(t) = A x(t) + B u(t) + c + w(t)
+%       y(t)  = C x(t) + D u(t) + k + v(t)
+%
+% Syntax:
+%    obj = linearSys()
+%    obj = linearSys(A)
 %    obj = linearSys(A,B)
 %    obj = linearSys(A,B,c)
 %    obj = linearSys(A,B,c,C)
@@ -13,12 +21,6 @@ classdef linearSys < contDynamics
 %    obj = linearSys(name,A,B,c,C,D)
 %    obj = linearSys(name,A,B,c,C,D,k)
 %
-% Description:
-%    Generates a linear system object according to the following first
-%    order differential equations:
-%       x'(t) = A x(t) + B u(t) + c + w(t)
-%       y(t)  = C x(t) + D u(t) + k + v(t)
-%
 % Inputs:
 %    name - name of system
 %    A - state matrix
@@ -29,7 +31,7 @@ classdef linearSys < contDynamics
 %    k - output offset
 %
 % Outputs:
-%    obj - Generated Object
+%    obj - generated linearSys object
 %
 % Example:
 %    A = [-2 0; 1 -3];
@@ -55,6 +57,7 @@ classdef linearSys < contDynamics
 %               20-May-2020 (NK, name now optional)
 %               19-November-2021 (MW, default values for c, D, k)
 %               14-December-2022 (TL, property check in inputArgsCheck)
+%               15-January-2023 (MW, allow 0 and 1 input arguments)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -75,21 +78,18 @@ methods
     % class constructor
     function obj = linearSys(varargin)
         
-        if nargin < 2
-            throw(CORAerror('CORA:notEnoughInputArgs',2));
-        elseif nargin > 7
+        if nargin > 7
             throw(CORAerror('CORA:tooManyInputArgs',7));
         end
         
         % parse name, system matrix, input matrix
-        if ischar(varargin{1})
+        if ~isempty(varargin) && ischar(varargin{1})
             name = varargin{1};
             varargin = varargin(2:end);
         else
             name = 'linearSys'; % default name
         end
-        A = varargin{1};
-        B = varargin{2};
+        [A,B] = setDefaultValues({[],[]},varargin);
         varargin = varargin(3:end);
         
         % number of states, inputs, and outputs
@@ -98,13 +98,16 @@ methods
         outputs = states;
         
         % number of inputs
+        if ~isempty(A) && isempty(B)
+            B = zeros(states,1);
+        end
         if ~isscalar(B)
             inputs = size(B,2);
         end
 
         % for c, D, and k: overwrite empty entries by default zeros
         % case C = [] is allowed: yields no output computation in code
-        [c, C] = setDefaultValues({[], 1}, varargin);
+        [c, C] = setDefaultValues({zeros(states,1), 1}, varargin);
         if isempty(c)
             c = zeros(states, 1);
         end
@@ -119,7 +122,7 @@ methods
         inputArgsCheck({ ...
             {A, 'att', 'numeric', 'matrix'}
             {B, 'att', 'numeric', 'matrix'}
-            {c, 'att', 'numeric'} % c can be empty
+            {c, 'att', 'numeric', 'matrix'}
             {C, 'att', 'numeric', 'matrix'}
             {D, 'att', 'numeric', 'matrix'}
             {k, 'att', 'numeric', 'column'}

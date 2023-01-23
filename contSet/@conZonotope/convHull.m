@@ -11,7 +11,7 @@ function cZ = convHull(cZ,S,varargin)
 %    cZ - conZonotope object
 %    S - contSet object (or cell-array of conZonotope objects)
 %    method - (optional) method for computation of convex hull
-%                        'exact:Tiwary' (default)
+%                        'exact:Raghuraman' (default)
 %                        'exact:Kochdumper'
 %
 % Outputs:

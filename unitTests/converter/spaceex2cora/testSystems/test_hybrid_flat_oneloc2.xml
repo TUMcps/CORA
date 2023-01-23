@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="cont">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <location id="1" name="always" x="465.0" y="394.0" width="224.0" height="144.0">
+      <invariant>x1 &gt;= 0 &amp;&amp; x2 &lt;= 0</invariant>
+      <flow>x1' = -2*x1 + x2 &amp;&amp;
+x2' = x1 - 2*x2</flow>
+    </location>
+    <transition source="1" target="1">
+      <guard>x1 &lt; 0</guard>
+      <assignment>x1' := -x1 &amp;&amp; x2' := x2</assignment>
+      <labelposition x="-131.0" y="-83.0" width="264.0" height="76.0" />
+    </transition>
+    <transition source="1" target="1">
+      <guard>x2 &gt; 0</guard>
+      <assignment>x1' := x2 - 1 &amp;&amp; x2' := -x1</assignment>
+      <labelposition x="29.0" y="-52.0" width="222.0" height="108.0" />
+      <middlepoint x="155.0" y="0.0" />
+    </transition>
+  </component>
+  <component id="system">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <bind component="cont" as="cont_1" x="373.0" y="203.0" width="136.0" height="62.0">
+      <map key="x1">x1</map>
+      <map key="x2">x2</map>
+    </bind>
+  </component>
+</sspaceex>
+

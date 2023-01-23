@@ -2,10 +2,10 @@ classdef matPolytope
 % matPolytope class 
 %
 % Syntax:  
-%    obj = matPolytope(vert)
+%    obj = matPolytope(V)
 %
 % Inputs:
-%    vert - cell-array storing the vertices
+%    V - cell-array storing the vertices
 %
 % Outputs:
 %    obj - generated matPolytope object
@@ -58,23 +58,24 @@ methods
         end
     end
          
-    %methods in seperate files     
-    matP = plus(summand1,summand2)
-    matP = simplePlus(summand1,summand2)
-    matP = mtimes(factor1,factor2)
-    matP = mpower(matP,exponent)
+    % methods in seperate files
+    display(matP) % display on command window
     matP = expmInd(matP,maxOrder)
     [eP,eI] = expmIndMixed(matP,intermediateOrder,maxOrder)
-    intMat = intervalMatrix(matP)
-    matZ = matZonotope(matP)
-    matP = mptPolytope(matP)
-    val = expmDist(matP,exactMat,maxOrder)
-    matV = vertices(matP)
+    val = expmDist(matP,exactMat,maxOrder) % deprecated?
+    intMat = intervalMatrix(matP) % conversion to interval matrix
+    matZ = matZonotope(matP) % conversion to matrix zonotope
+    matP = mpower(matP,exponent) % exponentiation
+    matP = mptPolytope(matP) % conversion to polytope
+    matP = mtimes(factor1,factor2) % linear map
+    plot(matP,varargin) % plot
+    matP = plus(summand1,summand2) % Minkowski addition
+    matP = simplePlus(summand1,summand2) % ?
+    n = size(matP) % read out dimension of vertices
+    matV = vertices(matP) % read vertices of matrix polytope
     
-    %display functions
-    plot(matP,varargin)
-    display(matP)
 end
+
 end
 
 %------------- END OF CODE --------------

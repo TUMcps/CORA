@@ -1,15 +1,15 @@
-function [functionName,sys] = data2NonLinSys(Data,path)
+function sys = data2NonLinSys(data,functionName,path)
 % data2NonLinSys - converts Data into a linearSys or nonlinearSys object
 %
 % Syntax:  
-%    [functionName,sys] = data2NonLinSys(Data,path)
+%    sys = data2NonLinSys(data,functionName,path)
 %
 % Input:
-%    Data - Automaton in structHA format
+%    data - linear/nonlinear system in structHA format
+%    functionName - name of CORA model file
 %    path - folder from which to generate auxiliary files
 %
 % Output:
-%    functionName - name of function
 %    sys - linearSys object or nonlinearSys object (depending on dynamics)
 %
 % Other m-files required: none
@@ -26,9 +26,8 @@ function [functionName,sys] = data2NonLinSys(Data,path)
 %------------- BEGIN CODE --------------
 
 % Get Meta Information of the given Automaton
-Comp = Data.Components{1,1};
-functionName = Data.name;
-automaton_id = Data.componentID;
+Comp = data.components{1,1};
+automaton_id = data.componentID;
 
 % Create main comments
 functionStr = "function sys = " + functionName + "(~)";

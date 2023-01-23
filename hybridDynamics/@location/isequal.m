@@ -1,13 +1,15 @@
-function res = isequal(loc1,loc2)
+function res = isequal(loc1,loc2,varargin)
 % isequal - checks if two locations are equal by comparing the invariants,
 %    transitions, flow equations, and names
 %
 % Syntax:  
 %    res = isequal(loc1,loc2)
+%    res = isequal(loc1,loc2,tol)
 %
 % Inputs:
 %    trans1 - location object
 %    trans2 - location object
+%    tol - tolerance (optional)
 %
 % Outputs:
 %    res - true/false
@@ -51,42 +53,74 @@ function res = isequal(loc1,loc2)
 
 %------------- BEGIN CODE --------------
 
-% easy checks first to facilitate quick exits
+% too many input arguments
+if nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs',3));
+end
+
+% default values
+tol = setDefaultValues({eps},varargin);
+
+% check input arguments
+inputArgsCheck({{loc1,'att','location'};
+                {loc2,'att','location'};
+                {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
+
+% assume true
 res = true;
 
 % compare names
-if ~strcmp(loc1.name,loc2.name)
-    res = false; return
-end
+% if ~strcmp(loc1.name,loc2.name)
+%     res = false; return
+% end
 
-% compare invariant
-if ~isequal(loc1.invariant,loc2.invariant)
-    res = false; return
+% compare invariants: 
+% note: we use 'eq' instead of 'isequal' as long as the mptPolytope class
+% exists, once the switch to the polytope class is done, use 'isequal';
+% also, the invariant then should not be [], but a polytope that spans the
+% entire space (e.g., 0*x <= 0), so no need for case differentiation
+if ~(isnumeric(loc1.invariant) && isempty(loc1.invariant) ...
+        && isnumeric(loc2.invariant) && isempty(loc2.invariant))
+    if xor(isnumeric(loc1.invariant),isnumeric(loc2.invariant)) ...
+            || ( isnumeric(loc1.invariant) ...
+                && ~all(isempty(loc1.invariant),isempty(loc2.invariant)) ) ...
+            || ~eq(loc1.invariant,loc2.invariant,tol)
+        res = false; return
+    end
 end
 
 % compare flow equations
-if ~isequal(loc1.contDynamics,loc2.contDynamics)
+if ~isequal(loc1.contDynamics,loc2.contDynamics,tol)
     res = false; return
 end
 
 % compare transitions
+
 % same number of outgoing transitions
 if length(loc1.transition) ~= length(loc2.transition)
     res = false; return
 end
+
 % try to find match between transitions
 idxInLoc2 = false(length(loc1.transition));
+
 for i=1:length(loc1.transition)
+    % assume no matching transition was found
     found = false;
+
+    % loop over all transitions of second location
     for j=1:length(loc2.transition)
+        % skip transitions that have already been matched
         if ~idxInLoc2(j)
-            if isequal(loc1.transition{i},loc2.transition{j})
-                found = true;
-                idxInLoc2(j) = true;
+            % check for equality
+            if isequal(loc1.transition{i},loc2.transition{j},tol)
+                % matching transition found
+                found = true; idxInLoc2(j) = true;
                 break
             end
         end
     end
+    
     if ~found
         % i-th transition in loc1 has no match in loc2
         res = false; return

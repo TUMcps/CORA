@@ -70,9 +70,12 @@ for i = 1:numS1
         exprright = [S1(i).Invariant.exprRight; S2(j).Invariant.exprRight];
         % combine equation Text, to keep it sensible and readable
         text = S1(i).Invariant.Text + newline + "&&" + newline + S2(j).Invariant.Text;
+        % no global outputs in SpaceEx
+        text_output = "";
         
         S1XS2(idx).Invariant = struct('inequalities',ineq,'equalities',eq,...
-            'Text',text,'exprLeft',exprleft,'exprRight',exprright);
+            'Text',text,'Text_output',text_output,...
+            'exprLeft',exprleft,'exprRight',exprright);
         
         % Combine Transition Sets of S1(i) & S2(j)
         T1 = S1(i).Trans;

@@ -1,7 +1,8 @@
 classdef location
 % location - constructor of class location
 %
-% Syntax:  
+% Syntax:
+%    loc = location()
 %    loc = location(invSet,trans,sys)
 %    loc = location(name,invSet,trans,sys)
 %
@@ -71,7 +72,9 @@ methods
     function loc = location(varargin)
 
         % parse input arguments
-        if nargin <= 2
+        if nargin == 0
+            invSet = [];
+        elseif nargin <= 2
             throw(CORAerror('CORA:notEnoughInputArgs',3));
         elseif nargin == 3
             invSet = varargin{1};

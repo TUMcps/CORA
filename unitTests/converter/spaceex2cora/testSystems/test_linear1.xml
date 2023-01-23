@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="cont">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <location id="1" name="always" x="316.0" y="146.0" width="218.0" height="106.0">
+      <flow>x1' = 2*x1 + x2 &amp;&amp;
+x2' = 4*x1 - 3*x2</flow>
+    </location>
+  </component>
+  <component id="system">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <bind component="cont" as="cont_1" x="323.0" y="185.0">
+      <map key="x1">x1</map>
+      <map key="x2">x2</map>
+    </bind>
+  </component>
+</sspaceex>
+

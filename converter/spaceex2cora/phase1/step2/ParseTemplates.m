@@ -77,6 +77,7 @@ for i = 1:num_templates
         % represent references to other templates by their index in this array
         parsedComp = ComputeNetworkComponent(currentComp,templateIDs(1:i-1));
         parsedComp.isNetwork = true;
+        
     else
         throw(CORAerror('CORA:converterIssue',...
             ['Component ' num2str(i) ' seems to be neither base nor network.']));

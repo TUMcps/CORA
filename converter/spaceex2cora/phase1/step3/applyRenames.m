@@ -35,7 +35,7 @@ names_out = names_in;
 for i = 1:numel(names_in)
     % find the 1st rename applying to names_in(i)
     rename_idx = find(keys == names_in(i),1);
-    if(~isempty(rename_idx))
+    if ~isempty(rename_idx)
         % if a rename is found, write it to output
         names_out(i) = renames(rename_idx);
     end

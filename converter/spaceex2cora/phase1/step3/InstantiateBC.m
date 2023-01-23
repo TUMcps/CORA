@@ -28,7 +28,7 @@ function child = InstantiateBC(parent,template,bind)
 
 % Author:       ???
 % Written:      ???
-% Last update:  ---
+% Last update:  13-January-2023 (MW, save constants for completeness)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -45,58 +45,35 @@ fprintf("instantiating Base Component: '%s'\n",child.name);
 % Apply variable mapping to all equations
 
 % number of locations in base components
-numStates = length(child.States);
+nrLocs = length(child.States);
 
 % loop over each location
-for st = 1:numStates
+for iLoc = 1:nrLocs
     % read out location
-    St = child.States(st);
+    loc = child.States(iLoc);
     
     % Apply mapping to Flow
-    child.States(st).Flow = applyMappingToEquation(St.Flow,bind);
+    child.States(iLoc).Flow = applyMappingToEquation(loc.Flow,bind);
         
     % Apply Mapping to Invariant
-    child.States(st).Invariant = applyMappingToCondition(St.Invariant,bind);
+    child.States(iLoc).Invariant = applyMappingToCondition(loc.Invariant,bind);
     
     % number of outgoing transitions
-    numTrans = length(St.Trans);
+    numTrans = length(loc.Trans);
 
     % loop over each outgoing transition
-    for tr = 1:numTrans
+    for iTrans = 1:numTrans
         % read out transition
-        Tr = St.Trans(tr);
+        trans = loc.Trans(iTrans);
         
         % Apply mapping to reset function
-        child.States(st).Trans(tr).reset = applyMappingToEquation(Tr.reset,bind);
+        child.States(iLoc).Trans(iTrans).reset = applyMappingToEquation(trans.reset,bind);
         
         % Apply mapping to guard set
-        child.States(st).Trans(tr).guard = applyMappingToCondition(Tr.guard,bind);
+        child.States(iLoc).Trans(iTrans).guard = applyMappingToCondition(trans.guard,bind);
     end
 end
 
-% init array that all variables are states (and not constants)
-noConst = true(numel(child.listOfVar),1);
-
-% loop over each variable
-for v=1:numel(child.listOfVar)
-    
-    % index of variable to be renamed
-    renameIdx = bind.keys == child.listOfVar(v).name;
-
-    if any(renameIdx)
-        % rename state/constant
-        child.listOfVar(v).name = bind.renames(renameIdx);
-
-        % check if state is constant (converting a string that does not 
-        % represent a double value to a double results in NaN)
-        if ~isnan(str2double(bind.renames(renameIdx)))
-            noConst(v) = false;
-        end
-    end
-
-end
-
-% remove all constants from list of variables
-child.listOfVar = child.listOfVar(noConst);
+% constants are mapped in resolveBinds
 
 %------------- END OF CODE --------------

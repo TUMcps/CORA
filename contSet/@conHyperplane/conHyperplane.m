@@ -57,9 +57,7 @@ methods
         end
 
         % default values
-        h = [];
-        C = [];
-        d = 0;
+        h = []; C = []; d = 0;
         
         if nargin == 0
             h = halfspace();
@@ -70,17 +68,18 @@ methods
                 obj = varargin{1};
                 return
             end
-
             h = varargin{1};
             varargin = varargin(2:end);
-            [C, d] = setDefaultValues({[], 0}, varargin);
             
         elseif nargin == 2 || nargin == 4
             h = halfspace(varargin{1},varargin{2});
             varargin = varargin(3:end);
-            [C, d] = setDefaultValues({[], 0}, varargin);
         end
 
+        % set default values
+        [C,d] = setDefaultValues({C,d}, varargin);
+        
+        % check input arguments
         inputArgsCheck({ ...
             {h, 'att', 'halfspace'}; ...
             {C, 'att', 'numeric', {'finite', 'matrix'}}; ...

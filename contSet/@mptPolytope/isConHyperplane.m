@@ -1,23 +1,24 @@
-function [res,ch] = isConHyperplane(obj)
+function [res,hyp] = isConHyperplane(obj)
 % isConHyperplane - check if a polytope can be equivalently represented as
 %                   a constrained hyperplane
 %
 % Syntax:  
-%    [res,ch] = isConHyperplane(obj)
+%    [res,hyp] = isConHyperplane(obj)
 %
 % Inputs:
 %    obj - mptPolytope object
 %
 % Outputs:
-%    res - 1 if equivalently representable as hyperplane, 0 if not
-%    ch - equivalent conHyperplane object
+%    res - true/false whether equivalently representable as a constrained
+%          hyperplane
+%    hyp - equivalent conHyperplane object
 %
 % Example: 
 %    A = [1 1;1 0;-1 -1];
 %    b = [1;2;-1];
-%    poly = mptPolytope(A,b);
+%    P = mptPolytope(A,b);
 %
-%    [res,ch] = isConHyperplane(poly);
+%    [res,hyp] = isConHyperplane(P);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,8 +33,8 @@ function [res,ch] = isConHyperplane(obj)
 
 %------------- BEGIN CODE --------------
 
-    res = 0;
-    ch = [];
+    res = false;
+    hyp = [];
 
     % check if equality constraints exist
     if ~isempty(obj.P.Ae)
@@ -43,12 +44,17 @@ function [res,ch] = isConHyperplane(obj)
         d = obj.P.be(1);
         
         % convert all other equality constraints to inequality constraints
-        C = [obj.P.A; obj.P.Ae(2:end,:); -obj.P.Ae(2:end,:)];
-        D = [obj.P.b; obj.P.be(2:end); -obj.P.be(2:end)];
+        A = [obj.P.A; obj.P.Ae(2:end,:); -obj.P.Ae(2:end,:)];
+        b = [obj.P.b; obj.P.be(2:end); -obj.P.be(2:end)];
         
         % construct constrained hyperplane
-        res = 1;
-        ch = conHyperplane(c,d,C,D);
+        res = true;
+        if isempty(A) && isempty(b)
+            hyp = conHyperplane(c,d);
+        else
+            hyp = conHyperplane(c,d,A,b);
+        end
+        
         
     else
         
@@ -82,8 +88,12 @@ function [res,ch] = isConHyperplane(obj)
                     A([i,idx],:) = [];
                     b([i,idx],:) = [];
                     
-                    res = 1;
-                    ch = conHyperplane(c,d,A,b);
+                    res = true;
+                    if isempty(A) && isempty(b)
+                        hyp = conHyperplane(c,d);
+                    else
+                        hyp = conHyperplane(c,d,A,b);
+                    end
                     return;
                 end
             end

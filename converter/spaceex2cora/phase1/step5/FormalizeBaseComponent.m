@@ -56,15 +56,17 @@ if isempty(BC.inputs)
     BC.inputs(1).name = string(dummyName);
 end
 
-% iterate over discrete States
+% iterate over locations of base component
 for i = 1:length(BC.States)
+    % read out i-th location for easier access
     State = BC.States(i);
     
     % derive linear representation of flow equations
     if convtype
         [isLin,A,B,c,eqs] = eq2linSys(State.Flow.varNames,...
             State.Flow.expressions,BC.states,BC.inputs);
-        [C,D,k] = outputMatricesComp2Comp(BC.states,BC.inputs,BC.outputsLocal);
+        [isLin_out,C,D,k,eqs_out] = outputMatricesComp2Comp(BC.states,BC.inputs,...
+            [BC.outputsLocal;BC.outputsGlobal],State.Invariant);
     else
         % what do outputsLocal map to in state vector
         if ~isempty(BC.outputsLocal)
@@ -76,23 +78,29 @@ for i = 1:length(BC.States)
         % derive linear representation of flow equations
         [isLin,A,B,c,eqs] = eq2linSysFlat(State.Flow.varNames,...
             State.Flow.expressions,BC.states,BC.inputs,BC.outputsLocal,map);
+        % output matrices
+        [isLin_out,C,D,k,eqs_out] = outputMatrices(State.Invariant.equalities,...
+            BC.states,BC.inputs,BC.outputsLocal,map,BC.outputsGlobal);
+        % write output equation to invariant for later
+        BC.States(i).Invariant.Text_output = eqs_out;
     end
 
-    % assign matrices for if system is linear
-    if isLin
+    % assign matrices if system is linear
+    if isLin && isLin_out
         BC.States(i).Flow.A = A;
         BC.States(i).Flow.B = B;
         BC.States(i).Flow.c = c;
-        if convtype
-            % only parallel: assign output matrices (to be used as inputs
-            % in other components)
-            BC.States(i).Flow.C = C;
-            BC.States(i).Flow.D = D;
-            BC.States(i).Flow.k = k;
-        end
+        % output matrices relate local outputs to inputs of other
+        % components (only parallel hybrid automata)
+        BC.States(i).Flow.C = C;
+        BC.States(i).Flow.D = D;
+        BC.States(i).Flow.k = k;
     end
-    % save equations in format: dx(i,1) = ...
+    % save differential equations in format: dx(i,1) = ...
     BC.States(i).Flow.FormalEqs = eqs;
+    % save output equations in format: dx(i,1) = ... (we can write x
+    % instead of y since the computation is outsourced to a function)
+    BC.States(i).Flow.FormalEqs_out = eqs_out;
         
     % derive polytope for invariant
     if State.Invariant.Text == ""
@@ -105,24 +113,14 @@ for i = 1:length(BC.States)
     end
     BC.States(i).Invariant.set = set;
     
-    % assign linear output matrices: only flat HA
-    % note: this might be overhauled in the future as it is not clear
-    % what is the relation between the invariant and the outputs
-    if ~convtype
-        [C,D,k] = outputMatrices(State.Invariant.equalities,...
-            BC.states,BC.inputs,BC.outputsGlobal);
-        BC.States(i).Flow.C = C;
-        BC.States(i).Flow.D = D;
-        BC.States(i).Flow.k = k;
-    end
-    
     % iterate over outgoing transitions of current State
     if isfield(State,'Trans')
-        numTrans = length(State.Trans);
+        nrTrans = length(State.Trans);
     else
-        numTrans = 0;
+        nrTrans = 0;
     end
-    for j = 1:numTrans
+
+    for j = 1:nrTrans
         Tran = State.Trans(j);
         
         %derive polytope for guard

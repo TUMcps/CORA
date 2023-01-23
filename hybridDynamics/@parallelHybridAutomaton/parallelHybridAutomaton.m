@@ -94,6 +94,9 @@ properties (SetAccess = protected, GetAccess = public)
     
     % number of inputs for the complete automaton
     numInputs (1,1) {mustBeNonnegative,mustBeFinite} = 0;
+
+    % computed location products (used for speed up)
+    locProd struct;
 end
 
 methods
@@ -164,10 +167,10 @@ methods
         for i=1:length(pHA.bindsInputs)
             % nrOfInputs(max)-by-2 array
             % (we can use any location since all must have same nrOfInputs)
-            if ( isempty(pHA.bindsInputs{i}) ...
-                    && pHA.components{i}.location{1}.contDynamics.nrOfInputs ~= 0 ) ...
-                    || ( size(pHA.bindsInputs{i},2) ~= 2 || ...
-                    size(pHA.bindsInputs{i},1) > pHA.components{i}.location{1}.contDynamics.nrOfInputs )
+            if xor(isempty(pHA.bindsInputs{i}), ...
+                    pHA.components{i}.location{1}.contDynamics.nrOfInputs == 0) ...
+                    || ~any(size(pHA.bindsInputs{i},2) ~= [0,2]) ...
+                    || size(pHA.bindsInputs{i},1) ~= pHA.components{i}.location{1}.contDynamics.nrOfInputs
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     ['Input binds have to be\n'...
                      '   empty if that component''s number of inputs is zero\n'...
@@ -189,6 +192,9 @@ methods
 
         % extract overall state and input dimensions (remaining properties)
         pHA = validateBinds(pHA);
+
+        % init struct for computed location products
+        pHA.locProd = struct('location',cell(0),'locID',cell(0));
     end
 end
 end

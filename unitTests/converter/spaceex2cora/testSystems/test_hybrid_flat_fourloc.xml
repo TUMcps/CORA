@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<sspaceex xmlns="http://www-verimag.imag.fr/xml-namespaces/sspaceex" version="0.2" math="SpaceEx">
+  <component id="cont">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <param name="u1" type="real" local="false" d1="1" d2="1" dynamics="any" />
+    <location id="1" name="topleft" x="419.0" y="241.0" width="224.0" height="144.0">
+      <invariant>x1 &lt;= 0 &amp;&amp; x2 &gt;= 0</invariant>
+      <flow>x1' = u1 &amp;&amp; x2' = -1</flow>
+    </location>
+    <location id="2" name="topright" x="1218.0" y="235.0" width="222.0" height="138.0">
+      <invariant>x1 &gt;= 0 &amp;&amp; x2 &gt;= 0</invariant>
+      <flow>x1' = -1 &amp;&amp; x2' = u1</flow>
+    </location>
+    <location id="3" name="bottomleft" x="404.0" y="722.0" width="216.0" height="144.0">
+      <invariant>x1 &lt;= 0 &amp;&amp; x2 &lt;= 0</invariant>
+      <flow>x1' = 1 &amp;&amp; x2' = u1</flow>
+    </location>
+    <location id="4" name="bottomright" x="1234.0" y="710.0" width="220.0" height="152.0">
+      <invariant>x1 &gt;= 0 &amp;&amp; x2 &lt;= 0</invariant>
+      <flow>x1' = u1 &amp;&amp; x2' = 1</flow>
+    </location>
+    <transition source="2" target="1">
+      <guard>x1 &lt;= 0</guard>
+      <assignment>x1' := x1 - 10 &amp;&amp; x2' := x2 + 5</assignment>
+      <labelposition x="-74.0" y="-98.0" width="234.0" height="74.0" />
+      <middlepoint x="813.5" y="182.5" />
+    </transition>
+    <transition source="1" target="2">
+      <guard>x1 &gt;= 0</guard>
+      <assignment>x1' := x1 + 10 &amp;&amp; x2' := x2 + 5</assignment>
+      <labelposition x="-121.0" y="18.0" width="250.0" height="76.0" />
+      <middlepoint x="818.5" y="305.5" />
+    </transition>
+    <transition source="2" target="4">
+      <guard>x2 &lt;= 0</guard>
+      <assignment>x1' := x1 + 5 &amp;&amp; x2' := x2 - 10</assignment>
+      <labelposition x="17.0" y="-37.0" width="200.0" height="84.0" />
+      <middlepoint x="1348.0" y="467.5" />
+    </transition>
+    <transition source="4" target="2">
+      <guard>x2 &gt;= 0</guard>
+      <assignment>x1' := x1 + 5 &amp;&amp; x2' := x2 + 10</assignment>
+      <labelposition x="-238.0" y="-45.0" width="240.0" height="82.0" />
+      <middlepoint x="1129.0" y="463.5" />
+    </transition>
+    <transition source="3" target="4">
+      <guard>x1 &gt;= 0</guard>
+      <assignment>x1' := x1 + 10 &amp;&amp; x2' := x2 - 5</assignment>
+      <labelposition x="-101.0" y="15.0" width="226.0" height="92.0" />
+      <middlepoint x="816.0" y="802.5" />
+    </transition>
+    <transition source="4" target="3">
+      <guard>x1 &lt;= 0</guard>
+      <assignment>x1' := x1 - 10 &amp;&amp; x2' := x2 - 5</assignment>
+      <labelposition x="-105.0" y="-86.0" width="230.0" height="72.0" />
+      <middlepoint x="813.0" y="658.5" />
+    </transition>
+    <transition source="3" target="1">
+      <guard>x2 &gt;= 0</guard>
+      <assignment>x1' := x1 - 5 &amp;&amp; x2' := x2 + 10</assignment>
+      <labelposition x="28.0" y="-34.0" width="190.0" height="78.0" />
+      <middlepoint x="488.5" y="479.0" />
+    </transition>
+    <transition source="1" target="3">
+      <guard>x2 &lt;= 0</guard>
+      <assignment>x1' := x1 - 5 &amp;&amp; x2' := x2 - 10</assignment>
+      <labelposition x="-227.0" y="-34.0" width="186.0" height="80.0" />
+      <middlepoint x="344.5" y="486.0" />
+    </transition>
+  </component>
+  <component id="system">
+    <param name="x1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="x2" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <param name="u1" type="real" local="false" d1="1" d2="1" dynamics="any" controlled="true" />
+    <bind component="cont" as="cont_1" x="373.0" y="203.0" width="136.0" height="62.0">
+      <map key="x1">x1</map>
+      <map key="x2">x2</map>
+      <map key="u1">u1</map>
+    </bind>
+  </component>
+</sspaceex>
+

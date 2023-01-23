@@ -13,10 +13,10 @@ function res = testLongDuration_spaceex2cora_hybrid_lowpass()
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 
 % Author:       Mark Wetzlinger
-% Written:      7-December-2018
+% Written:      07-December-2018
 % Last update:  ---
 % Last revision:---
 
@@ -24,7 +24,7 @@ function res = testLongDuration_spaceex2cora_hybrid_lowpass()
 
 %% automaton #1: original file
 
-PHA = lowpassFilter();
+pHA = lowpassFilter();
 
 % parameter
 params.tFinal = 0.4;
@@ -32,26 +32,26 @@ params.x0 = [0;0;0;0];
 params.startLoc = [1;3]; 
 
 % simulation
-% [~,simRes{1}] = simulate(PHA,params);
+[~,simRes{1}] = simulate(pHA,params);
 
 
 %% automaton #2: converted parallel HA
 
-spaceex2cora('lowpass_parallel.xml',1,[],'lowpass_parallel');
-HA_SX = lowpass_parallel();
+spaceex2cora('lowpass_parallel.xml',true,[],'lowpass_parallel');
+pHA_SX = lowpass_parallel();
 
 % simulation 
-[~,simRes{2}] = simulate(HA_SX, params);
+[~,simRes{2}] = simulate(pHA_SX, params);
 
 
 %% automaton #3: converted flat HA
 
-spaceex2cora('lowpass_parallel.xml',0,[],'lowpass_flat');
-HA_SXflat = lowpass_flat();
+spaceex2cora('lowpass_parallel.xml',false,[],'lowpass_flat');
+HA_SX = lowpass_flat();
 
 % simulation
 params.startLoc = 3;
-[~,simRes{3}] = simulate(HA_SXflat, params);
+[~,simRes{3}] = simulate(HA_SX, params);
 
 
 %% visualization
@@ -78,12 +78,12 @@ tol = 1e-6;
 for i = 1:length(simRes{1})
     % compare results for original and converted parallel hybrid automaton
     if ~all(size(simRes{1}{i}) == size(simRes{2}{i})) || ...
-            max(max(abs(simRes{1}{i} - simRes{2}{i}))) > tol 
+            ~all(all(withinTol(simRes{1}{i},simRes{2}{i},tol)))
         throw(CORAerror('CORA:testFailed'));
     end
     % compare results for original and converted flat hybrid automaton
     if ~all(size(simRes{1}{i}) == size(simRes{3}{i})) || ... 
-            max(max(abs(simRes{1}{i} - simRes{3}{i}))) > tol
+            ~all(all(withinTol(simRes{1}{i},simRes{2}{i},tol)))
         throw(CORAerror('CORA:testFailed'));
     end
 end

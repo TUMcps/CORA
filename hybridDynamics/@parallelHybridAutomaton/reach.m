@@ -28,6 +28,7 @@ function [R,res] = reach(pHA,params,options,varargin)
 %                                specifications)
 %               03-March-2022 (MP, implemented synchronization labels)
 %               27-November-2022 (MW, restructure specification syntax)
+%               20-January-2023 (MW, save already computed location products)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -119,12 +120,22 @@ function [R,res] = reach(pHA,params,options,varargin)
         % restart if immediate transition has occurred
         if restart; continue; end
 
-        % construct new location with local Automaton Product
-        if options.verbose
-            disp("  compute location product of locations [" + ...
-               strjoin(string(locID),',') + "]...");
+        % location for evaluation via local Automaton Product        
+        % check if location product has been computed before
+        locProdIdx = cellfun(@(x) all(x == locID),{pHA.locProd.locID});
+        if k > 0 && any(locProdIdx)
+            % read location product from saved locations
+            locObj = pHA.locProd(locProdIdx).location;
+        else
+            % compute new location product
+            if options.verbose
+                disp("  compute location product of locations [" + ...
+                   strjoin(string(locID),',') + "]...");
+            end
+            locObj = locationProduct(pHA,locID,allLabels);
+            pHA.locProd = [pHA.locProd;...
+                struct('location',locObj,'locID',locID)];
         end
-        locObj = locationProduct(pHA,locID,allLabels);
 
         % compute the reachable set within the constructed location
         if options.verbose
