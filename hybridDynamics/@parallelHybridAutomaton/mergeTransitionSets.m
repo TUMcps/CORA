@@ -87,6 +87,11 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
                 else
                     checkedLabels = [checkedLabels; syncLabel];
                 end
+
+                % for partly-synchronized transitions, the states of all
+                % components, which do not participate in the
+                % synchronization, remain (identity)
+                idStates = zeros(pHA.numStates,1);
                 
                 % update target location of component i
                 resultingTarget(i) = trans.target;
@@ -102,29 +107,36 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
                 labelStateIndices = {};
                 labelStateIndices{1} = pHA.bindsStates{i};
 
-                % loop over each component (sufficient to look through
-                % components i+1:end because otherwise the label in the
-                % current component would have been checked before)
-                for j = i+1:length(transList)
-                    idx = cellfun(@(x) strcmp(x.syncLabel,syncLabel),...
-                        transList{j},'UniformOutput',true);
-                    if ~isempty(idx) && any(idx)
-                        % only one transition per component may have a
-                        % given synchronization label, therefore we can use
-                        % this index to read out the transition and other
-                        % relevant information
-                        temp = transList{j}(idx);
-                        labelTransSet = [labelTransSet; temp{1}];
-                        labelCompIdx = [labelCompIdx; j];
-                        labelStateIndices = [labelStateIndices; pHA.bindsStates(j)];
-
-                        % update target location of component j
-                        resultingTarget(j) = temp{1}.target;
+                % loop over each component: cannot start at component i+1
+                % (which would suffice because otherwise the label in the
+                % current component would have been checked before), since
+                % we need the states with identity in the reset
+                for j = 1:length(transList)
+                    if j ~= i
+                        idx = cellfun(@(x) strcmp(x.syncLabel,syncLabel),...
+                            transList{j},'UniformOutput',true);
+                        if ~isempty(idx) && any(idx)
+                            % only one transition per component may have a
+                            % given synchronization label, therefore we can use
+                            % this index to read out the transition and other
+                            % relevant information
+                            temp = transList{j}(idx);
+                            labelTransSet = [labelTransSet; temp{1}];
+                            labelCompIdx = [labelCompIdx; j];
+                            labelStateIndices = [labelStateIndices; pHA.bindsStates(j)];
+    
+                            % update target location of component j
+                            resultingTarget(j) = temp{1}.target;
+                        else
+                            % set indices of state binds to 1 (will later be
+                            % used in reset function to maintain values)
+                            idStates(pHA.bindsStates{j}) = 1;
+                        end
                     end
                 end
                 
                 % the transition is only active if in all components where
-                % the label occurs, of one these transitions is active
+                % the label occurs, one of these transitions is active
                 % (the lenghty variable on the right-hand side computes the
                 % number of components in which <label> occurs)
                 if length(labelTransSet) ~= ...
@@ -188,7 +200,7 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
 
                 % merge reset functions into one reset function
                 resultingReset = synchronizeResets(labelTransSet,...
-                    pHA.numStates,pHA.numInputs);
+                    pHA.numStates,pHA.numInputs,idStates);
                 
                 % instantiate resulting transition
                 transSet{cnt} = transition(resultingGuard,resultingReset,...
@@ -196,6 +208,7 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
 
                 % increment counter for number of transitions
                 cnt = cnt + 1;
+
             end            
         end
     end

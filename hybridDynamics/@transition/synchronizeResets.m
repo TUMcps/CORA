@@ -1,4 +1,4 @@
-function syncReset = synchronizeResets(transitionSet,n,m)
+function syncReset = synchronizeResets(transitionSet,n,m,idStates)
 % synchronizeResets - merge reset functions with the same synchronization
 %    labels; since the variables of the different subcomponents are
 %    considered disjoint in this implementation (i.e., the left-hand side
@@ -23,6 +23,7 @@ function syncReset = synchronizeResets(transitionSet,n,m)
 %    transitionSet (cell-array) - transitions to be synchronized
 %    n - full state dimension
 %    m - global input dimension
+%    idStates - states of components which remain as they are (identity)
 %
 % Outputs:
 %    syncReset (struct) - synchronized reset function
@@ -31,34 +32,39 @@ function syncReset = synchronizeResets(transitionSet,n,m)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Author:       Maximilian Perschl, Mark Wetzlinger
 % Written:      04-April-2022
 % Last update:  01-July-2022
+%               14-January-2023 (MW, handle states unaffected by sync)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % find out which reset functions are linear and which are nonlinear
 linearResets = false(size(transitionSet));
-for i = 1:length(transitionSet)
+for i=1:length(transitionSet)
     if isfield(transitionSet(i).reset,'A')
         linearResets(i) = true;
     end
 end
+% check for dependency on inputs
+withInputs = any(arrayfun(@(x) x.reset.hasInput,transitionSet,'UniformOutput',true));
 
 % synchronize purely linear resets
 if all(linearResets)
 
     % initialize state/input matrix and constant offset
-    A = zeros(n);
-    B = zeros(n,m);
+    A = diag(idStates);
+    if withInputs
+        B = zeros(n,m);
+    end
     c = zeros(n,1);
 
     % since all resets have been projected to higher dimensions before,
     % we can just add them here
-    for i = 1:length(transitionSet)
+    for i=1:length(transitionSet)
         A = A + transitionSet(i).reset.A;
         if isfield(transitionSet(i).reset,'B')
             B = B + transitionSet(i).reset.B;
@@ -68,7 +74,9 @@ if all(linearResets)
 
     % assign matrices and vector to struct
     syncReset.A = A;
-    syncReset.B = B;
+    if withInputs
+        syncReset.B = B;
+    end
     syncReset.c = c;
     return;
     
