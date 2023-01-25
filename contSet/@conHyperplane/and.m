@@ -35,6 +35,11 @@ function S = and(hyp,S)
 
 %------------- BEGIN CODE --------------
 
+% convert second set to polytope, otherwise infinite loop
+if isa(S,'conHyperplane')
+    S = mptPolytope(S);
+end
+
 % input argument check happens there
 S = S & hyp;
 

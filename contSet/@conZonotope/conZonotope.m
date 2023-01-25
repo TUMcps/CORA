@@ -25,7 +25,7 @@ classdef conZonotope < contSet
 %    Z = [0 3 0 1;0 0 2 1];
 %    A = [1 0 1]; b = 1;
 %    cZ = conZonotope(Z,A,b);
-%    plotZono(cZ);
+%    plot(cZ);
 %
 % References:
 %    [1] Scott, Joseph K., et al. "Constrained zonotopes:

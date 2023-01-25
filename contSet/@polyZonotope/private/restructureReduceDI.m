@@ -52,12 +52,19 @@ function pZ = restructureReduceDI(pZ, dfOrder, method, varargin)
     % construct equivalent polyZonotope without indep. generators
     G = [pZ.G,pZ.Grest];
     expMat = blkdiag(pZ.expMat,eye(size(pZ.Grest,2)));
+    if ~isempty(pZ.id)
+        id = [pZ.id;max(abs(pZ.id))+(1:size(pZ.Grest,2))'];
+    else
+        id = (1:size(pZ.Grest,2))';
+    end
     [d,m] = size(expMat);
     
     % case 1: everything is within limits
     if d <= dfOrder*n && m <= genOrder*n
-        id = [pZ.id;max(abs(pZ.id))+(1:size(pZ.Grest,2))'];
-        pZ = polyZonotope(pZ.c,G,zeros(n,0),expMat,id);
+        pZ.G = G;
+        pZ.Grest = zeros(n,0);
+        pZ.expMat = expMat;
+        pZ.id = id;
         return;
     end
     
@@ -74,9 +81,12 @@ function pZ = restructureReduceDI(pZ, dfOrder, method, varargin)
         
         % reduce resulting generators to n generators
         G_ = generators(reduce(zonotope(zeros(n,1),G(:,ind_r)),method,1));
-        id = [pZ.id;max(abs(pZ.id))+(1:n)'];
-        pZ = polyZonotope(pZ.c,[G(:,~ind_r),G_],zeros(n,0),...
-                            blkdiag(expMat,eye(n)),id);
+        m = size(G_,2);
+        pZ.G = [G(:,~ind_r),G_];
+        pZ.Grest = zeros(n,0);
+        pZ.expMat = blkdiag(expMat(:,~ind_r),eye(m));
+        pZ.id = [id;max(abs(id))+(1:m)'];
+        pZ = deleteZeros(pZ);
                         
     %case 3+4: generators fit/dont fit, but too many dep. factors
     elseif d>dfOrder*n
@@ -93,7 +103,7 @@ function pZ = restructureReduceDI(pZ, dfOrder, method, varargin)
             ind = expMat(i,:) > 0;
             Ind(i,:) = ind;
             pZ_ = polyZonotope(zeros(n,1),G(:,ind), ...
-                  zeros(n,0),expMat(:,ind),pZ.id);
+                  zeros(n,0),expMat(:,ind),id);
             
             % calculate "volume" of the zonotope over-approximation
             V(i) = sum(rad(interval(zonotope(pZ_))));
@@ -130,12 +140,15 @@ function pZ = restructureReduceDI(pZ, dfOrder, method, varargin)
         
         Zr = reduce(zonotope(polyZonotope(zeros(n,1),G(:,indMask),...
                     zeros(n,0),expMat(:,indMask))),method,1);
-        G = [G(:,~indMask),generators(Zr)];
-        expMat = blkdiag(expMat(ii(D+1:end),~indMask),eye(n));
-        id = [pZ.id(ii(D+1:end));
-              max(abs(pZ.id(ii(D+1:end))))+(1:n)'];
+        Gr = generators(Zr);
+        m = size(Gr,2);
+        G = [G(:,~indMask),Gr];
+        expMat = blkdiag(expMat(ii(D+1:end),~indMask),eye(m));
+        id = [id(ii(D+1:end));
+              max(abs(id(ii(D+1:end))))+(1:m)'];
         % construct resulting polyZonotope
         pZ = polyZonotope(pZ.c+center(Zr),G,zeros(n,0),expMat,id);
+        pZ = deleteZeros(pZ);
     else
         throw(CORAerror('CORA:specialError',...
             'Bug in restructureReduceDI: Check logic!'));
