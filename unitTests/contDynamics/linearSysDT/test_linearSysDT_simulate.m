@@ -8,7 +8,7 @@ function res = test_linearSysDT_simulate
 %    -
 %
 % Outputs:
-%    res - boolean
+%    res - true/false
 %
 % Example: 
 %

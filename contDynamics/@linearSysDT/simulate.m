@@ -117,7 +117,9 @@ function params = aux_uwv(obj,params,steps)
 
 % check input, set default
 if ~isfield(params,'u')
-    params.u = zeros(obj.nrOfInputs,steps);
+    % should be of length steps if no output equation is given and steps+1
+    % if an output equation is given, but we keep it simple
+    params.u = zeros(obj.nrOfInputs,steps+1);
 else
     % length depends on whether throughput matrix is all-zero or not
     if any(any(obj.D))

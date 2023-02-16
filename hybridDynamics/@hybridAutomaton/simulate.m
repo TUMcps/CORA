@@ -38,9 +38,9 @@ xInter = params.x0;             % intermediate state at transitions
 % init output arguments
 loc = {}; t = {}; x = {};
 
-% iteratively simulate for each location seperately
-while (tInter < params.tFinal) && ...
-      (~isempty(locCurr)) && ~isFinalLocation(locCurr,params.finalLoc)
+% iteratively simulate for each location separately
+while tInter < params.tFinal && ...
+      ~isempty(locCurr) && ~isFinalLocation(locCurr,params.finalLoc)
 
     % choose input
     params.u = params.uLoc{locCurr};

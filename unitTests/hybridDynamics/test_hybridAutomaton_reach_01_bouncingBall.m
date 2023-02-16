@@ -115,8 +115,8 @@ for iLoc = 2:hitCounter
 end
 
 % compare exact values with simulation results
-res_tHit = all(abs(tHit - tHit_sim) < 1e-10);
-res_xHit = all(all(abs(xHit - xHit_sim) < 1e-10));
+res_tHit = all(withinTol(tHit,tHit_sim,1e-10));
+res_xHit = all(all(withinTol(xHit,xHit_sim,1e-10)));
 res_sim = res_tHit & res_xHit;
 
 
@@ -129,13 +129,9 @@ I = interval(R(end).timeInterval.set{end});
 I_saved = interval( ...
            [0.1481306674226159; -0.2059360624105376], ...
            [0.1974097982443197; 0.4812208662215985]);
-        
-% check if slightly bloated versions enclose each other
-res_1 = (I <= enlarge(I_saved,1+1e-4));
-res_2 = (I_saved <= enlarge(I,1+1e-4));
 
 % final result
-res_reach = res_1*res_2;
+res_reach = isequal(I,I_saved,1e-4);
 
 % overall result
 res = res_sim & res_reach;
