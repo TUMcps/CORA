@@ -51,6 +51,7 @@ function [t,x,ind,y] = simulate(obj,params,varargin)
 % Written:       03-May-2007 
 % Last update:   20-March-2008
 %                08-May-2020 (MW, update interface)
+%                13-February-2023 (MW, remove duplicates)                                           
 % Last revision: 16-November-2021 (MW, include params.w|v)
 
 %------------- BEGIN CODE --------------
@@ -128,11 +129,12 @@ for i = 1:steps
     end
 
     % store the results
-    x = [x;x_];
     if i == 1
         t = t_ + params.tStart;
+        x = x_;
     else
-        t = [t; t_ + t(end)];
+        t = [t; t_(2:end) + t(end)];
+        x = [x;x_(2:end,:)];
     end
     x0 = x(end,:)';
 

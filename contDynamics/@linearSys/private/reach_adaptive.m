@@ -608,16 +608,16 @@ else
     uVec = options.uTrans;
 end
 
-% state equation
-options.U = obj.B * options.U + W;
-options.uTransVec = obj.B * uVec + obj.c + centerW;
-
 % output equation
 if any(any(obj.D))
     options.V = obj.D * options.U + V;
 else
     options.V = V;
 end
+
+% state equation
+options.U = obj.B * options.U + W;
+options.uTransVec = obj.B * uVec + obj.c + centerW;
 
 % initialize input vector for output equation
 % note: this CANNOT the same as the input vector for the state equation

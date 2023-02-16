@@ -27,6 +27,7 @@ function [R,res] = reach(obj,params,options,varargin)
 %                23-April-2020 (MW, restructure params/options)
 %                07-December-2020 (MW, fix wrong indexing)
 %                16-November-2021 (MW, add disturbance W)
+%                09-February-2023 (LL, fix wrong uTrans indexing)
 % Last revision: ---
 
 
@@ -71,16 +72,17 @@ for i = 1:steps
     
     % compute output set at beginning of current step
     Rout{i} = outputSet(obj,options,Rnext.tp);
+    
+    % write results to reachable set struct Rnext
+    Rnext.tp = reduce(obj.A*Rnext.tp + Uadd + obj.c + options.W,...
+        options.reductionTechnique,options.zonotopeOrder);
 
     % if a trajectory should be tracked
     if isfield(options,'uTransVec')
-        options.uTrans = options.uTransVec(:,i);
+        options.uTrans = options.uTransVec(:,i+1);
         % update input set
         Uadd = obj.B*(options.U + options.uTrans);
     end
-    
-    % write results to reachable set struct Rnext
-    Rnext.tp = obj.A*Rnext.tp + Uadd + obj.c + options.W;
 
     % log information
     verboseLog(i,tVec(i),options);
