@@ -33,11 +33,12 @@ function han = plot(pZ,varargin)
 %
 % See also: plotRandPoint
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
+% Author:       Niklas Kochdumper, Mark Wetzlinger, Tobias Ladner
 % Written:      29-March-2018
 % Last update:  23-June-2020 (MW, harmonize with other plot functions)
 %               14-July-2020 (MW, merge with plotFilled)
 %               25-May-2022 (TL: 1D Plotting)
+%               23-February-2023 (TL: enlarge polygon if 2 regions)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -68,11 +69,18 @@ pZ = deleteZeros(pZ);
 
 % project to desired dimensions
 pZ = project(pZ,dims);
+pZ = compact(pZ);
 
 if length(dims) == 1
     % add zeros to 2nd dimension
     pZ = pZ.cartProd(0);
     dims = [1;2];
+end
+
+% check if is zonotope
+if all(sum(pZ.expMat > 0, 2) == 1)
+    han = plot(zonotope(pZ), [1, 2], NVpairs{:});
+    return
 end
 
 % 2D vs 3D plot
@@ -126,6 +134,15 @@ if length(dims) == 2
                 polyAll = poly;
             else
                 polyAll = union(polyAll,poly);
+            end
+
+            if polyAll.NumRegions >= 2
+                % might be due to numeric instability
+                % enlargen polygon slightly
+                polyAll_ = polybuffer(polyAll, 1e-8);
+                if polyAll_.NumRegions < polyAll.NumRegions
+                    polyAll = polyAll_;
+                end
             end
         end
         

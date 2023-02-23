@@ -57,6 +57,8 @@ else
     [NVpairs,type] = readNameValuePair(NVpairs,'Distribution');
 end
 
+
+
 % default computation for dimension
 if isempty(n)
     if isempty(c)

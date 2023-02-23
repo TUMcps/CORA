@@ -1,14 +1,14 @@
-function P = minkDiff(P1,P2,varargin)
+function P = minkDiff(P1,S,varargin)
 % minkDiff - compute the Minkowski difference of two polytopes:
-%         P1 - P2 = P <-> P + P2 \subseteq P1
+%         P1 - S = P <-> P + S \subseteq P1
 %
 % Syntax:  
-%    P = minkDiff(P1,P2)
-%    P = minkDiff(P1,P2,type)
+%    P = minkDiff(P1,S)
+%    P = minkDiff(P1,S,type)
 %
 % Inputs:
 %    P1 - mptPolytope object
-%    P2 - mptPolytope object, contSet object, or numerical vector
+%    S - mptPolytope object, contSet object, or numerical vector
 %    type - type of computation ('exact' or 'inner')
 %
 % Outputs:
@@ -34,78 +34,75 @@ function P = minkDiff(P1,P2,varargin)
 %
 % See also: zonotope/minkDiff
 
-% Author:       Niklas Kochdumper
+% Author:       Niklas Kochdumper, Mark Wetzlinger
 % Written:      04-February-2021
 % Last update:  09-November-2022 (MW, rename 'minkDiff')
-% Last revision:---
+% Last revision:23-February-2023 (MW, update input argument handling,
+%                                     different method for P-Z)
 
 %------------- BEGIN CODE --------------
 
-    % different algorithms for different set representations
-    if isnumeric(P2)
-       P = P1 + (-P2); 
-       
+% default value
+type = setDefaultValues({'exact'},varargin);
+% check input arguments
+inputArgsCheck({{P1,'att','mptPolytope'} ...
+    {S,'att',{'contSet','numeric'}}...
+    {type,'str',{'exact','inner'}}});
+
+% different algorithms for different set representations
+if isnumeric(S)
+    P = P1 + (-S);
+
+% exact computation 
+elseif strcmp(type,'exact')
+    
+    if isa(S,'zonotope') || isa(S,'interval')
+
+        % reduce offset of each halfspace of the polytope to obtain
+        % inner-approximation of the Minkowski difference
+        A = P1.P.A;
+        b = P1.P.b;
+        
+        for i = 1:size(A,1)
+            l = supportFunc(S,A(i,:)','upper');
+            b(i) = b(i) - l;
+        end
+        
+        % instantiate polytope
+        P = mptPolytope(A,b);
+        
+    elseif isa(S,'conZonotope') || isa(S,'mptPolytope') || ...
+           isa(S,'zonoBundle')
+
+        % compute Minkowski difference according to Lemma 1 in [1]
+        V = vertices(S); P = P1 + (-V(:,1));
+
+        for i = 2:size(V,2)
+            P = P & (P1 + (-V(:,i))); 
+        end
+        
     else
-        
-        % parse input arguments
-        type = 'exact';
-        if nargin > 2 && ~isempty(varargin{1})
-            type = varargin{1};
-        end
-        
-        % exact computation 
-        if strcmp(type,'exact')
-        
-            if isa(P2,'zonotope') && isa(P2,'interval')
-
-                % convert to zonotope
-                Z = zonotope(P2);
-
-                % compute Minkowski diff. according to Theorem 1 in [1]
-                c1 = center(Z);
-                G = generators(Z);
-
-                P = P1 + (-c1);
-
-                for i = 1:size(G,2)
-                    P = (P + G(:,i)) & (P + (-G(:,i)));
-                end
-                
-            elseif isa(P2,'conZonotope') || isa(P2,'mptPolytope') || ...
-                   isa(P2,'zonoBundle')
-
-                % compute Minkowski difference according to Lemma 1 in [1]
-                V = vertices(P2); P = P1 + (-V(:,1));
-
-                for i = 2:size(V,2)
-                   P = P & (P1 + (-V(:,i))); 
-                end
-                
-            else
-                if strcmp(type,'exact')
-                    throw(CORAerror('CORA:noExactAlg',cZ1,cZ2));
-                end
-            end
-        
-        % inner-approximative computation 
-        elseif strcmp(type,'inner')
-            
-            % scale each halfspace of the polytope to obtain
-            % inner-approximatin of the Minkowski difference
-            A = P1.P.A;
-            b = P1.P.b;
-            
-            for i = 1:size(A,1)
-               l = supportFunc(P2,A(i,:)','upper');
-               b(i) = b(i) - l;
-            end
-            
-            P = mptPolytope(A,b);          
-            
-        else
-            throw(CORAerror('CORA:wrongValue','third',"'exact' or 'inner'"));
-        end
+        throw(CORAerror('CORA:noExactAlg',P1,S));
     end
+
+% inner-approximative computation 
+elseif strcmp(type,'inner')
+    % note: exact for many set-representation, check where this is truly an
+    % inner-approximation...
+    
+    % scale each halfspace of the polytope to obtain
+    % inner-approximation of the Minkowski difference
+    A = P1.P.A;
+    b = P1.P.b;
+    
+    for i = 1:size(A,1)
+        l = supportFunc(S,A(i,:)','upper');
+        b(i) = b(i) - l;
+    end
+    
+    % instantiate polytope
+    P = mptPolytope(A,b);          
+    
 end
 
 %------------- END OF CODE --------------
