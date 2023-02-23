@@ -4,10 +4,14 @@ function I = generateRandom(varargin)
 % Syntax:  
 %    I = interval.generateRandom()
 %    I = interval.generateRandom('Dimension',n)
+%    I = interval.generateRandom('Dimension',n,'Center',c)
+%    I = interval.generateRandom('Dimension',n,'Center',c,'MaxRadius',r)
 %
 % Inputs:
 %    Name-Value pairs (all options, arbitrary order):
-%       <'Dimension',d> - dimension
+%       <'Dimension',n> - dimension
+%       <'Center',c> - center
+%       <'MaxRadius',r> - maximum radius for each dimension
 %
 % Outputs:
 %    I - random interval
@@ -23,8 +27,9 @@ function I = generateRandom(varargin)
 % See also: -
 
 % Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
-% Last update:  19-May-2022 (name-value pair syntax)
+% Written:      17-September-2019
+% Last update:  19-May-2022 (MW, name-value pair syntax)
+%               23-February-2023 (MW, add 'Center' and 'MaxRadius')
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -36,26 +41,53 @@ else
     % read input arguments
     NVpairs = varargin(1:end);
     % check list of name-value pairs
-    checkNameValuePairs(NVpairs,{'Dimension'});
+    checkNameValuePairs(NVpairs,{'Dimension','Center','MaxRadius'});
     % dimension given?
     [NVpairs,n] = readNameValuePair(NVpairs,'Dimension');
+    % center given?
+    [NVpairs,c] = readNameValuePair(NVpairs,'Center');
+    % maximum radius given?
+    [NVpairs,r] = readNameValuePair(NVpairs,'MaxRadius');
 end
 
-% check input arguments
-inputArgsCheck({{n,'att','numeric','nonnan'}});
+% check if the center matches the dimension (if both provided)
+if ~isempty(n)
+    if isscalar(n)
+        % rewrite as [n,1] for easier handling of matrices
+        n = [n,1];
+    end
+    if ~isempty(c) && any(n ~= size(c))
+        throw(CORAerror('CORA:wrongValue','name-value pair Center',...
+            'has to match the dimension of name-value pair Dimension'));
+    end
+end
 
-% default computation for dimension
+% default computation of dimension
 if isempty(n)
-    nmax = 10;
-    n = randi(nmax);
+    if isempty(c)
+        nmax = 10;
+        n = [randi(nmax),1];
+    else
+        % center given -> read out dimension
+        n = size(c);
+    end
 end
 
-% default computation of bounds
-lb = -10; mid = 0; ub = 10;
-infi = lb + rand(n,1)*(mid - lb);
-supr = mid + rand(n,1)*(ub - mid);
+% default computation of center
+if isempty(c)
+    % set somewhere in the neighborhood of the origin
+    c = -2 + 4*rand(n);
+end
+
+% default computation of maximum radius
+if isempty(r)
+    r = 10*rand;
+end
+
+% effective radius of interval (has to be symmetric to maintain center)
+rad = r/2 * rand;
 
 % instantiate interval
-I = interval(infi,supr);
+I = interval(c-rad,c+rad);
 
 %------------- END OF CODE --------------

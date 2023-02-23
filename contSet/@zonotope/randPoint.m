@@ -62,6 +62,7 @@ if isempty(G) || ~any(any(G))
     % replicate center N times
     p = repmat(c,1,N); return
 end
+
         
 % generate different types of random points
 if strcmp(type,'standard')
@@ -74,6 +75,17 @@ if strcmp(type,'standard')
     
 % sampling of extreme random points
 elseif strcmp(type,'extreme')
+
+    % 1D case
+    if n == 1
+        % flush all generators into one
+        G = sum(abs(G),2);
+        % random signs
+        s = sign(randn(1,N));
+        % instantiate points
+        p = c + s*G;
+        return
+    end
     
     % consider degenerate case
     if rank(G) < n
