@@ -1,4 +1,4 @@
-function [statObs,dynObs,x0,goalSet,lanelets, information] = commonroad2cora(filename, varargin)
+function [statObs,dynObs,x0,goalSet,lanelets,information] = commonroad2cora(filename,varargin)
 % commonroad2cora - convert CommonRoad XML-file scenario to CORA model
 %
 % Syntax:
@@ -21,30 +21,27 @@ function [statObs,dynObs,x0,goalSet,lanelets, information] = commonroad2cora(fil
 %    information - contains further information extracted from commonroad
 %
 % Example:
-%    [statObs,dynObs,x0,goalSet,lanelets] = commonroad2cora('USA_US101-1_1_S-1', 'verbose', false);
+%    [statObs,dynObs,x0,goalSet,lanelets] = ...
+%        commonroad2cora('USA_US101-1_1_S-1','verbose',false);
 %
-%    figure
-%    hold on
-%    for i = 1:length(lanelets)
-%       plot(lanelets{i}.set, 'FaceColor',[.7 .7 .7]);
+%    figure; hold on;
+%    for i=1:length(lanelets)
+%        plot(lanelets{i}.set,'FaceColor',[.7 .7 .7]);
 %    end
 %
-%    plot(goalSet{1}.set,[1,2],'EdgeColor','none', 'FaceColor', 'r', 'FaceAlpha',0.5);
-%
+%    plot(goalSet{1}.set,[1,2],'FaceColor','r','FaceAlpha',0.5);
 %    plot(x0.x,x0.y,'.g','MarkerSize',20);
 %
-%    for i = 1:length(dynObs)
-%       plot(dynObs{i}.set,[1,2],'b','EdgeColor','none','Filled',true);
+%    for i=1:length(dynObs)
+%        plot(dynObs{i}.set,[1,2],'FaceColor','b');
 %    end
-%
-%    for i = 1:length(statObs)
-%       plot(statObs{i}.set, 'FaceColor', 'y','EdgeColor','none');
+%    for i=1:length(statObs)
+%        plot(statObs{i}.set,'FaceColor','y');
 %    end
-%    % Note: Change EdgeColor for static obstacles for better visibility of
-%    % road Boundary
+%    % Note: change 'EdgeColor' for static obstacles for better visibility
+%    % of road boundary
 %
-%    xlim([-32,35]);
-%    ylim([-14,15]);
+%    xlim([-32,35]); ylim([-14,15]);
 %    axis equal
 %
 % Other m-files required: none
@@ -56,7 +53,7 @@ function [statObs,dynObs,x0,goalSet,lanelets, information] = commonroad2cora(fil
 % Author:       Farah Atour, Niklas Kochdumper, Philipp Gassert
 % Written:      28-April-2020
 % Last update:  17-September-2020
-% Last revision: ---
+% Last revision:---
 
 %------------- BEGIN CODE --------------%
 
@@ -151,7 +148,7 @@ if strcmp(commonroad_version, '2020a')
         
         % initial state
         ShapeList_initialstate = getXList(staticObstaclesList, {'shape'}, i);
-        stateList_initialstate = getXList(dynamicObstaclesList, {'initialState'}, i);
+        stateList_initialstate = getXList(staticObstaclesList, {'initialState'}, i);
         
         % transforming any shape into a polyshape
         initialstate_vertices = shape_fct(ShapeList_initialstate, stateList_initialstate);

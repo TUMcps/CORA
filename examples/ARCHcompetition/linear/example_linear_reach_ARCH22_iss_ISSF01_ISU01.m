@@ -91,16 +91,23 @@ simRes = simulateRandom(sys, params, simOpt);
 % Visualization -----------------------------------------------------------
 
 figure; hold on; box on; grid on;
+useCORAcolors("CORA:contDynamics")
 
 % plot reachable set
 plotOverTime(R,3);
 
+% plot initial set
+plotOverTime(R(1).R0,3);
+
 % plot simulation
-plotOverTime(simRes,3,'Traj','y');
+plotOverTime(simRes,3);
 
 % plot unsafe set
-plot([0 20],[d d],'--r');
-plot([0 20],[-d -d],'--r');
+specs = specification({
+    interval([0;d],[20;d])
+    interval([0;-d],[20;-d])
+});
+plot(specs, [1 2], '--')
 
 % formatting
 xlabel('t');

@@ -43,8 +43,8 @@ end
 
 % output equation is not provided or y = x
 if isempty(obj.C) || ...
-        ( isscalar(obj.C) && obj.C == 1 && ~any(any(obj.D)) && ~any(obj.k) && ...
-        ~any(center(options.V)) && isempty(generators(options.V)) )
+        ( isscalar(obj.C) && obj.C == 1 && ~any(any(obj.D)) ...
+        && ~any(obj.k) && isZero(options.V) )
     Y = R;
     return;
 end

@@ -5,17 +5,16 @@ function E = plus(E,S,varargin)
 % Syntax:  
 %    E = plus(E,S)
 %    E = plus(E,S,mode)
-%    E = plus(E,S,L)
-%    E = plus(E,S,L,mode)
+%    E = plus(E,S,mode,L)
 %
 % Inputs:
 %    E - ellipsoid object
 %    S - set representation/double matrix
-%    L - (optional) directions to use for approximation
 %    mode - (optional) type of approximation
 %               'inner'
 %               'outer':
 %               'outer:halder': available when L is empty
+%    L - (optional) directions to use for approximation
 %
 % Outputs:
 %    E - ellipsoid object after Minkowski sum
@@ -42,72 +41,55 @@ function E = plus(E,S,varargin)
 % Author:       Victor Gassmann
 % Written:      09-March-2021
 % Last update:  04-July-2022 (VG: class array instead of cell array)
+%               17-March-2023 (MW, simplify argument pre-processing)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 %% parsing & checking
+if nargin > 4
+    throw(CORAerror('CORA:tooManyInputArgs',4));
+end
+
 % make sure first argument is class argument 
 [E,S] = findClassArg(E,S,'ellipsoid');
 
+if isa(S,'ellipsoid')
+    [mode,L] = setDefaultValues({'outer:halder',zeros(dim(E),0)},varargin);
+else
+    [mode,L] = setDefaultValues({'outer',zeros(dim(E),0)},varargin);
+end
+
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'};
-                {S,'att',{'contSet','numeric'}}});
+                {S,'att',{'contSet','numeric'}}; ...
+                {mode,'str',{'outer','outer:halder','inner'}}; ...
+                {L,'att','numeric'}});
 
+% ind mask for which ellipsoids are empty
+ind_empty = isempty(E);
+E(ind_empty) = [];
 % Minkowski addition with empty set
 if isempty(E)
     return;
 elseif (isnumeric(S) && isempty(S)) || (isa(S,'contSet') && any(isemptyobject(S)))
     E = ellipsoid(); return
+elseif (isnumeric(S) && ~any(S)) || (isa(S,'contSet') && isZero(S))
+    % adding the origin does not change the set...
+    return;
 end
 
 % dimension check
 equalDimCheck(E,S);
 
-% parse arguments
-if isempty(varargin)
-    L = zeros(dim(E),0);
-    mode = 'outer';
-elseif length(varargin)==1
-    if isa(varargin{1},'char')
-        mode = varargin{1};
-        L = zeros(dim(E),0);
-    elseif isa(varargin{1},'double')
-        L = varargin{1};
-        mode = 'outer';
-    else
-        throw(CORAerror('CORA:wrongValue','third',"be of type 'double' or 'char'"));
-    end
-elseif length(varargin)==2
-    if ~isa(varargin{1},'double')
-        throw(CORAerror('CORA:wrongValue','third',"be of type 'double'"));
-    end
-    if ~isa(varargin{2},'char')
-        throw(CORAerror('CORA:wrongValue','fourth',"be of type 'char'"));
-    end
-    L = varargin{1};
-    mode = varargin{2};
-else
-    throw(CORAerror('CORA:tooManyInputArgs',4));
-end
-
-
-if all(isempty(S))
-    return;
-end
-
 % check arguments
-if ~strcmp(mode,'outer') && ~strcmp(mode,'inner')
-    if length(varargin)==2
-        throw(CORAerror('CORA:wrongValue','fourth',"'inner' or 'outer'"));
-    else
-        if ~isa(S,'ellipsoid') || ~strcmp(mode,'outer:halder')
-            throw(CORAerror('CORA:wrongValue','third',"'inner' or 'outer'"));
-        end
-    end
+if strcmp(mode,'outer:halder') && ~isa(S,'ellipsoid')
+    throw(CORAerror('CORA:notSupported',['The method ''outer:halder'' ',...
+        'is only implemented for the Minkowski sum of two ellipsoids.']))
 end
 
-if size(L,1)~=dim(E)
+% check for dimension mismatch...
+if size(L,1) ~= dim(E)
     throw(CORAerror('CORA:dimensionMismatch',E,L));
 end
 
@@ -131,6 +113,18 @@ end
 if isa(S,'ellipsoid')
    E = plusEllipsoid([E;S(:)],L,mode);
    return;
+end
+
+if isa(S,'interval')
+    % convert to ellipsoid
+    E = E + ellipsoid(S);
+    return;
+end
+
+if isa(S,'zonotope')
+    % convert to interval (then to ellipsoid)
+    E = E + interval(S);
+    return;
 end
 
 % throw error for all other combinations

@@ -85,23 +85,26 @@ ref = {[17 18],[19 20],[21 22]};
 for k = 1:length(dims)
     
     figure; hold on; box on
-    projDims = dims{k}; projRef = ref{k};
+    projDim = dims{k}; projRef = ref{k};
 
-    % plot reachable sets 
-    plot(R,projDims,'Order',3);
+    % plot reachable sets
+    useCORAcolors("CORA:contDynamics")
+    plot(R,projDim,'DisplayName','Reachable set');
     
     % plot initial set
-    plot(params.R0,projDims,'k','FaceColor','w');
+    plot(R(1).R0,projDim, 'DisplayName','Initial set');
     
-    % plot simulation results     
-    plot(simRes,projDims);
+    % plot simulation results      
+    plot(simRes,projDim,'DisplayName','Simulations');
     
     % plot reference trajectory
-    plot(params.u(projRef(1),:),params.u(projRef(2),:),'r','LineWidth',2);
+    plot(params.u(projRef(1),:),params.u(projRef(2),:),'r', ...
+        'LineWidth',2,'DisplayName','Reference trajectory');
 
     % label plot
-    xlabel(['x_{',num2str(projDims(1)),'}']);
-    ylabel(['x_{',num2str(projDims(2)),'}']);
+    xlabel(['x_{',num2str(projDim(1)),'}']);
+    ylabel(['x_{',num2str(projDim(2)),'}']);
+    legend()
 end
 
 % example completed

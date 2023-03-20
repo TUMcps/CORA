@@ -147,6 +147,9 @@ else
     % loop over all reachable sets
     hold on
 
+    % save color index
+    oldColorIndex = gca().ColorOrderIndex;
+
     for i = 1:size(R,1)
 
         % get desired set
@@ -179,15 +182,24 @@ else
             % plot the set
             if isa(temp,'polyZonotope')
                 if isempty(splits)
-                    han = plot(zonotope(temp),dims_,NVpairs{:});
+                    han_ij = plot(zonotope(temp),dims_, NVpairs{:});
                 else
-                    han = plot(temp,dims_,'Splits',splits,NVpairs{:});
+                    han_ij = plot(temp,dims_,'Splits',splits, NVpairs{:});
                 end
             else
-                han = plot(temp,dims_,NVpairs{:});
+                han_ij = plot(temp,dims_,NVpairs{:});
+            end
+
+            if i == 1 && j == 1
+                han = han_ij;
+                % don't display subsequent plots in legend
+                NVpairs = [NVpairs, {'HandleVisibility','off'}];
             end
         end
     end
+
+    % correct color index
+    updateColorIndex(oldColorIndex);
 end
 
 if nargout == 0

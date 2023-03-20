@@ -150,7 +150,7 @@ function res = recursive(obj,x,t,vars)
         rhs = recursive(obj.lhs,x,t,vars);
         lhs = true*ones(size(rhs));
 
-        res = ~until(~lhs,~rhs,t,obj.from,obj.to);
+        res = ~until(lhs,~rhs,t,obj.from,obj.to);
 
     elseif strcmp(obj.type,'release')
 
@@ -181,7 +181,7 @@ function res = until(lhs,rhs,t,from,to)
         ind1 = find(lhs(cnt:ind(end)) == false,1);
         ind2 = find(rhs(ind) == true,1);
 
-        if isempty(ind1) || (~isempty(ind2) && ind1 > ind2)
+        if ~isempty(ind2) && (isempty(ind1) || ind2 < ind1)
             res(cnt) = true;
         end
 

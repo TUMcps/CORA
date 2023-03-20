@@ -113,11 +113,11 @@ subplot(2,2,1); hold on;
 for i=1:length(RcontY)    
     ZprojY = project(RcontY{i},[2 4]);
     ZprojY = reduce(ZprojY,'girard',10);
-    plot(ZprojY,[1 2],'FaceColor',colorblind('b'));
+    plot(ZprojY,[1 2],'FaceColor',CORAcolor('CORA:reachSet'));
 end
-plot(R0Level,[2 4],'k','FaceColor','w');
+plot(R0Level,[2 4],'k','FaceColor',CORAcolor("CORA:initialSet"));
 for i=1:length(simRes.t)
-    plot(simRes.x{i}(:,7)*4.75e-6,level{i},'Color',colorblind('y'));
+    plot(simRes.x{i}(:,7)*4.75e-6,level{i},'Color',CORAcolor("CORA:simulations"));
 end
 
 % Pressure vs level
@@ -125,11 +125,11 @@ subplot(2,2,2); hold on;
 for i=1:length(RcontY)    
     ZprojY = project(RcontY{i},[1 4]);
     ZprojY = reduce(ZprojY,'girard',10);
-    plot(ZprojY,[1 2],'FaceColor',colorblind('b'));
+    plot(ZprojY,[1 2],'FaceColor',CORAcolor('CORA:reachSet'));
 end
-plot(R0Level,[1 4],'k','FaceColor','w');
+plot(R0Level,[1 4],'k','FaceColor',CORAcolor("CORA:initialSet"));
 for i=1:length(simRes.t)
-    plot(simRes.x{i}(:,1)*1e-5,level{i},'Color',colorblind('y'));
+    plot(simRes.x{i}(:,1)*1e-5,level{i},'Color',CORAcolor("CORA:simulations"));
 end
 
 % Power demand vs Pressure
@@ -137,22 +137,22 @@ subplot(2,2,3); hold on;
 for i=1:length(RcontY)    
     ZprojY = project(RcontY{i},[2 1]);
     ZprojY = reduce(ZprojY,'girard',10);
-    plot(ZprojY,[1 2],'FaceColor',colorblind('b'));
+    plot(ZprojY,[1 2],'FaceColor',CORAcolor('CORA:reachSet'));
 end
-plot(R0Level,[2 1],'k','FaceColor','w');
+plot(R0Level,[2 1],'k','FaceColor',CORAcolor("CORA:initialSet"));
 for i=1:length(simRes.t)
     plot(simRes.x{i}(:,7)*4.75e-6,simRes.x{i}(:,1)*1e-5,...
-        'Color',colorblind('y'));
+       'Color',CORAcolor("CORA:simulations"));
 end
 
 % Steam quality vs Steam volume
 subplot(2,2,4); hold on;
 projDims=[3 4];
-plot(Rcont,projDims,'FaceColor',colorblind('b'));
-plot(params.R0,projDims,'k','FaceColor','w');
+plot(Rcont,projDims,'FaceColor',CORAcolor('CORA:reachSet'));
+plot(params.R0,projDims,'k','FaceColor',CORAcolor("CORA:initialSet"));
 for i=1:length(simRes.t)
     plot(simRes.x{i}(:,projDims(1)),simRes.x{i}(:,projDims(2)),...
-        'Color',colorblind('y'));
+        'Color',CORAcolor("CORA:simulations"));
 end
 xlabel("x_" + projDims(1)); ylabel("x_" + projDims(2));
 

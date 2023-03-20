@@ -71,12 +71,13 @@ for k = 1:length(dims)
     
     figure; hold on; box on;
     projDim = dims{k};
+    useCORAcolors("CORA:contDynamics")
     
     % plot reachable sets
     plot(R,projDim);
     
     % plot initial set
-    plot(params.R0,projDim,'k','FaceColor','w');
+    plot(R.R0,projDim);
     
     % plot simulation results     
     plot(simRes,projDim,'Marker','.');

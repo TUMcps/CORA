@@ -48,7 +48,7 @@ elseif rank(E1)>0 && rank(E2)==0
 end
 
 % check if difference should be empty (only non-empty if
-% ellipsoid(E2.Q)\subeteq ellipsoid(E1.Q)
+% ellipsoid(E2.Q)\subseteq ellipsoid(E1.Q)
 if ~isBigger(E1,E2)
     E = ellipsoid;
     return;

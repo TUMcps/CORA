@@ -171,6 +171,7 @@ switch identifier
 
 
     % no exact algorithm implemented (mostly because there is none)
+    % - (contSet) object of first/second/... contSet class in operation
     case 'CORA:noExactAlg'
         classlist = "";
         for i=1:length(varargin)-1

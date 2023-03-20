@@ -114,14 +114,15 @@ for i = 1:length(R)
     int = cartProd(intT,intX);
     
     % plot the interval
-    plot(int,[1,2],'FaceColor',colorblind('b'));
+    plot(int,[1,2],'FaceColor',CORAcolor("CORA:reachSet"));
     
     % update time
     t = t + options.timeStep;
 end
 
 % plot specification
-plot([0 0.1],[x0 x0],'--r');
+spec = specification(interval([0; x0], [0.1; x0]));
+plot(spec,[1 2],'--');
 
 % formatting
 xlim([0,0.1]);

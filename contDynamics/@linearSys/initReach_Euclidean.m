@@ -67,13 +67,19 @@ if isa(Rinit,'polyZonotope') || isa(Rinit,'conPolyZono')
 elseif isa(Rinit,'zonoBundle') 
     Rhom=enclose(Rinit,Rhom_tp)+F*Rinit.Z{1}+inputCorr;
 else
-    Rhom=enclose(Rinit,Rhom_tp)+F*Rinit+inputCorr;
+    try
+        Rhom=enclose(Rinit,Rhom_tp)+F*Rinit+inputCorr;
+    catch
+        Rhom=enclose(Rinit,Rhom_tp)+F*interval(Rinit)+inputCorr;
+    end
 end
 
-%reduce zonotope
-Rhom=reduce(Rhom,options.reductionTechnique,options.zonotopeOrder);
-Rhom_tp=reduce(Rhom_tp,options.reductionTechnique,options.zonotopeOrder);
-RV=reduce(RV,options.reductionTechnique,options.zonotopeOrder);
+%reduce zonotopes
+Rhom = reduce(Rhom,options.reductionTechnique,options.zonotopeOrder);
+Rhom_tp = reduce(Rhom_tp,options.reductionTechnique,options.zonotopeOrder);
+if ~isnumeric(RV)
+    RV = reduce(RV,options.reductionTechnique,options.zonotopeOrder);
+end
 
 %save homogeneous and particulate solution
 options.Rhom=Rhom;

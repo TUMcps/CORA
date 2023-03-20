@@ -40,6 +40,11 @@ function res = isempty(P)
 % the polytope is empty. If the problem is infeasible or b'*y == 0, the
 % polytope is not empty
 
+% completely empty object
+if isemptyobject(P)
+    res = true; return
+end
+
 % get object properties
 A = P.P.A;
 b = P.P.b;

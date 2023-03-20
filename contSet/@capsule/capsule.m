@@ -73,7 +73,7 @@ methods
             
         else
             c = varargin{1};
-            g = zeros(length(obj.c),1);
+            g = zeros(length(c),1);
             r = 0;
 
             if nargin == 2

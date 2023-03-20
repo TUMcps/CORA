@@ -34,9 +34,9 @@ if ~all(size(M1)==size(M2))
 end
 % check if both are symmetric, M1 is pd, and M2 psd (probably too strict of a condition)
 if ~isApproxSymmetric(M1,TOL) || ~isApproxSymmetric(M2,TOL) || ...
-        min(eig(M1))<-TOL || min(eig(M2))<-TOL
+        min(eig(M1))<TOL || min(eig(M2))<-TOL
     throw(CORAerror('CORA:specialError',...
-        'Both matrices are required to be pd and symmetric!'));
+        'Both matrices need to be symmetric, first matrix needs to be pd, second needs to be psd!'));
 end
 
 [U1,S1,~] = svd(M1);

@@ -80,21 +80,22 @@ for k = 1:length(dims)
     
     figure; hold on;
     projDims = dims{k};
+    useCORAcolors('CORA:contDynamics', 2)
     
     % plot reachable sets
-    hanInt = plot(Rint,projDims);
-    hanZono = plot(Rzono,projDims,'FaceColor',colorblind('gray'));
+    plot(Rint,projDims,'DisplayName','Interval matrix');
+    plot(Rzono,projDims,'DisplayName','Matrix zonotopes');
     
     % plot initial set
-    plot(params.R0,projDims,'k','FaceColor','w');
+    plot(Rint.R0,projDims,'DisplayName','Initial set');
     
     % plot simulation results      
-    plot(simRes,projDims);
+    plot(simRes,projDims,'DisplayName','Simulations');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);
     ylabel(['x_{',num2str(projDims(2)),'}']);
-    legend([hanInt,hanZono],'Interval matrix','Matrix zonotopes');
+    legend();
 end
 
 % example completed

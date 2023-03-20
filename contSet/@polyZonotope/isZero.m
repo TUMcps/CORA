@@ -3,6 +3,7 @@ function res = isZero(pZ,varargin)
 %
 % Syntax:  
 %    res = isZero(pZ)
+%    res = isZero(pZ,tol)
 %
 % Inputs:
 %    pZ - polyZonotope object
@@ -35,7 +36,13 @@ tol = setDefaultValues({0},varargin);
 inputArgsCheck({{pZ,'att','polyZonotope'};
                 {tol,'att','numeric',{'nonnegative','scalar','nonnan'}}});
 
-tmp = abs([pZ.c,pZ.G,pZ.Grest]);
-res = all(( withinTol(tmp,0,tol) ),2);
+% empty case
+if isemptyobject(pZ)
+    res = false; return
+end
+
+% enclose by an interval and compute norm
+res = norm(interval(pZ)) <= tol;
+
 
 %------------- END OF CODE --------------

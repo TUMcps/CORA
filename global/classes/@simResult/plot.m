@@ -56,26 +56,37 @@ end
 % check which trajectory has to be plotted
 whichtraj = checkTraj(simRes,whichtraj);
 
+% save color index
+oldColorIndex = gca().ColorOrderIndex;
+
 % loop over all simulated trajectories
 hold on
 for i = 1:length(simRes.(whichtraj))
     if isempty(height) % no 3D plot
         if length(dims) == 2
-            han = plot(simRes.(whichtraj){i}(:,dims(1)),...
+            han_i = plot(simRes.(whichtraj){i}(:,dims(1)),...
                 simRes.(whichtraj){i}(:,dims(2)),NVpairs{:});
         else
-            han = plot3(simRes.(whichtraj){i}(:,dims(1)),...
+            han_i = plot3(simRes.(whichtraj){i}(:,dims(1)),...
                 simRes.(whichtraj){i}(:,dims(2)),...
                 simRes.(whichtraj){i}(:,dims(3)),NVpairs{:});
         end
     else
         % z values normalized to [0,1] in other plots
         zCoordinates = height*ones(length(simRes.(whichtraj){i}(:,dims(1))),1);
-        han = plot3(simRes.(whichtraj){i}(:,dims(1)),...
-            simRes.(whichtraj){i}(:,dims(2)),...
-            zCoordinates,NVpairs{:}); 
+        han_i = plot3(simRes.(whichtraj){i}(:,dims(1)),...
+            simRes.(whichtraj){i}(:,dims(2)), zCoordinates,NVpairs{:}); 
+    end
+
+    if i == 1
+        han = han_i;
+        % don't display subsequent plots in legend
+        NVpairs = [NVpairs, {'HandleVisibility','off'}];
     end
 end
+
+% correct color index
+updateColorIndex(oldColorIndex);
 
 % show 3 dimensions ('hold on' causes projection to first two dimensions
 %   to be shown if figure was not 3D before)

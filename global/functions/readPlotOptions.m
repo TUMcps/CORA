@@ -10,7 +10,10 @@ function NVpairs = readPlotOptions(plotOptions,varargin)
 %    purpose - information about plot, admissible values:
 %                   'simResult' - simulation results
 %                   'reachSet' - reachability results
+%                   'initialSet' - reachability results
 %                   'polygon' - internal polygon class
+%                   'spec:safeSet' - specification of type 'safeSet'
+%                   'spec:unsafeSet' - specification of type 'unsafeSet'
 %                   'fill' - patches
 %                   'contour' - contour
 %                   'mesh' - mesh plots
@@ -29,10 +32,11 @@ function NVpairs = readPlotOptions(plotOptions,varargin)
 %
 % See also: contSet/plot (all classes)
 
-% Author:        Mark Wetzlinger
+% Author:        Mark Wetzlinger, Tobias Ladner
 % Written:       14-July-2020 
 % Last update:   29-October-2021 (only name-value pairs as output args)
 %                01-June-2022 (allow empty plotOptions as input argument)
+%                28-February-2023 (TL: use axis default colors)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -41,8 +45,9 @@ function NVpairs = readPlotOptions(plotOptions,varargin)
 purpose = setDefaultValues({'none'},varargin);
 
 % check input arguments
-inputArgsCheck({{purpose,'str',{'simResult','reachSet','polygon',...
-            'mesh','surf','contour','fill','none'}}});
+inputArgsCheck({{purpose,'str',{'simResult','reachSet', 'initialSet', ...
+        'polygon', 'spec:safeSet','spec:unsafeSet', ...
+        'mesh','surf','contour','fill','none'}}});
 
 
 % allowed colors
@@ -143,6 +148,9 @@ if ~isempty(filled)
     warning("Name-value pair 'Filled'-true|false is deprecated.");
 end
 % note: filled is overruled if 'FaceColor' is provided
+if strcmp(facecolor, 'default')
+    facecolor = aux_defaultPlotColor();
+end
 
 % different handling depending on object that will be plotted
 switch purpose
@@ -158,7 +166,7 @@ switch purpose
         elseif (~isempty(filled) && ~filled) || ~isempty(edgecolor)
             NVpairs = [NVpairs, 'FaceColor', 'none'];
         else
-            NVpairs = [NVpairs, 'FaceColor', colorblind('b')];
+            NVpairs = [NVpairs, 'FaceColor', aux_defaultPlotColor()];
         end
         % edgecolor order: 'EdgeColor' > 'Color' > same as facecolor
         if ~isempty(edgecolor)
@@ -168,7 +176,26 @@ switch purpose
         elseif ~isempty(facecolor)
             NVpairs = [NVpairs, 'EdgeColor', facecolor];
         else
-            NVpairs = [NVpairs, 'EdgeColor', colorblind('b')];
+            NVpairs = [NVpairs, 'EdgeColor', aux_defaultPlotColor()];
+        end
+
+    case 'initialSet'
+        % edgecolor order: 'EdgeColor' > 'k'
+        if ~isempty(edgecolor)
+            NVpairs = [NVpairs, 'EdgeColor', edgecolor];
+        else
+            NVpairs = [NVpairs, 'EdgeColor', [0 0 0]];
+        end
+        
+        % facecolor order: 'FaceColor' > 'Color' > default color
+        if ~isempty(facecolor)
+            NVpairs = [NVpairs, 'FaceColor', facecolor];
+            % warning if filled is false
+            filledWarning(filled,facecolor);
+        elseif ~isempty(color)
+            NVpairs = [NVpairs, 'FaceColor', color];
+        else
+            NVpairs = [NVpairs, 'FaceColor', aux_defaultPlotColor()];
         end
     
     case 'simResult'
@@ -176,7 +203,7 @@ switch purpose
         if ~isempty(color)
             NVpairs = [NVpairs, 'Color', color];
         else
-            NVpairs = [NVpairs, 'Color', colorblind('y')];
+            NVpairs = [NVpairs, 'Color', aux_defaultPlotColor()];
         end
    
     case 'polygon'
@@ -196,13 +223,63 @@ switch purpose
         elseif ~isempty(facecolor)
             NVpairs = [NVpairs, 'EdgeColor', facecolor];
         else
-            NVpairs = [NVpairs, 'EdgeColor', colorblind('b')];
+            NVpairs = [NVpairs, 'EdgeColor', aux_defaultPlotColor()];
         end
         
         % Marker not supported by polygon
         [NVpairs,marker] = readNameValuePair(NVpairs,'Marker');
         if ~isempty(marker)
             warning("Name-value pair 'Marker'-<options> is ignored.");
+        end
+
+    case 'spec:safeSet'
+        
+        % facecolor order: 'FaceColor' > 'Color' > CORAcolor('CORA:safe')
+        if ~isempty(facecolor)
+            safeColor = facecolor;
+            % warning if filled is false
+            filledWarning(filled,facecolor);
+        elseif ~isempty(color)
+            safeColor = color;
+        else
+            safeColor = CORAcolor('CORA:safe');
+        end
+        NVpairs = [NVpairs, 'FaceColor', safeColor];
+
+        % edgecolor order: 'EdgeColor' > 'Color' > safeColor
+        if ~isempty(edgecolor)
+            NVpairs = [NVpairs, 'EdgeColor', edgecolor];
+            % warning if filled is false
+            filledWarning(filled,facecolor);
+        elseif ~isempty(color)
+            NVpairs = [NVpairs, 'EdgeColor', color];
+        else
+            NVpairs = [NVpairs, 'EdgeColor', safeColor];
+        end
+
+    case 'spec:unsafeSet'
+        
+        % facecolor order: 'FaceColor' > 'Color' > CORAcolor('CORA:unsafe')
+        if ~isempty(facecolor)
+            unsafeColor = facecolor;
+            % warning if filled is false
+            filledWarning(filled,facecolor);
+        elseif ~isempty(color)
+            unsafeColor = color;
+        else
+            unsafeColor = CORAcolor('CORA:unsafe');
+        end
+        NVpairs = [NVpairs, 'FaceColor', unsafeColor];
+
+        % edgecolor order: 'EdgeColor' > 'Color' > unsafeColor
+        if ~isempty(edgecolor)
+            NVpairs = [NVpairs, 'EdgeColor', edgecolor];
+            % warning if filled is false
+            filledWarning(filled,facecolor);
+        elseif ~isempty(color)
+            NVpairs = [NVpairs, 'EdgeColor', color];
+        else
+            NVpairs = [NVpairs, 'EdgeColor', unsafeColor];
         end
 
     case 'fill'
@@ -213,7 +290,7 @@ switch purpose
         elseif ~isempty(color)
             NVpairs = [NVpairs, 'FaceColor', color];
         else
-            NVpairs = [NVpairs, 'FaceColor', colorblind('b')];
+            NVpairs = [NVpairs, 'FaceColor', aux_defaultPlotColor()];
         end
         % edgecolor order: always 'none'
         NVpairs = [NVpairs, 'EdgeColor', 'none'];
@@ -227,7 +304,7 @@ switch purpose
         elseif ~isempty(color)
             NVpairs = [NVpairs, 'EdgeColor', color];
         else
-            NVpairs = [NVpairs, 'EdgeColor', colorblind('b')];
+            NVpairs = [NVpairs, 'EdgeColor', aux_defaultPlotColor()];
         end
 
     case 'none'
@@ -249,7 +326,7 @@ switch purpose
             filledWarning(filled,facecolor);
         else
             % only color: 'EdgeColor' > 'Color' > default color
-            usedColor = colorblind('b'); % define like this because re-used
+            usedColor = aux_defaultPlotColor();
             if ~isempty(edgecolor)
                 usedColor = edgecolor;
             elseif ~isempty(color)
@@ -265,13 +342,18 @@ switch purpose
         end
 end
 
+% convert char hex color to dec due to 'fill'
+NVpairs = aux_convertHex2Dec(NVpairs, 'FaceColor');
+NVpairs = aux_convertHex2Dec(NVpairs, 'EdgeColor');
+NVpairs = aux_convertHex2Dec(NVpairs, 'Color');
+
 % add remaining plotOptions
 NVpairs = [NVpairs, plotOptions];
 
 end
 
+% Auxiliary functions -----------------------------------------------------
 
-% Auxiliary function
 function filledWarning(filled,facecolor)
 % print warning that name-value pair 'Filled',false is overwritten if the
 % name-value pair 'FaceColor'-<color> is given (unless <color>='none')
@@ -286,6 +368,53 @@ if ~filled && ~isempty(facecolor)
     end
 end
 
+end
+
+function color = aux_defaultPlotColor()
+    % returns next color according to the color order of the current axis
+    % see colororder
+
+    % read current color order
+    ax = gca;
+    colorOrder = ax.ColorOrder;
+    colorIndex = ax.ColorOrderIndex;
+
+    % select color
+    color = colorOrder(colorIndex, :);
+end
+
+function NVpairs = aux_convertHex2Dec(NVpairs, label)
+    [NVpairs,color] = readNameValuePair(NVpairs,label);
+    
+    if~isempty(color)
+        % try to convert hex to dec
+        if ischar(color) || isstring(color)
+            % keep old color if unsuccessful
+            % error might be thrown during Matlab plot/fill
+            color_new = char(color);
+
+            % check if starts with '#'
+            if color_new(1) == '#'
+                 % remove '#'
+                color_new = color_new(2:end);
+
+                if length(color_new) == 6 || length(color_new) == 3
+                    % check if 'abc' or 'abcdef'
+                    color_new = reshape(color_new', [], 3)';
+                    if size(color_new, 2) == 1
+                        % extend 'abc' to 'aabbcc'
+                        color_new = [color_new, color_new];
+                    end
+    
+                    % convert hex to dec
+                    color = hex2dec(color_new)'/255;
+                end
+            end
+        end
+
+        % add back to NVpairs
+        NVpairs = [NVpairs, label, color];
+    end
 end
 
 %------------- END OF CODE --------------

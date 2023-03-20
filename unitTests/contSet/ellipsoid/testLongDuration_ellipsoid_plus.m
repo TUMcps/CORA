@@ -39,22 +39,18 @@ for i=[2,10:5:15]
             Y3 = randPoint(E3,i,'extreme');
             %%%
             % compute outer approx (check overloaded syntax)
-            Eo1 = E1+E2;
-            % check regular syntax
-            Eo2 = plus(E1,[E2,E3],'outer');
+            Eo = E1+E2;
             % 'inner' only exists for 'L' syntax
 %             % compute inner approx
-%             Ei1 = plus(E1,E2,'inner');
-%             Ei2 = plus(E1,[E2,E3],'inner');
+%             Ei = plus(E1,E2,'inner');
 %             % check if inner contained in outer
-%             if ~contains(Eo1,Ei1) || ~contains(Eo2,Ei2)
+%             if ~contains(Eo,Ei)
 %                 res = false;
 %                 break;
 %             end
             %check if Yi+Yj \in E
-            Yres1 = sumPoints(Y1,Y2);
-            Yres2 = sumPoints(Y1,Y2,Y3);
-            if ~contains(Eo1,Yres1) || ~contains(Eo2,Yres2)
+            Yres = sumPoints(Y1,Y2);
+            if ~contains(Eo,Yres)
                 res = false;
                 break;
             end

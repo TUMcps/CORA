@@ -21,9 +21,10 @@ function [params,options] = postProcessing(sys,func,params,options)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger, Matthias Althoff
+% Author:       Mark Wetzlinger
 % Written:      04-February-2021
-% Last update:  07-July-2021 (MA, U should not be converted for simulateGaussian and observe)
+% Last update:  07-July-2021 (MA, U should not be converted for
+%                                 simulateGaussian and observe)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -268,13 +269,17 @@ if isa(sys,'linearSys') && ~isempty(sys.c)
             vTransInt = interval(vTrans);
             options.originContained = contains(vTransInt,zeros(dim(vTrans),1));
         else
-            options.originContained = contains(vTrans,zeros(dim(vTrans),1));
+            if isa(vTrans,'polyZonotope')
+                options.originContained = contains(vTrans,zeros(dim(vTrans),1),'approx');
+            else
+                options.originContained = contains(vTrans,zeros(dim(vTrans),1));
+            end
         end
     end
 elseif isInterval(U)
     % no constant input, faster computation if U is an interval
-    int = interval(U);
-    options.originContained = contains(int,zeros(dim(U),1));
+    I = interval(U);
+    options.originContained = contains(I,zeros(dim(U),1));
 else
     % no constant input c, U not an interval
     options.originContained = contains(U,zeros(dim(U),1));

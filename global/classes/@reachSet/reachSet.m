@@ -127,6 +127,10 @@ methods
         % call built-in function
         res = builtin('subsref', obj, S);
     end
+
+    function R0 = R0(obj)
+        R0 = initialSet(obj(1).timePoint(1).set{1});
+    end
 end
 
 methods (Static = true)

@@ -166,26 +166,29 @@ disp(['Total Time: ', num2str(tSim+tVio+tComp+tVeri)]);
 
 disp("Plotting..")
 figure; hold on; box on;
-axis = [2,7];
+projDims = [2,7];
 
 % plot specification
-ss = plot(safeSet, axis,'FaceColor',[0,.8,0]);
+plot(specification(safeSet, 'safeSet'), projDims, 'DisplayName', 'Safe set');
 
-% plot reachable set
+useCORAcolors("CORA:contDynamics")
 if ~isVio
-    plot(R,axis,'FaceColor',[0.7 0.7 0.7]);
+    % plot reachable set
+    plot(R,projDims,'DisplayName','Reachable set');
+    % plot initial set
+    plot(R(1).R0,projDims,'DisplayName','Initial set');
+else
+    updateColorIndex()
+    % plot initial set
+    plot(R0,projDims,'DisplayName','Initial set', 'EdgeColor',[0 0 0],'FaceColor',CORAcolor("CORA:initialSet"));
 end
 
-% plot initial set
-is = plot(R0,axis,'FaceColor','w','EdgeColor','k'); % for legend
-plot(R0,axis,'FaceColor','w','EdgeColor','w');
-
 % plot simulation
-sims = plot(simRes,axis,'k');
+plot(simRes,projDims, 'DisplayName', 'Simulations');
 
 % labels and legend
 xlabel('y'); ylabel('\phi');
-legend([ss, is, sims], "Safe Set", "Initial Set", "Simulations");
+legend();
 
 
 % example completed

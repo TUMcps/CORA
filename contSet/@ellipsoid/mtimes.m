@@ -37,7 +37,7 @@ function E = mtimes(A,E)
 
 % if A is scalar, transform to appropriate diagonal matrix
 if isnumeric(A) && numel(A)==1
-    A = A*eye(dim(E));
+    A = A*eye(dim(E(1)));
 end
 
 % check input arguments

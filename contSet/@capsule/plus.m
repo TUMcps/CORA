@@ -57,7 +57,6 @@ try
         % obtain new radius
         C.r = C.r + summand.r + radiusOfGenerator;
         
-    %is summand a vector?
     elseif isnumeric(summand) && isvector(summand)
         %Calculate Minkowski sum
         C.c = C.c + summand;
@@ -65,7 +64,23 @@ try
     elseif isa(summand,'conPolyZono')
         
         C = summand + C;
+
+    elseif isa(summand,'interval')
+        % shift center
+        c_ = C.c + center(summand);
+        % enlarge radius by radius of enclosing hyperball of interval
+        r_ = C.r + radius(summand);
+        C = capsule(c_,C.g,r_);
+
+    elseif isa(summand,'zonotope')
+        % outer-approximate zonotope by interval and use interval method
+        C = C + interval(summand);
     
+    elseif isZero(summand,1e-12)
+        % addition of only the origin (note: for some set representations,
+        % this is a bit slow, so we put it at the end of the list...)
+        return
+
     %something else?
     else
         % throw error for given arguments

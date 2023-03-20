@@ -91,20 +91,24 @@ for k = 1:length(dims)
     projDims = dims{k};
     
     subplot(1,2,1); hold on; box on;
+    useCORAcolors("CORA:contDynamics")
+    title("with uncertain parameters")
 
     % plot reachable set (with uncertain paramaeters)
     plot(RcontParam,projDims);
 
     % plot initial set
-    plot(params.R0,projDims,'k','FaceColor','w');
+    plot(RcontParam.R0,projDims);
     
     subplot(1,2,2); hold on; box on;
+    useCORAcolors("CORA:contDynamics")
+    title("without uncertain parameters")
     
     % plot reachable set (without uncertain parameters)
-    plot(RcontNoParam,projDims,'FaceColor',colorblind('r'));
+    plot(RcontNoParam,projDims);
 
     % plot initial set
-    plot(params.R0,projDims,'k','FaceColor','w');
+    plot(RcontNoParam.R0,projDims);
     
     % loop over all subplots
     for sp=1:2

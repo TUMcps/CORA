@@ -177,7 +177,9 @@ projDim = node * 2;
 % 1. constant inputs 
 figure; hold on; box on;
 title("Constant uncertain inputs");
+useCORAcolors("CORA:contDynamics")
 plotOverTime(R_C,projDim);
+plotOverTime(R_C(1).R0,projDim);
 plotOverTime(simRes_C,projDim);
 % xlim([8.15e-3,8.4e-3]);
 xlabel('t');
@@ -186,7 +188,9 @@ ylabel(['v_{' num2str(node) '}']);
 % 2. time-varying inputs 
 figure; hold on; box on;
 title("Time-varying inputs");
+useCORAcolors("CORA:contDynamics")
 plotOverTime(R_F,projDim);
+plotOverTime(R_F(1).R0,projDim);
 plotOverTime(simRes_F,projDim);
 % xlim([8.15e-3,8.4e-3]);
 xlabel('t');

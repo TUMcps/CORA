@@ -105,13 +105,15 @@ figure; hold on; box on
 h = fill([-100,0,-100],[-60,0,60],'g','EdgeColor','k');
 set(h,'FaceColor',colorblind('gray'));
 
+useCORAcolor('CORA:contDynamics')
+
 % plot reachable set
 plot(R,[1,2]);
 
 % plot initial set
-plot(params.R0,[1,2],'k','FaceColor','w');
+plot(R(1).R0,[1,2]);
 
-% plot simulation
+% plot si   mulation
 plot(simRes,[1,2]);
 
 xlabel('s_x');

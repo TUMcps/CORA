@@ -58,6 +58,7 @@ if strcmp(options.linAlg,'wrapping-free')
     end
     Raux=eAt*options.Raux;
     Rpar=options.Rpar + interval(Raux) + interval(Rtrans) + (-center(Rtrans));
+
 elseif strcmp(options.linAlg,'standard')
     % option 2 (not wrapping-free)
     % method implemented from Algorithm 1 in
@@ -70,13 +71,23 @@ elseif strcmp(options.linAlg,'standard')
         Rtrans = options.Rtrans;
         inputCorr = 0;
         Rhom=eAt*options.Rhom + Rtrans;
+
+        % computation of time-point solution desired?
         if options.compTimePoint
             Rhom_tp=eAt*options.Rhom_tp + Rtrans;
         end
     end
-    Raux=eAt*options.Raux;
-    Rpar=reduce(options.Rpar + Raux,options.reductionTechnique,options.zonotopeOrder);
-    Rhom=reduce(Rhom,options.reductionTechnique,options.zonotopeOrder);
+    % propagate particular solution
+    Raux = eAt*options.Raux;
+
+    % reduction operation
+    Rpar = options.Rpar + Raux;
+    if ~isnumeric(options.Rpar)
+        Rpar = reduce(Rpar,options.reductionTechnique,options.zonotopeOrder);
+    end
+    Rhom = reduce(Rhom,options.reductionTechnique,options.zonotopeOrder);
+
+    % computation of time-point solution desired?
     if options.compTimePoint
         Rhom_tp=reduce(Rhom_tp,options.reductionTechnique,options.zonotopeOrder);
     end
@@ -95,7 +106,7 @@ options.Raux=Raux;
 
 %write results to reachable set struct Rnext
 if isa(Rhom,'mptPolytope')
-    Rnext.ti=Rhom+mptPolytope(Rpar)+mptPolytope(inputCorr);
+    Rnext.ti = Rhom+mptPolytope(Rpar)+mptPolytope(inputCorr);
     if options.compTimePoint
         Rnext.tp=Rhom_tp+mptPolytope(Rpar);
     else

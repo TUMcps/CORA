@@ -1293,8 +1293,7 @@ function [Rout,Rout_error,Rout_tp,Rout_tp_error,set] = ...
 
 % additional inclusion of check...?
 
-if isscalar(obj.C) && obj.C == 1 && ~any(center(options.V)) && ...
-        isempty(generators(options.V)) && ~any(options.vTrans)
+if isscalar(obj.C) && obj.C == 1 && isZero(options.V) && ~any(options.vTrans)
     % y = x ... consequently, errors are also equal
     if isU
         Rout = zonotope([center(set.enc) + set.boxFstartset_center + ...
@@ -1319,8 +1318,7 @@ if isscalar(obj.C) && obj.C == 1 && ~any(center(options.V)) && ...
     
 else
     
-    if ~isscalar(obj.C) && ~any(center(options.V)) && ...
-        isempty(generators(options.V)) && ~any(options.vTrans)
+    if ~isscalar(obj.C) && isZero(options.V) && ~any(options.vTrans)
         % y = Cx ... errors are scaled
         
         if isU

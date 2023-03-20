@@ -139,12 +139,19 @@ simRes = simResult(x,t);
 % Visualization -----------------------------------------------------------
 
 figure; hold on; box on;
+projDim = [1, 2];
 
-% plot reachable set
-plot(R);
+% plot reachable sets
+useCORAcolors("CORA:contDynamics")
+plot(R,projDim,'DisplayName','Reachable set');
 
-% plot simulation results
-plot(simRes);
+% plot initial set
+plot(R(1).R0,projDim, 'DisplayName','Initial set');
+
+% plot simulation results      
+plot(simRes,projDim,'DisplayName','Simulations');
+
+legend()
 
 % example completed
 res = true;

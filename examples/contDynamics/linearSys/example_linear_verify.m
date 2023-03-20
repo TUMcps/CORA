@@ -75,19 +75,18 @@ disp(['Specifications satisfied? ' num2str(res)]);
 % specifications
 figure; hold on; box on;
 % goal set
-h_safe = plot(spec(3).set,[1,2],'FaceColor',colorblind('gray'),'EdgeColor','k');
+plot(spec(3),[1,2], 'DisplayName','Safe set');
 % unsafe sets
-h_unsafe = plot(spec(1).set,[1,2],'FaceColor',colorblind('r'));
-plot(spec(2).set,[1,2],'FaceColor',colorblind('r'));
+plot(spec(1:2),[1,2], 'DisplayName', 'Unsafe sets');
 
 % outer-approximation reachable set
-h_outer = plot(R,[1,2]);
+useCORAcolors("CORA:contDynamics")
+plot(R,[1,2],'DisplayName','Outer-approximation');
 
 % initial set
-h_init = plot(params.R0,[1,2],'FaceColor','w','EdgeColor','k');
+plot(R.R0,[1,2], 'DisplayName','Initial set');
 
 % legend
-legend([h_safe,h_unsafe,h_outer,h_init],'Safe set','Unsafe sets',...
-    'Outer-approximation','Initial set','location','southeast');
+legend('location','southeast');
 
 %------------- END OF CODE --------------

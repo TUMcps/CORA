@@ -30,11 +30,33 @@ function E = plusEllipsoid(E,L,mode)
 % Last update:  25-May-2022 (VG: included more options, as well as 1D
 %                               special case)
 %               05-July-2022 (VG: removed unecessary input argument)
+%               17-March-2023 (VG: bugfix for equally small ellipsoids)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-N = length(E);
 n = dim(E(1));
+
+% remove all ellipsoids that only contain a point and add them
+q = zeros(n,1);
+ind_c = false(size(E));
+for i=1:length(E)
+    if isZero(-E(i).q+E(i))
+        q = q +E(i).q;
+        ind_c(i) = true;
+    end
+end
+% if only centers, handle
+if all(ind_c)
+    E = ellipsoid(zeros(n),q);
+    return;
+end
+
+% at least one "real" ellipsoid remains
+E(ind_c) = [];
+E(1).q = E(1).q +q;
+
+N = length(E);
+
 % generally, all ellipsoids can be degenerate as long as a positively
 % weighted sum of their shape matrices is invertible (otherwise all E_c are
 % degenerate and and(...,'outer') will not work)
@@ -48,6 +70,17 @@ end
 
 T = eye(n);
 [V,S,~] = svd(Q_sum);
+if all(withinTol(diag(S),0,TOL))
+    % result is 0
+    E = ellipsoid(zeros(n));
+    return;
+end
+% find max eigenvalue and scaling factor such that max(eig(Q_sum))\approx 1
+s = S(1,1);
+S = 1/s*S;
+for j=1:length(E)
+    E(j).Q = 1/s*E(j).Q;
+end
 nt = n;
 n_d = 0;
 xt_rem = zeros(n_d,1);
@@ -100,7 +133,14 @@ else
         % choose between fixed point iteration [1] or exact computation 
         % (SDP problem) [2]
         if strcmp(mode,'outer')
-            Et = plusEllipsoidOA(E);
+            idx = true(length(E),1);
+            q = zeros(dim(E(1)),1);
+            for j=1:length(E)
+                idx(j) = ~isZero(E(j)-E(j).q,1e-8);
+                q = q + ~idx(j)*E(j).q;
+            end
+            E = E(idx);
+            Et = plusEllipsoidOA(E) + q;
         elseif strcmp(mode,'outer:halder')
             Et = plusEllipsoidOA_halder(E);
         elseif strcmp(mode,'inner')
@@ -112,6 +152,6 @@ else
 end
 
 % backtransform
-E = T'*ellipsoid(blkdiag(Et.Q,zeros(n_d)),[Et.q;xt_rem]);
+E = T'*ellipsoid(s*blkdiag(Et.Q,zeros(n_d)),[Et.q;xt_rem]);
 
 %------------- END OF CODE --------------

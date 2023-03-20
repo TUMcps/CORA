@@ -131,8 +131,9 @@ vars = [x;y];
 eq = (x-1)^2 + (y-1)^2 - 0.161^2;
 
 ls = levelSet(eq,vars,'==');
+spec = specification(ls, 'unsafeSet');
 
-plot(ls,[1,2],'r');
+plot(spec,[1,2]);
 xlim([0.6,1.4]);
 ylim([0.6,1.4]);
 xlabel('x');

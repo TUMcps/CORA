@@ -33,6 +33,11 @@ function E = plusEllipsoidOA(E)
 % number of ellipsoids in cell array
 N = length(E);
 
+% addin' nothin' to somethin' is still that somethin'
+if N == 1
+    return
+end
+
 % dimension
 n = dim(E(1));
 

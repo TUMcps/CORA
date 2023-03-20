@@ -1,7 +1,8 @@
-function E = ellipsoid(Z,mode)
-% ellipsoid - Overapproximates a zonotope by an ellipsoid
+function E = ellipsoid(Z,varargin)
+% ellipsoid - converts a zonotope to an ellipsoid
 %
-% Syntax:  
+% Syntax:
+%    E = ellipsoid(Z)
 %    E = ellipsoid(Z,mode)
 %
 % Inputs:
@@ -45,10 +46,9 @@ function E = ellipsoid(Z,mode)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-default = 'outer:norm_bnd';
-if ~exist('mode','var')
-    mode = default;
-end
+
+% set default method
+mode = setDefaultValues({'outer:norm_bnd'},varargin);
 
 % obtain rank of zonotope
 n = dim(Z);
@@ -57,8 +57,14 @@ c = center(Z);
 Grank = rank(G);
 
 
+% zonotope is the origin
+if isZero(Z)
+
+    E = ellipsoid(zeros(n),zeros(n,1));
+    return
+
 % reduce dimension of zonotope if not full dimensional
-if n ~= Grank
+elseif n ~= Grank
     
     % compute QR decomposition
     [Q, R] = qr(G);

@@ -32,7 +32,7 @@ params.tFinal = 3;
 params.R0 = polyZonotope(interval( ...
     [-0.45, -0.55, 0.65, -0.75, 0.85, -0.65], ...
     [-0.43, -0.53, 0.65, -0.74, 0.86, -0.64] ...
-));
+)');
 
 
 % Reachability Settings ---------------------------------------------------
@@ -127,31 +127,28 @@ disp(['Total Time: ', num2str(tSim+tVio+tComp+tVeri)]);
 % Visualization -----------------------------------------------------------
 
 disp("Plotting..");
+spec = specification(unsafeSet,'unsafeSet',interval(params.tFinal));
 
 for w=1:3
-    figure; hold on; box on;
-    R0 = project(params.R0, w);
-    R0 = cartProd(polyZonotope(0, [], [], []), R0);
+    figure; hold on; box off;
     
-    % plot specification
-    us = plot(cartProd(interval(params.tFinal, params.tFinal), project(unsafeSet, w)),...
-        [1,2],'FaceColor',[.8, 0, 0]);
-    alpha(us,.5)
+    % plot specification 
+    plotOverTime(spec,w, 'DisplayName', 'Unsafe set');
 
     % plot reachable set
-    rs = plotOverTime(R, w, 'FaceColor', [.8, .8, .8], 'EdgeColor', 'none');
+    useCORAcolors('CORA:contDynamics')
+    plotOverTime(R, w, 'DisplayName', 'Reachable set');
 
     % plot initial set
-    is = plot(R0, [1, 2], 'FaceColor', 'w', 'EdgeColor', 'k');
+    plotOverTime(R(1).R0, w, 'DisplayName', 'Initial set');
 
     % plot simulation
-    ss = plotOverTime(simRes, w, 'k');
+    plotOverTime(simRes, w, 'DisplayName', 'Simulations');
 
     % labels and legend
     xlabel('time');
     ylabel(sprintf("\\omega_%d", w));
-    legend([us, rs, is, ss], "Unsafe Set", "Reachable Set", ...
-        "Initial Set", "Simulations", Location="best")
+    legend(Location="best")
 end
 
 % example completed

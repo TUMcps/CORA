@@ -84,22 +84,28 @@ simRes = simulateRandom(sys,params,simOpt);
 % PLOT 1: reachable set over time
 
 figure; hold on; box on
+projDim = 4;
 
-% plot reachable set
-plotOverTime(R,4,'FaceColor',[0 0.8 0]);
+% plot reachable sets
+useCORAcolors("CORA:contDynamics")
+plotOverTime(R,projDim,'DisplayName','Reachable set');
+
+% plot initial set
+plotOverTime(R(1).R0,projDim, 'DisplayName','Initial set');
+
+% plot simulation results      
+plotOverTime(simRes,projDim,'DisplayName','Simulations');
 
 % plot the unsafe set
-I = interval([0;5],[params.tFinal;10]);
-plot(I,[1,2],'FaceColor',[1 0.5 0],'FaceAlpha',0.6);
-
-% plot simulation
-plotOverTime(simRes,4);
+spec = specification(interval(5,10),'unsafeSet',interval(0,params.tFinal));
+plotOverTime(spec,1,'DisplayName','Unsafe set');
 
 % formatting
 xlabel('t [s]');
 ylabel('x_4');
 xlim([0,params.tFinal]);
 ylim([1,6]);
+legend()
 
 
 % PLOTs 2-3: projections of the reachable set
@@ -111,18 +117,20 @@ for i = 1:length(dims)
     figure; hold on; box on;
     projDim = dims{i};
     
-    % plot reachable set
-    plot(R,projDim,'FaceColor',[0 0.8 0]);
+    % plot reachable sets
+    useCORAcolors("CORA:contDynamics")
+    plot(R,projDim,'DisplayName','Reachable set');
     
     % plot initial set
-    plot(R0,projDim,'k','FaceColor','w');
+    plot(R(1).R0,projDim,'DisplayName','Initial set');
     
-    % plot simulation results
-    plot(simRes,projDim);
+    % plot simulation results      
+    plot(simRes,projDim,'DisplayName','Simulations');
     
     % formatting
     xlabel(['x_',num2str(projDim(1))]);
     ylabel(['x_',num2str(projDim(2))]);
+    legend()
 end
 
 completed = true;

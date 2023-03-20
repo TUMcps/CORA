@@ -27,7 +27,7 @@ function rgb = colorblind(color)
 %------------- BEGIN CODE --------------
 
 % provided colors
-colors = {'blue','b','red','r','yellow','y','gray'};
+colors = {'blue','b','red','r','yellow','y','green','g','gray'};
 if ~any(ismember(colors,color))
     throw(CORAerror('CORA:wrongValue','second','Desired color not provided!'));
 end
@@ -39,6 +39,8 @@ elseif any(ismember({'red','r'},color))
     rgb = [227, 27, 35] ./ 255;
 elseif any(ismember({'yellow','y'},color))
     rgb = [255, 195, 37] ./ 255;
+elseif any(ismember({'green','g'},color))
+    rgb = [0.4660 0.6740 0.1880];
 elseif any(ismember({'gray'},color))
     rgb = [230, 241, 238] ./ 255;
 end

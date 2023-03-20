@@ -14,10 +14,11 @@ function [res,vars] = pre_contains(classname,S1,S2,varargin)
 %
 % Inputs:
 %    classname - class of calling function
-%    S1,S2 - contSet object
+%    S1 - contSet object
+%    S2 - contSet object, numeric array
 %    method - method for computation ('exact' or 'approx')
 %    tol - tolerance
-%    maxEval - see zonotope/in
+%    maxEval - see zonotope/contains
 %
 % Outputs:
 %    res - true/false whether result has been computed here
@@ -66,6 +67,13 @@ if strcmp(classname,'zonotope')
         maxEval = max(500,200*m1);
     end
 
+elseif strcmp(classname,'zonoBundle')
+    % more types...
+    inputArgsCheck({{S1,'att',classname};
+                    {S2,'att',{'contSet','numeric'}};
+                    {type,'str',{'exact','approx','exact:zonotope','exact:conZonotope','exact:polytope'}};
+                    {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
+
 else
     % check input arguments
     inputArgsCheck({{S1,'att',classname};
@@ -88,7 +96,7 @@ elseif isemptyobject(S1)
 end
 
 % check dimension mismatch (has to come after empty set case!)
-% equalDimCheck(S1,S2);
+equalDimCheck(S1,S2);
 
 % result has to be computed in calling function
 res = false;

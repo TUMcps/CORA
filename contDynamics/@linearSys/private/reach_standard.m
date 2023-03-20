@@ -106,7 +106,10 @@ for i = 2:steps
     Rhom = reduce(Rhom,options.reductionTechnique,options.zonotopeOrder);
     Rhom_tp = reduce(Rhom_tp,options.reductionTechnique,options.zonotopeOrder);
     Raux = eAt*Raux;
-    Rpar = reduce(Rpar + Raux,options.reductionTechnique,options.zonotopeOrder);
+    Rpar = Rpar + Raux;
+    if ~isnumeric(Rpar)
+        Rpar = reduce(Rpar,options.reductionTechnique,options.zonotopeOrder);
+    end
     
     %write results to reachable set struct Rnext
     if isa(Rhom,'mptPolytope')

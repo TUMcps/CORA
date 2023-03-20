@@ -72,44 +72,46 @@ dims = {[1 2],[3 4]};
 % Plot 1: reachable set for whole time horizon
 for k = 1:length(dims)
 
-    figure; hold on; box on
+    figure; hold on; box on; title("Reachable set")
     projDims = dims{k};
+    useCORAcolors("CORA:contDynamics", 2)
 
     % plot outer-approximation
-    h1 = plot(Rout,projDims,'Set','tp');
+    plot(Rout,projDims,'Set','tp', 'DisplayName', 'Outer-approx');
     
     % plot inner-approximation
-    h2 = plot(Rin,projDims,'FaceColor',colorblind('r'));
+    plot(Rin,projDims,'DisplayName','Inner-approx');
 
     % plot initial set
-    plot(params.R0,projDims,'w');
+    plot(Rout.R0,projDims, 'DisplayName', 'Initial set');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);
     ylabel(['x_{',num2str(projDims(2)),'}']);
     
     % legend
-    legend([h1,h2],'outer-approx.','inner-approx.');
+    legend();
 end
 
 % Plot 2: final reachable set
 for k = 1:length(dims)
 
-    figure; hold on; box on
+    figure; hold on; box on; title("Final reachable set")
     projDims = dims{k};
+    useCORAcolors("CORA:contDynamics", 2)
 
     % plot outer-approximation 
-    h1 = plot(Rout.timePoint.set{end},projDims);
+    plot(Rout.timePoint.set{end},projDims,'DisplayName','Outer-approx');
     
     % plot inner-approximation
-    h2 = plot(Rin.timePoint.set{end},projDims,'Color',colorblind('r'));
+    plot(Rin.timePoint.set{end},projDims,'DisplayName','Inner-approx');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);
     ylabel(['x_{',num2str(projDims(2)),'}']);
     
     % legend
-    legend([h1,h2],'outer-approx.','inner-approx.');
+    legend();
 end
 
 % example completed

@@ -129,21 +129,21 @@ disp("Plotting..")
 figure; hold on; box on;
 
 % plot goal set
-gs = plot(goalSet, [1, 2], 'FaceColor', [0, .8, 0]);
+plot(specification(goalSet, 'safeSet'), [1, 2], 'DisplayName', 'Goal set');
 
 % plot reachable set
-rs = plot(R, [1, 2], 'FaceColor', [.8, .8, .8]);
+useCORAcolors("CORA:contDynamics")
+plot(R, [1, 2], 'DisplayName', 'Reachable set');
 
 % plot initial set
-is = plot(params.R0, [1, 2], 'k', 'FaceColor', 'w');
+plot(R(1).R0, [1, 2], 'DisplayName', 'Initial set');
 
 % plot simulations
-ss = plot(simRes,[1, 2], 'k');
+plot(simRes,[1, 2], 'DisplayName', 'Simulations');
 
 % labels and legend
 xlabel('x'); ylabel('y');
-legend([gs, rs, is, ss], "Goal Set", "Reachable Set", ...
-    "Initial Set", "Simulations", Location="best")
+legend(Location="best")
 
 
 % example completed

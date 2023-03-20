@@ -49,10 +49,8 @@ end
 % set of possible inputs
 V = obj.B*options.U + W;
 
-options.isRV = true;
-if all(center(V) == zeros(obj.dim,1)) && size(V.Z,2) == 1
-    options.isRV = false;
-end
+% do we have a time-varying input solution?
+options.isRV = ~isZero(V);
 
 % compute vTrans 
 vTrans = obj.B*options.uTrans + Wcenter;
@@ -64,30 +62,35 @@ end
 A = obj.A;
 Apower = obj.taylor.powers;
 E = obj.taylor.error;
-taylorTerms = options.taylorTerms;
 r = options.timeStep;
-dim = length(A);
+n = length(A);
 factors = options.factor;
 
 if options.isRV
     %init Vsum
     Vsum = r*V;
-    Asum = r*eye(dim);
+    Asum = r*eye(n);
     %compute higher order terms
-    for i = 1:taylorTerms
+    for i = 1:options.taylorTerms
         %compute sums
         Vsum = Vsum+Apower{i}*factors(i+1)*V;
         Asum = Asum+Apower{i}*factors(i+1);
     end
     
     %compute overall solution
-    inputSolV = Vsum+E*r*V;
+    try
+        inputSolV = Vsum+E*r*V;
+    catch
+        % for all set representations, which currently do not support the
+        % multiplication of an interval matrix with itself
+        inputSolV = Vsum+E*r*interval(V);
+    end
     
 else
     % only Asum, since V == origin (0)
-    Asum = r*eye(dim);
+    Asum = r*eye(n);
     %compute higher order terms
-    for i = 1:taylorTerms
+    for i = 1:options.taylorTerms
         %compute sum
         Asum = Asum+Apower{i}*factors(i+1);
     end
@@ -100,10 +103,10 @@ inputSolVtrans = eAtInt*zonotope(vTrans);
 
 %compute additional uncertainty if origin is not contained in input set
 if options.originContained
-    inputCorr = zeros(dim,1);
+    inputCorr = zeros(n,1);
 else
     %compute inputF
-    [obj] = inputTie(obj,options);
+    obj = inputTie(obj,options);
     inputF = obj.taylor.inputF;
     inputCorr = inputF*zonotope(vTrans);
 end
@@ -111,16 +114,16 @@ end
 
 %write to object structure
 obj.taylor.V = V;
-if options.isRV && any(any(inputSolV.Z))
+if options.isRV && ~isemptyobject(inputSolV)
     obj.taylor.RV = inputSolV;
 else
-    obj.taylor.RV = zonotope(zeros(obj.dim,1));
+    obj.taylor.RV = zeros(obj.dim,1);
 end
 
-if any(any(inputSolVtrans.Z))
+if ~isemptyobject(inputSolVtrans)
     obj.taylor.Rtrans = inputSolVtrans;
 else
-    obj.taylor.Rtrans = zonotope(zeros(obj.dim,1));
+    obj.taylor.Rtrans = zeros(obj.dim,1);
 end
 obj.taylor.inputCorr = inputCorr;
 obj.taylor.eAtInt = eAtInt;

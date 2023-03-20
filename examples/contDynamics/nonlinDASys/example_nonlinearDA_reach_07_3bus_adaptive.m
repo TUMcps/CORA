@@ -70,23 +70,22 @@ dim_x = [1 2];
 figure; hold on; box on;
 
 % plot reachable sets
-plot(R);
+useCORAcolors("CORA:contDynamics")
+plot(R,dim_x,'DisplayName','Reachable set');
 
 % plot initial set
-plot(params.R0,dim_x,'FaceColor','w','EdgeColor','k');
+plot(R(1).R0,dim_x,'DisplayName','Initial set');
 
 % plot simulation results
-plot(simRes);
+plot(simRes,dim_x,'DisplayName','Simulations');
 
 % label plot
 xlabel(['x_{',num2str(dim_x(1)),'}']);
 ylabel(['x_{',num2str(dim_x(2)),'}']);
-
+legend()
 
 % examples completed
 res = true;
-
-
 
 %------------- END OF CODE --------------
         

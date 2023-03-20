@@ -66,14 +66,14 @@ end
 % real interval given
 linSys = linearSys.generateRandom('realInterval',realInt);
 ev = eigs(linSys.A);
-if ~contains(realInt,real(ev))
+if ~all(contains(realInt,real(ev)'))
     res = false;
 end
 
 % imaginary interval given
 linSys = linearSys.generateRandom('ImaginaryInterval',imagInt);
 ev = eigs(linSys.A);
-if ~contains(imagInt,imag(ev))
+if ~all(contains(imagInt,imag(ev)'))
     res = false;
 end
 
@@ -81,7 +81,7 @@ end
 linSys = linearSys.generateRandom('realInterval',realInt,...
     'ImaginaryInterval',imagInt);
 ev = eigs(linSys.A);
-if ~contains(realInt,real(ev)) || ~contains(imagInt,imag(ev))
+if ~all(contains(realInt,real(ev)')) || ~all(contains(imagInt,imag(ev)'))
     res = false;
 end
 
@@ -92,7 +92,7 @@ linSys = linearSys.generateRandom('StateDimension',n,...
 ev = eigs(linSys.A);
 if linSys.dim ~= n || linSys.nrOfInputs ~= nrInputs || ...
         linSys.nrOfOutputs ~= nrOutputs || ...
-        ~contains(realInt,real(ev)) || ~contains(imagInt,imag(ev))
+        ~all(contains(realInt,real(ev)')) || ~all(contains(imagInt,imag(ev)'))
     res = false;
 end
 

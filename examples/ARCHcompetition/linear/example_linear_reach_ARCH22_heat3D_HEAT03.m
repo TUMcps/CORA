@@ -129,7 +129,7 @@ for i = 1:length(Rset)
     int = cartProd(intT,intX);
     
     % plot the interval
-    plot(int,[1,2],'FaceColor',colorblind('b'));
+    plot(int,[1,2],'FaceColor',CORAcolor("CORA:reachSet"));
     
     % update time
     t = t + options.timeStep;
@@ -137,7 +137,7 @@ end
 
 % plot simulation
 for i = 1:length(simRes.x)
-   plot(simRes.t{i},simRes.x{i}(:,indMid),'y');
+   plot(simRes.t{i},simRes.x{i}(:,indMid),'Color',CORAcolor("CORA:simulations"));
 end
 
 % formatting 
