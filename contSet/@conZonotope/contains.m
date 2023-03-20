@@ -80,7 +80,7 @@ function res = contains(cZ,S,varargin)
         
         res = false(1,size(S,2));
         for i = 1:size(S,2)
-            res(i) = containsPoint(cZ,S(:,i)); 
+            res(i) = aux_containsPoint(cZ,S(:,i)); 
         end
         
     % capsule/ellipsoid in constrained zonotope containment
@@ -96,7 +96,7 @@ function res = contains(cZ,S,varargin)
         if strcmp(type,'exact')
 
             if isa(S,'taylm') || isa(S,'polyZonotope')
-                throw(CORAerror('CORA:noExactAlg',S,"'taylm' or 'polyZonotope'"));
+                throw(CORAerror('CORA:noExactAlg',cZ,S));
             elseif isa(S,'interval')
                 res = contains(cZ,vertices(S));
             else
@@ -111,7 +111,7 @@ function res = contains(cZ,S,varargin)
                 res = contains(P,S); 
             else
                 S = conZonotope(S);
-                res = containsSet(cZ,S);
+                res = aux_containsSet(cZ,S);
             end
         end
     end
@@ -120,22 +120,15 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function res = containsPoint(cZ,p)
+function res = aux_containsPoint(cZ,p)
 % use linear programming to check if a point is located inside a
 % constrained zonotope
 
     % get object properties
-    n = size(cZ.Z,1);
     nrGens = size(cZ.Z,2)-1;
     
     c = cZ.Z(:,1);
     G = cZ.Z(:,2:end);
-
-    % check input arguments
-    if size(p,1) ~= n || size(p,2) ~= 1
-        throw(CORAerror('CORA:wrongInputInConstructor',...
-            'Input argument ''obj'' has the wrong format!'));
-    end
 
     % construct inequality constraints
     A = [eye(nrGens);-eye(nrGens)];
@@ -169,7 +162,7 @@ function res = containsPoint(cZ,p)
     end
 end
 
-function res = containsSet(cZ1,cZ2)
+function res = aux_containsSet(cZ1,cZ2)
 % check polytope in polytope containment according to Theorem 1 in [1]
 
     % convert to AH polytopes

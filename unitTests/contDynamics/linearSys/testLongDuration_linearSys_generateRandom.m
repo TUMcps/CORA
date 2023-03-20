@@ -64,7 +64,7 @@ for ii=1:length(imagInts)
         % check if all properties satisfy prescribed values/ranges
         if linSys.dim ~= nrStates || linSys.nrOfInputs ~= nrInputs || ...
                 linSys.nrOfOutputs ~= nrOutputs || ...
-                ~contains(realInt,real(ev)) || ~contains(imagInt,imag(ev))
+                ~all(contains(realInt,real(ev)')) || ~all(contains(imagInt,imag(ev)'))
             res = false; return
         end
 

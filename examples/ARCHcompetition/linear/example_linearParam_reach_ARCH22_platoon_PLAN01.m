@@ -145,7 +145,7 @@ simRes = simulateRandom(linSys, params, simOpt);
 figure; hold on; box on;
 
 % plot reachable set over time (part 1)
-plotOverTime(R,1,'FaceColor',colorblind('b'));
+plotOverTime(R,1,'FaceColor',CORAcolor("CORA:reachSet"));
 
 % plot reachable set over time (part 2)
 t = options.timeStep - tadd;
@@ -158,14 +158,14 @@ for i = 1:length(RcontInv)
     int = cartProd(intT,intX);
     
     % plot interval
-    plot(int,[1 2],'FaceColor',colorblind('b'));
+    plot(int,[1 2],'FaceColor',CORAcolor("CORA:reachSet"));
     
     % update time
     t = t + options.timeStep;
 end
 
 % plot simulation results
-plotOverTime(simRes,1);
+plotOverTime(simRes,1,'Color',CORAcolor('CORA:simulations'));
 % formatting
 xlabel('t');
 ylabel('x_1');

@@ -113,9 +113,13 @@ simRes = simulateRandom(linSys, params, simOpt);
 % Visualization -----------------------------------------------------------
 
 figure; hold on; box on;
+useCORAcolors("CORA:contDynamics")
 
 % plot reachable set over time 
 plotOverTime(R,1);
+
+% plot initial set
+plotOverTime(R(1).R0,1);
 
 % plot simulation results
 plotOverTime(simRes,1);

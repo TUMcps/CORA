@@ -132,46 +132,55 @@ disp(['Total Time: ', num2str(tSim+tVio+tComp+tVeri)]);
 
 disp("Plotting..")
 figure; hold on; box on;
+projDims = [1, 2];
 
 % plot specification
-ss = plot(safeSet, [1,2], 'FaceColor', [0,.8,0]);
+plot(specification(safeSet, 'safeSet'), projDims, 'DisplayName', 'Safe set');
 
-% plot reachable set
+useCORAcolors("CORA:contDynamics")
 if ~isVio
-    plot(R, [1, 2],'FaceColor',[0.7 0.7 0.7]);
+    % plot reachable set
+    plot(R, projDims, 'DisplayName', 'Reachable set')
+
+    % plot initial set
+    plot(R(1).R0, projDims, 'DisplayName', 'Initial set');
+else
+    updateColorIndex()
+    plot(R0, projDims, 'k', 'FaceColor', CORAcolor("CORA:initialSet"), 'DisplayName', 'Initial set')
 end
 
-% plot initial set
-is = plot(R0,[1,2],'FaceColor','w','EdgeColor','k');
-
 % plot simulations
-sims = plot(simRes,[1,2],'k');
+plot(simRes,projDims, 'DisplayName', 'Simulations');
 
 % labels and legend
 xlabel('\theta_1'); ylabel('\theta_2');
-legend([ss, is, sims], "Safe Set", "Initial Set", "Simulations", Location="northwest")
+legend(Location="northwest")
 
 figure; hold on; box on;
+projDims = [3, 4];
 
 % plot specification
-ss = plot(safeSet, [3,4], 'FaceColor',[0,.8,0]);
+plot(specification(safeSet, 'safeSet'), projDims, 'DisplayName', 'Safe set');
 
-% plot reachable set
+useCORAcolors("CORA:contDynamics")
 if ~isVio
-    plot(R, [3, 4],'FaceColor',[0.7 0.7 0.7]);
+    % plot reachable set
+    plot(R, projDims, 'DisplayName', 'Reachable set')
+
+    % plot initial set
+    plot(R(1).R0, projDims, 'DisplayName', 'Initial set');
+else
+    updateColorIndex()
+    plot(R0, projDims, 'k', 'FaceColor', CORAcolor("CORA:initialSet"))
 end
 
-% plot initial set
-is = plot(R0,[3,4],'FaceColor','w','EdgeColor','k');
-
 % plot simulations
-sims = plot(simRes,[3,4],'k');
+plot(simRes,projDims, 'DisplayName', 'Simulations');
 
 % labels and legend
 xlabel('$\dot \theta_1$','interpreter','latex');
 ylabel('$\dot \theta_2$','interpreter','latex');
-legend([ss, is, sims], "Safe Set", "Initial Set", ...
-    "Simulations", Location="northwest")
+legend(Location="northwest")
 
 % example completed
 completed = true;

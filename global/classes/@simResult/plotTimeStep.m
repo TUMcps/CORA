@@ -32,6 +32,9 @@ NVpairs = readPlotOptions(varargin(2:end));
 % min / max for axis (if time is const, eps differences are shown...)
 mintimestep = Inf; maxtimestep = -Inf; cumsummin = Inf; cumsummax = -Inf;
 
+% save color index
+oldColorIndex = gca().ColorOrderIndex;
+
 % loop over all simulations
 nrSim = length(simRes.t);
 hold on; box on;
@@ -49,6 +52,9 @@ for i=1:nrSim
     if cumsumtVec(1) < cumsummin;   cumsummin = cumsumtVec(1);   end
     if cumsumtVec(end) > cumsummax; cumsummax = cumsumtVec(end); end
 end
+
+% correct color index
+updateColorIndex(oldColorIndex);
 
 % title and labels
 title('Simulation: Time Step Size');

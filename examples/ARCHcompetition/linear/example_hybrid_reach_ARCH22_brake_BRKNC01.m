@@ -120,12 +120,14 @@ disp(['computation time: ',num2str(tVer + tComp)]);
 % Visualization -----------------------------------------------------------
 
 figure; hold on; box on;
+useCORAcolors('CORA:contDynamics')
 
 % plot reachable set
 plotOverTime(R,2);
 
 % plot specification
-plot([0 0.1],[x0 x0],'--r');
+spec = specification(interval([0; x0], [0.1; x0]));
+plot(spec,[1 2],'--');
 
 % formatting
 xlim([0,0.1]);

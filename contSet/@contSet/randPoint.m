@@ -29,6 +29,7 @@ function x = randPoint(S,N,type,pr)
 % Author:        Matthias Althoff
 % Written:       19-November-2020
 % Last update:   19-June-2021 (MP, generalization)
+%                08-March-2023 (MW, reduce number of contains-calls)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -60,16 +61,21 @@ Sigma = E.Q/quantileFctValue;
 
 % create N samples
 x = zeros(dim(S),N);
+remainingSamples = N;
+idx = 1;
 
-for i = 1:N
-    % create sample of normal distribution
-    pt = mvnrnd(c,Sigma,1)';
+while remainingSamples > 0
+    % create remaining number of samples of normal distribution
+    pt = mvnrnd(c,Sigma,remainingSamples)';
     
-    % correct value if not enclosed
-    while ~contains(S,pt)
-        pt = mvnrnd(c,Sigma,1)';
-    end
-    x(:,i) = pt;
+    % check containment
+    ptInside = contains(S,pt);
+    nrInside = nnz(ptInside);
+    remainingSamples = remainingSamples - nrInside;
+
+    % store the ones that are contained, repeat loop for remaining number
+    x(:,idx:idx+nrInside-1) = pt(:,ptInside');
+    idx = idx+nrInside;
 end
 
 %------------- END OF CODE --------------

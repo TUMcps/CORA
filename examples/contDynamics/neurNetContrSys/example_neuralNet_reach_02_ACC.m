@@ -75,6 +75,10 @@ k = [v_set; T_gap; 0; 0; 0];
 % [5, 20, 20, 20, 20, 20, 1]
 load('controllerACC.mat');
 
+% distance computation
+DM = [1 0 0 -1 0 0; 0 0 0 0 T_gap 0];
+Db = [0;D_default];
+
 actFun = [{'identity'}, repmat({'ReLU'}, [1, length(W)])];
 W = [{C}, W];
 b = [{k}, b];
@@ -92,16 +96,25 @@ simRes = simulateRandom(sys, params);
 tSim = toc;
 disp(['Time to compute random simulations: ', num2str(tSim)]);
 
-
 % Check Violation --------------------------------------------------------
 
-goalSet = interval(-[0.6; 0.2; 0.06; 0.3], [0.6; 0.2; 0.06; 0.3]);
 tic;
+simResDistances = [];
 isVio = false;
 for i = 1:length(simRes.x)
+    x = simRes.x{i};
+    x = DM * x' + Db;
+    
+    simResDistances_i = simResult({x'}, simRes.t(i));
+    if isempty(simResDistances)
+        simResDistances = simResDistances_i;
+    else
+        simResDistances = add(simResDistances, simResDistances_i);
+    end
+        
     % relative distance D_rel
-    distance = [1, 0, 0, -1, 0, 0]*simRes.x{i}';
-    safe_distance = D_default + [0, 0, 0, 0, T_gap, 0]*simRes.x{i}';
+    distance = x(1, :);
+    safe_distance = x(2, :);
     % safe distance D_safe
     isVio = isVio || ~all(distance >= safe_distance);
 end
@@ -124,13 +137,19 @@ else
     % Verification --------------------------------------------------------
 
     tic;
+
+    % transform 
+    R_distances = DM * R + Db;
+
     isVeri = true;
-    for i = 1:length(R)
-        for j = 1:length(R(i).timeInterval.set)
-            % relative distance D_rel
-            distance = interval([1, 0, 0, -1, 0, 0]*R(i).timeInterval.set{j});
-            safe_distance = D_default + interval([0, 0, 0, 0, T_gap, 0]*R(i).timeInterval.set{j});
-            % safe distance D_safe
+    for i = 1:length(R_distances)
+        for j = 1:length(R_distances(i).timeInterval.set)
+            % read distances
+            R_ij = R_distances(i).timeInterval.set{j};
+            distance = interval(project(R_ij, 1));
+            safe_distance = interval(project(R_ij, 2));
+
+            % check safety
             isVeri = isVeri && (infimum(distance) > supremum(safe_distance));
         end
     end
@@ -152,34 +171,20 @@ disp("Plotting..")
 figure; hold on; box on;
 
 % plot reachable sets
-for i = 1:length(R)
-    for j = 1:length(R(i).timeInterval.set)
 
-        time = R(i).timeInterval.time{j};
+% relative distance D_rel
+plotOverTime(R_distances, 1, 'DisplayName', 'Distance', 'FaceColor', CORAcolor("CORA:safe"));
 
-        % relative distance D_rel
-        temp = interval([1, 0, 0, -1, 0, 0]*R(i).timeInterval.set{j});
-        h1 = plot(cartProd(time, temp), [1, 2], 'FaceColor', [0, .8, 0]);
+% safe distance D_safe
+plotOverTime(R_distances, 2, 'DisplayName', 'Safe distance', 'FaceColor', CORAcolor("CORA:unsafe"));
 
-        % safe distance D_safe
-        temp = D_default + interval([0, 0, 0, 0, T_gap, 0]*R(i).timeInterval.set{j});
-        h2 = plot(cartProd(time, temp), [1, 2], 'FaceColor', [0.8, 0, 0]); 
-    end
-end
-
-% plot simulation
-for i = 1:length(simRes.x)
-    % relative distance D_rel
-    distance = [1, 0, 0, -1, 0, 0]*simRes.x{i}';
-    safe_distance = D_default + [0, 0, 0, 0, T_gap, 0]*simRes.x{i}';
-    % safe distance D_safe
-    ss = plot(simRes.t{i}, distance,'Color','k');
-end
+% plot simulations
+plotOverTime(simResDistances, 1, 'k', 'DisplayName', 'Simulations');
 
 % labels and legend
 xlabel('time');
 ylabel('distance');
-legend([h1, h2, ss], 'Distance', 'Safe Distance', 'Simulations');
+legend();
 
 % example completed
 completed = true;

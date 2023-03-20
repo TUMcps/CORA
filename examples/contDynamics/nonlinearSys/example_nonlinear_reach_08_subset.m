@@ -51,8 +51,6 @@ options.tensorOrder = 3;
 
 sys = nonlinearSys(@vanderPolEq);
 
-
-
 % Reachability Analysis ---------------------------------------------------
      
 % extract a subset of a reachable set as shown in Fig. 3 in [1]
@@ -80,25 +78,23 @@ paramSim.tFinal = 1;
 
 % visualization of the time interval reachable set
 figure; hold on;
+useCORAcolors("CORA:contDynamics")
 
-plot(R,[1,2],'FaceColor',[.7 .7 .7],'Splits',4); 
-
+% reachable set
+plot(R,[1,2],'Splits',4); 
 
 % visualization of the initial and final reachable set
-plot(R0,[1,2],'FaceColor','w');
-plot(R0,[1,2],'FaceColor',[30,119,255]./255,'FaceAlpha',0.7);
-plot(Rfin,[1,2],'FaceColor','w','Splits',10);
-plot(Rfin,[1,2],'FaceColor',[30,119,255]./255,'FaceAlpha',0.7,'Splits',10);
+plot(R.R0,[1,2]);
+plot(Rfin,[1,2],'FaceColor',CORAcolor("CORA:finalSet"),'Splits',10);
 
 % visualization of the reachable subset
-plot(zonotope(Rsubset),[1,2],'FaceColor','w');
-plot(zonotope(Rsubset),[1,2],'FaceColor',[255,140,0]./255,'EdgeColor','none');
+plot(zonotope(Rsubset),[1,2],'FaceColor',CORAcolor("CORA:highlight1"));
 
 % visualization of the simulation results
-plot(x(end,1),x(end,2),'.k','MarkerSize',30);
-plot(paramSim.x0(1),paramSim.x0(2),'Color','w','MarkerSize',20,'Marker','.');
-plot(paramSim.x0(1),paramSim.x0(2),'Color',[255,140,0]./255, ...
+plot(paramSim.x0(1),paramSim.x0(2),'Color',CORAcolor("CORA:highlight1"),...
      'MarkerSize',20,'Marker','.');
+plot(x(1,1),x(1,2),'.','Color', CORAcolor('CORA:simulations'));
+plot(x(end,1),x(end,2),'.','MarkerSize',30,'Color', CORAcolor('CORA:simulations'));
 
 % formatting
 xlim([-1.5,1.5]);
@@ -159,21 +155,20 @@ hold on
 % visualize constraint
 xlim([-1.5,1.5]);
 ylim([0.5 3.5]);
-plot(hs,[1,2],'FaceColor','r','FaceAlpha',0.5);
+plot(specification(hs),[1,2]);
 
 % visualize time interval reachable set
-plot(R,[1,2],'FaceColor',[.7 .7 .7],'Splits',4); 
+useCORAcolors("CORA:contDynamics")
+plot(R,[1,2],'Splits',4); 
 
 % visualize initial and final reachable set
-plot(params.R0,[1,2],'FaceColor','w');
-plot(Rfin,[1,2],'FaceColor','w','Splits',10);
-plot(params.R0,[1,2],'FaceColor',[255,140,0]./255,'FaceAlpha',0.7);
-plot(Rfin,[1,2],'FaceColor',[30,119,255]./255,'FaceAlpha',0.7,'Splits',10);
+plot(R.R0,[1,2]);
+plot(Rfin,[1,2],'FaceColor',CORAcolor("CORA:finalSet"),'Splits',10);
 
 % visualize falsifying trajectory
-plot(xTraj(:,1),xTraj(:,2),'k');
-plot(xTraj(1,1),xTraj(1,2),'.k','MarkerSize',15);
-plot(xTraj(end,1),xTraj(end,2),'.k','MarkerSize',15);
+plot(xTraj(:,1),xTraj(:,2),'Color', CORAcolor('CORA:simulations'));
+plot(xTraj(1,1),xTraj(1,2),'.','MarkerSize',15,'Color', CORAcolor('CORA:simulations'));
+plot(xTraj(end,1),xTraj(end,2),'.','MarkerSize',15,'Color', CORAcolor('CORA:simulations'));
 
 % formatting
 set(gcf,'Position',[855 434 560 375]);
@@ -214,22 +209,18 @@ hold on
 
 xlim([-1.5,1.5]);
 ylim([0.5 3.5]);
-plot(hs,[1,2],'FaceColor','r','FaceAlpha',0.5);
+plot(specification(hs),[1,2]);
 
 % visualize time interval reachable set
-plot(R,[1,2],'FaceColor',[.7 .7 .7],'Splits',4); 
+plot(R,[1,2],'FaceColor',CORAcolor("CORA:reachSet"),'Splits',4); 
 
 % visualize initial and final reachable set
-plot(R0,[1,2],'FaceColor','w');
-plot(R0,[1,2],'FaceColor',[30,119,255]./255,'FaceAlpha',0.7);
-plot(Rfin,[1,2],'FaceColor','w','Splits',10);
-plot(Rfin,[1,2],'FaceColor',[30,119,255]./255,'FaceAlpha',0.7,'Splits',10);
+plot(R0,[1,2],'FaceColor',CORAcolor("CORA:highlight2"));
+plot(Rfin,[1,2],'FaceColor',CORAcolor("CORA:highlight2"),'Splits',10);
 
 % visualize optimized initial and final set
-plot(Rfin_,[1,2],'FaceColor','w');
-plot(Rfin_,[1,2],'FaceColor',[255,140,0]./255,'FaceAlpha',0.7);
-plot(R0_,[1,2],'FaceColor','w');
-plot(R0_,[1,2],'FaceColor',[255,140,0]./255,'FaceAlpha',0.7);
+plot(Rfin_,[1,2],'FaceColor',CORAcolor("CORA:highlight1"));
+plot(R0_,[1,2],'FaceColor',CORAcolor("CORA:highlight1"));
 
 
 % formatting

@@ -86,25 +86,35 @@ tComp = toc;
 disp(['computation time (polynomial zonotope): ',num2str(tComp)]);
 
 
+% Simulation --------------------------------------------------------------
+
+% simulation settings
+simOpt.points = 20;
+% random simulation
+simRes = simulateRandom(vanderPol, params, simOpt);
 
 % Visualization -----------------------------------------------------------
     
 figure; hold on; box on;
+projDim = [1 2];
 
 % plot reachable set (zonotope)
-handleLin = plot(R,[1,2],'FaceColor',[0 0.4 1]);
 
-% plot reachable set (polynomial zonotope)
-handlePoly = plot(Rpoly,[1,2],'FaceColor',[0 0.8 0],'Splits',2);
+useCORAcolors("CORA:contDynamics", 2)
+plot(R,projDim,'DisplayName','zonotope');
+plot(Rpoly,projDim,'DisplayName','polynomial zonotope');
 
 % plot initial set
-plot(R0,[1,2],'k','FaceColor','w');
+plot(R(1).R0,projDim, 'DisplayName','Initial set');
+
+% plot simulation results      
+plot(simRes,projDim,'DisplayName','Simulations');
 
 % label plot
 xlabel('x_1');
 ylabel('x_2');
 
-legend([handleLin,handlePoly],'zonotope','sparse polynomial zonotope');
+legend();
 
 
 % example completed

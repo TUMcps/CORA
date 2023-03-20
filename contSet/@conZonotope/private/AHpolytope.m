@@ -38,7 +38,7 @@ if isempty(cZ.A)
     G = cZ.Z(:,2:end);
     
     m = size(G,2);
-    A= [eye(m);-eye(m)];
+    A = [eye(m);-eye(m)];
     b = ones(2*m,1);
     
 else

@@ -102,9 +102,13 @@ disp(['Computation time: ',num2str(tComp)]);
 % Visualization -----------------------------------------------------------
 
 figure; hold on; box on;
+useCORAcolors('CORA:contDynamics')
 
 % plot reachable set
 plotOverTime(R,1);
+
+% plot initial set
+plotOverTime(R.R0,1);
 
 % plot simulation
 plotOverTime(simRes,indMid);

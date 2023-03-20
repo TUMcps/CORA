@@ -120,7 +120,7 @@ end
 
 for i=1:totalSets
     % grayscale color brightening over time
-    grayscale = repelem(i/totalSets,3);
+    grayscale = CORAcolor("CORA:reachSet") * i/totalSets;
     
     % phase space plot
     subplot(1,2,1);
@@ -131,7 +131,7 @@ for i=1:totalSets
         % always plot until last index before current time
         % add idx below!
         plot(simRes.x{r}(idx{r}(i):idx{r}(i+1),1),...
-            simRes.x{r}(idx{r}(i):idx{r}(i+1),2),'Color',colorblind('y'));
+            simRes.x{r}(idx{r}(i):idx{r}(i+1),2),'Color',CORAcolor("CORA:simulations"));
     end
     
     % xy space plot (additional over-approximation in conversion)
@@ -142,7 +142,7 @@ for i=1:totalSets
     for r=1:simOpt.points
         % take same indices as above
         plot(simX{r}(idx{r}(i):idx{r}(i+1)),...
-            simY{r}(idx{r}(i):idx{r}(i+1)),'Color',colorblind('y'));
+            simY{r}(idx{r}(i):idx{r}(i+1)),'Color',CORAcolor("CORA:simulations"));
     end
     
     % pause for video effect

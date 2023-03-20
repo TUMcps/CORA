@@ -166,6 +166,9 @@ if unify
     
 else
     hold on;
+
+    % save color index
+    oldColorIndex = gca().ColorOrderIndex;
     
     % loop over all reachable sets
     for i = 1:size(R,1)
@@ -196,9 +199,18 @@ else
             int = cartProd(intT,intX);
 
             % plot interval
-            han = plot(int,[1,2],NVpairs{:});
+            han_ij = plot(int,[1,2],NVpairs{:});
+
+            if i == 1 && j == 1
+                han = han_ij;
+                % don't display subsequent plots in legend
+                NVpairs = [NVpairs, {'HandleVisibility','off'}];
+            end
         end
     end
+
+    % correct color index
+    updateColorIndex(oldColorIndex);
 end
 
 if nargout == 0

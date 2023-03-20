@@ -105,25 +105,23 @@ disp(['Computation time (parallelo): ',num2str(tComp),' s']);
 
 % compare inner- with outer-approximation
 figure; hold on; box on;
-hanOut = plot(Rout1.timePoint.set{end},[1,2],'Color',colorblind('r'));
-hanInScal = plot(Rin1.timePoint.set{end},[1,2],'g');
-hanInProj = plot(Rin2.timePoint.set{end});
-hanInPar = plot(Rin3.timePoint.set{end},[1,2],'c');
+useCORAcolors("CORA:default")
+plot(Rout1.timePoint.set{end},[1,2],'DisplayName','Outer-approx.');
+plot(Rin1.timePoint.set{end},[1,2],'DisplayName','Inner-approx. (scal)');
+plot(Rin2.timePoint.set{end},[1, 2],'DisplayName','Inner-approx. (proj)');
+plot(Rin3.timePoint.set{end},[1,2],'DisplayName','Inner-approx. (parallelo)');
+legend('Location','northwest')
 
-l = legend([hanOut,hanInScal,hanInProj,hanInPar],'Outer-approx.', ...
-           'Inner-approx. (scal)','Inner-approx. (proj)', ...
-           'Inner-approx. (parallelo)');
-set(l,'Location','northwest');
 xlabel('x_1');
 ylabel('x_2');
 
 % plot inner-approximation over time
 figure; hold on; box on;
-plotOverTime(Rout2,1);
-hOut = plotOverTime(Rout2,2);
-hIn1 = plotOverTime(Rin2,1,'FaceColor',colorblind('r'));
-hIn2 = plotOverTime(Rin2,2,'FaceColor',colorblind('gray'),...
-    'EdgeColor','k');
+plotOverTime(Rout2,1,'Color',CORAcolor("CORA:reachSet", 2, 1));
+hOut = plotOverTime(Rout2,2,'Color',CORAcolor("CORA:reachSet", 2, 1));
+hIn1 = plotOverTime(Rin2,1,'FaceColor',CORAcolor("CORA:reachSet", 2, 2));
+hIn2 = plotOverTime(Rin2,2,'FaceColor',CORAcolor("CORA:reachSet", 2, 2), ...
+    'EdgeColor', [0 0 0]);
 
 xlabel('time');
 ylabel('x_1, x_2');

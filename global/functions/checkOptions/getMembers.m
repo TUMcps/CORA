@@ -29,7 +29,8 @@ if strcmp(fieldname,'R0')
         'mptPolytope','polyZonotope','probZonotope','zonoBundle','zonotope'};
     
 elseif strcmp(fieldname,'U')
-    memberlist = {'zonotope','interval'};
+    memberlist = {'zonotope','interval','ellipsoid','polyZonotope',...
+        'conZonotope','capsule','mptPolytope'};
 
 elseif strcmp(fieldname,'V')
     memberlist = {'zonotope','ellipsoid','interval'};

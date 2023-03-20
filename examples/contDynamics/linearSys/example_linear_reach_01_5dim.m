@@ -70,20 +70,22 @@ dims = {[1 2],[3 4]};
 for k = 1:length(dims)
 
     figure; hold on; box on
+    useCORAcolors("CORA:contDynamics")
     projDims = dims{k};
 
     % plot reachable sets
-    plot(R,projDims);
+    plot(R,projDims, 'DisplayName', 'Reachable set');
 
     % plot initial set
-    plot(params.R0,projDims,'k','FaceColor','w');
+    plot(R.R0,projDims,'DisplayName','Initial set');
 
     % plot simulation results
-    plot(simRes,projDims);
+    plot(simRes,projDims, 'DisplayName', 'Simulations');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);
     ylabel(['x_{',num2str(projDims(2)),'}']);
+    legend('Location', 'northwest')
 end
 
 % example completed

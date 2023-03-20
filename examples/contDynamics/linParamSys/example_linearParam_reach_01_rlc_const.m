@@ -94,38 +94,43 @@ simRes = simulateRandom(sysIntMat, params, simOpt);
 
 figure; hold on; box on;
 projDim = [20,40];
+useCORAcolors("CORA:contDynamics", 2)
     
 % plot reachable sets
-hanIntMat = plot(RintMat,projDim,'Order',10);
-hanMatZono = plot(RmatZono,projDim,'FaceColor',colorblind('gray'),'Order',10);
+plot(RintMat,projDim,'Order',10,'DisplayName','Interval matrix');
+plot(RmatZono,projDim,'Order',10,'DisplayName','Matrix zonotope');
 
 % plot initial set
-plot(params.R0,projDim,'k','FaceColor','w');
+plot(RintMat.R0,projDim,'DisplayName','Initial set');
 
 % plot simulation results     
-plot(simRes,projDim);
+plot(simRes,projDim,'DisplayName','Simulations');
 
 % label plot
 xlabel(['x_{',num2str(projDim(1)),'}']);
 ylabel(['x_{',num2str(projDim(2)),'}']);
-legend([hanIntMat,hanMatZono],'Interval matrix','Matrix zonotope');
+legend();
 
 
 % PLOT 2: reachable set over time
 
 figure; hold on;
+useCORAcolors("CORA:contDynamics", 2)
 
 % plot time elapse
-hanIntMat = plotOverTime(RintMat,projDim(1));
-hanMatZono = plotOverTime(RmatZono,projDim(1),'FaceColor',colorblind('gray'));
+plotOverTime(RintMat,projDim(1),'DisplayName','Interval matrix');
+plotOverTime(RmatZono,projDim(1),'DisplayName','Matrix zonotope');
+
+% plot initial set
+plotOverTime(RintMat.R0,projDim(1),'DisplayName','Initial set');
 
 % plot simulation results
-plotOverTime(simRes,projDim(1));
+plotOverTime(simRes,projDim(1),'DisplayName','Simulations');
 
 % label plot
 xlabel('t');
 ylabel(['x_{',num2str(projDim(1)),'}']);
-legend([hanIntMat,hanMatZono],'Interval matrix','Matrix zonotope');
+legend();
 
 % example completed
 completed = true;

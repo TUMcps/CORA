@@ -146,20 +146,23 @@ simRes = simResult(x,t);
 
 % Visualization -----------------------------------------------------------
 
+dim_x = [1 2];
 figure; hold on; box on;
 
-% plot reachable set
-plot(R);
-
-% plot simulation results
-plot(simRes);
+% plot reachable sets
+useCORAcolors("CORA:contDynamics")
+plot(R,dim_x,'DisplayName','Reachable set');
 
 % plot initial set
-plot(params.R0,[1,2],'FaceColor','w','EdgeColor','k');
+plot(R(1).R0,dim_x,'DisplayName','Initial set');
+
+% plot simulation results
+plot(simRes,dim_x,'DisplayName','Simulations');
 
 % axis labels
 xlabel('$x_1$','interpreter','latex');
 ylabel('$x_2$','interpreter','latex');
+legend()
 
 
 % examples completed

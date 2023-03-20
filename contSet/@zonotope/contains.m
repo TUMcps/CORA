@@ -110,25 +110,57 @@ function res = contains(Z,S,varargin)
         % we return a logical array, one value per points
         res = false(1,size(S,2));
 
-        % By comparing the complexity of computing the halfspace
-        % representation and a linear program, one can see that computing
-        % the halfspace representation is easier to compute when the
-        % dimension n is <= 4, or when the number of generators m is <= n.
-        % Thus, in those two cases, this is the easiest solution:
-        if isempty(Z.halfspace) && (dim(Z) <= 4 || size(Z.generators,2) <= dim(Z))
-            Z=halfspace(Z);
+        % There are basically two algorithms to choose from: Either we
+        % compute it by first calculating all the halfspaces of the
+        % zonotope, or we solve it using linear programming. For the
+        % halfspace method, the relevant quantity to look for is the
+        % maximal number of facets of the zonotope.
+        % If the zonotope is non-degenerate (which we may assume if
+        % #generators >= dim), then this is given as follows:
+        if size(Z.generators,2) >= size(Z.generators,1)
+            numberOfFacets = 2*nchoosek(size(Z.generators, 2), size(Z.generators,1)-1);
+        else
+            % If the zonotope is degenerate, we need to replace the dim by
+            % the rank
+            numberOfFacets = 2*nchoosek(size(Z.generators,2),rank(Z)-1);
+        end
+        % We can now estimate the approximate runtime of the halfspace
+        % method:
+        runtime_halfspaceMethod = numberOfFacets * size(Z.generators,1)^4;
+        % The runtime of the linprog method on the other hand mainly
+        % depends on the number of generators, but also on the number of
+        % points we are evaluating this on:
+        runtime_linprogMethod = (size(Z.generators, 2)+1)^(3.5) * size(S,2);
+        
+        % We can now compare runtimes. Additionally, we need to
+        % double-check that the halfspace method does not lead to an
+        % explosion of halfspaces. Currently, the maximal number of
+        % halfspaces allowed is hardcoded in such a way, that
+        % numberOfFacets < 100000
+        % This has to be taken with a grain of salt, and the user may want
+        % to change that value to whatever value he/she desires.
+        % In practice, this is only relevant for dimensions <= 3.
+
+        % halfspace conversion always preferrable if the zonotope is in
+        % fact a parallelotope
+        
+        if isParallelotope(Z) || (isempty(Z.halfspace) && ...
+                numberOfFacets < 100000 && runtime_halfspaceMethod < runtime_linprogMethod)
+            Z = halfspace(Z);
         end
         
         % If the halfspace-representation of the zonotope has already been
         % computed in advance, we can use this
         if ~isempty(Z.halfspace)
             for i = 1:size(S,2)
-                %simple test: Is point inside the zonotope?
+                % simple test: check if point fulfills all inequalities
+                % composing the halfspace representation of the zonotope
                 inequality = Z.halfspace.H*S(:,i) < Z.halfspace.K | ...
                     withinTol(Z.halfspace.H*S(:,i),Z.halfspace.K,tol);
                 res(i) = all(inequality);
             end
         else
+            % check for each point whether zonotope norm is <= 1
             for i = 1:size(S,2)
                 tmp = zonotopeNorm(Z,S(:,i)-Z.center);
                 res(i) = tmp < 1 | withinTol(tmp,1,tol);
@@ -213,7 +245,14 @@ function res = contains(Z,S,varargin)
                     end
                     
                     if ~GOT_installed
-                        [~, warn_id] = warning('You have not installed the Global Optimization Toolbox from MATLAB, and can therefore not use surrogateopt for solving the zonotope containment problem. Alternatively, the DIRECT algorithm will be used for now, but for improved results, please install the Global Optimization Toolbox.');
+                        [~, warn_id] = warning(...
+                            ['You have not installed the Global ' ...
+                            'Optimization Toolbox from MATLAB, and can '...
+                            'therefore not use surrogateopt for solving '...
+                            'the zonotope containment problem. '...
+                            'Alternatively, the DIRECT algorithm will '...
+                            'be used for now, but for improved results, '...
+                            'please install the Global Optimization Toolbox.']);
                         % Right after the first warning, disable it, so as
                         % to not clutter the command window
                         warning('off', warn_id);

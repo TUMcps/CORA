@@ -80,12 +80,13 @@ simRes = simulateRandom(sys, params, simOpt);
 % Visualization -----------------------------------------------------------
 
 figure; hold on; box on;
+useCORAcolors("CORA:contDynamics")
 
 % plot reachable sets
 plot(R);
 
 % plot initial set
-plot(params.R0,[1 2],'k','FaceColor','w');
+plot(R.R0,[1 2]);
 
 % plot simulation results     
 plot(simRes);

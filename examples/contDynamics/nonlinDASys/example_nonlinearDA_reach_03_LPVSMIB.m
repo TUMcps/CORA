@@ -170,11 +170,13 @@ figure; hold on; box on;
 projDims=[1 2];
 
 % plot reachable set
+useCORAcolors('CORA:contDynamics')
 plot(R,projDims);
+plot(R(1).R0,projDims);
 
 % plot simulation results
 for r=1:runs
-    plot(x{r}(:,projDims(1)),x{r}(:,projDims(2)),'Color',colorblind('y'));
+    plot(x{r}(:,projDims(1)),x{r}(:,projDims(2)),'Color',CORAcolor("CORA:simulations"));
 end
 
 % example completed

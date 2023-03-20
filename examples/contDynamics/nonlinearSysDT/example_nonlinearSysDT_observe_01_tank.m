@@ -64,8 +64,11 @@ for iEst = 1:length(Estimator)
     if ~isempty(estSet)
         for n = 1:6
             figure; hold on;
+            useCORAcolors("CORA:contDynamics")
             % plot time elapse
-            plotOverTime(estSet,n);
+            plotOverTime(estSet,n,'Set','tp');
+            % plot initial set
+            plotOverTime(estSet.R0,n);
             % plot simulation
             plotOverTime(simRes,n);
 

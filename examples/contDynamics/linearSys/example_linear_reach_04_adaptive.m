@@ -72,22 +72,23 @@ end
 
 % Visualization -----------------------------------------------------------
 
-figure; hold on; box on;
+figure; hold on; box on; legend();
 projDims = [1,2];
 
+% plot unsafe set
+unsafeSet = specification(interval([2;-2],[4;2]));
+plot(unsafeSet,projDims,'DisplayName', 'Unsafe Set');
+
 % plot reachable set
-plot(R{1});
-plot(R{2},projDims,'FaceColor',colorblind('gray'));
+useCORAcolors("CORA:contDynamics", 2)
+plot(R{1}, projDims, 'DisplayName', sprintf("Reachable set: error=%.2f", errs(1))); 
+plot(R{2}, projDims, 'DisplayName', sprintf("Reachable set: error=%.2f", errs(2))); 
 
 % plot initial set
-plot(params.R0,projDims,'k','FaceColor','w');
+plot(R{1}.R0,projDims, 'DisplayName', 'Initial set');
 
 % plot simulation
-plot(simRes,projDims,'b');
-
-% plot unsafe set
-unsafeSet = interval([2;-2],[4;2]);
-plot(unsafeSet,projDims,'FaceColor',colorblind('r'));
+plot(simRes,projDims, 'DisplayName', 'Simulations');
 
 % formatting
 xlabel('x_1'); ylabel('x_2');

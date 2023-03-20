@@ -89,7 +89,7 @@ Rexact = reach(sys,params,options);
 
 % Visualization -----------------------------------------------------------
 
-colors = {colorblind('b'),colorblind('r'),[0 0.8 0]};
+colors = {colorblind('b'),colorblind('r'),colorblind('g')};
 han = []; text = cell(length(colors),1);
 
 figure;
@@ -101,7 +101,7 @@ for p=1:2
         % plot outer-approximation
         temp = plot(R{i}.timePoint.set{end},[1,2],...
             'EdgeColor',colors{i},'LineWidth',1.2);
-        han = [temp,han];
+        han = [han,temp];
         text{i} = ['$\varepsilon_{\max}$ = ',num2str(errors(i))];
         % plot inner-approximation
         plot(pgon{i},[1,2],'EdgeColor',colors{i},'LineWidth',1.2);

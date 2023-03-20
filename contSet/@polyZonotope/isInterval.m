@@ -43,10 +43,7 @@ if ~isZonotope(pZ)
     return;
 end
 
-% convert to zonotope
-zono = zonotope(pZ);
-
-% check if zonotope is an interval
-res = isInterval(zono);
+% convert to zonotope and check is an interval
+res = isInterval(zonotope(pZ));
 
 %------------- END OF CODE --------------

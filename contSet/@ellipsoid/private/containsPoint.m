@@ -30,21 +30,13 @@ function [B,val] = containsPoint(E,Y)
 % Author:       Victor Gassmann
 % Written:      13-March-2019
 % Last update:  16-March-2021 (complete rewrite)
+%               08-March-2023 (remove checks)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% read dimension
-n = dim(E);
-
-if ~isa(Y,'double')
-    throw(CORAerror('CORA:wrongValue','second','be a double matrix'));
-end
-
-[m,N] = size(Y);
-if m~=n
-    throw(CORAerror('CORA:dimensionMismatch',E,Y));
-end
+% number of points
+N = size(Y,2);
 
 % init values
 B = false(1,N);

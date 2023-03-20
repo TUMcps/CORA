@@ -74,24 +74,27 @@ simRes = simulateRandom(vanderPol, params, simOpt);
 
 % Visualization -----------------------------------------------------------
 
-projectedDims = [1 2];
+projDims = [1 2];
     
 figure; hold on; box on;
 
-%plot reachable sets 
-plot(R_wo_linear);
-plot(R_linRem,projectedDims,'FaceColor',colorblind('gray'));
+% plot reachable set (normal lagrange remainder)
+useCORAcolors("CORA:contDynamics", 2)
+plot(R_wo_linear,projDims,'DisplayName','Normal Remainder');
 
-%plot initial set
-plot(params.R0,projectedDims,'k','FaceColor','w');
+% plot reachable sets (lagrange remainder added to system matrices (A,B))
+plot(R_linRem,projDims,'DisplayName','Linear Remainder');
 
-%plot simulation results      
-plot(simRes,projectedDims,'k');
+% plot initial set
+plot(R_linRem(1).R0,projDims,'DisplayName','Initial set');
+
+% plot simulation results      
+plot(simRes,projDims,'DisplayName','Simulations');
 
 %label plot
-xlabel(['x_{',num2str(projectedDims(1)),'}']);
-ylabel(['x_{',num2str(projectedDims(2)),'}']);
-
+xlabel(['x_{',num2str(projDims(1)),'}']);
+ylabel(['x_{',num2str(projDims(2)),'}']);
+legend()
 
 %example completed
 completed = true;

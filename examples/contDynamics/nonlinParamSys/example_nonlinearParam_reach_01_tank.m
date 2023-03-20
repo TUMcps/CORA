@@ -88,21 +88,22 @@ for i = 1:length(dims)
     
     figure; hold on; box on;
     projDims = dims{i};
+    useCORAcolors("CORA:contDynamics", 2)
 
     % plot reachable sets
-    hanParam = plot(RcontParam,projDims);
-    hanNoParam = plot(RcontNoParam,projDims,'FaceColor',colorblind('gray'));
+    plot(RcontParam,projDims,'DisplayName','parametric');
+    plot(RcontNoParam,projDims,'DisplayName','non-parametric');
     
     % plot initial set
-    plot(params.R0,projDims,'k','FaceColor','w');
+    plot(RcontParam.R0,projDims,'DisplayName','Initial set');
   
     % plot simulation results
-    plot(simRes,projDims);
+    plot(simRes,projDims,'DisplayName','Simulations');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);
     ylabel(['x_{',num2str(projDims(2)),'}']);
-    legend([hanParam,hanNoParam],'parametric','non-parametric');
+    legend();
 end
 
 completed = true;

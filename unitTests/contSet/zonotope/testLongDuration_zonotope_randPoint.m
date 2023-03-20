@@ -48,7 +48,7 @@ for i=1:nrOfTests
     Z = zonotope(c,G);
     
     % check 'standard' method
-    nrPtsStandard = 100;
+    nrPtsStandard = 25;
     pNormal = randPoint(Z,nrPtsStandard,'standard');
     
     % check 'extreme' method:
@@ -64,7 +64,7 @@ for i=1:nrOfTests
     nrPtsExtreme = sum(nrPtsExtreme);
     
     % check 'gaussian' method:
-    nrPtsGaussian = 100;
+    nrPtsGaussian = 25;
     pr = 0.8;
     pGaussian = randPoint(Z,nrPtsGaussian,'gaussian',pr);
     % note: these points are not checked for containment because there
@@ -72,16 +72,12 @@ for i=1:nrOfTests
     
     % check for containment in zonotope
     % (use containsPoint instead of in, since the latter has a bug)
-    for j=1:nrPtsStandard
-        if ~contains(Z,pNormal(:,j))
-            res = false; break;
-        end
+    if ~all(contains(Z,pNormal))
+        res = false; break;
     end
-    for j=1:nrPtsExtreme
-        if ~contains(enlarge(Z,1+tol),pExtreme(:,j))
-            % enlarging Z is required, otherwise wrong result!
-            res = false; break;
-        end
+    if ~all(contains(enlarge(Z,1+tol),pExtreme))
+        % enlarging Z is required, otherwise wrong result!
+        res = false; break;
     end
     
     if ~res

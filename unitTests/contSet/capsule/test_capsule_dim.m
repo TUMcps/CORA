@@ -8,18 +8,16 @@ function res = test_capsule_dim
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Author:       Mark Wetzlinger
-% Written:      27-Sep-2019
+% Written:      27-September-2019
 % Last update:  12-March-2021 (MW, add empty case)
 % Last revision:---
 

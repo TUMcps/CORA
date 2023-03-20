@@ -90,20 +90,22 @@ for plotRun=1:3
     figure; hold on; box on;
     
     % plot reachable set (normal lagrange remainder)
-    plot(R_wo_linear,projDims);
+    useCORAcolors("CORA:contDynamics", 2)
+    plot(R_wo_linear,projDims,'DisplayName','Normal Remainder');
     
     % plot reachable sets (lagrange remainder added to system matrices (A,B))
-    plot(R,projDims,'FaceColor',colorblind('gray'));
+    plot(R,projDims,'DisplayName','Linear Remainder');
     
     % plot initial set
-    plot(params.R0,projDims,'k','FaceColor','w');
+    plot(R(1).R0,projDims);
   
     % plot simulation results      
-    plot(simRes,projDims);
+    plot(simRes,projDims,'DisplayName','Simulations');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);
     ylabel(['x_{',num2str(projDims(2)),'}']);
+    legend();
 end
 
 

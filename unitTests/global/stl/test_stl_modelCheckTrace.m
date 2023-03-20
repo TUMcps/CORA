@@ -29,7 +29,7 @@ function res = test_stl_modelCheckTrace()
 
     % Analytical Test 1 ---------------------------------------------------
 
-    % analytical test for the until-operator
+    % analytical tests for the until-operator
 
     % trajectory
     phi = -pi/2:0.01:0;
@@ -55,6 +55,54 @@ function res = test_stl_modelCheckTrace()
     if modelCheckTrace(eq,x,t) ~= false
         error('Analytical test 1 failed!')
     end
+
+
+    % analytical tests for the globally-operator
+
+    % trajectory
+    x = linspace(0,1,100)';
+    t = linspace(0,1,100)';
+
+    % STL formula
+    y = stl('y',2); 
+    eq = globally(y(1) > 0.1,interval(0,1));
+
+    % model checking
+    if modelCheckTrace(eq,x,t) ~= false
+        error('Analytical test 2 failed!')
+    end
+
+    % different STL formula
+    eq = globally(y(1) >= 0.2 & y(1) <= 0.3, interval(0.2,0.3));
+
+    % model checking
+    if modelCheckTrace(eq,x,t) ~= true
+        error('Analytical test 2 failed!')
+    end   
+
+
+    % analytical tests for the finally-operator
+
+    % trajectory
+    x = linspace(0,1,100)';
+    t = linspace(0,1,100)';
+
+    % STL formula
+    y = stl('y',2); 
+    eq = finally(y(1) > 1.1,interval(0,1));
+
+    % model checking
+    if modelCheckTrace(eq,x,t) ~= false
+        error('Analytical test 3 failed!')
+    end
+
+    % different STL formula
+    eq = finally(y(1) >= 0.25, interval(0.2,0.3));
+
+    % model checking
+    if modelCheckTrace(eq,x,t) ~= true
+        error('Analytical test 3 failed!')
+    end   
 
 
     % Random Tests --------------------------------------------------------

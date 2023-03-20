@@ -195,16 +195,18 @@ R = add(add(add(add(R_21,R_22),R_23),R_24),R);
 % Visualization -----------------------------------------------------------
 
 figure; hold on; box on;
+useCORAcolors('CORA:contDynamics')
 
 % plot reachable set
 plot(R,[1,3]);
+plot(R(1).R0,[1,3]);
 
 % plot simulation
 plot(simRes,[1,3]);
 
 % guard set
-plot([0.03 0.03],[-10 90],'r');
-plot([-0.03 -0.03],[-10 90],'r');
+plot(specification(interval([0.03; -10], [0.03; 90])));
+plot(specification(interval([-0.03; -10], [-0.03; 90])));
 
 % formatting
 xlabel('x_1');

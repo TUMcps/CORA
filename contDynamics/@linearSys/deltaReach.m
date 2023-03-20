@@ -57,7 +57,9 @@ end
 
 %reduce zonotope
 Rhom=reduce(Rhom,options.reductionTechnique,options.intermediateOrder);
-RV=reduce(RV,options.reductionTechnique,options.intermediateOrder);
+if ~isnumeric(RV)
+    RV=reduce(RV,options.reductionTechnique,options.intermediateOrder);
+end
 
 
 %total solution

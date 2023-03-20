@@ -83,14 +83,15 @@ xlabel('x_1'); ylabel('x_2');
 hs1 = convert2set(eq.lhs);
 hs2 = convert2set(eq.rhs);
 
-plot(hs1,[1,2],'FaceColor','r','FaceAlpha',0.5);
-plot(hs2,[1,2],'FaceColor','b','FaceAlpha',0.5);
+plot(hs1,[1,2],'FaceColor',colorblind('r'),'FaceAlpha',0.5);
+plot(hs2,[1,2],'FaceColor',colorblind('b'),'FaceAlpha',0.5);
 
 % plot reachable set
-plot(R,[1,2],'FaceColor',[.7 .7 .7]);
+useCORAcolors("CORA:contDynamics")
+plot(R,[1,2],'DisplayName','Reachable set');
 
 % plot initial set
-plot(params.R0,[1,2],'FaceColor','w','EdgeColor','k');
+plot(R.R0,[1,2],'DisplayName','Initial set');
 
 % example completed
 res = true;

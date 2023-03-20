@@ -137,22 +137,26 @@ disp("Plotting..")
 figure; hold on; box on;
 
 % plot specifications
-ss = plot(cartProd(spec.time, interval(spec.set)), [1, 2], 'FaceColor', [0, .8, 0]);
-us = plot(cartProd(spec.time, 1 + 0.4*interval(spec.set)), [1, 2], 'FaceColor', [.8, 0, 0]);
-alpha(us,.5)
+plotOverTime(spec, 1, 'DisplayName', 'Safe set');
+plotOverTime(specification(1 + 0.4*interval(spec.set), 'unsafeSet', spec.time), 1, 'DisplayName', 'Unsafe set');
 
+useCORAcolors("CORA:contDynamics")
 % plot reachable set
 if ~isVio
-    plotOverTime(R, 1, 'FaceColor', [0.7, 0.7, 0.7]);
+    plotOverTime(R, 1, 'DisplayName', 'Reachable set');
+    plotOverTime(R(1).R0, 1, 'DisplayName', 'Initial set');
+else
+    updateColorIndex()
+    updateColorIndex()
 end
 
 % plot simulations
-plotOverTime(simRes, 1, 'k');
+plotOverTime(simRes, 1, 'DisplayName', 'Simulations');
 
 % labels and legend
 xlabel('time');
 ylabel('\theta');
-legend([us, ss], "Unsafe Set", "Safe Set", Location="best");
+legend(Location="best");
 
 % example completed
 completed = true;

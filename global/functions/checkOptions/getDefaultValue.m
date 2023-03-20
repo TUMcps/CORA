@@ -251,7 +251,7 @@ function val = def_W(sys)
 
 val = [];
 if isa(sys,'contDynamics')
-    val = zonotope(zeros(sys.dim,1));
+    val = interval(zeros(sys.dim,1),zeros(sys.dim,1));
 end
 % no assignment for hybridAutomaton / parallelHybridAutomaton
 
@@ -261,7 +261,7 @@ function val = def_V(sys)
 
 val = [];
 if isa(sys,'contDynamics')
-    val = zonotope(zeros(sys.nrOfOutputs,1));
+    val = interval(zeros(sys.nrOfOutputs,1),zeros(sys.nrOfOutputs,1));
 end
 % no assignment for hybridAutomaton / parallelHybridAutomaton
 

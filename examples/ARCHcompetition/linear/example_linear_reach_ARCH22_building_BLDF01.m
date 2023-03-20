@@ -130,7 +130,9 @@ simRes = simulateRandom(sys, params, simOpt);
 
 % Plot 1: time interval t \in [0,1] s
 figure; hold on; box on;
+useCORAcolors('CORA:contDynamics')
 plotOverTime(R1,25);
+plotOverTime(R1.R0,25);
 plotOverTime(simRes,25);
 axis([0, 1, -8e-3, 6e-3])
 xlabel('t');
@@ -140,7 +142,9 @@ box on
 
 % Plot 2: time interval t \in [0,20] s
 figure; hold on; box on;
+useCORAcolors('CORA:contDynamics')
 plotOverTime(R,25);
+plotOverTime(R(1).R0,25);
 plotOverTime(simRes,25);
 axis([0, 20, -8e-3, 6e-3])
 xlabel('t');

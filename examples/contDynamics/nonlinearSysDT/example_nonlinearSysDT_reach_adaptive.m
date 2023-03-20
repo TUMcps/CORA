@@ -29,28 +29,25 @@ n = 6; m = 1;
 dt = 0.05;
 sys = nonlinearSysDT(@tank6EqDT_V1,dt,n,m);
 
-
 % Model parameters --------------------------------------------------------
 
 params.tFinal = 40;
 params.R0 = zonotope([2; 4; 4; 2; 10; 4],0.2*eye(n));
 params.U = zonotope([0,0.005]);
 
-
 % Reachability settings ---------------------------------------------------
 
 options.alg = 'lin-adaptive';
-
 
 % Reachability analysis ---------------------------------------------------
 
 R = reach(sys,params,options);
 
-
 % Visualization -----------------------------------------------------------
 
 figure; hold on;
-plot(R);
-
+useCORAcolors("CORA:contDynamics")
+plot(R,[1 2],'DisplayName','Reachable set')
+plot(R.R0,[1 2],'DisplayName','Initial set')
 
 %------------- END OF CODE --------------

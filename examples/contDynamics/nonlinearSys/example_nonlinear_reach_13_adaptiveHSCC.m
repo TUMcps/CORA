@@ -28,9 +28,6 @@ res = true;
 % plotting
 makePlots = true;
 fontsize = 17;
-setedgeblue = [0.00, 0.45, 0.81];
-setedgegray = [0.50, 0.50, 0.50];
-setfacegray = [0.75, 0.75, 0.75];
 
 tab2 = zeros(2,4);
 
@@ -70,8 +67,10 @@ sysxticks = {[0,5,10],[0,3,6]};
 sysyticks = {[0,3,6],[0,5,10]};
 for p=1:ceil(sys.dim/2)
     subplot(rows,cols,p); hold on; box on;
-    plot(R,projDims{p},'FaceColor',setfacegray,'EdgeColor',setfacegray);
-    plot(simRes,projDims{p},'Color',setedgeblue);
+    useCORAcolors("CORA:contDynamics")
+    plot(R,projDims{p});
+    plot(R(1).R0);
+    plot(simRes,projDims{p});
     if p == 1; plot(params.R0,projDims{p},'r','LineWidth',1.5);
     else;      scatter(0.01,0.01,3,'r','filled');
     end
@@ -90,10 +89,11 @@ sgtitle("Figure 6");
 % time step size
 fig7a = figure; hold on; box on;
 title("Figure 7a");
+useCORAcolors("CORA:default")
 tVec = query(R,'tVec');
 cumsumtVec = cumsum(tVec);
 tVecSteps = [0;repelem(cumsumtVec(1:end-1),2);cumsumtVec(end)];
-plot(tVecSteps,repelem(tVec,2),'Color',setedgeblue);
+plot(tVecSteps,repelem(tVec,2));
 % axes and labels
 ax = gca; ax.FontSize = 11;
 xlabel('t','FontSize',fontsize,'interpreter','latex');
@@ -102,8 +102,9 @@ ylabel('$\Delta t$','FontSize',fontsize,'interpreter','latex');
 % taylor terms (Rlin and Rerr)
 fig7b = figure; hold on; box on;
 title("Figure 7b");
-plot(tVecSteps,repelem(opt.tt_lin,2),'Color',setedgeblue);
-plot(tVecSteps,repelem(opt.tt_err,2),'Color',setedgegray);
+useCORAcolors("CORA:default")
+plot(tVecSteps,repelem(opt.tt_lin,2));
+plot(tVecSteps,repelem(opt.tt_err,2));
 axis([0,params.tFinal,0,max([opt.tt_lin;opt.tt_err])+1]);
 ax = gca; ax.FontSize = 11;
 legend('$\eta_{lin}$','$\eta_{abs}$','Location','northeast','Orientation','horizontal',...
@@ -115,8 +116,9 @@ ylabel('$\eta$','FontSize',fontsize,'interpreter','latex');
 % zonotope order
 fig7c = figure; hold on; box on;
 title("Figure 7c");
+useCORAcolors("CORA:default")
 fullzonorderRtp = sum(opt.zonordersRtp,2);
-plot(tVecSteps,repelem(fullzonorderRtp,2),'Color',setedgeblue);
+plot(tVecSteps,repelem(fullzonorderRtp,2));
 % axes and labels
 axis([0,params.tFinal,0,ceil(1.1*max(fullzonorderRtp))]);
 ax = gca; ax.FontSize = 11;
@@ -175,10 +177,11 @@ if makePlots
 % time step size
 fig8 = figure; sgtitle("Figure 8");
 subplot(2,1,1); hold on; box on;
+useCORAcolors("CORA:default")
 tVec = query(R,'tVec');
 cumsumtVec = cumsum(tVec);
 tVecSteps = [0;repelem(cumsumtVec(1:end-1),2);cumsumtVec(end)];
-plot(tVecSteps,repelem(tVec,2),'Color',setedgeblue);
+plot(tVecSteps,repelem(tVec,2));
 % axes and labels
 % axis([0,params.tFinal,0.9*min(tVec),1.1*max(tVec)]);
 ax = gca; ax.FontSize = 11;
@@ -188,8 +191,9 @@ ylabel('$\Delta t$','FontSize',fontsize,'interpreter','latex');
 
 % zonotope order
 subplot(2,1,2); hold on; box on;
+useCORAcolors("CORA:default")
 fullzonorderRtp = sum(opt.zonordersRtp,2);
-plot(tVecSteps,repelem(fullzonorderRtp,2),'Color',setedgeblue);
+plot(tVecSteps,repelem(fullzonorderRtp,2));
 % axes and labels
 axis([0,params.tFinal,0,ceil(1.1*max(fullzonorderRtp))]);
 ax = gca; ax.FontSize = 11;

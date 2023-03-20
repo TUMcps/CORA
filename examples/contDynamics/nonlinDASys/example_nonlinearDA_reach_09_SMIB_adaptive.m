@@ -179,11 +179,19 @@ end
 % second plot
 figure; hold on; box on;
 
-% plot reachable set
-plot(R);
+projDim = [1, 2];
 
-% plot simulation results
-plot(simRes);
+% plot reachable sets
+useCORAcolors("CORA:contDynamics")
+plot(R,projDim,'DisplayName','Reachable set');
+
+% plot initial set
+plot(R(1).R0,projDim, 'DisplayName','Initial set');
+
+% plot simulation results      
+plot(simRes,projDim,'DisplayName','Simulations');
+
+legend()
 
 
 % examples completed

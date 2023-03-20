@@ -86,7 +86,9 @@ disp(['computation time: ',num2str(tVer + tComp)]);
 figure; hold on; box on;
 
 % plot reachable set
+useCORAcolors("CORA:contDynamics")
 plot(R,[3,4]);
+plot(R(1).R0,[3,4])
 
 % plot tooth of gear
 locs = HA.location;
@@ -94,13 +96,12 @@ trans = locs{1}.transition;
 guard1 = trans{1}.guard;
 guard2 = trans{2}.guard;
 
-hs1 = halfspace(guard1.h.c(3:4),guard1.h.d);
-hs2 = halfspace(guard2.h.c(3:4),guard2.h.d);
+spec = specification({
+    halfspace(guard1.h.c(3:4),guard1.h.d);
+    halfspace(guard2.h.c(3:4),guard2.h.d)
+    });
 
 axis([-2e-2,-3e-3,-1e-2,1e-2]);
-
-plot(hs1,[1,2],'r');
-plot(hs2,[1,2],'r');
-
+plot(spec,[1,2])
 
 %------------- END OF CODE --------------

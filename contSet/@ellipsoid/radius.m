@@ -6,7 +6,7 @@ function r = radius(E,varargin)
 %    r = radius(E,i) returns the i largest radii
 %
 % Inputs:
-%    obj - ellipsoid object
+%    E - ellipsoid object
 %    i - integer > 0
 %
 % Outputs:

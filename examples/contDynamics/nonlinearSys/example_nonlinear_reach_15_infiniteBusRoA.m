@@ -81,18 +81,19 @@ simRes = simulateRandom(sys, params, simOpt);
 % Visualization -----------------------------------------------------------
 
 figure; hold on; box on;
+useCORAcolors("CORA:contDynamics")
 
 % plot reachable sets
 plot(R);
 
 % plot initial set
-plot(params.R0,[1 2],'k','FaceColor','w');
+plot(R(1).R0,[1 2]);
 
 % plot simulation results     
 plot(simRes);
 
 % plot invariant
-plot(E,[1 2],'w','LineWidth',3);
+plot(E,[1 2],'LineWidth',3,'Color',colorblind('g'));
 
 % label plot
 xlabel('a');
@@ -102,8 +103,9 @@ ylabel('b');
 % plot final reachable set
 figure; hold on; box on;
 
-plot(R.timePoint.set{end});
-plot(E,[1 2],'Color',colorblind('r'));
+plot(specification(E, 'safeSet'),[1 2]);
+plot(R.timePoint.set{end},[1,2],'FaceColor',CORAcolor("CORA:reachSet"));
+
 
 
 % example completed

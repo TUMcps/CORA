@@ -263,14 +263,13 @@ for hdot0 = [-19.5, -22.5, -25.5, -28.5]
     title(sprintf('$\\dot{h}_0(0) = %.1f$', hdot0), 'interpreter', 'latex')
 
     % plot specification
-    us = plot(unsafeSet, [3, 1], 'FaceColor', [0.8, 0, 0]);
-    alpha(us, .5)
+    us = plot(specification(unsafeSet), [3, 1]);
 
     % plot reachable set
     rs = plot([], []);
     for i = 1:length(R)
         rs = plot(interval([0, 0, -1; 1, 0, 0]*R{i})+interval([0; 0], [1; 0]),...
-            [1,2],'FaceColor',[.8, .8, .8],'EdgeColor',[.8, .8, .8]);
+            [1,2],'FaceColor',CORAcolor("CORA:reachSet"));
     end
 
     % plot simulations

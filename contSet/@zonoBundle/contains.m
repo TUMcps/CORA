@@ -8,7 +8,11 @@ function res = contains(zB,S,varargin)
 % Inputs:
 %    zB - zonoBundle object
 %    S - contSet object or single point
-%    type - type of containment check ('exact' or 'approx')
+%    type - type of containment check:
+%           'exact': any exact evaluation (see below, default)
+%           'exact:zonotope': check containment for each zonotope
+%           'exact:polytope: convert zB to polytope
+%           'approx'
 %
 % Outputs:
 %    res - true/false
@@ -35,13 +39,13 @@ function res = contains(zB,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval/contains, conZonotope/contains
+% See also: interval/contains, conZonotope/contains, zonotope/contains
 
-% Author:       Niklas Kochdumper
+% Author:       Niklas Kochdumper, Mark Wetzlinger
 % Written:      19-November-2019
 % Last update:  15-November-2022 (MW, return logical array for points)
 %               25-November-2022 (MW, rename 'contains')
-% Last revision:---
+% Last revision:16-March-2023 (MW, restructure, add more types)
 
 %------------- BEGIN CODE --------------
 
@@ -60,42 +64,76 @@ end
 % point or point cloud in zonotope bundle containment
 if isnumeric(S)
     
-    res = false(1,size(S,2));
-    for i = 1:size(S,2)
-        res(i) = contains(conZonotope(zB),S(:,i));
+    if strcmp(type,'exact:polytope')
+        % conversion to polytope
+        res = contains(mptPolytope(zB),S);
+
+    elseif strcmp(type,'exact:zonotope')
+        % check every zonotope individually
+        res = true(1,size(S,2));
+        for i=1:zB.parallelSets
+            res = res & contains(zB.Z{i},S);
+        end
+
+    else % all other types, including approx
+        % conversion to constrained zonotope
+        res = contains(conZonotope(zB),S);
+
     end
     
 % capsule/ellipsoid in zonotope bundle containment
 elseif isa(S,'capsule') || isa(S,'ellipsoid')
+    % same algorithm for all types
     
-    P = mptPolytope(zB);
-    res = contains(P,S); 
-
-else
-    
-    % use the fast but over-approximative or the exact but possibly
-    % slow containment check
-    if strcmp(type,'exact')
-
-        if isa(S,'taylm') || isa(S,'polyZonotope')
-            throw(CORAerror('CORA:noExactAlg',S,"'taylm' or 'polyZonotope'"));
-        elseif isa(S,'interval')
-            res = contains(zB,vertices(S));
-        else
-            P = mptPolytope(zB);
-            res = contains(P,S); 
+    if strcmp(type,'exact:zonotope')
+        % check every zonotope individually
+        res = true(1,size(S,2));
+        for i=1:zB.parallelSets
+            res = res & contains(zB.Z{i},S);
         end
-        
+
     else
-        
-        if isa(S,'taylm') || isa(S,'polyZonotope')
-            P = mptPolytope(zB);
-            res = contains(P,S); 
-        else
-            cZ = conZonotope(zB);
-            res = contains(cZ,S,type);
-        end
+        % default: conversion to polytope
+        P = mptPolytope(zB);
+        res = contains(P,S); 
+
     end
+
+elseif isa(S,'interval')
+
+    if strcmp(type,'exact:polytope')
+        res = contains(mptPolytope(zB),S);
+
+    elseif strcmp(type,'exact:zonotope')
+        % check every zonotope individually
+        res = true(1,size(S,2));
+        for i=1:zB.parallelSets
+            res = res & contains(zB.Z{i},S);
+        end
+    
+    else % all other types: check every vertex
+        res = all(contains(zB,vertices(S)));
+
+    end
+
+elseif isa(S,'taylm') || isa(S,'polyZonotope')
+
+    % no exact algorithm
+    if contains(type,'exact')
+        throw(CORAerror('CORA:noExactAlg',zB,S));
+    end
+
+    % approx method via conversion to polytope
+    res = contains(mptPolytope(zB),S);
+
+else % all other classes
+
+    if contains(type,'exact')
+        res = contains(mptPolytope(zB),S);
+    elseif strcmp(type,'approx')
+        res = contains(conZonotope(zB),S,type);
+    end
+
 end
 
 %------------- END OF CODE --------------

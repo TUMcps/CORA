@@ -41,11 +41,23 @@ NVpairs = readPlotOptions(varargin(2:end),'simResult');
 % check which trajectory has to be plotted
 whichtraj = checkTraj(simRes,whichtraj);
 
+% save color index
+oldColorIndex = gca().ColorOrderIndex;
+
 % loop over all simulated trajectories
 hold on
 for i = 1:length(simRes.(whichtraj))
-    han = plot(simRes.t{i},simRes.(whichtraj){i}(:,dims),NVpairs{:});
+    han_i = plot(simRes.t{i},simRes.(whichtraj){i}(:,dims),NVpairs{:});
+
+    if i == 1
+        han = han_i;
+        % don't display subsequent plots in legend
+        NVpairs = [NVpairs, {'HandleVisibility','off'}];
+    end
 end
+
+% correct color index
+updateColorIndex(oldColorIndex);
 
 if nargout == 0
     clear han;

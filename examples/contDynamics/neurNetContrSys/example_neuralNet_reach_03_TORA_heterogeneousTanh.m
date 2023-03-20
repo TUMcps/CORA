@@ -131,25 +131,27 @@ disp(['Total Time: ', num2str(tSim+tVio+tComp+tVeri)]);
 
 disp("Plotting..")
 figure; hold on; box on;
+projDims = [1, 2];
 
 % plot specifications
-ss = plot(spec.set, [1, 2], 'FaceColor', [0, .8, 0]);
+plot(spec, projDims, 'DisplayName', 'Safe set');
 
 % plot reachable set
-rs = plot(R, [1, 2], 'FaceColor', [.7, .7, .7]);
+useCORAcolors("CORA:contDynamics")
+ plot(R, projDims, 'DisplayName', 'Reachable set');
 
 % plot initial set
-is = plot(R0, [1, 2], 'FaceColor', 'w', 'EdgeColor', 'k');
+plot(R(1).R0, projDims, 'DisplayName', 'Initial set');
 
 % plot simulations
-sims = plot(simRes, [1, 2], 'k');
+plot(simRes, projDims, 'DisplayName', 'Simulations');
 
 % labels, limits, and legend
 xlabel('$x_1$ (distance)', 'interpreter', 'latex');
 ylabel('$x_2\ (\dot{x_1})$', 'interpreter', 'latex')
 xlim([-1.5, 1.5]);
 ylim([-1.5, 1.5]);
-legend([ss, rs, is, sims], "Goal Set", "Reachable Set", "Initial Set", "Simulations")
+legend()
 
 % example completed
 completed = true;
