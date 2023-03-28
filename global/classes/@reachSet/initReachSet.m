@@ -40,8 +40,6 @@ end
 % premature exit, e.g., because of specification violation)
 if ~isempty(timeInt) && isempty(timeInt.set{end})
     ind = ~cellfun('isempty',timeInt.set);
-    timePoint.set = timePoint.set(ind);
-    timePoint.time = timePoint.time(ind);
     timeInt.set = timeInt.set(ind);
     timeInt.time = timeInt.time(ind);
     if isfield(timeInt,'algebraic')

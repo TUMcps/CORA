@@ -57,7 +57,8 @@ end
 whichtraj = checkTraj(simRes,whichtraj);
 
 % save color index
-oldColorIndex = gca().ColorOrderIndex;
+ax = gca();
+oldColorIndex = ax.ColorOrderIndex;
 
 % loop over all simulated trajectories
 hold on

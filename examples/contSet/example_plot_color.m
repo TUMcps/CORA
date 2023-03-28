@@ -18,7 +18,7 @@ function example_plot_color()
 
 % Author:        Tobias Ladner
 % Written:       28-February-2023
-% Last update:   ---
+% Last update:   24-March-2023
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -42,13 +42,17 @@ for i=1:4
     Z = M * Z;
 end
 
-% specify color
-plot(Z, [1 2], 'g', 'DisplayName', 'Green')
+% specify color via LineSpec
+% see also https://www.mathworks.com/help/matlab/ref/plot.html#btzitot_sep_mw_3a76f056-2882-44d7-8e73-c695c0c54ca8
+plot(Z, [1 2], 'g--', 'DisplayName', 'Green')
 Z = M * Z;
 
-% or fill
-plot(Z, [1 2], 'EdgeColor', 'k', 'FaceColor', [0 0.4470 0.7410], ...
-    'DisplayName', 'Filled')
+% or using EdgeColor
+plot(Z, [1 2], 'EdgeColor', [0 0 1], 'DisplayName', 'EdgeColor')
+Z = M * Z;
+
+% or fill using FaceColor
+plot(Z, [1 2], 'FaceColor', [1 0 0], 'DisplayName', 'FaceColor')
 Z = M * Z;
 
 for i=1:7
@@ -68,7 +72,28 @@ newcolors = [0 0.5 1; 0.5 0 1; 0.7 0.7 0.7];
 colororder(newcolors)
 
 Z = Z0;
-for i=1:13
+for i=1:3
+    plot(Z, [1 2], 'DisplayName', 'Default')
+    Z = M * Z;
+end
+
+% or explicitly specify the EdgeColor with CORAcolor('CORA:next')
+for i=1:3
+    plot(Z, [1 2], 'EdgeColor', CORAcolor('CORA:next'), ...
+        'DisplayName', 'EdgeColor')
+    Z = M * Z;
+end
+
+
+% or fill with 'FaceColor' and CORAcolor('CORA:next')
+for i=1:3
+    plot(Z, [1 2], 'FaceColor', CORAcolor('CORA:next'), ...
+        'DisplayName', 'FaceColor')
+    Z = M * Z;
+end
+
+% back to default
+for i=1:5
     plot(Z, [1 2], 'DisplayName', 'Default')
     Z = M * Z;
 end

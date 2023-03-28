@@ -33,7 +33,8 @@ NVpairs = readPlotOptions(varargin(2:end));
 mintimestep = Inf; maxtimestep = -Inf; cumsummin = Inf; cumsummax = -Inf;
 
 % save color index
-oldColorIndex = gca().ColorOrderIndex;
+ax = gca();
+oldColorIndex = ax.ColorOrderIndex;
 
 hold on; box on;
 % loop over all branches in R

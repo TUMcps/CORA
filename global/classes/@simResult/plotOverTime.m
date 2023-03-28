@@ -24,9 +24,9 @@ function han = plotOverTime(simRes,varargin)
 %
 % See also: simResult, simulateRandom, plot
 
-% Author:       Niklas Kochdumper
+% Author:       Niklas Kochdumper, Tobias Ladner
 % Written:      06-June-2020
-% Last update:  ---
+% Last update:  22-March-2023 (TL: fixed bug for class arrays)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -42,17 +42,21 @@ NVpairs = readPlotOptions(varargin(2:end),'simResult');
 whichtraj = checkTraj(simRes,whichtraj);
 
 % save color index
-oldColorIndex = gca().ColorOrderIndex;
+ax = gca();
+oldColorIndex = ax.ColorOrderIndex;
 
 % loop over all simulated trajectories
 hold on
-for i = 1:length(simRes.(whichtraj))
-    han_i = plot(simRes.t{i},simRes.(whichtraj){i}(:,dims),NVpairs{:});
-
-    if i == 1
-        han = han_i;
-        % don't display subsequent plots in legend
-        NVpairs = [NVpairs, {'HandleVisibility','off'}];
+for i = 1:length(simRes)
+    sim_i = simRes(i);
+    for j = 1:length(sim_i.(whichtraj))
+        han_i = plot(sim_i.t{j},sim_i.(whichtraj){j}(:,dims),NVpairs{:});
+    
+        if i == 1 && j == 1
+            han = han_i;
+            % don't display subsequent plots in legend
+            NVpairs = [NVpairs, {'HandleVisibility','off'}];
+        end
     end
 end
 

@@ -148,7 +148,8 @@ else
     hold on
 
     % save color index
-    oldColorIndex = gca().ColorOrderIndex;
+    ax = gca();
+    oldColorIndex = ax.ColorOrderIndex;
 
     for i = 1:size(R,1)
 

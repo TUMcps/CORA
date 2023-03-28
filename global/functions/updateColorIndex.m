@@ -22,7 +22,8 @@ function updateColorIndex(oldColorIndex)
 %------------- BEGIN CODE --------------
 
 if nargin < 1
-    oldColorIndex = gca().ColorOrderIndex;
+    ax = gca();
+    oldColorIndex = ax.ColorOrderIndex;
 end
 
 % reset to old index

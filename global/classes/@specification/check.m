@@ -1,18 +1,19 @@
-function [res,ind] = check(spec,S,varargin)
+function [res,indSpec,indObj] = check(spec,S,varargin)
 % check - checks if a set satisfies the specification
 %
 % Syntax:  
-%    [res,ind] = check(spec,S)
-%    [res,ind] = check(spec,S,time)
+%    [res,indSpec,indObj] = check(spec,S)
+%    [res,indSpec,indObj] = check(spec,S,time)
 %
 % Inputs:
 %    spec - specification object
-%    S - contSet or reachSet object
+%    S - numeric, contSet, reachSet, or simResult object
 %    time - time interval for the reachable set (class: interval)
 %
 % Outputs:
 %    res - true/false whether set satisfies the specification
-%    ind - index of the specification that is violated
+%    indSpec - index of the first specification that is violated
+%    indObj - index of the first object S that is violated
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -20,144 +21,212 @@ function [res,ind] = check(spec,S,varargin)
 %
 % See also: specification
 
-% Author:       Niklas Kochdumper
+% Author:       Niklas Kochdumper, Tobias Ladner
 % Written:      29-May-2020             
-% Last update:  ---
+% Last update:  22-March-2022 (TL: simResult, indObj)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    res = true;
+% parse input arguments
+if nargin < 2
+    throw(CORAerror("CORA:notEnoughInputArgs", 2))
+elseif nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs', 3))
+end
+time = setDefaultValues({[]}, varargin);
 
-    % parse input arguments
-    ind = []; time = [];
-    
-    if nargin > 2 && ~isempty(varargin{1})
-        time = varargin{1}; 
+% init outputs
+res = true; indSpec = []; indObj = [];
+
+% start checking ----------------------------------------------------------
+
+% split into temporal logic and other specifications
+[spec,specLogic] = splitLogic(spec);
+
+% check temporal logic ----------------------------------------------------
+
+if ~isempty(specLogic)
+    for i = 1:size(specLogic,1)
+        res = checkLogic(specLogic(i,1).set,S,time);
+        if ~res
+            indSpec = 1; return;
+        end
     end
+    if ~isempty(spec)
+        res = check(spec,S,time);
+    end
+end
 
-    % split into temporal logic and other specifications
-    [spec,specLogic] = splitLogic(spec);
+% check other specification -----------------------------------------------
 
-    if ~isempty(specLogic)
-        for i = 1:size(specLogic,1)
-            res = checkLogic(specLogic(i,1).set,S,time);
+% check S object
+if isnumeric(S) % ---------------------------------------------------------
+    
+    % check if single or multiple points are provided
+    if size(S,2) > 1
+        % multiple points
+        for i = 1:size(S,2)
+            [res,indSpec] = check(spec,S(:,i),time(i));
             if ~res
-                ind = 1; return;
-            end
-        end
-        if ~isempty(spec)
-            res = check(spec,S,time);
-        end
-    end
-    
-    % check if set or single point is provided
-    if isnumeric(S)
-        
-        % check if single or multiple points are provided
-        if size(S,2) > 1
-            for i = 1:size(S,2)
-                [res,ind] = check(spec,S(:,i));
-                if ~res
-                    return; 
-                end
-            end
-        else
-            
-            % loop over all specifications
-            for i = 1:size(spec,1)
-
-                % check if time frames overlap
-                if isempty(time) && ~isempty(spec(i,1).time)
-                    throw(CORAerror('CORA:specialError',...
-                        'Timed specifications require a time interval.')); 
-                end
-
-                if isempty(spec(i,1).time) || contains(spec(i,1).time,time)
-
-                    % different types of specifications
-                    switch spec(i,1).type
-
-                        case 'invariant'
-                            res = contains(spec(i,1).set,S);
-
-                        case 'unsafeSet'
-                            res = ~contains(spec(i,1).set,S);
-
-                        case 'safeSet'
-                            res = contains(spec(i,1).set,S);
-
-                        case 'custom'
-                            res = checkCustom(spec(i,1).set,S);
-                    end
-
-                    % return as soon as one specification is violated
-                    if ~res
-                        ind = i; return;
-                    end
-                end
-            end
-            
-        end
-        
-    elseif isa(S,'reachSet')
-
-        % loop over all specifications
-        for i = 1:size(spec,1)
-
-            % loop over all reachable sets
-            for k = 1:size(S,1)
-                for j = 1:length(S(k).timeInterval.set)
-                    [res,ind] = check(spec(i,1),S(k).timeInterval.set{j});
-                    if ~res
-                        ind = i; return; 
-                    end
-                end
+                indObj = i;
+                return; 
             end
         end
 
     else
-
+        % single point
+        
         % loop over all specifications
         for i = 1:size(spec,1)
+            spec_i = spec(i);
 
             % check if time frames overlap
-            if isempty(time) && ~isempty(spec(i,1).time)
+            if isempty(time) && ~isempty(spec_i.time)
                 throw(CORAerror('CORA:specialError',...
                     'Timed specifications require a time interval.')); 
             end
 
-            if isempty(spec(i,1).time) || isIntersecting(spec(i,1).time,time)
+            if isempty(spec_i.time) || contains(spec_i.time,time)
 
                 % different types of specifications
-                switch spec(i,1).type
+                switch spec_i.type
 
                     case 'invariant'
-                        res = checkInvariant(spec(i,1).set,S);
+                        res = contains(spec_i.set,S);
 
                     case 'unsafeSet'
-                        res = checkUnsafeSet(spec(i,1).set,S);
+                        res = ~contains(spec_i.set,S);
 
                     case 'safeSet'
-                        res = checkSafeSet(spec(i,1).set,S);
+                        res = contains(spec_i.set,S);
 
                     case 'custom'
-                        res = checkCustom(spec(i,1).set,S);
+                        res = aux_checkCustom(spec_i.set,S);
                 end
 
                 % return as soon as one specification is violated
                 if ~res
-                    ind = i; return;
+                    indSpec = i; 
+                    indObj = 1;
+                    return;
                 end
+            end
+        end
+    end
+    
+elseif isa(S,'simResult') % -----------------------------------------------
+
+    % loop over all simulations
+    for i = 1:length(S)
+        S_i = S(i);
+        for k = 1:length(S_i.x)
+            [res,indSpec] = check(spec, S_i.x{k}', interval(S_i.t{k}));
+            if ~res
+                indObj = {i,k};
+                return; 
+            end
+        end
+    end
+    
+elseif isa(S,'reachSet') % ------------------------------------------------
+
+    % loop over all specifications
+    for i = 1:size(spec,1)
+        spec_i = spec(i);
+
+        % loop over all reachable sets
+        for k = 1:size(S,1)
+
+            timePoint = S(k).timePoint;
+            timeInterval = S(k).timeInterval;
+
+            for j = 1:length(timeInterval.set)
+                % where is the specification active?
+
+                if isempty(spec_i.time) % entire time horizon
+                    res = check(spec_i, timeInterval.set{j});
+
+                elseif rad(spec_i.time) > 0 % part of time horizon
+                    res = check(spec_i, ...
+                        timeInterval.set{j}, ...
+                        timeInterval.time{j});
+
+                else % only active in one time point
+                    % check if its on boundary of timeInterval
+                    if contains(spec_i.time, timePoint.time{j})
+                        % only start of time interval
+                        res = check(spec_i, ...
+                            timePoint.set{j}, ...
+                            interval(timePoint.time{j}));
+
+                    elseif contains(spec_i.time, timePoint.time{j+1})
+                        % only end of time interval
+                        res = check(spec_i, ...
+                            timePoint.set{j+1}, ...
+                            interval(timePoint.time{j+1}));
+
+                    else % intermediate
+                        res = check(spec_i, ...
+                            timeInterval.set{j}, ...
+                            timeInterval.time{j});
+                    end
+                end
+
+                if ~res
+                    indSpec = i; 
+                    indObj = {k,j};
+                    return; 
+                end
+            end
+        end
+    end
+
+else % contSet ------------------------------------------------------------
+
+    % loop over all specifications
+    for i = 1:size(spec,1)
+        spec_i = spec(i);
+
+        % check if time frames overlap
+        if isempty(time) && ~isempty(spec_i.time)
+            throw(CORAerror('CORA:specialError',...
+                'Timed specifications require a time interval.')); 
+        end
+
+        if isempty(spec_i.time) || isIntersecting(spec_i.time,time)
+
+            % different types of specifications
+            switch spec_i.type
+
+                case 'invariant'
+                    res = aux_checkInvariant(spec_i.set,S);
+
+                case 'unsafeSet'
+                    res = aux_checkUnsafeSet(spec_i.set,S);
+
+                case 'safeSet'
+                    res = aux_checkSafeSet(spec_i.set,S);
+
+                case 'custom'
+                    res = aux_checkCustom(spec_i.set,S);
+            end
+
+            % return as soon as one specification is violated
+            if ~res
+                indSpec = i; 
+                indObj = 1;
+                return;
             end
         end
     end
 end
 
+end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function res = checkUnsafeSet(set,S)
+function res = aux_checkUnsafeSet(set,S)
 % check if reachable set intersects the unsafe sets
 
     if iscell(S)
@@ -181,7 +250,7 @@ function res = checkUnsafeSet(set,S)
     end
 end
 
-function res = checkSafeSet(set,S)
+function res = aux_checkSafeSet(set,S)
 % check if reachable set is inside the safe set
 
     if iscell(S)
@@ -197,7 +266,7 @@ function res = checkSafeSet(set,S)
     end
 end
 
-function res = checkCustom(func,S)
+function res = aux_checkCustom(func,S)
 % check if the reachable set satisfies a user provided specification
 
     if iscell(S)
@@ -213,7 +282,7 @@ function res = checkCustom(func,S)
     end
 end
 
-function res = checkInvariant(set,S)
+function res = aux_checkInvariant(set,S)
 % check if reachable set intersects the invariant
 
     if iscell(S)
