@@ -247,7 +247,7 @@
   {
      "inputs":
      [
-        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:initialSet','CORA:finalSet', 'CORA:simulations','CORA:unsafe','CORA:safe','CORA:highlight1','CORA:highlight2'}"], "purpose":"ID of CORA color"}
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:initialSet','CORA:finalSet', 'CORA:simulations','CORA:unsafe','CORA:safe','CORA:highlight1','CORA:highlight2', 'CORA:next'}"], "purpose":"ID of CORA color"}
      ]
   }
 }

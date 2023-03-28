@@ -245,8 +245,12 @@ end
 
 % transform scalar identity matrix to matrix
 B = sys.B;
-if isscalar(B) && B == 1
-    B = eye(sys.dim);
+if isscalar(B)
+    if B == 1
+        B = eye(sys.dim);
+    elseif B == 0
+        B = zeros(sys.dim);
+    end
 end
 
 % options.originContained = false;

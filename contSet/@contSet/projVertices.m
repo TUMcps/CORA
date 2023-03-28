@@ -55,6 +55,10 @@ S = project(S,dims);
 
 % init vertices
 V = [];
+if isemptyobject(S) || isempty(S)
+    % no vertices if set is empty
+    return
+end
 
 % figure; blobsize = 24; subplot(1,2,1); hold on;
 

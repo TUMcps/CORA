@@ -33,7 +33,8 @@ NVpairs = readPlotOptions(varargin(2:end));
 mintimestep = Inf; maxtimestep = -Inf; cumsummin = Inf; cumsummax = -Inf;
 
 % save color index
-oldColorIndex = gca().ColorOrderIndex;
+ax = gca();
+`oldColorIndex = ax.ColorOrderIndex;
 
 % loop over all simulations
 nrSim = length(simRes.t);

@@ -39,16 +39,15 @@ function han = plot(pZ,varargin)
 %               14-July-2020 (MW, merge with plotFilled)
 %               25-May-2022 (TL: 1D Plotting)
 %               23-February-2023 (TL: enlarge polygon if 2 regions)
+%               23-March-2023 (TL: bugfix Splits=0, clean up)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
+% parse input
+
 % default values for the optional input arguments
 dims = setDefaultValues({[1,2]},varargin);
-
-% check input arguments
-inputArgsCheck({{pZ,'att','polyZonotope'};
-                {dims,'att','numeric',{'nonempty','integer','positive','vector'}}});
 
 % read additional name-value pairs
 NVpairs = readPlotOptions(varargin(2:end));
@@ -56,6 +55,12 @@ NVpairs = readPlotOptions(varargin(2:end));
 [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar',10);
 % read out 'FaceColor' to decide plot/fill call where necessary
 [~,facecolor] = readNameValuePair(NVpairs,'FaceColor');
+
+% check input arguments
+inputArgsCheck({{pZ,'att','polyZonotope'};
+    {dims,'att','numeric',{'nonempty','integer','positive','vector'}}; ...
+    {splits,'att','numeric',{'scalar','integer','nonnegative'}} ...
+});
 
 % check dimension
 if length(dims) < 1
@@ -91,15 +96,19 @@ if length(dims) == 2
     
     % split the polynomial zonotope multiple times to obtain a better 
     % over-approximation of the real shape
+
+    % init with no split
     pZsplit{1} = pZ;
-    [polyPrev,V] = getPolygon(pZ);
+    [polyUnion,V] = aux_getPolygon(pZ);
+    polyPrev = polyUnion;
     Vlist{1} = V;
 
     for i=1:splits
         
+        % construct new polygon
         pZnew = [];
         Vnew = [];
-        polyAll = [];
+        polyUnion = [];
         
         for j = 1:length(pZsplit)
             
@@ -110,11 +119,11 @@ if length(dims) == 2
                 res = splitLongestGen(pZsplit{j});
                 
                 % compute the corresponding polygons
-                [poly1,V1] = getPolygon(res{1});
+                [poly1,V1] = aux_getPolygon(res{1});
                 pZnew{end+1} = res{1};
                 Vnew{end+1} = V1;
                 
-                [poly2,V2] = getPolygon(res{2});
+                [poly2,V2] = aux_getPolygon(res{2});
                 pZnew{end+1} = res{2};
                 Vnew{end+1} = V2;
                 
@@ -124,24 +133,24 @@ if length(dims) == 2
             else
                 
                 % compute polygon
-                [poly,V] = getPolygon(pZsplit{j});
+                [poly,V] = aux_getPolygon(pZsplit{j});
                 pZnew{end+1} = pZsplit{j};
                 Vnew{end+1} = V;
             end
             
             % unite with previous polygons
-            if isempty(polyAll)
-                polyAll = poly;
+            if isempty(polyUnion)
+                polyUnion = poly;
             else
-                polyAll = union(polyAll,poly);
+                polyUnion = union(polyUnion,poly);
             end
 
-            if polyAll.NumRegions >= 2
+            if polyUnion.NumRegions >= 2
                 % might be due to numeric instability
                 % enlargen polygon slightly
-                polyAll_ = polybuffer(polyAll, 1e-8);
-                if polyAll_.NumRegions < polyAll.NumRegions
-                    polyAll = polyAll_;
+                polyUnion_ = polybuffer(polyUnion, 1e-8);
+                if polyUnion_.NumRegions < polyUnion.NumRegions
+                    polyUnion = polyUnion_;
                 end
             end
         end
@@ -149,15 +158,15 @@ if length(dims) == 2
         % update lists
         pZsplit = pZnew;
         Vlist = Vnew;
-        polyPrev = polyAll;
+        polyPrev = polyUnion;
     end
 
     warning(warOrig);
 
-    if size(polyAll.Vertices,1) > 0
+    if size(polyUnion.Vertices,1) > 0
         % add first point to end to close polygon
-        xVals = [polyAll.Vertices(:,1);polyAll.Vertices(1,1)];
-        yVals = [polyAll.Vertices(:,2);polyAll.Vertices(1,2)];
+        xVals = [polyUnion.Vertices(:,1);polyUnion.Vertices(1,1)];
+        yVals = [polyUnion.Vertices(:,2);polyUnion.Vertices(1,2)];
     else
         % if e.g. all generators are collinear
         V = cell2mat(Vlist);
@@ -204,7 +213,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function [poly,V] = getPolygon(pZ)
+function [poly,V] = aux_getPolygon(pZ)
 % enclose polynomial zonotope with a polygon
 
     % zonotope over-approximation

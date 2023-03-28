@@ -37,6 +37,7 @@ function NVpairs = readPlotOptions(plotOptions,varargin)
 % Last update:   29-October-2021 (only name-value pairs as output args)
 %                01-June-2022 (allow empty plotOptions as input argument)
 %                28-February-2023 (TL: use axis default colors)
+%                24-March-2023 (TL: defaultPlotColor)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -149,7 +150,7 @@ if ~isempty(filled)
 end
 % note: filled is overruled if 'FaceColor' is provided
 if strcmp(facecolor, 'default')
-    facecolor = aux_defaultPlotColor();
+    facecolor = defaultPlotColor();
 end
 
 % different handling depending on object that will be plotted
@@ -166,7 +167,7 @@ switch purpose
         elseif (~isempty(filled) && ~filled) || ~isempty(edgecolor)
             NVpairs = [NVpairs, 'FaceColor', 'none'];
         else
-            NVpairs = [NVpairs, 'FaceColor', aux_defaultPlotColor()];
+            NVpairs = [NVpairs, 'FaceColor', defaultPlotColor()];
         end
         % edgecolor order: 'EdgeColor' > 'Color' > same as facecolor
         if ~isempty(edgecolor)
@@ -176,7 +177,7 @@ switch purpose
         elseif ~isempty(facecolor)
             NVpairs = [NVpairs, 'EdgeColor', facecolor];
         else
-            NVpairs = [NVpairs, 'EdgeColor', aux_defaultPlotColor()];
+            NVpairs = [NVpairs, 'EdgeColor', defaultPlotColor()];
         end
 
     case 'initialSet'
@@ -195,7 +196,7 @@ switch purpose
         elseif ~isempty(color)
             NVpairs = [NVpairs, 'FaceColor', color];
         else
-            NVpairs = [NVpairs, 'FaceColor', aux_defaultPlotColor()];
+            NVpairs = [NVpairs, 'FaceColor', defaultPlotColor()];
         end
     
     case 'simResult'
@@ -203,7 +204,7 @@ switch purpose
         if ~isempty(color)
             NVpairs = [NVpairs, 'Color', color];
         else
-            NVpairs = [NVpairs, 'Color', aux_defaultPlotColor()];
+            NVpairs = [NVpairs, 'Color', defaultPlotColor()];
         end
    
     case 'polygon'
@@ -223,7 +224,7 @@ switch purpose
         elseif ~isempty(facecolor)
             NVpairs = [NVpairs, 'EdgeColor', facecolor];
         else
-            NVpairs = [NVpairs, 'EdgeColor', aux_defaultPlotColor()];
+            NVpairs = [NVpairs, 'EdgeColor', defaultPlotColor()];
         end
         
         % Marker not supported by polygon
@@ -290,7 +291,7 @@ switch purpose
         elseif ~isempty(color)
             NVpairs = [NVpairs, 'FaceColor', color];
         else
-            NVpairs = [NVpairs, 'FaceColor', aux_defaultPlotColor()];
+            NVpairs = [NVpairs, 'FaceColor', defaultPlotColor()];
         end
         % edgecolor order: always 'none'
         NVpairs = [NVpairs, 'EdgeColor', 'none'];
@@ -304,7 +305,7 @@ switch purpose
         elseif ~isempty(color)
             NVpairs = [NVpairs, 'EdgeColor', color];
         else
-            NVpairs = [NVpairs, 'EdgeColor', aux_defaultPlotColor()];
+            NVpairs = [NVpairs, 'EdgeColor', defaultPlotColor()];
         end
 
     case 'none'
@@ -326,7 +327,7 @@ switch purpose
             filledWarning(filled,facecolor);
         else
             % only color: 'EdgeColor' > 'Color' > default color
-            usedColor = aux_defaultPlotColor();
+            usedColor = defaultPlotColor();
             if ~isempty(edgecolor)
                 usedColor = edgecolor;
             elseif ~isempty(color)
@@ -368,19 +369,6 @@ if ~filled && ~isempty(facecolor)
     end
 end
 
-end
-
-function color = aux_defaultPlotColor()
-    % returns next color according to the color order of the current axis
-    % see colororder
-
-    % read current color order
-    ax = gca;
-    colorOrder = ax.ColorOrder;
-    colorIndex = ax.ColorOrderIndex;
-
-    % select color
-    color = colorOrder(colorIndex, :);
 end
 
 function NVpairs = aux_convertHex2Dec(NVpairs, label)

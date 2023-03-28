@@ -17,7 +17,7 @@ function useCORAcolors(identifier, varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: CORAcolor
+% See also: CORAcolor, colororder
 
 % Author:       Tobias Ladner
 % Written:      01-March-2023
@@ -66,8 +66,9 @@ switch identifier
             CORAcolor('CORA:simulations');
         ];
 end
-colororder(colors)
-set(gca, 'ColorOrderIndex', 1);
+
+set(gca(), 'ColorOrder', colors); 
+set(gca(), 'ColorOrderIndex', 1);
 
 end
 

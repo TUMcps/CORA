@@ -14,6 +14,7 @@ function color = CORAcolor(identifier, varargin)
 %       - 'CORA:safe'
 %       - 'CORA:highlight1': orange
 %       - 'CORA:highlight2': blue
+%       - 'CORA:next': next color according to colororder
 %    varargin - depends on identifier, see below
 %
 % Outputs:
@@ -27,7 +28,7 @@ function color = CORAcolor(identifier, varargin)
 
 % Author:       Tobias Ladner
 % Written:      02-March-2023
-% Last update:  ---
+% Last update:  24-March-2023 ('CORA:next')
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -38,7 +39,7 @@ end
 inputArgsCheck({{identifier, 'str', {'CORA:reachSet', ...
     'CORA:initialSet', 'CORA:finalSet', 'CORA:simulations', ...
     'CORA:unsafe','CORA:safe', ...
-    'CORA:highlight1','CORA:highlight2'}}})
+    'CORA:highlight1','CORA:highlight2', 'CORA:next'}}})
 
 color = [0 0 0]; % default
 
@@ -86,6 +87,9 @@ switch identifier
         color = [1.0000 0.6824 0.2980]; % orange
     case 'CORA:highlight2'
         color = [0.3804 0.6275 1.0000]; % light blue
+    case 'CORA:next'
+        color = defaultPlotColor();
+        
 end
     
 end

@@ -58,6 +58,7 @@ try
     plot(pZ,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
     
     % three arguments: object, dimensions, NVpair 'Splits'
+    plot(pZ,[1,2],'Splits',0);
     plot(pZ,[1,2],'Splits',6);
     plot(pZ,[1,2],'Splits',6,'LineWidth',2);
     plot(pZ,[1,2],'Splits',6,'EdgeColor','k','FaceColor',[.8 .8 .8]);
