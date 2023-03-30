@@ -64,9 +64,9 @@ if n<m
     %apply same transform to zonotope
     Zt = T*Z0;
     if ~doExact
-        lambda = norm(zonotope([zeros(n,1),generators(Zt)]),2,'ub_convex');
+        lambda = norm_(zonotope([zeros(n,1),generators(Zt)]),2,'ub_convex');
     else
-        lambda = norm(zonotope([zeros(n,1),generators(Zt)]),2,'exact');
+        lambda = norm_(zonotope([zeros(n,1),generators(Zt)]),2,'exact');
     end
     %since transformed zonotope is still contained in transf. ellipsoid and
     %since radius of said ell. =1, we can choose radius of ell =

@@ -42,7 +42,7 @@ if isnumeric(I)
     if I.inf >= 0 
         I.inf = sqrt(I.inf);
         I.sup = sqrt(I.sup);
-    elseif I.inf < 0 &&  I.sup >= 0
+    elseif I.inf < 0 && I.sup >= 0
         I.inf = NaN;
         I.sup = sqrt(I.sup);
     else

@@ -31,7 +31,7 @@ function [iAxis,relImpr] = evaluateRotations(V,deltaAngle)
 
 %compute volume before rotation
 IH=interval.enclosePoints(V);
-origVol=volume(IH);
+origVol=volume_(IH);
 
 % %obtain rotation center
 % c=center(IH);
@@ -56,8 +56,8 @@ for iRot=1:(dim-1)
     IH2=interval(Vrot2);
     
     %compute enclosing volume
-    vol1(iRot)=volume(IH1);
-    vol2(iRot)=volume(IH2);
+    vol1(iRot)=volume_(IH1);
+    vol2(iRot)=volume_(IH2);
 end
 
 [val1,indx1]=sort(vol1);

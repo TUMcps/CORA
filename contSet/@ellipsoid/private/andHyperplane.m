@@ -44,7 +44,7 @@ if ~isFullDim(E)
     % check if E.Q is all zero
     if nt==0
         % if E is 0-d, the result is either E.q if E.q\in H, or empty set
-        if contains(H,E.q)
+        if contains_(H,E.q,'exact',0)
             E = ellipsoid(zeros(n),E.q);
         else
             E = ellipsoid;
@@ -79,7 +79,7 @@ if n_nd==1
     x_max = max(abs(xH));
     r_xH = x_max*E.TOL;
     IntE_TOL = IntE + interval(-r_xH,r_xH);
-    if ~contains(IntE_TOL,xH)
+    if ~contains_(IntE_TOL,xH,'exact',0)
         E = ellipsoid;
         return;
     end

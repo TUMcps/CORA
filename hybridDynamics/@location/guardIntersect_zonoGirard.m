@@ -374,12 +374,12 @@ function [lb,ub] = robustProjection(D,n,gamma,lb,ub)
     end
 end
 
-function Z = tightenSet(Z,poly)
+function Z = tightenSet(Z,P)
 % remove the parts of the interval that are located outside the inequality
 % constraints C*x <= d of the constrained hyperplane
 
     % check if the zonotope fullfills the constraints
-    if ~isIntersecting(poly,Z,'approx')
+    if ~isIntersecting_(P,Z,'approx')
         Z = [];
         return;
     end
@@ -388,7 +388,7 @@ function Z = tightenSet(Z,poly)
     cZ = conZonotope(Z);
     
     % intersect the constrained zonotope with the polytope
-    cZ = cZ & poly;
+    cZ = and_(cZ,P,'exact');
     
     % tighten the domain of the zonotope factors
     try

@@ -99,8 +99,11 @@ function Zred = reduceUnderApproxLinProg(Z,order)
     [A,b,Aeq,beq,lb,ub,f,ind] = containmentConstraints(Z2,Z1);
     
     % solve linear program
-    options = optimoptions('linprog','Algorithm','interior-point', ...
-                           'MaxIterations',10000,'display','off');
+    persistent options
+    if isempty(options)
+        options = optimoptions('linprog','Algorithm','interior-point', ...
+                               'MaxIterations',10000,'display','off');
+    end
 
     [s,~,exitflag] = linprog(f',A,b,Aeq,beq,lb,ub,options);
     
@@ -128,8 +131,11 @@ function Zred = reduceUnderApproxScale(Z,order)
     [A,b,Aeq,beq,lb,ub,f,ind] = containmentConstraints(Z_,Z);
     
     % solve linear program
-    options = optimoptions('linprog','Algorithm','interior-point', ...
-                           'MaxIterations',10000,'display','off');               
+    persistent options
+    if isempty(options)
+        options = optimoptions('linprog','Algorithm','interior-point', ...
+                               'MaxIterations',10000,'display','off');
+    end             
                        
     [s,~,exitflag] = linprog(f',A,b,Aeq,beq,lb,ub,options);
     

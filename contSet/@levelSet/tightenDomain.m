@@ -115,7 +115,7 @@ function int = contractorLinear(obj,int,maxIter)
                 k_ = k;
                 k_(j) = interval(0,0);
                 temp = (-f + transpose(k)*m - transpose(k_)*int)/k(j);
-                int(j) = int(j) & temp;
+                int(j) = and_(int(j),temp,'exact');
             end
         end
     end
@@ -198,7 +198,7 @@ function int = contractorSplit(obj,int,maxIter)
             if ~any(infi > sup)
                 
                 int_ = interval(infi,sup);
-                vol_ = volume(int_);
+                vol_ = volume_(int_);
 
                 if vol_ >= volume(intList{h})
 

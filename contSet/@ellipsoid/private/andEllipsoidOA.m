@@ -43,7 +43,7 @@ if E1==E2
 end
 
 % check if ellipsoids are intersecting
-if ~isIntersecting(E1,E2)
+if ~isIntersecting_(E1,E2,'exact')
     E = ellipsoid;
     return;
 end
@@ -76,7 +76,7 @@ if ~isFullDim(E2)
     % I(nt+1:end,:)*xt = x_rem
     for i=1:(n-nt)
         Hi = conHyperplane(I(nt+i,:)',x2_rem(i));
-        E1 = E1 & Hi;
+        E1 = and_(E1,Hi,'outer');
         % since they are intersecting, E1 will not be empty
         assert(~isempty(E1),'Bug: Intersection should not be empty');
     end

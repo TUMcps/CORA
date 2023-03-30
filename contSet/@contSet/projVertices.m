@@ -60,25 +60,31 @@ if isemptyobject(S) || isempty(S)
     return
 end
 
+% other options for support function evaluation
+otherOptions = {};
+if isa(S,'polyZonotope') || isa(S,'conPolyZono')
+    otherOptions = {'interval',8,1e-3};
+end
+
 % figure; blobsize = 24; subplot(1,2,1); hold on;
 
 % compute support vectors of three directions
 
 % 0 degrees
-[~,V(:,1)] = supportFunc(S,[1;0]);
+[~,V(:,1)] = supportFunc_(S,[1;0],'upper',otherOptions{:});
 % plot([0,1],[0,0],'k');
 
 % 120 degrees
 angle_pi = 120*pi / 180;
 dir = [cos(angle_pi) -sin(angle_pi); sin(angle_pi) cos(angle_pi)] * [1;0];
 % plot([0,dir(1)],[0,dir(2)],'k');
-[~,V(:,2)] = supportFunc(S,dir);
+[~,V(:,2)] = supportFunc_(S,dir,'upper',otherOptions{:});
 
 % 240 degrees
 angle_pi = 240*pi / 180;
 dir = [cos(angle_pi) -sin(angle_pi); sin(angle_pi) cos(angle_pi)] * [1;0];
 % plot([0,dir(1)],[0,dir(2)],'k');
-[~,V(:,3)] = supportFunc(S,dir);
+[~,V(:,3)] = supportFunc_(S,dir,'upper',otherOptions{:});
 
 % copy last point for easier indexing (will be deleted later)
 V(:,4) = V(:,1);
@@ -114,7 +120,7 @@ while ~isempty(sections)
 %     subplot(1,2,1); hold on; plot([0,dir(1)],[0,dir(2)],'r');
     
     % compute support vector for the new direction
-    [~,V_new] = supportFunc(S,dir);
+    [~,V_new] = supportFunc_(S,dir,'upper',otherOptions{:});
 
 %     subplot(1,2,2); scatter(V_new(1),V_new(2),blobsize,'r'); hold off;
     

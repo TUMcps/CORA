@@ -97,9 +97,6 @@ methods
         obj.Q = Q;
         obj.q = q;
         obj.TOL = TOL;
-        
-        % set parent object properties
-        obj.dimension = dim(obj);
     end
 end
 

@@ -17,7 +17,7 @@ function Zres = intersectStrip(Z,C,phi,y,varargin)
 %               - 'radius'
 %               - 'alamo-volume' according to [3]
 %               - 'alamo-FRad' according to [3]
-%               - 'wang-FRad' according to [4] + auxiliary values as a struct
+%               - 'wang-FRad' according to [4]  auxiliary values as a struct
 %               - 'bravo' accroding to [5]
 %               - or lambda value
 %
@@ -37,11 +37,11 @@ function Zres = intersectStrip(Z,C,phi,y,varargin)
 %    Zpoly = Z & poly;
 % 
 %    figure; hold on 
-%    plot(Z,[1 2],'r-+');
-%    plot(poly,[1 2],'r-*');
-%    plot(Zpoly,[1 2],'b-+');
-%    plot(res_zono,[1 2],'b-*');
-%    legend('zonotope','strips','zono&poly','zonoStrips');
+%    plot(Z,[1 2],'b','DisplayName','zonotope');
+%    plot(poly,[1 2],'k*','DisplayName','Strips');
+%    plot(Zpoly,[1 2],'r','DisplayName','zono&strip');
+%    plot(res_zono,[1 2],'g','DisplayName','zonoStrips');
+%    legend();
 %
 % References:
 %    [1] V. T. H. Le, C. Stoica, T. Alamo, E. F. Camacho, and
@@ -75,56 +75,135 @@ function Zres = intersectStrip(Z,C,phi,y,varargin)
 %               17-Sep-2020 (wang and direct method added)
 %               04-Jan-2021 (bravo method robustified)
 %               02-Mar-2021 (notation changed)
+%               29-March-2023 (TL: clean up)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-if nargin==4
-    %The optimization function is based on norm of the generators
-    method = 'normGen';
-elseif nargin==5
-    % input is lambda value --> direct computation
-    if isnumeric(varargin{1})
-        Zres = zonotopeFromLambda(Z,phi,C,y,varargin{1});
-        return % stop program execution
-    % input is a struct
-    elseif isstruct(varargin{1})
-        method = varargin{1}.method;
-        aux = varargin{1};
-    % input is intersection method
-    else
-        method = varargin{1};
+% parse input
+if nargin < 4
+    throw(CORAerror("CORA:notEnoughInputArgs", 4))
+elseif nargin > 5
+    throw(CORAerror("CORA:tooManyInputArgs", 5))
+end
+
+inputArgs = { ...
+    {Z, 'att', 'zonotope'}; ...
+    {C, 'att', 'numeric', 'matrix'}; ...
+    {phi, 'att', 'numeric', 'column'}; ...
+    {y, 'att', 'numeric', 'column'}; ...
+    };
+inputArgsCheck(inputArgs)
+
+% parse varargin 
+method = setDefaultValues({'normGen'}, varargin);
+if isnumeric(method)
+    lambda = method;
+    Zres = aux_zonotopeFromLambda(Z,phi,C,y,lambda);
+    return % stop program execution
+
+elseif isstruct(method)
+    aux = method;
+    aux_checkAuxStruct(aux)
+    method = aux.method;
+end
+
+inputArgsCheck([inputArgs; ...
+    {{method, 'str', {'normGen', 'svd', 'radius', 'alamo-FRad', ...
+    'alamo-volume', 'wang-FRad', 'bravo'}}} ...
+])
+
+% check dimensions
+if CHECKS_ENABLED
+    if dim(Z) ~= size(C, 2)
+        throw(CORAerror('CORA:dimensionMismatch', cZ, C))
+    end
+    if size(C, 1) ~= size(phi, 1)
+        throw(CORAerror('CORA:dimensionMismatch', C, phi))
+    end
+    if size(C, 1) ~= size(y, 1)
+        throw(CORAerror('CORA:dimensionMismatch', C, y))
     end
 end
 
-% extract generators
-G = generators(Z);
-% obtain dimesnion and nr of generators
-[dim, gens] = size(G);
-
 % different methods for finding good lambda values
-%% svd and radius method
-if strcmp(method,'svd') || strcmp(method,'radius') 
+if strcmp(method,'svd') || strcmp(method,'radius')
+    Zres = aux_methodSvd(Z, C, phi, y, method);
+      
+elseif strcmp(method,'alamo-volume') 
+    Zres = aux_methodAlamoVolume(Z, C, phi, y);
+
+elseif strcmp(method,'alamo-FRad') 
+    Zres = aux_methodAlamoFRad(Z, C, phi, y);
+    
+elseif strcmp(method,'wang-FRad') 
+    Zres = aux_methodWangFRad(Z, C, phi, y, aux);
+ 
+elseif strcmp(method,'bravo') 
+    Zres = aux_methodBravo(Z, C, phi, y);
+
+elseif strcmp(method,'normGen')
+    Zres = aux_methodNormGen(Z, C, phi, y);
+    
+else
+    % selected method does not exist
+    throw(CORAerror('CORA:wrongValue', sprintf("Unkown method '%s'.", method)))
+end
+
+end
+
+% Auxiliary functions -----------------------------------------------------
+
+% method functions ---
+
+function Zres = aux_methodSvd(Z, C, phi, y, method)
+    % svd and radius method
+
+    G = generators(Z);
+    [dim, ~] = size(G);
+    
     % initialize lambda
     lambda0 = zeros(dim,length(phi));
     options = optimoptions(@fminunc,'Algorithm', 'quasi-newton','Display','off');
     %find optimal lambda
     lambda = fminunc(@fun,lambda0, options);
     % resulting zonotope
-    Zres = zonotopeFromLambda(Z,phi,C,y,lambda);
-    
-%% volume minimization according to Alamo, [3]    
-elseif strcmp(method,'alamo-volume') 
+    Zres = aux_zonotopeFromLambda(Z,phi,C,y,lambda);
+
+    function nfro = fun(lambda)
+    % embedded function to be minimized for optimal lambda
+        part1 = eye(length(Z.center));
+        for i=1:length(phi)
+            part1 = part1 - lambda(:,i)*C(i,:);
+            part2(:,i) = phi(i)*lambda(:,i);
+        end
+        part1 = part1 * G;
+        G_new = [part1 part2];
+        if strcmp(method,'svd')
+            nfro = sum(svd(G_new));
+        elseif strcmp(method,'radius')
+            nfro = radius(zonotope([zeros(length(Z.center),1) G_new]));
+        end
+    end
+end
+
+function Zres = aux_methodAlamoVolume(Z, C, phi, y)
+    % volume minimization according to Alamo, [3]  
+
     % warning if more than one strip is used
     if length(phi)>1
         throw(CORAerror('CORA:specialError',...
             'Alamo method should only be used for single strips to ensure convergence'));
     end
+
+    G = generators(Z);
+    [dim, nrGens] = size(G);
+
     % implement volume expression from [3], Vol(\hat{X}(lambda)) (last eq.
     % before Sec. 7); from now on referred to as (V)
     % obtain possible combinations of generators
-    comb_A = combinator(gens,dim,'c');
-    comb_B = combinator(gens,dim-1,'c');
+    comb_A = combinator(nrGens,dim,'c');
+    comb_B = combinator(nrGens,dim-1,'c');
     a_obj = 0;
     % |1-c'*lambda| can be pulled out from first summation in (V)
     for iComb=1:size(comb_A,1)
@@ -179,12 +258,15 @@ elseif strcmp(method,'alamo-volume')
     lambda = x_opt(1:dim);
     
     % resulting zonotope
-    Zres = zonotopeFromLambda(Z,phi,C,y,lambda);
-    
+    Zres = aux_zonotopeFromLambda(Z,phi,C,y,lambda);
 
-%% F-radius minimization according to Alamo, [3]    
-elseif strcmp(method,'alamo-FRad') 
+end
+
+function Zres = aux_methodAlamoFRad(Z, C, phi, y)
+    % F-radius minimization according to Alamo, [3]  
     
+    G = generators(Z);
+
     % auxiliary variables
     aux1 = G*G'; 
     aux2 = aux1*C(1,:)';
@@ -194,16 +276,20 @@ elseif strcmp(method,'alamo-FRad')
     lambda = aux2/aux3;
     
     % resulting zonotope
-    Zres = zonotopeFromLambda(Z,phi,C,y,lambda);
+    Zres = aux_zonotopeFromLambda(Z,phi,C,y,lambda);
     
     % warning
     if length(phi) > 1
         disp('Alamo method should only be used for single strips to ensure convergence');
     end
-    
-%% F-radius minimization according to Wang, Theorem 2 in [4]    
-elseif strcmp(method,'wang-FRad') 
-    
+
+end
+
+function Zres = aux_methodWangFRad(Z, C, phi, y, aux)
+    % F-radius minimization according to Wang, Theorem 2 in [4]    
+
+    G = generators(Z);
+
     % auxiliary variables
     P = G*G'; 
     Q_w = aux.E*aux.E';
@@ -222,22 +308,30 @@ elseif strcmp(method,'wang-FRad')
     lambda = L*inv(S);
     
     % resulting zonotope
-    Zres = zonotopeFromLambda(Z,phi,C,y,lambda);
+    Zres = aux_zonotopeFromLambda(Z,phi,C,y,lambda);
+
+end
+
+function Zres = aux_methodBravo(Z, C, phi, y)
+    % method according to Bravo, [5]  
     
-  
-%% method according to Bravo, [5]   
-elseif strcmp(method,'bravo') 
-    
-    %% Property 1 in [5]  
+    % Property 1 in [5]  
     % obtain center of zonotope
     p = center(Z);
+    G = generators(Z);
+    [dim, nrGens] = size(G);
+
+    c_cell = cell(1, nrGens+1);
+    G_cell = cell(1, nrGens+1);
+    volApproxZ = zeros(1, nrGens+1);
+
     % loop through generators
-    for j = 0:gens
+    for j = 0:nrGens
         % normal vector of strip and generator are not perpendicular
         if  j>0 && abs(C(1,:)*G(:,j)) > 1e10*eps
             % init T
-            T = zeros(dim,gens);
-            for iGen =1:gens
+            T = zeros(dim,nrGens);
+            for iGen =1:nrGens
                 if iGen~=j
                     T(:,iGen) = G(:,iGen)  - C(1,:)*G(:,iGen)/(C(1,:)*G(:,j))*G(:,j);
                 else
@@ -268,9 +362,12 @@ elseif strcmp(method,'bravo')
         disp('Bravo method is only applied to the first strip');
     end
 
+end
 
-%% norm Gen method
-elseif strcmp(method,'normGen')
+function Zres = aux_methodNormGen(Z, C, phi, y)
+    % norm Gen method
+    G = generators(Z);
+
     % Find the analytical solution  
     gamma=eye(length(C(:,1)));
     num= G*G'*C';
@@ -281,37 +378,13 @@ elseif strcmp(method,'normGen')
     
     lambda = num * den^-1;
     % resulting zonotope
-    Zres = zonotopeFromLambda(Z,phi,C,y,lambda);
-    
-    
-%% selected method does not exist
-else
-    disp('Method is not supported');
-    return;
+    Zres = aux_zonotopeFromLambda(Z,phi,C,y,lambda);
 end
 
-
-    % embedded function to be minimized for optimal lambda
-    function nfro = fun(lambda)
-        part1 = eye(length(Z.center));
-        for i=1:length(phi)
-            part1 = part1 - lambda(:,i)*C(i,:);
-            part2(:,i) = phi(i)*lambda(:,i);
-        end
-        part1 = part1 * G;
-        G_new = [part1 part2];
-        if strcmp(method,'svd')
-            nfro = sum(svd(G_new));
-        elseif strcmp(method,'radius')
-            nfro = radius(zonotope([zeros(length(Z.center),1) G_new]));
-        end
-
-    end
-
-end
+% helper functions ---
 
 % return zonotope from a given lambda vector, see Prop. 1 of [1]
-function Z = zonotopeFromLambda(Z,phi,C,y,Lambda)
+function Z = aux_zonotopeFromLambda(Z,phi,C,y,Lambda)
     % strips: |Cx − y| <= phi
     % zonotope: Z = c+G[-1,1]^o
 
@@ -324,6 +397,26 @@ function Z = zonotopeFromLambda(Z,phi,C,y,Lambda)
     % resulting zonotope
     Z.Z = [c_new G_new];
 
+end
+
+function aux_checkAuxStruct(aux)
+    if CHECKS_ENABLED
+        if ~isfield(aux, 'method')
+            throw(CORAerror('CORA:wrongFieldValue', 'aux.method', {'wang-FRad'}))
+        end
+        if ~isfield(aux, 'E')
+            throw(CORAerror('CORA:wrongFieldValue', 'aux.E', 'numeric'))
+        end
+        if ~isfield(aux, 'F')
+            throw(CORAerror('CORA:wrongFieldValue', 'aux.F', 'numeric'))
+        end
+        if ~isfield(aux, 'A')
+            throw(CORAerror('CORA:wrongFieldValue', 'aux.A', 'numeric'))
+        end
+        if ~isfield(aux, 'C')
+            throw(CORAerror('CORA:wrongFieldValue', 'aux.C', 'numeric'))
+        end
+    end
 end
 
 %------------- END OF CODE --------------

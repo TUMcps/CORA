@@ -66,7 +66,7 @@ function han = plot(cPZ,varargin)
 
     if length(dims) == 1
         % add zeros to 2nd dimension
-        cPZ = cPZ.cartProd(0);
+        cPZ = cartProd_(cPZ,0,'exact');
         dims = [1;2];
     end
 
@@ -95,10 +95,10 @@ function han = plot(cPZ,varargin)
             pZnew = [];
             for j = 1:length(pZsplit)
                 res = splitLongestGen(pZsplit{j});
-                if intersectsNullSpace(res{1})
+                if aux_intersectsNullSpace(res{1})
                     pZnew{end+1} = res{1};
                 end
-                if intersectsNullSpace(res{2})
+                if aux_intersectsNullSpace(res{2})
                     pZnew{end+1} = res{2};
                 end
             end
@@ -128,7 +128,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function res = intersectsNullSpace(obj)
+function res = aux_intersectsNullSpace(obj)
 % test if the split set violates the constraints (if it not intersects any
 % of the hyperplanes)
 
@@ -139,9 +139,9 @@ function res = intersectsNullSpace(obj)
     for i = 4:n
        
         c = zeros(n,1); c(i) = 1;
-        hs = conHyperplane(c,0);
+        hyp = conHyperplane(c,0);
         
-        if ~isIntersecting(hs,zonotope(obj))
+        if ~isIntersecting_(hyp,zonotope(obj),'exact')
            res = false;
            return;
         end

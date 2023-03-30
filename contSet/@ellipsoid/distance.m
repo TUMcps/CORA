@@ -30,7 +30,8 @@ function val = distance(E,S)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-%% parsing & checking
+
+%% parsing and checking
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'};
                 {S,'att',{'contSet','numeric'},'nonempty'}});

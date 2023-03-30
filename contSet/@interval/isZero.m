@@ -48,6 +48,6 @@ if isempty(I)
 end
 
 % enclose by an interval and compute norm
-res = norm(I) <= tol;
+res = norm_(I,2) <= tol;
 
 %------------- END OF CODE --------------

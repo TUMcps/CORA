@@ -56,7 +56,7 @@ if isempty(nrZonos)
 end
 
 % construct random zonotope bundle
-listZ = cell(zons,1);
+listZ = cell(nrZonos,1);
 listZ{1} = zonotope.generateRandom('Dimension',n);
 
 % to ensure that zonotope bundle not empty, the center of the next zonotope
@@ -65,9 +65,9 @@ for z=2:nrZonos
     inside = false;
     while ~inside
         inside = true;
-        c = randPoint(listZ{1});
+        c = randPoint_(listZ{1},1,'standard');
         for i=2:z-1
-            if ~contains(listZ{i},c)
+            if ~contains_(listZ{i},c,'exact',0)
                 inside = false; continue;
             end
         end

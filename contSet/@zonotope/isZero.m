@@ -45,6 +45,6 @@ if isempty(Z)
 end
 
 % enclose by an interval and compute norm
-res = norm(interval(Z)) <= tol;
+res = norm_(interval(Z),2) <= tol;
 
 %------------- END OF CODE --------------

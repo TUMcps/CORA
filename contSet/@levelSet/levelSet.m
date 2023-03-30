@@ -95,9 +95,6 @@ methods
             obj.compOp = compOp;
         end
         
-        % set parent object properties
-        obj.dimension = obj.dim;
-        
         % compute derivatives
         if strcmp(compOp,'==')
             grad = gradient(eq,vars);

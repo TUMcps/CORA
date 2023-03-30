@@ -45,8 +45,8 @@ n = dim(hyp);
 % null space has exactly n-1 vectors
 B = null(c');
 for i=1:n-1
-    if supportFunc(hyp,B(:,1),'upper') < Inf || ...
-       supportFunc(hyp,B(:,1),'lower') > -Inf
+    if supportFunc_(hyp,B(:,1),'upper') < Inf || ...
+       supportFunc_(hyp,B(:,1),'lower') > -Inf
         res = false;
         return;
     end

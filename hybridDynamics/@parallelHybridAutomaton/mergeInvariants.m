@@ -48,7 +48,7 @@ for i=1:length(invList)
             % first full-dimensional invariant
             invSet = temp;
         else
-            invSet = invSet & temp;
+            invSet = and_(invSet,temp,'exact');
         end
 
     end

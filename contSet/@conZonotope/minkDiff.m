@@ -62,7 +62,7 @@ elseif isa(S,'zonotope') || isa(S,'interval')
     cZ = cZ1 + (-c);
 
     for i = 1:size(G,2)
-        cZ = (cZ + G(:,i)) & (cZ + (-G(:,i)));
+        cZ = and_(cZ + G(:,i),cZ + (-G(:,i)),'exact');
     end
     
 elseif isa(S,'conZonotope') || isa(S,'mptPolytope') || ...
@@ -84,7 +84,7 @@ elseif isa(S,'conZonotope') || isa(S,'mptPolytope') || ...
     V = vertices(S);  cZ = cZ1 - V(:,1);
     
     for i = 2:size(V,2)
-       cZ = cZ & (cZ1 - V(:,i)); 
+       cZ = and_(cZ,cZ1 - V(:,i),'exact'); 
     end
     
 else

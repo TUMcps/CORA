@@ -40,7 +40,7 @@ Idty = eye(n);
 
 % compute width of the ellipsoid in each dimension using support functions
 for i=1:n
-    dI(i) = supportFunc(E0,Idty(:,i));
+    dI(i) = supportFunc_(E0,Idty(:,i),'upper');
 end
 
 % construct the resulting interval

@@ -77,7 +77,7 @@ if ~isempty(index)
             
             % check whether only one halfspace has beed crossed or if 
             % the point is indeed inside the guard set
-            if contains(guardSet, x(end,:)', 'exact', 1e-6)
+            if contains_(guardSet, x(end,:)', 'exact', 1e-6)
                 
                 % next location and reset function
                 nextloc = loc.transition{guard}.target;

@@ -64,7 +64,7 @@ function y = reset(trans,x,varargin)
 
             if trans.reset.inputDim > 0
                 % compute extended state x' = [x;u]
-                x = cartProd(x,u);
+                x = cartProd_(x,u,'exact');
             end
             if isnumeric(x)
                 y = trans.reset.f(x);
@@ -92,7 +92,7 @@ function y = reset(trans,x,varargin)
                     end
                 else
                     % nonlinear reset
-                    z{i} = cartProd(x{i},u{i});
+                    z{i} = cartProd_(x{i},u{i},'exact');
                     if isnumeric(y{i})
                         y{i} = trans.reset.f(z{i});
                     else

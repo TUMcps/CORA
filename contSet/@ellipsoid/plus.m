@@ -46,7 +46,7 @@ function E = plus(E,S,varargin)
 
 %------------- BEGIN CODE --------------
 
-%% parsing & checking
+% check number of input arguments
 if nargin > 4
     throw(CORAerror('CORA:tooManyInputArgs',4));
 end

@@ -97,8 +97,8 @@ function cZsplit = splitOneDim(cZ,I,splitDim)
     I2 = interval(cTemp-rTemp,cTemp+rTemp);
     
     % intersect the intervals with the original conZonotope object
-    cZsplit{1} = cZ & I1;
-    cZsplit{2} = cZ & I2;
+    cZsplit{1} = and_(cZ,I1,'exact');
+    cZsplit{2} = and_(cZ,I2,'exact');
     
 end
     

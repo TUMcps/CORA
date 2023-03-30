@@ -34,9 +34,9 @@ p2 = [-1;3];
 obj1 = polyZonotope([0;0],0.3*[1 -2 1; 2 3 1],[],[1 0 2;0 1 1]);
 obj2 = polyZonotope([0;0],0.4*[1 -2 1; 2 3 1],[],[1 0 2;0 1 1]);
 
-% empty set
-obj_e = polyZonotope();
-res_e = ~contains(obj_e,obj1) && contains(obj1,obj_e);
+% empty set: rewrite using emptySet class
+%obj_e = polyZonotope();
+%res_e = ~contains(obj_e,obj1) && contains(obj1,obj_e);
 
 % containment checks
 res1 = contains(pZ,p1,'approx');
@@ -45,7 +45,7 @@ res3 = contains(pZ,obj1,'approx');
 res4 = contains(pZ,obj2,'approx');
 
 % check if the result is correct
-if ~res1 || res2 || ~res3 || res4 || ~res_e
+if ~res1 || res2 || ~res3 || res4 % || ~res_e
     res = false;
 end
 

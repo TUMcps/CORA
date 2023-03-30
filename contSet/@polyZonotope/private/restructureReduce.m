@@ -121,7 +121,7 @@ else            % max order exceeded
         zono_ = zonotope(pZ_);
         
         % calculate volume of the zonotope over-approximation
-        Vdep(i) = volume(interval(zono_));
+        Vdep(i) = volume_(interval(zono_));
     end
     
     % find generators with the smallest volume => smallest

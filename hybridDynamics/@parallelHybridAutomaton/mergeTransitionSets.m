@@ -192,7 +192,7 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
                             resultingGuard = labelTransSet(j).guard;
                         else
                             % all subsequent full-dimensional guards
-                            resultingGuard = resultingGuard & labelTransSet(j).guard;
+                            resultingGuard = and_(resultingGuard,labelTransSet(j).guard,'exact');
                         end
                     end
                 end

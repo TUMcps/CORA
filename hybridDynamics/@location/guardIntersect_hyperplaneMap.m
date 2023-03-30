@@ -78,7 +78,7 @@ function [Rmin,tmin,tmax,int] = refinedIntersectionTime(loc,guard,R0,options)
     % compute halfspace representing the region inside the invariant
     hs = halfspace(guard.h.c,guard.h.d);
     
-    if ~contains(hs,center(R0))
+    if ~contains_(hs,center(R0))
         hs = halfspace(-guard.h.c,-guard.h.d);
     end
     
@@ -104,7 +104,7 @@ function [Rmin,tmin,tmax,int] = refinedIntersectionTime(loc,guard,R0,options)
     
     for i = 1:length(R.timePoint.set)
         
-       if ~found && contains(hs,R.timePoint.set{i})
+       if ~found && contains_(hs,R.timePoint.set{i})
           % update minimum time
           Rmin = R.timePoint.set{i};
           tmin = R.timePoint.time{i};

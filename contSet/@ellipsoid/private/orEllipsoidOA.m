@@ -55,9 +55,19 @@ for i=1:N
     end
 end
 
+persistent isMosek
+if isempty(isMosek)
+    isMosek = isSolverInstalled('mosek');
+end
+persistent isSDPT3
+if isempty(isSDPT3)
+    isSDPT3 = isSolverInstalled('sdpt3');
+end
+
+
 % find minimum volume ellipsoid spanning union [1]
 
-if isSolverInstalled('mosek')
+if isMosek
     % model the problem ourselves using MOSEK
     % MOSEK solves problems of the form 
     %%% (1) min_{x,X}   c'*x + sum_{j=1}^{N} Cj#Xj,
@@ -296,7 +306,7 @@ if isSolverInstalled('mosek')
     prob.cones.sub = 1:3*n_cones;
     prob.cones.subptr = 1+3*(0:n_cones-1);
     
-    % inequality bounds (equality constraints just have same lb & ub)
+    % inequality bounds (equality constraints just have same lb and ub)
     prob.blc = [zeros(1,n_y-1),1];
     prob.buc = prob.blc;
 
@@ -346,7 +356,7 @@ if isSolverInstalled('mosek')
     q = -A2\bt_sol;
     Q = inv(A2);
    
-elseif isSolverInstalled('sdpt3')
+elseif isSDPT3
     % IMPORTANT: Vectorization is upper-triangular (in contrast to MOSEK,
     % which is lower-triangular)
     % ALSO: For some reason, off-diagonal elements when stacking upper- 
@@ -515,6 +525,7 @@ elseif isYalmipInstalled()
     A = sqrtm(value(A2));
     b = A\value(bt);
     q = -Q*A*b;
+    
 else
     throw(CORAerror('CORA:noSuitableSolver','SDP'));
 end

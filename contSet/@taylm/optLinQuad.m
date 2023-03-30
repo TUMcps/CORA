@@ -1,12 +1,12 @@
-function int = optLinQuad(obj)
+function int = optLinQuad(tay)
 % optLinQuad - bounding optimization using Linear Dominated Bounder (LDB) 
 %              and Quadratic Fast Bounder (QFB)
 %
 % Syntax:  
-%    res = optLinQuad( obj )
+%    res = optLinQuad(tay)
 %
 % Inputs:
-%    obj - taylm
+%    tay - taylm object
 %
 % Outputs:
 %    res - interval
@@ -53,14 +53,14 @@ function int = optLinQuad(obj)
     % Quadratic Fast Bounder (QFB)
 
     % initialize all variables
-    unitVec = ones(length(obj.names_of_var),1);
+    unitVec = ones(length(tay.names_of_var),1);
     dom = interval(-unitVec,unitVec);
     
     % calculate minimum
-    minVal = globalMinimizer(obj,dom);
+    minVal = aux_globalMinimizer(tay,dom);
     
     % caclulate maximum
-    maxVal = globalMinimizer(-obj,dom);
+    maxVal = aux_globalMinimizer(-tay,dom);
     
     % construct overall interval
     int = interval(minVal,-maxVal);
@@ -70,11 +70,11 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function minVal = globalMinimizer(obj,dom)
+function minVal = aux_globalMinimizer(tay,dom)
 
     % initialize all variables
     domMin{1} = dom;
-    tayMin{1} = obj;
+    tayMin{1} = tay;
     
     minVal = inf;       % global minimum   
     cutOffMin = inf;    % global minimum is guaranteed to be smaller than this value
@@ -87,7 +87,7 @@ function minVal = globalMinimizer(obj,dom)
             
         % split the talyor model into a part that contains the constant and
         % linear monomials, and one part the contains the high order monomials
-        [objLin,objHo] = splitLinHighOrder(t);
+        [objLin,objHo] = aux_splitLinHighOrder(t);
 
         % compute the boundaries for both parts
         intHo = interval(objHo,'int');
@@ -97,19 +97,19 @@ function minVal = globalMinimizer(obj,dom)
         cutOffMin = min(cutOffMin,infimum(intLin)+supremum(intHo));
         
         % check for convergence and update the global minimum
-        if (rad(intHo)-rad(obj.remainder)) < obj.eps/2
+        if (rad(intHo)-rad(tay.remainder)) < tay.eps/2
             minVal = min(minVal,infimum(intHo)+infimum(intLin));
         end
         
         % check if the subdomain can be eliminated
-        if infimum(intLin) + infimum(intHo) > cutOffMin || (rad(intHo)-rad(obj.remainder)) < obj.eps/2
+        if infimum(intLin) + infimum(intHo) > cutOffMin || (rad(intHo)-rad(tay.remainder)) < tay.eps/2
             
             domMin = domMin(2:end);
             tayMin = tayMin(2:end);            
         else
 
             % Compute a bound using the Quadratic Fast Bounder (QFB)
-            H = hessian(t);
+            H = aux_hessian(t);
             [~,p] = chol(H);
             
             if p == 0       % Hessian matrix is positive definite
@@ -140,14 +140,14 @@ function minVal = globalMinimizer(obj,dom)
             else
             
                 % try to reduce the initial search domain using the LDB
-                [Dmin,xMin] = calcRedDomain(objLin,intHo,'min',dom); 
+                [Dmin,xMin] = aux_calcRedDomain(objLin,intHo,'min',dom); 
 
                 % bisect the domain along the largest dimension
-                [dom1,dom2,t1,t2] = halveDomain(obj,Dmin);
+                [dom1,dom2,t1,t2] = aux_halveDomain(tay,Dmin);
 
                 % add the subdomain that contains the minimum of the linear
                 % part at position 1 in the priority queue
-                if contains(dom1,xMin)
+                if contains_(dom1,xMin,'exact',eps)
                    domMin{1} = dom1;
                    tayMin{1} = t1;
                    domMin{end+1} = dom2;
@@ -163,28 +163,28 @@ function minVal = globalMinimizer(obj,dom)
     end
 end
 
-function [objLin,objHo] = splitLinHighOrder(obj)
+function [objLin,objHo] = aux_splitLinHighOrder(tay)
 
     % find all monomials that are constant or linear
-    ind = find(obj.monomials(:,1) <= 1);
+    ind = find(tay.monomials(:,1) <= 1);
     
     % construct the linear taylor model
-    objLin = obj;
-    objLin.monomials = obj.monomials(ind,:);
-    objLin.coefficients = obj.coefficients(ind);
+    objLin = tay;
+    objLin.monomials = tay.monomials(ind,:);
+    objLin.coefficients = tay.coefficients(ind);
     objLin.remainder = interval(0,0);
     
     % construct the taylor model containing the higher order terms
-    objHo = obj;
+    objHo = tay;
     objHo.monomials(ind,:) = [];
     objHo.coefficients(ind) = [];
     
 end
 
-function [D,x] = calcRedDomain(objLin,intHo,type,Dorig)
+function [D,x] = aux_calcRedDomain(objLin,intHo,type,Dorig)
 
     % extract the slopes of the linear part
-    slopes = extractSlopes(objLin);
+    slopes = aux_extractSlopes(objLin);
 
     % find the vertex of the domain that contains the minimum of the 
     % linear function
@@ -221,7 +221,7 @@ function [D,x] = calcRedDomain(objLin,intHo,type,Dorig)
     
 end
 
-function [dom1,dom2,t1,t2] = halveDomain(obj,dom)
+function [dom1,dom2,t1,t2] = aux_halveDomain(tay,dom)
 
    % determine coordinate with the larges radius
    radius = rad(dom);
@@ -239,34 +239,33 @@ function [dom1,dom2,t1,t2] = halveDomain(obj,dom)
    temp(indCoord) = sup(indCoord) - radius(indCoord);
    dom2 = interval(temp,sup);
 
-   % re-expand the taylor models at the center of the halved
-   % domains
-   t1 = reexpand(obj,dom1);
-   t2 = reexpand(obj,dom2);
+   % re-expand the taylor models at the center of the halved domains
+   t1 = reexpand(tay,dom1);
+   t2 = reexpand(tay,dom2);
 
 end
 
-function slopes = extractSlopes(obj)
+function slopes = aux_extractSlopes(tay)
 
     % extract the slopes of the linear part of the taylor model
-    slopes = zeros(length(obj.names_of_var),1);
+    slopes = zeros(length(tay.names_of_var),1);
     
     for i = 1:length(slopes)
         
-       ind = find(obj.monomials(:,1+i) == 1);
+       ind = find(tay.monomials(:,1+i) == 1);
        
        if ~isempty(ind)
-          slopes(i) = obj.coefficients(ind); 
+          slopes(i) = tay.coefficients(ind); 
        end   
     end
 end
 
-function H = hessian(obj)
+function H = aux_hessian(tay)
     
     % determine all 2nd-order monomials
-    ind = find(obj.monomials(:,1) == 2);
-    mon = obj.monomials(ind,2:end);
-    coeff = obj.coefficients(ind);
+    ind = find(tay.monomials(:,1) == 2);
+    mon = tay.monomials(ind,2:end);
+    coeff = tay.coefficients(ind);
     
     % construct hessian matrix
     H = zeros(size(mon,2));
@@ -281,12 +280,12 @@ function H = hessian(obj)
     end
 end
 
-function x = gradientDescend(obj,dom)
+function x = aux_gradientDescend(tay,dom)
 
     % determine all 2nd-order monomials
-    ind = find(obj.monomials(:,1) == 2);
-    mon = obj.monomials(ind,2:end);
-    coeff = obj.coefficients(ind);
+    ind = find(tay.monomials(:,1) == 2);
+    mon = tay.monomials(ind,2:end);
+    coeff = tay.coefficients(ind);
     
     % compute the derivative
     grad = cell(size(mon,2),1);
@@ -315,7 +314,7 @@ function x = gradientDescend(obj,dom)
     while true
         
         % standard gradient descend
-        G = evalGrad(grad,x);
+        G = aux_evalGrad(grad,x);
         x_ = x - G*dx;
         
         % project the point back onto the domain
@@ -329,7 +328,7 @@ function x = gradientDescend(obj,dom)
     end
 end
 
-function G = evalGrad(grad,x)
+function G = aux_evalGrad(grad,x)
 
     G = zeros(size(x));
     for i = 1:length(grad)
@@ -341,7 +340,7 @@ end
 
 % Functions for debugging -------------------------------------------------
 
-function displayRedDom2D(slopes,intHo,xMin,xMax)
+function aux_displayRedDom2D(slopes,intHo,xMin,xMax)
 
     [X1,X2] = meshgrid(-1:0.1:1,-1:0.1:1);
     Z = zeros(size(X1));
@@ -386,7 +385,7 @@ function displayRedDom2D(slopes,intHo,xMin,xMax)
 
 end
 
-function displayGradientDescend2D(mon,coeff,xMin)
+function aux_displayGradientDescend2D(mon,coeff,xMin)
 
     [X1,X2] = meshgrid(-1:0.1:1,-1:0.1:1);
     Z = zeros(size(X1));

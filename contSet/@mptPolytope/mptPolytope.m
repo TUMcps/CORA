@@ -47,7 +47,6 @@ methods
         if nargin == 0
             obj.P = [];
             obj.halfspace = [];
-            obj.dimension = 0;
             return
 
         % If 1 argument is passed
@@ -84,9 +83,6 @@ methods
             disp('This class needs more/less input values');
             obj=[];
         end
-        
-        % set parent object properties
-        obj.dimension = dim(obj);
 
     end
 end

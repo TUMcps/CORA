@@ -8,21 +8,23 @@ function [E,sigma_sq] = intersectStrip(E,C,phi,y,varargin)
 % Inputs:
 %    E - ellipsoid object
 %    C - matrix of normal vectors of strips
-%    phi - vector of widths of strips/auxiliary inputs for Liu2016
+%    phi - vector of widths of strips/auxiliary struct for Liu2016
 %    y - center of intersected strips
-%    varargin - methods to calculate the weights
+%    sigma_seq_prev - 
+%    methods to calculate the weights
 %               'Gollamudi1996' according to [1]
 %               'Liu2016' according to [2]
 %
 % Outputs:
 %    E - enclosing ellipsoid
+%    sigma_sq
 %
 % Example: (one strip and one ellipsoid)
 %    C = [1 0];
 %    phi = 0.5;
 %    y = 0;
 %    sigma_sq_prev = 0.5;
-%
+% 
 %    % convert strip to polytope
 %    C_poly = [C; -C];
 %    d = [phi + y; phi - y];
@@ -57,56 +59,69 @@ function [E,sigma_sq] = intersectStrip(E,C,phi,y,varargin)
 % Author:       Matthias Althoff
 % Written:      06-Jan-2021
 % Last update:  04-July-2022 (VG: input checks)
+%               29-March-2023 (TL: clean up)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-% inputArgsCheck({{E,'att','ellipsoid','scalar'};
-%                 {C,'att','numeric',{'ncols',dim(E)}};
-%                 {phi,'att','numeric',{'size',[size(C,1),1]}};
-%                 {y,'att','numeric',{'size',[size(C,1),1]}}});
 
-% init sigma_sq_prev
-sigma_sq = [];
 
-% assign inputs depending on the number of inputs
-if nargin==4
-    %The optimization function is based on norm of the generators
-    method = 'normGen';
-elseif nargin==5
-    % input is lambda value
-    if isnumeric(varargin{1})
-        method = 'Gollamudi1996';
-        sigma_sq_prev = 0;
-    % input is intersection method
-    else
-        method = varargin{1};
-    end
-elseif nargin==6
-    method = varargin{2};
-    sigma_sq_prev = varargin{1};
-    if strcmp(method,'Liu2016') 
-        sys = phi; 
-    end
+% parse input
+if nargin < 4
+    throw(CORAerror("CORA:notEnoughInputArgs", 4))
+elseif nargin > 6
+    throw(CORAerror('CORA:tooManyInputArgs', 6))
+end
+[sigma_sq_prev,method] = setDefaultValues({0,'Gollamudi1996'},varargin);
+if ~isnumeric(sigma_sq_prev)
+    method = sigma_sq_prev;
+    sigma_sq_prev = 0;
 end
 
-
-% obtain center and shape matrix
-c = center(E);
-Q = E.Q;
-
-% auxiliary value
-delta = y - C*c;
-
+inputArgsCheck({{E,'att','ellipsoid'}; ...
+    {C, 'att', 'numeric', 'matrix'}; ...
+    {phi, 'att', {'numeric','struct'}}; ...
+    {y, 'att', 'numeric', 'column'}; ...
+    {sigma_sq_prev, 'att' 'numeric', 'scalar'}; ...
+    {method, 'str', {'Gollamudi1996', 'Liu2016'}}
+})
 
 % different methods for finding good lambda values
-%% intersection according to Gollamudi1996, [1]
 if strcmp(method,'Gollamudi1996')  
+    if ~isnumeric(phi) && ~iscolumn(phi)
+        throw(CORAerror("CORA:wrongValue", 'third', 'numeric column'))
+    end
+
+    [E,sigma_sq] = aux_methodGollamudi1996(E, C, phi, y, sigma_sq_prev);
+    
+elseif strcmp(method,'Liu2016')   
+    if ~isstruct(phi)
+        throw(CORAerror("CORA:wrongValue", 'third', 'struct'))
+    end
+
+    [E,sigma_sq] = aux_methodLiu2016(E, C, phi, y, sigma_sq_prev);
+else
+    throw(CORAerror('CORA:wrongValue', sprintf("Unkown method '%s'.", method)))
+end
+
+end
+
+% Auxiliary functions -----------------------------------------------------
+
+function [E,sigma_sq] = aux_methodGollamudi1996(E, C, phi, y, sigma_sq_prev)
+    % intersection according to Gollamudi1996, [1]
     % ||Cx-y|| <= phi
     % correspondences to [1]:
     % \gamma --> phi
     % x --> c (center)
     % y is identical
     % P --> Q (shape matrix)
+
+    % obtain center and shape matrix
+    c = center(E);
+    Q = E.Q;
+    
+    % auxiliary value
+    delta = y - C*c;
     
     % identity matrix
     I = eye(length(y));
@@ -169,9 +184,10 @@ if strcmp(method,'Gollamudi1996')
         % ellipsoid is unchanged
         sigma_sq = sigma_sq_prev;
     end
-    
-%% intersection according to Liu2016, [2]    
-elseif strcmp(method,'Liu2016') 
+end
+
+function [E,sigma_sq] = aux_methodLiu2016(E, C, sys, y, sigma_sq_prev)
+    % intersection according to Liu2016, [2]    
     % correspondences to [2]:
     % \gamma --> phi
     % x --> c (center)
@@ -179,6 +195,13 @@ elseif strcmp(method,'Liu2016')
     % P --> Q (shape matrix)
     % F --> A
     % H --> C
+
+    % obtain center and shape matrix
+    c = center(E);
+    Q = E.Q;
+    
+    % auxiliary value
+    delta = y - C*c;
 
     % Theorem 3 of [2]
     if sigma_sq_prev + delta'*delta > 1
@@ -225,14 +248,6 @@ elseif strcmp(method,'Liu2016')
         % ellipsoid is unchanged
         sigma_sq = sigma_sq_prev;
     end
-    
-%% selected method does not exist
-else
-    disp('Method is not supported');
-    return;
-end
-
-
 end
 
 %------------- END OF CODE --------------

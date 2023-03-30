@@ -48,7 +48,7 @@ if d>=-E.TOL
             % inner product with xh
             v = sign((xh-E.q)'*h.c)*h.c;
             % compute touching point
-            [~,x] = supportFunc(E,v);
+            [~,x] = supportFunc_(E,v,'upper');
             E = ellipsoid(zeros(dim(E)),x);
         else 
             E = ellipsoid;
@@ -70,7 +70,7 @@ if ~isFullDim(E)
     % check if E.Q all zero
     if nt==0
         % check if E in halfspace
-        if contains(h,E.q)
+        if contains_(h,E.q,'exact',0)
             E = ellipsoid(zeros(n),E.q);
         else
             E = ellipsoid;
@@ -104,7 +104,7 @@ q1 = E.q;
 
 
 if strcmp(mode,'outer')
-    [r_s,~] = supportFunc(E,I(:,1),'lower');
+    [r_s,~] = supportFunc_(E,I(:,1),'lower');
     % makes more sense than ET original: define degenerate ellipsoid that
     % covers the transformed ellipsoid "exactly"
     q2 = [1/2*r_s;zeros(n_nd-1,1)];
@@ -114,13 +114,12 @@ if strcmp(mode,'outer')
     p = compIntersectionParam(W1,q1,W2,q2);
     [~,Q_nd,q_nd] = rootfnc(p,W1,q1,W2,q2);
 else
-    % that is "ellipsoidal toolbox original" (not sure where why this
-    % works)
-    E_hyp = E & conHyperplane(h);
+    % that is "ellipsoidal toolbox original" (not sure why this works)
+    E_hyp = and_(E,conHyperplane(h),'outer');
     q2 = E_hyp.q-2*sqrt(max(eig(E.Q)))*I(:,1);
     W2 = (I(:,1)*I(:,1)')*1/(4*max(eig(E.Q)));
     b1 = (E.q-E_hyp.q)'*W1*(E.q-E_hyp.q);
-    [~,xb] = supportFunc(E,-I(:,1));
+    [~,xb] = supportFunc_(E,-I(:,1),'upper');
     b2 = (q2-xb)'*W2*(q2-xb);
     %
     b1 = min(1,b1);
@@ -136,7 +135,7 @@ E_nd = ellipsoid(Q_nd,q_nd);
 % revert S transform + shift
 Et = S'*E_nd + d*c;
 
-% restore original dimensions & backtransform
+% restore original dimensions and backtransform
 E_t = ellipsoid([Et.Q,zeros(n_nd,n_rem);zeros(n_rem,n)],[Et.q;x_rem]);
 E = T*E_t;
 

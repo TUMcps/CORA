@@ -61,12 +61,12 @@ for i=1:length(ind)
     timePoint.set{iSet} = mptPolytope(timePoint.set{iSet},options);
         
     % intersect with invariant set
-    timeInt.set{iSet} = loc.invariant & timeInt.set{iSet};  
-    timePoint.set{iSet} = loc.invariant & timePoint.set{iSet};     
+    timeInt.set{iSet} = and_(loc.invariant,timeInt.set{iSet},'exact');
+    timePoint.set{iSet} = and_(loc.invariant & timePoint.set{iSet},'exact');
 end
 
 % remove last set if it is located outside the invariant
-if ~isIntersecting(loc.invariant,timeInt.set{end})
+if ~isIntersecting_(loc.invariant,timeInt.set{end},'exact')
     timeInt.set = timeInt.set(1:end-1); 
     timeInt.time = timeInt.time(1:end-1); 
     timePoint.set = timePoint.set(1:end-1); 

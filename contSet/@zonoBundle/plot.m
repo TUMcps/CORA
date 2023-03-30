@@ -56,7 +56,7 @@ end
 if length(dims) == 1
     zB = project(zB,dims);
     % add zeros to 2nd dimension
-    zB = zB.cartProd(0);
+    zB = cartProd_(zB,0,'exact');
     dims = [1;2];
 end
 

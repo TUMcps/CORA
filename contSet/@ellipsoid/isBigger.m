@@ -65,7 +65,7 @@ elseif ~isFullDim(obj) && ~isFullDim(E)
     end
     
     % share common subspace
-    % transform & cut
+    % transform and cut
     obj = project(U'*obj,1:r);
     E = project(U'*E,1:r);
     

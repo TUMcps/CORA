@@ -109,7 +109,17 @@ elseif strcmp(method,'cov')
     E = U*E;
     
 elseif strcmp(method,'min-vol')
-    if isSolverInstalled('mosek')
+
+    persistent isMosek
+    if isempty(isMosek)
+        isMosek = isSolverInstalled('mosek');
+    end
+    persistent isSDPT3
+    if isempty(isSDPT3)
+        isSDPT3 = isSolverInstalled('sdpt3');
+    end
+
+    if isMosek
         % model using mosek
         [~, res] = mosekopt('symbcon echo(0)');
         prob.bardim = 2*n_nd;
@@ -252,7 +262,7 @@ elseif strcmp(method,'min-vol')
         prob.cones = [repmat([res.symbcon.MSK_CT_QUAD 3],1,n_cones),...
                     repmat([res.symbcon.MSK_CT_QUAD n_nd+1],1,M)];
     
-        % inequality constraints (equality constraints just have same lb & ub)
+        % inequality constraints (equality constraints just have same lb and ub)
         prob.blc = [zeros(1,n_y-1),1];
         prob.buc = prob.blc;
     
@@ -278,7 +288,7 @@ elseif strcmp(method,'min-vol')
         b_sol = y_sol(ind_b);
         E = ellipsoid(inv(B_sol^2),-B_sol\b_sol);
 
-    elseif isSolverInstalled('sdpt3')
+    elseif isSDPT3
         % IMPORTANT: Vectorization is upper-triangular (in contrast to MOSEK,
         % which is lower-triangular)
         % ALSO: For some reason, off-diagonal elements when stacking upper- 
@@ -387,6 +397,7 @@ elseif strcmp(method,'min-vol')
             throw(CORAerror('CORA:solverIssue'));
         end
         E = ellipsoid(inv(value(B)^2),-value(B)\value(b));
+        
     else
         throw(CORAerror('CORA:noSuitableSolver','SDP'));
     end

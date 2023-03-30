@@ -286,8 +286,8 @@ function r = rescaleIterative(cZ)
                     dummy = iA(i,j) .* ( b(i) - A(i,:)*temp );
 
                     % update domains
-                    R(j) = R(j) & dummy;
-                    E(j) = E(j) & R(j);
+                    R(j) = and_(R(j),dummy,'exact');
+                    E(j) = and_(E(j),R(j),'exact');
                 end
             end
         end

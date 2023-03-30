@@ -42,6 +42,7 @@ classdef conZonotope < contSet
 % Written:      03-September-2017
 % Last update:  19-March-2021 (MW, error messages)
 %               14-December-2022 (TL, property check in inputArgsCheck)
+%               29-March-2023 (TL: optimized constructor)
 % Last revision:02-May-2020 (MW, methods list, rewrite methods(hidden),
 %                                 add property validation)
 
@@ -74,83 +75,90 @@ methods
     
     % class constructor
     function obj = conZonotope(varargin)
-
-        % parse input
-        if nargin > 4
-            throw(CORAerror('CORA:tooManyInputArgs',4));
-        end
-        
+        % init
         Z = []; A = []; b = [];
         inputChecks = {};
+        doChecks = CHECKS_ENABLED;
         
+        % parse input
         if nargin == 1 && isa(varargin{1},'conZonotope')
                 % copy constructor
                 obj = varargin{1};
                 return;
             
         elseif nargin == 1 || nargin == 3
+            % Z, (A, b)
             Z = varargin{1};
             varargin = varargin(2:end);
 
-            inputChecks = {{Z, 'att', 'numeric', 'matrix'}};
+            if doChecks
+                inputChecks = {{Z, 'att', 'numeric', 'matrix'}};
+            end
         
         elseif nargin == 2 || nargin == 4
+            % c, G, (A, b)
+
             c = varargin{1};
             G = varargin{2};
             varargin = varargin(3:end);
-
-            inputChecks = { ...
-                {c, 'att', 'numeric', {'finite', 'column'}};
-                {G, 'att', 'numeric', {'finite', 'matrix'}};
-            };
-            inputArgsCheck(inputChecks);
-
-            % check dimensions
-            if length(c) ~= size(G,1)
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'The dimensions of the center and the generator matrix do not match.')); 
+            
+            if doChecks
+                inputChecks = { ...
+                    {c, 'att', 'numeric', {'finite', 'column'}};
+                    {G, 'att', 'numeric', {'finite', 'matrix'}};
+                };
+                inputArgsCheck(inputChecks);
+    
+                % check dimensions
+                if length(c) ~= size(G,1)
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                        'The dimensions of the center and the generator matrix do not match.')); 
+                end
             end
+
             Z = [c,G];
+
+        elseif nargin > 4
+            throw(CORAerror('CORA:tooManyInputArgs',4));
         end
 
-        [A, b] = setDefaultValues({[], []}, varargin);
+        if ~isempty(varargin)
+            A = varargin{1};
+            b = varargin{2};
+        end
 
-        % check dimensions
-        inputArgsCheck([ ...
-            inputChecks; ...
-            {{A, 'att', 'numeric', {'finite', 'matrix'}}};
-            {{b, 'att', 'numeric', {'finite'}}};
-        ])
-        
-        if ~isempty(A) && ~isempty(b)
-            % check correctness of A and b and w.r.t Z
-            if ~isvector(b) % b is a vector ?
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'The constraint offset has to be a vector.'));
-            elseif size(A,2) ~= (size(Z,2)-1) % A fits Z (gens)?
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'The dimensions of the generator matrix and the constraint matrix do not match.'));
-            elseif size(A,1) ~= length(b) % A fits b ?
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'The dimensions of the constraint matrix and the constraint offset do not match.'));
+        if doChecks
+            % check dimensions
+            inputArgsCheck([ ...
+                inputChecks; ...
+                {{A, 'att', 'numeric', {'finite', 'matrix'}}};
+                {{b, 'att', 'numeric', {'finite'}}};
+            ])
+            
+            if ~isempty(A) && ~isempty(b)
+                % check correctness of A and b and w.r.t Z
+                if ~isvector(b) % b is a vector ?
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                        'The constraint offset has to be a vector.'));
+                elseif size(A,2) ~= (size(Z,2)-1) % A fits Z (gens)?
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                        'The dimensions of the generator matrix and the constraint matrix do not match.'));
+                elseif size(A,1) ~= length(b) % A fits b ?
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                        'The dimensions of the constraint matrix and the constraint offset do not match.'));
+                end
             end
         end
         
         % store object properties
         obj.Z = Z; obj.A = A; obj.b = b;
-        
-        % set parent object properties
-        obj.dimension = size(obj.Z,1);
     end
     
     
     % methods in seperate files
-    res = and(cZ,S)
-    cZ = cartProd(cZ,S)
     c = center(cZ)
     res = conIntersect(cZ1,cZ2,M)
     cPZ = conPolyZono(cZ)
-    res = contains(cZ,S,varargin)
     cZ = convHull(cZ,varargin)
     res = cubMap(cZ,varargin)
     cZ = deleteZeros(cZ)
@@ -163,7 +171,6 @@ methods
     cZ = intervalMultiplication(cZ,I)
     res = isempty(cZ)
     res = isFullDim(cZ)
-    res = isIntersecting(cZ,S,varargin)
     cZ = minkDiff(cZ1,S,varargin)
     P = mptPolytope(cZ)
     cZ = mtimes(factor1,factor2)
@@ -174,13 +181,10 @@ methods
     pZ = polyZonotope(cZ)
     cZ = project(cZ,projDim)
     cZ = quadMap(cZ,varargin)
-    p = randPoint(cZ,varargin)
     cZ = reduce(cZ,method,order,varargin)
     cZ = reduceConstraints(cZ,varargin)
     cZ = rescale(cZ,varargin)
     cZsplit = split(cZ,varargin)
-    [val,x,ksi] = supportFunc(cZ,dir,varargin)
-    V = vertices(cZ)
     zB = zonoBundle(cZ)
     Z = zonotope(cZ,varargin)
              

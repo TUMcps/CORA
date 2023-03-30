@@ -42,7 +42,6 @@ if isemptyobject(pZ)
 end
 
 % enclose by an interval and compute norm
-res = norm(interval(pZ)) <= tol;
-
+res = norm_(interval(pZ),2) <= tol;
 
 %------------- END OF CODE --------------

@@ -23,11 +23,11 @@ function n = dim(S)
 
 % Author:       Mark Wetzlinger
 % Written:      17-June-2022
-% Last update:  ---
+% Last update:  22-March-2023 (MW, adapt to new constructor syntax)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-n = S.dimension;
+n = 0;
 
 %------------- END OF CODE --------------

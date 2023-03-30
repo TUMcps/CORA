@@ -207,7 +207,7 @@ elseif strcmp(type,'outer')
         Zred = aux_repair(Zred,Z);
         Padd = mptPolytope(Zred);
         % intersect results
-        P = P & Padd;
+        P = and_(P,Padd,'exact');
     elseif strcmp(method,'volume')
         % solution 1 (method C):
 %         Zred1 = reduce(Z,'methC',1,filterLength);

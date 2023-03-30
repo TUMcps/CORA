@@ -148,7 +148,10 @@ function obj = removeLinProg(obj)
     A = obj.P.A; b = obj.P.b;
     ind = []; cnt = 1;
     
-    options = optimoptions('linprog','display','off');
+    persistent options
+    if isempty(options)
+        options = optimoptions('linprog','display','off');
+    end
     
     while cnt <= size(A,1)
        

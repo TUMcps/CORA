@@ -54,7 +54,12 @@ GG = G'*G;
 lmax = max(eig(GG));
 M = lmax*eye(m) - GG;
 
-if isSolverInstalled('mosek')
+persistent isMosek
+if isempty(isMosek)
+    isMosek = isSolverInstalled('mosek');
+end
+
+if isMosek
     % The problem to solve is 
     %%% norm(Z)^2 = max_{u\in{-1,1}^m} (c+G*u)'*(c+G*u).
     % This can be rewritten as

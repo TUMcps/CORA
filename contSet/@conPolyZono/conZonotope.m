@@ -68,11 +68,11 @@ function cZ = conZonotope(cPZ,varargin)
 
         % enclose set with a conZonotope using the selected algorithm
         if strcmp(type,'extend')
-            cZ = conZonotopeExtend(cPZ);
+            cZ = aux_conZonotopeExtend(cPZ);
         elseif strcmp(type,'linearize')
-            cZ = conZonotopeLinearize(cPZ);
+            cZ = aux_conZonotopeLinearize(cPZ);
         elseif strcmp(type,'all')
-            cZ = conZonotopeAll(cPZ);
+            cZ = aux_conZonotopeAll(cPZ);
         end
     
     else
@@ -84,7 +84,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function res = conZonotopeExtend(cPZ)
+function res = aux_conZonotopeExtend(cPZ)
 % enclose set with a constrained zonotope based on an extension to a higher
 % dimensional space
 
@@ -113,7 +113,7 @@ function res = conZonotopeExtend(cPZ)
     end
 end
 
-function res = conZonotopeLinearize(cPZ)
+function res = aux_conZonotopeLinearize(cPZ)
 % enclose set with a constrained zonotope based on an enclosure of the
 % nonlinear constraints with parallel hyperplanes according to Sec. 4.3.4
 % in [1]
@@ -142,8 +142,8 @@ function res = conZonotopeLinearize(cPZ)
     
     % enclose each nonlinear constraint f(x) by two parallel hyperplanes 
     % defined as J*x + l <= f(x) <= J*x + b (see Eq. (4.93) in [1])
-    jacHan = funHanJacobian(cPZ.A,cPZ.expMat_);
-    funHan = @(x) funCon(x,cPZ.b,cPZ.A,cPZ.expMat_);
+    jacHan = aux_funHanJacobian(cPZ.A,cPZ.expMat_);
+    funHan = @(x) aux_funCon(x,cPZ.b,cPZ.A,cPZ.expMat_);
     
     temp = ones(length(cPZ.id),1);
     dom = interval(-temp,temp);
@@ -168,21 +168,21 @@ function res = conZonotopeLinearize(cPZ)
     end
 end
 
-function res = conZonotopeAll(obj)
+function res = aux_conZonotopeAll(obj)
 % enclose set using a combination of the algorithms "extend" and
 % "linearize"
 
     % compute enclosure with method "extend"
-    res1 = conZonotopeExtend(obj);
+    res1 = aux_conZonotopeExtend(obj);
     
     % compute enclosure with method "linearize"
-    res2 = conZonotopeLinearize(obj);
+    res2 = aux_conZonotopeLinearize(obj);
    
     % intersect the results
-    res = res1 & res2;
+    res = and_(res1,res2,'exact');
 end
 
-function f = funCon(x,b,A,expMat_)
+function f = aux_funCon(x,b,A,expMat_)
 % evaluate the constrataints of a constratined polynomial zonotope
 
     % initialization
@@ -194,7 +194,7 @@ function f = funCon(x,b,A,expMat_)
     end
 end
 
-function J = jacobianCon(x,A,expMat_)
+function J = aux_jacobianCon(x,A,expMat_)
 % compute the jacobian matrix of the polynomial constraints for a
 % constrained polynomial zonotope
 
@@ -209,7 +209,7 @@ function J = jacobianCon(x,A,expMat_)
     end
 end
 
-function jacHan = funHanJacobian(A,expMat_)
+function jacHan = aux_funHanJacobian(A,expMat_)
 % compute a function handle for the jacobian matrix of the constraints
 
     % compute exponent matrix differentiazed for each variable
@@ -225,7 +225,7 @@ function jacHan = funHanJacobian(A,expMat_)
     end
 
     % function handle for jacobian matrix
-    jacHan=@(x)jacobianCon(x,Alist,Elist);
+    jacHan=@(x)aux_jacobianCon(x,Alist,Elist);
 end
     
 %------------- END OF CODE --------------

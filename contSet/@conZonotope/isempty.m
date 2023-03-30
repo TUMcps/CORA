@@ -71,7 +71,7 @@ if ~res && ~isempty(cZ.A)
         for i = 1:size(cZ.A,1)
             % hyperplane from a constraint does not intersect the unit cube
             % -> set is empty
-            if ~isIntersecting(halfspace(cZ.A(i,:),cZ.b(i)),unitCube)
+            if ~isIntersecting_(halfspace(cZ.A(i,:),cZ.b(i)),unitCube,'exact')
                 res = true; return
             end
         end
@@ -81,8 +81,11 @@ if ~res && ~isempty(cZ.A)
         % using the mptPolytope/isempty function)
         if size(cZ.A,1) >= 1
         
-            options = optimoptions('linprog','display','off', ...
-            'OptimalityTolerance',1e-10);	
+            persistent options
+            if isempty(options)
+                options = optimoptions('linprog','display','off', ...
+                                        'OptimalityTolerance',1e-10);
+            end
             
             p = size(cZ.A,2);
             ub = ones(p,1);

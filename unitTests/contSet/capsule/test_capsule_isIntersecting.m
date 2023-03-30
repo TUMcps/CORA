@@ -132,10 +132,7 @@ catch ME
     end
 end
 
-% 6. empty set
-C1 = capsule(1,1,1);
-C2 = capsule();
-res(6) = ~isIntersecting(C1,C2);
+% 6. empty set: rewrite using emptySet class
 
 % combine tests
 res = all(res);

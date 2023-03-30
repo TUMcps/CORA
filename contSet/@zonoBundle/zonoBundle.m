@@ -39,6 +39,7 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonoBundle  < contS
 % Author:       Matthias Althoff
 % Written:      09-November-2010
 % Last update:  14-December-2022 (TL, property check in inputArgsCheck)
+%               29-March-2023 (TL: optimized constructor)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -53,50 +54,43 @@ methods
     %class constructor
     function obj = zonoBundle(varargin)
         
-        if nargin > 1
-            throw(CORAerror('CORA:tooManyInputArgs', 1));
-        end
+        switch nargin
+            case 0
+                Z = {};
+            case 1
+                Z = varargin{1};
+                if isa(Z, 'zonoBundle')
+                    % copy contructor
+                    obj = Z;
+                    return
+                end
+            otherwise
+                throw(CORAerror('CORA:tooManyInputArgs', 1));
+        end        
 
-        % parse input
-        Z = setDefaultValues({{}}, varargin);
-
-        if isa(Z, 'zonoBundle')
-            % copy contructor
-            obj = Z;
-            return
-        end
-
-        inputArgsCheck({{Z, 'att', 'cell'}})
-
-        % check dimensions
-        if ~all(cellfun(@(x) isa(x,'zonotope'), Z,'UniformOutput',true))
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                'First input argument has to be a list of zonotope objects.'));
-        end
-        % all zonotopes have to be of the same dimension
-        if any(diff(cellfun(@(x) dim(x), Z,'UniformOutput',true)))
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                'Zonotopes have to be embedded in the same affine space.'));
+        if CHECKS_ENABLED
+            inputArgsCheck({{Z, 'att', 'cell'}})
+    
+            % check if zonotopes
+            if ~all(cellfun(@(x) isa(x,'zonotope'), Z,'UniformOutput',true))
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'First input argument has to be a list of zonotope objects.'));
+            end
+            % all zonotopes have to be of the same dimension
+            if any(diff(cellfun(@(x) dim(x), Z,'UniformOutput',true)))
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Zonotopes have to be embedded in the same affine space.'));
+            end
         end
 
         % assign properties
         obj.Z = Z;
         obj.parallelSets = length(Z);
-        
-        % set parent object properties
-        if isempty(obj.Z)
-            obj.dimension = 0;
-        else
-            obj.dimension = size(obj.Z{1}.Z,1);
-        end
     end
          
     % methods in seperate files
-    zB = and(zB,S) % intersection
-    zB = cartProd(zB,S) % Cartesian product
     c = center(zB) % center (only approximation)
     cPZ = conPolyZono(zB) % conversion to conPolyZono object
-    res = contains(zB,S,varargin) % containment check
     zB = convHull(zB,varargin) % convex hull
     cZ = conZonotope(zB) % conversion to conZonotope object
     n = dim(zB) % dimension
@@ -107,7 +101,6 @@ methods
     res = isempty(zB) % emptyness check
     res = isequal(zB1,zB2) % equality check
     res = isFullDim(zB) % full-dimensionality check
-    res = isIntersecting(zB,S,varargin) % intersection check
     P = mptPolytope(zB) % conversion to polytope
     zB = mtimes(factor1,factor2) % overloaded * operator
     zB = or(zB1, varargin) % union
@@ -115,15 +108,11 @@ methods
     pZ = polyZonotope(zB) % conversion to polyZonotope object
     zB = project(zB,dims) % projection onto subspace
     zB = quadMap(zB,Q) % quadratic map
-    p = randPoint(zB,varargin) % random point
     zB = reduce(zB,option,varargin) % order reduction
     zB = reduceCombined(zB,option,varargin) % order reduction
     zB = replace(zB,index,Z) % replace individual zonotope in bundle
     zB = shrink(zB,filterLength) % shrink extensions
     Zsplit = split(zB,varargin) % split
-    [val,x] = supportFunc(zB,dir,varargin) % evaluate support function
-    V = vertices(zB) % compute vertices
-    res = volume(zB) % compute volume
     Z = zonotope(zB) % conversion to zonotope object
         
     %display functions

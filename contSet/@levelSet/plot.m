@@ -67,23 +67,23 @@ function han = plot(ls,varargin)
 
         % different methods for the different dimensions
         if length(dims) == 2
-            han = plot2Dcontour(ls,dims,type);
+            han = aux_plot2Dcontour(ls,dims,type);
         else
-            [res,ind] = isSolvable(ls,dims);
+            [res,ind] = aux_isSolvable(ls,dims);
 
             if res
-                han = plot3Dsolvable(ls,dims,ind,type);
+                han = aux_plot3Dsolvable(ls,dims,ind,type);
             else
-                han = plot3Dgrid(ls,dims,type); 
+                han = aux_plot3Dgrid(ls,dims,type); 
             end
         end
 
     else
         % different methods for the differnt dimensions
         if length(dims) == 2
-            han = plot2Dgrid(ls,dims,type);
+            han = aux_plot2Dgrid(ls,dims,type);
         else
-            han = plot3Dgrid(ls,dims,type); 
+            han = aux_plot3Dgrid(ls,dims,type); 
         end 
     end
     
@@ -95,7 +95,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function han = plot2Dcontour(obj,dims,type)
+function han = aux_plot2Dcontour(obj,dims,type)
 % plot 2D level set using Matlabs contour plot function
 
     % re-read plotOptions, since always plot called
@@ -130,7 +130,7 @@ function han = plot2Dcontour(obj,dims,type)
     [~,han] = contour(X,Y,Z,level,type{:});
 end
 
-function han = plot2Dgrid(obj,dims,type)
+function han = aux_plot2Dgrid(obj,dims,type)
 % plot 2D level set by gridding the plot area 
 
     % re-read plotOptions, since always fill called
@@ -182,7 +182,7 @@ function han = plot2Dgrid(obj,dims,type)
     end  
 end
 
-function han = plot3Dsolvable(obj,dims,ind,type)
+function han = aux_plot3Dsolvable(obj,dims,ind,type)
 % plot 3D level set by solving for one variable
 
     % re-read plotOptions, since always surf ~ fill called
@@ -234,7 +234,7 @@ function han = plot3Dsolvable(obj,dims,ind,type)
 
 end
 
-function han = plot3Dgrid(obj,dims,type)
+function han = aux_plot3Dgrid(obj,dims,type)
 % plot 3D level set by gridding the plot area
 
     % re-read plotOptions, since always fill called
@@ -278,7 +278,7 @@ function han = plot3Dgrid(obj,dims,type)
                 int = interval(c-d,c+d);
                 
                 % plot the grid cell if it intersects the level set
-                if isIntersecting(obj,int,'approx')
+                if isIntersecting_(obj,int,'approx')
                     han = plot(int,dims,type{:});
                 end
             end
@@ -286,7 +286,7 @@ function han = plot3Dgrid(obj,dims,type)
     end
 end
 
-function [res,ind] = isSolvable(obj,dims)
+function [res,ind] = aux_isSolvable(obj,dims)
 % check if the level set equation is solvable for one variable
 
     res = false;
