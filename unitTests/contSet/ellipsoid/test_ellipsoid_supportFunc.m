@@ -54,17 +54,23 @@ end
 
 end
 
-
 % Auxiliary functions -----------------------------------------------------
+
 function res = checkSuppFunc(E)
     n = dim(E);
     [T,S,~] = svd(E.Q);
     s = sqrt(diag(S));
     res = true;
+
+    % loop over all directions
     for i=1:n
+        % direction
         l = T(:,i);
+        % evaluate support function and compute support vector
         [val,x] = supportFunc(E,l);
         ri = abs(val-l'*E.q);
+
+        % check results
         if ~withinTol(s(i),ri,E.TOL) || ~withinTol(norm(x-E.q),s(i),E.TOL)
             res = false;
             break;

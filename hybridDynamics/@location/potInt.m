@@ -57,7 +57,7 @@ for i = 1:nrTrans
         for j = 1:nrSets
 
             % check if reachable set intersects the guard set
-            if isIntersecting(guardSet,R{j},'approx')
+            if isIntersecting_(guardSet,R{j},'approx')
                 guards(counter) = i;
                 setIndices(counter) = j;
                 counter = counter + 1;

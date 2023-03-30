@@ -23,7 +23,7 @@ function int = interval(obj)
 
 %------------- BEGIN CODE -------------
 
-    int = arrayfun(@(a) s_zoo2int(a), obj, 'UniformOutput', false);
+    int = arrayfun(@(a) aux_zoo2int(a), obj, 'UniformOutput', false);
     A = [int{:}];
     int = reshape(A, size(int)); 
     
@@ -32,11 +32,11 @@ end
 
 %------------ Scalar function ---------------
 
-function res = s_zoo2int(obj)
+function res = aux_zoo2int(obj)
 
     res = interval(-inf,inf);
     for i = 1:length(obj.method)
-       res = res & interval(obj.objects{i}); 
+       res = and_(res,interval(obj.objects{i},'exact')); 
     end
     
 end

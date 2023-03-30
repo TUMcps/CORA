@@ -50,6 +50,7 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) polyZonotope < cont
 % Last update:   02-May-2020 (MW, add property validation, def constructor)
 %                21-March-2021 (MW, error messages, size checks, restructuring)
 %                14-December-2022 (TL, restructuring)
+%                29-March-2023 (TL: optimized constructor)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -96,41 +97,43 @@ methods
             id = (1:p)'; % column vector
         end
 
-        inputArgsCheck({ ...
-            {c, 'att', {'double'}, {'finite'}};
-            {G, 'att', {'double'}, {'finite', 'matrix'}};
-            {Grest, 'att', {'double'}, {'finite', 'matrix'}};
-            {expMat, 'att', {'double'}, ...
-                {'integer', 'nonnegative', 'matrix'}};
-            {id, 'att', {'double'}, {'integer'}};
-        })
-
-        % check dimensions
-        if ~isempty(c) && size(c, 2) ~= 1
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                'Center should be a column vector.'));
-        end
-        if size(id, 2) ~= 1
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                'Identifier vector should be a column vector.'));
-        end
-
-        % check dimensions
-        if ~isempty(G) && size(G,1) ~= n
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                'Dimension mismatch between center and dependent generator matrix.'));
-        end
-        if ~isempty(Grest) && size(Grest,1) ~= n
-             throw(CORAerror('CORA:wrongInputInConstructor',...
-                 'Dimension mismatch between center and dependent generator matrix.'));
-        end
-        if size(expMat,2) ~= h
-             throw(CORAerror('CORA:wrongInputInConstructor',...
-                 'Dimension mismatch between dependent generator matrix and exponent matrix.'));
-        end
-        if size(id, 1) ~= p
-             throw(CORAerror('CORA:wrongInputInConstructor',...
-                 'Dimension mismatch between exponent matrix and identifier vector.'));
+        if CHECKS_ENABLED
+            inputArgsCheck({ ...
+                {c, 'att', {'double'}, {'finite'}};
+                {G, 'att', {'double'}, {'finite', 'matrix'}};
+                {Grest, 'att', {'double'}, {'finite', 'matrix'}};
+                {expMat, 'att', {'double'}, ...
+                    {'integer', 'nonnegative', 'matrix'}};
+                {id, 'att', {'double'}, {'integer'}};
+            })
+    
+            % check dimensions
+            if ~isempty(c) && size(c, 2) ~= 1
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Center should be a column vector.'));
+            end
+            if size(id, 2) ~= 1
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Identifier vector should be a column vector.'));
+            end
+    
+            % check dimensions
+            if ~isempty(G) && size(G,1) ~= n
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Dimension mismatch between center and dependent generator matrix.'));
+            end
+            if ~isempty(Grest) && size(Grest,1) ~= n
+                 throw(CORAerror('CORA:wrongInputInConstructor',...
+                     'Dimension mismatch between center and dependent generator matrix.'));
+            end
+            if size(expMat,2) ~= h
+                 throw(CORAerror('CORA:wrongInputInConstructor',...
+                     'Dimension mismatch between dependent generator matrix and exponent matrix.'));
+            end
+            if size(id, 1) ~= p
+                 throw(CORAerror('CORA:wrongInputInConstructor',...
+                     'Dimension mismatch between exponent matrix and identifier vector.'));
+            end
         end
 
         % remove redundancies
@@ -144,9 +147,6 @@ methods
         obj.Grest = Grest;
         obj.expMat = expMat;
         obj.id = id;
-        
-        % set parent object properties
-        obj.dimension = n;
     end
 end
 

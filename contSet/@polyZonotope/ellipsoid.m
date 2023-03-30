@@ -59,7 +59,7 @@ Q{1} = inv(E.Q);
 pZ_ = quadMap(pZ,Q);
 
 % use range bounding to get radius of the ellipsoid
-r = supportFunc(pZ_,1,'upper',method);
+r = supportFunc_(pZ_,1,'upper',method,8,1e-3);
 
 % construct final ellipsoid
 E = ellipsoid((E.Q)*r,B*center(I));

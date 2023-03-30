@@ -65,7 +65,7 @@ for k = 1:iter
                 dummy = iA(i,j) .* ( b(i) - A(i,:)*temp );
                 
                 % update domains
-                R(j) = R(j) & dummy;
+                R(j) = and_(R(j),dummy,'exact');
                 E(j) = E(j) & R(j);
             end
         end

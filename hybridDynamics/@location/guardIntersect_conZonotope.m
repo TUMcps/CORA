@@ -38,7 +38,7 @@ end
 
 % intersect the reachable sets with the guard set    
 for i = 1:length(R)
-    R{i} = R{i} & guard; 
+    R{i} = and_(R{i},guard,'exact'); 
 end
 
 R = R(~cellfun('isempty',R));

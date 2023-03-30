@@ -101,9 +101,10 @@ methods
             x = h.d/h.c;
             % check if x is in {x|Cx\leq d}
             X = mptPolytope(C,d);
-            if ~contains(X,x)
+            if ~contains_(X,x,'exact',eps)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Assignment not consistent: implicit value for x given by hyperplane not contained in {x | C*x <= d}!'));
+                    ['Assignment not consistent: implicit value for x ' ...
+                    'given by hyperplane not contained in {x | C*x <= d}!']));
             end         
         end
 
@@ -112,25 +113,18 @@ methods
         obj.C = C;
         obj.d = d;
         
-        % set parent object properties
-        obj.dimension = dim(h);
-        
     end
          
-    % methods in seperate files  
-    res = and(hyp,S)
-    res = contains(hyp,S)
+    % methods in seperate files
     n = dim(hyp)
     val = distance(hyp,S)
     res = isempty(hyp)
     res = isequal(hyp1,hyp2,varargin)
     res = isHyperplane(hyp)
-    res = isIntersecting(hyp,S,varargin)
     P = mptPolytope(hyp)
     han = plot(hyp,varargin)
     hyp = projectHighDim(hyp,N,dims)
     Sproj = projectOnHyperplane(hyp,S)
-    [val,x] = supportFunc(hyp,d,type)
         
     % display functions
     display(hyp)

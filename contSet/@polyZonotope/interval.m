@@ -87,7 +87,7 @@ else
     for i = 1:n
         e_ = e;
         e_(i) = 1;
-        I(i) = supportFunc(pZ,e_,'range',method);
+        I(i) = supportFunc_(pZ,e_,'range',method,8,1e-3);
     end
 
 end

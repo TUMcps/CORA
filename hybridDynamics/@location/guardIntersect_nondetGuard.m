@@ -52,7 +52,7 @@ for i = 1:length(B)
     cZ = conZonotope(Ztemp);
     
     % intersect the set with the guard set
-    cZ = cZ & guard;
+    cZ = and_(cZ,guard,'exact');
     
     % enclose the intersection with an interval in transformed space
     Z{i} = B{i} * zonotope(interval(B{i}'*cZ));

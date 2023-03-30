@@ -61,7 +61,7 @@ if all(all(withinTol(E1.Q,E2.Q,TOL)))
     return;
 end
 
-% check bad directions & remove them
+% check bad directions and remove them
 isbDir = @(L) isBadDir(E1,E2,L);
 if isempty(L)
     N = 2*n;

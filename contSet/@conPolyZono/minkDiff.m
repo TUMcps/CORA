@@ -74,7 +74,7 @@ function cPZ = minkDiff(cPZ1,cPZ2,varargin)
             cPZ = cPZ1 + (-c);
 
             for i = 1:size(G,2)
-                cPZ = (cPZ + G(:,i)) & (cPZ + (-G(:,i)));
+                cPZ = and_(cPZ + G(:,i),cPZ + (-G(:,i)),'exact');
             end
 
         elseif isa(cPZ2,'conZonotope') || isa(cPZ2,'mptPolytope') || ...
@@ -91,7 +91,7 @@ function cPZ = minkDiff(cPZ1,cPZ2,varargin)
             cPZ = cPZ1 + (-V(:,1));
 
             for i = 2:size(V,2)
-                cPZ = cPZ & (cPZ1 + (-V(:,i))); 
+                cPZ = and_(cPZ,cPZ1 + (-V(:,i)),'exact'); 
             end
 
         else

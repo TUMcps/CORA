@@ -80,9 +80,6 @@ methods
         obj.cov = [];
         obj.gauss = false;
         
-        % set parent object properties
-        obj.dimension = size(obj.Z,1);
-        
         if nargin >= 2
             % update covariance matrix
             obj.cov = sigma(obj);

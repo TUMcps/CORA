@@ -40,8 +40,17 @@ G = generators(Z);
 [~,m] = size(G);
 GG = G'*G;
 
+persistent isMosek
+if isempty(isMosek)
+    isMosek = isSolverInstalled('mosek');
+end
+persistent isSDPT3
+if isempty(isSDPT3)
+    isSDPT3 = isSolverInstalled('sdpt3');
+end
+
 %compute upper bound on norm via dual problem of max_{|u|<=1} u'*G'*G*u
-if isSolverInstalled('mosek')
+if isMosek
     % The dual problem to 
     %%% max_{|u|<=1} u'*G'*G*u
     % is given by
@@ -100,7 +109,7 @@ if isSolverInstalled('mosek')
     % objective in scalar variables
     prob.c = [];
 
-    % inequality constraints (equality constraints just have same lb & ub)
+    % inequality constraints (equality constraints just have same lb and ub)
     prob.blc = ones(1,m);
     prob.buc = prob.blc;
 
@@ -122,7 +131,7 @@ if isSolverInstalled('mosek')
     ub = sqrt(d_sol'*ones(m,1));
 
 
-elseif isSolverInstalled('sdpt3')
+elseif isSDPT3
     % solve using sdpt3
     blk = cell(2,2);
     % first block: linear cone (more or less x>=0)
@@ -170,7 +179,9 @@ elseif isYalmipInstalled()
     optimize([GG<=diag(d),d>=0],d'*ones(m,1),options);
     ub = sqrt(value(d'*ones(m,1)));
     warning("YALMIP was used to model the problem - consider installing a supported solver to speed up computation...");
+    
 else
     throw(CORAerror('CORA:noSuitableSolver','SDP'));
 end
+
 %------------- END OF CODE --------------

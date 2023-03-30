@@ -75,7 +75,7 @@ else
     
     for i = 1:size(Gind,2)
         zono_ = zonotope([zonoRef.Z,Gind(:,i)]);
-        Vind(i) = volume(interval(zono_)); 
+        Vind(i) = volume_(interval(zono_)); 
     end
     
     % calculate the volume for the dependent generators
@@ -93,7 +93,7 @@ else
         zono_ = zonotope(pZ_);
         
         % calculate volume of the zonotope over-approximation
-        Vdep(i) = volume(interval(zono_));
+        Vdep(i) = volume_(interval(zono_));
     end
     
     % find generators with the smallest volume => smallest

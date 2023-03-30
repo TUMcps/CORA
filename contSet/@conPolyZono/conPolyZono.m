@@ -168,9 +168,6 @@ methods
         % assign object properties
         obj.c = c; obj.G = G; obj.expMat = expMat; obj.A = A; obj.b = b;
         obj.expMat_ = expMat_; obj.Grest = Grest; obj.id = id;
-        
-        % set parent object properties
-        obj.dimension = length(obj.c);
     end
 end
 

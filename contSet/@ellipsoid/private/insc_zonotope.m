@@ -70,9 +70,9 @@ end
 
 % compute zonotope norm
 if doExact
-    R = norm(zonotope([zeros(n,1),G]),2,'exact');
+    R = norm_(zonotope([zeros(n,1),G]),2,'exact');
 else
-    R = norm(zonotope([zeros(n,1),G]),2,'ub_convex');
+    R = norm_(zonotope([zeros(n,1),G]),2,'ub_convex');
 end
 %we want Z \in E, thus scale zonotope(.,G) such that is barely contained in
 %unit hyper-sphere, and apply inverse transform

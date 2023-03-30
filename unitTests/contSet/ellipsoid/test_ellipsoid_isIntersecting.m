@@ -26,9 +26,10 @@ function res = test_ellipsoid_isIntersecting
 %------------- BEGIN CODE --------------
 
 load cases.mat E_c
+res = true;
 
-% empty set
-res = ~ isIntersecting(E_c{1}.E1,ellipsoid());
+% empty set: rewrite using emptySet class
+% res = ~ isIntersecting(E_c{1}.E1,ellipsoid());
 
 % loop over cases
 for i=1:length(E_c)

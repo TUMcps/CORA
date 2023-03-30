@@ -241,7 +241,7 @@ function Z = minkDiffConZono(Z1,Z2)
     cZ = cZ + (-c);
     
     for i = 1:size(G,2)
-        cZ = (cZ + G(:,i)) & (cZ + (-G(:,i)));
+        cZ = and_(cZ + G(:,i),cZ + (-G(:,i)),'exact');
     end
 
     % compute zonotope inner-approximation of the constrained zonotope
@@ -276,7 +276,10 @@ function Z = innerApprox(cZ)
     f = -[zeros(1,m_),sum((cZ.Z(:,2:end)*T).^2,1)];
     
     % solve linear program to get interval inner-approximation of polytope
-    options = optimoptions('linprog','display','off');
+    persistent options
+    if isempty(options)
+        options = optimoptions('linprog','display','off');
+    end
     
     [x,~,exitflag] = linprog(f,A,b,[],[],[],[],options);
     

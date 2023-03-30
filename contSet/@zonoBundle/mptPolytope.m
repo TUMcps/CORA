@@ -43,7 +43,7 @@ end
 % intersect all polytopes
 P = Ptmp{1};
 for i=2:zB.parallelSets
-    P = P & Ptmp{i};
+    P = and_(P,Ptmp{i},'exact');
 end
     
 %------------- END OF CODE --------------

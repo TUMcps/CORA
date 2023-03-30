@@ -76,7 +76,7 @@ elseif isFullDim(E1) && ~isFullDim(E2) % E2 is degenerate
     nt = rank(E2);
     if nt==0
         % E2 contains only single point
-        res = contains(E1,E2.q);
+        res = contains_(E1,E2.q,'exact',0);
         return;
     end
     [T,~,~] = svd(E2.Q);
@@ -91,7 +91,7 @@ elseif isFullDim(E1) && ~isFullDim(E2) % E2 is degenerate
     I = eye(n);
     for i=1:(n-nt)
         Hi = conHyperplane(I(nt+i,:),x2_rem(i));
-        E1 = E1 & Hi;
+        E1 = and_(E1,Hi,'outer');
         % if intersection is empty, E2 cannot be contained in E1
         if isempty(E1)
             res = false;
@@ -129,7 +129,17 @@ Ms = 1/fac*Ms;
 
 n = size(Qs,1); % Q and Qs have same dimensions (see above)
 
-if isSolverInstalled('mosek')
+persistent isMosek
+if isempty(isMosek)
+    isMosek = isSolverInstalled('mosek');
+end
+persistent isSDPT3
+if isempty(isSDPT3)
+    isSDPT3 = isSolverInstalled('sdpt3');
+end
+
+
+if isMosek
     % model the problem ourselves using MOSEK
     % see @ellipsoid/private/andEllipsoidIA.m for general MOSEK problem
     % description
@@ -176,7 +186,7 @@ if isSolverInstalled('mosek')
     % objective in scalar variables
     prob.c = [];
 
-    % inequality constraints (equality constraints just have same lb & ub)
+    % inequality constraints (equality constraints just have same lb and ub)
     prob.blc = 0;
     prob.buc = 0;
 
@@ -205,7 +215,7 @@ if isSolverInstalled('mosek')
         throw(CORAerror('CORA:solverIssue','mosek'));
     end
 
-elseif isSolverInstalled('sdpt3')
+elseif isSDPT3
     % IMPORTANT: Vectorization is upper-triangular (in contrast to MOSEK,
     % which is lower-triangular)
     % ALSO: For some reason, off-diagonal elements when stacking upper- 
@@ -250,6 +260,7 @@ elseif isSolverInstalled('sdpt3')
     else
         res = true;
     end
+    
 elseif isYalmipInstalled()
     %For more details, see [1]
     t = sdpvar;
@@ -272,6 +283,7 @@ elseif isYalmipInstalled()
     res = ~diagnostics.problem;
     warning("YALMIP was used to model the problem - " + ...
         "consider installing a supported solver to speed up computation...");
+
 else
     throw(CORAerror('CORA:noSuitableSolver','SDP'));
 end

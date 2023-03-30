@@ -75,8 +75,8 @@ else
     ind = setdiff(1:length(Idep),ind);  
 
     % calculate the volumes of the parallelotopes
-    Vind = volume(Iind(ind));
-    Vdep = volume(Idep(ind));
+    Vind = volume_(Iind(ind));
+    Vdep = volume_(Idep(ind));
 
     % calculate the volume ratio
     ratio = (Vind/Vdep)^(1/n);

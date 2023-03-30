@@ -85,15 +85,15 @@ function cZsplit = splitOneDim(cZ,inter,splitDim)
     cTemp(splitDim) = c(splitDim) - 0.5*r(splitDim);
     rTemp(splitDim) = 0.5 * r(splitDim); 
     
-    int1 = interval(cTemp-rTemp,cTemp+rTemp);
+    I1 = interval(cTemp-rTemp,cTemp+rTemp);
     
     % second half of the enclosing interval 
     cTemp(splitDim) = c(splitDim) + 0.5*r(splitDim);
-    int2 = interval(cTemp-rTemp,cTemp+rTemp);
+    I2 = interval(cTemp-rTemp,cTemp+rTemp);
     
     % intersect the intervals with the original conPolyZono object
-    cZsplit{1} = cZ & int1;
-    cZsplit{2} = cZ & int2;
+    cZsplit{1} = and_(cZ,I1,'exact');
+    cZsplit{2} = and_(cZ,I2,'exact');
     
 end
     

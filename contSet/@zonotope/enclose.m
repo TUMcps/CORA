@@ -53,8 +53,8 @@ else
 end
 
 % retrieve number of generators of the zonotopes
-generators1 = length(Z.Z(1,:));
-generators2 = length(Z2.Z(1,:));
+generators1 = size(Z.Z,2);
+generators2 = size(Z2.Z,2);
 
 % if first zonotope has more or equal generators
 if generators2 <= generators1

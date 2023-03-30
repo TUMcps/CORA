@@ -66,7 +66,7 @@ if ~isFullDim(E(end))
         % intersect each cell element with all hyperplanes
         for j=1:(n-nt)
             Hi = conHyperplane(I(nt+j,:),x_rem(j));
-            E(i) = E(i) & Hi;
+            E(i) = and_(E(i),Hi,'outer');
             % check if intersection is empty; if yes, overall result is
             % empty
             if isempty(E(i))
@@ -85,7 +85,7 @@ n_nd = E(1).dim;
 if n_nd==1
     Ires = interval(E(1));
     for j=2:N
-        Ires = Ires & interval(E(j));
+        Ires = and_(Ires,interval(E(j)),'exact');
     end
     if isempty(Ires)
         E = ellipsoid;
@@ -93,7 +93,22 @@ if n_nd==1
     end
     qt = center(Ires);
     Qt = rad(Ires)^2;
-elseif isSolverInstalled('mosek') 
+
+    % backtransform
+    E = T*ellipsoid([Qt,zeros(n_nd,n-n_nd);zeros(n-n_nd,n)],[qt;x_rem]);
+    return
+end
+
+persistent isMosek
+if isempty(isMosek)
+    isMosek = isSolverInstalled('mosek');
+end
+persistent isSDPT3
+if isempty(isSDPT3)
+    isSDPT3 = isSolverInstalled('sdpt3');
+end
+
+if isMosek
     % model the problem ourselves using MOSEK
     % MOSEK solves problems of the form (var bounds omitted, not needed for
     % us)
@@ -351,7 +366,7 @@ elseif isSolverInstalled('mosek')
     prob.cones.sub = 2+(1:3*n_cones);
     prob.cones.subptr = 1+3*(0:n_cones-1);
 
-    % inequality constraints (equality constraints just have same lb & ub)
+    % inequality constraints (equality constraints just have same lb and ub)
     prob.blc = [zeros(1,n_y-1),1];
     prob.buc = prob.blc;
 
@@ -398,7 +413,8 @@ elseif isSolverInstalled('mosek')
     % construct Qt matrix
     Qt = B_sol^2;
     qt = d_sol;
-elseif isSolverInstalled('sdpt3')
+
+elseif isSDPT3
     % IMPORTANT: Vectorization is upper-triangular (in contrast to MOSEK,
     % which is lower-triangular)
     % ALSO: For some reason, off-diagonal elements when stacking upper- 
@@ -556,6 +572,7 @@ elseif isYalmipInstalled()
     else
         throw(CORAerror('CORA:solverIssue'));
     end
+
 else
     throw(CORAerror('CORA:noSuitableSolver','SDP'));
 end

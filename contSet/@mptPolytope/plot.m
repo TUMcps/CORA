@@ -51,7 +51,7 @@ end
 % transform to 2D polytope if only 1D should be plotted
 if length(dims) == 1
     P = project(P,dims);
-    P = P.cartProd(0);
+    P = cartProd_(P,0,'exact');
     dims = [1, 2];
 end
  
@@ -64,13 +64,12 @@ if ~isBounded(P.P)
     
     % intersect with the current polytope
     if length(dims) == 2
-        P = project(P,dims) & interval([xLim(1);yLim(1)], ...
-                                           [xLim(2);yLim(2)]);
+        P = and_(project(P,dims),interval([xLim(1);yLim(1)],[xLim(2);yLim(2)]),'exact');
         dims = [1,2];
     else
         zLim = get(gca,'Zlim');
-        P = project(P,dims) & interval([xLim(1);yLim(1);zLim(1)], ...
-                                           [xLim(2);yLim(2),zLim(2)]);
+        P = and_(project(P,dims),interval([xLim(1);yLim(1);zLim(1)], ...
+                                           [xLim(2);yLim(2),zLim(2)]),'exact');
         dims = [1,2,3];
     end
 end

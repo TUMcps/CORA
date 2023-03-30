@@ -25,7 +25,7 @@ function I = interval(C)
 % See also: zonotope
 
 % Author:       Niklas Kochdumper
-% Written:      20-Nov-2019 
+% Written:      20-November-2019 
 % Last update:  ---
 % Last revision:---
 
@@ -39,8 +39,8 @@ E = eye(n);
 
 % loop over all dimensions
 for i = 1:n
-    ub(i) = supportFunc(C,E(:,i),'upper');
-    lb(i) = supportFunc(C,E(:,i),'lower');        
+    ub(i) = supportFunc_(C,E(:,i),'upper');
+    lb(i) = supportFunc_(C,E(:,i),'lower');        
 end
 
 % instantiate interval

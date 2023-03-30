@@ -78,7 +78,7 @@ pZ = compact(pZ);
 
 if length(dims) == 1
     % add zeros to 2nd dimension
-    pZ = pZ.cartProd(0);
+    pZ = cartProd_(pZ,0,'exact');
     dims = [1;2];
 end
 

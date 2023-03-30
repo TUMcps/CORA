@@ -81,7 +81,7 @@ elseif strcmp(method,'split') || strcmp(method,'quadProg')
         temp(i) = 1;
 
         % calculate bounds
-        I(i) = supportFunc(cPZ,temp,'range',method);
+        I(i) = supportFunc_(cPZ,temp,'range',method,8);
     end
     
 end

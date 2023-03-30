@@ -64,7 +64,7 @@ elseif strcmp(type,'exact')
         b = P1.P.b;
         
         for i = 1:size(A,1)
-            l = supportFunc(S,A(i,:)','upper');
+            l = supportFunc_(S,A(i,:)','upper');
             b(i) = b(i) - l;
         end
         
@@ -78,7 +78,7 @@ elseif strcmp(type,'exact')
         V = vertices(S); P = P1 + (-V(:,1));
 
         for i = 2:size(V,2)
-            P = P & (P1 + (-V(:,i))); 
+            P = and_(P,P1 + (-V(:,i)),'exact'); 
         end
         
     else
@@ -87,8 +87,13 @@ elseif strcmp(type,'exact')
 
 % inner-approximative computation 
 elseif strcmp(type,'inner')
-    % note: exact for many set-representation, check where this is truly an
-    % inner-approximation...
+    % note: exact for all convex set representations, for non-convex an
+    % inner-approximation?
+
+    otherOptions = {};
+    if isa(S,'polyZonotope') || isa(S,'conPolyZono')
+        otherOptions = {'interval',8,1e-3};
+    end
     
     % scale each halfspace of the polytope to obtain
     % inner-approximation of the Minkowski difference
@@ -96,7 +101,7 @@ elseif strcmp(type,'inner')
     b = P1.P.b;
     
     for i = 1:size(A,1)
-        l = supportFunc(S,A(i,:)','upper');
+        l = supportFunc_(S,A(i,:)','upper',otherOptions{:});
         b(i) = b(i) - l;
     end
     

@@ -83,11 +83,11 @@ res_int = ~res_above && res_upperboundary && res_through && ...
     res_lowerboundary && ~res_below;
 % -------------------------------------------------------------------------
 
-% empty set
-hyp_e = conHyperplane();
-res_e = ~isIntersecting(hyp_above,hyp_e);
+% empty set: rewrite using emptySet class
+% hyp_e = conHyperplane();
+% res_e = ~isIntersecting(hyp_above,hyp_e);
 
 % combine tests
-res = res_zon && res_int && res_e;
+res = res_zon && res_int; % && res_e;
 
 %------------- END OF CODE --------------

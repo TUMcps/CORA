@@ -68,8 +68,6 @@ methods
             obj.c = [];
             obj.g = [];
             obj.r = 0;
-
-            obj.dimension = 0;
             
         else
             c = varargin{1};
@@ -104,9 +102,6 @@ methods
             obj.c = c;
             obj.g = g;
             obj.r = r;
-
-            % set parent object properties
-            obj.dimension = length(c);
         end
     end
 end

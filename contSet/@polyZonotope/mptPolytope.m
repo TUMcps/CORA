@@ -51,7 +51,7 @@ if nargin >= 3 && strcmp(varargin{1},'template')
     for i = 1:size(dir,2)
         
         dirTemp = dir(:,i)./norm(dir(:,i));
-        I = supportFunc(pZ,dirTemp,'range','split');
+        I = supportFunc_(pZ,dirTemp,'range','split',8,1e-3);
         
         C(counter,:) = dirTemp';
         d(counter) = supremum(I);
@@ -86,7 +86,7 @@ else
     pZ.Grest = [pZ.Grest, generators(Z)];
 
     % determine all potential vertices and remove redundant points
-    points = randPoint(pZ,'all','extreme');
+    points = randPoint_(pZ,'all','extreme');
     points = sortrows(points')';
 
     points_ = zeros(size(points));

@@ -58,7 +58,7 @@ function pgon = polygon(cPZ,varargin)
        pgon = [];
        for i = 1:length(L)
           poly = polygon(L{i},splits);
-          pgon = unite(pgon,poly);
+          pgon = aux_unite(pgon,poly);
        end
        return;
     else
@@ -83,7 +83,7 @@ function pgon = polygon(cPZ,varargin)
     p = length(pZ.id); temp = ones(p,1);
     dom = interval(-temp,temp);
     
-    [polyPrev,V] = getPolygon(pZ,cPZ.Grest);
+    [polyPrev,V] = aux_getPolygon(pZ,cPZ.Grest);
     list{1}.set = pZ;
     list{1}.dom = dom;
     list{1}.V = V;
@@ -99,26 +99,26 @@ function pgon = polygon(cPZ,varargin)
             if any(sum(ismembertol(list{j}.V',polyPrev.set.Vertices,1e-12),2) == 2)
             
                 % split the polynomial zonotope
-                res = splitDomain(list{j});
+                res = aux_splitDomain(list{j});
 
                 % compute the corresponding polygons
-                if intersectsNullSpace(res{1})
-                    [poly,V] = getPolygon(res{1}.set,cPZ.Grest);
+                if aux_intersectsNullSpace(res{1})
+                    [poly,V] = aux_getPolygon(res{1}.set,cPZ.Grest);
                     list_{end+1} = res{1};
                     list_{end}.V = V;
-                    polyAll = unite(polyAll,poly);
+                    polyAll = aux_unite(polyAll,poly);
                 end
 
-                if intersectsNullSpace(res{2})
-                    [poly,V] = getPolygon(res{2}.set,cPZ.Grest);
+                if aux_intersectsNullSpace(res{2})
+                    [poly,V] = aux_getPolygon(res{2}.set,cPZ.Grest);
                     list_{end+1} = res{2};
                     list_{end}.V = V;
-                    polyAll = unite(polyAll,poly);
+                    polyAll = aux_unite(polyAll,poly);
                 end
             
             else
                 list_{end+1} = list{j};
-                polyAll = unite(polyAll,polygon(list{j}.V(1,:),list{j}.V(2,:)));
+                polyAll = aux_unite(polyAll,polygon(list{j}.V(1,:),list{j}.V(2,:)));
             end
         end
         
@@ -141,7 +141,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function [poly,V] = getPolygon(set,Grest)
+function [poly,V] = aux_getPolygon(set,Grest)
 % construct the polygon that corresponds to the splitted set
 
     % convert to zonotope
@@ -161,7 +161,7 @@ function [poly,V] = getPolygon(set,Grest)
     end
 end
 
-function res = unite(S1,S2)
+function res = aux_unite(S1,S2)
 % compute union of two polygons (also works for empty sets contrary to the
 % original polygon/union function)
 
@@ -174,7 +174,7 @@ function res = unite(S1,S2)
     end
 end
 
-function res = splitDomain(obj)
+function res = aux_splitDomain(obj)
 % split the factor domain of the constrained polynomial zonotope
 
    % split constraint polynomial zonotope along the longest generator
@@ -190,7 +190,7 @@ function res = splitDomain(obj)
    res{2}.set = pZsplit{2}; res{2}.dom = temp{1};
 end
 
-function res = intersectsNullSpace(obj)
+function res = aux_intersectsNullSpace(obj)
 % test if the split set violates the constraints (if it not intersects any
 % of the hyperplanes)
 
@@ -203,7 +203,7 @@ function res = intersectsNullSpace(obj)
         c = zeros(n,1); c(i) = 1;
         hs = conHyperplane(c,0);
         
-        if ~isIntersecting(hs,zonotope(obj.set))
+        if ~isIntersecting_(hs,zonotope(obj.set),'exact')
            res = false;
            return;
         end

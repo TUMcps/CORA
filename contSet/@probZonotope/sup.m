@@ -35,8 +35,8 @@ function value = sup(probZ)
 Int=interval(probZ);
 
 %determine vector with greatest infinity norm within the interval hull
-N1=norm(infimum(Int),Inf);
-N2=norm(supremum(Int),Inf);
+N1=norm_(infimum(Int),Inf);
+N2=norm_(supremum(Int),Inf);
 value=max([N1,N2]);
 
 %------------- END OF CODE --------------

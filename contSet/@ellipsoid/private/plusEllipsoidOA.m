@@ -71,7 +71,17 @@ for i=1:N
     c_c{i} = E(i).q'*(E(i).Q\E(i).q)-1;
 end
 
-if isSolverInstalled('mosek')
+persistent isMosek
+if isempty(isMosek)
+    isMosek = isSolverInstalled('mosek');
+end
+persistent isSDPT3
+if isempty(isSDPT3)
+    isSDPT3 = isSolverInstalled('sdpt3');
+end
+
+
+if isMosek
     % model the problem ourselves using MOSEK
     % For details, see "orEllipsoidOA.m" (very similiar)
     
@@ -255,7 +265,7 @@ if isSolverInstalled('mosek')
     prob.cones.sub = 1:3*n_cones;
     prob.cones.subptr = 1+3*(0:n_cones-1);
     
-    % inequality bounds (equality constraints just have same lb & ub)
+    % inequality bounds (equality constraints just have same lb and ub)
     prob.blc = [zeros(1,n_y-1),1];
     prob.buc = prob.blc;
 
@@ -289,7 +299,7 @@ if isSolverInstalled('mosek')
     q = -Q*value(b_sol);
     E = ellipsoid(Q,q);
    
-elseif isSolverInstalled('sdpt3')
+elseif isSDPT3
     % IMPORTANT: Vectorization is upper-triangular (in contrast to MOSEK,
     % which is lower-triangular)
     % ALSO: For some reason, off-diagonal elements when stacking upper- 
@@ -468,6 +478,7 @@ elseif isYalmipInstalled()
     else
         throw(CORAerror('CORA:solverIssue'));
     end
+    
 else
     throw(CORAerror('CORA:noSuitableSolver','SDP'));
 end

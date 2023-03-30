@@ -181,12 +181,12 @@ function guard = adaptGuard(loc,guard,R)
     end
     
     % check if center is on the correct side of the hyperplane
-    if contains(inv,c)
-        if ~contains(hs,c)
+    if contains_(inv,c,'exact',100*eps)
+        if ~contains_(hs,c)
             guard = conHyperplane(-guard.h.c,-guard.h.d);
         end
     else
-        if contains(hs,c)
+        if contains_(hs,c)
             guard = conHyperplane(-guard.h.c,-guard.h.d);
         end
     end
@@ -208,7 +208,7 @@ function outside = getOutside(loc,guard,R)
     end
     
     % check if center is on the correct side of the hyperplane
-    if contains(inv,c)
+    if contains_(inv,c,'exact',100*eps)
         if guard.funHan(c) > 0
             outside = -1;
         end

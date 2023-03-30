@@ -37,7 +37,7 @@ end
 % intersect interval hulls
 I = IHtmp{1};
 for i=2:zB.parallelSets
-    I = I & IHtmp{i};
+    I = and_(I,IHtmp{i},'exact');
 end
 
 %------------- END OF CODE --------------

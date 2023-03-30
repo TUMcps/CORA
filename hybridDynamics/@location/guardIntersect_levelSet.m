@@ -46,6 +46,6 @@ end
 % compute the intersection of the reachable set with the guard set
 % (see Step 4 in Sec. 3.2 in [1])
 pZ = polyZonotope(I); 
-R = guard & pZ;
+R = and_(guard,pZ,'approx');
 
 %------------- END OF CODE --------------

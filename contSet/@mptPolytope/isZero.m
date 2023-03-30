@@ -44,6 +44,6 @@ if isempty(P)
 end
 
 % enclose by an interval and compute norm
-res = norm(interval(P)) <= tol;
+res = norm_(interval(P),2) <= tol;
 
 %------------- END OF CODE --------------

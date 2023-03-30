@@ -77,7 +77,7 @@ cZ = project(cZ,dims);
 
 if length(dims) == 1
     % add zeros to 2nd dimension
-    cZ = cZ.cartProd(0);
+    cZ = cartProd_(cZ,0,'exact');
     dims = [1;2];
 end
 
@@ -222,7 +222,7 @@ function han = plotTemplate(cZ,numDir,dims,plotOptions)
     % calculate the upper bounds along the directions
     d = zeros(size(C,2),1);
     for i = 1:length(d)
-        d(i) = supportFunc(cZ,C(:,i));
+        d(i) = supportFunc_(cZ,C(:,i),'upper');
     end
 
     % compute intersection of neighboring constraints in 2D case

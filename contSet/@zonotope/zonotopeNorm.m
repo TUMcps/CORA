@@ -70,7 +70,10 @@ Aineq = [Aineq1; Aineq2];
 bineq = zeros([2*m 1]);
 
 % Suppress solver output
-options = optimoptions('linprog', 'Display', 'none');
+persistent options
+if isempty(options)
+    options = optimoptions('linprog', 'Display', 'none');
+end
 
 % Solve the linear program
 [minimizer_p, res, exitflag] = linprog(f, Aineq, bineq, Aeq, beq, [], [], options);

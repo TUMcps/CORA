@@ -93,7 +93,7 @@ if isempty(pZ.G)
     return;
 end
 
-%% first & second derivative
+%% first and second derivative
 % id_d in occurence of id_diff
 [id_diff_d,ii_diff_d] = intersect(id_diff,id_d,'stable');
 pZ_diff_cell = jacobian(pZ,id_diff_d);

@@ -86,7 +86,11 @@ function res = inCone(N,v,v_)
     f = [zeros(1,m),ones(1,n)];
     
     % solve linear program
-    options = optimoptions('linprog','Display','off');
+    persistent options
+    if isempty(options)
+        options = optimoptions('linprog','Display','off');
+    end
+    
     x = linprog(f,[A1;A2],[b1;b2],[],[],lb,[],options);
     
     % check if problem is solvable

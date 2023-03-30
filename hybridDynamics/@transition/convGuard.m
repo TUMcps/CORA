@@ -38,7 +38,7 @@ switch options.guardIntersect
         end
         
         % intersect with invariant set
-        trans.guard = trans.guard & inv;
+        trans.guard = and_(trans.guard,inv,'exact');
 
     case {'conZonotope','conZonotopeFast'}
     

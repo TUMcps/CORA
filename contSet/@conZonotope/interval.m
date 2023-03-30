@@ -52,8 +52,8 @@ else                    % constraints
         temp(i) = 1;
 
         % calculate exact bounds by solving a linear program
-        lb = supportFunc(cZ,temp,'lower');
-        ub = supportFunc(cZ,temp,'upper');
+        lb = supportFunc_(cZ,temp,'lower');
+        ub = supportFunc_(cZ,temp,'upper');
 
         I(i) = interval(lb,ub);
     end

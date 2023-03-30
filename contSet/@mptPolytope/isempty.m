@@ -56,35 +56,35 @@ b = b./fac;
 
 [m,n] = size(A);
 
-if ~isempty(A)
+if isempty(A)
+    res = true; return
+end
 
-    % 
-    Aeq = A';
-    beq = zeros(n,1);
-    f = b;
-    lb = zeros(m,1);
-    ub = inf(m,1);
-    
-    % solve the dual problem using linear programming
+% solve the dual problem using linear programming
+persistent options
+if isempty(options)
     options = optimoptions('linprog','display','off', ...
-                           'OptimalityTolerance',1e-10);	
+                       'OptimalityTolerance',1e-10);
+end
 
-    [x,~,exitflag] = linprog(f,[],[],Aeq,beq,lb,ub,options);
-    
-    if exitflag == -2 || (exitflag > 0 && f'*x >= -1e-10)
-        % if this problem is infeasible or if optimal objective value is 0, the
-        % polytope is not empty
-        res = false;
-    elseif exitflag == -3 || (exitflag > 0 && f'*x < 1e-10)
-        % if problem is unbounded (below since minimization) or objective
-        % value is smaller zero, polytope is empty
-        res = true;
-    else
-        throw(CORAerror('CORA:solverIssue','linprog'))
-    end
+Aeq = A';
+beq = zeros(n,1);
+f = b;
+lb = zeros(m,1);
+ub = inf(m,1);
 
+[x,~,exitflag] = linprog(f,[],[],Aeq,beq,lb,ub,options);
+
+if exitflag == -2 || (exitflag > 0 && f'*x >= -1e-10)
+    % if this problem is infeasible or if optimal objective value is 0, the
+    % polytope is not empty
+    res = false;
+elseif exitflag == -3 || (exitflag > 0 && f'*x < 1e-10)
+    % if problem is unbounded (below since minimization) or objective
+    % value is smaller zero, polytope is empty
+    res = true;
 else
-    res = true; 
+    throw(CORAerror('CORA:solverIssue','linprog'))
 end
 
 %------------- END OF CODE --------------

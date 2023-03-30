@@ -37,7 +37,7 @@ end
 % intersect all parallelotopes
 P = mptPolytope(Zred{1});
 for i=2:zB.parallelSets
-    P = P & mptPolytope(Zred{i});
+    P = and_(P,mptPolytope(Zred{i}),'exact');
 end
 
 % check if polytope is empty

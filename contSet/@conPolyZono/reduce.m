@@ -78,7 +78,7 @@ function cPZ = reduce(cPZ,method,order)
         
         if isempty(pZ.G) || all(all(abs(pZ.G(1:n,:) < eps)))
             
-            pZ = removeIndepGens(pZ);
+            pZ = aux_removeIndepGens(pZ);
             
             c = pZ.c(1:n); G = pZ.G(1:n,:); expMat = pZ.expMat; 
             id = (1:length(pZ.id))' + max(pZ.id) + 1;
@@ -101,7 +101,7 @@ function cPZ = reduce(cPZ,method,order)
                % independent generators to the dependent generators
                if strcmp(method,'girard')
                    
-                  [A,Anew] = addUncertainty(A,G,pZ.expMat, ...
+                  [A,Anew] = aux_addUncertainty(A,G,pZ.expMat, ...
                                             Anew(:,end-m+1:end));
                    
                   if ~isempty(Anew)
@@ -142,7 +142,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function [A,Anew] = addUncertainty(A,G,expMat,Grest)
+function [A,Anew] = aux_addUncertainty(A,G,expMat,Grest)
 % try to add uncertainty on constraint coming from the independent 
 % generators to the dependent generators
 
@@ -159,7 +159,7 @@ function [A,Anew] = addUncertainty(A,G,expMat,Grest)
    end
 end
 
-function pZ = removeIndepGens(pZ)
+function pZ = aux_removeIndepGens(pZ)
 % redefine independent generators as new dependent generators
 
     G = [pZ.G pZ.Grest];

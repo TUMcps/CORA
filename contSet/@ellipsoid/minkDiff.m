@@ -46,7 +46,7 @@ function E = minkDiff(E,S,varargin)
 
 %------------- BEGIN CODE --------------
 
-%% parsing & checking
+%% parsing and checking
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'};
                 {S,'att',{'contSet','numeric'}}});

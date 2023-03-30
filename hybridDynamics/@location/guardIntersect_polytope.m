@@ -34,7 +34,7 @@ function R = guardIntersect_polytope(loc,R,guard,options)
 
     % intersect the reachable sets with the guard set
     for i = 1:length(R)
-        R{i} = R{i} & guard; 
+        R{i} = and_(R{i},guard,'exact'); 
     end
 
     % compute vertices
@@ -118,7 +118,7 @@ function P = conv2polytope(R)
     Zred2 = zonotope(interval(R));
     
     % compute intersection of the two reduced sets
-    P = mptPolytope(Zred1) & mptPolytope(Zred2);
+    P = and_(mptPolytope(Zred1),mptPolytope(Zred2),'exact');
 end
 
 %------------- END OF CODE --------------

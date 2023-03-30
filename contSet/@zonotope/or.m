@@ -61,11 +61,7 @@ function Z = or(Z, varargin)
         S = varargin{1};
 
         % determine zonotope object
-        if ~isa(Z,'zonotope')
-            temp = Z;
-            Z = S;
-            S = temp;
-        end
+        [Z,S] = findClassArg(Z,S,'zonotope');
 
         % different cases depending on the class of the second set
         if isa(S,'zonotope') || isa(S,'interval') || isnumeric(S)
@@ -301,7 +297,10 @@ function Z = unionLinProg(Zcell,order)
     A = [A;[zeros(m,n),-eye(m)]];
     b = [b;zeros(m,1)];
     
-    options = optimoptions('linprog','display','off');
+    persistent options
+    if isempty(options)
+        options = optimoptions('linprog','display','off');
+    end
     
     x = linprog(f',A,b,[],[],[],[],options);
     

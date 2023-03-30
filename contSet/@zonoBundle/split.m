@@ -82,8 +82,8 @@ elseif nargin==2
         Znew{1} = rotMat*zonotope(intHull{1});
         Znew{2} = rotMat*zonotope(intHull{2});
         %splitted sets
-        Zsplit{1} = zB & Znew{1};
-        Zsplit{2} = zB & Znew{2};
+        Zsplit{1} = and_(zB,Znew{1},'exact');
+        Zsplit{2} = and_(zB,Znew{2},'exact');
     end
     
 elseif nargin==3
@@ -114,8 +114,8 @@ Zleft = zonotope(interval(lb,rightLimitMod));
 Zright = zonotope(interval(leftLimitMod,ub));
 
 %generate splitted zonotope bundles
-Zsplit{1} = Zbundle & Zleft;
-Zsplit{2} = Zbundle & Zright;   
+Zsplit{1} = and_(Zbundle,Zleft,'exact');
+Zsplit{2} = and_(Zbundle,Zright,'exact');
 
 %shrink zonotopes
 %W{1} = eye(length(options.W));
@@ -123,8 +123,8 @@ Zsplit{2} = Zbundle & Zright;
 % Zmat = Zred.Z;
 % W{2} = Zmat(:,2:end); %<-- obtain this from order reduction!!
 
-% Zsplit{1} = Zbundle & shrink2(Zsplit{1},W);
-% Zsplit{2} = Zbundle & shrink2(Zsplit{2},W);
+% Zsplit{1} = and_(Zbundle,shrink2(Zsplit{1},W),'exact');
+% Zsplit{2} = and_(Zbundle,shrink2(Zsplit{2},W),'exact');
 
 % Zsplit{1} = pinv(options.W)*shrink(options.W*Zsplit{1},options.filterLength);
 % Zsplit{2} = pinv(options.W)*shrink(options.W*Zsplit{2},options.filterLength);

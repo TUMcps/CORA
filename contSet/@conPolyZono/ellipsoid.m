@@ -55,11 +55,11 @@ G = [cPZ.G,cPZ.Grest];
 [B,~,~] = svd([-G,G]); 
 
 % compute interval enclosure in the transformed space
-int = interval(B'*cPZ);
-cPZ = cPZ + (-B*center(int));
+I = interval(B'*cPZ);
+cPZ = cPZ + (-B*center(I));
 
 % compute Q matrix of the ellipsoid
-E = ellipsoid(diag(rad(int).^2));
+E = ellipsoid(diag(rad(I).^2));
 E = B * E;
 
 % comptue quadratic map of the polynomial zonotope
@@ -67,9 +67,9 @@ Q{1} = inv(E.Q);
 cPZ_ = quadMap(cPZ,Q);
 
 % use range bounding to get radius of the ellipsoid
-r = supportFunc(cPZ_,1,'upper',method);
+r = supportFunc_(cPZ_,1,'upper',method,8);
 
 % construct final ellipsoid
-E = ellipsoid((E.Q)*r,B*center(int));
+E = ellipsoid((E.Q)*r,B*center(I));
     
 %------------- END OF CODE --------------

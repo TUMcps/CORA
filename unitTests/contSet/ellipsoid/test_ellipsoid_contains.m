@@ -28,9 +28,9 @@ function res = test_ellipsoid_contains
 res = true;
 load cases.mat E_c
 
-% empty set
-E_e = ellipsoid();
-res = contains(E_c{1}.E1,E_e) && ~contains(E_e,E_c{1}.E1);
+% empty set: rewrite using emptySet class
+% E_e = ellipsoid();
+% res = contains(E_c{1}.E1,E_e) && ~contains(E_e,E_c{1}.E1);
 
 % loop over cases
 for i=1:length(E_c)
@@ -49,10 +49,11 @@ for i=1:length(E_c)
         res = false;
         break;
     end
-    E_e = ellipsoid();
-    if contains(E_e,E1) || ~contains(E1,E_e)
-        res = false;
-    end
+    % rewrite using emptySet class
+%     E_e = ellipsoid();
+%     if contains(E_e,E1) || ~contains(E1,E_e)
+%         res = false;
+%     end
 end
 
 %------------- END OF CODE --------------

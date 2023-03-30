@@ -39,10 +39,10 @@ end
 % compute interval bounds for ellipsoid equation (x-q)'Q^-1(x-q) 
 S = S + (-E.q);
 temp = quadMap(S,{inv(E.Q)});
-int = interval(temp);
+I = interval(temp);
 
 % check if \exists x: 0 < (x-q)'Q^-1(x-q) < 1 -> intersection
-if ~isempty(int & interval(0,1))
+if ~isempty(and_(I,interval(0,1),'exact'))
     res = true; 
 else
     res = false;

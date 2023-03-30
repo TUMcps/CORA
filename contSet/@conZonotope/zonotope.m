@@ -89,7 +89,10 @@ function res = zonotopeNullSpace(obj)
     lb = zeros(m_,1);
     ub = zeros(m_,1);
     
-    options = optimoptions('linprog','display','off');
+    persistent options
+    if isempty(options)
+        options = optimoptions('linprog','display','off');
+    end
     
     for i = 1:m_
         

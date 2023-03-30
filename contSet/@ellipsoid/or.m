@@ -38,7 +38,7 @@ function E = or(E,S,varargin)
 
 %------------- BEGIN CODE --------------
 
-%% parsing & checking
+%% parsing and checking
 % make sure first argument is class argument 
 [E,S] = findClassArg(E,S,'ellipsoid');
 mode = setDefaultValues({'outer'},varargin);

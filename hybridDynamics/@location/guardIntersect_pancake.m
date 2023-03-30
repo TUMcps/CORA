@@ -47,7 +47,7 @@ function R = guardIntersect_pancake(loc,R0,guard,guardID,options)
     c = center(R0);
     hs = halfspace(guard.h.c,guard.h.d);
 
-    if contains(hs,c)
+    if contains_(hs,c)
         hs = halfspace(-guard.h.c,-guard.h.d);
     end
 
@@ -155,13 +155,13 @@ function Rcont = jump(sys,hs,R0,options)
     R = reach(sys,params,options);
 
     % check if located inside the invariant
-    dist_ = supportFunc(R.timePoint.set{end},hs.c,'upper') - hs.d;
+    dist_ = supportFunc_(R.timePoint.set{end},hs.c,'upper','interval',8,1e-3) - hs.d;
     
     if dist_ < 0 
     % guard set crossed -> reduce time step size to get smaller set
         
         Rcont = R.timeInterval.set{end};
-        distMin = supportFunc(R0,hs.c,'lower') - hs.d;
+        distMin = supportFunc_(R0,hs.c,'lower','interval',8,1e-3) - hs.d;
         lb = 0; ub = timeStep;
         
         for i = 1:10
@@ -175,7 +175,7 @@ function Rcont = jump(sys,hs,R0,options)
             R = reach(sys,params,options);
 
             % check if located inside the invariant
-            dist = supportFunc(R.timePoint.set{end},hs.c,'upper') - hs.d;
+            dist = supportFunc_(R.timePoint.set{end},hs.c,'upper','interval',8,1e-3) - hs.d;
             
             if dist < 0
                 Rcont = R.timeInterval.set{end};
@@ -202,7 +202,7 @@ function Rcont = jump(sys,hs,R0,options)
             R = reach(sys,params,options);
 
             % check if located inside the invariant
-            dist = supportFunc(R.timePoint.set{end},hs.c,'upper') - hs.d;
+            dist = supportFunc_(R.timePoint.set{end},hs.c,'upper','interval',8,1e-3) - hs.d;
 
             if dist < 0
                 Rcont = R.timeInterval.set{end};

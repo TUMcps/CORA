@@ -69,9 +69,6 @@ methods
         % assign properties
         obj.c = c;
         obj.d = d;
-
-        % set parent object properties
-        obj.dimension = length(c);
     end
 end
 

@@ -38,12 +38,12 @@ function cZ = intersectStrip(cZ,C,phi,y,varargin)
 %    poly = mptPolytope([1 0;-1 0; 0 1;0 -1; 1 1;-1 -1],[3;7;5;1;5;1]);
 %    Zpoly = cZ & poly;
 % 
-%    figure; hold on ;
-%    plot(cZ,[1 2],'r-+');
-%    plot(poly,[1 2],'r-*');
-%    plot(Zpoly,[1 2],'b-+');
-%    plot(res_zono,[1 2],'b-*');
-%    legend('conZonotope','strips','conZono&poly','zonoStrips');
+%    figure; hold on;
+%    plot(cZ,[1 2],'b','DisplayName','conZonotope');
+%    plot(poly,[1 2],'k*','DisplayName','Strips');
+%    plot(Zpoly,[1 2],'r','DisplayName','conZono&strip');
+%    plot(res_zono,[1 2],'g--','DisplayName','zonoStrips');
+%    legend()
 %
 %
 % References:
@@ -51,6 +51,7 @@ function cZ = intersectStrip(cZ,C,phi,y,varargin)
 %       Henrik Sandberg, Karl Henrik Johansson, and Matthias
 %       Althoff. Privacy preserving set-based estimation using
 %       partially homomorphic encryption. arXiV.org.
+%   [2-5] ???
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -59,49 +60,120 @@ function cZ = intersectStrip(cZ,C,phi,y,varargin)
 % See also: none
 
 % Author:       Matthias Althoff
-% Written:      05-Mar-2020
-% Last update:  ---
+% Written:      05-March-2020
+% Last update:  29-March-2023 (TL: clean up)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-if nargin==4
-    %The optimization function is based on norm of the generators
-    method = 'normGen';
-elseif nargin==5
-    % input is Lambda value
-    if isnumeric(varargin{1})
-        cZ = conZonotopeFromLambda(cZ,phi,C,y,varargin{1});
-        return % stop program execution
-    % input is a struct
-    elseif isstruct(varargin{1})
-        method = varargin{1}.method;
-        aux = varargin{1};
-    % input is intersection method
-    else
-        method = varargin{1};
+% parse input
+if nargin < 4
+    throw(CORAerror("CORA:notEnoughInputArgs", 4))
+elseif nargin > 5
+    throw(CORAerror("CORA:tooManyInputArgs", 5))
+end
+
+inputArgs = { ...
+    {cZ, 'att', 'conZonotope'}; ...
+    {C, 'att', 'numeric', 'matrix'}; ...
+    {phi, 'att', 'numeric', 'column'}; ...
+    {y, 'att', 'numeric', 'column'}; ...
+    };
+inputArgsCheck(inputArgs)
+
+% parse varargin 
+method = setDefaultValues({'normGen'}, varargin);
+if isnumeric(method)
+    lambda = method;
+    cZ = aux_conZonotopeFromLambda(cZ,phi,C,y,lambda);
+    return % stop program execution
+
+elseif isstruct(method)
+    aux = method;
+    aux_checkAuxStruct(aux)
+    method = aux.method;
+end
+
+inputArgsCheck([inputArgs; ...
+    {{method, 'str', {'normGen', 'svd', 'radius', 'alamo-FRad', ...
+    'wang-FRad', 'bravo'}}} ...
+])
+
+% check dimensions
+if CHECKS_ENABLED
+    if dim(cZ) ~= size(C, 2)
+        throw(CORAerror('CORA:dimensionMismatch', cZ, C))
+    end
+    if size(C, 1) ~= size(phi, 1)
+        throw(CORAerror('CORA:dimensionMismatch', C, phi))
+    end
+    if size(C, 1) ~= size(y, 1)
+        throw(CORAerror('CORA:dimensionMismatch', C, y))
     end
 end
 
-% extract generators
-G = generators(cZ);
-% obtain dimesnion and nr of generators
-[n, nrGens] = size(G);
-
 % different methods for finding good Lambda values
-%% svd and radius method
-if strcmp(method,'svd') || strcmp(method,'radius') 
+if strcmp(method,'svd') || strcmp(method,'radius')
+    cZ = aux_methodSvd(cZ, C, phi, y, method);
+
+elseif strcmp(method,'alamo-FRad') 
+    cZ = aux_methodAlamoFRad(cZ, C, phi, y);
+    
+elseif strcmp(method,'wang-FRad') 
+    cZ = aux_methodWangFRad(cZ, C, phi, y, aux);
+    
+elseif strcmp(method,'bravo') 
+    cZ = aux_methodBravo(cZ, C, phi, y);
+
+elseif strcmp(method,'normGen')
+    cZ = aux_methodNormGen(cZ, C, phi, y);
+
+else
+    throw(CORAerror('CORA:wrongValue', sprintf("Unkown method '%s'.", method)))
+end
+
+end
+
+% Auxiliary functions -----------------------------------------------------
+
+% method functions ---
+
+function cZ = aux_methodSvd(cZ, C, phi, y, method)
+    % svd and radius method
+
+    G = generators(cZ);
+    [n, ~] = size(G);
+
     % initialize Lambda
     Lambda0 = zeros(n,length(phi));
     options = optimoptions(@fminunc,'Algorithm', 'quasi-newton','Display','off');
     %find optimal Lambda
     Lambda = fminunc(@fun,Lambda0, options);
     % resulting constrained zonotope
-    cZ = conZonotopeFromLambda(cZ,phi,C,y,Lambda);
-    
-    
-%% F-radius minimization according to Alamo, [3]    
-elseif strcmp(method,'alamo-FRad') 
+    cZ = aux_conZonotopeFromLambda(cZ,phi,C,y,Lambda);
+
+    function nfro = fun(Lambda)
+        % embedded function to be minimized for optimal Lambda
+        % (used for svd/radius method)
+        part1 = eye(length(cZ.center));
+        for i=1:length(phi)
+            part1 = part1 - Lambda(:,i)*C(i,:);
+            part2(:,i) = phi(i)*Lambda(:,i);
+        end
+        part1 = part1 * G;
+        G_new = [part1 part2];
+        if strcmp(method,'svd')
+            nfro = sum(svd(G_new));
+        elseif strcmp(method,'radius')
+            nfro = radius(zonotope([zeros(length(cZ.center),1) G_new]));
+        end
+    end
+end
+
+function cZ = aux_methodAlamoFRad(cZ, C, phi, y)
+    % F-radius minimization according to Alamo, [3]
+
+    G = generators(cZ);
     
     % auxiliary variables
     aux1 = G*G'; 
@@ -112,15 +184,18 @@ elseif strcmp(method,'alamo-FRad')
     Lambda = aux2/aux3;
     
     % resulting constrained zonotope
-    cZ = conZonotopeFromLambda(cZ,phi,C,y,Lambda);
+    cZ = aux_conZonotopeFromLambda(cZ,phi,C,y,Lambda);
     
     % warning
     if length(phi) > 1
-        disp('Alamo method should only be used for single strips to ensure convergence');
+        warning('Alamo method should only be used for single strips to ensure convergence');
     end
-    
-%% F-radius minimization according to Wang, Theorem 2 in [4]    
-elseif strcmp(method,'wang-FRad') 
+end
+
+function cZ = aux_methodWangFRad(cZ, C, phi, y, aux)
+    % F-radius minimization according to Wang, Theorem 2 in [4] 
+
+    G = generators(cZ);
     
     % auxiliary variables
     P = G*G'; 
@@ -140,14 +215,23 @@ elseif strcmp(method,'wang-FRad')
     Lambda = L / S; %L*inv(S);
     
     % resulting constrained zonotope
-    cZ = conZonotopeFromLambda(cZ,phi,C,y,Lambda);
-    
-  
-%% method according to Bravo, [5]   
-elseif strcmp(method,'bravo') 
-    
+    cZ = aux_conZonotopeFromLambda(cZ,phi,C,y,Lambda);
+end
+
+
+function cZ = aux_methodBravo(cZ, C, phi, y)
+    % method according to Bravo, [5]   
+
+    G = generators(cZ);
+    % obtain dimesnion and nr of generators
+    [n, nrGens] = size(G);
+
     % obtain center of constrained zonotope
     p = center(cZ);
+
+    Z_candidate = cell(1, nrGens+1);
+    volApprxZ = zeros(1, nrGens+1);
+
     % loop through generators
     for j = 0:nrGens
         % first generator 
@@ -185,12 +269,15 @@ elseif strcmp(method,'bravo')
     
     % warning
     if length(phi) > 1
-        disp('Bravo method is only applied to the first strip');
+        warning('Bravo method is only applied to the first strip');
     end
+end
 
+function cZ = aux_methodNormGen(cZ, C, phi, y)
+    % norm Gen method
+        
+     G = generators(cZ);
 
-%% norm Gen method
-elseif strcmp(method,'normGen')
     % Find the analytical solution  
     gamma=eye(length(C(:,1)));
     num= G*G'*C';
@@ -201,36 +288,13 @@ elseif strcmp(method,'normGen')
     
     Lambda = num * den^-1;
     % resulting constrained zonotope
-    cZ = conZonotopeFromLambda(cZ,phi,C,y,Lambda);
-    
-    
-%% selected method does not exist
-else
-    throw(CORAerror('CORA:notSupported','Given method not supported'));
+    cZ = aux_conZonotopeFromLambda(cZ,phi,C,y,Lambda);
 end
 
-
-    % embedded function to be minimized for optimal Lambda
-    function nfro = fun(Lambda)
-        part1 = eye(length(cZ.center));
-        for i=1:length(phi)
-            part1 = part1 - Lambda(:,i)*C(i,:);
-            part2(:,i) = phi(i)*Lambda(:,i);
-        end
-        part1 = part1 * G;
-        G_new = [part1 part2];
-        if strcmp(method,'svd')
-            nfro = sum(svd(G_new));
-        elseif strcmp(method,'radius')
-            nfro = radius(zonotope([zeros(length(cZ.center),1) G_new]));
-        end
-
-    end
-
-end
+% helper functions ---
 
 % return constrained zonotope from a given Lambda vector, see Theorem 6.3. of [1]
-function cZ = conZonotopeFromLambda(cZ,phi,C,y,Lambda)
+function cZ = aux_conZonotopeFromLambda(cZ,phi,C,y,Lambda)
     % strips: |Cx − y| <= phi
     
     % number of strips, dimensions
@@ -265,6 +329,26 @@ function cZ = conZonotopeFromLambda(cZ,phi,C,y,Lambda)
     cZ.A = A_new;
     cZ.b = b_new;
 
+end
+
+function aux_checkAuxStruct(aux)
+    if CHECKS_ENABLED
+        if ~isfield(aux, 'method')
+            throw(CORAerror('CORA:wrongFieldValue', 'aux.method', {'wang-FRad'}))
+        end
+        if ~isfield(aux, 'E')
+            throw(CORAerror('CORA:wrongFieldValue', 'aux.E', 'numeric'))
+        end
+        if ~isfield(aux, 'F')
+            throw(CORAerror('CORA:wrongFieldValue', 'aux.F', 'numeric'))
+        end
+        if ~isfield(aux, 'A')
+            throw(CORAerror('CORA:wrongFieldValue', 'aux.A', 'numeric'))
+        end
+        if ~isfield(aux, 'C')
+            throw(CORAerror('CORA:wrongFieldValue', 'aux.C', 'numeric'))
+        end
+    end
 end
 
 %------------- END OF CODE --------------

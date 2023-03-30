@@ -44,7 +44,7 @@ inputArgsCheck({{S,'att','contSet'};
                 {type,'att','char'}});
 
 % generate N random points inside the set
-points = randPoint(S,N);
+points = randPoint_(S,N,'standard');
 
 % plot the point cloud projected onto desired dimensions
 han = plot(points(dims(1),:),points(dims(2),:),type);
