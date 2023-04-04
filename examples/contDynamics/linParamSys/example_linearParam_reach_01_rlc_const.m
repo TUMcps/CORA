@@ -30,7 +30,7 @@ function completed = example_linearParam_reach_01_rlc_const()
 % get matrix zonotopes of the model
 [matZ_A,matZ_B] = RLCcircuit();
 matI_A = intervalMatrix(matZ_A);
-dim_x = matZ_A.dim;
+dim_x = dim(matZ_A,1);
 
 % create linear parametric systems with constant parameters
 sysMatZono  = linParamSys(matZ_A, eye(dim_x));

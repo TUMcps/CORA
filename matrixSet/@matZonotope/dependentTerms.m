@@ -35,7 +35,7 @@ function [zSq,zH] = dependentTerms(matZ,r)
 %load data from object structure
 C=matZ.center;
 G=matZ.generator;
-n=matZ.dim;
+n=dim(matZ);
 gens=matZ.gens;
 
 

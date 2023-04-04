@@ -131,6 +131,10 @@ methods
     function R0 = R0(obj)
         R0 = initialSet(obj(1).timePoint(1).set{1});
     end
+
+    % for functionSignatures.json
+    han = plot(obj, dims, varargin)
+    han = plotOverTime(obj, dim, varargin)
 end
 
 methods (Static = true)

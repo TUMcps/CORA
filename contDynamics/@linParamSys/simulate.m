@@ -70,8 +70,8 @@ else
     tSpan = [params.tStart,params.tFinal];
 end
 
-% sample system matrix
-tmp = randomSampling(obj.A,1);
+% sample one system matrix
+tmp = randPoint(obj.A);
 obj.sampleMatrix.A = tmp{1};
 
 % simulate the system

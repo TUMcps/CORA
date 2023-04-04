@@ -223,36 +223,38 @@ end
 
 function aux_checkInputArgs(name,fun,states,inputs,out_fun,outputs)
     
-    % check name (not empty because default name is not empty)
-    if ~ischar(name)
-        throw(CORAerror('CORA:wrongInputInConstructor',...
-            'System name has to be a char array.'));
-    end
+    if CHECKS_ENABLED
+        % check name (not empty because default name is not empty)
+        if ~ischar(name)
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'System name has to be a char array.'));
+        end
+        
+        % fun and out_fun have to be function handles with two inputs
+        if ~isempty(fun) && (~isa(fun,'function_handle') || nargin(fun) ~= 2)
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Dynamic function has to be a function handle with two input arguments.'));
+        end
+        if ~isempty(out_fun) && (~isa(out_fun,'function_handle') || nargin(out_fun) ~= 2)
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Output function has to be a function handle with two input arguments.'));
+        end
     
-    % fun and out_fun have to be function handles with two inputs
-    if ~isempty(fun) && (~isa(fun,'function_handle') || nargin(fun) ~= 2)
-        throw(CORAerror('CORA:wrongInputInConstructor',...
-            'Dynamic function has to be a function handle with two input arguments.'));
-    end
-    if ~isempty(out_fun) && (~isa(out_fun,'function_handle') || nargin(out_fun) ~= 2)
-        throw(CORAerror('CORA:wrongInputInConstructor',...
-            'Output function has to be a function handle with two input arguments.'));
-    end
-
-    % states and outputs have to be numeric, scalar integer > 0,
-    % inputs can be 0 (e.g., in parallel hybrid automata with only local
-    % outputs = inputs and no global inputs)
-    if ~isempty(states)
-        inputArgsCheck({{states,'att','numeric',...
-            {'positive','integer','scalar'}}});
-    end
-    if ~isempty(inputs)
-        inputArgsCheck({{inputs,'att','numeric',...
-            {'nonnegative','integer','scalar'}}});
-    end
-    if ~isempty(outputs)
-        inputArgsCheck({{outputs,'att','numeric',...
-            {'positive','integer','scalar'}}});
+        % states and outputs have to be numeric, scalar integer > 0,
+        % inputs can be 0 (e.g., in parallel hybrid automata with only local
+        % outputs = inputs and no global inputs)
+        if ~isempty(states)
+            inputArgsCheck({{states,'att','numeric',...
+                {'positive','integer','scalar'}}});
+        end
+        if ~isempty(inputs)
+            inputArgsCheck({{inputs,'att','numeric',...
+                {'nonnegative','integer','scalar'}}});
+        end
+        if ~isempty(outputs)
+            inputArgsCheck({{outputs,'att','numeric',...
+                {'positive','integer','scalar'}}});
+        end
     end
 
 end

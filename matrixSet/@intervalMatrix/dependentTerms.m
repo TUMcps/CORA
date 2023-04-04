@@ -10,14 +10,15 @@ function [intSq,intH] = dependentTerms(obj,r)
 %    [intSq,intH] = dependentTerms(obj,r)
 %
 % Inputs:
-%    obj - linParamSys object
+%    obj - intervalMatrix object
 %    r - time step increment
 %
 % Outputs:
 %    intSq - exact square matrix
 %    intH - exact Taylor terms up to second order
 %
-% Example: 
+% Example:
+%    ---
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -35,7 +36,7 @@ function [intSq,intH] = dependentTerms(obj,r)
 
 %load data from object structure
 A=obj.int;
-n=obj.dim;
+n=dim(obj,1);
 
 %initialize the square of A (sq), the first term of the interval
 %exponential (H)
@@ -82,6 +83,7 @@ end
 
 
 % Auxiliary functions -----------------------------------------------------
+
 function res = g(a,r)
     if isIntersecting(interval(-1/r,-1/r),a)
         res=-0.5;

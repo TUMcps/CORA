@@ -23,13 +23,12 @@ classdef matPolytope
 
 % Author:       Matthias Althoff
 % Written:      21-June-2010
-% Last update:  ---
+% Last update:  03-April-2023 (MW, remove property dim)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
-    dim = 1;
     verts = 0; % number of vertices
     vertex = [];
 end
@@ -38,23 +37,25 @@ methods
     
     % class constructor
     function obj = matPolytope(input)
-        if nargin > 1
-            throw(CORAerror('CORA:tooManyInputArgs',1));
-        end
-        if nargin==1
-            if isa(input, 'polytope')
+        if nargin == 0
+            % take default values
+
+        elseif nargin == 1
+            if isa(input,'mptPolytope')
                 %get vertices from polytope class
                 V=extreme(input);
                 %rewrite vertices as matrices
                 for i=1:length(V(:,1))
-                    matrixVertex{i}=vec2mat(V(i,:));
+                    matrixVertex{i} = vec2mat(V(i,:));
                 end
             else
-                matrixVertex=input;
+                matrixVertex = input;
             end
-            obj.dim = length(matrixVertex{1});
             obj.verts = length(matrixVertex);
             obj.vertex = matrixVertex;
+
+        else
+            throw(CORAerror('CORA:tooManyInputArgs',1));
         end
     end
          
@@ -64,7 +65,7 @@ methods
     [eP,eI] = expmIndMixed(matP,intermediateOrder,maxOrder)
     val = expmDist(matP,exactMat,maxOrder) % deprecated?
     intMat = intervalMatrix(matP) % conversion to interval matrix
-    matZ = matZonotope(matP) % conversion to matrix zonotope
+    matZ = matZonotope(matP) % conversion to matrix polytope
     matP = mpower(matP,exponent) % exponentiation
     matP = mptPolytope(matP) % conversion to polytope
     matP = mtimes(factor1,factor2) % linear map
@@ -73,6 +74,8 @@ methods
     matP = simplePlus(summand1,summand2) % ?
     n = size(matP) % read out dimension of vertices
     matV = vertices(matP) % read vertices of matrix polytope
+    res = isempty(matP) % emptiness check
+    n = dim(matP,rc) % dimension of matrix polytope
     
 end
 

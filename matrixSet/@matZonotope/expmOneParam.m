@@ -105,7 +105,7 @@ for n = 1:maxOrder
 end
 
 %center
-D_sum = eye(matZ.dim) + D{1}*r;
+D_sum = eye(dim(matZ)) + D{1}*r;
 D_u_sum = D_u{1}*r;
 for i = 2:maxOrder
     factor = r^i/factorial(i);

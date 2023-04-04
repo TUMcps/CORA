@@ -64,8 +64,7 @@ else
             matP.vertex{end+1}=matP1.vertex{j}*matP2.vertex{i};
         end
     end
-    %update number of generators and dimensions
-    matP.dim=matP1.dim;
+    %update number of generators
     matP.verts=matP1.verts*matP2.verts;
 end
 

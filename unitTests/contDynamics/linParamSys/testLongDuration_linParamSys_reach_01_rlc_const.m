@@ -29,7 +29,7 @@ function res = testLongDuration_linParamSys_reach_01_rlc_const()
 matI_A = intervalMatrix(matZ_A);
 
 %get dimension
-dim=matZ_A.dim;
+n=dim(matZ_A,1);
 
 %compute initial set
 %specify range of voltages
@@ -41,7 +41,7 @@ invAmid = inv(center(intA.int));
 
 %compute initial set
 intB = intervalMatrix(matZ_B);
-R0 = invAmid*intB*u0 + intervalMatrix(0,1e-3*ones(dim,1));
+R0 = invAmid*intB*u0 + intervalMatrix(0,1e-3*ones(n,1));
 
 %convert initial set to zonotope
 R0 = zonotope(interval(R0));
@@ -61,8 +61,8 @@ options.taylorTerms=8;
 options.intermediateTerms = 2;
 
 %instantiate linear dynamics with constant parameters
-linSys  = linParamSys(matZ_A, eye(dim));
-linSys2 = linParamSys(matI_A, eye(dim));
+linSys  = linParamSys(matZ_A, eye(n));
+linSys2 = linParamSys(matI_A, eye(n));
 
 %initialize reachable set computations
 R = reach(linSys, params, options);

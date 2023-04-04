@@ -63,7 +63,7 @@ eM_int = expm(M_int,1,6);
 % compute exponential matrices of random vertices
 eM = cell(10,1);
 for i=1:10
-    randMatrix = randomSampling(M_int,1);
+    randMatrix = randPoint(M_int);
     eM{i} = expm(randMatrix{1});
 end
 

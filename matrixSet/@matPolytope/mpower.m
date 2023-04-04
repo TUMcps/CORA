@@ -35,12 +35,13 @@ inputArgsCheck({{matP,'att','matPolytope'}, ...
 if exponent==0
     %return identity matrix
     matPpower=matPolytope();
-    matPpower.dim=matP.dim;
     matPpower.verts=1;
-    matPpower.vertex{1}=eye(matP.dim);       
+    matPpower.vertex{1}=eye(dim(matP));
+
 elseif exponent==1
     %do nothing
     matPpower=matP;
+    
 else
     matPpower=matP*matP;
     for i=3:exponent

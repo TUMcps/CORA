@@ -1,5 +1,5 @@
 function display(intMat)
-% display - Displays an intervalMatrix object on the command window
+% display - displays an intervalMatrix object on the command window
 %
 % Syntax:  
 %    display(intMat)
@@ -10,7 +10,9 @@ function display(intMat)
 % Outputs:
 %    ---
 %
-% Example: 
+% Example:
+%    intMat = intervalMatrix([1 2 3; 2 3 1],[1 0 2; 0 1 1])
+%    intMat = intervalMatrix()
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -18,20 +20,29 @@ function display(intMat)
 %
 % See also: none
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      18-June-2010
-% Last update:  ---
+% Last update:  03-April-2023 (MW, add empty case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-%display dimension, generators
-disp('dimension: ');
-disp(intMat.dim);
-%display left and right limits
-disp('left limit: ');
-disp(infimum(intMat.int));
-disp('right limit: ');
-disp(supremum(intMat.int));
+if isempty(intMat)
+    
+    dispEmptyObj(intMat,inputname(1));
+
+else
+
+    % display dimension
+    disp('dimension: ');
+    disp(dim(intMat));
+    
+    % display lower and upper bounds
+    disp('lower bound: ');
+    disp(infimum(intMat.int));
+    disp('upper bound: ');
+    disp(supremum(intMat.int));
+
+end
 
 %------------- END OF CODE --------------

@@ -46,10 +46,10 @@ elseif isa(x,'interval')
         text = "interval matrix";
     end
 elseif isa(x,'intervalMatrix')
-    x_size = x.dim;
+    x_size = dim(x);
     text = "interval matrix";
 elseif isa(x,'matZonotope')
-    x_size = x.dim;
+    x_size = dim(x);
     text = 'matrix zonotope';
 end
 

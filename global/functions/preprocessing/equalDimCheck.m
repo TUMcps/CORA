@@ -29,6 +29,7 @@ function equalDimCheck(S1,S2)
 % Author:       Victor Gassmann, Mark Wetzlinger
 % Written:      05-July-2022
 % Last update:  05-December-2022 (MW, fix matrix-case)
+%               03-April-2023 (MW, integrate matrix-numeric case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -36,9 +37,14 @@ function equalDimCheck(S1,S2)
 % only check if macro is enabled
 if CHECKS_ENABLED
 
-    % check if dimensions match
-    if isnumeric(S1) || ismatrixset(S1)
-        % operation between matrix/vector/scalar and set
+    if ismatrixset(S1) && isnumeric(S2)
+        % operation between matrixset and matrix
+        if ~all(dim(S1) == size(S2))
+            throw(CORAerror('CORA:dimensionMismatch',S1,S2));
+        end
+
+    elseif (isnumeric(S1) || ismatrixset(S1)) && isa(S2,'contSet')
+        % operation between matrix/matrix set and contSet
         % column dimension of matrix has to fit set dimension
         if size(S1,2) ~= dim(S2) && ~isscalar(S1)
             throw(CORAerror('CORA:dimensionMismatch',S1,S2));

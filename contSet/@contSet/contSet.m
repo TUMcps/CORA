@@ -51,8 +51,8 @@ methods
         end
     end
 
-    
-    % res = norm(S,varargin)
+    % for functionSignatures.json
+    han = plot(obj, dims, varargin)
 end
 
 methods(Access = {?contSet, ?contDynamics})

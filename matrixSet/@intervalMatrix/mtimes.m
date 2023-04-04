@@ -23,20 +23,10 @@ function intMat = mtimes(factor1,factor2)
 % Author:       Matthias Althoff
 % Written:      18-June-2010 
 % Last update:  05-August-2010
+%               03-April-2022 (MW, remove setting check)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
-%set multiplication scheme
-if isnumeric(factor1)
-    if ~isempty(factor2.setting)
-        intvalinit(factor2.setting);
-    end
-else
-    if ~isempty(factor1.setting)
-        intvalinit(factor1.setting);
-    end
-end
 
 %factor1 is a numeric matrix
 if isnumeric(factor1)

@@ -1,14 +1,13 @@
 classdef (InferiorClasses = {?mp}) intervalMatrix 
 % intervalMatrix class 
 %
-% Syntax:  
+% Syntax:
+%    obj = intervalMatrix()
 %    obj = intervalMatrix(C,D)
-%    obj = intervalMatrix(C,D,setting)
 %
 % Inputs:
 %    C - center matrix
 %    D - width matrix
-%    setting - setting for multiplication ('sharpivmult' or 'standard')
 %
 % Outputs:
 %    obj - generated object
@@ -22,48 +21,45 @@ classdef (InferiorClasses = {?mp}) intervalMatrix
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval,  polytope
+% See also: interval
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      18-June-2010
 % Last update:  26-August-2011
 %               15-June-2016
 %               06-May-2021
+%               03-April-2023 (MW, remove properties dim and setting)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
-    dim = 1;
+    % interval
     int = [];
-    setting = 'sharpivmult';
 end
     
 methods 
     %class constructor
-    function obj = intervalMatrix(matrixCenter,matrixDelta,setting)
+    function obj = intervalMatrix(matrixCenter,matrixDelta)
 
-        %one input
-        if nargin==1
+        if nargin == 0
+            % empty interval matrix
+            obj.int = interval();
+
+        elseif nargin == 1
+            
             if isa(matrixCenter,'intervalMatrix')
+                % copy constructor
                 obj = matrixCenter;
             else
-                obj.dim = length(matrixCenter);
+                % only center given, radius = 0
                 obj.int = interval(matrixCenter,matrixCenter);
-                obj.setting = [];
             end
+
         elseif nargin==2
-            obj.dim = length(matrixCenter);
-            %ensure positive matrix deltas
+            % ensure positive matrix deltas
             matrixDelta=abs(matrixDelta);
-            obj.int=interval(matrixCenter-matrixDelta,matrixCenter+matrixDelta);
-            obj.setting = [];
-        elseif nargin==3
-            obj.dim = length(matrixCenter);
-            %ensure positive matrix deltas
-            matrixDelta=abs(matrixDelta);
-            obj.int=interval(matrixCenter-matrixDelta,matrixCenter+matrixDelta);
-            obj.setting = setting;  %settings: 'sharpivmult','fastivmult'
+            obj.int = interval(matrixCenter-matrixDelta,matrixCenter+matrixDelta);
         end
     end
          
@@ -79,11 +75,10 @@ methods
     M = abs(intMat)
     n = infNorm(intMat)
     E = exponentialRemainder(intMat,maxOrder)
-    IH = interval(intMat)
+    I = interval(intMat)
     V = vertices(intMat)
     matP = matPolytope(intMat)
     matZ = matZonotope(intMat)
-    A = randomSampling(intMat,varargin)
     dist = expmDist(intMat,exactMat,maxOrder)
     vol = volume(intMat)
     val = expmNorm(intMat,t)
@@ -93,12 +88,20 @@ methods
     normBoundErr = expmNormErrInf(intMat,r)
     element = subsref(intMat, S)
     sq = exactSquare(intMat)
-    res = norm(intMAt, varargin)
+    res = norm(intMat,varargin)
+    res = isempty(intMat)
+    M = randPoint(intMat,varargin)
+    res = contains(intMat,M,type,tol)
     
     %display functions
     plot(varargin)
     display(intMat)
 end
+
+methods (Static = true)
+    intMat = generateRandom(varargin) % generates random interval matrix
+end
+
 end
 
 %------------- END OF CODE -------
