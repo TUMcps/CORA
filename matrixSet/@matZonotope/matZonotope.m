@@ -2,6 +2,7 @@ classdef (InferiorClasses = {?mp}) matZonotope
 % matZonotope class 
 %
 % Syntax:  
+%    obj = matZonotope()
 %    obj = matZonotope(C,G)
 %
 % Inputs:
@@ -28,15 +29,15 @@ classdef (InferiorClasses = {?mp}) matZonotope
 % Written:      14-September-2006 
 % Last update:  22-March-2007
 %               04-June-2010
-%               27-Aug-2019
+%               27-August-2019
+%               03-April-2023 (MW, remove property dim)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
-    dim = 1;
     gens = 0;
-    center = 0; 
+    center = []; 
     generator = [];
 end
     
@@ -44,39 +45,58 @@ methods
     
     % class constructor
     function obj = matZonotope(input1,input2)
-        %one input
-        if nargin==0
-            matrixCenter = 0;
+
+        if nargin == 0
+            % empty matrix zonotope
+            matrixCenter = [];
             matrixGenerator = [];
-        elseif nargin==1
+            nrGens = 0;
+
+        elseif nargin == 1
             if isa(input1,'zonotope')
-                %extract center
-                c=center(input1);
-                %extract generator matrix
-                G=generators(input1);
-                %obtain matrix center
-                matrixCenter = vec2mat(c);
-                %obtain matrix generators
-                if ~isempty(G)
-                    for i=1:length(G(1,:))
-                        matrixGenerator{i}=vec2mat(G(:,i));
-                    end
+                % conversion from zonotope
+                % extract center and generator matrix
+                c = center(input1);
+                G = generators(input1);
+                % obtain matrix center
+                matrixCenter = c;
+                % obtain matrix generators
+                if isempty(G)
+                    matrixGenerator = [];
+                    nrGens = 0;
+                elseif isvector(G)
+                    nrGens = 1;
+                    matrixGenerator = {G};
                 else
-                    matrixGenerator{1} = zeros(size(matrixCenter));
+                    nrGens = size(G,2);
+                    matrixGenerator = num2cell(G,[1,nrGens]);
                 end
+            elseif isa(input1,'matZonotope')
+                % copy constructor
+                nrGens = input1.gens;
+                matrixCenter = input1.center;
+                matrixGenerator = input1.generator;
             else
-                matrixCenter=input1;
+                % only center given...
+                matrixCenter = input1;
                 matrixGenerator = [];
+                nrGens = 0;
             end
-        elseif nargin==2
+
+        elseif nargin == 2
+
+            % TODO: integrate dimension check...
             matrixCenter = input1;
             matrixGenerator = input2;
+            nrGens = length(input2);
+
         else
+            
             throw(CORAerror('CORA:tooManyInputArgs',2));
         end
-        %set parameters
-        obj.dim = length(matrixCenter);
-        obj.gens = length(matrixGenerator);
+
+        % set properties
+        obj.gens = nrGens;
         obj.center = matrixCenter;
         obj.generator = matrixGenerator;
     end

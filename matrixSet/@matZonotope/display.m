@@ -11,6 +11,10 @@ function display(matZ)
 %    ---
 %
 % Example: 
+%    matZ = matZonotope()
+%    C = [0 0; 0 0];
+%    G{1} = [1 3; -1 2]; G{2} = [2 0; 1 -1];
+%    matZ = matZonotope(C,G)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,20 +29,28 @@ function display(matZ)
 
 %------------- BEGIN CODE --------------
 
-%display dimension, generators
-disp('dimension: ');
-disp(matZ.dim);
-disp('nr of generators: ');
-disp(matZ.gens);
-%display center
-disp('center: ');
-disp(matZ.center);
+if isempty(matZ)
+    
+    dispEmptyObj(matZ,inputname(1));
 
-%display generators
-disp('generators: ');
-for i=1:length(matZ.generator)
-    disp(matZ.generator{i}); 
-    disp('---------------'); 
+else
+
+    %display dimension, generators
+    disp('dimension: ');
+    disp(dim(matZ));
+    disp('nr of generators: ');
+    disp(matZ.gens);
+    %display center
+    disp('center: ');
+    disp(matZ.center);
+    
+    %display generators
+    disp('generators: ');
+    for i=1:length(matZ.generator)
+        disp(matZ.generator{i}); 
+        disp('---------------'); 
+    end
+
 end
 
 %------------- END OF CODE --------------

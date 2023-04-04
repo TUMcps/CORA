@@ -1,10 +1,9 @@
-function intMat = intervalMatrix(matZ,varargin)
+function intMat = intervalMatrix(matZ)
 % intervalMatrix - computes an enclosing interval matrix of a matrix
 %    zonotope
 %
 % Syntax:  
 %    intMat = intervalMatrix(matZ)
-%    intMat = intervalMatrix(matZ,setting)
 %
 % Inputs:
 %    matZ - matZonotope object
@@ -24,12 +23,10 @@ function intMat = intervalMatrix(matZ,varargin)
 % Written:      21-June-2010 
 % Last update:  06-October-2010
 %               26-August-2011
+%               03-April-2023 (MW, remove setting property)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
-% set default values
-setting = setDefaultValues({[]},varargin);
 
 % center matrix
 C = center(matZ);
@@ -41,7 +38,7 @@ for i=2:matZ.gens
 end
 
 %instantiate interval matrix
-intMat = intervalMatrix(C, D, setting);
+intMat = intervalMatrix(C, D);
 
 
 %------------- END OF CODE --------------

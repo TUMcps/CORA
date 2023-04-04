@@ -1,0 +1,54 @@
+{
+  "_schemaVersion": "1.0.0",
+
+  "reachSet.plot":
+  {
+     "inputs":
+     [
+        {"name":"obj", "kind":"required", "type":["contSet"], "purpose":"contSet"},
+        {"name":"dims", "kind":"required", "type":["numeric"],"purpose":"dimensions to plot"},
+        {"name":"lineSpec", "kind":"ordered", "type":["char"],"purpose":"Line Specifications"},
+
+        {"name":"Order", "kind":"namevalue", "type":["numeric"],"purpose":"(polynomial) zonotope order"},
+        {"name":"Splits", "kind":"namevalue", "type":["numeric"],"purpose":"splits (only for polyZonotope/conZonotope)"},
+        {"name":"Unify", "kind":"namevalue", "type":["logical"],"purpose":"compute union of all reachable sets"},
+        {"name":"Set", "kind":"namevalue", "type":["char","choices={'ti','tp','y'}"],"purpose":"which set to plot"},
+
+        {"name":"Color", "kind":"namevalue", "type":["numeric"],"purpose":"Color"},
+        {"name":"FaceColor", "kind":"namevalue", "type":["numeric"],"purpose":"EdgeColor"},
+        {"name":"EdgeColor", "kind":"namevalue", "type":["numeric"],"purpose":"FaceColor"},
+        {"name":"DisplayName", "kind":"namevalue", "type":["char"],"purpose":"DisplayName"},
+        {"name":"HandleVisibility", "kind":"namevalue", "type":["char","choices={'on','off','callback'}"],"purpose":"HandleVisibility"},
+        {"name":"LineWidth", "kind":"namevalue", "type":["numeric"],"purpose":"LineWidth"},
+        {"name":"LineStyle", "kind":"namevalue", "type":["char","choices={'-','--',':','-.'}"],"purpose":"LineStyle"},
+        {"name":"Marker", "kind":"namevalue", "type":["char","choices={'o','+','*','.','x','_','|','square','diamond','^','v','>','<','pentagram','hexagram'}"],"purpose":"Marker"},
+        {"name":"MarkerSize", "kind":"namevalue", "type":["numeric"],"purpose":"MarkerSize"},
+        {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric"],"purpose":"FaceAlpha"}
+     ]
+  },
+
+  "reachSet.plotOverTime":
+  {
+     "inputs":
+     [
+        {"name":"obj", "kind":"required", "type":["contSet"], "purpose":"contSet"},
+        {"name":"dim", "kind":"required", "type":["numeric"],"purpose":"dimension to plot"},
+        {"name":"lineSpec", "kind":"ordered", "type":["char"],"purpose":"Line Specifications"},
+
+        {"name":"Unify", "kind":"namevalue", "type":["logical"],"purpose":"compute union of all reachable sets"},
+        {"name":"Set", "kind":"namevalue", "type":["char","choices={'ti','tp','y'}"],"purpose":"which set to plot"},
+
+        {"name":"Color", "kind":"namevalue", "type":["numeric"],"purpose":"Color"},
+        {"name":"FaceColor", "kind":"namevalue", "type":["numeric"],"purpose":"EdgeColor"},
+        {"name":"EdgeColor", "kind":"namevalue", "type":["numeric"],"purpose":"FaceColor"},
+        {"name":"DisplayName", "kind":"namevalue", "type":["char"],"purpose":"DisplayName"},
+        {"name":"HandleVisibility", "kind":"namevalue", "type":["char","choices={'on','off','callback'}"],"purpose":"HandleVisibility"},
+        {"name":"LineWidth", "kind":"namevalue", "type":["numeric"],"purpose":"LineWidth"},
+        {"name":"LineStyle", "kind":"namevalue", "type":["char","choices={'-','--',':','-.'}"],"purpose":"LineStyle"},
+        {"name":"Marker", "kind":"namevalue", "type":["char","choices={'o','+','*','.','x','_','|','square','diamond','^','v','>','<','pentagram','hexagram'}"],"purpose":"Marker"},
+        {"name":"MarkerSize", "kind":"namevalue", "type":["numeric"],"purpose":"MarkerSize"},
+        {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric"],"purpose":"FaceAlpha"}
+     ]
+  }
+
+}

@@ -1,6 +1,29 @@
 {
   "_schemaVersion": "1.0.0",
 
+  "_comment": "contSet --------------------------------------------------", 
+  "contSet.plot":
+  {
+     "inputs":
+     [
+        {"name":"obj", "kind":"required", "type":["contSet"], "purpose":"contSet"},
+        {"name":"dims", "kind":"required", "type":["numeric"],"purpose":"dimensions to plot"},
+        {"name":"lineSpec", "kind":"ordered", "type":["char"],"purpose":"Line Specifications"},
+        {"name":"Color", "kind":"namevalue", "type":["numeric"],"purpose":"Color"},
+        {"name":"FaceColor", "kind":"namevalue", "type":["numeric"],"purpose":"EdgeColor"},
+        {"name":"EdgeColor", "kind":"namevalue", "type":["numeric"],"purpose":"FaceColor"},
+        {"name":"DisplayName", "kind":"namevalue", "type":["char"],"purpose":"DisplayName"},
+        {"name":"HandleVisibility", "kind":"namevalue", "type":["char","choices={'on','off','callback'}"],"purpose":"HandleVisibility"},
+        {"name":"LineWidth", "kind":"namevalue", "type":["numeric"],"purpose":"LineWidth"},
+        {"name":"LineStyle", "kind":"namevalue", "type":["char","choices={'-','--',':','-.'}"],"purpose":"LineStyle"},
+        {"name":"Marker", "kind":"namevalue", "type":["char","choices={'o','+','*','.','x','_','|','square','diamond','^','v','>','<','pentagram','hexagram'}"],"purpose":"Marker"},
+        {"name":"MarkerSize", "kind":"namevalue", "type":["numeric"],"purpose":"MarkerSize"},
+        {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric"],"purpose":"FaceAlpha"},
+         
+        {"name":"Splits", "kind":"namevalue", "type":["numeric"],"purpose":"Splits (only for polyZonotope/conZonotope)"}
+     ]
+  },
+
   "_comment": "capsule --------------------------------------------------", 
   "capsule.generateRandom":
   {

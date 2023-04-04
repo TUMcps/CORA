@@ -94,10 +94,11 @@ methods
         end
         
         % number of states and inputs
-        states = A.dim;
-        if ~isnumeric(B)
-            temp = randomSampling(B,1);
-            inputs = size(temp,2);
+        sizeA = dim(A);
+        states = sizeA(1);
+        if isa(B,'matZonotope') || isa(B,'intervalMatrix')
+            sizeB = dim(B);
+            inputs = sizeB(2);
         else
             inputs = size(B,2);
         end

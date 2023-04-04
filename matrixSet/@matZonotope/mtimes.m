@@ -76,8 +76,7 @@ else
             matZ.generator{end+1}=matZ1.generator{j}*matZ2.generator{i};
         end
     end
-    %update number of generators and dimension
-    matZ.dim=matZ.dim;
+    %update number of generators
     matZ.gens=(matZ1.gens+1)*(matZ2.gens+1)-1;
 end
 

@@ -41,7 +41,7 @@ j=2;
 absA = abs(A);
 
 %generate identity and zero matrices
-n = intMat.dim;
+n = dim(intMat,1);
 I = eye(n);
 O = zeros(n);
 

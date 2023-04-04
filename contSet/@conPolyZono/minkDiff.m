@@ -45,7 +45,7 @@ function cPZ = minkDiff(cPZ1,cPZ2,varargin)
 
     % check input arguments
     inputArgsCheck({{cPZ1,'att','conPolyZono'};
-                    {cPZ2,'att',{'conPolyZono','contSet','numeric'}};
+                    {cPZ2,'att',{'contSet','numeric'}};
                     {type,'str',{'exact','inner'}}});
     
     % different algorithms for different set representations
@@ -56,7 +56,7 @@ function cPZ = minkDiff(cPZ1,cPZ2,varargin)
         
         % consider independent generators
         if strcmp(type,'exact') && ~isempty(cPZ1.Grest)
-            cPZ1 = removeIndepGens(cPZ1);
+            cPZ1 = aux_removeIndepGens(cPZ1);
         else
             cPZ1.Grest = [];
         end
@@ -110,7 +110,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function cPZ = removeIndepGens(cPZ)
+function cPZ = aux_removeIndepGens(cPZ)
 % redefine independent generators as new dependent generators
 
     E = eye(size(cPZ.Grest,2));
@@ -120,7 +120,7 @@ function cPZ = removeIndepGens(cPZ)
                           blkdiag(cPZ.expMat,E),[],id);
     else
        cPZ = conPolyZono(cPZ.c,[cPZ.G,cPZ.Grest], ...
-                          blkdiag(cPZ.expMat,E),cPZ.A,cPZ.b, ...
+                          blkdiag(cPZ.expMat,E),[cPZ.A,zeros(1,size(cPZ.Grest,2))],cPZ.b, ...
                           blkdiag(cPZ.expMat_,E),[],id);
     end
 end

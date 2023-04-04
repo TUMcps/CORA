@@ -34,7 +34,7 @@ inputArgsCheck({{matZ,'att','matZonotope'}, ...
 if exponent==0
     %return identity matrix
     matZpower=matZ;
-    matZpower.center=eye(matZ.dim);
+    matZpower.center=eye(dim(matZ));
     matZpower.generator=[];
     matZpower.gens=0;
 elseif exponent==1

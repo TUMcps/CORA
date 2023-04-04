@@ -57,7 +57,7 @@ matrixDelta = [ ...
 M_int = intervalMatrix(matrixCenter, matrixDelta);
 
 % obtain result of some vertices-----------------------
-V = randomSampling(M_int,10);
+V = randPoint(M_int,10);
 
 %loop through vertices
 n_1_sample = zeros(length(V),1);

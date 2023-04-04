@@ -34,7 +34,7 @@ Ac = obj.A.center;
 Ag = obj.A.generator;
 c = center(Rinit);
 r = obj.stepSize;
-dim = obj.dim;
+n = obj.dim;
 Umat = Uconst.Z;
 params = obj.A.gens;%'obj.A.gens' does not work anymore once lin_error2dAB adds lagrange remainder to system matrix
 
@@ -47,7 +47,7 @@ end
 
 %first parametric order
 %auxiliary value
-M = eye(dim)*r + Ac*r^2/2 + Ac^2*r^3/6;
+M = eye(n)*r + Ac*r^2/2 + Ac^2*r^3/6;
 %loop
 for i=1:params
     R_g(:,i) = (Ag{i}*r + Ac*Ag{i}*r^2/2 + Ag{i}*Ac*r^2/2) * c + ...

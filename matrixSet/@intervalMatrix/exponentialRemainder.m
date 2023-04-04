@@ -49,7 +49,7 @@ if ~any(any(isnan(eM)))
     E = intervalMatrix(zeros(intMat.dim),W);
 else
     %instantiate remainder
-    E = intervalMatrix(zeros(intMat.dim),inf*ones(intMat.dim));
+    E = intervalMatrix(zeros(intMat.dim),Inf(intMat.dim));
 end
 
 %------------- END OF CODE --------------

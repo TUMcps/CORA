@@ -63,7 +63,7 @@ properties (SetAccess = private, GetAccess = public)
     transition (:,1) cell = {};
 
     % system dynamics
-    contDynamics {mustBeA(contDynamics,'contDynamics')} = contDynamics();
+    contDynamics = contDynamics();
 end
 
 methods
