@@ -11,9 +11,6 @@ function val = distance(P,S)
 % Outputs:
 %    val - distance to S
 %
-% Example: 
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

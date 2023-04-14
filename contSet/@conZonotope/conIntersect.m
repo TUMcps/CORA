@@ -4,7 +4,7 @@ function res = conIntersect(cZ1,cZ2,M)
 %    zonotope cZ2 (see Eq. (13) in [1] with cZ1=Z, cZ2=Y, M=R)
 %
 % Syntax:  
-%    res = conIntersect(cZ1,cZ1,M)
+%    res = conIntersect(cZ1,cZ2,M)
 %
 % Inputs:
 %    cZ1 - conZonotope object
@@ -18,12 +18,12 @@ function res = conIntersect(cZ1,cZ2,M)
 %    cZ1 = conZonotope([0 1.5 -1.5 0.5;0 1 0.5 -1],[1 1 1],-1);
 %    cZ2 = conZonotope([6 2 0;-2 0 1]);
 %    M = [2 1;-1 0];
-%
-%    res = conIntersect(cZ1,cZ2,M);
-%
+% 
+%    cZ_ = conIntersect(cZ1,cZ2,M);
+% 
 %    figure; hold on;
-%    plot(Z);
-%    plot(res,[1,2],'r');
+%    plot(cZ1); plot(cZ2);
+%    plot(cZ_,[1,2],'r--');
 %
 % Other m-files required: none
 % Subfunctions: none

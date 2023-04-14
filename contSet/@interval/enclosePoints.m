@@ -11,12 +11,12 @@ function I = enclosePoints(points)
 %    I - interval object
 %
 % Example: 
-%    points = -1 + 2*rand(2,10);
-%    I = interval.enclosePoints(points);
+%    p = -1 + 2*rand(2,10);
+%    I = interval.enclosePoints(p);
 %    
 %    figure; hold on;
-%    plot(points(1,:),points(2,:),'.k');
-%    plot(int,[1,2],'r');
+%    plot(I);
+%    plot(p(1,:),p(2,:),'.k');
 %
 % Other m-files required: none
 % Subfunctions: none

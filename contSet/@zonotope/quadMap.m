@@ -14,15 +14,15 @@ function Zquad = quadMap(Z1,varargin)
 %    Zquad - zonotope object
 %
 % Example: 
-%    zono = zonotope([0 1 1;0 1 0]);
+%    Z = zonotope([0 1 1;0 1 0]);
 %    Q{1} = [0.5 0.5; 0 -0.5];
 %    Q{2} = [-1 0; 1 1];
-%
-%    res = quadMap(zono,Q);
-%
+% 
+%    res = quadMap(Z,Q);
+% 
 %    figure; hold on;
-%    plot(zono,[1,2],'r');
-%
+%    plot(Z,[1,2],'r');
+% 
 %    figure; hold on;
 %    plot(res,[1,2],'b');
 %

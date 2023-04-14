@@ -16,10 +16,9 @@ function I = interval(cZ)
 %    A = [-2 1 -1]; b = 2;
 %    cZ = conZonotope(Z,A,b);
 %    I = interval(cZ);
-%
+% 
 %    figure; hold on;
-%    plot(cZono,[1,2],'FaceColor','r');
-%    plot(I,[1,2],'g');
+%    plot(cZ); plot(I);
 %
 % Other m-files required: none
 % Subfunctions: none

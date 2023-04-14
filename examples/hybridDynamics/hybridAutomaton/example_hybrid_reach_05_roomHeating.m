@@ -7,10 +7,10 @@ function res = example_hybrid_reach_05_roomHeating()
 %    example_hybrid_reach_05_roomHeating
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean, true if completed
+%    res - true/false
 %
 % References:
 %   [1] A. Fehnker and F. Ivancic. "Benchmarks for Hybrid Systems 

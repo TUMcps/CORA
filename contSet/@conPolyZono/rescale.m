@@ -23,9 +23,9 @@ function res = rescale(cPZ,varargin)
 %    cPZ_ = rescale(cPZ,'forwardBackward');
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'FaceColor','r','Splits',20);
-%    plot(polyZonotope(c,G,[],expMat),[1,2],'b','Splits',15);
-%    plot(polyZonotope(cPZ_.c,cPZ_.G,[],cPZ_.expMat),[1,2],'g','Splits',15);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',12);
+%    plot(polyZonotope(c,G,[],expMat),[1,2],'b','Splits',12);
+%    plot(polyZonotope(cPZ_.c,cPZ_.G,[],cPZ_.expMat),[1,2],'g','Splits',12);
 %
 % Outputs:
 %    res - rescaled conPolyZono object

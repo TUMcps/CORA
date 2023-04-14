@@ -14,12 +14,12 @@ function Z = mtimes(factor1,factor2)
 %
 % Example: 
 %    Z = zonotope([1 1 0; 0 0 1]);
-%    M = [0 1; 1 0];
+%    M = [1 2; 1 0];
 %    Zmat = M*Z;
-%
+% 
 %    figure; hold on;
 %    plot(Z,[1,2],'b');
-%    plot(Z,[1,2],'r');
+%    plot(Zmat,[1,2],'r');
 %
 % References:
 %    [1] M. Althoff. "Reachability analysis and its application to the 

@@ -24,7 +24,7 @@ function setOps = contSetOperations(varargin)
 %               'unitTest': logical array of implemented unit tests
 %
 % Example: 
-%    -
+%    setOps = contSetOperations('capsule');
 
 % Author:       Mark Wetzlinger
 % Written:      09-March-2021

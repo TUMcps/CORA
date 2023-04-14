@@ -27,6 +27,7 @@ function han = plot(C,varargin)
 % Author:       Matthias Althoff
 % Written:      04-March-2019
 % Last update:  25-May-2022 (TL: 1D Plotting)
+%               05-April-2023 (TL: clean up using plotPolygon)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -39,9 +40,6 @@ inputArgsCheck({{C,'att','capsule','nonempty'};
 
 % parse plot options
 NVpairs = readPlotOptions(varargin(2:end));
-
-% readout 'FaceColor' value to decide plot/fill call where necessary
-[~,facecolor] = readNameValuePair(NVpairs,'FaceColor');
 
 % check dimension
 if length(dims) < 1
@@ -64,14 +62,9 @@ elseif length(dims) == 2
     p = polygon(C);
 
     % plot and output the handle
-    if isempty(facecolor) || strcmp(facecolor,'none')
-        han = plot(p(1,:),p(2,:),NVpairs{:});
-    else
-        han = fill(p(1,:),p(2,:),facecolor,NVpairs{:});
-    end
+    han = plotPolygon(p, NVpairs{:});
 
 else
-
     % generate 3D plot
     if isempty(C.g)         % generator is empty
         E = ellipsoid(eye(3)*C.r^2,C.c);

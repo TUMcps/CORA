@@ -10,10 +10,7 @@ function res = test_neurNetContrSys_neurNetContrSys
 %    -
 %
 % Outputs:
-%    res - boolean
-%
-% Example:
-%    -
+%    res - true/false
 
 % Author:       Tobias Ladner
 % Written:      23-November-2022

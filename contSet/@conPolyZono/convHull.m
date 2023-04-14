@@ -21,12 +21,11 @@ function cPZ = convHull(cPZ,S)
 %    b = 0;
 %    expMat_ = [2 0; 0 1];
 %    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
-%
+% 
 %    res = convHull(cPZ);
-%
+% 
 %    figure; hold on;
-%    p = randPoint(res,10000);
-%    plot(p(1,:),p(2,:),'.k');
+%    plotRandPoint(cPZ,[1,2],1000,'.k');
 %    plot(cPZ,[1,2],'r');
 %
 % Other m-files required: none

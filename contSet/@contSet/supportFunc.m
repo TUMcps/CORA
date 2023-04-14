@@ -99,7 +99,7 @@ end
 % end
 
 % transpose dir if necessary
-if size(dir,1) == 1 && size(dir,2) >= 1
+if size(dir,1) == 1 && size(dir,2) > 1
     dir = dir';
 end
 

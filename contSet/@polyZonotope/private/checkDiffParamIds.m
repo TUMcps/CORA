@@ -11,9 +11,6 @@ function [id_diff,id_param] = checkDiffParamIds(pZ,varargin)
 %    id_diff - ???
 %    id_param - ???
 %
-% Example: 
-%    -
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

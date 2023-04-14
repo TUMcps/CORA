@@ -1,17 +1,17 @@
-function res = bool2stl(obj)
+function obj = bool2stl(bool)
 % bool2stl - convert boolean to stl object 
 %
 % Syntax:  
-%    res = bool2stl(obj)
+%    obj = stl.bool2stl(bool)
 %
 % Inputs:
-%    obj - boolean
+%    bool - true/false
 %
 % Outputs:
-%    res - resulting stl object (class stl)
+%    obj - resulting stl object (class stl)
 %
 % Example: 
-%    res = bool2stl(true)
+%    obj = stl.bool2stl(true);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -19,15 +19,23 @@ function res = bool2stl(obj)
 %
 % See also: stl
 
-% Author:       Niklas Kochdumper
-% Written:      9-November-2022 
-% Last update:  ---
+% Author:       Niklas Kochdumper, Mark Wetzlinger
+% Written:      09-November-2022 
+% Last update:  13-April-2023 (MW, make static function, update code)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-    res = stl('x',1);
-    res.type = 'true';
+% ensure that bool is really a logical
+inputArgsCheck({{bool,'att','logical','scalar'}});
+
+obj = stl('x',1);
+if bool
+    obj.type = 'true';
+else
+    obj.type = 'false';
 end
+obj.variables = [];
+obj.logic = true;
 
 %------------- END OF CODE --------------

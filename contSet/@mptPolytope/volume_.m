@@ -10,9 +10,6 @@ function vol = volume_(P,varargin)
 % Outputs:
 %    vol - volume
 %
-% Example: 
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

@@ -6,13 +6,10 @@ function res = example_nonlinear_reach_10_pendulum()
 %    example_nonlinear_reach_10_pendulum
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean
-%
-% References:
-%   -
+%    res - true/false
 
 % Author:        Mark Wetzlinger
 % Written:       03-August-2020

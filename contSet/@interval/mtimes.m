@@ -34,7 +34,8 @@ function res = mtimes(factor1,factor2)
 %               26-July-2016 (multiplication with zonotope added)
 %               05-August-2016 (simplified some cases; matrix case corrected)
 %               23-June-2022 (VG: added support for appropriate empty
-%               matrices/intervals)
+%                                 matrices/intervals)
+%               04-April-2023 (TL: vectorized matrix case)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -79,15 +80,18 @@ elseif isscalar(factor1)
     
     %obtain possible values
     if isnumeric(factor1) 
-        res = factor2;
         if factor1<0
             %infimum and supremum
-            res.inf = factor1*factor2.sup;
-            res.sup = factor1*factor2.inf;
+            res = interval( ...
+                factor1*factor2.sup, ...
+                factor1*factor2.inf ...
+            );
         else
             %infimum and supremum
-            res.inf = factor1*factor2.inf;
-            res.sup = factor1*factor2.sup;
+            res = interval( ...
+                factor1*factor2.inf, ...
+                factor1*factor2.sup ...
+            );
         end
     else
         res = factor1.*factor2;
@@ -98,104 +102,82 @@ elseif isscalar(factor2)
     
     %obtain possible values
     if isnumeric(factor2)
-        res = factor1;
         if factor2<0
             %infimum and supremum
-            res.inf = factor2*factor1.sup;
-            res.sup = factor2*factor1.inf;
+            res = interval( ...
+                factor2*factor1.sup, ...
+                factor2*factor1.inf ...
+            );
         else
             %infimum and supremum
-            res.inf = factor2*factor1.inf;
-            res.sup = factor2*factor1.sup;
+            res = interval( ...
+                factor2*factor1.inf, ...
+                factor2*factor1.sup ...
+            );
         end
     else
         res = factor1.*factor2;
     end
 
-% matrix case [int] * [numb]
-
-elseif isa(factor1, 'interval') && ~isa(factor2, 'interval')
-    I1 = factor1.inf;
-    S1 = factor1.sup;
- 
-    [m, n] = size(I1);
-    [m1, n1] = size(factor2);
-    A = interval();
-    
-    % allow appropriate empty cases (also faster)
-    Binf = zeros(m,n1);
-    Bsup = zeros(m,n1);
-    % initialize B as interval (size does not matter)
-    B = factor1;
-    for i = 1:m
-        A.inf = repmat(I1(i, :),n1, 1)';
-        A.sup = repmat(S1(i, :),n1, 1)';
-        B = A .* factor2;
-        Binf(i, :) = sum(B.inf, 1);
-        Bsup(i, :) = sum(B.sup, 1);
-    end
-    B.inf = Binf;
-    B.sup = Bsup;
- 
-    res = B;
-     
-% matrix case [numb] * [int]
-
-elseif ~isa(factor1, 'interval') && isa(factor2, 'interval')
-    I1 = factor2.inf;
-    S1 = factor2.sup;
-
-    [m1, n1] = size(I1);
-    [m, n] = size(factor1);
-    A = interval();
-
-    % allow appropriate empty cases (also faster)
-    Binf = zeros(m,n1);
-    Bsup = zeros(m,n1);
-    % initialize B as interval (size does not matter)
-    B = factor2;
-    for i = 1:m
-%         A.inf = repmat(I1(i, :),n1, 1);
-%         A.sup = repmat(S1(i, :),n1, 1);
-        factor1_1 = repmat(factor1(i, :), n1, 1)';
-
-        B = factor1_1 .* factor2;
-        Binf(i, :) = sum(B.inf, 1);
-        Bsup(i, :) = sum(B.sup, 1);
-    end
-    B.inf = Binf;
-    B.sup = Bsup;
-
-    res = B;
-
-% matrix case [int] * [int]
+% matrix case
 else
+    if ~issparse(factor1) && ~issparse(factor2)
+        % [m, k] * [k, n] = [m, n]
+        % -> [m, k, 1] .* [1, k, n] = [m, k, n]
+
+        if isnumeric(factor2) 
+            [m, ~] = size(factor1);
+            extSize = [1, size(factor2)];
+            factor2 = reshape(factor2, extSize);
+            res = factor1 .* factor2;
+        
+            % [m,k,n] -> [m,n]
+            res.inf = sum(res.inf, 2);
+            res.sup = sum(res.sup, 2);
+            res = reshape(res, m, []);
+            
+        else
+            [m, ~] = size(factor1);
+            extSize = [1, size(factor2)];
+            factor2.inf = reshape(factor2.inf, extSize);
+            factor2.sup = reshape(factor2.sup, extSize);
+            res = factor1 .* factor2;
+        
+            % [m,k,n] -> [m,n]
+            res.inf = sum(res.inf, 2);
+            res.sup = sum(res.sup, 2);
+            res = reshape(res, m, []);
+
+        end
+    else
+        % convert both to interval
+        factor1 = interval(factor1);
+        factor2 = interval(factor2);
+
+        % sparse only supports 2d arrays, keeping old algorithm..
+        I1 = factor1.inf;
+        S1 = factor1.sup;
     
-    I1 = factor1.inf;
-    S1 = factor1.sup;
+        [m, ~] = size(I1);
+        [~, n] = size(factor2.inf);
+    
+        % preallocate output bounds [m,n]
+        resInf = zeros(m,n);
+        resSup = zeros(m,n);
+        
+        A = interval();
+        for i = 1:m
+            % get i-th row [1, k], transpose
+            A.inf = I1(i, :)';
+            A.sup = S1(i, :)';
 
-    [m, n] = size(I1);
-    [m1, n1] = size(factor2.inf);
-    A = interval();
-
-    % allow appropriate empty cases (also faster)
-    Binf = zeros(m,n1);
-    Bsup = zeros(m,n1);
-    % initialize B as interval (size does not matter)
-    B = factor1;
-
-    for i = 1:m
-        A.inf = repmat(I1(i, :),n1, 1)';
-        A.sup = repmat(S1(i, :),n1, 1)';
-        B = A .* factor2;
-        Binf(i, :) = sum(B.inf, 1);
-        Bsup(i, :) = sum(B.sup, 1);
+            % [k, 1] .* [k, n] = [k, n]
+            B = A .* factor2;
+            resInf(i, :) = sum(B.inf, 1);
+            resSup(i, :) = sum(B.sup, 1);
+        end
+        res = interval(resInf, resSup);
     end
-    B.inf = Binf;
-    B.sup = Bsup;
-
-    res = B;
-
 end
 
 

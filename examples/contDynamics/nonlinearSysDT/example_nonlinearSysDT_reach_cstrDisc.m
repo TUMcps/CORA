@@ -12,8 +12,6 @@ function completed = example_nonlinearSysDT_reach_cstrDisc
 % Outputs:
 %    completed - true/false 
 %
-% Example: 
-%
 % References:
 %    [1] J.M. Bravo, Robust MPC of constrained discrete-time
 %        nonlinear systems based on approximated reachable sets, 2006

@@ -27,10 +27,10 @@ function cPZ = quadMap(varargin)
 %    res = quadMap(cPZ,Q);
 %
 %    figure; hold on
-%    plot(cPZ,[1,2],'FaceColor','b','Splits',20);
+%    plot(cPZ,[1,2],'FaceColor','b','Splits',12);
 %
 %    figure; hold on
-%    plot(res,[1,2],'FaceColor','r','Splits',20);
+%    plot(res,[1,2],'FaceColor','r','Splits',12);
 %
 % Other m-files required: none
 % Subfunctions: none

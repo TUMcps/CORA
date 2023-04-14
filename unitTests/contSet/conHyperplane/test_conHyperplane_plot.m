@@ -10,9 +10,7 @@ function res = test_conHyperplane_plot
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

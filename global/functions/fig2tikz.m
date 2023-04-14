@@ -16,12 +16,6 @@ function fig = fig2tikz(varargin)
 % Outputs:
 %    fig - handle to figure object
 %
-% Example:
-%    R; % from reach-function
-%    plot(R,[1,2],'r','Unify',true);
-%    fig2tikz;
-%    matlab2tikz('R.tikz');
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
@@ -201,7 +195,7 @@ for c=1:nrChildren
 
                 % not supported
                 throw(CORAerror('CORA:notSupported',...
-                    ['Object of class ' elem.Type ' are currently not supported.'));
+                    ['Object of class ' elem.Type ' are currently not supported.']));
 
         end
 

@@ -8,9 +8,7 @@ function res = test_halfspace_isIntersecting
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

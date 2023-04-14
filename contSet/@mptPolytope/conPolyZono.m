@@ -11,8 +11,8 @@ function cPZ = conPolyZono(poly)
 %    cPZ - conPolyZono object
 %
 % Example: 
-%    poly = mptPolytope.generateRandom('Dimension',2);
-%    cPZ = conPolyZono(poly)
+%    P = mptPolytope([1 1; -2 1; 0 -1],[1;1;1]);
+%    cPZ = conPolyZono(P)
 %
 % Other m-files required: none
 % Subfunctions: none

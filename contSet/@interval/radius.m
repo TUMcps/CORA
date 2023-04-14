@@ -11,7 +11,7 @@ function r = radius(I)
 %    r - radius of enclosing hyperball
 %
 % Example: 
-%    I = interval.generateRandom('Dimension',2);
+%    I = interval([-2;1],[4;3]);
 %    r = radius(I);
 %
 %    figure; hold on;

@@ -4,24 +4,22 @@ function pZ = outerApprox(pZ,tol,id)
 %    (ignoring all monomials that solely contain ids 'id')
 %
 % Syntax:  
-%    pZ = outerApprox(pZ,tol)
+%    pZ = outerApprox(pZ,tol,id)
 %
 % Inputs:
 %    pZ - polyZonotope object
 %    tol - tolerance
+%    id - identifiers
 %
 % Outputs:
 %    pZ - resulting polyZonotope object
 %
 % Example:
 %   pZ = polyZonotope([0;0],[2 0 2;0 2 2],[0.5;0],[1 0 3;0 1 1]);
-%
-%   S = outerApprox(pZ,1e-2);
+%   S = outerApprox(pZ,1e-2,1);
 %
 %   figure; hold on;
-%   plot(pZ,[1,2],'r');
-%   plot(S,[1,2],'b');
-%
+%   plot(pZ); plot(S,[1,2],'LineStyle','--');
 %
 % Other m-files required: none
 % Subfunctions: none

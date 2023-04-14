@@ -20,15 +20,13 @@ function cPZ = mtimes(factor1,factor2)
 %    b = 0;
 %    expMat_ = [1 0 1 0; 0 1 1 0; 0 0 0 1];
 %    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
-%
+% 
 %    M = [3 1;2 -4];
 %    cPZ_ = M * cPZ;
-%
-%    figure, hold on;
-%    plot(cPZ,[1,2],'FaceColor','r','Splits',15);
-%
+% 
 %    figure; hold on;
-%    plot(cPZ_,[1,2],'FaceColor','b','Splits',15);
+%    plot(cPZ,[1,2],'r');
+%    plot(cPZ_,[1,2],'b');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -52,13 +50,16 @@ try
     if isnumeric(M)
         
         cPZ.c = M*cPZ.c;
-        cPZ.G = M*cPZ.G;
+
+        if ~isempty(cPZ.G)
+            cPZ.G = M*cPZ.G;
+        end
     
         if ~isempty(cPZ.Grest)
             cPZ.Grest = M*cPZ.Grest;
         end
         
-    % use polynomial zonotope method for interval matrices
+    % use polynomial zonotope method for other cases
     else
         
         pZ = polyZonotope(cPZ.c,cPZ.G,cPZ.Grest,cPZ.expMat);

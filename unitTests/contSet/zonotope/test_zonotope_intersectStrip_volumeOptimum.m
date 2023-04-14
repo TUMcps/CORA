@@ -11,9 +11,7 @@ function res = test_zonotope_intersectStrip_volumeOptimum
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % References:
 %    [1] T. Alamo, J. M. Bravo, and E. F. Camacho. Guaranteed

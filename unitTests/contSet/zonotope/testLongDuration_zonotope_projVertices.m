@@ -9,9 +9,7 @@ function res = testLongDuration_zonotope_projVertices
 %    -
 %
 % Outputs:
-%    res - true/false 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

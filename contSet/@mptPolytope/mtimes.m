@@ -13,7 +13,15 @@ function [P] = mtimes(factor1,factor2)
 %    P - mptPolytope object
 %
 % Example: 
-%    ---
+%    C = [1 0 -1 0 1; 0 1 0 -1 1]';
+%    d = [3; 2; 3; 2; 1];
+%    P = mptPolytope(C,d);
+% 
+%    M = [1 2; -1 0.2];
+%    MP = M * P;
+% 
+%    figure; hold on;
+%    plot(P); plot(MP);
 %
 % Other m-files required: none
 % Subfunctions: none

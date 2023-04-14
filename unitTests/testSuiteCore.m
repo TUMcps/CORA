@@ -1,20 +1,22 @@
-function [failed, numberOfTests] = testSuiteCore(varargin)
+function [failed, numberOfTests] = testSuiteCore(prefix,varargin)
 % testSuiteCore - runs functions starting with a certain prefix contained 
 %    in the directory and recursively searches all subfolders for same prefix
 %
 % Syntax:  
-%    [failed, numberOfTests] = testSuiteCore(varargin)
+%    [failed, numberOfTests] = testSuiteCore(prefix)
+%    [failed, numberOfTests] = testSuiteCore(prefix,verbose)
+%    [failed, numberOfTests] = testSuiteCore(prefix,verbose,directory)
 %
 % Inputs:
 %    prefix - prefix of function names to be tested
-%    verbose - show workspace output or not (not required)
-%    directory - change directory (not required)
+%    verbose - (optional) show workspace output or not
+%    directory - (optional) change directory
 %
 % Outputs:
-%    failed - a cell array containing the name of the failed tests
-%    numberOfTests - number of performed tests
+%    failed - a cell array containing the names of the failed tests
+%    numberOfTests - number of run tests
 %
-% Example: 
+% Example:
 %    -
 
 % Author:       Dmitry Grebenyuk, Matthias Althoff
@@ -24,18 +26,9 @@ function [failed, numberOfTests] = testSuiteCore(varargin)
 
 %------------- BEGIN CODE --------------
 
-directory = [CORAROOT filesep 'unitTests'];
-verbose = false;
-
-if nargin >= 1
-    prefix = varargin{1};
-end
-if nargin >= 2
-    verbose = varargin{2};
-end
-if nargin >= 3
-    directory = varargin{3};
-end
+% default values
+[verbose,directory] = setDefaultValues(...
+    {false,[CORAROOT filesep 'unitTests']},varargin);
 
 numberOfTests = 0;
 failed = cell(0);
@@ -78,8 +71,6 @@ for i=1:size(files,1)
     [subfailed, subnum] = testSuiteCore(prefix,verbose,[directory filesep files(i).name]);
     failed = [failed; subfailed];
     numberOfTests = numberOfTests + subnum;
-end
-
 end
 
 %------------- END OF CODE --------------

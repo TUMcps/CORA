@@ -9,10 +9,7 @@ function completed = testLongDuration_nonlinParamSys_reach_04_VDP_linearRemainde
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 
 % Author:       Victor Gassmann
 % Written:      17-May-2019

@@ -9,22 +9,22 @@ function res = containsPoint(C,p)
 %    p - point specified as a vector
 %
 % Outputs:
-%    res - 1/0 if point is inside the capsule or not
+%    res - true/false
 %
 % Example: 
 %    C = capsule([1; 1; 0], [0.5; -1; 1], 0.5);
 %    p = [1; 1; 1];
-%    res = containsPoint(C,p)
+%    res = contains(C,p)
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Author:       Matthias Althoff
 % Written:      05-March-2019
-% Last update:  15-Sep-2019
+% Last update:  15-September-2019
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -58,19 +58,19 @@ for iPoint = 1:numPoints
             % is perpendicular part smaller than the radius?
             p_perpendicular = p_delta - p_proj;
             if norm(p_perpendicular) <= C.r
-                res(iPoint) = 1; % p is contained in cylinder and thus in  capsule
+                res(iPoint) = true; % p is contained in cylinder and thus in  capsule
             end
         % is p in up part of both half-hyperballs?
         elseif p_dir > 0
             p_delta_up = p_curr-(C.c + C.g);
             if norm(p_delta_up) <= C.r
-                res(iPoint) = 1; % p is contained in up part of half-hyperballs
+                res(iPoint) = true; % p is contained in up part of half-hyperballs
             end
         % is p in down part of both half-hyperballs?
         elseif p_dir < 0
             p_delta_dw = p_curr-(C.c - C.g);
             if norm(p_delta_dw) <= C.r
-                res(iPoint) = 1; % p is contained in down part of half-hyperballs
+                res(iPoint) = true; % p is contained in down part of half-hyperballs
             end
         end
     end

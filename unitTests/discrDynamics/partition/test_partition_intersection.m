@@ -7,12 +7,10 @@ function res = test_partition_intersection()
 %    res = test_partition_intersection()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 
 % Author:       Aaron Pereira, Matthias Althoff
 % Written:      02-August-2017

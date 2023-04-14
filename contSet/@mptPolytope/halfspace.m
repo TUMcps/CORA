@@ -1,8 +1,8 @@
-function [obj] = halfspace(obj)
+function obj = halfspace(obj)
 % halfspace - dummy function for creating halfspace representation
 %
 % Syntax:  
-%    [obj] = halfspace(obj)
+%    obj = halfspace(obj)
 %
 % Inputs:
 %    obj - mptPolytope object
@@ -10,14 +10,11 @@ function [obj] = halfspace(obj)
 % Outputs:
 %    obj - mptPolytope object
 %
-% Example: 
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Author:       Matthias Althoff
 % Written:      12-February-2012 

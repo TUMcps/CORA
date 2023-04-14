@@ -11,9 +11,7 @@ function res = testMP_Krylov_errorBounds(~)
 %    no
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % References:
 %    [1] Saad, Y. Analysis of Some Krylov Subspace Approximations to the Matrix 

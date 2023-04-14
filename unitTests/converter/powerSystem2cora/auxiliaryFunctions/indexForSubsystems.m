@@ -44,8 +44,6 @@ function index = indexForSubsystems(sys, subsystem, bus, bus_subsystem, statesPe
 %        using Reachable Sets", IEEE Transactions on Power Systems 29 (5), 
 %        2014, 2270-2280
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
@@ -56,7 +54,6 @@ function index = indexForSubsystems(sys, subsystem, bus, bus_subsystem, statesPe
 % Written:       05-May-2022
 % Last update:   ---
 % Last revision: ---
-
 
 %------------- BEGIN CODE --------------
 

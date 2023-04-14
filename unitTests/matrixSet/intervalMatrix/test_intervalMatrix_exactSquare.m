@@ -10,9 +10,7 @@ function res = test_intervalMatrix_exactSquare
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % References:
 %    [1] Kosheleva, O.; Kreinovich, V.; Mayer, G. & Nguyen, H. T.

@@ -13,10 +13,7 @@ function res = test_linearSys_reach_02_5dim()
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      09-August-2016

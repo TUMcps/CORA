@@ -54,7 +54,7 @@ if isnumeric(S)
 
     res = false(1,size(S,2));
     for i = 1:size(S,2)
-        res(i) = containsPoint(E,S(:,i));
+        res(i) = aux_containsPoint(E,S(:,i));
     end
 
 elseif isa(S,'ellipsoid')
@@ -86,29 +86,17 @@ end
 
 
 % Auxiliary Functions -----------------------------------------------------
-function [B,Val] = containsPoint(E,Y)
-% containsPoint - gives an array of boolean values indiciating whether
-%    points Y are contained in the ellipsoid
-%
-% Syntax:  
-%    [B,Val] = containsPoint(E,Y) gives an array of boolean values indiciating
-%     whether points Y are contained in the ellipsoid
-%
-% Inputs:
+function [B,Val] = aux_containsPoint(E,Y)
+% gives an array of boolean values indiciating whether points Y are
+% contained in the ellipsoid
+% inputs:
 %    E - ellipsoids object
 %    Y - Points
-%
-% Outputs:
+% outputs:
 %    B - boolean values indiciating whether
 %        points Y are contained in the ellipsoid
 %    Val-if contained, Value indicates the relative distance to the center of E: Val<=1
 %    <=> contained (=1: on boundary); otherwise: inf
-%
-% Example: 
-%    t = linspace(0,2*pi,1000);
-%    Y = [cos(t);sin(t)];
-%    E = ellipsoid([1,0;0,1/2],[1;1]);
-%    B = containsPoint(E,Y);
 
 n = dim(E);
 if ~isa(Y,'double')
@@ -153,9 +141,11 @@ if ~isFullDim(E)
     E = project(E,1:rankE);
     Y = Y(1:rankE,:);
 end
+
 % convert mask to indices
 tmp = 1:N;
 ii_eq_rem = tmp(ind_rem_eq);
+
 % now, E is fulldimensional
 for i=ii_eq_rem
     % simply check using ellipsoid equation

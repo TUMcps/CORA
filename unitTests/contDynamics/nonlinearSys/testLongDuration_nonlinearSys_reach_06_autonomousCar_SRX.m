@@ -18,10 +18,7 @@ function res = testLongDuration_nonlinearSys_reach_06_autonomousCar_SRX()
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      15-March-2012

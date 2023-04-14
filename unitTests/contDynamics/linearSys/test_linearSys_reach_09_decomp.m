@@ -6,12 +6,10 @@ function res = test_linearSys_reach_09_decomp()
 %    res = test_linearSys_reach_09_decomp
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: -
+%    res - true/false
 %
 % References: 
 %   [1] S. Bogomolov, M. Forets, G. Frehse, A. Podelski, C. Schilling

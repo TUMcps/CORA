@@ -7,10 +7,10 @@ function completed = example_nonlinearDA_reach_04_powerSystem_14bus()
 %    completed = example_nonlinearDA_reach_04_powerSystem_14bus()
 %
 % Inputs:
-%    ---
+%    -
 %
 % Outputs:
-%    completed - boolean 
+%    completed - true/false 
 %
 % References:
 %    [1] M. Althoff, "Formal and Compositional Analysis of Power Systems 

@@ -29,7 +29,7 @@ function res = cubMap(Z,varargin)
 %    
 %    T{1,1} = rand(2); T{1,2} = rand(2);
 %    T{2,1} = rand(2); T{2,2} = rand(2);
-%
+% 
 %    Zcub = cubMap(Z,T);
 %
 %    figure;

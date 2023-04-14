@@ -15,8 +15,7 @@ function res = checkNameValuePairs(NVpairs,fullList)
 %
 % Example: 
 %    NVpairs = {'Splits',8,'Order',5};
-%    checkNameValuePairs(NVpairs,{'Splits','Order'});   % no error
-%    checkNameValuePairs(NVpairs,{'Splits'});           % error
+%    checkNameValuePairs(NVpairs,{'Splits','Order'});
 %
 % Other m-files required: none
 % Subfunctions: none

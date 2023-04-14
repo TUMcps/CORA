@@ -11,7 +11,7 @@ function n = dim(Z)
 %    n - dimension of the ambient space
 %
 % Example: 
-%    Z = zonotope([-1;1;2],[2 4 -3; 2 1 0; 0 2 -1]]);
+%    Z = zonotope([-1;1;2],[2 4 -3; 2 1 0; 0 2 -1]);
 %    n = dim(Z)
 %
 % Other m-files required: zonotope/center

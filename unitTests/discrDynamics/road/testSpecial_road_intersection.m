@@ -6,13 +6,10 @@ function res = testSpecial_road_intersection
 %    res = testSpecial_road_intersection
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      18-August-2016

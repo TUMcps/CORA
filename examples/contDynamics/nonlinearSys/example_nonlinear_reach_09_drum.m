@@ -3,15 +3,13 @@ function res = example_nonlinear_reach_09_drum()
 %    analysis taken from [1]
 %
 % Syntax:  
-%    example_nonlinear_reach_09_drum
+%    res = example_nonlinear_reach_09_drum
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean
-%
-% Example: 
+%    res - true/false
 % 
 % References:
 %   [1] El-Guindy, Ahmed, Dongkun Han, and Matthias Althoff.

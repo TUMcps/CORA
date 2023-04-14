@@ -12,10 +12,7 @@ function res = testLongDuration_nonlinearSys_evalNthTensor
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example:
-%    -
+%    res - true/false
 
 % Author:       Niklas Kochdumper
 % Written:      08-February-2018

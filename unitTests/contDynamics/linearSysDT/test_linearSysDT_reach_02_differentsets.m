@@ -9,9 +9,7 @@ function res = test_linearSysDT_reach_02_differentsets
 %    -
 %
 % Outputs:
-%    res - boolean
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

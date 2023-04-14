@@ -20,12 +20,10 @@ function pZ = mtimes(factor1,factor2)
 %    pZres = matrix*pZ;
 %    pZresInt = intMatrix*pZ;
 %   
-%    figure
-%    plot(pZ,[1,2],'FaceColor','r');
-%    figure
-%    plot(pZres,[1,2],'FaceColor','b');
-%    figure
-%    plot(pZresInt,[1,2],'FaceColor','g');
+%    figure; hold on;
+%    plot(pZ,[1,2],'r');
+%    plot(pZres,[1,2],'b');
+%    plot(pZresInt,[1,2],'g');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -126,7 +124,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(Z)
+    if isempty(pZ)
         return
     end
 

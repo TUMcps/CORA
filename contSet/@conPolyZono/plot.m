@@ -32,7 +32,7 @@ function han = plot(cPZ,varargin)
 %    plot(cPZ,[1,2],'b','Splits',8);
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'r','Splits',15);
+%    plot(cPZ,[1,2],'r','Splits',12);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -43,6 +43,7 @@ function han = plot(cPZ,varargin)
 % Author:       Niklas Kochdumper
 % Written:      19-January-2020
 % Last update:  25-May-2022 (TL: 1D Plotting)
+%               05-April-2023 (TL: clean up using plotPolygon)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -65,21 +66,18 @@ function han = plot(cPZ,varargin)
     cPZ = project(cPZ,dims);
 
     if length(dims) == 1
-        % add zeros to 2nd dimension
-        cPZ = cartProd_(cPZ,0,'exact');
-        dims = [1;2];
-    end
-
-    if length(dims) == 2
-
+        % compute enclosing interval
+        plot(interval(cPZ),1,NVpairs{:})
+    
+    elseif length(dims) == 2
         % compute enclosing polygon
         pgon = polygon(cPZ,splits);
 
         % plot the polygon
         han = plot(pgon,[1,2],NVpairs{:});
+        updateColorIndex();
 
-    else
-
+    else % 3d
         % transform to equivalent higher-dimensional polynomial zonotope
         c = [cPZ.c; -cPZ.b];
         G = blkdiag(cPZ.G,cPZ.A);
@@ -112,13 +110,25 @@ function han = plot(cPZ,varargin)
         
         % loop over all parallel sets
         hold on;
+        ax = gca();
+        oldColorIndex = ax.ColorOrderIndex;
+        
         for i = 1:length(pZsplit)
             
             zono = zonotope(project(pZsplit{i},[1,2,3]));
             zono = zonotope([zono.Z,cPZ.Grest]);
             
-            han = plot(zono,[1,2,3],NVpairs{:});  
+            han_i = plot(zono,[1,2,3],NVpairs{:}); 
+
+            if i == 1
+                han = han_i;
+                % don't display subsequent plots in legend
+                NVpairs = [NVpairs, {'HandleVisibility','off'}]; 
+            end
         end
+
+        % correct color index
+        updateColorIndex(oldColorIndex);
     end
     
     if nargout == 0

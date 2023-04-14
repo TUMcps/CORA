@@ -32,9 +32,17 @@ function varargout = size(matP,varargin)
 if nargin > 2
     throw(CORAerror('CORA:tooManyInputArgs',2));
 elseif nargin > 1
-    [varargout{1:nargout}] = size(matP.vertex{1},varargin{1});
+    if isempty(matP)
+        [varargout{1:nargout}] = 0;
+    else
+        [varargout{1:nargout}] = size(matP.vertex{1},varargin{1});
+    end
 else
-    [varargout{1:nargout}] = size(matP.vertex{1});
+    if isempty(matP)
+        [varargout{1:nargout}] = [0,0];
+    else
+        [varargout{1:nargout}] = size(matP.vertex{1});
+    end
 end
 
 %------------- END OF CODE --------------

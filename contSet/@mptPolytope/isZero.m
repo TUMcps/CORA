@@ -1,6 +1,6 @@
 function res = isZero(P,varargin)
 % isZero - Checks if an polytope only represents the origin; if a tolerance
-%    is given, it is checked whether the capsule is contained in the ball
+%    is given, it is checked whether the polytope is contained in the ball
 %    centered at the origin with radius tolerance
 %
 % Syntax:  
@@ -15,8 +15,9 @@ function res = isZero(P,varargin)
 %    res - true/false
 %
 % Example: 
-%    P1 = interval(0,0);
-%    res = isZero(P);
+%    P = mptPolytope([1 1; -2 1; 0 -1],[0.01;0.01;0.01]);
+%    isZero(P)
+%    isZero(P,0.05)
 %
 % Other m-files required: none
 % Subfunctions: none

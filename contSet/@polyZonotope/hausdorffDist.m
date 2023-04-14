@@ -18,12 +18,11 @@ function val = hausdorffDist(pZ,points,varargin)
 % Examples:
 %    pZ = polyZonotope([0;0],[2 0 2;0 2 2],[0;0],[1 0 3;0 1 1]);
 %    points = randPoint(pZ,10000);
-%
 %    dist = hausdorffDist(pZ,points,8)
-%
+% 
 %    figure; hold on;
-%    plot(pZ,[1,2],'FaceColor','r');
 %    plot(points(1,:),points(2,:),'.k');
+%    plot(pZ);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -43,7 +42,7 @@ function val = hausdorffDist(pZ,points,varargin)
 
     % check input arguments
     inputArgsCheck({{pZ,'att','polyZonotope'};
-                    {points,'att','numeric','vector'};
+                    {points,'att','numeric','matrix'};
                     {splits,'att','numeric','nonempty'}});
     
     % split the polynomial zonotope multiple times to obtain a better 

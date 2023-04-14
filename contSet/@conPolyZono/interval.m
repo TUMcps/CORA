@@ -28,7 +28,7 @@ function I = interval(cPZ,varargin)
 %    int = interval(cPZ);
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'r','Splits',20);
+%    plot(cPZ,[1,2],'r','Splits',12);
 %    plot(int,[1,2],'b');
 %
 % Other m-files required: reduce

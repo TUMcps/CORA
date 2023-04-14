@@ -16,9 +16,8 @@ function equalDimCheck(S1,S2)
 %    M = [2 3; -1 -2];
 %    C = capsule([1;1],[1;-1],0.5);
 %    Z = zonotope([0;0;1],[1 -0.5 0; 0.4 0.6 1; 0 0.5 -1]);
-%
+% 
 %    equalDimCheck(M,C);
-%    equalDimCheck(C,Z);
 %
 % Other m-files required: none
 % Subfunctions: none

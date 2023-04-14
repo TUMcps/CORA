@@ -11,9 +11,6 @@ function vol = modVolume(P)
 % Outputs:
 %    vol - exact or overapproximated volume of a polytope
 %
-% Example: 
-%    Text for example...
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

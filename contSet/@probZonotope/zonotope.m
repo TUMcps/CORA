@@ -17,9 +17,9 @@ function Z = zonotope(probZ,m)
 %    Z2 = [0.6 1.2; 0.6 -1.2];
 %    probZ = probZonotope(Z1,Z2);
 %    Z = zonotope(probZ);
-%
-%    plot(probZ,'mesh'); hold on;
-%    plot(Z,[1,2],'r','Filled',true);
+% 
+%    figure; hold on;
+%    plot(probZ); plot(Z,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none

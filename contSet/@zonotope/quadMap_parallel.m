@@ -12,7 +12,17 @@ function Z = quadMap_parallel(Z,Q)
 %    Z - zonotope object
 %
 % Example: 
-%    ---
+%    Z = zonotope([0 1 1;0 1 0]);
+%    Q{1} = [0.5 0.5; 0 -0.5];
+%    Q{2} = [-1 0; 1 1];
+% 
+%    res = quadMap_parallel(Z,Q);
+% 
+%    figure; hold on;
+%    plot(Z,[1,2],'r');
+% 
+%    figure; hold on;
+%    plot(res,[1,2],'b');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,16 +37,13 @@ function Z = quadMap_parallel(Z,Q)
 
 %------------- BEGIN CODE --------------
 
-
-%get matrix of zonotope
+% get center and generator matrix of zonotope
 Zmat = Z.Z;
 dimQ = length(Q);
 gens = length(Zmat(1,:)) - 1;
 
-
 %for each dimension, compute generator elements
 parfor i = 1:dimQ
-    
     
     %pure quadratic evaluation
     quadMat = Zmat'*Q{i}*Zmat;
@@ -65,8 +72,7 @@ for i = 1:dimQ
     Gmat(i,:) = G{i}; 
 end
 
-%generate new zonotope
-Z = zonotope([c, Gmat]);
-
+% generate new zonotope
+Z = zonotope(c, Gmat);
 
 %------------- END OF CODE --------------

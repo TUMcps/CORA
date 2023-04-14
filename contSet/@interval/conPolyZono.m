@@ -11,7 +11,7 @@ function cPZ = conPolyZono(I)
 %    cPZ - conPolyZono object
 %
 % Example: 
-%    I = interval.generateRandom('Dimension',2);
+%    I = interval([-2;1],[2;4]);
 %    cPZ = conPolyZono(I)
 %
 % Other m-files required: none

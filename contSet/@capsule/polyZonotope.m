@@ -16,7 +16,7 @@ function pZ = polyZonotope(C)
 % 
 %    figure; hold on; box on;
 %    plot(C,[1,2],'FaceColor','r');
-%    plot(pZ,[1,2],'b','Splits',20);
+%    plot(pZ,[1,2],'b','Splits',10);
 %
 % Other m-files required: none
 % Subfunctions: none

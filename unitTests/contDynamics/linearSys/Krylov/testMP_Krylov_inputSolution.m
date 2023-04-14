@@ -10,10 +10,7 @@ function res = testMP_Krylov_inputSolution(~)
 %    no
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      24-August-2017

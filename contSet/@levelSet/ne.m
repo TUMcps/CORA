@@ -16,7 +16,19 @@ function res = ne(ls1,ls2,varargin)
 %    res - true/false
 %
 % Example: 
-%    ---
+%    % init symbolic variables
+%    syms a b c x y z
+% 
+%    % init level set
+%    eq = -x^2 - y^2 + 5;
+%    ls1 = levelSet(eq,[x;y],'<=');
+% 
+%    % different variable names
+%    eq = -a^2 - b^2 + 5;
+%    ls1_ = levelSet(eq,[a;b],'<=');
+% 
+%    % compare equal sets
+%    ls1 ~= ls1_
 %
 % Other m-files required: none
 % Subfunctions: none

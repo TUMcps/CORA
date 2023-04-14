@@ -10,10 +10,7 @@ function res = testLongDuration_linearSys_reach_04_inputTrajectory()
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      27-July-2018

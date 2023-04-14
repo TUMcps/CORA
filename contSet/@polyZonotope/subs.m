@@ -13,11 +13,10 @@ function pZ = subs(pZ,pZin,varargin)
 %    pZ - polyZonotope object
 %
 % Example: 
-%    % substitution
 %    pZ = polyZonotope([0;1],eye(2),zeros(2,0),[2,0;0,1;1,0],[1;2;3]);
 %    pZin = polyZonotope([0;0],[1,1,0;0,0,1],zeros(2,0),[1,0,0;1,0,2;0,1,0],[-1;1;2]);
 %    res = subs(pZ,pZin,[1;2]);
-%    print(res,{-1,[1;2],3},{'a','b','c'});
+%    print(res,'Ids',{-1,[1;2],3},'Vars',{'a','b','c'});
 %
 % Other m-files required: none
 % Subfunctions: none

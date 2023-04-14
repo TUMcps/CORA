@@ -9,7 +9,7 @@ function res = example_linear_reach_04_adaptive
 %    -
 %
 % Outputs:
-%    res - boolean
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

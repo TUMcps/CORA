@@ -13,10 +13,12 @@ function Z = minus(Z,varargin)
 %    Z - zonotope object
 %
 % Example: 
-%    ---
-%
-% References:
-%    ---
+%    Z = zonotope([1;0],[1 3 -2; -1 0 1]);
+%    p = [-1;-2];
+%    Z_ = Z - p;
+% 
+%    figure; hold on;
+%    plot(Z); plot(Z_);
 %
 % Other m-files required: none
 % Subfunctions: none

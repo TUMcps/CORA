@@ -42,6 +42,7 @@ function han = plot(cZ,varargin)
 % Last update:  15-July-2020 (MW, merge with plotFilled|Template|Split)
 %               25-May-2022 (TL: 1D Plotting)
 %               16-December-2022 (MW, add iterative method for 2D plots)
+%               05-April-2023 (TL: clean up using plotPolygon)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -74,12 +75,7 @@ end
 
 % project the object to the 2D-subspace
 cZ = project(cZ,dims);
-
-if length(dims) == 1
-    % add zeros to 2nd dimension
-    cZ = cartProd_(cZ,0,'exact');
-    dims = [1;2];
-end
+dims = 1:length(dims);
 
 % plot modes: standard (1), template (2), splits (3)
 if mode == 1
@@ -101,9 +97,6 @@ end
 
 function han = plotStandard(cZ,dims,plotOptions)
 
-    % get dimensions after projection
-    dims = 1:length(dims);
-
     if isempty(cZ.A) || ( ~any(any(cZ.A)) && ~any(cZ.b) )
         han = plot(zonotope(cZ.Z),dims,plotOptions{:});
     elseif length(dims) == 2
@@ -115,15 +108,13 @@ function han = plotStandard(cZ,dims,plotOptions)
         if size(V,2) == 2
             % just a line... (does not work well with polygon/polyshape
             % class) -> instantiate zonotope and plot it
-            c = 0.5*(V(:,1) + V(:,2)); G = 0.5*(V(:,2) - V(:,1));
+            c = 0.5*(V(:,1) + V(:,2)); 
+            G = 0.5*(V(:,2) - V(:,1));
             han = plot(zonotope(c,G),dims,plotOptions{:});
         else
             % init polygon for plotting (vertices are already ordered
             % correctly)
-            poly = polygon(V(1,:),V(2,:));
-            
-            % plot the template polygon
-            han = plot(poly,dims,plotOptions{:});
+            han = plotPolygon(V, plotOptions{:});
         end
 
     else
@@ -242,14 +233,10 @@ function han = plotTemplate(cZ,numDir,dims,plotOptions)
         [V,IA] = uniquetol(V',1e-3,'ByRows',true);
         % re-order
         [~,order] = mink(IA,length(IA));
-        V = V(order,:);
+        V = V(order,:)';
 
         % init polygon for plotting
-        poly = polygon(V(:,1),V(:,2));
-
-        % plot the template polygon
-        han = plot(poly,dims_,plotOptions{:});
-
+        han = plotPolygon(V, plotOptions{:});
     else
 
         % construct template polyhedron

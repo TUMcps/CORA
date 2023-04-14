@@ -41,10 +41,7 @@ inputArgsCheck({{simRes,'att',{'simResult'},{''}};
 
 % parse plotting options
 NVpairs = readPlotOptions(varargin(2:end),'simResult');
-[NVpairs,height] = readNameValuePair(NVpairs,'Height','isscalar');
 [NVpairs,whichtraj] = readNameValuePair(NVpairs,'Traj','ischar','x');
-
-% check redundancy
 
 % check dimension
 if length(dims) < 2
@@ -63,21 +60,9 @@ oldColorIndex = ax.ColorOrderIndex;
 % loop over all simulated trajectories
 hold on
 for i = 1:length(simRes.(whichtraj))
-    if isempty(height) % no 3D plot
-        if length(dims) == 2
-            han_i = plot(simRes.(whichtraj){i}(:,dims(1)),...
-                simRes.(whichtraj){i}(:,dims(2)),NVpairs{:});
-        else
-            han_i = plot3(simRes.(whichtraj){i}(:,dims(1)),...
-                simRes.(whichtraj){i}(:,dims(2)),...
-                simRes.(whichtraj){i}(:,dims(3)),NVpairs{:});
-        end
-    else
-        % z values normalized to [0,1] in other plots
-        zCoordinates = height*ones(length(simRes.(whichtraj){i}(:,dims(1))),1);
-        han_i = plot3(simRes.(whichtraj){i}(:,dims(1)),...
-            simRes.(whichtraj){i}(:,dims(2)), zCoordinates,NVpairs{:}); 
-    end
+    han_i = plotPolygon( ... % extend by nan to avoid closing line
+        [simRes.(whichtraj){i}(:,dims)',nan(length(dims),1)], ...
+        NVpairs{:});
 
     if i == 1
         han = han_i;

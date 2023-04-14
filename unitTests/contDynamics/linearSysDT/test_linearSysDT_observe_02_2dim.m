@@ -14,13 +14,11 @@ function res = test_linearSysDT_observe_02_2dim
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false
 %
 % Reference:
 %    [1] T. Alamo, J. M. Bravo, and E. F. Camacho. Guaranteed
 %        state estimation by zonotopes. Automatica, 41(6):1035–1043, 2005.
-%
-% Example: 
 
 % Author:       Matthias Althoff
 % Written:      19-November-2020

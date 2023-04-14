@@ -8,9 +8,7 @@ function res = test_taylm_cos
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: taylm, interval
 % Subfunctions: none

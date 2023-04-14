@@ -15,7 +15,13 @@ function res = isZero(zB,varargin)
 %    res - true/false
 %
 % Example: 
-%    zB
+%    Z1 = zonotope([2;0],[-1 1; 1 1]);
+%    Z2 = Z1 - [4;0];
+%    zB = zonoBundle({Z1,Z2});
+%    isZero(zB)
+%   
+%    figure; hold on;
+%    plot(Z1); plot(Z2); plot(zB);
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -12,9 +12,6 @@ function res = plus(factor1, factor2)
 % Outputs:
 %    res - a zoo object
 %
-% Example:
-%    -
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

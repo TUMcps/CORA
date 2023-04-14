@@ -1,26 +1,28 @@
-function [E] = insc_ellipsoid(Z,comptype)
+function E = insc_ellipsoid(Z,comptype)
 % insc_ellipsoid - Underapproximates a zonotope by an ellipsoid
 %
 % Syntax:  
 %    E = insc_ellipsoid(Z)
+%    E = insc_ellipsoid(Z,comptype)
 %
 % Inputs:
-%    Z                  - zonotope object
-%    (optional) comptype- specifies whether norm is computed exactly or not
+%    Z - zonotope object
+%    comptype - (optional) specifies whether norm is computed exactly or not
 %
 % Outputs:
 %    E - ellipsoid object
 %
 % Example: 
-%    Z = zonotope(rand(2,5));
-%    E = insc_ellipsoid(Z);
+%    Z = zonotope([1;0],[2 -1 3; 0 1 2]);
+%    E = ellipsoid(Z,'inner:norm');
+%    
+%    figure; hold on;
 %    plot(Z);
-%    hold on
 %    plot(E);
 %
 % References:
-%    [1] : M. Cerny, "Goffin抯 algorithm for zonotopes" Kybernetika, 
-%          vol. 48, no. 5, pp. 890�906, 2012
+%    [1] M. Cerny, "Goffin抯 algorithm for zonotopes" Kybernetika, 
+%        vol. 48, no. 5, pp. 890-906, 2012
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -34,6 +36,7 @@ function [E] = insc_ellipsoid(Z,comptype)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 rankG = rank(generators(Z));
 dimG = dim(Z);
 assert(rankG==dimG,'Degeneracy should be handled in main file!');
@@ -71,4 +74,5 @@ if n<m
 else
     E = ellipsoid(E0,c);
 end
+
 %------------- END OF CODE --------------

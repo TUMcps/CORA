@@ -13,9 +13,13 @@ function hs = mtimes(M,hs)
 %    hs - halfspace object
 %
 % Example: 
-%    M = [0.6980 0.7161; -0.7161 0.6980];
-%    hs = halfspace([1 1],2);
-%    M * hs;
+%    M = [0.9 0.2; -0.2 0.9];
+%    hs = halfspace([2 1],1);
+%    Mhs = M * hs;
+% 
+%    figure; hold on;
+%    plot(hs,[1,2],'b')
+%    plot(Mhs,[1,2],'r','FaceAlpha',0.5)
 %
 % Other m-files required: none
 % Subfunctions: none

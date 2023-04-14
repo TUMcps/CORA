@@ -22,7 +22,7 @@ function cPZ = minkDiff(cPZ1,cPZ2,varargin)
 %
 %   figure; hold on;
 %   plot(cPZ,[1,2],'b');
-%   plot(res,[1,2],'r','Splits',25);
+%   plot(res,[1,2],'r','Splits',12);
 %
 % References:
 %    [1] M. Althoff, "On Computing the Minkowski Difference of Zonotopes"

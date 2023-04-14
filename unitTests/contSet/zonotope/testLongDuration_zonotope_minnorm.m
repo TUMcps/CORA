@@ -8,9 +8,7 @@ function res = testLongDuration_zonotope_minnorm
 %    -
 %
 % Outputs:
-%    res - true/false 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

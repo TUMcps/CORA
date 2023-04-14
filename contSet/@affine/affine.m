@@ -25,7 +25,7 @@ classdef (InferiorClasses = {?interval}) affine < taylm
 % Outputs:
 %    obj - Generated Object
 %
-% Examples: 
+% Examples:
 %    % create affine object and taylor model object
 %    a = affine(interval(0,pi/2),'a','int',[],1e-8);
 %    t = taylm(interval(0,pi/2),6,'a','int',[],1e-8);
@@ -33,7 +33,6 @@ classdef (InferiorClasses = {?interval}) affine < taylm
 %    % compare the results
 %    int_a = interval(sin(a))
 %    int_t = interval(sin(t))
-%
 %
 % Other m-files required: none
 % Subfunctions: none

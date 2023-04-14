@@ -9,12 +9,8 @@ function removedInd = removedHalfspaces(obj,Horig)
 %    obj - mptPolytope object
 %    Horig - original halfspaces
 %    
-%
 % Outputs:
 %    removedInd - vector of constraints that have been removed
-%
-% Example: 
-%    ---
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -9,10 +9,7 @@ function res = test_Krylov_intervalHomogeneousSolution(~)
 %    no
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      23-August-2017

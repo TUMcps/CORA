@@ -20,7 +20,8 @@ function [vars,vars_der] = symVariables(varargin)
 %    do - symbolic output deviation form linearization point
 %
 % Example: 
-%    Text for example...
+%    sys = contDynamics('test',3,1,2);
+%    [vars,vars_der] = symVariables(sys);
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -1,7 +1,7 @@
 function eP = expm(matP,varargin)
 % expm - operator for the exponential matrix of a matrix polytope
 %
-% Syntax:  
+% Syntax:
 %    eP = expm(matP)
 %    eP = expm(matP,maxOrder)
 %
@@ -17,7 +17,6 @@ function eP = expm(matP,varargin)
 %    D = [0 0;0 0.5];
 %    intMat = intervalMatrix(C,D);
 %    matP = matPolytope(intMat);
-%
 %    eP = expm(matP,3)
 %
 % Other m-files required: none
@@ -34,11 +33,7 @@ function eP = expm(matP,varargin)
 %------------- BEGIN CODE --------------
 
 % parse input arguments
-maxOrder = 10;
-
-if nargin > 1
-    maxOrder = varargin{1}; 
-end
+maxOrder = setDefaultValues({10},varargin);
 
 % compute matrix exponential
 eP = expmInd(matP,maxOrder);

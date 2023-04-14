@@ -10,7 +10,7 @@ function completed = example_nonlinearParam_reach_01_tank()
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    completed - true/false 
 %
 % References:
 %   [1] M. Althoff et al. "Reachability analysis of nonlinear systems with 

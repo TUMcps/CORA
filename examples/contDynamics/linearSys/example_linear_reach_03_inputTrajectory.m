@@ -6,13 +6,10 @@ function res = example_linear_reach_03_inputTrajectory()
 %    res = example_linear_reach_03_inputTrajectory()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Reference:
-%    -
+%    res - true/false 
 
 % Author:       Matthias Althoff
 % Written:      27-July-2018

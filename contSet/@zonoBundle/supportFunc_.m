@@ -20,14 +20,11 @@ function [val,x] = supportFunc_(zB,dir,type,varargin)
 %    Z1 = zonotope([0 1 2 0;0 1 0 2]);
 %    Z2 = zonotope([3 -0.5 3 0;-1 0.5 0 3]);
 %    zB = zonoBundle({Z1,Z2});
-%
 %    val = supportFunc(zB,[1;1]);
 %   
-%    figure; hold on
-%    plot(Z1,[1,2],'b');
-%    plot(Z2,[1,2],'b');
-%    plot(zB,[1,2],'r');
-%    plot(conHyperplane(halfspace([1;1],val),[],[]),[1,2],'g');
+%    figure; hold on;
+%    plot(Z1); plot(Z2); plot(zB);
+%    plot(conHyperplane(halfspace([1;1],val)),[1,2],'g');
 %
 % Other m-files required: none
 % Subfunctions: none

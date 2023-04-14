@@ -10,10 +10,7 @@ function res = test_Krylov_Arnoldi(~)
 %    no
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      13-November-2018

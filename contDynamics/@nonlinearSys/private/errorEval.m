@@ -11,9 +11,6 @@ function [perfInd] = errorEval(IHerrorActual,IHerrorAssume)
 % Outputs:
 %    perfInd - performance index
 %
-% Example: 
-%    Text for example...
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

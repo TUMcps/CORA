@@ -14,9 +14,6 @@ function [obj,A_lin,U] = linearize(obj,R,options)
 %    A_lin - system matrix of the linearized system
 %    U - reachable set due to the inputs
 %
-% Example: 
-%    Text for example...
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

@@ -14,11 +14,8 @@ function zB = reduceCombined(zB,option,varargin)
 % Outputs:
 %    zB - reduced zonotope bundle
 %
-% Example: 
-%    ---
-%
 % Other m-files required: none
-% Subfunctions: ---
+% Subfunctions: none
 % MAT-files required: none
 %
 % See also: none

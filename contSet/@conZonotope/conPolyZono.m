@@ -12,7 +12,9 @@ function cPZ = conPolyZono(cZ)
 %    cPZ - conPolyZono object
 %
 % Example: 
-%    cZ = conZonotope.generateRandom('Dimension',2);
+%    Z = [0 3 0 1;0 0 2 1];
+%    A = [1 0 1]; b = 1;
+%    cZ = conZonotope(Z,A,b);
 %    cPZ = conPolyZono(cZ)
 %
 % Other m-files required: none

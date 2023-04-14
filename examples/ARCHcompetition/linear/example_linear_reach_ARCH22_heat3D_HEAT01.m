@@ -6,11 +6,10 @@ function example_linear_reach_ARCH22_heat3D_HEAT01()
 %    example_linear_reach_ARCH22_heat3D_HEAT01
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
+%    -
 
 % Author:       Niklas Kochdumper
 % Written:      27-May-2020

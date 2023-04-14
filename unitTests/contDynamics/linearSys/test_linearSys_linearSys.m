@@ -9,9 +9,7 @@ function res = test_linearSys_linearSys
 %    -
 %
 % Outputs:
-%    res - boolean
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -67,7 +67,8 @@ for i=1:2:length(NVpairs)-1
         % check whether name complies with check
         for j=1:length(funcs)
             if ~feval(funcs{j},value)
-                throw(CORAerror('CORA:specialError','Invalid assignment.'))
+                throw(CORAerror('CORA:specialError', ...
+                    sprintf("Invalid assignment for name-value pair '%s': Must pass '%s'.", name, funcs{j})))
             end
         end
 

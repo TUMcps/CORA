@@ -16,9 +16,6 @@ function completed = example_linearSysDT_observe_02_2dim
 % Reference:
 %    [1] T. Alamo, J. M. Bravo, and E. F. Camacho. Guaranteed
 %        state estimation by zonotopes. Automatica, 41(6):1035–1043, 2005.
-%
-% Example:
-%     -
 
 % Author:       Matthias Althoff
 % Written:      30-Apr-2021

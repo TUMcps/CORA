@@ -21,6 +21,15 @@ classdef conHyperplane < contSet
 % Outputs:
 %    obj - conHyperplane object
 %
+% Example:
+%    a = [-0.5; -1; 0.1];
+%    b = -1;
+%    hs = halfspace(a,b);
+%    C = [-0.6 0.8 -1.7;...
+%          0.6 0.5 -0.8];
+%    d = [1; 0.5];
+%    hyp = conHyperplane(hs,C,d);
+%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

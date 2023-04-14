@@ -13,8 +13,11 @@ function res = isequal(zB1,zB2,varargin)
 % Outputs:
 %    res - true/false
 %
-% Example: 
-%    ---
+% Example:
+%    Z1 = zonotope([1;1], [1 1; -1 1]);
+%    Z2 = zonotope([-1;1], [1 0; 0 1]);
+%    zB = zonoBundle({Z1,Z2});
+%    isequal(zB,zB)
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -12,9 +12,6 @@ function obj = mldivide(obj,P)
 % Outputs:
 %    obj - mptPolytope object
 %
-% Example: 
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

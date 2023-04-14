@@ -9,13 +9,10 @@ function res = testSpecial_carReach
 %    res = testSpecial_carReach
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      31-July-2016

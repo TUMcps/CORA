@@ -14,9 +14,6 @@ function E = ellipsoid(obj,varargin)
 % Outputs:
 %    E - ellipsoid object
 %
-% Example: 
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

@@ -9,9 +9,7 @@ function res = test_taylm_plus_minus_times
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: taylm, interval
 % Subfunctions: none

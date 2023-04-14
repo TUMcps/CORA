@@ -21,7 +21,7 @@ function print(pZ,varargin)
 %
 % Example: 
 %    pZ = polyZonotope([pi;-1],[2,0;1,1],zeros(2,0),[1,2;2,3;0,1],[1;2;3]);
-%    print(pZ,{[1;3],2},{'x','y'},3);
+%    print(pZ,'Ids',{[1;3],2},'Vars',{'x','y'},'Digits',3);
 %
 % Other m-files required: none
 % Subfunctions: none

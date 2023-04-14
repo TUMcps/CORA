@@ -8,7 +8,7 @@ function res = test_docstring()
 %    -
 %
 % Outputs:
-%    r - whether all files are valid
+%    res - whether all files are valid
 %
 % Other m-files required: none
 % Subfunctions: none

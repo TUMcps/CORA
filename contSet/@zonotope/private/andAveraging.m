@@ -1,6 +1,6 @@
-function [Z] = andAveraging(zonolist,varargin)
+function Z = andAveraging(zonolist,varargin)
 % andAveraging - computes the intersection between list of zonotopes
-% according to [1]
+%    according to [1]
 %
 % Syntax:
 %    Z = and(zonolist,options)
@@ -17,26 +17,22 @@ function [Z] = andAveraging(zonolist,varargin)
 %    Z - zonotope object enclosing the intersection
 %
 % Example:
-%    zonol{1} = zonotope([2 2 2;1 2 0]);
-%    zonol{2} = zonotope([3 1 -1 1;3 1 2 0]);
-%    zonol{3} = zonotope([1 3 -1 1;2 3 -2 0]);
-%
-%    res = andAveraging(zonol);
+%    Z1 = zonotope([2 2 2;1 2 0]);
+%    Z2 = zonotope([3 1 -1 1;3 1 2 0]);
+%    Z = and(Z1,Z2,'averaging');
 %
 %    figure; hold on;
-%    plot(zonol{1},[1,2],'r');
-%    plot(zonol{2},[1,2],'r-+');
-%    plot(zonol{3},[1,2],'r-*');
-%    plot(res,[1,2],'k');
-%    % other supported options for normGen:
-%    % find the best sum of w's
-%    res = andAveraging(zonol,'normGen',false);
-%    % sum of w's =0.9 for the closed form
-%    res = andAveraging(zonol,'normGen',true,0.9);
+%    plot(Z1); plot(Z2);
+%    plot(Z,[1,2],'k');
+%    % % other supported options for normGen:
+%    % % find the best sum of w's
+%    % res = andAveraging(zonol,'normGen',false);
+%    % % sum of w's =0.9 for the closed form
+%    % res = andAveraging(zonol,'normGen',true,0.9);
 %
 % References:
-%    [1] Amr Alanwar, Jagat Jyoti Rath, Hazem Said, Matthias Althoff
-%       Distributed Set-Based Observers Using Diffusion Strategy
+%    [1] Amr Alanwar, Jagat Jyoti Rath, Hazem Said, Matthias Althoff.
+%        Distributed Set-Based Observers Using Diffusion Strategy
 %
 % Other m-files required: none
 % Subfunctions: none

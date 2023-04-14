@@ -20,9 +20,9 @@ function zB = or(zB1, varargin)
 %    Z2 = zonotope([3 -0.5 3 0;-1 0.5 0 3]);
 %    zB = zonoBundle({Z1,Z2});
 %    I = interval([4;4],[5;6]);
-%
+% 
 %    res = zB | I;
-%
+% 
 %    figure; hold on;
 %    plot(zB,[1,2],'FaceColor','r');
 %    plot(I,[1,2],'FaceColor','b');

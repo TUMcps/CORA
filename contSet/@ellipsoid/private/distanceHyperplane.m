@@ -12,14 +12,11 @@ function val = distanceHyperplane(E,H)
 % Outputs:
 %    val - distance between ellipsoid and constrained hyperplane
 %
-% Example: 
-%    ---
-%
 % References:
 %   [1] Kurzhanskiy, A.A. and Varaiya, P., 2006, December. Ellipsoidal toolbox (ET).
-% In Proceedings of the 45th IEEE Conference on Decision and Control (pp. 1498-1503). IEEE.
+%       In Proceedings of the 45th IEEE Conference on Decision and Control (pp. 1498-1503). IEEE.
 %   [2] https://www2.eecs.berkeley.edu/Pubs/TechRpts/2006/EECS-2006-46.pdf
-%   (for details)
+%       (for details)
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -12,10 +12,8 @@ function res = test_nonlinearSys_reach_01_tank
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false
 %
-% Example: 
-%    -
 % Reference:
 %    [1] M. Althoff, O. Stursberg, and M. Buss: Reachability Analysis of 
 %        Nonlinear Systems with Uncertain Parameters using Conservative 

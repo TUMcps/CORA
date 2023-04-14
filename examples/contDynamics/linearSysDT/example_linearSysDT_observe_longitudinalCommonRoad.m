@@ -12,9 +12,6 @@ function completed = example_linearSysDT_observe_longitudinalCommonRoad
 %
 % Outputs:
 %    completed - true/false 
-%
-% Example: 
-%    -
 
 % Author:       Matthias Althoff, Niklas Kochdumper, Carlos Valero
 % Written:      15-July-2021

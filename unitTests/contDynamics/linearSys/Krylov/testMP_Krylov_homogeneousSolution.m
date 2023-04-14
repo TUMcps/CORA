@@ -10,9 +10,7 @@ function res = testMP_Krylov_homogeneousSolution(~)
 %    no
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      23-August-2017

@@ -12,9 +12,6 @@ function zB = replace(zB,index,Z)
 % Outputs:
 %    zB - zonoBundle object
 %
-% Example: 
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

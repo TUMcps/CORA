@@ -8,9 +8,7 @@ function res = test_conHyperplane_isempty
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

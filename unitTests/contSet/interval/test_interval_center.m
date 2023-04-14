@@ -5,12 +5,10 @@ function res = test_interval_center
 %    res = test_interval_center
 %
 % Inputs:
-%    .
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

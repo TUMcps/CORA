@@ -16,7 +16,7 @@ function [B,expMat] = poly2bernstein(G,expMat,dom)
 % Example: 
 %   expMat = [1 0 2;0 1 1];
 %   G = [1 2 3];
-%   dom = interval([-1;-1],[1,1]);
+%   dom = interval([-1;-1],[1;1]);
 %    
 %   [B,expMat_] = poly2bernstein(G,expMat,dom);
 %

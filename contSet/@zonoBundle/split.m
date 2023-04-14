@@ -14,7 +14,15 @@ function Zsplit = split(zB,varargin)
 %    Zsplit - one or many zonotope bundle pairs
 %
 % Example: 
-%    ---
+%    Z1 = zonotope([1;1;-1], [1 1 -1; -1 1 0; -2 0 1]);
+%    Z2 = Z1 + [2;1;-1];
+%    zB = zonoBundle({Z1,Z2}); 
+%    Zsplit = split(zB,2);
+%
+%    figure; hold on;
+%    plot(zB);
+%    plot(Zsplit{1},[1,2],'LineStyle','--');
+%    plot(Zsplit{2},[1,2],'LineStyle','--');
 %
 % Other m-files required: reduce
 % Subfunctions: none

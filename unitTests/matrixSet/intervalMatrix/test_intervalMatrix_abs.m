@@ -10,9 +10,7 @@ function res = test_intervalMatrix_abs
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % References:
 %    [1] Althoff, M.; Grebenyuk, D.: Implementation of Interval Arithmetic 

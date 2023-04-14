@@ -4,13 +4,13 @@ function res = example_hybrid_reach_01_bouncingBall
 %    bouncing ball example.
 %
 % Syntax:  
-%    example_hybrid_reach_01_bouncingBall
+%    res = example_hybrid_reach_01_bouncingBall
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean  
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      27-July-2016

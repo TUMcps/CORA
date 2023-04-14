@@ -17,9 +17,8 @@ function [Z,dHerror,gredIdx] = reduceAdaptive(Z,diagpercent,varargin)
 %    gredIdx - index of reduced generators
 %
 % Example: 
-%    Z = zonotope.generateRandom(2);
-%    Z = reduce(Z,'adaptive',0.5);
-%    
+%    Z = zonotope([1;0],[1 3 2 -1 0.03 0.02 -0.1; 2 0 -1 1 0.02 -0.01 0.2]);
+%    Z = reduce(Z,'adaptive',10);
 %
 % References:
 %    [1] Wetzlinger et al. "Adaptive Parameter Tuning for Reachability 

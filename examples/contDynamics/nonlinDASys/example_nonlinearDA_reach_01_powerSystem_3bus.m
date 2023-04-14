@@ -3,18 +3,13 @@ function completed = example_nonlinearDA_reach_01_powerSystem_3bus()
 %    nonlinear-differential-algebraic reachability analysis, 3-bus power system
 %
 % Syntax:  
-%    example_nonlinearDA_reach_01_powerSystem_3bus()
+%    completed = example_nonlinearDA_reach_01_powerSystem_3bus()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%
-% References:
-%    -
+%    completed - true/false
 
 % Author:       Matthias Althoff
 % Written:      18-August-2016

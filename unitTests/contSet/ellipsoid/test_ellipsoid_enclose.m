@@ -8,9 +8,7 @@ function res = test_ellipsoid_enclose
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -16,7 +16,7 @@ function [Gred]=generatorVolumeFilter(G,rem)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: none
 
 % Author:       Matthias Althoff
 % Written:      12-September-2008

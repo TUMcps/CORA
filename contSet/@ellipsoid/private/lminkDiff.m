@@ -15,9 +15,6 @@ function E_cell = lminkDiff(E1,E2,L,mode)
 %    E_cell - cell array of ellipsoid after Minkowski difference (length ==
 %               size(L,2))
 %
-% Example: 
-%    ---
-%
 % References:
 %   [1] Kurzhanskiy, A.A. and Varaiya, P., 2006, December. Ellipsoidal
 %       toolbox (ET). In Proceedings of the 45th IEEE Conference on

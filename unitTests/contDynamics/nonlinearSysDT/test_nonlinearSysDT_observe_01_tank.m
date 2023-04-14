@@ -18,9 +18,6 @@ function res = test_nonlinearSysDT_observe_01_tank()
 %
 % Reference:
 %    [1] M. Althoff "Guaranteed State Estimation in CORA 2021", ARCH 2021
-%
-% Example: 
-%    -
 
 % Author:       Matthias Althoff
 % Written:      25-March-2021

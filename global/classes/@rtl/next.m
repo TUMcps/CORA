@@ -13,7 +13,7 @@ function res = next(obj,time)
 %
 % Example: 
 %    x = stl('x',2)
-%    eq = next(rtl(x(1) < 5),1.2)
+%    eq = next(rtl(x(1) < 5),1.0)
 %
 % Other m-files required: none
 % Subfunctions: none

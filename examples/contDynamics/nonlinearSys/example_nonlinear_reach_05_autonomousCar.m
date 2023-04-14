@@ -17,7 +17,7 @@ function completed = example_nonlinear_reach_05_autonomousCar()
 %    -
 %
 % Outputs:
-%    completed - boolean 
+%    completed - true/false 
 %
 % References:
 %    [1] M. Althoff and J. M. Dolan. Online verification of automated

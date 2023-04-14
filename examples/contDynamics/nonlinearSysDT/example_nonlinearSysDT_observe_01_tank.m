@@ -10,15 +10,12 @@ function completed = example_nonlinearSysDT_observe_01_tank()
 %    -
 %
 % Outputs:
-%    res - true/false 
+%    completed - true/false 
 %
 % Reference:
 %    [1] M. Althoff. Guaranteed State Estimation in CORA 2021. 
 %        Proc. of the 8th International Workshop on Applied Verification 
 %        for Continuous and Hybrid Systems, 2021.
-%
-% Example: 
-%    -
 
 % Author:       Matthias Althoff
 % Written:      14-Jun-2021

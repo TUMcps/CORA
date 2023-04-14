@@ -38,7 +38,7 @@ if isa(S,'interval')
 
     % check if result is empty
     tmp = lb - ub;
-    if all(all(tmp < eps | withinTol(tmp,eps)))
+    if all(tmp <= eps, 'all')
         res = interval(min([lb,ub],[],2),max([lb,ub],[],2));
     else
         res = [];

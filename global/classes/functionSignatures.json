@@ -23,7 +23,10 @@
         {"name":"LineStyle", "kind":"namevalue", "type":["char","choices={'-','--',':','-.'}"],"purpose":"LineStyle"},
         {"name":"Marker", "kind":"namevalue", "type":["char","choices={'o','+','*','.','x','_','|','square','diamond','^','v','>','<','pentagram','hexagram'}"],"purpose":"Marker"},
         {"name":"MarkerSize", "kind":"namevalue", "type":["numeric"],"purpose":"MarkerSize"},
-        {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric"],"purpose":"FaceAlpha"}
+        {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric"],"purpose":"FaceAlpha"},
+        {"name":"XPos", "kind":"namevalue", "type":["numeric"],"purpose":"position on x-axis"},
+        {"name":"YPos", "kind":"namevalue", "type":["numeric"],"purpose":"position on y-axis"},
+        {"name":"ZPos", "kind":"namevalue", "type":["numeric"],"purpose":"position on z-axis"}
      ]
   },
 

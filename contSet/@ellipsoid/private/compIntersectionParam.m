@@ -12,9 +12,6 @@ function val = compIntersectionParam(W1,q1,W2,q2)
 %    val - solution minimizing the volume of the parametrization in 'and'
 %          (for details, see [1],[2])
 %
-% Example: 
-%    -
-%
 % References:
 %   [1] Largely based on the Ellipsoidal Toolbox, see:
 %       https://de.mathworks.com/matlabcentral/fileexchange/21936-ellipsoidal-toolbox-et

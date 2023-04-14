@@ -12,7 +12,7 @@ function P = project(P,dims)
 %    res - (mptPolytope) projected polytope
 %
 % Example: 
-%    P = mptPolytope.generateRandom('Dimension',3);
+%    P = mptPolytope([1 0 0; 0 1 0; 0 0 1; -1 -1 -1],[1;1;1;1]);
 %    P_ = project(P,[1,2]);
 %
 %    figure; hold on; grid on;

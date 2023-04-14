@@ -10,8 +10,7 @@ function getModelFactors(p,mu_max)
 %    mu_max - maximum tire-road friction
 %
 % Outputs:
-%
-% Example: 
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -14,10 +14,7 @@ function res = testLongDuration_nonlinParamSys_reach_01_tank
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      30-June-2009

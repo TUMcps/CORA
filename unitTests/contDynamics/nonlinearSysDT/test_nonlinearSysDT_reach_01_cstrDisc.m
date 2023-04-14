@@ -9,9 +9,7 @@ function res = test_nonlinearSysDT_reach_01_cstrDisc
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Reference:
 %    [1] J.M. Bravo, Robust MPC of constrained discrete-time

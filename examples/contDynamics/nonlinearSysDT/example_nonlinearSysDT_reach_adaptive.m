@@ -3,16 +3,13 @@ function res = example_nonlinearSysDT_reach_adaptive
 %    reachability analysis to test the adaptive parameter tuning approach
 %
 % Syntax:  
-%    example_nonlinearSysDT_reach_adaptive
+%    res = example_nonlinearSysDT_reach_adaptive
 %
 % Inputs:
 %    -
 %
 % Outputs:
-%    res - boolean
-% 
-% References:
-%   ---
+%    res - true/false
 
 % Author:        Mark Wetzlinger
 % Written:       21-September-2021

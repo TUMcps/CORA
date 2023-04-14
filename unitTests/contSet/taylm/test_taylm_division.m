@@ -9,9 +9,7 @@ function res = test_taylm_division
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: taylm, interval
 % Subfunctions: none

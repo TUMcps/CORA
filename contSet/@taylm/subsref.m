@@ -1,19 +1,21 @@
-function res = subsref(obj, S)
+function res = subsref(tay,S)
 % subsref - Overloads the operator that selects elements, e.g. T(1,2),
 % where the element of the first row and second column is referred to.
 %
 % Syntax:  
-%    res = subsref(obj, S)
+%    res = subsref(tay,S)
 %
 % Inputs:
-%    obj - a taylm object 
+%    tay - a taylm object 
 %    S - contains information of the type and content of element selections  
 %
 % Outputs:
 %    res - element or elemets of the taylm matrix
 %
-% Example: 
-%    t(1,2).monomials
+% Example:
+%    tay = taylm(interval([1;3],[2;4]),4,{'x';'y'});
+%    tay(1)
+%    tay(2)
 %
 % Other m-files required: taylm
 % Subfunctions: none
@@ -28,8 +30,7 @@ function res = subsref(obj, S)
 
 %------------- BEGIN CODE --------------
 
-    % call built-in function
-    res = builtin('subsref', obj, S);
-    
-end
+% call built-in function
+res = builtin('subsref', tay, S);
+
 %------------- END OF CODE --------------

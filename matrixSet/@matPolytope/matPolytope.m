@@ -72,10 +72,10 @@ methods
     plot(matP,varargin) % plot
     matP = plus(summand1,summand2) % Minkowski addition
     matP = simplePlus(summand1,summand2) % ?
-    n = size(matP) % read out dimension of vertices
+    [r,c] = size(matP,rc) % read out dimension of vertices
     matV = vertices(matP) % read vertices of matrix polytope
     res = isempty(matP) % emptiness check
-    n = dim(matP,rc) % dimension of matrix polytope
+    [r,c] = dim(matP,rc) % dimension of matrix polytope
     
 end
 

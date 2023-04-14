@@ -11,7 +11,7 @@ function I = interval(E)
 %    I - interval object
 %
 % Example: 
-%    E = ellipsoid.generateRandom();
+%    E = ellipsoid([3 -1; -1 1],[1;0]);
 %    I = interval(E);
 %
 %    figure; hold on;

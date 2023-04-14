@@ -8,9 +8,7 @@ function res = testLongDuration_interval_randPoint
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: @interval > containsPoint.m
 % Subfunctions: none

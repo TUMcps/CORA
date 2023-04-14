@@ -11,7 +11,11 @@ function res = isempty(zB)
 %    res - true/false
 %
 % Example: 
-%    ---
+%    Z1 = zonotope([2;0],[-1 1; 1 1]);
+%    zB1 = zonoBundle({Z1,Z1-[4;0]});
+%    zB2 = zonoBundle({Z1,Z1-[5;0]});
+%    isempty(zB1)
+%    isempty(zB2)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -20,8 +24,8 @@ function res = isempty(zB)
 % See also: none
 
 % Author:       Mark Wetzlinger, Niklas Kochdumper
-% Written:      16-Sep-2019
-% Last update:  21-Nov-2019 (NK, call conZonotope function)
+% Written:      16-September-2019
+% Last update:  21-November-2019 (NK, call conZonotope function)
 % Last revision:---
 
 %------------- BEGIN CODE --------------

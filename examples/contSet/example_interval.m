@@ -31,7 +31,7 @@ I3 = I1 & I2; % computes the intersection of I1 and I2
 c = center(I3) % returns and displays the center of I3
 
 figure; hold on;
-plot(I3,[1 2],'FaceColor',colorblind('gray')); % plot I3 
+plot(I3,[1 2],'FaceColor',colorblind('b')); % plot I3 
 plot(I1); % plot I1
 plot(I2); % plot I2
 

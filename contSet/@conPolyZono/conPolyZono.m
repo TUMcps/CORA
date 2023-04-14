@@ -30,10 +30,8 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) conPolyZono < contS
 %    A = [1 -0.5 0.5];
 %    b = 0.5;
 %    expMat_ = [0 1 2; 1 0 0; 0 1 0];
-%
 %    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
-%
-%    plot(cPZ,[1,2],'FaceColor','r','Splits',20);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',8);
 %
 % Other m-files required: none
 % Subfunctions: none

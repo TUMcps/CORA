@@ -8,9 +8,7 @@ function res = testLongDuration_conZonotope_project
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

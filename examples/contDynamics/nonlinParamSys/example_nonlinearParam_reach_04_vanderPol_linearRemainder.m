@@ -6,13 +6,10 @@ function completed = example_nonlinearParam_reach_04_vanderPol_linearRemainder()
 %    completed = example_nonlinearParam_reach_04_vanderPol_linearRemainder
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%
+%    completed - true/false
 
 % Author:       Victor Gassmann
 % Written:      17-May-2019

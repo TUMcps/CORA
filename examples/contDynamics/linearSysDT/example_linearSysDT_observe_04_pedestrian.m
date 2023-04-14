@@ -10,10 +10,7 @@ function completed = example_linearSysDT_observe_04_pedestrian
 %    -
 %
 % Outputs:
-%    res - true/false 
-%
-% Example: 
-%    -
+%    completed - true/false
 
 % Author:       Matthias Althoff
 % Written:      03-Mar-2021

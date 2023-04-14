@@ -9,12 +9,7 @@ function res = example_nonlinearDA_reach_09_SMIB_adaptive()
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%
-% References:
-%    -
+%    res - true/false
 
 % Author:       Mark Wetzlinger
 % Written:      30-August-2021

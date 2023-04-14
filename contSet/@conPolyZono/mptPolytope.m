@@ -28,7 +28,7 @@ function P = mptPolytope(cPZ,varargin)
 %    P = mptPolytope(cPZ);
 %
 %    figure; hold on
-%    plot(cPZ,[1,2],'FaceColor','r','Splits',20);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',12);
 %    plot(P,[1,2],'b');
 %
 % Other m-files required: reduce

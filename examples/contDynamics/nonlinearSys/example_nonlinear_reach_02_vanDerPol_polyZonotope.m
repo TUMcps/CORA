@@ -13,7 +13,7 @@ function completed = example_nonlinear_reach_02_vanDerPol_polyZonotope()
 %    -
 %
 % Outputs:
-%    completed - boolean 
+%    completed - true/false 
 %
 % References: 
 %   [1] N. Kochdumper et al. "Sparse Polynomial Zonotopes: A Novel Set 

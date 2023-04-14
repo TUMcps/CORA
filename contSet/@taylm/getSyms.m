@@ -1,17 +1,20 @@
-function res = getSyms(obj)
+function res = getSyms(tay)
 % getSyms - returns a polynomial in a sym form
 %
 % Syntax:  
-%    res = getSyms(obj)
+%    res = getSyms(tay)
 %
 % Inputs:
-%    obj - a Taylor model
+%    tay - a Taylor model
 %
 % Outputs:
-%    res - sym 
+%    res - sym
 %
 % Example:
-%    -
+%    syms x y
+%    func = sin(x+y) + exp(-x) + x*y;
+%    tay = taylm(func,interval([1;3],[2;4]),4);
+%    getSyms(tay)
 %
 % Other m-files required: taylm
 % Subfunctions: none
@@ -26,25 +29,26 @@ function res = getSyms(obj)
 
 %------------- BEGIN CODE --------------
 
-	res = arrayfun(@(a) s_getSyms(a), obj, 'UniformOutput', 0);
+	res = arrayfun(@(a) s_getSyms(a),tay,'UniformOutput',false);
     A = cat(1, res{:});
     res = reshape(A, size(res));
 
 end
 
-function res = s_getSyms( obj )
-    
+
+% Auxiliary function ------------------------------------------------------
+
+function res = s_getSyms(tay)
     % get coefficients
-    c = obj.coefficients;
+    c = tay.coefficients;
     % get monomials
-    degs = obj.monomials(:, 2:end);
+    degs = tay.monomials(:, 2:end);
     % get var names
-    names = obj.names_of_var;
+    names = tay.names_of_var;
     % transform the var names to syms
     v = sym([names]);
     % make a syms expression
     res = sum(c.*prod(repmat(v,[size(c,1) 1]).^degs,2));
-    
 end
 
 %------------- END OF CODE --------------

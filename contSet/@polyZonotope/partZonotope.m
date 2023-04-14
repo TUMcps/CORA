@@ -22,7 +22,7 @@ function [PZ,pZ_gi_cell,ind_constGen,EM,indexE] = partZonotope(pZ,id)
 %    pZ = polyZonotope(1,[1,1],[],[2,0;2,1;0,1],[1;2;3]);
 %    partZono = partZonotope(pZ,2);
 %    id_new = partZono.id(~ismember(partZono.id,pZ.id));
-%    print(partZono,{[1;3],id_new},{'b','w'});
+%    print(partZono,'Ids',{[1;3],id_new},'Vars',{'b','w'});
 %
 % Other m-files required: none
 % Subfunctions: none

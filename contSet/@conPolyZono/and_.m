@@ -22,7 +22,7 @@ function res = and_(cPZ,S,varargin)
 %    figure; hold on;
 %    xlim([-5,5]); ylim([-5,5]);
 %    plot(hs,[1,2],'r');
-%    plot(res1,[1,2],'FaceColor','b','Splits',20);
+%    plot(res1,[1,2],'FaceColor','b','Splits',10);
 %    plot(cPZ,[1,2],'g','LineWidth',2);
 %
 %    % intersection with constrained hyperplane
@@ -33,7 +33,7 @@ function res = and_(cPZ,S,varargin)
 %
 %    figure; hold on; xlim([-5,5]); ylim([-5,5]);
 %    plot(hyp,[1,2],'r');
-%    plot(res2,[1,2],'FaceColor','b','Splits',15);
+%    plot(res2,[1,2],'FaceColor','b','Splits',10);
 %    plot(cPZ,[1,2],'g','LineWidth',2);
 %
 %    % intersection of two constrained polynomial zonotopes
@@ -43,7 +43,7 @@ function res = and_(cPZ,S,varargin)
 %    res3 = cPZ1 & cPZ2;
 %
 %    figure; hold on;
-%    plot(res3,[1,2],'FaceColor',[0 .5 0],'Splits',20);
+%    plot(res3,[1,2],'FaceColor',[0 .5 0],'Splits',10);
 %    plot(cPZ1,[1,2],'r','LineWidth',1.5);
 %    plot(cPZ2,[1,2],'b','LineWidth',1.5);
 %

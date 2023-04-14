@@ -20,9 +20,9 @@ function E = minkDiff(E,S,varargin)
 % Example: 
 %    E1 = ellipsoid(10*eye(2));
 %    E2 = ellipsoid(8*eye(2));
-%
+% 
 %    res = minkDiff(E1,E2);
-%
+% 
 %    figure; hold on;
 %    plot(E1); plot(E2);
 %    plot(res,[1,2],'r');

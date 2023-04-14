@@ -10,9 +10,6 @@ function completed = example_linearSysDT_reach_02_5dim()
 %
 % Outputs:
 %    completed - true/false 
-%
-% Example: 
-%    -
 
 % Author:       Matthias Althoff
 % Written:      31-July-2018

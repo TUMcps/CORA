@@ -11,7 +11,8 @@ function n = dim(P)
 %    n - dimension of the ambient space
 %
 % Example: 
-%    ---
+%    P = mptPolytope([1 1; -2 1; 0 -1],[1;1;1]);
+%    dim(P)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,8 +32,12 @@ function n = dim(P)
 try %MPT3
     n = P.P.Dim;
 catch
-    [H,~] = double(P.P);
-    n = length(H(end,:));
+    if isempty(P)
+        n = 0;
+    else
+        [H,~] = double(P.P);
+        n = length(H(end,:));
+    end
 end
 
 %------------- END OF CODE --------------

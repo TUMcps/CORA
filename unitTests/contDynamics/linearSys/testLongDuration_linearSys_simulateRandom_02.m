@@ -10,9 +10,7 @@ function res = testLongDuration_linearSys_simulateRandom_02
 %    -
 %
 % Outputs:
-%    res - boolean
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

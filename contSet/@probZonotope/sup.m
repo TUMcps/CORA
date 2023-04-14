@@ -1,15 +1,15 @@
-function value = sup(probZ)
+function val = sup(probZ)
 % sup - Determines $sup(||x||_\infty),x in Z$, whereas sup is the operator
 %    determining the supremum of its argument.
 %
 % Syntax:  
-%    value = sup(probZ)
+%    val = sup(probZ)
 %
 % Inputs:
 %    probZ - probabilistic zonotope object
 %
 % Outputs:
-%    value - supremum of $||x||_\infty,x in Z$
+%    val - supremum of $||x||_\infty,x in Z$
 %
 % Example: 
 %    Z1 = [10 1 -2; 0 1 1];
@@ -31,12 +31,12 @@ function value = sup(probZ)
 
 %------------- BEGIN CODE --------------
 
-%convert zonotope to interval
-Int=interval(probZ);
+% convert probabilistic zonotope to interval
+I = interval(probZ);
 
-%determine vector with greatest infinity norm within the interval hull
-N1=norm_(infimum(Int),Inf);
-N2=norm_(supremum(Int),Inf);
-value=max([N1,N2]);
+% determine vector with greatest infinity norm within the interval hull
+N1 = norm(infimum(I),Inf);
+N2 = norm(supremum(I),Inf);
+val = max([N1,N2]);
 
 %------------- END OF CODE --------------

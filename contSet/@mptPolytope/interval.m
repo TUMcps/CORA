@@ -10,14 +10,11 @@ function I = interval(obj)
 % Outputs:
 %    I - interval 
 %
-% Example: 
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Author:       Matthias Althoff
 % Written:      01-February-2011

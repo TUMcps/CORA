@@ -9,7 +9,7 @@ function res = example_linear_reach_ARCH22_iss_ISSC01_ISU02()
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % References: 
 %    [1] S. Bogomolov et al. "Decomposing Reach Set Computations with 

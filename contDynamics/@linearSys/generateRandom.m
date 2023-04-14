@@ -25,9 +25,9 @@ function linSys = generateRandom(varargin)
 %
 % Example: 
 %    linSys1 = linearSys.generateRandom();
-%    linSys2 = linearSys.generateRandom('Dimension',3);
-%    linSys3 = linearSys.generateRandom('Dimension',5,...
-%       'RealInt',interval(-5,-1),'ImagInt',interval(-1,1));
+%    linSys2 = linearSys.generateRandom('StateDimension',3);
+%    linSys3 = linearSys.generateRandom('StateDimension',5,...
+%       'RealInterval',interval(-5,-1),'ImaginaryInterval',interval(-1,1));
 %
 % Other m-files required: none
 % Subfunctions: none

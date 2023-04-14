@@ -15,9 +15,9 @@ function V = vertices_(cZ,varargin)
 %    A = [1 0 1]; b = 1;
 %    cZ = conZonotope(Z,A,b);
 %    V = vertices(cZ);
-%
+% 
 %    figure; hold on
-%    plotZono(cZ);
+%    plot(cZ);
 %    plot(V(1,:),V(2,:),'.k','MarkerSize',15);
 %
 % Other m-files required: none

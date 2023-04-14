@@ -28,7 +28,7 @@ function p = randPoint_(cPZ,N,type,varargin)
 %    points = randPoint(cPZ,10,'extreme');
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'FaceColor','r','Splits',15);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',12);
 %    plot(points(1,:),points(2,:),'.k','MarkerSize',20);
 %
 % Other m-files required: none

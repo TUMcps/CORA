@@ -15,13 +15,13 @@ function [Y,L] = boundary(E,N)
 %
 % Example: 
 %    E = ellipsoid([1,0;0,1/2],[1;1]);
-%    Y = boundary(E,1000);
+%    Y = randPoint(E,1000,'extreme');
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ellipsoid/randPoint
+% See also: ellipsoid/randPoint_
 
 % Author:       Victor Gassmann
 % Written:      13-March-2019

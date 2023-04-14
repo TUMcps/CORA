@@ -14,7 +14,7 @@ function res = test_levelSet_isequal
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ------
+% See also: none
 
 % Author:       Mark Wetzlinger
 % Written:      11-January-2023

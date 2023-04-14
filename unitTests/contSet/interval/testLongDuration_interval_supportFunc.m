@@ -8,9 +8,7 @@ function res = testLongDuration_interval_supportFunc
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -40,6 +38,19 @@ for i=1:nrOfTests
     lb = -rand(n,1);
     ub = rand(n,1);
     I = interval(lb,ub);
+
+    % support function in random direction compared to zonotope
+    dir = randn(n,1);
+    [val,x] = supportFunc(I,dir,'upper');
+    [valZ,xZ] = supportFunc(zonotope(I),dir,'upper');
+    if ~withinTol(val,valZ,1e-14) || ~all(withinTol(x,xZ,1e-14))
+        res = false; break
+    end
+    [val,x] = supportFunc(I,dir,'lower');
+    [valZ,xZ] = supportFunc(zonotope(I),dir,'lower');
+    if ~withinTol(val,valZ,1e-14) || ~all(withinTol(x,xZ,1e-14))
+        res = false; break
+    end
 
     % support function in axis aligned directions
     id = eye(n);

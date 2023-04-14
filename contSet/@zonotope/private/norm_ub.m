@@ -11,8 +11,8 @@ function ub = norm_ub(Z,type)
 %    ub - upper bound on the maximum norm value
 %
 % Example: 
-%    Z = zonotope([randn(2,1),randn(2,10)]);
-%    ub = diffnormbound(Z);
+%    Z = zonotope([0;0],[1 3 -2; 2 -1 0]);
+%    norm(Z,2,'ub_convex')
 %
 % Other m-files required: none
 % Subfunctions: none

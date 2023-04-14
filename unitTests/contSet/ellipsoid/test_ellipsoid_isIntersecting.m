@@ -8,9 +8,7 @@ function res = test_ellipsoid_isIntersecting
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

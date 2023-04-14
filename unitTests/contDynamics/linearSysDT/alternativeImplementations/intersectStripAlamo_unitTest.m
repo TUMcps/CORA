@@ -12,9 +12,10 @@ function Zres = intersectStripAlamo_unitTest(Z,C,phi,d)
 %    d - center of strip
 %
 % Outputs:
-%    res - Boolean whether obj is contained in Z, or not
+%    res - true/false
 %
-% Example: strip and one zonotope
+% Example:
+%    % strip and zonotope
 %    C = [1 0];
 %    phi = 5;
 %    d = -2;
@@ -34,8 +35,7 @@ function Zres = intersectStripAlamo_unitTest(Z,C,phi,d)
 % 
 %    legend('zonotope','strip','zono&poly','zonoStrips');
 %
-%
-% references:
+% References:
 %    [1] T. Alamo, J. M. Bravo, and E. F. Camacho. Guaranteed
 %        state estimation by zonotopes. Automatica, 41(6):1035-1043,
 %        2005.

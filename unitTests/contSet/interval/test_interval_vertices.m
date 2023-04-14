@@ -8,9 +8,7 @@ function res = test_interval_vertices
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -20,32 +18,48 @@ function res = test_interval_vertices
 
 % Author:       Mark Wetzlinger
 % Written:      28-August-2019
-% Last update:  ---
+% Last update:  05-April-2023 (MW, unbounded intervals)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % empty set
 I_e = interval();
-res = isnumeric(vertices(I_e)) && isempty(vertices(I_e));
+V_empty = vertices(I_e);
+res = isnumeric(V_empty) && isempty(V_empty);
 
 % create interval
-lowerLimits = [-2; -4];
-upperLimits = [3; 1];
-int = interval(lowerLimits, upperLimits);
+lb = [-2; -4];
+ub = [3; 1];
+I = interval(lb, ub);
 
-% retreive vertices by function
-vert = vertices(int);
-vert_mat = vert;
-vert_mat = sortrows(vert_mat');
+% compute vertices
+V = vertices(I);
 
 % true vertices
-vert_true = [-2 3  3 -2;
-              1 1 -4 -4];
-vert_true = sortrows(vert_true');
+V_true = [-2 3  3 -2;
+           1 1 -4 -4];
 
-% compare results
+% check result
 tol = 1e-9;
-res = res && all(all(abs(vert_mat - vert_true) < tol));
+res(end+1,1) = compareMatrices(V,V_true,tol);
+
+% unbounded interval
+lb = [-2; -4];
+ub = [3; Inf];
+I = interval(lb, ub);
+
+% compute vertices
+V = vertices(I);
+
+% true vertices
+V_true = [-2 -2   3 3;
+          -4 Inf -4 Inf];
+
+% check result (depends on ordering!)
+res(end+1,1) = all(all(V == V_true));
+
+% combine results
+res = all(res);
 
 %------------- END OF CODE --------------

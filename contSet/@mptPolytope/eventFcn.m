@@ -1,7 +1,7 @@
 function [value,isterminal,direction] = eventFcn(obj,x,direction)
 % eventFcn - Returns the results of an event function that detects if a 
-% trajectory enters or leaves a mptPolytope;
-% this event function is needed, e.g. for matlab ode-solvers
+%    trajectory enters or leaves a mptPolytope;
+%    this event function is needed, e.g. for matlab ode-solvers
 %
 % Syntax:  
 %    [value,isterminal,direction] = eventFcn(obj,x,direction)
@@ -15,10 +15,7 @@ function [value,isterminal,direction] = eventFcn(obj,x,direction)
 %    value - value of the event function
 %    isterminal - specifies if the simulation stops if an event turns zero
 %    direction - specifies if the value of the event function has to 
-%    turn from negative to positive or the other way round
-%
-% Example: 
-%    ---
+%                turn from negative to positive or the other way round
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -61,6 +61,6 @@ end
 
 if ~res
     path = pathFailedTests(mfilename());
-    save(path,'pZ','f','f_val');
+    save(path,'pZ','f','f_val','ind_diff');
 end
 %------------- END OF CODE --------------

@@ -11,7 +11,11 @@ function n = dim(pZ)
 %    n - dimension of the ambient space
 %
 % Example: 
-%    pZ = polyZonotope.generateRandom('Dimension',4);
+%    c = [0;0];
+%    G = [2 0 1;0 2 1];
+%    Grest = [0;0.5];
+%    expMat = [1 0 3;0 1 1];
+%    pZ = polyZonotope(c,G,Grest,expMat);
 %    n = dim(pZ)
 %
 % Other m-files required: center.m

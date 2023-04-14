@@ -6,11 +6,10 @@ function res = example_linear_reach_ARCH22_building_BLDF01()
 %    res = example_linear_reach_ARCH22_building_BLDF01()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
+%    res - true/false
 
 % Author:       Niklas Kochdumper
 % Written:      13-March-2019

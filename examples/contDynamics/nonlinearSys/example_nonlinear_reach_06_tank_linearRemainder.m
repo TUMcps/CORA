@@ -12,8 +12,6 @@ function completed = example_nonlinear_reach_06_tank_linearRemainder
 % Outputs:
 %    completed - true/false 
 %
-% Example: 
-%
 % References:
 %    [1] M. Althoff, "Reachability analysis and its application to the
 %        safety assessment of autonomous cars", Dissertation, TUM 2010.

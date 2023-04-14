@@ -25,6 +25,7 @@ function dispEmptyObj(obj,argname)
 % Author:       Mark Wetzlinger
 % Written:      01-May-2020
 % Last update:  02-May-2020
+%               05-April-2023 (MW, correct dimensions)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -32,7 +33,8 @@ function dispEmptyObj(obj,argname)
 fprintf(newline);
 disp(argname + " =");
 fprintf(newline);
-disp("  1x1 empty " + class(obj));
+n = size(obj);
+disp("  " + n(1) + "x" + n(2) + " empty " + class(obj));
 fprintf(newline);
 
 %------------- END OF CODE --------------

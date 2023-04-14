@@ -15,9 +15,6 @@ function [obj,linSys,linOptions] = linearize(obj,options,R)
 %    linSys - linParamSys/linearSys object
 %    linOptions - options for the linearized system
 %
-% Example: 
-%    Text for example...
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

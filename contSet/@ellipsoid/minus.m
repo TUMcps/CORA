@@ -13,10 +13,12 @@ function E = minus(E,varargin)
 %    E - ellipsoid object
 %
 % Example: 
-%    ---
-%
-% References:
-%    ---
+%    E = ellipsoid([5 7;7 13],[1;2]);
+%    p = [1;-1];
+%    E_ = E - p;
+% 
+%    figure; hold on;
+%    plot(E); plot(E_);
 %
 % Other m-files required: none
 % Subfunctions: none

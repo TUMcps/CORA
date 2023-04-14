@@ -8,9 +8,7 @@ function res = test_levelSet_contains
 %    -
 %
 % Outputs:
-%    res - true/false 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

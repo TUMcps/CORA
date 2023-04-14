@@ -13,7 +13,7 @@ function val = norm_(E,type,varargin)
 %    val - value of the maximum norm
 %
 % Example: 
-%    E = ellipsoid.generateRandom('Dimension',2,'Center',zeros(2,1));
+%    E = ellipsoid([3 -1; -1 1],[0;0]);
 %    val = norm(E);
 %
 % Other m-files required: none

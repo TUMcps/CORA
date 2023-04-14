@@ -27,6 +27,7 @@ function han = plot(P,varargin)
 %               20-April-2018 (exception for empty sets)
 %               25-May-2022 (TL: 1D Plotting)
 %               22-November-2022 (TL: redundant VRep)
+%               05-April-2023 (TL: clean up using plotPolygon)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -51,8 +52,6 @@ end
 % transform to 2D polytope if only 1D should be plotted
 if length(dims) == 1
     P = project(P,dims);
-    P = cartProd_(P,0,'exact');
-    dims = [1, 2];
 end
  
 % check if polyhedron is bounded
@@ -82,9 +81,10 @@ end
 V = vertices(P);
 
 
-
 % plot projected vertices
-if length(dims) == 2
+if isempty(V)
+    han = plotPolygon(zeros(length(dims), 0),NVpairs{:});
+elseif length(dims) <= 2
     han = plotPolygon(V(dims,:),NVpairs{:});
 elseif length(dims) == 3
     han = plotPolytope3D(V(dims,:),NVpairs{:});

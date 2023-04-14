@@ -15,8 +15,6 @@ function perf = performanceObserver(EstSet)
 %    [1] M. Althoff and J. J. Rath. Comparison of Set-Based Techniques 
 %        for Guaranteed State Estimation of Linear Disturbed Systems, 
 %        in preparation.
-%
-% Example: 
 
 % Author:       Matthias Althoff
 % Written:      16-Jan-2021

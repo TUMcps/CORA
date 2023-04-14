@@ -11,15 +11,16 @@ function E = MVIE(Z)
 %    E - ellipsoid object
 %
 % Example: 
-%    Z = zonotope(rand(2,5));
-%    E = MVIE(Z);
+%    Z = zonotope([1;0],[2 -1 3; 0 1 2]);
+%    E = ellipsoid(Z,'inner:exact');
+%    
+%    figure; hold on;
 %    plot(Z);
-%    hold on
 %    plot(E);
 %
 % References:
-%    [1] : S. Boyd and L. Vandenberghe, Convex optimization. Cambridge
-%          university press, 2004
+%    [1] S. Boyd and L. Vandenberghe, Convex optimization. Cambridge
+%        university press, 2004
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -41,4 +42,5 @@ A = P.A;
 b = P.b;
 
 E = ellipsoid(mptPolytope(A,b),'inner');
+
 %------------- END OF CODE --------------

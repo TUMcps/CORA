@@ -2,7 +2,7 @@ function res = containsPoint(Z,p)
 % containsPoint - checks if p inside zonoBundle
 %
 % Syntax:  
-%    res = containsPoint(Z)
+%    res = containsPoint(Z,p)
 %
 % Inputs:
 %    Z - zonoBundle object
@@ -12,7 +12,14 @@ function res = containsPoint(Z,p)
 %    res - boolean (array) whether p in Z
 %
 % Example: 
-%    ---
+%    Z1 = zonotope([1;1], [1 1; -1 1]);
+%    Z2 = zonotope([-1;1], [1 0; 0 1]);
+%    zB = zonoBundle({Z1,Z2});
+%    p = [-0.5;1];
+%    contains(zB,p)
+% 
+%    figure; hold on;
+%    plot(zB); scatter(p(1),p(2),8,'r','filled');
 %
 % Other m-files required: none
 % Subfunctions: none
