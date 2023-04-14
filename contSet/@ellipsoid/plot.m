@@ -30,6 +30,7 @@ function han = plot(E,varargin)
 %               12-March-2021
 %               19-May-2022 (plot marker if ellipsoid is point)
 %               25-May-2022 (TL: 1D Plotting)
+%               05-April-2023 (TL: clean up using plotPolygon)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -43,9 +44,6 @@ inputArgsCheck({{E,'att','ellipsoid','scalar'};
 
 % read out plot options
 NVpairs = readPlotOptions(varargin(2:end));
-
-% readout 'FaceColor' to decide plot/fill call where necessary
-[~,facecolor] = readNameValuePair(NVpairs,'FaceColor');
 
 % check dimension
 if length(dims) < 1
@@ -82,15 +80,7 @@ if length(dims) <= 2
     % repeat first entry
     Y = [Y,Y(:,1)];
     %plot and output the handle
-    if length(dims) == 1
-       han = plot(Y(1,:),zeros(size(Y(1,:))),NVpairs{:});
-    else
-        if isempty(facecolor) || strcmp(facecolor,'none')
-            han = plot(Y(1,:),Y(2,:),NVpairs{:});
-        else
-            han = fill(Y(1,:),Y(2,:),facecolor,NVpairs{:});
-        end
-    end
+    han = plotPolygon(Y, NVpairs{:});
 
 else
     % enclose ellipsoid with zonotope

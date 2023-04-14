@@ -1,6 +1,6 @@
 function res = le(obj, obj2)
 % le - returns 1 if one polytopes is equal or enclosed by the other one and 
-% 0 otherwise; overloads the <= operator
+%    0 otherwise; overloads the <= operator
 %
 % Syntax:  
 %    res = le(obj, obj2)
@@ -10,10 +10,7 @@ function res = le(obj, obj2)
 %    obj2 - mptPolytope object
 %
 % Outputs:
-%   res - result in {0,1}
-%
-% Example: 
-%    ---
+%   res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

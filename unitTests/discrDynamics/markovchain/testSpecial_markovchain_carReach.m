@@ -6,13 +6,10 @@ function res = testSpecial_markovchain_carReach
 %    res = testSpecial_markovchain_carReach
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      31-July-2016

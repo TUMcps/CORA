@@ -6,10 +6,10 @@ function res = example_linear_reach_ARCH22_beam_CB01()
 %    res = example_linear_reach_ARCH22_beam_CB01()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 
 % Author:       Mark Wetzlinger
 % Written:      02-June-2021

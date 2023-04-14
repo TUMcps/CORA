@@ -131,6 +131,7 @@ methods
     res = isequal(I1,I2,varargin) % equal objects check
     res = isFullDim(I) % full dimensionality check
     res = isscalar(I) % one-dimensionality check
+    res = issparse(I) % issparse
     res = le(I1,I2) % subseteq check
     l = length(I) % largest dimension of interval
     I = log(I) % logarithm function

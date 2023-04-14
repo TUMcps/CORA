@@ -8,9 +8,7 @@ function res = testLongDuration_capsule_randPoint
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: @capsule > containsPoint.m
 % Subfunctions: none

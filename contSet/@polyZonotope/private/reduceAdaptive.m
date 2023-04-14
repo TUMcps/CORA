@@ -15,7 +15,11 @@ function pZ = reduceAdaptive(pZ,diagpercent)
 %    pZ - reduced polyZonotope object
 %
 % Example: 
-%    pZ = polyZonotope.generateRandom('Dimension',15);
+%    c = [0;0];
+%    G = [2 0 1 0.02 0.003; 0 2 1 0.01 -0.001];
+%    Grest = [0;0.5];
+%    expMat = [1 0 3 0 1;0 1 1 2 1];
+%    pZ = polyZonotope(c,G,Grest,expMat);
 %    pZ = reduce(pZ,'adaptive',0.05);
 %
 % References:

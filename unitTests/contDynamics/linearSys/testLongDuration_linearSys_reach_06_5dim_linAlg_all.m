@@ -11,10 +11,7 @@ function res = testLongDuration_linearSys_reach_06_5dim_linAlg_all()
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 
 % Author:       Mark Wetzlinger
 % Written:      26-June-2019

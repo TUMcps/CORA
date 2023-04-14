@@ -8,9 +8,7 @@ function res = test_ellipsoid_contains
 %    -
 %
 % Outputs:
-%    res - true/false 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

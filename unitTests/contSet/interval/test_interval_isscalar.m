@@ -5,12 +5,10 @@ function res = test_interval_isscalar
 %    res = test_interval_isscalar
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

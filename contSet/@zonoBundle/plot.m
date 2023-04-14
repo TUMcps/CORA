@@ -32,6 +32,7 @@ function han = plot(zB,varargin)
 % Last update:  13-February-2012
 %               19-October-2015 (NK, accelerate by using polyshape class)
 %               22-May-2022 (TL, 1D plots)
+%               05-April-2023 (TL: clean up using plotPolygon)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -71,6 +72,7 @@ if length(dims) == 2
     Z_eps = zonotope([0;0], eps * eye(2));
 
     % compute polytopes
+    P = cell(length(zB.parallelSets), 1);
     for i = 1:zB.parallelSets
 
         % delete zero generators
@@ -107,7 +109,7 @@ if length(dims) == 2
     V = V0 + m;
     
     % test if all points are identical within tolerance
-    inTol = all(all(withinTol(V(:,1),V,eps)));
+    inTol = all(withinTol(V(:,1),V,eps), "all");
 
     Pint = polyshape(V(1,:),V(2,:));
     if Pint.NumRegions > 0 && ~inTol
@@ -115,21 +117,19 @@ if length(dims) == 2
         han = plotPolygon(V,NVpairs{:});
     else
         if size(V, 2) > 0 && inTol
-            % plot point
-            [~, value] = readNameValuePair(NVpairs, 'Color');
-            NVpairs{end+1} = 'MarkerEdgeColor';
-            NVpairs{end+1} = value;
-            scatter(V(1, 1), V(2, 1), NVpairs{:})
-        else
-            % plot line
-            plot(V(1, :), V(2, :), NVpairs{:})
+            % just plot first point
+            V = V(:, 1);
         end
+        % plot line
+        han = plotPolygon(V,NVpairs{:});
+        
     end
 
     % reset warning state to previous setting
     warning(w);
     
 else
+    % plot 3d
     
     % project to plotted dimensions
     zB = project(zB,dims);

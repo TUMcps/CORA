@@ -4,13 +4,13 @@ function res = example_nonlinear_reach_14_adaptiveHSCC2
 %    reproducing results from [1]
 %
 % Syntax:  
-%    example_nonlinear_reach_14_adaptiveHSCC2
+%    res = example_nonlinear_reach_14_adaptiveHSCC2
 %
 % Inputs:
 %    -
 %
 % Outputs:
-%    res - boolean
+%    res - true/false
 %
 % References:
 %    [1] M. Wetzlinger, A. Kulmburg, M. Althoff. "Adaptive Parameter Tuning

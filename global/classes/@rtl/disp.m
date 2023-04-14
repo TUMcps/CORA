@@ -12,7 +12,7 @@ function disp(obj)
 %
 % Example: 
 %    x = stl('x',2)
-%    rtl(x(1) < 5) | x(2) > 3)
+%    rtl(x(1) < 5 | x(2) > 3)
 %
 % Other m-files required: none
 % Subfunctions: none

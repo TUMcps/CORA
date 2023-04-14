@@ -73,11 +73,7 @@ function cZ = or(cZ1,varargin)
         S = varargin{1};
 
         % determine conZonotope object
-        if ~isa(cZ1,'conZonotope')
-            temp = cZ1;
-            cZ1 = S;
-            S = temp;
-        end
+        [cZ1,S] = findClassArg(cZ1,S,'conZonotope');
 
         % different cases depending on the class of the second set
         if isa(S,'conPolyZono')

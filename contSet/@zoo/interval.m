@@ -1,14 +1,14 @@
-function int = interval(obj)
+function I = interval(z)
 % interval - calculate the bounding interval of a zoo-object
 %
 % Syntax:  
-%    int = interval(obj)
+%    I = interval(z)
 %
 % Inputs:
-%    obj - zoo object
+%    z - zoo object
 %
 % Outputs:
-%    int - interval overapproximating the zoo (class interval)
+%    I - interval overapproximating the zoo (class interval)
 %
 % Other m-files required: interval
 % Subfunctions: none
@@ -23,20 +23,19 @@ function int = interval(obj)
 
 %------------- BEGIN CODE -------------
 
-    int = arrayfun(@(a) aux_zoo2int(a), obj, 'UniformOutput', false);
-    A = [int{:}];
-    int = reshape(A, size(int)); 
+    I = arrayfun(@(a) aux_zoo2int(a), z, 'UniformOutput', false);
+    A = [I{:}];
+    I = reshape(A, size(I)); 
     
 end
 
+% Auxiliary function ------------------------------------------------------
 
-%------------ Scalar function ---------------
+function res = aux_zoo2int(z)
 
-function res = aux_zoo2int(obj)
-
-    res = interval(-inf,inf);
-    for i = 1:length(obj.method)
-       res = and_(res,interval(obj.objects{i},'exact')); 
+    res = interval(-Inf,Inf);
+    for i = 1:length(z.method)
+        res = and_(res,interval(z.objects{i},'exact')); 
     end
     
 end

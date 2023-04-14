@@ -21,7 +21,7 @@ function res = douglasPeucker(points,varargin)
 %    
 %    % simplify line segment
 %    points_ = douglasPeucker(points,0.5);
-%
+% 
 %    % visualization
 %    figure; hold on;
 %    plot(points(1,:),points(2,:),'r');
@@ -41,7 +41,7 @@ function res = douglasPeucker(points,varargin)
 %------------- BEGIN CODE --------------
 
     % parse input arguments
-    tol = setDefaultValues({0.01},varargin;
+    tol = setDefaultValues({0.01},varargin);
 
     % find point with the largest distance
     dmax = 0;

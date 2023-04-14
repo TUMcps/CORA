@@ -11,10 +11,7 @@ function res = test_linearSys_reach_01
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 
 % Author:       Hendrik Roehm, Matthias Althoff
 % Written:      02-March-2016

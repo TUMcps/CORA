@@ -12,9 +12,6 @@ function D = distancePoint(E,Y)
 % Outputs:
 %    D - distance(s) between E and Y
 %
-% Example: 
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

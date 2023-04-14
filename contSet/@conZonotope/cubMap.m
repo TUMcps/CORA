@@ -25,10 +25,12 @@ function res = cubMap(cZ,varargin)
 %
 % Example: 
 %    % cubic multiplication
-%    cZ = conZonotope.generateRandom('Dimension',2,'NrGenerators',4);
+%    Z = [0 3 0 1 -1;0 0 2 1 1];
+%    A = [1 0 1 -1]; b = 1;
+%    cZ = conZonotope(Z,A,b);
 %    
-%    T{1,1} = rand(2); T{1,2} = rand(2);
-%    T{2,1} = rand(2); T{2,2} = rand(2);
+%    T{1,1} = [1 -1; 0 1]; T{1,2} = [1 0; 0 -1];
+%    T{2,1} = [1 0; 0 -1]; T{2,2} = [-1 1; 0 -1];
 %
 %    cZcub = cubMap(cZ,T);
 %
@@ -39,10 +41,14 @@ function res = cubMap(cZ,varargin)
 %    plot(cZcub,[1,2],'FaceColor','b','Template',50);
 %
 %    % mixed cubic multiplication
-%    Z2 = zonotope.generateRandom('Dimension',2,'NrGenerators',5);
-%    Z3 = zonotope.generateRandom('Dimension',2,'NrGenerators',3);
+%    Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
+%    A = [1 1 1]; b = 1;
+%    cZ2 = conZonotope(Z,A,b);
+%    Z = [1 1.5 -1.5 0.5;0 1 0.5 -1];
+%    A = [1 1 1]; b = 1;
+%    cZ3 = conZonotope(Z,A,b);
 %
-%    ZcubMixed = cubMap(Z,Z2,Z3,T);
+%    ZcubMixed = cubMap(cZ,cZ2,cZ3,T);
 %
 % Other m-files required: none
 % Subfunctions: none

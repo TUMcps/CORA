@@ -10,9 +10,7 @@ function res = test_linearSys_trajectoryError()
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % References:
 %    [1] M. Althoff, B. Krogh, Avoiding Geometric Intersection Operations

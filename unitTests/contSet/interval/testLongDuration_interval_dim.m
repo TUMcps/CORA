@@ -8,9 +8,7 @@ function res = testLongDuration_interval_dim
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

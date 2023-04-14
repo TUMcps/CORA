@@ -1,29 +1,26 @@
 function [y,Q,q] = rootfnc(p,W1,q1,W2,q2)
-% rootfnc - polynomial whose root corresponds to the correct p (see 'and')
+% rootfnc - polynomial whose root corresponds to the correct p (see 'and_')
 %
 % Syntax:
 %    [y,Q,q] = rootfnc(p,W1,q1,W2,q2)
 %
 % Inputs:
-%    p           - current p value
+%    p - current p value
 %    W1,q1,W2,q2 - shape matrices and centers of E1,E2 (see 'and')
 %
 % Outputs:
 %    y - current function value (should go to 0)
 %    Q,q - current solution, i.e., ellipsoid(Q,q)
 %
-% Example: 
-%    -
-%
-% Refs: Very heavily inspired by file 'ell_fusionlambda.m' of the
-%       Ellipsoidal toolbox:
-%       https://de.mathworks.com/matlabcentral/fileexchange/21936-ellipsoidal-toolbox-et
+% References: Very heavily inspired by file 'ell_fusionlambda.m' of the
+%    Ellipsoidal toolbox:
+%    https://de.mathworks.com/matlabcentral/fileexchange/21936-ellipsoidal-toolbox-et
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: and
+% See also: ellipsoid/and_
 
 % Author:       Victor Gassmann
 % Written:      14-October-2019

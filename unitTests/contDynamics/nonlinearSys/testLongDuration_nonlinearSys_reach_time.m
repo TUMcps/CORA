@@ -13,10 +13,7 @@ function res = testLongDuration_nonlinearSys_reach_time
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 
 % Author:       Niklas Kochdumper
 % Written:      23-March-2018

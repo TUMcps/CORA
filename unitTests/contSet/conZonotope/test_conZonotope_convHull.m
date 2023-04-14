@@ -9,9 +9,7 @@ function res = test_conZonotope_convHull
 %    -
 %
 % Outputs:
-%    res - true/false 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

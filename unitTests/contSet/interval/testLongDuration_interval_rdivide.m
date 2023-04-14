@@ -9,9 +9,7 @@ function res = testLongDuration_interval_rdivide
 %    no
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

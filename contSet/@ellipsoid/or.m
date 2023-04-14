@@ -17,8 +17,8 @@ function E = or(E,S,varargin)
 %    E - ellipsoid object
 %
 % Example: 
-%    E1 = ellipsoid.generateRandom('Dimension',2);
-%    E2 = ellipsoid.generateRandom('Dimension',2);
+%    E1 = ellipsoid([3 -1; -1 1],[1;0]);
+%    E2 = ellipsoid([5 1; 1 2],[1;-1]);
 %    E = E1 | E2;
 %
 % References:
@@ -45,7 +45,7 @@ mode = setDefaultValues({'outer'},varargin);
 
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'};
-                {S,'att',{'contSet','numeric'}};
+                {S,'att',{'contSet','numeric','cell'}};
                 {mode,'str',{'outer','inner'}}});
 
 % empty set case

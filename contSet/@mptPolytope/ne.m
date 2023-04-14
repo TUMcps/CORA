@@ -15,9 +15,6 @@ function res = ne(P1,P2,varargin)
 % Outputs:
 %    res - true/false
 %
-% Example: 
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

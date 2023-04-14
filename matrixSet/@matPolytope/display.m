@@ -8,11 +8,11 @@ function display(matP)
 %    matP - matPolytope object
 %
 % Outputs:
-%    ---
+%    -
 %
 % Example:
 %    matP = matPolytope()
-%    matP = matPolytope([2 3; 2 1],[3 4; 3 2],[1 1; 1 0])
+%    matP = matPolytope({[2 3; 2 1],[3 4; 3 2],[1 1; 1 0]})
 %
 % Other m-files required: none
 % Subfunctions: none

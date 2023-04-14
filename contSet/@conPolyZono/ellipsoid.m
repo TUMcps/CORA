@@ -26,7 +26,7 @@ function E = ellipsoid(cPZ,varargin)
 %    E = ellipsoid(cPZ);
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'FaceColor','r','Splits',15);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',12);
 %    plot(E,[1,2],'b');
 %
 % Other m-files required: none

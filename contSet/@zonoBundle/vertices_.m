@@ -13,7 +13,14 @@ function V = vertices_(zB,varargin)
 %    V - matrix storing the vertices 
 %
 % Example: 
-%    -
+%    Z1 = zonotope([1;1], [1 1; -1 1]);
+%    Z2 = zonotope([-1;1], [1 0; 0 1]);
+%    zB = zonoBundle({Z1,Z2});
+%    V = vertices(zB);
+% 
+%    figure; hold on;
+%    plot(zB);
+%    plot(V(1,:),V(2,:),'k.','MarkerSize',12);
 %
 % Other m-files required: none
 % Subfunctions: none

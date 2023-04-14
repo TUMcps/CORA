@@ -15,16 +15,17 @@ function probZred = reduce(probZ,option,order)
 %    probZred - reduced zonotope
 %
 % Example:
-%    Z1 = rand(2,20);
-%    Z2 = -1+2*rand(2,5);
+%    Z1 = [1 2  4 2  5 3  4 2 1 3; ...
+%         -3 2 -1 4 -3 2 -3 4 2 1];
+%    Z2 = [3 -2 1 4 2; -1 1 0 2 1];
 %    probZ = probZonotope(Z1,Z2);
 %    probZred = reduce(probZ,'girard',3);
 %
-%    plot(probZ,'dark'); hold on;
-%    plot(probZred,'light');
+%    figure; hold on;
+%    plot(probZ); plot(probZred);
 %
 % Other m-files required: none
-% Subfunctions: reduceGirard, reduceAlthoff
+% Subfunctions: none
 % MAT-files required: none
 %
 % See also: none

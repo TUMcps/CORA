@@ -11,9 +11,7 @@ function completed = example_probOccupancyPrediction_road_01_braking()
 %    -
 %
 % Outputs:
-%    res - true/false
-%
-% Example: 
+%    completed - true/false
 %
 % References:
 %    [1] M. Althoff, "Reachability analysis and its application to the

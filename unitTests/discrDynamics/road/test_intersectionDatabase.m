@@ -10,9 +10,7 @@ function res = test_intersectionDatabase(~)
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

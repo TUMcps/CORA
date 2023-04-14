@@ -2,15 +2,13 @@ function res = testINTLAB_sinh_random()
 % testINTLAB_sinh_random - unit_test_function for comparing to IntLabV6
 %
 % Syntax:  
-%    res = testINTLAB_sinh_random()
+%    res = testINTLAB_sinh_random
 %
 % Inputs:
-%    no 
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

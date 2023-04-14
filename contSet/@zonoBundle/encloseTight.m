@@ -13,9 +13,6 @@ function zB = encloseTight(zB1,zB2,W)
 % Outputs:
 %    zB - zonotope bundle that encloses both bundles
 %
-% Example: 
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

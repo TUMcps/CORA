@@ -23,7 +23,7 @@ function res = contains_(cPZ,S,type,varargin)
 %    b = 0.5;
 %    expMat_ = [1 0 0;0 1 0;0 0 1];
 %    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
-%
+% 
 %    c = [0;0];
 %    G = [1 -2 1; 2 3 1];
 %    expMat = [1 0 2;0 1 1; 0 0 0];
@@ -32,7 +32,7 @@ function res = contains_(cPZ,S,type,varargin)
 %    expMat_ = [2 0 0;0 1 0; 0 0 1];
 %    cPZ1 = conPolyZono(c,0.3*G,expMat,A,b,expMat_);
 %    cPZ2 = conPolyZono(c,0.5*G,expMat,A,b,expMat_);
-%
+% 
 %    p1 = [1;1];
 %    p2 = [-1;3];
 % 
@@ -42,11 +42,11 @@ function res = contains_(cPZ,S,type,varargin)
 %    contains(cPZ,cPZ2,'approx')
 % 
 %    figure; hold on;
-%    plot(cPZ,[1,2],'b','Splits',15);
+%    plot(cPZ,[1,2],'b','Splits',12);
 %    plot(p1(1),p1(2),'.g','MarkerSize',20);
 %    plot(p2(1),p2(2),'.r','MarkerSize',20);
-%    plot(cPZ1,[1,2],'g','Splits',15);
-%    plot(cPZ2,[1,2],'r','Splits',15);
+%    plot(cPZ1,[1,2],'g','Splits',12);
+%    plot(cPZ2,[1,2],'r','Splits',12);
 %
 % Other m-files required: none
 % Subfunctions: none

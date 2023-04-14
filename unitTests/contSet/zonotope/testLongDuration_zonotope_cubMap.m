@@ -9,9 +9,7 @@ function res = testLongDuration_zonotope_cubMap
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

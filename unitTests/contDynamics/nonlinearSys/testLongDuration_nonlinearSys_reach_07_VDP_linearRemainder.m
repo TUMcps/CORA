@@ -9,10 +9,7 @@ function res = testLongDuration_nonlinearSys_reach_07_VDP_linearRemainder
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 
 % Author:       Victor Gassmann
 % Written:      22-May-2019

@@ -8,16 +8,13 @@ function res = testLongDuration_nonlinParamSys_reach_02_tank_certainCase
 % This example can be found in [1, Sec. 3.4.5] or in [2].
 %
 % Syntax:  
-%    testLongDuration_nonlinParamSys_reach_02_tank_certainCase
+%    res = testLongDuration_nonlinParamSys_reach_02_tank_certainCase
 %
 % Inputs:
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 %
 % References:
 %    [1] M. Althoff, "Reachability analysis and its application to the

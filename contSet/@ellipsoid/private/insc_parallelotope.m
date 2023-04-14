@@ -11,12 +11,11 @@ function Z = insc_parallelotope(E)
 %    Z - zonotope object
 %
 % Example: 
-%    E = ellipsoid.generateRandom('Dimension',2);
-%    Z = insc_parallelotope(E);
-%
+%    E = ellipsoid([3 -1; -1 1],[1;0]);
+%    Z = zonotope(E,8,'inner:box');
+% 
 %    figure; hold on;
-%    plot(E);
-%    plot(Z,[1,2],'r');
+%    plot(E); plot(Z);
 %
 % Other m-files required: none
 % Subfunctions: none

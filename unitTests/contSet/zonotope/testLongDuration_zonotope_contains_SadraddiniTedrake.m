@@ -13,8 +13,6 @@ function res = testLongDuration_zonotope_contains_SadraddiniTedrake
 % Outputs:
 %    res - true/false 
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

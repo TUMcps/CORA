@@ -40,6 +40,4 @@ else
     val = norm(intervalMatrix(center(I),rad(I)),type);
 end
 
-
-
 %------------- END OF CODE --------------

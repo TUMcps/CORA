@@ -10,10 +10,7 @@ function res = test_neurNetContrSys_reach_02_unicycle
 %    -
 %
 % Outputs:
-%    res - boolean
-%
-% Example:
-%    -
+%    res - true/false
 
 % Author:       Tobias Ladner
 % Written:      02-November-2022

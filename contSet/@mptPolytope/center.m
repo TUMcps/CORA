@@ -11,7 +11,7 @@ function c = center(P)
 %    c - center of the polytope
 %
 % Example:
-%    P = mptPolytope.generateRandom('Dimension',2);
+%    P = mptPolytope([1 1; -2 1; 0 -1],[1;1;1]);
 %    c = center(P);
 %
 %    figure; hold on;

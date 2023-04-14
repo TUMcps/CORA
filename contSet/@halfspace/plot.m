@@ -31,6 +31,7 @@ function han = plot(hs,varargin)
 % Written:      23-August-2013
 % Last update:  19-November-2019 (NK, plot area instead of line)
 %               25-May-2022 (TL: 1D Plotting)
+%               05-April-2023 (TL: clean up using plotPolygon)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -61,6 +62,8 @@ xLim = get(gca,'Xlim');
 yLim = get(gca,'Ylim');
 
 % convert to mptPolytope
+% projection with other dimensions = 0
+% and intersection with currently visible axis
 if length(dims) == 1
     C = [hs.c(dims)';1;-1];
     d = [hs.d;xLim(2);-xLim(1)];

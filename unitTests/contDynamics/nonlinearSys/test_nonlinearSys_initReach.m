@@ -12,10 +12,7 @@ function res = test_nonlinearSys_initReach
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      31-July-2017

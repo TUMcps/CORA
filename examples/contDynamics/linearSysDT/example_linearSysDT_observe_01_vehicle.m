@@ -11,10 +11,7 @@ function completed = example_linearSysDT_observe_01_vehicle()
 %    -
 %
 % Outputs:
-%    completed - true/false 
-%
-% Example: 
-%    -
+%    completed - true/false
 
 % Author:       Matthias Althoff
 % Written:      30-Apr-2021

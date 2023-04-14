@@ -12,9 +12,12 @@ function zB = cartProd_(zB,S,varargin)
 %    zB - zonoBundle object
 %
 % Example: 
-%    zB1 = zonoBundle.generateRandom('Dimension',2,'NrZonotopes',3);
-%    zB2 = zonoBundle.generateRandom('Dimension',3,'NrZonotopes',2);
-%
+%    Z1 = zonotope([1;-1],[2 -1 3; 0 1 -1]);
+%    Z2 = Z1 + [1;0];
+%    zB1 = zonoBundle({Z1,Z2});
+%    Z1 = zonotope([0;-2],[1 -3 2 0 1; -2 3 -1 -1 0]);
+%    Z2 = Z1 + [-1;0];
+%    zB2 = zonoBundle({Z1,Z2});
 %    zB = cartProd(zB1,zB2);
 %
 % Other m-files required: none

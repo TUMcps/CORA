@@ -1,17 +1,20 @@
-function rem = getRem(obj)
+function rem = getRem(tay)
 % getRem - returns remainder
 %
 % Syntax:  
-%    rem = getRem(obj)
+%    rem = getRem(tay)
 %
 % Inputs:
-%    obj - a Taylor model
+%    tay - a Taylor model
 %
 % Outputs:
 %    rem - an interval 
 %
 % Example:
-%    -
+%    syms x y
+%    func = sin(x+y) + exp(-x) + x*y;
+%    tay = taylm(func,interval([1;3],[2;4]),4);
+%    getRem(tay)
 %
 % Other m-files required: taylm
 % Subfunctions: none
@@ -25,13 +28,7 @@ function rem = getRem(obj)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-%
-%	rem = arrayfun(@(a) s_getRem(a), obj, 'UniformOutput', 0);
-%
-%end
-%
-%function rem = s_getRem( obj )
-%
-    rem = obj.remainder;
+
+rem = tay.remainder;
 
 %------------- END OF CODE --------------

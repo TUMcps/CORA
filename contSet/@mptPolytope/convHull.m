@@ -14,13 +14,10 @@ function P = convHull(P,S)
 % Example: 
 %    P1 = mptPolytope([-1 -1; 1 0;-1 0; 0 1; 0 -1],[2;3;2;3;2]);
 %    P2 = mptPolytope([-1 -1; -1 1; 1 1;0 -1],[0;2;2;0]) + [4;3];
-%
 %    P = convHull(P1,P2);
-%
+% 
 %    figure; hold on;
-%    plot(P1,[1,2],'FaceColor'.'r');
-%    plot(P2,[1,2],'FaceColor','b');
-%    plot(P,[1,2],'g');
+%    plot(P1); plot(P2); plot(P);
 %
 % Other m-files required: none
 % Subfunctions: none

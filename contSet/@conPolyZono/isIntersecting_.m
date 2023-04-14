@@ -29,7 +29,7 @@ function res = isIntersecting_(cPZ,S,type,varargin)
 %    res2 = isIntersecting(cPZ,pZ2,'approx')
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'FaceColor','b','Splits',15);
+%    plot(cPZ,[1,2],'FaceColor','b','Splits',12);
 %    plot(pZ1,[1,2],'g');
 %    plot(pZ2,[1,2],'r');
 %

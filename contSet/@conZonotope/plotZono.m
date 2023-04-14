@@ -47,8 +47,8 @@ function han = plotZono(cZ,varargin)
 % check input arguments
 inputArgsCheck({{cZ,'att','conZonotope'};
                 {dims,'att','numeric','nonnan'};
-                {plotOptZ,'att','cell','nonnan'};
-                {plotOptCon,'att','cell','nonnan'}});
+                {plotOptZ,'att','cell'};
+                {plotOptCon,'att','cell'}});
 
 % % default settings
 % dims = [1,2];
@@ -67,8 +67,8 @@ inputArgsCheck({{cZ,'att','conZonotope'};
 % end
 
 % plot the original zonotope
-zono = zonotope(cZ.Z);
-plot(zono,dims,plotOptZ{:});
+Z = zonotope(cZ.Z);
+plot(Z,dims,plotOptZ{:});
 
 % plot the constrained zonotope and return handle
 hold on;

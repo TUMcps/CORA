@@ -175,7 +175,7 @@ function han = aux_plot2Dgrid(obj,dims,type)
                 
                 % fill is unhappy if no RGB value is provided, the given
                 % value is overwritten anyway
-                dummyRGB = colorblind('b');
+                dummyRGB = CORAcolor("CORA:next");
                 han = fill(x,y,dummyRGB,type{:});
             end
         end

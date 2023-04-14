@@ -9,7 +9,7 @@ function completed = run_arch22_ainncs_category()
 %    -
 %
 % Outputs:
-%    completed - boolean
+%    completed - true/false
 %
 % Reference:
 %   [1] Johnson, Taylor T., et al. "ARCH-COMP22 Category Report:

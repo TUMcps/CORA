@@ -29,7 +29,7 @@ function matP = plus(summand1,summand2)
 %------------- BEGIN CODE --------------
 
 %Find a matrix polytope object
-[matP,summand] = findClassArg(summand1,summand2,classname);
+[matP,summand] = findClassArg(summand1,summand2,'matPolytope');
 
 %Is summand a matrix polytope?
 if isa(summand,'matPolytope')

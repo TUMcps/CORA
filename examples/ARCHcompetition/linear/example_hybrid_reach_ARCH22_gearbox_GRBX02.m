@@ -9,9 +9,6 @@ function example_hybrid_reach_ARCH22_gearbox_GRBX02()
 %    -
 %
 % Outputs:
-%    res - true/false
-%
-% Example: 
 %    -
 
 % Author:       Niklas Kochdumper

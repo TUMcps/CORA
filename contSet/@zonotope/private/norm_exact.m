@@ -12,7 +12,8 @@ function [val,x] = norm_exact(Z,type)
 %    x - vertex attaining maximum norm
 %
 % Example:
-%    -
+%    Z = zonotope([1;0],[1 3 -2; 2 -1 0]);
+%    norm(Z,2,'exact')
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -22,17 +23,11 @@ function [val,x] = norm_exact(Z,type)
 
 % Author:       Victor Gassmann
 % Written:      18-September-2019
-% Last update:  ---
+% Last update:  04-April-2023 (VG: moved YALMIP check into yalmip
+%                                   "execution branch")
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-
-if ~isYalmipInstalled()
-     throw(CORAerror('CORA:YALMIP',...
-         'YALMIP must be on the MATLAB search path to use this function'));
-elseif str2double(yalmip('version'))<20190425 % version: 25.04.2019
-    throw(CORAerror('CORA:YALMIP','YALMIP version >=20190425 required'));
-end
 
 if ~exist('type','var')
     type = 2;
@@ -120,6 +115,9 @@ if isMosek
     x = G*u_sol+c;
     val = sqrt(-(4*(b_sol-0.5)'*M*(b_sol-0.5) - 4*c'*G*(b_sol-0.5)-lmax*m));
 elseif isYalmipInstalled()
+    if str2double(yalmip('version'))<20190425 % version: 25.04.2019
+        throw(CORAerror('CORA:YALMIP','YALMIP version >=20190425 required'));
+    end
     b = binvar(m,1);
     obj = 4*(b-0.5)'*M*(b-0.5) - 4*c'*G*(b-0.5);
     options = sdpsettings('verbose',0);

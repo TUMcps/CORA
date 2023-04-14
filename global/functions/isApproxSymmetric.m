@@ -14,7 +14,7 @@ function res = isApproxSymmetric(Q,TOL)
 %
 % Example: 
 %    E = ellipsoid([1,0;0,1/2],[1;1]);
-%    res = issymmetric(E.Q,E.TOL);
+%    res = isApproxSymmetric(E.Q,E.TOL);
 %
 % Other m-files required: none
 % Subfunctions: none

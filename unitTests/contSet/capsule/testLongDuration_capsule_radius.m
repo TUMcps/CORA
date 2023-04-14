@@ -8,9 +8,7 @@ function res = testLongDuration_capsule_radius
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

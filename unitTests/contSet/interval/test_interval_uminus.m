@@ -5,12 +5,10 @@ function res = test_interval_uminus
 %    res = test_interval_uminus
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

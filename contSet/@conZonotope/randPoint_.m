@@ -16,7 +16,9 @@ function p = randPoint_(cZ,N,type,varargin)
 %    p - random point in the constrained zonotope
 %
 % Example: 
-%    cZ = conZonotope.generateRandom('Dimension',2);
+%    Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
+%    A = [1 1 1]; b = 1;
+%    cZ = conZonotope(Z,A,b);
 %    p = randPoint(cZ,100);
 %
 %    figure; hold on;

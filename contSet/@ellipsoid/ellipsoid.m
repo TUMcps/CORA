@@ -24,6 +24,11 @@ classdef ellipsoid < contSet
 % Outputs:
 %    obj - generated ellipsoid object
 %
+% Example:
+%    Q = [2.7 -0.2;-0.2 2.4];
+%    q = [1;2];
+%    E = ellipsoid(Q, q);
+%  
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

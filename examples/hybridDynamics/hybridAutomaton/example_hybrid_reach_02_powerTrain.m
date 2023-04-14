@@ -2,13 +2,13 @@ function res = example_hybrid_reach_02_powerTrain()
 % example_hybrid_reach_02_powerTrain - power train example from [1]
 %
 % Syntax:  
-%    example_hybrid_reach_02_powerTrain()
+%    res = example_hybrid_reach_02_powerTrain()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % References:
 %   [1] M. Althoff et al. "Avoiding Geometic Intersection Operations in 

@@ -13,9 +13,8 @@ function d = hausdorffDist(P1,P2)
 %    d - Hausdorff distance
 %
 % Examples:
-%    P1 = mptPolytope.generateRandom('Dimension',2);
-%    P2 = mptPolytope.generateRandom('Dimension',2);
-%   
+%    P1 = mptPolytope([1 1; -2 1; 0 -1],[1;1;1]);
+%    P2 = mptPolytope([2 1; -1 2; -1 -2; 1 -1],[1;1;1;1]);
 %    d = hausdorffDist(P1,P2)
 %
 %    figure; hold on;

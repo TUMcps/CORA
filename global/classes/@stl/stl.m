@@ -80,6 +80,7 @@ end
 
 methods (Static = true)
     Z = generateRandom(varargin)
+    stl = bool2stl(bool)
 end
 
 end

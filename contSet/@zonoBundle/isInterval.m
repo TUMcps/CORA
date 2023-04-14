@@ -12,9 +12,9 @@ function res = isInterval(zB)
 %    res - true/false
 %
 % Example:
-%    list{1} = zonotope([1;0],eye(2));
-%    list{2] = zonotope([1;0.5],eye(2));
-%    zB = zonoBundle(list);
+%    Z1 = zonotope([1;0],eye(2));
+%    Z2 = zonotope([1;0.5],eye(2));
+%    zB = zonoBundle({Z1,Z2});
 %    isInterval(zB)
 %
 % Other m-files required: none

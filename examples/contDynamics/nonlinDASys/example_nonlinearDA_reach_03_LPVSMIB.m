@@ -6,10 +6,10 @@ function res = example_nonlinearDA_reach_03_LPVSMIB
 %    example_nonlinearDA_reach_03_LPVSMIB
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % References:
 %   [1] A. El-Guindy "LPV control with formal gurantees for transient stability

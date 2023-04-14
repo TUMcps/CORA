@@ -13,8 +13,8 @@ function C = project(C,dims)
 %
 % Example: 
 %    C = capsule([1; 1; 0], [0; 0; 1], 0.5);
-%    Z1 = project(Z,[1 3]);
-%    Z2 = project(Z,[true false true]);
+%    C1 = project(C,[1 3]);
+%    C2 = project(C,[true false true]);
 %
 % Other m-files required: none
 % Subfunctions: none

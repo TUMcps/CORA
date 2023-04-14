@@ -6,10 +6,10 @@ function res = example_hybrid_reach_ARCH22_rendezvous_SRA04()
 %    res = example_hybrid_reach_ARCH22_rendezvous_SRA04()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false
 %
 % References: 
 %   [1] N. Chan et al. "Verifying safety of an autonomous spacecraft 

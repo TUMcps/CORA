@@ -17,9 +17,6 @@ function [value,isterminal,direction] = eventFcn(ls,x,direction)
 %    direction - specifies if the value of the event function has to 
 %                turn from negative to positive or the other way round
 %
-% Example: 
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

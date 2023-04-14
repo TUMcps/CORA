@@ -28,7 +28,7 @@ function Z = zonotope(E,varargin)
 %    Z - zonotope object
 %
 % Example: 
-%    E = ellipsoid.generateRandom('Dimension',2);
+%    E = ellipsoid([3 -1; -1 1],[1;0]);
 %    Zenc = zonotope(E,10,'outer:norm');
 %    Zinsc = zonotope(E,10,'inner:norm');
 %    Zbox = zonotope(E);

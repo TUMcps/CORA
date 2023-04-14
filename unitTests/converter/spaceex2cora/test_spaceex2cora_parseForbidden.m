@@ -9,10 +9,7 @@ function res = test_spaceex2cora_parseForbidden()
 %    -
 %
 % Outputs:
-%    pass - true/false
-%
-% Example:
-%    -
+%    res - true/false
 
 % Author:       Maximilian Perschl
 % Written:      22-September-2021

@@ -25,14 +25,14 @@ classdef zoo
 %
 % Examples:
 %   % compute function bounds with interval arithmetic
-%   i = interval([0;1],[2;4]);
-%   int_i = i(1) * (i(1)-i(2)) + i(1)*i(2)
-%
+%   I = interval([0;1],[2;4]);
+%   int_i = I(1) * (I(1)-I(2)) + I(1)*I(2)
+% 
 %   % compute function bounds with class zoo
 %   methods = {'taylm(int)'; 'affine(bnb)'; 'interval'};
-%   z = zoo(i,methods,{'x';'y'},6,0.001,1e-8);
-%   int_zoo = interval(z(1) * (z(1)-z(2)) + z(1)*z(2))
-%
+%   z = zoo(I,methods,{'x';'y'},6,0.001,1e-8);
+%   temp = z(1) * (z(1)-z(2)) + z(1)*z(2);
+%   int_zoo = interval(temp)
 %
 % Other m-files required: none
 % Subfunctions: none

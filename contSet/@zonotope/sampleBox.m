@@ -13,7 +13,7 @@ function X = sampleBox(Z,N)
 %    X - samples (each sample a column vector)
 %
 % Example: 
-%    Z = zonotope([1 1 ; 0 1]);
+%    Z = zonotope([0;0],[1 1; 0 1]);
 %    X = sampleBox(Z,1000);
 %
 % Other m-files required: none

@@ -9,9 +9,7 @@ function res = test_polyZonotope_plus
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

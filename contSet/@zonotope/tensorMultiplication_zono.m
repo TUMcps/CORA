@@ -13,9 +13,6 @@ function Zres = tensorMultiplication_zono(Z,M,options)
 % Outputs:
 %    Zres - zonotope object
 %
-% Example: 
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

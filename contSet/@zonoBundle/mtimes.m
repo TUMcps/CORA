@@ -20,7 +20,7 @@ function zB = mtimes(factor1,factor2)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: zonotope/mtimes
 
 % Author:       Matthias Althoff
 % Written:      09-November-2010

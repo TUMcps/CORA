@@ -8,9 +8,7 @@ function res = test_zonotope_enlarge
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

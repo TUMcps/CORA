@@ -20,15 +20,15 @@ function cPZ = plus(summand1,summand2)
 %    b = 0;
 %    expMat_ = [2 0; 0 1];
 %    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
-%
+% 
 %    E = ellipsoid(0.1*[2 1;1 2]);
-%
+% 
 %    res = cPZ + E; 
 %
 %    figure; hold on;
-%    plot(res,[1,2],'FaceColor','b','Splits',25);
+%    plot(res,[1,2],'FaceColor','b','Splits',12);
 %    plot(E,[1,2],'FaceColor','g');
-%    plot(cPZ,[1,2],'FaceColor','r','Splits',15);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',12);
 %
 % Other m-files required: none
 % Subfunctions: none

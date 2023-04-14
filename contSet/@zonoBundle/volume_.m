@@ -11,7 +11,10 @@ function vol = volume_(zB,varargin)
 %    vol - volume
 %
 % Example: 
-%    ---
+%    Z1 = zonotope([1;1], [1 1; -1 1]);
+%    Z2 = zonotope([-1;1], [1 0; 0 1]);
+%    zB = zonoBundle({Z1,Z2}); 
+%    volume(zB)
 %
 % Other m-files required: none
 % Subfunctions: none

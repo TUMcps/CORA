@@ -28,16 +28,16 @@ function cPZ = enclose(cPZ,varargin)
 %    b = 0;
 %    expMat_ = [2 0;0 1];
 %    cPZ1 = conPolyZono(c,G,expMat,A,b,expMat_);
-%
+% 
 %    M = [1 2;-1 0]; b = [2;3];
 %    cPZ2 = M*cPZ1 + b;
 %   
 %    cPZ = enclose(cPZ1,cPZ2);
-%
+% 
 %    figure; hold on;
-%    plot(cPZ,[1,2],'FaceColor',[0.6 0.6 0.6],'Splits',20);
-%    plot(cPZ1,[1,2],'FaceColor','r','Splits',15);
-%    plot(cPZ2,[1,2],'FaceColor','b','Splits',15);
+%    plot(cPZ,[1,2],'FaceColor',[0.6 0.6 0.6],'Splits',10);
+%    plot(cPZ1,[1,2],'FaceColor','r','Splits',8);
+%    plot(cPZ2,[1,2],'FaceColor','b','Splits',8);
 %
 % Other m-files required: none
 % Subfunctions: none

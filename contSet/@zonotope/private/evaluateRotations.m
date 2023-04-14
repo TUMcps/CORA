@@ -13,9 +13,6 @@ function [iAxis,relImpr] = evaluateRotations(V,deltaAngle)
 %    iAxis - indicates which axis has been rotated
 %    relImpr - computes the relative improvement of the rotation
 %
-% Example:
-%    -
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

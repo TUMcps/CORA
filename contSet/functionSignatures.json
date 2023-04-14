@@ -1,7 +1,18 @@
 {
   "_schemaVersion": "1.0.0",
 
-  "_comment": "contSet --------------------------------------------------", 
+  "_comment": "contSet --------------------------------------------------",
+  "contSet.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"}
+     ],
+     "outputs": [
+         {"name":"S", "type":"contSet"}
+     ]
+  },
+
   "contSet.plot":
   {
      "inputs":
@@ -19,6 +30,9 @@
         {"name":"Marker", "kind":"namevalue", "type":["char","choices={'o','+','*','.','x','_','|','square','diamond','^','v','>','<','pentagram','hexagram'}"],"purpose":"Marker"},
         {"name":"MarkerSize", "kind":"namevalue", "type":["numeric"],"purpose":"MarkerSize"},
         {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric"],"purpose":"FaceAlpha"},
+        {"name":"XPos", "kind":"namevalue", "type":["numeric"],"purpose":"position on x-axis"},
+        {"name":"YPos", "kind":"namevalue", "type":["numeric"],"purpose":"position on y-axis"},
+        {"name":"ZPos", "kind":"namevalue", "type":["numeric"],"purpose":"position on z-axis"},
          
         {"name":"Splits", "kind":"namevalue", "type":["numeric"],"purpose":"Splits (only for polyZonotope/conZonotope)"}
      ]

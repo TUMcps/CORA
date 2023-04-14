@@ -17,7 +17,7 @@ function E = mtimes(A,E)
 %    M = [1 0.5; 0.5 1];
 % 
 %    figure; hold on;
-%    plot(E);
+%    plot(E,[1,2],'b');
 %    plot(M*E,[1,2],'r');
 %
 % Other m-files required: none

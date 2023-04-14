@@ -16,7 +16,7 @@ function p = randPoint_(P,N,type,varargin)
 %    p - random point in R^n
 %
 % Example: 
-%    P = mptPolytope.generateRandom('Dimension',2);
+%    P = mptPolytope([1 1; -2 1; 0 -1],[1;1;1]);
 %    points = randPoint(P,100);
 %
 %    figure; hold on;

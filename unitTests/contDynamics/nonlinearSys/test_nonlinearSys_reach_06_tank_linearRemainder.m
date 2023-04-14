@@ -11,10 +11,7 @@ function res = test_nonlinearSys_reach_06_tank_linearRemainder
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 %
 % References:
 %    [1] M. Althoff. Reachability analysis and its application to the safety 

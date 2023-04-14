@@ -9,9 +9,7 @@ function res = testLongDuration_polyZonotope_polyZonotope
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

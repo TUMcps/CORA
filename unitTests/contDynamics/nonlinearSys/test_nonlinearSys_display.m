@@ -10,8 +10,6 @@ function res = test_nonlinearSys_display
 % Outputs:
 %    res - true/false
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

@@ -13,10 +13,15 @@ function cZ = minus(cZ,varargin)
 %    cZ - conZonotope object
 %
 % Example: 
-%    ---
+%    Z = [0 3 0 1;0 0 2 1];
+%    A = [1 0 1];
+%    b = 1;
+%    cZ = conZonotope(Z,A,b);
+%    cZ_ = cZ - [1;0];
 %
-% References:
-%    ---
+%    figure; hold on;
+%    plot(cZ);
+%    plot(cZ_,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -11,10 +11,7 @@ function res = test_nonlinearSys_linearize
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      30-July-2017

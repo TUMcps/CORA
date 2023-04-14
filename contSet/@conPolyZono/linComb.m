@@ -26,8 +26,8 @@ function res = linComb(cPZ,S)
 %    res = linComb(cPZ,Z);
 %
 %    figure; hold on;
-%    plot(res,[1,2],'FaceColor','r','Splits',15);
-%    plot(cPZ,[1,2],'FaceColor','b','Splits',15);
+%    plot(res,[1,2],'FaceColor','r','Splits',12);
+%    plot(cPZ,[1,2],'FaceColor','b','Splits',12);
 %    plot(Z,[1,2],'FaceColor','g');
 %
 % Other m-files required: none

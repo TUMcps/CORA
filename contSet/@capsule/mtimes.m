@@ -16,7 +16,9 @@ function C = mtimes(factor1,factor2)
 %    C = capsule([1; 1], [0; 1], 0.5);
 %    M = [0 1; 1 0];
 %    C_ = M*C;
-%    plot(C); hold on;
+%
+%    figure; hold on;
+%    plot(C);
 %    plot(C_);
 %
 % Other m-files required: none

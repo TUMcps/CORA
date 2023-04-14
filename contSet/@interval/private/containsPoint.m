@@ -13,7 +13,16 @@ function res = containsPoint(I,p)
 %    result - true/false (array)
 %
 % Example: 
-%    ---
+%    I = interval([-2;1],[4;3]);
+%    p_in = [0;2];
+%    p_out = [3;4];
+%    contains(I,p_in)
+%    contains(I,p_out)
+%    
+%    figure; hold on;
+%    plot(I);
+%    plot(p_in(1),p_in(2),'.g','MarkerSize',12);
+%    plot(p_out(1),p_out(2),'.r','MarkerSize',12);
 %
 % Other m-files required: none
 % Subfunctions: none

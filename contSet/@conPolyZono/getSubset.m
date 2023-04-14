@@ -24,8 +24,8 @@ function S = getSubset(cPZ,id,val)
 %    S = getSubset(cPZ,2,interval(-0.5,0.3));
 %
 %    figure; hold on;
-%    plot(S,[1,2],'FaceColor','b','Splits',15);
-%    plot(cPZ,[1,2],'r','LineWidth',2,'Splits',15);
+%    plot(S,[1,2],'FaceColor','b','Splits',12);
+%    plot(cPZ,[1,2],'r','LineWidth',2,'Splits',12);
 %
 % Other m-files required: none
 % Subfunctions: none

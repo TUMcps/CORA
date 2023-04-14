@@ -12,9 +12,6 @@ function P = plus(summand1,summand2)
 % Outputs:
 %    P - mptPolytope object
 %
-% Example: 
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

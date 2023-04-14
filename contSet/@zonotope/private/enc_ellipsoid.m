@@ -1,21 +1,22 @@
-function [E] = enc_ellipsoid(Z,comptype)
+function E = enc_ellipsoid(Z,comptype)
 % enc_ellipsoid - Overapproximates a zonotope by an ellipsoid
 %
 % Syntax:  
-%    E = ellipsoid(Z,comptype)
+%    E = enc_ellipsoid(Z,comptype)
 %
 % Inputs:
-%    Z                  - zonotope object
-%    (optional) comptype- specifies whether norm is computed exactly or not 
+%    Z - zonotope object
+%    comptype - (optional) specifies whether norm is computed exactly or not 
 %
 % Outputs:
 %    E - ellipsoid object
 %
-% Example: 
-%    Z = zonotope(rand(2,5));
-%    E = enc_ellipsoid(Z);
+% Example:
+%    Z = zonotope([1;0],[2 -1 3; 0 1 2]);
+%    E = ellipsoid(Z,'outer:norm_bnd');
+%    
+%    figure; hold on;
 %    plot(Z);
-%    hold on
 %    plot(E);
 %
 % References:

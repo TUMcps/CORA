@@ -20,7 +20,7 @@ function intMat = generateRandom(varargin)
 %    intMat1 = intervalMatrix.generateRandom();
 %    intMat2 = intervalMatrix.generateRandom('Dimension',3);
 %    intMat3 = intervalMatrix.generateRandom('Center',ones(2,1));
-%    intMat3 = intervalMatrix.generateRandom('MaxRadius',ones(2,1));
+%    intMat4 = intervalMatrix.generateRandom('MaxRadius',ones(2,1));
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -54,11 +54,13 @@ end
 
 % default computation for dimension
 if isempty(n)
-    if isempty(c)
+    if isempty(c) && isempty(r)
         nmax = 10;
         n = randi(nmax,1,2);
-    else
+    elseif ~isempty(c)
         n = size(c);
+    elseif ~isempty(r)
+        n = size(r);
     end
 end
 

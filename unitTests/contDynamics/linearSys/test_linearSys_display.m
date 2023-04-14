@@ -10,8 +10,6 @@ function res = test_linearSys_display
 % Outputs:
 %    res - true/false
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

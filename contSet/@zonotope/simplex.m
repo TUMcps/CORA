@@ -1,22 +1,22 @@
-function S = simplex(Z)
+function P = simplex(Z)
 % simplex - enclose a zonotope by a simplex
 %
 % Syntax:  
-%    S = simplex(Z)
+%    P = simplex(Z)
 %
 % Inputs:
 %    Z - zonotope object
 %
 % Outputs:
-%    S - simplex represented as a mptPolytope object
+%    P - mptPolytope object representing the simplex
 %
 % Example: 
-%    Z = zonotope.generateRandom('Dimension', 2);
-%    S = simplex(Z)
+%    Z = zonotope([1;0],[1 -1 0.5; 0 1 1]);
+%    P = simplex(Z)
 %    
 %    figure; hold on; box on;
 %    plot(Z);
-%    plot(S, [1,2], 'r');
+%    plot(P, [1,2], 'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,19 +31,17 @@ function S = simplex(Z)
 
 %------------- BEGIN CODE --------------
 
-    % construct an n-dimensional standard simplex with origin 0
-    n = dim(Z);
-    V = eye(n+1);
-    B = gramSchmidt(ones(n+1,1));
-    
-    S = mptPolytope((B(:,2:end)'*V)');
-    
-    % scale the simplex so that it tightly encloses the zonotope    
-    A = S.P.A;
-    b = supremum(interval(A*Z));
-    
-    S = mptPolytope(A, b);
+% construct an n-dimensional standard simplex with origin 0
+n = dim(Z);
+V = eye(n+1);
+B = gramSchmidt(ones(n+1,1));
 
-end
+P = mptPolytope((B(:,2:end)'*V)');
+
+% scale the simplex so that it tightly encloses the zonotope    
+A = P.P.A;
+b = supremum(interval(A*Z));
+
+P = mptPolytope(A, b);
 
 %------------- END OF CODE --------------

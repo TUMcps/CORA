@@ -13,8 +13,8 @@ function res = polytope2stl(obj,set)
 %
 % Example: 
 %    x = stl('x',2)
-%    pgon = polygon.generateRandom();
-%    res = polytope2stl(x,set
+%    set = mptPolytope([1 1; -2 1; 0 -1],[1;1;1]);
+%    res = polytope2stl(x,set);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,10 +30,10 @@ function res = polytope2stl(obj,set)
 %------------- BEGIN CODE --------------
 
     res = [];
-
-    for i = 1:size(set.P.A,1)
+    for i = 1:length(set.P.b)
         res = res & halfspace2set(obj,set.P.A(i,:),set.P.b(i));
     end
+
 end
 
 

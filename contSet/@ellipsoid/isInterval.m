@@ -13,8 +13,8 @@ function res = isInterval(E)
 %
 % Example:
 %    E1 = ellipsoid(0.02);
-%    isInterval(C1)
-%
+%    isInterval(E1)
+% 
 %    E2 = ellipsoid(eye(2),[1;0]);
 %    isInterval(E2)
 %

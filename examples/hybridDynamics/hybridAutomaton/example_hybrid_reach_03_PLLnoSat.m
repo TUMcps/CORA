@@ -10,10 +10,7 @@ function completed = example_hybrid_reach_03_PLLnoSat()
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    completed - true/false
 %
 % References:
 %    [1] Althoff, M.; Rajhans, A.; Krogh, B. H.; Yaldiz, S.; Li, X. & Pileggi, L. 

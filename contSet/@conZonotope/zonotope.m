@@ -16,14 +16,14 @@ function Z = zonotope(cZ,varargin)
 %    Z = [0 1 0 1;0 1 2 -1];
 %    A = [-2 1 -1]; b = 2;
 %    cZ = conZonotope(Z,A,b);
-%
+% 
 %    Z1 = zonotope(cZ,'nullSpace');
-%    Z2 = zonotope(cZ,'reduce')
-%
+%    Z2 = zonotope(cZ,'reduce');
+% 
 %    figure; hold on;
-%    plot(cZono,[1,2],'FaceColor',[.7 .7 .7]);
-%    plot(zono1,[1,2],'b');
-%    plot(zono2,[1,2],'r');
+%    plot(cZ,[1,2],'FaceColor',[.7 .7 .7]);
+%    plot(Z1,[1,2],'b');
+%    plot(Z2,[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none

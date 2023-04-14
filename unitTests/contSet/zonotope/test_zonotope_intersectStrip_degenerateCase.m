@@ -11,9 +11,7 @@ function res = test_zonotope_intersectStrip_degenerateCase
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % References:
 %    [1] Ye Wang, Vicenç Puig, and Gabriela Cembrano. Set-

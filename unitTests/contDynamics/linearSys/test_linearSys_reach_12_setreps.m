@@ -10,10 +10,7 @@ function res = test_linearSys_reach_12_setreps()
 %    -
 %
 % Outputs:
-%    res - true/false 
-%
-% Example: 
-%    -
+%    res - true/false
 
 % Author:       Mark Wetzlinger
 % Written:      17-March-2023

@@ -9,9 +9,7 @@ function res = testLongDuration_component_ellipsoid_andHalfspace
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

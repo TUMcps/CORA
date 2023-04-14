@@ -15,7 +15,8 @@ function varargout = norm_(Z,type,mode,varargin)
 %    x - vertex attaining maximum norm
 %
 % Example: 
-%    ---
+%    Z = zonotope([1;0],[1 3 -2; 2 -1 0]);
+%    norm(Z)
 %
 % Other m-files required: none
 % Subfunctions: none

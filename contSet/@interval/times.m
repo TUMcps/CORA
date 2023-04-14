@@ -25,41 +25,42 @@ function res = times(factor1,factor2)
 % Author:       Matthias Althoff
 % Written:      19-June-2015
 % Last update:  13-January-2016 (DG)
+%               04-April-2023 (TL: minor optimizations)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % an interval * a number
 if isa(factor1, 'interval') && ~isa(factor2, 'interval')
+    resInf = factor1.inf .* factor2;
+    resSup = factor1.sup .* factor2;
+
     res = interval();
-    res.inf = min(factor1.inf .* factor2, factor1.sup .* factor2);
-    res.sup = max(factor1.inf .* factor2, factor1.sup .* factor2);
+    res.inf = min(resInf, resSup);
+    res.sup = max(resInf, resSup);
     
 % a number * an interval
 elseif ~isa(factor1, 'interval') && isa(factor2, 'interval')
+    resInf = factor2.inf .* factor1;
+    resSup = factor2.sup .* factor1;
+    
     res = interval();
-    res.inf = min(factor2.inf .* factor1, factor2.sup .* factor1);
-    res.sup = max(factor2.inf .* factor1, factor2.sup .* factor1);
-
+    res.inf = min(resInf, resSup);
+    res.sup = max(resInf, resSup);
+    
 % an interval * an interval
 else
-    
-    % intitialization of res as an interval
-    res = factor1;
 
     % possible combinations
-    possibleValues{1} = res.inf .* factor2.inf;
-    possibleValues{2} = res.inf .* factor2.sup;
-    possibleValues{3} = res.sup .* factor2.inf;
-    possibleValues{4} = res.sup .* factor2.sup;
+    res1 = factor1.inf .* factor2.inf;
+    res2 = factor1.inf .* factor2.sup;
+    res3 = factor1.sup .* factor2.inf;
+    res4 = factor1.sup .* factor2.sup;
 
     % to find min and max
-    res.inf = min(possibleValues{1},min(possibleValues{2}, ...
-              min(possibleValues{3},possibleValues{4})));
-          
-    res.sup = max(possibleValues{1},max(possibleValues{2}, ...
-              max(possibleValues{3},possibleValues{4})));
-    
+    res = interval();
+    res.inf = min(res1,min(res2, min(res3,res4)));
+    res.sup = max(res1,max(res2, max(res3,res4)));    
 end
 
 %------------- END OF CODE --------------

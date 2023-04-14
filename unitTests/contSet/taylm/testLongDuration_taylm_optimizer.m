@@ -10,9 +10,7 @@ function res = testLongDuration_taylm_optimizer
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

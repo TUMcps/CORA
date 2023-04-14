@@ -34,21 +34,22 @@ function [f,fvec,fGrest] = fhandle(pZ,varargin)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 % parse input arguments
-if isempty(varargin)
+if nargin > 2
+    throw(CORAerror('CORA:tooManyInputArgs',2));
+elseif nargin == 1
     id = pZ.id;
-elseif length(varargin)==1
+elseif nargin == 2
     if iscell(varargin{1})
-        for i=1:length(varargin{1})
-            inputArgsCheck({{varargin{1}{i},'att','double',{'integer','ncols',1}}});
-        end
+%         for i=1:length(varargin{1})
+%             inputArgsCheck({{varargin{1}{i},'att','double',{'integer','ncols',1}}});
+%         end
         id = vertcat(varargin{1}{:});
     else
-        inputArgsCheck({{varargin{1},'att','double',{'integer','ncols',1}}});
+%         inputArgsCheck({{varargin{1},'att','double',{'integer','ncols',1}}});
         id = varargin{1};
     end
-else
-    throw(CORAerror('CORA:tooManyInputArgs',2));
 end
 
 % make sure all ids are unique
@@ -81,7 +82,5 @@ f = @(varargin) fG(varargin{:});
 fvec = @(x) fGt(x);
 % return function handle for rest zonotope
 fGrest = @(r) pZ.Grest*r;
-
-end
 
 %------------- END OF CODE --------------

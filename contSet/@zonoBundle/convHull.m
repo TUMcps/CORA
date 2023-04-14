@@ -16,13 +16,13 @@ function zB = convHull(zB,S)
 %    Z1 = zonotope([0 1 2 0;0 1 0 2]);
 %    Z2 = zonotope([3 -0.5 3 0;-1 0.5 0 3]);
 %    zB = zonoBundle({Z1,Z2});
-%
-%    res = convHull(zB,I);
-%
+% 
+%    zB_ = convHull(zB,I);
+% 
 %    figure; hold on;
-%    plot(int,[1,2],'FaceColor','b');
-%    plot(zB,[1,2],'FaceColor','r');
-%    plot(res,[1,2],'g','LineWidth',3);
+%    plot(I);
+%    plot(zB);
+%    plot(zB_);
 %
 % Other m-files required: none
 % Subfunctions: none

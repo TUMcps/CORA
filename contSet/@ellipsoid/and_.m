@@ -14,16 +14,15 @@ function E = and_(E,S,mode)
 % Outputs:
 %    E - ellipsoid object
 %
-% Example: 
-%    E1 = ellipsoid.generateRandom('Dimension',2);
-%    E2 = ellipsoid.generateRandom('Dimension',2);
-%    E3 = ellipsoid.generateRandom('Dimension',2);
+% Example:
+%    E1 = ellipsoid([3 -1; -1 1],[1;0]);
+%    E2 = ellipsoid([5 1; 1 2],[1;-1]);
+%    E3 = ellipsoid([0.6 -0.4; -0.4 2.2],[0.5;0]);
 %    Eo = and(E1,[E2,E3],'outer');
 %    Ei = and(E1,[E2,E3],'inner');
 %    figure; hold on;
-%    plot(E1); plot(E2);plot(E3);
-%    plot(Eo,[1,2],'r');
-%    plot(Eo,[1,2],'b');
+%    plot(E1); plot(E2); plot(E3);
+%    plot(Eo); plot(Ei);
 %
 % References: 
 %   [1] A. Kurzhanski et al. "Ellipsoidal Toolbox Manual", 2006

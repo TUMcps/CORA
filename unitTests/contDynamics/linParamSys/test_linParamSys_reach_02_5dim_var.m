@@ -9,10 +9,7 @@ function res = test_linParamSys_reach_02_5dim_var()
 %    -
 %
 % Outputs:
-%    res - boolean
-%
-% Example:
-%    -
+%    res - true/false
 %
 % References:
 %    [1] Althoff, M.; Le Guernic, C. & Krogh, B. H. Reachable Set Computation

@@ -12,9 +12,6 @@ function zB = shrink(zB,filterLength)
 % Outputs:
 %    zB - zonoBundle object
 %
-% Example: 
-%    ---
-%
 % Other m-files required: vertices, polytope
 % Subfunctions: none
 % MAT-files required: none

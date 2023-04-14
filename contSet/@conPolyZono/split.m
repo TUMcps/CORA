@@ -30,9 +30,9 @@ function res = split(cPZ,varargin)
 %    res = split(cPZ,1);
 %
 %    figure; hold on;
-%    plot(res{1},[1,2],'FaceColor','b','Splits',20);
-%    plot(res{2},[1,2],'FaceColor','g','Splits',20);
-%    plot(cPZ,[1,2],'r','Splits',15,'LineWidth',2);
+%    plot(res{1},[1,2],'FaceColor','b','Splits',12);
+%    plot(res{2},[1,2],'FaceColor','g','Splits',12);
+%    plot(cPZ,[1,2],'r','Splits',12,'LineWidth',2);
 %
 % Other m-files required: none
 % Subfunctions: none

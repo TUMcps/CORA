@@ -11,8 +11,7 @@ function display(obj)
 %    ---
 %
 % Example: 
-%    sys = contDynamics('test function',[1 2],1,3);
-%    display(sys);
+%    sys = contDynamics('test',3,1,2)
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -7,13 +7,10 @@ function example_linearParam_reach_ARCH22_platoon_PLAD01_BND42()
 %    example_linearParam_reach_ARCH22_platoon_PLAD01_BND42
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%
+%    -
 
 % Author:       Matthias Althoff
 % Written:      05-April-2017

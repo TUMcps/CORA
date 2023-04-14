@@ -12,7 +12,9 @@ function cPZ = conPolyZono(zB)
 %    cPZ - conPolyZono object
 %
 % Example: 
-%    zB = zonoBundle.generateRandom('Dimension',2);
+%    Z1 = zonotope([1;-1],[2 -1 3; 0 1 -1]);
+%    Z2 = Z1 + [1;0];
+%    zB = zonoBundle({Z1,Z2});
 %    cPZ = conPolyZono(zB)
 %
 % Other m-files required: none

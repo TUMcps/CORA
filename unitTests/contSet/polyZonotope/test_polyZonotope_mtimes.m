@@ -9,9 +9,7 @@ function res = test_polyZonotope_mtimes
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

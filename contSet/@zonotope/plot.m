@@ -30,6 +30,7 @@ function han = plot(Z,varargin)
 % Written:      27-July-2016
 % Last update:  14-July-2020 (merge with plotFilled)
 %               25-May-2022 (TL: 1D Plotting)
+%               05-April-2023 (TL: clean up using plotPolygon)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -39,9 +40,6 @@ dims = setDefaultValues({[1,2]},varargin);
 
 % parse plot options
 NVpairs = readPlotOptions(varargin(2:end));
-[NVpairs,height] = readNameValuePair(NVpairs,'Height','isscalar');
-% readout 'FaceColor' to decide plot/fill call where necessary
-[NVpairs,facecolor] = readNameValuePair(NVpairs,'FaceColor');
 
 % check dimension
 if length(dims) < 1
@@ -56,32 +54,16 @@ Z = project(Z,dims);
 % 1D, 2D or 3D plot
 if length(dims) == 1
     V = vertices(Z);
-    han = plot(V,[0,0],NVpairs{:});
+    han = plotPolygon(V,NVpairs{:});
 
 elseif length(dims) == 2
-
     % convert zonotope to polygon
     p = polygon(Z);
 
     % plot and output the handle
-    if isempty(facecolor) || strcmp(facecolor,'none')
-        if isempty(height) % no 3D plot
-            han = plot(p(1,:),p(2,:),NVpairs{:});
-        else
-            zCoordinates = height*ones(length(p(1,:)),1); 
-            han = plot3(p(1,:),p(2,:),zCoordinates,NVpairs{:}); 
-        end
-    else   
-        if isempty(height) % no 3D plot
-            han = fill(p(1,:),p(2,:),facecolor,NVpairs{:});
-        else
-            zCoordinates = height*ones(length(p(1,:)),1); 
-            han = fill3(p(1,:),p(2,:),zCoordinates,facecolor,NVpairs{:}); 
-        end
-    end
-
-else
+    han = plotPolygon(p, NVpairs{:});
     
+else
     % compute vertices
     V = vertices(Z);
     

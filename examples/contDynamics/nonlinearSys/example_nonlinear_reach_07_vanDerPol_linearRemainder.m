@@ -3,16 +3,13 @@ function completed = example_nonlinear_reach_07_vanDerPol_linearRemainder()
 %    nonlinear reachability analysis;
 %
 % Syntax:  
-%    example_nonlinear_reach_07_vanDerPol_linearRemainder()
+%    completed = example_nonlinear_reach_07_vanDerPol_linearRemainder()
 %
 % Inputs:
 %    -
 %
 % Outputs:
-%    completed - boolean 
-%
-% Example: 
-%
+%    completed - true/false 
 
 % Author:       Victor Gassmann
 % Written:      22-May-2019

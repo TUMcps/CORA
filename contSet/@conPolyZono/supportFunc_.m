@@ -46,7 +46,7 @@ function val = supportFunc_(cPZ,dir,type,method,splits,varargin)
 %    lb2 = conHyperplane(dir,infimum(b2));
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'FaceColor','r','Splits',15);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',12);
 %    plot(ub1,[1,2],'b');
 %    plot(lb1,[1,2],'b');
 %    plot(ub2,[1,2],'g');

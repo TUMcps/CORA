@@ -9,9 +9,7 @@ function res = testLongDuration_component_ellipsoid_distanceMptPolytope
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

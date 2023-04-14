@@ -1,20 +1,16 @@
-function completed = test_nonlinParamSys_reach_03_tank_linearRemainder
+function res = test_nonlinParamSys_reach_03_tank_linearRemainder
 % test_nonlinParamSys_reach_03_tank_linearRemainder - example of
 %    nonlinear reachability analysis with uncertain parameters.
-%
 %    This example can be found in [1, Sec. 3.4.5] or in [2].
 %
 % Syntax:  
-%    completed = test_nonlinParamSys_reach_03_tank_linearRemainder
+%    res = test_nonlinParamSys_reach_03_tank_linearRemainder
 %
 % Inputs:
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 %
 % References:
 %    [1] M. Althoff, "Reachability analysis and its application to the
@@ -119,6 +115,6 @@ end
 
 
 %example completed
-completed = true;
+res = true;
 
 %------------- END OF CODE --------------

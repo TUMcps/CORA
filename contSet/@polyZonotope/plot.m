@@ -21,7 +21,7 @@ function han = plot(pZ,varargin)
 %     
 %    figure; hold on;
 %    plotRandPoint(pZ);
-%    plot(pZ,[1,2],'b','Splits',3);
+%    plot(pZ,[1,2],'b','Splits',4);
 %
 %    figure; hold on;
 %    plotRandPoint(pZ);
@@ -40,6 +40,7 @@ function han = plot(pZ,varargin)
 %               25-May-2022 (TL: 1D Plotting)
 %               23-February-2023 (TL: enlarge polygon if 2 regions)
 %               23-March-2023 (TL: bugfix Splits=0, clean up)
+%               05-April-2023 (TL: clean up using plotPolygon)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -53,8 +54,6 @@ dims = setDefaultValues({[1,2]},varargin);
 NVpairs = readPlotOptions(varargin(2:end));
 % read out 'Splits', default value given
 [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar',10);
-% read out 'FaceColor' to decide plot/fill call where necessary
-[~,facecolor] = readNameValuePair(NVpairs,'FaceColor');
 
 % check input arguments
 inputArgsCheck({{pZ,'att','polyZonotope'};
@@ -74,22 +73,20 @@ pZ = deleteZeros(pZ);
 
 % project to desired dimensions
 pZ = project(pZ,dims);
+dims = 1:dim(pZ);
 pZ = compact(pZ);
-
-if length(dims) == 1
-    % add zeros to 2nd dimension
-    pZ = cartProd_(pZ,0,'exact');
-    dims = [1;2];
-end
 
 % check if is zonotope
 if all(sum(pZ.expMat > 0, 2) == 1)
-    han = plot(zonotope(pZ), [1, 2], NVpairs{:});
+    han = plot(zonotope(pZ), dims, NVpairs{:});
     return
 end
 
-% 2D vs 3D plot
-if length(dims) == 2
+% 1D, 2D vs 3D plot
+if length(dims) == 1
+    han = plot(interval(pZ, 'split'), 1, NVpairs{:});
+
+elseif length(dims) == 2
     
     warOrig = warning;
     warning('off','all');
@@ -106,36 +103,43 @@ if length(dims) == 2
     for i=1:splits
         
         % construct new polygon
-        pZnew = [];
-        Vnew = [];
+        scounter = 0;
+        pZnew = cell(length(pZsplit), 1);
+        Vnew = cell(length(pZsplit), 1);
         polyUnion = [];
         
         for j = 1:length(pZsplit)
             
             % only split the set if it is part of the boundary
             if any(sum(ismembertol(Vlist{j}',polyPrev.Vertices,1e-12),2) == 2)
-                
+                % split set if on boundary
+
                 % split the polynomial zonotope
                 res = splitLongestGen(pZsplit{j});
                 
                 % compute the corresponding polygons
                 [poly1,V1] = aux_getPolygon(res{1});
-                pZnew{end+1} = res{1};
-                Vnew{end+1} = V1;
+                scounter = scounter + 1;
+                pZnew{scounter} = res{1};
+                Vnew{scounter} = V1;
                 
                 [poly2,V2] = aux_getPolygon(res{2});
-                pZnew{end+1} = res{2};
-                Vnew{end+1} = V2;
+                scounter = scounter + 1;
+                pZnew{scounter} = res{2};
+                Vnew{scounter} = V2;
                 
                 % unite the polygons
                 poly = union(poly1,poly2);
                 
             else
-                
+                % no splitting if not on boundary
+
                 % compute polygon
                 [poly,V] = aux_getPolygon(pZsplit{j});
-                pZnew{end+1} = pZsplit{j};
-                Vnew{end+1} = V;
+                scounter = scounter + 1;
+                pZnew{scounter} = pZsplit{j};
+                Vnew{scounter} = V;
+
             end
             
             % unite with previous polygons
@@ -156,8 +160,8 @@ if length(dims) == 2
         end
         
         % update lists
-        pZsplit = pZnew;
-        Vlist = Vnew;
+        pZsplit = pZnew(1:scounter);
+        Vlist = Vnew(1:scounter);
         polyPrev = polyUnion;
     end
 
@@ -175,24 +179,21 @@ if length(dims) == 2
     end
     
     % plot the polygon
-    if isempty(facecolor) || strcmp(facecolor,'none')
-        han = plot(xVals,yVals,NVpairs{:});
-    else
-        han = fill(xVals,yVals,facecolor,NVpairs{:});
-    end
+    han = plotPolygon([xVals,yVals]', NVpairs{:});
 
 else
+    % plot 3d
     
     % split the polynomial zonotope multiple times to obtain a better 
     % over-approximation of the real shape
     pZsplit{1} = pZ;
 
     for i=1:splits
-        pZnew = [];
+        pZnew = cell(2*length(pZsplit));
         for j=1:length(pZsplit)
             res = splitLongestGen(pZsplit{j});
-            pZnew{end+1} = res{1};
-            pZnew{end+1} = res{2};
+            pZnew{2*j-1} = res{1};
+            pZnew{2*j} = res{2};
         end
         pZsplit = pZnew;
     end

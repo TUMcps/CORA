@@ -10,10 +10,7 @@ function res = testMP_Krylov_initReach(~)
 %    no
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      14-November-2018

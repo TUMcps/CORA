@@ -1,19 +1,15 @@
 function runExamples(varargin)
-% runExamples - runs all examples starting with a certain prefix in the
-% folder 'examples'.
+% runExamples - runs all examples (files starting with 'example') in the
+%    folder cora/examples
 %
 % Syntax:  
 %    runExamples(varargin)
 %
 % Inputs:
-%    prefix - prefix of function names to be tested (not required)
-%    verbose - show workspace output or not (not required)
-%    directory - change directory (not required)
+%    verbose - (optional) show workspace output or not
+%    directory - (optional) change directory
 %
 % Outputs:
-%    -
-%
-% Example: 
 %    -
 
 % Author:       Dmitry Grebenyuk, Matthias Althoff
@@ -23,30 +19,22 @@ function runExamples(varargin)
 
 %------------- BEGIN CODE --------------
 
-% default settings
-directory = [CORAROOT filesep 'examples'];
-prefix = 'example';
-verbose = true;
+% get the original working directory
+currentDirectory = pwd;
 
-if nargin >= 1
-    prefix = varargin{1};
-end
-if nargin >= 2
-    verbose = varargin{2};
-end
-if nargin >= 3
-    directory = varargin{3};
-end
+% default settings
+[verbose,directory] = setDefaultValues(...
+    {true,[CORAROOT filesep 'examples']},varargin);
 
 % run main program performing the examples
-[failed, numberOfTests] = testSuiteCore(prefix,verbose,directory);
+[failed, numberOfTests] = testSuiteCore('example',verbose,directory);
 
-% display number of failed examples + file names
+% display number of failed examples and file names
 disp('----------------------------------------------------------------------------');
-disp(['run ' int2str(numberOfTests) ' examples, ' int2str(size(failed, 2)) ' failed.']);
+disp(['run ' int2str(numberOfTests) ' examples, ' int2str(size(failed,1)) ' failed.']);
 disp(strjoin(failed, ',\n'));
 
 % return to original working directory
-cd(directory);
+cd(currentDirectory);
 
 %------------- END OF CODE --------------

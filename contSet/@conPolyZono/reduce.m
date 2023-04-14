@@ -26,8 +26,8 @@ function cPZ = reduce(cPZ,method,order)
 %    cPZ_ = reduce(cPZ,'girard',6);
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'FaceColor','r','Splits',15);
-%    plot(cPZ_,[1,2],'b','Splits',15);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',12);
+%    plot(cPZ_,[1,2],'b','Splits',12);
 %
 % Other m-files required: none
 % Subfunctions: none

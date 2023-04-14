@@ -1,14 +1,14 @@
-function Z = exactPlus(Z1,Z2,varargin)
+function Z = exactPlus(Z,Z2,varargin)
 % exactPlus - adds two zonotopes by adding all generators of common
 %    generator factors. Caution: The correspondance of generator factors
 %    has to be ensured before calling the function; this function is not a
 %    replacement for the Minkowski sum
 %
 % Syntax:  
-%    Z = exactPlus(Z1,Z2)
+%    Z = exactPlus(Z,Z2)
 %
 % Inputs:
-%    Z1 - zonotope object
+%    Z - zonotope object
 %    Z2 - zonotope object
 %    nrOfGens - (optional) limit on the number of generators that can be
 %               added exactly
@@ -26,7 +26,7 @@ function Z = exactPlus(Z1,Z2,varargin)
 %    plot(Z1);
 %    plot(Z2);
 %    plot(Zexact,[1,2],'g');
-%    plot(Z,[1,2],'r');
+%    plot(Z,[1,2],'r--');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -42,7 +42,7 @@ function Z = exactPlus(Z1,Z2,varargin)
 %------------- BEGIN CODE --------------
 
 % obtain matrix
-Zmat1 = Z1.Z;
+Zmat1 = Z.Z;
 Zmat2 = Z2.Z;
 
 % number of vectors

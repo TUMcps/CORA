@@ -9,9 +9,7 @@ function res = test_interval_mtimes
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -125,6 +123,13 @@ c = a*b;
 c_true = interval([-11 -9; -5 3],[1 0; 5 10]);
 resVec(end+1) = (c == c_true);
 %--------------------------------------------------------------------------
+
+%SPARSE VALUES-------------------------------------------------------------
+a = interval([2 -3; -1 2],[4 -2; 1 3]);
+b = interval(sparse([-2 0; -1 2]),sparse([-1 1; 1 3]));
+c = a*b;
+c_true = interval([-11 -9; -5 3],[1 0; 5 10]);
+resVec(end+1) = (c == c_true);
 
 % check result
 res = all(resVec);

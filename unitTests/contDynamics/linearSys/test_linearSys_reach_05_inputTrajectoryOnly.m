@@ -10,10 +10,7 @@ function res = test_linearSys_reach_05_inputTrajectoryOnly()
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      18-September-2018

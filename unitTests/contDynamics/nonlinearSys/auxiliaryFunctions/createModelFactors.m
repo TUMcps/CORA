@@ -8,8 +8,7 @@ function createModelFactors(c)
 %    c - symbolic expressions of model factors
 %
 % Outputs:
-%
-% Example: 
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none

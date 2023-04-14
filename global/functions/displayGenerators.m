@@ -15,7 +15,7 @@ function displayGenerators(G,maxGens,varName)
 % Example: 
 %    Z = zonotope(rand(2,50));
 %    G = generators(Z);
-%    display(G,10,'G');
+%    displayGenerators(G,10,'G');
 %
 % Other m-files required: none
 % Subfunctions: none

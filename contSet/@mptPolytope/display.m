@@ -12,7 +12,7 @@ function display(P)
 %    ---
 %
 % Example: 
-%    ---
+%    P = mptPolytope([1 1; -2 1; 0 -1],[1;1;1])
 %
 % Other m-files required: none
 % Subfunctions: none

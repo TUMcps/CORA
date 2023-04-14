@@ -10,10 +10,7 @@ function res = test_linearSys_reach_10_zeroDyn()
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example:
-%    -
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      30-June-2020

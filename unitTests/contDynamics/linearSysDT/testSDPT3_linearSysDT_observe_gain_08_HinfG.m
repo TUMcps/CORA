@@ -14,15 +14,13 @@ function res = testSDPT3_linearSysDT_observe_gain_08_HinfG()
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false
 %
 % Reference:
 %    [1] W. Tang, Z. Wang, Y. Wang, T. Raissi, and Y. Shen.
 %        Interval estimation methods for discrete-time linear time-
 %        invariant systems. IEEE Transactions on Automatic Control,
 %        64(11):4717-4724, 2019.
-%
-% Example: 
 
 % Author:       Matthias Althoff
 % Written:      01-March-2021

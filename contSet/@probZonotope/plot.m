@@ -20,7 +20,7 @@ function han = plot(probZ,varargin)
 %    Z1 = [10 1 -2; 0 1 1];
 %    Z2 = [0.6 1.2; 0.6 -1.2];
 %    probZ = probZonotope(Z1,Z2);
-%    plot(probZ,[1, 2], 'FaceColor','red');
+%    plot(probZ,[1,2],'FaceColor','red');
 %
 % Other m-files required: none
 % Subfunctions: none

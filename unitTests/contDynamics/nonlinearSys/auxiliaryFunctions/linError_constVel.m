@@ -13,8 +13,6 @@ function err = linError_constVel(obj,w,IH,IH_y)
 % Outputs:
 %    err - linearization error
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

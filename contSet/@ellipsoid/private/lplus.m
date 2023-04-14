@@ -14,8 +14,8 @@ function E_L = lplus(E,L,mode)
 %    E_L - Ellipsoid array after Minkowski addition (length(E_L)=size(L,2))
 %
 % Example: 
-%    E1 = ellipsoid.generateRandom('Dimension',2);
-%    E2 = ellipsoid.generateRandom('Dimension',2);
+%    E1 = ellipsoid([3 -1; -1 1],[1;0]);
+%    E2 = ellipsoid([5 1; 1 2],[1;-1]);
 %    l = [1;0];
 %    E = lplus([E1,E2],l);
 %

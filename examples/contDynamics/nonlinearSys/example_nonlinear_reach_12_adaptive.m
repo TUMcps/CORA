@@ -3,16 +3,13 @@ function res = example_nonlinear_reach_12_adaptive()
 %    analysis using adaptive parameter tuning
 %
 % Syntax:  
-%    example_nonlinear_reach_12_adaptive
+%    res = example_nonlinear_reach_12_adaptive
 %
 % Inputs:
 %    -
 %
 % Outputs:
-%    res - boolean
-%
-% References:
-%   -
+%    res - true/false
 
 % Author:        Mark Wetzlinger
 % Written:       02-February-2021

@@ -18,7 +18,7 @@ function pZ = linComb(pZ1,S)
 %    pZ = linComb(pZ1,pZ2);
 %
 %    figure; hold on;
-%    plot(pZ,[1,2],'FaceColor',[0.6 0.6 0.6],'Splits',20);
+%    plot(pZ,[1,2],'FaceColor',[0.6 0.6 0.6],'Splits',10);
 %    plot(pZ1,[1,2],'FaceColor','r');
 %    plot(pZ2,[1,2],'FaceColor','b');
 %

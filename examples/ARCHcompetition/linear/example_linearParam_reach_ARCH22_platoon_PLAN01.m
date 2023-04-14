@@ -7,13 +7,10 @@ function example_linearParam_reach_ARCH22_platoon_PLAN01()
 %    example_linearParam_reach_ARCH22_platoon_PLAN01
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%
+%    res - true/false 
 
 % Author:       Matthias Althoff
 % Written:      09-February-2017

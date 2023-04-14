@@ -15,12 +15,11 @@ function Z = insc_zonotope(E,m,comptype)
 %    Z - zonotope object
 %
 % Example: 
-%    E = ellipsoid.generateRandom('Dimension',2);
-%    Z = insc_zonotope(E,20);
-%
+%    E = ellipsoid([3 -1; -1 1],[1;0]);
+%    Z = zonotope(E,20,'inner:norm');
+% 
 %    figure; hold on;
-%    plot(E);
-%    plot(Z,[1,2],'r');
+%    plot(E); plot(Z);
 %
 % References:
 %    [1] P. Leopardi, "Distributing points on the sphere," School of Mathematics

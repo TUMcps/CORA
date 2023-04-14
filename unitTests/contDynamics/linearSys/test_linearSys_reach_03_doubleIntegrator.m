@@ -10,10 +10,7 @@ function res = test_linearSys_reach_03_doubleIntegrator()
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%    -
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      12-November-2017

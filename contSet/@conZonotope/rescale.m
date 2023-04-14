@@ -17,11 +17,11 @@ function cZ = rescale(cZ,varargin)
 %    Z = [0 1 0 1;0 1 2 -1];
 %    A = [-2 1 -1]; b = 2;
 %    cZ = conZonotope(Z,A,b);
-%    cZres = rescale(cZ,'iter');
+%    cZ_ = rescale(cZ,'iter');
 %    
 %    figure; hold on;
-%    plotZono(cZ,[1,2]);
-%    plotZono(cZres,[1,2],{'g'});
+%    plot(cZ,[1,2]);
+%    plot(cZ_,[1,2],'LineStyle','--');
 %
 % Other m-files required: none
 % Subfunctions: none

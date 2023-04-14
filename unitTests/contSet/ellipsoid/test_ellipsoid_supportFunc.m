@@ -8,9 +8,7 @@ function res = test_ellipsoid_supportFunc
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

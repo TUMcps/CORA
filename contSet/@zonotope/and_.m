@@ -18,7 +18,6 @@ function Z = and_(Z,S,method,varargin)
 % Example: 
 %    Z1 = zonotope([4 2 2;1 2 0]);
 %    Z2 = zonotope([3 1 -1 1;3 1 2 0]);
-%
 %    res = Z1 & Z2;
 %
 %    figure; hold on;

@@ -50,9 +50,10 @@ methods
             throw(CORAerror('CORA:tooManyInputArgs',1));
         end
     end
+end
 
-    % for functionSignatures.json
-    han = plot(obj, dims, varargin)
+methods (Static = true)
+    S = generateRandom(varargin) % generates a random contSet
 end
 
 methods(Access = {?contSet, ?contDynamics})

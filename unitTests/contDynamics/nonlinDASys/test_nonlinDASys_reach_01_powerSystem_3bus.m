@@ -13,10 +13,7 @@ function res = test_nonlinDASys_reach_01_powerSystem_3bus
 %    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
-%
+%    res - true/false
 
 % Author:       Matthias Althoff
 % Written:      04-August-2016

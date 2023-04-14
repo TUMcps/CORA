@@ -21,9 +21,9 @@ function int = interval(obj,varargin)
 % Example:
 %    tx = taylm(interval(1,4),4,'x');
 %    ty = taylm(interval(1,4),4,'y');
-%    t = sin(tx + ty);
-%    int1 = interval(t,'int')
-%    int2 = interval(t,'bnb')
+%    tay = sin(tx + ty);
+%    int1 = interval(tay,'int')
+%    int2 = interval(tay,'bnb')
 %
 % Other m-files required: interval
 % Subfunctions: s_tayl2int, intPower, intMul, evalInt

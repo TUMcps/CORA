@@ -26,8 +26,8 @@ function cPZ = reduceConstraints(cPZ,varargin)
 %    cPZ_ = reduceConstraints(cPZ,0);
 %
 %    figure; hold on;
-%    plot(cPZ,[1,2],'FaceColor','r','Splits',20);
-%    plot(cPZ_,[1,2],'b','Splits',10);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',12);
+%    plot(cPZ_,[1,2],'b','Splits',12);
 %
 % Other m-files required: none
 % Subfunctions: none

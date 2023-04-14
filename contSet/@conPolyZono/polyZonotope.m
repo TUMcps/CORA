@@ -23,7 +23,7 @@ function pZ = polyZonotope(cPZ)
 %    pZ = polyZonotope(cPZ);
 %   
 %    figure; hold on;
-%    plot(cPZ,[1,2],'FaceColor','r','Splits',20);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',12);
 %    plot(pZ);
 %
 % Other m-files required: reduce

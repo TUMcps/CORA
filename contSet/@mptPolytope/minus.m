@@ -12,12 +12,6 @@ function P = minus(P,varargin)
 % Outputs:
 %    P - mptPolytope object
 %
-% Example: 
-%    ---
-%
-% References:
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

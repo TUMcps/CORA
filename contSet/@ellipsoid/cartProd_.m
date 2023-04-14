@@ -15,8 +15,8 @@ function E = cartProd_(E,S,type)
 %    E - ellipsoid object
 %
 % Example: 
-%    E1 = ellipsoid.generateRandom('Dimension',2);
-%    E2 = ellipsoid.generateRandom('Dimension',2);
+%    E1 = ellipsoid([3 -1; -1 1],[1;0]);
+%    E2 = ellipsoid([5 1; 1 2],[1;-1]);
 %    E = cartProd(E1,E2); 
 %
 % Other m-files required: none

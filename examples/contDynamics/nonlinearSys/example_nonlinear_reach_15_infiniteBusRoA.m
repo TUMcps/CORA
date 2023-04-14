@@ -10,7 +10,7 @@ function completed = example_nonlinear_reach_15_infiniteBusRoA
 %    -
 %
 % Outputs:
-%    completed - boolean
+%    completed - true/false
 %
 % References:
 %    [1] M. Althoff. "Formal Verification of Power Systems", submitted to

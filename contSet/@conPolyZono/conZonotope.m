@@ -29,7 +29,7 @@ function cZ = conZonotope(cPZ,varargin)
 %    cZ = conZonotope(cPZ);
 %
 %    figure; hold on
-%    plot(cPZ,[1,2],'FaceColor','r','Splits',20);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',10);
 %    plot(cZ,[1,2],'b');
 %    plot(zonotope(cPZ),[1,2],'g');
 %

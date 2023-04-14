@@ -5,12 +5,10 @@ function res = test_partition_get_zonotopes()
 %    res = test_partition_get_zonotopes()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    res - boolean 
-%
-% Example: 
+%    res - true/false
 
 % Author:       Aaron Pereira, Matthias Althoff
 % Written:      02-August-2017

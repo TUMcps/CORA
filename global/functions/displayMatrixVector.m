@@ -14,7 +14,7 @@ function displayMatrixVector(x,varname)
 %
 % Example:
 %    M = [2 0; -1 2];
-%    displayMatrixVector(M);
+%    displayMatrixVector(M,'M');
 %
 % Other m-files required: DISPLAYDIM_MAX
 % Subfunctions: none

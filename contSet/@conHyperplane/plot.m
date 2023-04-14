@@ -34,6 +34,7 @@ function han = plot(hyp,varargin)
 % Author:       Niklas Kochdumper
 % Written:      19-November-2019
 % Last update:  25-May-2022 (TL: 1D Plotting)
+%               05-April-2023 (TL: clean up using plotPolygon)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -79,27 +80,21 @@ else
     d = [d;xLim(2);yLim(2);zLim(2);-xLim(1);-yLim(1);-zLim(1)];
 end
 
-vert = lcon2vert(C,d,hyp.h.c(dims)',hyp.h.d);
+vert = lcon2vert(C,d,hyp.h.c(dims)',hyp.h.d)';
 
 % plot constrained hyperplane
 if length(dims) == 1
-    if length(vert) == 1
-        [~, value] = readNameValuePair(NVpairs, 'Color');
-        NVpairs{end+1} = 'MarkerEdgeColor';
-        NVpairs{end+1} = value;
-        han = scatter(vert(1,1),0,NVpairs{:});
-    else
-        han = plot([vert(1,1),vert(2,1)],[0,0],NVpairs{:});
-    end
+    han = plotPolygon(vert,NVpairs{:});
+    
 elseif length(dims) == 2 
-    han = plot([vert(1,1),vert(2,1)],[vert(1,2),vert(2,2)],NVpairs{:});
+    han = plotPolygon(vert,NVpairs{:});
 else
     % state space transformation
     B = gramSchmidt(hyp.h.c);
-    vert_ = B'*vert';
+    vert_ = B'*vert;
     ind = convhull(vert_(2:end,:)');
     
-    han = fill3(vert(ind,1),vert(ind,2),vert(ind,3),NVpairs{:}); 
+    han = plotPolygon([vert(1,ind);vert(2,ind);vert(3,ind)],NVpairs{:}); 
 end
 
 if nargout == 0
