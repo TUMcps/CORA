@@ -26,6 +26,8 @@ function printTestOverview(varargin)
 
 % default format: last run
 format = setDefaultValues({'short'},varargin);
+% more leniency in writing of identifiers
+format = lower(format);
 % check if correct identifier provided
 inputArgsCheck({{format,'str',{'short','long','intlab','mosek','mp','sdpt3','nn'}}});
 
@@ -47,6 +49,15 @@ else
     end
 end
 
+% save results to shorter variable
+results = resultsTestSuite.results;
+
+% read data from results
+nrTotalTests = length(results);
+nrFailedTests = nnz(~[results.ok]);
+nameFailedTests = {results(~[results.ok]).fname};
+seedFailedTests = [results(~[results.ok]).seed];
+
 % print header
 fprintf('-*---------------------------------*-\n');
 fprintf('--- Results of last full test run ---\n\n');
@@ -63,14 +74,14 @@ fprintf(['  date/time:  ',resultsTestSuite.date,'\n']);
 
 % print test results
 fprintf('  tests:\n');
-fprintf(['  .. total:   ',num2str(resultsTestSuite.nrTotalTests),'\n']);
-fprintf(['  .. failed:  ',num2str(resultsTestSuite.nrFailedTests),'\n']);
+fprintf(['  .. total:   ',num2str(nrTotalTests),'\n']);
+fprintf(['  .. failed:  ',num2str(nrFailedTests),'\n']);
 
 % print names of all failed tests
-if resultsTestSuite.nrFailedTests > 0
-    fprintf(['  .. .. ',resultsTestSuite.nameFailedTests{1},'\n']);
-    for i=2:resultsTestSuite.nrFailedTests
-    fprintf(['        ',resultsTestSuite.nameFailedTests{i},'\n']);
+if nrFailedTests > 0
+    fprintf("  .. .. %s (seed=%i)\n", nameFailedTests{1}, seedFailedTests(1));
+    for i=2:nrFailedTests
+    fprintf("        %s (seed=%i)\n", nameFailedTests{i}, seedFailedTests(i));
     end
 end
 

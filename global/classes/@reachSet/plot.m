@@ -48,6 +48,7 @@ NVpairs = readPlotOptions(varargin(2:end),'reachSet');
 [NVpairs,order] = readNameValuePair(NVpairs,'Order','isscalar');
 [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar');
 [NVpairs,unify] = readNameValuePair(NVpairs,'Unify','islogical',false);
+[NVpairs,totalsets] = readNameValuePair(NVpairs,'UnifyTotalSets','isscalar',1);
 [NVpairs,whichset] = readNameValuePair(NVpairs,'Set','ischar','ti');
 
 % check dimension
@@ -60,11 +61,23 @@ elseif length(dims) == 3
 end
 
 % check which set has to be plotted
-whichset = checkSet(R,whichset);
+whichset = aux_checkSet(R,whichset);
 
 % check if the reachable sets should be unified to reduce the storage size
 % of the resulting figure
 if unify
+
+    % number of all sets that are to be unified
+    nrAllSets = aux_nrAllSets(R,whichset);
+    idxSplit = splitIntoNParts(nrAllSets,totalsets);
+    idxCurr = 1;
+
+    % loop over all reachable sets
+    hold on
+
+    % save color index
+    ax = gca();
+    oldColorIndex = ax.ColorOrderIndex;
 
     pgon = [];
     warOrig = warning;
@@ -85,6 +98,9 @@ if unify
         
         % loop over all time steps
         for j = 1:length(set)
+
+            % increment index
+            idxCurr = idxCurr + 1;
 
             % project set to desired dimensions
             temp = project(set{j},dims);
@@ -134,13 +150,26 @@ if unify
             
             % unite all polygons
             pgon = pgon | temp;
+
+            if any(idxCurr == idxSplit(:,2))
+                % end of partition reached -> plot
+                han_pgon = plot(pgon,[1,2],NVpairs{:});
+                % reset pgon
+                pgon = [];
+                % set handle visibility off (only entered once)
+                if idxCurr == idxSplit(1,2)
+                    han = han_pgon;
+                    % don't display subsequent plots in legend
+                    NVpairs = [NVpairs, {'HandleVisibility','off'}];
+                end
+            end
         end
     end
     
-    % plot the resulting set
-    han = plot(pgon,[1 2],NVpairs{:});
-    
     warning(warOrig);
+
+    % correct color index
+    updateColorIndex(oldColorIndex);
     
 else
     
@@ -210,8 +239,8 @@ end
 end
 
 
-% Auxiliary function
-function whichset = checkSet(R,whichset)
+% Auxiliary functions -----------------------------------------------------
+function whichset = aux_checkSet(R,whichset)
 
 % must be character vector for switch-expression to work properly
 if isempty(whichset)
@@ -254,6 +283,33 @@ switch whichset
             throw(CORAerror('CORA:wrongValue','Set',...
                 'has to be ''ti'', ''tp'' or ''y''.'));
         end
+end
+
+end
+
+
+function nrAllSets = aux_nrAllSets(R,whichset)
+% compute number of all sets that are to be plotted (only: 'Unify',true)
+% we will then partition this number into the desired number of sets given
+% by the name-value pair 'UnifyTotalSets',<totalsets> and plot <totalsets>
+% different sets (to avoid increasingly time-consuming '|'-operation of
+% polygons)
+
+% init total number
+nrAllSets = 0;
+
+% all branches of the reachSet object
+for i=1:size(R,1)
+    % choose correct set
+    switch whichset
+        case 'ti'
+            addSets = size(R(i,1).timeInterval.set,1);
+        case 'tp'
+            addSets = size(R(i,1).timePoint.set,1);
+        case 'y'
+            addSets = size(R(i,1).timeInterval.algebraic,1);
+    end
+    nrAllSets = nrAllSets + addSets;
 end
 
 end

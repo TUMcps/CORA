@@ -44,8 +44,8 @@ if isempty(C)
     return
 end
 
-% case >=2D: generator must be all-zero and radius = 0
-if any(C.g) || C.r > 0
+% case >=2D: generator must be axis-aligned or all-zero and radius = 0
+if nnz(C.g) > 1 || C.r > 0
     res = false;
 end
 

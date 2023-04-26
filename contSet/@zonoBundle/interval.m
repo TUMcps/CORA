@@ -28,6 +28,10 @@ function I = interval(zB)
 
 %------------- BEGIN CODE --------------
 
+if zB.parallelSets == 0
+    I = interval(); return
+end
+
 % enclose all zonotopes by an interval
 IHtmp = cell(zB.parallelSets,1);
 for i=1:zB.parallelSets

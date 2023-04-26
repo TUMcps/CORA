@@ -22,7 +22,11 @@ function cZ = conZonotope(zB)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
-    
+
+if zB.parallelSets == 0
+    cZ = conZonotope(); return
+end
+
 % initialization
 cZ = conZonotope(zB.Z{1});
 

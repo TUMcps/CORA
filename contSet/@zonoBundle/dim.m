@@ -29,6 +29,11 @@ function n = dim(zB)
 
 %------------- BEGIN CODE --------------
 
-n = length(center(zB.Z{1}));
+if zB.parallelSets == 0
+    % fully-empty
+    n = 0;
+else
+    n = length(center(zB.Z{1}));
+end
 
 %------------- END OF CODE --------------

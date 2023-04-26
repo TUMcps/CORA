@@ -320,6 +320,7 @@ end
 
 function aux_checkInputArgs(name,fun,states,inputs,params,type,out_fun,outputs)
 
+    if CHECKS_ENABLED
     % check name (not empty because default name is not empty)
     if ~ischar(name)
         throw(CORAerror('CORA:wrongInputInConstructor',...
@@ -358,6 +359,7 @@ function aux_checkInputArgs(name,fun,states,inputs,params,type,out_fun,outputs)
     if ~ischar(type) || ~ismember(type,{'constParam','varParam'})
         throw(CORAerror('CORA:wrongInputInConstructor',...
             '"Type" has to be either "constParam" or "varParam".'));
+    end
     end
 
 end

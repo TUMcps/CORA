@@ -35,7 +35,7 @@ function p = randPoint_(zB,N,type,varargin)
 % Author:       Matthias Althoff
 % Written:      18-August-2016 
 % Last update:  19-August-2022 (MW, integrate standardized pre-processing)
-% Last revision:27-March-2023 (MW, rename vertices_)
+% Last revision:27-March-2023 (MW, rename randPoint_)
 
 %------------- BEGIN CODE --------------
 
@@ -49,7 +49,10 @@ if strcmp(type,'standard')
 
     % compute vertices
     Vmat = vertices(zB);
-    nrOfVertices = length(Vmat(1,:));
+    nrOfVertices = size(Vmat,2);
+    if nrOfVertices == 0
+        p = Vmat; return
+    end
 
     % random convex combination
     alpha = rand(nrOfVertices,N);
@@ -74,7 +77,7 @@ elseif strcmp(type,'extreme')
         d = rand(n,1) - 0.5*ones(n,1);
         d = d./norm(d);
 
-        % compute farest point in this direction 
+        % compute farthest point in this direction 
         [~,x] = supportFunc_(temp,d,'upper');
         p(:,i) = x + c;     
     end

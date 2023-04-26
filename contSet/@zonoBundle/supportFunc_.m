@@ -32,12 +32,25 @@ function [val,x] = supportFunc_(zB,dir,type,varargin)
 %
 % See also: conZonotope/supportFunc_
 
-% Author:       Niklas Kochdumper
+% Author:       Niklas Kochdumper, Mark Wetzlinger
 % Written:      19-November-2019
-% Last update:  ---
+% Last update:  23-April-2023 (MW, fix empty case)
 % Last revision:27-March-2023 (MW, rename supportFunc_)
 
 %------------- BEGIN CODE --------------
+
+% fully-empty zonoBundle
+if zB.parallelSets == 0
+    x = [];
+    if strcmp(type,'upper')
+        val = -Inf;
+    elseif strcmp(type,'lower')
+        val = Inf;
+    elseif strcmp(type,'range')
+        val = interval(-Inf,Inf);
+    end
+    return
+end
 
 % initialization
 Aeq = [];
@@ -82,18 +95,39 @@ end
 if strcmp(type,'lower')
     
     % solve linear program
-    [x,val] = linprog(f',A,b,Aeq,beq,[],[],options);
+    [x,val,exitflag] = linprog(f',A,b,Aeq,beq,[],[],options);
+    if exitflag == -2
+        % primal infeasible -> empty set
+        val = Inf; x = []; return
+    elseif exitflag <= -3
+        % should not be unbounded, or other solver issue...
+        throw(CORAerror('CORA:solverIssue'));
+    end
     
 elseif strcmp(type,'upper')
     
     % solve linear program
-    [x,val] = linprog(-f',A,b,Aeq,beq,[],[],options);
+    [x,val,exitflag] = linprog(-f',A,b,Aeq,beq,[],[],options);
+    if exitflag == -2
+        % primal infeasible -> empty set
+        val = -Inf; x = []; return
+    elseif exitflag <= -3
+        % should not be unbounded, or other solver issue...
+        throw(CORAerror('CORA:solverIssue'));
+    end
     val = -val;
    
 elseif strcmp(type,'range')
 
     % solve linear program for upper bound
-    [x_upper,val_upper] = linprog(-f',A,b,Aeq,beq,[],[],options);
+    [x_upper,val_upper,exitflag] = linprog(-f',A,b,Aeq,beq,[],[],options);
+    if exitflag == -2
+        % primal infeasible -> empty set
+        val = interval(-Inf,Inf); x = []; return
+    elseif exitflag <= -3
+        % should not be unbounded, or other solver issue...
+        throw(CORAerror('CORA:solverIssue'));
+    end
     val_upper = -val_upper;
     % solve linear program for lower bound
     [x_lower,val_lower] = linprog(f',A,b,Aeq,beq,[],[],options);

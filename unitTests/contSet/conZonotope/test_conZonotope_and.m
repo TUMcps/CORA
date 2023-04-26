@@ -28,7 +28,7 @@ function res = test_conZonotope_and
 
 %------------- BEGIN CODE --------------
 
-res = true;
+resvec = [];
 
 % TEST 1: conZonotope (analytical) ----------------------------------------
 
@@ -64,9 +64,7 @@ V_ = [1 3 1 3;11/8 -1/8 -11/12 -7/12];
 % plot(V_(1,:),V_(2,:),'.k','MarkerSize',12);
 
 % check correctness
-if ~compareMatrices(V,V_)
-    res = false;
-end
+resvec(end+1) = compareMatrices(V,V_,1e-14);
 
 % TEST 2: halfspace (analytical) ------------------------------------------
 
@@ -97,12 +95,7 @@ V_ = [1 3 3 1; 0 1 2 3];
 % plot(intZono,[1,2],'b');
 
 % check correctness
-if ~compareMatrices(V,V_,1e-14)
-    res = false;
-end
-
-
-
+resvec(end+1) = compareMatrices(V,V_,1e-14);
 
 % TEST 3: conHyperplane (analytical) --------------------------------------
 
@@ -138,9 +131,9 @@ V_ = [2 2.5;0.5 0.75];
 % plot(intZono,[1,2],'b','LineWidth',2);
 
 % check correctness
-if ~compareMatrices(V,V_)
-    res = false;
-end
+resvec(end+1) = compareMatrices(V,V_);
 
+% gather results
+res = all(resvec);
 
 %------------- END OF CODE --------------

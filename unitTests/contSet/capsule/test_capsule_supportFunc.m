@@ -32,6 +32,17 @@ if supportFunc(C_e,[1;1],'upper') ~= -Inf || supportFunc(C_e,[1;1],'lower') ~= I
     res = false;
 end
 
+% 2D capsule without radius
+C = capsule([1;-1],[0;0],3);
+dir = [1;-2];
+[valC,xC] = supportFunc(C,dir);
+% check result
+if ~withinTol(dir'*xC,valC) || ~contains(C,xC)
+    res = false;
+end
+
+
+
 % loop over different dimensions
 for n = 2:4:30
     

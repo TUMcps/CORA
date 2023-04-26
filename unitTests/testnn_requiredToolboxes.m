@@ -30,7 +30,7 @@ if ~res_partial(2)
     disp('"Deep Learning Toolbox" missing!');
 end
 
-addons = matlab.addons.installedAddons;
+addons = matlabshared.supportpkg.getInstalled;
 res_partial(3) = any(strcmp("Deep Learning Toolbox Converter for ONNX Model Format", addons.Name));
 if ~res_partial(3)
     disp('"Deep Learning Toolbox Converter for ONNX Model Format" missing!');

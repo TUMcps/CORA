@@ -28,13 +28,17 @@ if ~isfile('unitTestsStatus.mat')
         "No data provided. Run '''runTestSuite''' to acquire data."));
 else
     % load results from last full test run
-    load('unitTestsStatus.mat','results');
+    load('unitTestsStatus.mat','testResults');
     % results stored in map with key = 'short', value = struct with data
-    testdata = results('short');
+    testdata = testResults('short');
 end
 
 % list main content folders
 foldernames = {'contDynamics';'contSet';'discrDynamics';'hybridDynamics';'matrixSet'};
+
+% name of failed tests
+nameFailedTests = {testdata.results.fname}';
+nameFailedTests = nameFailedTests(~[testdata.results.ok]');
 
 % write all funcs in one list and find matching unit tests
 allfuncs = {};
@@ -72,7 +76,7 @@ for i=1:length(allfuncs)
     if strcmp(fullList.test{i},'---')
         fullList.status(i,1) = -1; % no information
     else
-        if any(ismember(testdata.nameFailedTests,fullList.test{i}))
+        if any(ismember(nameFailedTests,fullList.test{i}))
             fullList.status(i,1) = 0; % at least one test failed
         else
             fullList.status(i,1) = 1; % all tests successful
@@ -89,7 +93,7 @@ end
 unassignedList.test = alltests;
 if ~isempty(unassignedList.test)
 unassignedList.status = ...
-    ~ismember(unassignedList.test,testdata.nameFailedTests);
+    ~ismember(unassignedList.test,nameFailedTests);
 end
 % issue: if method from superclass called, function test in unassignedList
 % ...this happens, e.g., in @nonlinearSys with reach (from contDynamics)

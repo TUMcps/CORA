@@ -85,7 +85,7 @@ V = vertices(P);
 if isempty(V)
     han = plotPolygon(zeros(length(dims), 0),NVpairs{:});
 elseif length(dims) <= 2
-    han = plotPolygon(V(dims,:),NVpairs{:});
+    han = plotPolygon(V(dims,:),NVpairs{:},'ConvHull',true);
 elseif length(dims) == 3
     han = plotPolytope3D(V(dims,:),NVpairs{:});
 end

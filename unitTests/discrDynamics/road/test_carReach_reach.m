@@ -13,7 +13,7 @@ function res = test_carReach_reach(~)
 %    no
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 
 % Author:       Matthias Althoff
 % Written:      31-July-2016

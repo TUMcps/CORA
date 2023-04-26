@@ -24,14 +24,13 @@ function createFileFromFunction(f,name,output,input)
 
 % Author:       Matthias Althoff
 % Written:      16-April-2022
-% Last update:  ---
+% Last update:  25-April-2023 (MW, update path)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-
 % set path
-path = [CORAROOT filesep 'models' filesep 'Cora' filesep 'powerSystems'];
+path = [CORAROOT filesep 'models' filesep 'powerSystems'];
 if ~exist(path,'dir')
    mkdir(path); 
 end
@@ -60,5 +59,11 @@ end
 %close file
 fclose(fid);
 
+% remove and add path so that file can be found
+warOrig = warning;
+warning('off','all');
+rmpath(path);
+warning(warOrig);
+addpath(path);
 
 %------------- END OF CODE --------------

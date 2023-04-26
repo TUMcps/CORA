@@ -9,7 +9,7 @@ function res = test_polyZonotope_partZonotope
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % Other m-files required: none
 % Subfunctions: none

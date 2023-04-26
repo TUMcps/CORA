@@ -20,7 +20,7 @@ function res = test_linearSysDT_observe_05_FRad_C()
 %        robust convergence. Automatica, 55:265-273, 2015.
 
 % Author:       Matthias Althoff
-% Written:      25-Feb-2021
+% Written:      25-February-2021
 % Last update:  ---
 % Last revision:---
 

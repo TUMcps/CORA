@@ -30,6 +30,11 @@ function res = isempty(zB)
 
 %------------- BEGIN CODE --------------
 
+% full-empty zonotope bundle
+if zB.parallelSets == 0
+    res = true; return
+end
+
 % check if any of the single zonotopes is empty
 for i = 1:length(zB.Z)
    if isempty(zB.Z{i})

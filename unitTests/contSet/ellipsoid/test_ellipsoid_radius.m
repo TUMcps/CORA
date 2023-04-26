@@ -22,7 +22,14 @@ function res = test_ellipsoid_radius
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% empty case: dim = 0
 res = true;
+E = ellipsoid();
+if rank(E) ~= 0
+    res = false;
+end
+
 load cases.mat E_c
 for i=1:length(E_c)
     E1 = E_c{i}.E1; % non-deg

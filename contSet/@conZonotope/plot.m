@@ -114,7 +114,7 @@ function han = plotStandard(cZ,dims,plotOptions)
         else
             % init polygon for plotting (vertices are already ordered
             % correctly)
-            han = plotPolygon(V, plotOptions{:});
+            han = plotPolygon(V, plotOptions{:},'ConvHull',true);
         end
 
     else
@@ -236,7 +236,7 @@ function han = plotTemplate(cZ,numDir,dims,plotOptions)
         V = V(order,:)';
 
         % init polygon for plotting
-        han = plotPolygon(V, plotOptions{:});
+        han = plotPolygon(V, plotOptions{:},'ConvHull',true);
     else
 
         % construct template polyhedron

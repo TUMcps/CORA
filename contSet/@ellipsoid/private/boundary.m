@@ -57,7 +57,13 @@ n_nd = dim(E_nd);
 if n_nd>=2
     L_nd = eq_point_set(n_nd-1,N);
 else
-    L_nd = linspace(-1,1,N);
+    if mod(N,2) == 0
+        L_nd = linspace(-1,1,N);
+    else
+        % ensure that L_nd does not become 0
+        L_nd = linspace(-1,1,N+1);
+        L_nd = L_nd(1:end-1);
+    end
 end
 
 Y_nd = zeros(n_nd,N);

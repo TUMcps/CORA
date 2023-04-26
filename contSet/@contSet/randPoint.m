@@ -56,8 +56,9 @@ inputArgsCheck({{S,'att','contSet'};
                 {type,'str',{'standard','extreme','gaussian'}};
                 {pr,'att','numeric',{'<=',1,'>=',0}}});
 
-% if N = 'all', then type has to be 'extreme'
-if ischar(N) && strcmp(N,'all') && ~strcmp(type,'extreme')
+% if N = 'all', then type has to be 'extreme' (nargin ensures that type has
+% been set by calling function)
+if ischar(N) && strcmp(N,'all') && nargin >= 3 && ~strcmp(type,'extreme')
     throw(CORAerror('CORA:wrongValue','third',...
         "If the number of points is 'all', the type has to be 'extreme'."));
 end
@@ -68,7 +69,7 @@ if ~strcmp(type,'gaussian')
         x = randPoint_(S,N,type);
     catch ME
         if isempty(S)
-            x = [];
+            x = double.empty(dim(S),0);
         elseif isZero(S)
             x = repmat(zeros(dim(S),1),1,N);
         else

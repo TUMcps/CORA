@@ -17,7 +17,7 @@ function res = test_capsule_enlarge
 % See also: -
 
 % Author:       Mark Wetzlinger
-% Written:      15-Sep-2019
+% Written:      15-September-2019
 % Last update:  ---
 % Last revision:---
 

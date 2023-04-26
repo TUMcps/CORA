@@ -1,11 +1,11 @@
-function [failed, numberOfTests] = testSuiteCore(prefix,varargin)
+function results = testSuiteCore(prefix,varargin)
 % testSuiteCore - runs functions starting with a certain prefix contained 
 %    in the directory and recursively searches all subfolders for same prefix
 %
 % Syntax:  
-%    [failed, numberOfTests] = testSuiteCore(prefix)
-%    [failed, numberOfTests] = testSuiteCore(prefix,verbose)
-%    [failed, numberOfTests] = testSuiteCore(prefix,verbose,directory)
+%    results = testSuiteCore(prefix)
+%    results = testSuiteCore(prefix,verbose)
+%    results = testSuiteCore(prefix,verbose,directory)
 %
 % Inputs:
 %    prefix - prefix of function names to be tested
@@ -13,8 +13,11 @@ function [failed, numberOfTests] = testSuiteCore(prefix,varargin)
 %    directory - (optional) change directory
 %
 % Outputs:
-%    failed - a cell array containing the names of the failed tests
-%    numberOfTests - number of run tests
+%    results - struct with results of test suite, fields
+%              'fname': function name of test
+%              'ok': true/false whether test successful
+%              'seed': randomized seed for test
+%              'time': computation time for test
 %
 % Example:
 %    -
@@ -30,47 +33,65 @@ function [failed, numberOfTests] = testSuiteCore(prefix,varargin)
 [verbose,directory] = setDefaultValues(...
     {false,[CORAROOT filesep 'unitTests']},varargin);
 
-numberOfTests = 0;
-failed = cell(0);
+% add underscore to prefix
+prefix = [prefix '_'];
 
-% Find all relevant files in directory und run the tests
-files = dir([directory filesep prefix '_*.m']);
-for i=1:size(files,1)
-    % Extract the function name
+% list all files
+files = findfiles(directory,true,prefix);
+
+% init struct
+results = struct('fname',[],'ok',[],'seed',[],'time',[]);
+
+% number of files
+nrTests = size(files,1);
+% generate test seeds
+testseeds = randi(2^32,nrTests,1);
+
+% loop over all test files
+for i=1:nrTests
+
+    % extract the function name
     [~, fname] = fileparts(files(i).name);
-    % Supress output of tests by usage of evalc
+
+    % save to struct
+    results(i,1).fname = fname;
+
     try
-        fprintf(['run ' fname ': ']);
+        % print current test on command window
+        if verbose
+            fprintf(['run ' fname ': ']);
+        end
+
+        % set semi-random seed
+        rng(testseeds(i));
+        results(i,1).seed = testseeds(i);
+
+        tic;
+        % supress output of tests by usage of evalc
         [~,res] = evalc(fname);
-        if res
-            fprintf('%s\n','passed');
-        else
+
+        % save time
+        results(i,1).time = toc;
+
+        % print result on command window
+        if verbose
+            if res
+                fprintf('%s\n','passed');
+            else
+                fprintf('%s\n','failed');
+            end
+        end
+
+    catch
+        results(i,1).time = toc;
+        res = false;
+        if verbose
             fprintf('%s\n','failed');
         end
-    catch
-        res = false;
-        fprintf('%s\n','failed');
     end
-    
-    % save file names of failed tests
-    if ~res
-        failed = [failed; {fname}];
-    end
-    numberOfTests = numberOfTests + 1;
-end
 
-% run files in subdirectories
-files = dir(directory);
-for i=1:size(files,1)
-    % Exclude directories "." and "..", as well as files (checked above)
-    if files(i).name(1) == '.' || files(i).isdir == 0
-        continue;
-    end
-    
-    % recursive call of subfolder (and its subfolders, ... etc.)
-    [subfailed, subnum] = testSuiteCore(prefix,verbose,[directory filesep files(i).name]);
-    failed = [failed; subfailed];
-    numberOfTests = numberOfTests + subnum;
+    % save result to struct
+    results(i,1).ok = res;
 end
 
 %------------- END OF CODE --------------

@@ -1,5 +1,5 @@
 function cZ = rescale(cZ,varargin)
-% resclae - Rescales the domains for the factors of a constrained zonotope
+% rescale - Rescales the domains for the factors of a constrained zonotope
 %
 % Syntax:  
 %    cZ = rescale(cZ)

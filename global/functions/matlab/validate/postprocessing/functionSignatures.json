@@ -1,0 +1,218 @@
+{
+  "_schemaVersion": "1.0.0",
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:wrongInputInConstructor'}"], "purpose":"ID of error"},
+        {"name":"desc", "kind":"required", "type":["char"], "purpose":"description of the error"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:dimensionMismatch'}"], "purpose":"ID of error"},
+        {"name":"obj1", "kind":"required", "type":["contSet", "numeric"], "purpose":"Object 1"},
+        {"name":"obj2", "kind":"required", "type":["contSet", "numeric"], "purpose":"Object 2"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:emptySet'}"], "purpose":"ID of error"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:converterIssue'}"], "purpose":"ID of error"},
+        {"name":"desc", "kind":"required", "type":["char"], "purpose":"description of the error"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:configFile'}"], "purpose":"ID of error"},
+        {"name":"issue", "kind":"required", "type":["char"], "purpose":"description of issue"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:fileNotFound'}"], "purpose":"ID of error"},
+        {"name":"file", "kind":"required", "type":["char"], "purpose":"file name"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:wrongValue'}"], "purpose":"ID of error"},
+        {"name":"input", "kind":"required", "type":["char", "choices={'first', 'second', 'first and/or second', 'name-value pair ...'}"], "purpose":"input argument"},
+        {"name":"possibleValues", "kind":"required", "type":["char"], "purpose":"description of range of admissible values"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:noExactAlg'}"], "purpose":"ID of error"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:noSuitableSolver'}"], "purpose":"ID of error"},
+        {"name":"solver", "kind":"required", "type":["char"], "purpose":"name of solver"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:notConverged'}"], "purpose":"ID of error"},
+        {"name":"issue", "kind":"required", "type":["char"], "purpose":"What did not converge?"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:wrongFieldValue'}"], "purpose":"ID of error"},
+        {"name":"fieldName", "kind":"required", "type":["char"], "purpose":"name of field"},
+        {"name":"admissibleValues", "kind":"required", "type":["char", "cell"], "purpose":"list of admissible values for given field"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:plotProperties'}"], "purpose":"ID of error"},
+        {"name":"dims", "kind":"required", "type":["numeric"], "purpose":"number of dimensions for which there is a problem"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:notEnoughInputArgs'}"], "purpose":"ID of error"},
+        {"name":"num", "kind":"required", "type":["numeric"], "purpose":"minimum required input arguments"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:tooManyInputArgs'}"], "purpose":"ID of error"},
+        {"name":"num", "kind":"required", "type":["numeric"], "purpose":"maximum required input arguments"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:evenNumberInputArgs'}"], "purpose":"ID of error"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:redundantNameValuePair'}"], "purpose":"ID of error"},
+        {"name":"fieldName", "kind":"required", "type":["char"], "purpose":"name of redundant field"},
+        {"name":"admissibleNames", "kind":"required", "type":["char", "cell"], "purpose":"list of admissible names"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:degenerateSet'}"], "purpose":"ID of error"},
+        {"name":"desc", "kind":"required", "type":["char"], "purpose":"description of the error"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:YALMIP'}"], "purpose":"ID of error"},
+        {"name":"errmsg", "kind":"required", "type":["char"], "purpose":"description of the error"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:outOfDomain'}"], "purpose":"ID of error"},
+        {"name":"validDomain", "kind":"required", "type":["char"], "purpose":"description of valid domain"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:specialError'}"], "purpose":"ID of error"},
+        {"name":"desc", "kind":"required", "type":["char"], "purpose":"description of the error"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:notSupported'}"], "purpose":"ID of error"},
+        {"name":"desc", "kind":"required", "type":["char"], "purpose":"description of unsupported functionality"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:reachSetExplosion'}"], "purpose":"ID of error"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:testFailed'}"], "purpose":"ID of error"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:noops'}"], "purpose":"ID of error"},
+        {"name":"varargin", "kind":"required", "repeating":true, "purpose":"specify input arguments"}
+     ]
+  }
+}

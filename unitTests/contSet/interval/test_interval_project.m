@@ -17,7 +17,7 @@ function res = test_interval_project
 % See also: -
 
 % Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
+% Written:      17-September-2019
 % Last update:  ---
 % Last revision:---
 

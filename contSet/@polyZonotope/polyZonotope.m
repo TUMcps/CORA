@@ -93,7 +93,7 @@ methods
             expMat = eye(h);
         end
         p = size(expMat, 1);
-        if nargin < 5
+        if nargin < 5 || isempty(id)
             id = (1:p)'; % column vector
         end
 

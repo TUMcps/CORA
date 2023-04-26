@@ -22,7 +22,7 @@ function res = test_nonlinearSysDT_reach_02_tank
 %        Control, 2008.
 
 % Author:       Matthias Althoff
-% Written:      25-Mar-2021
+% Written:      25-March-2021
 % Last update:  ---
 % Last revision:---
 

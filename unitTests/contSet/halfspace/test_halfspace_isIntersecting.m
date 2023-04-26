@@ -17,7 +17,7 @@ function res = test_halfspace_isIntersecting
 % See also: -
 
 % Author:       Mark Wetzlinger
-% Written:      02-Sep-2019
+% Written:      02-September-2019
 % Last update:  04-May-2020 (adapt acc. to new definition of isIntersecting)
 % Last revision:---
 

@@ -23,7 +23,13 @@ function res = test_ellipsoid_ellipsoid
 
 %------------- BEGIN CODE --------------
 
+% empty ellipsoid
+E = ellipsoid();
 res = true;
+if ~isempty(E)
+    res = false;
+end
+
 tol = 1e-12;
 load cases.mat E_c
 for i=1:length(E_c)
@@ -84,7 +90,6 @@ for i=1:length(E_c)
         E = ellipsoid(Q,q,eps,q); % <- should throw error here
         res = false; break;
     end
-    
     
 end
 

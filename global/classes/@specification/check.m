@@ -67,7 +67,7 @@ if isnumeric(S) % ---------------------------------------------------------
     if size(S,2) > 1
         % multiple points
         for i = 1:size(S,2)
-            [res,indSpec] = check(spec,S(:,i),time(i));
+            [res,indSpec] = check(spec,S(:,i),time);
             if ~res
                 indObj = i;
                 return; 
@@ -120,11 +120,16 @@ elseif isa(S,'simResult') % -----------------------------------------------
     % loop over all simulations
     for i = 1:length(S)
         S_i = S(i);
-        for k = 1:length(S_i.x)
-            [res,indSpec] = check(spec, S_i.x{k}', interval(S_i.t{k}));
-            if ~res
-                indObj = {i,k};
-                return; 
+        for j = 1:length(S_i.x)
+            Si_x_j = S_i.x{j};
+            Si_t_j = S_i.t{j};
+            for k = 1:length(Si_x_j)
+                % check simulation point with respective time
+                [res,indSpec] = check(spec, Si_x_j(k,:)', Si_t_j(k));
+                if ~res
+                    indObj = {i,j,k};
+                    return; 
+                end
             end
         end
     end

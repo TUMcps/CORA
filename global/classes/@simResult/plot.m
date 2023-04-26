@@ -60,9 +60,7 @@ oldColorIndex = ax.ColorOrderIndex;
 % loop over all simulated trajectories
 hold on
 for i = 1:length(simRes.(whichtraj))
-    han_i = plotPolygon( ... % extend by nan to avoid closing line
-        [simRes.(whichtraj){i}(:,dims)',nan(length(dims),1)], ...
-        NVpairs{:});
+    han_i = plotPolygon(simRes.(whichtraj){i}(:,dims)', NVpairs{:});
 
     if i == 1
         han = han_i;

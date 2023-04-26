@@ -35,11 +35,14 @@ function res = isFullDim(zB)
 
 %------------- BEGIN CODE --------------
 
+if zB.parallelSets == 0
+    res = false; return
+end
+
 % loop over all zonotopes
 for i = 1:zB.parallelSets
    if ~isFullDim(zB.Z{i})
-      res = false;
-      return;
+      res = false; return
    end
 end
 

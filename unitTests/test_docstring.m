@@ -18,39 +18,34 @@ function res = test_docstring()
 
 % Author:        Tobias Ladner
 % Written:       18-November-2022
-% Last update:   ---
+% Last update:   21-April-2023 (unix bugfix: author follows empty line)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
 
 files = [
-    aux_addFiles('contDynamics');
-    aux_addFiles('contSet');
-    aux_addFiles('converter');
-    aux_addFiles('contDynamics');
-    % aux_addFiles('discrDynamics');
-    aux_addFiles('examples');
-    aux_addFiles('global');
-    aux_addFiles('hybridDynamics');
-    aux_addFiles('matrixSet');
-    aux_addFiles('unitTests');
+    findfiles([CORAROOT filesep 'contDynamics']);
+    findfiles([CORAROOT filesep 'contSet']);
+    findfiles([CORAROOT filesep 'converter']);
+    findfiles([CORAROOT filesep 'contDynamics']);
+    % findfiles([CORAROOT filesep 'discrDynamics']);
+    findfiles([CORAROOT filesep 'examples']);
+    findfiles([CORAROOT filesep 'global']);
+    findfiles([CORAROOT filesep 'hybridDynamics']);
+    findfiles([CORAROOT filesep 'matrixSet']);
+    findfiles([CORAROOT filesep 'unitTests']);
 ];
 
 % exclude file paths
 % converter
-files = aux_exclFiles(files, ['converter' filesep 'powerSystem2cora' filesep 'cases'], 'IEEE14Parameters.m');
-files = aux_exclFiles(files, ['converter' filesep 'powerSystem2cora' filesep 'cases'], 'IEEE30Parameters.m');
+files = excludefiles(files, ['converter' filesep 'powerSystem2cora' filesep 'cases'], 'IEEE14Parameters.m');
+files = excludefiles(files, ['converter' filesep 'powerSystem2cora' filesep 'cases'], 'IEEE30Parameters.m');
 % examples
-files = aux_exclFiles(files, ['examples' filesep 'manual']);
-% global
-files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'combinator']);
-files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'cprnd']);
-files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'eq_sphere_partitions']);
-files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'm2tex']);
-files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'tprod']);
-files = aux_exclFiles(files, ['global' filesep 'functions'], 'Direct.m');
+files = excludefiles(files, ['examples' filesep 'manual']);
+% thirdparty
+files = excludefiles(files, ['global' filesep 'thirdparty']);
 % unitTests
-files = aux_exclFiles(files, ['unitTests' filesep 'converter' filesep 'powerSystem2cora' filesep 'models']);
+files = excludefiles(files, ['unitTests' filesep 'converter' filesep 'powerSystem2cora' filesep 'models']);
 
 % check in reverse order
 % files = flipud(files);
@@ -100,12 +95,14 @@ for i=1:length(files)
         issues{end+1} = "Author missing.";
     end
 
-    authorPos = strfind(filetext, "Author");
-    if ~isempty(authorPos)
-        authorPos = authorPos(1);
-        if filetext(authorPos-4) ~= filetext(authorPos-6)
-            issues{end+1} = "Author should not be included in help text.";
-        end
+    % author text should follow empty line
+    authorPos = strfind(filetext, "% Author");
+    lines = split(filetext(1:authorPos(1)), compose("\r\n"));
+    if length(lines) == 1
+        lines = split(filetext(1:authorPos(1)), newline);
+    end
+    if ~isempty(lines{end-1})
+        issues{end+1} = "Author should not be included in help text.";
     end
 
     if ~contains(filetext, "% Written")
@@ -137,31 +134,6 @@ end
 
 if issue_count > 0
     fprintf("Found errors in docstring in %i files.\n", issue_count);
-end
-
-end
-
-% Auxiliary Functions -----------------------------------------------------
-
-function files = aux_addFiles(path, includeSubfolders)
-    if nargin < 2
-        includeSubfolders = true;
-    end
-
-    subpath = '';
-    if includeSubfolders
-        subpath = ['**' filesep];
-    end
-
-    files = dir([CORAROOT filesep path filesep subpath '*.m']);
-end
-
-function files = aux_exclFiles(files, path, name)
-    idx = contains({files.folder}', [CORAROOT filesep path]);
-    if nargin == 3
-        idx = idx & contains({files.name}', name);
-    end
-    files = files(~idx);
 end
 
 %------------- END OF CODE --------------

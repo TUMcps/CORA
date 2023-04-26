@@ -2,7 +2,7 @@ function res = test_linearSys_reach_06_5dim_linAlg_all()
 % test_linearSys_reach_06_5dim_linAlg_all - unit_test_function of linear reachability 
 %    analysis with uncertain inputs (toy example),
 %    all linear reach algorithms used (except krylov due to system size)
-%    reduced version of testLongDuration_linearSys_reach_06
+%    reduced version of testLong_linearSys_reach_06
 %
 %
 % Syntax:  

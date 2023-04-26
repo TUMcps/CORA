@@ -9,7 +9,7 @@ function res = test_nonlinearSys_linError()
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 
 % Author:       Niklas Kochdumper
 % Written:      12-November-2018

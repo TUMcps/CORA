@@ -1,6 +1,6 @@
 function res = test_linearSys_reach_08_adaptive
-% test_linearSys_reach_08_adaptive - unit test for adaptive reachability analysis
-% reduced version of testLongDuration_linearSys_reach_08
+% test_linearSys_reach_08_adaptive - unit test for adaptive reachability 
+%   analysis; reduced version of testLong_linearSys_reach_08
 %
 % Syntax:  
 %    res = test_linearSys_reach_08_adaptive

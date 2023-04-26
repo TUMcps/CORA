@@ -17,7 +17,7 @@ function res = test_conHyperplane_isIntersecting
 % See also: -
 
 % Author:       Mark Wetzlinger
-% Written:      02-Sep-2019
+% Written:      02-September-2019
 % Last update:  ---
 % Last revision:---
 

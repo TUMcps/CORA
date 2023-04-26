@@ -132,8 +132,17 @@ genParam.Psi_g = Psi_g*ones(1,nrOfGenerators);
 
 %% save power system description
 % set path
-path = [CORAROOT filesep 'converter' filesep 'powerSystem2cora' filesep 'cases'];
+path = [CORAROOT filesep 'models' filesep 'powerSystems'];
+if ~isfolder(path)
+    mkdir([CORAROOT filesep 'models'],'powerSystems');
+end
 % save 
 save([path filesep filename],'bus','genParam','name','Pd','Qd','VM','Y');
+% remove and add path so that file can be found
+warOrig = warning;
+warning('off','all');
+rmpath(path);
+warning(warOrig);
+addpath(path);
 
 %------------- END OF CODE --------------

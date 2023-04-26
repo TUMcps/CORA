@@ -1,15 +1,14 @@
-function setOps = contSetOperations(varargin)
+function setOps = contSetOperations(contSetclass,varargin)
 % isContSetFunction - check which contSet classes have implemented
 %    certain functions (basic function in manual)
 %
 % Syntax:
-%    setOps = contSetOperations
 %    setOps = contSetOperations(contSetclass)
 %    setOps = contSetOperations(contSetclass,type)
 %
 % Inputs:
-%    contSetclass - (optional) class for which functions and unit tests
-%           should be printed to console
+%    contSetclass - class for which functions and unit tests should be
+%                   printed to console
 %    type - (options) 'basic' (default), 'all' (all functions)
 %
 % Outputs:
@@ -28,16 +27,23 @@ function setOps = contSetOperations(varargin)
 
 % Author:       Mark Wetzlinger
 % Written:      09-March-2021
-% Last update:  ---
+% Last update:  23-April-2023 (MW, adapt to new storage of test results)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+if nargin > 2
+    throw(CORAerror('CORA:tooManyInputArgs',2));
+end
+
+% default values
+type = setDefaultValues({'basic'},varargin);
 
 % groups in manual
 groups = {'basicSetOps','predicates','setProps','auxOps'};
 % list function specified in manual
 basicSetOps = {'mtimes','plus','cartProd','convHull','quadMap','and','or'}';
-predicates = {'in','isIntersecting','isFullDim','isequal','isempty'}';
+predicates = {'contains','isIntersecting','isFullDim','isequal','isempty'}';
 setProps = {'center','dim','norm','vertices','volume'}';
 auxOps = {'cubMap','enclose','enclosePoints','generateRandom','linComb',...
     'randPoint','reduce','supportFunc','plot','project'}';
@@ -66,30 +72,9 @@ for i=1:nrClasses_uT
 end
 % --- loading of CORA status finished ---
 
-
-% check if user-provided class exists
-contSetclass = [];
-if nargin >= 1
-    if ~ischar(varargin{1})
-        throw(CORAerror('CORA:specialError',...
-            "contSet class name must be a char array!"));
-    elseif ~ismember(varargin{1},classes)
-        throw(CORAerror('CORA:specialError',...
-            "Provided contSet class does not exist!"));
-    end
-    contSetclass = varargin{1};
-    type = 'basic';
-    if nargin == 2
-        if ~ischar(varargin{2})
-            throw(CORAerror('CORA:specialError',...
-                "type specification name must be a char array!"));
-        elseif ~ismember(varargin{2},{'basic','all'})
-            throw(CORAerror('CORA:specialError',...
-                "type specification name must be 'basic' or 'all'!"));
-        end
-        type = varargin{2};
-    end
-end
+% check input arguments
+inputArgsCheck({{contSetclass,'str',classes}, ...
+                {type,'str',{'basic','all'}}});
 
 
 % struct containing all groups + funcs
@@ -106,9 +91,23 @@ leftovers.func = cell(nrClasses,1);
 leftovers.unitTest = cell(nrClasses,1);
 
 
-% check if functions are implemented for respective classes
+% check if functions are implemented for respective classes (note: this was
+% initially implemented for all classes; we keep the code , but perform a
+% skip at the very beginning)
+idxClass = ismember(classes,contSetclass);
 for j=1:nrClasses
+    % only check desired class
+    if ~idxClass(j)
+        continue
+    end
+
+    % enlist all functions
     funcsInClass = allContSet.files{j}.files;
+    % remove trailing '_' hailing from function overloading via contSet
+    idxUnderscore = endsWith(funcsInClass,'_');
+    funcsInClass(idxUnderscore) = cellfun(@(x) x(1:end-1),...
+        funcsInClass(idxUnderscore),'UniformOutput',false);
+
     % check which set operations have unit tests
     idx = strcmp(classes{j},classes_uT);
     unitTestsForClass = {};
@@ -130,13 +129,17 @@ for j=1:nrClasses
         
     for i=1:length(groups)
         % check which set operations are implemented
-        [setOps.(groups{i}).exists(j,:),setOpsIdx] = ismember(setOps.(groups{i}).func,funcsInClass); 
+        [setOps.(groups{i}).exists(j,:),setOpsIdx] = ...
+            ismember(setOps.(groups{i}).func,funcsInClass); 
+
         % delete found set operations from list
         setOpsIdx(setOpsIdx == 0) = [];
         funcsInClass(setOpsIdx) = [];
+
         % check for which set operations there is a unit test
         [setOps.(groups{i}).unitTest(j,:),setOpsUnitTestsIdx] = ...
             ismember(setOps.(groups{i}).func,unitTestsForClass);
+        
         % delete found set operations from list
         setOpsUnitTestsIdx(setOpsUnitTestsIdx == 0) = [];
         unitTestsForClass(setOpsUnitTestsIdx) = [];
@@ -149,12 +152,6 @@ for j=1:nrClasses
     else
         leftovers.unitTest(j) = {false(length(funcsInClass),1)};
     end
-end
-
-
-% skip to end if no class should be printed
-if isempty(contSetclass)
-    return;
 end
 
 
@@ -199,23 +196,41 @@ end
 
 % additional group: all other implemented functions / corresponding unit tests
 if strcmp(type,'all') && ~isempty(remfuncs)
+    % conversions to other set representations
+    fprintf('conversions \n');
+    % check which of the remaining functions are conversion
+    idxConv = ismember(remfuncs,classes);
+
+    charlengthdiff = longestName - strlength(remfuncs);
+    for j=1:length(remfuncs)
+        if idxConv(j)
+            txtUnitTest = 'no';
+            if leftovers.unitTest{classIdx}(j)
+                txtUnitTest = 'yes';
+            end
+            fprintf(['.. ' remfuncs{j} ': ' ...
+                repmat(' ',1,charlengthdiff(j)) 'yes / ' txtUnitTest '\n']);
+        end
+    end
+
+    % other functions
     fprintf('remaining operations \n');
     
     charlengthdiff = longestName - strlength(remfuncs);
     for j=1:length(remfuncs)
-        txtUnitTest = 'no';
-        if leftovers.unitTest{classIdx}(j)
-            txtUnitTest = 'yes';
+        if ~idxConv(j)
+            txtUnitTest = 'no';
+            if leftovers.unitTest{classIdx}(j)
+                txtUnitTest = 'yes';
+            end
+            fprintf(['.. ' remfuncs{j} ': ' ...
+                repmat(' ',1,charlengthdiff(j)) 'yes / ' txtUnitTest '\n']);
         end
-        fprintf(['.. ' remfuncs{j} ': ' ...
-            repmat(' ',1,charlengthdiff(j)) 'yes / ' txtUnitTest '\n']);
     end
     
 end
 
 % print footer
 fprintf('-*---------------------------------*-\n');
-
-end
 
 %------------- END OF CODE --------------

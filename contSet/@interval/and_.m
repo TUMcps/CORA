@@ -41,7 +41,7 @@ if isa(S,'interval')
     if all(tmp <= eps, 'all')
         res = interval(min([lb,ub],[],2),max([lb,ub],[],2));
     else
-        res = [];
+        res = interval();
     end
 
 elseif isa(S,'halfspace') || isa(S,'conHyperplane')

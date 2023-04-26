@@ -17,7 +17,7 @@ function res = test_halfspace_dim
 % See also: -
 
 % Author:       Mark Wetzlinger
-% Written:      27-Sep-2019
+% Written:      27-September-2019
 % Last update:  16-March-2021 (MW, add empty case)
 % Last revision:---
 

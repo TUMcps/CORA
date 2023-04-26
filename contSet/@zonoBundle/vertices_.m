@@ -41,4 +41,9 @@ P = mptPolytope(zB);
 %obtain vertices (input check in polytope-function)
 V = vertices(P);
 
+% return correct dimension
+if isempty(V)
+    V = double.empty(dim(zB),0);
+end
+
 %------------- END OF CODE --------------

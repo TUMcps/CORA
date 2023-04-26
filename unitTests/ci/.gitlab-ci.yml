@@ -1,0 +1,127 @@
+
+# Settings -----------------------------------------------
+
+# define variables
+variables:
+  DO_CI: "true"
+  RUN_ALL_TESTS: "false"
+
+# define base settings
+.base-image:
+  image:
+    name: tobiasladnertum/cora:r2022a-dl
+    entrypoint: [""]
+  tags:
+    - matlab
+  rules:
+    - if: $DO_CI == "true"
+      when: always
+    - when: manual
+
+# define stages
+stages:
+  - init
+  - runTestSuite-short
+  - runTestSuite-all
+  - ci-status
+
+# Init stage ----------------------------------------------
+
+# define init settings
+.init:
+  stage: init
+  extends: .base-image
+  before_script: 
+    # tell bitbucket tests are running
+    - sudo chmod +x ./unitTests/ci/build_status 
+    - BUILD_STATUS="INPROGRESS" RESULT_TEXT="" ./unitTests/ci/build_status
+    # any non-zero exit code should fail the job
+    - set +e
+  after_script:
+    - BUILD_STATUS="0" RESULT_TEXT="Job finished." ./unitTests/ci/build_status
+
+# test job
+test-job:
+  extends: .init
+  rules:
+    - when: never
+  script: 
+    - matlab -batch "addpath(genpath('.')); test_conZonotope_convHull"
+
+# Short test stage ----------------------------------------
+
+# define base run
+.base-run:
+  extends: .init
+  variables:
+    testSuite: 'short'
+  script: 
+    # run testSuite
+    - matlab -batch "addpath(genpath('.')); runTestSuite('$testSuite');"
+
+    # check test results
+    - matlab -batch "addpath(genpath('.')); writeTestResultsForCI('$testSuite');"
+
+    # push results to bitbucket
+    - BUILD_STATUS=$(<failed.txt) RESULT_TEXT=$(<resultText.txt) ./unitTests/ci/build_status
+    
+    # exit with exit code
+    - EXIT_CODE=$(<failed.txt)
+    - echo "Exiting with code $EXIT_CODE."
+    - exit $EXIT_CODE
+  after_script: # all done in script
+
+# run short tests
+runTestSuiteShort:
+  stage: runTestSuite-short
+  extends: .base-run
+  variables:
+    testSuite: 'short'
+
+# All test stage -------------------------------------------
+
+# extends base run settings to always run tests for specific branches or if $RUN_ALL_TESTS == "true"
+.base-run-all:
+  stage: runTestSuite-all
+  extends: .base-run
+  rules: 
+    - if: $DO_CI == "true" && ($RUN_ALL_TESTS == "true" || $CI_COMMIT_BRANCH == "PUBLIC" || $CI_COMMIT_BRANCH == "public-bugfix" || $CI_COMMIT_BRANCH == "devgeneral" || $CI_COMMIT_BRANCH == "nn-main")
+      when: always
+
+# run long duration tests
+runTestSuiteLong:
+  extends: .base-run-all
+  variables:
+    testSuite: 'long'
+
+# run nn tests
+runTestSuiteNN:
+  extends: .base-run-all
+  variables:
+    testSuite: 'nn'
+
+# CI status block ------------------------------------------
+
+failure:
+  stage: ci-status
+  extends: .base-image
+  script:
+    # tell bitbucket something went wrong
+    - sudo chmod +x ./unitTests/ci/build_status 
+    - BUILD_STATUS="FAILED" RESULT_TEXT="Something went wrong. Check gitlab for details." ./unitTests/ci/build_status
+    - exit 1 # always fail
+  rules:
+    - if: $DO_CI == "true"
+      when: on_failure # of any earlier job
+
+success:
+  stage: ci-status
+  extends: .base-image
+  script:
+    # tell bitbucket all tests passed
+    - sudo chmod +x ./unitTests/ci/build_status 
+    - BUILD_STATUS="0" RESULT_TEXT="All tests passed." ./unitTests/ci/build_status
+    - exit 0
+  rules:
+    - if: $DO_CI == "true"
+      when: on_success # of all jobs

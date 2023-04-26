@@ -36,8 +36,8 @@ end
 % [S1,S2] = findClassArg(S1,S2,classname);
 
 % check input arguments
-inputArgsCheck({{S1,'att',{'contSet','numeric'},'vector'};
-                {S2,'att',{'contSet','numeric'},'vector'}});
+inputArgsCheck({{S1,'att',{'contSet','numeric'}};
+                {S2,'att',{'contSet','numeric'}}});
 
 type = setDefaultValues({'exact'},varargin);
 
