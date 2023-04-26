@@ -17,7 +17,7 @@ function res = test_ellipsoid_center
 % See also: -
 
 % Author:       Mark Wetzlinger
-% Written:      27-Sep-2019
+% Written:      27-September-2019
 % Last update:  ---
 % Last revision:---
 

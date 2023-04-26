@@ -34,6 +34,7 @@ function [val,x] = supportFunc_(C,dir,type,varargin)
 % Author:       Niklas Kochdumper
 % Written:      19-November-2019
 % Last update:  10-December-2022 (MW, add type = 'range')
+%               25-April-2023 (MW, bug fix)
 % Last revision:27-March-2023 (MW, rename supportFunc_)
 
 %------------- BEGIN CODE --------------
@@ -48,17 +49,23 @@ if isempty(g)
     g = zeros(size(c)); 
 end
 
+% length of direction
+l = vecnorm(dir);
+
 % compute upper or lower bound
 if strcmp(type,'upper')
-    val = dir'*c + abs(dir'*g) + r*norm(dir);  
-    x = c + g*sign(dir'*g) + r*dir;
+    val = dir'*c + abs(dir'*g) + r*l;  
+    x = c + g*sign(dir'*g) + r * dir ./ l;
+
 elseif strcmp(type,'lower')
-    val = dir'*c - abs(dir'*g) - r*norm(dir);  
-    x = c - g*sign(dir'*g) - r*dir;
+    val = dir'*c - abs(dir'*g) - r*l;  
+    x = c - g*sign(dir'*g) - r * dir ./ l;
+
 elseif strcmp(type,'range')
-    val = interval(dir'*c - abs(dir'*g) - r*norm(dir),...
-        dir'*c + abs(dir'*g) + r*norm(dir));
-    x = [c - g*sign(dir'*g) - r*dir, c + g*sign(dir'*g) + r*dir];
+    val = interval(dir'*c - abs(dir'*g) - r*l,...
+        dir'*c + abs(dir'*g) + r*l);
+    x = [c - g*sign(dir'*g) - r*dir./l, c + g*sign(dir'*g) + r*dir./l];
+
 end
 
 %------------- END OF CODE --------------

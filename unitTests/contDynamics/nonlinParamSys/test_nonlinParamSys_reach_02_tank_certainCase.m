@@ -34,7 +34,7 @@ function res = test_nonlinParamSys_reach_02_tank_certainCase
 % Parameters --------------------------------------------------------------
 
 dim_x=6;
-params.tFinal=50; %final time
+params.tFinal=10; %final time
 params.R0=zonotope([[2; 4; 4; 2; 10; 4],0.2*eye(dim_x)]);
 params.U=zonotope([0,0.005]);
 

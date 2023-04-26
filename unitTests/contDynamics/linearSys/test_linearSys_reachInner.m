@@ -9,7 +9,7 @@ function res = test_linearSys_reachInner()
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 
 % Author:       Niklas Kochdumper
 % Written:      26-August-2020

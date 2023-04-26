@@ -1,0 +1,38 @@
+{
+  "_schemaVersion": "1.0.0",
+  
+  "useCORAcolors":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:contDynamics'}"], "purpose":"ID of CORA color map"},
+        {"name":"numColors", "kind":"ordered", "type":"numeric", "purpose":"number of reachSet colors"}
+     ]
+  },
+  
+  "useCORAcolors":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:default'}"], "purpose":"ID of CORA color map"}
+     ]
+  },
+  
+  "CORAcolor":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:reachSet'}"], "purpose":"ID of CORA color"},
+        {"name":"numColors", "kind":"ordered", "type":"numeric", "purpose":"number of reachSet colors"},
+        {"name":"cidx", "kind":"ordered", "type":"numeric", "purpose":"index of reachSet color"}
+     ]
+  },
+  
+  "CORAcolor":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:initialSet','CORA:finalSet', 'CORA:simulations','CORA:unsafe','CORA:safe','CORA:highlight1','CORA:highlight2', 'CORA:next'}"], "purpose":"ID of CORA color"}
+     ]
+  }
+}

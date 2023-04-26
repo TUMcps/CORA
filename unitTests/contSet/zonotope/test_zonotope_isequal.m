@@ -17,7 +17,7 @@ function res = test_zonotope_isequal
 % See also: -
 
 % Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
+% Written:      17-September-2019
 % Last update:  21-April-2020
 %               09-August-2020 (enhance randomness)
 % Last revision:---

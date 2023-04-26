@@ -14,7 +14,7 @@ function res = test_hybridAutomaton_reach_01_bouncingBall
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 
 % Author:       Matthias Althoff
 % Written:      27-July-2016

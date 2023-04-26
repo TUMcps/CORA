@@ -17,7 +17,7 @@ function res = test_interval_contains
 % See also: -
 
 % Author:       Mark Wetzlinger, Adrian Kulmburg
-% Written:      27-Sep-2019
+% Written:      27-September-2019
 % Last update:  12-March-2021 (MW, add empty case)
 %               01-July-2021 (AK, merged test_interval_containsPoint with
 %                                 test_interval_in)

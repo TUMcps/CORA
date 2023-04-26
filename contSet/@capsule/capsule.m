@@ -107,6 +107,7 @@ methods
 end
 
 methods (Static = true)
+    C = enclosePoints(varargin) % enclose point cloud by capsule
     C = generateRandom(varargin) % generates random capsule
 end
 

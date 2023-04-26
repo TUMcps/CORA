@@ -10,7 +10,7 @@ function res = test_nonlinearSys_reach_04_laubLoomis_polyZonotope
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 
 % Author:       Matthias Althoff, Niklas Kochdumper
 % Written:      26-January-2016

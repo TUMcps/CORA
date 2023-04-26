@@ -17,37 +17,29 @@ function res = test_interval_and
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
+% Author:       Dmitry Grebenyuk, Mark Wetzlinger
 % Written:      05-January-2016
-% Last update:  ---
+% Last update:  23-April-2023 (MW, add empty set cases)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-tol = 1e-9;
 res = true;
 
-a = interval([-10; -2.0; 10.0], [-5; 8.0; 15.0]);
-b = interval([-11; 2; 11.0], [-6; 9; 12.0]);
-c = a & b;
-if abs( infimum(c(1)) + 10.0 ) > tol || abs( supremum(c(1)) + 6.0 ) > tol
-	res = false;
-	return;
-end
+% 3D case
+I1 = interval([-10; -2; 10], [-5; 8; 15]);
+I2 = interval([-11; 2; 11], [-6; 9; 12]);
+I = I1 & I2;
+I_true = interval([-10;2;11],[-6;8;12]);
+res(end+1,1) = isequal(I,I_true);
 
-if abs( infimum(c(2)) - 2.0 ) > tol || abs( supremum(c(2)) - 8.0 ) > tol
-	res = false;
-	return;
-end
+% empty intersection
+I1 = interval([-5;-2],[2;4]);
+I2 = interval([-7;6],[-3;8]);
+I = I1 & I2;
+res(end+1,1) = isempty(I);
 
-if abs( infimum(c(3)) - 11.0 ) > tol || abs( supremum(c(3)) - 12.0 ) > tol
-	res = false;
-	return;
-end
-
-% if ~isempty(a & interval())
-%     res = false;
-%     disp('test_and_failed');
-% end
+% combine results 
+res = all(res);
 
 %------------- END OF CODE --------------

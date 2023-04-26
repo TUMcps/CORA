@@ -9,7 +9,7 @@ function res = test_conPolyZono_reduceConstraints
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % Other m-files required: none
 % Subfunctions: none

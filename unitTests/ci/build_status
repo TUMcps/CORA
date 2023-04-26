@@ -1,0 +1,49 @@
+
+# Push gitLab CI/CD build status to bitbucket
+# see also: https://docs.gitlab.com/ee/ci/ci_cd_for_external_repos/bitbucket_integration.html
+
+# check variables
+if [ -z "$BITBUCKET_ACCESS_TOKEN" ]; then
+   echo "ERROR: BITBUCKET_ACCESS_TOKEN is not set"
+   exit 1
+fi
+if [ -z "$BITBUCKET_USERNAME" ]; then
+   echo "ERROR: BITBUCKET_USERNAME is not set"
+   exit 1
+fi
+if [ -z "$BITBUCKET_NAMESPACE" ]; then
+   echo "Setting BITBUCKET_NAMESPACE to $CI_PROJECT_NAMESPACE"
+   BITBUCKET_NAMESPACE=$CI_PROJECT_NAMESPACE
+fi
+if [ -z "$BITBUCKET_REPOSITORY" ]; then
+   echo "Setting BITBUCKET_REPOSITORY to $CI_PROJECT_NAME"
+   BITBUCKET_REPOSITORY=$CI_PROJECT_NAME
+fi
+if [ -z "$BUILD_STATUS" ]; then
+   echo "ERROR: BUILD_STATUS is not set"
+   exit 1
+fi
+
+# set BUILD_STATUS
+if [ "$BUILD_STATUS" = "0" ]; then
+   BITBUCKET_STATE="SUCCESSFUL"
+elif [ "$BUILD_STATUS" = "INPROGRESS" ]; then
+   BITBUCKET_STATE="INPROGRESS"
+else
+   BITBUCKET_STATE="FAILED"
+fi
+
+# set BITBUCKET variables for request
+BITBUCKET_API_ROOT="https://api.bitbucket.org/2.0"
+BITBUCKET_STATUS_API="$BITBUCKET_API_ROOT/repositories/$BITBUCKET_NAMESPACE/$BITBUCKET_REPOSITORY/commit/$CI_COMMIT_SHA/statuses/build"
+BITBUCKET_KEY="ci/gitlab-ci/$CI_JOB_NAME"
+BITBUCKET_DESCRIPTION=$RESULT_TEXT
+
+# push results
+echo "Pushing status to $BITBUCKET_STATUS_API..."
+curl --request POST "$BITBUCKET_STATUS_API" \
+--user $BITBUCKET_USERNAME:$BITBUCKET_ACCESS_TOKEN \
+--header "Content-Type:application/json" \
+--silent \
+--data "{ \"state\": \"$BITBUCKET_STATE\", \"key\": \"$BITBUCKET_KEY\", \"description\":
+\"$BITBUCKET_DESCRIPTION\",\"url\": \"$CI_PROJECT_URL/-/jobs/$CI_JOB_ID\" }"

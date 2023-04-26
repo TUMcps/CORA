@@ -45,6 +45,7 @@ function res = contains_(E,S,type,varargin)
 %               06-July-2021 (AK, merged containsPoint to in)
 %               04-July-2022 (VG: handle class array cases)
 %               25-November-2022 (MW, rename 'contains')
+%               25-April-2023 (VG, add method for capsule)
 % Last revision:27-March-2023 (MW, rename contains_)
 
 %------------- BEGIN CODE --------------
@@ -59,6 +60,12 @@ if isnumeric(S)
 
 elseif isa(S,'ellipsoid')
     res = containsEllipsoid(E,S);
+
+elseif isa(S,'capsule')
+    % check if balls at both ends of capsule are contained
+    E1 = ellipsoid(S.r^2*eye(dim(S)), S.c+S.g);
+    E2 = ellipsoid(S.r^2*eye(dim(S)), S.c-S.g);
+    res = containsEllipsoid(E,E1) && containsEllipsoid(E,E2);
 
 elseif isa(S,'zonotope') && strcmp(type,'approx')
     S = ellipsoid(S,'outer:norm_bnd');

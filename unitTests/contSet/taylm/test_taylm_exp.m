@@ -9,7 +9,7 @@ function res = test_taylm_exp
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % Other m-files required: taylm, interval
 % Subfunctions: none

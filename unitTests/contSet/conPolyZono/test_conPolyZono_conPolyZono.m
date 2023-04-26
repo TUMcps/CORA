@@ -8,7 +8,7 @@ function res = test_conPolyZono_conPolyZono
 %    -
 %
 % Outputs:
-%    res - boolean
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

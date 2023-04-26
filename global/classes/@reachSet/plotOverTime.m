@@ -45,6 +45,7 @@ inputArgsCheck({{R,'att',{'reachSet'},{''}};
 % parse input arguments
 NVpairs = readPlotOptions(varargin(2:end),'reachSet');
 [NVpairs,unify] = readNameValuePair(NVpairs,'Unify','islogical',false);
+[NVpairs,totalsets] = readNameValuePair(NVpairs,'UnifyTotalSets','isscalar',1);
 [NVpairs,whichset] = readNameValuePair(NVpairs,'Set','ischar','ti');
 
 % check which set has to be plotted

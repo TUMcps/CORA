@@ -34,6 +34,11 @@ function P = mptPolytope(zB,varargin)
 
 %------------- BEGIN CODE --------------
 
+if zB.parallelSets == 0
+    P = mptPolytope();
+    return
+end
+
 % compute over-approximative polytope for each zonotope
 Ptmp = cell(zB.parallelSets,1);
 for i=1:zB.parallelSets

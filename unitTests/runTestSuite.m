@@ -11,7 +11,7 @@ function runTestSuite(varargin)
 % Inputs:
 %    testSuite - (optional) name for test suite (case insensitive)
 %                   'short' (default): prefix = 'test'
-%                   'long': prefix = 'testLongDuration'
+%                   'long': prefix = 'testLong'
 %                   'mp': prefix = 'testMP'
 %                   'mosek': prefix = 'testMOSEK'
 %                   'sdpt3': prefix = 'testSDPT3'
@@ -26,7 +26,7 @@ function runTestSuite(varargin)
 %
 % Example:
 %    runTestSuite();
-%    runTestSuite('long',false,['contSet' filesep 'capsule']);
+%    runTestSuite('long',false,[CORAROOT filesep 'unitTests' filesep 'contSet' filesep 'capsule']);
 
 % Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      31-August-2016
@@ -64,7 +64,7 @@ switch testSuite
     case 'short'
         prefix = 'test';
     case 'long'
-        prefix = 'testLongDuration';
+        prefix = 'testLong';
     case 'intlab'
         prefix = 'testINTLAB';
     case 'mosek'
@@ -82,19 +82,18 @@ switch testSuite
     otherwise
 end
 
-% run main program performing the tests
-if iscell(prefix)
-    failed = []; numberOfTests = 0;
-    % nn test suite has three calls
-    for i=1:length(prefix)
-        [failed_temp, numberOfTests_temp] = testSuiteCore(prefix{i},verbose,directory);
-        failed = [failed; failed_temp];
-        numberOfTests = numberOfTests + numberOfTests_temp;
-    end
-else
-    % only one call to testSuiteCore
-    [failed, numberOfTests] = testSuiteCore(prefix,verbose,directory);
+% currently, onle nn test suite has three calls
+if ~iscell(prefix)
+    prefix = {prefix};
 end
+
+% run main program performing the tests
+results = [];
+for i=1:length(prefix)
+    results_i = testSuiteCore(prefix{i},verbose,directory);
+    results = [results; results_i];
+end
+
 % some test suites switch the directory...
 cd(directory);
 
@@ -103,11 +102,10 @@ if strcmp(directory,rootUnitTests)
     % end time
     timeEnd = char(datetime(now,'ConvertFrom','datenum'));
 
-    % save end date and time, number (and names) of (failed) tests
+    % save end date and time
     data.date = [timeStart ' - ' timeEnd(13:end)];
-    data.nrTotalTests = numberOfTests;
-    data.nrFailedTests = size(failed,1);
-    data.nameFailedTests = failed;
+    % save full results
+    data.results = results;
 
     % save matlab version
     data.matlabversion = version;
@@ -145,8 +143,8 @@ if strcmp(directory,rootUnitTests)
 else
     % display number of failed tests + file names
     disp('----------------------------------------------------------------------------');
-    disp(['run ' int2str(numberOfTests) ' tests, ' int2str(size(failed,1)) ' failed.']);
-    disp(strjoin(failed, ',\n'));
+    fprintf("run %i tests, %i failed.\n",length(results),nnz(~[results.ok]));
+    disp(strjoin("  " + {results(~[results.ok]).fname}, ',\n'));
     
 end
 

@@ -8,7 +8,7 @@ function res = test_requiredToolboxes
 %    no
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % Example: 
 %
@@ -20,21 +20,22 @@ function res = test_requiredToolboxes
 
 %------------- BEGIN CODE --------------
 
+Res = [];
 % note: license returns 1 if license exists and 0 if not (not: true/false!) 
 % check if symbolic math toolbox is available
-res_partial(1) = logical(license('test','Symbolic_Toolbox'));
-if ~res_partial(1)
+Res = logical(license('test','Symbolic_Toolbox'));
+if ~Res(end)
     disp('Symbolic Toolbox missing!');
 end
 
 % check if optimization toolbox is available
-res_partial(2) = logical(license('test','Optimization_Toolbox'));
-if ~res_partial(2)
+Res = [Res,logical(license('test','Optimization_Toolbox'))];
+if ~Res(end)
     disp('Optimization Toolbox missing!');
 end
 
-res_partial(3) = logical(license('test','Statistics_Toolbox'));
-if ~res_partial(3)
+Res = [Res,logical(license('test','Statistics_Toolbox'))];
+if ~Res(end)
     disp('Statistics Toolbox missing!');
 end
 
@@ -42,22 +43,31 @@ p = path;
 
 % note: contains returns true/false
 % check if MPT toolbox is available
-res_partial(4) = contains(p,[filesep 'mpt' filesep]);
-if ~res_partial(4)
+Res = [Res,contains(p,[filesep 'mpt' filesep])];
+if ~Res(end)
     disp('MPT toolbox missing!');
 end
 
 % check if YALMIP toolbox is available
-res_partial(5) = contains(p,[filesep 'yalmip' filesep]);
-if ~res_partial(5)
+Res = [Res,isYalmipInstalled()];
+if ~Res(end)
     disp('YALMIP toolbox missing!');
 end
 
-% check if CORA is on the path
-res_partial(6) = contains(p,[filesep 'contDynamics' filesep]); 
-res_partial(7) = contains(p,[filesep 'contSet' filesep]); 
-res_partial(8) = contains(p,[filesep 'hybridDynamics' filesep]);
+% Check if at least one SDP solver supported by YALMIP is installed
+Res = [Res,isSolverInstalled('mosek','sdpt3','gurobi','sedumi')];
+if ~Res(end)
+    disp('SDP solver supported by YALMIP missing!');
+end
 
-res = all(res_partial);
+% no check for MIP required as YALMIP 
+
+
+% check if CORA is on the path
+Res = [Res,contains(p,[filesep 'contDynamics' filesep])]; 
+Res = [Res,contains(p,[filesep 'contSet' filesep])]; 
+Res = [Res,contains(p,[filesep 'hybridDynamics' filesep])];
+
+res = all(Res);
 
 %------------- END OF CODE --------------

@@ -31,6 +31,11 @@ function res = isFullDim(P)
 
 %------------- BEGIN CODE --------------
 
+% check for emptiness
+if isempty(P)
+    res = false; return
+end
+
 % init result
 res = true;
 

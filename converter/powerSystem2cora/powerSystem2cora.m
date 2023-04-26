@@ -22,13 +22,13 @@ function powerSystem2cora(filename, varargin)
 %    .bus.load - vector of load buses
 %    .bus.fault - index of faulty bus
 %    .bus.slack - index of slack bus
+%
 % Outputs:
 %    x - ...
 %    y - ...
 %
 % Example:
-%    [x,y] = powerSystem2cora('IEEE30')
-
+%    [x,y] = powerSystem2cora('IEEE30');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,11 +38,10 @@ function powerSystem2cora(filename, varargin)
 
 % Author:       Matthias Althoff
 % Written:      14-April-2022
-% Last update:  ---
+% Last update:  25-April-2023 (MW, change destination folder)
 % Last revision:---
 
-%------------- BEGIN CODE --------------%
-
+%------------- BEGIN CODE --------------
 
 % load scenario
 scenario = load(filename);
@@ -73,7 +72,16 @@ eval(str);
 
 %% save model
 % set path
-path = [CORAROOT filesep 'models' filesep 'Cora' filesep 'powerSystems'];
+path = [CORAROOT filesep 'models' filesep 'powerSystemsConverted'];
+if ~isfolder(path)
+    mkdir([CORAROOT filesep 'models'],'powerSystemsConverted');
+end
 save([path filesep name], name);
+% remove and add path so that file can be found
+warOrig = warning;
+warning('off','all');
+rmpath(path);
+warning(warOrig);
+addpath(path);
 
 %------------- END OF CODE --------------

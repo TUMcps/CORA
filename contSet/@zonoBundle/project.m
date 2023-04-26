@@ -1,5 +1,6 @@
 function zB = project(zB,dims)
-% project - projects a zonotope bundle onto the specified dimensions
+% project - projects a zonotope bundle onto the specified dimensions; note
+%    that this returns an outer-approximation
 %
 % Syntax:  
 %    zB = project(zB,dims)

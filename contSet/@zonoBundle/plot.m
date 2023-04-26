@@ -114,7 +114,7 @@ if length(dims) == 2
     Pint = polyshape(V(1,:),V(2,:));
     if Pint.NumRegions > 0 && ~inTol
         % plot polytope
-        han = plotPolygon(V,NVpairs{:});
+        han = plotPolygon(V,NVpairs{:},'ConvHull',true);
     else
         if size(V, 2) > 0 && inTol
             % just plot first point

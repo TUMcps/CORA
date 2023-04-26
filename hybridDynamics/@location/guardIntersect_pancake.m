@@ -106,11 +106,24 @@ function [sys,params] = scaledSystem(sys,hs,R0,guardID,params)
 
     % create file path
     name = ['generated_',sys.name,'_',num2str(guardID),'_timeScaled'];
-    path = [CORAROOT filesep 'models' filesep 'auxiliary' filesep name];
+    foldername = [CORAROOT filesep 'models' filesep 'auxiliary'];
+    path = [foldername filesep name];
 
     % create file for time scaled dynamics
     func = F(xSym,uSym,pSym);
+    if ~isfolder(foldername)
+        mkdir([CORAROOT filesep 'models'],'auxiliary');
+    end
     matlabFunction(func,'File',path,'Vars',{xSym,uSym,pSym});
+
+    % remove and add path so that file can be found in input argument check
+    % of nonlinParamSys constructor called below
+    fullpath = genpath(foldername);
+    warOrig = warning;
+    warning('off','all');
+    rmpath(fullpath);
+    warning(warOrig);
+    addpath(fullpath);
 
     % create time scaled system
     str = ['sys = nonlinParamSys([@' name '],n,m,1);'];

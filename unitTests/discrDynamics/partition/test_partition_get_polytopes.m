@@ -8,7 +8,7 @@ function res = test_partition_get_polytopes()
 %    no
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 
 % Author:       Aaron Pereira, Matthias Althoff
 % Written:      02-August-2017

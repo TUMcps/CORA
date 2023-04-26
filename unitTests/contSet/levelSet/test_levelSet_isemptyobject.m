@@ -8,7 +8,7 @@ function res = test_levelSet_isemptyobject
 %    -
 %
 % Outputs:
-%    res - boolean
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

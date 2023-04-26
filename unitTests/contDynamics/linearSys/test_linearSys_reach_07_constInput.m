@@ -1,7 +1,7 @@
 function res = test_linearSys_reach_07_constInput(~)
 % test_linearSys_reach_07_constInput - unit test to check if constant inputs c
-%  (cf. x' = Ax + Bu + c) are handled correctly
-%   reduced version of testLongDuration_reach_07
+%   (cf. x' = Ax + Bu + c) are handled correctly; reduced version of
+%   testLong_reach_07
 % note: the simulation results may be not with absolute certainty correct,
 %       but should nonetheless remain inside the computed reachable sets
 %
@@ -12,7 +12,7 @@ function res = test_linearSys_reach_07_constInput(~)
 %    -
 %
 % Outputs:
-%    res - boolean whether reachable sets overapproximative
+%    res - true/false whether reachable sets overapproximative
 %
 % Other m-files required: none
 % Subfunctions: none

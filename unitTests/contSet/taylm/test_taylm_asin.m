@@ -8,7 +8,7 @@ function res = test_taylm_asin
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % Other m-files required: taylm, interval
 % Subfunctions: none

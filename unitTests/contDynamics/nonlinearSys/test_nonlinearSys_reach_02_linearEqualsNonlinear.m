@@ -11,7 +11,7 @@ function res = test_nonlinearSys_reach_02_linearEqualsNonlinear
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 
 % Author:       Matthias Althoff
 % Written:      09-August-2016

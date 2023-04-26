@@ -17,7 +17,7 @@ function res = test_halfspace_isempty
 % See also: -
 
 % Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
+% Written:      17-September-2019
 % Last update:  03-May-2020 (add empty case)
 % Last revision:---
 

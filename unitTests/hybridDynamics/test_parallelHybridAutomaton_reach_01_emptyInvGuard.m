@@ -10,7 +10,7 @@ function res = test_parallelHybridAutomaton_reach_01_emptyInvGuard()
 %    no
 %
 % Outputs:
-%    res - boolean  
+%    res - true/false  
 
 % Author:       Mark Wetzlinger
 % Written:      25-June-2022

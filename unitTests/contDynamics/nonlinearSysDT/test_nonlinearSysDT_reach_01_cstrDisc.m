@@ -67,9 +67,7 @@ res = true;
 for i = 1:simOpt.points
    for j = 1:length(R.timePoint.set)-1
       if ~contains(R.timePoint.set{j+1},simRes.x{i}(j,:)')
-          res = false;
-          path = pathFailedTests(mfilename());
-          save(path,'simRes');       
+          res = false;   
           return
       end
    end

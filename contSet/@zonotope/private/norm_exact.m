@@ -12,8 +12,7 @@ function [val,x] = norm_exact(Z,type)
 %    x - vertex attaining maximum norm
 %
 % Example:
-%    Z = zonotope([1;0],[1 3 -2; 2 -1 0]);
-%    norm(Z,2,'exact')
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,11 +22,18 @@ function [val,x] = norm_exact(Z,type)
 
 % Author:       Victor Gassmann
 % Written:      18-September-2019
-% Last update:  04-April-2023 (VG: moved YALMIP check into yalmip
-%                                   "execution branch")
+% Last update:  21-April-2023 (VG: reworked completely; not sure what I did
+%                   there initially, but it was wrong)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+if ~isYalmipInstalled()
+     throw(CORAerror('CORA:YALMIP',...
+         'YALMIP must be on the MATLAB search path to use this function'));
+elseif str2double(yalmip('version'))<20190425 % version: 25.04.2019
+    throw(CORAerror('CORA:YALMIP','YALMIP version >=20190425 required'));
+end
 
 if ~exist('type','var')
     type = 2;
@@ -39,7 +45,7 @@ end
 G = generators(Z);
 if isempty(G)
     x = center(Z);
-    val = sqrt(x'*x);
+    val = norm(x);
     return;
 end
 [~,m] = size(G);
@@ -55,51 +61,55 @@ if isempty(isMosek)
 end
 
 if isMosek
-    % The problem to solve is 
-    %%% norm(Z)^2 = max_{u\in{-1,1}^m} (c+G*u)'*(c+G*u).
-    % This can be rewritten as
-    %%%     -min_{u\in{-1,1}^m} u'*M*u - 2*c'*G*u - lmax*m,
+    % We want to find the vertex of the zero-centered zonotope for which
+    % the distance to the center (origin) is maximized, i.e.
+    %%% norm(Z)^2 = max_{x\in Z} (x-c)^T*(x-c)
+    %%% norm(Z)^2 = max_{u\in{-1,1}^m} u'*G'*G*u.
+    % This can be rewritten as (M = lmax*eye(m) -G'*G)
+    %%%     -min_{u\in{-1,1}^m} u'*M*u - lmax*m,
     % which is the same as
-    %%%     -min_{b\in{0,1}^m} 4*(b-0.5)'*M*(b-0.5) - 4*c'*G*(b-0.5)-lmax*m,
-    % which is the same as
-    %%%     -min_{b\in{0,1}^m} 4*||sqrtm(M)*(b-1/2*(ones(m,1)+G'*c))||_2^2
-    %%%                        -c'*G*G'*c.
-    % Ignoring constant terms for now, this can be rewritten as
+    %%%     -min_{b\in{0,1}^m} 4*(b-0.5)'*M*(b-0.5) -lmax*m.
+    % Ingoring the constant terms and factors, the optimizer is equal when
+    % optimizing 
+    %%%     min_{b\in{0,1}^m} ||sqrtm(M)*(b-0.5)||_2,
+    % or equivalently
     %%% min_{t,b} t,
-    %%%     s.t.    ||sqrtm(M)*b-1/2*sqrtm(M)*(ones(m,1)+G'*c)||_2 <= t,
+    %%%     s.t.    ||sqrtm(M)*b-1/2*sqrtm(M)*ones(m,1)||_2 <= t,
     %%%             0 <= b <= 1, b\in \mathbb{Z}
     
     % The second-order cone constraint can be modeled with
     %%% (t,s) \in Q^{m+1},
-    % where s = sqrtm(M)*b-1/2*sqrtm(M)*(ones(m,1)+G'*c).
+    % where s = sqrtm(M)*b-1/2*sqrtm(M)*ones(m,1).
     % Thus, our scalar variable vector is given by x = [t;s;b]
     
+    % no linear equality constraints
+    prob.a = sparse(zeros(0,1+m));
+    prob.blc = [];
+    prob.buc = [];
+
     [~, res] = mosekopt('symbcon echo(0)');
-    M_12 = real(sqrtm(M));
-    % variables: [t;s;b] (in that order)
+    M_sqrt = real(sqrtm(M));
+    % variables: [t;b] (in that order)
 
-    % linear constraints; we need:
-    %%% s = sqrtm(M)*b-1/2*sqrtm(M)*(ones(m,1)+G'*c)
-    prob.a = sparse([zeros(m,1),eye(m),-M_12]);
+    % we have the cone ||sqrtm(M)*b-1/2*sqrtm(M)*ones(m,1)||_2 <= t
+    % MOSEK writes that cone as
+    % (t,[sqrtm(M)*b-1/2*sqrtm(M)*ones(m,1)]_1,..) \in quadcone
+    % this obviously cannot be given to the optimizer, but it can be
+    % written as
+    % F*[t;b] +g \in quadcone, i.e.
+    prob.f = sparse([1,zeros(1,m);zeros(m,1),M_sqrt]);
+    prob.g = [0;-1/2*M_sqrt*ones(m,1)];
+    prob.cones = [res.symbcon.MSK_CT_QUAD, 1+m];
 
-    % lower and upper bounds are equal
-    prob.blc = -1/2*M_12*(ones(m,1)+G'*c);
-    prob.buc = prob.blc;
-
-    % cones
-    prob.cones.type = res.symbcon.MSK_CT_QUAD;
-    prob.cones.sub = 1:m+1;
-    prob.cones.subptr = 1;
-
-    % bounds on b (0 <= b <= 1)
-    prob.blx = [-inf(1,1+m),zeros(1,m)];
-    prob.bux = [inf(1,1+m),ones(1,m)];
+    % 0<=t<=inf; 0 <= b <= 1
+    prob.blx = [0,zeros(1,m)];
+    prob.bux = [inf,ones(1,m)];
 
     % make b integer variable
-    prob.ints.sub = 1+m+(1:m);
+    prob.ints.sub = 1+(1:m);
 
     % objective
-    prob.c = [1,zeros(1,m+m)];
+    prob.c = [1,zeros(1,m)];
 
     % optimize
     [~,res] = mosekopt('minimize echo(0)',prob);
@@ -110,26 +120,22 @@ if isMosek
     end
 
     % extract solution
-    b_sol = res.sol.int.xx(1+m+(1:m));
+    b_sol = res.sol.int.xx(1+(1:m));
     u_sol = 2*(b_sol-0.5);
     x = G*u_sol+c;
-    val = sqrt(-(4*(b_sol-0.5)'*M*(b_sol-0.5) - 4*c'*G*(b_sol-0.5)-lmax*m));
 elseif isYalmipInstalled()
-    if str2double(yalmip('version'))<20190425 % version: 25.04.2019
-        throw(CORAerror('CORA:YALMIP','YALMIP version >=20190425 required'));
-    end
     b = binvar(m,1);
-    obj = 4*(b-0.5)'*M*(b-0.5) - 4*c'*G*(b-0.5);
+    obj = 4*(b-0.5)'*M*(b-0.5);
     options = sdpsettings('verbose',0);
     %use gurobi for MUCH faster solve times
     %options.solver = 'bnb';
     %solve optimization problem
     optimize([], obj, options);
-    val = sqrt(value(-obj + m*lmax));
     x = G*value(2*(b-0.5))+c;
     warning("YALMIP was used to model the problem - consider installing a supported solver to speed up computation...");
 else
     throw(CORAerror('CORA:noSuitableSolver','integer programming'));
 end
 
+val = norm(x);
 %------------- END OF CODE --------------

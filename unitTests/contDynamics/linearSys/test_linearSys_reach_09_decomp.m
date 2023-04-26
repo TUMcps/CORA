@@ -18,7 +18,7 @@ function res = test_linearSys_reach_09_decomp()
 
 % Author:       Mark Wetzlinger
 % Written:      25-June-2019
-% Last update:  14-Aug-2019
+% Last update:  14-August-2019
 %               23-April-2020 (restructure params/options)
 % Last revision:---
 

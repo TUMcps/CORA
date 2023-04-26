@@ -10,7 +10,7 @@ function res = test_hybridAutomaton_reach_02_immediateTransition()
 %    no
 %
 % Outputs:
-%    res - boolean  
+%    res - true/false  
 
 % Author:       Mark Wetzlinger
 % Written:      17-June-2022

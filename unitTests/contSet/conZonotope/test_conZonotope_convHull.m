@@ -24,8 +24,7 @@ function res = test_conZonotope_convHull
 
 %------------- BEGIN CODE --------------
 
-% assume true
-res = true;
+resvec = [];
 
 % instantiate constrained zonotopes
 Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
@@ -45,21 +44,16 @@ V2 = vertices(cZ2);
 V_ = vertices(cZ_);
 
 % check vertices
-if ~compareMatrices(V_,[V1,V2],1e-14,'subset')
-    res = false;
-end
-
+resvec(end+1) = compareMatrices(V_,[V1,V2],1e-14,'subset');
 
 % convert second constrained zonotope to polytope and check again
-P2 = mptPolytope(cZ2);
+P2 = mptPolytope(V2');
 cZ_ = convHull(cZ1,P2);
-V_ = vertices(cZ_);
+
 
 % check vertices
-if ~compareMatrices(V_,[V1,V2],1e-12,'subset')
-    res = false;
-end
-
+V_ = vertices(cZ_);
+resvec(end+1) = compareMatrices(V_,[V1,V2],1e-12,'subset');
 
 % add a third constrained zonotope
 Z = [-4 3 0 1; 5 0 2 1];
@@ -74,8 +68,9 @@ V3 = vertices(cZ3);
 V_ = vertices(cZ_);
 
 % check vertices
-if ~compareMatrices(V_,[V1,V2,V3],1e-14,'subset')
-    res = false;
-end
+resvec(end+1) = compareMatrices(V_,[V1,V2,V3],1e-14,'subset');
+
+% gather results
+res = all(resvec);
 
 %------------- END OF CODE --------------

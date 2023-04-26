@@ -1,6 +1,6 @@
 function res = test_spaceex2cora_hybrid_flat_04
 % test_spaceex2cora_hybrid_flat_04 - test for model conversion from SpaceEx
-%    to CORA for a simple hybrid system with one location
+%    to CORA for a simple hybrid system with four locations
 %
 % Syntax:
 %    test_spaceex2cora_hybrid_flat_04
@@ -12,7 +12,7 @@ function res = test_spaceex2cora_hybrid_flat_04
 %    res - true/false
 
 % Author:       Mark Wetzlinger
-% Written:      10-January-2023
+% Written:      11-January-2023
 % Last update:  ---
 % Last revision:---
 
@@ -27,7 +27,7 @@ dir_spaceex = [CORAROOT filesep 'unitTests' filesep 'converter' ...
     filesep 'spaceex2cora' filesep 'testSystems'];
 
 % file name of SpaceEx model file
-filename = 'test_hybrid_flat_oneloc4';
+filename = 'test_hybrid_flat_fourloc';
 
 % convert SpaceEx model from .xml file
 spaceex2cora([dir_spaceex filesep filename '.xml']);
@@ -37,28 +37,62 @@ sys_spaceex = feval(filename);
 
 
 % instantiate equivalent CORA model
-inv = mptPolytope(struct('A',[-1 0; 0 1],'b',[0; 0]));
 
+% top-left
+inv = mptPolytope(struct('A',[1 0; 0 -1],'b',[0; 0]));
+dynamics = linearSys([0 0; 0 0],[1; 0],[0; -1]);
 % transitions
-c = [1;0]; d = 0; C = [0 1]; D = 0;
-guard = conHyperplane(c,d,C,D);
-reset = struct('f',@(x,u) [-x(1); sin(x(2)) + u(1)]);
-trans{1} = transition(guard,reset,1);
-
-c = [0;-1]; d = 0; C = [1 0]; D = 0;
-guard = conHyperplane(c,d,C,D);
-reset = struct('A',[0,1;-1,0],'c',[-1;0]);
-trans{2} = transition(guard,reset,1);
-
-% flow equation
-f = @(x,u) [-2*sin(x(1)) + u(1); log(x(1)) - x(2)];
-dynamics = nonlinearSys([filename '_Loc1_FlowEq'],f);
-
+guard = conHyperplane([-1 0],0,[0 -1],0);
+reset = struct('A',[1,0;0,1],'c',[10;5]);
+trans{1} = transition(guard,reset,2);
+guard = conHyperplane([0 1],0,[-1 0],0);
+reset = struct('A',[1,0;0,1],'c',[-5;-10]);
+trans{2} = transition(guard,reset,3);
 % define location
-loc{1} = location('always',inv,trans,dynamics);
+loc{1} = location('topleft',inv,trans,dynamics);
+
+% top-right
+inv = mptPolytope(struct('A',[-1 0; 0 -1],'b',[0; 0]));
+dynamics = linearSys([0 0; 0 0],[0; 1],[-1; 0]);
+% transitions
+guard = conHyperplane([1 0],0,[0 -1],0);
+reset = struct('A',[1,0;0,1],'c',[-10;5]);
+trans{1} = transition(guard,reset,1);
+guard = conHyperplane([0 1],0,[-1 0],0);
+reset = struct('A',[1,0;0,1],'c',[5;-10]);
+trans{2} = transition(guard,reset,4);
+% define location
+loc{2} = location('topright',inv,trans,dynamics);
+
+% bottom-left
+inv = mptPolytope(struct('A',[1 0; 0 1],'b',[0; 0]));
+dynamics = linearSys([0 0; 0 0],[0; 1],[1; 0]);
+% transitions
+guard = conHyperplane([0 -1],0,[1 0],0);
+reset = struct('A',[1,0;0,1],'c',[-5;10]);
+trans{1} = transition(guard,reset,1);
+guard = conHyperplane([-1 0],0,[0 1],0);
+reset = struct('A',[1,0;0,1],'c',[10;-5]);
+trans{2} = transition(guard,reset,4);
+% define location
+loc{3} = location('bottomleft',inv,trans,dynamics);
+
+% bottom-right
+inv = mptPolytope(struct('A',[-1 0; 0 1],'b',[0; 0]));
+dynamics = linearSys([0 0; 0 0],[1; 0],[0; 1]);
+% transitions
+guard = conHyperplane([0 -1],0,[-1 0],0);
+reset = struct('A',[1,0;0,1],'c',[5;10]);
+trans{1} = transition(guard,reset,2);
+guard = conHyperplane([1 0],0,[0 1],0);
+reset = struct('A',[1,0;0,1],'c',[-10;-5]);
+trans{2} = transition(guard,reset,3);
+% define location
+loc{4} = location('bottomright',inv,trans,dynamics);
 
 % instantiate hybrid automaton
 sys_cora = hybridAutomaton(loc);
+
 
 % compare systems
 if sys_cora ~= sys_spaceex

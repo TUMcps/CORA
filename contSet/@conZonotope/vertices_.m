@@ -28,37 +28,45 @@ function V = vertices_(cZ,varargin)
 
 % Author:       Niklas Kochdumper
 % Written:      11-May-2018
-% Last update:  ---
+% Last update:  25-April-2023 (TL, 2d support func computation)
 % Last revision:27-March-2023 (MW, rename vertices_)
 
 %------------- BEGIN CODE --------------
 
-% First remove redundant constraints that will not overapproximate the
-% original constrained zonotope. Then we can check whether or not the
-% resulting set is, in fact, a zonotope
-cZ = reduceConstraints(cZ);
-
-if ~isempty(cZ.A)
-    
-    % Calculate potential vertices of the constrained zonotope (vertices + 
-    % points inside the set)
-    V = potVertices(cZ);
-
-    % Compute the convex hull to eliminate points located in the interior of
-    % the constrained zonotope
-    n = size(V,1);
-
-    if size(V,2) > n+1    % set is full-dimensional
-        ind = convhulln(V');
-        ind = unique(ind,'stable');
-        V = V(:,ind);
-    end
-    
+if dim(cZ) == 2
+    % Vertices of a 2D cZ can be computed efficiently using support functions
+        
+    % compute vertices in projected dimensions
+    V = projVertices(cZ,[1,2]);
 else
+        
+    % First remove redundant constraints that will not overapproximate the
+    % original constrained zonotope. Then we can check whether or not the
+    % resulting set is, in fact, a zonotope
+    cZ = reduceConstraints(cZ);
     
-   % no constraints -> call zonotope/vertices
-   V = vertices(zonotope(cZ.Z));
-
+    if ~isempty(cZ.A)
+        
+        % Calculate potential vertices of the constrained zonotope (vertices + 
+        % points inside the set)
+        V = potVertices(cZ);
+    
+        % Compute the convex hull to eliminate points located in the interior of
+        % the constrained zonotope
+        n = size(V,1);
+    
+        if size(V,2) > n+1    % set is full-dimensional
+            ind = convhulln(V');
+            ind = unique(ind,'stable');
+            V = V(:,ind);
+        end
+        
+    else
+        
+       % no constraints -> call zonotope/vertices
+       V = vertices(zonotope(cZ.Z));
+    
+    end
 end
 
 %------------- END OF CODE --------------
