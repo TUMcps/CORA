@@ -40,8 +40,16 @@ function han = plot(R,varargin)
 dims = setDefaultValues({[1,2]},varargin);
 
 % check input arguments
-inputArgsCheck({{R,'att',{'reachSet'},{''}};
-                {dims,'att',{'numeric'},{'nonempty','vector','integer','positive'}}});
+inputArgsCheck({{R,'att','reachSet','nonempty'};
+                {dims,'att','numeric',{'nonempty','vector','integer','positive'}}});
+
+% check hold status
+holdStatus = ishold;
+if ~holdStatus
+    plot(NaN,NaN,'HandleVisibility','off');
+    % reset color index (before readPlotOptions!)
+    set(gca(),'ColorOrderIndex',1);
+end
 
 % check name-value pairs
 NVpairs = readPlotOptions(varargin(2:end),'reachSet');
@@ -89,21 +97,21 @@ if unify
         % get desired set
         switch whichset
             case 'ti'
-                set = R(i,1).timeInterval.set;
+                Rset = R(i,1).timeInterval.set;
             case 'tp'
-                set = R(i,1).timePoint.set;
+                Rset = R(i,1).timePoint.set;
             case 'y'
-                set = R(i,1).timeInterval.algebraic;
+                Rset = R(i,1).timeInterval.algebraic;
         end
         
         % loop over all time steps
-        for j = 1:length(set)
+        for j = 1:length(Rset)
 
             % increment index
             idxCurr = idxCurr + 1;
 
             % project set to desired dimensions
-            temp = project(set{j},dims);
+            temp = project(Rset{j},dims);
 
             % order reduction
             if ~isempty(order)
@@ -185,18 +193,18 @@ else
         % get desired set
         switch whichset
             case 'ti'
-                set = R(i,1).timeInterval.set;
+                Rset = R(i,1).timeInterval.set;
             case 'tp'
-                set = R(i,1).timePoint.set;
+                Rset = R(i,1).timePoint.set;
             case 'y'
-                set = R(i,1).timeInterval.algebraic;
+                Rset = R(i,1).timeInterval.algebraic;
         end
 
         % loop over all time steps
-        for j = 1:length(set)
+        for j = 1:length(Rset)
 
             % project set to desired dimensions
-            temp = project(set{j},dims);
+            temp = project(Rset{j},dims);
             
             if length(dims) == 2
                dims_ = [1,2]; 
@@ -230,6 +238,11 @@ else
 
     % correct color index
     updateColorIndex(oldColorIndex);
+end
+
+% reset hold status
+if ~holdStatus
+    hold off
 end
 
 if nargout == 0

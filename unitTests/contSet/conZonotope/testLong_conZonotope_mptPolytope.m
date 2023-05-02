@@ -28,13 +28,19 @@ function res = testLong_conZonotope_mptPolytope
 
 %------------- BEGIN CODE --------------
 
+% assume true
 res = true;
 
-% TEST 1: 2D --------------------------------------------------------------
+% number of tests
+nrTests = 10;
 
-for j = 1:5
+for j=1:nrTests
+
+    % random dimension
+    n = randi([2,3]);
+
     % Generate random polytope vertices
-    points = rand(2,100);
+    points = rand(n,100);
     ind = convhulln(points');
     ind = unique(ind(:,1),'stable');
     V = points(:,ind);
@@ -55,51 +61,18 @@ for j = 1:5
     V2 = vertices(P);
 
     % plot the result
-%     plot(cZono,[1,2],'FaceColor','b');
+%     plot(cZ,[1,2],'FaceColor','b');
 %     hold on
-%     plot(poly,[1,2],'r');
+%     plot(P,[1,2],'r');
 %     plot(V(1,:),V(2,:),'.k','MarkerSize',12);
 
-
     % Check for correctness
     if ~compareMatrices(V,V1,1e-10)
        throw(CORAerror('CORA:testFailed'));
     elseif ~compareMatrices(V,V2,1e-10)
        throw(CORAerror('CORA:testFailed'));
     end
-end
-
-
-% TEST 2: 3D --------------------------------------------------------------
-
-for j = 1:5
-    % Generate random polytope vertices
-    points = rand(3,100);
-    ind = convhulln(points');
-    ind = unique(ind(:,1),'stable');
-    V = points(:,ind);
-
-    % Construct a mptPolytope object from the vertices
-    P = mptPolytope(V');
-
-    % Convert to constrained zonotope object
-    cZ = conZonotope(P);
-
-    % Calculate vertices
-    V1 = vertices(cZ);
-
-    % Convert back to a mptPolytope
-    P = mptPolytope(cZ);
-
-    % Calculate vertices
-    V2 = vertices(P);
-
-    % Check for correctness
-    if ~compareMatrices(V,V1,1e-10)
-       throw(CORAerror('CORA:testFailed'));
-    elseif ~compareMatrices(V,V2,1e-10)
-       throw(CORAerror('CORA:testFailed'));
-    end
+    
 end
 
 %------------- END OF CODE --------------

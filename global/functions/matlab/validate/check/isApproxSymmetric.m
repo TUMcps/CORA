@@ -20,12 +20,13 @@ function res = isApproxSymmetric(Q,TOL)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Author:       Victor Gassmann
 % Written:      13-March-2019
 % Last update:  15-October-2019
 % Last revision:---
+
 %------------- BEGIN CODE --------------
 
 % take default value for tolerance if none given

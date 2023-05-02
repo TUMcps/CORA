@@ -35,7 +35,7 @@ nhs = -hs;
 resvec(end+1) = all(nhs.c == -c, 'all');
 resvec(end+1) = all(nhs.d == d, 'all');
 
-% compare with -1 * cPZ
+% compare with -1 * hs
 resvec(end+1) = isequal(nhs, -1*hs);
 
 % test empty case

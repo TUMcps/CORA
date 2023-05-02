@@ -86,10 +86,10 @@ Rwrappingfree = reach(sys,params,options);
 
 % Verification ------------------------------------------------------------
 
-res_adaptive = containsSimResult(Radaptive,simRes,true);
-res_start = containsSimResult(Rstart,simRes,true);
-res_standard = containsSimResult(Rstandard,simRes,true);
-res_wrappingfree = containsSimResult(Rwrappingfree,simRes,true);
+res_adaptive = contains(Radaptive,simRes);
+res_start = contains(Rstart,simRes);
+res_standard = contains(Rstandard,simRes);
+res_wrappingfree = contains(Rwrappingfree,simRes);
 
 % full result
 res = res_adaptive && res_start && res_standard && res_wrappingfree;

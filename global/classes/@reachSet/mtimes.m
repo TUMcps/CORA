@@ -26,11 +26,11 @@ function R = mtimes(M,R)
 %------------- BEGIN CODE --------------
 
 for i = 1:size(R,1)
-    if ~isempty(R(i).timeInterval.set)
+    if ~isempty(R(i).timeInterval)
         R(i).timeInterval.set = cellfun(@(x) M*x, ...
            R(i).timeInterval.set,'UniformOutput',false);
     end
-    if ~isempty(R(i).timePoint.set)
+    if ~isempty(R(i).timePoint)
         R(i).timePoint.set = cellfun(@(x) M*x, ...
             R(i).timePoint.set,'UniformOutput',false);
     end

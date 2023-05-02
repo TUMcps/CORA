@@ -42,28 +42,30 @@ if isfield(R.timePoint,'error')
 end
 
 % time-interval solutions
-time = R.timeInterval.time;
-nrSets = length(time);
-% read out interval
-timeInf = zeros(nrSets,1);
-timeSup = zeros(nrSets,1);
-for i=1:nrSets
-    timeInf(i,1) = time{i}.infimum;
-    timeSup(i,1) = time{i}.supremum;
-end
-% order depending on start time of interval
-[timeInf,idx] = sort(timeInf,'ascend');
-timeSup = timeSup(idx);
-
-% new list of sets
-R.timeInterval.set = R.timeInterval.set(idx);
-% new list of time intervals
-for i=1:nrSets
-    R.timeInterval.time{i} = interval(timeInf(i),timeSup(i));
-end
-% error only for linearSys
-if isfield(R.timeInterval,'error')
-    R.timeInterval.error = R.timeInterval.error(idx);
+if ~isempty(R.timeInterval)
+    time = R.timeInterval.time;
+    nrSets = length(time);
+    % read out interval
+    timeInf = zeros(nrSets,1);
+    timeSup = zeros(nrSets,1);
+    for i=1:nrSets
+        timeInf(i,1) = time{i}.infimum;
+        timeSup(i,1) = time{i}.supremum;
+    end
+    % order depending on start time of interval
+    [timeInf,idx] = sort(timeInf,'ascend');
+    timeSup = timeSup(idx);
+    
+    % new list of sets
+    R.timeInterval.set = R.timeInterval.set(idx);
+    % new list of time intervals
+    for i=1:nrSets
+        R.timeInterval.time{i} = interval(timeInf(i),timeSup(i));
+    end
+    % error only for linearSys
+    if isfield(R.timeInterval,'error')
+        R.timeInterval.error = R.timeInterval.error(idx);
+    end
 end
 
 %------------- END OF CODE --------------

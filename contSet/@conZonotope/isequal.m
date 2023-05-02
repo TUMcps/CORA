@@ -48,16 +48,16 @@ inputArgsCheck({ {cZ,'att','conZonotope'}, ...
                  {S,'att','contSet'}, ...
                  {tol,'att','numeric',{'nonempty','scalar','finite','nonnegative'}}});
 
-% only implemented for conZonotope - conZonotope/zonotope
-if ~( isa(S,'conZonotope') || isa(S,'zonotope') )
+% only implemented for conZonotope - conZonotope/zonotope/interval
+if ~( isa(S,'conZonotope') || isa(S,'zonotope') || isa(S,'interval') )
     throw(CORAerror('CORA:noops',cZ,S));
 end
 
-% second set: zonotope
-if isa(S,'zonotope')
+% second set: zonotope or interval
+if isa(S,'zonotope') || isa(S,'interval')
     % first set: conZonotope without constraints
     if isempty(cZ.A) && isempty(cZ.b)
-        res = isequal(zonotope(cZ),S,tol);
+        res = isequal(zonotope(cZ),zonotope(S),tol);
     else
         % constraints given
         res = false;

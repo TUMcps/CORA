@@ -14,7 +14,7 @@ function res = test_reachSet_mtimes
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: none
 
 % Author:       Mark Wetzlinger
 % Written:      10-November-2022
@@ -33,13 +33,11 @@ dt = 0.02;
 steps = 10;
 
 % propagate sets
-timeInt.set = [];
-timeInt.time = [];
 for i=1:steps
     timePoint.set{i,1} = expm(A*i*dt) * Z;
     timePoint.time{i,1} = i*dt;
 end
-R = reachSet(timePoint,timeInt);
+R = reachSet(timePoint);
 
 % mapped reach set
 R_mapped = expm(A*dt) * R;

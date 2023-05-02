@@ -11,7 +11,8 @@ function Q = sparseOrthMatrix(n)
 %    Q - sparse orthogonal matrix
 %
 % Example:
-%    -
+%    n = 5;
+%    Q = sparseOrthMatrix(n);
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -1,5 +1,5 @@
 function str = bracketSubs(str)
-% bracketSubs - 
+% bracketSubs - substitute 'L' and 'R' by opening/closing parenthesis
 %
 % Syntax:  
 %    str = bracketSubs(str)
@@ -11,7 +11,8 @@ function str = bracketSubs(str)
 %    str - string
 %
 % Example:
-%    ---
+%    str = 'xL1R';
+%    str = bracketSubs(str);
 %
 % Other m-files required: none
 % Subfunctions: none

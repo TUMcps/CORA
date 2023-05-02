@@ -14,7 +14,7 @@ function res = test_reachSet_reachSet
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: none
 
 % Author:       Mark Wetzlinger
 % Written:      11-November-2022
@@ -27,11 +27,7 @@ function res = test_reachSet_reachSet
 res = true;
 
 % empty reachSet
-try
-    R = reachSet();
-catch
-    res = false; return
-end
+R = reachSet();
 
 % initialize some sets for instantiations
 Z = zonotope([1; 1],[1 0 3; -2 1 4]);
@@ -62,38 +58,34 @@ parent_ = -1;
 loc_ = -1;
 
 % correct instantiations according to constructor (all with correct length)
-try
-    R = reachSet(timePoint);
-    R = reachSet(timePoint,parent);
-    R = reachSet(timePoint,parent,loc);
-    R = reachSet(timePoint,timeInt);
-    R = reachSet(timePoint,timeInt,parent);
-    R = reachSet(timePoint,timeInt,parent,loc);
-catch
-    res = false; return
-end
+R = reachSet(timePoint);
+R = reachSet(timePoint,parent);
+R = reachSet(timePoint,parent,loc);
+R = reachSet(timePoint,timeInt);
+R = reachSet(timePoint,timeInt,parent);
+R = reachSet(timePoint,timeInt,parent,loc);
 
 % wrong instantiations: non-matching lengths, negative values, too many
 % input arguments
 try
     R = reachSet(timePoint_);
-    res = false; return
+    res = false;
 end
 try
     R = reachSet(timePoint,timeInt_);
-    res = false; return
+    res = false;
 end
 try
     R = reachSet(timePoint,timeInt,parent_);
-    res = false; return
+    res = false;
 end
 try
     R = reachSet(timePoint,timeInt,parent,loc_);
-    res = false; return
+    res = false;
 end
 try
     R = reachSet(timePoint,timeInt,parent,loc,loc);
-    res = false; return
+    res = false;
 end
 
 %------------- END OF CODE --------------

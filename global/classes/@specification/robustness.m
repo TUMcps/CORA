@@ -38,7 +38,7 @@ function val = robustness(spec,p,varargin)
        time = varargin{1}; 
     end
     
-    % check if multiple point are provided
+    % check if multiple points are provided
     if size(p,2) > 1
         
         % compute robustness for all points
@@ -76,6 +76,11 @@ function val = robustness(spec,p,varargin)
                     case 'custom'
                         throw(CORAerror('CORA:notSupported',...
                             ['Robustness computation for custom ' ...
+                             'specifications is not supported!']));
+
+                    case 'logic'
+                        throw(CORAerror('CORA:notSupported',...
+                            ['Robustness computation for logic ' ...
                              'specifications is not supported!']));
                 end
 

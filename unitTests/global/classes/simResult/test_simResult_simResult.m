@@ -14,7 +14,7 @@ function res = test_simResult_simResult
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: none
 
 % Author:       Mark Wetzlinger
 % Written:      11-November-2022
@@ -26,7 +26,7 @@ function res = test_simResult_simResult
 % init result
 res = true;
 
-% empty reachSet
+% empty simResult
 try
     simRes = simResult();
 catch

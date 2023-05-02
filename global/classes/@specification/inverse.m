@@ -28,7 +28,7 @@ function spec = inverse(spec)
     for i = 1:length(spec)
         
         if ~isempty(spec(i).time)
-            throw(CORAError('CORA:notSupported',...
+            throw(CORAerror('CORA:notSupported',...
                 'Computing the inverse is not yet supported for timed specifications!'));
         end
         
@@ -37,19 +37,19 @@ function spec = inverse(spec)
         elseif strcmp(spec(i).type,'unsafeSet')
             unsafe = [unsafe,i];
         else
-            throw(CORAError('CORA:notSupported',...
+            throw(CORAerror('CORA:notSupported',...
                 "Computing the inverse is not yet supported for " + ...
                 "other types than 'safeSet' and 'unsafeSet'."));
         end
     end
     
     if ~isempty(safe) && ~isempty(unsafe)
-        throw(CORAError('CORA:notSupported',...
+        throw(CORAerror('CORA:notSupported',...
                 "Computing the inverse is not yet supported for " + ...
                 "mixed types 'safeSet' and 'unsafeSet'."));
     elseif ~isempty(safe)
         
-        % combine all safe set specifications to a single safe set
+        % combine all safe set specifications to a single unsafe set
         set = mptPolytope(spec(safe(1)).set);
         
         for i = 2:length(safe)

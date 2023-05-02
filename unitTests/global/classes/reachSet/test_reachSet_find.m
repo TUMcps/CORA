@@ -14,7 +14,7 @@ function res = test_reachSet_find
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: none
 
 % Author:       Mark Wetzlinger
 % Written:      10-November-2022

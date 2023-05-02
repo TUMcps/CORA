@@ -26,19 +26,15 @@ function R = plus(R,S)
 %------------- BEGIN CODE --------------
 
 % get reachSet object
-if ~isa(R,'reachSet')
-    temp = R;
-    R = S;
-    S = temp;
-end
+[R,S] = findClassArg(R,S,'reachSet');
 
 % compute Minkowski sum
 for i = 1:size(R,1)
-    if ~isempty(R(i).timeInterval.set)
+    if ~isempty(R(i).timeInterval)
         R(i).timeInterval.set = cellfun(@(x) S + x,...
                         R(i).timeInterval.set,'UniformOutput',false);
     end
-    if ~isempty(R(i).timePoint.set)
+    if ~isempty(R(i).timePoint)
         R(i).timePoint.set = cellfun(@(x) S + x,...
                         R(i).timePoint.set,'UniformOutput',false); 
     end

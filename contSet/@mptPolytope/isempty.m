@@ -51,6 +51,17 @@ b = P.P.b;
 
 % normalize (just in case)
 fac = sqrt(sum(A.^2,2));
+
+ind = find(fac == 0);
+
+if ~isempty(ind)
+    if any(b(ind) < 0)
+        res = true; return
+    else
+        A(ind,:) = []; b(ind) = []; fac(ind) = [];
+    end
+end
+
 A = A./fac;
 b = b./fac;
 

@@ -14,6 +14,7 @@ function NVpairs = readPlotOptions(plotOptions,varargin)
 %                   'polygon' - internal polygon class
 %                   'spec:safeSet' - specification of type 'safeSet'
 %                   'spec:unsafeSet' - specification of type 'unsafeSet'
+%                   'spec:invariant' - specification of type 'invariant'
 %                   'fill' - patches
 %                   'contour' - contour
 %                   'mesh' - mesh plots
@@ -47,7 +48,7 @@ purpose = setDefaultValues({'none'},varargin);
 
 % check input arguments
 inputArgsCheck({{purpose,'str',{'simResult','reachSet', 'initialSet', ...
-        'polygon', 'spec:safeSet','spec:unsafeSet', ...
+        'polygon', 'spec:safeSet','spec:unsafeSet', 'spec:invariant', ...
         'mesh','surf','contour','fill','none'}}});
 
 
@@ -69,48 +70,48 @@ linespec.Marker = '';
 linespec.LineStyle = '';
 
 if ~isempty(plotOptions)
-% check whether first entry in plotOptions is linespec
-firstentry = lower(plotOptions{1});
-idxfound = false;
-
-% init that linespec given
-idxNVstart = 1;
-
-% loop over all categories
-for i=1:length(cats)
-    instancesfound = 0;
-    cat = allowed.(cats{i});
-    % loop over each entry
-    for s=1:length(cat)
-        if contains(firstentry,cat{s})
-            % instances found in this category
-            instancesfound = instancesfound + 1;
-            % remove found entry
-            firstentry = erase(firstentry,cat{s});
-            % break if two instances found in one category
-            if instancesfound > 1
-                idxfound = true; break;
+    % check whether first entry in plotOptions is linespec
+    firstentry = lower(plotOptions{1});
+    idxfound = false;
+    
+    % init that linespec given
+    idxNVstart = 1;
+    
+    % loop over all categories
+    for i=1:length(cats)
+        instancesfound = 0;
+        cat = allowed.(cats{i});
+        % loop over each entry
+        for s=1:length(cat)
+            if contains(firstentry,cat{s})
+                % instances found in this category
+                instancesfound = instancesfound + 1;
+                % remove found entry
+                firstentry = erase(firstentry,cat{s});
+                % break if two instances found in one category
+                if instancesfound > 1
+                    idxfound = true; break;
+                end
+                % overwrite empty linespec entry
+                linespec.(cats{i}) = cat{s};
             end
-            % overwrite empty linespec entry
-            linespec.(cats{i}) = cat{s};
         end
+        if isempty(firstentry)
+            idxfound = true; idxNVstart = 2;
+        end
+        if idxfound; break; end
     end
-    if isempty(firstentry)
-        idxfound = true; idxNVstart = 2;
+    
+    % re-init linespec
+    if ~isempty(firstentry)
+        linespec.Color = '';
+        linespec.Marker = '';
+        linespec.LineStyle = '';
     end
-    if idxfound; break; end
-end
-
-% re-init linespec
-if ~isempty(firstentry)
-    linespec.Color = '';
-    linespec.Marker = '';
-    linespec.LineStyle = '';
-end
-
-% if idxNVstart = 2, check which ones are given and overwrite by
-% corresponding NVpairs if they are provided
-plotOptions = plotOptions(idxNVstart:end);
+    
+    % if idxNVstart = 2, check which ones are given and overwrite by
+    % corresponding NVpairs if they are provided
+    plotOptions = plotOptions(idxNVstart:end);
 
 end
 
@@ -207,9 +208,7 @@ switch purpose
             NVpairs = [NVpairs, 'Color', defaultPlotColor()];
         end
    
-    case 'polygon'
-        % only called internally, so 'Filled' not respected
-        
+    case 'polygon'        
         % facecolor order: 'FaceColor' > 'none'
         if ~isempty(facecolor)
             NVpairs = [NVpairs, 'FaceColor', facecolor];
@@ -233,7 +232,7 @@ switch purpose
             warning("Name-value pair 'Marker'-<options> is ignored.");
         end
 
-    case 'spec:safeSet'
+    case {'spec:safeSet','spec:invariant'}
         
         % facecolor order: 'FaceColor' > 'Color' > CORAcolor('CORA:safe')
         if ~isempty(facecolor)
@@ -243,6 +242,7 @@ switch purpose
         elseif ~isempty(color)
             safeColor = color;
         else
+            % 'CORA:safe' same color as 'CORA:invariant'
             safeColor = CORAcolor('CORA:safe');
         end
         NVpairs = [NVpairs, 'FaceColor', safeColor];

@@ -20,12 +20,27 @@ function V = vertices_(I,varargin)
 %
 % See also: zonotope/vertices_
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      24-July-2006 
 % Last update:  27-March-2023 (MW, rename vertices_)
+%               28-April-2023 (MW, remove duplicates in degenerate case)
 % Last revision:05-April-2023 (MW, rewrite to support unbounded intervals)
 
 %------------- BEGIN CODE --------------
+
+% empty case
+if dim(I) == 0
+    V = []; return
+end
+
+% check whether there is a non-zero radius in all dimensions
+idxZeroDim = false(dim(I),1);
+if ~isFullDim(I)
+    % remove dimensions with zero radius -> save indices and add later
+    idxZeroDim = withinTol(rad(I),0);
+    valZeroDim = I.inf(idxZeroDim);
+    I = project(I,~idxZeroDim);
+end
 
 % compute all possible combinations of lower/upper bounds
 fac = logical(combinator(2,dim(I),'p','r')-1);
@@ -39,6 +54,14 @@ ub = I.sup;
 % loop over all factors
 for i=1:nrComb
     V(fac(i,:)',i) = ub(fac(i,:));
+end
+
+% add back removed dimensions
+if any(idxZeroDim)
+    V_ = V;
+    V = zeros(dim(I),size(V_,2));
+    V(idxZeroDim,:) = valZeroDim;
+    V(~idxZeroDim,:) = V_;
 end
 
 % old version:
