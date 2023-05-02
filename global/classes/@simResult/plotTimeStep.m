@@ -26,15 +26,27 @@ function han = plotTimeStep(simRes,varargin)
 
 %------------- BEGIN CODE --------------
 
+% check input arguments
+inputArgsCheck({{simRes,'att','simResult','nonempty'}});
+
+% check hold status
+holdStatus = ishold;
+if ~holdStatus
+    plot(NaN,NaN,'HandleVisibility','off');
+    % reset color index (before readPlotOptions!)
+    set(gca(),'ColorOrderIndex',1);
+end
+
 % parse plot options
-NVpairs = readPlotOptions(varargin(2:end));
+NVpairs = readPlotOptions(varargin(1:end));
 
 % min / max for axis (if time is const, eps differences are shown...)
-mintimestep = Inf; maxtimestep = -Inf; cumsummin = Inf; cumsummax = -Inf;
+mintimestep = Inf; maxtimestep = -Inf;
+cumsummin = Inf; cumsummax = -Inf;
 
 % save color index
 ax = gca();
-`oldColorIndex = ax.ColorOrderIndex;
+oldColorIndex = ax.ColorOrderIndex;
 
 % loop over all simulations
 nrSim = length(simRes.t);
@@ -57,15 +69,19 @@ end
 % correct color index
 updateColorIndex(oldColorIndex);
 
-% title and labels
-title('Simulation: Time Step Size');
-xlabel('t');
-ylabel('Time Step Size');
+% labels
+xlabel('$t$','interpreter','latex');
+ylabel('$\Delta t$','interpreter','latex');
 % axes
 axis([cumsummin,cumsummax,0.9*mintimestep,1.1*maxtimestep]);
 
 % get handle for graphics object
 han = get(groot,'CurrentFigure');
+
+% reset hold status
+if ~holdStatus
+    hold off
+end
 
 if nargout == 0
     clear han;

@@ -80,11 +80,8 @@ for i = 1:3
 %     plot(pointsRes(1,:),pointsRes(2,:),'.k');
     
     % check if all points are located inside the calculated zonotope
-    for j = 1:size(pointsRes,2)
-       p = pointsRes(:,j);
-       if ~contains(cZres,p)
-          throw(CORAerror('CORA:testFailed'));
-       end
+    if ~all(contains_(cZres,pointsRes,'exact',1e-6))
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 
@@ -105,20 +102,16 @@ for i = 1:3
     % obtain result
     cZres = cubMap(cZ,T);
 
-    % draw random points inside the conzonotope
+    % draw random points inside the constrained zonotope
     N = 100;
-    
     points = zeros(2,N);
-    
     for j = 1:N
        points(:,j) = randPoint(cZ);
     end
-    
     points = [points, vertices(cZ)];
 
     % calculate the cubic map for all possible point combinations
     pointsRes = zeros(size(points));
-    
     for j = 1:size(points,2)
         p = points(:,j);
         pointsRes(:,j) = cubMapPoint(p,p,p,T);
@@ -130,13 +123,8 @@ for i = 1:3
 %     plot(pointsRes(1,:),pointsRes(2,:),'.k');
     
     % check if all points are located inside the calculated zonotope
-    for j = 1:size(pointsRes,2)
-        
-       p = pointsRes(:,j);
-        
-       if ~contains(cZres,p)
-          throw(CORAerror('CORA:testFailed'));
-       end
+    if ~all(contains_(cZres,pointsRes,'exact',1e-6))
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 

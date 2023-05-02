@@ -31,8 +31,36 @@ function han = plotOverTime(spec,varargin)
 dims = setDefaultValues({1},varargin);
 
 % check input arguments
-inputArgsCheck({{spec,'att',{'specification'},{''}};
-                {dims,'att',{'numeric'},{'nonempty','scalar','integer','positive'}}});
+inputArgsCheck({{spec,'att','specification','nonempty'};
+                {dims,'att','numeric',{'nonempty','scalar','integer','positive'}}});
+
+% check hold status
+holdStatus = ishold;
+if ~holdStatus
+    plot(NaN,NaN,'HandleVisibility','off');
+    % reset color index (before readPlotOptions!)
+    set(gca(),'ColorOrderIndex',1);
+end
+
+% check if any of the specifications have a defined time frame
+spectime = cell(length(spec),1);
+for i=1:length(spec)
+    spectime{i} = spec(i).time;
+end
+noTimeGiven = cellfun(@(x) isempty(x),spectime,'UniformOutput',true);
+if all(noTimeGiven)
+    throw(CORAerror('CORA:specialError','No specification has a defined time frame.'));
+elseif any(noTimeGiven)
+    % set empty .time fields to min/max of others
+    tmin = Inf; tmax = -Inf;
+    for i=1:length(spec)
+        if ~noTimeGiven(i)
+            tmin = min([tmin,spectime{i}.inf]);
+            tmax = max([tmax,spectime{i}.sup]);
+        end
+    end
+    spectime{noTimeGiven} = interval(tmin,tmax);
+end
 
 for i=1:length(spec)
     hold on;
@@ -58,16 +86,21 @@ for i=1:length(spec)
     end
 
     % combine set with time
-    set = cartProd( ...
-        spec_i.time, ...                        % x
+    set_i = cartProd( ...
+        spectime{i}, ...                        % x
         interval(project(spec_i.set,dims)) ...  % y
     );
 
     % plot set
-    han_i = plot(set, [1,2], NVpairs{:});
+    han_i = plot(set_i, [1,2], NVpairs{:});
     if i==1
         han = han_i;
     end
+end
+
+% reset hold status
+if ~holdStatus
+    hold off
 end
 
 if nargout == 0

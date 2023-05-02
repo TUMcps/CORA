@@ -2,6 +2,8 @@ classdef specification
 % specification - class that stores specifications
 %
 % Syntax:
+%    obj = specification()
+%
 %    % single set
 %    obj = specification(set)
 %    obj = specification(set,location)
@@ -45,6 +47,7 @@ classdef specification
 %    time - interval defining when the specification is active
 %    eq - temporal logic formula (class stl)
 %    func - function handle to a user-provided specification check function
+%    location - activity of specification in which locations of a HA/pHA
 %
 % Outputs:
 %    obj - generated specification object
@@ -88,15 +91,19 @@ methods
     function obj = specification(varargin)
         
         % parse input arguments
-        if nargin < 1
-            throw(CORAerror('CORA:notEnoughInputArgs',1));
-        elseif nargin > 4
+        if nargin > 4
             throw(CORAerror('CORA:tooManyInputArgs',4));
         end
 
-        if nargin >= 1
+        if nargin == 0
+            % empty object
+            return
+        elseif nargin >= 1
+            if isa(varargin{1},'specification')
+                % copy constructor
+                obj = varargin{1}; return
             % first input argument: func, eq, set, list
-            if isa(varargin{1},'function_handle')
+            elseif isa(varargin{1},'function_handle')
                 % syntax: obj = specification(func)
                 obj.set = varargin{1};
                 obj.type = 'custom';

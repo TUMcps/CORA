@@ -38,7 +38,7 @@ if nargin < 1
 end
 inputArgsCheck({{identifier, 'str', {'CORA:reachSet', ...
     'CORA:initialSet', 'CORA:finalSet', 'CORA:simulations', ...
-    'CORA:unsafe','CORA:safe', ...
+    'CORA:unsafe','CORA:safe', 'CORA:invariant', ...
     'CORA:highlight1','CORA:highlight2', 'CORA:next'}}})
 
 color = [0 0 0]; % default
@@ -62,8 +62,8 @@ switch identifier
             throw(CORAerror('CORA:wrongValue', 'second/third', 'Color index must not be larger than number of colors.'))
         end
 
-        colorMain = [0.2706    0.5882    1.0000]; % blue
-        colorWorse = [0.0353    0.2510    0.4549]; % dark blue
+        colorMain  = [0.2706 0.5882 1.0000]; % blue
+        colorWorse = [0.0353 0.2510 0.4549]; % dark blue
 
         if cidx == numColors
             color = colorMain;
@@ -81,8 +81,8 @@ switch identifier
         color = [0 0 0];
     case 'CORA:unsafe'
         color = [0.9451 0.5529 0.5686]; % red
-    case 'CORA:safe'
-        color = [0.4706    0.7725    0.4980]; % green
+    case {'CORA:safe','CORA:invariant'}
+        color = [0.4706 0.7725 0.4980]; % green
     case 'CORA:highlight1'
         color = [1.0000 0.6824 0.2980]; % orange
     case 'CORA:highlight2'

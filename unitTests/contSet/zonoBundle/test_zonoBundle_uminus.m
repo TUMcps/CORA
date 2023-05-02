@@ -33,7 +33,7 @@ zB = zonoBundle({Z1,Z2});
 % negate
 nzB = -zB;
 
-% compare with -1 * cPZ
+% compare with -1 * zB
 resvec(end+1) = isequal(nzB, -1*zB);
 
 % test empty case

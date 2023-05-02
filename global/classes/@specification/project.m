@@ -11,29 +11,38 @@ function spec = project(spec,dims)
 % Outputs:
 %    spec - projected specification object
 %
+% Example:
+%    Z = zonotope([1;-1;0],[1 3 -2; 0 -1 1; 1 2 0]);
+%    spec = specification(Z,'safeSet');
+%    spec_ = project(spec,[1,3]);
+%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also:
+% See also: none
 
 % Author:       Mark Wetzlinger
 % Written:      26-June-2022
-% Last update:  ---
+% Last update:  30-April-2023 (MW, bug fix for arrays, add 'logic')
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% project set
-switch spec.type
-    case {'invariant','safeSet','unsafeSet'}
-        % loop over array of specifications
-        for i=1:length(spec)
+% loop over array of specifications
+for i=1:length(spec)
+
+    % check type
+    switch spec(i).type
+        case {'invariant','safeSet','unsafeSet'}
+            % project set
             spec(i).set = project(spec(i).set,dims);
-        end
-    case 'custom'
-        throw(CORAerror('CORA:notSupported',...
-            "Projection a specifications of type 'custom' is not yet supported."));
+
+        case {'custom','logic'}
+            throw(CORAerror('CORA:notSupported',...
+                "Projection of a specification of types 'custom' or " + ...
+                "'logic' is not yet supported."));
+    end
 end
 
 %------------- END OF CODE --------------

@@ -35,7 +35,7 @@ nP = -P;
 resvec(end+1) = all(nP.P.A == -C, 'all');
 resvec(end+1) = all(nP.P.b == d, 'all');
 
-% compare with -1 * cPZ
+% compare with -1 * P
 resvec(end+1) = isequal(nP, -1*P);
 
 % test empty case

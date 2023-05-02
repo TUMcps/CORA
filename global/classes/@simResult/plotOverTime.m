@@ -34,6 +34,18 @@ function han = plotOverTime(simRes,varargin)
 % default values for the optional input arguments
 dims = setDefaultValues({1},varargin);
 
+% check input arguments
+inputArgsCheck({{simRes,'att','simResult','nonempty'};
+                {dims,'att','numeric',{'positive','vector','integer'}}});
+
+% check hold status
+holdStatus = ishold;
+if ~holdStatus
+    plot(NaN,NaN,'HandleVisibility','off');
+    % reset color index (before readPlotOptions!)
+    set(gca(),'ColorOrderIndex',1);
+end
+
 % parse input arguments
 NVpairs = readPlotOptions(varargin(2:end),'simResult');
 [NVpairs,whichtraj] = readNameValuePair(NVpairs,'Traj','ischar','x');
@@ -62,6 +74,11 @@ end
 
 % correct color index
 updateColorIndex(oldColorIndex);
+
+% reset hold status
+if ~holdStatus
+    hold off
+end
 
 if nargout == 0
     clear han;

@@ -13,10 +13,8 @@ function han = plotPolygon(V,varargin)
 % Outputs:
 %    han - handle to the graphics object
 %
-% Example: 
-%    zono = zonotope.generateRandom('Dimension',2);
-%    V = vertices(zono);
-%
+% Example:
+%    V = [1 0; 1 2; 0 3; -2 2; -3 0; 0 -1; 1 0]';
 %    plotPolygon(V,'r');
 %
 % Other m-files required: none
@@ -72,7 +70,7 @@ elseif size(V, 2) == 1
     % correct color in NVpairs for scatter plot
 
     % EdgeColor > Color
-    [NVpairs, color] = readNameValuePair(NVpairs, 'Color');
+    [NVpairs,color] = readNameValuePair(NVpairs, 'Color');
     [NVpairs,edgecolor] = readNameValuePair(NVpairs,'EdgeColor');
     NVpairs{end+1} = 'MarkerEdgeColor';
     if ~isempty(edgecolor)

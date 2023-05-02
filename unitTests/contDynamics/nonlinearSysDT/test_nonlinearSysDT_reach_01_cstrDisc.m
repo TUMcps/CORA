@@ -62,15 +62,6 @@ simRes = simulateRandom(sysDisc, params, simOpt);
 
 % Verification ------------------------------------------------------------
 
-res = true;
-
-for i = 1:simOpt.points
-   for j = 1:length(R.timePoint.set)-1
-      if ~contains(R.timePoint.set{j+1},simRes.x{i}(j,:)')
-          res = false;   
-          return
-      end
-   end
-end
+res = contains(R,simRes);
 
 %------------- END OF CODE --------------

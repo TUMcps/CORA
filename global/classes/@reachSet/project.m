@@ -29,13 +29,13 @@ function R = project(R,dims)
 for i = 1:size(R,1)
 
     % time-point reachable set
-    if ~isempty(R(i).timePoint.set)
+    if ~isempty(R(i).timePoint)
         R(i).timePoint.set = cellfun(@(x) project(x,dims), ...
             R(i).timePoint.set,'UniformOutput',false);
     end
 
     % time-interval reachable set
-    if ~isempty(R(i).timeInterval.set)
+    if ~isempty(R(i).timeInterval)
         R(i).timeInterval.set = cellfun(@(x) project(x,dims), ...
             R(i).timeInterval.set,'UniformOutput',false);
     end

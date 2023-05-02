@@ -23,6 +23,7 @@ function ME = CORAerror(identifier,varargin)
 %                 'CORA:notEnoughInputArgs'
 %                 'CORA:tooManyInputArgs'
 %                 'CORA:evenNumberInputArgs'
+%                 'CORA:oddNumberInputArgs'
 %                 'CORA:degenerateSet'
 %                 'CORA:YALMIP'
 %                 'CORA:outOfDomain'
@@ -278,6 +279,11 @@ switch identifier
         errmsg_form = 'The function %s requires an even number of input argument(s).\n %s';
         errmsg = sprintf(errmsg_form,filename,helpmsg);
 
+    % function requires an odd number of input arguments (likely because
+    % of name-value pairs, e.g., generateRandom)
+    case 'CORA:oddNumberInputArgs'
+        errmsg_form = 'The function %s requires an odd number of input argument(s).\n %s';
+        errmsg = sprintf(errmsg_form,filename,helpmsg);
 
     % function takes name-value pairs, but provided pair has a name which
     % is not within the list of admissible names for all pairs; input args:

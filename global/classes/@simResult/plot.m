@@ -7,7 +7,7 @@ function han = plot(simRes,varargin)
 %    han = plot(simRes,dims,type)
 %
 % Inputs:
-%    obj - simResult object
+%    simRes - simResult object
 %    dims - (optional) dimensions for projection
 %    type - (optional) plot settings (LineSpec and Name-Value pairs)
 %          'Height', <height> height of z-coordinate
@@ -36,8 +36,16 @@ function han = plot(simRes,varargin)
 dims = setDefaultValues({[1,2]},varargin);
 
 % check input arguments
-inputArgsCheck({{simRes,'att',{'simResult'},{''}};
-                {dims,'att',{'numeric'},{'positive','vector','integer'}}});
+inputArgsCheck({{simRes,'att','simResult','nonempty'};
+                {dims,'att','numeric',{'positive','vector','integer'}}});
+
+% check hold status
+holdStatus = ishold;
+if ~holdStatus
+    plot(NaN,NaN,'HandleVisibility','off');
+    % reset color index (before readPlotOptions!)
+    set(gca(),'ColorOrderIndex',1);
+end
 
 % parse plotting options
 NVpairs = readPlotOptions(varargin(2:end),'simResult');
@@ -76,6 +84,11 @@ updateColorIndex(oldColorIndex);
 %   to be shown if figure was not 3D before)
 if length(dims) == 3
     view(3);
+end
+
+% reset hold status
+if ~holdStatus
+    hold off
 end
 
 if nargout == 0

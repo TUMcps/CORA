@@ -37,7 +37,7 @@ resvec(end+1) = all(pcZ.Z == Z, 'all');
 resvec(end+1) = all(pcZ.A == A, 'all');
 resvec(end+1) = all(pcZ.b == b, 'all');
 
-% compare with cPZ
+% compare with cZ
 resvec(end+1) = isequal(pcZ, cZ);
 
 % test empty case

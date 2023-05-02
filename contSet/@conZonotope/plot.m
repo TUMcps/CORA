@@ -43,6 +43,8 @@ function han = plot(cZ,varargin)
 %               25-May-2022 (TL: 1D Plotting)
 %               16-December-2022 (MW, add iterative method for 2D plots)
 %               05-April-2023 (TL: clean up using plotPolygon)
+%               27-April-2023 (VG: check if cZ is feasible to avoid
+%               nondescript error message
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -73,18 +75,26 @@ elseif length(dims) > 3
     throw(CORAerror('CORA:plotProperties',3));
 end
 
-% project the object to the 2D-subspace
-cZ = project(cZ,dims);
-dims = 1:length(dims);
+% check if constraints are feasible
+if isempty(cZ)
+    han = plotPolygon(zeros(length(dims), 0), NVpairs{:});
 
-% plot modes: standard (1), template (2), splits (3)
-if mode == 1
-    han = plotStandard(cZ,dims,NVpairs);
-elseif mode == 2
-    han = plotSplit(cZ,splits,dims,NVpairs);
-elseif mode == 3
-    han = plotTemplate(cZ,numDir,dims,NVpairs);
+else    
+    % project the object to the 2D-subspace
+    cZ = project(cZ,dims);
+    dims = 1:length(dims);
+    
+    % plot modes: standard (1), template (2), splits (3)
+    if mode == 1
+        han = plotStandard(cZ,dims,NVpairs);
+    elseif mode == 2
+        han = plotSplit(cZ,splits,dims,NVpairs);
+    elseif mode == 3
+        han = plotTemplate(cZ,numDir,dims,NVpairs);
+    end
+
 end
+
 
 if nargout == 0
     clear han

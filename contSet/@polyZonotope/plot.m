@@ -79,11 +79,9 @@ pZ = compact(pZ);
 % check if is zonotope
 if all(sum(pZ.expMat > 0, 2) == 1)
     han = plot(zonotope(pZ), dims, NVpairs{:});
-    return
-end
 
 % 1D, 2D vs 3D plot
-if length(dims) == 1
+elseif length(dims) == 1
     han = plot(interval(pZ, 'split'), 1, NVpairs{:});
 
 elseif length(dims) == 2

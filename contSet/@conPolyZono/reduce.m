@@ -76,7 +76,7 @@ function cPZ = reduce(cPZ,method,order)
         % transform back to constrained polynomial zonotope
         A = []; b = []; expMat_ = []; Grest = [];
         
-        if isempty(pZ.G) || all(all(abs(pZ.G(1:n,:) < eps)))
+        if isempty(pZ.G) || all(all(abs(pZ.G(1:n,:)) < eps))
             
             pZ = aux_removeIndepGens(pZ);
             

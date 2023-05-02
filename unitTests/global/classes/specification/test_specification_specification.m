@@ -9,7 +9,7 @@ function res = test_specification_specification
 %    -
 %
 % Outputs:
-%    -
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none

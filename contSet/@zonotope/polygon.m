@@ -28,20 +28,29 @@ function p = polygon(Z)
 
 %------------- BEGIN CODE --------------
 
+% empty case
+if isempty(Z)
+    p = []; return
+end
+
+% only supported for 2D cases
+if dim(Z) ~= 2
+    throw(CORAerror('CORA:notSupported','Only supports for 2D zonotopes.'));
+end
+
 % delete zero generators
 Z = deleteZeros(Z);
 
-% obtain center and generator
-c = center(Z); %center
-G = generators(Z); %matrix of generators
+% obtain center and generator matrix
+c = center(Z);
+G = generators(Z);
 
 % obtain number of generators
-n = size(G,2);
+nrGens = size(G,2);
 
 % obtain size of enclosing intervalhull of first two dimensions
 xmax = sum(abs(G(1,:)));
 ymax = sum(abs(G(2,:)));
-
  
 % Z with normalized direction: All generators pointing "up"
 Gnorm = G;
@@ -57,8 +66,8 @@ angles(angles<0) = angles(angles<0) +2*pi;%handle numerical imprecision/deficien
 [~,IX] = sort(angles,'ascend');
 
 %cumsum the generators in order of angle
-p = zeros(2,n+1);
-for i = 1:n
+p = zeros(2,nrGens+1);
+for i = 1:nrGens
     p(:,i+1) = p(:,i) + 2*Gnorm(:,IX(i));
 end
 
@@ -70,7 +79,6 @@ p = [p(1,:),p(1,end)+p(1,1)-p(1,2:end);...
     p(2,:),p(2,end)+p(2,1)-p(2,2:end)];
 
 %consider center
-p(1,:) = c(1) + p(1,:);
-p(2,:) = c(2) + p(2,:);
+p = c + p;
 
 %------------- END OF CODE --------------

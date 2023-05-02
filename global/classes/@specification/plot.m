@@ -31,9 +31,16 @@ function han = plot(spec,varargin)
 dims = setDefaultValues({[1,2]},varargin);
 
 % check input arguments
-inputArgsCheck({{spec,'att',{'specification'},{''}};
-                {dims,'att',{'numeric'},{'nonempty','vector','integer','positive'}}});
+inputArgsCheck({{spec,'att','specification','nonempty'};
+                {dims,'att','numeric',{'nonempty','vector','integer','positive'}}});
 
+% check hold status
+holdStatus = ishold;
+if ~holdStatus
+    plot(NaN,NaN,'HandleVisibility','off');
+    % reset color index (before readPlotOptions!)
+    set(gca(),'ColorOrderIndex',1);
+end
 
 % check dimension
 if length(dims) < 2
@@ -48,7 +55,7 @@ for i=1:length(spec)
 
     % read plotting options depending on type
     switch spec_i.type
-        case {'safeSet','unsafeSet'}
+        case {'safeSet','unsafeSet','invariant'}
             % check name-value pairs
             NVpairs = readPlotOptions(varargin(2:end), ...
                 sprintf("spec:%s",spec_i.type));
@@ -70,6 +77,11 @@ for i=1:length(spec)
     if i==1
         han = han_i;
     end
+end
+
+% reset hold status
+if ~holdStatus
+    hold off
 end
 
 if nargout == 0

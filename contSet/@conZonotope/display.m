@@ -49,11 +49,11 @@ else
     
     %display constraint system
     if isempty(cZ.A) && isempty(cZ.b)
-        disp('Constraint system (Cx <= d): no constraints.')
+        disp('Constraint system (Ax = b): no constraints.')
         fprintf(newline);
         
     else
-        disp('Constraint system (Cx <= d):')
+        disp('Constraint system (Ax = b):')
 
         displayGenerators(cZ.A,DISPLAYDIM_MAX,'A');
 

@@ -26,7 +26,7 @@ function res = testLong_ellipsoid_minkDiff
 res = true;
 
 % double
-res = res && testLong_component_ellipsoid_minusDouble;
+res = res && testLong_component_ellipsoid_minkDiffDouble;
 
 % ellipsoid
 res = res && testLong_component_ellipsoid_minkDiffEllipsoid;

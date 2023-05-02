@@ -12,6 +12,10 @@ function updateColorIndex(oldColorIndex)
 % Outputs:
 %    -
 %
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
 % See also: colororder
 
 % Author:        Tobias Ladner

@@ -42,7 +42,7 @@ resvec(end+1) = all(ppZ.Grest == Grest, 'all');
 resvec(end+1) = isequal(ppZ, pZ);
 
 % test empty case
-resvec(end+1) = isemptyobject(+mptPolytope());
+resvec(end+1) = isemptyobject(+polyZonotope());
 
 % add results
 res = all(resvec);
