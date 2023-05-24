@@ -27,7 +27,12 @@ function color = defaultPlotColor()
 % read current color order
 ax = gca;
 colorOrder = ax.ColorOrder;
-colorIndex = ax.ColorOrderIndex;
+
+if ishold
+    colorIndex = ax.ColorOrderIndex;
+else
+    colorIndex = 1;
+end
 
 % select color
 color = colorOrder(colorIndex, :);

@@ -585,7 +585,7 @@ if ~iscell(params.U)
     % same input set for each location
     uloc = cell(numComp,1);
     for i = 1:numComp
-        numLoc = length(sys.components{i}.location);
+        numLoc = length(sys.components(i).location);
         uloc{i} = cell(numLoc,1);    
         for j = 1:numLoc
             if isaInt
@@ -598,7 +598,7 @@ if ~iscell(params.U)
 else
     % convert to zonotope 
     for i = 1:numComp
-        numLoc = length(sys.components{i}.location);
+        numLoc = length(sys.components(i).location);
         for j = 1:numLoc
             if isa(params.U{i}{j},'interval')
                 uloc{i}{j} = zonotope(params.U{i}{j});
@@ -623,7 +623,7 @@ numComps = length(sys.components);
 if ~iscell(params.u) 
     % same input set for each location
     uloc = cell(numComps,1);
-    numLoc = length(sys.components{1}.location);
+    numLoc = length(sys.components(1).location);
     uloc{1} = cell(numLoc,1);
     for i = 1:numLoc
         uloc{1}{i} = params.u;

@@ -18,7 +18,7 @@ function msg = getErrorMessage(id)
 
 % Author:       Mark Wetzlinger
 % Written:      26-May-2021
-% Last update:  ---
+% Last update:  19-May-2023 (MW, fix for unit test)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -28,6 +28,9 @@ inputArgsCheck({{id,'att','char'}});
 
 % enable access to codex
 global codex;
+if isempty(codex)
+    initErrorCodex;
+end
 
 % check if id in codex
 ididx = find(ismember(codex.id,id));

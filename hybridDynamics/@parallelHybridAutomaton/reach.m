@@ -106,11 +106,11 @@ function [R,res] = reach(pHA,params,options,varargin)
         % automaton product (if no specification is location-specific, the
         % specifications are always the same ones as initialized)
         if specLocSpecific
-            options.specification = filterSpecifications(spec,locID);
+            options.specification = aux_filterSpecifications(spec,locID);
         end
         
         % compute input set for the constructed location
-        options.U = mergeInputSet(locID,options.Uloc,options.inputCompMap);
+        options.U = aux_mergeInputSet(locID,options.Uloc,options.inputCompMap);
         
         % check for immediate transitions
         [list,tracker,restart] = immediateTransition(pHA,list,locID,...
@@ -173,7 +173,7 @@ end
     
 % Auxiliary Functions -----------------------------------------------------
 
-function U = mergeInputSet(loc,Uloc,inputCompMap)
+function U = aux_mergeInputSet(loc,Uloc,inputCompMap)
 % compute the joint input set for the location generated via the automaton
 % product of all individual hybrid automata
 
@@ -200,7 +200,7 @@ function U = mergeInputSet(loc,Uloc,inputCompMap)
 
 end
 
-function activeSpecs = filterSpecifications(spec,locID)
+function activeSpecs = aux_filterSpecifications(spec,locID)
 % filter the specifications for the ones relevant to the local automaton
 % product: if a specific subcomponent is within a location where a
 % specification is relevant, the specification is checked in the next

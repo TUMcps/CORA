@@ -58,9 +58,9 @@ guard = conHyperplane(1,T_off);
 reset.A = 1;
 reset.c = 0;
 
-trans = {transition(guard,reset,2)};
+trans = transition(guard,reset,2);
 
-loc{1} = location('on',inv,trans,linSys);
+loc = location('on',inv,trans,linSys);
 
 % Location 2 : Heating off
 A = -(a1 + b1);
@@ -76,9 +76,9 @@ guard = conHyperplane(1,T_on);
 reset.A = 1;
 reset.c = 0;
 
-trans = {transition(guard,reset,1)};
+trans = transition(guard,reset,1);
 
-loc{2} = location('off',inv,trans,linSys);
+loc(2) = location('off',inv,trans,linSys);
 
 % Hybrid automaton
 HA1 = hybridAutomaton(loc);
@@ -102,9 +102,9 @@ guard = conHyperplane(1,T_off);
 reset.A = 1;
 reset.c = 0;
 
-trans = {transition(guard,reset,2)};
+trans = transition(guard,reset,2);
 
-loc{1} = location('on',inv,trans,linSys);
+loc(1) = location('on',inv,trans,linSys);
 
 % Location 2 : Heating off
 A = -(a2 + b2);
@@ -120,9 +120,9 @@ guard = conHyperplane(1,T_on);
 reset.A = 1;
 reset.c = 0;
 
-trans = {transition(guard,reset,1)};
+trans = transition(guard,reset,1);
 
-loc{2} = location('off',inv,trans,linSys);
+loc(2) = location('off',inv,trans,linSys);
 
 % Hybrid automaton
 HA2 = hybridAutomaton(loc);
@@ -131,7 +131,7 @@ HA2 = hybridAutomaton(loc);
 % Parallel Hybrid Automaton -----------------------------------------------
 
 % components
-comp = {HA1,HA2};
+comp = [HA1;HA2];
 
 % connections between the components
 inputBinds{1} = [0 1; ...   % first global input

@@ -57,7 +57,7 @@ else
     	% check if size of input matches inputCompMap
     	dims = length(find(params.inputCompMap == i));
         if dims > 0
-            numLoc = length(sys.components{i}.location);
+            numLoc = length(sys.components(i).location);
             if ~(all(size(val{i}) == [numLoc,1]) || all(size(val{i}) ~= [1,numLoc]))
                 res = false;
                 msg = 'has to match the number of locations';

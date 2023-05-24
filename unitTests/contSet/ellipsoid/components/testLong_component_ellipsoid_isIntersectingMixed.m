@@ -23,23 +23,31 @@ function res = testLong_component_ellipsoid_isIntersectingMixed
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 res = true;
 nRuns = 2;
+
+% degeneracy
 bools = [false,true];
+
 % smaller dims since halfspaces and vertices are involved
 for i=5:5:10
     for j=1:nRuns
         for k=1:2 
-            %%% generate all variables necessary to replicate results
+            % init random ellipsoid, zonotope, and polyZonotope
             E = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k));
             Z = zonotope.generateRandom('Dimension',i);
             pZ = polyZonotope.generateRandom('Dimension',i);
+
+            % sample random point from ellipsoid
             s = randPoint(E,1);
-            %%%
+
+            % init zonotope and polyZonotope containing that random point
+            % so that sets always intersect
             Z1 = zonotope(s,generators(Z));
             pZ1 = polyZonotope(s,pZ.G,pZ.Grest,pZ.expMat,pZ.id);
             
-            % intersect for sure
+            % check for intersection
             if ~isIntersecting(E,Z1,'approx') || ~isIntersecting(E,pZ1,'approx')
                 res = false;
                 return;
@@ -47,4 +55,5 @@ for i=5:5:10
         end
     end
 end
+
 %------------- END OF CODE --------------

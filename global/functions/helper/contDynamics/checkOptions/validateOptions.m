@@ -355,7 +355,7 @@ if (isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')) ...
     if isa(sys,'hybridAutomaton')
         % check contDynamics class from all locations
         for i=1:length(sys.location)
-            classname = class(sys.location{i}.contDynamics);
+            classname = class(sys.location(i).contDynamics);
             if contains(func,'simulate')
                 % for simulateRandom|simulate just contDynamics
                 classname = 'contDynamics';
@@ -367,8 +367,8 @@ if (isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')) ...
         comps = zeros(length(sys.components),1);
         for i=1:length(sys.components)
             % check contDynamics class from all components/locations
-            for j=1:length(sys.components{i}.location)
-                classname = class(sys.components{i}.location{j}.contDynamics);
+            for j=1:length(sys.components(i).location)
+                classname = class(sys.components(i).location(j).contDynamics);
                 if contains(func,'simulate')
                     % for simulateNormal|simulate just contDynamics
                     classname = 'contDynamics';
@@ -384,9 +384,9 @@ if (isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')) ...
     for i=1:length(configfile)
         if isa(sys,'hybridAutomaton')
             if strcmp(listname,'params')
-                [contDynlist,~] = eval([configfile{i} '(sys.location{cfgIdx(i)}.contDynamics,params,options)']);
+                [contDynlist,~] = eval([configfile{i} '(sys.location(cfgIdx(i)).contDynamics,params,options)']);
             elseif strcmp(listname,'options')
-                [~,contDynlist] = eval([configfile{i} '(sys.location{cfgIdx(i)}.contDynamics,params,options)']);
+                [~,contDynlist] = eval([configfile{i} '(sys.location(cfgIdx(i)).contDynamics,params,options)']);
             end
         elseif isa(sys,'parallelHybridAutomaton')
             cfgpHAcomp = find(cfgIdx(i)<=comps,1,'first');
@@ -396,10 +396,10 @@ if (isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')) ...
             end
             if strcmp(listname,'params')
                 [contDynlist,~] = eval([configfile{i} ...
-                    '(sys.components{cfgpHAcomp}.location{cfgpHAloc}.contDynamics,params,options)']);
+                    '(sys.components(cfgpHAcomp).location(cfgpHAloc).contDynamics,params,options)']);
             elseif strcmp(listname,'options')
                 [~,contDynlist] = eval([configfile{i} ...
-                    '(sys.components{cfgpHAcomp}.location{cfgpHAloc}.contDynamics,params,options)']);
+                    '(sys.components(cfgpHAcomp).location(cfgpHAloc).contDynamics,params,options)']);
             end
         end
         blueprint.name = [blueprint.name; contDynlist.name];

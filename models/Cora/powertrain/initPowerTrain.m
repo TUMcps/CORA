@@ -126,9 +126,9 @@ guard1 = h1;
 reset1.A = eye(dim);
 reset1.c = zeros(dim,1);
 %transitions
-trans{1} = transition(guard1,reset1,2); %--> next loc: 2
+trans = transition(guard1,reset1,2); %--> next loc: 2
 %specify location
-loc{1} = location('loc1',inv,trans,linSys1);
+loc = location('loc1',inv,trans,linSys1);
 
 %loc2:
 %invariant
@@ -140,11 +140,11 @@ guard2 = h2;
 reset1.A=eye(dim);
 reset1.c=zeros(dim,1);
 %transition 1
-trans=[];
-trans{1}=transition(guard1,reset1,1); %--> next loc: 1
-trans{2}=transition(guard2,reset1,3); %--> next loc: 3
+clear trans
+trans(1)=transition(guard1,reset1,1); %--> next loc: 1
+trans(2)=transition(guard2,reset1,3); %--> next loc: 3
 %specify location
-loc{2}=location('loc2',inv,trans,linSys2);
+loc(2)=location('loc2',inv,trans,linSys2);
 
 %loc3:
 %invariant
@@ -155,10 +155,10 @@ guard1 = h2;
 reset1.A=eye(dim);
 reset1.c=zeros(dim,1);
 %transition 1
-trans=[];
-trans{1}=transition(guard1,reset1,2); %--> next loc: 2
+clear trans
+trans=transition(guard1,reset1,2); %--> next loc: 2
 %specify location
-loc{3}=location('loc3',inv,trans,linSys3);
+loc(3)=location('loc3',inv,trans,linSys3);
 
 %specify hybrid automaton
 HA=hybridAutomaton(loc);

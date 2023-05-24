@@ -131,22 +131,19 @@ function res = aux_intersectPolyPoly(P1,P2,options)
     
     % introduce slack variables y to solve the dual problem
     % min t
-    % s.t. Ax - b <= y,
-    %         y_i <= t
+    % s.t. Ax - b <= t,
     
-    % opt var x = [t;y;x]
+    % opt var x = [t;x]
 
     p = length(b);
     n = size(A,2);
 
     % ineqs
-    % Ax -b <= y
-    % y_i <= t
-    Aineq = [zeros(p,1),-eye(p),A;
-             -ones(p,1),eye(p),zeros(p,n)];
-    bineq = [b;zeros(p,1)];
+    % Ax -b <= t
+    Aineq = [-ones(p,1),A];
+    bineq = b;
     
-    f = [1;zeros(p+n,1)];
+    f = [1;zeros(n,1)];
     
     % solve the dual problem using linear programming
     [~,val,exitflag] = linprog(f,Aineq,bineq,[],[],[],[],options);
@@ -177,8 +174,7 @@ function res = aux_intersectPolyConZono(P,cZ,options)
 %
 % min t
 %
-% s.t. Hx -d <= y
-%        y_i <= t, 1\leq i\leq p (number of rows in H),
+% s.t. Hx -d <= t
 %      c + Ga = x
 %          Aa = b
 %           a \in [-1,1]
@@ -194,23 +190,21 @@ function res = aux_intersectPolyConZono(P,cZ,options)
     m = size(G,2);
     p = size(H,1);
 
-    % opt var x = [t;y;x;a] 
+    % opt var x = [t;x;a] 
 
     % construct inequality constraints
-    % Hx -d <=y
-    % y_i <= t
+    % Hx -d <=t
     % -a <= 1
     %  a <= 1
-    Aineq = [zeros(p,1),-eye(p),H,zeros(p,m);
-             -ones(p,1),eye(p),zeros(p,n+m);
-             zeros(m,1+p+n),-eye(m);
-             zeros(m,1+p+n),eye(m)];
-    bineq = [d;zeros(p,1);ones(2*m,1)];
+    Aineq = [-ones(p,1),H,zeros(p,m);
+             zeros(m,1+n),-eye(m);
+             zeros(m,1+n),eye(m)];
+    bineq = [d;ones(2*m,1)];
 
     % construct equality constraints
     % x = c+ G*a
     % A*a = b
-    Aeq = [zeros(n,1+p),eye(n),-G];
+    Aeq = [zeros(n,1),eye(n),-G];
     beq = c;
     
     if ~isempty(cZ.A)
@@ -218,13 +212,13 @@ function res = aux_intersectPolyConZono(P,cZ,options)
         b = cZ.b;
         % A*a = b
         Aeq = [Aeq;
-               zeros(size(A,1),1+p+n),A];
+               zeros(size(A,1),1+n),A];
         beq = [beq;b];
     end
     
     % construct objective function
     % min t
-    f = [1;zeros(p+n+m,1)];
+    f = [1;zeros(n+m,1)];
     
     % solve linear program
     [~,val,exitflag] = linprog(f,Aineq,bineq,Aeq,beq,[],[],options);
@@ -263,8 +257,7 @@ function res = aux_intersectPolyZonoBundle(P,zB,options)
 %
 % min t
 %
-% s.t. Hx - d <= y,
-%         y_i <= t,
+% s.t. Hx - d <= t,
 %  c1 + G1 a1 = x,
 %             .
 %             .
@@ -279,16 +272,14 @@ function res = aux_intersectPolyZonoBundle(P,zB,options)
     n = dim(P);
     p = size(H,1);
 
-    % opt var x = [t;y;x;aa]
+    % opt var x = [t;x;aa]
     
 
     % construct inequality constraints
-    % Hx -d <=y
-    % y_i <= t
+    % Hx -d <=t
     % do not include aa yet (don't know how large aa is yet)
-    Aineq_ = [zeros(p,1),-eye(p),H;
-             -ones(p,1),eye(p),zeros(p,n)];
-    bineq = [d;zeros(p,1)];
+    Aineq_ = [-ones(p,1),H];
+    bineq = d;
     
     mm = 0;
     N = zB.parallelSets;
@@ -311,15 +302,15 @@ function res = aux_intersectPolyZonoBundle(P,zB,options)
    
     % construct equality constraints
     % x = c_k +G_k*a_k
-    Aeq = [zeros(N*n,1+p),repmat(eye(n),N,1),-blkdiag(GG_c{:})];
+    Aeq = [zeros(N*n,1),repmat(eye(n),N,1),-blkdiag(GG_c{:})];
 
     % lower and upper bounds
-    lb = [-inf(1+p+n,1);-ones(mm,1)];
-    ub = [inf(1+p+n,1);ones(mm,1)];
+    lb = [-inf(1+n,1);-ones(mm,1)];
+    ub = [inf(1+n,1);ones(mm,1)];
     
     % construct objective function
     % min t
-    f = [1;zeros(p+n+mm,1)];
+    f = [1;zeros(n+mm,1)];
     
     % solve linear program
     [~,val,exitflag] = linprog(f,Aineq,bineq,Aeq,beq,lb,ub,options);

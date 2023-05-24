@@ -11,6 +11,8 @@ function han = plot(ls,varargin)
 %    dims - (optional) dimensions for projection
 %           (assumption: other entries of the normal vector are zeros)
 %    type - (optional) plot settings (LineSpec and Name-Value pairs)
+%               - 'Splits': number of splits to plot sets with '<=','<'
+%               - 'PlotMethod': one of {'outer','inner'}, default: 'outer'
 %
 % Outputs:
 %    han - handle to the graphics object
@@ -29,9 +31,9 @@ function han = plot(ls,varargin)
 %
 % See also: none
 
-% Author:       Niklas Kochdumper
+% Author:       Niklas Kochdumper, Tobias Ladner
 % Written:      19-July-2019
-% Last update:  ---
+% Last update:  22-May-2023 (TL: speed up plotting of '<=' levelSets)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -43,8 +45,29 @@ function han = plot(ls,varargin)
     inputArgsCheck({{ls,'att','levelSet'};
                     {dims,'att','numeric',{'nonnan','integer','vector','positive'}}});
 
-    % read out plot options
-    type = readPlotOptions(varargin(2:end));
+    % read out plot options and additional name-value pairs
+    NVpairs = readPlotOptions(varargin(2:end));
+    % 'Splits' given?
+    [NVpairs,splits] = readNameValuePair(NVpairs,'Splits');
+    if isempty(splits)
+        if length(dims) == 3
+            splits = 4;
+        else
+            splits = 7;
+        end
+    end
+    % 'PlotMethod' given?
+    [NVpairs,plotMethod] = readNameValuePair(NVpairs,'PlotMethod',{},'outer');
+
+    % check name-value pairs
+    if CHECKS_ENABLED
+        if ~isnumeric(splits) || ~isscalar(splits)
+            throw(CORAerror("CORA:wrongValue","name-value pair 'Splits'",'numeric scalar'))
+        end
+        if ~ismember(plotMethod,{'inner','outer'})
+            throw(CORAerror("CORA:wrongValue","name-value pair 'PlotMethod'","'outer','inner'"))
+        end
+    end
 
     % check dimension
     if length(dims) < 1
@@ -67,23 +90,23 @@ function han = plot(ls,varargin)
 
         % different methods for the different dimensions
         if length(dims) == 2
-            han = aux_plot2Dcontour(ls,dims,type);
+            han = aux_plot2Dcontour(ls,dims,NVpairs);
         else
             [res,ind] = aux_isSolvable(ls,dims);
 
             if res
-                han = aux_plot3Dsolvable(ls,dims,ind,type);
+                han = aux_plot3Dsolvable(ls,dims,ind,NVpairs);
             else
-                han = aux_plot3Dgrid(ls,dims,type); 
+                han = aux_plot3Dsplit(ls,dims,splits,plotMethod,NVpairs); 
             end
         end
 
     else
         % different methods for the differnt dimensions
         if length(dims) == 2
-            han = aux_plot2Dgrid(ls,dims,type);
+            han = aux_plot2Dsplit(ls,dims,splits,plotMethod,NVpairs);
         else
-            han = aux_plot3Dgrid(ls,dims,type); 
+            han = aux_plot3Dsplit(ls,dims,splits,plotMethod,NVpairs); 
         end 
     end
     
@@ -130,56 +153,96 @@ function han = aux_plot2Dcontour(obj,dims,type)
     [~,han] = contour(X,Y,Z,level,type{:});
 end
 
-function han = aux_plot2Dgrid(obj,dims,type)
-% plot 2D level set by gridding the plot area 
+function han = aux_plot2Dsplit(obj,dims,splits,plotMethod,NVpairs)
+% plot 2D level set by splitting the plot area 
 
     % re-read plotOptions, since always fill called
-    type = readPlotOptions(type,'fill');
+    NVpairs = readPlotOptions(NVpairs,'fill');
 
     % get limits of figure
     ax = gca;
     xlim = get(ax,'Xlim');
     ylim = get(ax,'Ylim');
+    space = interval([xlim(1);ylim(1)],[xlim(2);ylim(2)]);
 
-    % substitute all remaining entries with zero
-    p = zeros(obj.dim,1);
-    
-    % generate grid
-    N = 200;
-    dx = (xlim(2)-xlim(1))/N;
-    dy = (ylim(2)-ylim(1))/N;
-    
-    dx_ = dx/2;
-    dy_ = dy/2;
-    
-    x = xlim(1)+dx_:dx:xlim(2)-dx_;
-    y = ylim(1)+dy_:dy:ylim(2)-dy_;
-    
-    [X,Y] = meshgrid(x,y);
-    
-    hold on
-    
-    % plot all grid cells belonging to the set
-    for i = 1:size(X,1)
-        for j = 1:size(X,2)
+    % determine subspaces to be plotted
+    subSpaces = aux_refineSpace(obj,dims,space,splits,plotMethod);
+
+    % plot ---
+
+    % read plot settings (TODO: move to new function (also for reachset etc.)?)
+    holdStatus = ishold;
+    if ~holdStatus
+        plot(NaN,NaN,'HandleVisibility','off');
+        % reset color index (before readPlotOptions!)
+        set(gca(),'ColorOrderIndex',1);
+
+        % reset limits
+        set(ax,'Xlim',xlim);
+        set(ax,'Ylim',ylim);
+    end
+    hold on;
+    ax = gca();
+    oldColorIndex = ax.ColorOrderIndex;
+
+    % plot sets (TODO: unify)
+    for i=1:length(subSpaces)
+        han_i = plot(subSpaces{i},[1,2],NVpairs{:});
+        if i == 1
+            han = han_i;
+            NVpairs = [NVpairs, {'HandleVisibility','off'}];
+        end
+    end
+    if isempty(subSpaces)
+        [NVpairs,facecolor] = readNameValuePair(NVpairs,'FaceColor');
+        han = fill(nan,nan,facecolor,NVpairs{:});
+    end
+
+    % restore plot settings
+    updateColorIndex(oldColorIndex);
+    if ~holdStatus
+        hold off;
+    end
+end
+
+function subSpaces = aux_refineSpace(obj,dims,space,splits,plotMethod)
+    % refine space and return included interval subspaces
+    subSpaces = {};
+
+    % init n-dim space (with all other dimenions = 0)
+    nSpace = interval(zeros(dim(obj),1));
+    nSpace(dims) = space;
+
+    % range bounding using fast interval arithmetic
+    val = obj.funHan(nSpace);
+
+    if all(val.sup <= 0) % compOp always '<=' or '<' here
+        % if all equations satisfied
+        subSpaces{1} = space;
+    elseif any(val.inf > 0)
+        % if any equation is unsatisfiable
+        % don't include subspace
+    else
+        % not (yet) decidedable
+        if splits == 0
+            switch plotMethod
+                case 'outer'
+                    % plot
+                    subSpaces{1} = space;
+                case 'inner'
+                    % don't plot
+            end
+        else
+            % refine subspace
+            partSpace = partition(space, 2);
             
-            % evaluate level set function for the center of the grid cell
-            p_ = p;
-            p_(dims) = [X(i,j);Y(i,j)];
-            val = obj.funHan(p_);
-            
-            % plot the grid cell
-            if val <= 0
-                x = X(i,j) + [-dx_ -dx_ dx_ dx_];
-                y = Y(i,j) + [-dy_ dy_ dy_ -dy_];
-                
-                % fill is unhappy if no RGB value is provided, the given
-                % value is overwritten anyway
-                dummyRGB = CORAcolor("CORA:next");
-                han = fill(x,y,dummyRGB,type{:});
+            % check subspaces
+            for i = 1:length(partSpace)
+                subSpaces_i = aux_refineSpace(obj,dims,partSpace{i},splits-1,plotMethod);
+                subSpaces = [subSpaces,subSpaces_i];
             end
         end
-    end  
+    end
 end
 
 function han = aux_plot3Dsolvable(obj,dims,ind,type)
@@ -234,55 +297,57 @@ function han = aux_plot3Dsolvable(obj,dims,ind,type)
 
 end
 
-function han = aux_plot3Dgrid(obj,dims,type)
-% plot 3D level set by gridding the plot area
+function han = aux_plot3Dsplit(obj,dims,splits,plotMethod,NVpairs)
+% plot 3D level set by splitting the plot area
 
     % re-read plotOptions, since always fill called
-    type = readPlotOptions(type,'fill');
+    NVpairs = readPlotOptions(NVpairs,'fill');
 
     % get limits of figure
     ax = gca;
     xlim = get(ax,'Xlim');
     ylim = get(ax,'Ylim');
     zlim = get(ax,'Zlim');
+    space = interval([xlim(1);ylim(1);zlim(1)],[xlim(2);ylim(2);zlim(2)]);
 
-    % substitute all remaining entries with zero
-    p = zeros(obj.dim,1);
-    
-    % generate grid
-    N = 20;
-    dx = (xlim(2)-xlim(1))/N;
-    dy = (ylim(2)-ylim(1))/N;
-    dz = (zlim(2)-zlim(1))/N;
-    
-    dx_ = dx/2; dy_ = dy/2; dz_ = dz/2;
-    
-    x = xlim(1)+dx_:dx:xlim(2)-dx_;
-    y = ylim(1)+dy_:dy:ylim(2)-dy_;
-    z = zlim(1)+dz_:dz:zlim(2)-dz_;
-    
-    [X,Y] = meshgrid(x,y);
-    
-    hold on
-    
-    % plot all grid cells belonging to the set
-    for i = 1:size(X,1)
-        for j = 1:size(X,2)
-            for k = 1:length(z)
-            
-                % construct grid cell
-                c = p; d = p;
-                c(dims) = [X(i,j); Y(i,j); z(k)];
-                d(dims) = [dx_; dy_; dz_];
-                
-                int = interval(c-d,c+d);
-                
-                % plot the grid cell if it intersects the level set
-                if isIntersecting_(obj,int,'approx')
-                    han = plot(int,dims,type{:});
-                end
-            end
+    % determine subspaces to be plotted
+    subSpaces = aux_refineSpace(obj,dims,space,splits,plotMethod);
+
+    % plot ---
+
+    % read plot settings (TODO: move to new function (also for reachset etc.)?)
+    holdStatus = ishold;
+    if ~holdStatus
+        plot(NaN,NaN,'HandleVisibility','off');
+        % reset color index (before readPlotOptions!)
+        set(gca(),'ColorOrderIndex',1);
+
+        % reset limits
+        set(ax,'Xlim',xlim);
+        set(ax,'Ylim',ylim);
+        set(ax,'Zlim',zlim);
+    end
+    hold on;
+    ax = gca();
+    oldColorIndex = ax.ColorOrderIndex;
+
+    % plot sets
+    for i=1:length(subSpaces)
+        han_i = plot(subSpaces{i},[1,2,3],NVpairs{:});
+        if i == 1
+            han = han_i;
+            NVpairs = [NVpairs, {'HandleVisibility','off'}];
         end
+    end
+    if isempty(subSpaces)
+        [NVpairs,facecolor] = readNameValuePair(NVpairs,'FaceColor');
+        han = fill3(nan,nan,nan,facecolor,NVpairs{:});
+    end
+
+    % restore plot settings
+    updateColorIndex(oldColorIndex);
+    if ~holdStatus
+        hold off;
     end
 end
 

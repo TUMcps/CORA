@@ -38,7 +38,7 @@ function res = isequal(trans1,trans2,varargin)
 
 % Author:       Mark Wetzlinger
 % Written:      26-November-2022
-% Last update:  ---
+% Last update:  21-May-2023 (MW, extend to arrays)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -55,6 +55,26 @@ tol = setDefaultValues({eps},varargin);
 inputArgsCheck({{trans1,'att','transition'};
                 {trans2,'att','transition'};
                 {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
+
+% check array length
+if any(size(trans1) ~= size(trans2))
+    res = false; return
+end
+
+% loop over all individual transition objects
+[r,c] = size(trans1);
+res = false(r,c);
+for i=1:r
+    for j=1:c
+        res(i,j) = aux_isequal(trans1(i,j),trans2(i,j),tol);
+    end
+end
+
+end
+
+% Auxiliary function ------------------------------------------------------
+
+function res = aux_isequal(trans1,trans2,tol)
 
 % easy checks first to facilitate quick exits
 res = true;
@@ -75,19 +95,11 @@ end
 % check fields (either both linear or both nonlinear)
 reset1fields = fields(trans1.reset);
 reset2fields = fields(trans2.reset);
-if length(reset1fields) ~= length(reset2fields)
+if ~all(ismember(reset1fields,reset2fields)) || ...
+        ~all(ismember(reset2fields,reset1fields))
     res = false; return
 end
-idx2 = zeros(length(reset1fields),1);
-for i=1:length(reset1fields)
-    temp = cellfun(@(x) strcmp(x,reset1fields{i}),reset2fields,'UniformOutput',true);
-    if isempty(temp)
-        % field from reset of trans1 does not exist in reset of trans2
-        res = false; return
-    end
-    % save idx for value comparison
-    idx2(i) = find(temp == true,1,'first');
-end
+
 % established that both reset functions have the same fields
 for i=1:length(reset1fields)
     fieldname = reset1fields{i};
@@ -113,8 +125,10 @@ for i=1:length(reset1fields)
         case 'f'
             % function handle for nonlinear reset function: instantiate
             % nonlinearSys object for comparison
-            if ~isequal(nonlinearSys(@(x,u) trans1.reset.f([x;u])),...
-                    nonlinearSys(@(x,u) trans1.reset.f([x;u])))
+            if ~isequal(nonlinearSys(@(x,u) trans1.reset.f([x;u]),...
+                    trans1.reset.stateDim,trans1.reset.inputDim),...
+                    nonlinearSys(@(x,u) trans2.reset.f([x;u]),...
+                    trans2.reset.stateDim,trans2.reset.inputDim))
                 res = false; return
             end
         case 'stateDim'
@@ -142,13 +156,15 @@ if ~(isnumeric(trans1.guard) && isempty(trans1.guard) ...
                 && ~all(isempty(trans1.guard),isempty(trans2.guard))
         res = false; return
     elseif isa(trans1.guard,'mptPolytope')
-        if trans1.guard ~= trans2.guard
+        if ~(trans1.guard == trans2.guard)
             % can be replaced once polytope class is there...
             res = false; return
         end
     elseif ~isequal(trans1.guard,trans2.guard,tol)
             res = false; return
     end
+end
+
 end
 
 %------------- END OF CODE --------------

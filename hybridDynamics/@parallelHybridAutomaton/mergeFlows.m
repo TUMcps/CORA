@@ -44,7 +44,7 @@ function sys = mergeFlows(pHA,flowList,locID)
             ['Only "linearSys" and "nonlinearSys" objects are currently ', ...
             'supported for parallel hybrid automata are currently supported!']));
     elseif all(isLinSys)
-        sys = mergeFlowsLinearSys(pHA,flowList);
+        sys = aux_mergeFlowsLinearSys(pHA,flowList);
     else
         % convert all linearSys to nonlinearSys
         for i=1:length(flowList)
@@ -52,14 +52,14 @@ function sys = mergeFlows(pHA,flowList,locID)
                 flowList{i} = nonlinearSys(flowList{i});
             end
         end
-        sys = mergeFlowsNonlinearSys(pHA,flowList,locID);
+        sys = aux_mergeFlowsNonlinearSys(pHA,flowList,locID);
     end 
 end
 
 
 % Auxiliary Functions -----------------------------------------------------
 
-function res = mergeFlowsLinearSys(pHA,flowList)
+function res = aux_mergeFlowsLinearSys(pHA,flowList)
 
     numComps = length(flowList);
     
@@ -187,7 +187,7 @@ function res = mergeFlowsLinearSys(pHA,flowList)
     res = linearSys(namemerged,Amerged,Bmerged,cMerged);
 end
 
-function res = mergeFlowsNonlinearSys(pHA,flowList,locID)
+function res = aux_mergeFlowsNonlinearSys(pHA,flowList,locID)
 
     % number of components in parallel hybrid automaton
     numComps = length(flowList);

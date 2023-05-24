@@ -28,25 +28,35 @@ function assignment_cora2spaceex(tran, docNode, reset)
 
 %------------- BEGIN CODE --------------
 
-A = reset.A;
-b = reset.c;
+% empty reset function (0x0 transition)
+if isempty(fields(reset))
+    eqs = '';
+    
+elseif isfield(reset,'A')
+    % linear reset
 
-dim = size(A,1);
-
-x = sym('x',[dim,1]);
-
-eq = A*x + b;
-
-% convert the equation to a character sequence
-eqs ='';
-for idx = 1:dim
-    x = sprintf('x%d''', idx); % first derivative of x_n
-    eq_c = char(eq(idx));
-    eq_c = [x, ' := ', eq_c];
-    if idx > 1;  eq_c = [newline,' & ', eq_c]; end
-    eqs = [eqs,eq_c];
+    A = reset.A;
+    b = reset.c;
+    
+    dim = size(A,1);
+    
+    x = sym('x',[dim,1]);
+    
+    eq = A*x + b;
+    
+    % convert the equation to a character sequence
+    eqs ='';
+    for idx = 1:dim
+        x = sprintf('x%d''', idx); % first derivative of x_n
+        eq_c = char(eq(idx));
+        eq_c = [x, ' := ', eq_c];
+        if idx > 1;  eq_c = [newline,' & ', eq_c]; end
+        eqs = [eqs,eq_c];
+    end
+elseif isfield(reset,'f')
+    throw(CORAerror('CORA:notSupported',...
+        'cora2spaceex does not support nonlinear reset functions.'));
 end
-
 
 %Add the element node (assignment), for the parent element (transition) and
 %set the equation attribute.

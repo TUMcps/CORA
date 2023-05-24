@@ -47,8 +47,8 @@ classdef levelSet < contSet
 
 properties (SetAccess = private, GetAccess = public)
     
-    eq (:,1) = [];      % symbolic equation
-    vars (:,1) = [];    % symbolic variables
+    eq = [];      % symbolic equation
+    vars = [];    % symbolic variables
     compOp = [];        % comparison operator
     
     funHan = [];        % function handle for the non-linear equation
@@ -174,6 +174,10 @@ methods
             end
         end 
     end
+end
+
+methods (Static = true)
+    S = generateRandom(varargin) % generates a random levelSet
 end
 
 end

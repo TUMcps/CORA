@@ -19,7 +19,7 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Author:       Johann Schoepfer, Niklas Kochdumper, Maximilian Perschl
 % Written:      14-June-2018
@@ -32,7 +32,7 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
     numComp = length(pHA.components);
 
     % initialize resulting set of transitions
-    transSet = {};
+    transSet = transition();
     % counter for number of transitions (cannot be known beforehand due to
     % synchronization labels)
     cnt = 1;
@@ -49,7 +49,7 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
         % loop over all transitions for the current subcomponent
         for t = 1:length(compTrans)
             
-            trans = compTrans{t};
+            trans = compTrans(t);
             
             % prepare target location vector
             resultingTarget = locID;
@@ -66,10 +66,10 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
                 % handled seperately for now; here, the other states in the
                 % projected reset function are set to identity
                 if trans.reset.hasInput
-                    transSet{cnt} = projectInputDependentTrans(pHA,...
+                    transSet(cnt) = projectInputDependentTrans(pHA,...
                         trans,pHA.numStates,i,locID,resultingTarget,true);
                 else
-                    transSet{cnt} = projectHighDim(trans,pHA.numStates,...
+                    transSet(cnt) = projectHighDim(trans,pHA.numStates,...
                         stateBind,resultingTarget,true);
                 end
 
@@ -113,7 +113,7 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
                 % we need the states with identity in the reset
                 for j = 1:length(transList)
                     if j ~= i
-                        idx = cellfun(@(x) strcmp(x.syncLabel,syncLabel),...
+                        idx = arrayfun(@(x) strcmp(x.syncLabel,syncLabel),...
                             transList{j},'UniformOutput',true);
                         if ~isempty(idx) && any(idx)
                             % only one transition per component may have a
@@ -121,12 +121,12 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
                             % this index to read out the transition and other
                             % relevant information
                             temp = transList{j}(idx);
-                            labelTransSet = [labelTransSet; temp{1}];
+                            labelTransSet = [labelTransSet; temp(1)];
                             labelCompIdx = [labelCompIdx; j];
                             labelStateIndices = [labelStateIndices; pHA.bindsStates(j)];
     
                             % update target location of component j
-                            resultingTarget(j) = temp{1}.target;
+                            resultingTarget(j) = temp(1).target;
                         else
                             % set indices of state binds to 1 (will later be
                             % used in reset function to maintain values)
@@ -203,7 +203,7 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
                     pHA.numStates,pHA.numInputs,idStates);
                 
                 % instantiate resulting transition
-                transSet{cnt} = transition(resultingGuard,resultingReset,...
+                transSet(cnt) = transition(resultingGuard,resultingReset,...
                     resultingTarget);
 
                 % increment counter for number of transitions

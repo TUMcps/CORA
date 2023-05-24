@@ -45,14 +45,10 @@ function [R,res] = reach(HA,params,options,varargin)
     
     % check specifications
     spec = [];
-%     spec_locations = {};
     if nargin >= 4
        spec = varargin{1};
-%        if nargin >= 5
-%            spec_locations = varargin{2};
-%        end
     end
-    options = check_flatHA_specification(options,HA,spec); %,spec_locations);
+    options = aux_check_flatHA_specification(options,HA,spec); %,spec_locations);
 
     % initialize reachable set
     R = [];
@@ -90,16 +86,17 @@ function [R,res] = reach(HA,params,options,varargin)
         end
 
         % check if current location has an immediate transition (this is
-        % the case if any guard set is defined as guard = [])
-        immediateTransition = cellfun(@(x) isnumeric(x.guard) && isempty(x.guard),...
-            HA.location{locID}.transition,'UniformOutput',true);
+        % the case if any guard set is defined as guard = []; also, the 
+        % transition must not be empty)
+        immediateTransition = arrayfun(@(x) isnumeric(x.guard) && isempty(x.guard) && ~isempty(x.target),...
+            HA.location(locID).transition,'UniformOutput',true);
 
         if any(immediateTransition)
             % execute reset function of immediate transition: overwrite
             % start set and location (time and parent do not change)
-            list{1}.set = reset(HA.location{locID}.transition{immediateTransition},...
+            list{1}.set = reset(HA.location(locID).transition(immediateTransition),...
                             R0,options.U);
-            list{1}.loc = HA.location{locID}.transition{immediateTransition}.target;
+            list{1}.loc = HA.location(locID).transition(immediateTransition).target;
 
             % notify user that an immediate transition has occurred
             if options.verbose
@@ -118,7 +115,7 @@ function [R,res] = reach(HA,params,options,varargin)
             % compute the reachable set within a location until either the
             % final time is reached or the reachable set hits a guard set
             % and the computation proceeds in another location
-            [Rtemp,Rjump,res] = reach(HA.location{locID},R0,tStart,options);
+            [Rtemp,Rjump,res] = reach(HA.location(locID),R0,tStart,options);
 
             if options.verbose
                 fprintf(string(Rtemp(1).timePoint.time{end}) + ")\n");
@@ -144,7 +141,7 @@ function [R,res] = reach(HA,params,options,varargin)
         % store the computed reachable set
         for i=1:size(Rtemp,1)
             % compute output set
-            Ytemp = aux_outputSet(Rtemp(i),HA.location{locID},options);
+            Ytemp = aux_outputSet(Rtemp(i),HA.location(locID),options);
             % store in reachSet object
             temp = reachSet(Ytemp.timePoint,Ytemp.timeInterval,...
                             Ytemp.parent,locID);
@@ -161,7 +158,7 @@ end
 
 % Auxiliary Function ------------------------------------------------------
 
-function options = check_flatHA_specification(options,HA,spec)
+function options = aux_check_flatHA_specification(options,HA,spec)
 % rewrites specifications in the correct format
 
     numLoc = length(HA.location);
@@ -234,30 +231,32 @@ function Ytemp = aux_outputSet(Rtemp,loc,options)
 % we only compute the output set at the end of the analysis of each
 % location (using the outputSet-functions in contDynamics)
 
-% adapt options (as in location/reach)
-[params,options_] = adaptOptions(loc,options);
-% dummy value for R0...
-params.R0 = zonotope(zeros(loc.contDynamics.dim,1));
-options_ = validateOptions(loc.contDynamics,'reach',params,options_);
-
-% time-point solution
-nrTimePointSets = length(Rtemp.timePoint.set);
-Ytemp.timePoint.set = cell(nrTimePointSets,1);
-Ytemp.timePoint.time = Rtemp.timePoint.time;
-for i=1:length(Rtemp.timePoint.set)
-    Ytemp.timePoint.set{i} = outputSet(loc.contDynamics,options_,Rtemp.timePoint.set{i});
-end
-
-% time-interval solution
-nrTimeIntervalSets = length(Rtemp.timeInterval.set);
-Ytemp.timeInterval.set = cell(nrTimeIntervalSets,1);
-Ytemp.timeInterval.time = Rtemp.timeInterval.time;
-for i=1:length(Rtemp.timeInterval.set)
-    Ytemp.timeInterval.set{i} = outputSet(loc.contDynamics,options_,Rtemp.timeInterval.set{i});
-end
-
-% parent
-Ytemp.parent = Rtemp.parent;
+    % adapt options (as in location/reach)
+    [params,options_] = adaptOptions(loc,options);
+    % dummy value for R0...
+    params.R0 = zonotope(zeros(loc.contDynamics.dim,1));
+    options_ = validateOptions(loc.contDynamics,'reach',params,options_);
+    
+    % time-point solution
+    nrTimePointSets = length(Rtemp.timePoint.set);
+    Ytemp.timePoint.set = cell(nrTimePointSets,1);
+    Ytemp.timePoint.time = Rtemp.timePoint.time;
+    for i=1:length(Rtemp.timePoint.set)
+        Ytemp.timePoint.set{i} = ...
+            outputSet(loc.contDynamics,options_,Rtemp.timePoint.set{i});
+    end
+    
+    % time-interval solution
+    nrTimeIntervalSets = length(Rtemp.timeInterval.set);
+    Ytemp.timeInterval.set = cell(nrTimeIntervalSets,1);
+    Ytemp.timeInterval.time = Rtemp.timeInterval.time;
+    for i=1:length(Rtemp.timeInterval.set)
+        Ytemp.timeInterval.set{i} = ...
+            outputSet(loc.contDynamics,options_,Rtemp.timeInterval.set{i});
+    end
+    
+    % parent
+    Ytemp.parent = Rtemp.parent;
 
 end
 

@@ -60,7 +60,7 @@ properties (SetAccess = private, GetAccess = public)
     invariant = [];
 
     % cell-array storing the transitions
-    transition (:,1) cell = {};
+    transition (:,1) = transition();
 
     % system dynamics
     contDynamics = contDynamics();
@@ -73,7 +73,10 @@ methods
 
         % parse input arguments
         if nargin == 0
-            invSet = [];
+            return
+        elseif nargin == 1 && isa(varargin{1},'location')
+            % copy constructor
+            loc = varargin{1}; return
         elseif nargin <= 2
             throw(CORAerror('CORA:notEnoughInputArgs',3));
         elseif nargin == 3
@@ -89,8 +92,8 @@ methods
             throw(CORAerror('CORA:tooManyInputArgs',4));
         end
 
-        % elements of transition cell-array have to be transition objects
-        if ~all(cellfun(@(x) isa(x,'transition'),loc.transition,'UniformOutput',true))
+        % loc.transition has to be an array of transition objects
+        if ~isa(loc.transition,'transition')
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 'All elements of transition have to be transition objects.'));
         end

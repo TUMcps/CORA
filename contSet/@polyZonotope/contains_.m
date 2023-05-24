@@ -68,16 +68,22 @@ function res = contains_(pZ,S,type,varargin)
     % point in polynomial zonotope containment
     if isnumeric(S)
         
+        % init containment check
         res = false(1,size(S,2));
         for i=1:size(S,2)
-            % try to prove that the point is inside the polynomial zonotope
-            % using the approach from [1]
-            Y = interval(S);
-            
-            x = aux_getFactorDomain(fHan,Y,X);
-            X_ = interval(x - 1e-10*ones(size(x)), x + 1e-10*ones(size(x)));
-            
-            res(i) = aux_containsInterval(fHan,jacHan,X,X_,Y);
+            % quick check: point is center of polyZonotope?
+            res(i) = all(withinTol(S(:,i),pZ.c));
+
+            if ~res(i)
+                % try to prove that the point is inside the polynomial zonotope
+                % using the approach from [1]
+                Y = interval(S(:,i));
+                
+                x = aux_getFactorDomain(fHan,Y,X);
+                X_ = interval(x - 1e-10*ones(size(x)), x + 1e-10*ones(size(x)));
+                
+                res(i) = aux_containsInterval(fHan,jacHan,X,X_,Y);
+            end
         end
         
     % set in zonotope containment

@@ -45,16 +45,16 @@ dynamics = linearSys([0 0; 0 0],[0; 0],[0; 1]);
 inv = mptPolytope(struct('A',[0 1],'b',0));
 guard = conHyperplane([0 1],0);
 reset = struct('A',[1 0; 0 1],'c',[1;5]);
-trans{1} = transition(guard,reset,2,'switch12');
-loc{1} = location('loc1',inv,trans,dynamics);
+trans = transition(guard,reset,2,'switch12');
+loc(1) = location('loc1',inv,trans,dynamics);
 
 % first component, second location
 dynamics = linearSys([0 0; 0 0],[0; 0],[0; -1]);
 inv = mptPolytope(struct('A',[0 -1],'b',0));
 guard = conHyperplane([0 1],0);
 reset = struct('A',[1 0; 0 1],'c',[1;-5]);
-trans{1} = transition(guard,reset,1,'switch21');
-loc{2} = location('loc2',inv,trans,dynamics);
+trans = transition(guard,reset,1,'switch21');
+loc(2) = location('loc2',inv,trans,dynamics);
 
 % init first hybrid automaton
 HA1 = hybridAutomaton(loc);
@@ -64,22 +64,22 @@ dynamics = linearSys([],zeros(0,1));
 inv = [];
 guard = [];
 reset = struct('A',[],'c',zeros(0,1));
-trans{1} = transition(guard,reset,2,'switch12');
-loc{1} = location('loc1',inv,trans,dynamics);
+trans = transition(guard,reset,2,'switch12');
+loc(1) = location('loc1',inv,trans,dynamics);
 
 % second component, second location
 dynamics = linearSys([],zeros(0,1));
 inv = [];
 guard = [];
 reset = struct('A',[],'c',zeros(0,1));
-trans{1} = transition(guard,reset,1,'switch21');
-loc{2} = location('loc2',inv,trans,dynamics);
+trans = transition(guard,reset,1,'switch21');
+loc(2) = location('loc2',inv,trans,dynamics);
 
 % init second hybrid automaton
 HA2 = hybridAutomaton(loc);
 
 % components and input binds
-components = {HA1,HA2};
+components = [HA1;HA2];
 inputBinds{1} = [0 1];
 inputBinds{2} = [0 1];
 

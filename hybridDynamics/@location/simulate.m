@@ -16,6 +16,7 @@ function [t,x,nextloc,xJump] = simulate(loc,params)
 %    xJump - state after jump according to the reset map
 %
 % Example:
+%    ---
 %
 % Other m-files required: eventFcn, indexList, reset
 % Subfunctions: none
@@ -40,7 +41,7 @@ params = rmfield(params,'loc');
 
 % convert all guard sets to halfspace-representation (polytope)
 for i=1:length(loc.transition)
-    loc.transition{i} = guard2polytope(loc.transition{i}); 
+    loc.transition(i) = guard2polytope(loc.transition(i)); 
 end
 
 % define event function from halfspace inequalities
@@ -73,15 +74,15 @@ if ~isempty(index)
         
         if guard ~= 0 && (~any(activatedGuards == guard))
             
-            guardSet = loc.transition{guard}.guard;
+            guardSet = loc.transition(guard).guard;
             
             % check whether only one halfspace has beed crossed or if 
             % the point is indeed inside the guard set
-            if contains_(guardSet, x(end,:)', 'exact', 1e-6)
+            if contains_(guardSet,x(end,:)','exact',1e-6)
                 
                 % next location and reset function
-                nextloc = loc.transition{guard}.target;
-                xJump = reset(loc.transition{guard},x(end,:));
+                nextloc = loc.transition(guard).target;
+                xJump = reset(loc.transition(guard),x(end,:));
                 break;
                 
             else

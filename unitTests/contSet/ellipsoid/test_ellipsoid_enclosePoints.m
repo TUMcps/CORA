@@ -22,13 +22,19 @@ function res = test_ellipsoid_enclosePoints
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
 res = true;
 
+% dimension
 n = 5;
+% number of points
 N = 100;
 V = randn(n,N);
+
+% svd
 [U,S,W] = svd(V);
 s = diag(S);
+
 TOL = ellipsoid().TOL;
 s(s<=TOL) = 10*TOL;
 S = [diag(s),zeros(n,N-n)];
@@ -38,7 +44,7 @@ V = U*S*W';
 % enclose points
 E = ellipsoid.enclosePoints(V);
 
-% degenerate
+% degenerate (n-1)
 s = diag(S);
 s(randperm(n,randi([1,n]))) = 0;
 Vd = U*[diag(s),zeros(n,N-n)]*W';

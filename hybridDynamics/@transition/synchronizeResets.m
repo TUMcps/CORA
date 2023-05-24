@@ -20,7 +20,7 @@ function syncReset = synchronizeResets(transitionSet,n,m,idStates)
 %    syncReset = synchronizeResets(transitionSet,dims,inputDims)
 %
 % Input:
-%    transitionSet (cell-array) - transitions to be synchronized
+%    transitionSet - array of transitions to be synchronized
 %    n - full state dimension
 %    m - global input dimension
 %    idStates - states of components which remain as they are (identity)
@@ -54,6 +54,13 @@ withInputs = any(arrayfun(@(x) x.reset.hasInput,transitionSet,'UniformOutput',tr
 
 % synchronize purely linear resets
 if all(linearResets)
+
+    % all reset functions need to have the same mapping
+    mapDims = arrayfun(@(x) size(x.reset.A,1),transitionSet,'UniformOutput',true);
+    if any(mapDims ~= mapDims(1))
+        throw(CORAerror('CORA:wrongValue','first',...
+            'All reset functions must map the same spaces: R^n -> R^m.'));
+    end
 
     % initialize state/input matrix and constant offset
     A = diag(idStates);

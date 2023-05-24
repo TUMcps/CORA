@@ -48,8 +48,8 @@ eq = x + y^2;
 inv = levelSet(eq,[x;y],'<=');
 guard = levelSet([eq,-eq],[x;y],{'<=','<='});
 reset.f = @(x,u) [sqrt(x(1)) + 3; x(2)^2 + 3];
-trans{1} = transition(guard,reset,2);
-loc{1} = location('loc1',inv,trans,dynamics);
+trans = transition(guard,reset,2);
+loc(1) = location('loc1',inv,trans,dynamics);
 
 % first component, second location
 f = @(x,u) [-x(2)^3 + u(2); -cos(x(1)) + u(1)];
@@ -59,8 +59,8 @@ eq = -x - y^2;
 inv = levelSet(eq,[x;y],'<=');
 guard = levelSet([eq,-eq],[x;y],{'<=','<='});
 reset.f = @(x,u) [x(1)^2 - 3; x(2)^3 + 3];
-trans{1} = transition(guard,reset,1);
-loc{2} = location('loc2',inv,trans,dynamics);
+trans = transition(guard,reset,1);
+loc(2) = location('loc2',inv,trans,dynamics);
 
 % init first hybrid automaton
 HA1 = hybridAutomaton(loc);
@@ -73,8 +73,8 @@ eq = x^2 + y + z - 1;
 inv = levelSet(eq,[x;y;z],'<=');
 guard = levelSet([eq,-eq],[x;y;z],{'<=','<='});
 reset.f = @(x,u) [x(1)^2 + 1; x(2) + 1; x(3) + 1];
-trans{1} = transition(guard,reset,2);
-loc{1} = location('loc1',inv,trans,dynamics);
+trans = transition(guard,reset,2);
+loc(1) = location('loc1',inv,trans,dynamics);
 
 % second component, second location
 f = @(x,u) [-x(2)^2 + x(3); sin(x(1)); cos(x(2)) + u(1)];
@@ -84,14 +84,14 @@ eq = -x^2 - y - z + 1;
 inv = levelSet(eq,[x;y;z],'<=');
 guard = levelSet([eq,-eq],[x;y;z],{'<=','<='});
 reset.f = @(x,u) [x(1)^2 - 1; x(2) - 1; x(3) - 1];
-trans{1} = transition(guard,reset,1);
-loc{2} = location('loc2',inv,trans,dynamics);
+trans = transition(guard,reset,1);
+loc(2) = location('loc2',inv,trans,dynamics);
 
 % init second hybrid automaton
 HA2 = hybridAutomaton(loc);
 
 % components and input binds
-components = {HA1,HA2};
+components = [HA1;HA2];
 inputBinds{1} = [2 1; 2 2];
 inputBinds{2} = [1 1];
 

@@ -16,8 +16,7 @@ function res = isequal(loc1,loc2,varargin)
 %
 % Example:
 %    % invariant
-%    polyOpt = struct('A',[-1,0],'b',0);
-%    inv = mptPolytope(polyOpt);
+%    inv = mptPolytope([-1,0],0);
 %    
 %    % transition
 %    c = [-1;0]; d = 0; C = [0,1]; D = 0;
@@ -27,7 +26,7 @@ function res = isequal(loc1,loc2,varargin)
 %    reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
 %
 %    % transition
-%    trans{1} = transition(guard,reset,2);
+%    trans = transition(guard,reset,2);
 %
 %    % flow equation
 %    dynamics = linearSys([0,1;0,0],[0;0],[0;-9.81]);
@@ -65,6 +64,26 @@ tol = setDefaultValues({eps},varargin);
 inputArgsCheck({{loc1,'att','location'};
                 {loc2,'att','location'};
                 {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
+
+% check array length
+if any(size(loc1) ~= size(loc2))
+    res = false; return
+end
+
+% loop over all individual transition objects
+[r,c] = size(loc1);
+res = false(r,c);
+for i=1:r
+    for j=1:c
+        res(i,j) = aux_isequal(loc1(i,j),loc2(i,j),tol);
+    end
+end
+
+end
+
+% Auxiliary function ------------------------------------------------------
+
+function res = aux_isequal(loc1,loc2,tol)
 
 % assume true
 res = true;
@@ -113,7 +132,7 @@ for i=1:length(loc1.transition)
         % skip transitions that have already been matched
         if ~idxInLoc2(j)
             % check for equality
-            if isequal(loc1.transition{i},loc2.transition{j},tol)
+            if isequal(loc1.transition(i),loc2.transition(j),tol)
                 % matching transition found
                 found = true; idxInLoc2(j) = true;
                 break
@@ -125,6 +144,8 @@ for i=1:length(loc1.transition)
         % i-th transition in loc1 has no match in loc2
         res = false; return
     end
+end
+
 end
 
 %------------- END OF CODE --------------

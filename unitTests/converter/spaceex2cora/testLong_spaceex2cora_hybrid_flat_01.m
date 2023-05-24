@@ -43,19 +43,19 @@ inv = mptPolytope(struct('A',[-1 0; 0 1],'b',[0; 0]));
 c = [1;0]; d = 0; C = [0 1]; D = 0;
 guard = conHyperplane(c,d,C,D);
 reset = struct('f',@(x,u) [-x(1); sin(x(2)) + u(1)]);
-trans{1} = transition(guard,reset,1);
+trans(1) = transition(guard,reset,1);
 
 c = [0;-1]; d = 0; C = [1 0]; D = 0;
 guard = conHyperplane(c,d,C,D);
 reset = struct('A',[0,1;-1,0],'c',[-1;0]);
-trans{2} = transition(guard,reset,1);
+trans(2) = transition(guard,reset,1);
 
 % flow equation
 f = @(x,u) [-2*sin(x(1)) + u(1); log(x(1)) - x(2)];
 dynamics = nonlinearSys([filename '_Loc1_FlowEq'],f);
 
 % define location
-loc{1} = location('always',inv,trans,dynamics);
+loc = location('always',inv,trans,dynamics);
 
 % instantiate hybrid automaton
 sys_cora = hybridAutomaton(loc);

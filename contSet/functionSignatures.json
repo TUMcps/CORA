@@ -6,6 +6,7 @@
   {
      "inputs":
      [
+        {"name":"admissibleSets", "kind":"ordered", "type":["cell"],"purpose":"cell array of admissable sets"},
         {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"}
      ],
      "outputs": [
@@ -34,7 +35,8 @@
         {"name":"YPos", "kind":"namevalue", "type":["numeric"],"purpose":"position on y-axis"},
         {"name":"ZPos", "kind":"namevalue", "type":["numeric"],"purpose":"position on z-axis"},
          
-        {"name":"Splits", "kind":"namevalue", "type":["numeric"],"purpose":"Splits (only for polyZonotope/conZonotope)"}
+        {"name":"Splits", "kind":"namevalue", "type":["numeric"],"purpose":"Splits (only for polyZonotope/conZonotope/levelSet)"},
+        {"name":"PlotMethod", "kind":"namevalue", "type":["char","choices={'outer','inner'}"],"purpose":"plotting method (only for levelSets)"}
      ]
   },
 
@@ -120,6 +122,21 @@
      ],
      "outputs": [
          {"name":"I", "type":"interval"}
+     ]
+  },
+
+  "_comment": "levelSet -------------------------------------------------", 
+  "levelSet.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"},
+        {"name":"NrEquations", "kind":"namevalue", "type":["numeric"],"purpose":"number of equations"},
+        {"name":"CompOps", "kind":"namevalue", "type":["cell"],"purpose":"subset of {'==','<=','<'}"},
+        {"name":"MaxExponent", "kind":"namevalue", "type":["numeric"],"purpose":"maximum exponent in equations"}
+     ],
+     "outputs": [
+         {"name":"ls", "type":"levelSet"}
      ]
   },
 

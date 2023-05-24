@@ -74,10 +74,10 @@ for i=1:size(R,1)
         iGuard = actGuards(j);
         
         % compute reset
-        Rjump_{j,1}.set = reset(loc.transition{iGuard},Rguard{j},options.U);  
+        Rjump_{j,1}.set = reset(loc.transition(iGuard),Rguard{j},options.U);  
         
         % target location and parent reachable set
-        Rjump_{j,1}.loc = loc.transition{iGuard}.target;
+        Rjump_{j,1}.loc = loc.transition(iGuard).target;
         Rjump_{j,1}.parent = R(i).parent + 1;
         
         % time interval for the guard intersection
@@ -90,8 +90,8 @@ for i=1:size(R,1)
     Rjump = [Rjump;Rjump_];
 
     % remove the parts of the reachable sets outside the invariant
-    if isfield(options,'intersectInvariant') && options.intersectInvariant
-        R(i) = potOut(loc,R(i),minInd,maxInd,options);
+    if options.intersectInvariant
+        R(i) = potOut(loc,R(i),minInd,maxInd);
     end
     
     % update times of the reachable set due to uncertain initial time

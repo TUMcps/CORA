@@ -43,10 +43,10 @@ reset = struct('A', resetA, 'c', resetc);
 
 guard = levelSet(x^2 + y^2 - 100^2,[x;y;vx;vy],'==');
 
-trans{1} = transition(guard, reset, 2);
+trans = transition(guard, reset, 2);
 
 % location
-loc{1} = location('S1', inv, trans, dynamics);
+loc(1) = location('S1', inv, trans, dynamics);
 
 
 % Mode Rendezvous Attempt -------------------------------------------------
@@ -64,8 +64,8 @@ syms x y vx vy;
 inv = levelSet(x^2 + y^2 - 100^2,[x;y;vx;vy],'<'); 
 
 % location
-trans = {};
-loc{2} = location('S2', inv, trans, dynamics);
+trans = transition();
+loc(2) = location('S2', inv, trans, dynamics);
 
 
 

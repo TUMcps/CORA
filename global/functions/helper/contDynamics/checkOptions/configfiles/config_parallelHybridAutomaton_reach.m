@@ -56,7 +56,7 @@ add2options('enclose','mandatory',{@iscell,@(val)any(ismember(getMembers('enclos
     {'iscell','memberenclose'},{@()any(ismember(getMembers('guardIntersect4enclose'),options.guardIntersect))});
 add2options('guardOrder','mandatory',{@isscalar,@isnumeric,@(val)ge(val,1)},...
     {'isscalar','isnumeric','geone'},{@()any(ismember(getMembers('guardIntersect4guardOrder'),options.guardIntersect))});
-add2options('intersectInvariant','optional',{@isscalar,@islogical},{'isscalar','islogical'});
+add2options('intersectInvariant','default',{@isscalar,@islogical},{'isscalar','islogical'});
 
 
 % 3. prepare lists for output args

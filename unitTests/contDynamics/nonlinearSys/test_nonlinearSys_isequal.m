@@ -57,18 +57,14 @@ sys6 = nonlinearSys(f,g);
 
 
 % check results
-if ~isequal(sys1,sys1)
-    res = false;
-elseif isequal(sys1,sys2)
-    res = false;
-elseif isequal(sys2,sys3)
-    res = false;
-elseif isequal(sys4,sys5)
-    res = false;
-elseif ~isequal(sys5,sys5_)
-    res = false;
-elseif isequal(sys5_,sys6)
-    res = false;
-end
+res = isequal(sys1,sys1);
+res(end+1,1) = ~isequal(sys1,sys2);
+res(end+1,1) = ~isequal(sys2,sys3);
+res(end+1,1) = ~isequal(sys4,sys5);
+res(end+1,1) = isequal(sys5,sys5_);
+res(end+1,1) = ~isequal(sys5_,sys6);
+
+% combine results
+res = all(res);
 
 %------------- END OF CODE --------------

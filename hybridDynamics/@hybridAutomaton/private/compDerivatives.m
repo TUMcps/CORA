@@ -29,7 +29,7 @@ function compDerivatives(HA,options)
 for i=1:length(HA.location)
    
     % read out location and corresponding flow equation
-    loc = HA.location{i};
+    loc = HA.location(i);
     sys = loc.contDynamics;
     
     % derivatives computation only required for nonlinear systems

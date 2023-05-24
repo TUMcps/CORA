@@ -60,22 +60,29 @@ methods
             return
             % empty object
         elseif nargin == 1
-            R.timePoint = varargin{1};
+            if isa(varargin{1},'reachSet')
+                % copy constructor
+                R = varargin{1};
+            else
+                R.timePoint = varargin{1};
+            end
         elseif nargin == 2
             R.timePoint = varargin{1};
-            if ~isstruct(varargin{2})
-                R.parent = varargin{2};
-            else
+            if isstruct(varargin{2}) || ...
+                    (isnumeric(varargin{2}) && isempty(varargin{2}))
                 R.timeInterval = varargin{2};
+            else
+                R.parent = varargin{2};
             end
         elseif nargin == 3
             R.timePoint = varargin{1};
-            if ~isstruct(varargin{2})
-                R.parent = varargin{2};
-                R.loc = varargin{3};
-            else
+            if isstruct(varargin{2}) || ...
+                    (isnumeric(varargin{2}) && isempty(varargin{2}))
                 R.timeInterval = varargin{2};
                 R.parent = varargin{3};
+            else
+                R.parent = varargin{2};
+                R.loc = varargin{3};
             end
         elseif nargin == 4
             R.timePoint = varargin{1};

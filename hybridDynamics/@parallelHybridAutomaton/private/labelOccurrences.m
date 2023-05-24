@@ -42,16 +42,16 @@ for i = 1:numComp
     labelsInComponent = {};
 
     % count in how many components a label occurs
-    for j = 1:length(pHA.components{i}.location)
+    for j = 1:length(pHA.components(i).location)
 
-        for k = 1:length(pHA.components{i}.location{j}.transition)
-            currentLabel = pHA.components{i}.location{j}.transition{k}.syncLabel;
+        for k = 1:length(pHA.components(i).location(j).transition)
+            currentLabel = pHA.components(i).location(j).transition(k).syncLabel;
 
             if ~isempty(currentLabel)
 
                 % check if corresponding guard set is empty
-                guardempty = isnumeric(pHA.components{i}.location{j}.transition{k}.guard) && ...
-                    isempty(pHA.components{i}.location{j}.transition{k}.guard);
+                guardempty = isnumeric(pHA.components(i).location(j).transition(k).guard) && ...
+                    isempty(pHA.components(i).location(j).transition(k).guard);
 
                 % all other entries: check if label already occurred
                 found = false;

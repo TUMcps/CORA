@@ -27,6 +27,7 @@ function display(ls)
 % Written:      09-June-2020
 % Last update:  03-March-2022 (MP, add functionality for levelSets with
 %                                 multiple equations)
+%               15-May-2023 (MW, fix printed string)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -50,8 +51,8 @@ else
     numSets = length(ls.eq);
     
     if numSets == 1
-        disp("  eq: f(" + varsPrintStr + ") " + ls.compOp + " " ...
-            + string(ls.eq) + newline);
+        disp("  f(" + varsPrintStr + "): " ...
+            + string(ls.eq) + " " + ls.compOp + " 0" + newline);
     else
         % loop over all level sets
         for i=1:numSets
@@ -61,8 +62,9 @@ else
                 andStr = " & ";
             end
             % display i-th equation
-            disp("  eq. #" + i + ": f(" + varsPrintStr + ") " + ls.compOp(i) ...
-                + " " + string(vpa(ls.eq(i),3)) + andStr);
+            disp("  f" + i + "(" + varsPrintStr + "): " ...
+                + string(vpa(ls.eq(i),3)) + " " + ls.compOp(i) + " 0" ...
+                + andStr);
         end
         fprintf(newline);
     end

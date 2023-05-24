@@ -44,12 +44,12 @@ dynamics = linearSys([0 0; 0 0],[1; 0],[0; -1]);
 % transitions
 guard = conHyperplane([-1 0],0,[0 -1],0);
 reset = struct('A',[1,0;0,1],'c',[10;5]);
-trans{1} = transition(guard,reset,2);
+trans(1) = transition(guard,reset,2);
 guard = conHyperplane([0 1],0,[-1 0],0);
 reset = struct('A',[1,0;0,1],'c',[-5;-10]);
-trans{2} = transition(guard,reset,3);
+trans(2) = transition(guard,reset,3);
 % define location
-loc{1} = location('topleft',inv,trans,dynamics);
+loc = location('topleft',inv,trans,dynamics);
 
 % top-right
 inv = mptPolytope(struct('A',[-1 0; 0 -1],'b',[0; 0]));
@@ -57,12 +57,12 @@ dynamics = linearSys([0 0; 0 0],[0; 1],[-1; 0]);
 % transitions
 guard = conHyperplane([1 0],0,[0 -1],0);
 reset = struct('A',[1,0;0,1],'c',[-10;5]);
-trans{1} = transition(guard,reset,1);
+trans(1) = transition(guard,reset,1);
 guard = conHyperplane([0 1],0,[-1 0],0);
 reset = struct('A',[1,0;0,1],'c',[5;-10]);
-trans{2} = transition(guard,reset,4);
+trans(2) = transition(guard,reset,4);
 % define location
-loc{2} = location('topright',inv,trans,dynamics);
+loc(2) = location('topright',inv,trans,dynamics);
 
 % bottom-left
 inv = mptPolytope(struct('A',[1 0; 0 1],'b',[0; 0]));
@@ -70,12 +70,12 @@ dynamics = linearSys([0 0; 0 0],[0; 1],[1; 0]);
 % transitions
 guard = conHyperplane([0 -1],0,[1 0],0);
 reset = struct('A',[1,0;0,1],'c',[-5;10]);
-trans{1} = transition(guard,reset,1);
+trans(1) = transition(guard,reset,1);
 guard = conHyperplane([-1 0],0,[0 1],0);
 reset = struct('A',[1,0;0,1],'c',[10;-5]);
-trans{2} = transition(guard,reset,4);
+trans(2) = transition(guard,reset,4);
 % define location
-loc{3} = location('bottomleft',inv,trans,dynamics);
+loc(3) = location('bottomleft',inv,trans,dynamics);
 
 % bottom-right
 inv = mptPolytope(struct('A',[-1 0; 0 1],'b',[0; 0]));
@@ -83,12 +83,12 @@ dynamics = linearSys([0 0; 0 0],[1; 0],[0; 1]);
 % transitions
 guard = conHyperplane([0 -1],0,[-1 0],0);
 reset = struct('A',[1,0;0,1],'c',[5;10]);
-trans{1} = transition(guard,reset,2);
+trans(1) = transition(guard,reset,2);
 guard = conHyperplane([1 0],0,[0 1],0);
 reset = struct('A',[1,0;0,1],'c',[-10;-5]);
-trans{2} = transition(guard,reset,3);
+trans(2) = transition(guard,reset,3);
 % define location
-loc{4} = location('bottomright',inv,trans,dynamics);
+loc(4) = location('bottomright',inv,trans,dynamics);
 
 % instantiate hybrid automaton
 sys_cora = hybridAutomaton(loc);

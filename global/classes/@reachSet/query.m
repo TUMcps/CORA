@@ -11,6 +11,7 @@ function val = query(R,prop)
 %           'reachSetTimePoint': cell-array of time-point solutions
 %           'finalSet': final time-point solution
 %           'tVec': vector of time steps
+%           'allLoc': all location IDs of visited locations
 %
 % Outputs:
 %    val - value of the property
@@ -23,46 +24,71 @@ function val = query(R,prop)
 
 % Author:       Niklas Kochdumper
 % Written:      02-June-2020
-% Last update:  ---
+% Last update:  19-May-2023 (MW, add 'allLoc' property)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
     % check input arguments
-    inputArgsCheck({{R,'att',{'reachSet'},{''}}; ...
-                    {prop,'str',{'reachSet','reachSetTimePoint','finalSet','tVec'}}});
+    inputArgsCheck({{R,'att','reachSet'}; ...
+                    {prop,'str',{'reachSet','reachSetTimePoint',...
+                        'finalSet','tVec','allLoc'}}});
 
-    if strcmp(prop,'reachSet')
-        val = R(1,1).timeInterval.set;
-        for i = 2:size(R,1)
-           val = [val;R(i).timeInterval.set]; 
-        end
+    switch prop
+        case 'reachSet'
+    
+            val = R(1,1).timeInterval.set;
+            for i = 2:size(R,1)
+               val = [val;R(i).timeInterval.set]; 
+            end
         
-    elseif strcmp(prop,'reachSetTimePoint')
-        val = R(1,1).timePoint.set;
-        for i = 2:size(R,1)
-           val = [val;R(i).timePoint.set]; 
-        end
+        case 'reachSetTimePoint'
+
+            val = R(1,1).timePoint.set;
+            for i = 2:size(R,1)
+               val = [val;R(i).timePoint.set]; 
+            end
         
-    elseif strcmp(prop,'finalSet')
-        if size(R,1) == 1
-           val = R(1,1).timePoint.set{end}; 
-        else
-           parents = getParents(R);
-           ind = setdiff(1:size(R,1),parents);
-           val = cell(length(ind),1);
-           
-           for i = 1:length(ind)
-              val{i} = R(ind(i),1).timePoint.set{end};
-           end
-        end
+        case 'finalSet'
+
+            if size(R,1) == 1
+               val = R(1,1).timePoint.set{end}; 
+            else
+               parents = getParents(R);
+               ind = setdiff(1:size(R,1),parents);
+               val = cell(length(ind),1);
+               
+               for i = 1:length(ind)
+                  val{i} = R(ind(i),1).timePoint.set{end};
+               end
+            end
         
-    elseif strcmp(prop,'tVec')
-        if size(R,1) == 1
-            val = diff(cell2mat(R.timePoint.time));
-        else
-            throw(CORAerror('CORA:notSupported','Multiple branches not supported.'));
-        end
+        case 'tVec'
+    
+            if size(R,1) == 1
+                val = diff(cell2mat(R.timePoint.time));
+            else
+                throw(CORAerror('CORA:notSupported',...
+                    'Multiple branches not supported.'));
+            end
+
+        case 'allLoc'
+
+            % empty case
+            if isempty(R)
+                val = []; return
+            end
+
+            % at least one branch in reachSet object
+            val = R(1).loc;
+            
+            % loop over all reachable sets, find all location IDs
+            for i=1:length(R)
+                % check if location ID has been seen before
+                if ~compareMatrices(R(i).loc,val,eps,'subset')
+                    val = [val,R(i).loc];
+                end
+            end
          
     end
 end

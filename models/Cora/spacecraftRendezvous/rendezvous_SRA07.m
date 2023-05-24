@@ -79,7 +79,7 @@ guardA = [-1;0;0;0;0];
 guardb = 100;
 guard = conHyperplane(guardA,guardb);
 
-trans{1} = transition(guard, reset, 2);
+trans(1) = transition(guard, reset, 2);
 
 %% equation:
 %   
@@ -92,13 +92,13 @@ reset = struct('A', resetA, 'c', resetc);
 %% equation:
 %   t>=t_l & t<=120
 guard = interval([-dist;-dist;-dist;-dist;t_l],[dist;dist;dist;dist;120]);
-trans{2} = transition(guard, reset, 3);
+trans(2) = transition(guard, reset, 3);
 
 %   t>=120 & t<=t_u
 guard = interval([-dist;-dist;-dist;-dist;120],[dist;dist;dist;dist;t_u]);
-trans{3} = transition(guard, reset, 3);
+trans(3) = transition(guard, reset, 3);
 
-loc{1} = location('S1',inv, trans, dynamics);
+loc(1) = location('S1',inv, trans, dynamics);
 
 
 
@@ -126,7 +126,7 @@ invb = ...
 invOpt = struct('A', invA, 'b', invb);
 inv = mptPolytope(invOpt);
 
-trans = {};
+trans = transition();
 %% equation:
 %   
 resetA = ...
@@ -139,29 +139,29 @@ reset = struct('A', resetA, 'c', resetc);
 
 %  t>=t_l & t<=110
 guard = interval([-dist;-dist;-dist;-dist;t_l],[dist;dist;dist;dist;110]);
-trans{1} = transition(guard, reset, 3);
+trans(1) = transition(guard, reset, 3);
 
 %  t>=110 & t<=112
 guard = interval([-dist;-dist;-dist;-dist;110],[dist;dist;dist;dist;112]);
-trans{2} = transition(guard, reset, 3);
+trans(2) = transition(guard, reset, 3);
 
 %  t>=112 & t<=115
 guard = interval([-dist;-dist;-dist;-dist;112],[dist;dist;dist;dist;115]);
-trans{3} = transition(guard, reset, 3);
+trans(3) = transition(guard, reset, 3);
 
 %  t>=115 & t<=120
 guard = interval([-dist;-dist;-dist;-dist;115],[dist;dist;dist;dist;120]);
-trans{4} = transition(guard, reset, 3);
+trans(4) = transition(guard, reset, 3);
 
 %  t>=120 & t<=135
 guard = interval([-dist;-dist;-dist;-dist;120],[dist;dist;dist;dist;135]);
-trans{5} = transition(guard, reset, 3);
+trans(5) = transition(guard, reset, 3);
 
 %  t>=135 & t<=t_u
 guard = interval([-dist;-dist;-dist;-dist;135],[dist;dist;dist;dist;t_u]);
-trans{6} = transition(guard, reset, 3);
+trans(6) = transition(guard, reset, 3);
 
-loc{2} = location('S2',inv, trans, dynamics);
+loc(2) = location('S2',inv, trans, dynamics);
 
 
 
@@ -187,8 +187,8 @@ invb = ...
 invOpt = struct('A', invA, 'b', invb);
 inv = mptPolytope(invOpt);
 
-trans = {};
-loc{3} = location('S3',inv, trans, dynamics);
+trans = transition();
+loc(3) = location('S3',inv, trans, dynamics);
 
 
 

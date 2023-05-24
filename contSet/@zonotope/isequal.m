@@ -43,11 +43,16 @@ tol = setDefaultValues({eps},varargin);
 
 % check input arguments
 inputArgsCheck({{Z1,'att','zonotope'};
-                {Z2,'att','zonotope'};
+                {Z2,'att',{'zonotope','interval'}};
                 {tol,'att','numeric',{'nonnan','scalar','nonnegative'}}});
 
 % init result
 res = false;
+
+% convert interval to zonotope
+if isa(Z2,'interval')
+    Z2 = zonotope(Z2);
+end
 
 % compare dimensions (quick check)
 if dim(Z1) ~= dim(Z2)

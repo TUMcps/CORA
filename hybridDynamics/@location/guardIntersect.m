@@ -62,7 +62,7 @@ function [Rguard,actGuards,minInd,maxInd] = ...
     Pguard = cell(length(loc.transition),1);
 
     for i=1:length(guardInd)
-        Pguard{guardInd(i)} = loc.transition{guardInd(i)}.guard;
+        Pguard{guardInd(i)} = loc.transition(guardInd(i)).guard;
     end
 
     % extract time interval and time point reachable set
@@ -70,7 +70,7 @@ function [Rguard,actGuards,minInd,maxInd] = ...
     Rtp = Rcont.timePoint.set;
 
     % group the reachable sets which intersect guards
-    [minInd,maxInd,P,actGuards] = groupSets(R,guards,setInd);
+    [minInd,maxInd,P,actGuards] = aux_groupSets(R,guards,setInd);
     
 
     % loop over all guard intersections
@@ -111,13 +111,13 @@ function [Rguard,actGuards,minInd,maxInd] = ...
             % compute intersection with the method in [3]
             case 'hyperplaneMap'
                 
-                R0 = getInitialSet(Rtp,minInd(i));
+                R0 = aux_getInitialSet(Rtp,minInd(i));
                 Rguard{i} = guardIntersect_hyperplaneMap(loc,guard,R0,options);   
 
             % compute intersection with the method in [4]
             case 'pancake'
                 
-                R0 = getInitialSet(Rtp,minInd(i));
+                R0 = aux_getInitialSet(Rtp,minInd(i));
                 Rguard{i} = guardIntersect_pancake(loc,R0,guard,actGuards(i),options);
                 
             % compute intersection with method for nondeterministic guards
@@ -142,7 +142,7 @@ function [Rguard,actGuards,minInd,maxInd] = ...
     end
     
     % remove all empty intersections
-    [Rguard,minInd,maxInd,actGuards] = removeEmptySets(Rguard,minInd,...
+    [Rguard,minInd,maxInd,actGuards] = aux_removeEmptySets(Rguard,minInd,...
                                                        maxInd,actGuards);
                                                    
     % convert sets back to polynomial zonotopes
@@ -160,7 +160,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function [minInd,maxInd,P,guards] = groupSets(Pset,guards,setIndices)
+function [minInd,maxInd,P,guards] = aux_groupSets(Pset,guards,setIndices)
 % group the reachable sets which intersect guard sets. The sets in one
 % group all intersect the same guard set and are located next to each other
 
@@ -177,11 +177,11 @@ function [minInd,maxInd,P,guards] = groupSets(Pset,guards,setIndices)
     end
     
     % Step 2: group accoring to the location (neigbouring sets together)
-    [minInd,maxInd,P,guards] = removeGaps(setIndicesGuards,guardInd,P);
+    [minInd,maxInd,P,guards] = aux_removeGaps(setIndicesGuards,guardInd,P);
 
 end
 
-function [minInd,maxInd,Pint,guards] = removeGaps(setIndicesGuards,guards,Pint)
+function [minInd,maxInd,Pint,guards] = aux_removeGaps(setIndicesGuards,guards,Pint)
 % Remove gaps in the set-index vector of each intersection
 
     % split all guard intersections with gaps between the set-indices into
@@ -222,7 +222,7 @@ function [minInd,maxInd,Pint,guards] = removeGaps(setIndicesGuards,guards,Pint)
     
 end
 
-function [R,minInd,maxInd,actGuards] = removeEmptySets(R,minInd,maxInd,actGuards)
+function [R,minInd,maxInd,actGuards] = aux_removeEmptySets(R,minInd,maxInd,actGuards)
 % remove all sets for which the intersection with the guard set turned out
 % to be empty
 
@@ -251,7 +251,7 @@ function [R,minInd,maxInd,actGuards] = removeEmptySets(R,minInd,maxInd,actGuards
     actGuards = actGuards(ind);
 end
 
-function R0 = getInitialSet(Rtp,minInd)
+function R0 = aux_getInitialSet(Rtp,minInd)
 % get the initial set
 
     if minInd == 1

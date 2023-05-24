@@ -63,12 +63,14 @@ if length(sys1.out_isLinear) ~= length(sys2.out_isLinear) || ...
 end
 
 % compare differential equations
-if ~aux_compareEquations(sys1.mFile,sys2.mFile)
+if ~aux_compareEquations(sys1.mFile,sys1.dim,sys1.nrOfInputs,sys1.dim,...
+        sys2.mFile,sys2.dim,sys2.nrOfInputs,sys2.dim)
     res = false; return
 end
 
 % compare output equations
-if ~aux_compareEquations(sys1.out_mFile,sys2.out_mFile)
+if ~aux_compareEquations(sys1.out_mFile,sys1.dim,sys1.nrOfInputs,sys1.nrOfOutputs,...
+        sys2.out_mFile,sys2.dim,sys2.nrOfInputs,sys2.nrOfOutputs)
     res = false; return
 end
 
@@ -80,22 +82,23 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function res = aux_compareEquations(sys1,sys2)
+function res = aux_compareEquations(sys1,x1dim,u1dim,y1dim,sys2,x2dim,u2dim,y2dim)
 % sys1, sys2 are function handles which are checked for equality
-% xu(1) is the number of states, xu(2) is the number of inputs
-
-% obtain number of states, inputs, and outputs
-[xu,y] = inputArgsLength(sys1);
-[xu_,y_] = inputArgsLength(sys2);
+% sys1: x1dim x u1dim -> y1dim (y1dim = x1dim for differential equations)
+% sys2: x2dim x u2dim -> y2dim (y2dim = x2dim for differential equations)
 
 % check number of states, inputs, and outputs
-if any(xu ~= xu_) || y ~= y_
+if x1dim ~= x2dim || y1dim ~= y2dim
     res = false; return
 end
 
+% inputs can also be dummy inputs, so length does not necessarily have to
+% be the same for the equations to be equal -> choose max
+udim = max([u1dim,u2dim]);
+
 % instantiate symbolic variables to evaluate nonlinear equations
-x_sym = sym('x',[xu(1),1],'real');
-u_sym = sym('u',[xu(2),1],'real');
+x_sym = sym('x',[x1dim,1],'real');
+u_sym = sym('u',[udim,1],'real');
 
 % evaluate equations
 f1 = sys1(x_sym,u_sym);
@@ -116,8 +119,8 @@ nrTests = 1000;
 for i=1:nrTests
 
     % random values for state and input
-    x_rand = randn(xu(1),1);
-    u_rand = randn(xu(2),1);
+    x_rand = randn(x1dim,1);
+    u_rand = randn(udim,1);
 
     % plug in both function handles
     f1_rand = sys1(x_rand,u_rand);

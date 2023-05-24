@@ -17,7 +17,7 @@ function invSet = mergeInvariants(pHA,invList)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Author:       Johann Schoepfer, Niklas Kochdumper
 % Written:      08-June-2018  

@@ -22,12 +22,20 @@ function res = isempty(simRes)
 
 % Author:       Mark Wetzlinger
 % Written:      01-May-2023
-% Last update:  ---
+% Last update:  22-May-2023 (MW, extend to class arrays)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% check time
-res = isempty(simRes.t);
+[r,c] = size(simRes);
+res = false(r,c);
+
+% loop over all objects
+for i=1:r
+    for j=1:c
+        % check time
+        res(i,j) = isempty(simRes(i,j).t);
+    end
+end
 
 %------------- END OF CODE --------------

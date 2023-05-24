@@ -13,9 +13,10 @@ function trans = convGuard(trans,inv,options)
 % Outputs:
 %    trans - modified transition object
 %
-% Example: 
+% Example:
+%    ---
 %
-% Other m-files required: not specified
+% Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %

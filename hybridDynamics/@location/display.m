@@ -10,7 +10,12 @@ function display(loc)
 % Outputs:
 %    ---
 %
-% Example: 
+% Example:
+%    inv = interval([-2;-1],[1;2]);
+%    trans = transition(conHyperplane([2 0],1),...
+%               struct('A',eye(2),'c',zeros(2,1)),2);
+%    sys = linearSys([1 -3; -2 1],1);
+%    loc = location(inv,trans,sys)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,6 +43,13 @@ if ~callFromHybridDisplay
     fprintf(newline);
 end
 
+% array of location objects
+if length(loc) > 1
+    disp("  " + length(loc) + "x1 location array");
+    fprintf(newline);
+    return
+end
+
 % display name
 if strcmp(loc.name,'location')
     disp("  Name: '" + loc.name + "' (default)");
@@ -59,8 +71,8 @@ if isempty(loc.transition)
     disp("  Number of transitions: 0");
 else
     transStr = "  Number of transitions: " + length(loc.transition) + " (";
-    if isscalar(loc.transition{1}.target)
-        targetLoc = cellfun(@(x) x.target,loc.transition,'UniformOutput',true);
+    if isscalar(loc.transition(1).target)
+        targetLoc = arrayfun(@(x) x.target,loc.transition,'UniformOutput',true);
         % different grammar...
         if length(loc.transition) == 1
             addString = "target location: ";
@@ -70,7 +82,7 @@ else
         % loop over targets of transition and synchronization labels
         temp = [];
         for i=1:length(loc.transition)
-            syncLabel = loc.transition{i}.syncLabel;
+            syncLabel = loc.transition(i).syncLabel;
             if isempty(syncLabel)
                 temp = [temp string(targetLoc(i))];
             else
@@ -82,11 +94,11 @@ else
         % location from location product of parallel hybrid automaton
         temp = [];
         for i=1:length(loc.transition)
-            syncLabel = loc.transition{i}.syncLabel;
+            syncLabel = loc.transition(i).syncLabel;
             if isempty(syncLabel)
-                temp = [temp "[" + strjoin(string(loc.transition{i}.target),",") + "]"];
+                temp = [temp "[" + strjoin(string(loc.transition(i).target),",") + "]"];
             else
-                temp = [temp "[" + strjoin(string(loc.transition{i}.target),",") + "]" ...
+                temp = [temp "[" + strjoin(string(loc.transition(i).target),",") + "]" ...
                     + " ('" + syncLabel + "')"];
             end
         end

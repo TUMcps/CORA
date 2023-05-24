@@ -3,10 +3,14 @@ classdef polygon
 %
 % Syntax:  
 %    obj = polygon(x,y)
+%    obj = polygon(V)
+%    obj = polygon(set)
 %
 % Inputs:
 %    x - vector with x coordinates of the polygon vertices
 %    y - vector with y coordinates of the polygon vertices
+%    V - vertices (2-dimensional)
+%    set - polyshape object
 %
 % Outputs:
 %    obj - polygon object
@@ -24,11 +28,11 @@ classdef polygon
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval, polytope
+% See also: interval, polytope, polyshape
 
 % Author:       Niklas Kochdumper
 % Written:      13-March-2020
-% Last update:  ---
+% Last update:  09-May-2023 (TL: constructor,plotPolygon)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -40,36 +44,69 @@ end
 methods
     
     % class constructor
-    function obj = polygon(x,y)
-        obj.set = polyshape(x,y);
+    function obj = polygon(varargin)
+        if nargin == 0
+            obj.set = polyshape();
+        elseif nargin == 1
+            set = varargin{1};
+            inputArgsCheck({{set,'att',{'polyshape','numeric'}}})
+            if isa(set,'polyshape')
+                obj.set = set;
+            else
+                V = set;
+                if(size(V,2) ~= 2)
+                    throw(CORAerror("CORA:wrongValue",'Given vertices should be two dimensional.'))
+                end
+                obj.set = polyshape(V(1,:),V(2,:));
+            end
+        elseif nargin == 2
+            x=varargin{1};y=varargin{2};
+            inputArgsCheck({{x,'att','numeric'},{y,'att','numeric'}})
+            obj.set = polyshape(x,y);
+        else
+            throw(CORAerror('CORA:tooManyInputArgs'));
+        end
     end
     
     function han = plot(pgon,dims,varargin)
     % plot the polygon object (always 2D!)
     % input argument dims is here for compliance with other plot functions)
-    
-        % parse input arguments
-        NVpairs = {'EdgeColor',colorblind('b')};
-        
-        if nargin >= 3
-            NVpairs = readPlotOptions(varargin(1:end),'polygon');
-            % name-value 'Filled',true|false is deprecated: issue warning
-            [NVpairs,filled] = readNameValuePair(NVpairs,'Filled','islogical');
-            % faceAlpha = 1 (not the default 0.35 from @polyshape/plot)
-            % except otherwise specified by user
-            [NVpairs,facealpha] = readNameValuePair(NVpairs,'FaceAlpha','isscalar');
-            if ~isempty(filled)
-                warning("Name-value pair 'Filled'-true|false is ignored.");
-            end
+
+        if nargin < 2
+            dims = [1,2];
         end
-        % readout 'FaceColor' to decide plot/fill call where necessary
-        [~,facecolor] = readNameValuePair(NVpairs,'FaceColor');
         
-        % plot the polygon object
-        if isempty(facecolor) || strcmp(facecolor,'none') || ~isempty(facealpha)
-            han = plot(pgon.set,NVpairs{:});            
+        % prepare vertices
+        V = pgon.set.Vertices';
+        V = V(dims,:);
+        n = length(dims);
+        
+        if pgon.set.NumRegions > 0
+            % vertices stored in polyshape to not close the regions
+            % close regions (separated by nan & end)
+            regStart = 1;
+            regEnds = [find(isnan(V(1,:)))'-1,size(V,2)];
+            regEnds = regEnds(regEnds > 0);
+
+            Vc = [];
+            for regEnd=regEnds
+                % close next region by adding first vertices at the end
+                Vc = [Vc,nan(n,1),V(:,regStart:regEnd),V(:,regStart)];
+                % jump to next region
+                regStart = regEnd + 2;
+            end
+            % remove leading nan
+            V = Vc(:,2:end);
         else
-            han = plot(pgon.set,NVpairs{:},'FaceAlpha',1);
+            % plot empty
+            V=zeros(2,0);
+        end
+    
+        % plot
+        han = plotPolygon(V,varargin{:});
+
+        if nargout == 0
+            clear han
         end
     end
     

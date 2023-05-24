@@ -26,12 +26,13 @@ function res = test_specification_isempty
 % init helpers
 set1 = zonotope([0;0],[1,-0.7;0.2,1]);
 set2 = interval([-1;-2],[2;3]);
+set3 = zonotope();
 time1 = interval(2,4);
 time2 = interval(1,3);
 
 spec1 = specification(set1,'unsafeSet',time1);
 spec2 = specification(set2,'safeSet',time2);
-spec3 = specification(set2,'safeSet');
+spec3 = specification(set3,'invariant');
 spec12 = [spec1;spec2];
 spec13 = [spec1;spec3];
 

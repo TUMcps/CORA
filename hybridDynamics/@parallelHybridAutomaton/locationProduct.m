@@ -17,7 +17,7 @@ function loc = locationProduct(pHA,locID,allLabels)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Author:       Johann Schoepfer, Niklas Kochdumper
 % Written:      08-June-2018  
@@ -36,7 +36,7 @@ transList = cell(1,numComp);
 
 for i=1:numComp
     % read out active location of i-th subcomponent
-    curr_loc = pHA.components{i}.location{locID(i)};
+    curr_loc = pHA.components(i).location(locID(i));
     % write invariant, flow, transition set into array for merge
     invList{i} = curr_loc.invariant;
     flowList{i} = curr_loc.contDynamics;

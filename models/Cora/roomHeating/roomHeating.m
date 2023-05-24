@@ -58,7 +58,7 @@ guard = conHyperplane([1 0],T_off);
 reset.A = eye(2);
 reset.c = zeros(2,1);
 
-trans{1} = transition(guard,reset,2);
+trans = transition(guard,reset,2);
 
 % transition 2: room 2 on -> off
 guard = conHyperplane([0 1],T_off);
@@ -66,10 +66,10 @@ guard = conHyperplane([0 1],T_off);
 reset.A = eye(2);
 reset.c = zeros(2,1);
 
-trans{2} = transition(guard,reset,3);
+trans(2) = transition(guard,reset,3);
 
 % location object
-loc{1} = location('on',inv,trans,linSys);
+loc = location('on',inv,trans,linSys);
 
 
 % Location 2 - room 1 off, room 2 on --------------------------------------
@@ -90,7 +90,7 @@ guard = conHyperplane([1 0],T_on);
 reset.A = eye(2);
 reset.c = zeros(2,1);
 
-trans{1} = transition(guard,reset,1);
+trans(1) = transition(guard,reset,1);
 
 % transition 2: room 2 on -> off
 guard = conHyperplane([0 1],T_off);
@@ -98,10 +98,10 @@ guard = conHyperplane([0 1],T_off);
 reset.A = eye(2);
 reset.c = zeros(2,1);
 
-trans{2} = transition(guard,reset,4);
+trans(2) = transition(guard,reset,4);
 
 % location object
-loc{2} = location('on',inv,trans,linSys);
+loc(2) = location('on',inv,trans,linSys);
 
 
 % Location 3 - room 1 on, room 2 off --------------------------------------
@@ -122,7 +122,7 @@ guard = conHyperplane([1 0],T_off);
 reset.A = eye(2);
 reset.c = zeros(2,1);
 
-trans{1} = transition(guard,reset,4);
+trans(1) = transition(guard,reset,4);
 
 % transition 2: room 2 off -> on
 guard = conHyperplane([0 1],T_on);
@@ -130,10 +130,10 @@ guard = conHyperplane([0 1],T_on);
 reset.A = eye(2);
 reset.c = zeros(2,1);
 
-trans{2} = transition(guard,reset,1);
+trans(2) = transition(guard,reset,1);
 
 % location object
-loc{3} = location('on',inv,trans,linSys);
+loc(3) = location('on',inv,trans,linSys);
 
 
 % Location 4 - room 1 off, room 2 off -------------------------------------
@@ -153,7 +153,7 @@ guard = conHyperplane([1 0],T_on);
 reset.A = eye(2);
 reset.c = zeros(2,1);
 
-trans{1} = transition(guard,reset,2);
+trans(1) = transition(guard,reset,2);
 
 % transition 2: room 2 on -> off
 guard = conHyperplane([0 1],T_on);
@@ -161,10 +161,10 @@ guard = conHyperplane([0 1],T_on);
 reset.A = eye(2);
 reset.c = zeros(2,1);
 
-trans{2} = transition(guard,reset,3);
+trans(2) = transition(guard,reset,3);
 
 % location object
-loc{4} = location('on',inv,trans,linSys);
+loc(4) = location('on',inv,trans,linSys);
 
 
 % Hybrid Automaton --------------------------------------------------------

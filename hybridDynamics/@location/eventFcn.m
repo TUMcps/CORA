@@ -10,7 +10,8 @@ function han = eventFcn(loc)
 % Outputs:
 %    han - event function handle
 %
-% Example: 
+% Example:
+%    ---
 %
 % Other m-files required: eventFcn
 % Subfunctions: none
@@ -39,16 +40,18 @@ function [value,isterminal,direction] = f(t,x)
     %retrieve system dimension
     n=length(value);
     %get result of guard events
-        for i=1:length(loc.transition)
-            %check if guard is a halfspace
-             [resValue,resIsterminal,resDirection] = eventFcn(loc.transition{i},x);
-             eventLength = length(resValue);
-             indices = n+1:n+eventLength;
-             value(indices,1) = resValue;
-             isterminal(indices,1) = resIsterminal;
-             direction(indices,1) = resDirection;       
-             n = n+eventLength;
+    for i=1:length(loc.transition)
+        %check if guard is a halfspace
+        if ~isempty(loc.transition(i))
+            [resValue,resIsterminal,resDirection] = eventFcn(loc.transition(i),x);
+            eventLength = length(resValue);
+            indices = n+1:n+eventLength;
+            value(indices,1) = resValue;
+            isterminal(indices,1) = resIsterminal;
+            direction(indices,1) = resDirection;       
+            n = n+eventLength;
         end
+    end
 end
 
 %return function handle

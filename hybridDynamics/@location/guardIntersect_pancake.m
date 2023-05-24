@@ -55,17 +55,17 @@ function R = guardIntersect_pancake(loc,R0,guard,guardID,options)
     optionsScal = options_;
     
     if ~isa(sys,'nonlinearSys')
-       optionsScal = defaultOptions(options_); 
+       optionsScal = aux_defaultOptions(options_); 
     end
     
     % create system for the time-scaled system dynamics
-    [sys_,params] = scaledSystem(sys,hs,R0,guardID,params);
+    [sys_,params] = aux_scaledSystem(sys,hs,R0,guardID,params);
 
     % compute the reachable set for the time scaled system 
-    R = reachTimeScaled(sys_,hs,R0,params,optionsScal);
+    R = aux_reachTimeScaled(sys_,hs,R0,params,optionsScal);
     
     % jump accross the guard set in only one time ste
-    R = jump(sys,hs,R,options_);
+    R = aux_jump(sys,hs,R,options_);
 
     % project the reachable set onto the hyperplane
     R = projectOnHyperplane(guard,R);
@@ -75,7 +75,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function [sys,params] = scaledSystem(sys,hs,R0,guardID,params)
+function [sys,params] = aux_scaledSystem(sys,hs,R0,guardID,params)
 % Scale the system dynamics using the distance to the hyperplane as a 
 % scaling factor 
 
@@ -91,7 +91,7 @@ function [sys,params] = scaledSystem(sys,hs,R0,guardID,params)
     m = sys.nrOfInputs;
     
     if isa(sys,'linearSys')
-       f = @(x,u) dynamicsLinSys(x,u,sys); 
+       f = @(x,u) aux_dynamicsLinSys(x,u,sys); 
     else
        f = sys.mFile; 
     end
@@ -130,7 +130,7 @@ function [sys,params] = scaledSystem(sys,hs,R0,guardID,params)
     eval(str);
 end
 
-function Rfin = reachTimeScaled(sys,hs,R0,params,options)
+function Rfin = aux_reachTimeScaled(sys,hs,R0,params,options)
 % Compute the reachable set of the scaled system such that the final
 % reachable set until the scaled reachable set is very close to the
 % hyperplane
@@ -153,7 +153,7 @@ function Rfin = reachTimeScaled(sys,hs,R0,params,options)
     Rfin = R.timePoint.set{end};
 end
 
-function Rcont = jump(sys,hs,R0,options)
+function Rcont = aux_jump(sys,hs,R0,options)
 % compute the reachable set in such a way that the reachable set jumps in 
 % only one time step accross the hyperplane    
 
@@ -229,7 +229,7 @@ function Rcont = jump(sys,hs,R0,options)
     end
 end
 
-function options = defaultOptions(options)
+function options = aux_defaultOptions(options)
 % set default options for nonlinear system reachability analysis (required
 % if the continuous dynamics of the hybrid automaton is linear)
 
@@ -254,7 +254,7 @@ function options = defaultOptions(options)
     end
 end
 
-function f = dynamicsLinSys(x,u,sys)
+function f = aux_dynamicsLinSys(x,u,sys)
 % dynamic function of a linear system
 
     if isempty(sys.c)

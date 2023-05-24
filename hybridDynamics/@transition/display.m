@@ -10,7 +10,11 @@ function display(trans)
 % Outputs:
 %    ---
 %
-% Example: 
+% Example:
+%    guard = conHyperplane([1 0],0);
+%    reset = struct('A',eye(2),'c',zeros(2,1));
+%    target = 1;
+%    transition(guard,reset,target)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -49,7 +53,11 @@ else
     fprintf(newline);
     
     % display reset function
-    if isfield(trans.reset,'A')
+    if isempty(fields(trans.reset))
+        % no reset function (empty transition)
+        disp("Reset function: (none)");
+
+    elseif isfield(trans.reset,'A')
         % linear reset function
         if trans.reset.hasInput
             disp("Reset function: Ax + Bu + c");
@@ -94,7 +102,10 @@ else
     end
     
     % display target
-    if length(trans.target) == 1
+    if isempty(trans.target)
+        % empty transition object
+        disp("Target location: (none)");
+    elseif length(trans.target) == 1
         % ordinary transition (e.g., in hybrid automaton)
         disp("Target location: " + trans.target);
     else

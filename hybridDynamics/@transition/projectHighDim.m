@@ -74,7 +74,15 @@ end
 % Auxiliary Functions -----------------------------------------------------
 
 function resetStruct = projectLinearReset(resetStruct,stateBind,dims,id)
-% projects a linear reset function into a higher-dimensional space 
+% projects a linear reset function into a higher-dimensional space
+
+    % note: reset function needs to map from R^n -> R^n
+    [n_,n] = size(resetStruct.A);
+    if n_ ~= n
+        throw(CORAerror('CORA:notSupported',...
+            ['Projection of reset functions to higher-dimensional spaces '...
+            'only supported for R^n -> R^n.']));
+    end
     
     % init A matrix by identity or zeros
     if id
@@ -102,6 +110,18 @@ function resetStruct = projectNonlinearReset(resetStruct,stateBind,dims,id)
 % compute the projection of a nonlinear reset function into a higher 
 % dimensional space
 % note: currently no option to set other states to identity?
+
+    % projection only allowed for R^n -> R^n (and no inputs)
+    [in,out] = inputArgsLength(resetStruct.f);
+    if in(2) > 0
+        throw(CORAerror('CORA:notSupported',...
+            ['Projection of reset functions to higher-dimensional spaces '...
+            'only for state-dependent resets']));
+    elseif in(1) ~= out
+        throw(CORAerror('CORA:notSupported',...
+            ['Projection of reset functions to higher-dimensional spaces '...
+            'only supported for R^n -> R^n.']));
+    end
 
     % project function
     resetStruct.f = @(x) projectFunction(x,resetStruct.f,stateBind);
