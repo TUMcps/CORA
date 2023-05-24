@@ -28,9 +28,10 @@ function res = simulateStandard(obj, options)
 % trajectory tracking
 tracking = isfield(options,'uTransVec');
 
-% initialize time and state
+% initialize time, state, and location (always 0 as purely continuous-time)
 t = cell(options.points,1);
 x = cell(options.points,1);
+loc = zeros(options.points,1);
 
 % output equation only for linearSys and linearSysDT currently
 comp_y = (isa(obj,'linearSys') || isa(obj,'linearSysDT')) && ~isempty(obj.C);
@@ -166,7 +167,7 @@ end
 
 % construct object storing the simulation results
 if comp_y
-    res = simResult(x,t,{},y);
+    res = simResult(x,t,loc,y);
 elseif isa(obj,'nonlinDASys')
     % special handling of algebraic variables
     a = cell(r,1);
@@ -176,9 +177,9 @@ elseif isa(obj,'nonlinDASys')
         a{r,1} = x{r}(:,dims_a);
         x{r,1} = x{r}(:,1:obj.dim);
     end
-    res = simResult(x,t,{},{},a);
+    res = simResult(x,t,loc,{},a);
 else
-    res = simResult(x,t);
+    res = simResult(x,t,loc);
 end
 
 

@@ -24,7 +24,7 @@ function res = isequal(HA1,HA2,varargin)
 
 % Author:       Mark Wetzlinger
 % Written:      10-January-2023
-% Last update:  ---
+% Last update:  21-May-2023 (MW, extend to arrays)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -42,6 +42,26 @@ inputArgsCheck({{HA1,'att','hybridAutomaton'};
                 {HA2,'att','hybridAutomaton'};
                 {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
 
+% check array length
+if any(size(HA1) ~= size(HA2))
+    res = false; return
+end
+
+% loop over all individual transition objects
+[r,c] = size(HA1);
+res = false(r,c);
+for i=1:r
+    for j=1:c
+        res(i,j) = aux_isequal(HA1(i,j),HA2(i,j),tol);
+    end
+end
+
+end
+
+% Auxiliary function ------------------------------------------------------
+
+function res = aux_isequal(HA1,HA2,tol)
+
 % check number of locations
 if length(HA1.location) ~= length(HA2.location)
     res = false; return
@@ -51,7 +71,7 @@ end
 for i=1:length(HA1.location)
     
     % compare locations
-    if ~isequal(HA1.location{i},HA2.location{i},tol)
+    if ~isequal(HA1.location(i),HA2.location(i),tol)
         res = false; return
     end
 
@@ -59,5 +79,7 @@ end
 
 % all checks ok
 res = true;
+
+end
 
 %------------- END OF CODE --------------

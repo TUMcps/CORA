@@ -62,7 +62,6 @@ dim = 6;
 A=zeros(dim);
 
 %set values
-A = zeros(dim);
 A(2,2)=-1e-6/Cp1*(1/Rp2+1/Rp3);
 A(2,3)=1e-6/(Cp1*Rp3);
 A(3,2)=1e-6/(Cp3*Rp3);
@@ -137,11 +136,11 @@ reset1.c = [0; 0; 0; -1; -1; 0];
 reset2.A = eye(dim_x);
 reset2.c = [0; 0; 0; -1; -1; 0];
 %transition 1 sim
-transSim{1} = transition(guard1Sim,reset1,2); %--> next loc: 2
+transSim(1) = transition(guard1Sim,reset1,2); %--> next loc: 2
 %transition 2 sim
-transSim{2} = transition(guard2Sim,reset2,3); %--> next loc: 3
+transSim(2) = transition(guard2Sim,reset2,3); %--> next loc: 3
 %specify location
-locSim{1} = location('off',inv,transSim,simSys);
+locSim(1) = location('off',inv,transSim,simSys);
 
 %loc2:
 %input:
@@ -156,9 +155,10 @@ Atmp(6,6) = 0;
 reset1.A = Atmp;
 reset1.c = zeros(dim_x,1);
 %transition 1 sim
-transSim{1} = transition(guard1Sim,reset1,4); %--> next loc: 4
+clear transSim
+transSim = transition(guard1Sim,reset1,4); %--> next loc: 4
 %specify location
-locSim{2} = location('up',inv,transSim,simSys);
+locSim(2) = location('up',inv,transSim,simSys);
 
 
 %loc3:
@@ -174,9 +174,9 @@ Atmp(6,6) = 0;
 reset1.A = Atmp;
 reset1.c = zeros(dim_x,1);
 %transition 1 sim
-transSim{1} = transition(guard1Sim,reset1,4); %--> next loc: 4
+transSim = transition(guard1Sim,reset1,4); %--> next loc: 4
 %specify location
-locSim{3} = location('dw',inv,transSim,simSys);
+locSim(3) = location('dw',inv,transSim,simSys);
 
 
 %loc4:
@@ -190,9 +190,9 @@ guard1Sim = interval([-dist; -dist; -dist; -dist; -dist; 50e-6],[dist; dist; dis
 reset1.A = eye(dim_x);
 reset1.c = zeros(dim_x,1);
 %transition 1 sim
-transSim{1} = transition(guard1Sim,reset1,1); %--> next loc: 1
+transSim = transition(guard1Sim,reset1,1); %--> next loc: 1
 %specify location
-locSim{4} = location('both',inv,transSim,simSys);
+locSim(4) = location('both',inv,transSim,simSys);
 
 % instantiate hybrid automaton
 HAsim = hybridAutomaton(locSim);

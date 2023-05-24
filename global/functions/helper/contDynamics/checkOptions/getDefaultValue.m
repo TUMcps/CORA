@@ -123,6 +123,8 @@ switch listname
                 defValue = 2;
             case 'compOutputSet'
                 defValue = true;
+            case 'intersectInvariant'
+                defValue = false;
             otherwise
                 throw(CORAerror('CORA:specialError',...
                     "There is no default value for options." + field + "."))
@@ -154,17 +156,17 @@ elseif isa(sys,'hybridAutomaton')
     numLoc = length(locations);
     val = cell(numLoc,1);
     for i = 1:numLoc
-        nrInputs = locations{i}.contDynamics.nrOfInputs;
+        nrInputs = locations(i).contDynamics.nrOfInputs;
         val{i} = zonotope(zeros(max(1,nrInputs),1));
     end
 elseif isa(sys,'parallelHybridAutomaton')
     numComps = length(sys.components);
     val = cell(numComps,1);
     for i=1:numComps
-        numLoc = length(sys.components{i}.location);
+        numLoc = length(sys.components(i).location);
         val{i} = cell(numLoc,1);
         for j = 1:numLoc
-            nrInputs = sys.components{i}.location{1}.contDynamics.nrOfInputs;
+            nrInputs = sys.components(i).location(1).contDynamics.nrOfInputs;
             val{i}{j} = zonotope(zeros(nrInputs,1));
         end    
     end
@@ -182,14 +184,14 @@ elseif isa(sys,'hybridAutomaton')
     numLoc = length(locations);
     val = cell(numLoc,1);
     for i = 1:numLoc
-        subsys = locations{i}.contDynamics;
+        subsys = locations(i).contDynamics;
         val{i} = zeros(max(1,subsys.nrOfInputs),1);
     end
 elseif isa(sys,'parallelHybridAutomaton')
     numComps = length(sys.components);
     val = cell(numComps,1);
     for i=1:numComps
-        numLoc = length(sys.components{i}.location);
+        numLoc = length(sys.components(i).location);
         val{i} = cell(numLoc,1);
         for j = 1:numLoc
             val{i}{j} = zeros(sys.numInputs,1);

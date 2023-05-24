@@ -13,8 +13,7 @@ function display(HA)
 %
 % Example: 
 %    % invariant
-%    polyOpt = struct('A',[-1,0],'b',0);
-%    inv = mptPolytope(polyOpt);
+%    inv = mptPolytope([-1,0],0);
 % 
 %    % transition
 %    c = [-1;0]; d = 0; C = [0,1]; D = 0;
@@ -50,16 +49,27 @@ disp([inputname(1), ' =']);
 
 fprintf(newline);
 
-% number of locations
-numLoc = length(HA.location);
+if isempty(HA)
 
-% loop over locations
-for i=1:numLoc
+    dispEmptyObj(HA,inputname(1));
+
+elseif length(HA) > 1
     
-    % number of location
-    disp("Location " + i + " of " + numLoc + ":");
-    display(HA.location{i});
+    disp("  " + length(HA) + "x1 hybridAutomaton array");
 
+else
+
+    % number of locations
+    numLoc = length(HA.location);
+    
+    % loop over locations
+    for i=1:numLoc
+        
+        % number of location
+        disp("Location " + i + " of " + numLoc + ":");
+        display(HA.location(i));
+    
+    end
 end
 
 fprintf(newline);

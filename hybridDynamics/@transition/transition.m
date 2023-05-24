@@ -1,7 +1,8 @@
 classdef transition
 % transition - constructor of the class transition
 %
-% Syntax:  
+% Syntax:
+%    trans = transition()
 %    trans = transition(guard,reset,target)
 %    trans = transition(guard,reset,target,syncLabel)
 %
@@ -22,8 +23,7 @@ classdef transition
 %
 % Example:
 %    guard = conHyperplane([1,0],0,[0,1],0);
-%    reset.A = [0, 0; 0, 0.2]; 
-%    reset.c = zeros(2,1);
+%    reset = struct('A',[0, 0; 0, 0.2],'c',zeros(2,1));
 %    target = 2;
 %    syncLabel = 'on';
 %
@@ -68,7 +68,12 @@ methods
     function trans = transition(varargin)
 
         % parse input arguments
-        if nargin < 3
+        if nargin == 0
+            return
+        elseif nargin == 1 && isa(varargin{1},'transition')
+            % copy constructor
+            trans = varargin{1}; return
+        elseif nargin < 3
             throw(CORAerror('CORA:notEnoughInputArgs',3));
         elseif nargin > 4
             throw(CORAerror('CORA:tooManyInputArgs',4));
@@ -137,6 +142,9 @@ methods
                 trans.reset.stateDim = size(trans.reset.A,1);
             end
         end
+
+        % check whether matrices of linear transitions have correct sizes
+        checkLinearReset(trans);
         
         % pre-compute derivatives for nonlinear resets: stored in fields
         % .J (Jacobian), .Q (Hessian), .T (third-order tensor)
@@ -154,7 +162,35 @@ methods
 
     end
     
-    % auxiliary functions
+
+    % Auxiliary functions -------------------------------------------------
+
+    function checkLinearReset(trans)
+    % ensure that linear reset function x_ = Ax + Bu + c is properly
+    % defined
+
+        if CHECKS_ENABLED && isfield(trans.reset,'A')
+            % size of next state vector and current state vector
+            if isfield(trans.reset,'c')
+                if ~isvector(trans.reset.c)
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Constant offset in linear reset function has to be a vector.'));
+                end
+
+                if size(trans.reset.A,1) ~= length(trans.reset.c)
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                        'Linear reset function: Mismatch in rows of A and length of c.'));
+                end
+            end
+
+            if trans.reset.hasInput && size(trans.reset.A,1) ~= size(trans.reset.B,1)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Linear reset function: Mismatch in rows of A and rows of B.'));
+            end
+        end
+
+    end
+
     function trans = compDerivatives(trans)
     % pre-compute all derivatives required for the enclosure of the 
     % nonlinear reset function by a Taylor series expansion of order 2

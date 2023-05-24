@@ -11,7 +11,7 @@ function I = generateRandom(varargin)
 %    Name-Value pairs (all options, arbitrary order):
 %       <'Dimension',n> - dimension
 %       <'Center',c> - center
-%       <'MaxRadius',r> - maximum radius for each dimension
+%       <'MaxRadius',r> - maximum radius for each dimension or scalar
 %
 % Outputs:
 %    I - random interval
@@ -26,10 +26,11 @@ function I = generateRandom(varargin)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
+% Author:       Mark Wetzlinger, Tobias Ladner
 % Written:      17-September-2019
 % Last update:  19-May-2022 (MW, name-value pair syntax)
 %               23-February-2023 (MW, add 'Center' and 'MaxRadius')
+%               22-May-2023 (TL, bugfix: all dimensions had same radius)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -56,20 +57,30 @@ if ~isempty(n)
         % rewrite as [n,1] for easier handling of matrices
         n = [n,1];
     end
-    if ~isempty(c) && any(n ~= size(c))
-        throw(CORAerror('CORA:wrongValue','name-value pair Center',...
-            'has to match the dimension of name-value pair Dimension'));
-    end
 end
 
 % default computation of dimension
 if isempty(n)
-    if isempty(c)
-        nmax = 10;
-        n = [randi(nmax),1];
-    else
+    if ~isempty(c)
         % center given -> read out dimension
         n = size(c);
+    elseif ~isempty(r) && ~isscalar(r)
+        % radius given with dimension specs
+        n = size(r);
+    else
+        nmax = 10;
+        n = [randi(nmax),1];
+    end
+end
+
+if CHECKS_ENABLED
+    if ~isempty(c) && any(n ~= size(c))
+        throw(CORAerror('CORA:wrongValue','name-value pair Center',...
+            'has to match the dimension of name-value pair Dimension'));
+    end
+    if ~isempty(r) && ~isscalar(r) && any(n ~= size(r))
+        throw(CORAerror('CORA:wrongValue','name-value pair MaxRadius',...
+            'has to match the dimension of name-value pair Dimension'));
     end
 end
 
@@ -81,11 +92,11 @@ end
 
 % default computation of maximum radius
 if isempty(r)
-    r = 10*rand;
+    r = 10*rand(n);
 end
 
 % effective radius of interval (has to be symmetric to maintain center)
-rad = r/2 * rand;
+rad = r/2 .* rand(n);
 
 % instantiate interval
 I = interval(c-rad,c+rad);

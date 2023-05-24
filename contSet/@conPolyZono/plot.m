@@ -75,7 +75,6 @@ function han = plot(cPZ,varargin)
 
         % plot the polygon
         han = plot(pgon,[1,2],NVpairs{:});
-        updateColorIndex();
 
     else % 3d
         % transform to equivalent higher-dimensional polynomial zonotope

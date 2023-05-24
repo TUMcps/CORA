@@ -64,6 +64,11 @@ R = reachSet(timePoint,parent,loc);
 R = reachSet(timePoint,timeInt);
 R = reachSet(timePoint,timeInt,parent);
 R = reachSet(timePoint,timeInt,parent,loc);
+% non-computed sets
+R = reachSet([],timeInt);
+R = reachSet([],timeInt,parent);
+R = reachSet(timePoint,[]);
+R = reachSet(timePoint,[],parent);
 
 % wrong instantiations: non-matching lengths, negative values, too many
 % input arguments

@@ -49,7 +49,7 @@ function B = calcBasis(loc,R,guard,options)
             case 'pca'
                 
                 % concatenate all generators
-                G = extractGenerators(R);
+                G = aux_extractGenerators(R);
                 
                 % project the generators onto the hyperplane
                 if  isa(guard,'conHyperplane')
@@ -72,7 +72,7 @@ function B = calcBasis(loc,R,guard,options)
             case 'flow'
                 
                 % compute projectd center of the union of all sets
-                c = extractCenter(R);
+                c = aux_extractCenter(R);
                 
                 if  isa(guard,'conHyperplane')
                    Z = zonotope(c); 
@@ -99,8 +99,9 @@ end
 
 
 % Auxiliary Functions -----------------------------------------------------
+% TODO: move to global!
 
-function G = extractGenerators(R)
+function G = aux_extractGenerators(R)
 % extract all generator vectors from the sets that are over-approximated
 
     G = [];
@@ -122,7 +123,7 @@ function G = extractGenerators(R)
     end
 end
 
-function c = extractCenter(R)
+function c = aux_extractCenter(R)
 % extract all generator vectors from the sets that are over-approximated
 
     c = [];

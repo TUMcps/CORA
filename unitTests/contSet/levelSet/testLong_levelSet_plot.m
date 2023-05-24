@@ -23,7 +23,7 @@ function res = testLong_levelSet_plot
 
 %------------- BEGIN CODE --------------
 
-res = true;
+resvec = [];
 
 % define level sets
 syms x y z
@@ -47,7 +47,6 @@ levelSets{5} = levelSet(eq,[x;y;z],'<=');
 eq = x^2 - 4;
 levelSets{6} = levelSet(eq,x,'==');
 
-
 % loop over sets
 for i = 1:length(levelSets)
     figure;
@@ -55,7 +54,6 @@ for i = 1:length(levelSets)
     ylim([-3,3]);
 
     try
-        
         if levelSets{i}.dim == 1
             plot(levelSets{i},1,'r');
         elseif levelSets{i}.dim == 2
@@ -63,13 +61,33 @@ for i = 1:length(levelSets)
         else
             plot(levelSets{i},[1,2,3],'r');
         end
+        resvec(end+1) = true;
     catch
         close;
-        res = false;
+        resvec(end+1) = false;
     end
-
 end
 
+% test additional plotting arguments
+ls = levelSets{2}; % with '<='
+
+plot(ls,[1,2],'PlotMethod','outer');
+plot(ls,[1,2],'PlotMethod','inner');
+resvec(end+1) = true;
+
+plot(ls,[1,2],'Splits',3);
+plot(ls,[1,2],'Splits',5);
+resvec(end+1) = true;
+
+plot(ls,[1,2],'Splits',3,'PlotMethod','outer');
+plot(ls,[1,2],'Splits',3,'PlotMethod','outer','FaceColor','b');
+plot(ls,[1,2],'Splits',3,'FaceColor','b','PlotMethod','outer');
+plot(ls,[1,2],'FaceColor','b','Splits',3,'PlotMethod','outer');
+resvec(end+1) = true;
+
 close all;
+
+% gather results
+res = all(resvec);
 
 %------------- END OF CODE --------------

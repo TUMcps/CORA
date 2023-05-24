@@ -6,7 +6,7 @@ function [HA,options,params,stateField,inputField,changeSpeed]=initCar_unitTest(
 %    [HA,options,stateField,inputField,changeSpeed]=initCar_unitTest(varargin)
 %
 % Inputs:
-%    -
+%    setLength - length of segments
 %
 % Outputs:
 %    HA - hybrid automaton object of the car
@@ -15,7 +15,7 @@ function [HA,options,params,stateField,inputField,changeSpeed]=initCar_unitTest(
 %    stateField - partition object of the state space
 %    inputField - partition object of the input space
 %    changeSpeed - speed from which the acceleration is bounded by engine
-%    power
+%                  power
 
 % Author:       Matthias Althoff
 % Written:      12-October-2009
@@ -23,9 +23,7 @@ function [HA,options,params,stateField,inputField,changeSpeed]=initCar_unitTest(
 %               31-July-2017
 % Last revision:---
 
-
 %------------- BEGIN CODE --------------
-
 
 %set options---------------------------------------------------------------
 %options.tStart = 0; %start time
@@ -76,20 +74,20 @@ ImaxSpeed = interval([0; maxSpeed-eps], [dist; maxSpeed]);
 IaccChange = interval([0; changeSpeed], [dist; changeSpeed+eps]); 
 
 %specify transitions
-tran1{1}=transition(IaccChange,reset,2); 
-tran2{1}=transition(ImaxSpeed,reset,3); 
-tran3=[]; 
-tran4{1}=transition(Istop,reset,5);
-tran5=[];
+tran1=transition(IaccChange,reset,2); 
+tran2=transition(ImaxSpeed,reset,3); 
+tran3=transition(); 
+tran4=transition(Istop,reset,5);
+tran5=transition();
 
 %--------------------------------------------------------------------------
 
 %specify locations              
-loc{1}=location('accSlow',inv,tran1,accSlow);
-loc{2}=location('accFast',inv,tran2,accFast);
-loc{3}=location('sL',inv,tran3,sL);
-loc{4}=location('dec',inv,tran4,dec);
-loc{5}=location('sS',inv,tran5,sS);
+loc(1)=location('accSlow',inv,tran1,accSlow);
+loc(2)=location('accFast',inv,tran2,accFast);
+loc(3)=location('sL',inv,tran3,sL);
+loc(4)=location('dec',inv,tran4,dec);
+loc(5)=location('sS',inv,tran5,sS);
 
 
 %specify hybrid automaton

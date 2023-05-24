@@ -32,7 +32,7 @@ stateBinds = cell(numComp,1);
 counter = 1;
 
 for i=1:numComp
-    numStates = pHA.components{i}.location{1}.contDynamics.dim;
+    numStates = pHA.components(i).location(1).contDynamics.dim;
     stateBinds{i} = (counter:counter+numStates-1)';
     counter = counter + numStates;
 end

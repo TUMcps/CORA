@@ -5,13 +5,14 @@ function v = ndimCross(Q)
 %    v = ndimCross(Q)
 %
 % Inputs:
-%    Q - ???
+%    Q - matrix of column vectors; must be a n x (n-1) matrix
 %
 % Outputs:
-%    v - ???
+%    v - n-dimensional cross product 
 %
 % Example: 
-%    -
+%    Q = rand(4,3);
+%    v = ndimCross(Q);
 %
 % Other m-files required: vertices, polytope
 % Subfunctions: none
@@ -26,7 +27,8 @@ function v = ndimCross(Q)
 
 %------------- BEGIN CODE --------------
 
-v = zeros(size(Q, 1));
+dim = length(Q(:,1));
+v = zeros(dim,1);
 for i=1:length(v)
     D=Q;
     D(i,:)=[];

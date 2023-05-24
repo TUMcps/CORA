@@ -14,7 +14,7 @@ function [R,Rjump,res] = immediateReset(loc,R0,tStart,options)
 % Outputs:
 %    R - reachable set due to continuous evolution
 %    Rjump - list of guard set intersections with the corresponding sets
-%    res - false (consistent output argument structure with location/reach)
+%    res - true (consistent output argument structure with location/reach)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,18 +32,17 @@ function [R,Rjump,res] = immediateReset(loc,R0,tStart,options)
 % create 'reachable set' from immediate reset
 timePoint.set = {R0};
 timePoint.time = {tStart};
-timeInt.set = {};
-timeInt.time = {};
+timeInt = [];
 
 % instantiate reachSet object
 R = reachSet(timePoint,timeInt);
 
 % reset initial set immediately according to reset function
-Rjump{1,1}.set = reset(loc.transition{options.immediateTransition},...
+Rjump{1,1}.set = reset(loc.transition(options.immediateTransition),...
                 R0,options.U);
 
 % target location of immediate transition
-Rjump{1,1}.loc = loc.transition{options.immediateTransition}.target;
+Rjump{1,1}.loc = loc.transition(options.immediateTransition).target;
 
 % branch number always 1
 Rjump{1,1}.parent = 1;

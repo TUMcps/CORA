@@ -66,6 +66,7 @@ sys_dt = linearSysDT(A,B,dt);
 params.tFinal = 1;
 params.R0 = zonotope(ones(dim_x,1),0.1*eye(dim_x));
 params.U = zonotope(zeros(dim_x,1),0.02*diag([0.1, 0.3]));
+clear options
 options.zonotopeOrder = 10;
 
 % compute reachable set

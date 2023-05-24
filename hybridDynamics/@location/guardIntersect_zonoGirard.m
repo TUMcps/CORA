@@ -59,7 +59,7 @@ function R = guardIntersect_zonoGirard(loc,R,guard,options)
         for j = 1:length(R)
            
             % interval enclosure in the transformed space according to [1]
-            intTemp = enclosingInterval(guard,B{i},R{j});
+            intTemp = aux_enclosingInterval(guard,B{i},R{j});
             
             % unite all intervals
             if j == 1
@@ -80,7 +80,7 @@ function R = guardIntersect_zonoGirard(loc,R,guard,options)
         
         % remove parts outside the guard sets inequality constraints
         if ~isempty(poly)
-            Z{i} = tightenSet(Z{i},poly);
+            Z{i} = aux_tightenSet(Z{i},poly);
         end
     end
     
@@ -99,7 +99,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function I = enclosingInterval(guard,B,Z)
+function I = aux_enclosingInterval(guard,B,Z)
 % Implementation of Algorithm 2 in reference paper [1]
 
     % enclose the set with a zonotope
@@ -130,7 +130,7 @@ function I = enclosingInterval(guard,B,Z)
                 Z_2D = zonotope(SZ);
 
                 % Interval of intersection
-                [m,M] = bound_intersect_2D(Z_2D,gamma);
+                [m,M] = aux_bound_intersect_2D(Z_2D,gamma);
 
                 lb(i) = max(m,lb(i));
                 ub(i) = min(M,ub(i));
@@ -144,7 +144,7 @@ function I = enclosingInterval(guard,B,Z)
             Z_2D = zonotope(SZ);
 
             % Interval of intersection
-            [m,M] = bound_intersect_2D(Z_2D,gamma);
+            [m,M] = aux_bound_intersect_2D(Z_2D,gamma);
 
             lb(i) = m;
             ub(i) = M;
@@ -152,7 +152,7 @@ function I = enclosingInterval(guard,B,Z)
     end
 
     % Convert to Zonotope
-    [lb,ub] = robustProjection(B,n,gamma,lb,ub);
+    [lb,ub] = aux_robustProjection(B,n,gamma,lb,ub);
 
     % Increase robustness by equaling out small differences
     test = ub >= lb;
@@ -170,7 +170,7 @@ function I = enclosingInterval(guard,B,Z)
 end
 
 
-function [m,M] = bound_intersect_2D(Z,L)
+function [m,M] = aux_bound_intersect_2D(Z,L)
 % Implementation of Algorithm 3 in [1]
 
     Z = deleteZeros(Z);
@@ -196,17 +196,17 @@ function [m,M] = bound_intersect_2D(Z,L)
     % Direction of 
     if P(1) < gamma
         dir = 1;
-        G = sort_trig(g,dir); % we should look right
+        G = aux_sort_trig(g,dir); % we should look right
     else
         dir = -1;
-        G = sort_trig(g,dir); % or left 
+        G = aux_sort_trig(g,dir); % or left 
     end
     dir = -dir;
     % G_low = G; %backup G
 
     s = sum(2*G,2);
 
-    m = dichotomicSearch(P,G,s,gamma,dir,Z);
+    m = aux_dichotomicSearch(P,G,s,gamma,dir,Z);
 
     
     % Upper bound ---------------------------------------------------------
@@ -222,15 +222,15 @@ function [m,M] = bound_intersect_2D(Z,L)
 
     if P(1) > gamma
         dir = 1;
-        G = -1*sort_trig(g,dir); % we should look left
+        G = -1*aux_sort_trig(g,dir); % we should look left
     else
         dir = -1;
-        G = -1*sort_trig(g,dir); % or right 
+        G = -1*aux_sort_trig(g,dir); % or right 
     end
 
     s = sum(2*G,2);
 
-    M = dichotomicSearch(P,G,s,gamma,dir,Z);
+    M = aux_dichotomicSearch(P,G,s,gamma,dir,Z);
 
     if (abs(m) < 1e-12) && (abs(M) < 1e-12) %prevent numerical error
         m=0;M=0;
@@ -239,7 +239,7 @@ function [m,M] = bound_intersect_2D(Z,L)
     end
 end
 
-function G = sort_trig(g,dir)
+function G = aux_sort_trig(g,dir)
 % sort g according to angle of every vector
 
     theta = cart2pol(g(1,:),g(2,:));
@@ -251,7 +251,7 @@ function G = sort_trig(g,dir)
     G = g(:,I);
 end
 
-function [G1,G2] = split_pivot(G,s,dir)
+function [G1,G2] = aux_split_pivot(G,s,dir)
 % split the set of generators at the pivot element (= angle) 
 
     cos_G = dir*G(1,:)./sqrt(G(1,:).^2 + G(2,:).^2);
@@ -262,7 +262,7 @@ function [G1,G2] = split_pivot(G,s,dir)
 
 end
 
-function [m,m_over,m_unde] = dichotomicSearch(P_0,G_0,s_0,gamma,dir,Z,queue)
+function [m,m_over,m_unde] = aux_dichotomicSearch(P_0,G_0,s_0,gamma,dir,Z,queue)
 % search the intersection between a 2D-zonotope and a line
 
     if nargin<7
@@ -279,9 +279,9 @@ function [m,m_over,m_unde] = dichotomicSearch(P_0,G_0,s_0,gamma,dir,Z,queue)
     max_counter = length(G(1,:));
 
     while length(G(1,:)) > 1 && counter < max_counter
-        [G1,G2] = split_pivot(G,s,dir);
+        [G1,G2] = aux_split_pivot(G,s,dir);
         s1 = sum(2*G1,2);
-        line_int_y = lineIntersect2D(P,P+s1,gamma);
+        line_int_y = aux_lineIntersect2D(P,P+s1,gamma);
         
         if ~isempty(line_int_y) % exist intersection
             G = G1;
@@ -301,10 +301,11 @@ function [m,m_over,m_unde] = dichotomicSearch(P_0,G_0,s_0,gamma,dir,Z,queue)
         counter = counter+1;
     end % only one generator remains
 
-    m = lineIntersect2D(P,P+s,gamma);
+    m = aux_lineIntersect2D(P,P+s,gamma);
 
     if isempty(m)
-        [m,m_over,m_unde] = dichotomicSearch(queue{1,1},queue{1,2},queue{1,3},gamma,dir,Z,queue);
+        [m,m_over,m_unde] = aux_dichotomicSearch(...
+            queue{1,1},queue{1,2},queue{1,3},gamma,dir,Z,queue);
     else
         % overapproximation
         m_over = P(2);
@@ -313,7 +314,7 @@ function [m,m_over,m_unde] = dichotomicSearch(P_0,G_0,s_0,gamma,dir,Z,queue)
     end
 end
 
-function y = lineIntersect2D(p1,p2,gamma)
+function y = aux_lineIntersect2D(p1,p2,gamma)
 % calculate the intersection between a line segment and a vertical line
 
     % check if gamma is one of the points
@@ -354,7 +355,7 @@ function y = lineIntersect2D(p1,p2,gamma)
     end
 end
 
-function [lb,ub] = robustProjection(D,n,gamma,lb,ub)
+function [lb,ub] = aux_robustProjection(D,n,gamma,lb,ub)
 % If the basis D is orthogonal to the hyperplane, set the interval value in
 % the corresponding dimension to the hyperplane parameter to increase the
 % numerical stability
@@ -374,7 +375,7 @@ function [lb,ub] = robustProjection(D,n,gamma,lb,ub)
     end
 end
 
-function Z = tightenSet(Z,P)
+function Z = aux_tightenSet(Z,P)
 % remove the parts of the interval that are located outside the inequality
 % constraints C*x <= d of the constrained hyperplane
 

@@ -28,6 +28,13 @@ function res = eq(P1,P2,varargin)
 
 %------------- BEGIN CODE --------------
 
-res = P1.P == P2.P;
+if isa(P2,'mptPolytope')
+    res = P1.P == P2.P;
+elseif isa(P2,'interval')
+    P2 = mptPolytope(P2);
+    res = P1.P == P2.P;
+else
+    throw(CORAerror('CORA:noops',P1,P2));
+end
 
 %------------- END OF CODE --------------

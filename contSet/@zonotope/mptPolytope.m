@@ -3,7 +3,8 @@ function [P,varargout] = mptPolytope(Z,varargin)
 %
 % Syntax:  
 %    P = mptPolytope(Z)
-%    P = mptPolytope(Z,'outer')
+%    P = mptPolytope(Z,type)
+%    P = mptPolytope(Z,type,method)
 %
 % Inputs:
 %    Z - zonotope object
@@ -38,7 +39,7 @@ function [P,varargout] = mptPolytope(Z,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Author:       Niklas Kochdumper, Matthias Althoff
 % Written:      06-August-2018

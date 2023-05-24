@@ -18,7 +18,7 @@ function res = test_compareMatrices
 
 % Author:       Mark Wetzlinger
 % Written:      22-November-2022
-% Last update:  ---
+% Last update:  08-May-2023 (TL, ordered)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -75,6 +75,21 @@ end
 
 % completely different matrices
 if compareMatrices(A,C)
+    res = false;
+end
+
+% check ordered
+if ~compareMatrices(A,B,eps,'equal',true)
+    res = false;
+elseif compareMatrices(A(:,1:end-1),B,eps,'equal',true)
+    res = false;
+elseif ~compareMatrices(A,B,eps,'subset',true)
+    res = false;
+elseif ~compareMatrices(A(:,1:end-1),B,eps,'subset',true)
+    res = false;
+elseif compareMatrices(A,B_order,eps,'equal',true)
+    res = false;
+elseif compareMatrices(A,B_order,eps,'subset',true)
     res = false;
 end
 

@@ -20,12 +20,12 @@ function res = test_halfspace_plot
 
 % Author:       Mark Wetzlinger
 % Written:      25-May-2022
-% Last update:  ---
+% Last update:  09-May-2023 (TL: added plotted point checks)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-res = true;
+resvec = [];
 
 % normal vector and offset
 a = [-0.5; -1; 0.1];
@@ -37,21 +37,38 @@ hs = halfspace(a,b);
 try
     % try all variations in plotting
     figure;
-    xlim([-2,2]);
+    xlim([-2,3]);
     ylim([-2,2]);
     
     % one argument: object
     plot(hs);
+    resvec(end+1) = true;
     
     % two arguments: object, dimensions
     plot(hs,1);
     plot(hs,[1,2]);
+    resvec(end+1) = true;
+
+    % check if plotted correctly
+    ax = gca();
+    colorOrder = ax.ColorOrder;
+    
+    % plot set
+    plot(hs,[1,2]);
+    V = [-2 2; 3 -0.5; 3 2; -2 2];
+    % check points
+    resvec(end+1) = compareMatrices(V, [ax.Children(1).Vertices],1e-4,'equal',true);
+    % test color
+    resvec(end+1) = isequal(colorOrder(1,:), ax.Children(1).FaceColor);
     
     % close figure
     close;
-catch
+catch ME
     close;
-    res = false;
+    resvec(end+1) = false;
 end
+
+% gather results
+res = all(resvec);
 
 %------------- END OF CODE --------------

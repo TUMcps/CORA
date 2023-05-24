@@ -53,15 +53,15 @@ immTransLabel = cell(length(pHA.components),1);
 for i=1:length(pHA.components)
 
     % transition of location
-    transList = pHA.components{i}.location{locID(i)}.transition;
+    transList = pHA.components(i).location(locID(i)).transition;
     immTransNoLabel{i} = false(length(transList),1);
     immTransLabel{i} = false(length(transList),1);
 
     % loop over transitions in current location, check for empty guard sets
     % with or without synchronization labels
     for j=1:length(transList)
-        if isnumeric(transList{j}.guard) && isempty(transList{j}.guard)
-            if isempty(transList{j}.syncLabel)
+        if isnumeric(transList(j).guard) && isempty(transList(j).guard)
+            if isempty(transList(j).syncLabel)
                 immTransNoLabel{i}(j) = true;
             else
                 immTransLabel{i}(j) = true;
@@ -133,10 +133,10 @@ else % here: any(cell2mat(immTransLabel)) = true
             if immTransLabel{i}(j)
     
                 % synchronization label of immediate transition
-                syncLabel = pHA.components{i}.location{locID(i)}.transition{j}.syncLabel;
+                syncLabel = pHA.components(i).location(locID(i)).transition(j).syncLabel;
         
                 % skip if synchronization label does not meet criteria
-                if ~skipTransition(i,locID,syncLabel,allLabels)
+                if ~aux_skipTransition(i,locID,syncLabel,allLabels)
                     syncTransitionFound = true;
                     break
                 end
@@ -196,8 +196,8 @@ for k=1:length(pHA.components)
     if idxIdReset(k)
         % append virtual self-transition with empty guard set and identity
         % reset function
-        resetStruct.A = eye(pHA.components{k}.location{locID(k)}.contDynamics.dim);
-        resetStruct.c = zeros(pHA.components{k}.location{locID(k)}.contDynamics.dim,1);
+        resetStruct.A = eye(pHA.components(k).location(locID(k)).contDynamics.dim);
+        resetStruct.c = zeros(pHA.components(k).location(locID(k)).contDynamics.dim,1);
         transList{k}{1} = transition([],resetStruct,locID(k),syncLabel);
 
         % target location = same as current location in component k
@@ -224,13 +224,13 @@ for k=1:length(pHA.components)
         % take transition with same synchronization label, but
         % remove label for call of mergeTransitionSets below
         transList{k}{1} = transition(...
-            pHA.components{k}.location{locID(k)}.transition{idx}.guard,...
-            pHA.components{k}.location{locID(k)}.transition{idx}.reset,...
-            pHA.components{k}.location{locID(k)}.transition{idx}.target,...
+            pHA.components(k).location(locID(k)).transition(idx).guard,...
+            pHA.components(k).location(locID(k)).transition(idx).reset,...
+            pHA.components(k).location(locID(k)).transition(idx).target,...
             syncLabel);
 
         % target location
-        list{1}.loc(k) = pHA.components{k}.location{locID(k)}.transition{idx}.target;
+        list{1}.loc(k) = pHA.components(k).location(locID(k)).transition(idx).target;
 
         % update tracker: idx of transition in transition list of location
         tracker(end).transition = [tracker(end).transition; idx];
@@ -264,7 +264,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function skip = skipTransition(currComp,locID,syncLabel,allLabels)
+function skip = aux_skipTransition(currComp,locID,syncLabel,allLabels)
 % check whether current transition is an immediate transition: we have to
 % go over all other instances of the synchronization label in other
 % components to ensure that at least one instance per component is active

@@ -45,6 +45,7 @@ function han = plot(cZ,varargin)
 %               05-April-2023 (TL: clean up using plotPolygon)
 %               27-April-2023 (VG: check if cZ is feasible to avoid
 %               nondescript error message
+%               09-May-2023 (TL: bugfix split plotting)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -53,6 +54,13 @@ function han = plot(cZ,varargin)
 dims = setDefaultValues({[1,2]},varargin);
 % standard plot mode
 mode = 1;
+
+% prepare hold on if splits given
+if ~ishold
+    plot(NaN,NaN,'HandleVisibility','off');
+    % reset color index (before readPlotOptions!)
+    set(gca(),'ColorOrderIndex',1);
+end
 
 % process linespec and Name-Value pairs
 NVpairs = readPlotOptions(varargin(2:end));
@@ -94,7 +102,6 @@ else
     end
 
 end
-
 
 if nargout == 0
     clear han
@@ -168,20 +175,37 @@ function han = plotSplit(cZ,splits,dims,plotOptions)
 
         list = listTemp;
     end
-
+    
+    % save hold status
+    holdStatus = ishold;
     hold on;
+
+    % save color index
+    ax = gca();
+    oldColorIndex = ax.ColorOrderIndex;
 
     for i = 1:length(list)
         % over-approximate the splitted sets with intervals
         if length(dims) == 1
-             han = plot(interval(list{i}),1,plotOptions{:});
+             han_i = plot(interval(list{i}),1,plotOptions{:});
         elseif length(dims) == 2
-            han = plot(interval(list{i}),[1,2],plotOptions{:});
+            han_i = plot(interval(list{i}),[1,2],plotOptions{:});
         else
-            han = plot(interval(list{i}),[1,2,3],plotOptions{:});
+            han_i = plot(interval(list{i}),[1,2,3],plotOptions{:});
+        end
+
+        if i == 1
+            han = han_i;
+            plotOptions = [plotOptions, {'HandleVisibility','off'}];
         end
     end
 
+    % correct color index
+    updateColorIndex(oldColorIndex);
+
+    if ~holdStatus
+        hold off;
+    end
 end
 
 

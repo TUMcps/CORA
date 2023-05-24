@@ -8,6 +8,7 @@ function res = compareMatrices(M1,M2,varargin)
 %    compareMatrices(M1,M2)
 %    compareMatrices(M1,M2,tol)
 %    compareMatrices(M1,M2,tol,flag)
+%    compareMatrices(M1,M2,tol,flag,ordered)
 %
 % Inputs:
 %    M1 - matrix
@@ -16,6 +17,8 @@ function res = compareMatrices(M1,M2,varargin)
 %    flag - (optional) type of comparison
 %           'equal': M1 has to be exactly M2
 %           'subset': M1 only has to be a subset of M2
+%    ordered - (optional) true/false, whether columns have to be in order
+%           default: false
 %
 % Outputs:
 %    -
@@ -36,6 +39,7 @@ function res = compareMatrices(M1,M2,varargin)
 % Author:       Mark Wetzlinger
 % Written:      13-November-2022
 % Last update:  22-November-2022 (MW, add subset variant)
+%               08-May-2023 (TL, ordered)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -48,13 +52,14 @@ if isempty(M1) && isempty(M2)
 end
 
 % parse input arguments
-[tol,type] = setDefaultValues({eps,'equal'},varargin);
+[tol,type,ordered] = setDefaultValues({eps,'equal',false},varargin);
 
 % check input arguments
 inputArgsCheck({{M1,'att','numeric',{'nonnan','nonempty','finite'}};
                 {M2,'att','numeric',{'nonnan','nonempty','finite'}};
                 {tol,'att','numeric',{'nonnan','scalar','nonnegative'}}; ...
-                {type,'str',{'equal','subset'}}});
+                {type,'str',{'equal','subset'}}; ...
+                {ordered,'att','logical'}});
 
 % check if matrices have same number of rows
 if size(M1,1) ~= size(M2,1)
@@ -67,17 +72,29 @@ elseif strcmp(type,'subset') && size(M1,2) > size(M2,2)
     res = false; return
 end
 
+% speed up computation if matrices have to be equal
+if ordered && (strcmp(type,'equal') || all(size(M1) == size(M2)))
+    res = all(withinTol(M1,M2,tol),'all');
+    return
+end
+
 % logical indices which columns have been checked (this is faster than
 % eliminating the columns from the matrices)
 M2logical = false(size(M2,2),1);
+% store index to start searching in M2; used for ordered=true
+% has to be larger than index of last found column
+jmin = 1;
 
 for i=1:size(M1,2)
     % take i-th column of M1 and see if it is part of M2
     found = false;
-    for j=1:size(M2,2)
+    for j=jmin:size(M2,2)
         if ~M2logical(j) && all(withinTol(M1(:,i),M2(:,j),tol))
             found = true;
             M2logical(j) = true;
+            if ordered
+                jmin = j+1;
+            end
             break
         end
     end

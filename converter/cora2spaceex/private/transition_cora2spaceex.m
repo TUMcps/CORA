@@ -36,6 +36,4 @@ tran.setAttribute('source',num2str(id));
 tran.setAttribute('target',num2str(target));
 component.appendChild(tran);
 
-end
-
 %------------- END OF CODE --------------

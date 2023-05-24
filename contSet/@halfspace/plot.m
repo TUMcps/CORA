@@ -81,6 +81,10 @@ poly = mptPolytope(C,d);
 % plot mptPolytope
 han = plot(poly,dims,NVpairs{:});
 
+% reset limits
+xlim(xLim)
+ylim(yLim)
+
 if nargout == 0
     clear han;
 end

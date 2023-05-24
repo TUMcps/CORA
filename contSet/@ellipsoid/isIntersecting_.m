@@ -52,7 +52,7 @@ function res = isIntersecting_(E,S,type,varargin)
 
 %------------- BEGIN CODE --------------
 
-% check if obj.Q is all-zero
+% all-zero shape matrix -> ellipsoid is just a point, check containment
 if rank(E)==0
     res = contains_(S,E.q,type,100*eps);
     return;

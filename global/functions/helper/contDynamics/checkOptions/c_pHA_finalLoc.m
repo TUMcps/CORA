@@ -42,7 +42,7 @@ if ~all(size(params.finalLoc) == [numComp,1])
 else
     for c=1:numComp
         % loop through every component
-        comp = sys.components{c};
+        comp = sys.components(c);
         numLoc = length(comp.location);
         if params.finalLoc(c) > numLoc + 1
             msg = 'must not be larger than the number of locations plus one';

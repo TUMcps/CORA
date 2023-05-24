@@ -23,7 +23,7 @@ function trans = projectInputDependentTrans(pHA,trans,N,compIndex,locID,targ,id)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Author:       Maximilian Perschl
 % Written:      17-February-2022
@@ -48,9 +48,9 @@ function trans = projectInputDependentTrans(pHA,trans,N,compIndex,locID,targ,id)
 
     % project reset function to the higher dimension
     if isfield(trans.reset,'A')
-        reset = projectLinearReset(pHA,trans.reset,compIndex,locID,id);
+        reset = aux_projectLinearReset(pHA,trans.reset,compIndex,locID,id);
     else
-        reset = projectNonlinearReset(pHA,trans.reset,compIndex,id);
+        reset = aux_projectNonlinearReset(pHA,trans.reset,compIndex,locID,id);
     end
     
     % update the target location
@@ -62,7 +62,7 @@ function trans = projectInputDependentTrans(pHA,trans,N,compIndex,locID,targ,id)
 end
 
 % Auxiliary Functions -----------------------------------------------------
-function resetStruct = projectLinearReset(pHA,resetStruct,compIndex,locID,id)
+function resetStruct = aux_projectLinearReset(pHA,resetStruct,compIndex,locID,id)
 % compute new reset matrices A,B,c according to the state/input dimensions
 % of the new automaton, where the mapping of inputs (which are states of
 % other components, defined in pHA.bindsInputs) is resolved; the resulting
@@ -110,12 +110,12 @@ function resetStruct = projectLinearReset(pHA,resetStruct,compIndex,locID,id)
             % multiplied by the transition's B
 
             % index of component where input i comes from
-            otherComponentIdx = bind(i,1);
+            otherCompIdx = bind(i,1);
             % row in output equation of other component
             otherOutputIdx = bind(i,2);
 
             % get flow of other component
-            otherFlow = pHA.components{otherComponentIdx}.location{locID(otherComponentIdx)}.contDynamics;
+            otherFlow = pHA.components(otherCompIdx).location(locID(otherCompIdx)).contDynamics;
 
             % is other component's flow linear or nonlinear?
             if isa(otherFlow,'linearSys')
@@ -133,7 +133,7 @@ function resetStruct = projectLinearReset(pHA,resetStruct,compIndex,locID,id)
                 % global)
                 for j = 1:size(otherFlow.D,2)
                     if ~(otherFlow.D(otherOutputIdx,j) == 0 ...
-                            || inputBinds{otherComponentIdx}(j,1) == 0)
+                            || inputBinds{otherCompIdx}(j,1) == 0)
                         throw(CORAerror('CORA:notSupported',...
                             ['It is not allowed for the throughput matrix D '...
                             'to point to inputs that are defined by the '...
@@ -169,15 +169,15 @@ function resetStruct = projectLinearReset(pHA,resetStruct,compIndex,locID,id)
                 end
 
                 % adjust full reset matrices A, B, and vector c
-                Aproj(stateBinds{compIndex},stateBinds{otherComponentIdx}) = ...
-                    Aproj(stateBinds{compIndex},stateBinds{otherComponentIdx}) + BC_i;
+                Aproj(stateBinds{compIndex},stateBinds{otherCompIdx}) = ...
+                    Aproj(stateBinds{compIndex},stateBinds{otherCompIdx}) + BC_i;
                 
                 % indices of the global inputs the other component receives 
                 globalInputIndices = [];
-                for j = 1:size(inputBinds{otherComponentIdx},1)
-                    if inputBinds{otherComponentIdx}(j,1) == 0
+                for j = 1:size(inputBinds{otherCompIdx},1)
+                    if inputBinds{otherCompIdx}(j,1) == 0
                         globalInputIndices = vertcat(globalInputIndices,...
-                            inputBinds{otherComponentIdx}(j,2));
+                            inputBinds{otherCompIdx}(j,2));
                     end
                 end
                 if ~isempty(globalInputIndices)
@@ -214,7 +214,7 @@ function resetStruct = projectLinearReset(pHA,resetStruct,compIndex,locID,id)
 
 end
 
-function resetResult = projectNonlinearReset(pHA,resetStruct,compIdx,id)
+function resetResult = aux_projectNonlinearReset(pHA,resetStruct,compIdx,locID,id)
 % project nonlinear reset function to the full state dimension, where the
 % reset function depends on inputs (either states of other components or
 % global inputs); additionally, we update all derivatives up to third order
@@ -225,7 +225,7 @@ function resetResult = projectNonlinearReset(pHA,resetStruct,compIdx,id)
     
     % initialize reset function
     if id
-        f = sym(ones(pHA.numStates,1));
+        f = x;
     else
         f = sym(zeros(pHA.numStates,1));
     end
@@ -237,14 +237,25 @@ function resetResult = projectNonlinearReset(pHA,resetStruct,compIdx,id)
     x_reset = x(statebinds);
     
     % resolve input binds: in addition to its own states, the reset
-    % function of the component takes the inputs (either from other
+    % function of the component takes the inputs (either outputs from other
     % components or global inputs) as input arguments
     for i = 1:size(pHA.bindsInputs{compIdx},1)
+        % read out input bind:
+        % binds(1) is component from which the output is fed as an input
+        % binds(2) is the number of the fed output from that component
         binds = pHA.bindsInputs{compIdx}(i,:);
-        if binds(1) == 0 
+        
+        if binds(1) == 0
+            % global input
             x_reset = [x_reset;u(binds(2))];
         else
-            x_reset = [x_reset;x(pHA.bindsStates{binds(1)}(binds(2)))];
+            % output from another component: insert state vector into
+            % corresponding output equation
+            y = pHA.components(binds(1)).location(locID(binds(1))).contDynamics.out_mFile(x(pHA.bindsStates{binds(1)}),u);
+
+            % concatenate
+            % x_reset = [x_reset;x(pHA.bindsStates{binds(1)}(binds(2)))];
+            x_reset = [x_reset;y(binds(2))];
         end
     end
     

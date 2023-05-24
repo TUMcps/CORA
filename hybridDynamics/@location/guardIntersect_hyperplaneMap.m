@@ -28,17 +28,17 @@ function R = guardIntersect_hyperplaneMap(loc,guard,R0,options)
 %------------- BEGIN CODE --------------
 
     % refine the time interval at which the guard set is hit
-    [R0,tmin,tmax,Rcont] = refinedIntersectionTime(loc,guard,R0,options); 
+    [R0,tmin,tmax,Rcont] = aux_refinedIntersectionTime(loc,guard,R0,options); 
     tmax = tmax - tmin;
 
     % average hitting time
     th = tmax/2;
     
     % system matrix A and set of uncertain inputs U
-    [A,U] = systemParams(loc.contDynamics,Rcont,options);
+    [A,U] = aux_systemParams(loc.contDynamics,Rcont,options);
     
     % constant part b of the flow \dot y = A*y0 + b (see Prop. 1 in [1])
-    b = constantFlow(A,R0,U,th,options.taylorTerms);
+    b = aux_constantFlow(A,R0,U,th,options.taylorTerms);
     
     % reduce order of the initial set to speed up the computations
     R0red = reduce(zonotope(R0),options.reductionTechnique,options.guardOrder);
@@ -48,15 +48,15 @@ function R = guardIntersect_hyperplaneMap(loc,guard,R0,options)
     
     % error due to abstraction to state-dependent constant flow 
     % (see Sec. 5.3 in [1])
-    err = abstractionError(A,U,R0red,th,tmax,options.taylorTerms);
+    err = aux_abstractionError(A,U,R0red,th,tmax,options.taylorTerms);
     
     % first part y_h of the mapped set (see Prop. 3 in [1])
-    [k,L,Q,phi] = taylorSeriesParam(guard,A,b,R0red);
+    [k,L,Q,phi] = aux_taylorSeriesParam(guard,A,b,R0red);
     
     res1 = k + L*R0_ + 0.5*phi*quadMap(R0red_,Q);
 
     % second part R_he of the mapped set (see (15) in [1])
-    res2 = mappedSetError(guard,R0,A,b,err);
+    res2 = aux_mappedSetError(guard,R0,A,b,err);
     
     % overall mapped set
     R = res1 + res2;
@@ -71,7 +71,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function [Rmin,tmin,tmax,int] = refinedIntersectionTime(loc,guard,R0,options)
+function [Rmin,tmin,tmax,int] = aux_refinedIntersectionTime(loc,guard,R0,options)
 % this function computes the reachable set with a smaller times step to
 % refine the time at which the reachable set intersects the guard set
 
@@ -116,7 +116,7 @@ function [Rmin,tmin,tmax,int] = refinedIntersectionTime(loc,guard,R0,options)
     end
 end
 
-function err = abstractionError(A,U,R0,th,tmax,order)
+function err = aux_abstractionError(A,U,R0,th,tmax,order)
 % Compute the set of abstractions errors due to the abstraction to state
 % dependent constant flow according to Sec. 5.3 in [1]
 
@@ -182,7 +182,7 @@ function err = abstractionError(A,U,R0,th,tmax,order)
 end
 
 
-function [A,U] = systemParams(sys,Rcont,options)
+function [A,U] = aux_systemParams(sys,Rcont,options)
 % get the system matrix A and the set of uncertain inputs U 
 
     if isa(sys,'linearSys')
@@ -239,7 +239,7 @@ function [A,U] = systemParams(sys,Rcont,options)
 end
 
 
-function R = mappedSetError(guard,R0,A,b,err)
+function R = aux_mappedSetError(guard,R0,A,b,err)
 % compute the second part R_he of the mapped set (see (15) in [1])
 
     % obtain object properties
@@ -256,7 +256,7 @@ function R = mappedSetError(guard,R0,A,b,err)
 end
 
 
-function b = constantFlow(A,R0,U,th,order)
+function b = aux_constantFlow(A,R0,U,th,order)
 % compute constant part b of the flow \dot y = A*y_0 + b according to 
 % Prop. 1 in [1]
     
@@ -284,7 +284,7 @@ function b = constantFlow(A,R0,U,th,order)
 end
 
 
-function [k,L,Q,phi] = taylorSeriesParam(guard,A,b,R0)
+function [k,L,Q,phi] = aux_taylorSeriesParam(guard,A,b,R0)
 % Computes the coefficients of the second order taylor series 
 %
 %   y_i \in k_i + L_i (x-x*) + 0.5*phi*(x-x*)'*Q_i*(x-x*)

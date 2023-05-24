@@ -10,7 +10,7 @@ function trans = guard2polytope(trans)
 % Outputs:
 %    trans - modified transition object
 %
-% Other m-files required: not specified
+% Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %

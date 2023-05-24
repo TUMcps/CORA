@@ -71,7 +71,7 @@ for iComp = 1:nrComp
 
     % initialize 'loc' variable, (technically, we only need this for
     % iComp > 1, but add it everywhere for consistency)
-    componentStr = componentStr + "loc = {};" + newlines(2);
+    componentStr = componentStr + "clear loc" + newlines(2);
     
     % shorter access to locations of i-th component
     locs = comp.States;
@@ -92,7 +92,7 @@ for iComp = 1:nrComp
         invariantStr = aux_invariantStr(loc);
         
         % init transition string
-        transitionStr = "trans = {};" + newline;
+        transitionStr = "trans = transition();" + newline;
 
         % loop over all outgoing transitions
         allTrans = loc.Trans;
@@ -112,12 +112,12 @@ for iComp = 1:nrComp
 
             % concatenate transition string incl. synchronization labels
             if strlength(trans.label) > 0
-                transStr = "trans{" + num2str(iTrans) + ...
-                    "} = transition(guard, reset, " + ...
+                transStr = "trans(" + num2str(iTrans) + ...
+                    ") = transition(guard, reset, " + ...
                     target + ", '" + trans.label + "');" + newlines(2);
             else
-                transStr = "trans{" + num2str(iTrans) + ...
-                    "} = transition(guard, reset, " + ...
+                transStr = "trans(" + num2str(iTrans) + ...
+                    ") = transition(guard, reset, " + ...
                     target + ");" + newlines(2);
             end
             % full transition string
@@ -131,7 +131,7 @@ for iComp = 1:nrComp
         else
             locName = locs(iLoc).name;
         end
-        locNameStr = "loc{" + num2str(iLoc) + "} = location('" + locName + ...
+        locNameStr = "loc(" + num2str(iLoc) + ") = location('" + locName + ...
             "', inv, trans, dynamics);" + newlines(4);
 
         % append location/dynamics/invariant/transition/location name
@@ -457,7 +457,7 @@ function inputBindsStr = aux_inputBindsStr(comp,iComp,components)
 
 % general information about input binds
 parallelComm = text2comment("composition: hybrid automaton and input binds") + ...
-    newline + "comp{" + num2str(iComp) + "} = hybridAutomaton(loc);" + newlines(2);
+    newline + "comp(" + num2str(iComp) + ") = hybridAutomaton(loc);" + newlines(2);
 
 % syntax of inputBinds: mx2 array, where
 %   m - number of input arguments to current component

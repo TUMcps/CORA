@@ -10,7 +10,7 @@ function [params,options] = adaptOptions(loc,options)
 %    options - settings for hybrid reachability analysis
 %
 % Outputs:
-%    params - parameter for continuous system reachability analysis
+%    params - parameters for continuous system reachability analysis
 %    options - settings for continuous system reachability analysis
 %
 % Other m-files required: none

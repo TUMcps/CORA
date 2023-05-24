@@ -1,25 +1,22 @@
-function R = potOut(loc,R,minInd,maxInd,options)
+function R = potOut(loc,R,minInd,maxInd)
 % potOut - determines the reachable sets after intersection with the
 %    invariant and obtains the fraction of the reachable set that must have
 %    transitioned; the resulting reachable sets are all converted to
 %    polytopes
 %
 % Syntax:  
-%    R = potOut(loc,R,minInd,maxInd,options)
+%    R = potOut(loc,R,minInd,maxInd)
 %
 % Inputs:
 %    loc - location object
 %    R - reachSet object storing the reachable set
-%    minInd - vector containting the indices of the set which first
+%    minInd - vector containing the indices of the set which first
 %             intersected the guard set for each guard set 
-%    maxInd - vector containting the indices of the set which last
-%             intersected the guard set for each guard set 
-%    options - struct containing algorithm settings
+%    maxInd - vector containing the indices of the set which last
+%             intersected the guard set for each guard set
 %
 % Outputs:
 %    R - reachSet object
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -57,12 +54,12 @@ for i=1:length(ind)
     iSet = ind(i);
         
     % overapproximate reachable set by a halfspace representation
-    timeInt.set{iSet} = mptPolytope(timeInt.set{iSet},options);
-    timePoint.set{iSet} = mptPolytope(timePoint.set{iSet},options);
+    timeInt.set{iSet} = mptPolytope(timeInt.set{iSet});
+    timePoint.set{iSet} = mptPolytope(timePoint.set{iSet});
         
     % intersect with invariant set
     timeInt.set{iSet} = and_(loc.invariant,timeInt.set{iSet},'exact');
-    timePoint.set{iSet} = and_(loc.invariant & timePoint.set{iSet},'exact');
+    timePoint.set{iSet} = and_(loc.invariant,timePoint.set{iSet},'exact');
 end
 
 % remove last set if it is located outside the invariant

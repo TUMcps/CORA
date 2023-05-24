@@ -12,7 +12,7 @@ classdef simResult
 %        each trajectory is a matrix of dimension [N,n]
 %    t - cell-array storing the time points for the simulated trajectories
 %        as vectors of dimension [N,1]
-%    loc - cell-array storing the locations for the simulated trajectories
+%    loc - double-array storing the locations for the simulated trajectories
 %    y - cell-array storing the output of the simulated trajectories, where
 %        each trajectory is a matrix of dimension [N,o]
 %    a - cell-array storing the algebraic variables of the simulated
@@ -44,7 +44,7 @@ properties (SetAccess = private, GetAccess = public)
     y (:,1) {cell} = {};     % outputs of the simulated trajectories
     a (:,1) {cell} = {};     % algebraic variables of the sim. trajectories
     t (:,1) {cell} = {};     % time of the simulated trajectories
-    loc (:,1) {cell} = {};   % index of the locations (hybrid systems only)
+    loc = [];                % index of the locations (0 for contDynamics)
     
 end
 
@@ -56,8 +56,11 @@ methods
         
         % parse input arguments
         if nargin == 0
-            return
             % empty object
+            return
+        elseif nargin == 1 && isa(varargin{1},'simResult')
+            % copy constructor
+            simRes = varargin{1};
         elseif nargin == 1
             throw(CORAerror('CORA:notEnoughInputArgs',2));
         elseif nargin == 2
@@ -82,46 +85,49 @@ methods
         	throw(CORAerror('CORA:tooManyInputArgs',5));
         end
 
+
         % check correct format of simulated trajectories
-        % - time has to be non-empty, the entries have to be nonnegative
-        %   and monotonically increasing
-        if isempty(simRes.t) || ~iscell(simRes.t) || ...
-                any(cellfun(@(x) size(x,2),simRes.t,'UniformOutput',true) ~= 1) || ...
-                any(cellfun(@(x) any(x < 0),simRes.t,'UniformOutput',true)) || ...
-                any(cellfun(@(x) any(diff(x < 0)),simRes.t,'UniformOutput',true))
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                'Property .t has the wrong format.'));
-        end
-        tVeclength = cellfun(@(x) length(x),simRes.t,'UniformOutput',true);
-        % check which trajectories are given
-        props = {'x','y','a'};
-        isTraj = [~isempty(simRes.x), ~isempty(simRes.y), ~isempty(simRes.a)];
-
-        % all trajectories have to have same number of runs
-        if nnz(isTraj) > 1
-            lengths = [length(simRes.x) length(simRes.y) length(simRes.a)];
-            if any(diff(lengths(isTraj)) ~= 0)
+        if CHECKS_ENABLED
+            % - time has to be non-empty, the entries have to be nonnegative
+            %   and monotonically increasing
+            if isempty(simRes.t) || ~iscell(simRes.t) || ...
+                    any(cellfun(@(x) size(x,2),simRes.t,'UniformOutput',true) ~= 1) || ...
+                    any(cellfun(@(x) any(x < 0),simRes.t,'UniformOutput',true)) || ...
+                    any(cellfun(@(x) any(diff(x < 0)),simRes.t,'UniformOutput',true))
                 throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'All trajectories have to have the same number of runs.'));
+                    'Property .t has the wrong format.'));
             end
-        end
-
-        % number of steps of each run has to equal length of time vector
-        for i=1:length(props)
-            proplength = cellfun(@(x) size(x,1),simRes.(props{i}),'UniformOutput',true);
-            if ~isempty(proplength) && any(proplength ~= tVeclength)
+            tVeclength = cellfun(@(x) length(x),simRes.t,'UniformOutput',true);
+            % check which trajectories are given
+            props = {'x','y','a'};
+            isTraj = [~isempty(simRes.x), ~isempty(simRes.y), ~isempty(simRes.a)];
+    
+            % all trajectories have to have same number of runs
+            if nnz(isTraj) > 1
+                lengths = [length(simRes.x) length(simRes.y) length(simRes.a)];
+                if any(diff(lengths(isTraj)) ~= 0)
                     throw(CORAerror('CORA:wrongInputInConstructor',...
-                        'The length of each run has to match the length of the time vector.'));
+                        'All trajectories have to have the same number of runs.'));
+                end
             end
-        end
-
-        % number of columns has to be the same for each group of trajectories
-        for i=1:length(props)
-            if isTraj(i) && length(simRes.(props{i})) > 1
-                cols = cellfun(@(x) size(x,2),simRes.(props{i}),'UniformOutput',true);
-                if any(diff(cols) > 0)
-                    throw(CORAerror('CORA:wrongInputInConstructor',...
-                        'The number of columns in .x/.y,/.a has to be the same in each run'));
+    
+            % number of steps of each run has to equal length of time vector
+            for i=1:length(props)
+                proplength = cellfun(@(x) size(x,1),simRes.(props{i}),'UniformOutput',true);
+                if ~isempty(proplength) && any(proplength ~= tVeclength)
+                        throw(CORAerror('CORA:wrongInputInConstructor',...
+                            'The length of each run has to match the length of the time vector.'));
+                end
+            end
+    
+            % number of columns has to be the same for each group of trajectories
+            for i=1:length(props)
+                if isTraj(i) && length(simRes.(props{i})) > 1
+                    cols = cellfun(@(x) size(x,2),simRes.(props{i}),'UniformOutput',true);
+                    if any(diff(cols) > 0)
+                        throw(CORAerror('CORA:wrongInputInConstructor',...
+                            'The number of columns in .x/.y,/.a has to be the same in each run'));
+                    end
                 end
             end
         end

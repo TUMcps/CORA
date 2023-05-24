@@ -29,7 +29,7 @@ function R = guardIntersect_polytope(loc,R,guard,options)
 
     % enclose all relevant reachable sets by polytopes
     for i = 1:length(R)
-        R{i} = conv2polytope(R{i});
+        R{i} = aux_conv2polytope(R{i});
     end
 
     % intersect the reachable sets with the guard set
@@ -64,7 +64,7 @@ function R = guardIntersect_polytope(loc,R,guard,options)
                 
             case 'flow'
                 % Flow method as described in Section V.A.d) in [2]
-                Z{i} = flowEnclosure(loc.contDynamics,V,options); 
+                Z{i} = aux_flowEnclosure(loc.contDynamics,V,options); 
                 
             otherwise
                 throw(CORAerror('CORA:wrongFieldValue','options.enclose',...
@@ -84,7 +84,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function Z = flowEnclosure(sys,V,options)
+function Z = aux_flowEnclosure(sys,V,options)
 % Flow method for enclosing a set of vertices with a zonotope as described 
 % in Section V.A.d) in [1]
 
@@ -105,7 +105,7 @@ function Z = flowEnclosure(sys,V,options)
 
 end
 
-function P = conv2polytope(R)
+function P = aux_conv2polytope(R)
 % compute an enclosing polytope for the given set
 
     % enclose set with zonotope

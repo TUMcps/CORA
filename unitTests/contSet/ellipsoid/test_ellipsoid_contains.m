@@ -54,4 +54,16 @@ for i=1:length(E_c)
 %     end
 end
 
+
+% ellipsoid and zonotope
+Q = [13 7; 7 5];
+q = [1; 2];
+E = ellipsoid(Q,q);
+
+c = [1;1];
+G = [1 1 1; 1 -1 0];
+Z = zonotope(c,G);
+
+res = res && ~contains(E,Z);
+
 %------------- END OF CODE --------------

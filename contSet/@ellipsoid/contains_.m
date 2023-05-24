@@ -52,11 +52,7 @@ function res = contains_(E,S,type,varargin)
 
 % containment check
 if isnumeric(S)
-
-    res = false(1,size(S,2));
-    for i = 1:size(S,2)
-        res(i) = aux_containsPoint(E,S(:,i));
-    end
+    res = aux_containsPoint(E,S);
 
 elseif isa(S,'ellipsoid')
     res = containsEllipsoid(E,S);
@@ -73,9 +69,9 @@ elseif isa(S,'zonotope') && strcmp(type,'approx')
 
 else
     if strcmp(type,'exact')
-        if ismethod(S,'vertices')
+        if ismethod(S,'vertices_')
             % check if all vertices of the set are contained
-            res = contains_(E,vertices(S),type,0);
+            res = all(contains_(E,vertices(S),type,0));
         else
             throw(CORAerror('CORA:noExactAlg',E,S));
         end   
@@ -91,58 +87,60 @@ else
 
 end
 
+end
+
 
 % Auxiliary Functions -----------------------------------------------------
-function [B,Val] = aux_containsPoint(E,Y)
-% gives an array of boolean values indiciating whether points Y are
-% contained in the ellipsoid
-% inputs:
-%    E - ellipsoids object
-%    Y - Points
-% outputs:
-%    B - boolean values indiciating whether
-%        points Y are contained in the ellipsoid
-%    Val-if contained, Value indicates the relative distance to the center of E: Val<=1
-%    <=> contained (=1: on boundary); otherwise: inf
 
-n = dim(E);
-if ~isa(Y,'double')
-    throw(CORAerror('CORA:wrongValue','second',"a double matrix"));
-end
-[m,N] = size(Y);
-if m~=n
-    throw(CORAerror('CORA:dimensionMismatch',E,Y));
-end
+function [res,val] = aux_containsPoint(E,Y)
+% gives an array of boolean values indicating whether points Y are
+% contained in the ellipsoid; additionally, the relative distance to the
+% center of the ellipsoid is returned (<= 1 if contained, =1 on boundary,
+% otherwise Inf)
 
+% number of points
+N = size(Y,2);
 
-B = false(1,N);
-Val = inf(1,N);
+% init results
+res = false(1,N);
+val = inf(1,N);
 ind_rem_eq = true(1,N);
 
+% degenerate case
 if ~isFullDim(E)
+
+    % subspace dimension
     nt = rank(E);
-    % if all-zero Q matrix
-    if nt==0
-        B = all(withinTol(repmat(E.q,1,N),Y,E.TOL),1);
-        Val(B) = 0;
+
+    % all-zero Q matrix -> ellipsoid is just a point
+    if nt == 0
+        res = all(withinTol(repmat(E.q,1,N),Y,E.TOL),1);
+        val(res) = 0;
         return;
     end
+
+    % project via svd
     [T,~,~] = svd(E.Q);
     E = T'*E;
     Y = T'*Y;
+
     % save remainder
     x_rem = E.q(nt+1:end);
     Y_rem = Y(nt+1:end,:);
-    % check whether x_rem==Y_rem (those that do not fullfill that are
-    % already not contained)
-    % indices of B which might be contained
-    ind_rem_eq = all(withinTol(repmat(x_rem,1,size(Y_rem,2)),Y_rem,E.TOL));
+
+    % check whether x_rem==Y_rem (those that do not fulfill are already
+    % not contained)
+
+    % indices of res which might be contained
+    ind_rem_eq = all(withinTol(repmat(x_rem,1,size(Y_rem,2)),Y_rem,E.TOL),1);
+
     % if only center remains
     if rank(E)==0
-        B(ind_rem_eq) = true;
-        Val(ind_rem_eq) = 1;
+        res(ind_rem_eq) = true;
+        val(ind_rem_eq) = 1;
         return;
     end
+
     % project so that E is no longer degenerate
     rankE = rank(E);
     E = project(E,1:rankE);
@@ -153,13 +151,15 @@ end
 tmp = 1:N;
 ii_eq_rem = tmp(ind_rem_eq);
 
-% now, E is fulldimensional
+% now, E is full-dimensional
 for i=ii_eq_rem
     % simply check using ellipsoid equation
     val_i = (Y(:,i)-E.q)'*(E.Q\(Y(:,i)-E.q));
     tmp_E = 1 + E.TOL;
-    B(i) = val_i < tmp_E | withinTol(val_i,tmp_E);
-    Val(i) = B(i)*val_i;
+    res(i) = val_i < tmp_E | withinTol(val_i,tmp_E);
+    val(i) = res(i)*val_i;
+end
+
 end
 
 %------------- END OF CODE --------------

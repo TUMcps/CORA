@@ -48,10 +48,10 @@ function HA = integrateAndFireNeuron()
     guard = conHyperplane([1 0],u_fire);
     reset.A = eye(2); reset.c = [0;0];
     
-    tran{1} = transition(guard,reset,2);
+    tran = transition(guard,reset,2);
     
     % location object
-    loc{1} = location(inv,tran,sys);
+    loc(1) = location(inv,tran,sys);
     
     
     % Location 2: Firing --------------------------------------------------
@@ -71,10 +71,10 @@ function HA = integrateAndFireNeuron()
     guard = conHyperplane([1 0],u_out);
     reset.A = eye(2); reset.c = [0;0];
     
-    tran{1} = transition(guard,reset,3);
+    tran = transition(guard,reset,3);
     
     % location object
-    loc{2} = location(inv,tran,sys);
+    loc(2) = location(inv,tran,sys);
     
     
     % Location 3: Reset ---------------------------------------------------
@@ -94,10 +94,10 @@ function HA = integrateAndFireNeuron()
     guard = conHyperplane([1 0],u_rest);
     reset.A = eye(2); reset.c = [0;0];
     
-    tran{1} = transition(guard,reset,1);
+    tran = transition(guard,reset,1);
     
     % location object
-    loc{3} = location(inv,tran,sys);
+    loc(3) = location(inv,tran,sys);
 
     
     % Hybrid Automaton ----------------------------------------------------

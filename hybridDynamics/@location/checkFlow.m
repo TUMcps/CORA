@@ -7,13 +7,14 @@ function [res,R] = checkFlow(loc,guard,R,options)
 %
 % Inputs:
 %    loc - location object
-%    guard - guard set (class: constrained hyperplane)
-%    R - list of reachable sets
+%    guard - guard set (class: conHyperplane, levelSet)
+%    R - cell-array of reachable sets
 %    options - struct containing the algorithm settings
 %
 % Outputs:
-%    res - true/false whether flow points toward the guard
-%    R - updated list of reachable sets
+%    res - true/false whether flow points toward the guard for any of the
+%          intersecting reachable sets
+%    R - updated cell-array of reachable sets
 %
 % References:
 %    [1] N. Kochdumper. "Extensions to Polynomial Zonotopes and their
@@ -38,9 +39,9 @@ function [res,R] = checkFlow(loc,guard,R,options)
     % adapt the guard set such that the normal vector of the hyperplane
     % points toward the outside of the invariant set
     if isa(guard,'conHyperplane')
-        guard = adaptGuard(loc,guard,R); 
+        guard = aux_adaptGuard(loc,guard,R); 
     else
-        outside = getOutside(loc,guard,R);
+        outside = aux_getOutside(loc,guard,R);
     end
     
     % loop over all reachable sets
@@ -51,9 +52,9 @@ function [res,R] = checkFlow(loc,guard,R,options)
             
         % check if the flow points toward the guard set
         if isa(guard,'conHyperplane')
-            res = flowInDirection(sys,guard,R{i},options);
+            res = aux_flowInDirection(sys,guard,R{i},options);
         else
-            res = flowInDirectionLevelSet(sys,guard,R{i},outside,options);
+            res = aux_flowInDirectionLevelSet(sys,guard,R{i},outside,options);
         end
         
         if res
@@ -74,8 +75,9 @@ end
 
 
 % Auxiliary Functions -----------------------------------------------------
+% TODO: move to contDynamics?
 
-function res = flowInDirection(sys,guard,R,options)
+function res = aux_flowInDirection(sys,guard,R,options)
 % check if the flow of the system points in the direction of the guard set
     
     % get hyperplane normal direction
@@ -133,7 +135,7 @@ function res = flowInDirection(sys,guard,R,options)
     res = supremum(interval(flow)) > 0;
 end
 
-function res = flowInDirectionLevelSet(sys,guard,R,outside,options)
+function res = aux_flowInDirectionLevelSet(sys,guard,R,outside,options)
 % check if the flow of the system points in the direction of the guard set
 
     % fast check: check if the flow of the center points towards the guard
@@ -166,7 +168,7 @@ function res = flowInDirectionLevelSet(sys,guard,R,outside,options)
     res = supremum(interval(flow)) > 0;
 end
 
-function guard = adaptGuard(loc,guard,R)
+function guard = aux_adaptGuard(loc,guard,R)
 % adapt the guard set such that the normal vector of the hyperplane points
 % toward the outside of the invariant set
 
@@ -192,7 +194,7 @@ function guard = adaptGuard(loc,guard,R)
     end
 end
 
-function outside = getOutside(loc,guard,R)
+function outside = aux_getOutside(loc,guard,R)
 % determine which side of the guard set is the outside of the invariant set
 % g(x) >= 0 is outside => outside = 1
 % g(x) < 0 is outside => outside = -1

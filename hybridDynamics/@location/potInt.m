@@ -47,8 +47,8 @@ counter = 1;
 for i = 1:nrTrans
     
     % read out guard set and target location
-    guardSet = loc.transition{i}.guard;
-    target = loc.transition{i}.target;
+    guardSet = loc.transition(i).guard;
+    target = loc.transition(i).target;
     
     % only check if target location is not one of the terminal locations
     if ~all(target == options.finalLoc)

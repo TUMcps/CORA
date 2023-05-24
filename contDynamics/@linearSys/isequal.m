@@ -64,17 +64,12 @@ end
 % now, sizes of matrices do not need to be checked anymore...
 
 % check system matrix
-if ~all(withinTol(sys1.A,sys2.A,tol))
+if ~all(all(withinTol(sys1.A,sys2.A,tol)))
     res = false; return
 end
 
 % check input matrix
-if ~all(withinTol(sys1.B,sys2.B,tol))
-    res = false; return
-end
-
-% check input matrix
-if ~all(withinTol(sys1.B,sys2.B,tol))
+if ~all(all(withinTol(sys1.B,sys2.B,tol)))
     res = false; return
 end
 

@@ -9,7 +9,7 @@ function res = testLong_spaceex2cora_hybrid_spacecraft()
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 
 % Author:       Niklas Kochdumper
 % Written:      18-May-2020

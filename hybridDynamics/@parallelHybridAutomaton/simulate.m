@@ -11,7 +11,7 @@ function [t,x,loc] = simulate(pHA,params)
 % Outputs:
 %    t - cell-array storing the time vectors
 %    x - cell-array storing the state trajectories
-%    loc - cell-array storing the visited locations
+%    loc - double-array storing the visited locations
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -34,7 +34,8 @@ function [t,x,loc] = simulate(pHA,params)
     locCurr = options.startLoc;      % current location
     xInter = options.x0;             % intermediate state at transitions
 
-    loc = {}; t = {}; x = {};
+    t = {}; x = {}; loc = [];
+    cnt = 0;
 
     % create list of label occurences to check whether all labeled
     % transitions are enabled at the same time
@@ -44,11 +45,14 @@ function [t,x,loc] = simulate(pHA,params)
     while tInter < options.tFinal && ~isempty(locCurr) && ...
            ~all(options.finalLoc == locCurr)
 
+        % increment counter
+        cnt = cnt + 1;
+
         % construct new location with local Automaton Product
         currentLocation = locationProduct(pHA,locCurr,allLabels);
 
         % construct system input for this location
-        params.u = mergeInputVector(locCurr,options);
+        params.u = aux_mergeInputVector(locCurr,options);
 
         % simulate within the current location
         params.tStart = tInter;
@@ -60,15 +64,20 @@ function [t,x,loc] = simulate(pHA,params)
         % update time
         tInter = tNew(end);
 
-        % store results
-        t{end+1,1} = tNew; x{end+1,1} = xNew; loc{end+1,1} = params.loc;
+        % concatenate to one full trajectory via cell-arrays (we cannot
+        % splice the individual parts into one large sequence since the
+        % number of states can vary across locations)
+        t{cnt,1} = tNew;
+        x{cnt,1} = xNew;
+        loc(cnt,:) = params.loc';
     end
+    
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary Function ------------------------------------------------------
 
-function res = mergeInputVector(loc,options)
+function res = aux_mergeInputVector(loc,options)
 % construct the input vector for the current location from the inputs for 
 % the subcomponents
 
@@ -76,7 +85,8 @@ function res = mergeInputVector(loc,options)
     temp = unique(options.inputCompMap);
     
     for i = 1:length(temp)
-       res(options.inputCompMap == temp(i)) = options.uLoc{temp(i)}{loc(temp(i))}; 
+        res(options.inputCompMap == temp(i)) = ...
+            options.uLoc{temp(i)}{loc(temp(i))}; 
     end
 end
 

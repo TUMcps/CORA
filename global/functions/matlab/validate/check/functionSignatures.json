@@ -1,0 +1,15 @@
+{
+  "_schemaVersion": "1.0.0",
+  
+  "compareMatrices":
+  {
+     "inputs":
+     [
+        {"name":"M1", "kind":"required", "type":["double"], "purpose":"first matrix"},
+        {"name":"M2", "kind":"required", "type":["double"], "purpose":"second matrix"},
+        {"name":"tol", "kind":"required", "type":["double"], "purpose":"tolerance"},
+        {"name":"flag", "kind":"required", "type":["char","choices={'equal','subset'}"], "purpose":"flag"},
+        {"name":"ordered", "kind":"required", "type":["logical"], "purpose":"whether columns have to appear in the same order"}
+     ]
+  }
+}

@@ -26,7 +26,7 @@ function res = find(R,prop,val)
 %------------- BEGIN CODE --------------
 
 % check input arguments (only first two)
-inputArgsCheck({{R,'att',{'reachSet'},{''}};
+inputArgsCheck({{R,'att','reachSet'};
                 {prop,'str',{'location','parent','time'}}});
 
 % init result

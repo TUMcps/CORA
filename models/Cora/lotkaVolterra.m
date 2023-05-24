@@ -38,10 +38,10 @@ function HA = lotkaVolterra()
     guard = levelSet(eq,vars,'==');
     reset.A = eye(3); reset.c = zeros(3,1);
 
-    trans{1} = transition(guard, reset, 2);
+    trans = transition(guard, reset, 2);
 
     % location
-    loc{1} = location('outside', inv, trans, sys);
+    loc(1) = location('outside', inv, trans, sys);
 
 
     % Location Inside -----------------------------------------------------
@@ -57,17 +57,17 @@ function HA = lotkaVolterra()
     inv = levelSet(eq,vars,'<=');
 
     % location
-    loc{2} = location('inside', inv, [], sys);
+    loc(2) = location('inside', inv, transition(), sys);
     
     % cannot model transition because of infinite switching
     % transition
 %     guard = levelSet(eq,vars,'==');
 %     reset.A = eye(3); reset.c = zeros(3,1);
 % 
-%     trans{1} = transition(guard, reset, 1);
+%     trans = transition(guard, reset, 1);
 % 
 %     % location
-%     loc{2} = location('inside', inv, trans, sys);
+%     loc(2) = location('inside', inv, trans, sys);
 
 
     % Hybrid Automaton ----------------------------------------------------

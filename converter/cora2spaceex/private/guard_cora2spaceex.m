@@ -5,11 +5,9 @@ function guard_cora2spaceex(tran, docNode, guard)
 %    guard_cora2spaceex(tran, docNode, guard)
 %
 % Inputs:
-%    tran -
+%    tran - transition
 %    docNode - 
-%    x1 -
-%    x2 -
-%    type - 
+%    guard - guard set
 %
 % Outputs:
 %    -
@@ -47,8 +45,13 @@ function guard_cora2spaceex(tran, docNode, guard)
         
         eqs = levelSet_cora2spaceex(guard);
         
-    else     
-        throw(CORAerror('CORA:notSupported','Given guard set class not supported.'));
+    elseif isnumeric(guard) && isempty(guard)
+        % TODO: replace by fullspace/emptySet
+        eqs = '';
+
+    else
+        throw(CORAerror('CORA:converterIssue',...
+            'Given guard set class not supported.'));
     end
 
     % Add the element node (guard), for the parent element (transition) and

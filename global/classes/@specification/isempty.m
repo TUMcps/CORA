@@ -27,6 +27,7 @@ function res = isempty(spec)
 
 %------------- BEGIN CODE --------------
 
-res = any(arrayfun(@(x) isempty(x.set),spec,'UniformOutput',true));
+res = any(arrayfun(@(x) isnumeric(x.set) && isempty(x.set),...
+    spec,'UniformOutput',true));
 
 %------------- END OF CODE --------------

@@ -21,17 +21,17 @@ function display(pHA)
 %    inv = mptPolytope(1,T_off);
 %    guard = conHyperplane(1,T_off);
 %    reset = struct('A',1,'c',0);
-%    trans = {transition(guard,reset,2)};
+%    trans = transition(guard,reset,2);
 %    linSys = linearSys(-(a1 + b1),[b1,a1],c1,1);
-%    loc{1} = location('on',inv,trans,linSys);
+%    loc(1) = location('on',inv,trans,linSys);
 % 
 %    % first component, second location
 %    inv = mptPolytope(-1,-T_on);
 %    guard = conHyperplane(1,T_on);
 %    reset = struct('A',1,'c',0);
-%    trans = {transition(guard,reset,1)};
+%    trans = transition(guard,reset,1);
 %    linSys = linearSys(-(a1 + b1),[b1,a1],[],1);
-%    loc{2} = location('off',inv,trans,linSys);
+%    loc(2) = location('off',inv,trans,linSys);
 % 
 %    HA1 = hybridAutomaton(loc);
 % 
@@ -39,22 +39,22 @@ function display(pHA)
 %    inv = mptPolytope(1,T_off);
 %    guard = conHyperplane(1,T_off);
 %    reset = struct('A',1,'c',0);
-%    trans = {transition(guard,reset,2)};
+%    trans = transition(guard,reset,2);
 %    linSys = linearSys(-(a2 + b2),[b2,a2],c2,1);
-%    loc{1} = location('on',inv,trans,linSys);
+%    loc(1) = location('on',inv,trans,linSys);
 % 
 %    % second component, second location
 %    inv = mptPolytope(-1,-T_on);
 %    guard = conHyperplane(1,T_on);
 %    reset = struct('A',1,'c',0);
-%    trans = {transition(guard,reset,1)};
+%    trans = transition(guard,reset,1);
 %    linSys = linearSys(-(a2 + b2),[b2,a2],[],1);
-%    loc{2} = location('off',inv,trans,linSys);
+%    loc(2) = location('off',inv,trans,linSys);
 % 
 %    HA2 = hybridAutomaton(loc);
 % 
 %    % parallel hybrid automaton
-%    components = {HA1,HA2};
+%    components = [HA1;HA2];
 %    inputBinds{1} = [0 1; ...   % first global input
 %                     2 1];      % first output of component 2
 %    inputBinds{2} = [0 1; ...   % first global input
@@ -81,6 +81,19 @@ disp([inputname(1), ' =']);
 
 fprintf(newline);
 
+if all(isempty(pHA))
+
+    dispEmptyObj(pHA,inputname(1));
+    return
+
+elseif length(pHA) > 1
+
+    disp("  " + length(loc) + "x1 parallelHybridAutomaton object");
+    fprintf(newline);
+    return
+
+end
+
 % number of components
 numComp = length(pHA.components);
 
@@ -91,17 +104,17 @@ for i=1:numComp
     disp("Component " + i + " of "+ numComp + ":");
 
     % number of locations
-    numLoc = length(pHA.components{i}.location);
+    numLoc = length(pHA.components(i).location);
     locString = "   Number of locations: " + numLoc + " (";
     % gather names of locations
-    if all(cellfun(@(x)strcmp(x.name,'location'),...
-            pHA.components{i}.location,'UniformOutput',true))
+    if all(arrayfun(@(x) strcmp(x.name,'location'),...
+            pHA.components(i).location,'UniformOutput',true))
         % no location has an actual name (all default names)
         temp = "no names";
     else
         temp = [];
         for j=1:numLoc
-            nameLoc = pHA.components{i}.location{j}.name;
+            nameLoc = pHA.components(i).location(j).name;
             if strcmp(nameLoc,'location')
                 % default name
                 temp = [temp "(no name)"];
@@ -118,12 +131,12 @@ for i=1:numComp
     % transitions in location
     transString = [];
     for j=1:numLoc
-        numTrans = length(pHA.components{i}.location{j}.transition);
+        numTrans = length(pHA.components(i).location(j).transition);
         target = []; syncLabel = {};
         % read out target locations and synchronization labels
         for k=1:numTrans
-            target(end+1,1) = pHA.components{i}.location{j}.transition{k}.target;
-            syncLabel{end+1,1} = pHA.components{i}.location{j}.transition{k}.syncLabel;
+            target(end+1,1) = pHA.components(i).location(j).transition(k).target;
+            syncLabel{end+1,1} = pHA.components(i).location(j).transition(k).syncLabel;
         end
         % go over all transitions
         while ~isempty(target)
@@ -157,17 +170,17 @@ for i=1:numComp
 
     % state dimension, input dimension (including input binds), output
     % dimension (has to be equal over all locations of a component)
-    disp("   State dimension: " + pHA.components{i}.location{1}.contDynamics.dim);
+    disp("   State dimension: " + pHA.components(i).location(1).contDynamics.dim);
 
     % input binds
     if isempty(pHA.bindsInputs{i})
         disp("   Input dimension: 0");
     else
         inpString = "   Input dimension: " + ...
-            pHA.components{i}.location{1}.contDynamics.nrOfInputs + " (";
+            pHA.components(i).location(1).contDynamics.nrOfInputs + " (";
         temp = [];
         % loop over each input
-        for j=1:pHA.components{i}.location{1}.contDynamics.nrOfInputs
+        for j=1:pHA.components(i).location(1).contDynamics.nrOfInputs
             origin_comp = pHA.bindsInputs{i}(j,1);
             origin_idx = pHA.bindsInputs{i}(j,2);
             if origin_comp == 0
@@ -184,7 +197,7 @@ for i=1:numComp
     end
     
     % output dimension
-    disp("   Output dimension: " + pHA.components{i}.location{1}.contDynamics.nrOfOutputs);
+    disp("   Output dimension: " + pHA.components(i).location(1).contDynamics.nrOfOutputs);
 
     fprintf(newline);
 

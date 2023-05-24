@@ -1,4 +1,4 @@
-classdef (InferiorClasses = {?interval ?intervalMatrix, ?matZonotope}) mptPolytope < contSet
+classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) mptPolytope < contSet
 % mptPolytope - object and copy constructor 
 %
 % Syntax:  

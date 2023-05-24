@@ -1,17 +1,23 @@
-function y = reset(trans,x,varargin)
+function x_ = reset(trans,x,varargin)
 % reset - resets the continuous state according the reset function
 %
 % Syntax:  
-%    y = reset(trans,x)
-%    y = reset(trans,x,u)
+%    x_ = reset(trans,x)
+%    x_ = reset(trans,x,u)
 %
 % Inputs:
 %    trans - transition object
-%    x - state value before the reset
-%    u - (optional) input at the time of reset
+%    x - state value before the reset (vector, set, or cell thereof)
+%    u - (optional) input at the time of reset (vector, set, or cell thereof)
 %
 % Outputs:
-%    y - state value after the reset
+%    x_ - state value after the reset
+%
+% Example:
+%    trans = transition(conHyperplane([1 0],0),...
+%            struct('A',eye(2),'c',[1;-1]),1);
+%    x = [2;1];
+%    x_ = reset(trans,x);
 %
 % References:
 %    [1] N. Kochdumper and et al. "Reachability Analysis for Hybrid Systems
@@ -28,9 +34,27 @@ function y = reset(trans,x,varargin)
 % Last update:  07-October-2008
 %               10-December-2021 (NK, added nonlinear reset functions)
 %               11-February-2022 (MP, added input dependence)
+%               11-May-2023 (MW, recursive call for cells, bug fixes)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
+
+% check whether multiple points/sets given
+if iscell(x)
+    % default: no inputs given
+    u = cell(length(x),1);
+    % check if inputs are given
+    if nargin > 2
+        u = varargin{1};
+    end
+
+    % recursive call
+    x_ = cell(length(x),1);
+    for i=1:length(x_)
+        x_{i} = reset(trans,x{i},u{i});
+    end
+
+else
 
     % default: no inputs given
     u = [];
@@ -44,72 +68,38 @@ function y = reset(trans,x,varargin)
         x = x';
     end
 
-    % loop over all points
-    if ~iscell(x)
-
-        % check whether reset function is linear or nonlinear
-        if isfield(trans.reset,'A')
-            % linear reset
-
-            if ~isfield(trans.reset,'B') || (~any(any(trans.reset.B)) && isempty(u))
-                % without inputs
-                y = trans.reset.A*x + trans.reset.c;
-            else
-                % with inputs
-                y = trans.reset.A*x + trans.reset.B*u + trans.reset.c;
-            end
-
+    % check whether reset function is linear or nonlinear
+    if isfield(trans.reset,'A')
+        % linear reset
+        if ~isfield(trans.reset,'B') || (~any(any(trans.reset.B)) && isempty(u))
+            % without inputs
+            x_ = trans.reset.A*x + trans.reset.c;
         else
-            % nonlinear reset
-
-            if trans.reset.inputDim > 0
-                % compute extended state x' = [x;u]
-                x = cartProd_(x,u,'exact');
-            end
-            if isnumeric(x)
-                y = trans.reset.f(x);
-            else
-                y = aux_nonlinearReset(trans,x);
-            end
+            % with inputs
+            x_ = trans.reset.A*x + trans.reset.B*u + trans.reset.c;
         end
 
     else
-        % output of reset fucntion
-        y = cell(length(x));
-        % extended state (only for nonlinear reset functions)
-        z = cell(length(x));
-
-        for i=1:length(x)
-            if ~isempty(x{i})
-                if isfield(trans.reset,'A')
-                    % linear reset
-                    if isfield(trans.reset,'B')
-                        % with input
-                        y{i} = trans.reset.A*x{i} + trans.reset.B*u + trans.reset.c;
-                    else
-                        % without input
-                        y{i} = trans.reset.A*x{i} + trans.reset.c;
-                    end
-                else
-                    % nonlinear reset
-                    z{i} = cartProd_(x{i},u{i},'exact');
-                    if isnumeric(y{i})
-                        y{i} = trans.reset.f(z{i});
-                    else
-                        y{i} = aux_nonlinearReset(trans,z{i});
-                    end
-                end
-            end
+        % nonlinear reset
+        if trans.reset.inputDim > 0
+            % compute extended state x' = [x;u]
+            x = cartProd_(x,u,'exact');
         end
-
+        if isnumeric(x)
+            x_ = trans.reset.f(x);
+        else
+            x_ = aux_nonlinearReset(trans,x);
+        end
     end
+
+end
 
 end
 
 
 % Auxiliary Functions -----------------------------------------------------
 
-function Y = aux_nonlinearReset(trans,Z)
+function X_ = aux_nonlinearReset(trans,Z)
 % compute the resulting set for a nonlinear reset function using the
 % approach described in Sec. 4.4 in [1]
 
@@ -166,7 +156,7 @@ function Y = aux_nonlinearReset(trans,Z)
     rem = zonotope(1/6*rem);
 
     % compute over-approximation using a Taylor series of order 2
-    Y = f + J * (Z + (-p)) + 0.5*quadMap((Z + (-p)),Q) + rem;
+    X_ = f + J * (Z + (-p)) + 0.5*quadMap((Z + (-p)),Q) + rem;
 end
 
 %------------- END OF CODE --------------

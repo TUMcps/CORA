@@ -25,12 +25,12 @@ function list = indexList(loc)
 %------------- BEGIN CODE --------------
 
     % get indices of the invariant
-    eq = getEquations(loc.invariant);
+    eq = aux_getEquations(loc.invariant);
     list(1:eq) = 0;
 
     % get indices of the guards
     for i = 1:length(loc.transition)
-        eq = getEquations(loc.transition{i}.guard);
+        eq = aux_getEquations(loc.transition(i).guard);
         list((end+1):(end+eq)) = i;
     end
 end
@@ -38,7 +38,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function eq = getEquations(S)
+function eq = aux_getEquations(S)
 % get number of inequality constraints describing the set representation
 
     if isa(S,'mptPolytope')
