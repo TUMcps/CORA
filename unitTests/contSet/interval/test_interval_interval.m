@@ -23,7 +23,6 @@ function res = test_interval_interval
 
 %------------- BEGIN CODE --------------
 
-res = true;
 tol = 1e-12;
 
 % empty interval
@@ -59,6 +58,8 @@ if any(any(abs(I.inf - a_mat) > tol)) || any(any(abs(I.sup - b_mat) > tol))
 end
 
 % wrong initializations
+if CHECKS_ENABLED
+
 a_large = [10; 15];
 b_small = [-20; -12];
 a_plus1 = [-3; -5; -2; -8];
@@ -97,5 +98,7 @@ try
     I = interval(a,b,b); % <- should throw error here
     res = false;
 end 
+
+end
 
 %------------- END OF CODE --------------

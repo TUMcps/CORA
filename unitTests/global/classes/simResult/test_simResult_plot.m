@@ -28,10 +28,7 @@ res = true;
 
 % empty simResult
 simRes = simResult();
-try
-    plot(simRes,[1,2]);
-    res = false;
-end
+plot(simRes,[1,2]);
 
 % simulations from linear discrete-time system
 A = [0.9810    0.0143    0.0262   -0.0140;

@@ -32,7 +32,8 @@ classdef polygon
 
 % Author:       Niklas Kochdumper
 % Written:      13-March-2020
-% Last update:  09-May-2023 (TL: constructor,plotPolygon)
+% Last update:  09-May-2023 (TL: constructor, plotPolygon)
+%               27-May-2023 (MW, isequal, removeCollinearPoints)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -49,19 +50,26 @@ methods
             obj.set = polyshape();
         elseif nargin == 1
             set = varargin{1};
-            inputArgsCheck({{set,'att',{'polyshape','numeric'}}})
-            if isa(set,'polyshape')
+            inputArgsCheck({{set,'att',{'polygon','polyshape','numeric'}}})
+            if isa(set, 'polygon')
+                obj = set;
+            elseif isa(set,'polyshape')
                 obj.set = set;
             else
                 V = set;
-                if(size(V,2) ~= 2)
-                    throw(CORAerror("CORA:wrongValue",'Given vertices should be two dimensional.'))
+                if(size(V,1) ~= 2)
+                    throw(CORAerror("CORA:wrongValue",...
+                        'Given vertices should be two dimensional.'))
                 end
                 obj.set = polyshape(V(1,:),V(2,:));
             end
         elseif nargin == 2
             x=varargin{1};y=varargin{2};
             inputArgsCheck({{x,'att','numeric'},{y,'att','numeric'}})
+            if ~isvector(x) || ~all(size(x) == size(y))
+                throw(CORAerror("CORA:wrongInputInConstructor",...
+                    'Given vertices x,y need to be vectors of the same length.'))
+            end
             obj.set = polyshape(x,y);
         else
             throw(CORAerror('CORA:tooManyInputArgs'));
@@ -117,7 +125,7 @@ methods
     end
     
     function res = isIntersecting(pgon1,pgon2)
-    % check if two polygon object insterst
+    % check if two polygon objects intersect
         temp = intersect(pgon1.set,pgon2.set);
         res = ~isempty(temp.Vertices);
     end
@@ -560,6 +568,94 @@ methods
                 break;
             end
         end
+    end
+
+    function res = isequal(pgon1,pgon2,varargin)
+        % compares whether two polygons represent the same shape
+        % notes: - (almost) collinear points are removed by the constructor
+        %        - vertices have to be in order, but start of list can vary
+
+        % set tolerance
+        tol = setDefaultValues({1e-8},varargin);
+
+        % the constructor already removes collinear points, but within its
+        % own tolerance -> look for collinear points up to given tolerance
+        pgon1 = removeCollinearPoints(pgon1,tol);
+        pgon2 = removeCollinearPoints(pgon2,tol);
+
+        % read out vertices
+        V1 = pgon1.set.Vertices; V2 = pgon2.set.Vertices;
+
+        % since the constructor removes collinear points, the number of
+        % vertices has to be equal
+        if size(V1,1) ~= size(V2,1)
+            res = false; return
+        end
+
+        % to deal with the different start vertex, first find one vertex
+        % that is part of both lists
+        % -> check all occurrences of the first vertex of P1 in P2
+        idx = find(all(withinTol(V1(1,:),V2,tol),2));
+
+        % any matching vertex found?
+        if isempty(idx)
+            res = false; return
+        end
+
+        % loop over all potential start vertices
+        for i=1:length(idx)
+            % re-order vertices of P2
+            V2_ = [V2(idx:end,:); V2(1:idx-1,:)];
+            % compare in order
+            if compareMatrices(V1,V2_,tol,'equal',true)
+                res = true; return
+            end
+        end
+
+        % no re-ordering successful
+        res = false;
+
+    end
+
+    function res = eq(pgon1,pgon2,varargin)
+        % overloads '==' operator
+        res = isequal(pgon1,pgon2,varargin{:});
+    end
+
+    function res = ne(pgon1,pgon2,varargin)
+        % overloads '~=' operator
+        res = ~isequal(pgon1,pgon2,varargin{:});
+    end
+
+    function pgon = removeCollinearPoints(pgon,varargin)
+        % removes collinear points up to a user-defined tolerance by
+        % checking the rank of two vectors computed from two subsequent
+        % pairs of vertices in the list
+
+        % set default tolerance
+        tol = setDefaultValues({0},varargin);
+
+        % read out ordered vertices
+        V = pgon.set.Vertices;
+
+        % compute vectors (note: wrap around at the end)
+        vectors = [V(end,:); V] - [V; V(1,:)];
+
+        % indices for which vertices are kept
+        idxKept = true(size(V,1),1);
+
+        % check rank
+        for i=1:length(idxKept)
+            if rank(vectors(i:i+1,:),tol) < 2
+                idxKept(i) = false;
+            end
+        end
+
+        % remove vertices if any are collinear
+        if ~all(idxKept)
+            pgon = polygon(V(idxKept,:)');
+        end
+
     end
 end
 

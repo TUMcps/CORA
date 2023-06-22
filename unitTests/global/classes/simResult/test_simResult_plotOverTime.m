@@ -23,25 +23,12 @@ function res = test_simResult_plotOverTime
 
 %------------- BEGIN CODE --------------
 
-% init result
-res = true;
-
-% empty simResult
-simRes = simResult();
-try
-    plotOverTime(simRes,1);
-    res = false;
-end
-
 % assume true
 res = true;
 
 % empty simResult
 simRes = simResult();
-try
-    plotOverTime(simRes);
-    res = false;
-end
+plotOverTime(simRes);
 
 % simulations from linear discrete-time system
 A = [0.9810    0.0143    0.0262   -0.0140;

@@ -35,10 +35,6 @@ v = rand(3,1);
 try
     h + v; % should throw error here
     res_dim = false;
-catch ME
-    if ~strcmp(ME.identifier,'CORA:dimensionMismatch')
-        res_dim = false;
-    end
 end
 
 % combine tests

@@ -29,6 +29,7 @@ function [params,options] = postProcessing(sys,func,params,options)
 
 %------------- BEGIN CODE --------------
 
+try
 
 % only contDynamics -------------------------------------------------------
 
@@ -148,6 +149,18 @@ if isa(sys,'parallelHybridAutomaton')
     
 end
 
+catch ME
+    % error handling: issues in postProcessing expected if validation of
+    % input arguments not strict
+    if ~VALIDATEOPTIONS_ERRORS
+        disp("Issue in post processing of input argument validation!");
+        disp("Likely cause: params/options do not fulfill requirements.");
+    else
+        rethrow(ME);
+    end
+
+end
+
 end
 
 
@@ -233,6 +246,8 @@ end
 end
 
 function [params,options] = set_originContained(sys,params,options)
+% determine whether the origin is contained in the inhomogeneous part
+%    B*U + c
 
 U = params.U;
 % define actual input set
@@ -249,8 +264,12 @@ if isscalar(B)
     if B == 1
         B = eye(sys.dim);
     elseif B == 0
-        B = zeros(sys.dim);
+        % 0 * U is only the origin, check offset
+        options.originContained = ~any(sys.c); return
     end
+elseif isnumeric(B) && ~any(any(B))
+    % 0 * U contains the origin, check offset
+    options.originContained = ~any(sys.c); return
 end
 
 % options.originContained = false;
@@ -259,11 +278,11 @@ if isa(sys,'linearSys') && ~isempty(sys.c)
     % is unsatisfiable
     found = false;
     for i = 1:size(B,1)
-       hp = conHyperplane(B(i,:),-sys.c(i));
-       if ~isIntersecting(hp,U)
-          options.originContained = false;
-          found = true;
-       end
+        hp = conHyperplane(B(i,:),-sys.c(i));
+        if ~isIntersecting_(hp,U,'exact')
+            options.originContained = false;
+            found = true;
+        end
     end
     if ~found
         % check if vTrans = B*U + c contains the origin

@@ -40,11 +40,11 @@ classdef simResult
 
 properties (SetAccess = private, GetAccess = public)
     
-    x (:,1) {cell} = {};     % states of the simulated trajectories
-    y (:,1) {cell} = {};     % outputs of the simulated trajectories
-    a (:,1) {cell} = {};     % algebraic variables of the sim. trajectories
-    t (:,1) {cell} = {};     % time of the simulated trajectories
-    loc = [];                % index of the locations (0 for contDynamics)
+    x = {};             % states of the simulated trajectories
+    y = {};             % outputs of the simulated trajectories
+    a = {};             % algebraic variables of the sim. trajectories
+    t = {};             % time of the simulated trajectories
+    loc = 0;            % index of the locations (0 for contDynamics)
     
 end
 

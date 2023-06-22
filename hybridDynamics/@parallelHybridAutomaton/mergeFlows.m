@@ -64,9 +64,9 @@ function res = aux_mergeFlowsLinearSys(pHA,flowList)
     numComps = length(flowList);
     
     % allocate merged dynamics
-    Amerged = zeros(pHA.numStates,pHA.numStates);
-    Bmerged = zeros(pHA.numStates,pHA.numInputs);
-    cMerged = zeros(pHA.numStates,1);
+    Amerged = zeros(pHA.dim,pHA.dim);
+    Bmerged = zeros(pHA.dim,pHA.nrOfInputs);
+    cMerged = zeros(pHA.dim,1);
     name = cell(numComps,1);
     
     % loop over all subcomponents
@@ -193,11 +193,11 @@ function res = aux_mergeFlowsNonlinearSys(pHA,flowList,locID)
     numComps = length(flowList);
     
     % construct symbolic state vector and input vector for merged flow
-    x = sym('x',[pHA.numStates,1]);
-    u = sym('u',[pHA.numInputs,1]);
+    x = sym('x',[pHA.dim,1]);
+    u = sym('u',[pHA.nrOfInputs,1]);
     
     % initialize dynamic function
-    f = sym(zeros(pHA.numStates,1));
+    f = sym(zeros(pHA.dim,1));
     
     % loop over all subcomponents
     for i = 1:numComps
@@ -292,7 +292,7 @@ function res = aux_mergeFlowsNonlinearSys(pHA,flowList,locID)
     funHan = matlabFunction(f,'Vars',{x,u});
     
     % instantiate nonlinear system
-    res = nonlinearSys(name,funHan,pHA.numStates,pHA.numInputs);
+    res = nonlinearSys(name,funHan,pHA.dim,pHA.nrOfInputs);
 end
 
 %------------- END OF CODE --------------

@@ -82,11 +82,22 @@ function val = supportFunc_(pZ,dir,type,method,maxOrderOrSplits,tol,varargin)
         val = interval(zonotope(pZ_));
         
         if strcmp(type,'lower')
-            val = infimum(val); 
+            if isempty(val)
+                val = Inf;
+            else
+                val = infimum(val);
+            end            
         elseif strcmp(type,'upper')
-            val = supremum(val);
+            if isempty(val)
+                val = -Inf;
+            else
+                val = supremum(val);
+            end
         elseif strcmp(type,'range')
-            % 'val' is already desired result
+            if isempty(val)
+                val = [-Inf,Inf];
+            end
+            % otherwise 'val' is already desired result
         end
         
     elseif strcmp(method,'bernstein')

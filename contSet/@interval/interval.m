@@ -40,63 +40,38 @@ classdef (InferiorClasses = {?mp}) interval < contSet
 %               20-March-2021 (MW, error messages)
 %               14-December-2022 (TL, property check in inputArgsCheck)
 %               29-March-2023 (TL: optimized constructor)
-% Last revision:---
+% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
-    inf;
-    sup;
+    inf;    % lower bound
+    sup;    % upper bound
 end
 
 methods
-    %class constructor
+
+    % class constructor
     function obj = interval(varargin)
 
-        % parse input
-        switch nargin
-            case 0
-                lb = [];
-                ub = [];
-            case 1
-                lb = varargin{1};
-                if isa(lb,'interval')
-                    % copy constructor
-                    obj = lb;
-                    return;
-                end
-                ub = lb;
-            case 2
-                lb = varargin{1};
-                ub = varargin{2};
-            otherwise
-                throw(CORAerror('CORA:tooManyInputArgs',2));
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'interval')
+            obj = varargin{1}; return
         end
 
-        % check input
-        if CHECKS_ENABLED
-            inputArgsCheck({ ...
-                {lb, 'att', 'numeric'}; ...
-                {ub, 'att', 'numeric'}; ...
-            })
+        % 2. parse input arguments: varargin -> vars
+        [lb,ub] = aux_parseInputArgs(varargin{:});
 
-            if ~all(size(lb) == size(ub))
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Limits are of different dimension.'));
-            elseif length(size(lb)) > 2
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Only 1d and 2d intervals are supported.'));
-            elseif ~all(lb <= ub, "all")
-                 throw(CORAerror('CORA:wrongInputInConstructor',...
-                     'Lower limit larger than upper limit.'));
-            end
-        end
-        
-        % assign properties;
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(lb,ub,nargin);
+
+        % 4. assign properties
         obj.inf = lb;
         obj.sup = ub;
+
     end
     
+
     function ind = end(obj,k,n)
     % overloads the end operator for referencing elements, e.g. I(end,2),
         ind = size(obj,k);
@@ -179,16 +154,65 @@ methods
     display(I)
 end
 
-% methods (Access = {?contSet, ?contDynamics})
-%     res = isIntersecting_(S1,S2,type,varargin)
-% 
-% end
-
 methods (Static = true)
     I = generateRandom(varargin) % generates random interval
     I = enclosePoints(points) % enclosure of point cloud
 end
 
+end
+
+% Auxiliary Functions -----------------------------------------------------
+
+function [lb,ub] = aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    % check number of input arguments
+    if nargin > 2
+        throw(CORAerror('CORA:tooManyInputArgs',2));
+    end
+
+    % no input arguments
+    if nargin == 0
+        lb = []; ub = [];
+        return
+    end
+
+    % assign lower and upper bound
+    [lb,ub] = setDefaultValues({[],[]},varargin);
+
+    % set upper bound to value of lower bound if only one value given
+    if ~isempty(lb) && isempty(ub)
+        ub = lb;
+    end
+
+end
+
+function aux_checkInputArgs(lb,ub,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
+        
+        inputArgsCheck({ ...
+            {lb, 'att', 'numeric', 'nonnan'}; ...
+            {ub, 'att', 'numeric', 'nonnan'}; ...
+        })
+
+        if ~all(size(lb) == size(ub))
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Limits are of different dimension.'));
+        elseif length(size(lb)) > 2
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Only 1d and 2d intervals are supported.'));
+        elseif ~all(all(lb <= ub))
+            % check again using tolerance (little bit slower)
+            if ~all(all(lb < ub | withinTol(double(lb),double(ub))))
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Lower limit larger than upper limit.'));
+            end
+        end
+        
+    end
 
 end
 

@@ -1,8 +1,8 @@
-function res = test_transition_isempty
-% test_transition_isempty - unit test for emptiness check
+function res = test_transition_isemptyobject
+% test_transition_isemptyobject - unit test for emptiness check
 %
 % Syntax:
-%    res = test_transition_isempty
+%    res = test_transition_isemptyobject
 %
 % Inputs:
 %    -
@@ -24,7 +24,7 @@ function res = test_transition_isempty
 %------------- BEGIN CODE --------------
 
 % empty object
-res = isempty(transition());
+res = isemptyobject(transition());
 
 % transition
 guard = conHyperplane([1,0],0,[0,1],0);
@@ -33,12 +33,12 @@ target = 2;
 syncLabel = 'on';
 
 trans = transition(guard,reset,target,syncLabel);
-res(end+1,1) = ~isempty(trans);
+res(end+1,1) = ~isemptyobject(trans);
 trans = transition(guard,reset,target);
-res(end+1,1) = ~isempty(trans);
+res(end+1,1) = ~isemptyobject(trans);
 
 % array of transitions
-res(end+1,1) = all(isempty([transition(),transition(guard,reset,target)]) == [true,false]);
+res(end+1,1) = all(isemptyobject([transition(),transition(guard,reset,target)]) == [true,false]);
 
 % combine results
 res = all(res);

@@ -29,45 +29,33 @@ classdef halfspace < contSet
 %               02-May-2020 (add property validation)
 %               19-March-2021 (MW, error messages)
 %               14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision:---
+% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
 
 properties (SetAccess = private, GetAccess = public)
-    c = [];
-    d = 0;
+    c = [];     % normal vector
+    d = 0;      % offset
 end
     
 methods
     %class constructor
     function obj = halfspace(varargin)
+
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'halfspace')
+            obj = varargin{1}; return
+        end
         
-        % parse input
-        if nargin > 2
-            throw(CORAerror('CORA:tooManyInputArgs',2));
-        end
+        % 1. parse input arguments: varargin -> vars
+        [c,d] = aux_parseInputArgs(varargin{:});
 
-        if nargin==1
-            hs = varargin{1};
-            inputArgsCheck({{hs, 'att', 'halfspace'}})
-            obj = hs;
-            return
-        end
+        % 2. check correctness of input arguments
+        aux_checkInputArgs(c,d,nargin);
 
-        [c, d] = setDefaultValues({[], 0}, varargin);
-        
-
-        if nargin > 0
-            inputArgsCheck({ ...
-                {c, 'att', 'numeric', {'finite', 'vector'}}; ...
-                {d, 'att', 'numeric', {'finite', 'scalar'}}; ...
-            })
-            c = reshape(c, [], 1); % column vector
-        end
-
-        % assign properties
-        obj.c = c;
+        % 3. assign properties (reshape c to a column vector)
+        obj.c = reshape(c,[],1);
         obj.d = d;
     end
 end
@@ -76,6 +64,42 @@ methods (Static = true)
     hs = generateRandom(varargin) % generates random halfspace
 end
 
+end
+
+
+% Auxiliary Functions -----------------------------------------------------
+
+function [c,d] = aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    % check number of input arguments
+    if nargin > 2
+        throw(CORAerror('CORA:tooManyInputArgs',2));
+    end
+
+    % no input arguments
+    if nargin == 0
+        c = []; d = 0;
+        return
+    end
+
+    % set default values
+    [c,d] = setDefaultValues({[],[]},varargin);
+
+end
+
+function aux_checkInputArgs(c,d,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
+
+        inputArgsCheck({ ...
+            {c, 'att', 'numeric', {'finite', 'vector'}}; ...
+            {d, 'att', 'numeric', {'finite', 'scalar'}}; ...
+        })
+        
+    end
 
 end
 

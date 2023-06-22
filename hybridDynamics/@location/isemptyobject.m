@@ -1,17 +1,17 @@
-function res = isempty(pHA)
-% isempty - checks if a parallelHybridAutomaton object is empty
+function res = isemptyobject(loc)
+% isemptyobject - checks if a location object is empty
 %
-% Syntax:
-%    res = isempty(pHA)
+% Syntax:  
+%    res = isemptyobject(loc)
 %
 % Inputs:
-%    pHA - parallelHybridAutomaton object
+%    loc - location object
 %
 % Outputs:
 %    res - true/false
 %
 % Example: 
-%    res = isempty(parallelHybridAutomaton());
+%    res = isemptyobject(location())
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -20,19 +20,19 @@ function res = isempty(pHA)
 % See also: none
 
 % Author:       Mark Wetzlinger
-% Written:      19-May-2023
+% Written:      16-May-2023
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-[r,c] = size(pHA);
+[r,c] = size(loc);
 res = false(r,c);
 
 % loop over all locations
 for i=1:r
     for j=1:c
-        res(i,j) = isempty(pHA(i,j).bindsInputs);
+        res(i,j) = isemptyobject(loc(i,j).contDynamics);
     end
 end
 

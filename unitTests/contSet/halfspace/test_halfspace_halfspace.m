@@ -23,14 +23,11 @@ function res = test_halfspace_halfspace
 
 %------------- BEGIN CODE --------------
 
-% assume true
-res = true;
+res = [];
 
 % empty halfspace
 hs = halfspace();
-if ~isempty(hs)
-    res = false;
-end
+res(end+1,1) = isempty(hs);
 
 % random normal vector, offset
 c = [3; 2; -1];
@@ -38,15 +35,16 @@ d = 1;
 
 % admissible initialization
 hs = halfspace(c,d);
-if ~compareMatrices(hs.c,c) || ~withinTol(hs.d,d)
-    res = false;
-end
+res(end+1,1) = compareMatrices(hs.c,c);
+res(end+1,1) = withinTol(hs.d,d);
+
 hs = halfspace(c',d);
-if ~compareMatrices(hs.c,c) || ~withinTol(hs.d,d)
-    res = false;
-end
+res(end+1,1) = compareMatrices(hs.c,c);
+res(end+1,1) = withinTol(hs.d,d);
 
 % wrong initializations
+if CHECKS_ENABLED
+
 c_mat = [3 5 2; 0 4 1; 2 4 2];
 d_vec = [5 -2];
 d_mat = [2 5; -4 2];
@@ -80,5 +78,10 @@ try
     hs = halfspace(c,d,d); % <- should throw error here
     res = false;
 end
+
+end
+
+% combine results
+res = all(res);
 
 %------------- END OF CODE --------------

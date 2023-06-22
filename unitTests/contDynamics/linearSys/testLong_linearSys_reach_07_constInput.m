@@ -75,7 +75,7 @@ end
 % for every run, the simulation results must be within R
 for i=1:simOpt.points
     disp("Trajectory " + i + "/" + simOpt.points + "...");
-    results = simRes.x{i};
+    results = simRes(i).x{1};
     
     for p=1:size(results,1)
         % loop over all points of the simulated trajectory

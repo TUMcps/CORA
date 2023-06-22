@@ -61,6 +61,8 @@ I = interval.generateRandom('Dimension',n,'Center',c,'MaxRadius',r);
 resvec(end+1) = dim(I) == n && all(withinTol(center(I),c)) && r >= max(rad(I));
 
 % dimension and center don't match
+if CHECKS_ENABLED
+
 resvec(end+1) = true;
 try
     I = interval.generateRandom('Dimension',2,'Center',ones(3,1));
@@ -72,6 +74,8 @@ resvec(end+1) = true;
 try
     I = interval.generateRandom('Dimension',3,'Center',ones(3,2));
     resvec(end+1) = false; % <- should not get to here
+end
+
 end
 
 % test multi-dimensional --------------------------------------------------

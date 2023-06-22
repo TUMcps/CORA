@@ -71,11 +71,11 @@ end
 for i=1:length(pHA1.components)
 
     % check for emptiness
-    if xor(isempty(pHA1),isempty(pHA2))
+    if xor(isemptyobject(pHA1),isemptyobject(pHA2))
         res = false; return
     end
     
-    if ~isempty(pHA1)
+    if ~isemptyobject(pHA1)
         % compare hybrid automata
         if ~isequal(pHA1.components(i),pHA2.components(i),tol)
             res = false; return

@@ -43,15 +43,15 @@ classdef conHyperplane < contSet
 %               19-March-2021 (MW, error messages)
 %               22-March-2021 (VG, added 1D case)
 %               14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision:---
+% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
 
 properties (SetAccess = private, GetAccess = public)
-    h; % halfspace obj
-    C;
-    d;
+    h;  % halfspace
+    C;  % constraint matrix
+    d;  % constraint offset
 end
     
 methods
@@ -59,65 +59,18 @@ methods
     % class constructor
     function obj = conHyperplane(varargin)
         
-        % parse input
-        if nargin > 4
-            % too many input arguments
-            throw(CORAerror('CORA:tooManyInputArgs',4));
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'conHyperplane')
+            obj = varargin{1}; return
         end
 
-        % default values
-        h = []; C = []; d = 0;
-        
-        if nargin == 0
-            h = halfspace();
-            
-        elseif nargin == 1 || nargin == 3
-            if isa(varargin{1},'conHyperplane')
-                % copy constructor
-                obj = varargin{1};
-                return
-            end
-            h = varargin{1};
-            varargin = varargin(2:end);
-            
-        elseif nargin == 2 || nargin == 4
-            h = halfspace(varargin{1},varargin{2});
-            varargin = varargin(3:end);
-        end
+        % 2. parse input arguments: varargin -> vars
+        [h,C,d] = aux_parseInputArgs(varargin{:});
 
-        % set default values
-        [C,d] = setDefaultValues({C,d}, varargin);
-        
-        % check input arguments
-        inputArgsCheck({ ...
-            {h, 'att', 'halfspace'}; ...
-            {C, 'att', 'numeric', {'finite', 'matrix'}}; ...
-            {d, 'att', 'numeric', {'finite', 'column'}}; ...
-        })
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(h,C,d,nargin);
 
-        if ~isempty(C)
-            if length(h.c) ~= size(C,2)
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'The dimension of the constraint matrix does not match the dimension of the halfspace.'));
-            elseif size(C,1) ~= length(d)
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'The length of the constraint offset does not match the dimension of the constraint matrix.'));
-            end
-        end
-        
-        % handle 1D case
-        if dim(h)==1 && h.c~=0 && ~isempty(C)
-            x = h.d/h.c;
-            % check if x is in {x|Cx\leq d}
-            X = mptPolytope(C,d);
-            if ~contains_(X,x,'exact',eps)
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    ['Assignment not consistent: implicit value for x ' ...
-                    'given by hyperplane not contained in {x | C*x <= d}!']));
-            end         
-        end
-
-        % set properties
+        % 4. assign properties
         obj.h = h;
         obj.C = C;
         obj.d = d;
@@ -139,6 +92,72 @@ methods
     display(hyp)
 
 end
+end
+
+% Auxiliary Functions -----------------------------------------------------
+
+function [h,C,d] = aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    % check number of input arguments
+    if nargin > 4
+        throw(CORAerror('CORA:tooManyInputArgs',4));
+    end
+
+    % no input arguments
+    if nargin == 0
+        h = halfspace(); C = []; d = 0;
+        return
+    end
+
+    % set default values depending on nargin
+    if nargin == 1 || nargin == 3
+        [h,C,d] = setDefaultValues({[],[],0},varargin);
+    elseif nargin == 2 || nargin == 4
+        [a,b,C,d] = setDefaultValues({[],[],[],0},varargin);
+        h = halfspace(a,b);
+    end
+
+end
+
+function aux_checkInputArgs(h,C,d,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
+            
+        inputArgsCheck({ ...
+            {h, 'att', 'halfspace'}; ...
+            {C, 'att', 'numeric', {'finite', 'matrix'}}; ...
+            {d, 'att', 'numeric', {'finite', 'column'}}; ...
+        })
+
+        if ~isempty(C)
+            if length(h.c) ~= size(C,2)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    ['The dimension of the constraint matrix does not '...
+                    'match the dimension of the halfspace.']));
+            elseif size(C,1) ~= length(d)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    ['The length of the constraint offset does not '...
+                    'match the dimension of the constraint matrix.']));
+            end
+        end
+        
+        % handle 1D case
+        if dim(h)==1 && h.c~=0 && ~isempty(C)
+            x = h.d/h.c;
+            % check if x is in {x|Cx\leq d}
+            X = mptPolytope(C,d);
+            if ~contains_(X,x,'exact',eps)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    ['Assignment not consistent: implicit value for x ' ...
+                    'given by hyperplane not contained in {x | C*x <= d}!']));
+            end         
+        end
+        
+    end
+
 end
 
 %------------- END OF CODE --------------

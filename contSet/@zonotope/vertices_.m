@@ -35,6 +35,7 @@ function V = vertices_(Z,alg,varargin)
 %               11-July-2012
 %               30-July-2016
 %               28-October-2019 (NK, added new algorithm)
+%               02-June-2023 (TL, convHull with degenerate zonotopes)
 % Last revision:27-March-2023 (MW, rename vertices_)
 
 %------------- BEGIN CODE --------------
@@ -85,28 +86,65 @@ end
 function V = verticesConvHull(Z)
 
     % first vertex is the center of the zonotope
-    V = center(Z);
+    c = center(Z);
+    G = generators(Z);
     n = dim(Z);
-    nrGens = size(generators(Z),2);
+    nrGens = size(G,2);
+
+    % we project vertices to lower-dims if degenerate
+    % starting with 1 points (center); always degenerate
+    V = c;
+    last_n = 0;
 
     % generate further potential vertices in the loop
-    for iVertex = 1:nrGens
+    for i=1:nrGens
 
-        translation = Z.Z(:,iVertex+1)*ones(1,length(V(1,:)));
-        V = [V+translation,V-translation];
+        % expand vertices with current generator
+        g = G(:,i);
+        V = [V-g,V+g];
 
         % remove inner points
-        if iVertex > n
-            try
+        try
+            if last_n < n
+                % last iteration it was degenerate, 
+                % assuming it still is; project to lower-dim
+
+                % shift by center
+                c = center(Z);
+                
+                % compute projection matrix via SVD
+                [U,S] = svd(V-c,'vector');
+                P = U(:,~withinTol(S,0));
+                
+                % project into low-dim space
+                V_proj = P'*V;
+    
+                % check if still degenerate
+                last_n = size(V_proj,1);
+    
+                if last_n == 1
+                    % 1-dim can be computed quickly
+                    [~,imin] = min(V_proj); 
+                    [~,imax] = max(V_proj); 
+                    indices = [imin,imax];
+                else
+                    % compute convex hull
+                    K = convhulln(V_proj');
+                    indices = unique(K);
+                end
+                
+                % select corresponding points of original matrix
+                V = V(:,indices);
+
+            else
+                % non-degenerate; normal conv hull computation
                 K = convhulln(V');
                 indices = unique(K);
                 V = V(:,indices);
-            catch
-                disp('Convex hull failed')
-                V = V;
             end
-        else
-            V = V;
+            
+        catch ME
+            warning('CORA: Convex hull failed. Continuing...')
         end
     end
 end

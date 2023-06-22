@@ -35,7 +35,7 @@ msg = '';
 
 if ~iscell(val)
     % same input everywhere
-    if length(val) ~= sys.numInputs
+    if length(val) ~= sys.nrOfInputs
         msg = 'has to match the number of inputs';
         res = false; return;
     end

@@ -393,7 +393,7 @@ verboseLog(k,t,options);
 % check_errors(fullcomp,e,ebar,Rcont_error,Rcont_tp_error,tVec,debugdata,timeStepIdxs);
 
 % write time to output structs
-timePoint.time = num2cell([0;cumsum(tVec)]);
+timePoint.time = num2cell([0;cumsum(tVec)]+options.tStart);
 timeInt.time = cell(length(timePoint.time)-1,1);
 for k=1:length(timePoint.time)-1
     timeInt.time{k} = interval(timePoint.time{k},timePoint.time{k+1});

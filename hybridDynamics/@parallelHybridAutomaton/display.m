@@ -81,14 +81,14 @@ disp([inputname(1), ' =']);
 
 fprintf(newline);
 
-if all(isempty(pHA))
+if all(isemptyobject(pHA))
 
     dispEmptyObj(pHA,inputname(1));
     return
 
 elseif length(pHA) > 1
 
-    disp("  " + length(loc) + "x1 parallelHybridAutomaton object");
+    disp("  " + length(pHA) + "x1 parallelHybridAutomaton object");
     fprintf(newline);
     return
 

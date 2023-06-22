@@ -2,6 +2,7 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) conPolyZono < contS
 % conPolyZono - class definition for constrained polynomial zonotopes 
 %
 % Syntax:  
+%    obj = conPolyZono(c)
 %    obj = conPolyZono(c,G,expMat)
 %    obj = conPolyZono(c,G,expMat,Grest)
 %    obj = conPolyZono(c,G,expMat,Grest,id)
@@ -42,7 +43,7 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) conPolyZono < contS
 % Author:       Niklas Kochdumper
 % Written:      06-November-2018 
 % Last update:  14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision: ---
+% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
@@ -59,58 +60,68 @@ end
    
 methods
     % object constructor
-    function obj = conPolyZono(c,G,expMat,varargin)
-        
-        % parse input arguments
-        if nargin == 2 % at least 3; 0 = empty set, 1 = copy
-            % not enough input arguments
-            throw(CORAerror('CORA:notEnoughInputArgs',3));
-        elseif nargin > 8
-            % too many input arguments
-            throw(CORAerror('CORA:tooManyInputArgs',8));
+    function obj = conPolyZono(varargin)
+
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'conPolyZono')
+            obj = varargin{1}; return
         end
 
-        if nargin == 0
-            c = []; G = []; expMat = [];
-        end
+        % 2. parse input arguments: varargin -> vars
+        [c,G,expMat,A,b,expMat_,Grest,id] = aux_parseInputArgs(varargin{:});
+
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(c,G,expMat,A,b,expMat_,Grest,id,nargin);
+
+        % 4. assign properties
+        obj.c = c; obj.G = G; obj.expMat = expMat; obj.A = A; obj.b = b;
+        obj.expMat_ = expMat_; obj.Grest = Grest; obj.id = id;
+    end
+end
+
+methods (Static = true)
+    cPZ = generateRandom(varargin) % generate random conPolyZono object
+end
+
+end
+
+
+% Auxiliary Functions -----------------------------------------------------
+
+function [c,G,expMat,A,b,expMat_,Grest,id] = aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    % check number of input arguments
+    if nargin > 8
+        % too many input arguments
+        throw(CORAerror('CORA:tooManyInputArgs',8));
+    end
+
+    % default values
+    [c,G,expMat] = setDefaultValues({[],[],[]},varargin);
+    A = []; b = []; expMat_ = []; Grest = []; id = [];
     
-        Grest = []; id = []; A = []; b = []; expMat_ = [];
-        
-        if nargin == 0
-            % empty set
-            return
-        elseif nargin == 1 && isa(c,'conPolyZono')
-            % copy constructor
-            obj = c; return;
-        elseif nargin == 1 && isnumeric(c) && isvector(c)
-            obj.c = c; return;
-        elseif nargin == 4
-           Grest = varargin{1};
-        elseif nargin == 5
-           Grest = varargin{1};
-           id = varargin{2};
-        elseif nargin == 6
-           A = varargin{1};
-           b = varargin{2};
-           expMat_ = varargin{3};
-        elseif nargin == 7
-           A = varargin{1};
-           b = varargin{2};
-           expMat_ = varargin{3};
-           Grest = varargin{4};
-        elseif nargin == 8
-           A = varargin{1};
-           b = varargin{2};
-           expMat_ = varargin{3};
-           Grest = varargin{4};
-           id = varargin{5};
-        end
-        
-        % call superclass method
-        if isempty(id)
-            id = (1:size(expMat,1))'; 
-        end
+    % set other (optional) values
+    if nargin == 0 || (nargin == 1 && isnumeric(c) && isvector(c))
+        return;
+    elseif nargin == 4 || nargin == 5
+        [Grest,id] = setDefaultValues({Grest,id},varargin(4:end));
+    elseif nargin >= 6
+        [A,b,expMat_,Grest,id] = setDefaultValues({A,b,expMat_,Grest,id},varargin(4:end));
+    end
+    
+    % set identifiers
+    if isempty(id)
+        id = (1:size(expMat,1))'; 
+    end
 
+end
+
+function aux_checkInputArgs(c,G,expMat,A,b,expMat_,Grest,id,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
 
         % check correctness of user input 
         inputChecks = { ...
@@ -118,7 +129,7 @@ methods
             {G, 'att', 'numeric', {'finite', 'matrix'}}; ...
             {expMat, 'att', 'numeric', {'integer', 'matrix'}}; ...
         };
-        if nargin > 5
+        if n_in > 5
             % only add constraints checks if they were in the input
             % to correctly indicate the position of the wrong input
             inputChecks = [
@@ -163,15 +174,7 @@ methods
                 'Invalid constraint exponent matrix.'));
         end
         
-        % assign object properties
-        obj.c = c; obj.G = G; obj.expMat = expMat; obj.A = A; obj.b = b;
-        obj.expMat_ = expMat_; obj.Grest = Grest; obj.id = id;
     end
-end
-
-methods (Static = true)
-    cPZ = generateRandom(varargin) % generate random conPolyZono object
-end
 
 end
 

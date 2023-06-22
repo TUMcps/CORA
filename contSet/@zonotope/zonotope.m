@@ -42,64 +42,34 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonotope < contSet
 %               1-May-2020 (NK) new constructor + removed orientation prop.
 %               14-December-2022 (TL, property check in inputArgsCheck)
 %               29-March-2023 (TL: optimized constructor)
-% Last revision: ---
+% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = protected, GetAccess = public)
-    % zonotope center and generator Z = [c,g_1,...,g_p]
-    Z;
+    Z;          % zonotope center and generator Z = [c,g_1,...,g_p]
 
-    % halfspace representation of the zonotope
-    halfspace;
+    % internally-set properties
+    halfspace;  % halfspace representation of the zonotope
 end
 
 methods
 
     function obj = zonotope(varargin)
 
-        % parse input
-        switch nargin
-            case 0
-                Z = [];
-            case 1
-                if isa(varargin{1}, 'zonotope')
-                    % copy constructor
-                    obj = varargin{1};
-                    return;
-                end
-                Z = varargin{1};
-            case 2
-                c = varargin{1};
-                G = varargin{2};
-    
-                if CHECKS_ENABLED
-                    inputArgsCheck({ ...
-                        {c, 'att', 'numeric', 'nonnan'}; ...
-                        {G, 'att', 'numeric', 'nonnan'}; ...
-                    })
-        
-                    % check dimensions
-                    if isempty(c) && ~isempty(G)
-                        throw(CORAerror('CORA:wrongInputInConstructor',...
-                            'Center is empty.'));
-                    elseif ~isvector(c)
-                        throw(CORAerror('CORA:wrongInputInConstructor',...
-                            'Center is not a vector.'));
-                    elseif ~isempty(G) && size(c,1) ~= size(G,1)
-                        throw(CORAerror('CORA:wrongInputInConstructor',...
-                            'Dimension mismatch between center and generator matrix.'));  
-                    end
-                end
-                Z = [c, G];
-            otherwise
-                throw(CORAerror("CORA:tooManyInputArgs", 2))
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'zonotope')
+            obj = varargin{1}; return
         end
 
-        inputArgsCheck({{Z, 'att', 'numeric', 'nonnan'}})
+        % 2. parse input arguments: varargin -> vars
+        [c,G] = aux_parseInputArgs(varargin{:});
 
-        % assign properties
-        obj.Z = Z;
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(c,G,nargin);
+
+        % 4. assign properties
+        obj.Z = [c,G];
         obj.halfspace = [];
     end
 end
@@ -108,6 +78,72 @@ methods (Static = true)
     Z = generateRandom(varargin) % generate random zonotope
     Z = enclosePoints(points,varargin) % enclose point cloud with zonotope
 end
+
+end
+
+
+% Auxiliary Functions -----------------------------------------------------
+
+function [c,G] = aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    % check number of input arguments
+    if nargin > 2
+        throw(CORAerror('CORA:tooManyInputArgs',2));
+    end
+
+    % no input arguments
+    if nargin == 0
+        c = []; G = [];
+        return
+    end
+
+    % set default values depending on nargin
+    if nargin == 1
+        if isempty(varargin{1})
+            c = []; G = [];
+        else
+            c = varargin{1}(:,1);
+            G = varargin{1}(:,2:end);
+        end
+    elseif nargin == 2
+        [c,G] = setDefaultValues({[],[]},varargin);
+    end
+
+end
+
+function aux_checkInputArgs(c,G,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
+
+        if n_in == 1
+
+            inputArgsCheck({{[c,G], 'att', 'numeric', 'nonnan'}})
+
+        elseif n_in == 2
+        
+            inputArgsCheck({ ...
+                {c, 'att', 'numeric', 'nonnan'}; ...
+                {G, 'att', 'numeric', 'nonnan'}; ...
+            })
+    
+            % check dimensions
+            if isempty(c) && ~isempty(G)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Center is empty.'));
+            elseif ~isempty(c) && ~isvector(c)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Center is not a vector.'));
+            elseif ~isempty(G) && size(c,1) ~= size(G,1)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Dimension mismatch between center and generator matrix.'));  
+            end
+
+        end
+        
+    end
 
 end
 

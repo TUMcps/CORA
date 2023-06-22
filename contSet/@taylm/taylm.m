@@ -2,11 +2,11 @@ classdef (InferiorClasses = {?interval}) taylm
 % taylm (Taylor model) class.
 %
 % Syntax:  
-%    Obj = taylm()
-%    Obj = taylm(int)
-%    Obj = taylm(int, max_order, names, opt_method, eps, tolerance)
-%    Obj = taylm(func,int)
-%    Obj = taylm(func,int,max_order, opt_method, eps, tolerance)
+%    obj = taylm()
+%    obj = taylm(int)
+%    obj = taylm(int,max_order,names,opt_method,eps,tolerance)
+%    obj = taylm(func,int)
+%    obj = taylm(func,int,max_order,opt_method,eps,tolerance)
 %
 % Inputs:
 %    int - interval object that defines the ranges of the variables
@@ -27,7 +27,7 @@ classdef (InferiorClasses = {?interval}) taylm
 %                moved to the remainder
 %
 % Outputs:
-%    Obj - Generated Object
+%    obj - generated object
 %
 % Examples: 
 %    % create and manipulate simple taylor models
@@ -66,14 +66,14 @@ classdef (InferiorClasses = {?interval}) taylm
 %               11-October-2017 (DG) Syms as an input
 %               3-April-2018 (NK) Restructured constructor
 %               02-May-2020 (MW) add property validation 
-% Last revision:---
+% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
     % coefficients of polynomial terms. 
     % format:       column vector
-    coefficients (:,1) {mustBeNumeric,mustBeFinite} = [];
+    coefficients = [];
     
     % monomials for of poly. terms (i.e. x*(y.^2)*z -> [1;2;1])
     % format:      cell array of column vectors
@@ -90,239 +90,44 @@ properties (SetAccess = private, GetAccess = public)
     
     % stores the maximal order of a polynomial
     % format:       integer
-    max_order (1,1) {mustBeInteger} = 6; 
+    max_order = 6; 
     
     % defines the method used to determine an interval over-approximation
-    % format:       string ('int' or 'bnb')
-    opt_method (1,:) char {mustBeMember(opt_method,{'int','bnb','bnbAdv','linQuad'})} = 'int';
+    % format:       string ('int', 'bnb', 'bnbAdv', 'linQuad')
+    opt_method = 'int';
     
     % precision for the branch and bound optimization (opt_method = 'bnb')
     % format:       scalar (> 0)
-    eps (1,1) {mustBePositive} = 0.001;
+    eps = 0.001;
     
     % coefficients smaller than this value get moved to the remainder
     % format:       scalar (> 0)
-    tolerance (1,1) {mustBePositive} = 1e-8;
+    tolerance = 1e-8;
     
 end
     
 methods
     % class constructor
     function obj = taylm(varargin)
-        
-        max_order = 6;
-        opt_method = 'int';
-        eps = 0.001;
-        tolerance = 1e-8;
-        
-        % default constructor
-        if nargin==0
-            
-            obj.coefficients = 0;
-            
-        % copy constructor
-        elseif isa(varargin{1},'taylm')
-            
-            obj = varargin{1};
-            
-        % first input is an interval
-        elseif isa(varargin{1},'interval')           
-               
-           int = varargin{1};
 
-           % parse input arguments
-           if nargin >= 2 && ~isempty(varargin{2})
-               max_order = varargin{2};
-           end
-           if nargin >= 4 && ~isempty(varargin{4})
-               opt_method = varargin{4};
-           end
-           if nargin >= 5 && ~isempty(varargin{5})
-               eps = varargin{5};
-           end
-           if nargin >= 6 && ~isempty(varargin{6})
-               tolerance = varargin{6};
-           end
-           
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'taylm')
+            obj = varargin{1}; return
+        end
 
-           % generate variable names if they are not provided
-           try
-               if nargin < 3
-                   names = genDefaultVarNames(int,[],inputname(1));
-               else
-                   names = genDefaultVarNames(int,varargin{3},inputname(1));
-               end
-           catch ex
-               rethrow(ex);
-           end
-           
+        % 2. parse input arguments: varargin -> vars
+        [func,int,max_order,names,opt_method,eps,tolerance] = ...
+            aux_parseInputArgs(varargin{:});
 
-           % generate the taylor model
-           if ~isscalar(int)
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(func,int,max_order,names,opt_method,eps,tolerance,nargin);
 
-               % use "repelem" instead of "arrayfunc" to initialize the
-               % object-array, because only this way the initialization of
-               % subclass arrays with the superclass constructor is
-               % suported
-               obj = repelem(obj,size(int,1),size(int,2));
-               for i = 1:size(int,1)
-                   for j = 1:size(int,2)
-                       obj(i,j).coefficients = [center(int(i,j)); rad(int(i,j))];
-                       obj(i,j).monomials = hashFunction([0; 1]);
-                       obj(i,j).max_order = max_order;
-                       obj(i,j).opt_method = opt_method;
-                       obj(i,j).eps = eps;
-                       obj(i,j).tolerance = tolerance;
-                       obj(i,j).remainder = interval(0,0);
-                       obj(i,j).names_of_var = names(i,j);
-                   end
-               end
+        % 4. compute object
+        obj = aux_computeObject(obj,func,int,max_order,names,opt_method,eps,tolerance,inputname(1));
 
-           else
-
-               obj.coefficients = [center(int); rad(int)];
-               obj.monomials = hashFunction([0; 1]);
-               obj.max_order = max_order;
-               obj.opt_method = opt_method;
-               obj.eps = eps;
-               obj.tolerance = tolerance;
-               obj.remainder = interval(0,0);
-               if ~iscell(names)
-                    obj.names_of_var = {names};
-               else
-                    obj.names_of_var = names;
-               end
-
-           end
-
-
-        % first input is a symbolic function
-        elseif isa(varargin{1},'sym')
-
-           % parse input arguments
-           if nargin < 2 || nargin > 6
-               if nargin > 6
-                   throw(CORAerror('CORA:tooManyInputArgs',6));
-               end
-               if nargin < 2
-                   throw(CORAerror('CORA:notEnoughInputArgs',2));
-               end
-           end
-
-           func = varargin{1};
-           int = varargin{2};
-
-           if nargin >= 3 && ~isempty(varargin{3})
-               max_order = varargin{3};
-           end
-           if nargin >= 4 && ~isempty(varargin{4})
-               opt_method = varargin{4};
-               if ~ischar(opt_method) || ~ismember(opt_method,{'int','bnb','bnbAdv','linQuad'})
-                   throw(CORAerror('CORA:wrongValue','fourth',"'int', 'bnb', 'bnbAdv', or 'linQuad'"));
-               end
-           end
-           if nargin >= 5 && ~isempty(varargin{5})
-               eps = varargin{5}; 
-           end
-           if nargin >= 6 && ~isempty(varargin{6})
-               tolerance = varargin{6};
-           end
-
-           % scalar vs. matrix input
-           if ~isscalar(func)
-              
-               % assign each symbolic variable the correct interval of
-               % values
-               v = symvar(func);
-               obj = cell(size(func));
-               
-               for i = 1:size(obj,1)
-                   for j = 1:size(obj,2)
-                        
-                       v_ = symvar(func(i,j));
-                       int_ = interval(zeros(length(v_),1),zeros(length(v_),1));
-                       counter = 1;
-                       k = 1;
-                       while k <= length(v) && counter <= length(v_)
-                           if isequal(v(k),v_(counter))
-                               int_(counter) = int(k);
-                               counter = counter + 1;
-                           end
-                           k = k + 1;
-                       end
-                       
-                       % call taylm constructor for a scalar function
-                       obj{i,j} = taylm(func(i,j),int_,max_order,opt_method,eps,tolerance);
-                       
-                   end
-               end
-
-               % bring the object to the correct format
-               A = cat(1, obj{:});
-               obj = reshape(A, size(obj));          
-
-           else
-
-               % extract variable names
-               v = symvar(func);
-               names = cellfun(@(x) char(x),num2cell(transpose(v)),'UniformOutput',false);
-
-               if length(names) > length(int)
-                   throw(CORAerror('CORA:wrongInputInConstructor',...
-                       ['The length of the input argument ''int'' '...
-                       'has to be identical to the number of variables in the symbolic function!'])); 
-               end
-
-               % create taylor models for all variables
-               for i = 1:length(v)
-                  str = sprintf('t%s = taylm(interval(%i,%i),%i,''%s'',''%s'',%e,%e);', ...
-                                names{i},infimum(int(i)), ...
-                                supremum(int(i)),max_order,names{i},opt_method,eps,tolerance);
-                  tay(i) = sym(sprintf('t%s',names{i}));
-
-                  eval(str); 
-               end
-
-               % evaluate the symbolic formula with taylor models
-               if ~isempty(v)
-                   temp = subs(func,v,tay);
-                   str = sprintf('obj = %s;',char(temp));
-                   eval(str);
-               else
-                   temp = eval(func);
-                   obj = taylm(interval(temp,temp),max_order,'const',opt_method,eps,tolerance);
-               end
-
-           end
-        
-        % convert class "affine" to class "taylm"
-        elseif isa(varargin{1},'affine')
-           
-            % check user input
-            if nargin > 1
-                throw(CORAerror('CORA:tooManyInputArgs',1));
-            end
-            
-            % copy all properties
-            c = metaclass(varargin{1});
-            prop = c.Properties;
-            
-            for i = 1:length(prop)
-               if ~prop{i}.Dependent
-                  obj.(prop{i}.Name) = varargin{1}.(prop{i}.Name);
-               end
-            end
-            
-        % convert numeric inputs to class taylm
-        elseif isnumeric(varargin{1})
-            
-            obj = taylm(interval(varargin{1}),varargin{2:end});
-            
-        else
-            throw(CORAerror('CORA:specialError','Wrong syntax. Type "help taylm" for more information.'));
-        end    
     end
-         
+    
+
     % methods in seperate files 
     res = plus(summand1,summand2)
     res = minus(minuend,subtrahend)
@@ -362,6 +167,251 @@ methods
     %display functions
     display(obj)
 end
+
+end
+
+
+% Auxiliary Functions -----------------------------------------------------
+
+function [func,int,max_order,names,opt_method,eps,tolerance] = ...
+    aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    % due to different supported syntaxes, number of allowed input
+    % arguments depends on input arguments (see below)
+
+    % default values
+    def_max_order = 6;
+    def_opt_method = 'int';
+    def_eps = 0.001;
+    def_tolerance = 1e-8;
+    % init values
+    func = []; int = []; names = {};
+
+    % no input arguments
+    if nargin == 0
+        max_order = def_max_order; opt_method = def_opt_method;
+        eps = def_eps; tolerance = def_tolerance;
+        return
+    end
+
+    % convert numeric to interval
+    if isnumeric(varargin{1})
+        varargin{1} = interval(varargin{1});
+    end
+
+    % two cases: first input argument either interval or symbolic object
+    if isa(varargin{1},'interval')
+        % syntaxes:
+        % - obj = taylm(int)
+        % - obj = taylm(int,max_order,names,opt_method,eps,tolerance)
+
+        % check number of input arguments
+        if nargin > 6
+            throw(CORAerror('CORA:tooManyInputArgs',6));
+        end
+        
+        % read out values
+        [int,max_order,names,opt_method,eps,tolerance] = ...
+            setDefaultValues({[],def_max_order,[],def_opt_method,def_eps,def_tolerance},varargin);
+        
+        % set func to empty for checking of input arguments and computation
+        % of object properties
+        func = [];
+    
+    elseif isa(varargin{1},'sym')
+        % syntaxes:
+        % - obj = taylm(func,int)
+        % - obj = taylm(func,int,max_order,opt_method,eps,tolerance)
+
+       % check number of input arguments
+       if nargin < 2
+           throw(CORAerror('CORA:notEnoughInputArgs',2));
+       elseif nargin > 6
+           throw(CORAerror('CORA:tooManyInputArgs',6));
+       end
+
+       % read out values
+       [func,int,max_order,opt_method,eps,tolerance] = ...
+           setDefaultValues({[],[],def_max_order,def_opt_method,def_eps,def_tolerance},varargin);
+
+       % set names to empty (always computed automatically if func given)
+       names = [];
+
+    end
+
+    % if values where there are default values are [], choose default value
+    % note: find better solution for this
+    if isempty(max_order);  max_order = def_max_order; end
+    if isempty(opt_method); opt_method = def_opt_method; end
+    if isempty(eps);        eps = def_eps; end
+    if isempty(tolerance);  tolerance = def_tolerance; end
+
+end
+
+function aux_checkInputArgs(func,int,max_order,names,opt_method,eps,tolerance,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
+
+        % correct value for max_order
+        if ~isnumeric(max_order) || ~isscalar(max_order) || mod(max_order,1) ~= 0
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Maximum order must be an integer greater than zero.'));
+        end
+
+        % correct method for optimization
+        if ~(ischar(opt_method) || isstring(opt_method)) || ~ismember(char(opt_method),{'int','bnb','bnbAdv','linQuad'})
+            throw(CORAerror('CORA:wrongValue','fourth',"'int', 'bnb', 'bnbAdv', or 'linQuad'"));
+        end
+
+        % correct value for eps
+        if ~isnumeric(eps) || ~isscalar(eps) || eps <= 0
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Precision for branch and bound optimization must be a scalar greater than zero.'));
+        end
+
+        % correct value for tolerance
+        if ~isnumeric(tolerance) || ~isscalar(tolerance) || tolerance <= 0
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Tolerance be a scalar greater than zero.'));
+        end
+
+    end
+
+end
+
+function obj = aux_computeObject(obj,func,int,max_order,names,opt_method,eps,tolerance,varname)
+% compute properties of taylm object
+
+    if isempty(func) && isempty(int)
+        % immediate exit
+        obj.coefficients = 0;
+        obj.max_order = max_order;
+        obj.opt_method = opt_method;
+        obj.eps = eps;
+        obj.tolerance = tolerance;
+        return
+    end
+
+    if isempty(func) && ~isempty(int)
+        % varargin{1} was an interval
+
+        % generate variable names if they are not provided
+        names = genDefaultVarNames(int,names,varname);
+        
+        % generate the taylor model
+        if isscalar(int)
+        
+            obj.coefficients = [center(int); rad(int)];
+            obj.monomials = hashFunction([0; 1]);
+            obj.max_order = max_order;
+            obj.opt_method = opt_method;
+            obj.eps = eps;
+            obj.tolerance = tolerance;
+            obj.remainder = interval(0,0);
+            if ~iscell(names)
+                obj.names_of_var = {names};
+            else
+                obj.names_of_var = names;
+            end
+        
+        else
+        
+            % use "repelem" instead of "arrayfunc" to initialize the
+            % object-array, because only this way the initialization of
+            % subclass arrays with the superclass constructor is
+            % suported
+            obj = repelem(obj,size(int,1),size(int,2));
+            for i = 1:size(int,1)
+                for j = 1:size(int,2)
+                    obj(i,j).coefficients = [center(int(i,j)); rad(int(i,j))];
+                    obj(i,j).monomials = hashFunction([0; 1]);
+                    obj(i,j).max_order = max_order;
+                    obj(i,j).opt_method = opt_method;
+                    obj(i,j).eps = eps;
+                    obj(i,j).tolerance = tolerance;
+                    obj(i,j).remainder = interval(0,0);
+                    obj(i,j).names_of_var = names(i,j);
+                end
+            end
+        
+        end
+
+
+    elseif ~isempty(func)
+        % varargin{1} was a symbolic function
+
+        % scalar vs. matrix input
+        if ~isscalar(func)
+        
+            % assign each symbolic variable the correct interval of
+            % values
+            v = symvar(func);
+            obj = cell(size(func));
+            
+            for i = 1:size(obj,1)
+                for j = 1:size(obj,2)
+                
+                    v_ = symvar(func(i,j));
+                    int_ = interval(zeros(length(v_),1),zeros(length(v_),1));
+                    counter = 1;
+                    k = 1;
+                    while k <= length(v) && counter <= length(v_)
+                        if isequal(v(k),v_(counter))
+                            int_(counter) = int(k);
+                            counter = counter + 1;
+                        end
+                            k = k + 1;
+                    end
+                    
+                    % call taylm constructor for a scalar function
+                    obj{i,j} = taylm(func(i,j),int_,max_order,opt_method,eps,tolerance);
+                
+                end
+            end
+            
+            % bring the object to the correct format
+            A = cat(1, obj{:});
+            obj = reshape(A, size(obj));          
+            
+        else
+            
+            % extract variable names
+            v = symvar(func);
+            names = cellfun(@(x) char(x),num2cell(transpose(v)),'UniformOutput',false);
+            
+            if length(names) > length(int)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                ['The length of the input argument ''int'' '...
+                'has to be identical to the number of variables in the symbolic function!'])); 
+            end
+            
+            % create taylor models for all variables
+            for i = 1:length(v)
+                str = sprintf('t%s = taylm(interval(%i,%i),%i,''%s'',''%s'',%e,%e);', ...
+                names{i},infimum(int(i)), ...
+                supremum(int(i)),max_order,names{i},opt_method,eps,tolerance);
+                tay(i) = sym(sprintf('t%s',names{i}));
+                
+                eval(str); 
+            end
+            
+            % evaluate the symbolic formula with taylor models
+            if ~isempty(v)
+                temp = subs(func,v,tay);
+                str = sprintf('obj = %s;',char(temp));
+                eval(str);
+            else
+                temp = eval(func);
+                obj = taylm(interval(temp,temp),max_order,'const',opt_method,eps,tolerance);
+            end
+    
+        end
+
+    end
+
 end
 
 %------------- END OF CODE -------

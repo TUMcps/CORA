@@ -67,13 +67,15 @@ oldColorIndex = ax.ColorOrderIndex;
 
 % loop over all simulated trajectories
 hold on
-for i = 1:length(simRes.(whichtraj))
-    han_i = plotPolygon(simRes.(whichtraj){i}(:,dims)', NVpairs{:});
-
-    if i == 1
-        han = han_i;
-        % don't display subsequent plots in legend
-        NVpairs = [NVpairs, {'HandleVisibility','off'}];
+for r=1:length(simRes)
+    for i=1:length(simRes(r).(whichtraj))
+        han_i = plotPolygon(simRes(r).(whichtraj){i}(:,dims)',NVpairs{:});
+        
+        if i == 1
+            han = han_i;
+            % don't display subsequent plots in legend
+            NVpairs = [NVpairs, {'HandleVisibility','off'}];
+        end
     end
 end
 

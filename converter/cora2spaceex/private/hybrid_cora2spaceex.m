@@ -55,7 +55,7 @@ for idx = 1:numel(systems)
     
     % concatenate transitions correctly (only non-empty transitions)
     for j=1:length(trans_)
-        if ~isempty(trans_)
+        if ~isemptyobject(trans_)
             try
                 trans = [trans; trans_];
             catch
@@ -81,7 +81,7 @@ for idx = 1:numel(trans)
     id = ids(idx);
     
     % TODO: integrate syncLabel in conversion!
-    tran = transition_cora2spaceex(component, docNode, target, id);
+    tran = transition_cora2spaceex(component, docNode, target, id, syncLabel);
     guard_cora2spaceex(tran,docNode,guard);    
     assignment_cora2spaceex(tran, docNode, reset) 
 end

@@ -1,10 +1,10 @@
 classdef zoo
-% Zoo class computes intervals and Taylor models in parallel for better
-% precision
+% zoo - range bounding using intervals and Taylor models in parallel for
+%    higher precision
 %
 % Syntax:
-%       object constructor: obj = zoo(int, methods)
-%                           obj = zoo(int, methods, names, max_order, eps, tolerance)
+%    obj = zoo(int, methods)
+%    obj = zoo(int, methods, names, max_order, eps, tolerance)
 %
 % Inputs:
 %    int - interval object 
@@ -19,20 +19,19 @@ classdef zoo
 %    tolerance - monomials with coefficients smaller than this value are
 %                moved to the remainder
 %
-%
 % Outputs:
-%    obj - Generated Object
+%    obj - generated object
 %
 % Examples:
-%   % compute function bounds with interval arithmetic
-%   I = interval([0;1],[2;4]);
-%   int_i = I(1) * (I(1)-I(2)) + I(1)*I(2)
+%    % compute function bounds with interval arithmetic
+%    I = interval([0;1],[2;4]);
+%    int_i = I(1) * (I(1)-I(2)) + I(1)*I(2)
 % 
-%   % compute function bounds with class zoo
-%   methods = {'taylm(int)'; 'affine(bnb)'; 'interval'};
-%   z = zoo(I,methods,{'x';'y'},6,0.001,1e-8);
-%   temp = z(1) * (z(1)-z(2)) + z(1)*z(2);
-%   int_zoo = interval(temp)
+%    % compute function bounds with class zoo
+%    methods = {'taylm(int)'; 'affine(bnb)'; 'interval'};
+%    z = zoo(I,methods,{'x';'y'},6,0.001,1e-8);
+%    temp = z(1) * (z(1)-z(2)) + z(1)*z(2);
+%    int_zoo = interval(temp)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -42,117 +41,39 @@ classdef zoo
 
 % Author:       Dmitry Grebenyuk, Niklas Kochdumper
 % Written:      05-November-2017
-%
 % Last update:  10-April-2018 (NK, modified object properties)
-%               ---
-% Last revision:---
+% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
     
     % cell array containing the names of the applied methods as strings
-    method
+    method;
     
-    % cell array contaiing the class objects for the applied methods
-    objects
+    % cell array containing the class objects for the applied methods
+    objects;
     
 end
     
 methods
     
     % class constructor
-    function obj = zoo(int, methods, varargin)
-        
-        % default settings
-        max_order = 6;
-        tolerance = 1e-8;
-        eps = 0.001;
-        
-        % parse input arguments
-        if nargin < 2 || nargin > 6
-               if nargin > 6
-                   throw(CORAerror('CORA:tooManyInputArgs',6));
-               end
-               if nargin < 2
-                   throw(CORAerror('CORA:notEnoughInputArgs',2));
-               end
+    function obj = zoo(varargin)
+
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'zoo')
+            obj = varargin{1}; return
         end
-        
-        if nargin >= 4 && ~isempty(varargin{2})
-           max_order = varargin{2}; 
-        end
-        if nargin >= 5 && ~isempty(varargin{3})
-           eps = varargin{3}; 
-        end
-        if nargin >= 6 && ~isempty(varargin{4})
-           tolerance = varargin{4}; 
-        end
-        
-        % generate variable names if they are not provided
-        try
-           if nargin < 3
-               names = genDefaultVarNames(int,[],inputname(1));
-           else
-               names = genDefaultVarNames(int,varargin{1},inputname(1));
-           end
-        catch ex
-            rethrow(ex);
-        end
-        
-        
-        % check user input
-        if ~all(cell2mat(cellfun(@ischar,methods,'UniformOutput',false))) || ~isa(int,'interval')
-            throw(CORAerror('CORA:wrongValue','first/second',"check documents"));
-        else
-            temp = ismember(methods,{'taylm(int)','taylm(bnb)','taylm(bnbAdv)', ...
-                    'taylm(linQuad)','affine(int)','affine(bnb)','affine(bnbAdv)', ...
-                    'interval'});
-            if ~all(temp)
-               ind = find(temp == 0);
-               str = methods{ind(1)};
-               throw(CORAerror('CORA:wrongValue','second',...
-                   "'taylm(int)', 'taylm(bnb)', 'taylm(bnbAdv)', 'taylm(linQuad)', " + ...
-                   "'affine(int)', 'affine(bnb)', 'affine(bnbAdv)', 'interval'"));
-            end 
-        end
-        
-        % generate the objects
-        obj.method = sort(methods);     % sort alphabetically
-        obj.objects = cell(length(methods),1);
-        
-        for i = 1:length(obj.method)
-           
-            m = obj.method{i};
-            
-            switch m
-                
-                case 'taylm(int)'
-                    obj.objects{i} = taylm(int,max_order,names,'int',eps,tolerance);
-                
-                case 'taylm(bnb)'
-                    obj.objects{i} = taylm(int,max_order,names,'bnb',eps,tolerance);
-                    
-                case 'taylm(bnbAdv)'
-                    obj.objects{i} = taylm(int,max_order,names,'bnbAdv',eps,tolerance);
-                
-                case 'taylm(linQuad)'
-                    obj.objects{i} = taylm(int,max_order,names,'linQuad',eps,tolerance);
-                    
-                case 'affine(int)'
-                    obj.objects{i} = affine(int,names,'int',eps,tolerance);
-                    
-                case 'affine(bnb)'
-                    obj.objects{i} = affine(int,names,'bnb',eps,tolerance);
-                    
-                case 'affine(bnbAdv)'
-                    obj.objects{i} = affine(int,names,'bnbAdv',eps,tolerance);
-                    
-                case 'interval'
-                    obj.objects{i} = int;
-                
-            end
-        end
+
+        % 2. parse input arguments: varargin -> vars
+        [int,methods,names,max_order,eps,tolerance] = aux_parseInputArgs(varargin{:});
+
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(int,methods,names,max_order,eps,tolerance,nargin);
+
+        % 4. compute object
+        obj = aux_computeObject(int,methods,names,max_order,eps,tolerance,inputname(1));
 
     end
     
@@ -173,6 +94,122 @@ methods
     function res = power(obj1,obj2); res = zooComputation(@power,obj1,obj2); end
              
 end
+
+end
+
+
+% Auxiliary Functions -----------------------------------------------------
+
+function [int,method,names,max_order,eps,tolerance] = aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    % check number of input arguments
+    if nargin > 6
+        throw(CORAerror('CORA:tooManyInputArgs',6));
+    end
+    if nargin < 2
+        throw(CORAerror('CORA:notEnoughInputArgs',2));
+    end
+
+    % set default values (first two always given)
+    [int,method,names,max_order,eps,tolerance] = ...
+        setDefaultValues({[],[],[],6,0.001,1e-8},varargin);
+
+end
+
+function aux_checkInputArgs(int,methods,names,max_order,eps,tolerance,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
+
+        % int has to be an interval
+        if ~isa(int,'interval')
+            throw(CORAerror('CORA:wrongValue','first',...
+                'has to be an interval object.'));
+        end
+
+        % check methods
+        if ~all(cell2mat(cellfun(@ischar,methods,'UniformOutput',false)))
+            throw(CORAerror('CORA:wrongValue','second',"has to be a cell-array of methods."));
+        end
+        
+        temp = ismember(methods,{'taylm(int)','taylm(bnb)','taylm(bnbAdv)', ...
+                'taylm(linQuad)','affine(int)','affine(bnb)','affine(bnbAdv)', ...
+                'interval'});
+        if ~all(temp)
+           ind = find(temp == 0);
+           str = methods{ind(1)};
+           throw(CORAerror('CORA:wrongValue','second',...
+               "'taylm(int)', 'taylm(bnb)', 'taylm(bnbAdv)', 'taylm(linQuad)', " + ...
+               "'affine(int)', 'affine(bnb)', 'affine(bnbAdv)', 'interval'"));
+        end
+
+        % correct value for max_order
+        if ~isnumeric(max_order) || ~isscalar(max_order) || mod(max_order,1) ~= 0
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Maximum order must be an integer greater than zero.'));
+        end
+
+        % correct value for eps
+        if ~isnumeric(eps) || ~isscalar(eps) || eps <= 0
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Precision for branch and bound optimization must be a scalar greater than zero.'));
+        end
+
+        % correct value for tolerance
+        if ~isnumeric(tolerance) || ~isscalar(tolerance) || tolerance <= 0
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Tolerance be a scalar greater than zero.'));
+        end
+        
+    end
+
+end
+
+function obj = aux_computeObject(int,methods,names,max_order,eps,tolerance,varname)
+
+    % generate variable names if they are not provided
+    names = genDefaultVarNames(int,names,varname);
+
+    % sort methods alphabetically
+    obj.method = sort(methods);
+    % generate the objects
+    obj.objects = cell(length(methods),1);
+    
+    for i = 1:length(obj.method)
+       
+        m = obj.method{i};
+        
+        switch m
+            
+            case 'taylm(int)'
+                obj.objects{i} = taylm(int,max_order,names,'int',eps,tolerance);
+            
+            case 'taylm(bnb)'
+                obj.objects{i} = taylm(int,max_order,names,'bnb',eps,tolerance);
+                
+            case 'taylm(bnbAdv)'
+                obj.objects{i} = taylm(int,max_order,names,'bnbAdv',eps,tolerance);
+            
+            case 'taylm(linQuad)'
+                obj.objects{i} = taylm(int,max_order,names,'linQuad',eps,tolerance);
+                
+            case 'affine(int)'
+                obj.objects{i} = affine(int,names,'int',eps,tolerance);
+                
+            case 'affine(bnb)'
+                obj.objects{i} = affine(int,names,'bnb',eps,tolerance);
+                
+            case 'affine(bnbAdv)'
+                obj.objects{i} = affine(int,names,'bnbAdv',eps,tolerance);
+                
+            case 'interval'
+                obj.objects{i} = int;
+            
+        end
+    end
+
 end
 
 %------------- END OF CODE -------

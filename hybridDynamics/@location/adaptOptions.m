@@ -39,9 +39,9 @@ if isfield(options,'paramInt')
 end
 
 % remove model parameters from options
-for i=1:length(paramsList.name)
-    if isfield(options,paramsList.name{i})
-        options = rmfield(options,paramsList.name{i}); 
+for i=1:length(paramsList)
+    if isfield(options,paramsList(i).name)
+        options = rmfield(options,paramsList(i).name); 
     end
 end 
 
@@ -66,7 +66,7 @@ optFields = [optFields; addFields];
 
 % remove all options not for contDynamics class
 for i=1:length(optFields)
-    if ~ismember(optionsList.name,optFields{i})
+    if ~ismember({optionsList.name}',optFields{i})
         options = rmfield(options,optFields{i}); 
     end
 end

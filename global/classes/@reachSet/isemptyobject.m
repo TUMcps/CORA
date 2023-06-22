@@ -1,8 +1,8 @@
-function res = isempty(R)
-% isempty - checks if a reachSet object is empty
+function res = isemptyobject(R)
+% isemptyobject - checks if a reachSet object is empty
 %
 % Syntax:  
-%    res = isempty(R)
+%    res = isemptyobject(R)
 %
 % Inputs:
 %    R - reachSet object
@@ -12,7 +12,7 @@ function res = isempty(R)
 %
 % Example:
 %    R = reachSet();
-%    isempty(R)
+%    isemptyobject(R)
 %
 % Other m-files required: none
 % Subfunctions: none

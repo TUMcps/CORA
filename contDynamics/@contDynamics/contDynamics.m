@@ -39,17 +39,10 @@ classdef contDynamics < matlab.mixin.Copyable
   
 
 properties (SetAccess = private, GetAccess = public)
-    % name of the system
-    name;
-
-    % state dimension
-    dim;
-
-    % input dimension
-    nrOfInputs;
-
-    % output dimension
-    nrOfOutputs;
+    name;           % name of the system
+    dim;            % state dimension
+    nrOfInputs;     % input dimension
+    nrOfOutputs;    % output dimension
 end
     
 methods
@@ -57,28 +50,35 @@ methods
     % class constructor
     function obj = contDynamics(varargin)
 
-        % parse input
-        maxArgs = 4; % max input args
-        if nargin > maxArgs
-            throw(CORAerror('CORA:tooManyInputArgs',maxArgs));
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'contDynamics')
+            obj = varargin{1}; return
         end
-        [name, dim, nrOfInputs, nrOfOutputs] = setDefaultValues( ...
-            {'',0,0,0}, varargin);
-        inputArgsCheck({ ...
-            {name, 'att', {'char', 'string'}}; ...
-            {dim, 'att', 'numeric', ...
-                {'integer', 'nonnegative', 'scalar'}}; ...
-            {nrOfInputs, 'att', 'numeric', ...
-                {'integer', 'nonnegative', 'scalar'}}; ...
-            {nrOfOutputs, 'att', 'numeric', ...
-                {'integer', 'nonnegative', 'scalar'}}; ...
-        })
 
-        % set properties
+        % 2. parse input arguments: varargin -> vars
+        if nargin > 4
+            throw(CORAerror('CORA:tooManyInputArgs',4));
+        end
+        [name,n,m,r] = setDefaultValues({'',0,0,0},varargin);
+
+        % 3. check correctness of input arguments
+        if CHECKS_ENABLED && nargin > 0
+            inputArgsCheck({ ...
+                {name, 'att', {'char', 'string'}}; ...
+                {n, 'att', 'numeric', ...
+                    {'integer', 'nonnegative', 'scalar'}}; ...
+                {m, 'att', 'numeric', ...
+                    {'integer', 'nonnegative', 'scalar'}}; ...
+                {r, 'att', 'numeric', ...
+                    {'integer', 'nonnegative', 'scalar'}}; ...
+            })
+        end
+
+        % 4. assign properties
         obj.name = name;
-        obj.dim = dim;
-        obj.nrOfInputs = nrOfInputs;
-        obj.nrOfOutputs = nrOfOutputs;
+        obj.dim = n;
+        obj.nrOfInputs = m;
+        obj.nrOfOutputs = r;
     end
 end
 

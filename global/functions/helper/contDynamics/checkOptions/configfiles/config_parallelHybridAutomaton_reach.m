@@ -24,43 +24,41 @@ function [paramsList,optionsList] = config_parallelHybridAutomaton_reach(sys,par
 % Author:       Mark Wetzlinger
 % Written:      04-February-2021
 % Last update:  ---
-% Last revision:---
+% Last revision:19-June-2023 (MW, structs, remove global variables)
 
 %------------- BEGIN CODE --------------
 
-% 1. init lists
-initParamsOptionsLists();
+% list of model parameters
+paramsList = struct('name',{},'status',{},'checkfun',{},'errmsg',{},'condfun',{});
 
 % append entries to list of model parameters
-add2params('tStart','default',{@isscalar,@isnumeric,@(val)ge(val,0)},{'isscalar','isnumeric','gezero'});
-add2params('tFinal','mandatory',{@isscalar,@isnumeric,@(val)val>0},{'isscalar','isnumeric','gezero'});
-add2params('startLoc','mandatory',{@(val)c_pHA_startLoc(val,sys,params)},{''});
-add2params('finalLoc','default',{@(val)c_pHA_finalLoc(val,sys,params)},{''});
-add2params('R0','mandatory',{@(val)c_pHA_R0(val,sys,params)},{''});
-add2params('inputCompMap','default',...
+paramsList(end+1,1) = add2list('tStart','default',{@isscalar,@isnumeric,@(val)ge(val,0)},{'isscalar','isnumeric','gezero'});
+paramsList(end+1,1) = add2list('tFinal','mandatory',{@isscalar,@isnumeric,@(val)val>0},{'isscalar','isnumeric','gezero'});
+paramsList(end+1,1) = add2list('startLoc','mandatory',{@(val)c_pHA_startLoc(val,sys,params)},{''});
+paramsList(end+1,1) = add2list('finalLoc','default',{@(val)c_pHA_finalLoc(val,sys,params)},{''});
+paramsList(end+1,1) = add2list('R0','mandatory',{@(val)c_pHA_R0(val,sys,params)},{''});
+paramsList(end+1,1) = add2list('inputCompMap','default',...
     {@isnumeric,@(val)max(val)<=length(sys.components),@(val)min(val)>=1,...
-    @(val) all(size(val)==[sys.numInputs,1]) || all(size(val)==[1,sys.numInputs])},...
+    @(val) all(size(val)==[sys.nrOfInputs,1]) || all(size(val)==[1,sys.nrOfInputs])},...
     {'isnumeric','lecomp','vectorgeone','???'});
-add2params('U','default',{@(val)c_pHA_U(val,sys,params)},{''});
+paramsList(end+1,1) = add2list('U','default',{@(val)c_pHA_U(val,sys,params)},{''});
 
+% list of algorithm parameters
+optionsList = struct('name',{},'status',{},'checkfun',{},'errmsg',{},'condfun',{});
 
 % append entries to list of algorithm parameters
-add2options('verbose','default',{@isscalar,@islogical},{'isscalar','islogical'});
-add2options('timeStep','mandatory',{@(val)c_HA_timeStep(val,sys,options)},{''});
-add2options('guardIntersect','mandatory',{@ischar,@(val)any(ismember(getMembers('guardIntersect'),val))},...
+optionsList(end+1,1) = add2list('verbose','default',{@isscalar,@islogical},{'isscalar','islogical'});
+optionsList(end+1,1) = add2list('timeStep','mandatory',{@(val)c_HA_timeStep(val,sys,options)},{''});
+optionsList(end+1,1) = add2list('guardIntersect','mandatory',{@ischar,@(val)any(ismember(getMembers('guardIntersect'),val))},...
     {'ischar','memberguardIntersect'});
-add2options('reductionTechnique','default',...
+optionsList(end+1,1) = add2list('reductionTechnique','default',...
     {@ischar,@(val)any(ismember(getMembers('reductionTechnique'),val))},...
     {'ischar','memberreductionTechnique'});
-add2options('enclose','mandatory',{@iscell,@(val)any(ismember(getMembers('enclose'),val))},...
+optionsList(end+1,1) = add2list('enclose','mandatory',{@iscell,@(val)any(ismember(getMembers('enclose'),val))},...
     {'iscell','memberenclose'},{@()any(ismember(getMembers('guardIntersect4enclose'),options.guardIntersect))});
-add2options('guardOrder','mandatory',{@isscalar,@isnumeric,@(val)ge(val,1)},...
+optionsList(end+1,1) = add2list('guardOrder','mandatory',{@isscalar,@isnumeric,@(val)ge(val,1)},...
     {'isscalar','isnumeric','geone'},{@()any(ismember(getMembers('guardIntersect4guardOrder'),options.guardIntersect))});
-add2options('intersectInvariant','default',{@isscalar,@islogical},{'isscalar','islogical'});
-
-
-% 3. prepare lists for output args
-[paramsList,optionsList] = outputParamsOptionsLists();
+optionsList(end+1,1) = add2list('intersectInvariant','default',{@isscalar,@islogical},{'isscalar','islogical'});
 
 end
 

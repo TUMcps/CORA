@@ -49,7 +49,7 @@ disp([inputname(1), ' =']);
 
 fprintf(newline);
 
-if isempty(HA)
+if isemptyobject(HA)
 
     dispEmptyObj(HA,inputname(1));
 

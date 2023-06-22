@@ -79,37 +79,33 @@ methods
     
     % class constructor
     function obj = nonlinearSysDT(varargin)
-        
-        % check number of input arguments
-        if nargin < 2
-            throw(CORAerror('CORA:notEnoughInputArgs',2));
-        elseif nargin > 7
-            throw(CORAerror('CORA:tooManyInputArgs',7));
-        end
 
-        % assign arguments
+        % 1. copy constructor: not allowed due to obj@contDynamics below
+%         if nargin == 1 && isa(varargin{1},'nonlinearSysDT')
+%             obj = varargin{1}; return
+%         end
+
+        % 2. parse input arguments: varargin -> vars
         [name,fun,dt,states,inputs,out_fun,outputs] = aux_parseInputArgs(varargin{:});
 
-        % check arguments
+        % 3. check correctness of input arguments
         aux_checkInputArgs(name,fun,dt,states,inputs,out_fun,outputs);
 
-        % default output equation and number of outputs (= states)
+        % 4. default output equation and number of outputs (= states)
         [states,inputs,out_fun,outputs,out_isLinear,rewriteAsC,C] = ...
-            aux_analyzeEqs(fun,states,inputs,out_fun,outputs);
+            aux_computeProperties(fun,states,inputs,out_fun,outputs);
         
-        % generate parent object
+        % 5. instantiate parent class
         obj@contDynamics(name,states,inputs,outputs);
         
-        % sampling time
+        % 6a. assign object properties: dynamic equation
         obj.dt = dt;
-        
-        % assign object properties: dynamic equation
         obj.mFile = fun;
         obj.jacobian = eval(['@jacobian_',name]);
         obj.hessian = eval(['@hessianTensor_' obj.name]);
         obj.thirdOrderTensor = eval(['@thirdOrderTensor_' obj.name]);
 
-        % assign object properties: output equation
+        % 6b. assign object properties: output equation
         obj.out_mFile = out_fun;
         obj.out_isLinear = out_isLinear;
         if all(out_isLinear) && rewriteAsC
@@ -165,9 +161,20 @@ end
 % Auxiliary functions -----------------------------------------------------
 function [name,fun,dt,states,inputs,out_fun,outputs] = aux_parseInputArgs(varargin)
 
+    if nargin ~= 0 && nargin < 2
+        throw(CORAerror('CORA:notEnoughInputArgs',2));
+    elseif nargin > 7
+        throw(CORAerror('CORA:tooManyInputArgs',7));
+    end
+
     % default values
     name = []; states = []; inputs = [];
     out_fun = []; outputs = [];
+
+    % no input arguments
+    if nargin == 0
+        return;
+    end
 
     % parse input arguments
     if nargin == 2
@@ -305,7 +312,7 @@ function C = aux_rewriteOutFunAsMatrix(out_fun,states,outputs)
 end
 
 function [states,inputs,out_fun,outputs,out_isLinear,rewriteAsC,C] = ...
-        aux_analyzeEqs(fun,states,inputs,out_fun,outputs)
+        aux_computeProperties(fun,states,inputs,out_fun,outputs)
 
     % get number of states and number of inputs 
     if isempty(states) || isempty(inputs)

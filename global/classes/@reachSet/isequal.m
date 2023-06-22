@@ -77,7 +77,13 @@ for i=1:length(R1)
     R1empty = isempty(R1(i).timePoint);
     if ~R1empty
         for j=1:length(R1(i).timePoint.time)
-            if ~withinTol(R1(i).timePoint.time{j},R2(i).timePoint.time{j},tol)
+            if isnumeric(R1(i).timePoint.time{j}) && isnumeric(R2(i).timePoint.time{j})
+                if ~withinTol(R1(i).timePoint.time{j},R2(i).timePoint.time{j},tol)
+                    res = false; return
+                end
+            elseif ~isequal(R1(i).timePoint.time{j},R2(i).timePoint.time{j},tol)
+                % for hybrid automata, time-point solutions may also have
+                % interval objects for the time property
                 res = false; return
             end
         end

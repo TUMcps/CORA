@@ -26,6 +26,10 @@ function res = test_equalDimCheck
 % assume true
 res = true;
 
+if ~CHECKS_ENABLED
+    return
+end
+
 % set and set
 Z = zonotope(zeros(2,1),eye(2));
 I = interval(-ones(2,1),ones(2,1));

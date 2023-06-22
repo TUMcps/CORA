@@ -1,8 +1,8 @@
-function res = isempty(HA)
-% isempty - checks if a hybrid automaton object is empty
+function res = isemptyobject(HA)
+% isemptyobject - checks if a hybrid automaton object is empty
 %
 % Syntax:  
-%    res = isequal(HA)
+%    res = isemptyobject(HA)
 %
 % Inputs:
 %    HA - hybridAutomaton object
@@ -32,7 +32,7 @@ res = false(r,c);
 % loop over all locations
 for i=1:r
     for j=1:c
-        res(i,j) = all(isempty(HA(i,j).location));
+        res(i,j) = all(isemptyobject(HA(i,j).location));
     end
 end
 

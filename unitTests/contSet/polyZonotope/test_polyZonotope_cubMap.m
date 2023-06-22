@@ -65,6 +65,50 @@ else
     end
 end
 
+% second test with extreme point
+
+% pZ
+c = [-0.1383; -0.2355];
+G = [; ...
+    0.4654, -0.1336, 0.2960, 0.3770, 0.2401, -0.1173, -0.1465, 0.0956; ...
+    -0.4872, 0.3647, -0.3217, -0.1125, 0.2805, -0.3750, 0.1550, 0.3522];
+Grest = [-0.3132, -0.1837, -0.1806; ...
+    0.4952, -0.3656, -0.4542];
+expMat = [; ...
+    1, 0, 0, 2, 2, 8, 6, 3; ...
+    0, 1, 0, 7, 1, 3, 4, 2; ...
+    0, 0, 1, 3, 2, 1, 4, 9];
+id = [1; 2; 3];
+pZ = polyZonotope(c, G, Grest, expMat, id);
+
+% extreme point
+p0 = [-1.0527; 3.5282];
+
+% third-order tensor
+T = {; ...
+    [-0.3274, -0.3096; 0.0991, -0.3295], [0.1074, 0.0649; -0.4000, 0.3806]; ...
+    [-0.4289, 0.1701; 0.3544, -0.4907], [0.0067, -0.0605; 0.3368, -0.2607]; ...
+    };
+
+% compute cubic map
+pZ_res = cubMap(pZ, T);
+p0_res = cubMapPoint(p0, p0, p0, T);
+
+% figure; 
+% % input
+% subplot(1, 2, 1); hold on;
+% plot(pZ,[1 2],'Splits',14);
+% scatter(p0(1,:),p0(2,:),'.k')
+% % output
+% subplot(1, 2, 2); hold on;
+% plot(pZ_res,[1 2],'Splits',14);
+% scatter(p0_res(1,:),p0_res(2,:),'.k')
+
+if ~containsPointSet(pZ_res, p0_res, [], 30)
+    throw(CORAerror('CORA:testFailed'));
+end
+
+
 res = true;
 
 %------------- END OF CODE --------------

@@ -23,31 +23,27 @@ function [paramsList,optionsList] = config_parallelHybridAutomaton_simulate(sys,
 % Author:       Mark Wetzlinger
 % Written:      04-February-2021
 % Last update:  ---
-% Last revision:---
+% Last revision:19-June-2023 (MW, structs, remove global variables)
 
 %------------- BEGIN CODE --------------
 
-% 1. init lists
-initParamsOptionsLists();
+% list of model parameters
+paramsList = struct('name',{},'status',{},'checkfun',{},'errmsg',{},'condfun',{});
 
 % append entries to list of model parameters
-add2params('tStart','default',{@isscalar,@isnumeric,@(val)ge(val,0)},{'isscalar','isnumeric','gezero'});
-add2params('tFinal','mandatory',{@isscalar,@isnumeric,@(val)val>0},{'isscalar','isnumeric','gezero'});
-add2params('startLoc','mandatory',{@(val)c_pHA_startLoc(val,sys,params)},{''});
-add2params('finalLoc','default',{@(val)c_pHA_finalLoc(val,sys,params)},{''});
-add2params('x0','mandatory',{@(val)all(size(val)==[sys.numStates,1])},{'eqsysdim'});
-add2params('inputCompMap','default',...
+paramsList(end+1,1) = add2list('tStart','default',{@isscalar,@isnumeric,@(val)ge(val,0)},{'isscalar','isnumeric','gezero'});
+paramsList(end+1,1) = add2list('tFinal','mandatory',{@isscalar,@isnumeric,@(val)val>0},{'isscalar','isnumeric','gezero'});
+paramsList(end+1,1) = add2list('startLoc','mandatory',{@(val)c_pHA_startLoc(val,sys,params)},{''});
+paramsList(end+1,1) = add2list('finalLoc','default',{@(val)c_pHA_finalLoc(val,sys,params)},{''});
+paramsList(end+1,1) = add2list('x0','mandatory',{@(val)all(size(val)==[sys.dim,1])},{'eqsysdim'});
+paramsList(end+1,1) = add2list('inputCompMap','default',...
     {@isnumeric,@(val)max(val)<=length(sys.components),@(val)min(val)>=1,...
-    @(val) all(size(val)==[sys.numInputs,1]) || all(size(val)==[1,sys.numInputs])},...
+    @(val) all(size(val)==[sys.nrOfInputs,1]) || all(size(val)==[1,sys.nrOfInputs])},...
     {'isnumeric','lecomp','vectorgeone','???'});
-add2params('u','default',{@(val)c_pHA_sim_u(val,sys,params)},{''});
+paramsList(end+1,1) = add2list('u','default',{@(val)c_pHA_sim_u(val,sys,params)},{''});
 
-% append entries to list of algorithm parameters
-% ---
-
-
-% 3. prepare lists for output args
-[paramsList,optionsList] = outputParamsOptionsLists();
+% list of algorithm parameters
+optionsList = struct('name',{},'status',{},'checkfun',{},'errmsg',{},'condfun',{});
 
 end
 

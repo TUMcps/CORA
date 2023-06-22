@@ -16,6 +16,8 @@ function runTestSuite(varargin)
 %                   'mosek': prefix = 'testMOSEK'
 %                   'sdpt3': prefix = 'testSDPT3'
 %                   'nn': prefixes 'test_nn', 'test_neurNetContrSys', 'testnn'
+%                 adding ':failed', only tests that failed in the last run
+%                 are executed
 %    verbose - (optional) true/false for logging results on command window
 %                         default = true
 %    directory - (optional) directory from which to search for tests
@@ -31,6 +33,7 @@ function runTestSuite(varargin)
 % Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      31-August-2016
 % Last update:  22-January-2021 (MW, save results of full run)
+%               16-June-2023 (MW, add ':failed')
 % Last revision:09-April-2023 (MW, unify all runTestSuite_* files)
 
 %------------- BEGIN CODE --------------
@@ -58,8 +61,18 @@ if strcmp(directory,rootUnitTests)
     timeStart = char(datetime(now,'ConvertFrom','datenum'));
 end
 
-% find out prefix
+% robustify
 testSuite = lower(testSuite);
+
+% check whether only failed tests are wanted
+if endsWith(testSuite,':failed')
+    % remove ':failed' from char array
+    testSuite = testSuite(1:end-7);
+    aux_runFailedTests(testSuite);
+    return
+end
+
+% find out prefix
 switch testSuite
     case 'short'
         prefix = 'test';
@@ -82,7 +95,7 @@ switch testSuite
     otherwise
 end
 
-% currently, onle nn test suite has three calls
+% currently, only nn test suite has three calls
 if ~iscell(prefix)
     prefix = {prefix};
 end
@@ -150,5 +163,50 @@ end
 
 % return to original working directory
 cd(currentDirectory);
+
+end
+
+
+% Auxiliary function ------------------------------------------------------
+function aux_runFailedTests(testSuite)
+% executes all unit tests of a given test suite that failed in the last
+% full run of that test suite
+
+    % load data from .mat file
+    try
+        load('unitTestsStatus.mat','testResults');
+    catch
+        % no previous results saved
+        disp("No saved results available! " + ...
+            "Run 'runTestSuite('" + testSuite + "')'; to generate.");
+        return
+    end
+
+    % read out failed tests
+    res = testResults(testSuite).results;
+
+    % list of failed tests
+    allTests = {res.fname}';
+    failedTests = allTests(~logical([res.ok]'));
+
+    % execute tests
+    for i=1:length(failedTests)
+        % read out name
+        fname = failedTests{i};
+
+        try
+            fprintf(['run ' fname ': ']);
+            [~,res] = evalc(fname);
+            if res
+                fprintf('%s\n','passed');
+            else
+                fprintf('%s\n','failed');
+            end
+        catch
+            fprintf('%s\n','failed');
+        end
+    end
+
+end
 
 %------------- END OF CODE --------------

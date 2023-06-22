@@ -75,41 +75,34 @@ methods
     
     % class constructor
     function obj = nonlinDASys(varargin)
-        
-        % check number of input arguments
-        if nargin < 2
-            throw(CORAerror('CORA:notEnoughInputArgs',2));
-        elseif nargin > 8
-            throw(CORAerror('CORA:tooManyInputArgs',8));
-        end
 
-        % assign arguments
+        % 1. copy constructor: not allowed due to obj@contDynamics below
+%         if nargin == 1 && isa(varargin{1},'nonlinDASys')
+%             obj = varargin{1}; return
+%         end
+
+        % 2. parse input arguments: varargin -> vars
         [name,dynFun,conFun,states,inputs,constraints,outFun,outputs] = ...
             aux_parseInputArgs(varargin{:});
 
-        % check arguments
+        % 3. check correctness of input arguments
         aux_checkInputArgs(name,dynFun,conFun,states,inputs,constraints,outFun,outputs);
         
-        % analyze functions and extract number of states, inputs, constraints, outputs
+        % 4. analyze functions and extract number of states, inputs, constraints, outputs
         [states,inputs,constraints,outFun,outputs,out_isLinear] = ...
-            aux_analyzeEqs(dynFun,conFun,states,inputs,constraints,outFun,outputs);
+            aux_computeProperties(dynFun,conFun,states,inputs,constraints,outFun,outputs);
         
-        % generate parent object
+        % 5. instantiate parent class and assign object properties
         obj@contDynamics(name,states,inputs,outputs);
-        
-        % assign object properties
         obj.nrOfConstraints = constraints;
         obj.dynFile = dynFun;
         obj.conFile = conFun;
-
+        obj.out_mFile = outFun;
+        obj.out_isLinear = out_isLinear;
         % link jacobian, hessian and third-order tensor files
         obj.jacobian = eval(['@jacobian_' obj.name]);
         obj.hessian = eval(['@hessianTensor_' obj.name]);
         obj.thirdOrderTensor = eval(['@thirdOrderTensor_' obj.name]);
-
-        % assign object properties: output equation
-        obj.out_mFile = outFun;
-        obj.out_isLinear = out_isLinear;
         obj.out_jacobian = eval(['@out_jacobian_',name]);
         obj.out_hessian = eval(['@out_hessianTensor_',name]);
         obj.out_thirdOrderTensor = eval(['@out_thirdOrderTensor_',name]);
@@ -159,9 +152,21 @@ end
 function [name,dynFun,conFun,states,inputs,constraints,outFun,outputs] = ...
             aux_parseInputArgs(varargin)
 
+    % check number of input arguments
+    if nargin ~= 0 && nargin < 2
+        throw(CORAerror('CORA:notEnoughInputArgs',2));
+    elseif nargin > 8
+        throw(CORAerror('CORA:tooManyInputArgs',8));
+    end
+
     % default values
     name = []; states = []; inputs = []; constraints = [];
     outFun = []; outputs = [];
+
+    % no input arguments
+    if nargin == 0
+        return;
+    end
 
     % parse input arguments
     if nargin == 2
@@ -276,7 +281,7 @@ function aux_checkInputArgs(name,dynFun,conFun,states,inputs,constraints,outFun,
 end
 
 function [states,inputs,constraints,outFun,outputs,out_isLinear] = ...
-    aux_analyzeEqs(dynFun,conFun,states,inputs,constraints,outFun,outputs)
+    aux_computeProperties(dynFun,conFun,states,inputs,constraints,outFun,outputs)
 
     % get number of states, inputs, and constraints 
     if isempty(states) || isempty(inputs) || isempty(constraints)

@@ -11,6 +11,7 @@ function [t,x,ind,y] = simulate(obj,params,varargin)
 %    params - struct containing the parameters for the simulation
 %       .tStart: initial time
 %       .tFinal: final time
+%       .timeStep: time step to get from initial time to final time
 %       .x0: initial point
 %       .u: piecewise-constant input signal u(t) of dimension
 %               m x z, where
@@ -85,15 +86,18 @@ if isfield(params,'timeStep')
         tSpan = [tSpan,tFinal];
     end
     % number of steps
-    steps = length(tSpan);
+    steps = length(tSpan)-1;
+    timeStepGiven = true;
 else
     % time vector and number of steps
     tSpan = [0,tFinal];
     steps = 1;
+    timeStepGiven = false;
 end
 
 % check values of u, w, and v
 [params,steps,tSpan] = aux_uwv(obj,params,steps,tSpan);
+tSpan = tSpan(1:2);
 
 % initializations
 params_ = params;
@@ -130,18 +134,35 @@ for i = 1:steps
 
     % store the results
     if i == 1
-        t = t_ + params.tStart;
-        x = x_;
+        if timeStepGiven
+            % only save first and last entry
+            t = [t_(1); t_(end)] + params.tStart;
+            x = [x_(1,:); x_(end,:)];
+        else
+            t = t_ + params.tStart;
+            x = x_;
+        end
     else
-        t = [t; t_(2:end) + t(end)];
-        x = [x;x_(2:end,:)];
+        if timeStepGiven
+            % only save last entry
+            t = [t; t_(end) + t(end)];
+            x = [x; x_(end,:)];
+        else
+            % save all simulated points
+            t = [t; t_(2:end) + t(end)];
+            x = [x; x_(2:end,:)];
+        end
     end
     x0 = x(end,:)';
 
     % compute output: skip last entry since the input is not valid there,
     % instead, this will be covered by the next input
     if comp_y
-        y_ = obj.C * x_(1:end-1,:)' + obj.D * params.u(:,i) + obj.k + params.v(:,i);
+        if timeStepGiven
+            y_ = obj.C * x_(1,:)' + obj.D * params.u(:,i) + obj.k + params.v(:,i);
+        else
+            y_ = obj.C * x_(1:end-1,:)' + obj.D * params.u(:,i) + obj.k + params.v(:,i);
+        end
         y = [y;y_'];
     end
 

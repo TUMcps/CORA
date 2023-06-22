@@ -1,9 +1,9 @@
 classdef linearSys < contDynamics
-% linearSys - object constructor for linearSys objects
+% linearSys - object constructor for linear time-invariant systems
 %
 % Description:
-%    Generates a linear system object according to the following first
-%    order differential equations:
+%    Generates a linear system object according to the following
+%    first-order differential equations:
 %       x'(t) = A x(t) + B u(t) + c + w(t)
 %       y(t)  = C x(t) + D u(t) + k + v(t)
 %
@@ -46,7 +46,7 @@ classdef linearSys < contDynamics
 %
 % See also: linearSysDT
 
-% Author:       Matthias Althoff, Niklas Kochdumper
+% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
 % Written:      23-January-2007 
 % Last update:  30-April-2007
 %               04-August-2016 (changed to new OO format)
@@ -58,7 +58,7 @@ classdef linearSys < contDynamics
 %               19-November-2021 (MW, default values for c, D, k)
 %               14-December-2022 (TL, property check in inputArgsCheck)
 %               15-January-2023 (MW, allow 0 and 1 input arguments)
-% Last revision:---
+% Last revision:18-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
@@ -69,8 +69,10 @@ properties (SetAccess = private, GetAccess = public)
     C     % output matrix: q x n
     D     % throughput matrix: q x m
     k     % output offset: q x 1
-    taylor = [];
-    krylov = [];
+
+    % internally-set properties
+    taylor = [];    % struct storing values from Taylor expansion
+    krylov = [];    % struct storing values for Krylov subspace
 end
 
 methods
@@ -78,60 +80,23 @@ methods
     % class constructor
     function obj = linearSys(varargin)
         
-        if nargin > 7
-            throw(CORAerror('CORA:tooManyInputArgs',7));
-        end
-        
-        % parse name, system matrix, input matrix
-        if ~isempty(varargin) && ischar(varargin{1})
-            name = varargin{1};
-            varargin = varargin(2:end);
-        else
-            name = 'linearSys'; % default name
-        end
-        [A,B] = setDefaultValues({[],[]},varargin);
-        varargin = varargin(3:end);
-        
-        % number of states, inputs, and outputs
-        states = size(A,1);
-        inputs = states;
-        outputs = states;
-        
-        % number of inputs
-        if ~isempty(A) && isempty(B)
-            B = zeros(states,1);
-        end
-        if ~isscalar(B)
-            inputs = size(B,2);
-        end
+        % 1. copy constructor: not allowed due to obj@contDynamics below
+%         if nargin == 1 && isa(varargin{1},'linearSys')
+%             obj = varargin{1}; return
+%         end
 
-        % for c, D, and k: overwrite empty entries by default zeros
-        % case C = [] is allowed: yields no output computation in code
-        [c, C] = setDefaultValues({zeros(states,1), 1}, varargin);
-        if isempty(c)
-            c = zeros(states, 1);
-        end
-        varargin = varargin(3:end);
-        if ~isempty(C) && ~isscalar(C)
-            outputs = size(C,1);
-        end
+        % 2. parse input arguments: varargin -> vars
+        [name,A,B,c,C,D,k] = aux_parseInputArgs(varargin{:});
 
-        [D, k] = setDefaultValues( ...
-            {zeros(outputs,inputs), zeros(outputs,1)}, varargin);
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(name,A,B,c,C,D,k,nargin);
 
-        inputArgsCheck({ ...
-            {A, 'att', 'numeric', 'matrix'}
-            {B, 'att', 'numeric', 'matrix'}
-            {c, 'att', 'numeric', 'matrix'}
-            {C, 'att', 'numeric', 'matrix'}
-            {D, 'att', 'numeric', 'matrix'}
-            {k, 'att', 'numeric', 'column'}
-        });
+        % 4. compute number of states, inputs, and outputs
+        [name,A,B,c,C,D,k,states,inputs,outputs] = ...
+            aux_computeProperties(name,A,B,c,C,D,k);
         
-        % instantiate parent class
+        % 5. instantiate parent class, assign properties
         obj@contDynamics(name,states,inputs,outputs); 
-        
-        % assign object properties
         obj.A = A; obj.B = B; obj.c = c;
         obj.C = C; obj.D = D; obj.k = k;
     end
@@ -140,6 +105,183 @@ end
 methods (Static = true)
     linSys = generateRandom(varargin) % generates random linear system
 end
+
+end
+
+
+% Auxiliary Functions -----------------------------------------------------
+
+function [name,A,B,c,C,D,k] = aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    % check number of input arguments
+    if nargin > 7
+        throw(CORAerror('CORA:tooManyInputArgs',7));
+    end
+
+    % default name
+    def_name = 'linearSys';
+    % init properties
+    A = []; B = []; c = []; C = []; D = []; k = [];
+
+    % no input arguments
+    if nargin == 0
+        name = def_name;
+        return
+    end
+
+    % parse depending on whether first input argument is the name
+    if ischar(varargin{1})
+        % first input argument: name
+        [name,A,B,c,C,D,k] = setDefaultValues({def_name,A,B,c,C,D,k},varargin);
+
+    else
+        % set default name
+        name = def_name;
+        [A,B,c,C,D,k] = setDefaultValues({A,B,c,C,D,k},varargin);
+
+    end
+    
+end
+
+function aux_checkInputArgs(name,A,B,c,C,D,k,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
+
+        % ensure that values have correct data type
+        if strcmp(name,'linearSys')
+            % default name (unless explicitly chosen by user, we have A as
+            % first input argument)
+
+            inputArgsCheck({ ...
+                {A, 'att', 'numeric', 'square'}
+                {B, 'att', 'numeric', 'matrix'}
+                {c, 'att', 'numeric'}
+                {C, 'att', 'numeric', 'matrix'}
+                {D, 'att', 'numeric', 'matrix'}
+                {k, 'att', 'numeric'}
+            });
+            
+        else
+
+            inputArgsCheck({ ...
+                {name, 'att', {'char','string'}}
+                {A, 'att', 'numeric', 'square'}
+                {B, 'att', 'numeric', 'matrix'}
+                {c, 'att', 'numeric'}
+                {C, 'att', 'numeric', 'matrix'}
+                {D, 'att', 'numeric', 'matrix'}
+                {k, 'att', 'numeric'}
+            });
+
+        end
+
+        % offsets must be vectors
+        if ~isempty(c) && ~isvector(c)
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Offset c must be a vector.'));
+        elseif ~isempty(k) && ~isvector(k)
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Offset k must be a vector'));
+        end
+        % check dimension of offset for state
+        if ~isempty(c) && size(A,1) ~= length(c)
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Length of offset c must match row/column dimension of state matrix A.'));
+        end
+
+        % check if dimensions fit
+        if ~isempty(B)
+            if ~isscalar(B)
+                if size(A,1) ~= size(B,1)
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                    ['Column dimension of input matrix B must match '...
+                    'row/column dimension of state matrix A.']));
+                end
+                inputs = size(B,2);
+            else % isscalar(B)
+                inputs = size(A,1);
+            end
+            if ~isempty(D) && ~isscalar(D) && inputs ~= size(D,2)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    ['Column dimension of input matrix B must match '...
+                    'column dimension of throughput matrix D.']));
+            end
+        end
+
+        if ~isempty(C)
+            if ~isscalar(C)
+                if size(A,1) ~= size(C,2)
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                        ['Column dimension of output matrix C must match '...
+                        'row/column dimension of state matrix A.']));
+                end
+                outputs = size(C,1);
+            else % isscalar(C)
+                outputs = size(A,1);
+            end
+            if ~isempty(D) && ~isscalar(D) && outputs ~= size(D,1)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    ['Row dimension of throughput matrix D must match '...
+                    'row dimension of output matrix C.']));
+            end
+            if ~isempty(k) && outputs ~= length(k)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Length of offset k must match row dimension of output matrix C.'));
+            end
+        end
+        
+    end
+
+end
+
+function [name,A,B,c,C,D,k,states,inputs,outputs] = ...
+    aux_computeProperties(name,A,B,c,C,D,k)
+% assign zero vectors/matrices for [] values (from user or by default)
+% compute number of states, inputs, and outputs
+% difficulty: MATLAB can use 1 instead of eye(n) for multiplication
+
+    % number of states
+    states = size(A,1);
+
+    % input matrix
+    if ~isempty(A) && isempty(B)
+        B = zeros(states,1);
+    end
+
+    % number of inputs
+    inputs = states;
+    if ~isscalar(B)
+        inputs = size(B,2);
+    end
+
+    % constant offset
+    if isempty(c)
+        c = zeros(states,1);
+    end
+
+    % output matrix
+    if isempty(C)
+        C = 1;
+    end
+
+    % number of outputs
+    outputs = states;
+    if ~isscalar(C)
+        outputs = size(C,1);
+    end
+
+    % throughput matrix
+    if isempty(D)
+        D = zeros(outputs,inputs);
+    end
+
+    % output offset
+    if isempty(k)
+        k = zeros(outputs,1);
+    end
 
 end
 

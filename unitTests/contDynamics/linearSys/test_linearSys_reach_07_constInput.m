@@ -73,33 +73,7 @@ if plotting
 
 end
 
-% Numerical check ---------------------------------------------------------
-
-% for every run, the simulation results must be within R
-for i=1:simOpt.points
-    disp("Trajectory " + i + "/" + simOpt.points + "...");
-    results = simRes.x{i};
-    
-    for p=1:size(results,1)
-        % loop over all points of the simulated trajectory
-        p_curr = results(p,:)';
-        
-        for iSet=1:length(R.timeInterval.set)
-            % check every time-interval set
-            if contains(R.timeInterval.set{iSet},p_curr)
-                break
-            end
-            if iSet == length(R.timeInterval.set)
-                % simulated point not in computed reachable sets
-                throw(CORAerror('CORA:testFailed'));
-            end
-        end
-        
-    end
-end
-
-
-
-end
+% check containment of simulation results in reachable set
+res = contains(R,simRes);
 
 %------------- END OF CODE --------------

@@ -23,48 +23,89 @@ function options = validateOptions(sys,func,params,options)
 % Author:       Mark Wetzlinger
 % Written:      25-January-2021
 % Last update:  26-January-2021
-% Last revision:---
+% Last revision:05-January-2023 (MW, greatly extend description of code,
+%                                no more errors but text on console)
+%               19-June-2023 (MW, adapt to new configfile syntax)
 
 %------------- BEGIN CODE --------------
 
-% see if configuration file for given class + func exists
-currfolder = mfilename('fullpath');
-currfolder = currfolder(1:end-length(mfilename));
-classname = class(sys);
-% rename classname to contDynamics for any simulate or observe function
-if isa(sys,'contDynamics') && any(contains(func,{'simulate','observe'}))
-    classname = 'contDynamics';
+% get file name of configuration file
+[configfile,fileExists] = aux_getConfigfile(sys,func);
+
+if ~fileExists
+    
+    % if no configuration file exists, we notify the user that this is the
+    % case (occurs most likely during development) and that parameters and
+    % options are not being checked
+
+    disp("No configuration file to execute model/algorithm parameter validation.");
+    disp("-> model/algorithm parameters are not checked!");
+    
+else
+    % params/options validation in multiple steps:
+
+    %%% VALIDATEOPTIONS_ERRORS;
+
+    % we first check the model parameters, then the algorithm parameters;
+    % this is because the model parameters do not depend on the setting of
+    % the algorithm parameters (cases such as the length of an input signal
+    % and the time step size exist, but then it is deemed to be the fault
+    % of the algorithm parameter (time step size) which does not match the
+    % length of the input signal
+    % the check of either model or algorithm parameters does not include
+    % any rewriting of the provided values (this is done in step 4.)
+    
+    % 2. validation of model parameters (params)
+    params = aux_checkFullList(sys,func,params,options,configfile,'params');
+    
+    % 3. validation of algorithm parameters (options)
+    options = aux_checkFullList(sys,func,params,options,configfile,'options');
+    
+    % 4. post-processing: internal rewriting of the checked model/algorithm
+    % parameters to allow for a simpler syntax in the reach/simulate/...
+    % functions
+    [params, options] = postProcessing(sys,func,params,options);
+    
+    % 5. since the split in params and options historically occurred after
+    % many of the functions had already been written, we unify the structs
+    % for params and options and work with only options in the code
+    options = params2options(params,options);
 end
-configfile = ['config_' classname '_' func];
-if ~isfile([currfolder filesep 'configfiles' filesep configfile '.m'])
-    throw(CORAerror('CORA:fileNotFound',configfile));
-end
-
-% initialize codex of error messages (global variable)
-initErrorCodex; % access with: 'global codex;'
-
-% check params
-params = checkFullList(sys,func,params,options,configfile,'params');
-
-% check options
-options = checkFullList(sys,func,params,options,configfile,'options');
-
-% post-processing: set params / options
-[params, options] = postProcessing(sys,func,params,options);
-
-% unify params and options
-options = params2options(params,options);
-
-% clear codex of error messages (global variable)
-clear codex;
-
 
 end
 
 
 % Auxiliary Functions -----------------------------------------------------
 
-function list = checkFullList(sys,func,params,options,configfile,listname)
+function [configfile,fileExists] = aux_getConfigfile(sys,func)
+% sys - object of contDynamics class
+% func - function for which parameters should be validated
+%
+% in this auxiliary function, we check whether a configuration file exists
+% for the given pair of contDynamics object and function; handling of this
+% existence is done in the main function
+
+currfolder = mfilename('fullpath');
+currfolder = currfolder(1:end-length(mfilename));
+
+% read name of contDynamics class
+classname = class(sys);
+
+% rename classname to 'contDynamics' as there is only one configuration
+% file for all classes inheriting from contDynamics
+if isa(sys,'contDynamics') && any(contains(func,{'simulate','observe'}))
+    classname = 'contDynamics';
+end
+
+% obtain name of configfile for given class and function
+configfile = ['config_' classname '_' func];
+
+% check if configfile exists
+fileExists = isfile([currfolder filesep 'configfiles' filesep configfile '.m']);
+
+end
+
+function list = aux_checkFullList(sys,func,params,options,configfile,listname)
 % sys           ... object of some contDynamics class
 % func          ... name of checked function, i.e. 'reach'
 % params        ... list of model parameters
@@ -72,15 +113,39 @@ function list = checkFullList(sys,func,params,options,configfile,listname)
 % configfile    ... name of configuration file
 % listname      ... 'params', 'options', for error messages
 
-% read configuration file
+% in this function, we check the provided list of model parameters (params)
+% or algorithm parameters (options); due to the occurrence of conditional
+% parameters (i.e., parameters that are mandatory only if another parameter
+% has a certain value), the sequence of steps is somewhat cumbersome:
+% 1. set non-conditional defaults
+%    for all parameters,
+%       for which there exists a default value
+%       and which do not depend on another parameter,
+%    we check whether the user has provided some value for this parameter;
+%    if not, then the default value is assigned to this parameter
+%
+% 2. check for redundant and conditional parameters
+%    we now check which of the user-provided model/algorithm parameters are
+%       redundant (not expected to exist)
+%       and conditional (depending on other parameters)
+%    to exclude them for the subsequent first round of parameter checks
+%
+% 3. after all non-conditional parameters have been checked, we can now
+%    know whether the conditions for the conditional parameters are
+%    fulfilled and checked those parameters as well
+%
+% 4. all redundancies are printed (if VALIDATEOPTIONS_ERRORS = false)
+
+% read the configuration file: the variable 'blueprint' stores all fields
+% in the params/options struct that are expected to exist
 if strcmp(listname,'params')
     [blueprint,~] = eval([configfile '(sys,params,options)']);
 elseif strcmp(listname,'options')
     [~,blueprint] = eval([configfile '(sys,params,options)']);
 end
 
-% set non-cond defaults
-list = setMissingDefaults(params,options,blueprint,sys,listname);
+% 1. set non-conditional defaults -----------------------------------------
+list = aux_setMissingDefaults(params,options,blueprint,sys,listname);
 
 % update configuration file
 if strcmp(listname,'params')
@@ -89,11 +154,14 @@ elseif strcmp(listname,'options')
     [~,blueprint] = eval([configfile '(sys,params,list)']);
 end
 
+
+% 2. check irredundant and non-conditional parameters ---------------------
+
 % read all fields (special read out when field is a struct)
-allfields = readAllFields(list);
+allfields = aux_readAllFields(list);
 
 % redundant indices
-redIdx = false(length(allfields),1);
+res.redIdxInUserList = false(length(allfields),1);
 
 % conditional indices
 condIdx = false(length(allfields),1);
@@ -102,33 +170,37 @@ condIdx = false(length(allfields),1);
 for i=1:length(allfields)
 
     % find idx of current field in blueprint
-    idx = find(ismember(blueprint.name,allfields{i}),1,'first');
+    idx = find(ismember({blueprint.name}',allfields{i}),1,'first');
 
     if isempty(idx)
         % field not in blueprint -> param / option is redundant
-        redIdx(i) = true;
-    elseif ~isempty(blueprint.condfunc{idx})
+        res.redIdxInUserList(i) = true;
+%         res.redIdxInUserList(i) = true;
+    elseif ~isempty(blueprint(idx).condfun)
         % field not in blueprint -> param / option is redundant
         condIdx(i) = true;
     end
 end
 
 % skip conditional and redundant indices
-skipIdx = condIdx | redIdx;
+skipIdx = condIdx | res.redIdxInUserList;
 
 % check non-conditional and non-redundant params / options
-validateList(list,blueprint,sys,listname,skipIdx);
+[res.mandMissing,res.failedChecks] = aux_validateList(list,blueprint,sys,listname,skipIdx);
+
+
+% 3. check remaining parameters -------------------------------------------
 
 % check conditions for conditional params / options
 % ... remove 'cond-' from status
-[blueprint, condBPIdx, condIdx] = checkCond(list,blueprint);
+[blueprint, condBPIdx, condIdx] = aux_checkCondition(list,blueprint);
 
 if any(condBPIdx)
     % set conditional defaults (now also listed in blueprint as 'default')
     if strcmp(listname,'params')
-        list = setMissingDefaults(list,options,blueprint,sys,listname);
+        list = aux_setMissingDefaults(list,options,blueprint,sys,listname);
     elseif strcmp(listname,'options')
-        list = setMissingDefaults(params,list,blueprint,sys,listname);
+        list = aux_setMissingDefaults(params,list,blueprint,sys,listname);
     end
     
     % another update of blueprint would be required if any of the
@@ -136,62 +208,89 @@ if any(condBPIdx)
     % and they would be in a check function of another conditional param / option  
     
     % unify condIdx
-    condIdx = [condIdx; true(length(readAllFields(list))-length(condIdx),1)];
+    condIdx = [condIdx; true(length(aux_readAllFields(list))-length(condIdx),1)];
     
     % remaining: check conditional params / options (also cond-default...)
-    validateList(list,blueprint,sys,listname,~condIdx);
+    [mandMissing_,failedChecks_] = aux_validateList(list,blueprint,sys,listname,~condIdx);
+
+    % append to previous result struct
+    res.mandMissing = res.mandMissing | mandMissing_;
+    res.failedChecks = [res.failedChecks; failedChecks_];
 end
 
-% print redundancies
+
+% 4. print information about input argument validation ---------------------
+% depends on value of macro VALIDATEOPTIONS_ERRORS:
+% - true:  warning for redundant params/options, since they are deleted from
+%          the respective struct
+% - false: parameters which are not mentioned in the configfile, missing
+%          mandatory parameters, and failed checks
+
 if strcmp(listname,'params')
-    redundantFields(list,options,blueprint,sys,func,listname,redIdx);
+    aux_printValidationResult(list,options,blueprint,sys,func,listname,res);
 elseif strcmp(listname,'options')
-    redundantFields(params,list,blueprint,sys,func,listname,redIdx);
+    aux_printValidationResult(params,list,blueprint,sys,func,listname,res);
 end
 
 end
 
 
-function list = setMissingDefaults(params,options,blueprint,sys,listname)
-% list      ... params struct / options struct
+function list = aux_setMissingDefaults(params,options,blueprint,sys,listname)
+% params    ... params struct
+% options   ... options struct
 % blueprint ... paramsList / optionsList (from config file)
 % sys       ... object of some hybrid or contDynamics class
 % listname  ... 'params' or 'options'
 
-% only checked whether default params / options are there or not
-% if not -> add that param / option with default value
+% here, we check whether model/algorithm parameters with default values are
+% assigned a value by the user:
+%    if yes, proceed to next parameter
+%    if not, assign the default value
+% note: the default values are defined in the function getDefaultValue.m
 
-% read configuration file
+% select struct
 if strcmp(listname,'params')
     list = params;
 elseif strcmp(listname,'options')
     list = options;
 end
 
-% indices with default values (skip where condfunc given)
-idxDefault = ismember(blueprint.status,'default') & ...
-    cellfun(@(x)isempty(x),blueprint.condfunc);
+% indices in the blueprint of parameters with default values
+% (here ,we skip all parameters which are conditional, i.e., whose status
+% depends on the value of another parameter / which has a condfun)
+idxDefault = ismember({blueprint.status}','default') & ...
+    cellfun(@(x)isempty(x),{blueprint.condfun}');
+
 % default fields
-defFields = blueprint.name(idxDefault);
-% names of user-defined fields
-fieldnames = readAllFields(list);
+defFields = {blueprint(idxDefault).name}';
+
+% names of user-defined fields (including special handling for parameters
+% which are themselves structs)
+fieldnames = aux_readAllFields(list);
+
 % loop over default params / options
 for i=1:length(defFields)
-    % check if default param / option given
+
+    % assign default value by reading from list of default values
     if ~any(ismember(fieldnames,defFields{i}))
+
         % assign default value by reading from list of default values
         if ~contains(defFields{i},'.')
-            % standard param / option
+            % standard (no struct) parameter
+            
+            % assign default value (full list in getDefaultValue.m)
             if strcmp(listname,'params')
                 list.(defFields{i}) = getDefaultValue(defFields{i},sys,list,options,listname);
             elseif strcmp(listname,'options')
                 list.(defFields{i}) = getDefaultValue(defFields{i},sys,params,list,listname);
             end
         else
-            % param / option is a struct
+            % parameter is a struct -> read out name of struct and field
             dotIdx = strfind(defFields{i},'.');
             firstname = defFields{i}(1:dotIdx-1);
             secondname = defFields{i}(dotIdx+1:end);
+
+            % assign default value (full list in getDefaultValue.m)
             if strcmp(listname,'params')
                 list.(firstname).(secondname) = getDefaultValue(defFields{i},sys,list,options,listname);
             elseif strcmp(listname,'options')
@@ -205,7 +304,7 @@ end
 end
 
 
-function validateList(list,blueprint,sys,listname,skipIdx)
+function [mandMissing,failedChecks] = aux_validateList(list,blueprint,sys,listname,skipIdx)
 % list      ... params struct / options struct
 % blueprint ... paramsList / optionsList (from config file)
 % sys       ... object of some hybrid or contDynamics class
@@ -213,111 +312,171 @@ function validateList(list,blueprint,sys,listname,skipIdx)
 % skipIdx   ... indices in list which are to be skipped
 %               (redundant and conditional params / options)
 
-% read fields correctly from list
-allfields = readAllFields(list);
+% for each parameter in 'list', we check whether it is provided by the user
+% (only if status = 'mandatory') and evaluate the check functions defined
+% in the corresponding entry in 'blueprint' (from the configfile)
+% -> wrongdoing is saved in output arguments
 
-% containers
-checkSuccessful = false(length(allfields),1);
-checkSuccessful(skipIdx) = true;
-sanitycounter = 0;
+% read out fields from list (including special handling for structs)
+allfields = aux_readAllFields(list);
 
-% check mandatory status of blueprint
-for i=1:length(blueprint.name)
-    if strcmp(blueprint.status{i},'mandatory') && isempty(blueprint.condfunc{i})
-        if ~isfield(list,blueprint.name{i})
-            % mandatory option missing -> print error
-            throw(CORAerror('CORA:specialError',...
-                sprintf('Error in %s check for %s object:\n  %s.%s is missing.',...
-                listname,class(sys),listname,blueprint.name{i})));
+% monitor which parameters defined as mandatory in 'blueprint' are missing
+% in the user-provided set of parameters 'list'
+mandMissing = false(length(blueprint),1);
+
+
+% loop over all entries in 'blueprint'
+for i=1:length(blueprint)
+
+    % check status (and existence of condfun)
+    if strcmp(blueprint(i).status,'mandatory') && isempty(blueprint(i).condfun)
+        % i-th parameter in 'blueprint' is mandatory and does not depend on
+        % the setting of another parameter (empty condfun)
+
+        % check if the user has provided a value for this parameter
+        if ~isfield(list,blueprint(i).name)
+
+            if VALIDATEOPTIONS_ERRORS
+                % mandatory parameter missing -> print error
+                throw(CORAerror('CORA:specialError',...
+                    sprintf('Error in %s check for %s object:\n  %s.%s is missing.',...
+                    listname,class(sys),listname,blueprint(i).name)));
+            else
+                % save index of missing parameter
+                mandMissing(i) = true;
+            end
         end
     end
 end
 
-while ~all(checkSuccessful)
+% init indices for which a check has failed (note: the '[]' is crucial for
+% the concatenation later on!)
+failedChecks = struct([]);
+failedIdx = 0;
+
+
+% go over all parameters (also the ones to which we have assigned the
+% default value in aux_setMissingDefaults) in the order by which they
+% are sorted in the configfile
+for i=1:length(blueprint)
     
-    % go through all parameters (also defaults) in correct order
-    for i=1:length(blueprint.name)
+    % for i-th parameter in blueprint, find the corresponding index in
+    % the user-provided list of parameters
+    idx = find(ismember(allfields,blueprint(i).name),1,'first');
+    
+    % skip if already successful check (or to be skipped b/c cond)
+    if ~isempty(idx) && ~skipIdx(idx) && ~mandMissing(i)
         
-        % find idx of current field in blueprint
-        idx = find(ismember(allfields,blueprint.name{i}),1,'first');
+        % special name-reading for parameters which are part of a group
+        % of parameters organized in a struct
+        if contains(blueprint(i).name,'.')
+            dotIdx = strfind(blueprint(i).name,'.');
+            firstname = blueprint(i).name(1:dotIdx-1);
+            secondname = blueprint(i).name(dotIdx+1:end);
+        end
         
-        % skip if already successful
-        if ~isempty(idx) && ~checkSuccessful(idx)
+        % loop over all check functions for the given parameter
+        for j=1:length(blueprint(i).checkfun)
             
-            % special handling for struct
-            if contains(blueprint.name{i},'.')
-                dotIdx = strfind(blueprint.name{i},'.');
-                firstname = blueprint.name{i}(1:dotIdx-1);
-                secondname = blueprint.name{i}(dotIdx+1:end);
-            end
-            
-            % check validity of assigned value
-            for j=1:length(blueprint.checkfuncs{i})
-                
-                % future handling of error messages
-                errmsgid = blueprint.errmsgs{i}{j};
-                if ~contains(blueprint.name{i},'.') % standard
-                    if isempty(errmsgid) % c_* validation functions return also msg
-                        [rescheck,msg] = blueprint.checkfuncs{i}{j}(list.(blueprint.name{i}));
-                    else 
-                        rescheck = blueprint.checkfuncs{i}{j}(list.(blueprint.name{i}));
-                        msg = getErrorMessage(errmsgid);
-                    end
-                else % special handling for struct
-                    if isempty(errmsgid) % c_* validation functions return also msg
-                        [rescheck,msg] = blueprint.checkfuncs{i}{j}(list.(firstname).(secondname));
-                    else 
-                        rescheck = blueprint.checkfuncs{i}{j}(list.(firstname).(secondname));
-                        msg = getErrorMessage(errmsgid);
-                    end
+            % read out identifier for error message
+            errmsgid = blueprint(i).errmsg{j};
+
+            % evaluate check function (different syntax for simple
+            % parameters and parameter which are structs)
+
+            if ~contains(blueprint(i).name,'.')
+                % standard case
+                if isempty(errmsgid) % c_* validation functions return also msg
+                    [rescheck,msg] = blueprint(i).checkfun{j}(list.(blueprint(i).name));
+                else 
+                    rescheck = blueprint(i).checkfun{j}(list.(blueprint(i).name));
+                    msg = getErrorMessage(errmsgid);
                 end
-                % error message if validation failed
-                if ~rescheck
+
+            else
+                % special handling for parameters which are structs
+                if isempty(errmsgid) % c_* validation functions return also msg
+                    [rescheck,msg] = blueprint(i).checkfun{j}(list.(firstname).(secondname));
+                else 
+                    rescheck = blueprint(i).checkfun{j}(list.(firstname).(secondname));
+                    msg = getErrorMessage(errmsgid);
+                end
+            end
+
+            
+            if ~rescheck
+                % check was not ok
+
+                if VALIDATEOPTIONS_ERRORS
+                    % error message if validation failed
                     throw(CORAerror('CORA:specialError',...
-                        sprintf([listname '.' blueprint.name{i} ' ' msg '.'])));
+                        sprintf([listname '.' blueprint(i).name ' ' msg '.'])));
+                else
+                    % append to list of failed checks
+                    failedIdx = failedIdx + 1;
+                    failedChecks(failedIdx).parameter = blueprint.name{i};
+                    failedChecks(failedIdx).message = msg;
                 end
+
             end
-            % all checks for parameter have been successful
-            checkSuccessful(idx) = true;
-            
         end
+        
     end
-    
-    sanitycounter = sanitycounter + 1;
-    if sanitycounter == 5 % prevent infinite loop
-        throw(CORAerror('CORA:specialError','Bug in validateOptions.'));
-    end
-
 end
 
 end
 
 
-function [blueprint,condBPIdx,condIdx] = checkCond(list,blueprint)
+function [blueprint,condBPIdx,condIdx] = aux_checkCondition(list,blueprint)
 % list      ... params struct / options struct
 % blueprint ... paramsList / optionsList (from config file)
 
-condBPIdx = false(length(blueprint.name),1);
-for i=1:length(blueprint.name)
-    if ~isempty(blueprint.condfunc{i})
+% this function returns the indices of the entries in 'list' and
+% 'blueprint', where the stored parameters are conditional; additionally,
+% we remove the condition function from the blueprint
+
+% find out which indices in 'blueprint' are of parameters whose status
+% depends on other parameters (have a non-empty condfun)
+condBPIdx = false(length(blueprint),1);
+
+% loop over all entries in 'blueprint'
+for i=1:length(blueprint)
+
+
+    if ~isempty(blueprint(i).condfun)
+        % ...is a conditional parameter
         condBPIdx(i) = true;
-        % check condition
-        if ~blueprint.condfunc{i}()
+
+        % evaluate the condition function: if it is not fulfilled, the 
+        % parameter's status is set to 'redundant'
+        if ~blueprint(i).condfun{1}()
             % set field 'status' to 'redundant'
-            blueprint.status{i} = 'redundant';
+            blueprint(i).status = 'redundant';
             condBPIdx(i) = false;
         end
-        % remove condition from validation functions
-        blueprint.condfunc{i} = {};
+
+        % remove the condition function from the blueprint
+        blueprint(i).condfun = {};
     end
 end
 
-% find condBPIdx entries in list
-allfields = readAllFields(list);
+% now, determine indices in 'list' which corresponding to the indices in
+% 'blueprint' which are conditional parameters
+
+% read out all fields from the user-provided list of parameters (including
+% special handling for parameter which are themselves structs)
+allfields = aux_readAllFields(list);
+
+% init indices for conditional parameters (indexing 'list')
 condIdx = false(length(allfields),1);
+
+% loop over all entries in 'blueprint'
 for i=1:length(condBPIdx)
+    % check if i-th entry in 'blueprint' is a conditional parameter
     if condBPIdx(i)
-        idx = find(ismember(allfields,blueprint.name{i}),1,'first');
+        % corresponding index in 'list' for i-th entry in 'blueprint'
+        idx = find(ismember(allfields,blueprint(i).name),1,'first');
+        % set conditional index to true
         condIdx(idx) = true;
     end
 end
@@ -325,20 +484,83 @@ end
 end
 
 
-function redundantFields(params,options,blueprint,sys,func,listname,redIdx)
+function aux_printValidationResult(params,options,blueprint,sys,func,listname,res)
 % params    ... params struct
 % options   ... options struct
 % blueprint ... paramsList / optionsList (from config file)
 % sys       ... object of some hybrid or contDynamics class
 % func      ... name of checked function, i.e. 'reach'
 % listname  ... 'params' or 'options'
-% redIdx    ... redundant indices from original list
+% res       ... struct containing the result of the parameter validation
+
+% prints the result of the parameter validation in case infractions like
+% 1.  missing mandatory parameters
+% 2.  parameters fail check functions
+% 3.  redundant parameters (not defined in configfile)
+% are found (1 and 2 only if VALIDATEOPTIONS_ERRORS = false)
+
+% no infractions found
+if ~any(res.mandMissing) && isempty(res.failedChecks) ...
+        && ~any(res.redIdxInUserList)
+    return
+end
+headerPrinted = false;
+
+% print missing mandatory values and failed checks
+if ~VALIDATEOPTIONS_ERRORS
+
+    % 1. missing mandatory values
+    mandMissingTxt = ['''', strjoin({blueprint(res.mandMissing).name},', '), ''''];
+    if ~strcmp(mandMissingTxt,"''")
+        % print header
+        headerPrinted = aux_printHeader(listname,headerPrinted);
+        % print missing mandatory fields
+        fprintf("  - missing mandatory fields: " + mandMissingTxt + "\n");
+    end
+    
+    
+    % 2. failed checks (with message)
+    numFailedChecks = length(res.failedChecks);
+    for i=1:numFailedChecks
+        % print header (unless already printed)
+        headerPrinted = aux_printHeader(listname,headerPrinted);
+
+        % check how many functions failed for the same parameter
+        fieldname = res.failedChecks(i).parameter;
+        j = i;
+        for k=j+1:numFailedChecks
+            if ~strcmp(res.failedChecks(j).parameter,fieldname)
+                j = k-1; break
+            end
+        end
+    
+        % list all infractions
+        if j == i
+            % single infraction
+            fprintf("  - failed check for field '" + fieldname + "':\n");
+            fprintf("    " + res.failedChecks(i).message + "\n");
+        elseif j > i
+            % multiple infractions
+            fprintf("  - failed checks for field '" + fieldname + "':\n");
+            for k=i:j
+                fprintf("    " + res.failedChecks(k).message + "\n");
+            end
+        end
+    end
+
+end
+
+
+% 3. redundant fields in struct for params/options
+
+% read out redundant indices
+redIdx = res.redIdxInUserList;
 
 % simplify access to names of provided params / options
 if strcmp(listname,'params')
-    allfields = readAllFields(params);
+    allfields = aux_readAllFields(params);
 elseif strcmp(listname,'options')
-    allfields = readAllFields(options);
+    allfields = aux_readAllFields(options);
 end
 
 % if cond-default given, redIdx shorter than list -> expand
@@ -347,7 +569,7 @@ if length(allfields) > length(redIdx)
 end
 
 % init output text
-redTxt = '';
+redTxt = '''';
 
 if (isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')) ...
         && ~strcmp(func,'simulate')
@@ -402,14 +624,14 @@ if (isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')) ...
                     '(sys.components(cfgpHAcomp).location(cfgpHAloc).contDynamics,params,options)']);
             end
         end
-        blueprint.name = [blueprint.name; contDynlist.name];
-        blueprint.status = [blueprint.status; contDynlist.status];
-        blueprint.checkfuncs = [blueprint.checkfuncs; contDynlist.checkfuncs];
+        % append new entries from contDynamics list
+        idxNew = ~ismember({contDynlist.name}',{blueprint.name}');
+        blueprint = [blueprint; contDynlist(idxNew)];
     end
     % check if redIdx present in any of the added lists
     for i=1:length(redIdx)
         if redIdx(i)
-            if any(ismember(blueprint.name,allfields{i}))
+            if any(ismember({blueprint.name}',allfields{i}))
                 redIdx(i) = false;
             end
         end
@@ -417,47 +639,116 @@ if (isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')) ...
 end
 
 % first part of redundancy check: params / options which are not used
-redTxt = [redTxt, strjoin(allfields(redIdx),', ')];
+redTxt = [redTxt, strjoin(allfields(redIdx),''', ''')];
 
 % second part of redundancy test: redundant conditional params / options
-redIdx = ismember(blueprint.status,'redundant');
+redIdx = ismember({blueprint.status}','redundant');
 % check if redundant conditional params / options provided
 for i=1:length(redIdx)
-    if redIdx(i) && ~any(ismember(allfields,blueprint.name(i)))
+    if redIdx(i) && ~any(ismember(allfields,blueprint(i).name))
         redIdx(i) = false;
     end
 end
 % add comma for correct text output
-if ~isempty(redTxt) && any(redIdx)
+if ~strcmp(redTxt,"'") && any(redIdx)
     redTxt = [redTxt, ', '];
 end
 % concatentate to first group
-redTxt = [redTxt, strjoin(blueprint.name(redIdx),', ')];
+redTxt = [redTxt, strjoin({blueprint(redIdx).name},''', '''), ''''];
 
 % print redundancies
-if ~isempty(redTxt)
-    warning(['Redundant ' listname ': ' redTxt]);
+if ~strcmp(redTxt,"''")
+    if VALIDATEOPTIONS_ERRORS
+        warning(['Redundant ' listname ': ' redTxt]);
+    else
+        headerPrinted = aux_printHeader(listname,headerPrinted);
+        disp("  - redundant fields: " + redTxt);
+    end
+end
+
+% additional message if mandatory parameters are missing or checks failed
+if ~VALIDATEOPTIONS_ERRORS
+    if any(res.mandMissing) || ~isempty(res.failedChecks)
+        headerPrinted = aux_printHeader(listname,headerPrinted);
+        fprintf("\n");
+        disp("ALERT! Missing mandatory fields and/or failed " + ...
+            "validation checks will likely cause run-time errors.");
+        disp("Correct the wrong settings in order of appearance to resolve potential issues.");
+    end
+
+    % print footer (only if header printed, too)
+    if headerPrinted
+        disp("-*---------------------------------*-");
+    end
 end
 
 end
 
+function headerPrinted = aux_printHeader(listname,headerPrinted)
+% helper function to print header at first instance of violations
 
-function allfields = readAllFields(list)
+if ~headerPrinted
+    disp("-*---------------------------------*-");
+    fprintf("Input argument validation (" + listname + "):\n");
+    headerPrinted = true;
+end
+
+end
+
+function allfields = aux_readAllFields(list)
 % list      ... params struct / options struct
 
+% auxiliary function to read out all fields from the params/options struct;
+% we cannot only call 'fields(list)' since some parameters can also be
+% struct, for which we therefore need extra manipulation. Finally, the
+% output is a list with the format
+%    'param1',
+%    'param2.sub1',
+%    'param2.sub2',
+%    'param3', ...
+% so that each field in a parameter-struct has its own (full) name
+
+% read out all fields
 allfields = fields(list);
+% ... for each parameter that is itself a struct, 'allfields' now has only
+% the name of that struct -> we want the full name though
+
+% init index
 idx = 0;
+
+% increment index until all fields in 'allfields' are traversed
 while idx < length(allfields)
+
+    % increment index
     idx = idx + 1;
-    if isstruct(list.(allfields{idx}))
-        structfields = fields(list.(allfields{idx}));
+
+    % name of the parameter-struct
+    structname = allfields{idx};
+
+    % check if the entry in 'list' with the idx-th name in 'allfields' is
+    % orginally a struct
+    if isstruct(list.(structname))
+
+        % list all fields of the parameter-struct
+        structfields = fields(list.(structname));
+
+        % shift that is required for all other parameters further down the
+        % list to fit in the fields of the parameter-struct
         shift = length(structfields);
+
+        % read out these other parameters
         temp = allfields(idx+1:end);
-        structname = allfields{idx};
+
+        % append names of fields of parameter-struct to 'allfields', using
+        % the format 'param_i.sub_j'
         for j=1:shift
             allfields{idx-1+j} = [structname '.' structfields{j}];
         end
+
+        % concatenate other parameter back onto the list of all parameters
         allfields = [allfields(1:idx-1+shift); temp];
+
+        % correct index
         idx = idx + shift - 1;
     end
 end

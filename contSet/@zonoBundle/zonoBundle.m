@@ -40,52 +40,40 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonoBundle  < contS
 % Written:      09-November-2010
 % Last update:  14-December-2022 (TL, property check in inputArgsCheck)
 %               29-March-2023 (TL: optimized constructor)
-% Last revision:---
+% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
 
 properties (SetAccess = private, GetAccess = public)
-    Z;
-    parallelSets;
+    Z;              % list of zonotopes
+
+    % internally-set properties
+    parallelSets;   % number of zonotopes
 end
     
 methods
-    %class constructor
+    % class constructor
     function obj = zonoBundle(varargin)
-        
-        switch nargin
-            case 0
-                Z = {};
-            case 1
-                Z = varargin{1};
-                if isa(Z, 'zonoBundle')
-                    % copy contructor
-                    obj = Z;
-                    return
-                end
-            otherwise
-                throw(CORAerror('CORA:tooManyInputArgs', 1));
-        end        
 
-        if CHECKS_ENABLED
-            inputArgsCheck({{Z, 'att', 'cell'}})
-    
-            % check if zonotopes
-            if ~all(cellfun(@(x) isa(x,'zonotope'), Z,'UniformOutput',true))
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'First input argument has to be a list of zonotope objects.'));
-            end
-            % all zonotopes have to be of the same dimension
-            if any(diff(cellfun(@(x) dim(x), Z,'UniformOutput',true)))
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Zonotopes have to be embedded in the same affine space.'));
-            end
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'zonoBundle')
+            obj = varargin{1}; return
         end
 
-        % assign properties
+        % 2. parse input arguments: varargin -> vars
+        Z = aux_parseInputArgs(varargin{:});
+
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(Z,nargin);
+
+        % 4. compute internal properties
+        parallelSets = length(Z);
+
+        % 5. assign properties
         obj.Z = Z;
-        obj.parallelSets = length(Z);
+        obj.parallelSets = parallelSets;
+
     end
          
     % methods in seperate files
@@ -125,6 +113,43 @@ methods (Static = true)
     zB = generateRandom(varargin) % generate random zonotope bundle
 end
 
+end
+
+% Auxiliary Functions -----------------------------------------------------
+
+function Z = aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    % check number of input arguments
+    if nargin > 1
+        throw(CORAerror('CORA:tooManyInputArgs',1));
+    end
+
+    % set default values
+    Z = setDefaultValues({{}},varargin);
+
+end
+
+function aux_checkInputArgs(Z,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
+
+        inputArgsCheck({{Z, 'att', 'cell'}})
+    
+        % check if zonotopes
+        if ~all(cellfun(@(x) isa(x,'zonotope'), Z,'UniformOutput',true))
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'First input argument has to be a list of zonotope objects.'));
+        end
+        % all zonotopes have to be of the same dimension
+        if any(diff(cellfun(@(x) dim(x), Z,'UniformOutput',true)))
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Zonotopes have to be embedded in the same affine space.'));
+        end
+        
+    end
 
 end
 
