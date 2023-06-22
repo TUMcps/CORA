@@ -67,9 +67,9 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
                 % projected reset function are set to identity
                 if trans.reset.hasInput
                     transSet(cnt) = projectInputDependentTrans(pHA,...
-                        trans,pHA.numStates,i,locID,resultingTarget,true);
+                        trans,pHA.dim,i,locID,resultingTarget,true);
                 else
-                    transSet(cnt) = projectHighDim(trans,pHA.numStates,...
+                    transSet(cnt) = projectHighDim(trans,pHA.dim,...
                         stateBind,resultingTarget,true);
                 end
 
@@ -91,7 +91,7 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
                 % for partly-synchronized transitions, the states of all
                 % components, which do not participate in the
                 % synchronization, remain (identity)
-                idStates = zeros(pHA.numStates,1);
+                idStates = zeros(pHA.dim,1);
                 
                 % update target location of component i
                 resultingTarget(i) = trans.target;
@@ -157,11 +157,11 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
                 for j = 1:length(labelTransSet)
                     if labelTransSet(j).reset.hasInput
                         labelTransSet(j) = projectInputDependentTrans(pHA,...
-                            labelTransSet(j),pHA.numStates,labelCompIdx(j),...
+                            labelTransSet(j),pHA.dim,labelCompIdx(j),...
                             locID,resultingTarget,false);
                     else
                         labelTransSet(j) = projectHighDim(labelTransSet(j),...
-                            pHA.numStates,labelStateIndices{j},resultingTarget,false);
+                            pHA.dim,labelStateIndices{j},resultingTarget,false);
                     end
                 end
                 % for nonlinear resets: all resulting reset functions are
@@ -200,7 +200,7 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
 
                 % merge reset functions into one reset function
                 resultingReset = synchronizeResets(labelTransSet,...
-                    pHA.numStates,pHA.numInputs,idStates);
+                    pHA.dim,pHA.nrOfInputs,idStates);
                 
                 % instantiate resulting transition
                 transSet(cnt) = transition(resultingGuard,resultingReset,...

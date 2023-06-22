@@ -1,17 +1,17 @@
-function res = isempty(loc)
-% isempty - checks if a location object is empty
+function res = isemptyobject(sys)
+% isemptyobject - checks if a contDynamics object is empty
 %
 % Syntax:  
-%    res = isequal(loc)
+%    res = isemptyobject(sys)
 %
 % Inputs:
-%    loc - location object
+%    sys - contDynamics object
 %
 % Outputs:
 %    res - true/false
 %
 % Example: 
-%    res = isempty(location())
+%    ---
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,13 +26,13 @@ function res = isempty(loc)
 
 %------------- BEGIN CODE --------------
 
-[r,c] = size(loc);
+[r,c] = size(sys);
 res = false(r,c);
 
-% loop over all locations
+% loop over all contDynamics
 for i=1:r
     for j=1:c
-        res(i,j) = isempty(loc(i,j).contDynamics);
+        res(r,c) = sys(r,c).dim == 0;
     end
 end
 

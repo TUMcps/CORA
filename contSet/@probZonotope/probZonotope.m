@@ -33,62 +33,84 @@ classdef (InferiorClasses = {?interval, ?zonotope}) probZonotope < contSet
 %               20-March-2015
 %               04-May-2020 (MW, transition to classdef)
 %               14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision: ---
+% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = protected, GetAccess = public)
-    % Z ... zonotope matrix
-    Z;
-    % g ... probabilistic generators
-    g;
-    % cov ... covariance matrix 
-    cov;
-    % gauss ... determining if Obj.cov is updated
-    gauss;
-    % gamma ... cut-off mSigma value
-    gamma;
+    Z;      % zonotope matrix
+    g;      % probabilistic generators
+    cov;    % covariance matrix
+
+    % internally-set properties
+    gauss;  % determining if cov is updated
+    gamma;  % cut-off mSigma value
 end
 
 methods
 
     function obj = probZonotope(varargin)
 
-        % parse input
-        if nargin > 3
-            throw(CORAerror('CORA:tooManyInputArgs',3));
-        end
-        
-        if nargin == 1 && isa(varargin{1}, 'probZonotope')
-            % copy constructor  
-            obj = varargin{1};
-            return
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'probZonotope')
+            obj = varargin{1}; return
         end
 
-        [Z, g, gamma] = setDefaultValues({[], [], 2}, varargin);
+        % 2. parse input arguments: varargin -> vars
+        [Z,g,gamma] = aux_parseInputArgs(varargin{:});
+
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(Z,g,gamma,nargin);
+
+        % 4. assign properties
+        obj.Z = Z;
+        obj.g = g;
+        obj.gamma = gamma;
+        obj.gauss = false;
+
+        % 5. compute cov
+        obj.cov = sigma(obj);
+        obj.gauss = true;
+        
+    end
+end
+
+end
+
+% Auxiliary Functions -----------------------------------------------------
+
+function [Z,g,gamma] = aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    % check number of input arguments
+    if nargin > 3
+        throw(CORAerror('CORA:tooManyInputArgs',3));
+    end
+
+    % no input arguments
+    if nargin == 0
+        Z = []; g = []; gamma = [];
+        return
+    end
+
+    % set default values
+    [Z,g,gamma] = setDefaultValues({[],[],2},varargin);
+
+end
+
+function aux_checkInputArgs(Z,g,gamma,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
+
         inputArgsCheck({ ...
             {Z, 'att', 'numeric', 'finite'}; ...
             {g, 'att', 'numeric', 'finite'}; ...
             {gamma, 'att', 'numeric'}; ...
         })
-
-        % assign properties
-        obj.Z = Z;
-        obj.g = g;
-        obj.gamma = gamma;
-        
-        obj.cov = [];
-        obj.gauss = false;
-        
-        if nargin >= 2
-            % update covariance matrix
-            obj.cov = sigma(obj);
-            obj.gauss = true;
-        end
         
     end
-end
-
 
 end
 

@@ -34,7 +34,7 @@ for i=1:length(invList)
 
     % project set to high dimensional space of the overall automaton
     if ~(isnumeric(invList{i}) && isempty(invList{i}))
-        temp = projectHighDim(invList{i},pHA.numStates,pHA.bindsStates{i});
+        temp = projectHighDim(invList{i},pHA.dim,pHA.bindsStates{i});
 
         % compute intersection with the invariants of the remaining
         % subcomponents

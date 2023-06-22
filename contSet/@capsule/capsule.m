@@ -8,7 +8,6 @@ classdef capsule < contSet
 % Syntax:  
 %    obj = capsule(c)
 %    obj = capsule(c,g)
-%    obj = capsule(c,r)
 %    obj = capsule(c,g,r)
 %
 % Inputs:
@@ -23,9 +22,7 @@ classdef capsule < contSet
 %    c = [1;2];
 %    g = [2;1];
 %    r = 1;
-%     
 %    C = capsule(c,g,r);
-%
 %    plot(C);
 %
 % Other m-files required: none
@@ -39,7 +36,7 @@ classdef capsule < contSet
 % Last update:  02-May-2020 (MW, add property validation)
 %               19-March-2021 (MW, error messages, remove capsule(r) case)
 %               14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision:---
+% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
@@ -52,57 +49,23 @@ end
 methods
 
     function obj = capsule(varargin)
-        if nargin > 3
-            % too many input arguments
-            throw(CORAerror('CORA:tooManyInputArgs',3));
-        end
 
-        % parse input
+        % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'capsule')
-            % copy constructor
-             obj = varargin{1};
-             return;
+            obj = varargin{1}; return
         end
-        
-        if nargin == 0
-            obj.c = [];
-            obj.g = [];
-            obj.r = 0;
-            
-        else
-            c = varargin{1};
-            g = zeros(length(c),1);
-            r = 0;
 
-            if nargin == 2
-                v2 = varargin{2};
-                if isscalar(v2)
-                    r = v2;
-                elseif isvector(v2) && length(c) == length(v2)
-                    g = v2;
-                elseif ~isempty(v2)
-                    % dimension mismatch
-                    throw(CORAerror('CORA:wrongInputInConstructor',...
-                        'Dimension mismatch between center and generator.'));
-                end
-            end
+        % 2. parse input arguments: varargin -> vars
+        [c,g,r] = aux_parseInputArgs(varargin{:});
 
-            if nargin == 3
-               g = varargin{2};
-               r = varargin{3};
-            end
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(c,g,r,nargin);
 
-            inputArgsCheck({ ...
-                {c, 'att', {'numeric','numeric'}, {{'nonempty','finite','column'},{'size',[]}} }; ...
-                {g, 'att', {'numeric','numeric'}, {{'nonempty','finite','column'},{'size',[]}} }; ...
-                {r, 'att', 'numeric', {'finite', 'nonnegative', 'scalar'}};
-            })
+        % 4. assign properties
+        obj.c = c;
+        obj.g = g;
+        obj.r = r;
 
-            % set properties
-            obj.c = c;
-            obj.g = g;
-            obj.r = r;
-        end
     end
 end
 
@@ -112,4 +75,60 @@ methods (Static = true)
 end
 
 end
+
+
+% Auxiliary functions -----------------------------------------------------
+function [c,g,r] = aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    % check number of input arguments
+    if nargin > 3
+        throw(CORAerror('CORA:tooManyInputArgs',3));
+    end
+
+    % no input arguments
+    if nargin == 0
+        c = []; g = []; r = 0;
+        return
+    end
+
+    % assign center
+    c = varargin{1};
+    % default values for generator and radius
+    g = zeros(length(c),1);
+    r = 0;
+
+    % assign generator if given
+    if nargin > 1 && ~isempty(varargin{2})
+        g = varargin{2};
+    end
+    % assign radius if given
+    if nargin > 2
+        r = varargin{3};
+    end
+
+end
+
+function aux_checkInputArgs(c,g,r,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
+
+        inputArgsCheck({ ...
+            {c, 'att', {'numeric','numeric'}, {{'nonempty','finite','column'},{'size',[]}} }; ...
+            {g, 'att', {'numeric','numeric'}, {{'nonempty','finite','column'},{'size',[]}} }; ...
+            {r, 'att', 'numeric', {'finite', 'nonnegative', 'scalar'}};
+        })
+
+        % dimension of center and generator must match
+        if ~all(size(c) == size(g))
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Dimension of center and generator do not match.'));
+        end
+
+    end
+
+end
+
 %------------- END OF CODE --------------

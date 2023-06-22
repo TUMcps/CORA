@@ -51,7 +51,7 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) polyZonotope < cont
 %                21-March-2021 (MW, error messages, size checks, restructuring)
 %                14-December-2022 (TL, restructuring)
 %                29-March-2023 (TL: optimized constructor)
-% Last revision: ---
+% Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
@@ -65,88 +65,31 @@ end
    
 methods
 
-    function obj = polyZonotope(c,G,Grest,expMat,id)
+    function obj = polyZonotope(varargin)
 
-        % parse input
-        if nargin > 5
-            % too many input arguments
-            throw(CORAerror('CORA:tooManyInputArgs',5));
-        end
-
-        if nargin == 0
-            c = [];
-        end
-        if nargin == 1 && isa(c, 'polyZonotope')
-            % Copy Constructor
-            obj = c;
-            return
-        end
-        n = length(c);
-        if nargin < 2
-            G = [];
-        end
-        h = size(G, 2);
-        if nargin < 3
-            Grest = [];
-        end
-        if nargin < 4
-            expMat = eye(h);
-        end
-        p = size(expMat, 1);
-        if nargin < 5 || isempty(id)
-            id = (1:p)'; % column vector
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'polyZonotope')
+            obj = varargin{1}; return
         end
 
-        if CHECKS_ENABLED
-            inputArgsCheck({ ...
-                {c, 'att', {'double'}, {'finite'}};
-                {G, 'att', {'double'}, {'finite', 'matrix'}};
-                {Grest, 'att', {'double'}, {'finite', 'matrix'}};
-                {expMat, 'att', {'double'}, ...
-                    {'integer', 'nonnegative', 'matrix'}};
-                {id, 'att', {'double'}, {'integer'}};
-            })
-    
-            % check dimensions
-            if ~isempty(c) && size(c, 2) ~= 1
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Center should be a column vector.'));
-            end
-            if size(id, 2) ~= 1
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Identifier vector should be a column vector.'));
-            end
-    
-            % check dimensions
-            if ~isempty(G) && size(G,1) ~= n
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Dimension mismatch between center and dependent generator matrix.'));
-            end
-            if ~isempty(Grest) && size(Grest,1) ~= n
-                 throw(CORAerror('CORA:wrongInputInConstructor',...
-                     'Dimension mismatch between center and dependent generator matrix.'));
-            end
-            if size(expMat,2) ~= h
-                 throw(CORAerror('CORA:wrongInputInConstructor',...
-                     'Dimension mismatch between dependent generator matrix and exponent matrix.'));
-            end
-            if size(id, 1) ~= p
-                 throw(CORAerror('CORA:wrongInputInConstructor',...
-                     'Dimension mismatch between exponent matrix and identifier vector.'));
-            end
-        end
+        % 1. parse input arguments: varargin -> vars
+        [c,G,Grest,expMat,id] = aux_parseInputArgs(varargin{:});
 
-        % remove redundancies
+        % 2. check correctness of input arguments
+        aux_checkInputArgs(c,G,Grest,expMat,id,nargin);
+
+        % 3. remove redundancies
         if ~isempty(expMat)
             [expMat,G] = removeRedundantExponents(expMat,G);
         end
 
-        % set properties
+        % 4. assign properties
         obj.c = c;
         obj.G = G;
         obj.Grest = Grest;
         obj.expMat = expMat;
         obj.id = id;
+
     end
 end
 
@@ -154,6 +97,83 @@ methods (Static = true)
     Z = generateRandom(varargin) % generate random polyZonotope
 end
 
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function [c,G,Grest,expMat,id] = aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    % check number of input arguments
+    if nargin > 5
+        throw(CORAerror('CORA:tooManyInputArgs',5));
+    end
+
+    % no input arguments
+    if nargin == 0
+        c = []; G = []; Grest = []; expMat = []; id = []; 
+        return
+    end
+
+    % set default values
+    [c,G,Grest,expMat,id] = setDefaultValues({[],[],[],[],[]},varargin);
+
+    % default value for exponent matrix
+    if all(size(expMat) == [0,0])
+        h = size(G,2);
+        expMat = eye(h);
+    end
+
+    % number of dependent factors
+    if isempty(id)
+        p = size(expMat,1);
+        id = (1:p)'; % column vector
+    end
+
+end
+
+function aux_checkInputArgs(c,G,Grest,expMat,id,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
+
+        inputArgsCheck({ ...
+            {c, 'att', 'double', 'finite'};
+            {G, 'att', 'double', {'finite', 'matrix'}};
+            {Grest, 'att', 'double', {'finite', 'matrix'}};
+            {expMat, 'att', 'double', ...
+                {'integer', 'nonnegative', 'matrix'}};
+            {id, 'att', 'double', 'integer'};
+        })
+
+        % check dimensions
+        if ~isempty(c) && size(c, 2) ~= 1
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Center should be a column vector.'));
+        end
+        if size(id, 2) ~= 1
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Identifier vector should be a column vector.'));
+        end
+        if ~isempty(G) && size(G,1) ~= size(c,1)
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Dimension mismatch between center and dependent generator matrix.'));
+        end
+        if ~isempty(Grest) && size(Grest,1) ~= size(c,1)
+             throw(CORAerror('CORA:wrongInputInConstructor',...
+                 'Dimension mismatch between center and dependent generator matrix.'));
+        end
+        if size(expMat,2) ~= size(G,2)
+             throw(CORAerror('CORA:wrongInputInConstructor',...
+                 'Dimension mismatch between dependent generator matrix and exponent matrix.'));
+        end
+        if size(id, 1) ~= size(expMat,1)
+             throw(CORAerror('CORA:wrongInputInConstructor',...
+                 'Dimension mismatch between exponent matrix and identifier vector.'));
+        end
+    end
 
 end
 

@@ -199,7 +199,7 @@ else % contSet ------------------------------------------------------------
                 'Timed specifications require a time interval.')); 
         end
 
-        if isempty(spec_i.time) || isIntersecting(spec_i.time,time)
+        if isempty(spec_i.time) || isIntersecting_(spec_i.time,time,'exact')
 
             % different types of specifications
             switch spec_i.type
@@ -238,9 +238,9 @@ function res = aux_checkUnsafeSet(set,S)
         res = true;
         for i = 1:length(S)
             try
-                res = ~isIntersecting(set,S{i}); 
+                res = ~isIntersecting_(set,S{i},'exact');
             catch
-                res = ~isIntersecting(set,S{i},'approx'); 
+                res = ~isIntersecting_(set,S{i},'approx'); 
             end
             if ~res
                return; 
@@ -248,9 +248,9 @@ function res = aux_checkUnsafeSet(set,S)
         end   
     else
         try
-            res = ~isIntersecting(set,S);
+            res = ~isIntersecting_(set,S,'exact');
         catch
-            res = ~isIntersecting(set,S,'approx'); 
+            res = ~isIntersecting_(set,S,'approx'); 
         end
     end
 end
@@ -293,13 +293,13 @@ function res = aux_checkInvariant(set,S)
     if iscell(S)
         res = false;
         for i = 1:length(S)
-            res = isIntersecting(set,S{i},'approx');
+            res = isIntersecting_(set,S{i},'approx');
             if res
                return; 
             end
         end
     else
-        res = isIntersecting(set,S,'approx');
+        res = isIntersecting_(set,S,'approx');
     end
 end
 

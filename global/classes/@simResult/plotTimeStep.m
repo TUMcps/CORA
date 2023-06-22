@@ -49,21 +49,23 @@ ax = gca();
 oldColorIndex = ax.ColorOrderIndex;
 
 % loop over all simulations
-nrSim = length(simRes.t);
+nrSim = length(simRes);
 hold on; box on;
-for i=1:nrSim
-    % time axis
-    cumsumtVec = [simRes.t{i}(1);repelem(simRes.t{i}(2:end-1),2);simRes.t{i}(end)];
-    % time step sizes
-    tVec = repelem(diff(simRes.t{i}),2);
-    % plot
-    plot(cumsumtVec,tVec,NVpairs{:});
-
-    % for axis limits
-    if min(tVec) < mintimestep;     mintimestep = min(tVec);     end
-    if max(tVec) > maxtimestep;     maxtimestep = max(tVec);     end
-    if cumsumtVec(1) < cumsummin;   cumsummin = cumsumtVec(1);   end
-    if cumsumtVec(end) > cumsummax; cumsummax = cumsumtVec(end); end
+for r=1:nrSim
+    for i=1:length(simRes(r))
+        % time axis
+        cumsumtVec = [simRes(r).t{i}(1);repelem(simRes(r).t{i}(2:end-1),2);simRes(r).t{i}(end)];
+        % time step sizes
+        tVec = repelem(diff(simRes(r).t{i}),2);
+        % plot
+        plot(cumsumtVec,tVec,NVpairs{:});
+    
+        % for axis limits
+        if min(tVec) < mintimestep;     mintimestep = min(tVec);     end
+        if max(tVec) > maxtimestep;     maxtimestep = max(tVec);     end
+        if cumsumtVec(1) < cumsummin;   cumsummin = cumsumtVec(1);   end
+        if cumsumtVec(end) > cumsummax; cumsummax = cumsumtVec(end); end
+    end
 end
 
 % correct color index

@@ -42,7 +42,7 @@ function [value,isterminal,direction] = f(t,x)
     %get result of guard events
     for i=1:length(loc.transition)
         %check if guard is a halfspace
-        if ~isempty(loc.transition(i))
+        if ~isemptyobject(loc.transition(i))
             [resValue,resIsterminal,resDirection] = eventFcn(loc.transition(i),x);
             eventLength = length(resValue);
             indices = n+1:n+eventLength;

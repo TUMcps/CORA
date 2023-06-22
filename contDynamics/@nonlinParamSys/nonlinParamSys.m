@@ -96,34 +96,29 @@ methods
     % class constructor
     function obj = nonlinParamSys(varargin)
 
-        % check number of input arguments
-        if nargin < 1
-            throw(CORAerror('CORA:notEnoughInputArgs',1));
-        elseif nargin > 8
-            throw(CORAerror('CORA:tooManyInputArgs',8));
-        end
+        % 1. copy constructor: not allowed due to obj@contDynamics below
+%         if nargin == 1 && isa(varargin{1},'nonlinParamSys')
+%             obj = varargin{1}; return
+%         end
 
-        % assign arguments
+        % 2. parse input arguments: varargin -> vars
         [name,fun,states,inputs,params,type,out_fun,outputs] = aux_parseInputArgs(varargin{:});
 
-        % check arguments
+        % 3. check correctness of input arguments
         aux_checkInputArgs(name,fun,states,inputs,params,type,out_fun,outputs);
 
-        % analyze functions and extract number of states, inputs, params, outputs
+        % 4. analyze functions and extract number of states, inputs, params, outputs
         [states,inputs,params,out_fun,outputs,out_isLinear] = ...
-            aux_analyzeEqs(fun,states,inputs,params,out_fun,outputs);
+            aux_computeProperties(fun,states,inputs,params,out_fun,outputs);
 
-        % generate parent object
+        % 5. instantiate parent class
         obj@contDynamics(name,states,inputs,outputs);
         
-        % assign object properties
+        % 6a. assign object properties: dynamic equation
         obj.nrOfParam = params;
-        
         if strcmp(type,'varParam')
            obj.constParam = false;
         end
-
-        % assign object properties: dynamic equation
         obj.mFile = fun;
         obj.jacobian = eval(['@jacobian_',name]);
         obj.jacobian_freeParam = eval(['@jacobian_freeParam_',name]);
@@ -131,7 +126,7 @@ methods
         obj.hessian = eval(['@hessianTensor_',name]);
         obj.thirdOrderTensor = eval(['@thirdOrderTensor_',name]);
         
-        % assign object properties: output equation
+        % 6b. assign object properties: output equation
         obj.out_mFile = out_fun;
         obj.out_isLinear = out_isLinear;
         obj.out_jacobian = eval(['@out_jacobian_',name]);
@@ -185,10 +180,20 @@ end
 
 function [name,fun,states,inputs,params,type,out_fun,outputs] = aux_parseInputArgs(varargin)
 
+    % check number of input arguments
+    if nargin > 8
+        throw(CORAerror('CORA:tooManyInputArgs',8));
+    end
+
     % default values
     name = []; states = []; inputs = []; params = []; 
     type = 'constParam';
     out_fun = []; outputs = [];
+
+    % no input arguments
+    if nargin == 0
+        return;
+    end
 
     % parse input arguments (order for each number not fixed)
     if nargin == 1
@@ -365,7 +370,7 @@ function aux_checkInputArgs(name,fun,states,inputs,params,type,out_fun,outputs)
 end
 
 function [states,inputs,params,out_fun,outputs,out_isLinear] = ...
-            aux_analyzeEqs(fun,states,inputs,params,out_fun,outputs)
+            aux_computeProperties(fun,states,inputs,params,out_fun,outputs)
 
     % get number of states and number of inputs 
     if isempty(states) || isempty(inputs) || isempty(params)

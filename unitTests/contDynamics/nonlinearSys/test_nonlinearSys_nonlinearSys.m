@@ -99,6 +99,7 @@ end
 
 
 % wrong instantiations (should not reach next line)
+if CHECKS_ENABLED
 
 % only name
 try
@@ -136,6 +137,8 @@ f_xup = @(x,u,p) x(1)^2;
 try
     nonlinearSys(f_xup);
     res = false;
+end
+
 end
 
 %------------- END OF CODE --------------

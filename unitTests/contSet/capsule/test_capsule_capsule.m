@@ -51,17 +51,14 @@ if ~compareMatrices(C.c,c) || ~compareMatrices(C.g,g)
     res = false;
 end
 
-% center and radius:
-C = capsule(c,r);
-if ~compareMatrices(C.c,c) || ~withinTol(C.r,r)
-	res = false;
-end
-
 % center, generator, and radius
 C = capsule(c,g,r);
 if ~compareMatrices(C.c,c) || ~compareMatrices(C.g,g) || ~withinTol(C.r,r)
     res = false;
 end
+
+
+if CHECKS_ENABLED
 
 % wrong initializations
 cn_1 = [3; 2; -1];
@@ -95,6 +92,8 @@ end
 try
     C = capsule(c,g,r,r); % <- should throw error here
     res = false;
+end
+
 end
 
 %------------- END OF CODE --------------

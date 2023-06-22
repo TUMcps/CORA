@@ -1,8 +1,8 @@
-function res = test_contDynamics_isempty
-% test_contDynamics_isempty - unit test for emptiness check
+function res = test_contDynamics_isemptyobject
+% test_contDynamics_isemptyobject - unit test for emptiness check
 %
 % Syntax:
-%    res = test_contDynamics_isempty
+%    res = test_contDynamics_isemptyobject
 %
 % Inputs:
 %    -
@@ -24,16 +24,16 @@ function res = test_contDynamics_isempty
 %------------- BEGIN CODE --------------
 
 % empty object
-res = isempty(contDynamics());
+res = isemptyobject(contDynamics());
 
 % only name not enough
-res(end+1,1) = isempty(contDynamics('sys'));
+res(end+1,1) = isemptyobject(contDynamics('sys'));
 
 % dimension given, but zero
-res(end+1,1) = isempty(contDynamics('sys',0));
+res(end+1,1) = isemptyobject(contDynamics('sys',0));
 
 % non-zero dimension given
-res(end+1,1) = ~isempty(contDynamics('sys',1));
+res(end+1,1) = ~isemptyobject(contDynamics('sys',1));
 
 % combine results
 res = all(res);

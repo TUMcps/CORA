@@ -1,8 +1,8 @@
-function res = test_location_isempty
-% test_location_isempty - test function for isempty
+function res = test_location_isemptyobject
+% test_location_isemptyobject - test function for isemptyobject
 %
 % Syntax:  
-%    res = test_location_isempty
+%    res = test_location_isemptyobject
 %
 % Inputs:
 %    -
@@ -24,7 +24,7 @@ function res = test_location_isempty
 %------------- BEGIN CODE --------------
 
 % empty location
-res = isempty(location());
+res = isemptyobject(location());
 
 % non-empty location
 inv = mptPolytope([-1,0],0);
@@ -33,8 +33,8 @@ reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
 trans = transition(guard,reset,1);
 dynamics = linearSys([0,1;0,0],[0;0],[0;-9.81]);
 
-res(end+1,1) = ~isempty(location(inv,trans,dynamics));
-res(end+1,1) = all(isempty([location(),location(inv,trans,dynamics)]) == [true false]);
+res(end+1,1) = ~isemptyobject(location(inv,trans,dynamics));
+res(end+1,1) = all(isemptyobject([location(),location(inv,trans,dynamics)]) == [true false]);
 
 % combine results
 res = all(res);

@@ -10,8 +10,6 @@ function corapath = CORAROOT()
 % Outputs:
 %    corapath (string) - directory of CORA
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

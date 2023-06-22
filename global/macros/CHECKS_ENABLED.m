@@ -13,8 +13,6 @@ function res = CHECKS_ENABLED()
 % Outputs:
 %    res - true/false
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

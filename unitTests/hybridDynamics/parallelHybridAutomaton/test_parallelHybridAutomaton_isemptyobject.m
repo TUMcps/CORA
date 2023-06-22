@@ -1,8 +1,9 @@
-function res = test_parallelHybridAutomaton_isempty
-% test_parallelHybridAutomaton_isempty - test function for isempty
+function res = test_parallelHybridAutomaton_isemptyobject
+% test_parallelHybridAutomaton_isemptyobject - test function for
+%    isemptyobject
 %
 % Syntax:  
-%    res = test_parallelHybridAutomaton_isempty
+%    res = test_parallelHybridAutomaton_isemptyobject
 %
 % Inputs:
 %    -
@@ -24,11 +25,11 @@ function res = test_parallelHybridAutomaton_isempty
 %------------- BEGIN CODE --------------
 
 % empty parallel hybrid automata
-res = isempty(parallelHybridAutomaton());
+res = isemptyobject(parallelHybridAutomaton());
 
 % full automaton
 pHA = roomHeatingParallel();
-res(end+1,1) = ~isempty(pHA);
+res(end+1,1) = ~isemptyobject(pHA);
 
 % combine results
 res = all(res);

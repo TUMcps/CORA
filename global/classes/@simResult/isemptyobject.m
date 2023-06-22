@@ -1,8 +1,8 @@
-function res = isempty(simRes)
-% isempty - checks if a simResult object is empty
+function res = isemptyobject(simRes)
+% isemptyobject - checks if a simResult object is empty
 %
 % Syntax:  
-%    res = isempty(simRes)
+%    res = isemptyobject(simRes)
 %
 % Inputs:
 %    simRes - simResult object
@@ -12,7 +12,7 @@ function res = isempty(simRes)
 %
 % Example:
 %    simRes = simResult();
-%    isempty(simRes)
+%    isemptyobject(simRes)
 %
 % Other m-files required: none
 % Subfunctions: none

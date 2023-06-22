@@ -4,14 +4,14 @@ classdef (InferiorClasses = {?interval}) affine < taylm
 % Syntax:
 %    obj = affine(int)
 %    obj = affine(int, name, opt_method, eps, tolerance)
-%    obj = affine(lower_b, upper_b)
-%    obj = affine(lower_b, upper_b, name, opt_method, eps, tolerance)
+%    obj = affine(lb, ub)
+%    obj = affine(lb, ub, name, opt_method, eps, tolerance)
 %
 % Inputs:
-%    int - an interval
+%    int - interval object
 %    name - a cell containing a name of a variable
-%    lower_b - a double, the lower bound of an interval
-%    upper_b - a double, the upper bound of an interval
+%    lb - lower bound of an interval
+%    ub - upper bound of an interval
 %    opt_method - method used to calculate interval over-approximations of
 %                 taylor models 
 %                  'int': standard interval arithmetic (default)
@@ -43,7 +43,7 @@ classdef (InferiorClasses = {?interval}) affine < taylm
 % Author:       Dmitry Grebenyuk, Niklas Kochdumper
 % Written:      22-September-2017
 % Last update:  08-April-2018 (NK, extended constructor syntax)
-% Last revision:---
+% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
@@ -54,68 +54,99 @@ end
 methods
     %class constructor
     function obj = affine(varargin)
+
+        % 1. copy constructor: not allowed due to obj@taylm below
+%         if nargin == 1 && isa(varargin{1},'affine')
+%             obj = varargin{1}; return
+%         end
+
+        % 1. parse input arguments: varargin -> vars
+        [int,name,opt_method,eps,tolerance] = aux_parseInputArgs(varargin{:});
+
+        % 2. check correctness of input arguments
+        aux_checkInputArgs(int,name,opt_method,eps,tolerance,nargin);
+
+        % 3. compute properties
+        [int,name,opt_method,eps,tolerance] = ...
+            aux_computeProperties(int,name,opt_method,eps,tolerance,inputname(1));
         
-        % check user input
-        if nargin < 1
-            throw(CORAerror('CORA:notEnoughInputArgs',1));
-        end
+        % 4. assign properties
+        % ...create the object by calling the constructor of the superclass
+        % (taylor model with max_order = 1)
+        obj = obj@taylm(int,1,name,opt_method,eps,tolerance);
+    end
+
+    
+    % conversion of affine object to taylm object
+    function tay = taylm(aff)
         
-        % first input is an interval object
-        if isa(varargin{1},'interval')
-           
-            int = varargin{1};
-            parseIndex = 2;
-            
-        % interval is specified by its boundaries
-        else
-            
-            if nargin < 2
-                throw(CORAerror('CORA:notEnoughInputArgs',2));
+        % copy all properties
+        c = metaclass(aff);
+        prop = c.Properties;
+        
+        for i = 1:length(prop)
+            if ~prop{i}.Dependent
+                tay.(prop{i}.Name) = aff.(prop{i}.Name);
             end
-            
-            int = interval(varargin{1},varargin{2});
-            parseIndex = 3;
         end
-        
-        % default values for the object properties
-        opt_method = 'int';
-        eps = 0.001;
-        tolerance = 1e-8;
-        
-        % generate variable names if they are not provided
-        try
-           if nargin < parseIndex
-               names = genDefaultVarNames(int,[],inputname(1));
-           else
-               names = genDefaultVarNames(int,varargin{parseIndex},inputname(1));
-           end
-        catch ex
-           rethrow(ex);
-        end
-        
-        % parse input arguments
-        if nargin >= parseIndex + 1 && ~isempty(varargin{parseIndex+1})
-            opt_method = varargin{parseIndex+1};
-        end
-        if nargin >= parseIndex + 2 && ~isempty(varargin{parseIndex+2})
-            eps = varargin{parseIndex+2};
-        end
-        if nargin >= parseIndex + 3 && ~isempty(varargin{parseIndex+3})
-            tolerance = varargin{parseIndex+3};
-        end
-        
-        % check if the selected optimization mehtod is feasible
+
+    end
+             
+end
+end
+
+% Auxiliary Functions -----------------------------------------------------
+
+function [int,name,opt_method,eps,tolerance] = aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    % check number of input arguments
+    if nargin > 6
+        throw(CORAerror('CORA:tooManyInputArgs',6));
+    end
+
+    % no input arguments
+    if nargin == 0
+        int = []; name = []; opt_method = []; eps = []; tolerance = [];
+        return
+    end
+
+    % set default values
+    if isa(varargin{1},'interval')
+        [int,name,opt_method,eps,tolerance] = ...
+            setDefaultValues({[],[],'int',0.001,1e-8},varargin);
+    else
+        [lb,ub,name,opt_method,eps,tolerance] = ...
+            setDefaultValues({[],[],[],'int',0.001,1e-8},varargin);
+        % init interval from lower and upper bounds
+        int = interval(lb,ub);
+    end
+
+end
+
+function aux_checkInputArgs(int,name,opt_method,eps,tolerance,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
+
+        % check if the selected optimization method is feasible
         % (optimization with 'linQuad' is not possible for class affine)
         if ~ischar(opt_method) || ~ismember(opt_method,{'int','bnb','bnbAdv'})
             throw(CORAerror('CORA:wrongValue','third/fourth',"'int','bnb' or 'bnbAdv'"));
         end
         
-        % create the object by calling the constructor of the superclass
-        % (taylor model with max_order = 1)      
-        obj = obj@taylm(int, 1, names, opt_method, eps, tolerance);
     end
-             
+
 end
+
+function [int,name,opt_method,eps,tolerance] = ...
+    aux_computeProperties(int,name,opt_method,eps,tolerance,varname)
+% compute properties of affine object
+
+    % generate variable names
+    name = genDefaultVarNames(int,name,varname);
+
 end
 
 %------------- END OF CODE -------

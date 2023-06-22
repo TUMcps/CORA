@@ -50,6 +50,8 @@ HA = hybridAutomaton([loc_1;loc_1]);
 
 
 % wrong initializations
+if CHECKS_ENABLED
+
 try
     % dimensions of reset functions do not match
     loc = [loc_1;loc_2];
@@ -65,6 +67,8 @@ try
     % not a location array
     HA = hybridAutomaton({loc_1,loc_2});
     res = false;
+end
+
 end
 
 %------------- END OF CODE --------------

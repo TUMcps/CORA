@@ -49,18 +49,6 @@ for i=1:nrOfTests
     if ~compareMatrices(C.c,c) || ~compareMatrices(C.g,g)
         res = false; break;
     end
-
-    % center and radius: -> assigned to c and g if n == 1
-    C = capsule(c,r);
-    if n == 1
-        if ~compareMatrices(C.c,c) || ~compareMatrices(C.g,r)
-            res = false; break;
-        end
-    else
-        if ~compareMatrices(C.c,c) || ~compareMatrices(C.r,r)
-            res = false; break;
-        end
-    end
     
     % center, generator, and radius
     C = capsule(c,g,r);

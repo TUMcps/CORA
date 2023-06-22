@@ -1,8 +1,8 @@
-function res = isempty(trans)
-% isempty - checks if a transition object is empty
+function res = isemptyobject(trans)
+% isemptyobject - checks if a transition object is empty
 %
 % Syntax:  
-%    res = isequal(trans)
+%    res = isemptyobject(trans)
 %
 % Inputs:
 %    trans - transition object
@@ -22,8 +22,8 @@ function res = isempty(trans)
 %    trans = transition(guard,reset,1);
 %
 %    % comparison
-%    res = isempty(trans)
-%    res = isempty(transition())
+%    res = isemptyobject(trans)
+%    res = isemptyobject(transition())
 %
 % Other m-files required: none
 % Subfunctions: none

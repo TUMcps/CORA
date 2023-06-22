@@ -28,14 +28,11 @@ function res = simulateStandard(obj, options)
 % trajectory tracking
 tracking = isfield(options,'uTransVec');
 
-% initialize time, state, and location (always 0 as purely continuous-time)
-t = cell(options.points,1);
-x = cell(options.points,1);
-loc = zeros(options.points,1);
+% location for contDynamics always 0
+loc = 0;
 
 % output equation only for linearSys and linearSysDT currently
 comp_y = (isa(obj,'linearSys') || isa(obj,'linearSysDT')) && ~isempty(obj.C);
-if comp_y; y = cell(options.points,1); end
 
 % generate random initial points
 nrExtreme = ceil(options.points*options.fracVert);
@@ -48,6 +45,8 @@ if nrStandard > 0
 	X0 = [X0, randPoint(options.R0,nrStandard,'standard')];
 end
 
+% initialize array of simResult objects
+res(options.points,1) = simResult();
 
 % the input trajectory for the given x0 is constructed as follows:
 % - options.uTrans given: no time-varying input vector
@@ -68,13 +67,15 @@ end
 for r = 1:options.points
     
     % initialize cells for current simulation run r
-    t{r} = 0;
+    t = 0;
     if isa(obj,'nonlinDASys')
-        x{r} = zeros(1,obj.dim+obj.nrOfConstraints);
+        x = zeros(1,obj.dim+obj.nrOfConstraints);
     else
-        x{r} = zeros(1,obj.dim);
+        x = zeros(1,obj.dim);
     end
-    if comp_y; y{r} = zeros(1,obj.nrOfOutputs); end
+    if comp_y
+        y = zeros(1,obj.nrOfOutputs);
+    end
     
     % start of trajectory
     options.x0 = X0(:,r);
@@ -151,37 +152,34 @@ for r = 1:options.points
         % append to previous values, overwrite first one:
         % - same for t and x
         % - different for y (correct one is only the new one)
-        t{r}(end:end+length(tTemp)-1,1) = tTemp;
-        x{r}(end:end+length(tTemp)-1,:) = xTemp;
-        if comp_y; y{r}(end:end+length(tTemp)-1,:) = yTemp; end
+        t(end:end+length(tTemp)-1,1) = tTemp;
+        x(end:end+length(tTemp)-1,:) = xTemp;
+        if comp_y
+            y(end:end+length(tTemp)-1,:) = yTemp;
+        end
         
     end
     
     if comp_y
         % final point of output trajectory uses different input and sensor noise
-        ylast = aux_outputTrajectoryEnd(obj,options,x{r});
-        y{r}(end,:) = ylast';
+        ylast = aux_outputTrajectoryEnd(obj,options,x);
+        y(end,:) = ylast';
+    end
+
+    % append simResult object
+    if comp_y
+        res(r,1) = simResult({x},{t},loc,{y});
+    elseif isa(obj,'nonlinDASys')
+        % dimensions of algebraic variables in extended state vector
+        dims_a = obj.dim+1:obj.dim+obj.nrOfConstraints;
+        a = x(:,dims_a);
+        x = x(:,1:obj.dim);
+        res(r,1) = simResult({x},{t},loc,{},{a});
+    else
+        res(r,1) = simResult({x},{t},loc);
     end
     
 end
-
-% construct object storing the simulation results
-if comp_y
-    res = simResult(x,t,loc,y);
-elseif isa(obj,'nonlinDASys')
-    % special handling of algebraic variables
-    a = cell(r,1);
-    % dimensions of algebraic variables in extended state vector
-    dims_a = obj.dim+1:obj.dim+obj.nrOfConstraints;
-    for r = 1:options.points
-        a{r,1} = x{r}(:,dims_a);
-        x{r,1} = x{r}(:,1:obj.dim);
-    end
-    res = simResult(x,t,loc,{},a);
-else
-    res = simResult(x,t,loc);
-end
-
 
 end
 

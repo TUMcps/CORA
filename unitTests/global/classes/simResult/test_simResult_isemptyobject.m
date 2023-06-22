@@ -1,8 +1,8 @@
-function res = test_simResult_isempty
-% test_simResult_isempty - unit test function for isempty
+function res = test_simResult_isemptyobject
+% test_simResult_isemptyobject - unit test function for isemptyobject
 %
 % Syntax:  
-%    res = test_simResult_isempty()
+%    res = test_simResult_isemptyobject()
 %
 % Inputs:
 %    -
@@ -25,13 +25,13 @@ function res = test_simResult_isempty
 
 % empty simResult
 simRes = simResult();
-res = isempty(simRes);
+res = isemptyobject(simRes);
 
 % simResult with trajectory
 t = {[0; 0.02; 0.05]};
 x = {[1 1; 0.9 1.1; 0.8 1.2]};
 simRes = simResult(x,t);
-res(end+1,1) = ~isempty(simRes);
+res(end+1,1) = ~isemptyobject(simRes);
 
 % combine results
 res = all(res);

@@ -44,15 +44,13 @@ classdef neurNetContrSys < contDynamics
 
 % Author:       Niklas Kochdumper, Tobias Ladner
 % Written:      17-September-2021
-%               23-November-2022 (TL, polish)
+% Last update:  23-November-2022 (TL, polish)
 %               14-December-2022 (TL, property check in inputArgsCheck)
-% Last update:  ---
-% Last revision:---
+% Last revision:18-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = private, GetAccess = public)
-
     sys; % system dynamics
     nn; % neural network controller
     dt; % sampling time
@@ -61,65 +59,108 @@ end
 methods
 
     % class constructor
-    function obj = neurNetContrSys(sys,nn,dt)
+    function obj = neurNetContrSys(varargin)
 
-        % check user input
-        if nargin < 3
-            throw(CORAerror('CORA:notEnoughInputArgs',3));
-        elseif nargin > 3
-            throw(CORAerror('CORA:tooManyInputArgs',3));
-        end
-        if isa(nn, "neuralNetworkOld")
-            nn = neuralNetwork.getFromOldNeuralNetwork(nn);
-        end
+        % 1. copy constructor: not allowed due to obj@contDynamics below
+%         if nargin == 1 && isa(varargin{1},'neurNetContrSys')
+%             obj = varargin{1}; return
+%         end
 
+        % 2. parse input arguments: varargin -> vars
+        [sysOL,nn,dt] = aux_parseInputArgs(varargin{:});
+
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(sysOL,nn,dt,nargin);
+
+        % 4. instantiate closed-loop system, convert old neuralNetwork
+        [sysCL,nn,dt] = aux_computeProperties(sysOL,nn,dt);
+        
+        % 5. instantiate parent class, assign properties
+        obj@contDynamics(sysCL.name,sysOL.dim,max(1,sysOL.nrOfInputs-nn.neurons_out),0);
+        obj.sys = sysCL; obj.nn = nn; obj.dt = dt;
+
+    end
+end
+end
+
+
+% Auxiliary Functions -----------------------------------------------------
+
+function [sys,nn,dt] = aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    % check number of input arguments
+    if nargin ~= 0 && nargin < 3
+        throw(CORAerror('CORA:notEnoughInputArgs',3));
+    elseif nargin > 3
+        throw(CORAerror('CORA:tooManyInputArgs',3));
+    end
+
+    % default values
+    sys = contDynamics(); nn = []; dt = 0;
+
+    % no input arguments
+    if nargin == 0
+        return
+    end
+
+    % parse user-provided input arguments
+    [sys,nn,dt] = setDefaultValues({sys,nn,dt},varargin);
+    
+end
+
+function aux_checkInputArgs(sys,nn,dt,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
+
+        % check data types
         inputArgsCheck({ ...
-            {sys, 'att', 'contDynamics'}; ...
-            {nn, 'att', 'neuralNetwork'}; ...
-            {dt, 'att', 'numeric', {'finite', 'nonnegative', 'scalar'}};
-        });
+            {sys,'att',{'nonlinearSys','nonlinParamSys'}},...
+            {nn,'att',{'neuralNetwork','neuralNetworkOld'}},...
+            {dt,'att','numeric',{'scalar','positive'}},...
+        })
 
-        % check dimensions
-        n = sys.dim;
-        m = nn.neurons_out;
-
-        if n ~= nn.neurons_in
+        % check if dimensions fit
+        if sys.dim ~= nn.neurons_in
             throw(CORAerror('CORA:wrongInputInConstructor', ...
                'Dimension of sys and input of nn should match.'));
         end
-        if sys.nrOfInputs < m
+        if sys.nrOfInputs < nn.neurons_out
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 ['Dimensions of open-loop system and neural network', ...
                 'are not consistent!']));
         end
-
-        % construct closed-loop system
-        if isa(sys, 'nonlinearSys')
-
-            f = @(x, u) [sys.mFile(x(1:n), [x(n+1:n+m); u]); zeros(m, 1)];
-            name = [sys.name, 'Controlled'];
-            sys = nonlinearSys(name, f, n+m, max(1, sys.nrOfInputs-m));
-
-        elseif isa(sys, 'nonlinParamSys')
-
-            f = @(x, u, p) [sys.mFile(x(1:n), [x(n+1:n+m); u], p); zeros(m, 1)];
-            name = [sys.name, 'Controlled'];
-            sys = nonlinParamSys(name, f, n+m, max(1, sys.nrOfInputs-m));
-
-        else
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                'Only nonlinearSysa and nonlinParamSys supported.'));
-        end
-
-        % generate parent object
-        obj@contDynamics(sys.name, n, max(1, sys.nrOfInputs-m), 1);
-
-        % assign object properties
-        obj.sys = sys;
-        obj.nn = nn;
-        obj.dt = dt;
+        
     end
+
 end
+
+function [sys,nn,dt] = aux_computeProperties(sys,nn,dt)
+% compute properties of neurNetContrSys object
+
+    n = sys.dim; m = nn.neurons_out;
+    % instantiate closed-loop system
+    if isa(sys, 'nonlinearSys')
+
+        f = @(x, u) [sys.mFile(x(1:n), [x(n+1:n+m); u]); zeros(m, 1)];
+        name = [sys.name, 'Controlled'];
+        sys = nonlinearSys(name, f, n+m, max(1, sys.nrOfInputs-m));
+
+    elseif isa(sys, 'nonlinParamSys')
+
+        f = @(x, u, p) [sys.mFile(x(1:n), [x(n+1:n+m); u], p); zeros(m, 1)];
+        name = [sys.name, 'Controlled'];
+        sys = nonlinParamSys(name, f, n+m, max(1, sys.nrOfInputs-m));
+
+    end
+
+    % convert old version of neuralNetwork class
+    if isa(nn, "neuralNetworkOld")
+        nn = neuralNetwork.getFromOldNeuralNetwork(nn);
+    end
+
 end
 
 %------------- END OF CODE --------------

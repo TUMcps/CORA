@@ -1,17 +1,17 @@
-function res = isempty(sys)
-% isempty - checks if a contDynamics object is empty
+function res = isemptyobject(pHA)
+% isemptyobject - checks if a parallelHybridAutomaton object is empty
 %
-% Syntax:  
-%    res = isempty(sys)
+% Syntax:
+%    res = isemptyobject(pHA)
 %
 % Inputs:
-%    sys - contDynamics object
+%    pHA - parallelHybridAutomaton object
 %
 % Outputs:
 %    res - true/false
 %
 % Example: 
-%    ---
+%    res = isemptyobject(parallelHybridAutomaton());
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -20,19 +20,19 @@ function res = isempty(sys)
 % See also: none
 
 % Author:       Mark Wetzlinger
-% Written:      16-May-2023
+% Written:      19-May-2023
 % Last update:  ---
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-[r,c] = size(sys);
+[r,c] = size(pHA);
 res = false(r,c);
 
-% loop over all contDynamics
+% loop over all locations
 for i=1:r
     for j=1:c
-        res(r,c) = sys(r,c).dim == 0;
+        res(i,j) = isempty(pHA(i,j).bindsInputs);
     end
 end
 

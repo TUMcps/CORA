@@ -219,7 +219,7 @@ function activeSpecs = aux_filterSpecifications(spec,locID)
     % the current set of locations (given location per subcomponent)
     for i=1:nrSpecs
         % active in all locations of any subcomponent?
-        if any(cellfun(@(x) isempty(x),spec(i).location,'UniformOutput',true))
+        if any(cellfun(@(x) isemptyobject(x),spec(i).location,'UniformOutput',true))
             activeSpecs_idx(i) = true; continue
         end
         % loop over subcomponents

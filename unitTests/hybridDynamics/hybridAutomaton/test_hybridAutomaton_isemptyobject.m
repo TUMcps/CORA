@@ -1,8 +1,8 @@
-function res = test_hybridAutomaton_isempty
-% test_hybridAutomaton_isempty - test function for emptiness check
+function res = test_hybridAutomaton_isemptyobject
+% test_hybridAutomaton_isemptyobject - test function for emptiness check
 %
 % Syntax:  
-%    res = test_hybridAutomaton_isempty
+%    res = test_hybridAutomaton_isemptyobject
 %
 % Inputs:
 %    -
@@ -23,8 +23,8 @@ function res = test_hybridAutomaton_isempty
 
 %------------- BEGIN CODE --------------
 
-% compare empty automata
-res = isempty(hybridAutomaton());
+% empty automaton
+res = isemptyobject(hybridAutomaton());
 
 % invariant
 inv_2D_poly = mptPolytope([-1,0],0);
@@ -50,10 +50,10 @@ loc2 = location(inv_3D_int,trans_3D_2D,dynamics_3D_lin);
 
 % non-empty hybrid automaton
 HA = hybridAutomaton([loc1;loc2]);
-res(end+1,1) = ~isempty(HA);
+res(end+1,1) = ~isemptyobject(HA);
 
 % array of hybrid automata
-res(end+1,1) = all(isempty([hybridAutomaton(),HA]) == [true false]);
+res(end+1,1) = all(isemptyobject([hybridAutomaton(),HA]) == [true false]);
 
 
 % combine results

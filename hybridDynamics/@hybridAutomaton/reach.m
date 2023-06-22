@@ -195,7 +195,7 @@ function options = aux_check_flatHA_specification(options,HA,spec)
 
         for i=1:numLoc
             for j=1:nrSpecs
-                if isempty(spec(j).location) || any(spec(j).location == i)
+                if isemptyobject(spec(j).location) || any(spec(j).location == i)
                     options.specificationLoc{i} = ...
                         add(options.specificationLoc{i},spec(j));
                 end

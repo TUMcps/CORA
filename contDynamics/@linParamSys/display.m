@@ -28,7 +28,6 @@ function display(sys)
 % Last update:  19-June-2022
 %               23-November-2022 (TL: dispInput)
 % Last revision:---
-% Last revision:---
 
 %------------- BEGIN CODE --------------
 

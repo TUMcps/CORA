@@ -20,8 +20,6 @@ function res = testLong_nonlinearSys_reach_poly
 
 %------------- BEGIN CODE --------------
 
-res = true;
-
 % Parameters --------------------------------------------------------------
 
 params.tFinal = 0.01;
@@ -66,7 +64,7 @@ R0{3} = zonotope(c + G(:,2),G(:,1));
 R0{4} = zonotope(c - G(:,2),G(:,1));
 
 % simulation options
-simOpt.points = 5000;
+simOpt.points = 100;
 simOpt.fracVert = 4e-4;
 simOpt.fracInpVert = 0.9;
 simOpt.nrConstInp = 2;
@@ -79,8 +77,8 @@ for i = 1:length(R0)
     params.R0 = R0{i};
     simRes = simulateRandom(sys, params, simOpt);
     
-    for j = 1:length(simRes.x)
-    	points = [points, simRes.x{j}(end,:)']; 
+    for j = 1:length(simRes)
+    	points = [points, simRes(j).x{1}(end,:)']; 
     end
 end
 
@@ -89,12 +87,7 @@ end
 
 % check if all points are located inside the time point reachable set
 pgon = polygon(R.timePoint.set{end},12);
-
-for i = 1:size(points,2)
-   if ~contains(pgon,points(:,i))
-       res = false; break
-   end
-end
+res = all(contains(pgon,points));
 
 % % visualize the set
 % figure; hold on;

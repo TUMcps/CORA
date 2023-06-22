@@ -194,7 +194,7 @@ elseif isa(sys,'parallelHybridAutomaton')
         numLoc = length(sys.components(i).location);
         val{i} = cell(numLoc,1);
         for j = 1:numLoc
-            val{i}{j} = zeros(sys.numInputs,1);
+            val{i}{j} = zeros(sys.nrOfInputs,1);
         end    
     end
 end
@@ -251,21 +251,37 @@ end
 
 function val = def_W(sys)
 
-val = [];
-if isa(sys,'contDynamics')
-    val = interval(zeros(sys.dim,1),zeros(sys.dim,1));
+if isa(sys,'contDynamics') || isa(sys,'parallelHybridAutomaton')
+    % note: dimension of composed automaton is fixed
+    val = interval(zeros(sys.dim,1));
+elseif isa(sys,'hybridAutomaton')
+    n = sys.dim;
+    if all(n(1) == n)
+        val = interval(zeros(n(1),1),zeros(n(1),1));
+    else
+        throw(CORAerror('CORA:notSupported',...
+            'Default value for W not supported for hybrid automata with varying number of states per location.'));
+    end
 end
-% no assignment for hybridAutomaton / parallelHybridAutomaton
 
 end
 
 function val = def_V(sys)
 
-val = [];
-if isa(sys,'contDynamics')
+if isa(sys,'contDynamics') || isa(sys,'parallelHybridAutomaton')
+    % note: dimension of composed automaton is fixed
+% CORA does not support output equations for composed parallel hybrid
+% automata -> use state dimension instead
     val = interval(zeros(sys.nrOfOutputs,1),zeros(sys.nrOfOutputs,1));
+elseif isa(sys,'hybridAutomaton')
+    r = sys.nrOfOutputs;
+    if all(r(1) == r)
+        val = interval(zeros(r(1),1));
+    else
+        throw(CORAerror('CORA:notSupported',...
+            'Default value for W not supported for hybrid automata with varying number of states per location.'));
+    end
 end
-% no assignment for hybridAutomaton / parallelHybridAutomaton
 
 end
 
@@ -273,7 +289,7 @@ function val = def_inputCompMap(sys)
 
 val = [];
 if isa(sys,'parallelHybridAutomaton')
-    val = ones(sys.numInputs,1);
+    val = ones(sys.nrOfInputs,1);
 end
 % no assignment for contDynamics
 
@@ -282,8 +298,16 @@ end
 function val = def_maxError(sys)
 
 val = [];
-if isa(sys,'contDynamics')
+if isa(sys,'contDynamics') || isa(sys,'parallelHybridAutomaton')
     val = Inf(sys.dim,1);
+elseif isa(sys,'hybridAutomaton')
+    n = sys.dim;
+    if all(n(1) == n)
+        val = Inf(n(1),1);
+    else
+        throw(CORAerror('CORA:notSupported',...
+            'Default value for maxError not supported for hybrid automata with varying number of states per location.'));
+    end
 end
 % no assignment for hybridAutomaton / parallelHybridAutomaton
 

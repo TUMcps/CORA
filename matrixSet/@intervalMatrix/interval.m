@@ -1,5 +1,5 @@
 function I = interval(intMat)
-% interval - Converts an interval matrix to an interval vector
+% interval - converts an interval matrix object to an interval object
 %
 % Syntax:  
 %    I = interval(intMat)
@@ -10,26 +10,22 @@ function I = interval(intMat)
 % Outputs:
 %    I - interval object
 %
-% Example: 
+% Example:
+%    ---
 %
-% Other m-files required: vertices, polytope
+% Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Mark Wetzlinger
 % Written:      21-June-2010
 % Last update:  25-July-2016 (intervalhull replaced by interval)
-% Last revision:---
+% Last revision:18-June-2023 (MW, harmonize with other conversion methods)
 
 %------------- BEGIN CODE --------------
 
-%convert matrix limits
-leftLimit = mat2vec(infimum(intMat.int));
-rightLimit = mat2vec(supremum(intMat.int));
-    
-%instantiate interval hull
-I=interval(leftLimit,rightLimit);
+I = intMat.int;
 
 %------------- END OF CODE --------------

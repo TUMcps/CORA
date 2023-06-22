@@ -39,28 +39,28 @@ upper_true = reshape(upper, reshapeSize);
 Int_true = interval(lower_true, upper_true);
 
 % compare results
-res_withResult = Int_reshape == Int_true;
+res = Int_reshape == Int_true;
 
 % wrong reshape dimensions should throw error
+if CHECKS_ENABLED
+
 reshapeSize = [9, 2];
 try
     reshape(Int, reshapeSize);
-    res_error = false;
-catch
-    res_error = true;
+    res = false;
 end
 
 % reshaping to larger array dimension should throw error
 reshapeSize = [4, 3, 2];
 try
     reshape(Int, reshapeSize);
-    res_diffDim = false;
-catch
-    res_diffDim = true;
+    res = false;
+end
+
 end
 
 
 % add results
-res = res_withResult && res_error && res_diffDim;
+res = all(res);
 
 %------------- END OF CODE --------------

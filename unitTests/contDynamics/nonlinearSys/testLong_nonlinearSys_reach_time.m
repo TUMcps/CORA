@@ -69,8 +69,8 @@ R = Rset.timeInterval.set{end};
 R = reduce(R,'girard',1);
 R = halfspace(R);
 
-for i = 1:length(simRes.x)
-    temp = simRes.x{i}(end,:);
+for i = 1:length(simRes)
+    temp = simRes(i).x{1}(end,:);
     res = all(R.halfspace.H*temp'<=R.halfspace.K);
     
     if ~res

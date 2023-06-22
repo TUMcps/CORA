@@ -12,8 +12,6 @@ function val = DISPLAYDIM_MAX()
 % Outputs:
 %    val - maximum dimension
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

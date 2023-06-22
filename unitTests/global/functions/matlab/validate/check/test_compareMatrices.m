@@ -95,6 +95,8 @@ end
 
 
 % check wrong input arguments (should not reach the next line)
+if CHECKS_ENABLED
+
 try
     % matrices have to be nonempty
     compareMatrices(A,D);
@@ -124,6 +126,8 @@ try
     % flag has to be 'equal' or 'subset'
     compareMatrices(A,B,eps,'exact');
     res = false;
+end
+
 end
 
 %------------- END OF CODE --------------

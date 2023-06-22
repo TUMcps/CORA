@@ -34,19 +34,22 @@ tracking = isfield(options,'uTransVec');
 % output equation only handled for linear systems
 comp_y = (isa(obj,'linearSys') || isa(obj,'linearSysDT')) && ~isempty(obj.C);
 
-% initialize results
-t = cell(options.points,1);
-x = cell(options.points,1);
-if comp_y; y = cell(options.points,1); end
+% location for contDynamics always zero
+loc = 0;
+
+% init array of simResult objects
+res(options.points,1) = simResult();
 
 % loop over all starting points in X0
 for r = 1:options.points
     
     % start of trajectory
+    t = 0; % dummy, will be overwritten
     options.x0 = randPoint(options.R0,1,'gaussian',options.p_conf);
-    t{r}(1) = 0; % dummy, will be overwritten
-    x{r}(1,:) = options.x0;
-    if comp_y; y{r}(1,:) = zeros(1,obj.nrOfOutputs); end
+    x = options.x0';
+    if comp_y
+        y = zeros(1,obj.nrOfOutputs);
+    end
     
     % loop over number of constant inputs per partial simulation
     for block = 1:length(options.nrConstInp)
@@ -99,42 +102,42 @@ for r = 1:options.points
             [tTemp,xTemp] = simulate(obj,options);
         end
 
-        t{r}(end:end+length(tTemp)-1,1) = tTemp;
-        x{r}(end:end+length(tTemp)-1,:) = xTemp;
-        if comp_y; y{r}(end:end+length(tTemp)-1,:) = yTemp; end
+        t(end:end+length(tTemp)-1,1) = tTemp;
+        x(end:end+length(tTemp)-1,:) = xTemp;
+        if comp_y
+            y(end:end+length(tTemp)-1,:) = yTemp;
+        end
         
     end
     
     if comp_y
         % final point of output trajectory uses different input and sensor noise
-        ylast = aux_outputTrajectoryEnd(obj,options,x{r});
-        y{r}(end,:) = ylast';
+        ylast = aux_outputTrajectoryEnd(obj,options,x);
+        y(end,:) = ylast';
+
+        % append simResult object for r-th trajectory
+        res(r,1) = simResult({x},{t},loc,{y});
+    else
+        % append simResult object for r-th trajectory
+        res(r,1) = simResult({x},{t});
     end
-    
-end
 
-
-% construct object storing the simulation results
-if comp_y
-    res = simResult(x,t,{},y);
-else
-    res = simResult(x,t);
 end
 
 end
 
 
-% Auxiliary function
+% Auxiliary functions -----------------------------------------------------
+
 function ylast = aux_outputTrajectoryEnd(obj,options,xtraj)
 
-if isfield(options,'uTransVec')
-    options.uTrans = options.uTransVec(:,end);
-end
-ulast = randPoint(options.U) + options.uTrans;
-vlast = randPoint(options.V);
-ylast = obj.C*xtraj(end,:)' + obj.D*ulast + obj.k + vlast;
+    if isfield(options,'uTransVec')
+        options.uTrans = options.uTransVec(:,end);
+    end
+    ulast = randPoint(options.U) + options.uTrans;
+    vlast = randPoint(options.V);
+    ylast = obj.C*xtraj(end,:)' + obj.D*ulast + obj.k + vlast;
 
 end
-
 
 %------------- END OF CODE --------------

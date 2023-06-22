@@ -116,6 +116,7 @@ end
 
 
 % wrong instantiations
+if CHECKS_ENABLED
 
 % only name
 try
@@ -164,6 +165,8 @@ f_xyup = @(x,y,u,p) x(1)^2;
 try
     nonlinParamSys(f_xyup);
     res = false;
+end
+
 end
 
 %------------- END OF CODE --------------

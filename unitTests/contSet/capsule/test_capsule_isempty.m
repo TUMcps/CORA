@@ -30,6 +30,6 @@ C3 = capsule([1;1],[0;1],0.5);
 C4 = capsule([1;1],[0;1],0);
 
 % compare results
-res = isempty(C1) && isempty(C2) && ~isempty(C3) && ~isempty(C4);
+res = isempty(C1) && ~isempty(C2) && ~isempty(C3) && ~isempty(C4);
 
 %------------- END OF CODE --------------

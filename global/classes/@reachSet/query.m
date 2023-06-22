@@ -74,11 +74,6 @@ function val = query(R,prop)
 
         case 'allLoc'
 
-            % empty case
-            if isempty(R)
-                val = []; return
-            end
-
             % at least one branch in reachSet object
             val = R(1).loc;
             

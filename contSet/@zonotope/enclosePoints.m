@@ -2,8 +2,8 @@ function Z = enclosePoints(points,varargin)
 % enclosePoints - enclose a point cloud with a zonotope
 %
 % Syntax:  
-%    Z = enclosePoints(points)
-%    Z = enclosePoints(points,method)
+%    Z = zonotope.enclosePoints(points)
+%    Z = zonotope.enclosePoints(points,method)
 %
 % Inputs:
 %    points - matrix storing point cloud (dimension: [n,p] for p points)
@@ -29,7 +29,7 @@ function Z = enclosePoints(points,varargin)
 %    [1] O. Stursberg et al. "Efficient representation and computation of 
 %        reachable sets for hybrid systems", HSCC 2003
 %    [2] M. Maiga et al. "A Comprehensive Method for Reachability Analysis
-%        ofUncertain Nonlinear Hybrid Systems", TAC 2017
+%        of Uncertain Nonlinear Hybrid Systems", TAC 2017
 %
 % Other m-files required: none
 % Subfunctions: none

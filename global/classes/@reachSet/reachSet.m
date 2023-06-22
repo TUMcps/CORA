@@ -94,47 +94,38 @@ methods
         end
         
         % check correct format of reachable sets
-        sets = {'timeInterval','timePoint'};
-        for i=1:length(sets)
-            if ~isempty(R.(sets{i}))
-                temp = R.(sets{i});
-                if ~isstruct(temp) ... % has to be a struct
-                        || ~isfield(temp,'set') || ... % has to have .set
-                        ~isfield(temp,'time') || ... % has to have .time
-                        (~isempty(temp.set) && ~iscell(temp.set)) || ... % .set have to be cells
-                        (~isempty(temp.time) && ~iscell(temp.time)) || ... % .time have to be cells
-                        any(size(temp.set) ~= size(temp.time)) % .set and .time have to be of equal length
-                    throw(CORAerror('CORA:wrongInputInConstructor',...
-                        'Fields .set and/or .time have the wrong format.'));
-                end
-                % optional fields: .error, .algebraic
-                if isfield(temp,'error') && ...
-                        ( ~isnumeric(temp.error) || ... % has to be numeric
-                          any(size(temp.error) ~= size(temp.time)) ) % correct length
-                    throw(CORAerror('CORA:wrongInputInConstructor',...
-                        'Field .error have the wrong format.'));
-                elseif isfield(temp,'algebraic') && ...
-                        ( ~iscell(temp.algebraic) || ... % has to be cell-array
-                          any(size(temp.algebraic) ~= size(temp.time)) ) % correct length
-                    throw(CORAerror('CORA:wrongInputInConstructor',...
-                        'Field .algebraic have the wrong format.'));
+        if CHECKS_ENABLED
+            sets = {'timeInterval','timePoint'};
+            for i=1:length(sets)
+                if ~isempty(R.(sets{i}))
+                    temp = R.(sets{i});
+                    if ~isstruct(temp) ... % has to be a struct
+                            || ~isfield(temp,'set') || ... % has to have .set
+                            ~isfield(temp,'time') || ... % has to have .time
+                            (~isempty(temp.set) && ~iscell(temp.set)) || ... % .set have to be cells
+                            (~isempty(temp.time) && ~iscell(temp.time)) || ... % .time have to be cells
+                            any(size(temp.set) ~= size(temp.time)) % .set and .time have to be of equal length
+                        throw(CORAerror('CORA:wrongInputInConstructor',...
+                            'Fields .set and/or .time have the wrong format.'));
+                    end
+                    % optional fields: .error, .algebraic
+                    if isfield(temp,'error') && ...
+                            ( ~isnumeric(temp.error) || ... % has to be numeric
+                              any(size(temp.error) ~= size(temp.time)) ) % correct length
+                        throw(CORAerror('CORA:wrongInputInConstructor',...
+                            'Field .error have the wrong format.'));
+                    elseif isfield(temp,'algebraic') && ...
+                            ( ~iscell(temp.algebraic) || ... % has to be cell-array
+                              any(size(temp.algebraic) ~= size(temp.time)) ) % correct length
+                        throw(CORAerror('CORA:wrongInputInConstructor',...
+                            'Field .algebraic have the wrong format.'));
+                    end
                 end
             end
         end
     end
-    
-    % assign array elements
-    function obj = subsasgn(obj, S, value)
-        % call built-in function
-        obj = builtin('subsasgn', obj, S, value);
-    end
-    
-    % get array entries
-    function res = subsref(obj, S)
-        % call built-in function
-        res = builtin('subsref', obj, S);
-    end
 
+    % get initial set
     function R0 = R0(obj)
         R0 = initialSet(obj(1).timePoint(1).set{1});
     end

@@ -39,9 +39,6 @@ C = capsule(c)
 % center and generator
 C = capsule(c,g)
 
-% center and radius
-C = capsule(c,r)
-
 % center, generator, and radius
 C = capsule(c,g,r)
 

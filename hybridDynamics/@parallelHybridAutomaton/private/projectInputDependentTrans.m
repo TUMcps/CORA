@@ -78,8 +78,8 @@ function resetStruct = aux_projectLinearReset(pHA,resetStruct,compIndex,locID,id
     inputBinds = pHA.bindsInputs;
     
     % read number of states and inputs of the entire automaton
-    sysDim = pHA.numStates;
-    sysInput = pHA.numInputs;
+    sysDim = pHA.dim;
+    sysInput = pHA.nrOfInputs;
     
     % Instantiate matrices in full state dimension
     if id
@@ -220,14 +220,14 @@ function resetResult = aux_projectNonlinearReset(pHA,resetStruct,compIdx,locID,i
 % global inputs); additionally, we update all derivatives up to third order
 
     % enlist state and input variables
-    x = sym('x',[pHA.numStates,1]);
-    u = sym('u',[pHA.numInputs,1]);
+    x = sym('x',[pHA.dim,1]);
+    u = sym('u',[pHA.nrOfInputs,1]);
     
     % initialize reset function
     if id
         f = x;
     else
-        f = sym(zeros(pHA.numStates,1));
+        f = sym(zeros(pHA.dim,1));
     end
 
     % read out state binds
@@ -277,7 +277,7 @@ function resetResult = aux_projectNonlinearReset(pHA,resetStruct,compIdx,locID,i
     J_han = matlabFunction(J,'Vars',{x_aug});
     
     % compute Hessian
-    Q = cell(pHA.numStates,1);
+    Q = cell(pHA.dim,1);
     % skip all dimensions that do not occur in state binds (= all-zero)
     for i=1:length(statebinds)
         temp = hessian(f(statebinds(i)),x_aug);
@@ -285,10 +285,10 @@ function resetResult = aux_projectNonlinearReset(pHA,resetStruct,compIdx,locID,i
     end
     
     % compute third-order tensor
-    T = cell(pHA.numStates,pHA.numStates+pHA.numInputs);
+    T = cell(pHA.dim,pHA.dim+pHA.nrOfInputs);
     % skip all rows in Jacobian that do not occur in state binds
     for i = 1:length(statebinds)
-        for j = 1:pHA.numStates+pHA.numInputs
+        for j = 1:pHA.dim+pHA.nrOfInputs
             temp = hessian(J(statebinds(i),j),x_aug);
             if any(any(temp~=0))
                 T{statebinds(i),j} = matlabFunction(temp,'Vars',{x_aug});
@@ -303,9 +303,9 @@ function resetResult = aux_projectNonlinearReset(pHA,resetStruct,compIdx,locID,i
     resetResult.T = T;
 
     % properties
-    resetResult.stateDim = pHA.numStates;
-    resetResult.inputDim = pHA.numInputs;
-    if pHA.numInputs > 0
+    resetResult.stateDim = pHA.dim;
+    resetResult.inputDim = pHA.nrOfInputs;
+    if pHA.nrOfInputs > 0
         resetResult.hasInput = true;
     else
         resetResult.hasInput = false;

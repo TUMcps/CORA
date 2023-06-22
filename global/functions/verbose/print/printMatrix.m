@@ -8,6 +8,7 @@ function printMatrix(M,varargin)
 % Inputs:
 %    M - matrix
 %    accuracy - (optional) floating-point precision
+%    clearLine - (optional) whether to finish with '\n'
 %
 % Outputs:
 %    -
@@ -25,10 +26,16 @@ function printMatrix(M,varargin)
 
 %------------- BEGIN CODE --------------
 
+% parse input
+if nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs',2));
+end
+
 % determine accuracy
-% default accuracy
-accuracy = '%4.3f%s';
-if nargin == 2
+if nargin < 2
+    % default accuracy
+    accuracy = '%4.3f%s';
+else
     % numerical value
     if isnumeric(varargin{1})
         accuracy = varargin{1};
@@ -36,32 +43,57 @@ if nargin == 2
     elseif ischar(varargin{1})
         if strcmp(varargin{1},'high')
             accuracy = '%16.16f%s';
+        else
+            accuracy = varargin{1};
         end
     end
-elseif nargin > 2
-    throw(CORAerror('CORA:tooManyInputArgs',2));
 end
 
+% determine clearLine
+if nargin < 3
+    clearLine = true;
+else
+    clearLine = varargin{2};
+end
+
+% scalar case
+if isscalar(M)
+    fprintf(accuracy, M);
+    if clearLine
+        fprintf('\n')
+    end
+    return
+end
+
+numRows = size(M,1);
+numCols = size(M,2);
+
 % write first element
-fprintf('%s\n','[ ...');
+fprintf('[ ');
+if numRows > 1
+    fprintf('...\n ')
+end
 
 %write each row
-for iRow=1:(length(M(:,1)))
-    if (length(M(1,:))-1)>0
-        for iCol=1:(length(M(1,:))-1)
-            %write in workspace
-            fprintf(accuracy, M(iRow,iCol), ', ');
+for iRow=1:numRows
+    for iCol=1:numCols
+        %write in workspace
+        fprintf(accuracy, M(iRow,iCol));
+
+        if iCol < numCols
+            fprintf(',')
         end
-    else
-        iCol = 0; %for vectors
+        fprintf(' ')
     end
-    if iRow<length(M(:,1))
-        %write in workspace
-        fprintf([accuracy,'\n'], M(iRow,iCol+1), '; ...');
-    else
-        %write in workspace
-        fprintf([accuracy,'\n\n'], M(iRow,iCol+1), '];');   
+
+    if numRows > 1 || iRow<numRows
+        %write new line
+        fprintf('; ...\n ')
     end
+end
+fprintf(']')
+if clearLine
+    fprintf('\n')
 end
 
 %------------- END OF CODE --------------

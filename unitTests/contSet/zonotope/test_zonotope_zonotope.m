@@ -53,6 +53,8 @@ if ~compareMatrices(center(Z),Zmat(:,1)) ...
 end
 
 % wrong initializations
+if CHECKS_ENABLED
+
 c_plus1 = [4; 6; -2; 3];
 G_plus1 = [2 -4 -6 3 5; 1 -7 3 -5 2; 0 4 -7 3 2; 2 0 5 -4 2];
 randLogicals = randn(size(G)) > 0;
@@ -93,5 +95,7 @@ try
     Z = zonotope(c,G,G); % <- should throw error here
     res = false;
 end 
+
+end
 
 %------------- END OF CODE --------------

@@ -46,40 +46,75 @@ classdef ellipsoid < contSet
 %               02-May-2020 (MW, add property validation)
 %               29-Mar-2021 (MA, faster eigenvalue computation)
 %               14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision:---
+% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
 
 properties (SetAccess = protected, GetAccess = public)
-    Q;
-    q;
-    TOL;
+    Q;      % shape matrix
+    q;      % center
+    TOL;    % tolerance
 end
    
 methods
 
     function obj = ellipsoid(varargin)
-        if nargin > 3
-            % too many input arguments
-            throw(CORAerror('CORA:tooManyInputArgs',3));
-        end
-        
-        % parse input
+
+        % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'ellipsoid')
-            % (copy constructor)
-            obj = varargin{1};
-            return
-        end
-        
-        if nargin == 0
-            Q = [];
-        else
-            Q = varargin{1};
-            varargin = varargin(2:end);
+            obj = varargin{1}; return
         end
 
-        [q, TOL] = setDefaultValues( ...
-            {zeros(size(Q,1),1), 1e-6}, varargin);
+        % 2. parse input arguments: varargin -> vars
+        [Q,q,TOL] = aux_parseInputArgs(varargin{:});
+
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(Q,q,TOL,nargin);
+
+        % 4. assign properties
+        obj.Q = Q;
+        obj.q = q;
+        obj.TOL = TOL;
+
+    end
+end
+
+methods (Static=true)
+    E = generateRandom(varargin)
+    E = enclosePoints(points,method) % enclose point cloud with ellipsoid
+    E = array(varargin)
+end
+
+end
+
+% Auxiliary Functions -----------------------------------------------------
+
+function [Q,q,TOL] = aux_parseInputArgs(varargin)
+% parse input arguments from user and assign to variables
+
+    if nargin > 3
+        % too many input arguments
+        throw(CORAerror('CORA:tooManyInputArgs',3));
+    end
+
+    % no input arguments
+    if nargin == 0
+        Q = []; q = []; TOL = 1e-6;
+        return
+    end
+
+    % assign shape matrix
+    Q = varargin{1};
+    % set default values
+    [q,TOL] = setDefaultValues({zeros(size(Q,1),1),1e-6},varargin(2:end));
+
+end
+
+function aux_checkInputArgs(Q,q,TOL,n_in)
+% check correctness of input arguments
+
+    % only check if macro set to true
+    if CHECKS_ENABLED && n_in > 0
 
         inputArgsCheck({ ...
             {Q, 'att', 'numeric', {'finite', 'matrix'}}; ...
@@ -98,18 +133,8 @@ methods
                 'Q needs to be positive semidefinite/symmetric.'));
         end
 
-        % assign properties
-        obj.Q = Q;
-        obj.q = q;
-        obj.TOL = TOL;
     end
-end
-
-methods (Static=true)
-    E = generateRandom(varargin)
-    E = enclosePoints(points,method) % enclose point cloud with ellipsoid
-    E = array(varargin)
-end
 
 end
+
 %------------- END OF CODE --------------

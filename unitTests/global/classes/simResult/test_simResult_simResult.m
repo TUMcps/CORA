@@ -82,6 +82,7 @@ catch
 end
 
 % check wrong instantiations
+if CHECKS_ENABLED
 
 % empty time
 try
@@ -139,6 +140,8 @@ end
 try
     simRes = simResult(x,t,{},y,a,x);
     res = false; return
+end
+
 end
 
 %------------- END OF CODE --------------

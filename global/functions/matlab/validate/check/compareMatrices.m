@@ -17,6 +17,7 @@ function res = compareMatrices(M1,M2,varargin)
 %    flag - (optional) type of comparison
 %           'equal': M1 has to be exactly M2
 %           'subset': M1 only has to be a subset of M2
+%           default: 'equal'
 %    ordered - (optional) true/false, whether columns have to be in order
 %           default: false
 %

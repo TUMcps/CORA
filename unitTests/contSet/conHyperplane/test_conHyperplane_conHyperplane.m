@@ -74,6 +74,8 @@ end
 
 
 % wrong initializations
+if CHECKS_ENABLED
+
 a_plus1 = [-0.5; -1; 0.1; 3];
 b_vec = [-1; 1];
 hs_plus1 = halfspace(a_plus1,b);
@@ -119,6 +121,8 @@ end
 try
     hyp = conHyperplane(a,b,C,d,d); % <- should throw error here
     res = false;
+end
+
 end
 
 %------------- END OF CODE --------------

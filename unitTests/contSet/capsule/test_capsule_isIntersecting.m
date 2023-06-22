@@ -24,8 +24,9 @@ function res = test_capsule_isIntersecting
 
 %------------- BEGIN CODE --------------
 
+res = [];
+
 % 1. Same center, generator, different radius
-res(1) = true;
 
 % define capsule
 c = [2; -1; 1];
@@ -42,13 +43,11 @@ bigInSmall = isIntersecting(C_small,C_big);
 smallInBig = isIntersecting(C_big,C_small);
 
 % check for correctness
-if ~bigInSmall || ~smallInBig
-    res(1) = false;
-end
+res(end+1,1) = bigInSmall;
+res(end+1,1) = smallInBig;
 
 
 % 2. centers too far away from one another
-res(2) = true;
 
 % center far away
 c_plus = 10*c;
@@ -66,13 +65,11 @@ minusInPlus = isIntersecting(C_plus,C_minus);
 plusInMinus = isIntersecting(C_minus,C_plus);
 
 % check for correctness
-if minusInPlus || plusInMinus
-    res(2) = false;
-end
+res(end+1,1) = ~minusInPlus;
+res(end+1,1) = ~plusInMinus;
 
 
 % 3. capsules overlapping
-res(3) = true;
 
 % different generators
 g1 = g;
@@ -87,13 +84,11 @@ C2inC1 = isIntersecting(C1,C2);
 C1inC2 = isIntersecting(C2,C1);
 
 % check for correctness
-if ~C2inC1 || ~C1inC2
-    res(3) = false;
-end
+res(end+1,1) = C2inC1;
+res(end+1,1) = C1inC2;
 
 
 % 4. capsules touching in exactly one point
-res(4) = true;
 
 % same radius
 r = 3;
@@ -113,21 +108,16 @@ C2inC1 = isIntersecting(C1,C2);
 C1inC2 = isIntersecting(C2,C1);
 
 % check for correctness
-if ~C2inC1 || ~C1inC2
-    res(4) = false;
-end
+res(end+1,1) = C2inC1;
+res(end+1,1) = C1inC2;
     
 
 % 5. dimension mismatch
-res(5) = true;
 C1 = capsule(1,1,1);
 C2 = capsule(rand(2,1),rand(2,1),1);
 try
     isIntersecting(C1,C2);
-catch ME
-    if ~strcmp(ME.identifier,'CORA:dimensionMismatch')
-        res(5) = false;
-    end
+    res = false;
 end
 
 % 6. empty set: rewrite using emptySet class

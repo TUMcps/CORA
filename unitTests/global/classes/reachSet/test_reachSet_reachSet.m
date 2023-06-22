@@ -70,6 +70,8 @@ R = reachSet([],timeInt,parent);
 R = reachSet(timePoint,[]);
 R = reachSet(timePoint,[],parent);
 
+if CHECKS_ENABLED
+
 % wrong instantiations: non-matching lengths, negative values, too many
 % input arguments
 try
@@ -91,6 +93,8 @@ end
 try
     R = reachSet(timePoint,timeInt,parent,loc,loc);
     res = false;
+end
+
 end
 
 %------------- END OF CODE --------------

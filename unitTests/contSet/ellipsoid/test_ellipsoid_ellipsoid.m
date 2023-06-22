@@ -51,6 +51,9 @@ for i=1:length(E_c)
     end
     
     
+    % wrong instantiations
+    if CHECKS_ENABLED
+
     % shape matrix non-psd (only n > 1)
     if n > 1
         try
@@ -89,6 +92,8 @@ for i=1:length(E_c)
     try
         E = ellipsoid(Q,q,eps,q); % <- should throw error here
         res = false; break;
+    end
+
     end
     
 end
