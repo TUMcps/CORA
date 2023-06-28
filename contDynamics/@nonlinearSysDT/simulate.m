@@ -46,6 +46,7 @@ function [t,x,ind,y] = simulate(obj,params)
 %               24-March-2020 (NK)
 %               08-May-2020 (MW, update interface)
 %               25-March-2021 (MA, initial state and time removed)
+%               22-June-2023 (LL, keep initial state and time, add output)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -53,9 +54,15 @@ function [t,x,ind,y] = simulate(obj,params)
 if nargout == 3
     ind = [];
 end
+comp_y = false;
 if nargout == 4
-    warning("Output trajectories not supported for class nonlinearSysDT!");
-	y = [];
+    ind = [];
+    %warning("Output trajectories not supported for class nonlinearSysDT!");
+    if ~isempty(obj.out_mFile)
+        comp_y = true;
+    else
+    	y = [];
+    end
 end
 
 % parse input arguments
@@ -76,7 +83,8 @@ change = false;
 
 if size(params.u,2) ~= 1
     change = true;
-    if size(params.u,2) ~= length(t)-1
+    if (~comp_y && size(params.u,2) ~= length(t)-1) || ...
+            (comp_y && size(params.u,2) ~= length(t))
         throw(CORAerror('CORA:specialError',...
             'Input signal "params.u" has the wrong dimension!'));
     end
@@ -86,20 +94,27 @@ end
 x = zeros(length(t),length(params.x0));
 x(1,:) = params.x0';
 
+if comp_y
+    y = zeros(length(t),obj.nrOfOutputs);
+    y(1,:) = obj.out_mFile(x(1,:)',params.u(:,1))';
+end
+
 % loop over all time steps
 for i = 1:length(t)-1
 
     if change
         temp = obj.mFile(x(i,:)',params.u(:,i));
+        if comp_y
+            y(i+1,:) = obj.out_mFile(temp,params.u(:,i+1))';
+        end
     else
         temp = obj.mFile(x(i,:)',params.u);
+        if comp_y
+            y(i+1,:) = obj.out_mFile(temp,params.u)';
+        end
     end
 
     x(i+1,:) = temp';
 end
-
-% remove initial state and time
-t(1,:) = [];
-x(1,:) = [];
 
 %------------- END OF CODE --------------

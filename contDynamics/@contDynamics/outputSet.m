@@ -27,6 +27,7 @@ function Y = outputSet(obj,options,R)
 % Author:       Mark Wetzlinger
 % Written:      19-November-2022
 % Last update:  07-December-2022 (MW, allow to skip output set)
+%               23-June-2023 (LL, consider inputs in first-order term)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -103,9 +104,10 @@ I_u = interval(U);
 I = cartProd(I_x,I_u);
 
 % evaluate reset function and Jacobian at expansion point
+D_lin = 0;
 if isa(obj,'nonlinearSys') || isa(obj,'nonlinearSysDT')
     zerothorder = obj.out_mFile(p_x,p_u);
-    J = obj.out_jacobian(p_x,p_u);
+    [J,D_lin] = obj.out_jacobian(p_x,p_u);
 elseif isa(obj,'nonlinParamSys')
     if isa(options.paramInt,'interval')
         % ...copied from nonlinParamSys/linearize
@@ -135,7 +137,7 @@ elseif isa(obj,'nonlinParamSys')
 end
 
 % first-order
-firstorder = J * (R + (-p_x));
+firstorder = J * (R + (-p_x)) + D_lin * (U + (-p_u));
 
 if all_linear
     % only affine map

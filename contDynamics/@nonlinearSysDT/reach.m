@@ -25,6 +25,7 @@ function R = reach(obj,params,options,varargin)
 % Written:      21-August-2012
 % Last update:  29-January-2018
 %               19-November-2022 (MW, integrate output equation)
+%               10-May-2023 (LL, integrate uTrans in U)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -53,7 +54,7 @@ for i = 1:steps
 
     % if a trajectory should be tracked
     if isfield(options,'uTransVec')
-        options.uTrans = options.uTransVec(:,i);
+        options.U = options.U + options.uTransVec(:,i);
     end  
 
     options.i = i;
