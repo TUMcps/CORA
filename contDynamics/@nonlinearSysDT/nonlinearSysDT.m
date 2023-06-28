@@ -50,6 +50,7 @@ classdef nonlinearSysDT < contDynamics
 %               02-February-2021 (MW, add switching between tensor files)
 %               25-March-2021 (MA, measurement matrix added)
 %               18-November-2022 (MW, add output equation)
+%               26-June-2023 (LL, support of 2D out_isLinear-array)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -81,9 +82,9 @@ methods
     function obj = nonlinearSysDT(varargin)
 
         % 1. copy constructor: not allowed due to obj@contDynamics below
-%         if nargin == 1 && isa(varargin{1},'nonlinearSysDT')
-%             obj = varargin{1}; return
-%         end
+        %         if nargin == 1 && isa(varargin{1},'nonlinearSysDT')
+        %             obj = varargin{1}; return
+        %         end
 
         % 2. parse input arguments: varargin -> vars
         [name,fun,dt,states,inputs,out_fun,outputs] = aux_parseInputArgs(varargin{:});
@@ -100,6 +101,7 @@ methods
         
         % 6a. assign object properties: dynamic equation
         obj.dt = dt;
+        
         obj.mFile = fun;
         obj.jacobian = eval(['@jacobian_',name]);
         obj.hessian = eval(['@hessianTensor_' obj.name]);
@@ -108,7 +110,7 @@ methods
         % 6b. assign object properties: output equation
         obj.out_mFile = out_fun;
         obj.out_isLinear = out_isLinear;
-        if all(out_isLinear) && rewriteAsC
+        if all(all(out_isLinear)) && rewriteAsC
             C = aux_rewriteOutFunAsMatrix(out_fun,states,outputs);
         end
         obj.C = C;

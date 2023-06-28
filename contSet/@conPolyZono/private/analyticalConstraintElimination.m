@@ -348,7 +348,7 @@ function [val,indices] = updateValues(val,indices,val_,ind_)
            valNew = [];
            
            for i = 1:size(val_,2)
-               index = find(all(bsxfun(@eq, val_(ind2,i), val(ind1,:)), 1));  
+               index = find(all(bsxfun(@withinTol, val_(ind2,i), val(ind1,:)), 1));  
                for j = 1:length(index)
                     valNew = [valNew, [val(:,index(j));val_(ind2rem,i)]];
                end

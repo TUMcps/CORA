@@ -60,3 +60,13 @@ From there, you can open MATLAB as you would on your locally.
 Note: If you are using an ssh connection, you need to forward the port.
 
 	ssh -L local_port:destination_server_ip:remote_port ssh_server_hostname
+
+## Run CORA test suite in docker
+
+For example, to run the CORA test suite within docker, open `./cora/unitTests/ci/` in the command line and execute the following commands:
+
+	# build image once
+	docker image build . -t cora-ci
+	
+	# run test suite
+	docker run -v "%cd%/../..":/code -e MLM_LICENSE_FILE=28000@mlm1.rbg.tum.de --rm cora-ci -batch "cd /code; addpath(genpath('.')); runTestSuite"

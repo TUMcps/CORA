@@ -4,7 +4,7 @@
 # define variables
 variables:
   DO_CI: "true"
-  RUN_ALL_TESTS: "false"
+  RUN_ALL_TESTS: "false" # or end commit message with '--ci-run-all'
 
 # define base settings
 .base-image:
@@ -85,7 +85,15 @@ runTestSuiteShort:
   stage: runTestSuite-all
   extends: .base-run
   rules: 
-    - if: $DO_CI == "true" && ($RUN_ALL_TESTS == "true" || $CI_COMMIT_BRANCH == "PUBLIC" || $CI_COMMIT_BRANCH == "public-bugfix" || $CI_COMMIT_BRANCH == "devgeneral" || $CI_COMMIT_BRANCH == "nn-main")
+    # run all tests if commit message contains '--ci-run-all' or always on specific branches
+    - if: $DO_CI == "true" && 
+            ($CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-all(.|\r|\n)*/
+                || $RUN_ALL_TESTS == "true" 
+                || $CI_COMMIT_BRANCH == "PUBLIC" 
+                || $CI_COMMIT_BRANCH == "public-bugfix" 
+                || $CI_COMMIT_BRANCH == "devgeneral" 
+                || $CI_COMMIT_BRANCH == "nn-main"
+            )
       when: always
 
 # run long duration tests
