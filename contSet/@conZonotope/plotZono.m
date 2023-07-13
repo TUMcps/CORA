@@ -36,46 +36,60 @@ function han = plotZono(cZ,varargin)
 % Author:       Niklas Kochdumper
 % Written:      11-May-2018
 % Last update:  ---
-% Last revision:---
+% Last revision:12-July-2023 (TL, restructure)
 
 %------------- BEGIN CODE --------------
 
-% parse input arguments
-[dims,plotOptZ,plotOptCon] = setDefaultValues(...
-    {[1,2],'b',{'FaceColor','r'}},varargin);
+% 1. parse input
+[cZ,dims,plotOptZ,plotOptCon] = aux_parseInput(cZ,varargin{:});
 
-% check input arguments
-inputArgsCheck({{cZ,'att','conZonotope'};
-                {dims,'att','numeric','nonnan'};
-                {plotOptZ,'att','cell'};
-                {plotOptCon,'att','cell'}});
+% 2. preprocess
+Z = aux_preprocess(cZ);
 
-% % default settings
-% dims = [1,2];
-% plotOptZ = {'b'};
-% plotOptCon = {'FaceColor','r'};
-% 
-% % parse input arguments
-% if nargin >= 2 && ~isempty(varargin{1})
-% 	dims = varargin{1}; 
-% end
-% if nargin >= 3 && ~isempty(varargin{2})
-% 	plotOptZ = varargin{2}; 
-% end
-% if nargin >= 4 && ~isempty(varargin{3})
-% 	plotOptCon = varargin{3}; 
-% end
+% 3. plot n-dimensional set
+han = aux_plotNd(cZ,Z,dims,plotOptZ,plotOptCon);
 
-% plot the original zonotope
-Z = zonotope(cZ.Z);
-plot(Z,dims,plotOptZ{:});
-
-% plot the constrained zonotope and return handle
-hold on;
-han = plot(cZ,dims,plotOptCon{:});
-
+% 4. clean han
 if nargout == 0
     clear han;
+end
+
+end
+
+% Auxiliary functions -----------------------------------------------------
+
+function [cZ,dims,plotOptZ,plotOptCon] = aux_parseInput(cZ,varargin)
+    % parse input arguments
+    [dims,plotOptZ,plotOptCon] = setDefaultValues(...
+        {[1,2],'b',{'FaceColor','r'}},varargin);
+    
+    % check input arguments
+    inputArgsCheck({{cZ,'att','conZonotope'};
+                    {dims,'att','numeric','nonnan'};
+                    {plotOptZ,'att','cell'};
+                    {plotOptCon,'att','cell'}});
+end
+
+function Z = aux_preprocess(cZ)
+    % preprocess
+    Z = zonotope(cZ.Z);
+end
+
+function han = aux_plotNd(cZ,Z,dims,plotOptZ,plotOptCon)
+    % get hold status 
+    holdStatus = ishold;
+    
+    % plot the original zonotope
+    plot(Z,dims,plotOptZ{:});
+    
+    % set hold to on for plot with constraints
+    hold on;
+    
+    % plot the constrained zonotope and return handle
+    han = plot(cZ,dims,plotOptCon{:});
+    
+    % restore hold status
+    hold(holdStatus)
 end
 
 %------------- END OF CODE --------------

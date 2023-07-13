@@ -24,33 +24,60 @@ function han = plot(I,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
+% Author:       Matthias Althoff, Tobias Ladner
 % Written:      31-July-2016
-% Last update:  ---
-% Last revision:---
+% Last update:  12-July-2023 (TL, use vertices)
+% Last revision:12-July-2023 (TL, restructure)
 
 %------------- BEGIN CODE --------------
 
-%plot interval via conversion to zonotope
-if nargin == 1
-    han = plot(zonotope(I));
-else
-    dims = varargin{1};
-    % we need to project the interval first since intervals with -Inf/Inf
-    % values exist which result in zonotopes with NaN centers...
-    Z = zonotope(project(I,dims));
+% 1. parse input
+[I,dims,NVpairs] = aux_parseInput(I,varargin{:});
 
-    if length(dims) == 1
-        han = plot(Z,1,varargin{2:end});
-    elseif length(dims) == 2
-        han = plot(Z,[1,2],varargin{2:end});
-    elseif length(dims) == 3
-        han = plot(Z,[1,2,3],varargin{2:end});
-    end
-end
+% 2. preprocess
+V = aux_preprocess(I,dims);
 
+% 3. plot
+han = plotPolygon(V,'ConvHull',true,NVpairs{:});
+
+% 4. clear han
 if nargout == 0
     clear han;
+end
+
+end
+
+% Auxiliary functions -----------------------------------------------------
+
+function [I,dims,NVpairs] = aux_parseInput(I,varargin)
+    % parse input arguments
+    dims = setDefaultValues({[1,2]},varargin);
+    
+    % check input arguments
+    inputArgsCheck({{I,'att','interval'};
+                    {dims,'att','numeric',{'nonnan','vector','positive','integer'}}});
+
+    % check dimension
+    if length(dims) < 1
+        throw(CORAerror('CORA:plotProperties',1));
+    elseif length(dims) > 3
+        throw(CORAerror('CORA:plotProperties',3));
+    end
+    
+    % read additional name-value pairs
+    NVpairs = readPlotOptions(varargin(2:end));
+end
+
+function V = aux_preprocess(I,dims)
+    % preprocess
+
+    % project
+    I = project(I,dims);
+
+    % compute vertices
+    V = vertices(I);
+
+    % infinity values in V will be considered in plotPolygon    
 end
 
 %------------- END OF CODE --------------

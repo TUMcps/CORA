@@ -110,7 +110,7 @@ for i = 1:polyOrd
     G1(:, h:h+dh-1) = kron(coef1, pZ.G(:, expi));
     G2(:, h:h+dh-1) = kron(coef2, pZ.G(:, expi));
 
-    Eout(:, h:h+dh-1) = kron(ones(1, i+1), expMat(:, expi));
+    Eout(:, h:h+dh-1) = repmat(expMat(:, expi),1,i+1);
     Eout(ind, h:h+dh-1) = kron(0:i, ones(1, sum(expi))); % fix a_ind
 
     h = h + dh;

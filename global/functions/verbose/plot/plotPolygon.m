@@ -27,6 +27,8 @@ function han = plotPolygon(V,varargin)
 % Written:      05-May-2020
 % Last update:  15-July-2020 (MW, merge with plotFilledPolygon)
 %               05-April-2023 (TL: generalized function)
+%               11-July-2023 (TL: bug fix sets with holes and FaceColor)
+%               12-July-2023 (TL: cut off infinity values at axis limits)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -44,6 +46,9 @@ end
 
 % read positions
 [NVpairs, V] = aux_positionAtXYZ(V, NVpairs);
+
+% correct infinity values
+V = aux_cutInfinityAtLimits(V);
 
 % readout 'FaceColor' to decide plot/fill call where necessary
 [NVpairs,facecolor] = readNameValuePair(NVpairs,'FaceColor');
@@ -81,11 +86,11 @@ elseif size(V, 2) == 1
 
     % FaceColor and marker
     if hasFaceColor
-        marker = '.';
-        NVpairs{end+1} = 'MarkerFaceColor';
-        NVpairs{end+1} = facecolor;
+        % filled point
+        NVpairs = [NVpairs,{'Marker','.','MarkerFaceColor',facecolor}];
     else
-        marker = 'o';
+        % open circle
+        NVpairs = [NVpairs,{'Marker','o'}];
     end
 
     if size(V, 1) == 2 
@@ -105,23 +110,42 @@ elseif size(V, 1) == 2
         V = aux_convHull(V);
     end
 
-    if ~hasFaceColor
-        % axis are reset even if they were set manually. Correct afterwards
-        xmode = xlim("mode");
-        x = xlim;
-        ymode = ylim("mode");
-        y = ylim;
+    % axis are reset even if they were set manually; correct afterwards
+    xmode = xlim("mode");
+    x = xlim;
+    ymode = ylim("mode");
+    y = ylim;
 
+    if ~hasFaceColor
+        % make line plot
         han = plot(V(1,:), V(2,:), NVpairs{:});
 
-        if xmode == "manual"
-            xlim(x);
-        end
-        if ymode == "manual"
-            ylim(y);
-        end
     else
+        % make filled plot
+
+        % for the set with multiple regions/holes to fill correctly,
+        % we need to remove the nan values
+        idxNan = any(isnan(V),1);
+        if nnz(idxNan) > 0
+            % store start point of each region
+            regStart = V(:,idxNan(2:end));
+
+            % remove nan value
+            V(:,any(isnan(V))) = [];
+            
+            % jump back to starting point V(:,1) to avoid line fragments
+            V = [V,fliplr(regStart)];            
+        end
+
         han = fill(V(1,:), V(2,:), facecolor, NVpairs{:});
+    end
+
+    % reset axis mode
+    if xmode == "manual"
+        xlim(x);
+    end
+    if ymode == "manual"
+        ylim(y);
     end
 
 elseif size(V, 1) == 3
@@ -180,23 +204,13 @@ function [NVpairs, V] = aux_positionAtXYZ(V, NVpairs)
 
     % add respective dimensions to V
     if ~isempty(xpos)
-        V = [ 
-            xpos * ones(1, n);
-            V
-        ];
+        V = [xpos * ones(1, n); V];
     end
     if ~isempty(ypos)
-        V = [ 
-            V(1, :);
-            ypos * ones(1, n);
-            V(2:end, :);
-        ];
+        V = [V(1, :); ypos * ones(1, n); V(2:end, :)];
     end
     if ~isempty(zpos)
-        V = [ 
-            V
-            zpos * ones(1, n);
-        ];
+        V = [V; zpos * ones(1, n)];
     end
 
     % check dimensions to plot
@@ -209,6 +223,31 @@ function [NVpairs, V] = aux_positionAtXYZ(V, NVpairs)
         throw(CORAerror('CORA:specialError', "Too many dimensions to plot." + ...
             "Specified 'dims', 'XPos', 'YPos', and 'ZPos' must not exceed 3!"))
     end 
+end
+
+function V = aux_cutInfinityAtLimits(V)
+    % infinity values are cut off at axis limits
+    % or smallest/largest value of V of respective dimension,
+    % whichever is further 'outside'
+
+    if any(isinf(V),'all')
+        % x-axis
+        xLim = xlim();
+        V(1,V(1,:) == -inf) = min([V(1,V(1,:) ~= -inf), xLim(1)]);
+        V(1,V(1,:) == inf) = max([V(1,V(1,:) ~= inf), xLim(2)]);
+
+        % y-axis
+        yLim = ylim();
+        V(2,V(2,:) == -inf) = min([V(2,V(2,:) ~= -inf), yLim(1)]);
+        V(2,V(2,:) == inf) = max([V(2,V(2,:) ~= inf), yLim(2)]);
+    
+        if size(V,1) == 3
+            % z-axis
+            zLim = zlim();
+            V(3,V(3,:) == -inf) = min([V(3,V(3,:) ~= -inf), zLim(1)]);
+            V(3,V(3,:) == inf) = max([V(3,V(3,:) ~= inf), zLim(2)]);
+        end
+    end
 end
 
 function aux_show3dAxis()
@@ -233,8 +272,8 @@ function V = aux_convHull(V)
         ind = convhull(V(1,:),V(2,:));
         V = V(:,ind);
     catch
-        if size(V, 2) == 2
-            % plot line, convhull fails if only 2 points are specified
+        if rank(V,1) <= 2
+            % plot line, convhull fails if only collinear points are specified
         else
             throw(CORAerror('CORA:specialError','Plotting the set failed while constructing the convex hull.'));
         end

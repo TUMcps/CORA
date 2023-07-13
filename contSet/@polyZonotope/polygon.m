@@ -38,6 +38,11 @@ function pgon = polygon(pZ,varargin)
     inputArgsCheck({{pZ,'att','polyZonotope'};
                     {splits,'att','numeric','nonnan'}});
     
+    % quick return if pZ is empty
+    if isempty(pZ)
+        pgon = polygon(); return
+    end
+
     % check if polynomial zonotope is two dimensional
     if dim(pZ) ~= 2
         throw(CORAerror('CORA:noExactAlg',pZ,...
@@ -70,7 +75,7 @@ function pgon = polygon(pZ,varargin)
     % polyshape objects (Matlab built-in) and compute the union
     warOrig = warning;
     warning('off','all');
-    pgon = [];
+    pgon = polygon();
 
     for i = 1:length(pZsplit)
 
@@ -83,11 +88,53 @@ function pgon = polygon(pZ,varargin)
         % transform to 2D polytope
         pgonTemp = polygon(V(1,:),V(2,:));
 
+        if pgonTemp.set.NumRegions == 0
+            % slightly enlarge if it's only a point or a line
+            % as polyshape optimizes such polygons to an empty object
+            pshapeLast = aux_enlargePoint(V(:,1));
+            pgonTemp = polygon(pshapeLast);
+            for j=2:size(V,2)
+                % enlarge next point to be a polygon
+                pshapeNext = aux_enlargePoint(V(:,j));
+
+                % create next line segment
+                pgonLine = polygon(convhull(union(pshapeLast, pshapeNext)));
+
+                % combine with previous line segments
+                pgonTemp = pgonTemp | pgonLine;
+                pshapeLast = pshapeNext;
+            end
+        end
+
         % calculate union with previous sets
         pgon = pgonTemp | pgon; 
+
+        if pgon.set.NumRegions >= 2
+            % might be due to numeric instability
+            % enlargen polygon slightly
+            setBuffed = polybuffer(polyUnion, 1e-8);
+            if setBuffed.NumRegions < pgon.set.NumRegions
+                pgon = polygon(setBuffed);
+            end
+        end
+
+        if pgon.set.NumRegions == 0
+            % this should not happen as we enlarge the polyhon properly
+            throw(CORAerror("CORA:specialError", ...
+                'Over-approximation not guaranteed. Polygon is empty, most likely due to numerical instabilities.'))
+        end
     end
     
     warning(warOrig);
+end
+
+% Auxiliary functions -----------------------------------------------------
+
+function pshape = aux_enlargePoint(x)
+    % x column vector
+    % add points surrounding x 
+    V = x' + 1e-7 * [1 1; 1 -1; -1 -1; -1 1];
+    pshape = polyshape(V);
 end
 
 %------------- END OF CODE --------------

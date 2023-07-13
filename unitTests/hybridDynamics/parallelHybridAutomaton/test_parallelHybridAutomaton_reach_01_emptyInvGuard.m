@@ -125,7 +125,6 @@ R_HA = reach(HA1,paramsHA,options);
 % Visualization -----------------------------------------------------------
 % just for debugging purposes
 
-% close all;
 % figure;
 % projDims = {[1,2],[3,4]};
 % for p=1:2

@@ -21,6 +21,7 @@ function res = vertices(S,varargin)
 % Author:       Mark Wetzlinger
 % Written:      18-August-2022
 % Last update:  23-November-2022 (MW, add classname as input argument)
+%               12-July-2023 (TL, corrected dimension of empty vertices)
 % Last revision:27-March-2023 (MW, restructure relation to subclass)
 
 %------------- BEGIN CODE --------------
@@ -42,12 +43,21 @@ inputArgsCheck({{S,'att','contSet'};
 % call subclass method
 try
     res = vertices_(S,method);
+
 catch ME
-    % empty set case
+    % catch empty set case
     if isempty(S)
-        res = []; return
+        res = [];
+    else
+        rethrow(ME);
     end
-    rethrow(ME);
+end
+
+if isempty(res)
+    % create res with proper dimensions
+    res = zeros(dim(S),0);
+end
+    
 end
 
 %------------- END OF CODE --------------

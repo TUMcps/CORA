@@ -38,6 +38,8 @@ spec3 = specification(set2,'safeSet');
 spec12 = [spec1;spec2];
 spec13 = [spec1;spec3];
 
+figure;
+
 try
     % single specification, unsafe
     plotOverTime(spec1);
@@ -53,10 +55,10 @@ try
     % two specifications, only one with time
     plotOverTime(spec13);
 
-    close all;
+    close;
 
-catch
-    close all;
+catch ME 
+    close;
     res = false;
 end
 

@@ -33,6 +33,8 @@ list = {set,set2};
 time = interval(2,4);
 loc = [1 2];
 
+figure;
+
 try
     % unsafe set
     spec = specification(set,'unsafeSet');
@@ -52,6 +54,10 @@ try
     spec = specification(set2,'invariant');
     plot(spec);
 
+    % mixed
+    spec = [specification(set,'safeSet'),specification(set,'safeSet'),specification(set2,'unsafeSet')];
+    plot(spec)
+
     % with time
     spec = specification(set,'safeSet',time);
     plot(spec);
@@ -60,10 +66,10 @@ try
     spec = specification(set,'safeSet',time,loc);
     plot(spec);
 
-    close all;
+    close;
 
-catch
-    close all;
+catch ME
+    close;
     res = false;
 end
 

@@ -90,6 +90,18 @@ try
     resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'subset',true);
     % test color
     resvec(end+1) = isequal(colorOrder(1,:), ax.Children(1).Color);
+
+    % test line polyZonotope
+    plot(polyZonotope([1;1], [1; 1]))
+    ax = gca();
+    resvec(end+1) = compareMatrices([0 2 0; 0 2 0], ...
+        [ax.Children(1).XData; ax.Children(1).YData], 1e-8,"equal");
+
+    % test almost line polyZonotope
+    plot(polyZonotope([1;1], [1 0; 0 0.000000000000001]))
+    ax = gca();
+    resvec(end+1) = compareMatrices([0 2 2 0 0; 1 1 1 1 1], ...
+        [ax.Children(1).XData; ax.Children(1).YData], 1e-8,"equal");
     
     % close figure
     close;

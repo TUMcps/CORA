@@ -26,6 +26,8 @@ function res = test_simResult_plotTimeStep
 % assume true
 res = true;
 
+figure;
+
 % empty simResult
 simRes = simResult();
 try
@@ -64,10 +66,7 @@ try
     plotTimeStep(simRes);
     plotTimeStep(simRes,'r--');
 
-    close all;
-
 catch
-    close all;
     res = false;
 end
 
@@ -95,11 +94,11 @@ try
     plotTimeStep(simRes);
     plotTimeStep(simRes,'r');
 
-    close all;
-
 catch
-    close all;
     res = false;
 end
+
+% close figure
+close
 
 %------------- END OF CODE --------------

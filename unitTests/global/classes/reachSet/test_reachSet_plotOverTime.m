@@ -26,8 +26,12 @@ function res = test_reachSet_plotOverTime
 % init result
 res = true;
 
+% create fogire
+figure;
+
 % empty reachSet
 R = reachSet();
+
 try
     plotOverTime(R);
     res = false;
@@ -62,10 +66,7 @@ try
     % with name-value pairs
     plotOverTime(R,4,'Unify',true);
 
-    close all;
-
-catch
-    close all;
+catch ME
     res = false;
 end
 
@@ -95,11 +96,11 @@ try
     % with unify
     plotOverTime(R,4,'Unify',true);
 
-    close all;
-
-catch
-    close all;
+catch ME
     res = false;
 end
+
+% close figure;
+close;
 
 %------------- END OF CODE --------------

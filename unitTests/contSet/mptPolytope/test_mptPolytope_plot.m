@@ -74,7 +74,7 @@ try
     
     % close figure
     close;
-catch
+catch ME
     close;
     resvec(end+1) = false;
 end

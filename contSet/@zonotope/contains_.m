@@ -98,6 +98,12 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
         % we return a logical array, one value per points
         res = false(1,size(S,2));
 
+        % special case: check if outer-body is only a point
+        if isempty(generators(Z))
+            res = all(withinTol(center(Z),S),1);
+            return
+        end
+
         % There are basically two algorithms to choose from: Either we
         % compute it by first calculating all the halfspaces of the
         % zonotope, or we solve it using linear programming. For the
@@ -214,6 +220,12 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
             % to Z1 and Z2, to match the notation in [2]
             Z1 = deleteZeros(S);
             Z2 = deleteZeros(Z);
+
+            % special case: inner zonotope is just a point
+            if isempty(generators(S))
+                res = contains_(Z,center(S),'exact',tol);
+                return
+            end
             
             % Depending on the method, choose the right subfunction
             switch type

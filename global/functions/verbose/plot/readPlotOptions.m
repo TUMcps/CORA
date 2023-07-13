@@ -293,8 +293,12 @@ switch purpose
         else
             NVpairs = [NVpairs, 'FaceColor', defaultPlotColor()];
         end
-        % edgecolor order: always 'none'
-        NVpairs = [NVpairs, 'EdgeColor', 'none'];
+        % edgecolor order: 'EdgeColor' > 'none'
+        if isempty(edgecolor)
+            NVpairs = ['EdgeColor', 'none', NVpairs];
+        else
+            NVpairs = ['EdgeColor', edgecolor, NVpairs];
+        end
     
     case {'contour','mesh','surf'}
     

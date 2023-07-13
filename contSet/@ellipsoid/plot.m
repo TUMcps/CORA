@@ -31,68 +31,64 @@ function han = plot(E,varargin)
 %               19-May-2022 (plot marker if ellipsoid is point)
 %               25-May-2022 (TL: 1D Plotting)
 %               05-April-2023 (TL: clean up using plotPolygon)
-% Last revision:---
+% Last revision:12-July-2023 (TL, restructure)
 
 %------------- BEGIN CODE --------------
 
-% parse input arguments
-dims = setDefaultValues({[1,2]},varargin);
+% 1. parse input arguments
+[E,dims,NVpairs] = aux_parseInput(E,varargin{:});
 
-% check input arguments
-inputArgsCheck({{E,'att','ellipsoid','scalar'};
-                {dims,'att','numeric',{'nonnan','vector','integer','positive'}}});
+% 2. plot n-dimensional set
+han = aux_plotNd(E,dims,NVpairs);
 
-% read out plot options
-NVpairs = readPlotOptions(varargin(2:end));
-
-% check dimension
-if length(dims) < 1
-    throw(CORAerror('CORA:plotProperties',1));
-elseif length(dims) > 3
-    throw(CORAerror('CORA:plotProperties',3));
-end
-
-% only center remaining
-if rank(E)==0
-    [~,color] = readNameValuePair(NVpairs,'Color',{},'k');
-    [~,marker] = readNameValuePair(NVpairs,'Marker',{},'x');
-    [~,markerSize] = readNameValuePair(NVpairs,'MarkerSize',{},6);
-    if length(dims) == 1
-        han = plot(E.q(dims(1)),0,'Color',color,...
-                   'Marker',marker,'MarkerSize',markerSize);
-    elseif length(dims) == 2
-        han = plot(E.q(dims(1)),E.q(dims(2)),'Color',color,...
-                   'Marker',marker,'MarkerSize',markerSize);
-    elseif length(dims) == 3
-        han = plot(E.q(dims(1)),E.q(dims(2),E.q(dims(3))),'Color',color,...
-                   'Marker',marker,'MarkerSize',markerSize);
-    end
-    return;
-end
-
-% 1D, 2D vs 3D plot
-if length(dims) <= 2
-    N = 1000;
-    % project ellipsoid
-    E_p = project(E,dims);
-    % compute points on boundary
-    Y = boundary(E_p,N);
-    % repeat first entry
-    Y = [Y,Y(:,1)];
-    %plot and output the handle
-    han = plotPolygon(Y, NVpairs{:});
-
-else
-    % enclose ellipsoid with zonotope
-    E = project(E,dims);
-    Z = zonotope(E,100,'outer:norm');
-    
-    % plot zonotope enclosure
-    han = plot(Z,[1,2,3],NVpairs{:});
-end
-
+% 3. clearn han
 if nargout == 0
     clear han;
+end
+
+end
+
+% Auxiliary functions -----------------------------------------------------
+
+function [E,dims,NVpairs] = aux_parseInput(E,varargin)
+    % parse input arguments
+    dims = setDefaultValues({[1,2]},varargin);
+    
+    % check input arguments
+    inputArgsCheck({{E,'att','ellipsoid','scalar'};
+                    {dims,'att','numeric',{'nonnan','vector','integer','positive'}}});
+    
+    % read additional name-value pairs
+    NVpairs = readPlotOptions(varargin(2:end));
+end
+
+function han = aux_plotNd(E,dims,NVpairs)
+    if rank(E)==0  % only center remaining
+        % read center point in desired dimensions
+        V = E.q(dims);
+
+        % plot single point
+        han = plotPolygon(V,NVpairs{:});
+    
+    elseif length(dims) <= 2 % 1d, 2d
+        N = 1000;
+        % project ellipsoid
+        E_p = project(E,dims);
+        % compute points on boundary
+        V = boundary(E_p,N);
+        % repeat first entry
+        V = [V,V(:,1)];
+        % plot and output the handle
+        han = plotPolygon(V, NVpairs{:});
+    
+    else % 3d
+        % enclose ellipsoid with zonotope
+        E = project(E,dims);
+        Z = zonotope(E,100,'outer:norm');
+        
+        % plot zonotope enclosure
+        han = plot(Z,[1,2,3],NVpairs{:});
+    end
 end
 
 %------------- END OF CODE --------------

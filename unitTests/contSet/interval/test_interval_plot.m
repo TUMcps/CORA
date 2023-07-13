@@ -83,6 +83,44 @@ try
     
     % close figure
     close;
+
+    % test interval with infinity bounds
+    figure;
+
+    % set bounds
+    xlim([1,2]);
+    ylim([-2,3]);
+    ax = gca();
+
+    % plot interval with all inf bounds
+    I = interval([-Inf;-Inf],[Inf;Inf]);
+    plot(I);
+
+    % check points
+    V = [1 2 2 1 1; -2 -2 3 3 -2];
+    resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true);
+
+    % plot interval with some inf bounds
+    I = interval([1.5;-Inf],[Inf;2]);
+    plot(I);
+
+    % check points
+    V = [1.5 2 2 1.5 1.5; -2 -2 2 2 -2];
+    resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true);
+
+
+    % plot interval outside of xlim
+    I = interval([-Inf;4],[2;Inf]);
+    plot(I);
+
+    % check points
+    V = [1 1 2 2; 4 4 4 4];
+    resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true);
+
+    % close figure
+    close;
+    
+
 catch ME
     close;
     resvec(end+1) = false;

@@ -26,6 +26,8 @@ function res = test_simResult_plotOverTime
 % assume true
 res = true;
 
+figure;
+
 % empty simResult
 simRes = simResult();
 plotOverTime(simRes);
@@ -61,10 +63,7 @@ try
     plotOverTime(simRes);
     plotOverTime(simRes,3,'r');
 
-    close all;
-
 catch
-    close all;
     res = false;
 end
 
@@ -92,11 +91,11 @@ try
     plotOverTime(simRes,2);
     plotOverTime(simRes,1,'r');
 
-    close all;
-
 catch
-    close all;
     res = false;
 end
+
+% close figure
+close
 
 %------------- END OF CODE --------------

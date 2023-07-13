@@ -49,7 +49,7 @@ try
     
     % close figure
     close;
-catch
+catch ME
     close;
     res = false;
 end

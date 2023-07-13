@@ -33,37 +33,75 @@ function han = plot(zB,varargin)
 %               19-October-2015 (NK, accelerate by using polyshape class)
 %               22-May-2022 (TL, 1D plots)
 %               05-April-2023 (TL: clean up using plotPolygon)
-% Last revision:---
+% Last revision:12-July-2023 (TL, restructure)
 
 %------------- BEGIN CODE --------------
 
-% default settings
-dims = setDefaultValues({[1,2]},varargin);
+% 1. parse input
+[zB,dims,NVpairs] = aux_parseInput(zB,varargin{:});
 
-% check input arguments
-inputArgsCheck({{zB,'att','zonoBundle'};
-                {dims,'att','numeric',{'nonempty','integer','positive','vector'}}});
+% 2. preprocess
+[zB,dims] = aux_preprocess(zB,dims);
 
-% process plot options
-NVpairs = readPlotOptions(varargin(2:end));
+% 3. plot n-dimensional set
+han = aux_plotNd(zB,dims,NVpairs);
 
-% check dimension
-if length(dims) < 1
-    throw(CORAerror('CORA:plotProperties',1));
-elseif length(dims) > 3
-    throw(CORAerror('CORA:plotProperties',3));
+% 4. clear han
+if nargout == 0
+    clear han;
 end
 
-if length(dims) == 1
-    zB = project(zB,dims);
-    % add zeros to 2nd dimension
-    zB = cartProd_(zB,0,'exact');
-    dims = [1;2];
 end
 
-% 2D vs. 3D plot
-if length(dims) == 2
+% Auxiliary functions -----------------------------------------------------
 
+function [zB,dims,NVpairs] = aux_parseInput(zB,varargin)
+    % parse input
+
+    % default settings
+    dims = setDefaultValues({[1,2]},varargin);
+    
+    % check input arguments
+    inputArgsCheck({{zB,'att','zonoBundle'};
+                    {dims,'att','numeric',{'nonempty','integer','positive','vector'}}});
+    
+    % check dimension
+    if length(dims) < 1
+        throw(CORAerror('CORA:plotProperties',1));
+    elseif length(dims) > 3
+        throw(CORAerror('CORA:plotProperties',3));
+    end
+
+    % process plot options
+    NVpairs = readPlotOptions(varargin(2:end));
+end
+
+function [zB,dims] = aux_preprocess(zB,dims)
+    % preprocess
+
+    if length(dims) == 1
+        zB = project(zB,dims);
+        % add zeros to 2nd dimension
+        zB = cartProd_(zB,0,'exact');
+        dims = [1;2];
+    end
+end
+
+function han = aux_plotNd(zB,dims,NVpairs)
+    % plot n-dimensional set
+    
+    if length(dims) == 2 % 1d, 2d
+        han = aux_plot2d(zB,dims,NVpairs);   
+        
+    else % 3d
+        han = aux_plot3d(zB,dims,NVpairs);
+    end
+end
+
+function han = aux_plot2d(zB,dims,NVpairs)
+    % plot 2-dimensional set
+
+    % turn off warning
     w = warning;
     warning('off','all');
 
@@ -127,9 +165,10 @@ if length(dims) == 2
 
     % reset warning state to previous setting
     warning(w);
-    
-else
-    % plot 3d
+end
+
+function han = aux_plot3d(zB,dims,NVpairs)
+    % plot 3-dimensional set
     
     % project to plotted dimensions
     zB = project(zB,dims);
@@ -141,8 +180,5 @@ else
     han = plotPolytope3D(V(dims,:),NVpairs{:}); 
 end
 
-if nargout == 0
-    clear han;
-end
 
 %------------- END OF CODE --------------
