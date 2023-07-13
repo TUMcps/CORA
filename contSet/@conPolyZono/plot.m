@@ -44,98 +44,133 @@ function han = plot(cPZ,varargin)
 % Written:      19-January-2020
 % Last update:  25-May-2022 (TL: 1D Plotting)
 %               05-April-2023 (TL: clean up using plotPolygon)
-% Last revision:---
+% Last revision:12-July-2023 (TL, restructure)
 
 %------------- BEGIN CODE --------------
+
+% 1. parse input
+[cPZ,dims,NVpairs,splits] = aux_parseInput(cPZ,varargin{:});
+
+% 2. preprocess for plotting
+[cPZ,dims] = aux_preprocess(cPZ,dims);
+
+% 3. plot n-dimensional set
+han = aux_plotNd(cPZ,dims,NVpairs,splits);
+
+% 4. clear han
+if nargout == 0
+    clear han;
+end
+
+end
+
+% Auxiliary Functions -----------------------------------------------------
+
+function [cPZ,dims,NVpairs,splits] = aux_parseInput(cPZ,varargin)
+    % parse input 
 
     % default values for the optional input arguments
     dims = setDefaultValues({[1,2]},varargin);
 
-    % read additional name-value pairs
-    NVpairs = readPlotOptions(varargin(2:end));
-    [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar',8);
-
+    % check input args
+    inputArgsCheck({{cPZ, 'att', 'conPolyZono'},
+        {dims,'att','numeric',{'nonempty','vector','integer','positive'}}})
+    
     % check dimension
     if length(dims) < 1
         throw(CORAerror('CORA:plotProperties',1));
     elseif length(dims) > 3
         throw(CORAerror('CORA:plotProperties',3));
     end
-
-    % project to desired dimensions
-    cPZ = project(cPZ,dims);
-
-    if length(dims) == 1
-        % compute enclosing interval
-        plot(interval(cPZ),1,NVpairs{:})
     
-    elseif length(dims) == 2
+    % read additional name-value pairs
+    NVpairs = readPlotOptions(varargin(2:end));
+    [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar',8);
+end
+
+function [cPZ,dims] = aux_preprocess(cPZ,dims)
+    % preprocess for plotting 
+
+    % project to desired dimension
+    cPZ = project(cPZ,dims);
+    dims = 1:length(dims);
+end
+
+function han = aux_plotNd(cPZ,dims,NVpairs,splits)
+    % plot n-dimensional set
+
+    if length(dims) == 1 % 1d
+        % compute enclosing interval
+        han = plot(interval(cPZ),dims,NVpairs{:});
+    
+    elseif length(dims) == 2 % 2d
         % compute enclosing polygon
         pgon = polygon(cPZ,splits);
-
-        % plot the polygon
-        han = plot(pgon,[1,2],NVpairs{:});
-
-    else % 3d
-        % transform to equivalent higher-dimensional polynomial zonotope
-        c = [cPZ.c; -cPZ.b];
-        G = blkdiag(cPZ.G,cPZ.A);
-        expMat = [cPZ.expMat,cPZ.expMat_];
-
-        pZ = polyZonotope(c,G,[],expMat);
-        
-        % split the polynomial zonotope multiple times to obtain a better 
-        % over-approximation of the real shape
-        pZsplit{1} = pZ;
-
-        for i = 1:splits
-            pZnew = [];
-            for j = 1:length(pZsplit)
-                res = splitLongestGen(pZsplit{j});
-                if aux_intersectsNullSpace(res{1})
-                    pZnew{end+1} = res{1};
-                end
-                if aux_intersectsNullSpace(res{2})
-                    pZnew{end+1} = res{2};
-                end
-            end
-            pZsplit = pZnew;
-        end
-
-        % check if set is empty
-        if isempty(pZsplit)
-             throw(CORAerror('CORA:emptySet'));
-        end
-        
-        % loop over all parallel sets
-        hold on;
-        ax = gca();
-        oldColorIndex = ax.ColorOrderIndex;
-        
-        for i = 1:length(pZsplit)
-            
-            zono = zonotope(project(pZsplit{i},[1,2,3]));
-            zono = zonotope([zono.Z,cPZ.Grest]);
-            
-            han_i = plot(zono,[1,2,3],NVpairs{:}); 
-
-            if i == 1
-                han = han_i;
-                % don't display subsequent plots in legend
-                NVpairs = [NVpairs, {'HandleVisibility','off'}]; 
-            end
-        end
-
-        % correct color index
-        updateColorIndex(oldColorIndex);
-    end
     
-    if nargout == 0
-        clear han;
+        % plot the polygon
+        han = plot(pgon,dims,NVpairs{:});
+    
+    else % 3d
+        han = aux_plot3d(cPZ,dims,NVpairs,splits);
     end
 end
 
-% Auxiliary Functions -----------------------------------------------------
+function han = aux_plot3d(cPZ,dims,NVpairs,splits)
+    % transform to equivalent higher-dimensional polynomial zonotope
+    c = [cPZ.c; -cPZ.b];
+    G = blkdiag(cPZ.G,cPZ.A);
+    expMat = [cPZ.expMat,cPZ.expMat_];
+    pZ = polyZonotope(c,G,[],expMat);
+    
+    % split the polynomial zonotope multiple times to obtain a better 
+    % over-approximation of the real shape
+    pZsplit{1} = pZ;
+    for i = 1:splits
+        pZnew = [];
+        for j = 1:length(pZsplit)
+            % split pZ
+            res = splitLongestGen(pZsplit{j});
+
+            % check contrains of splitted sets
+            if aux_intersectsNullSpace(res{1})
+                pZnew{end+1} = res{1};
+            end
+            if aux_intersectsNullSpace(res{2})
+                pZnew{end+1} = res{2};
+            end
+        end
+        pZsplit = pZnew;
+    end
+
+    % check if set is empty
+    if isempty(pZsplit)
+         throw(CORAerror('CORA:emptySet'));
+    end
+
+    % convert all sets into a zonotope
+    Zs = cell(1,length(pZsplit));
+    for i=1:length(pZsplit)
+        % read pZ i
+        pZi = pZsplit{i};
+        
+        % project to correct dims
+        pZi = project(pZi,dims);
+
+        % convert to zonotope
+        Zi = zonotope(pZi);
+
+        % add independent generators
+        Zi = zonotope([Zi.Z,cPZ.Grest]);
+
+        % add to list
+        Zs{i} = Zi;
+    end
+    % correct dims
+    dims = 1:3;
+
+    % plot sets
+    han = plotMultipleSetsAsOne(Zs,dims,NVpairs);
+end
 
 function res = aux_intersectsNullSpace(obj)
 % test if the split set violates the constraints (if it not intersects any

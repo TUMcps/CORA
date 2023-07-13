@@ -41,51 +41,91 @@ function han = plot(pZ,varargin)
 %               23-February-2023 (TL: enlarge polygon if 2 regions)
 %               23-March-2023 (TL: bugfix Splits=0, clean up)
 %               05-April-2023 (TL: clean up using plotPolygon)
-% Last revision:---
+%               11-July-2023 (TL: bug fix holes)
+% Last revision:12-July-2023 (TL, restructure)
 
 %------------- BEGIN CODE --------------
 
-% parse input
+% 1. parse input
+[pZ,dims,NVpairs,splits] = aux_parseInput(pZ,varargin{:});
 
-% default values for the optional input arguments
-dims = setDefaultValues({[1,2]},varargin);
+% 2. preprocess
+[pZ,dims] = aux_preprocess(pZ,dims);
 
-% read additional name-value pairs
-NVpairs = readPlotOptions(varargin(2:end));
-% read out 'Splits', default value given
-[NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar',10);
+% 3. plot n-dimensional set
+han = aux_plotNd(pZ,dims,NVpairs,splits);
 
-% check input arguments
-inputArgsCheck({{pZ,'att','polyZonotope'};
-    {dims,'att','numeric',{'nonempty','integer','positive','vector'}}; ...
-    {splits,'att','numeric',{'scalar','integer','nonnegative'}} ...
-});
-
-% check dimension
-if length(dims) < 1
-    throw(CORAerror('CORA:plotProperties',1));
-elseif length(dims) > 3
-    throw(CORAerror('CORA:plotProperties',3));
+% 4. clear han
+if nargout == 0
+    clear han;
 end
 
-% delete all zero-generators
-pZ = deleteZeros(pZ);
+end
 
-% project to desired dimensions
-pZ = project(pZ,dims);
-dims = 1:dim(pZ);
-pZ = compact(pZ);
 
-% check if is zonotope
-if all(sum(pZ.expMat > 0, 2) == 1)
-    han = plot(zonotope(pZ), dims, NVpairs{:});
+% Auxiliary Functions -----------------------------------------------------
 
-% 1D, 2D vs 3D plot
-elseif length(dims) == 1
-    han = plot(interval(pZ, 'split'), 1, NVpairs{:});
+function [pZ,dims,NVpairs,splits] = aux_parseInput(pZ,varargin)
+    % parse input
 
-elseif length(dims) == 2
+    % default values for the optional input arguments
+    dims = setDefaultValues({[1,2]},varargin);
     
+    % read additional name-value pairs
+    NVpairs = readPlotOptions(varargin(2:end));
+    % read out 'Splits', default value given
+    [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar',10);
+    
+    % check input arguments
+    inputArgsCheck({{pZ,'att','polyZonotope'};
+        {dims,'att','numeric',{'nonempty','integer','positive','vector'}}; ...
+        {splits,'att','numeric',{'scalar','integer','nonnegative'}} ...
+    });
+    
+    % check dimension
+    if length(dims) < 1
+        throw(CORAerror('CORA:plotProperties',1));
+    elseif length(dims) > 3
+        throw(CORAerror('CORA:plotProperties',3));
+    end
+end
+
+function [pZ,dims] = aux_preprocess(pZ,dims)
+    % delete all zero-generators
+    pZ = deleteZeros(pZ);
+    
+    % project to desired dimensions
+    pZ = project(pZ,dims);
+    dims = 1:dim(pZ);
+
+    % compact in lower-dimensional space
+    pZ = compact(pZ);
+end
+
+function han = aux_plotNd(pZ,dims,NVpairs,splits)
+    % plot n-dimensional set
+
+    % check if is zonotope (change to representsa)
+    if all(sum(pZ.expMat > 0, 2) == 1)
+        % plot zonottope
+        han = plot(zonotope(pZ), dims, NVpairs{:});
+    
+    elseif length(dims) == 1 % 1d
+        han = plot(interval(pZ, 'split'), 1, NVpairs{:});
+    
+    elseif length(dims) == 2 % 2d
+        han = aux_plot2d(pZ,dims,NVpairs,splits);      
+    
+    else % 3d
+        han = aux_plot3d(pZ,dims,NVpairs,splits);
+        
+    end
+end
+
+function han = aux_plot2d(pZ,dims,NVpairs,splits)
+    % plot 2-dimensional set
+
+    % turn off warning from polygon
     warOrig = warning;
     warning('off','all');
     
@@ -163,25 +203,62 @@ elseif length(dims) == 2
         polyPrev = polyUnion;
     end
 
+    % restore warning
     warning(warOrig);
 
+    % check vertices
     if size(polyUnion.Vertices,1) > 0
-        % add first point to end to close polygon
-        xVals = [polyUnion.Vertices(:,1);polyUnion.Vertices(1,1)];
-        yVals = [polyUnion.Vertices(:,2);polyUnion.Vertices(1,2)];
+        % vertices are present
+        % close regions and holes for correct plotting
+
+        V = polyUnion.Vertices;
+
+        % find nan values
+        idxNan = [find(any(isnan(V),2));size(V,1)+1];
+        
+        % iterate over regions
+        regStart = 1;
+        xVals = [];
+        yVals = [];
+        for i=1:length(idxNan)
+            % close each region by appending start point 
+            xVals = [xVals; V(regStart:idxNan(i)-1,1); V(regStart,1); nan];
+            yVals = [yVals; V(regStart:idxNan(i)-1,2); V(regStart,2); nan];
+
+            regStart = idxNan(i)+1;
+        end
+
+        % remove nan values at the end
+        xVals(end) = [];
+        yVals(end) = [];
     else
-        % if e.g. all generators are collinear
-        V = cell2mat(Vlist);
-        xVals = V(1,:);
-        yVals = V(2,:);
+        % no vertices are present
+        % if e.g. all generators are collinear or within tol of polyshape
+        V = cell2mat(Vlist)';
+        xVals = [V(:,1);V(1,1)];
+        yVals = [V(:,2);V(1,2)];
     end
     
     % plot the polygon
     han = plotPolygon([xVals,yVals]', NVpairs{:});
+end
 
-else
-    % plot 3d
-    
+function [poly,V] = aux_getPolygon(pZ)
+    % enclose polynomial zonotope with a polygon
+
+    % zonotope over-approximation
+    Z = zonotope(pZ);
+
+    % calculate vertices of zonotope
+    V = vertices(Z);
+
+    % transform to 2D polytope
+    poly = polyshape(V(1,:),V(2,:));
+end
+
+function han = aux_plot3d(pZ,dims,NVpairs,splits)
+    % plot 3-dimensional set
+
     % split the polynomial zonotope multiple times to obtain a better 
     % over-approximation of the real shape
     pZsplit{1} = pZ;
@@ -196,33 +273,14 @@ else
         pZsplit = pZnew;
     end
     
-    % loop over all parallel sets
-    hold on;
+    % convert all sets to a zonotope
+    Zs = cell(1,length(pZsplit));
     for i = 1:length(pZsplit{i})
-        han = plot(zonotope(pZsplit{i}),[1,2,3],NVpairs{:}); 
+        Zs{i} = zonotope(pZsplit{i});
     end
-end
 
-if nargout == 0
-    clear han;
-end
-
-end
-
-
-% Auxiliary Functions -----------------------------------------------------
-
-function [poly,V] = aux_getPolygon(pZ)
-% enclose polynomial zonotope with a polygon
-
-    % zonotope over-approximation
-    Z = zonotope(pZ);
-
-    % calculate vertices of zonotope
-    V = vertices(Z);
-
-    % transform to 2D polytope
-    poly = polyshape(V(1,:),V(2,:));
+    % plot all sets as one
+    han = plotMultipleSetsAsOne(Zs,dims,NVpairs);
 end
 
 %------------- END OF CODE --------------

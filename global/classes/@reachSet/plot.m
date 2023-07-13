@@ -32,62 +32,133 @@ function han = plot(R,varargin)
 % Written:      02-June-2020
 % Last update:  15-July-2020 (MW, merge with plotFilled, plotOptions)
 %               29-October-2021 (MW, remove linespec, 'Filled')
-% Last revision:---
+%               11-July-2023 (VG, bug fix unify last set not plotted)
+% Last revision:12-July-2023 (TL, restructure)
 
 %------------- BEGIN CODE --------------
 
-% default values for the optional input arguments
-dims = setDefaultValues({[1,2]},varargin);
 
-% check input arguments
-inputArgsCheck({{R,'att','reachSet','nonempty'};
-                {dims,'att','numeric',{'nonempty','vector','integer','positive'}}});
+% 1. parse input
+[R,dims,NVpairs,order,splits,unify,totalsets,whichset] = aux_preprocess(R,varargin{:});
 
-% check hold status
-holdStatus = ishold;
-if ~holdStatus
-    plot(NaN,NaN,'HandleVisibility','off');
-    % reset color index (before readPlotOptions!)
-    set(gca(),'ColorOrderIndex',1);
+% 2. plot reachable sets
+han = aux_plotReachSet(R,dims,NVpairs,order,splits,unify,totalsets,whichset);
+
+% 3. clear han
+if nargout == 0
+    clear han;
 end
 
-% check name-value pairs
-NVpairs = readPlotOptions(varargin(2:end),'reachSet');
-[NVpairs,order] = readNameValuePair(NVpairs,'Order','isscalar');
-[NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar');
-[NVpairs,unify] = readNameValuePair(NVpairs,'Unify','islogical',false);
-[NVpairs,totalsets] = readNameValuePair(NVpairs,'UnifyTotalSets','isscalar',1);
-[NVpairs,whichset] = readNameValuePair(NVpairs,'Set','ischar','ti');
-
-% check dimension
-if length(dims) < 2
-    throw(CORAerror('CORA:plotProperties',2));
-elseif length(dims) > 3
-    throw(CORAerror('CORA:plotProperties',3));
-elseif length(dims) == 3
-    unify = false;
 end
 
-% check which set has to be plotted
-whichset = aux_checkSet(R,whichset);
 
-% check if the reachable sets should be unified to reduce the storage size
-% of the resulting figure
-if unify
+% Auxiliary functions -----------------------------------------------------
+
+function [R,dims,NVpairs,order,splits,unify,totalsets,whichset] = aux_preprocess(R,varargin)
+    % parse input
+
+    % default values for the optional input arguments
+    dims = setDefaultValues({[1,2]},varargin);
+    
+    % check input arguments
+    inputArgsCheck({{R,'att','reachSet','nonempty'};
+                    {dims,'att','numeric',{'nonempty','vector','integer','positive'}}});
+    
+    % check name-value pairs
+    NVpairs = readPlotOptions(varargin(2:end),'reachSet');
+    [NVpairs,order] = readNameValuePair(NVpairs,'Order','isscalar');
+    [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar');
+    [NVpairs,unify] = readNameValuePair(NVpairs,'Unify','islogical',false);
+    [NVpairs,totalsets] = readNameValuePair(NVpairs,'UnifyTotalSets','isscalar',1);
+    [NVpairs,whichset] = readNameValuePair(NVpairs,'Set','ischar','ti');
+    
+    % check dimension
+    if length(dims) < 2
+        throw(CORAerror('CORA:plotProperties',2));
+    elseif length(dims) > 3
+        throw(CORAerror('CORA:plotProperties',3));
+    elseif length(dims) == 3
+        unify = false;
+    end
+    
+    % check which set has to be plotted
+    whichset = aux_checkSet(R,whichset);
+end
+
+function whichset = aux_checkSet(R,whichset)
+
+% must be character vector for switch-expression to work properly
+if isempty(whichset)
+    % default value
+    if ~isempty(R(1).timeInterval)
+        whichset = 'ti';
+    else
+        whichset = 'tp';
+    end
+end
+
+switch whichset
+    case 'ti'
+        if isempty(R(1).timeInterval) && ~isempty(R(1).timePoint)
+            warning("No time-interval reachable set. Time-point reachable set plotted instead.");
+            whichset = 'tp';
+        end
+        
+    case 'tp'
+        % no issues (should always be there)
+
+    case 'y'
+        if isempty(R(1).timeInterval.algebraic)
+            throw(CORAerror('CORA:emptyProperty'));
+        end
+
+    otherwise
+        % default value
+        if isempty(whichset)
+            whichset = 'ti';
+            if isempty(R(1).timeInterval) 
+                if ~isempty(R(1).timePoint)
+                    whichset = 'tp';
+                else
+                    throw(CORAerror('CORA:emptySet'));
+                end
+            end
+        else
+            % has to be one of the above three cases...
+            throw(CORAerror('CORA:wrongValue','Set',...
+                'has to be ''ti'', ''tp'' or ''y''.'));
+        end
+end
+
+end
+
+function han = aux_plotReachSet(R,dims,NVpairs,order,splits,unify,totalsets,whichset)
+    % plots the reachable set
+    
+    % check if the reachable sets should be unified to reduce the storage size
+    % of the resulting figure
+    if unify
+        % unify and plot the reachable sets
+        han = aux_plotUnified(R,dims,NVpairs,order,splits,totalsets,whichset);
+      
+    else
+        % plot reachable sets individually
+        han = aux_plotSingle(R,dims,NVpairs,order,splits,whichset);
+    end
+
+end
+
+function han = aux_plotUnified(R,dims,NVpairs,order,splits,totalsets,whichset)
+    % unify and plot the reachable sets
 
     % number of all sets that are to be unified
     nrAllSets = aux_nrAllSets(R,whichset);
     idxSplit = splitIntoNParts(nrAllSets,totalsets);
-    idxCurr = 1;
+    idxCurr = 0;
 
-    % loop over all reachable sets
-    hold on
-
-    % save color index
-    ax = gca();
-    oldColorIndex = ax.ColorOrderIndex;
-
-    pgon = [];
+    % init
+    pgons = {};
+    pgon = polygon();
     warOrig = warning;
     warning('off','all');
     
@@ -161,33 +232,54 @@ if unify
 
             if any(idxCurr == idxSplit(:,2))
                 % end of partition reached -> plot
-                han_pgon = plot(pgon,[1,2],NVpairs{:});
+                pgons{end+1} = pgon;
+                
                 % reset pgon
-                pgon = [];
-                % set handle visibility off (only entered once)
-                if idxCurr == idxSplit(1,2)
-                    han = han_pgon;
-                    % don't display subsequent plots in legend
-                    NVpairs = [NVpairs, {'HandleVisibility','off'}];
-                end
+                pgon = polygon();
             end
         end
     end
     
     warning(warOrig);
 
-    % correct color index
-    updateColorIndex(oldColorIndex);
-    
-else
-    
-    % loop over all reachable sets
-    hold on
+    % plot polygons
+    han = plotMultipleSetsAsOne(pgons,[1,2],NVpairs);
 
-    % save color index
-    ax = gca();
-    oldColorIndex = ax.ColorOrderIndex;
+end
 
+function nrAllSets = aux_nrAllSets(R,whichset)
+    % compute number of all sets that are to be plotted (only: 'Unify',true)
+    % we will then partition this number into the desired number of sets given
+    % by the name-value pair 'UnifyTotalSets',<totalsets> and plot <totalsets>
+    % different sets (to avoid increasingly time-consuming '|'-operation of
+    % polygons)
+    
+    % init total number
+    nrAllSets = 0;
+    
+    % all branches of the reachSet object
+    for i=1:size(R,1)
+        % choose correct set
+        switch whichset
+            case 'ti'
+                addSets = size(R(i,1).timeInterval.set,1);
+            case 'tp'
+                addSets = size(R(i,1).timePoint.set,1);
+            case 'y'
+                addSets = size(R(i,1).timeInterval.algebraic,1);
+        end
+        nrAllSets = nrAllSets + addSets;
+    end
+end
+
+function han = aux_plotSingle(R,dims,NVpairs_base,order,splits,whichset)
+    % plot reachable sets individually
+
+    % init
+    sets = {};
+    NVpairs = {};
+
+    % iterate over all reachable sets
     for i = 1:size(R,1)
 
         % get desired set
@@ -204,126 +296,31 @@ else
         for j = 1:length(Rset)
 
             % project set to desired dimensions
-            temp = project(Rset{j},dims);
-            
-            if length(dims) == 2
-               dims_ = [1,2]; 
-            else
-               dims_ = [1,2,3]; 
-            end
+            R_proj = project(Rset{j},dims);
 
             % order reduction
             if ~isempty(order)
-                temp = reduce(temp,'girard',order);
+                R_proj = reduce(R_proj,'girard',order);
             end
 
             % plot the set
-            if isa(temp,'polyZonotope')
+            if isa(R_proj,'polyZonotope')
                 if isempty(splits)
-                    han_ij = plot(zonotope(temp),dims_, NVpairs{:});
+                    sets{end+1} = zonotope(R_proj);
+                    NVpairs{end+1} = NVpairs_base;
                 else
-                    han_ij = plot(temp,dims_,'Splits',splits, NVpairs{:});
+                    sets{end+1} = R_proj;
+                    NVpairs{end+1} = [{'Splits',splits}, NVpairs_base];
                 end
             else
-                han_ij = plot(temp,dims_,NVpairs{:});
-            end
-
-            if i == 1 && j == 1
-                han = han_ij;
-                % don't display subsequent plots in legend
-                NVpairs = [NVpairs, {'HandleVisibility','off'}];
+                sets{end+1} = R_proj;
+                NVpairs{end+1} = NVpairs_base;
             end
         end
     end
 
-    % correct color index
-    updateColorIndex(oldColorIndex);
-end
-
-% reset hold status
-if ~holdStatus
-    hold off
-end
-
-if nargout == 0
-    clear han;
-end
-
-end
-
-
-% Auxiliary functions -----------------------------------------------------
-function whichset = aux_checkSet(R,whichset)
-
-% must be character vector for switch-expression to work properly
-if isempty(whichset)
-    % default value
-    if ~isempty(R(1).timeInterval)
-        whichset = 'ti';
-    else
-        whichset = 'tp';
-    end
-end
-
-switch whichset
-    case 'ti'
-        if isempty(R(1).timeInterval) && ~isempty(R(1).timePoint)
-            warning("No time-interval reachable set. Time-point reachable set plotted instead.");
-            whichset = 'tp';
-        end
-        
-    case 'tp'
-        % no issues (should always be there)
-
-    case 'y'
-        if isempty(R(1).timeInterval.algebraic)
-            throw(CORAerror('CORA:emptyProperty'));
-        end
-
-    otherwise
-        % default value
-        if isempty(whichset)
-            whichset = 'ti';
-            if isempty(R(1).timeInterval) 
-                if ~isempty(R(1).timePoint)
-                    whichset = 'tp';
-                else
-                    throw(CORAerror('CORA:emptySet'));
-                end
-            end
-        else
-            % has to be one of the above three cases...
-            throw(CORAerror('CORA:wrongValue','Set',...
-                'has to be ''ti'', ''tp'' or ''y''.'));
-        end
-end
-
-end
-
-
-function nrAllSets = aux_nrAllSets(R,whichset)
-% compute number of all sets that are to be plotted (only: 'Unify',true)
-% we will then partition this number into the desired number of sets given
-% by the name-value pair 'UnifyTotalSets',<totalsets> and plot <totalsets>
-% different sets (to avoid increasingly time-consuming '|'-operation of
-% polygons)
-
-% init total number
-nrAllSets = 0;
-
-% all branches of the reachSet object
-for i=1:size(R,1)
-    % choose correct set
-    switch whichset
-        case 'ti'
-            addSets = size(R(i,1).timeInterval.set,1);
-        case 'tp'
-            addSets = size(R(i,1).timePoint.set,1);
-        case 'y'
-            addSets = size(R(i,1).timeInterval.algebraic,1);
-    end
-    nrAllSets = nrAllSets + addSets;
-end
+    % plot sets
+    han = plotMultipleSetsAsOne(sets,1:length(dims),NVpairs);
 
 end
 

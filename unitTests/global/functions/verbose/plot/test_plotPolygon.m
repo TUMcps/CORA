@@ -28,6 +28,8 @@ resvec = [];
 try
     % test if plotting works ----------------------------------------------
 
+    figure;
+
     % 2D polygon
     V = [1 0; 1 2; 0 3; -2 2; -3 0; 0 -1; 1 0]';
     plotPolygon(V);
@@ -107,14 +109,12 @@ try
     plotPolygon(V(1,:),'ZPos',1);
     resvec(end+1) = isequal([V(1,:); 0 0 0 0 0; 1 1 1 1 1], [ax.Children(1).XData;ax.Children(1).YData;ax.Children(1).ZData]);
 
-    close all;
+    close;
 
 catch ME
+    close
     resvec(end+1) = false;
 end
-
-% close all figures
-close all;
 
 % gather results
 res = all(resvec);

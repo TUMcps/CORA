@@ -32,61 +32,17 @@ function han = plotOverTime(R,varargin)
 %               01-July-2021 (MP, adding improved unify algorithm)
 %               01-April-2023 (MW, speed up fastUnify plotting)
 % Last revision:01-May-2023 (MW, restructure, add unify for tp solutions)
+%               12-July-2023 (TL, restructure)
 
 %------------- BEGIN CODE --------------
 
-% default values for the optional input arguments
-dims = setDefaultValues({1},varargin);
+% 1. parse input
+[R,dims,NVpairs,unify,totalsets,whichset] = aux_parseInput(R,varargin{:});
 
-% check input arguments
-inputArgsCheck({{R,'att','reachSet','nonempty'};
-                {dims,'att','numeric',{'nonempty','scalar','integer','positive'}}});
+% 2. plot reachable sets
+han = aux_plotReachSet(R,dims,NVpairs,unify,totalsets,whichset);
 
-% check hold status
-holdStatus = ishold;
-if ~holdStatus
-    plot(NaN,NaN,'HandleVisibility','off');
-    % reset color index (before readPlotOptions!)
-    set(gca(),'ColorOrderIndex',1);
-end
-
-% parse input arguments
-NVpairs = readPlotOptions(varargin(2:end),'reachSet');
-[NVpairs,unify] = readNameValuePair(NVpairs,'Unify','islogical',false);
-[NVpairs,totalsets] = readNameValuePair(NVpairs,'UnifyTotalSets','isscalar',1);
-[NVpairs,whichset] = readNameValuePair(NVpairs,'Set','ischar','ti');
-
-% check which set has to be plotted
-whichset = aux_checkSet(R,whichset);
-
-% check if the reachable sets should be unified to reduce the storage size
-% of the resulting figure
-if unify
-    
-    if any(strcmp(whichset,{'ti','y'}))
-        % check whether fastUnify approach is possible
-        if aux_fastUnify(R)
-            han = aux_plotFastUnify(R,dims,NVpairs,whichset);
-        else
-            % unification of polygons
-            han = aux_plotUnify(R,dims,NVpairs,whichset);
-        end
-    elseif strcmp(whichset,'tp')
-        % utilize NaN as breaks between lines to plot time-point solutions
-        han = aux_plotUnifyTP(R,dims,NVpairs,whichset);
-    end
-
-else
-    % regular plotting if individual sets
-    han = aux_plotStandard(R,dims,NVpairs,whichset);
-
-end
-
-% reset hold status
-if ~holdStatus
-    hold off
-end
-
+% 3. clear han
 if nargout == 0
     clear han;
 end
@@ -95,6 +51,24 @@ end
 
 
 % Auxiliary functions -----------------------------------------------------
+
+function [R,dims,NVpairs,unify,totalsets,whichset] = aux_parseInput(R,varargin)
+    % default values for the optional input arguments
+    dims = setDefaultValues({1},varargin);
+    
+    % check input arguments
+    inputArgsCheck({{R,'att','reachSet','nonempty'};
+                    {dims,'att','numeric',{'nonempty','scalar','integer','positive'}}});
+    
+    % parse input arguments
+    NVpairs = readPlotOptions(varargin(2:end),'reachSet');
+    [NVpairs,unify] = readNameValuePair(NVpairs,'Unify','islogical',false);
+    [NVpairs,totalsets] = readNameValuePair(NVpairs,'UnifyTotalSets','isscalar',1);
+    [NVpairs,whichset] = readNameValuePair(NVpairs,'Set','ischar','ti');
+    
+    % check which set has to be plotted
+    whichset = aux_checkSet(R,whichset);
+end
 
 function whichset = aux_checkSet(R,whichset)
 
@@ -136,6 +110,33 @@ switch whichset
         end
 end
 
+end
+
+function han = aux_plotReachSet(R,dims,NVpairs,unify,totalsets,whichset)
+    % plot reachable set
+
+    % check if the reachable sets should be unified to reduce the storage size
+    % of the resulting figure
+    if unify
+        
+        if any(strcmp(whichset,{'ti','y'}))
+            % check whether fastUnify approach is possible
+            if aux_fastUnify(R)
+                han = aux_plotFastUnify(R,dims,NVpairs,whichset);
+            else
+                % unification of polygons
+                han = aux_plotUnify(R,dims,NVpairs,whichset);
+            end
+        elseif strcmp(whichset,'tp')
+            % utilize NaN as breaks between lines to plot time-point solutions
+            han = aux_plotUnifyTP(R,dims,NVpairs,whichset);
+        end
+    
+    else
+        % regular plotting if individual sets
+        han = aux_plotStandard(R,dims,NVpairs,whichset);
+    
+    end
 end
 
 function fastUnify = aux_fastUnify(R)
@@ -234,10 +235,19 @@ for i=2:size(R,1)
         y_merged(length(y_merged)/2+1:end)];
 end
 
-% plot patch (list already ordered, skip instantiation of polygon
+
+% plot patch
+
+if ~ishold
+    % patch ignores hold status, thus correcting it manually...
+    plot(nan,nan,'HandleVisibility','off')
+end
+
+% (list already ordered, skip instantiation of polygon
 % which checks for shape simplification)
-% linespec 'b' overwritten by NVpairs, but patch requires it...
-han = patch(x_merged,y_merged,'b',NVpairs{:});
+
+[NVpairs,facecolor] = readNameValuePair(NVpairs,'FaceColor',{},CORAcolor("CORA:next"));
+han = patch(x_merged,y_merged,facecolor,NVpairs{:});
 
 end
 
@@ -332,12 +342,9 @@ han = plot(t,x,NVpairs{:});
 end
 
 function han = aux_plotStandard(R,dims,NVpairs,whichset)
+% plot reachable sets as they are
 
-hold on;
-
-% save color index
-ax = gca();
-oldColorIndex = ax.ColorOrderIndex;
+sets = {};
 
 % loop over all reachable sets
 for i = 1:size(R,1)
@@ -367,19 +374,12 @@ for i = 1:size(R,1)
         end
         I = cartProd(intT,intX);
 
-        % plot interval
-        han_ij = plot(I,[1,2],NVpairs{:});
-
-        if i == 1 && j == 1
-            han = han_ij;
-            % don't display subsequent plots in legend
-            NVpairs = [NVpairs, {'HandleVisibility','off'}];
-        end
+        % save set
+        sets{end+1} = I;
     end
 end
 
-% correct color index
-updateColorIndex(oldColorIndex);
+han = plotMultipleSetsAsOne(sets,[1,2],NVpairs);
 
 end
 

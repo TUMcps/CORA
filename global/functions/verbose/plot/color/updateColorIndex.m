@@ -20,7 +20,7 @@ function updateColorIndex(oldColorIndex)
 
 % Author:        Tobias Ladner
 % Written:       28-February-2023
-% Last update:   ---
+% Last update:   13-July-2023 (hold off case)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -30,10 +30,19 @@ if nargin < 1
     oldColorIndex = ax.ColorOrderIndex;
 end
 
-% reset to old index
-set(gca(), 'ColorOrderIndex', oldColorIndex)
+if ishold
+    % reset to old index
+    set(gca(), 'ColorOrderIndex', oldColorIndex)
 
-% update index with empty, invisible plot
-plot(nan, nan, 'HandleVisibility', 'off')
+    % update index with empty, invisible plot
+    han = plot(nan, nan);
+
+    % delte index again
+    delete(han);
+
+else
+    % for 'hold off', color index is always 2 after plotting anything
+    set(gca(), 'ColorOrderIndex', 2);
+end
 
 %------------- END OF CODE --------------

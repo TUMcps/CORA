@@ -35,70 +35,92 @@ function han = plot(hyp,varargin)
 % Written:      19-November-2019
 % Last update:  25-May-2022 (TL: 1D Plotting)
 %               05-April-2023 (TL: clean up using plotPolygon)
-% Last revision:---
+% Last revision:12-July-2023 (TL, restructure)
 
 %------------- BEGIN CODE --------------
 
-% parse input arguments
-dims = setDefaultValues({[1,2]},varargin);
+% 1. parse input arguments
+[hyp, dims, NVpairs] = aux_parseInput(hyp,varargin{:});
 
-% check input arguments
-inputArgsCheck({{hyp,'att','conHyperplane'};
-                {dims,'att','numeric',{'vector','positive','integer'}}});
+% 2. preprocess for plotting
+[V,dims] = aux_preprocess(hyp,dims);
 
-% parse plot options
-NVpairs = readPlotOptions(varargin(2:end));
+% 3. plot n-dimensional set
+han = aux_plotNd(hyp,V,dims,NVpairs);
 
-% check dimension
-if length(dims) < 1
-    throw(CORAerror('CORA:plotProperties',1));
-elseif length(dims) > 3
-    throw(CORAerror('CORA:plotProperties',3));
-end
-
-% get size of current plot
-xLim = get(gca,'Xlim');
-yLim = get(gca,'Ylim');
-
-% compute vertices
-if ~isempty(hyp.C)
-    C = hyp.C(:,dims);
-    d = hyp.d;
-else
-    C = []; d = [];
-end
-
-if length(dims) == 1
-    C = [C;1;-1];
-    d = [d;xLim(2);-xLim(1)];
-elseif length(dims) == 2
-    C = [C;eye(2);-eye(2)];
-    d = [d;xLim(2);yLim(2);-xLim(1);-yLim(1)];
-else
-    zLim = get(gca,'Zlim');
-    C = [C;eye(3);-eye(3)];
-    d = [d;xLim(2);yLim(2);zLim(2);-xLim(1);-yLim(1);-zLim(1)];
-end
-
-vert = lcon2vert(C,d,hyp.h.c(dims)',hyp.h.d)';
-
-% plot constrained hyperplane
-if length(dims) == 1
-    han = plotPolygon(vert,NVpairs{:});
-    
-elseif length(dims) == 2 
-    han = plotPolygon(vert,NVpairs{:});
-else
-    % state space transformation
-    B = gramSchmidt(hyp.h.c);
-    vert_ = B'*vert;
-    ind = convhull(vert_(2:end,:)');
-    
-    han = plotPolygon([vert(1,ind);vert(2,ind);vert(3,ind)],NVpairs{:}); 
-end
-
+% 4. clear han
 if nargout == 0
     clear han;
+end
+
+end
+
+% Auxiliary functions -----------------------------------------------------
+
+function [hyp, dims, NVpairs] = aux_parseInput(hyp,varargin)
+    % parse input arguments
+    dims = setDefaultValues({[1,2]},varargin);
+    
+    % check input arguments
+    inputArgsCheck({{hyp,'att','conHyperplane'};
+                    {dims,'att','numeric',{'vector','positive','integer'}}});
+    
+    % check dimension
+    if length(dims) < 1
+        throw(CORAerror('CORA:plotProperties',1));
+    elseif length(dims) > 3
+        throw(CORAerror('CORA:plotProperties',3));
+    end
+    
+    % parse plot options
+    NVpairs = readPlotOptions(varargin(2:end));
+end
+
+function [V,dims] = aux_preprocess(hyp,dims)
+    % preprocess for plotting
+
+    % get size of current plot
+    xLim = get(gca,'Xlim');
+    yLim = get(gca,'Ylim');
+    
+    % compute vertices
+    if ~isempty(hyp.C)
+        C = hyp.C(:,dims);
+        d = hyp.d;
+    else
+        C = []; d = [];
+    end
+    
+    if length(dims) == 1
+        C = [C;1;-1];
+        d = [d;xLim(2);-xLim(1)];
+    elseif length(dims) == 2
+        C = [C;eye(2);-eye(2)];
+        d = [d;xLim(2);yLim(2);-xLim(1);-yLim(1)];
+    else
+        zLim = get(gca,'Zlim');
+        C = [C;eye(3);-eye(3)];
+        d = [d;xLim(2);yLim(2);zLim(2);-xLim(1);-yLim(1);-zLim(1)];
+    end
+    
+    V = lcon2vert(C,d,hyp.h.c(dims)',hyp.h.d)';
+    dims = 1:length(dims);
+end
+
+function han = aux_plotNd(hyp,V,dims,NVpairs)
+    % plot n-dimensional set
+
+    if length(dims) <= 2 % 1d, 2d
+        han = plotPolygon(V,NVpairs{:});
+        
+    else % 3d
+        % state space transformation
+        B = gramSchmidt(hyp.h.c);
+        vert_ = B'*V;
+        ind = convhull(vert_(2:end,:)');
+        
+        han = plotPolygon([V(1,ind);V(2,ind);V(3,ind)],NVpairs{:}); 
+    end
 end
 
 %------------- END OF CODE --------------

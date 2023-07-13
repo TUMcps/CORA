@@ -28,7 +28,6 @@ function createTableObservers
 
 % set path
 path = [CORAROOT filesep 'unitTests' filesep 'contDynamics' filesep 'linearSysDT' filesep 'results'];
-close all
 
 % load file
 name = 'TankLin_30_States_ZOrder_100_2021March29_10_59_24';

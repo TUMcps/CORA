@@ -31,7 +31,6 @@ function simulateTank_lin_30(options)
 
 % set path
 savepath = [CORAROOT filesep 'unitTests' filesep 'contDynamics' filesep 'linearSysDT' filesep 'models'];
-close all
 
 %% Settings
 

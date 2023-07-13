@@ -46,76 +46,95 @@ function han = plot(cZ,varargin)
 %               27-April-2023 (VG: check if cZ is feasible to avoid
 %               nondescript error message
 %               09-May-2023 (TL: bugfix split plotting)
-% Last revision:---
+% Last revision:12-July-2023 (TL, restructure)
 
 %------------- BEGIN CODE --------------
 
-% default settings
-dims = setDefaultValues({[1,2]},varargin);
-% standard plot mode
-mode = 1;
+% 1. parse input
+[cZ,dims,NVpairs,mode,splits,numDir] = aux_parseInput(cZ,varargin{:});
 
-% prepare hold on if splits given
-if ~ishold
-    plot(NaN,NaN,'HandleVisibility','off');
-    % reset color index (before readPlotOptions!)
-    set(gca(),'ColorOrderIndex',1);
-end
+% 2. preprocess
+[cZ,dims] = aux_preprocess(cZ,dims);
 
-% process linespec and Name-Value pairs
-NVpairs = readPlotOptions(varargin(2:end));
-[NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar');
-[NVpairs,numDir] = readNameValuePair(NVpairs,'Template','isscalar');
+% 3. plot n-dimensional set
+han = aux_plotNd(cZ,dims,NVpairs,mode,splits,numDir);
 
-% error if both given
-if ~isempty(splits) && ~isempty(numDir)
-    throw(CORAerror('CORA:specialError','Choose either Splits or Template.'));
-elseif ~isempty(splits)
-    mode = 2;
-elseif ~isempty(numDir)
-    mode = 3;
-end
-
-% check dimension
-if length(dims) < 1
-    throw(CORAerror('CORA:plotProperties',1));
-elseif length(dims) > 3
-    throw(CORAerror('CORA:plotProperties',3));
-end
-
-% check if constraints are feasible
-if isempty(cZ)
-    han = plotPolygon(zeros(length(dims), 0), NVpairs{:});
-
-else    
-    % project the object to the 2D-subspace
-    cZ = project(cZ,dims);
-    dims = 1:length(dims);
-    
-    % plot modes: standard (1), template (2), splits (3)
-    if mode == 1
-        han = plotStandard(cZ,dims,NVpairs);
-    elseif mode == 2
-        han = plotSplit(cZ,splits,dims,NVpairs);
-    elseif mode == 3
-        han = plotTemplate(cZ,numDir,dims,NVpairs);
-    end
-
-end
-
+% 4. clear han
 if nargout == 0
     clear han
 end
 
 end
 
-
 % Auxiliary Functions -----------------------------------------------------
 
-function han = plotStandard(cZ,dims,plotOptions)
+function [cZ,dims,NVpairs,mode,splits,numDir] = aux_parseInput(cZ,varargin)
+    % parse input
+
+    % default settings
+    dims = setDefaultValues({[1,2]},varargin);
+
+    % check input args
+    inputArgsCheck({{cZ, 'att', 'conZonotope'},
+        {dims,'att','numeric',{'nonempty','vector','integer','positive'}}})
+
+    % check dimension
+    if length(dims) < 1
+        throw(CORAerror('CORA:plotProperties',1));
+    elseif length(dims) > 3
+        throw(CORAerror('CORA:plotProperties',3));
+    end
+    
+    % process linespec and Name-Value pairs
+    NVpairs = readPlotOptions(varargin(2:end));
+    [NVpairs,splits] = readNameValuePair(NVpairs,'Splits','isscalar');
+    [NVpairs,numDir] = readNameValuePair(NVpairs,'Template','isscalar');
+    
+    % choose plot mode
+    if ~isempty(splits) && ~isempty(numDir)
+        % error if both given
+        throw(CORAerror('CORA:specialError','Choose either Splits or Template.'));
+    elseif ~isempty(splits)
+        % plot mode 'split'
+        mode = 2;
+    elseif ~isempty(numDir)
+        % plot mode 'template'
+        mode = 3;
+    else
+        % default plot mode 'standard'
+        mode = 1;
+    end
+end
+
+function [cZ,dims] = aux_preprocess(cZ,dims)
+    % project the object to the N=dimensional subspace
+    cZ = project(cZ,dims);
+    dims = 1:length(dims);
+end
+
+function han = aux_plotNd(cZ,dims,NVpairs,mode,splits,numDir)
+    % check if constraints are feasible
+    if isempty(cZ)
+        % plot empty set
+        han = plotPolygon(zeros(length(dims), 0), NVpairs{:});
+    
+    else        
+        % plot modes: standard (1), template (2), splits (3)
+        if mode == 2
+            han = plotSplit(cZ,splits,dims,NVpairs);
+        elseif mode == 3
+            han = plotTemplate(cZ,numDir,dims,NVpairs);
+        else
+            % default plot mode
+            han = plotStandard(cZ,dims,NVpairs);
+        end
+    end
+end
+
+function han = plotStandard(cZ,dims,NVpairs)
 
     if isempty(cZ.A) || ( ~any(any(cZ.A)) && ~any(cZ.b) )
-        han = plot(zonotope(cZ.Z),dims,plotOptions{:});
+        han = plot(zonotope(cZ.Z),dims,NVpairs{:});
     elseif length(dims) == 2
         % 2D projection can be computed efficiently using support functions
         
@@ -127,11 +146,11 @@ function han = plotStandard(cZ,dims,plotOptions)
             % class) -> instantiate zonotope and plot it
             c = 0.5*(V(:,1) + V(:,2)); 
             G = 0.5*(V(:,2) - V(:,1));
-            han = plot(zonotope(c,G),dims,plotOptions{:});
+            han = plot(zonotope(c,G),dims,NVpairs{:});
         else
             % init polygon for plotting (vertices are already ordered
             % correctly)
-            han = plotPolygon(V, plotOptions{:},'ConvHull',true);
+            han = plotPolygon(V, NVpairs{:},'ConvHull',true);
         end
 
     else
@@ -141,31 +160,31 @@ function han = plotStandard(cZ,dims,plotOptions)
         poly = mptPolytope(cZ);
         
         % plot the polytope
-        han = plot(poly,dims,plotOptions{:});        
+        han = plot(poly,dims,NVpairs{:});        
     end
 end
 
-function han = plotSplit(cZ,splits,dims,plotOptions)
+function han = plotSplit(cZ,splits,dims,NVpairs)
 
     % recursively split the constrained zonotope
-    list = {cZ};
+    cZSplit = {cZ};
 
     for i = 1:splits
-
-        listTemp = cell(length(list)*2,1);
+        % init
+        listTemp = cell(length(cZSplit)*2,1);
         counter = 1;
 
         % loop over all sets at the current recursion level
-        for j = 1:length(list)
+        for j = 1:length(cZSplit)
 
            % calculate radius of the interval over-approximation as a
            % heuristic indicating which dimension should be best splitted
-           inter = interval(list{j});
+           inter = interval(cZSplit{j});
            r = rad(inter);
 
            % split the set
            [~,ind] = max(r);
-           temp = split(list{j},ind);
+           temp = split(cZSplit{j},ind);
 
            % update variables
            listTemp{counter} = temp{1};
@@ -173,43 +192,21 @@ function han = plotSplit(cZ,splits,dims,plotOptions)
            counter = counter + 2;
         end
 
-        list = listTemp;
-    end
-    
-    % save hold status
-    holdStatus = ishold;
-    hold on;
-
-    % save color index
-    ax = gca();
-    oldColorIndex = ax.ColorOrderIndex;
-
-    for i = 1:length(list)
-        % over-approximate the splitted sets with intervals
-        if length(dims) == 1
-             han_i = plot(interval(list{i}),1,plotOptions{:});
-        elseif length(dims) == 2
-            han_i = plot(interval(list{i}),[1,2],plotOptions{:});
-        else
-            han_i = plot(interval(list{i}),[1,2,3],plotOptions{:});
-        end
-
-        if i == 1
-            han = han_i;
-            plotOptions = [plotOptions, {'HandleVisibility','off'}];
-        end
+        cZSplit = listTemp;
     end
 
-    % correct color index
-    updateColorIndex(oldColorIndex);
-
-    if ~holdStatus
-        hold off;
+    % convert splitted sets to intervals
+    Is = cell(1,length(cZSplit));
+    for i=1:length(cZSplit)
+        Is{i} = interval(cZSplit{i});
     end
+
+    % plot all sets as one
+    han = plotMultipleSetsAsOne(Is,dims,NVpairs);
 end
 
 
-function han = plotTemplate(cZ,numDir,dims,plotOptions)
+function han = plotTemplate(cZ,numDir,dims,NVpairs)
 
     % select directions for template polyhedron
     if length(dims) == 2
@@ -270,14 +267,14 @@ function han = plotTemplate(cZ,numDir,dims,plotOptions)
         V = V(order,:)';
 
         % init polygon for plotting
-        han = plotPolygon(V, plotOptions{:},'ConvHull',true);
+        han = plotPolygon(V, NVpairs{:},'ConvHull',true);
     else
 
         % construct template polyhedron
         poly = polytope(C',d);
     
         % plot the template polyhedron
-        han = plot(poly,dims_,plotOptions{:});
+        han = plot(poly,dims_,NVpairs{:});
 
     end
 

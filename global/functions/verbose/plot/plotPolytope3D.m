@@ -74,9 +74,16 @@ if ~isempty(V)
         lower = i;
     end
     
-    % loop over all facets
+    % set hold on
+    holdStatus = ishold;
+    if ~holdStatus
+        % flush current axis
+        plot(nan,nan,'HandleVisibility','off');
+    end
+
     hold on;
     
+    % loop over all facets
     for i = 1:length(K)
         for j = 1:length(K{i})
             
@@ -92,8 +99,12 @@ if ~isempty(V)
             else
                 han = fill3(vert(ind,1),vert(ind,2),vert(ind,3), facecolor, NVpairs{:});
             end
-%             han = fill3(vert(ind,1),vert(ind,2),vert(ind,3),NVpairs{:});
         end
+    end
+
+    % reset hold status
+    if ~holdStatus
+        hold('off');
     end
     
     view([1,1,1]);

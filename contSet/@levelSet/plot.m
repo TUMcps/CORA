@@ -34,16 +34,43 @@ function han = plot(ls,varargin)
 % Author:       Niklas Kochdumper, Tobias Ladner
 % Written:      19-July-2019
 % Last update:  22-May-2023 (TL: speed up plotting of '<=' levelSets)
-% Last revision:---
+% Last revision:12-July-2023 (TL, restructure)
 
 %------------- BEGIN CODE --------------
 
+% 1. parse input arguments
+[ls,dims,NVpairs,splits,plotMethod] = aux_parseInput(ls,varargin{:});
+
+% 2. preprocess
+[ls,dims] = aux_preprocess(ls,dims);
+
+% 3. plot n-dimensional set
+han = aux_plotNd(ls,dims,NVpairs,splits,plotMethod);
+
+% 4. clear han
+if nargout == 0
+    clear han;
+end
+
+end
+
+
+% Auxiliary Functions -----------------------------------------------------
+
+function [ls,dims,NVpairs,splits,plotMethod] = aux_parseInput(ls,varargin)
     % parse input arguments
     dims = setDefaultValues({[1,2]},varargin);
 
     % check input arguments
     inputArgsCheck({{ls,'att','levelSet'};
                     {dims,'att','numeric',{'nonnan','integer','vector','positive'}}});
+
+    % check dimension
+    if length(dims) < 1
+        throw(CORAerror('CORA:plotProperties',1));
+    elseif length(dims) > 3
+        throw(CORAerror('CORA:plotProperties',3));
+    end
 
     % read out plot options and additional name-value pairs
     NVpairs = readPlotOptions(varargin(2:end));
@@ -68,13 +95,10 @@ function han = plot(ls,varargin)
             throw(CORAerror("CORA:wrongValue","name-value pair 'PlotMethod'","'outer','inner'"))
         end
     end
+end
 
-    % check dimension
-    if length(dims) < 1
-        throw(CORAerror('CORA:plotProperties',1));
-    elseif length(dims) > 3
-        throw(CORAerror('CORA:plotProperties',3));
-    end
+function [ls,dims] = aux_preprocess(ls,dims)
+    % preprocess
 
     if length(dims) == 1
         % add artificial dimension at 2nd dimension
@@ -84,23 +108,25 @@ function han = plot(ls,varargin)
         ls = projectHighDim(ls, length(dim_old)+2, dim_old);
         dims = [1;2];
     end
+end
 
+function han = aux_plotNd(ls,dims,NVpairs,splits,plotMethod)
     % different types of level sets
     if strcmp(ls.compOp,'==')
-
+    
         % different methods for the different dimensions
         if length(dims) == 2
             han = aux_plot2Dcontour(ls,dims,NVpairs);
         else
             [res,ind] = aux_isSolvable(ls,dims);
-
+    
             if res
                 han = aux_plot3Dsolvable(ls,dims,ind,NVpairs);
             else
                 han = aux_plot3Dsplit(ls,dims,splits,plotMethod,NVpairs); 
             end
         end
-
+    
     else
         % different methods for the differnt dimensions
         if length(dims) == 2
@@ -109,14 +135,7 @@ function han = plot(ls,varargin)
             han = aux_plot3Dsplit(ls,dims,splits,plotMethod,NVpairs); 
         end 
     end
-    
-    if nargout == 0
-        clear han;
-    end
 end
-
-
-% Auxiliary Functions -----------------------------------------------------
 
 function han = aux_plot2Dcontour(obj,dims,type)
 % plot 2D level set using Matlabs contour plot function

@@ -60,7 +60,19 @@ try
     resvec(end+1) = compareMatrices(V, [ax.Children(1).Vertices],1e-4,'equal',true);
     % test color
     resvec(end+1) = isequal(colorOrder(1,:), ax.Children(1).FaceColor);
-    
+
+    % check edge color
+    hs = halfspace([1;1],1);
+    plot(hs,[1,2],'EdgeColor',[1 0 0]);
+    ax = gca();
+    resvec(end+1) = isequal(ax.Children(1).EdgeColor, [1 0 0]);
+
+    % but default edge color should be none
+    hs = halfspace([1;1],1);
+    plot(hs);
+    ax = gca();
+    resvec(end+1) = isequal(ax.Children(1).EdgeColor, 'none');
+  
     % close figure
     close;
 catch ME

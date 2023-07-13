@@ -163,7 +163,7 @@ function aux_checkInputArgs(c,G,Grest,expMat,id,n_in)
         end
         if ~isempty(Grest) && size(Grest,1) ~= size(c,1)
              throw(CORAerror('CORA:wrongInputInConstructor',...
-                 'Dimension mismatch between center and dependent generator matrix.'));
+                 'Dimension mismatch between center and independent generator matrix.'));
         end
         if size(expMat,2) ~= size(G,2)
              throw(CORAerror('CORA:wrongInputInConstructor',...

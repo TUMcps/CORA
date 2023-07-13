@@ -26,6 +26,8 @@ function res = test_simResult_plot
 % init result
 res = true;
 
+figure;
+
 % empty simResult
 simRes = simResult();
 plot(simRes,[1,2]);
@@ -61,10 +63,7 @@ try
     plot(simRes);
     plot(simRes,[1,3],'r');
 
-    close all;
-
 catch
-    close all;
     res = false;
 end
 
@@ -92,11 +91,11 @@ try
     plot(simRes,[1,2]);
     plot(simRes,[1,2],'r');
 
-    close all;
-
 catch
-    close all;
     res = false;
 end
+
+% close figure
+close
 
 %------------- END OF CODE --------------

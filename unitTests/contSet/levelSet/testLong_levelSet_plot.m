@@ -63,10 +63,14 @@ for i = 1:length(levelSets)
         end
         resvec(end+1) = true;
     catch
-        close;
         resvec(end+1) = false;
     end
+
+    % close figure
+    close;
 end
+
+figure;
 
 % test additional plotting arguments
 ls = levelSets{2}; % with '<='
@@ -85,7 +89,8 @@ plot(ls,[1,2],'Splits',3,'FaceColor','b','PlotMethod','outer');
 plot(ls,[1,2],'FaceColor','b','Splits',3,'PlotMethod','outer');
 resvec(end+1) = true;
 
-close all;
+% close figure
+close;
 
 % gather results
 res = all(resvec);

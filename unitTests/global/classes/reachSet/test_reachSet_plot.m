@@ -26,6 +26,8 @@ function res = test_reachSet_plot
 % init result
 res = true;
 
+figure;
+
 % empty reachSet
 R = reachSet();
 try
@@ -62,10 +64,7 @@ try
     % with name-value pairs
     plot(R,[1,2],'Order',10);
 
-    close all;
-
 catch
-    close all;
     res = false;
 end
 
@@ -95,11 +94,11 @@ try
     % explicitly, time-point solution
     plot(R,[1,2],'Set','tp');
 
-    close all;
-
 catch
-    close all;
     res = false;
 end
+
+% close figure
+close
 
 %------------- END OF CODE --------------

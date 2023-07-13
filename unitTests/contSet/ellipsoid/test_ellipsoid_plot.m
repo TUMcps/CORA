@@ -93,7 +93,7 @@ try
     
     % close figure
     close(h);
-catch
+catch ME
     close;
     resvec(end+1) = false;
 end

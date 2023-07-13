@@ -117,6 +117,12 @@ for i=1:length(files)
         issues{end+1} = "Last revision missing.";
     end
 
+    if startsWith(file.folder, [CORAROOT filesep 'unitTests' filesep])
+        if contains(filetext, 'close all')
+            issues{end+1} = "Avoid 'close all' in unit tests.";
+        end
+    end
+
     % display information
 
     all_good = isempty(issues);
