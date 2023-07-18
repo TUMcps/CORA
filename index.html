@@ -1,203 +1,167 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
+<!doctype html>
+<html lang="en" data-bs-theme="light">
 <head>
-<title>CORA</title>
-<meta charset="UTF-8">
-<link rel="stylesheet" href="styles/layout.css" type="text/css">
-<!--[if lt IE 9]><script src="scripts/html5shiv.js"></script><![endif]-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CORA - A Tool for COntinuous Reachability Analysis</title>
+    <meta name="author" content="Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger, Tobias Ladner">
+    <meta name="description"
+          content="The COntinuous Reachability Analyzer (CORA) is a collection of MATLAB classes for the formal verification of cyber-physical systems using reachability analysis. CORA integrates various vector and matrix set representations and operations on them as well as reachability algorithms of various dynamic system classes. The software is designed such that set representations can be exchanged without having to modify the code for reachability analysis. CORA is designed using the object oriented paradigm, such that users can safely use methods without concerning themselves with detailed information hidden inside the object. Since the toolbox is written in MATLAB, the installation and use is platform independent. From Release 2018 on, the direct import of SpaceEx models into CORA is also supported. The following points summarize the main capabilities of the CORA toolbox:">
+    <meta name="keywords" content="CORA, Matlab, toolbox, reachability analysis, set-based computing">
+    <link rel="icon" type="image/x-icon" href="./images/CoraLogo-icon.png">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link href="./styles/css.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <!-- MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+
 </head>
 <body>
-<!-- content -->
-<div class="wrapper row1">
-  <header id="header" class="clear">
-    <div id="hgroup">     
-      <img src="images/CoraLogo.png"> 
-      <h2 style="color:white;">PLACEHOLDER</h2>
-      <h2 style="color:black;">A Tool for Continuous Reachability Analysis</h2>
+<div class="container">
+    <div class="row">
+        <div class="col-1 col-md-2 col-lg-3"></div>
+        <div class="col-10 col-md-8 col-lg-6">
+            <figure class="text-center">
+                <img src="./images/CoraLogo.svg" alt="CORA Logo"/>
+                <figcaption class="figure-caption text-center">A Tool for COntinuous Reachability Analysis.</figcaption>
+            </figure>
+        </div>
     </div>
-  </header>
-</div>
-<div class="wrapper row3">
-  <div id="container" class="clear">
-    <!-- main content -->
-    <div id="content">
-      <!-- section 2 -->
-      <section>
-        <!-- article 1 -->
-        <article>
-          <h1 style="color:black;">Toolbox Description</h1>
-          <p style="color:black;"> The COntinuous Reachability Analyzer (CORA) is a collection of MATLAB classes for the formal verification of cyber-physical systems using reachability analysis. CORA integrates various vector and matrix set representations and operations on them as well as reachability algorithms of various dynamic system classes. The software is designed such that set representations can be exchanged without having to modify the code for reachability analysis. CORA is designed using the object oriented paradigm, such that users can safely use methods without concerning themselves with detailed information hidden inside the object. Since the toolbox is written in MATLAB, the installation and use is platform independent. From Release 2018 on, the direct import of SpaceEx models into CORA is also supported. The following points summarize the main capabilities of the CORA toolbox:</p>
-        </article>
-        <!-- / articles -->
-      </section>
-      <!-- section 2 -->
-      <section id="latest">
-        <ul>
-          <li>
-            <article class="clear">
-              <figure><img src="images/ContinuousSystem.png" alt="">
-                <figcaption>
-                  <h2 style="color:black;">Reachability Analysis for Continuous Systems</h2>
-                  <p style="color:black;">CORA computes reachable sets for linear systems, nonlinear systems as well as for systems with constraints. Continuous as well as discrete time models are supported. Uncertainty in the system inputs as well as uncertainty in the model parameters can be explicitly considered. In addition, CORA also provides capabilities for the simulation of dynamical models.</p>
-                </figcaption>
-              </figure>
-            </article>
-          </li>
-          <li>
-            <article class="clear">
-              <figure><img src="images/HybridSystem.png" alt="">
-                <figcaption>
-                  <h2 style="color:black;">Reachability Analysis for Hybrid Systems</h2>
-                  <p style="color:black;">The toolbox is also capable to calculate the reachable sets for hybrid systems. All implemented dynamic system classes can be used to describe the different continuous flows for the discrete system states. Further, multiple different methods for the calculation of the intersections with guard sets are implemented in CORA.</p>
-                </figcaption>
-              </figure>
-            </article>
-          </li>
-	  <li class="last">
-            <article class="clear">
-              <figure><img src="images/SetRepresentations.png" alt="">
-                <figcaption>
-                  <h2 style="color:black;">Geometric Sets</h2>
-                  <p style="color:black;">CORA has a modular design, making it possible to use the capabilities of the various set representations for other purposes besides reachability analysis. The toolbox implements vector set representation, e.g., zonotopes, Taylor models and intervals, as well as matrix set representations such as matrix zonotope and interval matrices.</p>
-                </figcaption>
-              </figure>
-            </article>
-          </li>	
-        </ul>
-      </section>
-      <!-- publications -->
-      <section id="latest" class="last">
-	<p style="color:white;">PLACEHOLDER</p>
-	<h1 style="color:black;">Publications</h1>
-	<p style="color:white;"></p>
- 	<table style="width:100%">
-	  <tr valign="top">
-	    <td align="middle" style="color:black;">
-		[<a name="GassmannAlthoff22" style="color:black;">1</a>]
-	    </td>
-	    <td style="color:black;">
-		V.&nbsp;Gaßmann and M.&nbsp;Althoff.
- 		Implementation of Ellipsoidal Operations in CORA 2022.
- 		In <em>Proc. of the Workshop on Applied Verification for Continuous
-  		and Hybrid Systems</em>, pages 1-17, 2022.
-		[&nbsp;<a href="https://mediatum.ub.tum.de/export/1700997/bibtex" style="color:orange;" target="_blank">.bib</a>&nbsp;| 
-		<a href="https://tumcps.github.io/CORA/data/PublicationEllipsoidalOperations.pdf" style="color:orange;" target="_blank">.pdf</a>&nbsp;]
-	    </td>
-	  </tr>
-	  <tr valign="top">
-	    <td align="middle" style="color:black;">
-		[<a name="Althoff21" style="color:black;">2</a>]
-	    </td>
-	    <td style="color:black;">
-		M.&nbsp;Althoff.
- 		Guaranteed State Estimation in CORA 2021.
- 		In <em>Proc. of the Workshop on Applied Verification for Continuous
-  		and Hybrid Systems</em>, pages 161-175, 2021.
-		[&nbsp;<a href="https://mediatum.ub.tum.de/export/1636779/bibtex" style="color:orange;" target="_blank">.bib</a>&nbsp;| 
-		<a href="https://tumcps.github.io/CORA/data/PublicationStateEstimation.pdf" style="color:orange;" target="_blank">.pdf</a>&nbsp;]
-	    </td>
-	  </tr>
-	  <tr valign="top">
-	    <td align="middle" style="color:black;" width="5%">
-		[<a name="AlthoffGrebenyukKochdumper18" style="color:black;">3</a>]
-	    </td>
-	    <td style="color:black;">
-	     	M.&nbsp;Althoff, D.&nbsp;Grebenyuk and N.&nbsp;Kochdumper.
- 		Implementation of Taylor Models in CORA 2018.
- 		In <em>Proc. of the 5th International Workshop on Applied
-  		Verification for Continuous and Hybrid Systems</em>, pages 145–173, 2018.
-		[&nbsp;<a href="https://mediatum.ub.tum.de/export/1454477/bibtex" style="color:orange;" target="_blank">.bib</a>&nbsp;| 
-		<a href="https://tumcps.github.io/CORA/data/PublicationTaylorModels.pdf" style="color:orange;" target="_blank">.pdf</a>&nbsp;]
-	    </td>
-	  </tr>
-	  <tr valign="top">
-	    <td align="middle" style="color:black;" width="5%">
-		[<a name="AlthoffGrebenyuk16" style="color:black;">4</a>]
-	    </td>
-	    <td style="color:black;">
-	     	M.&nbsp;Althoff and D.&nbsp;Grebenyuk.
- 		Implementation of Interval Arithmetic in CORA 2016.
- 		In <em>Proc. of the 3rd International Workshop on Applied
-  		Verification for Continuous and Hybrid Systems</em>, pages 91-105, 2016.
-		[&nbsp;<a href="https://mediatum.ub.tum.de/export/1379696/bibtex" style="color:orange;" target="_blank">.bib</a>&nbsp;| 
-		<a href="https://tumcps.github.io/CORA/data/PublicationIntervalArithmetic.pdf" style="color:orange;" target="_blank">.pdf</a>&nbsp;]
-	    </td>
-	  </tr>
-	  <tr valign="top">
-	    <td align="middle" style="color:black;">
-		[<a name="Althoff15" style="color:black;">5</a>]
-	    </td>
-	    <td style="color:black;">
-		M.&nbsp;Althoff.
- 		An Introduction to CORA 2015.
- 		In <em>Proc. of the Workshop on Applied Verification for Continuous
-  		and Hybrid Systems</em>, pages 120-151, 2015.
-		[&nbsp;<a href="https://mediatum.ub.tum.de/export/1280439/bibtex" style="color:orange;" target="_blank">.bib</a>&nbsp;| 
-		<a href="https://tumcps.github.io/CORA/data/PublicationCORA.pdf" style="color:orange;" target="_blank">.pdf</a>&nbsp;]
-	    </td>
-	  </tr>
-	</table>
-      </section>
+
+    <div class="row">
+        <h2>Toolbox Description</h2>
+        <p>The COntinuous Reachability Analyzer (CORA) is a collection of MATLAB classes for the formal verification of
+            cyber-physical systems using reachability analysis. CORA integrates various vector and matrix set
+            representations and operations on them as well as reachability algorithms of various dynamic system classes.
+            The
+            software is designed such that set representations can be exchanged without having to modify the code for
+            reachability analysis. CORA is designed using the object oriented paradigm, such that users can safely use
+            methods without concerning themselves with detailed information hidden inside the object. Since the toolbox
+            is
+            written in MATLAB, the installation and use is platform independent. From Release 2018 on, the direct import
+            of
+            SpaceEx models into CORA is also supported. The following points summarize the main capabilities of the CORA
+            toolbox:</p>
     </div>
-    <!-- right column -->
-    <aside id="right_column">
-      <h2 class="title" style="color:black;">Downloads</h2>
-      <nav>
-        <ul>
-          <li><a href="https://tumcps.github.io/CORA/data/CORA_2022.zip">CORA Toolbox (Release 2022)</a></li>
-          <li><a href="https://tumcps.github.io/CORA/data/Cora2022Manual.pdf" target="_blank">CORA Manual (Release 2022)</a></li>
-          <li><a href="https://github.com/TUMcps/CORA" target="_blank">Repository</a></li>
-          <li><a href="https://de.mathworks.com/matlabcentral/fileexchange/68551-cora" target="_blank">MATLAB Central</a></li>
-        </ul>
-      </nav>
-      <!-- /nav -->
-      <h2 class="title" style="color:black;">Archive</h2>
-      <nav>
-        <ul>
-	  <li><a href="https://tumcps.github.io/CORA/data/CORA_2021.zip">CORA Toolbox (Release 2021)</a></li>
-          <li><a href="https://tumcps.github.io/CORA/data/Cora2021Manual.pdf" target="_blank">CORA Manual (Release 2021)</a></li>
-	  <li style="color:white;">PLACEHOLDER</li>
-	  <li><a href="https://tumcps.github.io/CORA/data/CORA_2020.zip">CORA Toolbox (Release 2020)</a></li>
-          <li><a href="https://tumcps.github.io/CORA/data/Cora2020Manual.pdf" target="_blank">CORA Manual (Release 2020)</a></li>
-	  <li style="color:white;">PLACEHOLDER</li>
-	  <li><a href="https://tumcps.github.io/CORA/data/CORA_2018.zip">CORA Toolbox (Release 2018)</a></li>
-          <li><a href="https://tumcps.github.io/CORA/data/Cora2018Manual.pdf" target="_blank">CORA Manual (Release 2018)</a></li>
-	  <li style="color:white;">PLACEHOLDER</li>
-	  <li><a href="https://tumcps.github.io/CORA/data/CORA_2016.zip">CORA Toolbox (Release 2016)</a></li>
-          <li><a href="https://tumcps.github.io/CORA/data/Cora2016Manual.pdf" target="_blank">CORA Manual (Release 2016)</a></li>
-	  <li style="color:white;">PLACEHOLDER</li>
-	  <li><a href="https://tumcps.github.io/CORA/data/CORA_2015.zip">CORA Toolbox (Release 2015)</a></li>
-          <li><a href="https://tumcps.github.io/CORA/data/Cora2015Manual.pdf" target="_blank">CORA Manual (Release 2015)</a></li>
-	  <li style="color:white;">PLACEHOLDER</li>
-	  <li><a href="https://tumcps.github.io/CORA/data/CORA_2012.zip">CORA Toolbox (Release 2012)</a></li>
-        </ul>
-      </nav>
-      <!-- /nav -->
-      <h2 class="title" style="color:black;">Get In Contact</h2>
-      <section class="last">
-        <nav>
-        <ul>
-          <li><a href="https://www.ce.cit.tum.de/en/air/people/prof-dr-ing-matthias-althoff/" target="_blank">Prof. Matthias Althoff</a></li>
-          <li><a href="https://scholar.google.de/citations?user=xJQUgWsAAAAJ" target="_blank">Dr. Niklas Kochdumper</a></li>
-		  <li><a href="https://www.ce.cit.tum.de/air/people/mark-wetzlinger-msc/" target="_blank">Mark Wetzlinger, M.Sc.</a></li>
-		  <li><a href="https://www.ce.cit.tum.de/air/people/tobias-ladner-msc/" target="_blank">Tobias Ladner, M.Sc.</a></li>
-		  <li><a href="https://www.ce.cit.tum.de/en/air/home/" target="_blank">Research Group</a></li>
-        </ul>
-      </nav>
-      </section>
-      <!-- /section -->
-    </aside>
-    <!-- / content body -->
-  </div>
+
+    <!-- Reachability Analysis for Continuous Systems -->
+    <div class="row">
+        <div class="col-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3">
+            <figure class="text-center">
+                <img src="./images/ContinuousSystem.svg " alt="Continuous System"/>
+            </figure>
+        </div>
+        <div class="col-12 col-md-6 col-lg-6 col-xl-8 col-xxl-9">
+            <h3>Reachability Analysis for Continuous Systems</h3>
+            <p>CORA computes reachable sets for linear systems, nonlinear systems as well as for systems with
+                constraints.
+                Continuous as well as discrete time models are supported. Uncertainty in the system inputs as well as
+                uncertainty in the model parameters can be explicitly considered. In addition, CORA also provides
+                capabilities for the simulation of dynamical models.</p>
+        </div>
+    </div>
+
+    <!-- Reachability Analysis for Hybrid Systems -->
+    <div class="row">
+        <div class="col-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3">
+            <figure class="text-center">
+                <img src="./images/HybridSystem.svg" alt="Hybrid System"/>
+            </figure>
+        </div>
+        <div class="col-12 col-md-6 col-lg-6 col-xl-8 col-xxl-9">
+            <h3>Reachability Analysis for Hybrid Systems</h3>
+            <p>The toolbox is also capable to calculate the reachable sets for hybrid systems. All implemented dynamic
+                system classes can be used to describe the different continuous flows for the discrete system states.
+                Further, multiple different methods for the calculation of the intersections with guard sets are
+                implemented in CORA.</p>
+        </div>
+    </div>
+
+    <!-- Geometric Sets -->
+    <div class="row">
+        <div class="col-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3">
+            <figure class="text-center">
+                <img src="./images/SetRepresentations_test.svg" alt="Set Representations"/>
+            </figure>
+        </div>
+        <div class="col-12 col-md-6 col-lg-6 col-xl-8 col-xxl-9">
+            <h3>Geometric Sets</h3>
+            <p>CORA has a modular design, making it possible to use the capabilities of the various set representations
+                for other purposes besides reachability analysis. The toolbox implements vector set representation,
+                e.g., zonotopes, Taylor models and intervals, as well as matrix set representations such as matrix
+                zonotope and interval matrices.
+            </p>
+        </div>
+    </div>
+
+    <!-- MathJax Test -->
+    <div class="row">
+        <h3>MathJax Test</h3>
+        When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\) and they are
+        $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
+
+    </div>
+
+    <!-- Include live script test -->
+    <div class="row">
+        <h3>Include live script</h3>
+        <div class="position-relative">
+            <iframe class="code code-lg" src="./matlab/scripts/test-script.html"></iframe>
+            <div class="position-absolute top-0 end-0 translate-middle-x">
+                <div class="code-btn-box">
+                    <a class="btn btn-outline-secondary btn-sm" href="./matlab/scripts/test-script.mlx"
+                       title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
+                </div>
+            </div>
+        </div>
+        <p>... or a small code snippet:</p>
+        <div class="position-relative">
+            <iframe class="code code-sm" src="./matlab/scripts/test-script-snippet.html"></iframe>
+            <div class="position-absolute top-0 end-0 translate-middle-x">
+                <div class="code-btn-box">
+                    <a class="btn btn-outline-secondary btn-sm" href="./matlab/scripts/test-script-snippet.mlx"
+                       title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
+                </div>
+            </div>
+        </div>
+        <p>... or a medium code snippet:</p>
+        <div class="position-relative">
+            <iframe class="code code-md" src="./matlab/scripts/test-script.html"></iframe>
+            <div class="position-absolute top-0 end-0 translate-middle-x">
+                <div class="code-btn-box">
+                    <a class="btn btn-outline-secondary btn-sm" href="./matlab/scripts/test-script.mlx"
+                       title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <h3>Include an image</h3>
+            <p>See steps in <code>./images/latex/main.tex</code>.</p>
+            <div class="col-0 col-md-2 col-lg-3"></div>
+            <div class="col-12 col-md-8 col-lg-6">
+                <figure class="text-center">
+                    <img src="./images/latex/figures/set-representations.svg" alt="A fancy image."/>
+                    <figcaption class="figure-caption text-center">A fancy image.</figcaption>
+                </figure>
+            </div>
+        </div>
+    </div>
+
 </div>
-<!-- footer -->
-<div class="wrapper row3">
-  <footer id="footer" class="clear">
-    <p class="fl_left">Copyright &copy; 2022 - All Rights Reserved - <a href="https://www.tum.de/en/" target="_blank">Technische Universit&auml;t M&uuml;nchen</a></p>
-    <p class="fl_right">Website by <a href="https://www.ce.cit.tum.de/en/air/people/prof-dr-ing-matthias-althoff/" target="_blank">Matthias Althoff, 
-		<a href="https://scholar.google.de/citations?user=xJQUgWsAAAAJ" target="_blank">Niklas Kochdumper, 
-		<a href="https://www.ce.cit.tum.de/air/people/mark-wetzlinger-msc/" target="_blank">Mark Wetzlinger,</a> & <a href="http://www.os-templates.com/" title="Free Website Templates" target="_blank">OS Templates</a></p>
-  </footer>
-</div>
+
+<!-- Load Bootstrap at the very end -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
 </body>
 </html>
