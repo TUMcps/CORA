@@ -1,16 +1,16 @@
-\documentclass{article}
+\documentclass[crop=true]{standalone}
 
 % tikz
 \usepackage{tikzscale}
 \usepackage{pgfplots}
 \usepackage{mathtools}
 \pgfplotsset{compat=1.18}
-\usepgfplotslibrary{external}
-\tikzexternalize[prefix=./]
-\newcommand{\includetikz}[1]{%
-    \tikzsetnextfilename{#1}%
-    \input{#1.tikz}%
-}
+% \usepgfplotslibrary{external}
+% \tikzexternalize[prefix=./]
+% \newcommand{\includetikz}[1]{%
+%     \tikzsetnextfilename{#1}%
+%     \input{#1.tikz}%
+% }
 % explicitly set line width to avoid different widths in different pdf viewers
 \tikzset{every picture/.style={line width=0.5pt}}
 % groupplots
@@ -19,20 +19,19 @@
 \usetikzlibrary{matrix}
 
 \begin{document}
-
-% HOWTO: Convert a matlab figures to tikz file as svg
-
-% 1. Save Matlab figure to ./<figure-path>/<figure-name>.fig
-% 2. Convert fig to tikz: 			convertToTikz(`./<figure-path>/<figure-name>.fig')
-% 1. Change <figure-path>/<figure-name> in the figure below to the tikz figure (without .tikz extension!)
-% 2. Create pdf of figure: 		pdflatex --shell-escape -synctex=1 main.tex
-% 3. Change directory: 			cd <figure-path>
-% 4. Convert pdf to svg:			dvisvgm --pdf -O <figure-name>.pdf 
-
-\begin{figure}[h]
-    \centering
-    % \includetikz{.<figure-path>/<figure-name>}
-    \includetikz{./figures/set-representations}
-\end{figure}
-
+%
+% HOWTO: Convert a Matlab figure to svg via tikz
+%
+% 1. Create and save Matlab figure      								savefig('<figure-path>/<figure-name>.fig')
+% 2. Convert fig to tikz:										convertToTikz('<figure-path>/<figure-name>.fig')
+% 3. Update <figure-path>/<figure-name> in the \input command below
+% 4. Create dvi of figure:										pdflatex -output-format=dvi main
+% 5. Convert dvi to svg:										dvisvgm main.dvi --font-format=woff --optimize -o <figure-path>/<figure-name>.svg
+% 6. Add to website         										<img src="<figure-path>/<figure-name>.svg"/>
+%
+% \input{./<figure-path>/<figure-name>.tikz}
+\input{./figures/hybrid.tikz}
+%
+% Note: Make sure that there are no empty lines within the document environment for standalone to properly crop the image
+%
 \end{document}

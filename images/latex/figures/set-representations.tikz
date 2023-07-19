@@ -30,7 +30,7 @@ legend style={legend cell align=left, align=left, draw=white!15!black}
 -1	1\\
 1	-1\\
 };
-\addlegendentry{Zonotope}
+\addlegendentry{Zonotope $\mathcal{Z}$}
 
 \addplot [color=mycolor2]
   table[row sep=crcr]{%
@@ -913,7 +913,7 @@ legend style={legend cell align=left, align=left, draw=white!15!black}
 -1.128	3.1146\\
 -1.1191	3.1235\\
 };
-\addlegendentry{Ellipsoid}
+\addlegendentry{Ellipsoid $\mathcal{E}$}
 
 \end{axis}
 \end{tikzpicture}%
