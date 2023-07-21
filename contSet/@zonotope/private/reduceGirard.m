@@ -31,7 +31,7 @@ function Zred = reduceGirard(Z,order)
 Zred=Z;
 
 % pick generators to reduce
-[center, Gunred, Gred] = pickedGenerators(Z,order);
+[center, Gunred, Gred] = pickedGeneratorsFast(Z,order);
 
 % box remaining generators
 d=sum(abs(Gred),2);

@@ -34,7 +34,9 @@ function createJacobianFile(Jdyn,Jcon,Jp,path,name,vars)
 
 %------------- BEGIN CODE --------------
 
+% open file
 fid = fopen([path filesep name '.m'],'w');
+try
 
 % system has no uncertain parameters
 if isempty(Jp)
@@ -126,8 +128,14 @@ else
     end
 end
 
+catch ME
+    % close file
+    fclose(fid);
 
-%close file
+    rethrow(ME)
+end
+
+% close file
 fclose(fid);
 
 %------------- END OF CODE --------------

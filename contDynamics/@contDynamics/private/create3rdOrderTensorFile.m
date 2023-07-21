@@ -83,8 +83,9 @@ else
     Tcon = [];
 end
 
-% create the file
+% open file
 fid = fopen([path filesep name '.m'],'w');
+try
 
 % function arguments depending on occurring variable types
 if isempty(vars.y) || isempty(Tcon)
@@ -247,7 +248,7 @@ for k=1:length(Tdyn(:,1))
            indNonZero{k} = [indNonZero{k}; l]; 
         end
 
-        disp(['dynamic index ',num2str(k),',',num2str(l)]);
+        disp(['     .. dynamic index ',num2str(k),',',num2str(l)]);
     end
 end
 
@@ -279,7 +280,7 @@ if ~isempty(Tcon)
             % write rest of matrix
             writeSparseMatrix(Tcon{k,l},['Tg{',num2str(k),',',num2str(l),'}'],fid);
 
-            disp(['dynamic index ',num2str(k),',',num2str(l)]);
+            disp(['     .. dynamic index ',num2str(k),',',num2str(l)]);
         end
     end
 end
@@ -299,6 +300,9 @@ for i = 1:length(indNonZero)
     end
 end
 
+% properly end function
+fprintf(fid, 'end\n\n');
+
 % create optimized function to reduce the number of interval operations
 if opt && ~isempty(out)
     % create file with optimized evaluation
@@ -310,10 +314,23 @@ if opt && ~isempty(out)
     text = fileread(pathTemp);
 
     % print text from file
-    fprintf(fid, '%s',text);
+    fprintf(fid, '%s\n',text);
+
+    if ~contains(text, 'end')
+        % returned function text doesn't contain the 'end' keyword 
+        % in some Matlab versions
+        fprintf(fid, 'end\n\n');
+    end
 end
 
-%close file
+catch ME
+    % close file
+    fclose(fid);
+
+    rethrow(ME);
+end
+
+% close file
 fclose(fid);
 
 

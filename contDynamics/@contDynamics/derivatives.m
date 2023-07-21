@@ -93,6 +93,8 @@ if ~any([allnew;...
     return;
 end
 
+fprintf("Computing multivariate derivatives for dynamic '%s':\n", obj.name)
+
 % first, store the actual dynamics (given in symbolic variables)
 % and all other Lagrange remainder options in cora/models/auxiliary/<func>
 storedData.fdyn = fdyn;
@@ -141,7 +143,7 @@ end
 
 % compute Jacobian
 if requiredFiles.standard(1)
-    disp('...compute symbolic Jacobian');
+    disp('  .. compute symbolic Jacobian');
     name = ['jacobian_' obj.name];
     [Jdyn,Jcon,Jp] = jacobians(obj,fdyn,fcon,vars,options,simplify);
     createJacobianFile(Jdyn,Jcon,Jp,path,name,vars);
@@ -156,7 +158,7 @@ if requiredFiles.standard(1)
 end
 % compute Jacobian (output)
 if requiredFiles_out.standard(1)
-    disp('...compute symbolic Jacobian (output)');
+    disp('  .. compute symbolic Jacobian (output)');
     name = ['out_jacobian_' obj.name];
     [Jout,~,Jpout] = jacobians(obj,fout,[],vars,options,simplify);
     createJacobianFile(Jout,[],Jpout,path,name,vars);
@@ -173,7 +175,7 @@ end
 % Hessians and third-order tensors
 if any([requiredFiles.standard(2:3); requiredFiles.int(2:3)])
     % compute Hessians
-    disp('...compute symbolic Hessians');
+    disp('  .. compute symbolic Hessians');
     [J2dyn,J2con] = hessians(fdyn,fcon,vars,simplify);
 
     if requiredFiles.standard(2)
@@ -189,7 +191,7 @@ if any([requiredFiles.standard(2:3); requiredFiles.int(2:3)])
     
     if any([requiredFiles.standard(3); requiredFiles.int(3)])
         % compute third-order derivatives
-        disp('...compute symbolic third-order derivatives'); 
+        disp('  .. compute symbolic third-order derivatives'); 
         [J3dyn,J3con] = thirdOrderDerivatives(J2dyn,J2con,vars,simplify);
     
         if requiredFiles.standard(3)
@@ -211,7 +213,7 @@ end
 % Hessians and third-order tensors (output)
 if any([requiredFiles_out.standard(2:3); requiredFiles_out.int(2:3)])
     % compute Hessians
-    disp('...compute symbolic Hessians (output)');
+    disp('  .. compute symbolic Hessians (output)');
     J2out = hessians(fout,[],vars,simplify);
 
     if requiredFiles_out.standard(2)
@@ -227,7 +229,7 @@ if any([requiredFiles_out.standard(2:3); requiredFiles_out.int(2:3)])
     
     if any([requiredFiles_out.standard(3); requiredFiles_out.int(3)])
         % compute third-order derivatives
-        disp('...compute symbolic third-order derivatives (output)'); 
+        disp('  .. compute symbolic third-order derivatives (output)'); 
         J3out = thirdOrderDerivatives(J2out,[],vars,simplify);
     
         if requiredFiles_out.standard(3)
@@ -255,6 +257,9 @@ rehash path;
 
 % save data so that symbolic computations do not have to be re-computed
 save(filepathOld,'storedData');
+
+% 
+fprintf("Done.\n")
 
 end
 

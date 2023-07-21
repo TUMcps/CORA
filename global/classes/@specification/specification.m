@@ -249,18 +249,6 @@ methods
             end
         end
     end   
-    
-    % assign array elements
-    function obj = subsasgn(obj,S,value)
-        % call built-in function
-        obj = builtin('subsasgn',obj,S,value);
-    end
-    
-    % get array entries
-    function res = subsref(obj,S)
-        % call built-in function
-        res = builtin('subsref',obj,S);
-    end
 
 end
 end

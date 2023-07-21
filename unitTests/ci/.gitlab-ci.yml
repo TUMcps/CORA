@@ -46,7 +46,7 @@ test-job:
   rules:
     - when: never
   script: 
-    - matlab -batch "addpath(genpath('.')); test_conZonotope_convHull"
+    - matlab -batch "addpath(genpath('.')); testLong_zonotope_reduce"
 
 # Short test stage ----------------------------------------
 
