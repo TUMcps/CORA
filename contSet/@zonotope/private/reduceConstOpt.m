@@ -84,28 +84,29 @@ end
 %build reduced zonotope
 Zred.Z=[cen,Gunred,Gred];
 
+end
 
 
 function vol=svdLogVol(X, G)
-
-n = size(G,1);
-Y = reshape(X, n, 3*n);
-S = Y(:,(n+1):2*n);
-
-vol = sum(log(diag(abs(S)))); % log(diag(abs(S))) can be < 0
-
+    n = size(G,1);
+    Y = reshape(X, n, 3*n);
+    S = Y(:,(n+1):2*n);
+    
+    vol = sum(log(diag(abs(S)))); % log(diag(abs(S))) can be < 0
+end
 
 function [c, ceq]=zonoSVDConst(X, G)
+    n = size(G,1);
+    Y = reshape(X, n, 3*n);
+    U = Y(:,1:n);
+    S = Y(:,(n+1):2*n);
+    V = Y(:,(2*n+1):3*n);
+    
+    
+    C_inv = V * diag(diag(1 ./S)) * U'; 
+    c = sum(abs(C_inv * G), 2) - ones(n,1);
+    ceq = [U*U' - diag(ones(1,n)); V*V' - diag(ones(1,n))];
 
-n = size(G,1);
-Y = reshape(X, n, 3*n);
-U = Y(:,1:n);
-S = Y(:,(n+1):2*n);
-V = Y(:,(2*n+1):3*n);
-
-
-C_inv = V * diag(diag(1 ./S)) * U'; 
-c = sum(abs(C_inv * G), 2) - ones(n,1);
-ceq = [U*U' - diag(ones(1,n)); V*V' - diag(ones(1,n))];
+end
 
 %------------- END OF CODE --------------

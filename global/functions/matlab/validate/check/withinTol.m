@@ -1,4 +1,4 @@
-function res = withinTol(a,b,varargin)
+function res = withinTol(a,b,tol)
 % withinTol - checks whether two numeric values (scalars, vectors, arrays)
 %    are within a given tolerance
 %
@@ -25,16 +25,16 @@ function res = withinTol(a,b,varargin)
 % Author:       Victor Gassmann
 % Written:      19-July-2021
 % Last update:  ---
-% Last revision:---
+% Last revision:20-July-2023 (TL, speed up input parsing)
 
 %------------- BEGIN CODE --------------
 
-if nargin > 3
+% parse input
+if nargin < 3
+    tol = 1e-8;
+elseif nargin > 3
     throw(CORAerror('CORA:tooManyInputArgs',3));
 end
-
-% set default value
-tol = setDefaultValues({1e-8},varargin);
 
 % allow scalar values to be expanded
 if ~all(size(a)==size(b)) && ~isscalar(a) && ~isscalar(b) && ...

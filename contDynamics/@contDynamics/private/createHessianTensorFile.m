@@ -67,7 +67,10 @@ for k=1:size(J2con,1) %length(vars.y)
     Hcon{k} = squeeze(J2con(k,:,:));
 end
 
+% open file
 fid = fopen([path filesep name '.m'],'w');
+try
+
 % function arguments depending on occurring variable types
 if isempty(vars.p)
     if isempty(vars.y) % no constraints
@@ -165,7 +168,7 @@ if ~isempty(vars.x)
             writeSparseMatrixOptimized(indDyn{k},['Hf{',num2str(k),'}'],fid,taylMod);
         end
         
-        disp(['dynamics dim ',num2str(k)]);
+        disp(['     .. dynamics dim ',num2str(k)]);
     end
 else
     fprintf(fid,'\n\nHf = {};\n\n');
@@ -243,6 +246,13 @@ if opt
         % delete funOptimizeCon file
         delete([path filesep 'funOptimizeCon.m']);
     end
+end
+
+catch ME
+    % close file
+    fclose(fid);
+
+    rethrow(ME)
 end
 
 % close file

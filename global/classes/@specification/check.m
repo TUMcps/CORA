@@ -87,7 +87,7 @@ if isnumeric(S) % ---------------------------------------------------------
                     'Timed specifications require a time interval.')); 
             end
 
-            if isempty(spec_i.time) || contains(spec_i.time,time)
+            if isempty(spec_i.time) || contains_(spec_i.time,time,'exact',100*eps)
 
                 % different types of specifications
                 switch spec_i.type

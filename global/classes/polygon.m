@@ -85,35 +85,54 @@ methods
         if nargin < 2
             dims = [1, 2];
         end
-
-        % prepare vertices
-        V = pgon.set.Vertices';
-        V = V(dims, :);
         n = length(dims);
 
-        if pgon.set.NumRegions > 0
-            % vertices stored in polyshape to not close the regions
-            % close regions (separated by nan & end)
-            regStart = 1;
-            regEnds = [find(isnan(V(1, :)))' - 1, size(V, 2)];
-            regEnds = regEnds(regEnds > 0);
-
-            Vc = [];
-            for regEnd = regEnds
-                % close next region by adding first vertices at the end
-                Vc = [Vc, nan(n, 1), V(:, regStart:regEnd), V(:, regStart)];
-                % jump to next region
-                regStart = regEnd + 2;
+        if pgon.set.NumRegions > 2
+            % plot each region separately
+            regions = pgon.set.regions;
+            pgons = cell(length(regions),1);
+            for i=1:length(regions)
+                pgons{i} = regions(i);
             end
-            % remove leading nan
-            V = Vc(:, 2:end);
+
+            han = plotMultipleSetsAsOne(pgons, dims, varargin);
+
+        elseif pgon.set.NumRegions == 1
+            % init region
+            regions = pgon.set.regions;
+            region = regions(1);
+        
+            % save holes
+            holes = region.holes;
+            
+            % remove holes
+            region = region.rmholes();
+
+            % get polygon of region
+            V = [region.Vertices;region.Vertices(1,:)]';
+
+            % cut out holes; inserted at smallest distance to boundary
+            for i=1:length(holes)
+                % extract
+                holesV = [holes(i).Vertices;holes(i).Vertices(1,:)]';
+                holesV3D = reshape(holesV,n,1,[]);
+
+                [~,idxV] = min(min(vecnorm(V-holesV3D,2,1),[],3),[],2);
+                [~,idxH] = min(min(vecnorm(V-holesV3D,2,1),[],2),[],3);
+
+                V = [V(:,1:idxV), ...
+                    holesV(:,idxH:end),holesV(:,1:idxH), ...
+                    V(:,idxV:end)];
+            end 
+
+            % plot
+            han = plotPolygon(V, varargin{:});
+
         else
             % plot empty
             V = zeros(2, 0);
+            han = plotPolygon(V, varargin{:});
         end
-
-        % plot
-        han = plotPolygon(V, varargin{:});
 
         if nargout == 0
             clear han

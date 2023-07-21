@@ -29,7 +29,10 @@ function createJacobianFile_freeParam(Jdyn,path,name)
 
 %------------- BEGIN CODE --------------
 
+% open file
 fid = fopen([path filesep name '.m'],'w');
+try
+
 fprintf(fid, '%s\n\n', ['function [A,B]=',name,'(x,u,p)']);
 
 % SYSTEM MATRIX
@@ -44,7 +47,14 @@ fprintf(fid, '%s', 'B=[');
 % write rest of matrix
 writeMatrix(Jdyn.u,fid);
 
-%close file
+catch ME
+    % close file
+    fclose(fid);
+    
+    rethrow(ME);
+end
+
+% close file
 fclose(fid);
 
 %------------- END OF CODE --------------

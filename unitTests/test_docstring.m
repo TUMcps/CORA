@@ -19,6 +19,7 @@ function res = test_docstring()
 % Author:        Tobias Ladner
 % Written:       18-November-2022
 % Last update:   21-April-2023 (unix bugfix: author follows empty line)
+%                19-July-2023 (ignore script files)
 % Last revision: ---
 
 %------------- BEGIN CODE --------------
@@ -56,6 +57,11 @@ for i=1:length(files)
     file = files(i);
     file_path = [file.folder, filesep, file.name];
     filetext = fileread(file_path);
+
+    if ~startsWith(filetext,'function') && ~startsWith(filetext,'classdef')
+        % ignore script files
+        continue
+    end
 
     issues = [];
 
