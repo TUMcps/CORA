@@ -42,7 +42,7 @@ h1, h2 {
     font-size: large;
 }
 
-img {
+img, embed, object[type="image/svg+xml"] {
     width: 100%;
     max-width: 80vw;
     height: auto;
