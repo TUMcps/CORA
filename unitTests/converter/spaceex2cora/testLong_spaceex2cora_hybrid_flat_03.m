@@ -44,8 +44,8 @@ eq = -x^2 - y^2 + 5;
 inv = levelSet(eq,[x;y],'<=');
 
 % transitions
-eq1 = x^2 + y^2 - 5;
-eq2 = -x^2 - y^2 + 5;
+eq1 = -x^2 - y^2 + 5;
+eq2 = x^2 + y^2 - 5;
 guard = levelSet([eq1,eq2],[x;y],{'<=','<='});
 reset = struct('A',[1,0;0,1],'c',[-2;-2]);
 trans = transition(guard,reset,2);
@@ -62,8 +62,8 @@ eq = x^2 + y^2 - 5;
 inv = levelSet(eq,[x;y],'<=');
 
 % transitions
-eq1 = -x^2 - y^2 + 5;
-eq2 = x^2 + y^2 - 5;
+eq1 = x^2 + y^2 - 5;
+eq2 = -x^2 - y^2 + 5;
 guard = levelSet([eq1,eq2],[x;y],{'<=','<='});
 reset = struct('A',[1,0;0,1],'c',[2;2]);
 trans = transition(guard,reset,1);

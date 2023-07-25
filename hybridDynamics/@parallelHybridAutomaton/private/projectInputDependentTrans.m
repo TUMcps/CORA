@@ -32,19 +32,16 @@ function trans = projectInputDependentTrans(pHA,trans,N,compIndex,locID,targ,id)
 
 %------------- BEGIN CODE --------------
 
-    % project guard set to the higher dimension
+    % convert to mptPolytope unless guard set is fullspace, a levelSet,
+    % an mptPolytope, or a conHyperplane
     guard = trans.guard;
-    if ~(isnumeric(guard) && isempty(guard)) && ~isa(guard,'levelSet') ...
+    if ~isa(guard,'fullspace') && ~isa(guard,'levelSet') ...
             && ~isa(guard,'mptPolytope') && ~isa(guard,'conHyperplane')
-        % convert to mptPolytope unless guard set is [], a levelSet,
-        % an mptPolytope, or a conHyperplane
         guard = mptPolytope(guard);
     end
 
-    % only project unless guard set is []
-    if ~(isnumeric(guard) && isempty(guard))
-        guard = projectHighDim(guard,N,pHA.bindsStates{compIndex});
-    end
+    % project guard set to the higher dimension
+    guard = projectHighDim(guard,N,pHA.bindsStates{compIndex});
 
     % project reset function to the higher dimension
     if isfield(trans.reset,'A')
@@ -251,7 +248,13 @@ function resetResult = aux_projectNonlinearReset(pHA,resetStruct,compIdx,locID,i
         else
             % output from another component: insert state vector into
             % corresponding output equation
-            y = pHA.components(binds(1)).location(locID(binds(1))).contDynamics.out_mFile(x(pHA.bindsStates{binds(1)}),u);
+            othersys = pHA.components(binds(1)).location(locID(binds(1))).contDynamics;
+            if isa(othersys,'linearSys')
+                y = othersys.C * x(pHA.bindsStates{binds(1)}) ...
+                    + othersys.D * u;
+            elseif isa(othersys,'nonlinearSys')
+                y = othersys.out_mFile(x(pHA.bindsStates{binds(1)}),u);
+            end
 
             % concatenate
             % x_reset = [x_reset;x(pHA.bindsStates{binds(1)}(binds(2)))];

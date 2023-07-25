@@ -50,9 +50,13 @@ function [R,res] = reach(obj,params,varargin)
         spec = varargin{2};
     end
     
-
     % options preprocessing
-    options = validateOptions(obj,mfilename,params,options);
+    if ~isfield(options,'validated') || ~options.validated
+        options = validateOptions(obj,mfilename,params,options);
+    else
+        % internal call: skip validation (options already checked)
+        options = validateOptions(obj,mfilename,params,options,true);
+    end
     
     specLogic = [];
     if ~isempty(spec)
@@ -62,25 +66,40 @@ function [R,res] = reach(obj,params,varargin)
         end
     end
 
-    % decide which reach function to execute by options.linAlg
-    if strcmp(options.linAlg,'adaptive')
-        [timeInt,timePoint,res] = reach_adaptive(obj, options);
+    % hybrid systems: if invariant is empty set (used to model instant
+    % transitions), exit immediately with only start set as reachable set
+    % same goes for tStart = tFinal, which may occur in hybrid systems
+    if withinTol(options.tStart,options.tFinal) || ...
+            ( isfield(options,'specification') ...
+            && strcmp(options.specification(1).type,'invariant') ...
+            && isempty(options.specification(1).set) )
+        timePoint.set{1} = options.R0; timePoint.time{1} = options.tStart;
+        timeInt = [];
+        res = false;
     else
-        % all below, const. time step sizes
-        if strcmp(options.linAlg,'standard')
-            [timeInt,timePoint,res] = reach_standard(obj, options);
-        elseif strcmp(options.linAlg,'wrapping-free')
-            [timeInt,timePoint,res] = reach_wrappingfree(obj, options);
-        elseif strcmp(options.linAlg,'fromStart')
-            [timeInt,timePoint,res] = reach_fromStart(obj, options);
-        elseif strcmp(options.linAlg,'decomp')
-            [timeInt,timePoint,res] = reach_decomp(obj, options);
-        elseif strcmp(options.linAlg,'krylov')
-            [timeInt,timePoint,res] = reach_krylov(obj, options);
+
+        % decide which reach function to execute by options.linAlg
+        if strcmp(options.linAlg,'adaptive')
+            [timeInt,timePoint,res] = reach_adaptive(obj, options);
+        else
+            % all below, const. time step sizes
+            if strcmp(options.linAlg,'standard')
+                [timeInt,timePoint,res] = reach_standard(obj, options);
+            elseif strcmp(options.linAlg,'wrapping-free')
+                [timeInt,timePoint,res] = reach_wrappingfree(obj, options);
+            elseif strcmp(options.linAlg,'fromStart')
+                [timeInt,timePoint,res] = reach_fromStart(obj, options);
+            elseif strcmp(options.linAlg,'decomp')
+                [timeInt,timePoint,res] = reach_decomp(obj, options);
+            elseif strcmp(options.linAlg,'krylov')
+                [timeInt,timePoint,res] = reach_krylov(obj, options);
+            end
+            % error vector (initial set: no error; error not computed -> NaN)
+            timePoint.error = [0; NaN(length(timePoint.set)-1,1)];
+            if isfield(timeInt,'set')
+                timeInt.error = NaN(length(timeInt.set),1);
+            end
         end
-        % error vector (initial set: no error; error not computed -> NaN)
-        timePoint.error = [0; NaN(length(timePoint.set)-1,1)];
-        timeInt.error = NaN(length(timeInt.set),1);
     end
 
     % create object of class reachSet

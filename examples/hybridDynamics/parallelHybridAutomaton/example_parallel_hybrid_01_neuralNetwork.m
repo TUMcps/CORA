@@ -32,7 +32,7 @@ function res = example_parallel_hybrid_01_neuralNetwork()
 HA = integrateAndFireNeuron();
 
 % network with 3 identical neurons 
-comp = {HA,HA,HA};
+comp = [HA;HA;HA];
 
 % neuron connections:
 inputBinds{1} = [0,1;0,2];     % input 1 -> neuron 1, input 2 -> neuron 1

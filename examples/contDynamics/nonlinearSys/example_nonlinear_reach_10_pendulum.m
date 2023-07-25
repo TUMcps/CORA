@@ -105,13 +105,13 @@ simX = cell(simOpt.points,1);
 simY = cell(simOpt.points,1);
 idx = cell(simOpt.points,1);
 for r=1:simOpt.points
-    phi = simRes.x{r}(:,1);
+    phi = simRes(r).x{1}(:,1);
     simX{r,1} = P.L*sin(phi);
     simY{r,1} = -P.L*cos(phi);
     % prepare indices for simulation
     idx{r} = [1;zeros(totalSets,1)];
     for i=1:totalSets
-        idx{r}(i+1) = find(simRes.t{r} <= options.timeStep*i,1,'last');
+        idx{r}(i+1) = find(simRes(r).t{1} <= options.timeStep*i,1,'last');
     end
 end
 
@@ -127,8 +127,8 @@ for i=1:totalSets
     for r=1:simOpt.points
         % always plot until last index before current time
         % add idx below!
-        plot(simRes.x{r}(idx{r}(i):idx{r}(i+1),1),...
-            simRes.x{r}(idx{r}(i):idx{r}(i+1),2),'Color',CORAcolor("CORA:simulations"));
+        plot(simRes(r).x{1}(idx{r}(i):idx{r}(i+1),1),...
+            simRes(r).x{1}(idx{r}(i):idx{r}(i+1),2),'Color',CORAcolor("CORA:simulations"));
     end
     
     % xy space plot (additional over-approximation in conversion)

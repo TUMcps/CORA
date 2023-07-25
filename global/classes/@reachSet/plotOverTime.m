@@ -352,8 +352,14 @@ for i = 1:size(R,1)
     % get desired set
     switch whichset
         case 'ti'
-            Rset = R(i,1).timeInterval.set;
-            Rtime = R(i,1).timeInterval.time;
+            % fall back to time-point set (hybrid, instant transitions)
+            if isempty(R(i,1).timeInterval)
+                Rset = R(i,1).timePoint.set;
+                Rtime = R(i,1).timePoint.time;
+            else
+                Rset = R(i,1).timeInterval.set;
+                Rtime = R(i,1).timeInterval.time;
+            end
         case 'tp'
             Rset = R(i,1).timePoint.set;
             Rtime = R(i,1).timePoint.time;

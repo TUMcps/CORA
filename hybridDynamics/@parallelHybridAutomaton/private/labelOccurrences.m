@@ -14,7 +14,8 @@ function allLabels = labelOccurrences(pHA)
 %                   .component: components with synchronization label
 %                   .location: corresponding locations in each component
 %                   .transition: corresponding transition in location
-%                   .guardempty: true/false whether corresponding guard set is empty
+%                   .instant: true/false whether corresponding guard set
+%                             yields an instant transition
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,6 +27,7 @@ function allLabels = labelOccurrences(pHA)
 % Written:      03-March-2022
 % Last update:  19-June-2022 (MW, add warning for lonely syncLabels)
 %               23-June-2022 (MW, output argument now struct, not only map)
+%               06-April-2023 (MW, rename 'guardempty' -> 'instant')
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -49,9 +51,9 @@ for i = 1:numComp
 
             if ~isempty(currentLabel)
 
-                % check if corresponding guard set is empty
-                guardempty = isnumeric(pHA.components(i).location(j).transition(k).guard) && ...
-                    isempty(pHA.components(i).location(j).transition(k).guard);
+                % check if corresponding guard set is fullspace -> instant
+                % transition
+                instant = isa(pHA.components(i).location(j).transition(k).guard,'fullspace');
 
                 % all other entries: check if label already occurred
                 found = false;
@@ -63,11 +65,11 @@ for i = 1:numComp
                     allLabels(found).component = [allLabels(found).component; i];
                     allLabels(found).location = [allLabels(found).location; j];
                     allLabels(found).transition = [allLabels(found).transition; k];
-                    allLabels(found).guardempty = [allLabels(found).guardempty; guardempty];
+                    allLabels(found).instant = [allLabels(found).instant; instant];
                 else
                     % first/new label
                     allLabels = [allLabels; struct('name',currentLabel,'component',i,...
-                        'location',j,'transition',k,'guardempty',guardempty)];
+                        'location',j,'transition',k,'instant',instant)];
                 end
             end
 

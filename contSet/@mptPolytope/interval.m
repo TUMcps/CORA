@@ -62,7 +62,13 @@ end
 
 
 %instantiate interval
-I = interval(leftLim,rightLim);
+% check against numerical issues:
+if all(withinTol(leftLim,rightLim))
+    % choose one of the limits to avoid leftLim > rightLim jitter
+    I = interval(leftLim);
+else
+    I = interval(leftLim,rightLim);
+end
 
 
 

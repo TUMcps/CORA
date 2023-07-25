@@ -41,7 +41,7 @@ else % all other contSet classes (can be nx1 arrays)
     % loop over class-arrays
     for i=1:size(S,1)
         for j=1:size(S,2)
-                res(i,j) = checkIfEmpty(S(i,j));
+            res(i,j) = checkIfEmpty(S(i,j));
         end
     end
 end
@@ -97,6 +97,12 @@ switch classname
             && isnumeric(S.q) && isempty(S.q) ...
             && isnumeric(S.TOL) && ...
             ( (isscalar(S.TOL) && S.TOL == 1e-6) || isempty(S.TOL) );
+
+    case 'emptySet'
+        res = isempty(S.dimension) || S.dimension == 0;
+
+    case 'fullspace'
+        res = isempty(S.dimension) || S.dimension == 0;
 
     case 'halfspace'
         res = isnumeric(S.c) && isempty(S.c) ...

@@ -203,6 +203,7 @@ end
 
 function val = def_tu(sys,params)
 
+val = [];
 if isa(sys,'contDynamics')
     if isa(sys,'linearSysDT') || isa(sys,'nonlinearSysDT')
         if size(params.u,2) == 1

@@ -81,6 +81,8 @@ for iComp = 1:nrComp
     for iLoc = 1:nrLocs
         % shorter access to i-th location
         loc = locs(iLoc);
+        % loop over all outgoing transitions
+        allTrans = loc.Trans;
         
         % general information about i-th location
         locStr = padComment("Location " + loc.name) + newlines(2);
@@ -89,20 +91,17 @@ for iComp = 1:nrComp
         dynamicsStr = aux_dynamicsStr(loc,iLoc,comp,iComp,isFlatHA,resultpath,functionName);
         
         % describe invariant
-        invariantStr = aux_invariantStr(loc);
+        invariantStr = aux_invariantStr(loc,allTrans,isFlatHA);
         
         % init transition string
         transitionStr = "trans = transition();" + newline;
-
-        % loop over all outgoing transitions
-        allTrans = loc.Trans;
 
         for iTrans = 1:length(allTrans)
             % shorter access to i-th transition
             trans = allTrans(iTrans);
             
             % read out target location
-            target = num2str(trans.destination);
+            targetStr = num2str(trans.destination);
 
             % describe reset equation
             resetStr = aux_resetStr(trans,iComp,iLoc,iTrans,isFlatHA,resultpath,functionName);
@@ -111,14 +110,15 @@ for iComp = 1:nrComp
             guardStr = aux_guardStr(trans,loc);
 
             % concatenate transition string incl. synchronization labels
-            if strlength(trans.label) > 0
+            % (only for conversion to parallel hybrid automaton)
+            if ~isFlatHA && strlength(trans.label) > 0
                 transStr = "trans(" + num2str(iTrans) + ...
                     ") = transition(guard, reset, " + ...
-                    target + ", '" + trans.label + "');" + newlines(2);
+                    targetStr + ", '" + trans.label + "');" + newlines(2);
             else
                 transStr = "trans(" + num2str(iTrans) + ...
                     ") = transition(guard, reset, " + ...
-                    target + ");" + newlines(2);
+                    targetStr + ");" + newlines(2);
             end
             % full transition string
             transitionStr = transitionStr + resetStr + guardStr + transStr;
@@ -309,14 +309,13 @@ end
 
 end
 
-function invariantStr = aux_invariantStr(loc)
+function invariantStr = aux_invariantStr(loc,allTrans,isFlatHA)
 
 % Get information for Invariant
 InvText = loc.Invariant.Text;
-if isnumeric(loc.Invariant.set) && isempty(loc.Invariant.set)
-    str1 = "";
-    str2 = "[];";
-    InvText = "no invariant given";
+if isa(loc.Invariant.set,'fullspace')
+    n = length(loc.Flow.expressions);
+    [str1,str2] = aux_fullspaceString(n,allTrans,isFlatHA);
 elseif isa(loc.Invariant.set,'mptPolytope')
     [str1,str2] = mptPolytopeString(loc.Invariant.set);
 elseif isa(loc.Invariant.set,'levelSet')
@@ -394,14 +393,15 @@ function guardStr = aux_guardStr(trans,loc)
 % general information about guard set
 tranGuardText = trans.guard.Text;
 if tranGuardText == ""
-    tranGuardText = "no guard set given";
+    tranGuardText = "no guard set given -> instant transition";
 end
 
 % different set representations for guard set
-if isnumeric(trans.guard.set) && isempty(trans.guard.set)
-    % empty guard set -> immediate transition
+if isa(trans.guard.set,'fullspace')
+    % fullspace -> immediate transition (no text in spaceex)
     str1 = "";
-    str2 = "[];";
+    % init invariant using state dimension of dynamics in given location
+    str2 = "fullspace(" + length(loc.Flow.expressions) + ");";
 
 elseif isa(trans.guard.set,'mptPolytope')
     % intersect guard with invariant
@@ -516,6 +516,82 @@ end
 
 
 % writing sets as string
+function [str1,str2] = aux_fullspaceString(n,allTrans,isFlatHA)
+% in principle, we interpret an undefined invariant in SpaceEx (no text) as
+% the entire n-dim. space, corresponding to a fullspace object in CORA; the
+% reachability analysis requires to leave the invariant in order to proceed
+% to the transition to another location; therefore, we need to 'cut' the
+% invariant according to the outgoing transitions of the location
+
+if isempty(allTrans) || n == 0 || (~isFlatHA && ...
+        all(arrayfun(@(x) ~strcmp(x,''),[allTrans.label],'UniformOutput',true)) )
+    % conditions for fullspace invariant:
+    % 1. no outgoing transitions -> fullspace as invariant
+    % 2. no flow/invariant given -> dummy fullspace (since n=0)
+    % 3. all outgoing transitions have a synchronization label -> this
+    %    component has to wait for other components to leave their
+    %    invariant, which will trigger the transition
+    % additionally, if 
+    str1 = "";
+    str2 = "fullspace(" + n + ");";
+else
+    % instantiate fullspace object
+    inv = fullspace(n);
+    % loop over all outgoing transitions and shrink the invariant by the
+    % complements of each guard set
+    for t=1:length(allTrans)
+        % skip guards with synchronization label (will be computed
+        % on-the-fly, if the entire transition is active)
+        if isFlatHA || strcmp(allTrans(t).label,'')
+            % read out guard set
+            guard = allTrans(t).guard.set;
+            % shift by a small bit if it's a polytope with a strict
+            % inequality -> necessary to result in empty invariants for
+            % pairs of guard sets ax <= b & ax > b
+            if isa(guard,'mptPolytope') && ...
+                  ( contains(allTrans(t).guard.Text,"<") || ...
+                    contains(allTrans(t).guard.Text,">") ) && ...
+                 ~( contains(allTrans(t).guard.Text,">=") || ...
+                    contains(allTrans(t).guard.Text,"<=") )
+                guard = guard + 1e-12*ones(n,1);
+            end
+    
+            % try to compute complement of guard set
+            if isa(guard,'mptPolytope') || isa(guard,'levelSet') ...
+                    || isa(guard,'fullspace')
+                temp = ~guard;
+            else
+                % complement cannot be computed
+                throw(CORAerror('CORA:converterIssue',...
+                    'Issue in conversion of empty invariant and non-empty guard sets.'));
+            end
+    
+            % intersect with invariant
+            inv = and_(inv,temp,'exact');
+    
+            % break if invariant has become empty
+            if isa(inv,'emptySet')
+                break
+            end
+        end
+    end
+    % write to string (either polytope or levelSet)
+    if isa(inv,'emptySet') || (isa(inv,'mptPolytope') && isempty(inv))
+        % resulting invariant is the empty set -> the location will be
+        % exited even before the first step of the reachability analysis
+        str1 = ""; str2 = "emptySet(" + n + ");";
+    elseif isa(inv,'mptPolytope')
+        [str1,str2] = mptPolytopeString(inv);
+    elseif isa(inv,'levelSet')
+        [str1,str2] = levelSetString(inv);
+    else
+        throw(CORAerror('CORA:converterIssue',...
+            'Issue in conversion of empty invariant.'));
+    end
+end
+
+end
+
 function [str1,str2] = mptPolytopeString(set)
 % generates the string that constructs the mptPolytope
 

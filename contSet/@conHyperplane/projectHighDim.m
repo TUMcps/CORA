@@ -12,7 +12,7 @@ function res = projectHighDim(hyp,N,dims)
 %          states of the low-dimensional space
 %
 % Outputs:
-%    res - conHyperplane object in the high dimensional space
+%    res - conHyperplane object in the higher-dimensional space
 %
 % Example: 
 %    hs = halfspace([1, -2], 1);

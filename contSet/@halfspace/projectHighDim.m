@@ -1,5 +1,5 @@
 function hs = projectHighDim(hs,N,dims)
-% projectHighDim - project a halfspace object to a higher dimensional
+% projectHighDim - projects a halfspace object to a higher-dimensional
 %                  space
 %
 % Syntax:  
@@ -8,11 +8,11 @@ function hs = projectHighDim(hs,N,dims)
 % Inputs:
 %    hs - halfspace object
 %    N - dimension of the higher dimensional space
-%    dims - states of the high dimensional space that correspond to the
-%          states of the low dimensional mptPolytope object
+%    dims - states of the high-dimensional space that correspond to the
+%          states of the low-dimensional space
 %
 % Outputs:
-%    hs - halfspace object in the high-dimensional space
+%    hs - halfspace object in the higher-dimensional space
 %
 % Example: 
 %    C = [2.1, 3.4, 5.2];

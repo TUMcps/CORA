@@ -61,16 +61,16 @@ HA1 = hybridAutomaton(loc);
 
 % second component, first location
 dynamics = linearSys([],zeros(0,1));
-inv = [];
-guard = [];
+inv = fullspace(0);
+guard = fullspace(0);
 reset = struct('A',[],'c',zeros(0,1));
 trans = transition(guard,reset,2,'switch12');
 loc(1) = location('loc1',inv,trans,dynamics);
 
 % second component, second location
 dynamics = linearSys([],zeros(0,1));
-inv = [];
-guard = [];
+inv = fullspace(0);
+guard = fullspace(0);
 reset = struct('A',[],'c',zeros(0,1));
 trans = transition(guard,reset,1,'switch21');
 loc(2) = location('loc2',inv,trans,dynamics);
@@ -95,7 +95,7 @@ end
 % execution of the model
 
 % model parameters
-params.R0 = zonotope([-5;-5],0.05*eye(2));
+params.R0 = zonotope([-2;-3],[0.1; 0]);
 params.U = zonotope(0);
 params.startLoc = [1;1];
 params.tFinal = 20;
@@ -118,18 +118,18 @@ R_end = query(R,'finalSet');
 R_end = R_end{1};
 
 % final set according to manual computation
-R_end_ = zonotope([-1;-1],[0.05;0]);
+R_end_ = zonotope([2;-3],[0.1; 0]);
 
 if ~isequal(R_end,R_end_)
     res = false;
 end
 
 % visualization (debugging)
-% figure; hold on; box on;
-% plot(R);
-% plot(params.R0,[1,2],'FaceColor',colorblind('gray'),'EdgeColor','k');
-% plot(R_end_,[1,2],'g','LineWidth',1.5);
-% plot(R_end,[1,2],'r--','LineWidth',1.5);
-% close;
+figure; hold on; box on;
+plot(R,[1,2]);
+plot(params.R0,[1,2],'FaceColor',colorblind('gray'),'EdgeColor','k');
+plot(R_end_,[1,2],'g','LineWidth',1.5);
+plot(R_end,[1,2],'r--','LineWidth',1.5);
+close;
 
 %------------- END OF CODE --------------

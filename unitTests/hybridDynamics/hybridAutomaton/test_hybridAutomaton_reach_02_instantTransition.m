@@ -1,10 +1,10 @@
-function res = test_hybridAutomaton_reach_02_immediateTransition()
-% test_hybridAutomaton_reach_02_immediateTransition - test for reachability
-%    of hybrid dynamics, where the hybrid automaton contains immediate
+function res = test_hybridAutomaton_reach_02_instantTransition()
+% test_hybridAutomaton_reach_02_instantTransition - test for reachability
+%    of hybrid dynamics, where the hybrid automaton contains instant
 %    transitions (no elapsed time in between two subsequent transitions)
 %
 % Syntax:  
-%    test_hybridAutomaton_reach_02_immediateTransition
+%    test_hybridAutomaton_reach_02_instantTransition
 %
 % Inputs:
 %    -
@@ -48,7 +48,7 @@ options.enclose = {'box'};
 % loc2: flow upwards (irrelevant)
 % loc3: flow left
 % loc4: flow down (irrelevant)
-% however, the transitions loc2->loc3 and loc4->loc1 are immediate, thus
+% however, the transitions loc2->loc3 and loc4->loc1 are instant, thus
 % we should only ever move from right to left and vice versa as the
 % invariants in all locations are the same [-1,1] box
 
@@ -69,9 +69,9 @@ inv = mptPolytope(interval([-1;-1],[1;1]));
 
 % guard sets
 guard1 = conHyperplane([1,0],1);
-guard2 = [];
+guard2 = fullspace(2);
 guard3 = conHyperplane([-1,0],1);
-guard4 = [];
+guard4 = fullspace(2);
 
 % reset functions
 resetA = [1, 0; 0, 1];
@@ -100,7 +100,7 @@ loc(4) = location('down',inv,trans4,linSys4);
 HA1 = hybridAutomaton(loc);
 
 
-% same hybrid automaton without immediate transitions
+% same hybrid automaton without instant transitions
 % reset functions
 resetc12 = [-0.5; 0.15];
 resetc34 = [0.5; 0.15];
@@ -127,27 +127,30 @@ R2 = reach(HA2,params,options);
 
 % Numerical check ---------------------------------------------------------
 
-% since immediate transition do not effect additional branches in the
-% reachSet object, both reachSet objects have to have the same length
-if length(R1) ~= length(R2)
-    res = false;
-end
-
 % all sets need to be equal as well (only check first and last time point)
-for i=1:length(R1)
+i_R1 = 1;
+for i=1:length(R2)
+    % skip index if from instant transition
+    while isempty(R1(i_R1).timeInterval)
+        i_R1 = i_R1 + 1;
+    end
+
     % same number of sets per branch
-    if length(R1(i).timePoint.set) ~= length(R2(i).timePoint.set)
+    if length(R1(i_R1).timePoint.set) ~= length(R2(i).timePoint.set)
         res = false;
         break
     end
 
     % same start set and end set (faster than checking all, and should
     % catch any potential errors)
-    if ~isequal(R1(i).timePoint.set{1},R2(i).timePoint.set{1}) || ...
-            ~isequal(R1(i).timePoint.set{end},R2(i).timePoint.set{end})
+    if ~isequal(R1(i_R1).timePoint.set{1},R2(i).timePoint.set{1}) || ...
+            ~isequal(R1(i_R1).timePoint.set{end},R2(i).timePoint.set{end})
         res = false;
         break
     end
+
+    % increment index of R2
+    i_R1 = i_R1 + 1;
 end
 
 %------------- END OF CODE --------------

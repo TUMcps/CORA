@@ -134,7 +134,11 @@ for i = 2:steps
     if isfield(options,'specification')
         [res,timeInt,timePoint] = checkSpecification(...
             options.specification,Rnext.ti,timeInt,timePoint,i);
-        if ~res; return; end
+        if ~res
+            % compute output set of last set
+            timePoint.set{i+1} = outputSet(obj,options,Rnext.tp);
+            return
+        end
     end
     
     % log information

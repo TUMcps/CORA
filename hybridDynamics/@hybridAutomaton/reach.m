@@ -9,7 +9,7 @@ function [R,res] = reach(HA,params,options,varargin)
 %    HA - hybridAutomaton object
 %    params - parameter defining the reachability problem
 %    options - options for the computation of the reachable set
-%    spec - object of class specification
+%    spec - (optional) object of class specification
 %
 % Outputs:
 %    R - reachSet object storing the reachable set
@@ -39,6 +39,8 @@ function [R,res] = reach(HA,params,options,varargin)
     
     % options preprocessing
     options = validateOptions(HA,mfilename,params,options);
+    % ensure that options are not checked again (in any contDynamics/reach)
+    options.validated = true;
 
     % compute derivatives for each location
     compDerivatives(HA,options);
@@ -48,19 +50,23 @@ function [R,res] = reach(HA,params,options,varargin)
     if nargin >= 4
        spec = varargin{1};
     end
-    options = aux_check_flatHA_specification(options,HA,spec); %,spec_locations);
+    options = aux_check_flatHA_specification(options,HA,spec);
 
-    % initialize reachable set
-    R = [];
+    % initialize reachable set: we use a fixed size to start with and then
+    % double the size if the current size is exceeded; this process avoids
+    % costly 'and-1' concatenation
+    R(10,1) = reachSet();
+    % index to append new reachSet objects to full list
+    r = 0;
 
     % initialize queue for reachable set computation (during the
     % computation, multiple branches of reachable set can emerge, requiring
     % to compute the successor reachable sets for all branches one after
     % the other; the queue handles this process)
-    list{1}.set = options.R0;
-    list{1}.loc = options.startLoc;
-    list{1}.time = interval(options.tStart);
-    list{1}.parent = 0;
+    list.set = options.R0;
+    list.loc = options.startLoc;
+    list.time = interval(options.tStart);
+    list.parent = 0;
 
     % display information on command window
     if options.verbose
@@ -72,36 +78,49 @@ function [R,res] = reach(HA,params,options,varargin)
 
         % get location, initial set, start time, and parent branch for
         % reachable set computation of first element in the queue
-        locID = list{1}.loc;
-        R0 = list{1}.set;
-        tStart = list{1}.time;
-        parent = list{1}.parent;
+        locID = list(1).loc;
+        R0 = list(1).set;
+        tStart = list(1).time;
+        parent = list(1).parent;
 
-        % get input and specification for the current location
+        % get inputs and specification for the current location
         options.U = options.Uloc{locID};
+        options.u = options.uloc{locID};
         options.specification = options.specificationLoc{locID};
         % get timeStep for the current location (unless adaptive)
         if ~strcmp(options.linAlg,'adaptive')
             options.timeStep = options.timeStepLoc{locID};
         end
 
-        % check if current location has an immediate transition (this is
-        % the case if any guard set is defined as guard = []; also, the 
-        % transition must not be empty)
-        immediateTransition = arrayfun(@(x) isnumeric(x.guard) && isempty(x.guard) && ~isempty(x.target),...
+        % check if current location has an instant transition
+        instantTransition = arrayfun(@(x) isa(x.guard,'fullspace'),...
             HA.location(locID).transition,'UniformOutput',true);
 
-        if any(immediateTransition)
-            % execute reset function of immediate transition: overwrite
-            % start set and location (time and parent do not change)
-            list{1}.set = reset(HA.location(locID).transition(immediateTransition),...
-                            R0,options.U);
-            list{1}.loc = HA.location(locID).transition(immediateTransition).target;
+        if any(instantTransition)
 
-            % notify user that an immediate transition has occurred
+            % save reachable set to array
+            temp = struct('set',{{R0}},'time',{{tStart}});
+            if r == length(R)
+                R(2*r,1) = reachSet();
+            end
+            R(r+1,1) = reachSet(temp,[],list(1).parent,locID);
+            % increment counter
+            r = r + 1;
+
+            % here, we overwrite the first entry in list and continue the
+            % reachability analysis with this set -- in contrast to below,
+            % where the new sets are appended at the end of the list 
+
+            % append to the end of the list
+            list(1).set = reset(HA.location(locID).transition(instantTransition),...
+                            R0,options.U);
+            list(1).loc = HA.location(locID).transition(instantTransition).target;
+            list(1).parent = r;
+
+            % print on command window that an instant transition has occurred
             if options.verbose
                 disp("  transition: location " + locID + ...
-                    " -> location " + list{1}.loc + "..." + ...
+                    " -> location " + list(1).loc + "..." + ...
                     " (time: " + string(tStart) + ")");
             end
             continue
@@ -127,27 +146,34 @@ function [R,res] = reach(HA,params,options,varargin)
 
         % add the new branches of reachable sets to the queue
         for i=1:length(Rjump)
-            Rjump{i}.parent = Rjump{i}.parent + length(R);
+            Rjump(i).parent = Rjump(i).parent + r;
         end
         list = [list; Rjump];
 
         % display transitions on command window
-        if options.verbose && isscalar(list)
-            % multiple successor locations currently not supported...
-            disp("  transition: location " + locID + " -> location " + ...
-                string(list{1}.loc) + "... (time: " + string(list{1}.time) + ")");
+        if options.verbose
+            aux_displayTransition(Rjump,locID);
         end
 
         % store the computed reachable set
         for i=1:size(Rtemp,1)
             % compute output set
             Ytemp = aux_outputSet(Rtemp(i),HA.location(locID),options);
-            % store in reachSet object
+            % init reachSet object and append to full list
             temp = reachSet(Ytemp.timePoint,Ytemp.timeInterval,...
-                            Ytemp.parent,locID);
-            R = add(R,temp,parent);
+                            parent,locID);
+            if r == length(R)
+                R(2*r,1) = reachSet();
+            end
+            R(r+1,1) = temp;
+            % increment counter
+            r = r + 1;
         end
     end
+
+    % truncate reachable set (empty entries at the end due to
+    % pre-allocation of memory)
+    R = R(1:r,1);
 
     if options.verbose
         disp("...time horizon reached, analysis finished." + newline);
@@ -231,32 +257,72 @@ function Ytemp = aux_outputSet(Rtemp,loc,options)
 % we only compute the output set at the end of the analysis of each
 % location (using the outputSet-functions in contDynamics)
 
-    % adapt options (as in location/reach)
-    [params,options_] = adaptOptions(loc,options);
-    % dummy value for R0...
-    params.R0 = zonotope(zeros(loc.contDynamics.dim,1));
-    options_ = validateOptions(loc.contDynamics,'reach',params,options_);
-    
+% rewrite options.u of current location to options.uTrans for outputSet()
+% TODO: do this in validateOptions?
+if isfield(options,'u')
+    options.uTrans = options.u;
+end
+
+% init
+Ytemp.timePoint = [];
+Ytemp.timeInterval = [];
+
+% time-point solution
+if ~isempty(Rtemp.timePoint)    
     % time-point solution
     nrTimePointSets = length(Rtemp.timePoint.set);
     Ytemp.timePoint.set = cell(nrTimePointSets,1);
     Ytemp.timePoint.time = Rtemp.timePoint.time;
     for i=1:length(Rtemp.timePoint.set)
         Ytemp.timePoint.set{i} = ...
-            outputSet(loc.contDynamics,options_,Rtemp.timePoint.set{i});
+            outputSet(loc.contDynamics,options,Rtemp.timePoint.set{i});
     end
-    
-    % time-interval solution
+end
+
+% time-interval solution
+if ~isempty(Rtemp.timeInterval)
     nrTimeIntervalSets = length(Rtemp.timeInterval.set);
     Ytemp.timeInterval.set = cell(nrTimeIntervalSets,1);
     Ytemp.timeInterval.time = Rtemp.timeInterval.time;
     for i=1:length(Rtemp.timeInterval.set)
         Ytemp.timeInterval.set{i} = ...
-            outputSet(loc.contDynamics,options_,Rtemp.timeInterval.set{i});
+            outputSet(loc.contDynamics,options,Rtemp.timeInterval.set{i});
     end
-    
-    % parent
-    Ytemp.parent = Rtemp.parent;
+end
+
+% parent
+Ytemp.parent = Rtemp.parent;
+
+end
+
+function aux_displayTransition(list,locID)
+% only if verbose = true: print outgoing transitions with target location
+% identifier and time during which the transition has occurred
+
+if isempty(list)
+    return
+
+elseif isscalar(list)
+    disp("  transition: location " + strjoin(string(locID),",") + ...
+        " -> location " + strjoin(string(list(1).loc),",") + ...
+        "... (time: " + string(list(1).time) + ")");
+
+else
+    % print 'header'
+    fprintf("  transitions: ");
+    % indent not in first line
+    indent = "";
+
+    % loop over multiple transitions
+    for i=1:length(list)
+        fprintf(indent + "location " + strjoin(string(locID),",") + ...
+            " -> location " + strjoin(string(list(i).loc),",") + ...
+            "... (time: " + string(list(i).time) + ")\n");
+        % add indent for vertical alignment to all other transitions
+        indent = "               ";
+    end
+
+end
 
 end
 

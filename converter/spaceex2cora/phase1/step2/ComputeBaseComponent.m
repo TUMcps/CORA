@@ -147,7 +147,7 @@ for k = 1:h_numTrans
         text = bc_in.transition{k}.guard{1}.Text;
     else
         % no equation -> guard set is entire space (transition is taken
-        % immediately upon entering the location unless synchronization
+        % instantly upon entering the location unless synchronization
         % label is given)
         text = "";
     end

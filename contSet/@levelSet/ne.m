@@ -8,8 +8,8 @@ function res = ne(ls1,ls2,varargin)
 %    res = ne(ls1,ls2,tol)
 %
 % Inputs:
-%    ls1 - location object
-%    ls2 - location object
+%    ls1 - levelSet object
+%    ls2 - levelSet object
 %    tol - tolerance (optional)
 %
 % Outputs:

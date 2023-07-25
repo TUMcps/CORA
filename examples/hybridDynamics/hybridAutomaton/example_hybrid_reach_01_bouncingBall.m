@@ -61,10 +61,10 @@ guard = conHyperplane([1,0],0,[0,1],0);
 reset.A = [0, 0; 0, alpha]; reset.c = zeros(2,1);
 
 % transitions
-trans{1} = transition(guard,reset,1);
+trans = transition(guard,reset,1);
 
 % location object
-loc{1} = location('loc1',inv,trans,linSys); 
+loc = location('loc1',inv,trans,linSys); 
 
 % hybrid automata
 HA = hybridAutomaton(loc);

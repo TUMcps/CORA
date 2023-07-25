@@ -194,7 +194,7 @@ for i = 1:length(guardIntersect)
     
     % check if all simulated points are located inside the computed guard
     % intersection
-    R = project(Rjump{1}.set,2:11);
+    R = project(Rjump(1).set,2:11);
     if size(R.Z,2) > 12
         R = reduce(R,'pca',1);
     end

@@ -35,21 +35,27 @@ trans(2) = transition(guard,reset,2);
 flow = linearSys(zeros(2),0,[1;1]);
 loc = location(inv,trans,flow);
 
-% cell-array of reachable sets
+% reachSet object
 % -- not intersecting any guard
-R{1} = zonotope([1;0],0.05*eye(2));
-R{2} = zonotope([2;0],0.05*eye(2));
+sets.set{1} = zonotope([1;0],0.05*eye(2));
+sets.set{2,1} = zonotope([2;0],0.05*eye(2));
 % -- only intersecting guard of first transition
-R{3} = zonotope([3;0],0.05*eye(2));
-R{4} = zonotope([3;2],0.05*eye(2));
-R{5} = zonotope([3;4],0.05*eye(2));
+sets.set{3} = zonotope([3;0],0.05*eye(2));
+sets.set{4} = zonotope([3;2],0.05*eye(2));
+sets.set{5} = zonotope([3;4],0.05*eye(2));
 % -- intersecting both guards
-R{6} = zonotope([3;5],0.05*eye(2));
+sets.set{6} = zonotope([3;5],0.05*eye(2));
 % -- only intersecting guard of second transition
-R{7} = zonotope([2;5],0.05*eye(2));
-R{8} = zonotope([1;5],0.05*eye(2));
+sets.set{7} = zonotope([2;5],0.05*eye(2));
+sets.set{8} = zonotope([1;5],0.05*eye(2));
 % -- not intersecting any guard
-R{9} = zonotope([1;4],0.05*eye(2));
+sets.set{9} = zonotope([1;4],0.05*eye(2));
+% time is irrelevant
+for i=1:9
+    sets.time{i,1} = interval((i-1),i);
+end
+% init object (no time-point solutions)
+R = reachSet([],sets);
 
 % set options (dummy)
 options.finalLoc = 4;

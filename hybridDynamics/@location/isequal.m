@@ -95,17 +95,15 @@ res = true;
 
 % compare invariants: 
 % note: we use 'eq' instead of 'isequal' as long as the mptPolytope class
-% exists, once the switch to the polytope class is done, use 'isequal';
-% also, the invariant then should not be [], but a polytope that spans the
-% entire space (e.g., 0*x <= 0), so no need for case differentiation
-if ~(isnumeric(loc1.invariant) && isempty(loc1.invariant) ...
-        && isnumeric(loc2.invariant) && isempty(loc2.invariant))
-    if xor(isnumeric(loc1.invariant),isnumeric(loc2.invariant)) ...
-            || ( isnumeric(loc1.invariant) ...
-                && ~all(isempty(loc1.invariant),isempty(loc2.invariant)) ) ...
-            || ~eq(loc1.invariant,loc2.invariant,tol)
+% exists, once the switch to the polytope class is done, use 'isequal' in
+% accordance with other calls
+if any([isnumeric(loc1.invariant),isnumeric(loc2.invariant)])
+    % empty location object may have .invariant = []
+    if xor(isnumeric(loc1.invariant),isnumeric(loc2.invariant))
         res = false; return
     end
+elseif ~eq(loc1.invariant,loc2.invariant,tol)
+    res = false; return
 end
 
 % compare flow equations

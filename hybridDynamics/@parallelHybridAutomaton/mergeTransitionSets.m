@@ -1,9 +1,10 @@
-function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
+function [transSet,mergedLabels] = mergeTransitionSets(pHA,transList,locID,allLabels)
 % mergeTransitionSets - computes the transition set of a combined location 
 %    from the transition sets of the subcomponents
 %
 % Syntax:  
 %    transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
+%    [transSet,mergedLabels] = mergeTransitionSets(pHA,transList,locID,allLabels)
 %
 % Input:
 %    pHA - parallelHybridAutomaton object
@@ -14,12 +15,14 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
 %
 % Outputs:
 %    transSet - cell array containing the resulting transition sets
+%    mergedLabels - list of synchronization labels which were used to
+%                   construct a merged transition
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: parallelHybridAutomaton/mergeInvariants
 
 % Author:       Johann Schoepfer, Niklas Kochdumper, Maximilian Perschl
 % Written:      14-June-2018
@@ -39,6 +42,8 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
     
     % list of checked transition labels
     checkedLabels = {};
+    % list of synchronization labels that were merged
+    mergedLabels = {};
 
     % loop over all subcomponents
     for i = 1:numComp
@@ -147,8 +152,11 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
                 
                 % create a new transition from the transitions to be
                 % synchronized, which models the relevant transitions being
-                % executed simultaneously 
-                
+                % executed simultaneously
+
+                % save label for product of invariants
+                mergedLabels = [mergedLabels; syncLabel];
+
                 
                 % first, we project each transition to the full dimension;
                 % here, the other states of the reset function are set to
@@ -176,7 +184,7 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
                 
                 % synchronize guards by intersection
                 % note: might not work for all nonlinear guards
-                resultingGuard = [];
+                resultingGuard = fullspace();
 
                 % note: empty guard sets can simply be skipped as they
                 % represent the full subspace of the covered dimensions,
@@ -185,9 +193,8 @@ function transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
                 % full-dimensional sets along these dimensions, thus we do
                 % not require any further processing at this stage
                 for j=1:length(labelTransSet)
-                    if ~(isnumeric(labelTransSet(j).guard) && ...
-                            isempty(labelTransSet(j).guard))
-                        if isnumeric(resultingGuard) && isempty(resultingGuard)
+                    if ~isa(labelTransSet(j).guard,'fullspace')
+                        if isa(resultingGuard,'fullspace')
                             % first full-dimensional guard enters here
                             resultingGuard = labelTransSet(j).guard;
                         else

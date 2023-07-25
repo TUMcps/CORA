@@ -120,7 +120,7 @@ for i = 1:length(guardIntersect)
     
     % check if all simulated points are located inside the computed guard
     % intersection
-    P = mptPolytope(project(Rjump{1}.set,2:5));
+    P = mptPolytope(project(Rjump(1).set,2:5));
     res(i) = all(contains(P,points,'exact',1e-3));
 end
 

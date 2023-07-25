@@ -1,8 +1,8 @@
-function res = test_location_immediateReset
-% test_location_immediateReset - test function for immediateReset
+function res = test_location_instantReset
+% test_location_instantReset - test function for instantReset
 %
 % Syntax:  
-%    res = test_location_immediateReset
+%    res = test_location_instantReset
 %
 % Inputs:
 %    -
@@ -36,11 +36,11 @@ R0 = zonotope([4;2]);
 tStart = 2;
 
 % options
-options.immediateTransition = true;
+options.instantTransition = true;
 options.U = zonotope(0);
 
 % reset
-[R,Rjump,res_] = immediateReset(loc,R0,tStart,options);
+[R,Rjump,res_] = instantReset(loc,R0,tStart,options);
 
 % 'res' must be true as no specification was violated
 res = res_;

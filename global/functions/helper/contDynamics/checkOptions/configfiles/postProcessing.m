@@ -532,25 +532,22 @@ end
 end
 
 function [params,options] = set_HA_inputs(sys,params,options)
-% internal value options.Uloc stores the input set for each location
+% internal values options.Uloc and options.uloc store the input set and 
+% input trajectory, respectively, for each location
 
-locations = sys.location;
-numLoc = length(locations);
+% number of locations
+numLoc = length(sys.location);
 
+% input set
 if ~iscell(params.U)
-    isaInt = false;
+    % same input set for each location
+    % (likely only works if all have same dimension...)
+
     if isa(params.U,'interval')
-        isaInt = true; UZon = zonotope(params.U);
+        params.U = zonotope(params.U);
     end
     % same input set for each location
-    Uloc = cell(numLoc,1);
-    for i = 1:numLoc
-        if isaInt
-            Uloc{i} = UZon;
-        else
-            Uloc{i} = params.U;
-        end
-    end
+    Uloc = repmat({params.U},numLoc,1);
     
 else
     % copy input set, convert to zonotope if necessary
@@ -564,8 +561,24 @@ else
     end
 end
 
-params = rmfield(params,'U');
+% input trajectory
+if ~iscell(params.u)
+    % same input trajectory for each location
+    % (likely only works if all have same dimension...)
+
+    uloc{i} = repmat({params.u},numLoc,1);
+else
+    % no changes for input trajectory
+    uloc = params.u;
+end
+
+% assign internal params
+params.uloc = uloc;
 params.Uloc = Uloc;
+
+% remove params
+params = rmfield(params,'U');
+params = rmfield(params,'u');
 
 end
 
@@ -594,43 +607,69 @@ end
 function [params,options] = set_pHA_inputs(sys,params,options)
 % internal value options.Uloc stores the input set for each location
 
+% read out number of components
 numComp = length(sys.components);
 
 if ~iscell(params.U)
-    isaInt = false;
+    % same input set for each location of each component
+    % (likely only works if all have same dimension...)
+
+    % convert to zonotope if given as interval
     if isa(params.U,'interval')
-        isaInt = true; UZon = zonotope(params.U);
+        params.U = zonotope(params.U);
     end
-    % same input set for each location
-    uloc = cell(numComp,1);
+    
+    % init input set for each location of each component
+    Uloc = cell(numComp,1);
+    % loop over all components
     for i = 1:numComp
+        % number of locations of given component
         numLoc = length(sys.components(i).location);
-        uloc{i} = cell(numLoc,1);    
-        for j = 1:numLoc
-            if isaInt
-                uloc{i}{j} = UZon;
-            else
-                uloc{i}{j} = params.U;
-            end
-        end
+        % init given input set for all locations
+        Uloc{i} = repmat({params.U},numLoc,1);
     end
 else
-    % convert to zonotope 
+    % loop over all components
     for i = 1:numComp
+        % number of locations of i-th component
         numLoc = length(sys.components(i).location);
         for j = 1:numLoc
+            % convert to zonotope
             if isa(params.U{i}{j},'interval')
-                uloc{i}{j} = zonotope(params.U{i}{j});
+                Uloc{i}{j} = zonotope(params.U{i}{j});
             else
-                uloc{i}{j} = params.U{i}{j};
+                Uloc{i}{j} = params.U{i}{j};
             end
         end
-    end    
+    end
 end
 
-params.Uloc = uloc;
+% input trajectory
+if ~iscell(params.u)
+    % same input trajectory for each location of each component
+    % (likely only works if all have same dimension...)
 
+    % init length by number of components
+    uloc = cell(numComp,1);
+    % loop over all components
+    for i=1:numComp
+        % number of locations of given component
+        numLoc = length(sys.components(i).location);
+        % init input trajectory for all locations
+        uloc{i} = repmat({params.u},numLoc,1);
+    end
+else
+    % no changes for input trajectory
+    uloc = params.u;
+end
+
+% init params with appended 'loc' for location
+params.Uloc = Uloc;
+params.uloc = uloc;
+
+% remove params
 params = rmfield(params,'U');
+params = rmfield(params,'u');
 
 end
 

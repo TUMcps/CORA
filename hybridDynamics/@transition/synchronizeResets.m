@@ -151,27 +151,39 @@ end
 syncReset.J = @(x) J_combined(x);
 
 % init variable for Hessians and third-order tensor
-temp = @(x) zeros(n+m,n+m);
+% temp = @(x) zeros(n+m,n+m);
 
 % Hessians
-syncReset.Q = repmat({temp},[n,1]);
+syncReset.Q = repmat({0},[n,1]);
 for i = 1:n
     for j = 1:length(transitionSet)
-        if ~isempty(transitionSet(j).reset.Q{i})
-            syncReset.Q{i} = @(x) syncReset.Q{i}(x) ...
-                + transitionSet(j).reset.Q{i}(x);
+        if ~isnumeric(transitionSet(j).reset.Q{i})
+            % if Hessian is numeric, it is zero -> skip addition
+            if isnumeric(syncReset.Q{i})
+                % first addition to Hessian
+                syncReset.Q{i} = @(x) transitionSet(j).reset.Q{i}(x);
+            else
+                syncReset.Q{i} = @(x) syncReset.Q{i}(x) ...
+                    + transitionSet(j).reset.Q{i}(x);
+            end
         end
     end
 end
 
 % third-order tensors
-syncReset.T = repmat({temp},[n,n+m]);
+syncReset.T = repmat({0},[n,n+m]);
 for i = 1:n
-    for j = 1:n
+    for j = 1:n    % ...why not n+m?
         for k = 1:length(transitionSet)
-            if ~isempty(transitionSet(k).reset.T{i,j})
-                syncReset.T{i,j} = @(x) syncReset.T{i,j}(x) ...
-                    + transitionSet(k).reset.T{i,j}(x);
+            if ~isnumeric(transitionSet(k).reset.T{i,j})
+                % if third-order tensor is numeric, it is zero -> skip addition
+                if isnumeric(syncReset.T{i,j})
+                    % first addition to third-order tensor
+                    syncReset.T{i,j} = @(x) transitionSet(k).reset.T{i,j}(x);
+                else
+                    syncReset.T{i,j} = @(x) syncReset.T{i,j}(x) ...
+                        + transitionSet(k).reset.T{i,j}(x);
+                end
             end
         end
     end

@@ -54,7 +54,7 @@ R = reach(sys, params, options);
 simOpt.points = 60;
 simOpt.fracVert = 0.5;
 simOpt.fracInpVert = 0.5;
-simOpt.inpChanges = 6;
+simOpt.nrConstInp = 6;
 
 simRes = simulateRandom(sys, params, simOpt);
 

@@ -18,9 +18,6 @@ function res = isFuncLinear(f,varargin)
 %    f = @(x,u) [x(1) - u(2); x(3)^2*x(2) - u(1)];
 %    res = isFuncLinear(f,[3;2])
 %
-% References:
-%    ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
@@ -29,7 +26,7 @@ function res = isFuncLinear(f,varargin)
 
 % Author:       Mark Wetzlinger
 % Written:      05-July-2022
-% Last update:  ---
+% Last update:  06-June-2023 (MW, add quick check for constant functions)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -45,10 +42,18 @@ elseif nargin > 2
     throw(CORAerror('CORA:tooManyInputArgs',2));
 end
 
-% check if Hessian matrix is all-zero
-
 % init symbolic input arguments
 x = sym('x',[max(sizeInputArgs),length(sizeInputArgs)]);
+
+% quick check: if the function f is constant (which may occur in a
+% computation of derivatives), f has one input argument (actually none)
+% and the insertion f(x) yields a numeric matrix, no symbolic variables
+if isscalar(sizeInputArgs) && sizeInputArgs == 1 && isnumeric(f(x))
+    res = true(sizeFunOut); return
+end
+
+% check if Hessian matrix is all-zero
+
 % init cell array for evaluation of f
 inputArgs = cell(length(sizeInputArgs),1);
 % gather all used symbolic variables in one vector for Jacobian evaluation

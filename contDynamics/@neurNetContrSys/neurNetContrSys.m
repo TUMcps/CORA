@@ -106,6 +106,11 @@ function [sys,nn,dt] = aux_parseInputArgs(varargin)
 
     % parse user-provided input arguments
     [sys,nn,dt] = setDefaultValues({sys,nn,dt},varargin);
+
+    % convert old version of neuralNetwork class
+    if isa(nn, "neuralNetworkOld")
+        nn = neuralNetwork.getFromOldNeuralNetwork(nn);
+    end
     
 end
 
@@ -154,11 +159,6 @@ function [sys,nn,dt] = aux_computeProperties(sys,nn,dt)
         name = [sys.name, 'Controlled'];
         sys = nonlinParamSys(name, f, n+m, max(1, sys.nrOfInputs-m));
 
-    end
-
-    % convert old version of neuralNetwork class
-    if isa(nn, "neuralNetworkOld")
-        nn = neuralNetwork.getFromOldNeuralNetwork(nn);
     end
 
 end

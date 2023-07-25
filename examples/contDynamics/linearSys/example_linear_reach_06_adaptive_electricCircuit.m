@@ -77,7 +77,7 @@ for i = length(R):-1:1
     pgon1 = polygon(V(1,:),V(2,:));
     V = sqrt(dim_x)*R{i}.timePoint.error(end)*[1 0 -1 0;0 -1 0 1];
     pgon2 = polygon(V(1,:),V(2,:));
-    pgon{i,1} = pgon1 - pgon2;
+    pgon{i,1} = minkDiff(pgon1,pgon2);
     warning(w);
 end
 fprintf('Done!\n');

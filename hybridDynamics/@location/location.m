@@ -99,8 +99,8 @@ methods
         end
 
         % convert invariant sets to polytopes if possible
-        if (isnumeric(invSet) && isempty(invSet)) || ...
-                isa(invSet,'mptPolytope') || isa(invSet,'levelSet')
+        if isa(invSet,'fullspace') || isa(invSet,'mptPolytope') ...
+                || isa(invSet,'levelSet') || isa(invSet,'emptySet')
             % keep mptPolytopes, levelSet, and empty invariants as is
             loc.invariant = invSet;
         else

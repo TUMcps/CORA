@@ -91,8 +91,8 @@ disp(['Time to compute random simulations: ', num2str(tSim)]);
 
 tic
 isVio = false;
-for i = 1:length(simRes.x)
-    isVio = isVio || ~goalSet.contains(simRes.x{i}(end, :)');
+for i = 1:length(simRes)
+    isVio = isVio || ~goalSet.contains(simRes(i).x{1}(end, :)');
 end
 tVio = toc;
 disp(['Time to check violation in simulations: ', num2str(tVio)]);

@@ -81,7 +81,7 @@ g = @(x,u) [x(1)-x(2); x(3)];
 dynamics{2,2} = nonlinearSys(f,g);
 eq = -x1^2 + x2 - x3 + 5;
 compOp = '<=';
-inv{2,1} = levelSet(eq,vars,compOp);
+inv{2,2} = levelSet(eq,vars,compOp);
 compOp = '==';
 guard = levelSet(eq,vars,compOp);
 reset = struct('f',@(x,u) [-x(1)-u(1);x(2);-x(3)]);

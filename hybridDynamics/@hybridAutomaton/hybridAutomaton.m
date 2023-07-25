@@ -107,8 +107,7 @@ function aux_checkInputArgs(locs,n_in)
 
             % 1. invariant of each location has to have same dimension as
             % flow equation of that same location (unless empty)
-            if ~(isnumeric(locs(i).invariant) && isempty(locs(i).invariant)) ...
-                    && dim(locs(i).invariant) ~= locs(i).contDynamics.dim
+            if dim(locs(i).invariant) ~= locs(i).contDynamics.dim
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'Ambient dimension of invariant has to match state dimension of flow.'));
             end

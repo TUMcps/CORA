@@ -43,14 +43,14 @@ for i=1:numComp
     transList{i} = curr_loc.transition;
 end
 
-% merge invariants
-mergedInvSet = mergeInvariants(pHA,invList);
-
-% merge flows (= continuous dynamics)
-mergedFlow = mergeFlows(pHA,flowList,locID);
-
 % merge transition sets
-mergedTransSets = mergeTransitionSets(pHA,transList,locID,allLabels);
+[mergedTransSets,mergedLabels] = mergeTransitionSets(pHA,transList,locID,allLabels);
+
+% merge invariants
+mergedInvSet = mergeInvariants(pHA,invList,transList,mergedLabels);
+
+% merge flows
+mergedFlow = mergeFlows(pHA,flowList,locID);
 
 % construct resulting location object
 loc = location(mergedInvSet,mergedTransSets,mergedFlow);

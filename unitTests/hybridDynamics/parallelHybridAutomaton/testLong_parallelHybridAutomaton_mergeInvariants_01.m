@@ -102,7 +102,8 @@ pHA = parallelHybridAutomaton(components,inputBinds);
 % merge invariant sets
 mergedInv = mergeInvariants(pHA,...
     {pHA.components(1).location(1).invariant,...
-    pHA.components(2).location(2).invariant});
+    pHA.components(2).location(2).invariant},...
+    {transition();transition()});
 
 % instantiate true solution
 eq1 = -x1 + x2^2 + 3;
@@ -119,7 +120,8 @@ res = isequal(mergedInv,mergedInv_,1e-14);
 % merge invariant sets
 mergedInv = mergeInvariants(pHA,...
     {pHA.components(1).location(2).invariant,...
-    pHA.components(2).location(1).invariant});
+    pHA.components(2).location(1).invariant}, ...
+    {transition();transition()});
 
 % instantiate true solution
 eq1 = x1 - x2^2 - 3;

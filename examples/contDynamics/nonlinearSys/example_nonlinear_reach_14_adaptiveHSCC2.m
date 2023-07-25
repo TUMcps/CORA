@@ -78,7 +78,7 @@ for sys_no = 1:sys_total
         % computation of gamma_min
         endpoints = zeros(sys.dim,simOpt.points);
         for i=1:simOpt.points
-            endpoints(:,i) = simRes.x{i}(end,:)';
+            endpoints(:,i) = simRes(i).x{1}(end,:)';
         end
         simendset = interval.enclosePoints(endpoints);
         if contains(options.alg,'poly')

@@ -121,20 +121,22 @@ function X_ = aux_nonlinearReset(trans,Z)
     J = trans.reset.J(p);
     
     % evaluate Hessians at expansion point
-    Q = cell(n,1);
+    Q = repmat({0},[n,1]);
     for i = 1:n
         funHan = trans.reset.Q{i};
-        if ~isempty(funHan)
+        if ~isnumeric(funHan)
+            % if Hessian is numeric, it is zero
             Q{i} = funHan(p);
         end
     end
     
     % evaluate third-order tensors over entire set
-    T = cell(n,n+m);
+    T = repmat({0},[n,n+m]);
     for i = 1:n
         for j = 1:n+m
             funHan = trans.reset.T{i,j};
-            if ~isempty(funHan)
+            if ~isnumeric(funHan)
+                % if third-order tensor is numeric, it is zero
                 T{i,j} = funHan(I);
             end
         end
@@ -146,7 +148,8 @@ function X_ = aux_nonlinearReset(trans,Z)
     
     for i = 1:n
         for j = 1:n+m
-            if ~isempty(T{i,j})
+            if ~isnumeric(T{i,j})
+                % skip entries that do not contribute to remainder sum
                 rem(i) = rem(i) + I(j) * transpose(I) * T{i,j} * I;
             end
         end
