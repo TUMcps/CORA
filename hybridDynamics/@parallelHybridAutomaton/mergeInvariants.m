@@ -1,14 +1,16 @@
-function invSet = mergeInvariants(pHA,invList)
+function invSet = mergeInvariants(pHA,invList,transList,mergedLabels)
 % mergeInvariants - creates the full-dimensional invariant of the overall
-%    system from the invariants of the subcomponents; all subcomponents
-%    with an empty invariant (= full space) are skipped
+%    system from the invariants of the subcomponents
 %
 % Syntax:  
-%    invSet = mergeInvariants(pHA,invList)
+%    invSet = mergeInvariants(pHA,invList,transList,mergedLabels)
 %
 % Inputs:
 %    pHA - parallelHybridAutomaton object
 %    invList - list with the invariant sets for all subcomponents
+%    transList - list with the transition for all subcomponents
+%    mergedLabels - synchronization labels which are active in the
+%                   composed location
 %
 % Outputs:
 %    invSet - resulting invariant set
@@ -19,39 +21,41 @@ function invSet = mergeInvariants(pHA,invList)
 %
 % See also: none
 
-% Author:       Johann Schoepfer, Niklas Kochdumper
+% Author:       Johann Schoepfer, Niklas Kochdumper, Mark Wetzlinger
 % Written:      08-June-2018  
 % Last update:  09-July-2018 (NK, use "projectHighDim" function)
+%               06-April-2023 (MW, integrate fullspace invariants)
+%               24-May-2023 (MW, intersect invariants with transitions)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
 % initialize resulting invariant set
-invSet = [];
+invSet = fullspace(pHA.dim);
 
 % loop over the invariants of the remaining subcomponents
 for i=1:length(invList)
 
-    % project set to high dimensional space of the overall automaton
-    if ~(isnumeric(invList{i}) && isempty(invList{i}))
-        temp = projectHighDim(invList{i},pHA.dim,pHA.bindsStates{i});
-
-        % compute intersection with the invariants of the remaining
-        % subcomponents
-        % note: if an invariant is empty, we assume it stems from a
-        % converted model which had no invariant set (empty invariant)
-        % in the current location; this poses no problem for further
-        % analysis since it is only checked whether the reachable set fully
-        % exits the invariant set, for which the remaining full-dimensional
-        % invariants of the other subcomponents suffice
-        if isnumeric(invSet) && isempty(invSet)
-            % first full-dimensional invariant
-            invSet = temp;
-        else
-            invSet = and_(invSet,temp,'exact');
+    % intersect invariant with complements of guard sets if the
+    % corresponding transition's synchronization label is active in the
+    % composed location
+    for j=1:length(transList{i})
+        if isa(transList{i}(j).guard,'mptPolytope') ...
+                || isa(transList{i}(j).guard,'levelSet')...
+                && ismember(transList{i}(j).syncLabel,mergedLabels)
+            % not-operation not implemented for some cases...
+            try
+                invList{i} = and_(invList{i},~transList{i}(j).guard,'exact');
+            end
         end
-
     end
+
+    % project set to high dimensional space of the overall automaton
+    temp = projectHighDim(invList{i},pHA.dim,pHA.bindsStates{i});
+
+    % compute intersection with the invariants of the remaining
+    % subcomponents
+    invSet = and_(invSet,temp,'exact');
 
 end
 

@@ -1,14 +1,14 @@
-function res = projectHighDim(obj,N,dim)
-% projectHighDim - project a mptPolytope object to a higher dimensional
+function res = projectHighDim(obj,N,dims)
+% projectHighDim - project a mptPolytope object to a higher-dimensional
 %                  space
 %
 % Syntax:  
-%    res = projectHighDim(obj,N,dim)
+%    res = projectHighDim(obj,N,dims)
 %
 % Inputs:
 %    obj - mptPolytope object
 %    N - dimension of the higher dimensional space
-%    dim - states of the high dimensional space that correspond to the
+%    dims - states of the high dimensional space that correspond to the
 %          states of the low dimensional mptPolytope object
 %
 % Outputs:
@@ -37,14 +37,14 @@ function res = projectHighDim(obj,N,dim)
     % check input arguments
     inputArgsCheck({{obj,'att','mptPolytope'};
                     {N,'att','numeric','nonnan'};
-                    {dim,'att','numeric','nonnan'}});
+                    {dims,'att','numeric','nonnan'}});
     
     % initialize variables
     A = zeros(size(obj.P.A,1),N);
     b = obj.P.b;
 
     % insert parameters from the original mptPolytope object
-    A(:,dim) = obj.P.A;
+    A(:,dims) = obj.P.A;
 
     % construct the resulting high dimensional mptPolytope object
     res = mptPolytope(A,b);

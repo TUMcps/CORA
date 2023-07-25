@@ -35,7 +35,7 @@ function res = aux_zoo2int(z)
 
     res = interval(-Inf,Inf);
     for i = 1:length(z.method)
-        res = and_(res,interval(z.objects{i},'exact')); 
+        res = and_(res,interval(z.objects{i}),'exact'); 
     end
     
 end

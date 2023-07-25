@@ -1,36 +1,24 @@
-function [list,tracker,restart] = immediateTransition(pHA,list,locID,...
-    allLabels,fullR0,fullU,tracker,verbose)
-% immediateTransition - if the currently active locations allow for an
-%    immediate transition, i.e.
+function [mergedTrans,tracker] = instantTransition(pHA,locID,allLabels,tracker)
+% instantTransition - if the currently active locations allow for an
+%    instant transition, i.e.
 %       - either there is a transition without a synchronization label, or
 %       - all transitions with the same synchronization label can be taken
-%         immediately,
-%    this transition is constructed and executed here; any subsequent
-%    immediate transitions are executed in the next iteration of the main
-%    loop
-%
-%    The first entry of 'list' is altered so that the immediate transition
-%    does not cause any change in the stored reachable set; the flag
-%    'restart' describes whether an immediate transition has been taken.
+%         instantly,
+%    this transition is constructed here; any subsequent instant
+%    transitions are executed in the next iteration of the main loop
 %
 % Syntax:  
-%    [list,tracker,restart] = immediateTransition(pHA,list,locID,...
-%                               allLabels,fullR0,fullU,tracker,verbose)
+%    [mergedTrans,tracker] = instantTransition(pHA,list,locID,allLabels,tracker)
 %
 % Inputs:
 %    pHA - parallelHybridAutomaton object
-%    list - queue for reachable set computation
 %    locID - vector of location IDs for all components
 %    allLabels - struct describing synchronization labels
-%    fullR0 - start set of current iteration (full automaton)
-%    fullU - input set of current iteration (full automaton)
 %    tracker (struct) - meta data about the current run
-%    verbose - true/false for logging information on command window
 %
 % Outputs:
-%    list - updated queue for reachable set computation
+%    mergedTrans - merged transition
 %    tracker (struct) - meta data about the current run
-%    restart - true/false whether immediate transition has been taken
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -41,11 +29,12 @@ function [list,tracker,restart] = immediateTransition(pHA,list,locID,...
 % Author:       Mark Wetzlinger
 % Written:      20-June-2022
 % Last update:  ---
-% Last revision:---
+% Last revision:06-June-2023 (MW, return merged transition, which will be
+%                                 saved in the pHA variable)
 
 %------------- BEGIN CODE --------------
 
-% logical indices for immediate transitions in currently active locations
+% logical indices for instant transitions in currently active locations
 immTransNoLabel = cell(length(pHA.components),1);
 immTransLabel = cell(length(pHA.components),1);
 
@@ -57,10 +46,10 @@ for i=1:length(pHA.components)
     immTransNoLabel{i} = false(length(transList),1);
     immTransLabel{i} = false(length(transList),1);
 
-    % loop over transitions in current location, check for empty guard sets
+    % loop over transitions in current location, check for fullspace guards
     % with or without synchronization labels
     for j=1:length(transList)
-        if isnumeric(transList(j).guard) && isempty(transList(j).guard)
+        if isa(transList(j).guard,'fullspace')
             if isempty(transList(j).syncLabel)
                 immTransNoLabel{i}(j) = true;
             else
@@ -71,18 +60,18 @@ for i=1:length(pHA.components)
 
 end
 
-% order for immediate transitions:
-% 1. if there are immediate transitions without synchronization labels,
+% order for instant transitions:
+% 1. if there are instant transitions without synchronization labels,
 %    these are transitions are merged and taken first
-% 2. if there are no immediate transitions without synchronization labels,
-%    we have to go over all immediate transitions with synchronization
+% 2. if there are no instant transitions without synchronization labels,
+%    we have to go over all instant transitions with synchronization
 %    labels by checking for each label if there is an active transition in
 %    each component where the label occurs
 
 if ~any(cell2mat([immTransNoLabel; immTransLabel]))
-    % no immediate transitions at all
+    % no instant transitions at all
 
-    % since only immediate transitions could cause a livelock and the
+    % since only instant transitions could cause a livelock and the
     % tracker is currently only used for that, we can skip the entries for
     % the transition and synchronization labels this time (use dummy
     % values which cannot yield a livelock)
@@ -90,10 +79,10 @@ if ~any(cell2mat([immTransNoLabel; immTransLabel]))
     tracker(end).syncLabel = '';
 
     % quick exit
-    restart = false; return
+    mergedTrans = {}; return
 
 elseif any(cell2mat(immTransNoLabel))
-    % there are immediate transitions without synchronization labels
+    % there are instant transitions without synchronization labels
     % -> can always be constructed and taken
 
     % update synchronization label in tracker before init of dummy label
@@ -104,10 +93,10 @@ elseif any(cell2mat(immTransNoLabel))
     % the general list as this is not a return value)
     syncLabel = 'unifiedTransWithoutSyncLabels';
     allLabels = [allLabels; struct('name',syncLabel,'component',[],...
-        'location',[],'transition',[],'guardempty',[])];
+        'location',[],'transition',[],'instant',[])];
 
-    % check all current locations for immediate transitions...
-    % note: by definition, there can only be one outgoing immediate
+    % check all current locations for instant transitions...
+    % note: by definition, there can only be one outgoing instant
     % transition without a synchronization label per location!
     for i=1:length(immTransNoLabel)
         if any(immTransNoLabel{i})
@@ -115,7 +104,7 @@ elseif any(cell2mat(immTransNoLabel))
             allLabels(end).location = [allLabels(end).location; locID(i)];
             allLabels(end).transition = [allLabels(end).transition; ...
                 find(immTransNoLabel{i},1,'first')];
-            allLabels(end).guardempty = [allLabels(end).guardempty; true];
+            allLabels(end).instant = [allLabels(end).instant; true];
         end
     end
 
@@ -124,15 +113,15 @@ else % here: any(cell2mat(immTransLabel)) = true
     % assume no synchronization label meets necessary criteria
     syncTransitionFound = false;
 
-    % go over immediate transitions with synchronization labels, check if
+    % go over instant transitions with synchronization labels, check if
     % they can be executed -> if yes, find all transition for merge
     for i=1:length(immTransLabel)
         for j=1:length(immTransLabel{i})
     
-            % only check immediate transitions
+            % only check instant transitions
             if immTransLabel{i}(j)
     
-                % synchronization label of immediate transition
+                % synchronization label of instant transition
                 syncLabel = pHA.components(i).location(locID(i)).transition(j).syncLabel;
         
                 % skip if synchronization label does not meet criteria
@@ -152,14 +141,14 @@ else % here: any(cell2mat(immTransLabel)) = true
     end
 
     if ~syncTransitionFound
-        % no immediate transition with synchronization labels found
+        % no instant transition with synchronization labels found
 
-        % dummy values for tracker (see if-branch: no immediate transitions)
+        % dummy values for tracker (see if-branch: no instant transitions)
         tracker(end).transition = zeros(1,length(locID));
         tracker(end).syncLabel = '';
 
         % quick exit
-        restart = false; return
+        mergedTrans = {}; return
     end
 
     % update tracker: used synchronization label
@@ -179,7 +168,7 @@ idxIdReset = true(length(pHA.components),1);
 
 % sychronization label given: already checked that all other
 % transitions with same synchronization label are also
-% immediate transitions; now get these transitions
+% instant transitions; now get these transitions
 for k=1:length(pHA.components)
     if any(allLabels(idxSyncLabel).component == k)
         idxIdReset(k) = false;
@@ -187,28 +176,26 @@ for k=1:length(pHA.components)
 end
 
 % initialize transition for full state
-transList = cell(1,length(pHA.components));
+transList = cell(length(pHA.components),1);
 
 % loop over all components for full transition
 for k=1:length(pHA.components)
 
     % check for identity reset or not
     if idxIdReset(k)
-        % append virtual self-transition with empty guard set and identity
-        % reset function
-        resetStruct.A = eye(pHA.components(k).location(locID(k)).contDynamics.dim);
-        resetStruct.c = zeros(pHA.components(k).location(locID(k)).contDynamics.dim,1);
-        transList{k}{1} = transition([],resetStruct,locID(k),syncLabel);
-
-        % target location = same as current location in component k
-        list{1}.loc(k) = locID(k);
+        % append virtual self-transition with fullspace guard set and
+        % identity reset function
+        stateDim = pHA.components(k).location(locID(k)).contDynamics.dim;
+        resetStruct.A = eye(stateDim);
+        resetStruct.c = zeros(stateDim,1);
+        transList{k,1} = transition(fullspace(stateDim),resetStruct,locID(k),syncLabel);
 
         % append to list of all labels
         allLabels(idxSyncLabel).component = [allLabels(idxSyncLabel).component; k];
         allLabels(idxSyncLabel).location = [allLabels(idxSyncLabel).location; locID(k)];
         % index this virtual transition by "0" (consistent with livelock check)
         allLabels(idxSyncLabel).transition = [allLabels(idxSyncLabel).transition; 0];
-        allLabels(idxSyncLabel).guardempty = [allLabels(idxSyncLabel).guardempty; true];
+        allLabels(idxSyncLabel).instant = [allLabels(idxSyncLabel).instant; true];
 
         % update tracker: idx of transition in transition list of location
         tracker(end).transition = [tracker(end).transition; 0];
@@ -223,14 +210,11 @@ for k=1:length(pHA.components)
 
         % take transition with same synchronization label, but
         % remove label for call of mergeTransitionSets below
-        transList{k}{1} = transition(...
+        transList{k,1} = transition(...
             pHA.components(k).location(locID(k)).transition(idx).guard,...
             pHA.components(k).location(locID(k)).transition(idx).reset,...
             pHA.components(k).location(locID(k)).transition(idx).target,...
             syncLabel);
-
-        % target location
-        list{1}.loc(k) = pHA.components(k).location(locID(k)).transition(idx).target;
 
         % update tracker: idx of transition in transition list of location
         tracker(end).transition = [tracker(end).transition; idx];
@@ -239,25 +223,23 @@ for k=1:length(pHA.components)
     
 end
 
+% has the transition-to-be-merged been computed before?
+if ~isempty(pHA.mergedTrans)
+    % check whether
+    % 1) there has been a merged instant transition starting from the same
+    %    locID as currently 
+    % 2) the same transitions from the transition list have been merged
+    sameTrans = all([pHA.mergedTrans.locID] == locID,1) ...
+        & all([pHA.mergedTrans.transID] == tracker(end).transition,1);
+    if any(sameTrans)
+        mergedTrans = pHA.mergedTrans(sameTrans).transition;
+        return
+    end
+end
 
 % construct transition for full state (note that the synchronization label
 % is removed during the process)
 mergedTrans = mergeTransitionSets(pHA,transList,locID,allLabels);
-
-% reset state
-list{1}.set = reset(mergedTrans{1},fullR0,fullU);
-
-% other immediate transitions that are now available will be handled in the
-% next iteration of the main loop
-restart = true;
-
-% notify user that an immediate transition has occurred
-if verbose
-    disp("  transition: locations [" + ...
-        strjoin(string(locID),",") + "] -> locations [" + ...
-        strjoin(string(list{1}.loc),",") + "]... " + ...
-        "(time: " + string(list{1}.time) + ")");
-end
 
 end
 
@@ -265,7 +247,7 @@ end
 % Auxiliary Functions -----------------------------------------------------
 
 function skip = aux_skipTransition(currComp,locID,syncLabel,allLabels)
-% check whether current transition is an immediate transition: we have to
+% check whether current transition is an instant transition: we have to
 % go over all other instances of the synchronization label in other
 % components to ensure that at least one instance per component is active
 % at the moment (i.e., we are in a location with a transition with that 
@@ -300,10 +282,10 @@ function skip = aux_skipTransition(currComp,locID,syncLabel,allLabels)
             skip = true; break;
         end
 
-        % check if the corresponding transition is immediate
+        % check if the corresponding transition is instant
         locIdx = compIdx & ...
             allLabels(idxSyncLabel).location == locID(comp);
-        if isempty(locIdx) || ~allLabels(idxSyncLabel).guardempty(locIdx)
+        if isempty(locIdx) || ~allLabels(idxSyncLabel).instant(locIdx)
             skip = true; break;
         end
     end

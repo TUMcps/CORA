@@ -42,6 +42,14 @@ function res = and_(ls,S,varargin)
 
 %------------- BEGIN CODE --------------
 
+    % ensure order
+    [ls,S] = findClassArg(ls,S,'levelSet');
+
+    % intersection with fullspace or emptySet
+    if isa(S,'fullspace') || isa(S,'emptySet')
+        res = and_(S,ls); return
+    end
+
     % check input arguments
     if isa(S,'conPolyZono')
         res = and_(S,ls,'exact'); return
@@ -51,15 +59,68 @@ function res = and_(ls,S,varargin)
     if isa(S,'mptPolytope')
         S = levelSet(S);
     end
+
+    % special case: intersection with a point
+    if isa(S,'polyZonotope') && aux_isavector(S)
+        % check if point fulfills level set equation
+        if ls.funHan(S.c) < 0 || withinTol(ls.funHan(S.c),0)
+            % init as zonotope for upcoming computations
+            res = zonotope(S.c);
+        else
+            res = emptySet(dim(S));
+        end
+        return
+    end
     
-    % check if S is a level Set with same compOp => use specialized algorithm
+    % check if S is a level Set with same compOp => concatenate
     if isa(S,'levelSet')
         % use vars from ls (should be irrelevant which ones are used)
         vars = ls.vars;
         newEqs = [ls.eq;subs(S.eq,S.vars,vars)];
         newCompOp = aux_uniteCompOp(ls.compOp,S.compOp);
         res = levelSet(newEqs,vars,newCompOp);
+        res = compact(res);
         return;
+    end
+
+    % split up ls if it has multiple equations
+    if iscell(ls.compOp) && not(isscalar(ls.compOp))
+        res = fullspace(length(ls.vars));
+        for i = 1:length(ls.compOp)
+            op = ls.compOp{i};
+            eq = ls.eq(i);
+            lsComp = levelSet(eq, ls.vars, op);
+            comp = lsComp & S;
+            res = res & comp;
+        end
+        return;
+    end
+
+    % compute coarse outer-approximation
+    if any(strcmp(ls.compOp,{'<=','<'}))
+        % caution: multiple equations not supported...
+
+        % outer-approximation second set by interval for range bounding
+        I = interval(S);
+
+        % perform range bounding using Taylor models for complement of
+        % level set and second set
+        ls_ = not(ls);
+        boundedVals = interval(taylm(symfun(ls_.eq, ls_.vars),I));
+
+        % if the entire range is contained in the complement, the
+        % intersection is empty
+        % (TODO: slightly different for '<' / '<=')
+        if contains_(interval(-Inf,0),boundedVals)
+            res = emptySet(dim(S));
+            return
+        end
+
+        % S is an outer-approximation of S & ls, use this for now
+        % TODO: implement contractors for tighter outer-approximation
+        res = zonotope(S);
+        return
+
     end
     
     if ~strcmp(ls.compOp,'==')
@@ -377,6 +438,25 @@ end
 
 % concatenate
 compOp = [compOp1;compOp2];
+
+end
+
+function res = aux_isavector(S)
+% checks if the set S represents just a vector
+% TODO: integrate this function to 'representsa'
+res = false;
+
+if isa(S,'polyZonotope')
+    % just a point if there are no independent generators (or all-zero) and
+    % either no dependent generators (or all-zero) or the exponent matrix
+    % is all-zero
+    if ~isempty(S.Grest) && any(any(S.Grest))
+        res = false; return
+    elseif ~isempty(S.G) && any(any(S.G)) && any(any(S.expMat))
+        res = false; return
+    end
+    res = true;
+end   
 
 end
 

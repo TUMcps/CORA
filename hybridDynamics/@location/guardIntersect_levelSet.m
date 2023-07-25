@@ -37,7 +37,13 @@ for i = 1:length(R)
    
     % interval enclosure (see Step 2 in Sec. 3.2 in [1])
     I_ = interval(R{i});
-    I_ = tightenDomain(guard,I_);
+    % domain tightening only possible for guard sets with comparison
+    % operator '=='; for instant transitions with conditions, level sets
+    % have comparison operator '<=' and thus the domain cannot be
+    % tightened; however, instant transitions also only have one set in R
+    try
+        I_ = tightenDomain(guard,I_);
+    end
     
     % compute union of all intervals (see Step 3 in Sec. 3.2 in [1])
     I = I | I_;

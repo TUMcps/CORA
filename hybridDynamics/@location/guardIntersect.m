@@ -1,16 +1,18 @@
 function [Rguard,actGuards,minInd,maxInd] = ...
-    guardIntersect(loc,guards,setInd,Rcont,options)
+    guardIntersect(loc,guards,setInd,setType,Rcont,options)
 % guardIntersect - computes an enclosure of the intersection between the
 %    reachable set and the guard sets
 %
 % Syntax:  
 %    [Rguard,actGuards,minInd,maxInd] = 
-%       guardIntersect(loc,guards,setInd,Rcont,options)
+%       guardIntersect(loc,guards,setInd,setType,Rcont,options)
 %
 % Inputs:
 %    loc - location object
 %    guards - cell array containing the guard sets that have been hit
 %    setInd - cell array containing the indices of intersecting sets
+%    setType - which set has been determined to intersect the guard set
+%              ('time-interval' or 'time-point')
 %    Rcont - reachSet object storing the reachable set
 %    options - struct with settings for reachability analysis
 %
@@ -65,13 +67,13 @@ function [Rguard,actGuards,minInd,maxInd] = ...
         Pguard{guardInd(i)} = loc.transition(guardInd(i)).guard;
     end
 
-    % extract time interval and time point reachable set
-    R = Rcont.timeInterval.set;
-    Rtp = Rcont.timePoint.set;
-
     % group the reachable sets which intersect guards
-    [minInd,maxInd,P,actGuards] = aux_groupSets(R,guards,setInd);
-    
+    Rtp = Rcont.timePoint.set;
+    if strcmp(setType,'time-interval')
+        [minInd,maxInd,P,actGuards] = aux_groupSets(Rcont.timeInterval.set,guards,setInd);
+    elseif strcmp(setType,'time-point')
+        [minInd,maxInd,P,actGuards] = aux_groupSets(Rtp,guards,setInd);
+    end
 
     % loop over all guard intersections
     Rguard = cell(length(minInd),1);
@@ -82,12 +84,23 @@ function [Rguard,actGuards,minInd,maxInd] = ...
         guard = Pguard{actGuards(i)};
         
         % remove all intersections where the flow does not point in the
-        % direction of the guard set
-        if isa(guard,'conHyperplane') || isa(guard,'levelSet')
-            [res,P{i}] = checkFlow(loc,guard,P{i},options);
-            if ~res
-                continue;
+        % direction of the guard set (only check if there is no instant
+        % transition, i.e., there is a time-interval reachable set)
+        if strcmp(setType,'time-interval') && ...
+                (isa(guard,'conHyperplane') || isa(guard,'levelSet'))
+            try
+                [res,P{i}] = checkFlow(loc,guard,P{i},options);
+                if ~res
+                    continue;
+                end
             end
+        end
+
+        if isa(guard,'levelSet')
+            % if current guard set is a level set, only level set method
+            % applies
+            Rguard{i} = guardIntersect_levelSet(loc,P{i},guard);
+            continue
         end
 
         % selected method for the calculation of the intersection
@@ -125,7 +138,7 @@ function [Rguard,actGuards,minInd,maxInd] = ...
                 
                 Rguard{i} = guardIntersect_nondetGuard(loc,P{i},guard,options);
                 
-            % compute intersection with the metohd in [5]    
+            % compute intersection with the method in [5]    
             case 'levelSet'
                 
                 if isa(guard,'conHyperplane')

@@ -89,8 +89,8 @@ disp(['Time to compute random simulations: ', num2str(tSim)]);
 
 tic
 isVio = false;
-for i = 1:length(simRes.x)
-    x = simRes.x{i}(simRes.t{i} >= 0.5);
+for i = 1:length(simRes)
+    x = simRes(i).x{1}(simRes(i).t{1} >= 0.5);
     isVio = isVio || ~all((0 <= x(:, 1)) & (x(:, 1) <= 1));
 end
 tVio = toc;

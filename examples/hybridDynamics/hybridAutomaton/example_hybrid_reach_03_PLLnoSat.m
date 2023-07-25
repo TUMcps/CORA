@@ -479,7 +479,7 @@ while length(x_cycle(:,1)) < simCycles
 
     %simulate within the actual location
     params.u = params.uLoc{params.loc};
-    [~,~,params.loc,params.x0]=simulate(obj.location{params.loc},params);
+    [~,~,params.loc,params.x0]=simulate(obj.location(params.loc),params);
     
     %store results at the end of location 1
     if params.loc==2 && (params.x0(4)<=params.x0(5))

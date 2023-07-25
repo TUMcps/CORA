@@ -101,11 +101,11 @@ disp(['Time to compute random simulations: ', num2str(tSim)]);
 tic;
 simResDistances = [];
 isVio = false;
-for i = 1:length(simRes.x)
-    x = simRes.x{i};
+for i = 1:length(simRes)
+    x = simRes(i).x{1};
     x = DM * x' + Db;
     
-    simResDistances_i = simResult({x'}, simRes.t(i));
+    simResDistances_i = simResult({x'}, simRes(i).t);
     if isempty(simResDistances)
         simResDistances = simResDistances_i;
     else

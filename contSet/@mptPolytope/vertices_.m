@@ -1,4 +1,4 @@
-function V = vertices_(obj,varargin)
+function v_new = vertices_(obj,varargin)
 % vertices_ - computes the vertices of a mptPolytope
 %
 % Syntax:  
@@ -40,8 +40,8 @@ function V = vertices_(obj,varargin)
 % check if vertex representation already exists
 if obj.P.hasVRep()
     
-    V = obj.P.V;
-    V = V';
+    v_new = obj.P.V;
+    v_new = v_new';
     
 else
 
@@ -50,10 +50,36 @@ else
     % for each polytope
     v = []; %init set of vertices
     for i=1:length(obj.P)
-        v_new = lcon2vert(obj.P(i).A,obj.P(i).b,[],[],[],0);
+        try
+            v_new = lcon2vert(obj.P(i).A,obj.P(i).b,[],[],[],0);
+        catch ME
+            % check for subspaces
+            [~,S] = isFullDim(obj);
+    
+            % is polytope just a point?
+            if isempty(S)
+                v_new = center(obj)';
+            elseif size(S,2) < size(obj.P.A,2)
+                % polytope is non-degenerate in subspace;
+                % we plug in
+                %    x = S*y + c in Ax <= b, resulting in ASy <= b - Ac,
+                % where y is of the subspace dimension and c is any point
+                % within the original polytope P (we use the center-function)
+                c = center(obj);
+                P_ = mptPolytope(obj.P.A*S,obj.P.b - obj.P.A*c);
+                % compute vertices for y in subspace
+                v_new = vertices_(P_,'lcon2vert');
+                % map back via x = S*y + c
+                v_new = S*v_new + c;
+                v_new = v_new';
+                return
+            else
+                rethrow(ME);
+            end
+        end
         v = [v; v_new];
     end
-    V = v';
+    v_new = v';
 end
 
 %------------- END OF CODE --------------

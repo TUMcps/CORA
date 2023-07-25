@@ -29,12 +29,16 @@ function R = updateTime(R,time)
 deltaT = time - infimum(time);
 
 % shift time of time-point reachable sets
-for i=1:length(R.timePoint.time)
-	R.timePoint.time{i} = R.timePoint.time{i} + deltaT; 
+if ~isempty(R.timePoint)
+    for i=1:length(R.timePoint.time)
+	    R.timePoint.time{i} = R.timePoint.time{i} + deltaT; 
+    end
 end
 % shift time of time-interval reachable sets
-for i=1:length(R.timeInterval.time)
-    R.timeInterval.time{i} = R.timeInterval.time{i} + deltaT;
+if ~isempty(R.timeInterval)
+    for i=1:length(R.timeInterval.time)
+        R.timeInterval.time{i} = R.timeInterval.time{i} + deltaT;
+    end
 end
 
 %------------- END OF CODE --------------

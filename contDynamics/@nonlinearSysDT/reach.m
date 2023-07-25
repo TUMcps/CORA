@@ -46,6 +46,20 @@ t = options.tStart:obj.dt:options.tFinal;
 
 steps = length(t)-1;
 timePoint.set = cell(steps+1,1);
+
+% add constant input
+if isfield(options,'uTrans')
+    options.U = options.U + options.uTrans;
+    options.uTrans = 0;
+end
+U0 = options.U;
+
+% add input for time 1
+if isfield(options,'uTransVec')
+    options.U = U0 + options.uTransVec(:,1);
+end  
+
+% compute output for time 1
 timePoint.set{1} = outputSet(obj,options,params.R0);
 Rnext = params.R0;
 
@@ -54,7 +68,7 @@ for i = 1:steps
 
     % if a trajectory should be tracked
     if isfield(options,'uTransVec')
-        options.U = options.U + options.uTransVec(:,i);
+        options.U = U0 + options.uTransVec(:,i);
     end  
 
     options.i = i;

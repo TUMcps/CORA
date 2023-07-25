@@ -29,9 +29,8 @@ dim_y = 4;
 % Parameters --------------------------------------------------------------
 
 % initial set
-params.x0 = x0;
 Bound_x = 0.8e-3*eye(2);
-params.R0 = zonotope([params.x0,Bound_x]); % x0
+params.R0 = zonotope([x0,Bound_x]); % x0
 
 % initial set (algebraic states)
 params.y0guess = y0.';

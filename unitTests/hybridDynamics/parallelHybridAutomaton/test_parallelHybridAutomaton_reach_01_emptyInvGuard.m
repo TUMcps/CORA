@@ -52,7 +52,7 @@ options.enclose = {'box'};
 % HA1: flow right and left
 % HA2: flow up and down (but slower than HA1)
 % -> whenever HA1 hits right or left, HA2 switches location as well
-%    via immediate transition/synchronization label
+%    via instant transition/synchronization label
 
 % continuous dynamics: right/left faster than up/down
 A = [0 0; 0 0];
@@ -68,13 +68,13 @@ linSys_down = linearSys('down',A,B,c_down);
 
 % invariant set 
 inv = mptPolytope(interval([-1;-1],[1;1]));
-inv_empty = [];
+inv_fullspace = fullspace(2);
 
 % guard sets (boundary of box)
 guard_right = conHyperplane([1,0],1);
 guard_left = conHyperplane([-1,0],1);
-% guard set for immediate transition
-guard_empty = [];
+% guard set for instant transition
+guard_instant = fullspace(2);
 
 % reset functions: shift up/left
 resetA = [1, 0; 0, 1];
@@ -95,12 +95,12 @@ loc = [location('right',inv,trans1,linSys_right);...
 HA1 = hybridAutomaton(loc);
 
 % HA2: transitions
-trans1 = transition(guard_empty,reset_left,2,'hit_right');
-trans2 = transition(guard_empty,reset_left,1,'hit_left');
+trans1 = transition(guard_instant,reset_left,2,'hit_right');
+trans2 = transition(guard_instant,reset_left,1,'hit_left');
 
 % HA2: locations (invariants are full space)
-loc = [location('up',inv_empty,trans1,linSys_up);...
-        location('down',inv_empty,trans2,linSys_down)];
+loc = [location('up',inv_fullspace,trans1,linSys_up);...
+        location('down',inv_fullspace,trans2,linSys_down)];
 
 % instantiate second hybrid automaton
 HA2 = hybridAutomaton(loc);
@@ -121,6 +121,7 @@ R = reach(pHA,params,options);
 
 % first hybrid automaton
 R_HA = reach(HA1,paramsHA,options);
+
 
 % Visualization -----------------------------------------------------------
 % just for debugging purposes
@@ -156,7 +157,7 @@ R_HA = reach(HA1,paramsHA,options);
 
 % Numerical check ---------------------------------------------------------
 
-% since immediate transitions do not effect additional branches in the
+% since instant transitions do not effect additional branches in the
 % reachSet object, both reachSet objects have to have the same length
 res = length(R) == length(R_HA);
 

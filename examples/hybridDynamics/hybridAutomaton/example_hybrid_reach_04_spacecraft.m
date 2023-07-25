@@ -131,11 +131,13 @@ R2 = find(R,'location',2);
 plot(R2,[3,4]);
 
 % plot simulation for location 2
-for i = 1:length(simRes.loc)
-   if simRes.loc{i} == 2
-       x = simRes.x{i};
-       plot(x(:,3),x(:,4),'Color',colorblind('y'));
-   end
+for i = 1:length(simRes)
+    for j=1:length(simRes(i).loc)
+        if simRes(i).loc(j) == 2
+            x = simRes(i).x{j};
+            plot(x(:,3),x(:,4),'Color',colorblind('y'));
+        end
+    end
 end
 
 % formatting

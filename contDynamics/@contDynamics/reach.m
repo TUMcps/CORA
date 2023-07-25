@@ -41,7 +41,12 @@ function [R,res,options] = reach(obj,params,options,varargin)
 res = true;
 
 % options preprocessing
-options = validateOptions(obj,mfilename,params,options);
+if ~isfield(options,'validated') || ~options.validated
+    options = validateOptions(obj,mfilename,params,options);
+else
+    % internal call: skip validation (options already checked)
+    options = validateOptions(obj,mfilename,params,options,true);
+end
 
 % handling of specifications
 spec = []; specLogic = [];
@@ -92,6 +97,7 @@ if isa(obj,'nonlinDASys')
 end
 
 % first timePoint set is initial set
+timePoint.time{1} = options.tStart;
 if syslin
     timePoint.set{1} = options.R0;
 else
@@ -105,7 +111,6 @@ else
     timePoint.set{1}{1}.prev = 1;
     timePoint.set{1}{1}.parent = 1;
 end
-timePoint.time{1} = options.tStart;
 
 % log information
 verboseLog(1,options.t,options);

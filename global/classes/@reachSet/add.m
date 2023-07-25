@@ -8,7 +8,7 @@ function R = add(R1,R2,varargin)
 % Inputs:
 %    R1 - reachSet object
 %    R2 - reachSet object
-%    parent - index of the parent for the root of the reachSet object obj2
+%    parent - (optional) index of the parent for the root of R2
 %
 % Outputs:
 %    R - resulting reachSet object
@@ -19,18 +19,18 @@ function R = add(R1,R2,varargin)
 %
 % See also: reachSet
 
-% Author:       Niklas Kochdumper
+% Author:       Niklas Kochdumper, Mark Wetzlinger
 % Written:      29-May-2020             
-% Last update:  ---
+% Last update:  06-June-2023 (MW, simplify)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
 
-% one of the objects is empty
-if isempty(R1)
+% one of the objects is empty 
+if (isscalar(R1) || isnumeric(R1)) && isemptyobject(R1)
     R = R2;
     return
-elseif isempty(R2)
+elseif (isscalar(R2) || isnumeric(R2)) && isemptyobject(R2)
     R = R1;
     return
 end
@@ -39,27 +39,26 @@ end
 parent = setDefaultValues({0},varargin);
 
 % check input arguments
-inputArgsCheck({{R1,'att',{'reachSet'},{''}};
-                {R2,'att',{'reachSet'},{''}};
+inputArgsCheck({{R1,'att','reachSet'};
+                {R2,'att','reachSet'};
                 {parent,'att',{'numeric'},{'integer','nonnegative','scalar'}}});
 
-% add objects together
-R = repelem(R1(1,1),size(R1,1)+size(R2,1),1);
-cnt = 1;
+% length of R1
+R1_length = length(R1);
 
-for i = 1:size(R1,1)
-    R(cnt,1) = R1(i,1);
-    cnt = cnt + 1;
-end
+% indices where R2 parent is 0 -> overwritten by provided value for parent
+idxZero = [R2.parent] == 0;
 
-for i = 1:size(R2,1)
-    R(cnt,1) = R2(i,1);
-    if R(cnt,1).parent == 0
-        R(cnt,1).parent = parent;
+% loop of all non-zero parents in R2, increment by length of R1
+for i=1:length(R2)
+    if idxZero(i)
+        R2(i).parent = parent;
     else
-        R(cnt,1).parent = R(cnt,1).parent + size(R1,1);
+        R2(i).parent = R2(i).parent + R1_length;
     end
-    cnt = cnt + 1;
 end
+
+% concatenate objects
+R = [R1;R2];
 
 %------------- END OF CODE --------------

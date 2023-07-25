@@ -47,9 +47,17 @@ elseif isnumeric(factor2)
     %compute new intervals
     intMat.int=intMat.int*matrix;
     
+% multiplication with empty set
+elseif isa(factor2,'emptySet')
+    intMat = emptySet(dim(factor1,1));
+
+% multiplication with full space
+elseif isa(factor2,'fullspace')
+    intMat = fullspace(dim(factor1,1));
+
 %both factors are interval matrices
 else
-    %initialize matrix zonotope
+    %initialize result
     intMat=factor1;
     %compute interval matrix
     intMat.int=factor1.int*factor2.int;

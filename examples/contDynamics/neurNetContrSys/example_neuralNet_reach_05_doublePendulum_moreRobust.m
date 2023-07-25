@@ -83,8 +83,8 @@ disp(['Time to compute random simulations: ', num2str(tSim)]);
 
 tic
 isVio = false;
-for i = 1:length(simRes.x)
-    x = simRes.x{i};
+for i = 1:length(simRes)
+    x = simRes(i).x{1};
     for j =1:length(safeSet)
         isVio = isVio || ~all( ...
             (infimum(safeSet(j)) <= x(:, j)) & ...

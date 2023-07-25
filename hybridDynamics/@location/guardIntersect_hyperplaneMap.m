@@ -75,7 +75,7 @@ function [Rmin,tmin,tmax,int] = aux_refinedIntersectionTime(loc,guard,R0,options
 % this function computes the reachable set with a smaller times step to
 % refine the time at which the reachable set intersects the guard set
 
-    % compute halfspace representing the region inside the invariant
+    % init halfspace representing the region inside the invariant
     hs = halfspace(guard.h.c,guard.h.d);
     
     if ~contains_(hs,center(R0))
@@ -95,24 +95,25 @@ function [Rmin,tmin,tmax,int] = aux_refinedIntersectionTime(loc,guard,R0,options
     
     % compute reachable set until it fully crossed the hyperplane
     R = reach(loc.contDynamics,params,options,spec);
-    
+    % extract last time
     tmax = R.timePoint.time{end};
     
     % compute minimum time and set
-    Rmin = R0; tmin = 0; int = []; found = 0;
+    Rmin = R0; tmin = 0; int = []; found = false;
     
     
-    for i = 1:length(R.timePoint.set)
+    for k = 1:length(R.timeInterval.set)
         
-       if ~found && contains_(hs,R.timePoint.set{i})
-          % update minimum time
-          Rmin = R.timePoint.set{i};
-          tmin = R.timePoint.time{i};
-       else
-          % compute union of all sets that intersect the guard
-          int = int | interval(R.timeInterval.set{i});
-          found = 1;
-       end
+        % check if start set of step intersects
+        if ~found && contains_(hs,R.timePoint.set{k})
+            % update minimum time
+            Rmin = R.timePoint.set{k};
+            tmin = R.timePoint.time{k};
+        else
+            % compute union of all sets that intersect the guard
+            int = int | interval(R.timeInterval.set{k});
+            found = true;
+        end
     end
 end
 

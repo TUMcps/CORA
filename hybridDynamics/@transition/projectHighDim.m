@@ -45,19 +45,17 @@ function trans = projectHighDim(trans,N,dims,target,id)
         % from within the pHA).
     end
 
-    % project guard set to the higher dimension
+    
+    % convert to mptPolytope unless guard set is fullspace, a levelSet,
+    % an mptPolytope, or a conHyperplane
     guard = trans.guard;
-    if ~(isnumeric(guard) && isempty(guard)) && ~isa(guard,'levelSet') ...
+    if ~isa(guard,'fullspace') && ~isa(guard,'levelSet') ...
             && ~isa(guard,'mptPolytope') && ~isa(guard,'conHyperplane')
-        % convert to mptPolytope unless guard set is [], a levelSet,
-        % an mptPolytope, or a conHyperplane
         guard = mptPolytope(guard);
     end
     
-    % only project unless guard set is []
-    if ~(isnumeric(guard) && isempty(guard))
-        trans.guard = projectHighDim(guard,N,dims);
-    end
+    % project guard set to the higher dimension
+    trans.guard = projectHighDim(guard,N,dims);
 
     % project reset function to the higher dimension
     if isfield(trans.reset,'A')
@@ -171,13 +169,17 @@ end
 function res = projectQuadMat(x,Q,n,stateBind)
 % project Hessian of reset function to higher dimension
     res = zeros(n);
-    res(stateBind,stateBind) = Q(x(stateBind));
+    try
+        res(stateBind,stateBind) = Q(x(stateBind));
+    end
 end
 
 function res = projectThirdOrder(x,T,n,stateBind)
 % project third-order tensor reset function to higher dimension
     res = interval(zeros(n));
-    res(stateBind,stateBind) = T(x(stateBind));
+    try
+        res(stateBind,stateBind) = T(x(stateBind));
+    end
 end
 
 %------------- END OF CODE --------------

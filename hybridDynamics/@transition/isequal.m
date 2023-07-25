@@ -148,21 +148,18 @@ for i=1:length(reset1fields)
 end
 
 % guard set
-if ~(isnumeric(trans1.guard) && isempty(trans1.guard) ...
-        && isnumeric(trans2.guard) && isempty(trans2.guard))
+if isa(trans1.guard,'mptPolytope')
+    if ~(trans1.guard == trans2.guard)
+        % can be replaced once polytope class is there...
+        res = false; return
+    end
+elseif any([isnumeric(trans1.guard),isnumeric(trans2.guard)])
+    % empty transition object may have .guard = []
     if xor(isnumeric(trans1.guard),isnumeric(trans2.guard))
         res = false; return
-    elseif isnumeric(trans1.guard) ...
-                && ~all(isempty(trans1.guard),isempty(trans2.guard))
-        res = false; return
-    elseif isa(trans1.guard,'mptPolytope')
-        if ~(trans1.guard == trans2.guard)
-            % can be replaced once polytope class is there...
-            res = false; return
-        end
-    elseif ~isequal(trans1.guard,trans2.guard,tol)
-            res = false; return
     end
+elseif ~isequal(trans1.guard,trans2.guard,tol)
+    res = false; return
 end
 
 end

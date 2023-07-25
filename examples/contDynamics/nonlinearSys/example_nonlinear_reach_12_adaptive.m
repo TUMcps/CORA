@@ -48,7 +48,7 @@ simRes = simulateRandom(sys,params,simOpt);
 % computation of gamma_min
 endpoints = zeros(sys.dim,simOpt.points);
 for i=1:simOpt.points
-    endpoints(:,i) = simRes.x{i}(end,:)';
+    endpoints(:,i) = simRes(i).x{1}(end,:)';
 end
 simendset = interval.enclosePoints(endpoints);
 gamma_u = 2*rad(interval(simendset));

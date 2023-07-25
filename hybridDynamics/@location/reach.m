@@ -3,7 +3,7 @@ function [R,Rjump_,res] = reach(loc,R0,tStart,options)
 %    determines the intersections with the guard sets
 %
 % Syntax:  
-%    [R,Rjump,res] = reach(loc,R0,tStart,options)
+%    [R,Rjump_,res] = reach(loc,R0,tStart,options)
 %
 % Inputs:
 %    loc - location object
@@ -29,11 +29,12 @@ function [R,Rjump_,res] = reach(loc,R0,tStart,options)
 %------------- BEGIN CODE --------------
 
 res = true;
-Rjump = {};
+Rjump = struct('set',cell(1,0),'time',cell(1,0),...
+    'loc',cell(1,0),'parent',cell(1,0));
 
-% adapt options
-[params,options_] = adaptOptions(loc,options);
-
+% split options into params and options for contDynamics/reach
+[params,options_] = splitIntoParamsOptions(options);
+% additional adaptations
 params.tStart = infimum(tStart);
 params.R0 = R0;
 
@@ -60,31 +61,37 @@ for i=1:size(R,1)
 
     % determine all guard sets of the current location which any
     % reachable set intersects
-    [guards,setIndices] = potInt(loc,R(i).timeInterval.set,options);
+    [guards,setIndices,setType] = potInt(loc,R(i),options);
 
     % compute intersections with the guard sets
     [Rguard,actGuards,minInd,maxInd] = ...
-                    guardIntersect(loc,guards,setIndices,R(i),options);
+            guardIntersect(loc,guards,setIndices,setType,R(i),options);
 
     % compute reset and get target location
-    Rjump_ = cell(length(Rguard),1);
+    Rjump_ = struct('set',cell(1,0),'time',cell(1,0),...
+        'loc',cell(1,0),'parent',cell(1,0));
 
     for j=1:length(Rguard)
         
         iGuard = actGuards(j);
         
         % compute reset
-        Rjump_{j,1}.set = reset(loc.transition(iGuard),Rguard{j},options.U);  
+        Rjump_(j,1).set = reset(loc.transition(iGuard),Rguard{j},options.U);  
         
         % target location and parent reachable set
-        Rjump_{j,1}.loc = loc.transition(iGuard).target;
-        Rjump_{j,1}.parent = R(i).parent + 1;
+        Rjump_(j,1).loc = loc.transition(iGuard).target;
+        Rjump_(j,1).parent = R(i).parent + 1;
         
         % time interval for the guard intersection
-        tMin = infimum(R.timeInterval.time{minInd(j)});
-        tMax = supremum(R.timeInterval.time{maxInd(j)}) + 2*rad(tStart);
+        if strcmp(setType,'time-interval')
+            tMin = infimum(R.timeInterval.time{minInd(j)});
+            tMax = supremum(R.timeInterval.time{maxInd(j)}) + 2*rad(tStart);
+        else
+            tMin = R.timePoint.time{minInd(j)};
+            tMax = R.timePoint.time{maxInd(j)};
+        end
         
-        Rjump_{j,1}.time = interval(tMin,tMax);
+        Rjump_(j,1).time = interval(tMin,tMax);
     end
     
     Rjump = [Rjump;Rjump_];

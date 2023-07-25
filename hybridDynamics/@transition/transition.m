@@ -94,11 +94,10 @@ methods
         end
         
         % 1. check guard set: either empty or admissible set representation
-        guardlist = {'interval','mptPolytope','levelSet','conHyperplane'};
-        if (isnumeric(trans.guard) && ~isempty(trans.guard)) || ...
-                (~isnumeric(trans.guard) && ~any(ismember(class(trans.guard),guardlist)))
+        guardlist = {'interval','mptPolytope','levelSet','conHyperplane','fullspace'};
+        if ~any(ismember(class(trans.guard),guardlist))
             throw(CORAerror('CORA:wrongInputInConstructor',...
-                ['Property ''guard'' has to be either [] or one of the following classes:\n'...
+                ['Property ''guard'' has to be one of the following classes:\n'...
                 '  ' strjoin(guardlist,', ') '.']));
         end
 
@@ -144,14 +143,14 @@ methods
         end
 
         % check whether matrices of linear transitions have correct sizes
-        checkLinearReset(trans);
+        aux_checkLinearReset(trans);
         
         % pre-compute derivatives for nonlinear resets: stored in fields
         % .J (Jacobian), .Q (Hessian), .T (third-order tensor)
         if isfield(trans.reset,'f') && ~all(isfield(trans.reset,{'J','Q','T'}))
             % skip computation if J, Q, and T have already been computed
             % (this occurs during internal re-instantation of transitions)
-            trans = compDerivatives(trans);
+            trans = aux_compDerivatives(trans);
         end
 
         % 3. check target: non-empty, integer, larger than zero
@@ -165,7 +164,7 @@ methods
 
     % Auxiliary functions -------------------------------------------------
 
-    function checkLinearReset(trans)
+    function aux_checkLinearReset(trans)
     % ensure that linear reset function x_ = Ax + Bu + c is properly
     % defined
 
@@ -191,7 +190,7 @@ methods
 
     end
 
-    function trans = compDerivatives(trans)
+    function trans = aux_compDerivatives(trans)
     % pre-compute all derivatives required for the enclosure of the 
     % nonlinear reset function by a Taylor series expansion of order 2
     % additional fields: .J (Jacobian), .Q (Hessian), .T (third-order tensor)
@@ -220,21 +219,34 @@ methods
         J = jacobian(f,z);
         trans.reset.J = matlabFunction(J,'Vars',{z});
         
+        % check if Jacobian is constant:
+        % insert NaN for all variables -> all entries with variables become
+        % NaN, all others simple double
+        Jconst = ~isnan(double(subs(J,z,NaN(length(z),1))));
         
         % second-order derivative
         trans.reset.Q = cell(n,1);
         for i = 1:n
-            % compute Hessian of f
-            trans.reset.Q{i,1} = matlabFunction(hessian(f(i),z),'Vars',{z});
+            if all(Jconst(i,:))
+                % skip linear Jacobians
+                trans.reset.Q{i,1} = 0;
+            else
+                % compute Hessian of f
+                trans.reset.Q{i,1} = matlabFunction(hessian(f(i),z),'Vars',{z});
+            end
         end
         
         % third-order derivative
         trans.reset.T = cell(n,n+m);
         for i = 1:n
-            % skip linear Jacobians
             for j = 1:n+m
-                % third-order tensor = Hessian of Jacobian
-                trans.reset.T{i,j} = matlabFunction(hessian(J(i,j),z),'Vars',{z});
+                if Jconst(i,j)
+                    % skip linear Jacobians
+                    trans.reset.T{i,j} = 0;
+                else
+                    % third-order tensor = Hessian of Jacobian
+                    trans.reset.T{i,j} = matlabFunction(hessian(J(i,j),z),'Vars',{z});
+                end
             end
         end
     end

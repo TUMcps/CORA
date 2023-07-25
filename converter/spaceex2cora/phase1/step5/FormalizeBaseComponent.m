@@ -102,10 +102,10 @@ for i = 1:length(BC.States)
     % instead of y since the computation is outsourced to a function)
     BC.States(i).Flow.FormalEqs_out = eqs_out;
         
-    % derive polytope for invariant
+    % derive set for invariant
     if State.Invariant.Text == ""
-        % empty invariant: short version to define full space as invariant
-        set = [];
+        % empty invariant: short version to define fullspace as invariant
+        set = fullspace(length(State.Flow.expressions));
     else
         % non-empty invariant
         set = eq2set(State.Invariant.inequalities,State.Invariant.equalities,...
@@ -125,8 +125,8 @@ for i = 1:length(BC.States)
         
         %derive polytope for guard
         if strcmp(Tran.guard.Text,"")
-            % no guard set given -> immediate transition (guard = [])
-            set = [];
+            % no guard set given -> instant transition (fullspace)
+            set = fullspace(length(State.Flow.expressions));
         elseif convtype
             % guard set given, pHA
             set = eq2set(Tran.guard.inequalities,Tran.guard.equalities, ...

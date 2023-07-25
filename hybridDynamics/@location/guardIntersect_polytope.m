@@ -39,12 +39,9 @@ function R = guardIntersect_polytope(loc,R,guard,options)
 
     % compute vertices
     V = [];
-    
     for i = 1:length(R)
-        if ~isempty(R{i})
-            vert = vertices(R{i});
-            V = [V,vert];
-        end
+        vert = vertices(R{i});
+        V = [V,vert];
     end
     
     % enclose vertices with the methods described in Section V.A in [2]

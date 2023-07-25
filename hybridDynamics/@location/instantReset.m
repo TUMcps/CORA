@@ -1,9 +1,10 @@
-function [R,Rjump,res] = immediateReset(loc,R0,tStart,options)
-% immediateReset - executes an immediate transition, i.e., a transition
-%    with no guard set where the initial set is reset at time 0
+function [R,Rjump,res] = instantReset(loc,R0,tStart,options)
+% instantReset - executes an instant transition, i.e., a transition
+%    with a full-dimensional set, leading to a reset at time 0 using the
+%    initial set
 %
 % Syntax:  
-%    [R,Rjump,res] = immediateReset(loc,R0,tStart,options)
+%    [R,Rjump,res] = instantReset(loc,R0,tStart,options)
 %
 % Inputs:
 %    loc - location object
@@ -29,7 +30,7 @@ function [R,Rjump,res] = immediateReset(loc,R0,tStart,options)
 
 %------------- BEGIN CODE --------------
 
-% create 'reachable set' from immediate reset
+% create 'reachable set' from instant reset
 timePoint.set = {R0};
 timePoint.time = {tStart};
 timeInt = [];
@@ -37,12 +38,12 @@ timeInt = [];
 % instantiate reachSet object
 R = reachSet(timePoint,timeInt);
 
-% reset initial set immediately according to reset function
-Rjump{1,1}.set = reset(loc.transition(options.immediateTransition),...
+% reset initial set instantly according to reset function
+Rjump{1,1}.set = reset(loc.transition(options.instantTransition),...
                 R0,options.U);
 
-% target location of immediate transition
-Rjump{1,1}.loc = loc.transition(options.immediateTransition).target;
+% target location of instant transition
+Rjump{1,1}.loc = loc.transition(options.instantTransition).target;
 
 % branch number always 1
 Rjump{1,1}.parent = 1;

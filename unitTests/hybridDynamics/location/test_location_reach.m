@@ -57,7 +57,7 @@ res = res_;
 % reachable set needs to consist of four sets
 res(end+1,1) = length(R.timeInterval.set) == 4;
 % all Rjump - reset.c need to intersect the guard set
-res(end+1,1) = cellfun(@(x) isIntersecting(x.set-reset.c,guard),Rjump,...
+res(end+1,1) = arrayfun(@(x) isIntersecting(x.set-reset.c,guard),Rjump,...
     'UniformOutput',true);
 
 % combine results

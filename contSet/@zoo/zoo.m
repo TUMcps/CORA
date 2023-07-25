@@ -73,7 +73,11 @@ methods
         aux_checkInputArgs(int,methods,names,max_order,eps,tolerance,nargin);
 
         % 4. compute object
-        obj = aux_computeObject(int,methods,names,max_order,eps,tolerance,inputname(1));
+        [method,objects] = aux_computeObject(int,methods,names,max_order,eps,tolerance,inputname(1));
+
+        % 5. assign properties
+        obj.method = method;
+        obj.objects = objects;
 
     end
     
@@ -167,45 +171,45 @@ function aux_checkInputArgs(int,methods,names,max_order,eps,tolerance,n_in)
 
 end
 
-function obj = aux_computeObject(int,methods,names,max_order,eps,tolerance,varname)
+function [method,objects] = aux_computeObject(int,methods,names,max_order,eps,tolerance,varname)
 
     % generate variable names if they are not provided
     names = genDefaultVarNames(int,names,varname);
 
     % sort methods alphabetically
-    obj.method = sort(methods);
+    method = sort(methods);
     % generate the objects
-    obj.objects = cell(length(methods),1);
+    objects = cell(length(methods),1);
     
-    for i = 1:length(obj.method)
+    for i = 1:length(method)
        
-        m = obj.method{i};
+        m = method{i};
         
         switch m
             
             case 'taylm(int)'
-                obj.objects{i} = taylm(int,max_order,names,'int',eps,tolerance);
+                objects{i} = taylm(int,max_order,names,'int',eps,tolerance);
             
             case 'taylm(bnb)'
-                obj.objects{i} = taylm(int,max_order,names,'bnb',eps,tolerance);
+                objects{i} = taylm(int,max_order,names,'bnb',eps,tolerance);
                 
             case 'taylm(bnbAdv)'
-                obj.objects{i} = taylm(int,max_order,names,'bnbAdv',eps,tolerance);
+                objects{i} = taylm(int,max_order,names,'bnbAdv',eps,tolerance);
             
             case 'taylm(linQuad)'
-                obj.objects{i} = taylm(int,max_order,names,'linQuad',eps,tolerance);
+                objects{i} = taylm(int,max_order,names,'linQuad',eps,tolerance);
                 
             case 'affine(int)'
-                obj.objects{i} = affine(int,names,'int',eps,tolerance);
+                objects{i} = affine(int,names,'int',eps,tolerance);
                 
             case 'affine(bnb)'
-                obj.objects{i} = affine(int,names,'bnb',eps,tolerance);
+                objects{i} = affine(int,names,'bnb',eps,tolerance);
                 
             case 'affine(bnbAdv)'
-                obj.objects{i} = affine(int,names,'bnbAdv',eps,tolerance);
+                objects{i} = affine(int,names,'bnbAdv',eps,tolerance);
                 
             case 'interval'
-                obj.objects{i} = int;
+                objects{i} = int;
             
         end
     end

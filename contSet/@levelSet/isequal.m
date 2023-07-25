@@ -54,6 +54,9 @@ inputArgsCheck({{ls1,'att','levelSet'};
                 {ls2,'att','levelSet'};
                 {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
 
+% reduce both to minimal representation
+ls1 = compact(ls1);
+ls2 = compact(ls2);
 
 % check if number of equations are equal
 if length(ls1.eq) ~= length(ls2.eq)

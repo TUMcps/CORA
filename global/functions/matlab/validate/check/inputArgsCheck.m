@@ -203,6 +203,13 @@ if ~isempty(varargin)
             varyingAttributes = false;
             % number of attributes (can be zero)
             n_attribute = length(attributes);
+            % convert all numerics from attributes to string (not ideal
+            % output text, but works for now...)
+            for i=1:n_attribute
+                if isnumeric(attributes{i})
+                    attributes{i} = num2str(attributes{i});
+                end
+            end
             if n_attribute == 1 && strcmp(attributes{1},'')
                 % deprecated case with '' -> counts as zero attributes
                 n_attribute = 0;

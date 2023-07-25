@@ -70,23 +70,6 @@ for i=1:length(optFields)
         options = rmfield(options,optFields{i}); 
     end
 end
-
-% % remove parameters from options
-% options = rmfield(options,'R0');
-% options = rmfield(options,'tFinal');
-% options = rmfield(options,'tStart');
-% options = rmfield(options,'startLoc');
-% options = rmfield(options,'U');
-% 
-% % remove redundant fields
-% valFields = getValidFields(class(obj.contDynamics));
-% list = fields(options);
-% 
-% for i = 1:length(list)
-%     if ~ismember(list{i},valFields)
-%         options = rmfield(options,list{i}); 
-%     end
-% end
     
 % compute time point solution for linear parametric systems
 if isa(loc.contDynamics,'linParamSys')
