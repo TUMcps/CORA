@@ -32,6 +32,7 @@ function han = plot(hs,varargin)
 % Last update:  19-November-2019 (NK, plot area instead of line)
 %               25-May-2022 (TL: 1D Plotting)
 %               05-April-2023 (TL: clean up using plotPolygon)
+%               26-July-2023 (TL: getUnboundedAxisLimits)
 % Last revision:12-July-2023 (TL, restructure)
 
 %------------- BEGIN CODE --------------
@@ -78,9 +79,9 @@ function [hs,dims,NVpairs] = aux_parseInput(hs,varargin)
 end
 
 function [P,dims] = aux_preprocess(hs,dims)
-    % get size of current plot
-    xLim = get(gca,'Xlim');
-    yLim = get(gca,'Ylim');
+
+    % get limits of current plot
+    [xLim,yLim,zLim] = getUnboundedAxisLimits();
     
     % convert to mptPolytope
     % projection with other dimensions = 0
@@ -92,7 +93,6 @@ function [P,dims] = aux_preprocess(hs,dims)
         C = [hs.c(dims)';eye(2);-eye(2)];
         d = [hs.d;xLim(2);yLim(2);-xLim(1);-yLim(1)];
     else
-        zLim = get(gca,'Zlim');
         C = [hs.c(dims)';eye(3);-eye(3)];
         d = [hs.d;xLim(2);yLim(2);zLim(2);-xLim(1);-yLim(1);-zLim(1)];
     end

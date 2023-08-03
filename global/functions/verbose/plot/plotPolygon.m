@@ -230,20 +230,19 @@ function V = aux_cutInfinityAtLimits(V)
     % or smallest/largest value of V of respective dimension,
     % whichever is further 'outside'
 
+    [xLim,yLim,zLim] = getUnboundedAxisLimits(V);
+
     if any(isinf(V),'all')
         % x-axis
-        xLim = xlim();
         V(1,V(1,:) == -inf) = min([V(1,V(1,:) ~= -inf), xLim(1)]);
         V(1,V(1,:) == inf) = max([V(1,V(1,:) ~= inf), xLim(2)]);
 
         % y-axis
-        yLim = ylim();
         V(2,V(2,:) == -inf) = min([V(2,V(2,:) ~= -inf), yLim(1)]);
         V(2,V(2,:) == inf) = max([V(2,V(2,:) ~= inf), yLim(2)]);
     
         if size(V,1) == 3
             % z-axis
-            zLim = zlim();
             V(3,V(3,:) == -inf) = min([V(3,V(3,:) ~= -inf), zLim(1)]);
             V(3,V(3,:) == inf) = max([V(3,V(3,:) ~= inf), zLim(2)]);
         end

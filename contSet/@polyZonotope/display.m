@@ -55,8 +55,9 @@ else
     displayGenerators(expMat,DISPLAYDIM_MAX,'expMat');
     
     % display id
-    disp('id:');
-    disp(pZ.id);
+    displayIds(pZ.id,'id')
+   
+    end
     
 end
 

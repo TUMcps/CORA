@@ -103,6 +103,12 @@ if size(dir,1) == 1 && size(dir,2) > 1
     dir = dir';
 end
 
+% ensure that dimension of direction fits dimension of the set
+if ~isemptyobject(S) && dim(S) ~= length(dir)
+    throw(CORAerror('CORA:wrongValue','second',...
+        [num2str(dim(S)) '-dimensional column vector.']));
+end
+
 % result has to be computed in calling function
 varargout = cell(1,max(nargout,1));
 try

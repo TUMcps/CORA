@@ -118,17 +118,23 @@ methods
         % 2. parse input arguments: varargin -> vars
         [func,int,max_order,names,opt_method,eps,tolerance] = ...
             aux_parseInputArgs(varargin{:});
+        if nargin == 0
+            varname = [];
+        else
+            varname = inputname(1);
+        end
 
         % 3. check correctness of input arguments
         aux_checkInputArgs(func,int,max_order,names,opt_method,eps,tolerance,nargin);
 
         % 4. compute object
-        obj = aux_computeObject(obj,func,int,max_order,names,opt_method,eps,tolerance,inputname(1));
+        obj = aux_computeObject(obj,func,int,max_order,names,opt_method,eps,tolerance,varname);
 
     end
     
 
     % methods in seperate files 
+    n = dim(tay)
     res = plus(summand1,summand2)
     res = minus(minuend,subtrahend)
     res = times(factor1, factor2)
@@ -166,6 +172,10 @@ methods
     
     %display functions
     display(obj)
+end
+
+methods (Static = true)
+    obj = generateRandom(varargin) % generate random taylor model
 end
 
 end

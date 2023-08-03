@@ -43,9 +43,9 @@ else
     checkNameValuePairs(NVpairs,{'Dimension','NormalVector','Offset'});
     % dimension given?
     [NVpairs,n] = readNameValuePair(NVpairs,'Dimension');
-    % dimension given?
+    % normal vector given?
     [NVpairs,c] = readNameValuePair(NVpairs,'NormalVector');
-    % dimension given?
+    % offset given?
     [NVpairs,d] = readNameValuePair(NVpairs,'Offset');
 end
 
@@ -64,14 +64,14 @@ if isempty(n)
     end
 end
 
-% default computation for dimension
+% default computation for normal vector
 if isempty(c)
     c = 5 * randn(n,1);
     % normalize
     c = c ./ vecnorm(c,2);
 end
 
-% default computation for dimension
+% default computation for offset
 if isempty(d)
     d = 5*randn(1);
 end

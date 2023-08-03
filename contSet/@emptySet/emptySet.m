@@ -67,7 +67,6 @@ end
 
 methods (Static = true)
     O = generateRandom(varargin) % generate random empty set
-    O = enclosePoints(points,varargin) % enclose point cloud with empty
 end
 
 end

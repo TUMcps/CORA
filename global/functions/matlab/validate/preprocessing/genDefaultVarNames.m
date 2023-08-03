@@ -32,7 +32,7 @@ function names = genDefaultVarNames(mat,names,inputname)
    % no names provided -> create default names
    if isempty(names)
 
-       text = 'dummy';
+       text = 'x';
        if ~isempty(inputname)
           text = inputname; 
        end

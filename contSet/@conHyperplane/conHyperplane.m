@@ -92,6 +92,12 @@ methods
     display(hyp)
 
 end
+
+methods (Static = true)
+    hyp = generateRandom(varargin) % generate random conHyperplane
+end
+
+
 end
 
 % Auxiliary Functions -----------------------------------------------------

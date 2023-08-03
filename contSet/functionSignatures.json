@@ -54,6 +54,22 @@
      ]
   },
 
+  "_comment": "conHyperplane --------------------------------------------", 
+  "conHyperplane.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"},
+        {"name":"NormalVector", "kind":"namevalue", "type":["numeric"],"purpose":"normal vector of halfspace"},
+        {"name":"Offset", "kind":"namevalue", "type":["numeric"],"purpose":"offset of halfspace"},
+        {"name":"ConstraintMatrix", "kind":"namevalue", "type":["numeric"],"purpose":"constraint matrix"},
+        {"name":"ConstraintVector", "kind":"namevalue", "type":["numeric"],"purpose":"constraint vector"}
+     ],
+     "outputs": [
+         {"name":"hyp", "type":"conHyperplane"}
+     ]
+  },
+
   "_comment": "conPolyZono ----------------------------------------------", 
   "conPolyZono.generateRandom":
   {
@@ -96,6 +112,30 @@
      ],
      "outputs": [
          {"name":"E", "type":"ellipsoid"}
+     ]
+  },
+
+  "_comment": "emptySet -------------------------------------------------", 
+  "emptySet.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"}
+     ],
+     "outputs": [
+         {"name":"O", "type":"emptySet"}
+     ]
+  },
+
+  "_comment": "fullspace ------------------------------------------------", 
+  "fullspace.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"}
+     ],
+     "outputs": [
+         {"name":"fs", "type":"fullspace"}
      ]
   },
 
@@ -165,6 +205,18 @@
      ],
      "outputs": [
          {"name":"pZ", "type":"polyZonotope"}
+     ]
+  },
+
+  "_comment": "taylm ----------------------------------------------------", 
+  "taylm.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"}
+     ],
+     "outputs": [
+         {"name":"tay", "type":"taylm"}
      ]
   },
 

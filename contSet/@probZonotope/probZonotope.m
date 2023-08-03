@@ -75,6 +75,10 @@ methods
     end
 end
 
+methods (Static = true)
+    Z = generateRandom(varargin) % generate random probZonotope
+end
+
 end
 
 % Auxiliary Functions -----------------------------------------------------
