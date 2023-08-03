@@ -61,6 +61,13 @@ plotNPlots(5);
 updateColorIndex(oldColorIndex)
 resvec(end+1) = ax.ColorOrderIndex == (oldColorIndex+1);
 
+% reset color index (pass index < 1)
+updateColorIndex(0)
+resvec(end+1) = ax.ColorOrderIndex == 1;
+
+updateColorIndex(-1)
+resvec(end+1) = ax.ColorOrderIndex == 1;
+
 close(f);
 
 % gather results

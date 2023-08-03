@@ -66,14 +66,14 @@ Rnext = params.R0;
 % loop over all reachablity steps
 for i = 1:steps
 
-    % if a trajectory should be tracked
-    if isfield(options,'uTransVec')
-        options.U = U0 + options.uTransVec(:,i);
-    end  
-
     options.i = i;
     % compute next reachable set
     [Rnext,options] = linReach(obj,Rnext,options);
+
+    % if a trajectory should be tracked
+    if isfield(options,'uTransVec')
+        options.U = U0 + options.uTransVec(:,i+1);
+    end  
     % compute output set
     timePoint.set{i+1} = outputSet(obj,options,Rnext);
 

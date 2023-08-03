@@ -35,6 +35,7 @@ function han = plot(hyp,varargin)
 % Written:      19-November-2019
 % Last update:  25-May-2022 (TL: 1D Plotting)
 %               05-April-2023 (TL: clean up using plotPolygon)
+%               26-July-2023 (TL: getUnboundedAxisLimits)
 % Last revision:12-July-2023 (TL, restructure)
 
 %------------- BEGIN CODE --------------
@@ -79,9 +80,8 @@ end
 function [V,dims] = aux_preprocess(hyp,dims)
     % preprocess for plotting
 
-    % get size of current plot
-    xLim = get(gca,'Xlim');
-    yLim = get(gca,'Ylim');
+    % get limits of current plot
+    [xLim,yLim,zLim] = getUnboundedAxisLimits();
     
     % compute vertices
     if ~isempty(hyp.C)
@@ -98,7 +98,6 @@ function [V,dims] = aux_preprocess(hyp,dims)
         C = [C;eye(2);-eye(2)];
         d = [d;xLim(2);yLim(2);-xLim(1);-yLim(1)];
     else
-        zLim = get(gca,'Zlim');
         C = [C;eye(3);-eye(3)];
         d = [d;xLim(2);yLim(2);zLim(2);-xLim(1);-yLim(1);-zLim(1)];
     end

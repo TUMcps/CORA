@@ -28,6 +28,7 @@ function han = plot(P,varargin)
 %               25-May-2022 (TL: 1D Plotting)
 %               22-November-2022 (TL: redundant VRep)
 %               05-April-2023 (TL: clean up using plotPolygon)
+%               26-July-2023 (TL: getUnboundedAxisLimits)
 % Last revision:12-July-2023 (TL, restructure)
 
 %------------- BEGIN CODE --------------
@@ -80,9 +81,8 @@ function [V,dims] = aux_preprocess(P,dims)
     % check if polyhedron is bounded
     if ~isBounded(P.P)
         
-        % get size of current plot
-        xLim = get(gca,'Xlim');
-        yLim = get(gca,'Ylim');
+        % get limits of current plot
+        [xLim,yLim,zLim] = getUnboundedAxisLimits();
         
         % intersect with the current polytope
         if length(dims) == 2
@@ -92,7 +92,6 @@ function [V,dims] = aux_preprocess(P,dims)
                 'exact');
             dims = [1,2];
         else
-            zLim = get(gca,'Zlim');
             P = and_( ...
                 project(P,dims), ...
                 interval([xLim(1);yLim(1);zLim(1)], ...
