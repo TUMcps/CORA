@@ -13,6 +13,7 @@
 .*.lb
 
 .idea
+*.iml
 
 ## Intermediate documents:
 *.dvi

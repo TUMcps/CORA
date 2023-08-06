@@ -11,6 +11,7 @@
     <link rel="icon" type="image/x-icon" href="./images/CoraLogo-icon.png">
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
 
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/newsreader@4.5.10/index.min.css " rel="stylesheet">
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -26,21 +27,74 @@
 
 </head>
 <body>
-<div class="container">
-    <div class="row">
-        <div class="col-1 col-md-2 col-lg-3"></div>
-        <div class="col-10 col-md-8 col-lg-6">
-            <figure class="text-center">
-                <object type="image/svg+xml" data="./images/CoraLogo.svg">
-                    Your browser does not support SVG
-                </object>
-                <figcaption class="figure-caption text-center">A Tool for COntinuous Reachability Analysis.</figcaption>
-            </figure>
+
+<nav class="navbar bg-dark navbar-expand-lg fixed-top" data-bs-theme="dark">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03"
+                aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#"> <img src="./images/CoraLogo-icon.png"/></a>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="#features">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#get-started">Get Started</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#examples">Examples</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contact">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#publications">Publications</a>
+                </li>
+                <li class="nav-item navbar-text">
+                    <div class="d-block d-lg-none">
+                        <hr/>
+                    </div>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://github.com/TUMcps/CORA"><i class="bi bi-github"></i>&nbsp;GitHub</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://github.com/TUMcps/CORA/blob/master/Cora2022Manual.pdf"><i
+                            class="bi bi-file-earmark-pdf-fill"></i>&nbsp;Manual</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"><i class="bi bi-clock-history"></i>&nbsp;History</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#archive"><i class="bi bi-archive-fill"></i>&nbsp;Archive</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://de.mathworks.com/matlabcentral/fileexchange/68551-cora"><i
+                            class="bi bi-box-seam-fill"></i>&nbsp;Matlab</a>
+                </li>
+            </ul>
         </div>
     </div>
+</nav>
 
+<div class="container">
     <div class="row">
-        <h2>Toolbox Description</h2>
+        <div class="col-1 col-md-3 col-lg-4"></div>
+        <div class="col-10 col-md-6 col-lg-4">
+            <object type="image/svg+xml" data="./images/CoraLogo.svg">
+                Your browser does not support SVG
+            </object>
+        </div>
+    </div>
+    <div class="text-center">
+        A Tool for COntinuous Reachability Analysis.
+    </div>
+
+    <div class="row space-before">
         <p>The COntinuous Reachability Analyzer (CORA) is a collection of MATLAB classes for the formal verification of
             cyber-physical systems using reachability analysis. CORA integrates various vector and matrix set
             representations and operations on them as well as reachability algorithms of various dynamic system classes.
@@ -55,73 +109,179 @@
             toolbox:</p>
     </div>
 
+    <!-- Features -->
+    <div id="features"></div>
     <div class="row">
-        <div class="col-12 col-xl-4">
-            <div class="card" data-bs-theme="blue">
-                <div class="card-img-top text-center">
-                    <object type="image/svg+xml" data="./images/latex/figures/ACC.svg">
-                        Your browser does not support SVG
-                    </object>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Reachability Analysis for Continuous Systems</h5>
-                    <p class="card-text">CORA computes reachable sets for linear systems, nonlinear systems as well as
-                        for systems with
-                        constraints.
-                        Continuous as well as discrete time models are supported. Uncertainty in the system inputs as
-                        well as
-                        uncertainty in the model parameters can be explicitly considered. In addition, CORA also
-                        provides
-                        capabilities for the simulation of dynamical models.</p>
-                    <a href="#" class="btn btn-light">Go somewhere</a>
-                </div>
-            </div>
+        <div class="col-12 col-md-6 col-xl-8 order-1 order-md-0">
+            <h5>Reachability Analysis for Continuous Systems</h5>
+            <p>CORA computes reachable sets for linear systems, nonlinear systems as well as
+                for systems with
+                constraints.
+                Continuous as well as discrete time models are supported. Uncertainty in the system inputs as
+                well as
+                uncertainty in the model parameters can be explicitly considered. In addition, CORA also
+                provides
+                capabilities for the simulation of dynamical models.</p>
+            <div class="text-start"><a href="#" class="btn btn-primary">Read more</a></div>
         </div>
-
-        <div class="col-12 col-xl-4">
-            <div class="card" data-bs-theme="blue">
-                <div class="card-img-top text-center">
-                    <object type="image/svg+xml" data="./images/latex/figures/hybrid.svg">
-                        Your browser does not support SVG
-                    </object>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Reachability Analysis for Hybrid Systems</h5>
-                    <p class="card-text">The toolbox is also capable to calculate the reachable sets for hybrid systems. All implemented dynamic
-                        system classes can be used to describe the different continuous flows for the discrete system states.
-                        Further, multiple different methods for the calculation of the intersections with guard sets are
-                        implemented in CORA.</p>
-                    <a href="#" class="btn btn-light">Go somewhere</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-xl-4">
-            <div class="card" data-bs-theme="blue">
-                <div class="card-img-top text-center">
-                    <object type="image/svg+xml" data="./images/latex/figures/set-representations.svg">
-                        Your browser does not support SVG
-                    </object>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Geometric Sets</h5>
-                    <p class="card-text">CORA has a modular design, making it possible to use the capabilities of the various set representations
-                        for other purposes besides reachability analysis. The toolbox implements vector set representation,
-                        e.g., zonotopes, Taylor models and intervals, as well as matrix set representations such as matrix
-                        zonotope and interval matrices.</p>
-                    <a href="#" class="btn btn-light">Go somewhere</a>
-                </div>
-            </div>
+        <div class="col-12 col-md-6 col-xl-4 order-0 order-md-1">
+            <object type="image/svg+xml" data="./images/latex/figures/ACC.svg">
+                Your browser does not support SVG
+            </object>
         </div>
     </div>
 
-    <!-- MathJax Test -->
     <div class="row">
-        <h3>MathJax Test</h3>
-        A zonotope is defined as
-        $$\mathcal{Z} = \left< c, G \right>_{Z} = \left\{ c + \sum_{i=1}^h \beta_i G_{(\cdot,i)}\ \middle|\ \beta_i \in
-        [-1,1] \right\} .$$
+        <div class="col-12 col-md-6 col-xl-8 order-1 order-md-1">
+            <h5>Reachability Analysis for Hybrid Systems</h5>
+            <p>The toolbox is also capable to calculate the reachable sets for hybrid systems. All implemented dynamic
+                system classes can be used to describe the different continuous flows for the discrete system states.
+                Further, multiple different methods for the calculation of the intersections with guard sets are
+                implemented in CORA.</p>
+            <div class="text-start"><a href="#" class="btn btn-primary">Read more</a></div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-4 order-0 order-md-0">
+            <object type="image/svg+xml" data="./images/latex/figures/hybrid.svg">
+                Your browser does not support SVG
+            </object>
+        </div>
+    </div>
 
+    <div class="row">
+        <div class="col-12 col-md-6 col-xl-8 order-1 order-md-0">
+            <h5>Geometric Sets</h5>
+            <p>CORA has a modular design, making it possible to use the capabilities of the various set representations
+                for other purposes besides reachability analysis. The toolbox implements vector set representation,
+                e.g., zonotopes, Taylor models and intervals, as well as matrix set representations such as matrix
+                zonotope and interval matrices.</p>
+            <div class="text-start"><a href="#" class="btn btn-primary">Read more</a></div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-4 order-0 order-md-1">
+            <object type="image/svg+xml" data="./images/latex/figures/set-representations.svg">
+                Your browser does not support SVG
+            </object>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-md-6 col-xl-8 order-1 order-md-1">
+            <h5>Formal Verification of Neural Networks</h5>
+            <p>CORA enables the formal verification of neural networks, both in open-loop as well as in closed loop scenarios. Open-loop verification
+                refers to the task where properties of the output set of a neural network are verified, e.g. correctly classified images given noisy
+                input. In closed-loop scenarios, the neural network is used as controller of a dynamic system and is neatly integrated in the
+                reachability algorithms above, e.g. controlling a car while keeping a safe distance.</p>
+            <div class="text-start"><a href="#" class="btn btn-primary">Read more</a></div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-4 order-0 order-md-0">
+            <object type="image/svg+xml" data="./images/latex/figures/ACC.svg">
+                Your browser does not support SVG
+            </object>
+        </div>
+    </div>
+
+    <!-- Getting Started -->
+    <div id="get-started"></div>
+    <div class="row space-before">
+        <h4>Get Started</h4>
+        <p>To install CORA, please follow the steps below</p>
+        <div>
+            <ol>
+                <li>Install <a href="https://de.mathworks.com/products/matlab.html" target="_blank">MATLAB</a></li>
+                <li>Clone the <a href="https://github.com/TUMcps/CORA" target="_blank">CORA git repository</a></li>
+                <li>Add the cloned repository to your MATLAB path</li>
+                <li>Install the required packages described in the <a href="https://github.com/TUMcps/CORA/blob/master/Cora2022Manual.pdf"
+                                                                      target="_blank">CORA manual</a></li>
+                <li>Run the following script in MATLAB:</li>
+            </ol>
+        </div>
+
+        <div class="position-relative">
+            <iframe class="code code-sm" scrolling="no" src="./matlab/scripts/test-script-snippet.html"></iframe>
+            <div class="position-absolute top-0 end-0 translate-middle-x">
+                <div class="code-btn-box">
+                    <a class="btn btn-outline-secondary btn-sm" href="./matlab/scripts/test-script-snippet.mlx"
+                       title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
+                </div>
+            </div>
+        </div>
+
+        Congratulations, you have successfully installed CORA!
+    </div>
+
+    <!-- Examples -->
+    <div id="examples"></div>
+    <div class="row space-before">
+        <h4>Examples</h4>
+        <div>
+            TODO
+        </div>
+    </div>
+
+    <!-- Contact -->
+    <div id="contact"></div>
+    <div class="row space-before">
+        <h4>Contact</h4>
+        <div>
+            <ul>
+                <li><a href="https://www.ce.cit.tum.de/en/air/people/prof-dr-ing-matthias-althoff/" target="_blank">Prof. Matthias Althoff</a></li>
+                <li><a href="https://scholar.google.de/citations?user=xJQUgWsAAAAJ" target="_blank">Dr. Niklas Kochdumper</a></li>
+                <li><a href="https://www.ce.cit.tum.de/air/people/mark-wetzlinger-msc/" target="_blank">Mark Wetzlinger, M.Sc.</a></li>
+                <li><a href="https://www.ce.cit.tum.de/air/people/tobias-ladner-msc/" target="_blank">Tobias Ladner, M.Sc.</a></li>
+                <li><a href="https://www.ce.cit.tum.de/en/air/home/" target="_blank">Research Group</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Publications -->
+    <div id="publications"></div>
+    <div class="row space-before">
+        <h4>Publications</h4>
+        <div>
+
+            <ol class="citation-list">
+                <li>
+                    M.&nbsp;Althoff. An Introduction to CORA 2015. In <em>Proc. of the Workshop on Applied Verification for Continuous and Hybrid
+                    Systems</em>, pages 120-151, 2015.
+                    [&nbsp;<a href="https://mediatum.ub.tum.de/export/1280439/bibtex" target="_blank">.bib</a>&nbsp;| <a
+                        href="https://tumcps.github.io/CORA/data/PublicationCORA.pdf" target="_blank">.pdf</a>&nbsp;]
+                </li>
+                <li>
+                    M.&nbsp;Althoff and D.&nbsp;Grebenyuk. Implementation of Interval Arithmetic in CORA 2016. In <em>Proc. of the 3rd International
+                    Workshop on Applied Verification for Continuous and Hybrid Systems</em>, pages 91-105, 2016.
+                    [&nbsp;<a href="https://mediatum.ub.tum.de/export/1379696/bibtex" target="_blank">.bib</a>&nbsp;|
+                    <a href="https://tumcps.github.io/CORA/data/PublicationIntervalArithmetic.pdf" target="_blank">.pdf</a>&nbsp;]
+                </li>
+                <li>
+                    M.&nbsp;Althoff, D.&nbsp;Grebenyuk and N.&nbsp;Kochdumper. Implementation of Taylor Models in CORA 2018. In <em>Proc. of the 5th
+                    International Workshop on Applied Verification for Continuous and Hybrid Systems</em>, pages 145–173, 2018.
+                    [&nbsp;<a href="https://mediatum.ub.tum.de/export/1454477/bibtex" target="_blank">.bib</a>&nbsp;|
+                    <a href="https://tumcps.github.io/CORA/data/PublicationTaylorModels.pdf" target="_blank">.pdf</a>&nbsp;]
+                </li>
+                <li>
+                    M.&nbsp;Althoff. Guaranteed State Estimation in CORA 2021. In <em>Proc. of the Workshop on Applied Verification for Continuous and
+                    Hybrid Systems</em>, pages 161-175, 2021.
+                    [&nbsp;<a href="https://mediatum.ub.tum.de/export/1636779/bibtex" target="_blank">.bib</a>&nbsp;|
+                    <a href="https://tumcps.github.io/CORA/data/PublicationStateEstimation.pdf" target="_blank">.pdf</a>&nbsp;]
+                </li>
+                <li>
+                    V.&nbsp;Gaßmann and M.&nbsp;Althoff. Implementation of Ellipsoidal Operations in CORA 2022. In <em>Proc. of the Workshop on
+                    Applied Verification for Continuous and Hybrid Systems</em>, pages 1-17, 2022.
+                    [&nbsp;<a href="https://mediatum.ub.tum.de/export/1700997/bibtex" target="_blank">.bib</a>&nbsp;|
+                    <a href="https://tumcps.github.io/CORA/data/PublicationEllipsoidalOperations.pdf" target="_blank">.pdf</a>&nbsp;]
+                </li>
+            </ol>
+        </div>
+    </div>
+
+
+    <!-- MathJax Test -->
+    <div class="row space-before">
+        <h3>MathJax Test</h3>
+        <div>
+            A zonotope is defined as
+            $$\mathcal{Z} = \left< c, G \right>_{Z} = \left\{ c + \sum_{i=1}^h \beta_i G_{(\cdot,i)}\ \middle|\ \beta_i \in
+            [-1,1] \right\} .$$
+        </div>
     </div>
 
     <!-- Include live script test -->
@@ -170,6 +330,13 @@
                 </figure>
             </div>
         </div>
+    </div>
+
+    <div class="row">
+        <hr/>
+        <div class="col-12 col-md-6">Copyright &copy; 2023 - All Rights Reserved - <a href="https://www.tum.de/en/" target="_blank">Technische
+            Universit&auml;t M&uuml;nchen</a></div>
+        <div class="col-12 col-md-6">Website by Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger, and Tobias Ladner</div>
     </div>
 
 </div>
