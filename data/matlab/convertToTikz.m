@@ -27,7 +27,7 @@ f=fread(fid,'*char')';
 fclose(fid);
 
 f = regexprep(f,'width=[0-9]*.[0-9]*in','width=8cm');
-f = regexprep(f,'height=[0-9]*.[0-9]*in','height=4.5cm');
+f = regexprep(f,'height=[0-9]*.[0-9]*in','height=8cm');
 f = regexprep(f,'at=\{\([0-9]*.[0-9]*in,[0-9]*.[0-9]*in\)\},','at={(0in,0in)},');
 f = strrep(f,"\begin{tikzpicture}",compose("\\begin{tikzpicture}\n\\footnotesize"));
 % f = strrep(f,"legend style={","legend style={font=\tiny,");

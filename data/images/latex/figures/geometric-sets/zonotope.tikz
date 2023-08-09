@@ -1,0 +1,34 @@
+% This file was created by matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+%
+\begin{tikzpicture}
+\footnotesize
+
+\begin{axis}[%
+width=8cm,
+height=8cm,
+at={(0in,0in)},
+scale only axis,
+xmin=-1.2,
+xmax=3.2,
+xtick={\empty},
+ymin=-0.2,
+ymax=4.2,
+ytick={\empty},
+axis background/.style={fill=white}
+]
+
+\addplot[area legend, draw=mycolor1, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	0\\
+1	0\\
+3	2\\
+3	4\\
+1	4\\
+-1	2\\
+-1	0\\
+}--cycle;
+\end{axis}
+\end{tikzpicture}%

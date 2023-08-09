@@ -1,0 +1,5367 @@
+% This file was created by matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+%
+\begin{tikzpicture}
+\footnotesize
+
+\begin{axis}[%
+width=8cm,
+height=8cm,
+at={(0in,0in)},
+scale only axis,
+unbounded coords=jump,
+xmin=-8,
+xmax=8,
+xtick={\empty},
+ymin=-8,
+ymax=8,
+ytick={\empty},
+axis background/.style={fill=white}
+]
+\addplot [color=mycolor1, forget plot]
+  table[row sep=crcr]{%
+nan	nan\\
+};
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-8	0\\
+-7.875	0\\
+-7.875	0.125\\
+-8	0.125\\
+-8	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-8	0.125\\
+-7.875	0.125\\
+-7.875	0.25\\
+-8	0.25\\
+-8	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.875	0\\
+-7.75	0\\
+-7.75	0.125\\
+-7.875	0.125\\
+-7.875	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.875	0.125\\
+-7.75	0.125\\
+-7.75	0.25\\
+-7.875	0.25\\
+-7.875	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-8	0.25\\
+-7.75	0.25\\
+-7.75	0.5\\
+-8	0.5\\
+-8	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.75	0\\
+-7.625	0\\
+-7.625	0.125\\
+-7.75	0.125\\
+-7.75	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.75	0.125\\
+-7.625	0.125\\
+-7.625	0.25\\
+-7.75	0.25\\
+-7.75	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.625	0\\
+-7.5	0\\
+-7.5	0.125\\
+-7.625	0.125\\
+-7.625	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.625	0.125\\
+-7.5	0.125\\
+-7.5	0.25\\
+-7.625	0.25\\
+-7.625	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.75	0.25\\
+-7.5	0.25\\
+-7.5	0.5\\
+-7.75	0.5\\
+-7.75	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-8	0.5\\
+-7.5	0.5\\
+-7.5	1\\
+-8	1\\
+-8	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.5	0\\
+-7.375	0\\
+-7.375	0.125\\
+-7.5	0.125\\
+-7.5	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.5	0.125\\
+-7.375	0.125\\
+-7.375	0.25\\
+-7.5	0.25\\
+-7.5	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.375	0\\
+-7.25	0\\
+-7.25	0.125\\
+-7.375	0.125\\
+-7.375	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.375	0.125\\
+-7.25	0.125\\
+-7.25	0.25\\
+-7.375	0.25\\
+-7.375	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.5	0.25\\
+-7.25	0.25\\
+-7.25	0.5\\
+-7.5	0.5\\
+-7.5	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.25	0\\
+-7.125	0\\
+-7.125	0.125\\
+-7.25	0.125\\
+-7.25	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.25	0.125\\
+-7.125	0.125\\
+-7.125	0.25\\
+-7.25	0.25\\
+-7.25	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.125	0\\
+-7	0\\
+-7	0.125\\
+-7.125	0.125\\
+-7.125	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.125	0.125\\
+-7	0.125\\
+-7	0.25\\
+-7.125	0.25\\
+-7.125	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.25	0.25\\
+-7	0.25\\
+-7	0.5\\
+-7.25	0.5\\
+-7.25	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7.5	0.5\\
+-7	0.5\\
+-7	1\\
+-7.5	1\\
+-7.5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-8	1\\
+-7	1\\
+-7	2\\
+-8	2\\
+-8	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7	0\\
+-6.875	0\\
+-6.875	0.125\\
+-7	0.125\\
+-7	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7	0.125\\
+-6.875	0.125\\
+-6.875	0.25\\
+-7	0.25\\
+-7	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.875	0\\
+-6.75	0\\
+-6.75	0.125\\
+-6.875	0.125\\
+-6.875	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.875	0.125\\
+-6.75	0.125\\
+-6.75	0.25\\
+-6.875	0.25\\
+-6.875	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7	0.25\\
+-6.75	0.25\\
+-6.75	0.5\\
+-7	0.5\\
+-7	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.75	0\\
+-6.625	0\\
+-6.625	0.125\\
+-6.75	0.125\\
+-6.75	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.75	0.125\\
+-6.625	0.125\\
+-6.625	0.25\\
+-6.75	0.25\\
+-6.75	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.625	0\\
+-6.5	0\\
+-6.5	0.125\\
+-6.625	0.125\\
+-6.625	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.625	0.125\\
+-6.5	0.125\\
+-6.5	0.25\\
+-6.625	0.25\\
+-6.625	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.75	0.25\\
+-6.5	0.25\\
+-6.5	0.5\\
+-6.75	0.5\\
+-6.75	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7	0.5\\
+-6.5	0.5\\
+-6.5	1\\
+-7	1\\
+-7	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.5	0\\
+-6.375	0\\
+-6.375	0.125\\
+-6.5	0.125\\
+-6.5	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.5	0.125\\
+-6.375	0.125\\
+-6.375	0.25\\
+-6.5	0.25\\
+-6.5	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.375	0\\
+-6.25	0\\
+-6.25	0.125\\
+-6.375	0.125\\
+-6.375	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.375	0.125\\
+-6.25	0.125\\
+-6.25	0.25\\
+-6.375	0.25\\
+-6.375	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.5	0.25\\
+-6.25	0.25\\
+-6.25	0.5\\
+-6.5	0.5\\
+-6.5	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.25	0\\
+-6.125	0\\
+-6.125	0.125\\
+-6.25	0.125\\
+-6.25	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.25	0.125\\
+-6.125	0.125\\
+-6.125	0.25\\
+-6.25	0.25\\
+-6.25	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.125	0\\
+-6	0\\
+-6	0.125\\
+-6.125	0.125\\
+-6.125	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.125	0.125\\
+-6	0.125\\
+-6	0.25\\
+-6.125	0.25\\
+-6.125	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.25	0.25\\
+-6	0.25\\
+-6	0.5\\
+-6.25	0.5\\
+-6.25	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6.5	0.5\\
+-6	0.5\\
+-6	1\\
+-6.5	1\\
+-6.5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-7	1\\
+-6	1\\
+-6	2\\
+-7	2\\
+-7	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-8	2\\
+-6	2\\
+-6	4\\
+-8	4\\
+-8	2\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6	0\\
+-5.875	0\\
+-5.875	0.125\\
+-6	0.125\\
+-6	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6	0.125\\
+-5.875	0.125\\
+-5.875	0.25\\
+-6	0.25\\
+-6	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.875	0\\
+-5.75	0\\
+-5.75	0.125\\
+-5.875	0.125\\
+-5.875	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.875	0.125\\
+-5.75	0.125\\
+-5.75	0.25\\
+-5.875	0.25\\
+-5.875	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6	0.25\\
+-5.75	0.25\\
+-5.75	0.5\\
+-6	0.5\\
+-6	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.75	0\\
+-5.625	0\\
+-5.625	0.125\\
+-5.75	0.125\\
+-5.75	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.75	0.125\\
+-5.625	0.125\\
+-5.625	0.25\\
+-5.75	0.25\\
+-5.75	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.625	0\\
+-5.5	0\\
+-5.5	0.125\\
+-5.625	0.125\\
+-5.625	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.625	0.125\\
+-5.5	0.125\\
+-5.5	0.25\\
+-5.625	0.25\\
+-5.625	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.75	0.25\\
+-5.5	0.25\\
+-5.5	0.5\\
+-5.75	0.5\\
+-5.75	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6	0.5\\
+-5.5	0.5\\
+-5.5	1\\
+-6	1\\
+-6	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.5	0\\
+-5.375	0\\
+-5.375	0.125\\
+-5.5	0.125\\
+-5.5	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.5	0.125\\
+-5.375	0.125\\
+-5.375	0.25\\
+-5.5	0.25\\
+-5.5	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.375	0\\
+-5.25	0\\
+-5.25	0.125\\
+-5.375	0.125\\
+-5.375	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.375	0.125\\
+-5.25	0.125\\
+-5.25	0.25\\
+-5.375	0.25\\
+-5.375	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.5	0.25\\
+-5.25	0.25\\
+-5.25	0.5\\
+-5.5	0.5\\
+-5.5	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.25	0\\
+-5.125	0\\
+-5.125	0.125\\
+-5.25	0.125\\
+-5.25	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.25	0.125\\
+-5.125	0.125\\
+-5.125	0.25\\
+-5.25	0.25\\
+-5.25	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.125	0\\
+-5	0\\
+-5	0.125\\
+-5.125	0.125\\
+-5.125	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.125	0.125\\
+-5	0.125\\
+-5	0.25\\
+-5.125	0.25\\
+-5.125	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.25	0.25\\
+-5	0.25\\
+-5	0.5\\
+-5.25	0.5\\
+-5.25	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5.5	0.5\\
+-5	0.5\\
+-5	1\\
+-5.5	1\\
+-5.5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6	1\\
+-5	1\\
+-5	2\\
+-6	2\\
+-6	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5	0\\
+-4.875	0\\
+-4.875	0.125\\
+-5	0.125\\
+-5	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5	0.125\\
+-4.875	0.125\\
+-4.875	0.25\\
+-5	0.25\\
+-5	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.875	0\\
+-4.75	0\\
+-4.75	0.125\\
+-4.875	0.125\\
+-4.875	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.875	0.125\\
+-4.75	0.125\\
+-4.75	0.25\\
+-4.875	0.25\\
+-4.875	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5	0.25\\
+-4.75	0.25\\
+-4.75	0.5\\
+-5	0.5\\
+-5	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.75	0\\
+-4.625	0\\
+-4.625	0.125\\
+-4.75	0.125\\
+-4.75	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.75	0.125\\
+-4.625	0.125\\
+-4.625	0.25\\
+-4.75	0.25\\
+-4.75	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.625	0\\
+-4.5	0\\
+-4.5	0.125\\
+-4.625	0.125\\
+-4.625	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.625	0.125\\
+-4.5	0.125\\
+-4.5	0.25\\
+-4.625	0.25\\
+-4.625	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.75	0.25\\
+-4.5	0.25\\
+-4.5	0.5\\
+-4.75	0.5\\
+-4.75	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5	0.5\\
+-4.5	0.5\\
+-4.5	1\\
+-5	1\\
+-5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.5	0\\
+-4.375	0\\
+-4.375	0.125\\
+-4.5	0.125\\
+-4.5	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.5	0.125\\
+-4.375	0.125\\
+-4.375	0.25\\
+-4.5	0.25\\
+-4.5	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.375	0\\
+-4.25	0\\
+-4.25	0.125\\
+-4.375	0.125\\
+-4.375	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.375	0.125\\
+-4.25	0.125\\
+-4.25	0.25\\
+-4.375	0.25\\
+-4.375	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.5	0.25\\
+-4.25	0.25\\
+-4.25	0.5\\
+-4.5	0.5\\
+-4.5	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.25	0\\
+-4.125	0\\
+-4.125	0.125\\
+-4.25	0.125\\
+-4.25	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.25	0.125\\
+-4.125	0.125\\
+-4.125	0.25\\
+-4.25	0.25\\
+-4.25	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.125	0\\
+-4	0\\
+-4	0.125\\
+-4.125	0.125\\
+-4.125	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.125	0.125\\
+-4	0.125\\
+-4	0.25\\
+-4.125	0.25\\
+-4.125	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.25	0.25\\
+-4	0.25\\
+-4	0.5\\
+-4.25	0.5\\
+-4.25	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4.5	0.5\\
+-4	0.5\\
+-4	1\\
+-4.5	1\\
+-4.5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-5	1\\
+-4	1\\
+-4	2\\
+-5	2\\
+-5	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-6	2\\
+-4	2\\
+-4	4\\
+-6	4\\
+-6	2\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-8	4\\
+-4	4\\
+-4	8\\
+-8	8\\
+-8	4\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4	0\\
+-3.875	0\\
+-3.875	0.125\\
+-4	0.125\\
+-4	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4	0.125\\
+-3.875	0.125\\
+-3.875	0.25\\
+-4	0.25\\
+-4	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.875	0\\
+-3.75	0\\
+-3.75	0.125\\
+-3.875	0.125\\
+-3.875	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.875	0.125\\
+-3.75	0.125\\
+-3.75	0.25\\
+-3.875	0.25\\
+-3.875	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4	0.25\\
+-3.75	0.25\\
+-3.75	0.5\\
+-4	0.5\\
+-4	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.75	0\\
+-3.625	0\\
+-3.625	0.125\\
+-3.75	0.125\\
+-3.75	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.75	0.125\\
+-3.625	0.125\\
+-3.625	0.25\\
+-3.75	0.25\\
+-3.75	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.625	0\\
+-3.5	0\\
+-3.5	0.125\\
+-3.625	0.125\\
+-3.625	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.625	0.125\\
+-3.5	0.125\\
+-3.5	0.25\\
+-3.625	0.25\\
+-3.625	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.75	0.25\\
+-3.5	0.25\\
+-3.5	0.5\\
+-3.75	0.5\\
+-3.75	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4	0.5\\
+-3.5	0.5\\
+-3.5	1\\
+-4	1\\
+-4	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.5	0\\
+-3.375	0\\
+-3.375	0.125\\
+-3.5	0.125\\
+-3.5	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.5	0.125\\
+-3.375	0.125\\
+-3.375	0.25\\
+-3.5	0.25\\
+-3.5	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.375	0\\
+-3.25	0\\
+-3.25	0.125\\
+-3.375	0.125\\
+-3.375	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.375	0.125\\
+-3.25	0.125\\
+-3.25	0.25\\
+-3.375	0.25\\
+-3.375	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.5	0.25\\
+-3.25	0.25\\
+-3.25	0.5\\
+-3.5	0.5\\
+-3.5	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.25	0\\
+-3.125	0\\
+-3.125	0.125\\
+-3.25	0.125\\
+-3.25	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.25	0.125\\
+-3.125	0.125\\
+-3.125	0.25\\
+-3.25	0.25\\
+-3.25	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.125	0\\
+-3	0\\
+-3	0.125\\
+-3.125	0.125\\
+-3.125	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.125	0.125\\
+-3	0.125\\
+-3	0.25\\
+-3.125	0.25\\
+-3.125	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.25	0.25\\
+-3	0.25\\
+-3	0.5\\
+-3.25	0.5\\
+-3.25	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3.5	0.5\\
+-3	0.5\\
+-3	1\\
+-3.5	1\\
+-3.5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4	1\\
+-3	1\\
+-3	2\\
+-4	2\\
+-4	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3	0\\
+-2.875	0\\
+-2.875	0.125\\
+-3	0.125\\
+-3	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3	0.125\\
+-2.875	0.125\\
+-2.875	0.25\\
+-3	0.25\\
+-3	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2.875	0\\
+-2.75	0\\
+-2.75	0.125\\
+-2.875	0.125\\
+-2.875	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2.875	0.125\\
+-2.75	0.125\\
+-2.75	0.25\\
+-2.875	0.25\\
+-2.875	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3	0.25\\
+-2.75	0.25\\
+-2.75	0.5\\
+-3	0.5\\
+-3	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2.75	0.125\\
+-2.625	0.125\\
+-2.625	0.25\\
+-2.75	0.25\\
+-2.75	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2.625	0.125\\
+-2.5	0.125\\
+-2.5	0.25\\
+-2.625	0.25\\
+-2.625	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2.75	0.25\\
+-2.5	0.25\\
+-2.5	0.5\\
+-2.75	0.5\\
+-2.75	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3	0.5\\
+-2.5	0.5\\
+-2.5	1\\
+-3	1\\
+-3	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2.5	0.125\\
+-2.375	0.125\\
+-2.375	0.25\\
+-2.5	0.25\\
+-2.5	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2.375	0.125\\
+-2.25	0.125\\
+-2.25	0.25\\
+-2.375	0.25\\
+-2.375	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2.5	0.25\\
+-2.25	0.25\\
+-2.25	0.5\\
+-2.5	0.5\\
+-2.5	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2.25	0.125\\
+-2.125	0.125\\
+-2.125	0.25\\
+-2.25	0.25\\
+-2.25	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2.125	0.125\\
+-2	0.125\\
+-2	0.25\\
+-2.125	0.25\\
+-2.125	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2.25	0.25\\
+-2	0.25\\
+-2	0.5\\
+-2.25	0.5\\
+-2.25	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2.5	0.5\\
+-2	0.5\\
+-2	1\\
+-2.5	1\\
+-2.5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-3	1\\
+-2	1\\
+-2	2\\
+-3	2\\
+-3	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4	2\\
+-2	2\\
+-2	4\\
+-4	4\\
+-4	2\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2	0.125\\
+-1.875	0.125\\
+-1.875	0.25\\
+-2	0.25\\
+-2	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2	0.25\\
+-1.875	0.25\\
+-1.875	0.375\\
+-2	0.375\\
+-2	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2	0.375\\
+-1.875	0.375\\
+-1.875	0.5\\
+-2	0.5\\
+-2	0.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.875	0.25\\
+-1.75	0.25\\
+-1.75	0.375\\
+-1.875	0.375\\
+-1.875	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.875	0.375\\
+-1.75	0.375\\
+-1.75	0.5\\
+-1.875	0.5\\
+-1.875	0.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.75	0.25\\
+-1.625	0.25\\
+-1.625	0.375\\
+-1.75	0.375\\
+-1.75	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.75	0.375\\
+-1.625	0.375\\
+-1.625	0.5\\
+-1.75	0.5\\
+-1.75	0.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.625	0.375\\
+-1.5	0.375\\
+-1.5	0.5\\
+-1.625	0.5\\
+-1.625	0.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2	0.5\\
+-1.5	0.5\\
+-1.5	1\\
+-2	1\\
+-2	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.5	0.375\\
+-1.375	0.375\\
+-1.375	0.5\\
+-1.5	0.5\\
+-1.5	0.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.5	0.5\\
+-1.375	0.5\\
+-1.375	0.625\\
+-1.5	0.625\\
+-1.5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.5	0.625\\
+-1.375	0.625\\
+-1.375	0.75\\
+-1.5	0.75\\
+-1.5	0.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.375	0.5\\
+-1.25	0.5\\
+-1.25	0.625\\
+-1.375	0.625\\
+-1.375	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.375	0.625\\
+-1.25	0.625\\
+-1.25	0.75\\
+-1.375	0.75\\
+-1.375	0.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.5	0.75\\
+-1.25	0.75\\
+-1.25	1\\
+-1.5	1\\
+-1.5	0.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.25	0.625\\
+-1.125	0.625\\
+-1.125	0.75\\
+-1.25	0.75\\
+-1.25	0.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.25	0.75\\
+-1.125	0.75\\
+-1.125	0.875\\
+-1.25	0.875\\
+-1.25	0.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.25	0.875\\
+-1.125	0.875\\
+-1.125	1\\
+-1.25	1\\
+-1.25	0.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.125	0.75\\
+-1	0.75\\
+-1	0.875\\
+-1.125	0.875\\
+-1.125	0.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1.125	0.875\\
+-1	0.875\\
+-1	1\\
+-1.125	1\\
+-1.125	0.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2	1\\
+-1	1\\
+-1	2\\
+-2	2\\
+-2	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	0.875\\
+-0.875	0.875\\
+-0.875	1\\
+-1	1\\
+-1	0.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	1\\
+-0.875	1\\
+-0.875	1.125\\
+-1	1.125\\
+-1	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	1.125\\
+-0.875	1.125\\
+-0.875	1.25\\
+-1	1.25\\
+-1	1.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	1.25\\
+-0.875	1.25\\
+-0.875	1.375\\
+-1	1.375\\
+-1	1.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	1.375\\
+-0.875	1.375\\
+-0.875	1.5\\
+-1	1.5\\
+-1	1.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.875	1.25\\
+-0.75	1.25\\
+-0.75	1.375\\
+-0.875	1.375\\
+-0.875	1.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.875	1.375\\
+-0.75	1.375\\
+-0.75	1.5\\
+-0.875	1.5\\
+-0.875	1.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	1.5\\
+-0.875	1.5\\
+-0.875	1.625\\
+-1	1.625\\
+-1	1.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	1.625\\
+-0.875	1.625\\
+-0.875	1.75\\
+-1	1.75\\
+-1	1.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.875	1.5\\
+-0.75	1.5\\
+-0.75	1.625\\
+-0.875	1.625\\
+-0.875	1.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.875	1.625\\
+-0.75	1.625\\
+-0.75	1.75\\
+-0.875	1.75\\
+-0.875	1.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	1.75\\
+-0.875	1.75\\
+-0.875	1.875\\
+-1	1.875\\
+-1	1.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	1.875\\
+-0.875	1.875\\
+-0.875	2\\
+-1	2\\
+-1	1.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.875	1.75\\
+-0.75	1.75\\
+-0.75	1.875\\
+-0.875	1.875\\
+-0.875	1.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.875	1.875\\
+-0.75	1.875\\
+-0.75	2\\
+-0.875	2\\
+-0.875	1.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	1.75\\
+-0.625	1.75\\
+-0.625	1.875\\
+-0.75	1.875\\
+-0.75	1.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	1.875\\
+-0.625	1.875\\
+-0.625	2\\
+-0.75	2\\
+-0.75	1.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2	2\\
+-1	2\\
+-1	3\\
+-2	3\\
+-2	2\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2	3\\
+-1	3\\
+-1	4\\
+-2	4\\
+-2	3\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	2\\
+-0.75	2\\
+-0.75	2.25\\
+-1	2.25\\
+-1	2\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	2.25\\
+-0.75	2.25\\
+-0.75	2.5\\
+-1	2.5\\
+-1	2.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	2\\
+-0.625	2\\
+-0.625	2.125\\
+-0.75	2.125\\
+-0.75	2\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	2.125\\
+-0.625	2.125\\
+-0.625	2.25\\
+-0.75	2.25\\
+-0.75	2.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	2.25\\
+-0.625	2.25\\
+-0.625	2.375\\
+-0.75	2.375\\
+-0.75	2.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	2.375\\
+-0.625	2.375\\
+-0.625	2.5\\
+-0.75	2.5\\
+-0.75	2.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	2.5\\
+-0.75	2.5\\
+-0.75	2.75\\
+-1	2.75\\
+-1	2.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	2.75\\
+-0.75	2.75\\
+-0.75	3\\
+-1	3\\
+-1	2.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	2.5\\
+-0.625	2.5\\
+-0.625	2.625\\
+-0.75	2.625\\
+-0.75	2.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	2.625\\
+-0.625	2.625\\
+-0.625	2.75\\
+-0.75	2.75\\
+-0.75	2.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.625	2.5\\
+-0.5	2.5\\
+-0.5	2.625\\
+-0.625	2.625\\
+-0.625	2.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.625	2.625\\
+-0.5	2.625\\
+-0.5	2.75\\
+-0.625	2.75\\
+-0.625	2.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	2.75\\
+-0.625	2.75\\
+-0.625	2.875\\
+-0.75	2.875\\
+-0.75	2.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	2.875\\
+-0.625	2.875\\
+-0.625	3\\
+-0.75	3\\
+-0.75	2.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.625	2.75\\
+-0.5	2.75\\
+-0.5	2.875\\
+-0.625	2.875\\
+-0.625	2.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.625	2.875\\
+-0.5	2.875\\
+-0.5	3\\
+-0.625	3\\
+-0.625	2.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	3\\
+-0.75	3\\
+-0.75	3.25\\
+-1	3.25\\
+-1	3\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	3.25\\
+-0.75	3.25\\
+-0.75	3.5\\
+-1	3.5\\
+-1	3.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	3\\
+-0.625	3\\
+-0.625	3.125\\
+-0.75	3.125\\
+-0.75	3\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	3.125\\
+-0.625	3.125\\
+-0.625	3.25\\
+-0.75	3.25\\
+-0.75	3.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.625	3\\
+-0.5	3\\
+-0.5	3.125\\
+-0.625	3.125\\
+-0.625	3\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.625	3.125\\
+-0.5	3.125\\
+-0.5	3.25\\
+-0.625	3.25\\
+-0.625	3.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	3.25\\
+-0.625	3.25\\
+-0.625	3.375\\
+-0.75	3.375\\
+-0.75	3.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	3.375\\
+-0.625	3.375\\
+-0.625	3.5\\
+-0.75	3.5\\
+-0.75	3.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.625	3.25\\
+-0.5	3.25\\
+-0.5	3.375\\
+-0.625	3.375\\
+-0.625	3.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.625	3.375\\
+-0.5	3.375\\
+-0.5	3.5\\
+-0.625	3.5\\
+-0.625	3.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	3.5\\
+-0.75	3.5\\
+-0.75	3.75\\
+-1	3.75\\
+-1	3.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	3.75\\
+-0.75	3.75\\
+-0.75	4\\
+-1	4\\
+-1	3.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	3.5\\
+-0.625	3.5\\
+-0.625	3.625\\
+-0.75	3.625\\
+-0.75	3.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	3.625\\
+-0.625	3.625\\
+-0.625	3.75\\
+-0.75	3.75\\
+-0.75	3.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.625	3.5\\
+-0.5	3.5\\
+-0.5	3.625\\
+-0.625	3.625\\
+-0.625	3.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.625	3.625\\
+-0.5	3.625\\
+-0.5	3.75\\
+-0.625	3.75\\
+-0.625	3.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	3.75\\
+-0.625	3.75\\
+-0.625	3.875\\
+-0.75	3.875\\
+-0.75	3.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.75	3.875\\
+-0.625	3.875\\
+-0.625	4\\
+-0.75	4\\
+-0.75	3.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.625	3.75\\
+-0.5	3.75\\
+-0.5	3.875\\
+-0.625	3.875\\
+-0.625	3.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.625	3.875\\
+-0.5	3.875\\
+-0.5	4\\
+-0.625	4\\
+-0.625	3.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	3.875\\
+-0.375	3.875\\
+-0.375	4\\
+-0.5	4\\
+-0.5	3.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4	4\\
+-2	4\\
+-2	6\\
+-4	6\\
+-4	4\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-4	6\\
+-2	6\\
+-2	8\\
+-4	8\\
+-4	6\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2	4\\
+-1	4\\
+-1	5\\
+-2	5\\
+-2	4\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2	5\\
+-1	5\\
+-1	6\\
+-2	6\\
+-2	5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	4\\
+-0.5	4\\
+-0.5	4.5\\
+-1	4.5\\
+-1	4\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	4.5\\
+-0.5	4.5\\
+-0.5	5\\
+-1	5\\
+-1	4.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	4\\
+-0.375	4\\
+-0.375	4.125\\
+-0.5	4.125\\
+-0.5	4\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	4.125\\
+-0.375	4.125\\
+-0.375	4.25\\
+-0.5	4.25\\
+-0.5	4.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	4.25\\
+-0.375	4.25\\
+-0.375	4.375\\
+-0.5	4.375\\
+-0.5	4.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	4.375\\
+-0.375	4.375\\
+-0.375	4.5\\
+-0.5	4.5\\
+-0.5	4.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	4.5\\
+-0.375	4.5\\
+-0.375	4.625\\
+-0.5	4.625\\
+-0.5	4.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	4.625\\
+-0.375	4.625\\
+-0.375	4.75\\
+-0.5	4.75\\
+-0.5	4.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	4.75\\
+-0.375	4.75\\
+-0.375	4.875\\
+-0.5	4.875\\
+-0.5	4.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	4.875\\
+-0.375	4.875\\
+-0.375	5\\
+-0.5	5\\
+-0.5	4.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	5\\
+-0.5	5\\
+-0.5	5.5\\
+-1	5.5\\
+-1	5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	5.5\\
+-0.5	5.5\\
+-0.5	6\\
+-1	6\\
+-1	5.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	5\\
+-0.375	5\\
+-0.375	5.125\\
+-0.5	5.125\\
+-0.5	5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	5.125\\
+-0.375	5.125\\
+-0.375	5.25\\
+-0.5	5.25\\
+-0.5	5.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	5.25\\
+-0.375	5.25\\
+-0.375	5.375\\
+-0.5	5.375\\
+-0.5	5.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	5.375\\
+-0.375	5.375\\
+-0.375	5.5\\
+-0.5	5.5\\
+-0.5	5.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	5.5\\
+-0.375	5.5\\
+-0.375	5.625\\
+-0.5	5.625\\
+-0.5	5.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	5.625\\
+-0.375	5.625\\
+-0.375	5.75\\
+-0.5	5.75\\
+-0.5	5.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	5.75\\
+-0.375	5.75\\
+-0.375	5.875\\
+-0.5	5.875\\
+-0.5	5.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	5.875\\
+-0.375	5.875\\
+-0.375	6\\
+-0.5	6\\
+-0.5	5.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2	6\\
+-1	6\\
+-1	7\\
+-2	7\\
+-2	6\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2	7\\
+-1	7\\
+-1	8\\
+-2	8\\
+-2	7\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	6\\
+-0.5	6\\
+-0.5	6.5\\
+-1	6.5\\
+-1	6\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	6.5\\
+-0.5	6.5\\
+-0.5	7\\
+-1	7\\
+-1	6.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	6\\
+-0.375	6\\
+-0.375	6.125\\
+-0.5	6.125\\
+-0.5	6\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	6.125\\
+-0.375	6.125\\
+-0.375	6.25\\
+-0.5	6.25\\
+-0.5	6.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	6.25\\
+-0.375	6.25\\
+-0.375	6.375\\
+-0.5	6.375\\
+-0.5	6.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	6.375\\
+-0.375	6.375\\
+-0.375	6.5\\
+-0.5	6.5\\
+-0.5	6.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	6.5\\
+-0.375	6.5\\
+-0.375	6.625\\
+-0.5	6.625\\
+-0.5	6.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	6.625\\
+-0.375	6.625\\
+-0.375	6.75\\
+-0.5	6.75\\
+-0.5	6.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	6.75\\
+-0.375	6.75\\
+-0.375	6.875\\
+-0.5	6.875\\
+-0.5	6.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	6.875\\
+-0.375	6.875\\
+-0.375	7\\
+-0.5	7\\
+-0.5	6.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	7\\
+-0.5	7\\
+-0.5	7.5\\
+-1	7.5\\
+-1	7\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-1	7.5\\
+-0.5	7.5\\
+-0.5	8\\
+-1	8\\
+-1	7.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	7\\
+-0.375	7\\
+-0.375	7.125\\
+-0.5	7.125\\
+-0.5	7\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	7.125\\
+-0.375	7.125\\
+-0.375	7.25\\
+-0.5	7.25\\
+-0.5	7.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.375	7\\
+-0.25	7\\
+-0.25	7.125\\
+-0.375	7.125\\
+-0.375	7\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.375	7.125\\
+-0.25	7.125\\
+-0.25	7.25\\
+-0.375	7.25\\
+-0.375	7.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	7.25\\
+-0.375	7.25\\
+-0.375	7.375\\
+-0.5	7.375\\
+-0.5	7.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	7.375\\
+-0.375	7.375\\
+-0.375	7.5\\
+-0.5	7.5\\
+-0.5	7.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.375	7.25\\
+-0.25	7.25\\
+-0.25	7.375\\
+-0.375	7.375\\
+-0.375	7.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.375	7.375\\
+-0.25	7.375\\
+-0.25	7.5\\
+-0.375	7.5\\
+-0.375	7.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	7.5\\
+-0.375	7.5\\
+-0.375	7.625\\
+-0.5	7.625\\
+-0.5	7.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	7.625\\
+-0.375	7.625\\
+-0.375	7.75\\
+-0.5	7.75\\
+-0.5	7.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.375	7.5\\
+-0.25	7.5\\
+-0.25	7.625\\
+-0.375	7.625\\
+-0.375	7.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.375	7.625\\
+-0.25	7.625\\
+-0.25	7.75\\
+-0.375	7.75\\
+-0.375	7.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	7.75\\
+-0.375	7.75\\
+-0.375	7.875\\
+-0.5	7.875\\
+-0.5	7.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.5	7.875\\
+-0.375	7.875\\
+-0.375	8\\
+-0.5	8\\
+-0.5	7.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.375	7.75\\
+-0.25	7.75\\
+-0.25	7.875\\
+-0.375	7.875\\
+-0.375	7.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-0.375	7.875\\
+-0.25	7.875\\
+-0.25	8\\
+-0.375	8\\
+-0.375	7.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.875	0.875\\
+1	0.875\\
+1	1\\
+0.875	1\\
+0.875	0.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.875	1\\
+1	1\\
+1	1.125\\
+0.875	1.125\\
+0.875	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.875	1.125\\
+1	1.125\\
+1	1.25\\
+0.875	1.25\\
+0.875	1.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.75	1.25\\
+0.875	1.25\\
+0.875	1.375\\
+0.75	1.375\\
+0.75	1.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.75	1.375\\
+0.875	1.375\\
+0.875	1.5\\
+0.75	1.5\\
+0.75	1.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.875	1.25\\
+1	1.25\\
+1	1.375\\
+0.875	1.375\\
+0.875	1.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.875	1.375\\
+1	1.375\\
+1	1.5\\
+0.875	1.5\\
+0.875	1.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	1.75\\
+0.75	1.75\\
+0.75	1.875\\
+0.625	1.875\\
+0.625	1.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	1.875\\
+0.75	1.875\\
+0.75	2\\
+0.625	2\\
+0.625	1.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.75	1.5\\
+0.875	1.5\\
+0.875	1.625\\
+0.75	1.625\\
+0.75	1.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.75	1.625\\
+0.875	1.625\\
+0.875	1.75\\
+0.75	1.75\\
+0.75	1.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.875	1.5\\
+1	1.5\\
+1	1.625\\
+0.875	1.625\\
+0.875	1.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.875	1.625\\
+1	1.625\\
+1	1.75\\
+0.875	1.75\\
+0.875	1.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.75	1.75\\
+0.875	1.75\\
+0.875	1.875\\
+0.75	1.875\\
+0.75	1.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.75	1.875\\
+0.875	1.875\\
+0.875	2\\
+0.75	2\\
+0.75	1.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.875	1.75\\
+1	1.75\\
+1	1.875\\
+0.875	1.875\\
+0.875	1.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.875	1.875\\
+1	1.875\\
+1	2\\
+0.875	2\\
+0.875	1.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.375	0.375\\
+1.5	0.375\\
+1.5	0.5\\
+1.375	0.5\\
+1.375	0.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.125	0.625\\
+1.25	0.625\\
+1.25	0.75\\
+1.125	0.75\\
+1.125	0.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1	0.75\\
+1.125	0.75\\
+1.125	0.875\\
+1	0.875\\
+1	0.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1	0.875\\
+1.125	0.875\\
+1.125	1\\
+1	1\\
+1	0.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.125	0.75\\
+1.25	0.75\\
+1.25	0.875\\
+1.125	0.875\\
+1.125	0.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.125	0.875\\
+1.25	0.875\\
+1.25	1\\
+1.125	1\\
+1.125	0.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.25	0.5\\
+1.375	0.5\\
+1.375	0.625\\
+1.25	0.625\\
+1.25	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.25	0.625\\
+1.375	0.625\\
+1.375	0.75\\
+1.25	0.75\\
+1.25	0.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.375	0.5\\
+1.5	0.5\\
+1.5	0.625\\
+1.375	0.625\\
+1.375	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.375	0.625\\
+1.5	0.625\\
+1.5	0.75\\
+1.375	0.75\\
+1.375	0.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.25	0.75\\
+1.5	0.75\\
+1.5	1\\
+1.25	1\\
+1.25	0.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.5	0.375\\
+1.625	0.375\\
+1.625	0.5\\
+1.5	0.5\\
+1.5	0.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.625	0.25\\
+1.75	0.25\\
+1.75	0.375\\
+1.625	0.375\\
+1.625	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.625	0.375\\
+1.75	0.375\\
+1.75	0.5\\
+1.625	0.5\\
+1.625	0.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.875	0.125\\
+2	0.125\\
+2	0.25\\
+1.875	0.25\\
+1.875	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.75	0.25\\
+1.875	0.25\\
+1.875	0.375\\
+1.75	0.375\\
+1.75	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.75	0.375\\
+1.875	0.375\\
+1.875	0.5\\
+1.75	0.5\\
+1.75	0.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.875	0.25\\
+2	0.25\\
+2	0.375\\
+1.875	0.375\\
+1.875	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.875	0.375\\
+2	0.375\\
+2	0.5\\
+1.875	0.5\\
+1.875	0.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1.5	0.5\\
+2	0.5\\
+2	1\\
+1.5	1\\
+1.5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1	1\\
+2	1\\
+2	2\\
+1	2\\
+1	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	2\\
+0.75	2\\
+0.75	2.125\\
+0.625	2.125\\
+0.625	2\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	2.125\\
+0.75	2.125\\
+0.75	2.25\\
+0.625	2.25\\
+0.625	2.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	2.25\\
+0.75	2.25\\
+0.75	2.375\\
+0.625	2.375\\
+0.625	2.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	2.375\\
+0.75	2.375\\
+0.75	2.5\\
+0.625	2.5\\
+0.625	2.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.75	2\\
+1	2\\
+1	2.25\\
+0.75	2.25\\
+0.75	2\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.75	2.25\\
+1	2.25\\
+1	2.5\\
+0.75	2.5\\
+0.75	2.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	2.5\\
+0.625	2.5\\
+0.625	2.625\\
+0.5	2.625\\
+0.5	2.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	2.625\\
+0.625	2.625\\
+0.625	2.75\\
+0.5	2.75\\
+0.5	2.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	2.5\\
+0.75	2.5\\
+0.75	2.625\\
+0.625	2.625\\
+0.625	2.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	2.625\\
+0.75	2.625\\
+0.75	2.75\\
+0.625	2.75\\
+0.625	2.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	2.75\\
+0.625	2.75\\
+0.625	2.875\\
+0.5	2.875\\
+0.5	2.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	2.875\\
+0.625	2.875\\
+0.625	3\\
+0.5	3\\
+0.5	2.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	2.75\\
+0.75	2.75\\
+0.75	2.875\\
+0.625	2.875\\
+0.625	2.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	2.875\\
+0.75	2.875\\
+0.75	3\\
+0.625	3\\
+0.625	2.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.75	2.5\\
+1	2.5\\
+1	2.75\\
+0.75	2.75\\
+0.75	2.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.75	2.75\\
+1	2.75\\
+1	3\\
+0.75	3\\
+0.75	2.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	3.875\\
+0.5	3.875\\
+0.5	4\\
+0.375	4\\
+0.375	3.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	3\\
+0.625	3\\
+0.625	3.125\\
+0.5	3.125\\
+0.5	3\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	3.125\\
+0.625	3.125\\
+0.625	3.25\\
+0.5	3.25\\
+0.5	3.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	3\\
+0.75	3\\
+0.75	3.125\\
+0.625	3.125\\
+0.625	3\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	3.125\\
+0.75	3.125\\
+0.75	3.25\\
+0.625	3.25\\
+0.625	3.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	3.25\\
+0.625	3.25\\
+0.625	3.375\\
+0.5	3.375\\
+0.5	3.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	3.375\\
+0.625	3.375\\
+0.625	3.5\\
+0.5	3.5\\
+0.5	3.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	3.25\\
+0.75	3.25\\
+0.75	3.375\\
+0.625	3.375\\
+0.625	3.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	3.375\\
+0.75	3.375\\
+0.75	3.5\\
+0.625	3.5\\
+0.625	3.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.75	3\\
+1	3\\
+1	3.25\\
+0.75	3.25\\
+0.75	3\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.75	3.25\\
+1	3.25\\
+1	3.5\\
+0.75	3.5\\
+0.75	3.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	3.5\\
+0.625	3.5\\
+0.625	3.625\\
+0.5	3.625\\
+0.5	3.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	3.625\\
+0.625	3.625\\
+0.625	3.75\\
+0.5	3.75\\
+0.5	3.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	3.5\\
+0.75	3.5\\
+0.75	3.625\\
+0.625	3.625\\
+0.625	3.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	3.625\\
+0.75	3.625\\
+0.75	3.75\\
+0.625	3.75\\
+0.625	3.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	3.75\\
+0.625	3.75\\
+0.625	3.875\\
+0.5	3.875\\
+0.5	3.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	3.875\\
+0.625	3.875\\
+0.625	4\\
+0.5	4\\
+0.5	3.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	3.75\\
+0.75	3.75\\
+0.75	3.875\\
+0.625	3.875\\
+0.625	3.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.625	3.875\\
+0.75	3.875\\
+0.75	4\\
+0.625	4\\
+0.625	3.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.75	3.5\\
+1	3.5\\
+1	3.75\\
+0.75	3.75\\
+0.75	3.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.75	3.75\\
+1	3.75\\
+1	4\\
+0.75	4\\
+0.75	3.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1	2\\
+2	2\\
+2	3\\
+1	3\\
+1	2\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1	3\\
+2	3\\
+2	4\\
+1	4\\
+1	3\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2	0.125\\
+2.125	0.125\\
+2.125	0.25\\
+2	0.25\\
+2	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2.125	0.125\\
+2.25	0.125\\
+2.25	0.25\\
+2.125	0.25\\
+2.125	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2	0.25\\
+2.25	0.25\\
+2.25	0.5\\
+2	0.5\\
+2	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2.25	0.125\\
+2.375	0.125\\
+2.375	0.25\\
+2.25	0.25\\
+2.25	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2.375	0.125\\
+2.5	0.125\\
+2.5	0.25\\
+2.375	0.25\\
+2.375	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2.25	0.25\\
+2.5	0.25\\
+2.5	0.5\\
+2.25	0.5\\
+2.25	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2	0.5\\
+2.5	0.5\\
+2.5	1\\
+2	1\\
+2	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2.5	0.125\\
+2.625	0.125\\
+2.625	0.25\\
+2.5	0.25\\
+2.5	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2.625	0.125\\
+2.75	0.125\\
+2.75	0.25\\
+2.625	0.25\\
+2.625	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2.5	0.25\\
+2.75	0.25\\
+2.75	0.5\\
+2.5	0.5\\
+2.5	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2.75	0\\
+2.875	0\\
+2.875	0.125\\
+2.75	0.125\\
+2.75	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2.75	0.125\\
+2.875	0.125\\
+2.875	0.25\\
+2.75	0.25\\
+2.75	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2.875	0\\
+3	0\\
+3	0.125\\
+2.875	0.125\\
+2.875	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2.875	0.125\\
+3	0.125\\
+3	0.25\\
+2.875	0.25\\
+2.875	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2.75	0.25\\
+3	0.25\\
+3	0.5\\
+2.75	0.5\\
+2.75	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2.5	0.5\\
+3	0.5\\
+3	1\\
+2.5	1\\
+2.5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2	1\\
+3	1\\
+3	2\\
+2	2\\
+2	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3	0\\
+3.125	0\\
+3.125	0.125\\
+3	0.125\\
+3	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3	0.125\\
+3.125	0.125\\
+3.125	0.25\\
+3	0.25\\
+3	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.125	0\\
+3.25	0\\
+3.25	0.125\\
+3.125	0.125\\
+3.125	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.125	0.125\\
+3.25	0.125\\
+3.25	0.25\\
+3.125	0.25\\
+3.125	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3	0.25\\
+3.25	0.25\\
+3.25	0.5\\
+3	0.5\\
+3	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.25	0\\
+3.375	0\\
+3.375	0.125\\
+3.25	0.125\\
+3.25	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.25	0.125\\
+3.375	0.125\\
+3.375	0.25\\
+3.25	0.25\\
+3.25	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.375	0\\
+3.5	0\\
+3.5	0.125\\
+3.375	0.125\\
+3.375	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.375	0.125\\
+3.5	0.125\\
+3.5	0.25\\
+3.375	0.25\\
+3.375	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.25	0.25\\
+3.5	0.25\\
+3.5	0.5\\
+3.25	0.5\\
+3.25	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3	0.5\\
+3.5	0.5\\
+3.5	1\\
+3	1\\
+3	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.5	0\\
+3.625	0\\
+3.625	0.125\\
+3.5	0.125\\
+3.5	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.5	0.125\\
+3.625	0.125\\
+3.625	0.25\\
+3.5	0.25\\
+3.5	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.625	0\\
+3.75	0\\
+3.75	0.125\\
+3.625	0.125\\
+3.625	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.625	0.125\\
+3.75	0.125\\
+3.75	0.25\\
+3.625	0.25\\
+3.625	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.5	0.25\\
+3.75	0.25\\
+3.75	0.5\\
+3.5	0.5\\
+3.5	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.75	0\\
+3.875	0\\
+3.875	0.125\\
+3.75	0.125\\
+3.75	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.75	0.125\\
+3.875	0.125\\
+3.875	0.25\\
+3.75	0.25\\
+3.75	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.875	0\\
+4	0\\
+4	0.125\\
+3.875	0.125\\
+3.875	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.875	0.125\\
+4	0.125\\
+4	0.25\\
+3.875	0.25\\
+3.875	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.75	0.25\\
+4	0.25\\
+4	0.5\\
+3.75	0.5\\
+3.75	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3.5	0.5\\
+4	0.5\\
+4	1\\
+3.5	1\\
+3.5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3	1\\
+4	1\\
+4	2\\
+3	2\\
+3	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2	2\\
+4	2\\
+4	4\\
+2	4\\
+2	2\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	4\\
+0.5	4\\
+0.5	4.125\\
+0.375	4.125\\
+0.375	4\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	4.125\\
+0.5	4.125\\
+0.5	4.25\\
+0.375	4.25\\
+0.375	4.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	4.25\\
+0.5	4.25\\
+0.5	4.375\\
+0.375	4.375\\
+0.375	4.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	4.375\\
+0.5	4.375\\
+0.5	4.5\\
+0.375	4.5\\
+0.375	4.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	4.5\\
+0.5	4.5\\
+0.5	4.625\\
+0.375	4.625\\
+0.375	4.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	4.625\\
+0.5	4.625\\
+0.5	4.75\\
+0.375	4.75\\
+0.375	4.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	4.75\\
+0.5	4.75\\
+0.5	4.875\\
+0.375	4.875\\
+0.375	4.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	4.875\\
+0.5	4.875\\
+0.5	5\\
+0.375	5\\
+0.375	4.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	4\\
+1	4\\
+1	4.5\\
+0.5	4.5\\
+0.5	4\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	4.5\\
+1	4.5\\
+1	5\\
+0.5	5\\
+0.5	4.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	5\\
+0.5	5\\
+0.5	5.125\\
+0.375	5.125\\
+0.375	5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	5.125\\
+0.5	5.125\\
+0.5	5.25\\
+0.375	5.25\\
+0.375	5.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	5.25\\
+0.5	5.25\\
+0.5	5.375\\
+0.375	5.375\\
+0.375	5.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	5.375\\
+0.5	5.375\\
+0.5	5.5\\
+0.375	5.5\\
+0.375	5.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	5.5\\
+0.5	5.5\\
+0.5	5.625\\
+0.375	5.625\\
+0.375	5.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	5.625\\
+0.5	5.625\\
+0.5	5.75\\
+0.375	5.75\\
+0.375	5.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	5.75\\
+0.5	5.75\\
+0.5	5.875\\
+0.375	5.875\\
+0.375	5.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	5.875\\
+0.5	5.875\\
+0.5	6\\
+0.375	6\\
+0.375	5.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	5\\
+1	5\\
+1	5.5\\
+0.5	5.5\\
+0.5	5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	5.5\\
+1	5.5\\
+1	6\\
+0.5	6\\
+0.5	5.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1	4\\
+2	4\\
+2	5\\
+1	5\\
+1	4\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1	5\\
+2	5\\
+2	6\\
+1	6\\
+1	5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	6\\
+0.5	6\\
+0.5	6.125\\
+0.375	6.125\\
+0.375	6\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	6.125\\
+0.5	6.125\\
+0.5	6.25\\
+0.375	6.25\\
+0.375	6.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	6.25\\
+0.5	6.25\\
+0.5	6.375\\
+0.375	6.375\\
+0.375	6.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	6.375\\
+0.5	6.375\\
+0.5	6.5\\
+0.375	6.5\\
+0.375	6.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	6.5\\
+0.5	6.5\\
+0.5	6.625\\
+0.375	6.625\\
+0.375	6.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	6.625\\
+0.5	6.625\\
+0.5	6.75\\
+0.375	6.75\\
+0.375	6.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	6.75\\
+0.5	6.75\\
+0.5	6.875\\
+0.375	6.875\\
+0.375	6.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	6.875\\
+0.5	6.875\\
+0.5	7\\
+0.375	7\\
+0.375	6.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	6\\
+1	6\\
+1	6.5\\
+0.5	6.5\\
+0.5	6\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	6.5\\
+1	6.5\\
+1	7\\
+0.5	7\\
+0.5	6.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.25	7\\
+0.375	7\\
+0.375	7.125\\
+0.25	7.125\\
+0.25	7\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.25	7.125\\
+0.375	7.125\\
+0.375	7.25\\
+0.25	7.25\\
+0.25	7.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	7\\
+0.5	7\\
+0.5	7.125\\
+0.375	7.125\\
+0.375	7\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	7.125\\
+0.5	7.125\\
+0.5	7.25\\
+0.375	7.25\\
+0.375	7.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.25	7.25\\
+0.375	7.25\\
+0.375	7.375\\
+0.25	7.375\\
+0.25	7.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.25	7.375\\
+0.375	7.375\\
+0.375	7.5\\
+0.25	7.5\\
+0.25	7.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	7.25\\
+0.5	7.25\\
+0.5	7.375\\
+0.375	7.375\\
+0.375	7.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	7.375\\
+0.5	7.375\\
+0.5	7.5\\
+0.375	7.5\\
+0.375	7.375\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.25	7.5\\
+0.375	7.5\\
+0.375	7.625\\
+0.25	7.625\\
+0.25	7.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.25	7.625\\
+0.375	7.625\\
+0.375	7.75\\
+0.25	7.75\\
+0.25	7.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	7.5\\
+0.5	7.5\\
+0.5	7.625\\
+0.375	7.625\\
+0.375	7.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	7.625\\
+0.5	7.625\\
+0.5	7.75\\
+0.375	7.75\\
+0.375	7.625\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.25	7.75\\
+0.375	7.75\\
+0.375	7.875\\
+0.25	7.875\\
+0.25	7.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.25	7.875\\
+0.375	7.875\\
+0.375	8\\
+0.25	8\\
+0.25	7.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	7.75\\
+0.5	7.75\\
+0.5	7.875\\
+0.375	7.875\\
+0.375	7.75\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.375	7.875\\
+0.5	7.875\\
+0.5	8\\
+0.375	8\\
+0.375	7.875\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	7\\
+1	7\\
+1	7.5\\
+0.5	7.5\\
+0.5	7\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0.5	7.5\\
+1	7.5\\
+1	8\\
+0.5	8\\
+0.5	7.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1	6\\
+2	6\\
+2	7\\
+1	7\\
+1	6\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1	7\\
+2	7\\
+2	8\\
+1	8\\
+1	7\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2	4\\
+4	4\\
+4	6\\
+2	6\\
+2	4\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2	6\\
+4	6\\
+4	8\\
+2	8\\
+2	6\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4	0\\
+4.125	0\\
+4.125	0.125\\
+4	0.125\\
+4	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4	0.125\\
+4.125	0.125\\
+4.125	0.25\\
+4	0.25\\
+4	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.125	0\\
+4.25	0\\
+4.25	0.125\\
+4.125	0.125\\
+4.125	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.125	0.125\\
+4.25	0.125\\
+4.25	0.25\\
+4.125	0.25\\
+4.125	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4	0.25\\
+4.25	0.25\\
+4.25	0.5\\
+4	0.5\\
+4	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.25	0\\
+4.375	0\\
+4.375	0.125\\
+4.25	0.125\\
+4.25	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.25	0.125\\
+4.375	0.125\\
+4.375	0.25\\
+4.25	0.25\\
+4.25	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.375	0\\
+4.5	0\\
+4.5	0.125\\
+4.375	0.125\\
+4.375	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.375	0.125\\
+4.5	0.125\\
+4.5	0.25\\
+4.375	0.25\\
+4.375	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.25	0.25\\
+4.5	0.25\\
+4.5	0.5\\
+4.25	0.5\\
+4.25	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4	0.5\\
+4.5	0.5\\
+4.5	1\\
+4	1\\
+4	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.5	0\\
+4.625	0\\
+4.625	0.125\\
+4.5	0.125\\
+4.5	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.5	0.125\\
+4.625	0.125\\
+4.625	0.25\\
+4.5	0.25\\
+4.5	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.625	0\\
+4.75	0\\
+4.75	0.125\\
+4.625	0.125\\
+4.625	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.625	0.125\\
+4.75	0.125\\
+4.75	0.25\\
+4.625	0.25\\
+4.625	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.5	0.25\\
+4.75	0.25\\
+4.75	0.5\\
+4.5	0.5\\
+4.5	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.75	0\\
+4.875	0\\
+4.875	0.125\\
+4.75	0.125\\
+4.75	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.75	0.125\\
+4.875	0.125\\
+4.875	0.25\\
+4.75	0.25\\
+4.75	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.875	0\\
+5	0\\
+5	0.125\\
+4.875	0.125\\
+4.875	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.875	0.125\\
+5	0.125\\
+5	0.25\\
+4.875	0.25\\
+4.875	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.75	0.25\\
+5	0.25\\
+5	0.5\\
+4.75	0.5\\
+4.75	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4.5	0.5\\
+5	0.5\\
+5	1\\
+4.5	1\\
+4.5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4	1\\
+5	1\\
+5	2\\
+4	2\\
+4	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5	0\\
+5.125	0\\
+5.125	0.125\\
+5	0.125\\
+5	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5	0.125\\
+5.125	0.125\\
+5.125	0.25\\
+5	0.25\\
+5	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.125	0\\
+5.25	0\\
+5.25	0.125\\
+5.125	0.125\\
+5.125	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.125	0.125\\
+5.25	0.125\\
+5.25	0.25\\
+5.125	0.25\\
+5.125	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5	0.25\\
+5.25	0.25\\
+5.25	0.5\\
+5	0.5\\
+5	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.25	0\\
+5.375	0\\
+5.375	0.125\\
+5.25	0.125\\
+5.25	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.25	0.125\\
+5.375	0.125\\
+5.375	0.25\\
+5.25	0.25\\
+5.25	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.375	0\\
+5.5	0\\
+5.5	0.125\\
+5.375	0.125\\
+5.375	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.375	0.125\\
+5.5	0.125\\
+5.5	0.25\\
+5.375	0.25\\
+5.375	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.25	0.25\\
+5.5	0.25\\
+5.5	0.5\\
+5.25	0.5\\
+5.25	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5	0.5\\
+5.5	0.5\\
+5.5	1\\
+5	1\\
+5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.5	0\\
+5.625	0\\
+5.625	0.125\\
+5.5	0.125\\
+5.5	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.5	0.125\\
+5.625	0.125\\
+5.625	0.25\\
+5.5	0.25\\
+5.5	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.625	0\\
+5.75	0\\
+5.75	0.125\\
+5.625	0.125\\
+5.625	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.625	0.125\\
+5.75	0.125\\
+5.75	0.25\\
+5.625	0.25\\
+5.625	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.5	0.25\\
+5.75	0.25\\
+5.75	0.5\\
+5.5	0.5\\
+5.5	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.75	0\\
+5.875	0\\
+5.875	0.125\\
+5.75	0.125\\
+5.75	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.75	0.125\\
+5.875	0.125\\
+5.875	0.25\\
+5.75	0.25\\
+5.75	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.875	0\\
+6	0\\
+6	0.125\\
+5.875	0.125\\
+5.875	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.875	0.125\\
+6	0.125\\
+6	0.25\\
+5.875	0.25\\
+5.875	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.75	0.25\\
+6	0.25\\
+6	0.5\\
+5.75	0.5\\
+5.75	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5.5	0.5\\
+6	0.5\\
+6	1\\
+5.5	1\\
+5.5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5	1\\
+6	1\\
+6	2\\
+5	2\\
+5	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4	2\\
+6	2\\
+6	4\\
+4	4\\
+4	2\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6	0\\
+6.125	0\\
+6.125	0.125\\
+6	0.125\\
+6	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6	0.125\\
+6.125	0.125\\
+6.125	0.25\\
+6	0.25\\
+6	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.125	0\\
+6.25	0\\
+6.25	0.125\\
+6.125	0.125\\
+6.125	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.125	0.125\\
+6.25	0.125\\
+6.25	0.25\\
+6.125	0.25\\
+6.125	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6	0.25\\
+6.25	0.25\\
+6.25	0.5\\
+6	0.5\\
+6	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.25	0\\
+6.375	0\\
+6.375	0.125\\
+6.25	0.125\\
+6.25	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.25	0.125\\
+6.375	0.125\\
+6.375	0.25\\
+6.25	0.25\\
+6.25	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.375	0\\
+6.5	0\\
+6.5	0.125\\
+6.375	0.125\\
+6.375	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.375	0.125\\
+6.5	0.125\\
+6.5	0.25\\
+6.375	0.25\\
+6.375	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.25	0.25\\
+6.5	0.25\\
+6.5	0.5\\
+6.25	0.5\\
+6.25	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6	0.5\\
+6.5	0.5\\
+6.5	1\\
+6	1\\
+6	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.5	0\\
+6.625	0\\
+6.625	0.125\\
+6.5	0.125\\
+6.5	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.5	0.125\\
+6.625	0.125\\
+6.625	0.25\\
+6.5	0.25\\
+6.5	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.625	0\\
+6.75	0\\
+6.75	0.125\\
+6.625	0.125\\
+6.625	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.625	0.125\\
+6.75	0.125\\
+6.75	0.25\\
+6.625	0.25\\
+6.625	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.5	0.25\\
+6.75	0.25\\
+6.75	0.5\\
+6.5	0.5\\
+6.5	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.75	0\\
+6.875	0\\
+6.875	0.125\\
+6.75	0.125\\
+6.75	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.75	0.125\\
+6.875	0.125\\
+6.875	0.25\\
+6.75	0.25\\
+6.75	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.875	0\\
+7	0\\
+7	0.125\\
+6.875	0.125\\
+6.875	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.875	0.125\\
+7	0.125\\
+7	0.25\\
+6.875	0.25\\
+6.875	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.75	0.25\\
+7	0.25\\
+7	0.5\\
+6.75	0.5\\
+6.75	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6.5	0.5\\
+7	0.5\\
+7	1\\
+6.5	1\\
+6.5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6	1\\
+7	1\\
+7	2\\
+6	2\\
+6	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7	0\\
+7.125	0\\
+7.125	0.125\\
+7	0.125\\
+7	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7	0.125\\
+7.125	0.125\\
+7.125	0.25\\
+7	0.25\\
+7	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.125	0\\
+7.25	0\\
+7.25	0.125\\
+7.125	0.125\\
+7.125	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.125	0.125\\
+7.25	0.125\\
+7.25	0.25\\
+7.125	0.25\\
+7.125	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7	0.25\\
+7.25	0.25\\
+7.25	0.5\\
+7	0.5\\
+7	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.25	0\\
+7.375	0\\
+7.375	0.125\\
+7.25	0.125\\
+7.25	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.25	0.125\\
+7.375	0.125\\
+7.375	0.25\\
+7.25	0.25\\
+7.25	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.375	0\\
+7.5	0\\
+7.5	0.125\\
+7.375	0.125\\
+7.375	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.375	0.125\\
+7.5	0.125\\
+7.5	0.25\\
+7.375	0.25\\
+7.375	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.25	0.25\\
+7.5	0.25\\
+7.5	0.5\\
+7.25	0.5\\
+7.25	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7	0.5\\
+7.5	0.5\\
+7.5	1\\
+7	1\\
+7	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.5	0\\
+7.625	0\\
+7.625	0.125\\
+7.5	0.125\\
+7.5	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.5	0.125\\
+7.625	0.125\\
+7.625	0.25\\
+7.5	0.25\\
+7.5	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.625	0\\
+7.75	0\\
+7.75	0.125\\
+7.625	0.125\\
+7.625	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.625	0.125\\
+7.75	0.125\\
+7.75	0.25\\
+7.625	0.25\\
+7.625	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.5	0.25\\
+7.75	0.25\\
+7.75	0.5\\
+7.5	0.5\\
+7.5	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.75	0\\
+7.875	0\\
+7.875	0.125\\
+7.75	0.125\\
+7.75	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.75	0.125\\
+7.875	0.125\\
+7.875	0.25\\
+7.75	0.25\\
+7.75	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.875	0\\
+8	0\\
+8	0.125\\
+7.875	0.125\\
+7.875	0\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.875	0.125\\
+8	0.125\\
+8	0.25\\
+7.875	0.25\\
+7.875	0.125\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.75	0.25\\
+8	0.25\\
+8	0.5\\
+7.75	0.5\\
+7.75	0.25\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7.5	0.5\\
+8	0.5\\
+8	1\\
+7.5	1\\
+7.5	0.5\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+7	1\\
+8	1\\
+8	2\\
+7	2\\
+7	1\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+6	2\\
+8	2\\
+8	4\\
+6	4\\
+6	2\\
+}--cycle;
+
+\addplot[area legend, draw=none, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4	4\\
+8	4\\
+8	8\\
+4	8\\
+4	4\\
+}--cycle;
+\end{axis}
+\end{tikzpicture}%

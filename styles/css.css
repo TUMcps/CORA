@@ -48,8 +48,26 @@ img, embed, object[type="image/svg+xml"] {
 
 .card {
     margin: 10px;
+    padding: 10px;
 }
 
+.card > img {
+    margin-bottom: 5px;
+}
+
+.card-link {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.card-link:HOVER {
+    margin: 0px;
+}
+
+.card-link:HOVER b {
+    margin-left: 10px;
+    margin-right: 10px;
+}
 
 
 .code {
