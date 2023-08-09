@@ -8,7 +8,7 @@
     <meta name="description"
           content="The COntinuous Reachability Analyzer (CORA) is a collection of MATLAB classes for the formal verification of cyber-physical systems using reachability analysis. CORA integrates various vector and matrix set representations and operations on them as well as reachability algorithms of various dynamic system classes. The software is designed such that set representations can be exchanged without having to modify the code for reachability analysis. CORA is designed using the object oriented paradigm, such that users can safely use methods without concerning themselves with detailed information hidden inside the object. Since the toolbox is written in MATLAB, the installation and use is platform independent. From Release 2018 on, the direct import of SpaceEx models into CORA is also supported. The following points summarize the main capabilities of the CORA toolbox:">
     <meta name="keywords" content="CORA, Matlab, toolbox, reachability analysis, set-based computing">
-    <link rel="icon" type="image/x-icon" href="./images/CoraLogo-icon.png">
+    <link rel="icon" type="image/x-icon" href="./data/images/CoraLogo-icon.png">
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
 
     <link href="https://cdn.jsdelivr.net/npm/@fontsource/newsreader@4.5.10/index.min.css " rel="stylesheet">
@@ -34,7 +34,7 @@
                 aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="#"> <img src="./images/CoraLogo-icon.png"/></a>
+        <a class="navbar-brand" href="#"> <img src="./data/images/CoraLogo-icon.png"/></a>
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item navbar-text">
@@ -90,7 +90,7 @@
     <div class="row">
         <div class="col-1 col-md-3 col-lg-4"></div>
         <div class="col-10 col-md-6 col-lg-4">
-            <object type="image/svg+xml" data="./images/CoraLogo.svg">
+            <object type="image/svg+xml" data="./data/images/CoraLogo.svg">
                 Your browser does not support SVG
             </object>
         </div>
@@ -115,8 +115,9 @@
     </div>
 
     <!-- Features -->
-    <div id="features"></div>
-    <div class="row">
+
+    <hr id="features" />
+    <div class="row space-before">
         <div class="col-12 col-md-6 col-xl-8 order-1 order-md-0">
             <h5>Reachability Analysis for Continuous Systems</h5>
             <p>CORA computes reachable sets for linear systems, nonlinear systems as well as
@@ -130,11 +131,13 @@
             <div class="text-start"><a href="#" class="btn btn-primary">Read more</a></div>
         </div>
         <div class="col-12 col-md-6 col-xl-4 order-0 order-md-1 text-center">
-            <object type="image/svg+xml" data="./images/latex/figures/ACC.svg">
+            <object type="image/svg+xml" data="./data/images/latex/figures/vanDerPol.svg">
                 Your browser does not support SVG
             </object>
         </div>
     </div>
+
+    <hr/>
 
     <div class="row">
         <div class="col-12 col-md-6 col-xl-8 order-1 order-md-1">
@@ -146,27 +149,31 @@
             <div class="text-start"><a href="#" class="btn btn-primary">Read more</a></div>
         </div>
         <div class="col-12 col-md-6 col-xl-4 order-0 order-md-0 text-center">
-            <object type="image/svg+xml" data="./images/latex/figures/hybrid.svg">
+            <object type="image/svg+xml" data="./data/images/latex/figures/hybrid.svg">
                 Your browser does not support SVG
             </object>
         </div>
     </div>
+
+    <hr/>
 
     <div class="row">
         <div class="col-12 col-md-6 col-xl-8 order-1 order-md-0">
             <h5>Geometric Sets</h5>
             <p>CORA has a modular design, making it possible to use the capabilities of the various set representations
                 for other purposes besides reachability analysis. The toolbox implements vector set representation,
-                e.g., zonotopes, Taylor models and intervals, as well as matrix set representations such as matrix
-                zonotope and interval matrices.</p>
+                e.g., intervals, zonotopes, Taylor models, and polytopes, as well as matrix set representations such as matrix
+                zonotopes and interval matrices.</p>
             <div class="text-start"><a href="#" class="btn btn-primary">Read more</a></div>
         </div>
         <div class="col-12 col-md-6 col-xl-4 order-0 order-md-1 text-center">
-            <object type="image/svg+xml" data="./images/latex/figures/set-representations.svg">
+            <object type="image/svg+xml" data="./data/images/latex/figures/setBasedAlgorithm.svg">
                 Your browser does not support SVG
             </object>
         </div>
     </div>
+
+    <hr/>
 
     <div class="row">
         <div class="col-12 col-md-6 col-xl-8 order-1 order-md-1">
@@ -178,14 +185,14 @@
             <div class="text-start"><a href="#" class="btn btn-primary">Read more</a></div>
         </div>
         <div class="col-12 col-md-6 col-xl-4 order-0 order-md-0 text-center">
-            <object type="image/svg+xml" data="./images/latex/figures/ACC.svg">
+            <object type="image/svg+xml" data="./data/images/latex/figures/ACC.svg">
                 Your browser does not support SVG
             </object>
         </div>
     </div>
 
     <!-- Getting Started -->
-    <div id="get-started"></div>
+    <hr id="get-started" />
     <div class="row space-before">
         <h4>Get Started</h4>
         <p>To install CORA, please follow the steps below</p>
@@ -201,10 +208,10 @@
         </div>
 
         <div class="position-relative">
-            <iframe class="code code-sm" scrolling="no" src="./matlab/scripts/test-script-snippet.html"></iframe>
+            <iframe class="code code-sm" scrolling="no" src="./data/matlab/scripts/test-script-snippet.html"></iframe>
             <div class="position-absolute top-0 end-0 translate-middle-x">
                 <div class="code-btn-box">
-                    <a class="btn btn-outline-secondary btn-sm" href="./matlab/scripts/test-script-snippet.mlx"
+                    <a class="btn btn-outline-secondary btn-sm" href="./data/matlab/scripts/test-script-snippet.mlx"
                        title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
                 </div>
             </div>
@@ -214,7 +221,7 @@
     </div>
 
     <!-- Examples -->
-    <div id="examples"></div>
+    <hr id="examples" />
     <div class="row space-before">
         <h4>Examples</h4>
         <div>
@@ -223,7 +230,7 @@
     </div>
 
     <!-- Contact -->
-    <div id="contact"></div>
+    <hr id="contact"/>
     <div class="row space-before">
         <h4>Contact</h4>
         <div>
@@ -238,7 +245,7 @@
     </div>
 
     <!-- Publications -->
-    <div id="publications"></div>
+    <hr id="publications"/>
     <div class="row space-before">
         <h4>Publications</h4>
         <div>
@@ -277,10 +284,10 @@
             </ol>
         </div>
     </div>
-
+    <hr/>
 
     <!-- MathJax Test -->
-    <div class="row space-before">
+    <div class="row">
         <h3>MathJax Test</h3>
         <div>
             A zonotope is defined as
@@ -293,30 +300,30 @@
     <div class="row">
         <h3>Include live script</h3>
         <div class="position-relative">
-            <iframe class="code code-lg" src="./matlab/scripts/test-script.html"></iframe>
+            <iframe class="code code-lg" src="./data/matlab/scripts/test-script.html"></iframe>
             <div class="position-absolute top-0 end-0 translate-middle-x">
                 <div class="code-btn-box">
-                    <a class="btn btn-outline-secondary btn-sm" href="./matlab/scripts/test-script.mlx"
+                    <a class="btn btn-outline-secondary btn-sm" href="./data/matlab/scripts/test-script.mlx"
                        title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
                 </div>
             </div>
         </div>
         <p>... or a small code snippet:</p>
         <div class="position-relative">
-            <iframe class="code code-sm" src="./matlab/scripts/test-script-snippet.html"></iframe>
+            <iframe class="code code-sm" src="./data/matlab/scripts/test-script-snippet.html"></iframe>
             <div class="position-absolute top-0 end-0 translate-middle-x">
                 <div class="code-btn-box">
-                    <a class="btn btn-outline-secondary btn-sm" href="./matlab/scripts/test-script-snippet.mlx"
+                    <a class="btn btn-outline-secondary btn-sm" href="./data/matlab/scripts/test-script-snippet.mlx"
                        title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
                 </div>
             </div>
         </div>
         <p>... or a medium code snippet:</p>
         <div class="position-relative">
-            <iframe class="code code-md" src="./matlab/scripts/test-script.html"></iframe>
+            <iframe class="code code-md" src="./data/matlab/scripts/test-script.html"></iframe>
             <div class="position-absolute top-0 end-0 translate-middle-x">
                 <div class="code-btn-box">
-                    <a class="btn btn-outline-secondary btn-sm" href="./matlab/scripts/test-script.mlx"
+                    <a class="btn btn-outline-secondary btn-sm" href="./data/matlab/scripts/test-script.mlx"
                        title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
                 </div>
             </div>
@@ -324,11 +331,11 @@
 
         <div class="row">
             <h3>Include an image</h3>
-            <p>See steps in <code>./images/latex/main.tex</code>.</p>
+            <p>See steps in <code>./data/images/latex/main.tex</code>.</p>
             <div class="col-0 col-md-2 col-lg-3"></div>
             <div class="col-12 col-md-8 col-lg-6">
                 <figure class="text-center">
-                    <object type="image/svg+xml" data="./images/latex/figures/ACC.svg">
+                    <object type="image/svg+xml" data="./data/images/latex/figures/ACC.svg">
                         Your browser does not support SVG
                     </object>
                     <figcaption class="figure-caption text-center">A fancy image.</figcaption>

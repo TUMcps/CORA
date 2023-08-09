@@ -15,7 +15,7 @@ iframe {
     background-color: white;
 }
 
-.space-before, .row {
+.space-before {
     margin-top: 75px;
 }
 
@@ -28,6 +28,14 @@ iframe {
 }
 .navbar-brand {
     width: 25px;
+}
+
+.row ~ hr {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    margin-left: 5%;
+    width: 90%;
+    color: var(--bs-primary);
 }
 
 

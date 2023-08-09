@@ -16,8 +16,10 @@ ymin=0,
 ymax=1.2,
 axis background/.style={fill=white},
 title style={font=\bfseries},
-title={Bouncing Ball},
-legend style={legend cell align=left, align=left, draw=white!15!black}
+title={},
+xlabel={time},
+ylabel={altitude},
+legend style={legend cell align=left, align=left, draw=white!15!black,}
 ]
 
 \addplot[area legend, draw=mycolor1, fill=mycolor1]
