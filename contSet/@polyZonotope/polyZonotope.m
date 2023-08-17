@@ -140,12 +140,12 @@ function aux_checkInputArgs(c,G,Grest,expMat,id,n_in)
     if CHECKS_ENABLED && n_in > 0
 
         inputArgsCheck({ ...
-            {c, 'att', 'double', 'finite'};
-            {G, 'att', 'double', {'finite', 'matrix'}};
-            {Grest, 'att', 'double', {'finite', 'matrix'}};
-            {expMat, 'att', 'double', ...
+            {c, 'att', 'numeric', 'finite'};
+            {G, 'att', 'numeric', {'finite', 'matrix'}};
+            {Grest, 'att', 'numeric', {'finite', 'matrix'}};
+            {expMat, 'att', 'numeric', ...
                 {'integer', 'nonnegative', 'matrix'}};
-            {id, 'att', 'double', 'integer'};
+            {id, 'att', 'numeric', 'integer'};
         })
 
         % check dimensions

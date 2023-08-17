@@ -1,4 +1,4 @@
-function int = interval(obj,varargin)
+function int = interval(tay,varargin)
 % interval - Calculate an interval that bounds the taylor model
 %
 % Syntax:  
@@ -42,28 +42,28 @@ function int = interval(obj,varargin)
 % Author:       Niklas Kochdumper
 % Written:      04-April-2018
 % Last update:  ---
-% Last revision: ---
+% Last revision:17-August-2023 (TL, aux_ and comments)
 
 %------------- BEGIN CODE -------------
 
     % parse input arguments
-    option = setDefaultValues({obj.opt_method},varargin);
+    option = setDefaultValues({tay.opt_method},varargin);
 
     % check input arguments
-    inputArgsCheck({{obj,'att','taylm'};
+    inputArgsCheck({{tay,'att','taylm'};
                     {option,'str',{'int','bnb','bnbAdv','linQuad','bernstein'}}});    
 
     % calculate the bounding interval
     if strcmp(option, 'int')
-        int = arrayfun(@(a) s_tayl2int(a), obj, 'UniformOutput', false);
+        int = arrayfun(@(a) aux_tayl2int(a), tay, 'UniformOutput', false);
     elseif strcmp(option, 'bernstein')
-        int = arrayfun(@(a) optBernstein(a), obj, 'UniformOutput', false);
+        int = arrayfun(@(a) optBernstein(a), tay, 'UniformOutput', false);
     elseif strcmp(option, 'bnb')
-        int = arrayfun(@(a) optBnb(a), obj, 'UniformOutput', false);
+        int = arrayfun(@(a) optBnb(a), tay, 'UniformOutput', false);
     elseif strcmp(option, 'bnbAdv')
-        int = arrayfun(@(a) optBnbAdv(a), obj, 'UniformOutput', false);
+        int = arrayfun(@(a) optBnbAdv(a), tay, 'UniformOutput', false);
     elseif strcmp(option, 'linQuad')
-        int = arrayfun(@(a) optLinQuad(a), obj, 'UniformOutput', false);
+        int = arrayfun(@(a) optLinQuad(a), tay, 'UniformOutput', false);
     else
         throw(CORAerror('CORA:wrongValue','second',...
             'be ''int'', ''bnb'', ''bnbAdv'' and ''linQuad'''));
@@ -76,21 +76,22 @@ end
 
 %% Auxiliary functions
 
-function int = s_tayl2int(obj)
+function int = aux_tayl2int(tay)
     % evaluate taylor factors
-    int = obj.remainder;
+    int = tay.remainder;
     
-    for i = 1:length(obj.coefficients)
-        exp = obj.monomials(i,:);
+    for i = 1:length(tay.coefficients)
+        exp = tay.monomials(i,:);
         temp = 1;       
         for j = 1:length(exp)
-           temp = intMul(temp,intPower(exp(j)));
+           temp = aux_intMul(temp,aux_intPower(exp(j)));
         end
-        int = int + evalInt(temp) * obj.coefficients(i);
+        int = int + aux_evalInt(temp) * tay.coefficients(i);
     end
 end
 
-function int = intPower(exponent)
+function int = aux_intPower(exponent)
+    % exponent to integer
 
     if exponent == 0
         int = 1;            % interval(1,1)           
@@ -101,26 +102,28 @@ function int = intPower(exponent)
     end
 end
 
-function int = intMul(factor1,factor2)
+function int = aux_intMul(factor1,factor2)
+    % also see aux_intPower
 
     if factor1 == 1
-        int = factor2;
+        int = factor2; % 1 * fac2 = fac2
     elseif factor2 == 1
-        int = factor1;
-    elseif factor2 == 2 && factor1 == 2
-        int = 2;      % [0,1] * [0,1] = [0,1]
-    elseif factor2 == 3 && factor2 == 3
-        int = 3;      % [-1,1] * [-1,1] = [-1,1]
+        int = factor1; % fac1 * 1 = fac1
+    elseif factor1 == 2 && factor2 == 2
+        int = 2;       % [0,1] * [0,1] = [0,1]
+    elseif factor1 == 3 && factor2 == 3
+        int = 3;       % [-1,1] * [-1,1] = [-1,1]
     else
-        int = 3;      % [-1,1] * [0,1] = [-1,1]
+        int = 3;       % [-1,1] * [0,1] = [-1,1], [0,1] * [-1,1] = [-1,1]
     end
 end
 
-function int = evalInt(obj)
+function int = aux_evalInt(tay)
+    % also see aux_intPower
         
-    if obj == 1
+    if tay == 1
         int = interval(1,1);
-    elseif obj == 2
+    elseif tay == 2
         int = interval(0,1);
     else
         int = interval(-1,1);

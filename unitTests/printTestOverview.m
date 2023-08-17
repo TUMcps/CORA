@@ -87,17 +87,20 @@ fprintf('-*---------------------------------*-\n');
 fprintf('--- Results of last full test run ---\n\n');
 
 % print which test suite
-fprintf(['  test suite: ',format,'\n']);
+fprintf(['  Test suite: ',format,'\n']);
 
-% print machine and Matlab version
-fprintf(['  system:     ',resultsTestSuite.hostsystem,'\n']);
+% print CORA version, Matlab version and machine
+if isfield(resultsTestSuite,'coraversion')
+    fprintf(['  Version:    ',resultsTestSuite.coraversion,'\n']);
+end
 fprintf(['  Matlab:     ',resultsTestSuite.matlabversion,'\n']);
+fprintf(['  System:     ',resultsTestSuite.hostsystem,'\n']);
 
 % print date and time
-fprintf(['  date/time:  ',resultsTestSuite.date,'\n']);
+fprintf(['  Date/time:  ',resultsTestSuite.date,'\n']);
 
 % print test results
-fprintf('  tests:\n');
+fprintf('  Tests:\n');
 fprintf(['  .. total:   ',num2str(nrTotalTests),'\n']);
 fprintf(['  .. failed:  ',num2str(nrFailedTests),'\n']);
 

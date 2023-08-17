@@ -120,6 +120,9 @@ if strcmp(directory,rootUnitTests)
     % save full results
     data.results = results;
 
+    % save CORA version
+    data.coraversion = CORAVERSION;
+
     % save matlab version
     data.matlabversion = version;
 

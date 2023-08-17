@@ -99,16 +99,16 @@ for i=1:length(files)
 
     if ~contains(filetext, "% Author")
         issues{end+1} = "Author missing.";
-    end
-
-    % author text should follow empty line
-    authorPos = strfind(filetext, "% Author");
-    lines = split(filetext(1:authorPos(1)), compose("\r\n"));
-    if length(lines) == 1
-        lines = split(filetext(1:authorPos(1)), newline);
-    end
-    if ~isempty(lines{end-1})
-        issues{end+1} = "Author should not be included in help text.";
+    else
+        % author text should follow empty line
+        authorPos = strfind(filetext, "% Author");
+        lines = split(filetext(1:authorPos(1)), compose("\r\n"));
+        if length(lines) == 1
+            lines = split(filetext(1:authorPos(1)), newline);
+        end
+        if ~isempty(lines{end-1})
+            issues{end+1} = "Author should not be included in help text.";
+        end
     end
 
     if ~contains(filetext, "% Written")
