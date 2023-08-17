@@ -42,8 +42,13 @@ methods
         % call super class constructor
         obj@nnLayer(name)
 
-        obj.scale = scale;
-        obj.offset = offset;
+        inputArgsCheck({ ...
+            {scale, 'numeric'}; ...
+            {offset, 'numeric'}; ...
+        })
+
+        obj.scale = double(scale);
+        obj.offset = double(offset);
     end
 
     function [nin, nout] = getNumNeurons(obj)

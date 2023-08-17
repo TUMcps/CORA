@@ -12,6 +12,7 @@
         {"name":"Order", "kind":"namevalue", "type":["numeric"],"purpose":"(polynomial) zonotope order"},
         {"name":"Splits", "kind":"namevalue", "type":["numeric"],"purpose":"splits (only for polyZonotope/conZonotope)"},
         {"name":"Unify", "kind":"namevalue", "type":["logical"],"purpose":"compute union of all reachable sets"},
+        {"name":"UnifyTotalSets", "kind":"namevalue", "type":["logical"],"purpose":"number of unified sets"},
         {"name":"Set", "kind":"namevalue", "type":["char","choices={'ti','tp','y'}"],"purpose":"which set to plot"},
 
         {"name":"Color", "kind":"namevalue", "type":["numeric"],"purpose":"Color"},

@@ -170,6 +170,9 @@ methods
     res = prod(obj,varargin)    % product of array elements
     res = sum(obj,varargin)     % sum of array elements
     
+    % plot
+    res = plot(tay,varargin)
+    
     %display functions
     display(obj)
 end

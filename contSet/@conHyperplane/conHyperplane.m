@@ -43,6 +43,7 @@ classdef conHyperplane < contSet
 %               19-March-2021 (MW, error messages)
 %               22-March-2021 (VG, added 1D case)
 %               14-December-2022 (TL, property check in inputArgsCheck)
+%               16-August-2023 (TL, removed 1D check)
 % Last revision:16-June-2023 (MW, restructure using auxiliary functions)
 
 %------------- BEGIN CODE --------------
@@ -149,19 +150,6 @@ function aux_checkInputArgs(h,C,d,n_in)
                     'match the dimension of the constraint matrix.']));
             end
         end
-        
-        % handle 1D case
-        if dim(h)==1 && h.c~=0 && ~isempty(C)
-            x = h.d/h.c;
-            % check if x is in {x|Cx\leq d}
-            X = mptPolytope(C,d);
-            if ~contains_(X,x,'exact',eps)
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    ['Assignment not consistent: implicit value for x ' ...
-                    'given by hyperplane not contained in {x | C*x <= d}!']));
-            end         
-        end
-        
     end
 
 end
