@@ -15,6 +15,10 @@ iframe {
     background-color: white;
 }
 
+.space-before-sm {
+    margin-top: 25px;
+}
+
 .space-before {
     margin-top: 75px;
 }
@@ -87,7 +91,7 @@ img, embed, object[type="image/svg+xml"] {
 }
 
 .code-sm {
-    height: 120px;
+    height: 150px;
     border: 0;
 }
 

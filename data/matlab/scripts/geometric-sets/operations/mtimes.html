@@ -1,0 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,IE=9,chrome=1"><meta name="generator" content="MATLAB 2023a"><title>Untitled</title><style type="text/css"> .CodeBlock { background-color: #F5F5F5; margin: 10px 0 10px 0; }
+.S0 { border-left: 1px solid rgb(217, 217, 217); border-right: 1px solid rgb(217, 217, 217); border-top: 1px solid rgb(217, 217, 217); border-bottom: 0px none rgb(33, 33, 33); border-radius: 4px 4px 0px 0px; padding: 6px 45px 0px 13px; line-height: 18.004px; min-height: 0px; white-space: nowrap; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }
+.S1 { border-left: 1px solid rgb(217, 217, 217); border-right: 1px solid rgb(217, 217, 217); border-top: 0px none rgb(33, 33, 33); border-bottom: 0px none rgb(33, 33, 33); border-radius: 0px; padding: 0px 45px 0px 13px; line-height: 18.004px; min-height: 0px; white-space: nowrap; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }
+.S2 { border-left: 1px solid rgb(217, 217, 217); border-right: 1px solid rgb(217, 217, 217); border-top: 0px none rgb(33, 33, 33); border-bottom: 1px solid rgb(217, 217, 217); border-radius: 0px 0px 4px 4px; padding: 0px 45px 4px 13px; line-height: 18.004px; min-height: 0px; white-space: nowrap; color: rgb(33, 33, 33); font-family: Menlo, Monaco, Consolas, "Courier New", monospace; font-size: 14px;  }</style></head><body><div class = rtcContent><div class="CodeBlock"><div class="inlineWrapper"><div  class = 'S0'><span style="white-space: pre"><span style="color: rgb(0, 128, 19);">% initialize set and matrix</span></span></div></div><div class="inlineWrapper"><div  class = 'S1'><span style="white-space: pre"><span >S = zonotope([0;0], [1 1 0; 1 0 1]);</span></span></div></div><div class="inlineWrapper"><div  class = 'S1'><span style="white-space: pre"><span >M = [1 0; -1 0.5];</span></span></div></div><div class="inlineWrapper"><div  class = 'S1'>&nbsp;</div></div><div class="inlineWrapper"><div  class = 'S1'><span style="white-space: pre"><span style="color: rgb(0, 128, 19);">% linear map</span></span></div></div><div class="inlineWrapper"><div  class = 'S1'><span style="white-space: pre"><span >res = M * S;</span></span></div></div><div class="inlineWrapper"><div  class = 'S2'><span style="white-space: pre"></div></div></div>
+<br>
+<!-- 
+##### SOURCE BEGIN #####
+% initialize set and matrix
+S = zonotope([0;0], [1 1 0; 1 0 1]);
+M = [1 0; -1 0.5];
+
+% linear map
+res = M * S;
+exportToHTML(); % for website
+##### SOURCE END #####
+-->
+</div></body></html>

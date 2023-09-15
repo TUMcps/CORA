@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="light">
+<html lang="en" data-bs-theme="light" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     <!-- MathJax -->
+
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async
             src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
@@ -41,6 +42,12 @@
                     <div class="d-block d-lg-none">
                         <hr/>
                     </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#set-representations">Set Representations</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#set-operations">Set Operations</a>
                 </li>
             </ul>
             <ul class="navbar-nav">
@@ -81,14 +88,14 @@
                 zonotopes and interval matrices.</p>
         </div>
         <div class="col-12 col-lg-6 col-xl-4 order-1 order-md-1 text-center">
-            <object type="image/svg+xml" data="../../data/images/latex/figures/setBasedAlgorithm.svg">
+            <object type="image/svg+xml" data="../../data/images/latex/figures/setBasedAlgorithm2.svg">
                 Your browser does not support SVG
             </object>
         </div>
     </div>
 
-    <!-- Features -->
-    <hr id="features"/>
+    <!-- Set representations -->
+    <hr id="set-representations"/>
     <div class="row space-before">
         <div class="col-12">
             <h4>Set Representations</h4>
@@ -101,19 +108,21 @@
         </div>
         <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
             <a href="./conHyperplane/index.html" class="card card-link">
-                <img src="../../data/images/latex/figures/geometric-sets/conHyperplane.svg" alt="constrained Hyperplane"/>
+                <img src="../../data/images/latex/figures/geometric-sets/conHyperplane.svg"
+                     alt="Constrained Hyperplane"/>
                 <b>Constrained Hyperplane</b>
             </a>
         </div>
         <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
             <a href="./conPolyZono/index.html" class="card card-link">
-                <img src="../../data/images/latex/figures/geometric-sets/conPolyZono.svg" alt="constrained Polynomial Zonotope"/>
+                <img src="../../data/images/latex/figures/geometric-sets/conPolyZono.svg"
+                     alt="Constrained Polynomial Zonotope"/>
                 <b>Constrained Polynomial Zonotope</b>
             </a>
         </div>
         <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
             <a href="./conZonotope/index.html" class="card card-link">
-                <img src="../../data/images/latex/figures/geometric-sets/conZonotope.svg" alt="constrained Zonotope"/>
+                <img src="../../data/images/latex/figures/geometric-sets/conZonotope.svg" alt="Constrained Zonotope"/>
                 <b>Constrained Zonotope</b>
             </a>
         </div>
@@ -121,6 +130,18 @@
             <a href="./ellipsoid/index.html" class="card card-link">
                 <img src="../../data/images/latex/figures/geometric-sets/ellipsoid.svg" alt="Ellipsoid"/>
                 <b>Ellipsoid</b>
+            </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
+            <a href="./emptySet/index.html" class="card card-link">
+                <img src="../../data/images/latex/figures/geometric-sets/emptySet.svg" alt="Empty Set"/>
+                <b>Empty Set</b>
+            </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
+            <a href="./fullspace/index.html" class="card card-link">
+                <img src="../../data/images/latex/figures/geometric-sets/fullspace.svg" alt="Fullspace"/>
+                <b>Fullspace</b>
             </a>
         </div>
         <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
@@ -153,9 +174,14 @@
                 <b>Polynomial Zonotope</b>
             </a>
         </div>
+
+        <!-- center remaining sets -->
+        <div class="d-none d-lg-none d-xl-block col-xl-2 text-center"></div>
+
         <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
             <a href="./probZonotope/index.html" class="card card-link">
-                <img src="../../data/images/latex/figures/geometric-sets/probZonotope.svg" alt="Probabilistic Zonotope"/>
+                <img src="../../data/images/latex/figures/geometric-sets/probZonotope.svg"
+                     alt="Probabilistic Zonotope"/>
                 <b>Probabilistic Zonotope</b>
             </a>
         </div>
@@ -165,10 +191,6 @@
                 <b>Taylor Model</b>
             </a>
         </div>
-
-        <!-- center remaining sets -->
-        <div class="d-none d-md-block col-md-2 col-lg-3 col-xl-4 text-center"></div>
-
         <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
             <a href="./zonoBundle/index.html" class="card card-link">
                 <img src="../../data/images/latex/figures/geometric-sets/zonoBundle.svg" alt="Zonotope Bundle"/>
@@ -181,6 +203,126 @@
                 <b>Zonotope</b>
             </a>
         </div>
+    </div>
+
+    <!-- Set Operations -->
+    <hr id="set-operations"/>
+    <div class="row space-before">
+        <div class="col-12">
+            <h4>Set Operations</h4>
+            <p>The reachability algorithms implemented in CORA rely on set-based computation. One major
+                design principle is that the same standard set operations are implemented for all set representations so
+                that algorithms can be executed with different set representations. We show some basic set operations
+                here. More information in Section 2.1 in the CORA manual.</p>
+        </div>
+
+        <!-- mtimes -->
+        <h5 class="space-before-sm">Linear Map</h5>
+        <div class="col-12 col-lg-12 col-xl-6 order-0 order-md-0">
+            <p>The linear map is defined as</p>
+            $$\texttt{mtimes}(M,\mathcal{S}) = M \otimes \mathcal{S} = \left\{ Ms \ |\ s\in\mathcal{S} \right\}.$$
+            <p>The function \(\texttt{mtimes}\) overloads the * operator in MATLAB.</p>
+
+            <div class="row">
+                <div class="position-relative">
+                    <iframe class="code code-sm" scrolling="no" src="../../data/matlab/scripts/geometric-sets/operations/mtimes.html"></iframe>
+                    <div class="position-absolute top-0 end-0 translate-middle-x">
+                        <div class="code-btn-box">
+                            <a class="btn btn-outline-secondary btn-sm"
+                               href="../../data/matlab/scripts/geometric-sets/operations/mtimes.mlx"
+                               title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-none d-lg-block col-lg-2 d-xl-none"></div>
+        <div class="col-12 col-sm-12 col-lg-8 col-xl-6 text-center">
+            <object type="image/svg+xml" data="../../data/images/latex/figures/geometric-sets/operations/mtimes.svg">
+                Your browser does not support SVG
+            </object>
+        </div>
+
+        <!-- plus -->
+        <h5 class="space-before-sm">Minkowski Sum</h5>
+        <div class="col-12 col-lg-12 col-xl-6 order-0 order-md-0">
+            <p>The Minkowski sum is defined as</p>
+            $$\texttt{plus}(\mathcal{S}_1,\mathcal{S}_2) = \mathcal{S}_1 \oplus \mathcal{S}_2 = \left\{ s_1 + s_2 \ |\ s_1\in\mathcal{S}_1,\ s_2\in\mathcal{S}_2 \right\}.$$
+            <p>The function \(\texttt{plus}\) overloads the + operator in MATLAB.</p>
+
+            <div class="row">
+                <div class="position-relative">
+                    <iframe class="code code-sm" scrolling="no" src="../../data/matlab/scripts/geometric-sets/operations/plus.html"></iframe>
+                    <div class="position-absolute top-0 end-0 translate-middle-x">
+                        <div class="code-btn-box">
+                            <a class="btn btn-outline-secondary btn-sm"
+                               href="../../data/matlab/scripts/geometric-sets/operations/plus.mlx"
+                               title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-none d-lg-block col-lg-2 d-xl-none"></div>
+        <div class="col-12 col-sm-12 col-lg-8 col-xl-6 text-center">
+            <object type="image/svg+xml" data="../../data/images/latex/figures/geometric-sets/operations/plus.svg">
+                Your browser does not support SVG
+            </object>
+        </div>
+
+        <!-- convHull -->
+        <h5 class="space-before-sm">Convex Hull</h5>
+        <div class="col-12 col-lg-12 col-xl-6 order-0 order-md-0">
+            <p>The convex hull is defined as</p>
+            $$\texttt{convHull}(\mathcal{S}_1,\mathcal{S}_2) = \left\{ \lambda s_1 + (1-\lambda) s_2 \ |\ s_1\in\mathcal{S}_1,\ s_2\in\mathcal{S}_2,\ \lambda\in[0,1] \right\}.$$
+
+            <div class="row">
+                <div class="position-relative">
+                    <iframe class="code code-sm" scrolling="no" src="../../data/matlab/scripts/geometric-sets/operations/convHull.html"></iframe>
+                    <div class="position-absolute top-0 end-0 translate-middle-x">
+                        <div class="code-btn-box">
+                            <a class="btn btn-outline-secondary btn-sm"
+                               href="../../data/matlab/scripts/geometric-sets/operations/convHull.mlx"
+                               title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-none d-lg-block col-lg-2 d-xl-none"></div>
+        <div class="col-12 col-sm-12 col-lg-8 col-xl-6 text-center">
+            <object type="image/svg+xml" data="../../data/images/latex/figures/geometric-sets/operations/convHull.svg">
+                Your browser does not support SVG
+            </object>
+        </div>
+
+        <!-- plot -->
+        <h5 class="space-before-sm">Plotting</h5>
+        <div class="col-12 col-lg-12 col-xl-6 order-0 order-md-0">
+            <p>Plotting sets is a useful function to visualize your computations:</p>
+            $$\texttt{plot}(\mathcal{S},\texttt{dims},\texttt{varargin}).$$
+            <p>The function \(\texttt{plot}\) allows flexible plotting of your sets, where \(\texttt{dims}\) are the dimensions to be plotted and \(\texttt{varargin}\) are standard <a href="https://de.mathworks.com/help/matlab/ref/plot.html" target="_blank">MATLAB plotting parameters</a>.</p>
+
+            <div class="row">
+                <div class="position-relative">
+                    <iframe class="code code-sm" scrolling="no" src="../../data/matlab/scripts/geometric-sets/operations/plot.html"></iframe>
+                    <div class="position-absolute top-0 end-0 translate-middle-x">
+                        <div class="code-btn-box">
+                            <a class="btn btn-outline-secondary btn-sm"
+                               href="../../data/matlab/scripts/geometric-sets/operations/plot.mlx"
+                               title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-none d-lg-block col-lg-2 d-xl-none"></div>
+        <div class="col-12 col-sm-12 col-lg-8 col-xl-6 text-center">
+            <object type="image/svg+xml" data="../../data/images/latex/figures/geometric-sets/operations/plot.svg">
+                Your browser does not support SVG
+            </object>
+        </div>
+
     </div>
 
 

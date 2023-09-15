@@ -1,0 +1,68 @@
+% This file was created by matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+\definecolor{mycolor2}{rgb}{0.85000,0.32500,0.09800}%
+\definecolor{mycolor3}{rgb}{0.49400,0.18400,0.55600}%
+\definecolor{mycolor4}{rgb}{0.46600,0.67400,0.18800}%
+%
+\begin{tikzpicture}
+\footnotesize
+
+\begin{axis}[%
+width=8cm,
+height=4.5cm,
+at={(0in,0in)},
+scale only axis,
+xmin=-4,
+xmax=3,
+ymin=-4,
+ymax=3,
+axis background/.style={fill=white},
+legend style={at={(0.03,0.97)}, anchor=north west, legend cell align=left, align=left, draw=white!15!black}
+]
+\addplot [color=mycolor1]
+table[row sep=crcr]{%
+  -1.5	-3.5\\
+  0.5	-1.5\\
+  -1.5	0.5\\
+  -3.5	-1.5\\
+  -1.5	-3.5\\
+};
+\addlegendentry{$\mathcal{S}$}
+
+\addplot [color=mycolor2]
+  table[row sep=crcr]{%
+0.5	0.5\\
+2.5	0.5\\
+2.5	2.5\\
+0.5	2.5\\
+0.5	0.5\\
+};
+\addlegendentry{$M\mathcal{S}$}
+
+\addplot [color=mycolor3, dashed]
+  table[row sep=crcr]{%
+2.5	2.5\\
+0.5	2.5\\
+-3.5	-1.5\\
+-1.5	-3.5\\
+2.5	0.5\\
+2.5	2.5\\
+};
+\addlegendentry{$\texttt{convHull}(S,M\mathcal{S})$}
+
+\addplot [color=mycolor4]
+  table[row sep=crcr]{%
+2.6	2.6\\
+0.4	2.6\\
+-3.6	-1.4\\
+-3.6	-1.6\\
+-1.6	-3.6\\
+-1.4	-3.6\\
+2.6	0.4\\
+2.6	2.6\\
+};
+\addlegendentry{$\texttt{convHull}(S,M\mathcal{S}) \oplus \mathcal{I}$}
+
+\end{axis}
+\end{tikzpicture}%
