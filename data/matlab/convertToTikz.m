@@ -26,12 +26,12 @@ fid  = fopen(tikzpath,'r');
 f=fread(fid,'*char')';
 fclose(fid);
 
-f = regexprep(f,'width=[0-9]*.[0-9]*in','width=8cm');
-f = regexprep(f,'height=[0-9]*.[0-9]*in','height=4.5cm');
+f = regexprep(f,'width=[0-9]*.[0-9]*in','width=4cm');
+f = regexprep(f,'height=[0-9]*.[0-9]*in','height=4cm');
 f = regexprep(f,'at=\{\([0-9]*.[0-9]*in,[0-9]*.[0-9]*in\)\},','at={(0in,0in)},');
 f = strrep(f,"\begin{tikzpicture}",compose("\\begin{tikzpicture}\n\\footnotesize"));
 % f = strrep(f,"legend style={","legend style={font=\tiny,");
-f = strrep(f,"mark size=0.5000pt","mark size=0.1000pt");
+f = strrep(f,"mark size=0.5000pt","mark size=1.0000pt");
 
 fid  = fopen(tikzpath,'w');
 fprintf(fid,'%s',f);

@@ -21,7 +21,7 @@ function res = enlargeAxis(factor)
 
 % parse input
 if nargin < 1
-    factor = 1.1;
+    factor = 1.2;
 end
 
 % get axis limits
