@@ -2,7 +2,7 @@ function display(I)
 % display - Displays the properties of an interal object (lower and upper
 %    bounds) on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(I)
 %
 % Inputs:
@@ -21,13 +21,14 @@ function display(I)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      19-June-2015
-% Last update:  22-February-2016 (DG, now it displays the name)
-%               01-May-2020 (MW, handling of empty case)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-June-2015
+% Last update:   22-February-2016 (DG, now it displays the name)
+%                01-May-2020 (MW, handling of empty case)
+%                11-September-2023 (TL, respect output display format)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isemptyobject(I)
     
@@ -60,7 +61,9 @@ else
             lb = full(I.inf(idxRow,idxCol));
             ub = full(I.sup(idxRow,idxCol));
             % print value
-            fprintf('  %-8s [%.4f, %.4f]\n',idxStr,lb,ub);
+            lb = strtrim(formattedDisplayText(lb));
+            ub = strtrim(formattedDisplayText(ub));
+            fprintf('  %-8s [%s, %s]\n',idxStr,lb,ub);
         end
 
     else
@@ -72,7 +75,9 @@ else
             str = ' ';
             % display one row
             for j = 1:cols
-                newStr = sprintf('[%0.4f, %0.4f]',I.inf(i,j),I.sup(i,j));
+                lb = strtrim(formattedDisplayText(I.inf(i,j)));
+                ub = strtrim(formattedDisplayText(I.sup(i,j)));
+                newStr = sprintf('[%s, %s]',lb,ub);
                 str = [str,' ',newStr];
             end
             disp(str);
@@ -83,4 +88,4 @@ else
     fprintf(newline);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

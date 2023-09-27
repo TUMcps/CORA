@@ -23,6 +23,6 @@ function version = CORAVERSION()
 
 %------------- BEGIN CODE --------------
 
-version = 'CORA v2022.2.2';
+version = 'CORA v2022.2.3';
 
 %------------- END OF CODE --------------

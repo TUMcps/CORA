@@ -71,6 +71,13 @@ try
     resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true);
     % test color
     resvec(end+1) = isequal(colorOrder(1,:), ax.Children(1).Color);
+
+    % check FaceAlpha
+    plot(Z, 1:2, 'r', 'FaceAlpha', 0.1)
+    resvec(end+1) = isequal([1 0 0], ax.Children(1).FaceColor) ...
+        && isequal([1 0 0], ax.Children(1).EdgeColor) ...
+        && isequal(0.1, ax.Children(1).FaceAlpha) ...
+        && isequal(1, ax.Children(1).EdgeAlpha);
     
     % close figure
     close;
