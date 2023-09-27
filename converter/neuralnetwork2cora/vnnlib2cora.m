@@ -19,9 +19,9 @@ function [X0,spec] = vnnlib2cora(file)
 %
 % See also: specification
 
-% Author:       Niklas Kochdumper
+% Author:       Niklas Kochdumper, Tobias Ladner
 % Written:      23-November-2021
-% Last update:  ---
+% Last update:  30-August-2023 (TL, bug fix multiple terms in and)
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -140,8 +140,17 @@ function [len,data] = parseAssert(text,data)
         while ~startsWith(text,')')
             [len_,data] = parseAssert(text,data);
             text = strtrim(text(len_:end));
+
+            % move overall length counter to current position
             len = len + len_;
+            if startsWith(text,'(')
+                % multiple terms in and; correct len
+                len = len-1;
+            end
         end
+
+    else
+        keyboard
     end
 end
 

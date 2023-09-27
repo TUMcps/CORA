@@ -142,6 +142,7 @@ end
 % distribute 'Color' to 'EdgeColor' and 'FaceColor', overwrite if necessary
 [plotOptions,edgecolor] = readNameValuePair(plotOptions,'EdgeColor');
 [plotOptions,facecolor] = readNameValuePair(plotOptions,'FaceColor');
+[~,facealpha] = readNameValuePair(plotOptions,'FaceAlpha');
 [plotOptions,filled] = readNameValuePair(plotOptions,'Filled');
 [NVpairs,color] = readNameValuePair(NVpairs,'Color');
 
@@ -153,6 +154,21 @@ end
 if strcmp(facecolor, 'default')
     facecolor = defaultPlotColor();
 end
+
+% set FaceColor if FaceAlpha is provided
+if ~isempty(facealpha)
+    % facecolor order: 'FaceColor' > 'Color' > 'EdgeColor' > default color
+    if ~isempty(facecolor)
+        % facecolor already set
+    elseif ~isempty(color)
+        facecolor = color;
+    elseif ~isempty(edgecolor)
+        facecolor = edgecolor;
+    else
+        facecolor = defaultPlotColor();
+    end
+end
+
 
 % different handling depending on object that will be plotted
 switch purpose
