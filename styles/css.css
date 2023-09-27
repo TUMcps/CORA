@@ -117,7 +117,3 @@ img, embed, object[type="image/svg+xml"] {
 .citation-list li::marker {
     content: "[" counter(list-item) "] ";
 }
-
-.citation-list a {
-    color:orange;
-}
