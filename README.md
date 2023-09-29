@@ -1,2 +1,3 @@
 # CORA
-Toolbox for Reachability Analysis
+
+A Toolbox for COntinuous Reachability Analysis
