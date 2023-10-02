@@ -1,5 +1,5 @@
 \definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
-\definecolor{mycolor2}{rgb}{0.85000,0.32500,0.09800}%
+\definecolor{mycolor2}{rgb}{0.46600,0.67400,0.18800}%
 %
 \begin{tikzpicture}
 \footnotesize
@@ -18,12 +18,12 @@ scale only axis,
 width=1/\cols*\textwidth -\horzsep,
 legend style={legend columns=2,legend to name=legendname, legend cell align=left,/tikz/every even column/.append style={column sep=0.5cm}}
 ]
-\nextgroupplot[xmin=-2.75,xmax=2.75,ymin=-2.75,ymax=2.75,title={$\mathcal{S}_1,\ \mathcal{S}_2$}]
-\input{\basepath convHull_11.tikz}
+\nextgroupplot[xmin=-2.4,xmax=2.4,ymin=-2.4,ymax=2.4,xlabel={$x_{(1)}$},ylabel={$x_{(2)}$},title={$\mathcal{S}$}]
+\input{\basepath example_mtimes_11.tikz}
 \coordinate (top) at (rel axis cs:0,1);
-\nextgroupplot[xmin=-2.75,xmax=2.75,ymin=-2.75,ymax=2.75,title={$\texttt{convHull}(\mathcal{S}_1,\ \mathcal{S}_2)$}]
-\input{\basepath convHull_legends.tikz}
-\input{\basepath convHull_12.tikz}
+\nextgroupplot[xmin=-2.4,xmax=2.4,ymin=-2.4,ymax=2.4,xlabel={$x_{(1)}$},title={$M\otimes\mathcal{S}$}]
+\input{\basepath example_mtimes_legends.tikz}
+\input{\basepath example_mtimes_12.tikz}
 \coordinate (bot) at (rel axis cs:1,0);
 \end{groupplot}
 \path (top|-current bounding box.south)--coordinate(legendpos)(bot|-current bounding box.south);
