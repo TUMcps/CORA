@@ -27,7 +27,6 @@
 
 </head>
 <body>
-
 <nav class="navbar bg-dark navbar-expand-lg fixed-top" data-bs-theme="dark">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler"
@@ -43,7 +42,23 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#example">Example</a>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        System Dynamics
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#linearSys">Linear Systems</a></li>
+                        <li><a class="dropdown-item" href="#linParamSys">Linear Systems with Uncertain Parameters</a>
+                        </li>
+                        <li><a class="dropdown-item" href="#linearSysDT">Linear Discrete-Time Systems</a></li>
+                        <li><a class="dropdown-item" href="#linearProbSystems">Linear Probabilistic Systems</a></li>
+                        <li><a class="dropdown-item" href="#nonlinearSys">Nonlinear Systems</a></li>
+                        <li><a class="dropdown-item" href="#nonlinearParamSys">Nonlinear Systems with Uncertain
+                            Parameters</a></li>
+                        <li><a class="dropdown-item" href="#nonlinearSysDT">Nonlinear Discrete-Time Systems</a></li>
+                        <li><a class="dropdown-item" href="#nonlinDASys">Nonlinear Differential-Algebraic Systems</a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item navbar-text">
                     <div class="d-block d-lg-none">
@@ -53,11 +68,12 @@
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" target="_blank" href="https://github.com/TUMcps/CORA"><i class="bi bi-github"></i>&nbsp;GitHub</a>
+                    <a class="nav-link" target="_blank" href="https://github.com/TUMcps/CORA"><i
+                            class="bi bi-github"></i> GitHub</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" target="_blank" href="../../manual.html"><i
-                            class="bi bi-file-earmark-pdf-fill"></i>&nbsp;Manual</a>
+                            class="bi bi-file-earmark-pdf-fill"></i> Manual</a>
                 </li>
             </ul>
         </div>
@@ -87,38 +103,388 @@
         </div>
     </div>
 
-    <!-- Example -->
-    <hr id="example"/>
+    <hr>
     <div class="row space-before">
-        <div class="col-12">
-            <h4>Example</h4>
-            <p>The code below shows a brief example of reachability analysis in CORA.
-                To improve the usability of CORA, all dynamic systems share a set of identical operations, such as <code>reach</code> to compute the reachable set and <code>simulateRandom</code> for random simulations.
-                More information can be found in Section 4 in the <a href="../../manual.html" target="_blank">CORA manual</a>.</p>
-            <div class="position-relative">
-                <iframe class="code code-lg" src="../../data/matlab/scripts/continuous-systems/example_linearSys.html"></iframe>
-                <div class="position-absolute top-0 end-0 translate-middle-x">
-                    <div class="code-btn-box">
-                        <a class="btn btn-outline-secondary btn-sm"
-                           href="../../data/matlab/scripts/continuous-systems/example_linearSys.mlx"
-                           title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="col">
+            <p>The following dynamic systems are implemented in CORA. More information can be found in Section 4 in the
+                <a target="_blank" href="../../manual.html"><i class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.
+            </p>
+            <ul class="list-group list-group-flush">
+                <li id="linearSys" class="list-group-item px-0">
+                    <a class="btn" data-bs-toggle="collapse" href="#collapse_linearSys" role="button"
+                       aria-expanded="true"
+                       aria-controls="collapse_linParamSys">
+                        <div class="row">
+                            <div class="col-11"><h4>Linear Systems</h4></div>
+                            <div class="col-1"><span class="mr-3"></span></div>
+                        </div>
+                    </a>
+                    <div class="collapse show" id="collapse_linearSys">
+                        <div class="row">
+                            <div class="col-12">
+                                <p>
+                                    In CORA, linear systems have the form
+                                    $$ \dot{x}(t) = A x(t) + B u(t) + c + w(t),$$
+                                    $$ y(t) = C x(t) + D u(t) + k + v(t), $$
+                                    where \(x(t) \in \mathbb{R}^n\) is the system state,
+                                    \(u(t)\in \mathbb{R}^m\) is the system input,
+                                    \(w(t) \in \mathbb{R}^n\) is the disturbance,
+                                    \(y(t) \in \mathbb{R}^p\) is the system output,
+                                    \(v(t) \in \mathbb{R}^p\) is the sensor noise, and
+                                    \(A \in \mathbb{R}^{n \times n}\),
+                                    \(B \in \mathbb{R}^{n \times m}\),
+                                    \(c \in \mathbb{R}^n\),
+                                    \(C \in \mathbb{R}^{p \times n}\),
+                                    \(D \in \mathbb{R}^{p \times m}\),
+                                    \(k \in \mathbb{R}^p\).
+                                </p>
+                                <p>More information can be found in Section 4 in the <a target="_blank"
+                                                                                        href="../../manual.html"><i
+                                        class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.</p>
+                            </div>
 
-        <div class="col-12">
-            <p>Further examples can be found at <code>./examples/contDynamics</code> on <a target="_blank" href="https://github.com/TUMcps/CORA"><i class="bi bi-github"></i>&nbsp;GitHub</a>.</p>
+                            <div class="col-12">
+                                <h5>Example</h5>
+                                <p>The code below gives a reachability analysis example for linear systems in CORA.
+                                    All dynamic systems share a set of identical
+                                    operations, such as
+                                    <code>reach</code> to compute the reachable set and <code>simulateRandom</code> for
+                                    random simulations.
+                                    Further examples can be found at <code>./examples/contDynamics</code> on <a
+                                            target="_blank"
+                                            href="https://github.com/TUMcps/CORA"><i
+                                            class="bi bi-github"></i> GitHub</a>.</p>
+                                <div class="position-relative">
+                                    <iframe class="code code-lg"
+                                            src="../../data/matlab/scripts/continuous-systems/example_linearSys.html"></iframe>
+                                    <div class="position-absolute top-0 end-0 translate-middle-x">
+                                        <div class="code-btn-box">
+                                            <a class="btn btn-outline-secondary btn-sm"
+                                               href="../../data/matlab/scripts/continuous-systems/example_linearSys.mlx"
+                                               title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li id="linParamSys" class="list-group-item px-0">
+                    <a class="btn collapsed" data-bs-toggle="collapse" href="#collapse_linParamSys" role="button"
+                       aria-expanded="false"
+                       aria-controls="collapse_linParamSys">
+                        <div class="row">
+                            <div class="col-11"><h4>Linear Systems with Uncertain Parameters</h4></div>
+                            <div class="col-1"><span class="mr-3"></span></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="collapse_linParamSys">
+                        <div class="row">
+                            <div class="col-12">
+                                <p>
+                                    This class extends linear systems by uncertain parameters. We provide two
+                                    implementations, one for uncertain parameters that are fixed over time and one for
+                                    parameters that can arbitrarily vary over time. For the case with fixed parameters,
+                                    a linear parametric system is defined as
+                                    $$\dot{x}(t) = A(p)~x(t) + B(p)~u(t), ~~ p \in \mathcal{P},$$
+                                    which can be equivalently formulated as
+                                    $$\dot{x}(t) = A x(t) + B u(t), ~~ A \in \mathcal{A},~B \in \mathcal{B},$$
+                                    $$\text{with} ~~ \mathcal{A} = \{ A(p) ~|~ p \in \mathcal{P} \},~ \mathcal{B} = \{
+                                    B(p) ~|~ p \in \mathcal{P} \},$$
+                                    where \(x(t) \in \mathbb{R}^n\) is the system state,
+                                    \(u(t)\in \mathbb{R}^m\) is the system input,
+                                    \(p \in \mathbb{R}^p\) is the parameter vector, and
+                                    \(\mathcal{P} \subset \mathbb{R}^p\) is the set of parameters.
+                                    For the case with fixed parameters, a linear parametric system is defined as
+                                    $$ \dot{x}(t) = A(t)~x(t) + B(t)~u(t), ~~ A(t) \in \mathcal{A},~B(t) \in
+                                    \mathcal{B}.$$
+                                </p>
+                                <p>More information can be found in Section 4 in the <a target="_blank"
+                                                                                        href="../../manual.html"><i
+                                        class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li id="linearSysDT" class="list-group-item px-0">
+                    <a class="btn collapsed" data-bs-toggle="collapse" href="#collapse_linearSysDT" role="button"
+                       aria-expanded="false"
+                       aria-controls="collapse_linearSysDT">
+                        <div class="row">
+                            <div class="col-11"><h4>Linear Discrete-Time Systems</h4></div>
+                            <div class="col-1"><span class="mr-3"></span></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="collapse_linearSysDT">
+                        <div class="row">
+                            <div class="col-12">
+                                <p>
+                                    In addition to continuous-time linear systems, CORA also supports discrete-time
+                                    linear systems defined as
+                                    $$x[i+1] = A x[i] + B u[i] + c + w[i],$$
+                                    $$y[i] = C x[i] + D u[i] + k + v[i],$$
+                                    where \(x[i] \in \mathbb{R}^n\) is the system state,
+                                    \(u[i] \in \mathbb{R}^m\) is the system input,
+                                    \(w[i] \in \mathbb{R}^n\) is the disturbance,
+                                    \(y[i] \in \mathbb{R}^p\) is the system output,
+                                    \(v[i] \in \mathbb{R}^p\) is the sensor noise, and
+                                    \(A \in \mathbb{R}^{n \times n}\), \(B \in \mathbb{R}^{n \times m}\), \(c \in
+                                    \mathbb{R}^n\),
+                                    \(C \in \mathbb{R}^{p \times n}\), \(D \in \mathbb{R}^{p \times m}\), \(k \in
+                                    \mathbb{R}^p\).
+                                </p>
+                                <p>More information can be found in Section 4 in the <a target="_blank"
+                                                                                        href="../../manual.html"><i
+                                        class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li id="linearProbSystems" class="list-group-item px-0">
+                    <a class="btn collapsed" data-bs-toggle="collapse" href="#collapse_linearProbSystems" role="button"
+                       aria-expanded="false"
+                       aria-controls="collapse_linearProbSystems">
+                        <div class="row">
+                            <div class="col-11"><h4>Linear Probabilistic Systems</h4></div>
+                            <div class="col-1"><span class="mr-3"></span></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="collapse_linearProbSystems">
+                        <div class="row">
+                            <div class="col-12">
+                                <p>
+                                    In contrast to all other systems, we consider stochastic properties here.
+                                    The system under consideration is defined by the following linear stochastic
+                                    differential equation (SDE), which is also known as the multivariate
+                                    Ornstein-Uhlenbeck process:
+                                    $$\dot{x} = A x(t) + u(t) + C \xi(t),$$
+                                    $$x(0) \in \mathbb{R}^{n}, \, u(t)\in \mathcal{U} \subset \mathbb{R}^n, \, \xi \in
+                                    \mathbb{R}^{m},$$
+                                    where \(A\) and \(C\) are matrices of proper dimension and \(A\) has full rank.
+                                    There are two kinds of inputs:
+                                    the first input \(u\) is Lipschitz continuous and can take any value in
+                                    \(\mathcal{U} \subset \mathbb{R}^n\) for which no probability distribution is known.
+                                    The second input \(\xi\in\mathbb{R}^m\) is white Gaussian noise.
+                                    The combination of both inputs can be seen as a white Gaussian noise input, where
+                                    the mean value is unknown within the set \(\mathcal{U}\).
+                                </p>
+                                <p>More information can be found in Section 4 in the <a target="_blank"
+                                                                                        href="../../manual.html"><i
+                                        class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li id="nonlinearSys" class="list-group-item px-0">
+                    <a class="btn collapsed" data-bs-toggle="collapse" href="#collapse_nonlinearSys" role="button"
+                       aria-expanded="false"
+                       aria-controls="collapse_nonlinearSys">
+                        <div class="row">
+                            <div class="col-11"><h4>Nonlinear Systems</h4></div>
+                            <div class="col-1"><span class="mr-3"></span></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="collapse_nonlinearSys">
+                        <div class="row">
+                            <div class="col-12">
+                                <p>
+                                    Although a fairly large group of dynamic systems can be described by linear systems,
+                                    the extension to nonlinear systems is an important step towards the analysis of more
+                                    complex systems.
+                                    We consider general nonlinear continuous systems defined by the differential
+                                    equation
+                                    $$\dot x(t) = f(x(t),u(t)), \label{eq:nonlinearSystem}$$
+                                    $$y(t) = g(x(t),u(t)), \label{eq:nonlinearSystem_output}$$
+                                    where \(x(t) \in \mathbb{R}^n\) is the system state,
+                                    \(u(t) \in \mathbb{R}^m\) is the system input,
+                                    \(y(t) \in \mathbb{R}^o\) is the system output,
+                                    and \(f:\mathbb{R}^n \times \mathbb{R}^m \to \mathbb{R}^n\) and
+                                    \(g:\mathbb{R}^n \times \mathbb{R}^m \to \mathbb{R}^o\) are sufficiently smooth.
+                                </p>
+                                <p>More information can be found in Section 4 in the <a target="_blank"
+                                                                                        href="../../manual.html"><i
+                                        class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.</p>
+                            </div>
+
+                            <div class="col-12">
+                                <h5>Example</h5>
+                                <p>The code below gives a reachability analysis example for nonlinear systems in CORA.
+                                    Further examples can be found at <code>./examples/contDynamics</code> on <a
+                                            target="_blank"
+                                            href="https://github.com/TUMcps/CORA"><i
+                                            class="bi bi-github"></i> GitHub</a>.</p>
+                                <div class="position-relative">
+                                    <iframe class="code code-lg"
+                                            src="../../data/matlab/scripts/continuous-systems/example_nonlinearSys.html"></iframe>
+                                    <div class="position-absolute top-0 end-0 translate-middle-x">
+                                        <div class="code-btn-box">
+                                            <a class="btn btn-outline-secondary btn-sm"
+                                               href="../../data/matlab/scripts/continuous-systems/example_nonlinearSys.mlx"
+                                               title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li id="nonlinearParamSys" class="list-group-item px-0">
+                    <a class="btn collapsed" data-bs-toggle="collapse" href="#collapse_nonlinearParamSys" role="button"
+                       aria-expanded="false"
+                       aria-controls="collapse_nonlinearParamSys">
+                        <div class="row">
+                            <div class="col-11"><h4>Nonlinear Systems with Uncertain Parameters</h4></div>
+                            <div class="col-1"><span class="mr-3"></span></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="collapse_nonlinearParamSys">
+                        <div class="row">
+                            <div class="col-12">
+                                <p>
+                                    Nonlinear parametric systems extend nonlinear systems by additionally considering
+                                    uncertain parameters $p$:
+                                    $$\dot{x}(t) = f(x(t),u(t),p), ~~ p\in \mathcal{P} \subset \mathbb{R}^{p},
+                                    \label{eq:nonlinParamSystem} $$
+                                    $$y(t) = g(x(t),u(t),p) \label{eq:nonlinParamSystem_output},$$
+                                    where \(x(t) \in \mathbb{R}^n\) is the system state,
+                                    \(u(t) \in \mathbb{R}^m\) is the system input,
+                                    \(p \in \mathbb{R}^p\) is the parameter vector,
+                                    \(y(t) \in \mathbb{R}^o\) is the system output,
+                                    and \(f: \mathbb{R}^n \times \mathbb{R}^m \times \mathbb{R}^p \to \mathbb{R}^n\)
+                                    and \(g: \mathbb{R}^n \times \mathbb{R}^m \times \mathbb{R}^p \to \mathbb{R}^o\) are
+                                    sufficiently smooth.
+                                    As for linear parametric systems, the parameters \(p \in \mathcal{P}\) can be
+                                    constant over time or time-varying.
+                                </p>
+                                <p>More information can be found in Section 4 in the <a target="_blank"
+                                                                                        href="../../manual.html"><i
+                                        class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li id="nonlinearSysDT" class="list-group-item px-0">
+                    <a class="btn collapsed" data-bs-toggle="collapse" href="#collapse_nonlinearSysDT" role="button"
+                       aria-expanded="false"
+                       aria-controls="collapse_nonlinearSysDT">
+                        <div class="row">
+                            <div class="col-11"><h4>Nonlinear Discrete-Time Systems</h4></div>
+                            <div class="col-1"><span class="mr-3"></span></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="collapse_nonlinearSysDT">
+                        <div class="row">
+                            <div class="col-12">
+                                <p>
+                                    We consider nonlinear discrete-time systems defined as
+                                    $$x[i+1] = f \big( x[i],u[i] \big),$$
+                                    $$y[i] = g \big( x[i],u[i] \big),$$
+                                    where \(x[i] \in \mathbb{R}^n\) is the system state,
+                                    \(u[i] \in \mathbb{R}^m\) is the system input,
+                                    \(y[i]\) is the system output,
+                                    and \(f:\mathbb{R}^n \times \mathbb{R}^m \to \mathbb{R}^n\)
+                                    and \(g:\mathbb{R}^n \times \mathbb{R}^m \to \mathbb{R}^o\) are continuous
+                                    functions.
+                                </p>
+                                <p>More information can be found in Section 4 in the <a target="_blank"
+                                                                                        href="../../manual.html"><i
+                                        class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li id="nonlinDASys" class="list-group-item px-0">
+                    <a class="btn collapsed" data-bs-toggle="collapse" href="#collapse_nonlinDASys" role="button"
+                       aria-expanded="false"
+                       aria-controls="collapse_nonlinDASys">
+                        <div class="row">
+                            <div class="col-11"><h4>Nonlinear Differential-Algebraic Systems</h4></div>
+                            <div class="col-1"><span class="mr-3"></span></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="collapse_nonlinDASys">
+                        <div class="row">
+                            <div class="col-12">
+                                <p>
+                                    We consider time-invariant, semi-explicit, index-1 differential-algebraic systems
+                                    defined as
+                                    $$\dot{x} = f(x(t),y(t),u(t)), $$
+                                    $$0 = g(x(t),y(t),u(t)), $$
+                                    $$z = h(x(t),y(t),u(t)), $$
+                                    where \(x(t) \in \mathbb{R}^n\) is the vector of differential variables,
+                                    \(y(t) \in \mathbb{R}^q\) is the vector of algebraic variables,
+                                    \(u(t) \in \mathbb{R}^m\) is the vector of inputs,
+                                    \(z(t) \in \mathbb{R}^o\) is the system output,
+                                    and \(f: \mathbb{R}^n \times \mathbb{R}^q \times \mathbb{R}^m \to \mathbb{R}^n\),
+                                    \(g: \mathbb{R}^n \times \mathbb{R}^q \times \mathbb{R}^m \to \mathbb{R}^q\),
+                                    and \(h: \mathbb{R}^n \times \mathbb{R}^q \times \mathbb{R}^m \to \mathbb{R}^o\) are
+                                    sufficiently smooth continuous functions.
+                                    The initial state is consistent when \(g(x(0),y(0),u(0)) = 0\),
+                                    while for DAEs with an index greater than 1, further hidden algebraic constraints
+                                    have to be considered.
+                                    For an implicit DAE, the index-1 property holds if and only if
+                                    \(\forall t: \, \det(\frac{\partial g(x(t),y(t),u(t))}{\partial y})\neq 0\),
+                                    i.e., the Jacobian of the algebraic equations is non-singular.
+                                    Loosely speaking, the index specifies the distance to an ODE (which has index 0) by
+                                    the number of required time differentiations of the general form
+                                    \(0 = F(\dot{\tilde{x}}, \tilde{x}, u, t)\) along a solution \(\tilde{x}(t)\),
+                                    in order to express \(\dot{\tilde{x}}\) as a continuous function of \(\tilde{x}\)
+                                    and \(t\).
+                                </p>
+                                <p>More information can be found in Section 4 in the <a target="_blank"
+                                                                                        href="../../manual.html"><i
+                                        class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li id="neurNetContrSys" class="list-group-item px-0">
+                    <a class="btn collapsed" data-bs-toggle="collapse" href="#collapse_neurNetContrSys" role="button"
+                       aria-expanded="false"
+                       aria-controls="collapse_neurNetContrSys">
+                        <div class="row">
+                            <div class="col-11"><h4>Neural Network Controlled Systems</h4></div>
+                            <div class="col-1"><span class="mr-3"></span></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="collapse_neurNetContrSys">
+                        <div class="row">
+                            <div class="col-12">
+                                <p>
+                                    Due to the current trend towards artificial intelligence, the system class of neural
+                                    network controlled system is gaining more and more importance.
+                                    In CORA, we consider neural network controlled systems with discrete feedback,
+                                    where the neural network controller updates the control input at the end of the time
+                                    steps defined by the sampling time \(\Delta t\).
+                                    The dynamic system \(\dot{x} = f(x,u)\) can be any of the above system dynamics.
+                                </p>
+                            </div>
+                            <div class="d-none col-0 d-lg-block col-lg-2 col-xl-3"></div>
+                            <div class="col-12 col-lg-8 col-xl-6 text-center">
+                                <object type="image/svg+xml"
+                                        data="../../data/images/latex/figures/dynamic-systems/feedback_neuralNetContrSys.svg">
+                                    Your browser does not support SVG
+                                </object>
+                            </div>
+                            <p>More information can be found in Section 4 in the <a target="_blank"
+                                                                                    href="../../manual.html"><i
+                                    class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.</p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
-
 
     <!-- footer -->
     <div class="row space-before">
         <hr/>
-        <div class="col-12 col-md-6">Copyright &copy; 2023 - All Rights Reserved - <a href="https://www.tum.de/en/" target="_blank">Technische
+        <div class="col-12 col-md-6">Copyright &copy; 2023 - All Rights Reserved - <a href="https://www.tum.de/en/"
+                                                                                      target="_blank">Technische
             Universit&auml;t M&uuml;nchen</a></div>
-        <div class="col-12 col-md-6">Website by Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger, and Tobias Ladner</div>
+        <div class="col-12 col-md-6">Website by Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger, and Tobias
+            Ladner
+        </div>
     </div>
 
 </div>
@@ -128,12 +494,14 @@
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
 <script>
-    const navLinks = document.querySelectorAll('.nav-item')
+    const navLinks = document.querySelectorAll('.dropdown-item')
     const menuToggle = document.getElementById('navbarToggler')
     const bsCollapse = new bootstrap.Collapse(menuToggle, {toggle: false})
 
     navLinks.forEach((l) => {
-        l.addEventListener('click', () => { bsCollapse.toggle() })
+        l.addEventListener('click', () => {
+            bsCollapse.toggle()
+        })
     })
 </script>
 </body>

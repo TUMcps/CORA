@@ -58,12 +58,12 @@
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link" target="_blank" href="https://github.com/TUMcps/CORA"><i
-                            class="bi bi-github"></i>&nbsp;GitHub</a>
+                            class="bi bi-github"></i> GitHub</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" target="_blank"
                        href="../../manual.html"><i
-                            class="bi bi-file-earmark-pdf-fill"></i>&nbsp;Manual</a>
+                            class="bi bi-file-earmark-pdf-fill"></i> Manual</a>
                 </li>
             </ul>
         </div>
@@ -207,7 +207,7 @@
             <p>The reachability algorithms implemented in CORA rely on set-based computation. One major
                 design principle is that the same standard set operations are implemented for all set representations so
                 that algorithms can be executed with different set representations. We show some basic set operations
-                here. More information in Section 2.1 in the CORA manual.</p>
+                here. More information in Section 2.1 in the <a target="_blank" href="../../manual.html"><i class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.</p>
         </div>
 
         <!-- mtimes -->
@@ -219,7 +219,8 @@
 
             <div class="row">
                 <div class="position-relative">
-                    <iframe class="code code-sm" scrolling="no" src="../../data/matlab/scripts/geometric-sets/operations/mtimes.html"></iframe>
+                    <iframe class="code code-sm" scrolling="no"
+                            src="../../data/matlab/scripts/geometric-sets/operations/mtimes.html"></iframe>
                     <div class="position-absolute top-0 end-0 translate-middle-x">
                         <div class="code-btn-box">
                             <a class="btn btn-outline-secondary btn-sm"
@@ -241,12 +242,14 @@
         <h5 class="space-before-sm">Minkowski Sum</h5>
         <div class="col-12 col-lg-12 col-xl-6 order-0 order-md-0">
             <p>The Minkowski sum is defined as</p>
-            $$\texttt{plus}(\mathcal{S}_1,\mathcal{S}_2) = \mathcal{S}_1 \oplus \mathcal{S}_2 = \left\{ s_1 + s_2 \ |\ s_1\in\mathcal{S}_1,\ s_2\in\mathcal{S}_2 \right\}.$$
+            $$\texttt{plus}(\mathcal{S}_1,\mathcal{S}_2) = \mathcal{S}_1 \oplus \mathcal{S}_2 = \left\{ s_1 + s_2 \ |\
+            s_1\in\mathcal{S}_1,\ s_2\in\mathcal{S}_2 \right\}.$$
             <p>The function \(\texttt{plus}\) overloads the \(+\) operator in MATLAB.</p>
 
             <div class="row">
                 <div class="position-relative">
-                    <iframe class="code code-sm" scrolling="no" src="../../data/matlab/scripts/geometric-sets/operations/plus.html"></iframe>
+                    <iframe class="code code-sm" scrolling="no"
+                            src="../../data/matlab/scripts/geometric-sets/operations/plus.html"></iframe>
                     <div class="position-absolute top-0 end-0 translate-middle-x">
                         <div class="code-btn-box">
                             <a class="btn btn-outline-secondary btn-sm"
@@ -268,11 +271,13 @@
         <h5 class="space-before-sm">Convex Hull</h5>
         <div class="col-12 col-lg-12 col-xl-6 order-0 order-md-0">
             <p>The convex hull is defined as</p>
-            $$\texttt{convHull}(\mathcal{S}_1,\mathcal{S}_2) = \left\{ \lambda s_1 + (1-\lambda) s_2 \ |\ s_1\in\mathcal{S}_1,\ s_2\in\mathcal{S}_2,\ \lambda\in[0,1] \right\}.$$
+            $$\texttt{convHull}(\mathcal{S}_1,\mathcal{S}_2) = \left\{ \lambda s_1 + (1-\lambda) s_2 \ |\
+            s_1\in\mathcal{S}_1,\ s_2\in\mathcal{S}_2,\ \lambda\in[0,1] \right\}.$$
 
             <div class="row">
                 <div class="position-relative">
-                    <iframe class="code code-sm" scrolling="no" src="../../data/matlab/scripts/geometric-sets/operations/convHull.html"></iframe>
+                    <iframe class="code code-sm" scrolling="no"
+                            src="../../data/matlab/scripts/geometric-sets/operations/convHull.html"></iframe>
                     <div class="position-absolute top-0 end-0 translate-middle-x">
                         <div class="code-btn-box">
                             <a class="btn btn-outline-secondary btn-sm"
@@ -295,11 +300,15 @@
         <div class="col-12 col-lg-12 col-xl-6 order-0 order-md-0">
             <p>Plotting sets is a useful function to visualize your computations:</p>
             $$\texttt{plot}(\mathcal{S},\texttt{dims},\texttt{varargin}).$$
-            <p>The function \(\texttt{plot}\) allows flexible plotting of your sets, where \(\texttt{dims}\) are the dimensions to be plotted and \(\texttt{varargin}\) are standard <a href="https://de.mathworks.com/help/matlab/ref/plot.html" target="_blank">MATLAB plotting parameters</a>.</p>
+            <p>The function \(\texttt{plot}\) allows flexible plotting of your sets, where \(\texttt{dims}\) are the
+                dimensions to be plotted and \(\texttt{varargin}\) are standard <a
+                        href="https://de.mathworks.com/help/matlab/ref/plot.html" target="_blank">MATLAB plotting
+                    parameters</a>.</p>
 
             <div class="row">
                 <div class="position-relative">
-                    <iframe class="code code-sm" scrolling="no" src="../../data/matlab/scripts/geometric-sets/operations/plot.html"></iframe>
+                    <iframe class="code code-sm" scrolling="no"
+                            src="../../data/matlab/scripts/geometric-sets/operations/plot.html"></iframe>
                     <div class="position-absolute top-0 end-0 translate-middle-x">
                         <div class="code-btn-box">
                             <a class="btn btn-outline-secondary btn-sm"
@@ -318,7 +327,9 @@
         </div>
 
         <div class="col-12 space-before">
-            <p>Further examples can be found at <code>./examples/contSet</code> on <a target="_blank" href="https://github.com/TUMcps/CORA"><i class="bi bi-github"></i>&nbsp;GitHub</a>.</p>
+            <p>Further examples can be found at <code>./examples/contSet</code> on <a target="_blank"
+                                                                                      href="https://github.com/TUMcps/CORA"><i
+                    class="bi bi-github"></i> GitHub</a>.</p>
         </div>
 
     </div>
@@ -347,7 +358,9 @@
     const bsCollapse = new bootstrap.Collapse(menuToggle, {toggle: false})
 
     navLinks.forEach((l) => {
-        l.addEventListener('click', () => { bsCollapse.toggle() })
+        l.addEventListener('click', () => {
+            bsCollapse.toggle()
+        })
     })
 </script>
 </body>

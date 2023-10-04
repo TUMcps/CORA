@@ -46,6 +46,10 @@ iframe {
     color: var(--bs-primary);
 }
 
+.list-group-item {
+    padding-top: 60px;
+}
+
 
 img, embed, object[type="image/svg+xml"] {
     width: 100%;
@@ -116,4 +120,38 @@ img, embed, object[type="image/svg+xml"] {
 
 .citation-list li::marker {
     content: "[" counter(list-item) "] ";
+}
+
+.list-group-item > .btn {
+    width: 100%;
+    text-align: left;
+}
+
+
+.list-group-item span {
+    border: solid #222;
+    border-width: 0 1px 1px 0;
+    display: inline;
+    cursor: pointer;
+    padding: 3px;
+    position: absolute;
+    right: 0;
+    margin-top: 10px;
+}
+
+.list-group-item a.btn.collapsed span {
+    transform: rotate(40deg);
+    -webkit-transform: rotate(40deg);
+    transition: .3s transform ease-in-out;
+}
+
+
+.list-group-item a.btn span {
+    transform: rotate(-140deg);
+    -webkit-transform: rotate(-140deg);
+    transition: .3s transform ease-in-out;
+}
+
+.list-group-item h4 {
+    margin: 0;
 }
