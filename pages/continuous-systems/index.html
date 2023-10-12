@@ -44,7 +44,7 @@
                 <li class="nav-item">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                        aria-expanded="false">
-                        System Dynamics
+                        Dynamic Systems
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#linearSys">Linear Systems</a></li>
@@ -275,6 +275,31 @@
                         </div>
                     </div>
                 </li>
+                <li id="linearARMAX" class="list-group-item px-0">
+                    <a class="btn collapsed" data-bs-toggle="collapse" href="#collapse_linearARMAX" role="button"
+                       aria-expanded="false"
+                       aria-controls="collapse_linearARMAX">
+                        <div class="row">
+                            <div class="col-11"><h4>Linear ARMAX</h4></div>
+                            <div class="col-1"><span class="mr-3"></span></div>
+                        </div>
+                    </a>
+                    <div class="collapse" id="collapse_linearARMAX">
+                        <div class="row">
+                            <div class="col-12">
+                                <p>
+                                    Discrete-time Autoregressive Moving Average models with exogenous Input (ARMAX models) are considered in the \(linearARMAX\) class.
+                                    They can be described by the following equation:
+                                    $$y[i] = \sum_{j=1}^p \bar{A}_{j} y[i-j] + \sum_{j=0}^p \bar{B}_{j} {u}[i-j]$$
+                                    where \([i] \in \mathbb{R}^o\) is the system output at time step \(i\) and \(u[i] \in \mathbb{R}^m\) is the system input which can also include disturbances and measurements noise.
+                                </p>
+                                <p>More information can be found in Section 4 in the <a target="_blank"
+                                                                                        href="../../manual.html"><i
+                                        class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
                 <li id="nonlinearSys" class="list-group-item px-0">
                     <a class="btn collapsed" data-bs-toggle="collapse" href="#collapse_nonlinearSys" role="button"
                        aria-expanded="false"
@@ -456,7 +481,7 @@
                                     In CORA, we consider neural network controlled systems with discrete feedback,
                                     where the neural network controller updates the control input at the end of the time
                                     steps defined by the sampling time \(\Delta t\).
-                                    The dynamic system \(\dot{x} = f(x,u)\) can be any of the above system dynamics.
+                                    The dynamic system \(\dot{x} = f(x,u)\) can be any of the above dynamic systems.
                                 </p>
                             </div>
                             <div class="d-none col-0 d-lg-block col-lg-2 col-xl-3"></div>
@@ -472,6 +497,7 @@
                         </div>
                     </div>
                 </li>
+                <li class="list-group-item px-0"></li> <!-- empty last item to have line underneath previous item -->
             </ul>
         </div>
     </div>
