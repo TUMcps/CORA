@@ -19,13 +19,19 @@ iframe {
     background-color: white;
 }
 
-.space-before-sm {
-    margin-top: 50px;
-}
 
 .space-before {
     margin-top: 75px;
 }
+
+.space-before-sm {
+    margin-top: 50px;
+}
+
+.space-before-xs {
+    margin-top: 20px;
+}
+
 
 .figure-caption {
     font-size: large;
