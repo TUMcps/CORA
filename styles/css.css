@@ -1,4 +1,7 @@
 
+.navbar-nav, .nav-link, .navbar-dark, .navbar[data-bs-theme=dark] {
+    --bs-nav-link-color: #ddd;
+}
 
 body {
     padding-top: 15vh;

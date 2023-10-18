@@ -125,8 +125,10 @@
                             <div class="col-12">
                                 <p>
                                     In CORA, linear systems have the form
+                                </p> <div class="overflow-x-auto">
                                     $$ \dot{x}(t) = A x(t) + B u(t) + c + w(t),$$
                                     $$ y(t) = C x(t) + D u(t) + k + v(t), $$
+                                </div> <p>
                                     where \(x(t) \in \mathbb{R}^n\) is the system state,
                                     \(u(t)\in \mathbb{R}^m\) is the system input,
                                     \(w(t) \in \mathbb{R}^n\) is the disturbance,
@@ -187,18 +189,24 @@
                                     implementations, one for uncertain parameters that are fixed over time and one for
                                     parameters that can arbitrarily vary over time. For the case with fixed parameters,
                                     a linear parametric system is defined as
+                                </p> <div class="overflow-x-auto">
                                     $$\dot{x}(t) = A(p)~x(t) + B(p)~u(t), ~~ p \in \mathcal{P},$$
+                                </div> <p>
                                     which can be equivalently formulated as
+                                </p> <div class="overflow-x-auto">
                                     $$\dot{x}(t) = A x(t) + B u(t), ~~ A \in \mathcal{A},~B \in \mathcal{B},$$
                                     $$\text{with} ~~ \mathcal{A} = \{ A(p) ~|~ p \in \mathcal{P} \},~ \mathcal{B} = \{
                                     B(p) ~|~ p \in \mathcal{P} \},$$
+                                </div> <p>
                                     where \(x(t) \in \mathbb{R}^n\) is the system state,
                                     \(u(t)\in \mathbb{R}^m\) is the system input,
                                     \(p \in \mathbb{R}^p\) is the parameter vector, and
                                     \(\mathcal{P} \subset \mathbb{R}^p\) is the set of parameters.
                                     For the case with fixed parameters, a linear parametric system is defined as
+                                </p> <div class="overflow-x-auto">
                                     $$ \dot{x}(t) = A(t)~x(t) + B(t)~u(t), ~~ A(t) \in \mathcal{A},~B(t) \in
                                     \mathcal{B}.$$
+                                </div> <p>
                                 </p>
                                 <p>More information can be found in Section 4 in the <a target="_blank"
                                                                                         href="../../manual.html"><i
@@ -222,8 +230,10 @@
                                 <p>
                                     In addition to continuous-time linear systems, CORA also supports discrete-time
                                     linear systems defined as
+                                </p> <div class="overflow-x-auto">
                                     $$x[i+1] = A x[i] + B u[i] + c + w[i],$$
                                     $$y[i] = C x[i] + D u[i] + k + v[i],$$
+                                </div> <p>
                                     where \(x[i] \in \mathbb{R}^n\) is the system state,
                                     \(u[i] \in \mathbb{R}^m\) is the system input,
                                     \(w[i] \in \mathbb{R}^n\) is the disturbance,
@@ -258,9 +268,11 @@
                                     The system under consideration is defined by the following linear stochastic
                                     differential equation (SDE), which is also known as the multivariate
                                     Ornstein-Uhlenbeck process:
+                                </p> <div class="overflow-x-auto">
                                     $$\dot{x} = A x(t) + u(t) + C \xi(t),$$
                                     $$x(0) \in \mathbb{R}^{n}, \, u(t)\in \mathcal{U} \subset \mathbb{R}^n, \, \xi \in
                                     \mathbb{R}^{m},$$
+                                </div> <p>
                                     where \(A\) and \(C\) are matrices of proper dimension and \(A\) has full rank.
                                     There are two kinds of inputs:
                                     the first input \(u\) is Lipschitz continuous and can take any value in
@@ -291,7 +303,9 @@
                                 <p>
                                     Discrete-time Autoregressive Moving Average models with exogenous Input (ARMAX models) are considered in the \(linearARMAX\) class.
                                     They can be described by the following equation:
+                                </p> <div class="overflow-x-auto">
                                     $$y[i] = \sum_{j=1}^p \bar{A}_{j} y[i-j] + \sum_{j=0}^p \bar{B}_{j} {u}[i-j]$$
+                                </div> <p>
                                     where \([i] \in \mathbb{R}^o\) is the system output at time step \(i\) and \(u[i] \in \mathbb{R}^m\) is the system input which can also include disturbances and measurements noise.
                                 </p>
                                 <p>More information can be found in Section 4 in the <a target="_blank"
@@ -319,8 +333,10 @@
                                     complex systems.
                                     We consider general nonlinear continuous systems defined by the differential
                                     equation
+                                </p> <div class="overflow-x-auto">
                                     $$\dot x(t) = f(x(t),u(t)), \label{eq:nonlinearSystem}$$
                                     $$y(t) = g(x(t),u(t)), \label{eq:nonlinearSystem_output}$$
+                                </div> <p>
                                     where \(x(t) \in \mathbb{R}^n\) is the system state,
                                     \(u(t) \in \mathbb{R}^m\) is the system input,
                                     \(y(t) \in \mathbb{R}^o\) is the system output,
@@ -369,9 +385,11 @@
                                 <p>
                                     Nonlinear parametric systems extend nonlinear systems by additionally considering
                                     uncertain parameters $p$:
+                                </p> <div class="overflow-x-auto">
                                     $$\dot{x}(t) = f(x(t),u(t),p), ~~ p\in \mathcal{P} \subset \mathbb{R}^{p},
                                     \label{eq:nonlinParamSystem} $$
                                     $$y(t) = g(x(t),u(t),p) \label{eq:nonlinParamSystem_output},$$
+                                </div> <p>
                                     where \(x(t) \in \mathbb{R}^n\) is the system state,
                                     \(u(t) \in \mathbb{R}^m\) is the system input,
                                     \(p \in \mathbb{R}^p\) is the parameter vector,
@@ -403,8 +421,11 @@
                             <div class="col-12">
                                 <p>
                                     We consider nonlinear discrete-time systems defined as
+                                </p> <div class="overflow-x-auto">
+
                                     $$x[i+1] = f \big( x[i],u[i] \big),$$
                                     $$y[i] = g \big( x[i],u[i] \big),$$
+                                </div> <p>
                                     where \(x[i] \in \mathbb{R}^n\) is the system state,
                                     \(u[i] \in \mathbb{R}^m\) is the system input,
                                     \(y[i]\) is the system output,
@@ -434,9 +455,11 @@
                                 <p>
                                     We consider time-invariant, semi-explicit, index-1 differential-algebraic systems
                                     defined as
+                                </p> <div class="overflow-x-auto">
                                     $$\dot{x} = f(x(t),y(t),u(t)), $$
                                     $$0 = g(x(t),y(t),u(t)), $$
                                     $$z = h(x(t),y(t),u(t)), $$
+                                </div> <p>
                                     where \(x(t) \in \mathbb{R}^n\) is the vector of differential variables,
                                     \(y(t) \in \mathbb{R}^q\) is the vector of algebraic variables,
                                     \(u(t) \in \mathbb{R}^m\) is the vector of inputs,
