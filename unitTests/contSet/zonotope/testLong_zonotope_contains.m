@@ -1,7 +1,7 @@
 function res = testLong_zonotope_contains
 % testLong_zonotope_contains - unit test function of contains
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_contains
 %
 % Inputs:
@@ -16,14 +16,13 @@ function res = testLong_zonotope_contains
 %
 % See also: -
 
-% Author:       Matthias Althoff, Adrian Kulmburg
-% Written:      26-July-2016
-% Last update:  14-Sep-2019
-%               01-July-2021 (AK, added more tests, and merged with
-%                             testLong_zonotope_containsPoint)
-% Last revision:---
+% Authors:       Matthias Althoff, Adrian Kulmburg
+% Written:       26-July-2016
+% Last update:   14-September-2019
+%                01-July-2021 (AK, more tests, and merged with testLong_zonotope_containsPoint)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% Basic Containment Test
 % create zonotope
@@ -96,4 +95,4 @@ res_array = all(contains(Z,p_array));
 % add results
 res = res && res_single && ~res_array;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

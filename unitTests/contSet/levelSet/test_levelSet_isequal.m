@@ -1,7 +1,7 @@
 function res = test_levelSet_isequal
 % test_levelSet_isequal - unit test function of equality check
 %
-% Syntax:  
+% Syntax:
 %    res = test_levelSet_isequal
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_levelSet_isequal
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      11-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -75,5 +75,4 @@ if ~isequal(ls1,ls2)
 end
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function [HA,options,params,stateField,inputField,changeSpeed] = testAuxiliaryFc
 % testAuxiliaryFct_initCar - initializes a car model for the abstraction to
 %    a Markov chain
 %
-% Syntax:  
+% Syntax:
 %    [HA,options,stateField,inputField,changeSpeed] = testAuxiliaryFct_initCar()
 %
 % Inputs:
@@ -16,13 +16,13 @@ function [HA,options,params,stateField,inputField,changeSpeed] = testAuxiliaryFc
 %    changeSpeed - speed from which the acceleration is bounded by engine
 %    power
 
-% Author:       Matthias Althoff
-% Written:      12-October-2009
-% Last update:  31-July-2016
-%               09-July-2021
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       12-October-2009
+% Last update:   31-July-2016
+%                09-July-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% set parameters
 params.tStart = 0; %start time
@@ -90,5 +90,4 @@ inputField = partition([-1,1],...  %acceleartion in m/s^2
                      6);  
 end
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

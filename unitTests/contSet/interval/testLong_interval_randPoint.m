@@ -1,7 +1,7 @@
 function res = testLong_interval_randPoint
 % testLong_interval_randPoint - unit test function of randPoint
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_interval_randPoint
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_interval_randPoint
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
-% Last update:  23-March-2021 (MW, more thorough test, empty case)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-September-2019
+% Last update:   23-March-2021 (MW, more thorough test, empty case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % random intervals
 nrTests = 100;
@@ -52,4 +52,4 @@ for i=1:nrTests
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

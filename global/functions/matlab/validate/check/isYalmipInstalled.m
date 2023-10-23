@@ -1,7 +1,7 @@
 function res = isYalmipInstalled()
 % isYalmipInstalled - checks if YALMIP [1] is installed
 %
-% Syntax:  
+% Syntax:
 %    res = isYalmipInstalled
 %
 % Inputs:
@@ -14,7 +14,7 @@ function res = isYalmipInstalled()
 %    -
 %
 % References:
-%    [1] Löfberg, J., 2004, September. YALMIP: A toolbox for 
+%    [1] LÃ¶fberg, J., 2004, September. YALMIP: A toolbox for 
 %        modeling and optimization in MATLAB. In Proceedings of 
 %        the CACSD Conference (Vol. 3).
 %
@@ -24,16 +24,18 @@ function res = isYalmipInstalled()
 %
 % See also: @zonotope/minnorm.m
 
-% Author:       Victor Gassmann
-% Written:      15-October-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       15-October-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 try
     sdpvar;
     res = true;
 catch
     res = false;
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

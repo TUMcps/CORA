@@ -2,7 +2,7 @@ function res = test_interval_enclosePoints
 % test_interval_enclosePoints - unit test function of
 %    enclosePoints
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_enclosePoints
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_interval_enclosePoints
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % point cloud
 pts = [1 4 2 5 3 2 4 3 2 5; ...
@@ -37,4 +37,4 @@ I_true = interval([1; 6],[5; 9]);
 % check with correct solution
 res = I == I_true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

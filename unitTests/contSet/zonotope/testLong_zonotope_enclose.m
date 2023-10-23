@@ -1,7 +1,7 @@
 function res = testLong_zonotope_enclose
 % testLong_zonotope_enclose - unit test function of enclose
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_enclose
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_zonotope_enclose
 %
 % See also: -
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      26-July-2016
-% Last update:  09-August-2020 (MW, enhance randomness)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       26-July-2016
+% Last update:   09-August-2020 (MW, enhance randomness)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -59,4 +59,4 @@ for i=1:nrTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

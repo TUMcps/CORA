@@ -16,12 +16,12 @@ function res = test_interval_convHull
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      12-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       12-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % 1. Empty case: convHull is empty set
@@ -45,5 +45,4 @@ end
 % combine results
 res = res_empty && res_mismatch;
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

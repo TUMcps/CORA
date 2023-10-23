@@ -2,7 +2,7 @@ function res = testLong_spaceex2cora_hybrid_spacecraft()
 % testLong_spaceex2cora_hybrid_spacecraft - test SpaceEx conversion for a
 %                                       hybrid system with nonlinear guards
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_spaceex2cora_hybrid_spacecraft()
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = testLong_spaceex2cora_hybrid_spacecraft()
 % Outputs:
 %    res - true/false 
 
-% Author:       Niklas Kochdumper
-% Written:      18-May-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       18-May-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Hybrid Automaton --------------------------------------------------------
 
@@ -65,4 +65,4 @@ end
 disp('Successful Conversion: error = ' + string(max(error)))
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

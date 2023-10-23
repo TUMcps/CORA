@@ -1,7 +1,7 @@
 function res = douglasPeucker(points,varargin)
 % douglasPeucker - simplify a 2D line segment using Douglar-Peucker alg.
 %
-% Syntax:  
+% Syntax:
 %    res = douglasPeucker(points)
 %    res = douglasPeucker(points,tol)
 %
@@ -33,12 +33,12 @@ function res = douglasPeucker(points,varargin)
 %
 % See also: polygon, capsule
 
-% Author:       Niklas Kochdumper
-% Written:      07-January-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       07-January-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parse input arguments
     tol = setDefaultValues({0.01},varargin);
@@ -47,7 +47,7 @@ function res = douglasPeucker(points,varargin)
     dmax = 0;
     index = 0;
     for i = 2:size(points,2)-1
-        d = distance(points(:,i),points(:,1),points(:,end));
+        d = aux_distance(points(:,i),points(:,1),points(:,end));
         if d > dmax
             index = i;
             dmax = d;
@@ -70,13 +70,13 @@ function res = douglasPeucker(points,varargin)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function d = distance(x,p1,p2)
+function d = aux_distance(x,p1,p2)
 % distance of the point x from the line segment spanned by p1 and p2
     B = gramSchmidt(p1-p2);
     x_ = B'*(x-p1);
     d = abs(x_(2));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

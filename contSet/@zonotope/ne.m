@@ -25,13 +25,13 @@ function res = ne(Z1,Z2,varargin)
 %
 % See also: zonotope/isequal
 
-% Author:       Mark Wetzlinger
-% Written:      23-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = ~isequal(Z1,Z2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

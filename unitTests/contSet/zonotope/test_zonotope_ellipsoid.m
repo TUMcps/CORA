@@ -1,7 +1,7 @@
 function res = test_zonotope_ellipsoid
 % test_zonotope_ellipsoid - unit test function of ellipsoid
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_ellipsoid
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_ellipsoid
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -47,4 +47,4 @@ if ~contains(E2o,E2i) || ~all(contains(Z2,Y2i)) || ~all(contains(E2o,Y2i))
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_fullspace_display
 % test_fullspace_display - unit test function of display
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_display
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_display
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % n-dimensional empty set
 n = 2;
@@ -30,4 +30,4 @@ fs = fullspace(n)
 % only has to run through without errors...
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

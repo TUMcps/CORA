@@ -1,7 +1,7 @@
 function [t,x,loc] = simulate(pHA,params)
 % simulate - simulates a parallel hybrid automaton
 %
-% Syntax:  
+% Syntax:
 %    [t,x,loc] = simulate(pHA,params)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function [t,x,loc] = simulate(pHA,params)
 %
 % See also: simulateRandom
 
-% Author:        Victor Charlent, Johann Schoepfer, Niklas Kochdumper
+% Authors:       Victor Charlent, Johann Schoepfer, Niklas Kochdumper
 % Written:       24-May-2016  
 % Last update:   04-July-2018
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % new options preprocessing
     options = validateOptions(pHA,mfilename,params,struct([]));
@@ -75,7 +75,7 @@ function [t,x,loc] = simulate(pHA,params)
 end
 
 
-% Auxiliary Function ------------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function res = aux_mergeInputVector(loc,options)
 % construct the input vector for the current location from the inputs for 
@@ -90,4 +90,4 @@ function res = aux_mergeInputVector(loc,options)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

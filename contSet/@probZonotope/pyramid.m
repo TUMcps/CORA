@@ -3,7 +3,7 @@ function probTotal = pyramid(probZ,mArray,P)
 %    step sizes defined by an array of mSigma bounds and determines
 %    the probability of intersection with a polytope P
 %
-% Syntax:  
+% Syntax:
 %    probTotal = pyramid(pZ,mArray,P)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function probTotal = pyramid(probZ,mArray,P)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      06-October-2007
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-October-2007
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get Sigma, dimension
 Sigma=sigma(probZ);
@@ -48,7 +48,7 @@ end
 probTotal=0;
 for i=1:length(mArray)
     %convert zonotope to polytope
-    msP=mptPolytope(msZ{i});
+    msP=polytope(msZ{i});
 %     if i==1
 %         plot(msZ{i});
 %         hold on
@@ -87,7 +87,7 @@ end
 % %plot remaining pyramid: only for the special case of the HSCC08 paper
 % %example
 % I=interval([-10,10;-5,-3;-10,100]);
-% P=mptPolytope(I);
+% P=polytope(I);
 % for i=1:length(mArray)
 %     Znew=msZ{i}.Z;
 %     Znew(3,1)=0.5*(maxVal(i+1)+maxVal(i));
@@ -101,4 +101,4 @@ end
 %     hold on
 % end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_fullspace_project
 % test_fullspace_project - unit test function of project
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_project
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_project
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init fullspace
 n = 4;
@@ -54,4 +54,4 @@ end
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

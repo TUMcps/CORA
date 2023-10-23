@@ -1,7 +1,7 @@
 function res = test_reachSet_isemptyobject
 % test_reachSet_isemptyobject - unit test function for isemptyobject
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_isemptyobject()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_reachSet_isemptyobject
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      01-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       01-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty reachSet
 R = reachSet();
@@ -48,4 +48,4 @@ res(end+1,1) = ~isemptyobject(R);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

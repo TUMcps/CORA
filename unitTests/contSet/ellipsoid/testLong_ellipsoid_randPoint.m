@@ -1,7 +1,7 @@
 function res = testLong_ellipsoid_randPoint
 % testLong_ellipsoid_randPoint - unit test function of randPoint
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_randPoint
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_ellipsoid_randPoint
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      02-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       02-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 res = true;
@@ -52,4 +52,4 @@ for i=1:nrOfTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

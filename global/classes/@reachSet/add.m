@@ -1,7 +1,7 @@
 function R = add(R1,R2,varargin)
 % add - joins two reachSet objects
 %
-% Syntax:  
+% Syntax:
 %    R = add(R1,R2)
 %    R = add(R1,R2,parent)
 %
@@ -19,12 +19,12 @@ function R = add(R1,R2,varargin)
 %
 % See also: reachSet
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      29-May-2020             
-% Last update:  06-June-2023 (MW, simplify)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       29-May-2020             
+% Last update:   06-June-2023 (MW, simplify)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % one of the objects is empty 
 if (isscalar(R1) || isnumeric(R1)) && isemptyobject(R1)
@@ -61,4 +61,4 @@ end
 % concatenate objects
 R = [R1;R2];
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

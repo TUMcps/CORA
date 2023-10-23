@@ -1,7 +1,7 @@
 function res = testLong_capsule_center
 % testLong_capsule_center - unit test function of center
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_capsule_center
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_capsule_center
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      28-August-2019
-% Last update:  12-March-2021 (add empty case)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-August-2019
+% Last update:   12-March-2021 (add empty case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % random capsules
@@ -41,4 +41,4 @@ for n=1:50
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = testLong_taylm_plot
 % testLong_taylm_plot - unit test of plot function
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_taylm_plot
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = testLong_taylm_plot
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Tobias Ladner
-% Written:      10-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       10-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -83,4 +83,4 @@ end
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

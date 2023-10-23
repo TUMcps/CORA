@@ -3,7 +3,7 @@ function R = observe_stripBased(obj,options)
 % according to the set membership approach, see [1].
 %
 %
-% Syntax:  
+% Syntax:
 %    R = observe_stripBased(obj,options)
 %
 % Inputs:
@@ -15,8 +15,11 @@ function R = observe_stripBased(obj,options)
 %
 % Reference:
 %    [1] M. Althoff and J. J. Rath. Comparison of Set-Based Techniques 
-%        for Guaranteed State Estimation of Linear Disturbed Systems, 
-%        in preparation.
+%        for Guaranteed State Estimation of Linear Disturbed Systems. 
+%        Automatica, 130, article no. 109662, 2021.
+%    [2] M. Althoff. Guaranteed state estimation in CORA 2021. In Proc. 
+%        of the 8th International Workshop on Applied Verification for 
+%        Continuous and Hybrid Systems, 2021
 %
 % Example: 
 %
@@ -26,15 +29,15 @@ function R = observe_stripBased(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       08-Sep-2020
-% Last update:   25-Feb-2021
+% Authors:       Matthias Althoff
+% Written:       08-September-2020
+% Last update:   25-February-2021
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %time period
+
 tVec = options.tStart:options.timeStep:options.tFinal-options.timeStep;
 
 % initialize parameter for the output equation
@@ -80,4 +83,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

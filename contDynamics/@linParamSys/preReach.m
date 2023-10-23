@@ -19,12 +19,12 @@ function obj = preReach(obj,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      26-August-2011
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-August-2011
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute mapping matrix
 [obj] = mappingMatrix(obj,options);
@@ -34,4 +34,4 @@ obj = tie(obj);
 U = deleteZeros(options.U);
 obj.RV = errorSolution(obj,options,U);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

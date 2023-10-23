@@ -2,7 +2,7 @@ function I = interval(zB)
 % interval - converts a zonotope bundle to an interval according to
 %    Proposition 6 in [1]
 %
-% Syntax:  
+% Syntax:
 %    I = interval(zB)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function I = interval(zB)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      10-November-2010
-% Last update:  25-July-2016 (intervalhull replaced by interval)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       10-November-2010
+% Last update:   25-July-2016 (intervalhull replaced by interval)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if zB.parallelSets == 0
     I = interval(); return
@@ -44,4 +44,4 @@ for i=2:zB.parallelSets
     I = and_(I,IHtmp{i},'exact');
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

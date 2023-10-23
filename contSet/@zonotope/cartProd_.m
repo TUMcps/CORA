@@ -1,7 +1,7 @@
 function Z = cartProd_(Z,S,varargin)
 % cartProd_ - computes the Cartesian product of two zonotopes
 %
-% Syntax:  
+% Syntax:
 %    Z = cartProd_(Z,S)
 %
 % Inputs:
@@ -20,32 +20,34 @@ function Z = cartProd_(Z,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/cartProd
 
-% Author:       Matthias Althoff
-% Written:      18-May-2011
-% Last update:  27-Aug-2019
-%               05-May-2020 (MW, standardized error message)
-% Last revision:27-March-2023 (MW, rename cartProd_)
+% Authors:       Matthias Althoff
+% Written:       18-May-2011
+% Last update:   27-August-2019
+%                05-May-2020 (MW, standardized error message)
+% Last revision: 27-March-2023 (MW, rename cartProd_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % first or second set is zonotope
 if isa(Z,'zonotope')
 
     % different cases for different set representations
     if isa(S,'zonotope')
-        Z.Z = [[center(Z);center(S)],blkdiag(generators(Z),generators(S))];
+        Z.c = [Z.c;S.c];
+        Z.G = blkdiag(Z.G,S.G);
     elseif isnumeric(S)
-        Z.Z = [[center(Z);S],[generators(Z);zeros(size(S,1),size(Z.Z,2)-1)]];
+        Z.c = [Z.c;S];
+        Z.G = [Z.G;zeros(size(S,1),size(Z.G,2))];
     elseif isa(S,'interval') 
         Z = cartProd_(Z,zonotope(S),'exact');
     elseif isa(S,'conZonotope')
         Z = cartProd_(conZonotope(Z),S,'exact');
     elseif isa(S,'zonoBundle')
         Z = cartProd_(zonoBundle(Z),S,'exact');
-    elseif isa(S,'mptPolytope')
-        Z = cartProd_(mptPolytope(Z),S,'exact');
+    elseif isa(S,'polytope')
+        Z = cartProd_(polytope(Z),S,'exact');
     elseif isa(S,'polyZonotope')
         Z = cartProd_(polyZonotope(Z),S,'exact');
     elseif isa(S,'conPolyZono')
@@ -59,7 +61,9 @@ elseif isa(S,'zonotope')
 
     % first argument is a vector
     if isnumeric(Z)
-        Z = zonotope([Z;center(S)],[zeros(size(Z,1),size(S.Z,2)-1);generators(S)]);
+        S.c = [Z;S.c];
+        S.G = [zeros(size(Z,1),size(S.G,2));S.G];
+        Z = S;
     else
         % throw error for given arguments
         throw(CORAerror('CORA:noops',Z,S));
@@ -72,4 +76,4 @@ else
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

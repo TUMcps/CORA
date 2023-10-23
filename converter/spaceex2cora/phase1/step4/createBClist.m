@@ -4,7 +4,7 @@ function BClist = createBClist(instances)
 %    note: function does not check whether input is a tree structure.
 %          All contained Base-Components are assumed to be tree leaves.
 %
-% Syntax:  
+% Syntax:
 %    BClist = createBClist(instances)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function BClist = createBClist(instances)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      29-November-2018 
-% Last update:  --- 
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       29-November-2018 
+% Last update:   --- 
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % output on command window
 disp("create components of parallel hybrid automaton...");
@@ -51,4 +51,4 @@ end
 fprintf("done. created list containing %i BC instances.\n",...
         numel(BCinstances));
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

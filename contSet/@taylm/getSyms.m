@@ -1,7 +1,7 @@
 function res = getSyms(tay)
 % getSyms - returns a polynomial in a sym form
 %
-% Syntax:  
+% Syntax:
 %    res = getSyms(tay)
 %
 % Inputs:
@@ -22,23 +22,23 @@ function res = getSyms(tay)
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      02-October-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       02-October-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-	res = arrayfun(@(a) s_getSyms(a),tay,'UniformOutput',false);
+	res = arrayfun(@(a) aux_s_getSyms(a),tay,'UniformOutput',false);
     A = cat(1, res{:});
     res = reshape(A, size(res));
 
 end
 
 
-% Auxiliary function ------------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function res = s_getSyms(tay)
+function res = aux_s_getSyms(tay)
     % get coefficients
     c = tay.coefficients;
     % get monomials
@@ -51,4 +51,4 @@ function res = s_getSyms(tay)
     res = sum(c.*prod(repmat(v,[size(c,1) 1]).^degs,2));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

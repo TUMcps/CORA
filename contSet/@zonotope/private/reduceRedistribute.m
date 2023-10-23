@@ -2,7 +2,7 @@ function [Zred]=reduceRedistribute(Z,order)
 % reduceRedistribute - Reduce remaining generators of a zonotope
 % so that its order stays below a specified limit 
 %
-% Syntax:  
+% Syntax:
 %    [Zred]=reduceRedistribute(Z,order)
 %
 % Inputs:
@@ -18,13 +18,13 @@ function [Zred]=reduceRedistribute(Z,order)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      07-September-2012 
-% Last update:  16-March-2019 (vnorm replaced, sort removed)
-%               27-Aug-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-September-2012 
+% Last update:   16-March-2019 (vnorm replaced, sort removed)
+%                27-August-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %initialize Z_red
 Zred=Z;
@@ -68,18 +68,21 @@ if ~isempty(G)
             Gunred=G(:,indRemain);
             
             %scale generators in G for compensation
-            Gnew = generatorScaling(Gunred, pickedGens);
-            %Gold = generatorScaling_old(Gunred, pickedGens);
+            Gnew = aux_generatorScaling(Gunred, pickedGens);
+            %Gold = aux_generatorScaling_old(Gunred, pickedGens);
 
             %build reduced zonotope
-            Zred.Z=[c,Gnew];
+            Zred.c = c;
+            Zred.G = Gnew;
         end
 
     end
 end
 
 
-function Gnew = generatorScaling(Grem, Gdel)
+% Auxiliary functions -----------------------------------------------------
+
+function Gnew = aux_generatorScaling(Grem, Gdel)
 
 %dim 
 d = length(Grem(:,1));
@@ -97,7 +100,7 @@ end
 scale = ones(length(Grem(1,:)),1);
 
 %get frame out of most and least aligned generators
-perpendicularInd_pre = pickPerpendicular(Gnorm,d);
+perpendicularInd_pre = aux_pickPerpendicular(Gnorm,d);
 
 
 for i=1:length(Gdel(1,:))
@@ -134,7 +137,7 @@ end
 
 
 %pick n-1 perpendicular generators
-function perpendicularInd = pickPerpendicular(Gnorm,dim)
+function perpendicularInd = aux_pickPerpendicular(Gnorm,dim)
 
 %which generatpors are not least aligned with all other generators?
 alignmentMat = abs(Gnorm'*Gnorm);
@@ -167,7 +170,7 @@ end
 perpendicularInd = finalInd;
 
 % %pick n-1 perpendicular generators
-% function perpendicularInd_old = pickPerpendicular(Gnorm,pickedInd,dim)
+% function perpendicularInd_old = aux_pickPerpendicular(Gnorm,pickedInd,dim)
 % 
 % %which generatpors are not least aligned with all other generators?
 % alignmentMat = abs(Gnorm'*Gnorm);
@@ -186,7 +189,7 @@ perpendicularInd = finalInd;
 % perpendicularInd = indices(1:(dim-1));
 
 
-function Gnew = generatorScaling_old(Grem, Gdel)
+function Gnew = aux_generatorScaling_old(Grem, Gdel)
 
 %dim 
 d = length(Grem(:,1));
@@ -224,4 +227,4 @@ for i=1:length(Grem(:,1))
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

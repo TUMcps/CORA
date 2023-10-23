@@ -2,7 +2,7 @@ function completed = example_capsule()
 % example_capsule - example demonstrating set based computation with
 %                   capsules
 %
-% Syntax:  
+% Syntax:
 %    completed = example_capsule()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function completed = example_capsule()
 %
 % See also: none
 
-% Author:        ---
+% Authors:       ---
 % Written:       ---
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % construct a capsule
 c = [1;2];
@@ -55,4 +55,4 @@ plot(C3,[1,2],'k');
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

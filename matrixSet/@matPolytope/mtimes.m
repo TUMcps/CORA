@@ -2,7 +2,7 @@ function matP = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix or a 
 %    matrix polytope with a matrix polytope
 %
-% Syntax:  
+% Syntax:
 %    matP = mtimes(factor1,factor2)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function matP = mtimes(factor1,factor2)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      21-June-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-June-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %factor1 is a numeric matrix
 if isnumeric(factor1)
@@ -68,4 +68,4 @@ else
     matP.verts=matP1.verts*matP2.verts;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

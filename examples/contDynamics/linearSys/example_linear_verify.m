@@ -2,7 +2,7 @@ function res = example_linear_verify
 % example_linear_verify - test function for the novel verification
 %    algorithm based on rigorous Hausdorff distance to exact solution
 %
-% Syntax:  
+% Syntax:
 %    res = example_linear_verify
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = example_linear_verify
 %
 % See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      16-August-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       16-August-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % System Dynamics ---------------------------------------------------------
 
@@ -45,6 +45,9 @@ params.U = zonotope([zeros(2,1),0.05*eye(2)]);
 params.u = repmat([0.1,-0.2,0.3,-0.4],2,1);
 params.tu = [0,0.5,0.7,0.9];
 
+options = struct;
+options.verifyAlg = 'reachavoid:zonotope';
+
 
 % Specifications ----------------------------------------------------------
 
@@ -52,11 +55,11 @@ params.tu = [0,0.5,0.7,0.9];
 hs = halfspace([0 -1],-12.1);
 spec = specification(hs,'unsafeSet');
 
-P = mptPolytope([-1 0;0 -1;1 2],[0;0;4]) + [-3.8;5.833];
+P = polytope([-1 0;0 -1;1 2],[0;0;4]) + [-3.8;5.833];
 spec = add(spec,specification(P,'unsafeSet'));
 
 % safe sets
-P = mptPolytope([1 0;-1 0;0 1;0 -1;1 -1;-1 1], ...
+P = polytope([1 0;-1 0;0 1;0 -1;1 -1;-1 1], ...
                         [12; 7; 12.2; -2.05; 1.2; 13]);
 spec = add(spec,specification(P,'safeSet'));
 
@@ -64,7 +67,7 @@ spec = add(spec,specification(P,'safeSet'));
 % Verification ------------------------------------------------------------
 
 tic;
-[res,R] = verify(sys,params,spec);
+[res,R] = verify(sys,params,options,spec);
 tComp = toc;
 disp(['Computation time: ',num2str(tComp),'s']);
 disp(['Specifications satisfied? ' num2str(res)]);
@@ -89,4 +92,4 @@ plot(R.R0,[1,2], 'DisplayName','Initial set');
 % legend
 legend('location','southeast');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_zonotope_underapproximate
 % test_zonotope_underapproximate - unit test function of underapproximate
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_underapproximate
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_underapproximate
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      26-July-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-July-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create zonotope
 Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
@@ -46,4 +46,4 @@ true_V_2 = [2, -10, -4, -4; ...
 % check results
 res = compareMatrices(V_1,true_V_1) && compareMatrices(V_2,true_V_2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function [R,tcomp] = observe_FRadB(obj,options)
 % from [1].
 %
 %
-% Syntax:  
+% Syntax:
 %    [R,Rout] = observe_FRadB(obj,options)
 %
 % Inputs:
@@ -28,16 +28,16 @@ function [R,tcomp] = observe_FRadB(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       12-Sep-2020
-% Last update:   04-Jan-2021
-%                25-Feb-2021
+% Authors:       Matthias Althoff
+% Written:       12-September-2020
+% Last update:   04-January-2021
+%                25-February-2021
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set intersection procedure
+
 options.intersectionType = 2;
 options.intersectionTechnique.method = 'wang-FRad'; % type
 options.intersectionTechnique.A = obj.A; % system matrix
@@ -52,4 +52,4 @@ tcomp = toc;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function Zred = reduceMethC(Z,order,filterLength)
 %    maximize their spanned volume. Use exhaustive search on filtered
 %    generators
 %
-% Syntax:  
+% Syntax:
 %    Zred = reduceMethC(Z)
 %
 % Inputs:
@@ -20,17 +20,17 @@ function Zred = reduceMethC(Z,order,filterLength)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      11-September-2008
-% Last update:  26-February-2009
-%               27-August-2010
-%               01-December-2010
-%               12-August-2016
-%               17-March-2017
-%               27-June-2018
+% Authors:       Matthias Althoff
+% Written:       11-September-2008
+% Last update:   26-February-2009
+%                27-August-2010
+%                01-December-2010
+%                12-August-2016
+%                17-March-2017
+%                27-June-2018
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % initialize Z_red
 Zred=Z;
@@ -91,6 +91,7 @@ if ~isempty(Gred)
 end
 
 %build reduced zonotope
-Zred.Z=[center,Gunred,Gred];
+Zred.c = center;
+Zred.G = [Gunred,Gred];
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

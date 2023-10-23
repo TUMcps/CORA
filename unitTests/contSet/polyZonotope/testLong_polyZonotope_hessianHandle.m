@@ -2,7 +2,7 @@ function res = testLong_polyZonotope_hessianHandle
 % testLong_polyZonotope_hessianHandle - unit test function for
 %    computing the fhandle of the hessian of a 1D polyZonotope
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polyZonotope_hessianHandle
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_polyZonotope_hessianHandle
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      24-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       24-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 nTests = 10;
@@ -42,7 +42,7 @@ for i=1:nTests
     pZ = noIndep(polyZonotope.generateRandom('Dimension',n,...
         'NrGenerators',ng,'NrFactors',nf));
     
-    x = sym('x',[size(pZ.expMat,1),1],'real');
+    x = sym('x',[size(pZ.E,1),1],'real');
     ne = length(pZ.id);
     ind_diff = ismember(pZ.id,unique(randi(ne-1,ne-1,1)));
     
@@ -75,4 +75,4 @@ for i=1:nTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

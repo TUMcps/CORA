@@ -1,7 +1,7 @@
 function [t,x,loc] = simulate(HA,params)
 % simulate - simulates a trajectory of a hybrid automaton
 %
-% Syntax:  
+% Syntax:
 %    [t,x] = simulate(HA,params)
 %    [t,x,loc] = simulate(HA,params)
 %
@@ -20,13 +20,13 @@ function [t,x,loc] = simulate(HA,params)
 %
 % See also: location/simulate
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       03-May-2007 
 % Last update:   08-May-2020 (MW, update interface)
 %                21-May-2023 (MW, output single trajectory)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % new options preprocessing
 params = validateOptions(HA,mfilename,params,struct([]));
@@ -67,4 +67,4 @@ while tInter < params.tFinal && ...
     loc(cnt,1) = params.loc;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

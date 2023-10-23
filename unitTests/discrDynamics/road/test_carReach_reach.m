@@ -6,7 +6,7 @@ function res = test_carReach_reach(~)
 % of traffic participants; The Markov model is generated based on
 % reachability analysis
 %
-% Syntax:  
+% Syntax:
 %    res = test_carReach_reach(~)
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = test_carReach_reach(~)
 % Outputs:
 %    res - true/false 
 
-% Author:       Matthias Althoff
-% Written:      31-July-2016
-% Last update:  31-July-2017
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       31-July-2016
+% Last update:   31-July-2017
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set fileName and pathName
 fileName = 'fArray_unitTest.mat';
@@ -73,4 +73,4 @@ res_partial(end + 1) = (max(abs(segmentLength - groundTruthSegmentLength)) < 1e-
 % have all partial tests passed?
 res = prod(res_partial);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_nonlinearSys_display
 % test_nonlinearSys_display - unit test for display function
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSys_display
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_nonlinearSys_display
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % one-dimensional, no inputs, no outputs
 f = @(x,u) x(1)^2;
@@ -68,4 +68,4 @@ sys = nonlinearSys(f,g)
 % code executed successfully
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = testLong_interval_rdivide
 % testLong_interval_rdivide - unit_test_function of sine for
 %    intervals, overloaded './' function for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_interval_rdivide
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_interval_rdivide
 %
 % See also: mtimes
 
-% Author:       Mark Wetzlinger
-% Written:      08-August-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       08-August-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 numberRandTests = 5000;
 
@@ -89,4 +89,4 @@ end
 % combine results
 res = all(res_rand_scalar) && all(res_rand_int);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

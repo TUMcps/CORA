@@ -2,7 +2,7 @@ function res = testLong_conZonotope_quadMap
 % testLong_conZonotope_quadMap - unit test function for the
 %    computation of the quadratic map of a constrained zonotope
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conZonotope_quadMap
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = testLong_conZonotope_quadMap
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Niklas Kochdumper
-% Written:      13-August-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       13-August-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -37,7 +37,7 @@ for k = 1:3
     
     % Generate random conZonotope object
     V = rand(2,3)-0.5*ones(2,3);
-    P = mptPolytope(V');
+    P = polytope(V);
     cZ = conZonotope(P);
 
     % generate quadratic mapping matrices
@@ -68,14 +68,13 @@ for k = 1:3
        points_(:,i) = quadMapPoint(p,p,Q);
     end
 
-    % convert the resulting conZonotope to a mptPolytope (to easily check if
+    % convert the resulting conZonotope to a polytope (to easily check if
     % a point is located inside the conZonotope)
-    P = mptPolytope(cZquad);
+    P = polytope(cZquad);
 
     % extract inequality constraints
-    temp = get(P,'P');
-    A = temp.A;
-    b = temp.b;
+    A = P.A;
+    b = P.b;
 
 %     % visualize result
 %     plot(points_(1,:),points_(2,:),'.k');
@@ -101,7 +100,7 @@ for k = 2:5
    
     % create random zonotope
     Z = zonotope(rand(k,10)-0.5*ones(k,10));
-    cZ = conZonotope(Z.Z);
+    cZ = conZonotope(Z);
     
     % generate random quadratic mapping matrices
     Q{1} = rand(k)-0.5*ones(k);
@@ -112,12 +111,12 @@ for k = 2:5
     cZquad = quadMap(cZ,Q);
     
     % compare the results
-    if ~compareMatrices(Zquad.Z,cZquad.Z) || ...
+    if ~compareMatrices( ...
+            [Zquad.c,Zquad.G], [cZquad.c,cZquad.G]) || ...
         ~isempty(cZquad.A) || ~isempty(cZquad.b)
         throw(CORAerror('CORA:testFailed'));
     end  
 end
-
 
 
 % TEST 3: Random Test (mixed multiplication) ------------------------------
@@ -126,13 +125,13 @@ for k = 1:3
     
     % Generate first random conZonotope object
     V1 = rand(2,3)-0.5*ones(2,3);
-    P = mptPolytope(V1');
+    P = polytope(V1);
     cZ1 = conZonotope(P);
     
     % Generate first random conZonotope object
     V2 = rand(2,2)-0.5*ones(2,2);
     Z = zonotope(interval(min(V2,[],2),max(V2,[],2)));
-    cZ2 = conZonotope(Z.Z,[1 -1],0);
+    cZ2 = conZonotope(Z.c,Z.G,[1 -1],0);
     V2 = [max(V2,[],2),min(V2,[],2)];
 
     % generate random quadratic mapping matrices
@@ -177,14 +176,13 @@ for k = 1:3
         end
     end
 
-    % convert the resulting conZonotope to a mptPolytope (to easily check if
+    % convert the resulting conZonotope to a polytope (to easily check if
     % a point is located inside the conZonotope)
-    P = mptPolytope(cZquad);
+    P = polytope(cZquad);
 
     % extract inequality constraints
-    temp = get(P,'P');
-    A = temp.A;
-    b = temp.b;
+    A = P.A;
+    b = P.b;
 
 %     % visualize result
 %     plot(points_(1,:),points_(2,:),'.k');
@@ -199,4 +197,4 @@ for k = 1:3
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

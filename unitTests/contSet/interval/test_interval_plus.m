@@ -2,7 +2,7 @@ function res = test_interval_plus
 % test_interval_plus - unit_test_function of plus,
 %    overloaded '+' operator for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_plus
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_interval_plus
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      04-January-2016
-% Last update:  13-Janyary-2016 (DG)
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       04-January-2016
+% Last update:   13-January-2016 (DG)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 res = true;
@@ -32,7 +32,7 @@ b = interval(1, 1);
 c = a + b;
 
 % empty set
-if ~isempty(b+interval())
+if ~representsa(b+interval(),'emptySet')
     res = false;
 end
 
@@ -139,4 +139,4 @@ if abs( infimum(c(6)) - 10.0 ) > tol || abs( supremum(c(6)) - 16.2 ) > tol
 	return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

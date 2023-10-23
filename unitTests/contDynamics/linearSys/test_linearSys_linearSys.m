@@ -2,7 +2,7 @@ function res = test_linearSys_linearSys
 % test_linearSys_linearSys - unit test for constructor, to see if
 %    properties are set correctly
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_linearSys
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_linearSys_linearSys
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-November-2021
-% Last update:  15-January-2023 (MW, include new syntax)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-November-2021
+% Last update:   15-January-2023 (MW, include new syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = false;
 
@@ -54,7 +54,7 @@ C = [1 1 0 0;
 C_def = 1;
 y = 2;
 
-% throughput matrix: q x m
+% feedthrough matrix: q x m
 D = [0 0 1;
      0 0 0];
 D_def = 0;
@@ -124,4 +124,4 @@ end
 % all checks ok
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

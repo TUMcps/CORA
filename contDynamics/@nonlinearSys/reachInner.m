@@ -1,7 +1,7 @@
 function [Rin,Rout] = reachInner(sys,params,options)
 % reachInner - compute an inner-approximation of the reachable set
 %
-% Syntax:  
+% Syntax:
 %    Rin = reachInner(sys,params,options)
 %    [Rin,Rout] = reachInner(sys,params,options)
 %
@@ -32,12 +32,12 @@ function [Rin,Rout] = reachInner(sys,params,options)
 %
 % See also: linearSys/reachInner
 
-% Author:       Niklas Kochdumper
-% Written:      14-August-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       14-August-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % note: options preprocessing in reachInner* functions
 
@@ -65,4 +65,4 @@ switch options.algInner
             'options.algInner',{'scale','proj','parallelo'}));
 end
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

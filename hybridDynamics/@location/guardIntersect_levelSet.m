@@ -2,7 +2,7 @@ function R = guardIntersect_levelSet(loc,R,guard)
 % guardIntersect_levelSet - implementation of the guard intersection 
 %    enclosure with polynomial zonotopes as described in [1]
 %
-% Syntax:  
+% Syntax:
 %    R = guardIntersect_levelSet(loc,R,guard,options)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function R = guardIntersect_levelSet(loc,R,guard)
 %   [1] N. Kochdumper et al. "Reachability Analysis for Hybrid Systems with 
 %       Nonlinear Guard Sets", HSCC 2020
 
-% Author:       Niklas Kochdumper
-% Written:      07-January-2020 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       07-January-2020 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute enclosing interval for all reachable sets 
 I = [];
@@ -54,4 +54,4 @@ end
 pZ = polyZonotope(I); 
 R = and_(guard,pZ,'approx');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

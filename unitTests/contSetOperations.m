@@ -1,5 +1,5 @@
 function setOps = contSetOperations(contSetclass,varargin)
-% isContSetFunction - check which contSet classes have implemented
+% contSetOperations - check which contSet classes have implemented
 %    certain functions (basic function in manual)
 %
 % Syntax:
@@ -25,12 +25,12 @@ function setOps = contSetOperations(contSetclass,varargin)
 % Example: 
 %    setOps = contSetOperations('capsule');
 
-% Author:       Mark Wetzlinger
-% Written:      09-March-2021
-% Last update:  23-April-2023 (MW, adapt to new storage of test results)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       09-March-2021
+% Last update:   23-April-2023 (MW, adapt to new storage of test results)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin > 2
     throw(CORAerror('CORA:tooManyInputArgs',2));
@@ -43,7 +43,7 @@ type = setDefaultValues({'basic'},varargin);
 groups = {'basicSetOps','predicates','setProps','auxOps'};
 % list function specified in manual
 basicSetOps = {'mtimes','plus','cartProd','convHull','quadMap','and','or'}';
-predicates = {'contains','isIntersecting','isFullDim','isequal','isempty'}';
+predicates = {'contains','isIntersecting','isFullDim','isequal','isEmptySet'}';
 setProps = {'center','dim','norm','vertices','volume'}';
 auxOps = {'cubMap','enclose','enclosePoints','generateRandom','linComb',...
     'randPoint','reduce','supportFunc','plot','project'}';
@@ -233,4 +233,4 @@ end
 % print footer
 fprintf('-*---------------------------------*-\n');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

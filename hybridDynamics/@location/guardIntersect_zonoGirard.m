@@ -2,7 +2,7 @@ function R = guardIntersect_zonoGirard(loc,R,guard,options)
 % guardIntersect_zonoGirard - implementation of the zonotope-hyperplane
 %    intersection approach described in [1]
 %
-% Syntax:  
+% Syntax:
 %    R = guardIntersect_zonoGirard(loc,R,guard,options)
 %
 % Inputs:
@@ -26,13 +26,13 @@ function R = guardIntersect_zonoGirard(loc,R,guard,options)
 %
 % See also: none
 
-% Author:       Stefan Liu, Niklas Kochdumper
-% Written:      19-Dec-2016 
-% Last update:  18-May-2018 (NK, integration into CORA)
-%               19-December-2019 (NK, restructured the code)
-% Last revision:---
+% Authors:       Stefan Liu, Niklas Kochdumper
+% Written:       19-December-2016 
+% Last update:   18-May-2018 (NK, integration into CORA)
+%                19-December-2019 (NK, restructured the code)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % check if guard set is a constrained hyperplane
     if ~isa(guard,'conHyperplane')
@@ -45,7 +45,7 @@ function R = guardIntersect_zonoGirard(loc,R,guard,options)
     
     % construct polytope from guard set inequality constraints C*x <= d
     if ~isempty(guard.C)
-        poly = mptPolytope(guard.C,guard.d);
+        poly = polytope(guard.C,guard.d);
     else
         poly = [];
     end
@@ -70,7 +70,7 @@ function R = guardIntersect_zonoGirard(loc,R,guard,options)
         end
         
         % set for one basis is empty -> overall set is emtpy
-        if isempty(I)
+        if representsa_(I,'emptySet',eps)
             R = [];
             return;
         end
@@ -79,7 +79,7 @@ function R = guardIntersect_zonoGirard(loc,R,guard,options)
         Z{i} = B{i}*zonotope(I);
         
         % remove parts outside the guard sets inequality constraints
-        if ~isempty(poly)
+        if ~representsa_(poly,"emptySet",eps)
             Z{i} = aux_tightenSet(Z{i},poly);
         end
     end
@@ -97,7 +97,7 @@ function R = guardIntersect_zonoGirard(loc,R,guard,options)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function I = aux_enclosingInterval(guard,B,Z)
 % Implementation of Algorithm 2 in reference paper [1]
@@ -124,7 +124,7 @@ function I = aux_enclosingInterval(guard,B,Z)
             for k = 1:length(Z.Z)
 
                 % Generate two-dimensional zonogon
-                ZZ = Z.Z{k}.Z;
+                ZZ = [Z.Z{k}.c,Z.Z{k}.G];
                 SZ = [(ZZ'*n)';(ZZ'*B(:,i))'];
                 SZ(abs(SZ) < eps) = 0;
                 Z_2D = zonotope(SZ);
@@ -138,7 +138,7 @@ function I = aux_enclosingInterval(guard,B,Z)
 
         else
             % Generate two-dimensional zonogon
-            ZZ = Z.Z;
+            ZZ = [Z.c,Z.G];
             SZ = [(ZZ'*n)';(ZZ'*B(:,i))'];
             SZ(abs(SZ) < eps) = 0;
             Z_2D = zonotope(SZ);
@@ -165,7 +165,7 @@ function I = aux_enclosingInterval(guard,B,Z)
     if all(lb <= ub)
         I = interval(lb,ub);
     else
-        I = []; 
+        I = interval(); 
     end
 end
 
@@ -173,7 +173,7 @@ end
 function [m,M] = aux_bound_intersect_2D(Z,L)
 % Implementation of Algorithm 3 in [1]
 
-    Z = deleteZeros(Z);
+    Z = compact_(Z,'zeros',eps);
 
     c = center(Z);
     g = generators(Z);
@@ -399,8 +399,8 @@ function Z = aux_tightenSet(Z,P)
     end
     
     % extract the rescaled zonotope from the constrained zonotope
-    Z = zonotope(cZ.Z);
+    Z = zonotope(cZ.c,cZ.G);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

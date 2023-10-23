@@ -2,7 +2,7 @@ function Z = reduceUnderApprox(Z,method,order)
 % reduceUnderApprox - reduces the order of a zonotope so that an
 %    under-approximation of the original set is obtained
 %
-% Syntax:  
+% Syntax:
 %    Z = reduceUnderApprox(Z,method,order)
 %
 % Inputs:
@@ -38,21 +38,21 @@ function Z = reduceUnderApprox(Z,method,order)
 %
 % See also: reduce
 
-% Author:       Niklas Kochdumper
-% Written:      19-November-2018
-% Last update:  29-Aug-2019
-%               15-April-2020 (added additional reduction techniques)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       19-November-2018
+% Last update:   29-August-2019
+%                15-April-2020 (added additional reduction techniques)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % check input arguments
-    inputArgsCheck({{Z,'att','zonotope','nonempty'};
+    inputArgsCheck({{Z,'att','zonotope'};
                     {method,'str',{'sum','scale','linProg','wetzlinger'}};
                     {order,'att','numeric','nonnan'}});
     
     % remove all-zero generators
-    Z = deleteZeros(Z);
+    Z = compact_(Z,'zeros',eps);
 
     % check if reduction is required
     [n, nrOfGens] = size(generators(Z));
@@ -61,13 +61,13 @@ function Z = reduceUnderApprox(Z,method,order)
         
         % reduce with the selected method
         if strcmp(method,'sum')
-            Z = reduceUnderApproxSum(Z,order);
+            Z = aux_reduceUnderApproxSum(Z,order);
         elseif strcmp(method,'scale')
-            Z = reduceUnderApproxScale(Z,order);
+            Z = aux_reduceUnderApproxScale(Z,order);
         elseif strcmp(method,'linProg')
-            Z = reduceUnderApproxLinProg(Z,order);
+            Z = aux_reduceUnderApproxLinProg(Z,order);
         elseif strcmp(method,'wetzlinger')
-            Z = reduceUnderApproxWetzlinger(Z,order);
+            Z = aux_reduceUnderApproxWetzlinger(Z,order);
         end
     else
         return;
@@ -76,9 +76,9 @@ function Z = reduceUnderApprox(Z,method,order)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function Zred = reduceUnderApproxLinProg(Z,order)
+function Zred = aux_reduceUnderApproxLinProg(Z,order)
 % reduce the zonotope order by computing an interval under-approximation of
 % the zonotope spanned by the reduced generators using linear programming
    
@@ -86,7 +86,7 @@ function Zred = reduceUnderApproxLinProg(Z,order)
     n = dim(Z);
     N = floor(order*n-n);
     
-    [c,G,Gred] = selectSmallestGenerators(Z,N);
+    [c,G,Gred] = aux_selectSmallestGenerators(Z,N);
 
     % construct zonotope from the generators that are reduced
     Z1 = zonotope([zeros(length(c),1),Gred]);
@@ -96,7 +96,7 @@ function Zred = reduceUnderApproxLinProg(Z,order)
 
     % compute largest interval that fits inside the zonotope by using
     % linear programming
-    [A,b,Aeq,beq,lb,ub,f,ind] = containmentConstraints(Z2,Z1);
+    [A,b,Aeq,beq,lb,ub,f,ind] = aux_containmentConstraints(Z2,Z1);
     
     % solve linear program
     persistent options
@@ -118,7 +118,7 @@ function Zred = reduceUnderApproxLinProg(Z,order)
 
 end
 
-function Zred = reduceUnderApproxScale(Z,order)
+function Zred = aux_reduceUnderApproxScale(Z,order)
 % An over-approximative reduced zonotope is computed first. This zonotope
 % is then scaled using linear programming until it is fully contained in 
 % the original zonotope 
@@ -128,7 +128,7 @@ function Zred = reduceUnderApproxScale(Z,order)
     
     % get conditions for linear program to scale the over-approximative 
     % zonotope until it is contained inside the original zonotope
-    [A,b,Aeq,beq,lb,ub,f,ind] = containmentConstraints(Z_,Z);
+    [A,b,Aeq,beq,lb,ub,f,ind] = aux_containmentConstraints(Z_,Z);
     
     % solve linear program
     persistent options
@@ -149,14 +149,14 @@ function Zred = reduceUnderApproxScale(Z,order)
     Zred = zonotope([center(Z_),generators(Z_)*diag(s)]);
 end
 
-function Zred = reduceUnderApproxSum(Z,order)
+function Zred = aux_reduceUnderApproxSum(Z,order)
 % sum up the generators that are reduced to obtain an inner-approximation
 
     % select generators to reduce
     n = dim(Z);
     N = floor(order*n - 1);
     
-    [c,G,Gred] = selectSmallestGenerators(Z,N);
+    [c,G,Gred] = aux_selectSmallestGenerators(Z,N);
 
     % under-approximate the generators that are reduced by one generator
     % corresponding to the sum of generators
@@ -166,7 +166,7 @@ function Zred = reduceUnderApproxSum(Z,order)
     Zred = zonotope([c,G,g]);
 end
 
-function Zred = reduceUnderApproxWetzlinger(Z,order)
+function Zred = aux_reduceUnderApproxWetzlinger(Z,order)
 % reduction based on the Hausdorff distance betwenn a zonotope and its
 % interval enclosure (see Theorem 3.2 in [2])
 
@@ -174,7 +174,7 @@ function Zred = reduceUnderApproxWetzlinger(Z,order)
     n = dim(Z);
     N = floor(order*n-n);
     
-    [c,G,Gred] = selectSmallestGenerators(Z,N);
+    [c,G,Gred] = aux_selectSmallestGenerators(Z,N);
 
     % construct zonotope from the generators that are reduced
     Z1 = zonotope([zeros(length(c),1),Gred]);
@@ -210,7 +210,7 @@ function Zred = reduceUnderApproxWetzlinger(Z,order)
     end
 end
 
-function [c,G,Gred] = selectSmallestGenerators(Z,N)
+function [c,G,Gred] = aux_selectSmallestGenerators(Z,N)
 % select the generators that are reduced
 
     % obtain object properties
@@ -226,26 +226,26 @@ function [c,G,Gred] = selectSmallestGenerators(Z,N)
     Gred = G_(:,ind(N+1:end));
 end
 
-function [A,b,Aeq,beq,lb,ub,f,ind] = containmentConstraints(Zx,Zy)
+function [A,b,Aeq,beq,lb,ub,f,ind] = aux_containmentConstraints(Zx,Zy)
 % provides the contraints for linear programming for zonotope in zonotope 
 % containment
 
     % decide depending on the complexity of the problem if an approximate
     % or the exact containment problem is solved
-    comb = combinator(size(Zy.Z,2)-1,size(Zy.Z,1),'c');
+    comb = combinator(size(Zy.G,2),dim(Zy),'c');
     
     if size(comb,1) < 1000
-        [A,b,Aeq,beq,lb,ub,f,ind] = contConstrPolytope(Zx,Zy);
+        [A,b,Aeq,beq,lb,ub,f,ind] = aux_contConstrPolytope(Zx,Zy);
     else
-        [A,b,Aeq,beq,lb,ub,f,ind] = contConstrTedrake(Zx,Zy);
+        [A,b,Aeq,beq,lb,ub,f,ind] = aux_contConstrTedrake(Zx,Zy);
     end
 end
 
-function [A,b,Aeq,beq,lb,ub,f,ind] = contConstrPolytope(Zx,Zy)
+function [A,b,Aeq,beq,lb,ub,f,ind] = aux_contConstrPolytope(Zx,Zy)
 % construct inequality constraints for zonotope X in zonotope Y containment
 
     % get halfspace representation of the zonotope
-    poly = mptPolytope(zonotope(Zy));
+    poly = polytope(zonotope(Zy));
     C = get(poly,'A');
     d = get(poly,'b');
 
@@ -276,7 +276,7 @@ function [A,b,Aeq,beq,lb,ub,f,ind] = contConstrPolytope(Zx,Zy)
 
 end
 
-function [A,b,Aeq,beq,lb,ub,f,ind] = contConstrTedrake(Zx,Zy)
+function [A,b,Aeq,beq,lb,ub,f,ind] = aux_contConstrTedrake(Zx,Zy)
 % this function returns sufficient conditions for the zonotope X to be
 % contained in zonotope Y according to Theorem 1 in [1]. The optimization 
 % variable x is defined as follows:     
@@ -369,4 +369,4 @@ function [A,b,Aeq,beq,lb,ub,f,ind] = contConstrTedrake(Zx,Zy)
     ind = 1:nx;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

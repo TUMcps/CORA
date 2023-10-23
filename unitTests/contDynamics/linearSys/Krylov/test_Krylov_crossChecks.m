@@ -2,7 +2,7 @@ function res = test_Krylov_crossChecks(~)
 % test_Krylov_crossChecks - unit test that cross checks certain aspects of
 %     the Krylov method. Further information can be found in [1].
 %
-% Syntax:  
+% Syntax:
 %    res = test_Krylov_crossChecks(~)
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = test_Krylov_crossChecks(~)
 %    [1] Saad, Y. Analysis of Some Krylov Subspace Approximations to the Matrix 
 %        Exponential Operator, SIAM Journal on Numerical Analysis, 1992, 29, 209-228
 
-% Author:       Matthias Althoff
-% Written:      15-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       15-November-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % example 1; Saad 1992
 N = 100;
@@ -66,4 +66,4 @@ res(4) = all(all(abs(I_diff)<=1e-7));
 % all tests passed?
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

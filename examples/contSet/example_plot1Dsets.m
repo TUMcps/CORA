@@ -1,7 +1,7 @@
 function example_plot1Dsets()
 % example_plot1Dsets - shows all plots possible with 1D sets
 %
-% Syntax:  
+% Syntax:
 %    completed = example_plot1Dsets()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function example_plot1Dsets()
 %
 % See also: none
 
-% Author:        Tobias Ladner
+% Authors:       Tobias Ladner
 % Written:       31-May-2022
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 close all;
 figure;
@@ -159,7 +159,7 @@ plot(ls,1,'Color',colorblind('r'));
 
 % polytope
 i = i + 1;
-S = mptPolytope(I);
+S = polytope(I);
 
 subplot(nrows, ncols, i)
 hold on;
@@ -258,4 +258,4 @@ subplot(nrows, ncols, ncols+i)
 hold on;
 plot(S,1,'Color',colorblind('r'));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

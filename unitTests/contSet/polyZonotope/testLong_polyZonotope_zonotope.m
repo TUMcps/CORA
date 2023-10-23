@@ -2,7 +2,7 @@ function res = testLong_polyZonotope_zonotope
 % testLong_polyZonotope_zonotope - unit test function for zonotope
 %    over-approximation of a polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polyZonotope_zonotope
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_polyZonotope_zonotope
 %
 % See also: -
 
-% Author:       Niklas Kochdumper
-% Written:      26-June-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-June-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -34,9 +34,9 @@ for i = 1:5
     G = rand(2,7)-0.5*ones(2,7);
     ind = datasample(1:7,4,'Replace',false);
     G(:,ind) = G(:,ind)./10;
-    Grest = rand(2,1)-0.5*ones(2,1);
-    expMat = [eye(2), round(rand(2,5)*5)];
-    pZ = polyZonotope(c,G,Grest,expMat);
+    GI = rand(2,1)-0.5*ones(2,1);
+    E = [eye(2), round(rand(2,5)*5)];
+    pZ = polyZonotope(c,G,GI,E);
 
     % calculate zonotope over-approximation
     Z = zonotope(pZ);
@@ -67,9 +67,9 @@ for i = 1:5
     G = rand(4,6)-0.5*ones(4,6);
     ind = datasample(1:6,4,'Replace',false);
     G(:,ind) = G(:,ind)./10;
-    Grest = rand(4,2)-0.5*ones(4,2);
-    expMat = [eye(4), round(rand(4,2)*5)];
-    pZ = polyZonotope(c,G,Grest,expMat);
+    GI = rand(4,2)-0.5*ones(4,2);
+    E = [eye(4), round(rand(4,2)*5)];
+    pZ = polyZonotope(c,G,GI,E);
 
     % calculate zonotope over-approximation
     Z = zonotope(pZ);
@@ -91,4 +91,4 @@ for i = 1:5
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

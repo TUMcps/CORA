@@ -1,7 +1,7 @@
 function n = dim(zB)
 % dim - returns the dimension of the ambient space of a zonotope bundle
 %
-% Syntax:  
+% Syntax:
 %    n = dim(zB)
 %
 % Inputs:
@@ -22,18 +22,18 @@ function n = dim(zB)
 %
 % See also: rank.m
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       23-November-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if zB.parallelSets == 0
     % fully-empty
     n = 0;
 else
-    n = length(center(zB.Z{1}));
+    n = length(zB.Z{1}.c);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

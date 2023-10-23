@@ -3,7 +3,7 @@ function pZ = outerApprox(pZ,tol,id)
 %    represented by another polynomial zonotope within relative tolerance
 %    (ignoring all monomials that solely contain ids 'id')
 %
-% Syntax:  
+% Syntax:
 %    pZ = outerApprox(pZ,tol,id)
 %
 % Inputs:
@@ -27,12 +27,12 @@ function pZ = outerApprox(pZ,tol,id)
 %
 % See also: --
 
-% Author:       Victor Gassmann
-% Written:      21-July-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       21-July-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 inputArgsCheck({{pZ,'att',{'polyZonotope'},{'scalar'}};
@@ -43,17 +43,17 @@ inputArgsCheck({{pZ,'att',{'polyZonotope'},{'scalar'}};
 % compute indices of generators that should be reduced (i.e., that do not
 % only contain ids 'id')
 ind_other = ~ismember(pZ.id,id);
-ii = find(any(pZ.expMat(ind_other,:)>0,1));
+ii = find(any(pZ.E(ind_other,:)>0,1));
 
 G = pZ.G(:,ii);
-expMat = pZ.expMat(:,ii);
-Grest = pZ.Grest;
+E = pZ.E(:,ii);
+GI = pZ.GI;
 n = dim(pZ);
 
 % compute length metric for all generators
-ind_even = all(mod(expMat,2)==0,1);
+ind_even = all(mod(E,2)==0,1);
 G(:,ind_even) = 1/2*G(:,ind_even);
-M = [G,Grest];
+M = [G,GI];
 m = size(M,2);
 [~,ii_s] = sort(sum(abs(M),1),'ascend');
 
@@ -72,12 +72,13 @@ for i=1:m
 end
 ii_red = ii_s(1:redCount);
 ii_red_G = ii_red(ii_red<=size(G,2));
-ii_red_Grest = ii_red(ii_red>size(G,2));
+ii_red_GI = ii_red(ii_red>size(G,2));
 
 % reduce
 G_red = pZ.G(:,ii(ii_red_G));
-Grest_new = [G_red,pZ.Grest(:,ii(ii_red_Grest))]; 
-pZ.Grest = [pZ.Grest,diag(sum(abs(Grest_new),2))];
-pZ.expMat(:,ii(ii_red_G)) = [];
+GI_new = [G_red, pZ.GI(:,ii(ii_red_GI))]; 
+pZ.GI = [pZ.GI, diag(sum(abs(GI_new),2))];
+pZ.E(:,ii(ii_red_G)) = [];
 pZ.G(:,ii(ii_red_G)) = [];
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function display(sys)
 % display - Displays a nonlinearSysDT object on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(sys)
 %
 % Inputs:
@@ -21,15 +21,14 @@ function display(sys)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
-% Written:      27-October-2011
-% Last update:  29-January-2018 (NK)
-%               19-June-2022 (MW)
-%               23-November-2022 (TL: dispInput)
-% Last revision:---
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
+% Written:       27-October-2011
+% Last update:   29-January-2018 (NK)
+%                19-June-2022 (MW)
+%                23-November-2022 (TL, dispInput)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % disp input if necessary
 dispInput(inputname(1))
@@ -68,4 +67,4 @@ end
 
 fprintf(newline);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

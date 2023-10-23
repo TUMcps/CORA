@@ -2,7 +2,7 @@ function [eAt, eAtInt] = exponentialMatrices(obj,options)
 % exponentialMatrices - computes the exponential matrix for the initial
 % state and constant input solution
 %
-% Syntax:  
+% Syntax:
 %    [eAt, eAtInt] = exponentialMatrices(obj,options)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function [eAt, eAtInt] = exponentialMatrices(obj,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      27-August-2013
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       27-August-2013
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % compute exponential matrix
@@ -39,4 +39,4 @@ eAt = obj.taylor.eAt;
 eAtInt = obj.taylor.eAtInt;
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

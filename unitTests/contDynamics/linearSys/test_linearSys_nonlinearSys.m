@@ -1,7 +1,7 @@
 function res = test_linearSys_nonlinearSys
 % test_linearSys_nonlinearSys - unit test for conversion to nonlinearSys
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_nonlinearSys
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_linearSys_nonlinearSys
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -46,7 +46,7 @@ c_def = [];
 C = [1 1 0 0;
      0 -0.5 0.5 0];
 
-% throughput matrix: q x m
+% feedthrough matrix: q x m
 D = [0 0 1;
      0 0 0];
 
@@ -82,4 +82,4 @@ if ~isequal(sys_nonlin,sys_nonlin_,1e-14)
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

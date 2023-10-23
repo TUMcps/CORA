@@ -1,7 +1,7 @@
 function res = test_fullspace_center
 % test_fullspace_center - unit test function of center
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_center
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_center
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init fullspace
 n = 2;
@@ -34,4 +34,4 @@ c_true = zeros(n,1);
 % compare results
 res = all(c == c_true);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

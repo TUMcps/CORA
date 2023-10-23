@@ -2,7 +2,7 @@ function res = example_linear_reach_05_innerApprox()
 % example_linear_reach_05_innerApprox - example that demonstrates how to
 %    compute an inner-approximation of the reachable set
 %
-% Syntax:  
+% Syntax:
 %    res = example_linear_reach_05_innerApprox()
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = example_linear_reach_05_innerApprox()
 % Outputs:
 %    res - true/false 
 
-% Author:       Niklas Kochdumper
-% Written:      27-August-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       27-August-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -61,7 +61,6 @@ Rout = reach(fiveDimSys, params, options2);
 tComp = toc;
 
 disp(['computation time (outer-approximation): ',num2str(tComp)]);
-
 
 
 % Visualization -----------------------------------------------------------
@@ -117,4 +116,4 @@ end
 % example completed
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

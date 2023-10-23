@@ -2,7 +2,7 @@ function val = subsref(intMat,S)
 % subsref - Overloads the operator that selects elements, e.g. A(1,2),
 %    where the element of the first row and second column is referred to.
 %
-% Syntax:  
+% Syntax:
 %    element = subsref(intMat,S)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function val = subsref(intMat,S)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      23-September-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       23-September-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %check if parantheses are used to select elements
 if strcmp(S.type,'()')
@@ -66,4 +66,4 @@ else
     val=[];
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_ellipsoid_enlarge
 % test_ellipsoid_enlarge - unit test function of enlarge
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_enlarge
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_enlarge
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      17-September-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-September-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate ellipsoid
 E = ellipsoid([1 0;0 2],[0; 1]);
@@ -36,4 +36,4 @@ E_true = ellipsoid([4 0;0 8],[0; 1]);
 % compare results
 res = isequal(E_true,E_enlarged);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

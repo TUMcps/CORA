@@ -2,7 +2,7 @@ function matP = matPolytope(matZ)
 % matPolytope - Converts a matrix zonotope into a matrix polytope 
 %    representation
 %
-% Syntax:  
+% Syntax:
 %    matP = matPolytope(matZ)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function matP = matPolytope(matZ)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      22-June-2010
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-June-2010
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % obtain vertices
 V=vertices(zonotope(matZ));
@@ -37,4 +37,4 @@ end
 %convert polytope to matrix polytope
 matP=matPolytope(matrixVertex);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

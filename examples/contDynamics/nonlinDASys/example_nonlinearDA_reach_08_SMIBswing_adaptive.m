@@ -2,7 +2,7 @@ function res = example_nonlinearDA_reach_08_SMIBswing_adaptive()
 % example_nonlinearDA_reach_08_SMIBswing_adaptive - example of nonlinear
 %    differential-algebraic reachability analysis
 %
-% Syntax:  
+% Syntax:
 %    example_nonlinearDA_reach_08_SMIBswing_adaptive()
 %
 % Inputs:
@@ -11,19 +11,19 @@ function res = example_nonlinearDA_reach_08_SMIBswing_adaptive()
 % Outputs:
 %    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      30-August-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       30-August-2021
+% Last update:   ---
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % SMIB system with 2 diff. variables and 4 alg. variables
+
 dim_x = 2;
 dim_y = 4;
 
-[P,I,x0,y0] = aux2_modelParameters();
+[P,I,x0,y0] = aux_aux2_modelParameters();
 
 
 % Parameters --------------------------------------------------------------
@@ -106,7 +106,7 @@ dim_y = 4;
 
 runs = 1;
 Bound_x = 0.8e-3*eye(2);
-params.R0  = zonotope([params.x0,Bound_x]);
+params.R0  = zonotope([x0,Bound_x]);
 params.u = center(params.U);
 
 t = cell(runs,1); x = cell(runs,1);
@@ -165,10 +165,9 @@ res = true;
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-% Auxiliary Functions -----------------------------------------------------
-
-function [P,I,x0,y0] = aux2_modelParameters()
+function [P,I,x0,y0] = aux_aux2_modelParameters()
 % defines the parameters for the model
 
     %  Example 13.2 p. 864
@@ -201,7 +200,7 @@ function [P,I,x0,y0] = aux2_modelParameters()
 
     % Use fsolve to get theta1 and q1
     % Phase angle and reactive power at bus 1 (Unknown for PV-bus)
-    X0net       = fsolve(@(X) aux2_init_network(X,P),ones(2,1),options_fsolve);
+    X0net       = fsolve(@(X) aux_aux2_init_network(X,P),ones(2,1),options_fsolve);
     I.theta1    = X0net(1);
     I.Q1        = X0net(2);      
 
@@ -209,7 +208,7 @@ function [P,I,x0,y0] = aux2_modelParameters()
     I.V1        = 1;
 
     % Use fsolve to get synchrous generator paramters
-    X0gen       = fsolve(@(X) aux2_init_generator(X,P,I),ones(4,1),options_fsolve);
+    X0gen       = fsolve(@(X) aux_aux2_init_generator(X,P,I),ones(4,1),options_fsolve);
     % assignment of variables
     I.E1        = X0gen(3);        % q-axis transient voltage (diff. variable)
     I.Pm1       = X0gen(4);        % d-axis machine voltage (alg. varaible)
@@ -218,7 +217,7 @@ function [P,I,x0,y0] = aux2_modelParameters()
     y0 = [I.P1 I.Q1 I.theta1 I.V1];
 end
 
-function X0 = aux2_init_network(X,P)
+function X0 = aux_aux2_init_network(X,P)
 
     % Variables
     theta1 = X(1);
@@ -230,7 +229,7 @@ function X0 = aux2_init_network(X,P)
     ];
 end
 
-function X0 = aux2_init_generator(X,P,I)
+function X0 = aux_aux2_init_generator(X,P,I)
 
     % Variables
     delta1  = X(1);
@@ -246,5 +245,4 @@ function X0 = aux2_init_generator(X,P,I)
     ];
 end
 
-%------------- END OF CODE --------------
-        
+% ------------------------------ END OF CODE ------------------------------

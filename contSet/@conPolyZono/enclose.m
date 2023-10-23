@@ -4,10 +4,10 @@ function cPZ = enclose(cPZ,varargin)
 %
 % Description:
 %    Computes the set
-%    { a x1 + (1 - a) * (M x1 + x2) | x1 \in cPZ, x2 \in cPZ2, a \in [0,1] }
+%    { a x1 + (1 - a) * x2 | x1 \in cPZ, x2 \in cPZ2, a \in [0,1] }
 %    where cPZ2 = M*cPZ + cPZplus
 % 
-% Syntax:  
+% Syntax:
 %    cPZ = enclose(cPZ,cPZ2)
 %    cPZ = enclose(cPZ,M,Splus)
 %
@@ -23,11 +23,11 @@ function cPZ = enclose(cPZ,varargin)
 % Example: 
 %    c = [0;0];
 %    G = [1 0;0 1];
-%    expMat = [1 0;0 1];
+%    E = [1 0;0 1];
 %    A = [1 -1];
 %    b = 0;
-%    expMat_ = [2 0;0 1];
-%    cPZ1 = conPolyZono(c,G,expMat,A,b,expMat_);
+%    EC = [2 0;0 1];
+%    cPZ1 = conPolyZono(c,G,E,A,b,EC);
 % 
 %    M = [1 2;-1 0]; b = [2;3];
 %    cPZ2 = M*cPZ1 + b;
@@ -45,12 +45,12 @@ function cPZ = enclose(cPZ,varargin)
 %
 % See also: polyZonotope/enclose, zonotope/enclose
 
-% Author:       Niklas Kochdumper
-% Written:      25-January-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-January-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 if nargin == 2
@@ -67,24 +67,23 @@ end
 % check if exponent matrices are identical
 if ~all(size(cPZ.id) == size(cPZ2.id)) ||  ...
    ~all(cPZ.id == cPZ2.id) ||  ...
-   ~all(size(cPZ.expMat) == size(cPZ2.expMat)) || ...
-   ~all(all(cPZ.expMat == cPZ2.expMat)) || ...
-   ~all(size(cPZ.expMat_) == size(cPZ2.expMat_)) || ...
-   ~all(all(cPZ.expMat_ == cPZ2.expMat_)) || ...
+   ~all(size(cPZ.E) == size(cPZ2.E)) || ...
+   ~all(all(cPZ.E == cPZ2.E)) || ...
+   ~all(size(cPZ.EC) == size(cPZ2.EC)) || ...
+   ~all(all(cPZ.EC == cPZ2.EC)) || ...
    ~all(size(cPZ.A) == size(cPZ2.A)) || ~all(all(cPZ.A == cPZ2.A))
     throw(CORAerror('CORA:specialError','Constraint polynomial zonotopes are not compatible!'));
 end
 
 % compute set with the enclose method for polynomial zonotopes
-pZ1 = polyZonotope(cPZ.c,cPZ.G,cPZ.Grest,cPZ.expMat,cPZ.id);
-pZ2 = polyZonotope(cPZ2.c,cPZ2.G,cPZ2.Grest,cPZ2.expMat,cPZ2.id);
+pZ1 = polyZonotope(cPZ.c,cPZ.G,cPZ.GI,cPZ.E,cPZ.id);
+pZ2 = polyZonotope(cPZ2.c,cPZ2.G,cPZ2.GI,cPZ2.E,cPZ2.id);
 pZ = enclose(pZ1,pZ2);
 
 % compute exponent matrix of constraint system
-expMat_ = [cPZ.expMat_; zeros(1,size(cPZ.expMat_,2))];
+EC = [cPZ.EC; zeros(1,size(cPZ.EC,2))];
 
 % construct resulting constrained polynomial zonotope
-cPZ = conPolyZono(pZ.c,pZ.G,pZ.expMat,cPZ.A,cPZ.b,expMat_, ...
-                  pZ.Grest,pZ.id);
+cPZ = conPolyZono(pZ.c,pZ.G,pZ.E,cPZ.A,cPZ.b,EC, pZ.GI,pZ.id);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

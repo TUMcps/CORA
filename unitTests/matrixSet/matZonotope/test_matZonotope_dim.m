@@ -1,7 +1,7 @@
 function res = test_matZonotope_dim
 % test_matZonotope_dim - unit test function for dimension read
 % 
-% Syntax:  
+% Syntax:
 %    res = test_matZonotope_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_matZonotope_dim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty matrix zonotope
 matZ = matZonotope();
@@ -51,4 +51,4 @@ res(end+1,1) = dim(matZ,2) == 2;
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

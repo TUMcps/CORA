@@ -1,7 +1,7 @@
 function cPZ = conPolyZono(I)
 % conPolyZono - convert an interval to a constrained polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    cPZ = conPolyZono(I)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function cPZ = conPolyZono(I)
 %
 % See also: interval, zonotope, polyZonotope
 
-% Author:       Niklas Kochdumper
-% Written:      21-January-2020
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       21-January-2020
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 cPZ = conPolyZono(polyZonotope(I));
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -5,7 +5,7 @@ classdef capsule < contSet
 %    This class represents capsule objects defined as
 %    C := L + S, L = {c + g*a | a \in [-1,1]}, S = {x | ||x||_2 <= r}.
 %
-% Syntax:  
+% Syntax:
 %    obj = capsule(c)
 %    obj = capsule(c,g)
 %    obj = capsule(c,g,r)
@@ -31,14 +31,14 @@ classdef capsule < contSet
 %
 % See also: interval, polytope
 
-% Author:       Matthias Althoff
-% Written:      04-March-2019
-% Last update:  02-May-2020 (MW, add property validation)
-%               19-March-2021 (MW, error messages, remove capsule(r) case)
-%               14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Matthias Althoff
+% Written:       04-March-2019
+% Last update:   02-May-2020 (MW, add property validation)
+%                19-March-2021 (MW, error messages, remove capsule(r) case)
+%                14-December-2022 (TL, property check in inputArgsCheck)
+% Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = protected, GetAccess = public)
     c; % center
@@ -78,6 +78,7 @@ end
 
 
 % Auxiliary functions -----------------------------------------------------
+
 function [c,g,r] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
 
@@ -131,4 +132,4 @@ function aux_checkInputArgs(c,g,r,n_in)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

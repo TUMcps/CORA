@@ -1,7 +1,7 @@
 function res = isempty(matP)
 % isempty - checks if an interval matrix is empty
 %
-% Syntax:  
+% Syntax:
 %    res = isempty(intMat)
 %
 % Inputs:
@@ -25,14 +25,14 @@ function res = isempty(matP)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check dimension of interval
 res = any(dim(matP) == 0);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

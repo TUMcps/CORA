@@ -1,7 +1,7 @@
 function cZ = rescale(cZ,varargin)
 % rescale - Rescales the domains for the factors of a constrained zonotope
 %
-% Syntax:  
+% Syntax:
 %    cZ = rescale(cZ)
 %    cZ = rescale(cZ, method)
 %
@@ -33,12 +33,12 @@ function cZ = rescale(cZ,varargin)
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Dmitry Grebenyuk, Niklas Kochdumper
-% Written:      18-December-2017
-% Last update:  12-May-2018
-% Last revision:---
+% Authors:       Dmitry Grebenyuk, Niklas Kochdumper
+% Written:       18-December-2017
+% Last update:   12-May-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parse input arguments
     method = setDefaultValues({'exact'},varargin);
@@ -53,7 +53,7 @@ function cZ = rescale(cZ,varargin)
             throw(CORAerror('CORA:specialError','No constraints left!'));
         elseif isempty(cZ.ksi)
             if strcmp(method,'iter')
-                cZ = preconditioning(cZ);
+                cZ = aux_preconditioning(cZ);
                 [domKsi, R] = ksi_iterative(cZ);
             else
                 domKsi = ksi_optimizer(cZ);
@@ -68,7 +68,7 @@ function cZ = rescale(cZ,varargin)
         
     catch ex
         % provide meaningful error message for the user
-        if isempty(cZ)
+        if representsa_(cZ,'emptySet',eps)
             throw(CORAerror('CORA:emptySet'));
         else
             rethrow(ex);
@@ -90,9 +90,10 @@ function cZ = rescale(cZ,varargin)
     % rescale c-zonotope (Equation (24) in reference paper [1])
     temp = diag(ksi_r);
 
-    G = cZ.Z(:, 2:end);
-    c = cZ.Z(:, 1) + G*ksi_m;
-    cZ.Z = [c, G * temp];
+    G = cZ.G;
+    c = cZ.c + G*ksi_m;
+    cZ.c = c;
+    cZ.G = G * temp;
     cZ.b = cZ.b - cZ.A * ksi_m;
     cZ.A = cZ.A * temp;
 
@@ -105,25 +106,24 @@ function cZ = rescale(cZ,varargin)
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-
-% Auxiliary Functions -----------------------------------------------------
-
-function cZ = preconditioning(cZ)
+function cZ = aux_preconditioning(cZ)
 % preconditioning of the constraint matrix to improve rescaling    
 
     % bring constraint matrices to Reduced Echelon Form
-    [cZ.A,cZ.b,indPer] = rrefInfty(cZ.A,cZ.b);
+    [cZ.A,cZ.b,indPer] = aux_rrefInfty(cZ.A,cZ.b);
     
     % adapt the generator matrix to the new order of factors
-    c = cZ.Z(:,1);
-    G = cZ.Z(:,2:end);
+    c = cZ.c;
+    G = cZ.G;
     
-    cZ.Z = [c, G(:,indPer)];
+    cZ.c = c;
+    cZ.G = G(:,indPer);
 end
 
 
-function [A_,b_,indPer] = rrefInfty(A,b)
+function [A_,b_,indPer] = aux_rrefInfty(A,b)
 % Transform the matrix [A b] to Reduced Echelon Form using Gauss-Jordan
 % elimination with full pivoting. The row elements with the largest 
 % absolute values relative to the inifinity norm of their row are chosen as 
@@ -184,4 +184,4 @@ function [A_,b_,indPer] = rrefInfty(A,b)
     A_ = A_(:,1:n-1);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

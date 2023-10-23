@@ -2,7 +2,7 @@ function res = testLong_zonotope_cartProd
 % testLong_zonotope_cartProd - unit test function of Cartesian
 %    product
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_cartProd
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_zonotope_cartProd
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      03-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % number of tests
 nrTests = 1000;
@@ -142,4 +142,4 @@ for i=1:nrTests
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

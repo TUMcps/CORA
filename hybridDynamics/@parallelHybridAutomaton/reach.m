@@ -1,7 +1,7 @@
 function [R,res] = reach(pHA,params,options,varargin)
 % reach - computes the reachable set for a parallel hybrid automaton
 %
-% Syntax:  
+% Syntax:
 %    R = reach(pHA,params,options)
 %    [R,res] = reach(pHA,params,options,spec)
 %
@@ -21,17 +21,16 @@ function [R,res] = reach(pHA,params,options,varargin)
 %
 % See also: parallelHybridAutomaton
 
-% Author:       Niklas Kochdumper
-% Written:      04-July-2018 
-% Last update:  14-June-2020
-%               13-October-2021 (MP, implemented location-specific
-%                                specifications)
-%               03-March-2022 (MP, implemented synchronization labels)
-%               27-November-2022 (MW, restructure specification syntax)
-%               20-January-2023 (MW, save already computed location products)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       04-July-2018 
+% Last update:   14-June-2020
+%                13-October-2021 (MP, location-specific specifications)
+%                03-March-2022 (MP, implemented synchronization labels)
+%                27-November-2022 (MW, restructure specification syntax)
+%                20-January-2023 (MW, save already computed location products)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     res = true;
     
@@ -230,7 +229,7 @@ function [R,res] = reach(pHA,params,options,varargin)
 end
     
     
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [U,u] = aux_mergeInputSet(loc,Uloc,uloc,inputCompMap)
 % compute the joint input set for the location generated via the automaton
@@ -247,7 +246,7 @@ function [U,u] = aux_mergeInputSet(loc,Uloc,uloc,inputCompMap)
         
         % project input set of location from individual hybrid automaton
         % to higher-dimensional space of automaton product
-        Utemp = projectHighDim(Uloc{comp(i)}{loc(comp(i))},numInp,ind);
+        Utemp = projectHighDim_(Uloc{comp(i)}{loc(comp(i))},numInp,ind);
         % same for trajectory
         utemp = zeros(numInp,1);
         utemp(ind) = uloc{comp(i)}{loc(comp(i))};
@@ -330,4 +329,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

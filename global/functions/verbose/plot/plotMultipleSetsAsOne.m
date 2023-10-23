@@ -3,7 +3,7 @@ function han = plotMultipleSetsAsOne(sets,varargin)
 %    while making it appear as a single set
 %    (e.g. in legend, colororder, hold status, ...)
 %
-% Syntax:  
+% Syntax:
 %    han = plotMultipleSetsAsOne(V,varargin)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function han = plotMultipleSetsAsOne(sets,varargin)
 %
 % See also: contSet/plot, readPlotOptions
 
-% Author:       Tobias Ladner
-% Written:      12-July-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       12-July-2023
+% Last update:   04-October-2023 (TL, catch polyshape objects)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. prepare current axis (before parsing input)
 [holdStatus,oldColorIndex] = aux_prepareAxis();
@@ -49,6 +49,7 @@ if nargout == 0
 end
 
 end
+
 
 % Auxiliary functions -----------------------------------------------------
 
@@ -130,12 +131,17 @@ function han = aux_plotSets(sets,dims,NVpairs)
 
         % iterate over all sets
         for i=1:length(sets)
-            % read NVpairs for set i
+            % read set i
+            sets_i = sets{i};
             NVpairs_i = NVpairs{i};
 
             % plot set i
-            han_i = plot(sets{i},dims,NVpairs_i{:}, handleVis{:});
-    
+            if isa(sets_i,'polyshape')
+                sets_i = polygon(sets_i);
+            end
+            han_i = plot(sets_i,dims,NVpairs_i{:}, handleVis{:});
+            
+                
             if i == 1    
                 % force not showing subsequent plots in legend            
                 handleVis = {'HandleVisibility','off'};
@@ -159,4 +165,4 @@ function aux_postprocessAxis(holdStatus,oldColorIndex)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

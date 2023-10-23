@@ -3,7 +3,7 @@ function res = example_nonlinear_reach_13_adaptiveHSCC
 %    reachability analysis using adaptive parameter tuning,
 %    reproducing results from [1]
 %
-% Syntax:  
+% Syntax:
 %    res = example_nonlinear_reach_13_adaptiveHSCC
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = example_nonlinear_reach_13_adaptiveHSCC
 %    [1] M. Wetzlinger, A. Kulmburg, M. Althoff. "Adaptive Parameter Tuning
 %        for Reachability Analysis of Nonlinear Systems", HSCC 2021.
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       02-February-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -207,4 +207,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

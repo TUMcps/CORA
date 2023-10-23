@@ -2,8 +2,8 @@ function [V_c,H_c,V_g,H_g] = subspace_Krylov(obj,Z,options)
 % subspace_Krylov - computes the Krylov subspaces for the center and
 % generators of a zonotpe
 %
-% Syntax:  
-%    [obj] = exponential_Krylov(obj,options)
+% Syntax:
+%    [obj] = subspace_Krylov(obj,Z,options)
 %
 % Inputs:
 %    obj - linearSys object
@@ -25,12 +25,12 @@ function [V_c,H_c,V_g,H_g] = subspace_Krylov(obj,Z,options)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      02-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       02-November-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Multiply previous reachable set with exponential matrix------------------
 % obtain center and generators of previous reachable set
@@ -87,4 +87,4 @@ else
     H_g = []; %no generators 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

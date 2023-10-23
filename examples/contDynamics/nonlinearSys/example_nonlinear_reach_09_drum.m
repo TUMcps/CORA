@@ -2,7 +2,7 @@ function res = example_nonlinear_reach_09_drum()
 % example_nonlinear_reach_09_drum - example for nonlinear reachability
 %    analysis taken from [1]
 %
-% Syntax:  
+% Syntax:
 %    res = example_nonlinear_reach_09_drum
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = example_nonlinear_reach_09_drum()
 %       the load-following capabilities of power plants."
 %       IEEE Transactions on Power Systems 31.6 (2016): 4691-4702.
 
-% Author:        Ahmed El-Guindy, Matthias Althoff, Mark Wetzlinger
+% Authors:       Ahmed El-Guindy, Matthias Althoff, Mark Wetzlinger
 % Written:       22-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameter ---------------------------------------------------------------
 
@@ -158,4 +158,4 @@ xlabel("x_" + projDims(1)); ylabel("x_" + projDims(2));
 % example completed
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

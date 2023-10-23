@@ -4,7 +4,7 @@ function res = testLong_linearSys_reach_11_inputTrajectory
 %    sets given time-varying input signal; afterwards, the trajectories
 %    are checked for containment within the reachable sets
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_linearSys_reach_11_inputTrajectory
 %
 % Inputs:
@@ -19,12 +19,12 @@ function res = testLong_linearSys_reach_11_inputTrajectory
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-February-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-February-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % System Dynamics ---------------------------------------------------------
 
@@ -97,4 +97,4 @@ res = res_adaptive && res_start && res_standard && res_wrappingfree;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

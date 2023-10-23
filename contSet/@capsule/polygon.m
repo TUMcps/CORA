@@ -2,7 +2,7 @@ function p = polygon(C)
 % polygon - Under-approximates a two-dimensional capsule by a polygon and 
 %    returns its vertices; mainly used for plotting reasons.
 %
-% Syntax:  
+% Syntax:
 %    p = polygon(C)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function p = polygon(C)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      05-March-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-March-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % fixed number of points for half circles
 nrOfPoints = 500;
@@ -74,4 +74,4 @@ y2 = y2 + c2(2); % shift by c1
 % concatenate results (start point added to close polygon)
 p = [[x1,x2,x1(1)];[y1,y2,y1(1)]];
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

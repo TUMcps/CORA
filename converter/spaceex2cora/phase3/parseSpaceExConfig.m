@@ -3,7 +3,7 @@ function [configParams,configSpecs,spec_mapping] = ...
 % parseSpaceExConfig - Constructs structs for parameters and specifications
 %    for reachability analysis as given in a SpaceEx config-file
 %
-% Syntax:  
+% Syntax:
 %    [configParams,configSpecs,spec_mapping] = ...
 %       parseSpaceExConfig(filename,state_names,input_names,component_names,location_names)
 %
@@ -40,12 +40,12 @@ function [configParams,configSpecs,spec_mapping] = ...
 %
 % See also: ---
 
-% Author:       Maximilian Perschl
-% Written:      05-September-2021
-% Last update:  30-September-2021
-% Last revision:---
+% Authors:       Maximilian Perschl
+% Written:       05-September-2021
+% Last update:   30-September-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % open file descriptor
 configFile = fopen(filename,'r');
@@ -104,4 +104,4 @@ end
 
 fclose(configFile);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

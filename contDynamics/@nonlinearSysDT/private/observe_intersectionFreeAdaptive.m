@@ -30,15 +30,15 @@ function R = observe_intersectionFreeAdaptive(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       25-Mar-2021
+% Authors:       Matthias Althoff
+% Written:       25-March-2021
 % Last update:   ---
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %time period
+
 tVec = options.tStart:options.timeStep:options.tFinal-options.timeStep;
 
 % initialize parameter for the output equation
@@ -102,4 +102,4 @@ for k = 1:length(tVec)-1
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

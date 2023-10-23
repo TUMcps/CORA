@@ -3,7 +3,7 @@ function [R,tcomp] = observe_volMinB(obj,options)
 % from [1].
 %
 %
-% Syntax:  
+% Syntax:
 %    [R,tcomp] = observe_volMinB(obj,options)
 %
 % Inputs:
@@ -27,15 +27,15 @@ function [R,tcomp] = observe_volMinB(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       10-Sep-2020
-% Last update:   26-Feb-2021
+% Authors:       Matthias Althoff
+% Written:       10-September-2020
+% Last update:   26-February-2021
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set intersection procedure
+
 options.intersectionType = 1;
 options.intersectionTechnique = 'bravo'; % unclear whether method is an intersection method
 
@@ -46,4 +46,4 @@ tcomp = toc;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

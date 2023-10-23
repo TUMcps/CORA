@@ -2,7 +2,7 @@ function [Rfirst,options] = initReach_Krylov(obj,Rinit,options)
 % initReach_Krylov - computes the reachable continuous set for the first
 %    time step using Krylov subspace methods
 %
-% Syntax:  
+% Syntax:
 %    [Rfirst,options] = initReach_Krylov(obj,Rinit,options)
 %
 % Inputs:
@@ -22,16 +22,16 @@ function [Rfirst,options] = initReach_Krylov(obj,Rinit,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      15-November-2016
-% Last update:  29-November-2016
-%               19-December-2016
-%               03-March-2017
-%               02-November-2018
-%               24-July-2020 (box inputs removed)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       15-November-2016
+% Last update:   29-November-2016
+%                19-December-2016
+%                03-March-2017
+%                02-November-2018
+%                24-July-2020 (box inputs removed)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % retrieve C matrix for projection
 C = obj.C;
@@ -58,7 +58,6 @@ else
 end
 obj.krylov.state.H_c = H_c;
 obj.krylov.state.H_g = H_g;
-
 
 
 % INITIAL SET SOLUTION------------------------------------------------------
@@ -225,9 +224,9 @@ options.Rhom_0 = Rhom;
 options.RV_0 = RV_0;
 
 %total solution
-if isa(Rinit,'mptPolytope')
+if isa(Rinit,'polytope')
     %convert zonotopes to polytopes
-    Radd = mptPolytope(RV);
+    Radd = polytope(RV);
     Rtotal = Rhom+Radd;
     Rtotal_tp = Rhom_tp+Radd;
 else
@@ -240,4 +239,4 @@ end
 Rfirst.tp = C*Rtotal_tp;
 Rfirst.ti = C*Rtotal;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function val = expmNormInf(intMat,t)
 %    symmetric solution of the computation of the mapping mimicing the 
 %    exponential
 %
-% Syntax:  
+% Syntax:
 %    val = expmNormInf(intMat,t)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function val = expmNormInf(intMat,t)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      25-June-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-June-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %extract nominal matrix and symmetric interval matrix
 infA = infimum(intMat.int);
@@ -64,4 +64,4 @@ val = summand1 + summand2;
 %  %final result
 %  val2 = [0 0 1]*Ginf*initVec;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

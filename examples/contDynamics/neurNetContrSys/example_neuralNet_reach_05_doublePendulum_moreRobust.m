@@ -1,9 +1,8 @@
-function completed = example_neuralNet_reach_05_doublePendulum_moreRobust
+function [completed,res,tTotal] = example_neuralNet_reach_05_doublePendulum_moreRobust
 % example_neuralNet_reach_05_doublePendulum_moreRobust - example of
 %    reachability analysis for a neural network controlled double pendulum
-%                                  
 %
-% Syntax:  
+% Syntax:
 %    completed = example_neuralNet_reach_05_doublePendulum_moreRobust()
 %
 % Inputs:
@@ -11,6 +10,8 @@ function completed = example_neuralNet_reach_05_doublePendulum_moreRobust
 %
 % Outputs:
 %    completed - true/false 
+%    res - verification result
+%    tTotal - total time
 % 
 % Reference:
 %   [1] Johnson, Taylor T., et al. "ARCH-COMP21 Category Report: 
@@ -18,12 +19,13 @@ function completed = example_neuralNet_reach_05_doublePendulum_moreRobust
 %       for Continuous and Hybrid Systems Plants." 
 %       EPiC Series in Computing 80 (2021): 90-119.
 
-% Author:       Niklas Kochdumper, Tobias Ladner
-% Written:      08-November-2021
-% Last update:  23-May-2022 (TL: ARCH'22 Revisions)
-% Last revision:14-November-2022 (TL: clean up)
+% Authors:       Niklas Kochdumper, Tobias Ladner
+% Written:       08-November-2021
+% Last update:   23-May-2022 (TL, ARCH'22 revisions)
+%                30-March-2023 (TL, verify violated runs, ARCH'23 revisions)
+% Last revision: 14-November-2022 (TL, clean up)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 disp("BENCHMARK: Double Pendulum (more robust)")
 
@@ -34,23 +36,18 @@ R0 = interval([1;1;1;1],[1.3;1.3;1.3;1.3]);
 params.tFinal = 0.4;
 params.R0 = polyZonotope(R0);
 
-
 % Reachability Settings ---------------------------------------------------
 
 options.timeStep = 0.02;
-options.taylorTerms = 4;
-options.zonotopeOrder = 200;
 options.alg = 'lin';
 options.tensorOrder = 2;
-options.lagrangeRem.simplify = 'optimize';
-
+options.taylorTerms = 4;
+options.zonotopeOrder = 200;
 
 % Parameters for NN evaluation --------------------------------------------
 
 evParams = struct();
-evParams.bound_approx = true;
-evParams.polynomial_approx = "lin";
-
+evParams.poly_method = "singh";
 
 % System Dynamics ---------------------------------------------------------
 
@@ -64,70 +61,17 @@ nn = neuralNetwork.readONNXNetwork('controller_double_pendulum_more_robust.onnx'
 % construct neural network controlled system
 sys = neurNetContrSys(sys,nn,0.02);
 
-
 % Specification -----------------------------------------------------------
 
 safeSet = interval([-0.5;-0.5;-0.5;-0.5],[1.5;1.5;1.5;1.5]);
-spec = specification(safeSet,'safeSet',interval(0.5,1));
+spec = specification(safeSet,'safeSet');
 
+% Verification ------------------------------------------------------------
 
-% Simulation --------------------------------------------------------------
-
-tic
-simRes = simulateRandom(sys, params);
-tSim = toc;
-disp(['Time to compute random simulations: ', num2str(tSim)]);
-
-
-% Check Violation --------------------------------------------------------
-
-tic
-isVio = false;
-for i = 1:length(simRes)
-    x = simRes(i).x{1};
-    for j =1:length(safeSet)
-        isVio = isVio || ~all( ...
-            (infimum(safeSet(j)) <= x(:, j)) & ...
-            (x(:, j) <= supremum(safeSet(j))));
-    end
-end
-tVio = toc;
-disp(['Time to check violation in simulations: ', num2str(tVio)]);
-
-if isVio
-    disp("Result: VIOLATED")
-    R = [];
-    tComp = 0;
-    tVeri = 0;
-else
-    % Reachability Analysis -----------------------------------------------
-
-    tic
-    R = reach(sys, params, options, evParams);
-    tComp = toc;
-    disp(['Time to compute reachable set: ', num2str(tComp)]);
-
-    % Verification --------------------------------------------------------
-
-    tic
-    isVeri = true;
-    for i = 1:length(R)
-        R_i = R(i);
-        for j = 1:length(R_i.timeInterval)
-            isVeri = isVeri & safeSet.contains(R_i.timeInterval.set{j});
-        end
-    end
-    tVeri = toc;
-    disp(['Time to check Verification: ', num2str(tVeri)]);
-
-    if isVeri
-        disp('Result: VERIFIED');
-    else
-        disp('Result: UNKNOWN');
-    end
-end
-disp(['Total Time: ', num2str(tSim+tVio+tComp+tVeri)]);
-
+t = tic;
+[res, R, simRes] = verify(sys, spec, params, options, evParams, true);
+tTotal = toc(t);
+disp(['Result: ' res])
 
 % Visualization -----------------------------------------------------------
 
@@ -138,17 +82,12 @@ projDims = [1, 2];
 % plot specification
 plot(specification(safeSet, 'safeSet'), projDims, 'DisplayName', 'Safe set');
 
+% plot reachable set
 useCORAcolors("CORA:contDynamics")
-if ~isVio
-    % plot reachable set
-    plot(R, projDims, 'DisplayName', 'Reachable set')
+plot(R, projDims, 'DisplayName', 'Reachable set')
 
-    % plot initial set
-    plot(R(1).R0, projDims, 'DisplayName', 'Initial set');
-else
-    updateColorIndex()
-    plot(R0, projDims, 'k', 'FaceColor', CORAcolor("CORA:initialSet"), 'DisplayName', 'Initial set')
-end
+% plot initial set
+plot(R0, projDims, 'k', 'FaceColor', [1 1 1], 'DisplayName', 'Initial set');
 
 % plot simulations
 plot(simRes,projDims, 'DisplayName', 'Simulations');
@@ -163,17 +102,12 @@ projDims = [3, 4];
 % plot specification
 plot(specification(safeSet, 'safeSet'), projDims, 'DisplayName', 'Safe set');
 
+% plot reachable set
 useCORAcolors("CORA:contDynamics")
-if ~isVio
-    % plot reachable set
-    plot(R, projDims, 'DisplayName', 'Reachable set')
+plot(R, projDims, 'DisplayName', 'Reachable set')
 
-    % plot initial set
-    plot(R(1).R0, projDims, 'DisplayName', 'Initial set');
-else
-    updateColorIndex()
-    plot(R0, projDims, 'k', 'FaceColor', CORAcolor("CORA:initialSet"), 'DisplayName', 'Initial set')
-end
+% plot initial set
+plot(R0, projDims, 'k', 'FaceColor', [1 1 1], 'DisplayName', 'Initial set');
 
 % plot simulations
 plot(simRes,projDims, 'DisplayName', 'Simulations');
@@ -183,7 +117,19 @@ xlabel('$\dot \theta_1$','interpreter','latex');
 ylabel('$\dot \theta_2$','interpreter','latex');
 legend(Location="northwest")
 
-% example completed
+
+% example completed -------------------------------------------------------
+
 completed = true;
 
-%------------- END OF CODE --------------
+% handling for ARCH competition
+if nargout < 2
+    clear res;
+end
+if nargout < 3
+    clear tTotal;
+end
+
+end
+
+% ------------------------------ END OF CODE ------------------------------

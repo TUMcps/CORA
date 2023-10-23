@@ -2,7 +2,7 @@ function res = testLong_zonotope_ellipsoid
 % testLong_zonotope_ellipsoid - unit test function of ellipsoid
 %    (and implicitly of MVEE, insc_ellipsoid, enc_ellipsoid, MVEE, MVIE)
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_ellipsoid
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_zonotope_ellipsoid
 %
 % See also: insc_ellipsoid,enc_ellipsoid,MVEE,MVIE
 
-% Author:       Victor Gassmann, Matthias Althoff
-% Written:      11-October-2019
-% Last update:  06-June-2021 (MA, degenerate case added)
-% Last revision:---
+% Authors:       Victor Gassmann, Matthias Althoff
+% Written:       11-October-2019
+% Last update:   06-June-2021 (MA, degenerate case added)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 %do small dimensions if gurobi is not installed => norm takes much longer
@@ -102,4 +102,4 @@ for i=dims
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

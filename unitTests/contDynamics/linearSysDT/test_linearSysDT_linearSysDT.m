@@ -2,7 +2,7 @@ function res = test_linearSysDT_linearSysDT
 % test_linearSysDT_linearSysDT - unit test for constructor, to see if
 %    properties are set correctly
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSysDT_linearSysDT
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_linearSysDT_linearSysDT
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-November-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-November-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = false;
 
@@ -52,7 +52,7 @@ C = [1 1 0 0;
 C_def = 1;
 y = 2;
 
-% throughput matrix: q x m
+% feedthrough matrix: q x m
 D = [0 0 1;
      0 0 0];
 D_def = 0;
@@ -133,4 +133,4 @@ res = true;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_nonlinearSys_isequal
 % test_nonlinearSys_isequal - unit test for equality check
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSys_isequal
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_nonlinearSys_isequal
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      09-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       09-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -67,4 +67,4 @@ res(end+1,1) = ~isequal(sys5_,sys6);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

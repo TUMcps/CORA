@@ -1,7 +1,7 @@
 function res = test_interval_norm
 % test_interval_norm - unit test function of norm
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_norm
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_norm
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init interval, where upper bound vertex defines max-norm
 lb = [-2; -1];
@@ -36,4 +36,4 @@ normI_Inf = norm(I,Inf);
 % check with correct result
 res = normI_1 == 7 && normI_2 == 5 && normI_Inf == 4 && norm(interval()) == -Inf;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

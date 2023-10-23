@@ -1,7 +1,7 @@
 function res = test_interval_subsasgn
 % test_interval_subsasgn - unit test subsasgn of subscripted assignment
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_subsasgn
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_interval_subsasgn
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      19-January-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       19-January-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 res = true;
@@ -59,4 +59,4 @@ if abs( infimum(c(6,1)) + 15.0 ) > tol || abs( supremum(c(6,1)) - 20.0 ) > tol
 	return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

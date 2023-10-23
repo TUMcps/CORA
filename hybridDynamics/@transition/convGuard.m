@@ -2,7 +2,7 @@ function trans = convGuard(trans,inv,options)
 % convGuard - converts the guard sets to the set representation that is
 %    required for the selected guard-intersection method
 %
-% Syntax:  
+% Syntax:
 %    trans = convGuard(trans,inv,options)
 %
 % Inputs:
@@ -22,20 +22,20 @@ function trans = convGuard(trans,inv,options)
 %
 % See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      16-May-2018
-% Last update:  19-June-2022 (MW, error message, use switch-case)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       16-May-2018
+% Last update:   19-June-2022 (MW, error message, use switch-case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 switch options.guardIntersect
 
     case 'polytope'
 
-        if ~isa(trans.guard,'mptPolytope')
-            % convert to mptPolytope
-            trans.guard = mptPolytope(trans.guard);
+        if ~isa(trans.guard,'polytope')
+            % convert to polytope
+            trans.guard = polytope(trans.guard);
         end
         
         % intersect with invariant set
@@ -43,7 +43,7 @@ switch options.guardIntersect
 
     case {'conZonotope','conZonotopeFast'}
     
-        if isa(trans.guard,'mptPolytope')
+        if isa(trans.guard,'polytope')
             % convert to conZonotope
             trans.guard = conZonotope(trans.guard);
         end      
@@ -56,4 +56,4 @@ switch options.guardIntersect
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

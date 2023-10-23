@@ -2,7 +2,7 @@ function res = test_writeTestResultsForCI
 % test_writeTestResultsForCI - unit test function for writeTestResultsForCI
 % 
 % 
-% Syntax:  
+% Syntax:
 %    res = test_writeTestResultsForCI
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_writeTestResultsForCI
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      22-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       22-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -47,4 +47,4 @@ delete failed.txt;
 % return result
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

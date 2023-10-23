@@ -1,7 +1,7 @@
 function I = interval(intMat)
 % interval - converts an interval matrix object to an interval object
 %
-% Syntax:  
+% Syntax:
 %    I = interval(intMat)
 %
 % Inputs:
@@ -19,13 +19,13 @@ function I = interval(intMat)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      21-June-2010
-% Last update:  25-July-2016 (intervalhull replaced by interval)
-% Last revision:18-June-2023 (MW, harmonize with other conversion methods)
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       21-June-2010
+% Last update:   25-July-2016 (intervalhull replaced by interval)
+% Last revision: 18-June-2023 (MW, harmonize with other conversion methods)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 I = intMat.int;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

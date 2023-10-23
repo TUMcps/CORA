@@ -1,7 +1,7 @@
 function res = test_zonoBundle_isemptyobject
 % test_zonoBundle_isemptyobject - unit test function of isemptyobject
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonoBundle_isemptyobject
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonoBundle_isemptyobject
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate zonotope bundles
 zB1 = zonoBundle();
@@ -33,4 +33,4 @@ zB2 = zonoBundle({Z1,Z2});
 % check results
 res = isemptyobject(zB1) && ~isemptyobject(zB2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

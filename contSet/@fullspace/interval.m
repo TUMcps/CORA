@@ -3,7 +3,7 @@ function I = interval(fs)
 %    case R^0: since the only contained point 0 is not representable in
 %    MATLAB, we cannot convert R^0 to an interval
 %
-% Syntax:  
+% Syntax:
 %    I = interval(fs)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function I = interval(fs)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if fs.dimension > 0
     % lower and upper bounds are infinity
@@ -36,4 +36,4 @@ else
     throw(CORAerror('CORA:outOfDomain','validDomain','>0'));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

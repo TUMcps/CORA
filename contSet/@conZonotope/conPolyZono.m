@@ -2,7 +2,7 @@ function cPZ = conPolyZono(cZ)
 % conPolyZono - convert a constrained zonotope to a constrained polynomial 
 %    zonotope
 %
-% Syntax:  
+% Syntax:
 %    cPZ = conPolyZono(cZ)
 %
 % Inputs:
@@ -23,19 +23,19 @@ function cPZ = conPolyZono(cZ)
 %
 % See also: conZonotope, polyZonotope
 
-% Author:       Niklas Kochdumper
-% Written:      21-January-2020
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       21-January-2020
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-p = size(cZ.Z,2) - 1;
+p = size(cZ.G,2);
 
 if ~isempty(cZ.A)
-    cPZ = conPolyZono(cZ.Z(:,1),cZ.Z(:,2:end),eye(p),cZ.A,cZ.b,eye(p));
+    cPZ = conPolyZono(cZ.c,cZ.G,eye(p),cZ.A,cZ.b,eye(p));
 else
-    cPZ = conPolyZono(cZ.Z(:,1),cZ.Z(:,2:end),eye(p));
+    cPZ = conPolyZono(cZ.c,cZ.G,eye(p));
 end
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

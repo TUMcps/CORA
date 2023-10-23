@@ -1,7 +1,7 @@
 function res = test_levelSet_contains
 % test_levelSet_contains - unit test function of levelSet containment
 %
-% Syntax:  
+% Syntax:
 %    res = test_levelSet_contains
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_levelSet_contains
 %
 % See also: -----
 
-% Author:       Maximilian Perschl
-% Written:      08-November-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Maximilian Perschl
+% Written:       08-November-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 % Define problem
@@ -78,5 +78,4 @@ if contains(nonlinear_ls,[sqrt(2);-1+1e-5],'exact',1e-6)
 end
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

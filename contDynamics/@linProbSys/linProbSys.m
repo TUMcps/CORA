@@ -34,15 +34,15 @@ classdef linProbSys < contDynamics
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      06-October-2007 
-% Last update:  26-February-2008
-%               05-August-2016 (changed to new OO format)
-%               19-June-2022 (MW, update syntax)
-%               14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision:18-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Matthias Althoff
+% Written:       06-October-2007 
+% Last update:   26-February-2008
+%                05-August-2016 (changed to new OO format)
+%                19-June-2022 (MW, update syntax)
+%                14-December-2022 (TL, property check in inputArgsCheck)
+% Last revision: 18-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     A;      % state matrix
@@ -80,7 +80,7 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [name,A,B,C] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
@@ -185,4 +185,4 @@ function [name,A,B,C,states,inputs] = aux_computeProperties(name,A,B,C)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

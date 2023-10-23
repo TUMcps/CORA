@@ -1,7 +1,7 @@
 function res = mpower(base,exponent)
 % mpower - Overloaded '^' operator for intervals (power)
 %
-% Syntax:  
+% Syntax:
 %    res = mpower(base,exponent)
 %
 % Inputs:
@@ -22,14 +22,14 @@ function res = mpower(base,exponent)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff, Dmitry Grebenyuk
-% Written:      25-June-2015
-% Last update:  01-July-2015
-%               10-February-2016
-%               03-October-2017 (DG) A^0 = I is added
-% Last revision:03-October-2017
+% Authors:       Matthias Althoff, Dmitry Grebenyuk
+% Written:       25-June-2015
+% Last update:   01-July-2015
+%                10-February-2016
+%                03-October-2017 (DG, A^0 = I is added)
+% Last revision: 03-October-2017
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = interval();
 
@@ -73,4 +73,4 @@ else
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

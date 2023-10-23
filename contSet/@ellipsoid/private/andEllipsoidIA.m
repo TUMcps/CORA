@@ -2,7 +2,7 @@ function E = andEllipsoidIA(E,E2)
 % andEllipsoidIA - Computes the inner-approximation of the intersection
 %    between multiple ellipsoids
 %
-% Syntax:  
+% Syntax:
 %    E = andEllipsoidIA(E,E2)
 %
 % Inputs:
@@ -25,14 +25,14 @@ function E = andEllipsoidIA(E,E2)
 %
 % See also: andEllipsoidOA
 
-% Author:       Victor Gassmann
-% Written:      09-March-2021
-% Last update:  13-May-2022
-%               04-July-2022 (VG: convert cell array to class array)
-%               06-September-2022 (VG: resolved bug for 1D-case)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       09-March-2021
+% Last update:   13-May-2022
+%                04-July-2022 (VG, convert cell array to class array)
+%                06-September-2022 (VG, resolved bug for 1D-case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 E = [E;E2(:)];
 ind_dMask = ~isFullDim(E);
@@ -69,7 +69,7 @@ if ~isFullDim(E(end))
             E(i) = and_(E(i),Hi,'outer');
             % check if intersection is empty; if yes, overall result is
             % empty
-            if isempty(E(i))
+            if representsa_(E(i),'emptySet',eps)
                 E = ellipsoid;
                 return;
             end
@@ -87,7 +87,7 @@ if n_nd==1
     for j=2:N
         Ires = and_(Ires,interval(E(j)),'exact');
     end
-    if isempty(Ires)
+    if representsa_(Ires,'emptySet',eps)
         E = ellipsoid;
         return;
     end
@@ -580,4 +580,4 @@ end
 % backtransform
 E = T*ellipsoid([Qt,zeros(n_nd,n-n_nd);zeros(n-n_nd,n)],[qt;x_rem]);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

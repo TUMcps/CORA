@@ -4,7 +4,7 @@ function [timeInt,timePoint,res,savedata] = reach_adaptive(obj,options)
 %    the Hausdorff distance to the exact reachable set; all internal
 %    reachability settings are set automatically
 %
-% Syntax:  
+% Syntax:
 %    [Rout,Rout_tp,res,savedata] = reach_adaptive(obj,options)
 %
 % Inputs:
@@ -26,12 +26,12 @@ function [timeInt,timePoint,res,savedata] = reach_adaptive(obj,options)
 %
 % See also: none
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       08-July-2021
 % Last update:   22-March-2022
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % initializations ---------------------------------------------------------
 
@@ -190,10 +190,10 @@ while options.tFinal - t > 1e-9
         end
         
         % debug: print fulfillment of error bounds
-        print_e2ebar(isdebug,k,cnti,isU,fullcomp(k),e,ebar,timeStep);
+        aux_print_e2ebar(isdebug,k,cnti,isU,fullcomp(k),e,ebar,timeStep);
         
         % debug: save data (required for bounds check and plot functions)
-        debugdata = debug_debugdata(k,cnti,fullcomp(k),debugdata,e,ebar,coeff,timeStep);
+        debugdata = aux_debug_debugdata(k,cnti,fullcomp(k),debugdata,e,ebar,coeff,timeStep);
         
         % check non-accumulating and accumulating error against bound
         cnt.accok(cnti,1) = e.acc < ebar.acc(k);
@@ -361,7 +361,7 @@ while options.tFinal - t > 1e-9
     end
     
     % update debugdata
-    debugdata = debug_debugdata_sets(k,fullcomp,debugdata,set,expmat);
+    debugdata = aux_debug_debugdata_sets(k,fullcomp,debugdata,set,expmat);
     
     % save chosen time step to time step vector
     tVec(k,1) = timeStep;
@@ -381,16 +381,16 @@ end
 verboseLog(k,t,options);
 
 % debug: plot errors and bounds
-% plot_errorcurve(isdebug,fullcomp,e,ebar,tVec,debugdata);
+% aux_plot_errorcurve(isdebug,fullcomp,e,ebar,tVec,debugdata);
 
 % debug: plot fulfillment of error bounds
-% plot_e2ebar(isdebug,fullcomp,debugdata,timeStepIdxs);
+% aux_plot_e2ebar(isdebug,fullcomp,debugdata,timeStepIdxs);
 
 % debug: plot error curve
-% plot_Rerror(isdebug,fullcomp,tVec,Rcont_error,Rcont_tp_error,e,options.tu);
+% aux_plot_Rerror(isdebug,fullcomp,tVec,Rcont_error,Rcont_tp_error,e,options.tu);
 
 % check if all errors below respective bounds
-% check_errors(fullcomp,e,ebar,Rcont_error,Rcont_tp_error,tVec,debugdata,timeStepIdxs);
+% aux_check_errors(fullcomp,e,ebar,Rcont_error,Rcont_tp_error,tVec,debugdata,timeStepIdxs);
 
 % write time to output structs
 timePoint.time = num2cell([0;cumsum(tVec)]+options.tStart);
@@ -405,10 +405,10 @@ res = true;
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 % main function to check correct functionality
-function check_errors(fullstep,e,ebar,Rout_error,Rout_tp_error,tVec,debugdata,timeStepIdxs)
+function aux_check_errors(fullstep,e,ebar,Rout_error,Rout_tp_error,tVec,debugdata,timeStepIdxs)
 % check function which returns true/false depending on fulfillment of error
 % bounds over time; as a safety measure, this function is always executed
 
@@ -851,7 +851,7 @@ savedata.reductionerrorpercentage = ebar.red_e(end)/e.emax;
 %     % propagate exponential matrix for next V
 %     expmat_aux = expmat_aux * expmat_Deltatk;
 %     % compute error
-%     errV(i) = errOp(V{i});
+%     errV(i) = aux_errOp(V{i});
 % end
 % 
 % % 2. compute weights and ordering
@@ -864,11 +864,11 @@ savedata.reductionerrorpercentage = ebar.red_e(end)/e.emax;
 % % alternative (but practically not feasible)
 % % Vsort = V(tau);
 % % errVsort_cumsum = zeros(steps,1);
-% % errVsort_cumsum(1) = errOp(Vsort{1});
+% % errVsort_cumsum(1) = aux_errOp(Vsort{1});
 % % V_sum_temp = Vsort{1};
 % % for i=2:steps
 % %     V_sum_temp = V_sum_temp + Vsort{2};
-% %     errVsort_cumsum(i) = errOp(V_sum_temp);
+% %     errVsort_cumsum(i) = aux_errOp(V_sum_temp);
 % % end
 % 
 % % question: how much could we reduce if we allocate some portion of emax?
@@ -984,7 +984,7 @@ end
 end
 
 % specification-related functions
-function doCheck = checkSet(FGunsat,t)
+function doCheck = aux_checkSet(FGunsat,t)
 % returns whether the current safe/unsafe set has to be checked for the 
 % given time interval, which is not required if the verification has been
 % successful in a prior iteration
@@ -1127,13 +1127,13 @@ for i=1:length(savedata.Gunsat)
     
     % propagate generator matrix of GfastInner (for later steps)
     if options.G{i}.fastInner
-        C = options.G{i}.set.P.A;
+        C = options.G{i}.set.A;
         % note that G_GfastInner contains mapping by C from i-th safe set,
         % but GfastInner_add does not (so it can be used for all safe sets)
         set.G_GfastInner{i} = set.G_GfastInner{i} + sum(abs(C * set.GfastInner_add),2);
         
         % perform actual check
-        if checkSet(savedata.Gunsat{i},timeInterval)
+        if aux_checkSet(savedata.Gunsat{i},timeInterval)
             d = options.G{i}.set.P.b;
             Grem = sum(abs([C * obj.C * generators(set.enc), ...
                 C * obj.C * diag(set.boxFstartset_Gbox + set.FtildeuTrans_Gbox + set.G_PUtotal_infty)]),2);
@@ -1146,7 +1146,7 @@ for i=1:length(savedata.Gunsat)
                 res = false; return
             elseif checkval < 0
                 % outer-approximation inside safe set -> time interval ok
-                savedata.Gunsat{i} = removeFromUnsat(savedata.Gunsat{i},timeInterval);
+                savedata.Gunsat{i} = aux_removeFromUnsat(savedata.Gunsat{i},timeInterval);
             end
             
         end
@@ -1160,13 +1160,13 @@ for i=1:length(savedata.Funsat)
     
     % propagate generator matrix of GfastInner (for later steps)
     if options.F{i}.fastInner
-        C = options.F{i}.set.P.A;
+        C = options.F{i}.set.A;
         % note that G_GfastInner contains mapping by C from i-th safe set,
         % but GfastInner_add does not (so it can be used for all safe sets)
         set.F_GfastInner{i} = set.F_GfastInner{i} + sum(abs(C * set.GfastInner_add),2);
         
         % perform actual check
-        if checkSet(savedata.Funsat{i},timeInterval)
+        if aux_checkSet(savedata.Funsat{i},timeInterval)
             d = options.F{i}.set.P.b;
             Grem = sum(abs([C * obj.C * generators(set.enc), ...
                 C * obj.C * diag(set.boxFstartset_Gbox + set.FtildeuTrans_Gbox + set.G_PUtotal_infty)]),2);
@@ -1180,7 +1180,7 @@ for i=1:length(savedata.Funsat)
             elseif checkval < 0
                 % outer-approximation does not intersect unsafe set ->
                 % time interval is verified
-                savedata.Funsat{i} = removeFromUnsat(savedata.Funsat{i},timeInterval);
+                savedata.Funsat{i} = aux_removeFromUnsat(savedata.Funsat{i},timeInterval);
             end
             
         end
@@ -1191,7 +1191,7 @@ end
 
 end
 
-function FGunsat = removeFromUnsat(FGunsat,t)
+function FGunsat = aux_removeFromUnsat(FGunsat,t)
 % adapt FGunsat so that timeInterval is not part of time intervals covered
 
 FGunsat_col = reshape(FGunsat',numel(FGunsat),1);
@@ -1293,7 +1293,7 @@ function [Rout,Rout_error,Rout_tp,Rout_tp_error,set] = ...
 
 % additional inclusion of check...?
 
-if isscalar(obj.C) && obj.C == 1 && isZero(options.V) && ~any(options.vTrans)
+if isscalar(obj.C) && obj.C == 1 && representsa_(options.V,'origin',eps) && ~any(options.vTrans)
     % y = x ... consequently, errors are also equal
     if isU
         Rout = zonotope([center(set.enc) + set.boxFstartset_center + ...
@@ -1309,7 +1309,7 @@ if isscalar(obj.C) && obj.C == 1 && isZero(options.V) && ~any(options.vTrans)
     
     % time-point solution
     if isU
-        Rout_tp = zonotope([set.Hstartp.Z, ...
+        Rout_tp = zonotope(set.Hstartp.c, [set.Hstartp.G, ...
             set.G_PUtotal_zero, diag(set.G_PUtotal_infty)]);
     else
         Rout_tp = set.Hstartp;
@@ -1318,7 +1318,7 @@ if isscalar(obj.C) && obj.C == 1 && isZero(options.V) && ~any(options.vTrans)
     
 else
     
-    if ~isscalar(obj.C) && isZero(options.V) && ~any(options.vTrans)
+    if ~isscalar(obj.C) && representsa_(options.V,'origin',eps) && ~any(options.vTrans)
         % y = Cx ... errors are scaled
         
         if isU
@@ -1335,8 +1335,8 @@ else
         
         % time-point solution
         if isU
-            Rout_tp = zonotope([obj.C * set.Hstartp.Z, ...
-                [obj.C * set.G_PUtotal_zero, obj.C * diag(set.G_PUtotal_infty)]]);
+            Rout_tp = obj.C * zonotope(set.Hstartp.c, [set.Hstartp.G, ...
+                set.G_PUtotal_zero, diag(set.G_PUtotal_infty)]);
         else
             Rout_tp = obj.C * set.Hstartp;
         end
@@ -1380,7 +1380,7 @@ end
 end
 
 % error computation
-function errval = errOp(S)
+function errval = aux_errOp(S)
 % output of error operator err(*): computes radius of smallest hypersphere
 % centered at the origin(!), which encloses S
 % this function represents the predominant error measure in this algorithm
@@ -1524,18 +1524,18 @@ else
     set.Ftilderad = savedata.Ftilderad{timeStepIdx};
 end
 % original computation:
-% - e.F = 2 * errOp(set.F * set.startset);
+% - e.F = 2 * aux_errOp(set.F * set.startset);
 % following version to increase computational efficiency
-Fstartset_Z = [set.Fcenter * set.startset.Z, ...
-    diag(set.Frad * sum(abs(set.startset.Z),2))];
-set.boxFstartset_center = Fstartset_Z(:,1);
-set.boxFstartset_Gbox = sum(abs(Fstartset_Z(:,2:end)),2);
+set.boxFstartset_center = set.Fcenter * set.startset.c;
+Fstartset_G = [set.Fcenter * set.startset.G, ...
+    diag(set.Frad * sum(abs([set.startset.c, set.startset.G]),2))];
+set.boxFstartset_Gbox = sum(abs(Fstartset_G),2);
 e.F = 2 * vecnorm(set.boxFstartset_Gbox + abs(set.boxFstartset_center));
 
 
 % original computation:
 % - set.FtildeuTrans = set.Ftilde * zonotope(u);
-% - e.Ftilde = 2 * errOp(set.FtildeuTrans);
+% - e.Ftilde = 2 * aux_errOp(set.FtildeuTrans);
 % following version to increase computational efficiency
 set.FtildeuTrans_center = zeros(obj.dim,1);
 set.FtildeuTrans_Gbox = zeros(obj.dim,1);
@@ -1567,7 +1567,7 @@ e.PU_tauk = 0;
 if isU
     e.PU_tauk = vecnorm( sum(abs(expmat.tk * set.G_PU_zero),2) + ...
         sum(abs(expmat.tk * set.G_PU_infty),2) );
-    % ... equal to errOp(set.eAtkPU)
+    % ... equal to aux_errOp(set.eAtkPU)
 end
 
 % total non-accumulating error
@@ -2696,7 +2696,7 @@ end
 end
 
 % plot/debug functions to facilitate bug fixing
-function debugdata = debug_debugdata(k,cnt,fullcomp,debugdata,e,ebar,coeff,timeStep)
+function debugdata = aux_debug_debugdata(k,cnt,fullcomp,debugdata,e,ebar,coeff,timeStep)
 % save all current values for inspection in case bugs occur
 
 debugdata.timeStep{k,1}(cnt,1) = timeStep;
@@ -2728,7 +2728,7 @@ debugdata.ebar.remacc{k,1}(cnt,1) = ebar.remacc(k);
         
 end
 
-function debugdata = debug_debugdata_sets(k,fullcomp,debugdata,set,expmat)
+function debugdata = aux_debug_debugdata_sets(k,fullcomp,debugdata,set,expmat)
 % save sets and matrices used for set propagation in each step
 
 if fullcomp(k)
@@ -2747,7 +2747,7 @@ debugdata.expmat.Deltatk{k,1} = expmat.Deltatk;
 
 end
 
-function plot_Rerror(isdebug,fullcomp,tVec,Rout_error,Rout_tp_error,e,tu)
+function aux_plot_Rerror(isdebug,fullcomp,tVec,Rout_error,Rout_tp_error,e,tu)
 % plot curves of over-approximation error contained in time-point and
 % time-interval reachable sets, along with maximum admissible error and
 % switches of input vector (to possibly explain some jumps)
@@ -2789,7 +2789,7 @@ close;
 
 end
 
-function plot_errorcurve(isdebug,fullcomp,e,ebar,tVec,debugdata)
+function aux_plot_errorcurve(isdebug,fullcomp,e,ebar,tVec,debugdata)
 % plots the committed error and the corresponding bounds over time
 
 % isdebug = true;
@@ -2898,7 +2898,7 @@ close;
 
 end
 
-function plot_e2ebar(isdebug,fullcomp,debugdata,timeStepIdxs)
+function aux_plot_e2ebar(isdebug,fullcomp,debugdata,timeStepIdxs)
 % plot to what percentage the bounds are fulfilled in each step
 
 % isdebug = true;
@@ -2933,7 +2933,7 @@ close;
 
 end
 
-function print_e2ebar(isdebug,k,cnt,isU,fullcomp,e,ebar,timeStep)
+function aux_print_e2ebar(isdebug,k,cnt,isU,fullcomp,e,ebar,timeStep)
 
 % isdebug = true;
 if ~isdebug
@@ -2954,4 +2954,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

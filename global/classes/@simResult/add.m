@@ -1,7 +1,7 @@
 function simRes = add(simRes1,simRes2)
 % add - joins two simResult objects
 %
-% Syntax:  
+% Syntax:
 %    simRes = add(simRes1,simRes2)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function simRes = add(simRes1,simRes2)
 %
 % See also: reachSet
 
-% Author:       Niklas Kochdumper
-% Written:      29-May-2020             
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       29-May-2020             
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % special case
 if isempty(simRes1)
@@ -47,4 +47,4 @@ simRes.x = [simRes1.x; simRes2.x];
 simRes.t = [simRes1.t; simRes2.t];
 simRes.loc = [simRes1.loc; simRes2.loc];
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

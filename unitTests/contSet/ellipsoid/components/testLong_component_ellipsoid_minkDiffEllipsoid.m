@@ -1,7 +1,7 @@
 function res = testLong_component_ellipsoid_minkDiffEllipsoid
 % testLong_component_ellipsoid_minkDiffEllipsoid - unit test
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_component_ellipsoid_minkDiffEllipsoid
 %
 % Inputs:
@@ -16,12 +16,13 @@ function res = testLong_component_ellipsoid_minkDiffEllipsoid
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      17-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       17-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = true;
 nRuns = 2;
 for i=10:5:15
@@ -44,7 +45,7 @@ for i=10:5:15
             % generate degenerate ellipsoid contained in E2
             E3 = ellipsoid(U*S*U',E2.q);
             E2i = minkDiff(E1,E3,'inner');
-            if isempty(E1o) 
+            if representsa_(E1o,'emptySet',eps)
                 if ~(E1==E2) && contains(E1,E2)
                     res = false;
                     return;
@@ -56,7 +57,7 @@ for i=10:5:15
                 return;
             end
             E3i = minus(E2,E3,'inner');
-            if isempty(E3i)
+            if representsa_(E3i,'emptySet',eps)
                 res = false;
                 return;
             end
@@ -82,4 +83,5 @@ for i=10:5:15
         end
     end
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

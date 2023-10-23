@@ -3,7 +3,7 @@ function V = potVertices(cZ)
 %    the points vertices are either real vertices or are located inside the
 %    constrained zonotope 
 %
-% Syntax:  
+% Syntax:
 %    V = potVertices(cZ)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function V = potVertices(cZ)
 %   [2] C. Lara, J. Flores, F. Calderon.
 %       "On the Hyperbox - Hyperplane Intersection Problem"
 
-% Author:       Niklas Kochdumper
-% Written:      13-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       13-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
 % Calculate extreme points for the zonotope factors ksi
 if isempty(cZ.ksi)
@@ -56,9 +56,9 @@ if isempty(cZ.ksi)
         try
             ksi_2 = lcon2vert(A,b,A_,cZ.b);
         catch
-            poly = Polyhedron([A;A_;-A_],[b;cZ.b;-cZ.b]);
-            computeVRep(poly);
-            ksi_2 = poly.V;
+            poly = polytope([A;A_;-A_],[b;obj.b;-obj.b]);
+            V = computeVRep(poly);
+            ksi_2 = V;
         end
     elseif n < 5
         % calculate the intersection points via [2] naive method 
@@ -99,6 +99,6 @@ if isempty(cZ.ksi)
 end
     
 % Calculate the corresponding zonotope points (ksi-space -> real space)
-V = cZ.Z * [ones(1,size(cZ.ksi,2)); cZ.ksi];
+V = [cZ.c,cZ.G] * [ones(1,size(cZ.ksi,2)); cZ.ksi];
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

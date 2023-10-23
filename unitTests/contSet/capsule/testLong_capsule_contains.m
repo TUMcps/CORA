@@ -1,7 +1,7 @@
 function res = testLong_capsule_contains
 % testLong_capsule_contains - unit test function of contains
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_capsule_contains
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_capsule_contains
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      11-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 nrTests = 1000;
 
@@ -119,4 +119,4 @@ end
 % combine tests
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

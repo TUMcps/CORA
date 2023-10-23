@@ -1,7 +1,7 @@
 function res = test_interval_abs
 % test_interval_abs - unit test function of absolute value
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_abs
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_abs
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      05-January-2016
-% Last update:  12-January-2016 (DG)
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       05-January-2016
+% Last update:   12-January-2016 (DG)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % define problem
 tol = 1e-9;
@@ -60,4 +60,4 @@ if abs( infimum(c(6)) - 5.0 ) > tol || abs( supremum(c(6)) - 8.0 ) > tol
 	return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

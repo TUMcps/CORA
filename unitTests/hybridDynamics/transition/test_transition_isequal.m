@@ -1,7 +1,7 @@
 function res = test_transition_isequal
 % test_transition_isequal - test function for isequal
 %
-% Syntax:  
+% Syntax:
 %    res = test_transition_isequal
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_transition_isequal
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      26-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       26-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = [];
 
@@ -80,4 +80,4 @@ res(end+1,1) = ~isequal(transition(guard1,reset1,target1,syncLabel1),...
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

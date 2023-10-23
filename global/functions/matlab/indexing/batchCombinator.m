@@ -32,12 +32,13 @@ function [CN, state] = batchCombinator(N, K, batch_size, state)
 %
 % See also: ---
 
-% Author:       Michael Eichelbeck
-% Written:      27-July-2022 
-% Last update:  ---
+% Authors:       Michael Eichelbeck
+% Written:       27-July-2022 
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
     if ~isfield(state, 'BC') % init
         
         if K>N
@@ -127,4 +128,4 @@ function [CN, state] = batchCombinator(N, K, batch_size, state)
           
 end % end of function
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function [Rfirst,options] = initReach(obj,Rinit,options)
 % initReach - computes the reachable continuous set for the first time step
 %
-% Syntax:  
+% Syntax:
 %    [Rfirst,options] = initReach(obj,Rinit,options)
 %
 % Inputs:
@@ -21,15 +21,15 @@ function [Rfirst,options] = initReach(obj,Rinit,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      05-August-2010
-% Last update:  16-May-2011
-%               19-February-2012
-%               12-August-2016
-%               19-May-2020 (MW, error handling for exploding sets)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-August-2010
+% Last update:   16-May-2011
+%                19-February-2012
+%                12-August-2016
+%                19-May-2020 (MW, error handling for exploding sets)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % store taylor terms and time step as object properties
 obj.stepSize = options.timeStep;
@@ -75,4 +75,4 @@ if isa(Rinit,'zonotope')
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

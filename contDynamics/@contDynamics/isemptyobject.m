@@ -1,7 +1,7 @@
 function res = isemptyobject(sys)
 % isemptyobject - checks if a contDynamics object is empty
 %
-% Syntax:  
+% Syntax:
 %    res = isemptyobject(sys)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function res = isemptyobject(sys)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 [r,c] = size(sys);
 res = false(r,c);
@@ -36,4 +36,4 @@ for i=1:r
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_zonoBundle_zonotope
 % test_zonoBundle_zonotope - unit test function of zonotope conversion
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonoBundle_zonotope
 %
 % Inputs:
@@ -16,17 +16,17 @@ function res = test_zonoBundle_zonotope
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
 zB = zonoBundle();
 Z = zonotope(zB);
-res = isempty(Z);
+res = representsa(Z,'emptySet');
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);
@@ -46,4 +46,4 @@ res(end+1,1) = contains(Z,zB);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

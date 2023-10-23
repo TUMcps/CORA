@@ -1,7 +1,7 @@
 function res = isequal(cPZ1,cPZ2,varargin)
 % isequal - checks if two constrained polynomial zonotopes are equal
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(cPZ1,cPZ2)
 %    res = isequal(cPZ1,cPZ2,tol)
 %
@@ -26,12 +26,12 @@ function res = isequal(cPZ1,cPZ2,varargin)
 %
 % See also: polyZonotope/isequal, zonotope/isequal
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       27-January-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -50,8 +50,8 @@ inputArgsCheck({{cPZ1,'att','conPolyZono'};
 res = false;
 
 % remove redundancies
-cPZ1 = compact(cPZ1);
-cPZ2 = compact(cPZ2);
+cPZ1 = compact_(cPZ1,'all',eps);
+cPZ2 = compact_(cPZ2,'all',eps);
 
 % compare number of constraints (quick check)
 if size(cPZ1.A,1) ~= size(cPZ2.A)
@@ -61,22 +61,21 @@ end
 % compare number of generators (quick check)
 if size(cPZ1.G,2) ~= size(cPZ2.G,2) || ... 
     size(cPZ1.A,2) ~= size(cPZ2.A,2) || ...
-    size(cPZ1.Grest,2) ~= size(cPZ2.Grest,2)
+    size(cPZ1.GI,2) ~= size(cPZ2.GI,2)
     return 
 end
 
 % compare identifier vectors
 temp1 = sort(cPZ1.id); temp2 = sort(unique([cPZ1.id;cPZ2.id]));
-E1 = cPZ1.expMat; E2 = cPZ2.expMat; 
-E1_ = cPZ1.expMat_; E2_ = cPZ2.expMat_;
+E1 = cPZ1.E; E2 = cPZ2.E; 
+EC1 = cPZ1.EC; EC2 = cPZ2.EC;
 
 if length(temp1) ~= length(temp2) || ~all(temp1 == temp2)
     return;
 elseif ~all(cPZ1.id == cPZ2.id)
-    [~,E1,E2] = mergeExpMatrix(cPZ1.id,cPZ2.id,cPZ1.expMat,cPZ2.expMat);
+    [~,E1,E2] = mergeExpMatrix(cPZ1.id,cPZ2.id,cPZ1.E,cPZ2.E);
     if ~isempty(cPZ1.A)
-        [~,E1_,E2_] = mergeExpMatrix(cPZ1.id,cPZ2.id,cPZ1.expMat_, ...
-                                 cPZ2.expMat_);
+        [~,EC1,EC2] = mergeExpMatrix(cPZ1.id,cPZ2.id,cPZ1.EC,cPZ2.EC);
     end
 end
 
@@ -89,7 +88,7 @@ end
 if ~isempty(cPZ1.A)
    
     % compare constraint exponent matrices
-    if ~(all(all(withinTol(E1_,E2_,tol))))
+    if ~(all(all(withinTol(EC1,EC2,tol))))
         return
     end
     
@@ -106,8 +105,8 @@ if ~isempty(cPZ1.A)
 end
 
 % compare center and independent generators
-Z1 = zonotope(cPZ1.c,cPZ1.Grest);
-Z2 = zonotope(cPZ2.c,cPZ2.Grest);
+Z1 = zonotope(cPZ1.c,cPZ1.GI);
+Z2 = zonotope(cPZ2.c,cPZ2.GI);
 res = isequal(Z1,Z2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

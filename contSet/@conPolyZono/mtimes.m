@@ -2,7 +2,7 @@ function cPZ = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix (or
 %    interval matrix) with a constrained polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    cPZ = mtimes(factor1,factor2)
 %
 % Inputs:
@@ -15,11 +15,11 @@ function cPZ = mtimes(factor1,factor2)
 % Example: 
 %    c = [0;0];
 %    G = [2 0 2; 0 2 2];
-%    expMat = [1 0 1; 0 1 1; 0 0 0];
+%    E = [1 0 1; 0 1 1; 0 0 0];
 %    A = [2 2 4 -4];
 %    b = 0;
-%    expMat_ = [1 0 1 0; 0 1 1 0; 0 0 0 1];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    EC = [1 0 1 0; 0 1 1 0; 0 0 0 1];
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 % 
 %    M = [3 1;2 -4];
 %    cPZ_ = M * cPZ;
@@ -34,12 +34,12 @@ function cPZ = mtimes(factor1,factor2)
 %
 % See also: polyZonotope/mtimes, plus
 
-% Author:       Niklas Kochdumper
-% Written:      15-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       15-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % find the conPolyZono object
 [cPZ,M] = findClassArg(factor1,factor2,'conPolyZono');
@@ -55,19 +55,19 @@ try
             cPZ.G = M*cPZ.G;
         end
     
-        if ~isempty(cPZ.Grest)
-            cPZ.Grest = M*cPZ.Grest;
+        if ~isempty(cPZ.GI)
+            cPZ.GI = M*cPZ.GI;
         end
         
     % use polynomial zonotope method for other cases
     else
         
-        pZ = polyZonotope(cPZ.c,cPZ.G,cPZ.Grest,cPZ.expMat);
+        pZ = polyZonotope(cPZ.c,cPZ.G,cPZ.GI,cPZ.E);
         
         temp = mtimes(M,pZ);
         
-        cPZ = conPolyZono(temp.c,temp.G,temp.expMat,cPZ.A,cPZ.b, ...
-                          cPZ.expMat_,temp.Grest,cPZ.id);
+        cPZ = conPolyZono(temp.c,temp.G,temp.E,cPZ.A,cPZ.b, ...
+                          cPZ.EC,temp.GI,cPZ.id);
         
     end
 
@@ -81,7 +81,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(cPZ)
+    if representsa_(cPZ,'emptySet',eps)
         return
     end
 
@@ -94,4 +94,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

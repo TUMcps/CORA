@@ -1,7 +1,7 @@
 function res = test_levelSet_levelSet
 % test_levelSet_levelSet - unit test function of constructor
 %
-% Syntax:  
+% Syntax:
 %    res = test_levelSet_levelSet
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_levelSet_levelSet
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -64,4 +64,4 @@ try
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

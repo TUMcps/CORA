@@ -2,7 +2,7 @@ function res = test_matZonotope_display
 % test_matZonotope_display - unit test function for display (only check for
 %    runtime errors)
 % 
-% Syntax:  
+% Syntax:
 %    res = test_matZonotope_display
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_matZonotope_display
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -44,4 +44,4 @@ C = [0 2; 1 -1; 1 -2];
 G{1} = [1 1; -1 0; -2 1]; G{2} = [-2 0; 0 1; 1 -1];
 matZ = matZonotope(C,G)
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

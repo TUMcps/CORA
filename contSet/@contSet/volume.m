@@ -20,12 +20,12 @@ function res = volume(S,varargin)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      18-August-2022
-% Last update:  23-November-2022 (MW, add classname as input argument)
-% Last revision:27-March-2023 (MW, restructure relation to subclass)
+% Authors:       Mark Wetzlinger
+% Written:       18-August-2022
+% Last update:   23-November-2022 (MW, add classname as input argument)
+% Last revision: 27-March-2023 (MW, restructure relation to subclass)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
 if nargin < 1
@@ -48,11 +48,11 @@ try
     res = volume_(S,method,order);
 catch ME
     % empty set case
-    if isempty(S)
+    if representsa_(S,'emptySet',eps)
         res = 0;
     else
         rethrow(ME);
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

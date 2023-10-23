@@ -17,8 +17,8 @@ function [t,x,ind,y] = simulate(obj,params,varargin)
 %               m x z, where
 %               m = number of system inputs, and
 %               z = 1 (fixed input) or
-%                   s (if no throughput matrix given)
-%                   s+1 (if throughput matrix given)
+%                   s (if no feedthrough matrix given)
+%                   s+1 (if feedthrough matrix given)
 %                   where s is the number of steps
 %       .w: disturbance of dimension n x s (n = system dimension)
 %       .v: sensor noise of dimension n_out x s+1 (n_out = output dimension)
@@ -48,14 +48,14 @@ function [t,x,ind,y] = simulate(obj,params,varargin)
 %
 % See also: none
 
-% Author:        Matthias Althoff, Mark Wetzlinger
+% Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       03-May-2007 
 % Last update:   20-March-2008
 %                08-May-2020 (MW, update interface)
 %                13-February-2023 (MW, remove duplicates)                                           
 % Last revision: 16-November-2021 (MW, include params.w|v)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 isOpt = false;
@@ -181,7 +181,7 @@ end
 end
 
 
-% Auxiliary function
+% Auxiliary functions -----------------------------------------------------
 
 function [params,steps,tSpan] = aux_uwv(obj,params,steps,tSpan)
 % set input vector u, disturbance w, and sensor noise v correctly
@@ -204,8 +204,8 @@ sizeV = size(params.v,2);
 
 % if a timeStep is given, then u, w, and v have to have
 %   either 1 column (fixed value) or
-%   u: s (if throughput matrix is all-zero)
-%   u: s+1 (if throughput matrix is non-zero)
+%   u: s (if feedthrough matrix is all-zero)
+%   u: s+1 (if feedthrough matrix is non-zero)
 %   w: s
 %   v: s+1
 % using s = number of steps
@@ -281,11 +281,11 @@ else % steps == 1, i.e., no params.timeStep given
                 '    disturbance (params.w)\n' ...
                 '    sensor noise (params.v)\n' ...
                 'have to be either 1 or match one another, that is\n'...
-                '    Case #1: throughput matrix D provided:\n'...
+                '    Case #1: feedthrough matrix D provided:\n'...
                 '        params.u: x+1 columns\n'...
                 '        params.w: x   columns\n'...
                 '        params.v: x+1 columns\n'...
-                '    Case #2: throughput matrix D not provided:\n'...
+                '    Case #2: feedthrough matrix D not provided:\n'...
                 '        params.u: x   columns\n'...
                 '        params.w: x   columns\n'...
                 '        params.v: x+1 columns'...
@@ -325,4 +325,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

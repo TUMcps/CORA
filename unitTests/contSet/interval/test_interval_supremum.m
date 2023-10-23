@@ -1,7 +1,7 @@
 function res = test_interval_supremum
 % test_interval_supremum - unit test function of the supremum of an interval
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_supremum
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_supremum
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      14-January-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       14-January-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % define problem
 tol = 1e-9;
@@ -59,4 +59,4 @@ if abs( supremum(c(6)) - 8.0 ) > tol
 	return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function l = length(I)
 % length - Overloads the operator that returns the length
 %    of the longest array dimension
 %
-% Syntax:  
+% Syntax:
 %    l = length(I)
 %
 % Inputs:
@@ -21,14 +21,14 @@ function l = length(I)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      18-November-2015 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-November-2015 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % length of infimum and supremum equal
 l = length(I.inf);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

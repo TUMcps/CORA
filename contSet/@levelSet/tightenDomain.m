@@ -3,7 +3,7 @@ function I = tightenDomain(ls,S,varargin)
 %    between the level set and the set S as described in Sec. 4.2 in [1];
 %    this operation only works for level sets with '=='
 %
-% Syntax:  
+% Syntax:
 %    I = tightenDomain(ls,S)
 %
 % Inputs:
@@ -39,12 +39,12 @@ function I = tightenDomain(ls,S,varargin)
 %
 % See also: and
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       25-July-2019
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % operations only if '=='
 if ~strcmp(ls.compOp,'==')
@@ -65,20 +65,21 @@ I = interval(S);
 
 % choose contractor algorithm 
 if strcmp(type,'split')
-    I = contractorSplit(ls,I,maxIter);
+    I = aux_contractorSplit(ls,I,maxIter);
 elseif strcmp(type,'taylor')
-    I = contractorTaylor(ls,I,maxIter);
+    I = aux_contractorTaylor(ls,I,maxIter);
 elseif strcmp(type,'linear')
-    I = contractorLinear(ls,I,maxIter);
+    I = aux_contractorLinear(ls,I,maxIter);
 elseif strcmp(type,'forwardBackward')
-    I = contractorForwardBackward(ls,I);
+    I = aux_contractorForwardBackward(ls,I);
 end
     
 end
    
 
-% Auxiliary Functions -----------------------------------------------------
-function int = contractorForwardBackward(obj,int)
+% Auxiliary functions -----------------------------------------------------
+
+function int = aux_contractorForwardBackward(obj,int)
 
     % compute syntax tree nodes for all variables
     vars = [];
@@ -95,7 +96,7 @@ function int = contractorForwardBackward(obj,int)
 
 end
 
-function int = contractorLinear(obj,int,maxIter)
+function int = aux_contractorLinear(obj,int,maxIter)
 
     % loop over all iterations
     for i = 1:maxIter
@@ -121,7 +122,7 @@ function int = contractorLinear(obj,int,maxIter)
     end
 end
 
-function int = contractorTaylor(obj,int,maxIter)
+function int = aux_contractorTaylor(obj,int,maxIter)
 
     infi = infimum(int);
     sup = supremum(int);
@@ -138,13 +139,13 @@ function int = contractorTaylor(obj,int,maxIter)
                 % check if equaiton is solvable for the current variable
                 if obj.solved{j}.solvable
 
-                    [infi,sup,fail] = scaleVarSolvable(obj,infi,sup,j);
+                    [infi,sup,fail] = aux_scaleVarSolvable(obj,infi,sup,j);
 
                 end
 
                 % not solvable or evaluation failed
                 if ~obj.solved{j}.solvable || fail
-                    [infi,sup] = scaleVarUnsolvable(obj,infi,sup,j);
+                    [infi,sup] = aux_scaleVarUnsolvable(obj,infi,sup,j);
                 end
             end
         end            
@@ -154,7 +155,7 @@ function int = contractorTaylor(obj,int,maxIter)
     int = interval(infi,sup);
 end
     
-function int = contractorSplit(obj,int,maxIter)   
+function int = aux_contractorSplit(obj,int,maxIter)   
     
     intList{1} = int;
     
@@ -178,14 +179,14 @@ function int = contractorSplit(obj,int,maxIter)
                     % check if equaiton is solvable for the current variable
                     if obj.solved{j}.solvable
 
-                        [infi,sup,fail] = scaleVarSolvable(obj,infi,sup,j);
+                        [infi,sup,fail] = aux_scaleVarSolvable(obj,infi,sup,j);
                         
                     end
                         
                     % not solvable or evaluation failed
                     if ~obj.solved{j}.solvable || fail
 
-                        [infi,sup] = scaleVarUnsolvable(obj,infi,sup,j);
+                        [infi,sup] = aux_scaleVarUnsolvable(obj,infi,sup,j);
                         
                         if infi(j) > sup(j)
                            break; 
@@ -234,7 +235,7 @@ end
 
 % Auxiliary Functions -----------------------------------------------------
 
-function [infi,sup,fail] = scaleVarSolvable(obj,infi,sup,j)
+function [infi,sup,fail] = aux_scaleVarSolvable(obj,infi,sup,j)
 
     fail = 0;
 
@@ -272,7 +273,7 @@ function [infi,sup,fail] = scaleVarSolvable(obj,infi,sup,j)
     end
 end
 
-function [infi,sup] = scaleVarUnsolvable(obj,infi,sup,j)
+function [infi,sup] = aux_scaleVarUnsolvable(obj,infi,sup,j)
 
     % compute Taylor series at linearization point
     int = interval(infi,sup);
@@ -292,10 +293,10 @@ function [infi,sup] = scaleVarUnsolvable(obj,infi,sup,j)
     if grad(j) ~= 0
         
         % over-approximate higher order terms
-        err = quadEval(hess,int_);
+        err = aux_quadEval(hess,int_);
 
         for k = 1:length(third)
-            err = err + 1/6 * int_(k) * quadEval(third{k},int_);
+            err = err + 1/6 * int_(k) * aux_quadEval(third{k},int_);
         end
 
         % update bounds
@@ -308,7 +309,7 @@ function [infi,sup] = scaleVarUnsolvable(obj,infi,sup,j)
 
 end
 
-function res = quadEval(Q,int)
+function res = aux_quadEval(Q,int)
 % tight evaluation of a quadratic term using interval arithmetic
 
     res = interval(0,0);
@@ -322,4 +323,4 @@ function res = quadEval(Q,int)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

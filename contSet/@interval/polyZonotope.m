@@ -1,7 +1,7 @@
 function pZ = polyZonotope(I)
 % polyZonotope - convert an interval object to a polynomial zonotope 
 %
-% Syntax:  
+% Syntax:
 %    pZ = polyZonotope(I)
 %
 % Inputs:
@@ -24,17 +24,17 @@ function pZ = polyZonotope(I)
 %
 % See also: zonotope/polyZonotope, taylm/polyZonotope
 
-% Author:       Niklas Kochdumper
-% Written:      25-June-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-June-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 c = center(I);
 G = diag(rad(I));
-expMat = eye(length(c));
+E = eye(length(c));
 
-pZ = polyZonotope(c,G,[],expMat);
+pZ = polyZonotope(c,G,[],E);
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

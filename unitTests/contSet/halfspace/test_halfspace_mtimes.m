@@ -1,7 +1,7 @@
 function res = test_halfspace_mtimes
 % test_halfspace_mtimes - unit test function of mtimes
 %
-% Syntax:  
+% Syntax:
 %    res = test_halfspace_mtimes
 %
 % Inputs:
@@ -16,18 +16,18 @@ function res = test_halfspace_mtimes
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      16-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. empty case
 % res_empty = true;
 h = halfspace();
 A = rand(2,2);
-res_empty = isempty(A*h);
+res_empty = representsa(A*h,'emptySet');
 
 % 2. analytical test
 % instantiate halfspace
@@ -60,4 +60,4 @@ end
 % combine tests
 res = res_empty && res_analytical;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

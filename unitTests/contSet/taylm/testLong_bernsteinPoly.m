@@ -3,7 +3,7 @@ function res = testLong_bernsteinPoly
 %    of a polynomial to a bernstein polynomial as implemented by the
 %    function "poly2bernstein"
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_bernsteinPoly
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = testLong_bernsteinPoly
 %
 % See also: poly2bernstein
 
-% Author:       Niklas Kochdumper
-% Written:      31-January-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       31-January-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % assume true
     res = true;
@@ -40,22 +40,22 @@ function res = testLong_bernsteinPoly
            % generate random polynomial zonotope
            pZ = polyZonotope.generateRandom('Dimension',1,'NrFactors',n);
            
-           n_ = size(pZ.expMat,1);
-           expMat = [zeros(n_,1),pZ.expMat];
+           n_ = size(pZ.E,1);
+           E = [zeros(n_,1),pZ.E];
            G = [pZ.c,pZ.G];
            
            dom = interval(-ones(n_,1),ones(n_,1));
            
            % convert to bernstein polynomial
-           [B,expMat_] = poly2bernstein(G,expMat,dom);
+           [B,E_] = poly2bernstein(G,E,dom);
            
            % test for random points if the two polynomials are identical
            for j = 1:M
                
               p = randPoint(dom);
               
-              val = aux_regularPolynom(p,G,expMat);
-              val_ = aux_bernsteinPolynom(p,B,expMat_);
+              val = aux_regularPolynom(p,G,E);
+              val_ = aux_bernsteinPolynom(p,B,E_);
               
               if ~withinTol(val,val_,1e-13)
                  res = false; return
@@ -67,34 +67,34 @@ function res = testLong_bernsteinPoly
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function val = aux_regularPolynom(x,G,expMat)
+function val = aux_regularPolynom(x,G,E)
 % evaluate a polynomial at the point x
 
     val = 0;
     
     for i = 1:length(G)
        temp = 1;
-       for j = 1:size(expMat,1)
-          temp = temp * x(j)^expMat(j,i); 
+       for j = 1:size(E,1)
+          temp = temp * x(j)^E(j,i); 
        end
        val = val + G(i) * temp;
     end
 end
 
-function val = aux_bernsteinPolynom(x,B,expMat)
+function val = aux_bernsteinPolynom(x,B,E)
 % evaluate a bernstein polynomial at point x
 
     l = length(x);
-    n = max(max(expMat));
+    n = max(max(E));
     
     dom = interval(-ones(l,1),ones(l,1));
     
     val = 0;
     
     for i = 1:length(B)
-       val = val + B(i) * aux_bernsteinPolynom_(x,dom,n,expMat(:,i)); 
+       val = val + B(i) * aux_bernsteinPolynom_(x,dom,n,E(:,i)); 
     end
 end
 
@@ -113,4 +113,4 @@ function val = aux_bernsteinPolynom_(x,dom,n,e)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

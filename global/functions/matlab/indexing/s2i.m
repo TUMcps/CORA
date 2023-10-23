@@ -3,7 +3,7 @@ function indices = s2i(siz,subscripts)
 %    conveniently for arbitrarily many dimensions. The function sub2ind 
 %    converts subscripts to linear inidces
 %
-% Syntax:  
+% Syntax:
 %    indices = s2i(siz,subscripts)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function indices = s2i(siz,subscripts)
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       14-September-2006
 % Last update:   28-July-2020
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 multiplicator = siz;
 for i = 2:length(multiplicator)
@@ -40,4 +40,4 @@ multiplicator = [1, multiplicator(1:end-1)];
 indices = (multiplicator * (subscripts - 1)')+1;
 indices=indices.*(prod((subscripts<=siz).*(subscripts>0),2))';
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

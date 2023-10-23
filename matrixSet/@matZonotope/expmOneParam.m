@@ -3,7 +3,7 @@ function [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,varargin
 %    evaluated dependently. Higher order terms are computed via interval
 %    arithmetic.
 %
-% Syntax:  
+% Syntax:
 %    [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,varargin)
 %
 % Inputs:
@@ -31,12 +31,12 @@ function [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,varargin
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      13-September-2010 
-% Last update:  04-April-2017
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       13-September-2010 
+% Last update:   04-April-2017
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %cannot directly use u as input since zonotope has preference over
 %matZonotopes
@@ -56,9 +56,8 @@ C = matZ.center;
 G = matZ.generator{1};
 
 %obtain center and generator of input uTrans
-u_mat = u.Z;
-c_u = u_mat(:,1);
-g_u = u_mat(:,2);
+c_u = u.c;
+g_u = u.G;
 
 %initialize matrices D,E (center and generators of powers)
 D{1} = C;
@@ -137,4 +136,4 @@ RconstInput = zonotope(matZonotope(D_u_sum, E_u_sum));
 % no powers based on interval matrix
 iPow = [];
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -7,7 +7,7 @@ function res = test_linearSysDT_observe_02_2dim
 % final observed set is close to an interval provided by a previous 
 % solution that has been saved
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSysDT_observe_02_2dim()
 %
 % Inputs:
@@ -20,12 +20,12 @@ function res = test_linearSysDT_observe_02_2dim
 %    [1] T. Alamo, J. M. Bravo, and E. F. Camacho. Guaranteed
 %        state estimation by zonotopes. Automatica, 41(6):1035–1043, 2005.
 
-% Author:       Matthias Althoff
-% Written:      19-November-2020
-% Last update:  04-June-2021
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-November-2020
+% Last update:   04-June-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% Load vehicle model
 load twoDimSys sys params options
@@ -149,4 +149,4 @@ end
 % final result
 res = all(resPartial);
         
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

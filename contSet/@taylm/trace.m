@@ -1,7 +1,7 @@
 function res = trace(obj)
 % trace - trace for TM matrices
 %
-% Syntax:  
+% Syntax:
 %    res = trace(obj)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = trace(obj)
 %
 % See also: taylm
 
-% Author:       Dmitry Grebenyuk
-% Written:      19-November-2017
-% Last update:  ---  
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       19-November-2017
+% Last update:   ---  
+% Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     res = obj(1,1);
     for i = 2:size(obj, 1)
@@ -29,4 +29,5 @@ function res = trace(obj)
     end
     
 end
-%------------ END OF CODE ------------
+
+% ------------------------------ END OF CODE ------------------------------

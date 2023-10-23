@@ -1,7 +1,7 @@
 function res = test_emptySet_plot
 % test_emptySet_plot - unit test function of plot
 %
-% Syntax:  
+% Syntax:
 %    res = test_emptySet_plot
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_emptySet_plot
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      03-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       03-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -69,7 +69,7 @@ try
     % check points
     resvec(end+1) = all(isnan([ax.Children(1).XData;ax.Children(1).YData]));
     % test color
-    resvec(end+1) = isequal(colorOrder(1,:), ax.Children(1).FaceColor);
+    resvec(end+1) = isequal(colorOrder(1,:), ax.Children(1).Color);
 
     % plot second set
     plot(O,[1,3]);
@@ -77,7 +77,7 @@ try
     % check points
     resvec(end+1) = all(isnan([ax.Children(1).XData;ax.Children(1).YData]));
     % test color
-    resvec(end+1) = isequal(colorOrder(2,:), ax.Children(1).FaceColor);
+    resvec(end+1) = isequal(colorOrder(2,:), ax.Children(1).Color);
     
     % close figure
     close;
@@ -109,4 +109,4 @@ end
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

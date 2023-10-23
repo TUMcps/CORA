@@ -1,7 +1,7 @@
 function res = test_levelSet_compact
 % test_levelSet_compact - unit test function of compact
 %
-% Syntax:  
+% Syntax:
 %    res = test_levelSet_compact
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_levelSet_compact
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      25-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init symbolic variables
 syms x y
@@ -70,4 +70,4 @@ res(end+1,1) = isequal(S,S_true);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

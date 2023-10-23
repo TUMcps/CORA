@@ -2,7 +2,7 @@ function probZ = plus(summand1,summand2)
 % plus - Overloaded '+' operator for the Minkowski addition of a
 %        probabilistic zonotope with another summand according to [1,(4)]
 %
-% Syntax:  
+% Syntax:
 %    probZ = plus(summand1,summand2)
 %
 % Inputs:
@@ -33,13 +33,13 @@ function probZ = plus(summand1,summand2)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      06-September-2007
-% Last update:  24-August-2016
-%               05-May-2020 (MW, standardized error message)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-September-2007
+% Last update:   24-August-2016
+%                05-May-2020 (MW, standardized error message)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % determine probabilistic zonotope object
 [probZ,summand] = findClassArg(summand1,summand2,'probZonotope');
@@ -57,7 +57,7 @@ try
     %Is summand a zonotope?
     elseif isa(summand,'zonotope')
         %Calculate minkowski sum
-        summandZ=summand.Z;
+        summandZ=[summand.c,summand.G];
         probZ.Z=[probZ.Z(:,1)+summandZ(:,1),probZ.Z(:,2:end),summandZ(:,2:end)];
         
     %is summand a vector?
@@ -81,7 +81,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(probZ)
+    if representsa_(probZ,'emptySet',eps)
         return
     elseif isemptyobject(summand)
         probZ = probZonotope(); return
@@ -95,4 +95,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

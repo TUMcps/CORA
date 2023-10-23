@@ -2,7 +2,7 @@ function equalDimCheck(S1,S2)
 % equalDimCheck - checks if two objects are compatible, i.e., whether they
 %    can execute a set-based operation
 %
-% Syntax:  
+% Syntax:
 %    equalDimCheck(S1,S2)
 %
 % Inputs:
@@ -25,13 +25,14 @@ function equalDimCheck(S1,S2)
 %
 % See also: ---
 
-% Author:       Victor Gassmann, Mark Wetzlinger
-% Written:      05-July-2022
-% Last update:  05-December-2022 (MW, fix matrix-case)
-%               03-April-2023 (MW, integrate matrix-numeric case)
-% Last revision:---
+% Authors:       Victor Gassmann, Mark Wetzlinger
+% Written:       05-July-2022
+% Last update:   05-December-2022 (MW, fix matrix-case)
+%                03-April-2023 (MW, integrate matrix-numeric case)
+%                21-October-2023 (TL, cellfun)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % only check if macro is enabled
 if CHECKS_ENABLED
@@ -63,6 +64,11 @@ if CHECKS_ENABLED
         if dim(S1) ~= dim(S2) && dim(S1) ~= 0 && dim(S2) ~= 0
             throw(CORAerror('CORA:dimensionMismatch',S1,S2));
         end
+
+    elseif iscell(S1)
+        cellfun(@(S1) equalDimCheck(S1,S2),S1);
+    elseif iscell(S2)
+        cellfun(@(S2) equalDimCheck(S1,S2),S2);
     
     else
         % operation between set and set
@@ -76,4 +82,4 @@ if CHECKS_ENABLED
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

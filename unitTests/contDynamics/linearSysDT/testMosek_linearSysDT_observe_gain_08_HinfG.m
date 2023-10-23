@@ -7,7 +7,7 @@ function res = testMosek_linearSysDT_observe_gain_08_HinfG()
 % test checks whether the same result as in a previous implementation is 
 % obtained
 %
-% Syntax:  
+% Syntax:
 %    res = testMosek_linearSysDT_observe_gain_08_HinfG
 %
 % Inputs:
@@ -22,12 +22,12 @@ function res = testMosek_linearSysDT_observe_gain_08_HinfG()
 %        invariant systems. IEEE Transactions on Automatic Control,
 %        64(11):4717-4724, 2019.
 
-% Author:       Matthias Althoff
-% Written:      01-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       01-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "observe_gain_HinfG"
 path = CORAROOT;
@@ -60,4 +60,4 @@ delete(target);
 rmpath(genpath(path));
 addpath(genpath(path));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

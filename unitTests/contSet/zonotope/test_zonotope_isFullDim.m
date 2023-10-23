@@ -1,7 +1,7 @@
 function res = test_zonotope_isFullDim
 % test_zonotope_isFullDim - unit test function of isFullDim
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_isFullDim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_isFullDim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty case
 Z = zonotope();
@@ -41,4 +41,4 @@ res(3) = ~isFullDim(Z);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

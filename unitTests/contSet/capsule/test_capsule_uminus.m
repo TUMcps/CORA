@@ -1,7 +1,7 @@
 function res = test_capsule_uminus
 % test_capsule_uminus - unit test function of uminus
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_uminus
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_capsule_uminus
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      06-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       06-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = true(0);
 
@@ -45,4 +45,4 @@ resvec(end+1) = isequal(nC, -1*C);
 % add results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

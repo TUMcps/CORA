@@ -2,7 +2,7 @@ function [timeInt,timePoint,res] = reach_decomp(obj,options)
 % reach_decomp - implementation of decomposed approach for reachability
 %    analysis of linear systems, cf. [1]
 %
-% Syntax:  
+% Syntax:
 %    [timeInt,timePoint,res] = reach_decomp(obj,options)
 %
 % Inputs:
@@ -28,13 +28,13 @@ function [timeInt,timePoint,res] = reach_decomp(obj,options)
 %       "Decomposing Reach Set Computations with Low-dimensional Sets
 %            and High-Dimensional Matrices"
 
-% Author:       Mark Wetzlinger
-% Written:      11-June-2019
-% Last update:  14-August-2019
-%               19-November-2022 (MW, modularize specification check)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-June-2019
+% Last update:   14-August-2019
+%                19-November-2022 (MW, modularize specification check)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % blocks and output matrix ------------------------------------------------
 options.blocks = length(options.partition);
@@ -170,11 +170,12 @@ for k=2:steps
                 Yinhomtemp = Yinhom{bi};
 
                 % change representation if suitable
-                if issparse(Rinhom{bi}.Z) && nnz(Rinhom{bi}.Z(:,2:end)) / numel(generators(Rinhom{bi})) > 0.5
+                if issparse([Rinhom{bi}.c,Rinhom{bi}.G]) ...
+                    && nnz(Rinhom{bi}.G) / numel(generators(Rinhom{bi})) > 0.5
                     % change to full representation
-                    Rinhom{bi} = zonotope([full(center(Rinhom{bi})), full(generators(Rinhom{bi}))]);
-                    Rtrans{bi} = zonotope([full(center(Rtrans{bi})), full(generators(Rtrans{bi}))]);
-                    Raux{bi}   = zonotope([full(center(Raux{bi})), full(generators(Raux{bi}))]);
+                    Rinhom{bi} = zonotope(full(Rinhom{bi}.c), full(Rinhom{bi}.G));
+                    Rtrans{bi} = zonotope(full(Rtrans{bi}.c), full(Rtrans{bi}.G));
+                    Raux{bi}   = zonotope(full(Raux{bi}.c), full(Raux{bi}.G));
                 end
                 
             
@@ -219,4 +220,4 @@ verboseLog(length(tVec),tVec(end),options);
 % no violation of specification
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function Rnext = post(obj,Rnext,uTrans,options)
 % post - computes the reachable set for the next time step
 %
-% Syntax:  
+% Syntax:
 %    Rnext = post(obj,Rnext,Uadd,options)
 %
 % Inputs:
@@ -21,16 +21,16 @@ function Rnext = post(obj,Rnext,uTrans,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      25-March-2021 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-March-2021 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % dummy function --> unify names in the future
 options.uTrans = uTrans;
 options.U = zonotope(zeros(length(uTrans),1));
 Rnext.tp = linReach(obj,Rnext.tp,options);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

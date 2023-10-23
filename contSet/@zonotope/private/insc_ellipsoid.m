@@ -1,7 +1,7 @@
 function E = insc_ellipsoid(Z,comptype)
 % insc_ellipsoid - Underapproximates a zonotope by an ellipsoid
 %
-% Syntax:  
+% Syntax:
 %    E = insc_ellipsoid(Z)
 %    E = insc_ellipsoid(Z,comptype)
 %
@@ -30,12 +30,12 @@ function E = insc_ellipsoid(Z,comptype)
 %
 % See also: enc_ellipsoid, MVIE, MVEE
 
-% Author:       Victor Gassmann
-% Written:      18-September-2019
-% Last update:  08-June-2021 (degeneracy check in main file)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       18-September-2019
+% Last update:   08-June-2021 (degeneracy check in main file)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 rankG = rank(generators(Z));
 dimG = dim(Z);
@@ -48,8 +48,8 @@ else
     doExact = false;
 end
 %extract zonotope information, i.e. center and generator matrix
-G = Z.Z(:,2:end);
-c = Z.Z(:,1);
+c = Z.c;
+G = Z.G;
 [n,m] = size(G);
 %initial guess contained in Z analogous to [1], Sec. 4.1
 E0 = G*G';
@@ -75,4 +75,4 @@ else
     E = ellipsoid(E0,c);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

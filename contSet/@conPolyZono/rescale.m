@@ -2,7 +2,7 @@ function res = rescale(cPZ,varargin)
 % rescale - rescale a constrained polynomial zonotope object by computing 
 %    a shrinked factor domain resulting from the constraints
 %
-% Syntax:  
+% Syntax:
 %    res = rescale(cPZ)
 %    res = rescale(cPZ,method)
 %
@@ -14,18 +14,18 @@ function res = rescale(cPZ,varargin)
 % Example:
 %    c = [0;0];
 %    G = [1 0 0 0.2;0 -2 1 0.2];
-%    expMat = [1 1 2 0;0 1 1 0;0 0 0 1];
+%    E = [1 1 2 0;0 1 1 0;0 0 0 1];
 %    A = [1 2 1 2 0.75];
 %    b = -1.75;
-%    expMat_ = [2 1 0 0 0;0 0 2 1 0;0 0 0 0 1];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    EC = [2 1 0 0 0;0 0 2 1 0;0 0 0 0 1];
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 %
 %    cPZ_ = rescale(cPZ,'forwardBackward');
 %
 %    figure; hold on;
 %    plot(cPZ,[1,2],'FaceColor','r','Splits',12);
-%    plot(polyZonotope(c,G,[],expMat),[1,2],'b','Splits',12);
-%    plot(polyZonotope(cPZ_.c,cPZ_.G,[],cPZ_.expMat),[1,2],'g','Splits',12);
+%    plot(polyZonotope(c,G,[],E),[1,2],'b','Splits',12);
+%    plot(polyZonotope(cPZ_.c,cPZ_.G,[],cPZ_.E),[1,2],'g','Splits',12);
 %
 % Outputs:
 %    res - rescaled conPolyZono object
@@ -36,12 +36,12 @@ function res = rescale(cPZ,varargin)
 %
 % See also: conZonotope/rescale
 
-% Author:       Niklas Kochdumper
-% Written:      06-November-2018
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       06-November-2018
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 method = setDefaultValues({'forwardBackward'},varargin);
@@ -56,10 +56,10 @@ temp = ones(length(cPZ.id),1);
 dom = interval(-temp,temp);
 
 if ~isempty(cPZ.A)
-	dom = contractPoly(-cPZ.b,cPZ.A,[],cPZ.expMat_,dom,method);
+	dom = contractPoly(-cPZ.b,cPZ.A,[],cPZ.EC,dom,method);
 end
 
-if isempty(dom)
+if representsa_(dom,'emptySet',eps)
     throw(CORAerror('CORA:emptySet'));
 end
 
@@ -67,4 +67,4 @@ end
 % again between [-1,1]
 res = getSubset(cPZ,cPZ.id,dom);
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

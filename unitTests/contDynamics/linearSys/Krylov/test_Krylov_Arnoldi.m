@@ -3,7 +3,7 @@ function res = test_Krylov_Arnoldi(~)
 % the Arnoldi iteration against a fragment of the MATLAB implementation of
 % expokit
 %
-% Syntax:  
+% Syntax:
 %    res = test_Krylov_Arnoldi(~)
 %
 % Inputs:
@@ -12,12 +12,12 @@ function res = test_Krylov_Arnoldi(~)
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      13-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       13-November-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % system matrix
 A = [...
@@ -47,7 +47,7 @@ v = ones(length(A),1);
 [V,H] = arnoldi(A,v,KrylovOrder);
 
 % call Arnoldi iteration from expokit
-[V_expokit,H_expokit] = Arnoldi_expokit(linDyn.A, v, KrylovOrder);
+[V_expokit,H_expokit] = aux_Arnoldi_expokit(linDyn.A, v, KrylovOrder);
 
 % compare V
 maxErr_V = max(max(abs(V-V_expokit(:, 1:KrylovOrder))));
@@ -63,9 +63,9 @@ res = all(res);
 end
 
 
-% Auxiliary Function
+% Auxiliary functions -----------------------------------------------------
 
-function [V,H] = Arnoldi_expokit(A, v, KrylovOrder)
+function [V,H] = aux_Arnoldi_expokit(A, v, KrylovOrder)
 
 % dimension
 n = length(A);
@@ -100,4 +100,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

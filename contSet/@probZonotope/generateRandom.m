@@ -1,7 +1,7 @@
 function Z = generateRandom(varargin)
 % generateRandom - Generates a random probZonotope
 %
-% Syntax:  
+% Syntax:
 %    Z = probZonotope.generateRandom()
 %    Z = probZonotope.generateRandom('Dimension',n)
 %    Z = probZonotope.generateRandom('Dimension',n,'NrGenerators',nrGens)
@@ -30,12 +30,12 @@ function Z = generateRandom(varargin)
 %
 % See also: zonotope/generateRandom
 
-% Author:       Tobias Ladner
-% Written:      02-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       02-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -54,7 +54,6 @@ else
     % distribution for generators given?
     [NVpairs,type] = readNameValuePair(NVpairs,'Distribution');
 end
-
 
 
 % default computation for dimension
@@ -113,4 +112,4 @@ Z = probZonotope(c,G);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

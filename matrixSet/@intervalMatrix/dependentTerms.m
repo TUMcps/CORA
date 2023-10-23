@@ -6,7 +6,7 @@ function [intSq,intH] = dependentTerms(obj,r)
 %    time: the for loop has to be executed only once and help functions do
 %    not have to be called so often
 %
-% Syntax:  
+% Syntax:
 %    [intSq,intH] = dependentTerms(obj,r)
 %
 % Inputs:
@@ -26,13 +26,13 @@ function [intSq,intH] = dependentTerms(obj,r)
 %
 % See also:
 
-% Author:       Matthias Althoff
-% Written:      20-February-2007 
-% Last update:  30-April-2007
-%               23-September-2010
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       20-February-2007 
+% Last update:   30-April-2007
+%                23-September-2010
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %load data from object structure
 A=obj.int;
@@ -54,7 +54,7 @@ end
 for i=1:n
     %i neq j
     %auxiliary value s
-    s=sum(A,i);
+    s=aux_sum(A,i);
     %auxiliary value b
     b=A(i,:); b(i)=0;
     %auxiliary matrix C
@@ -72,7 +72,7 @@ for i=1:n
     a_sup=supremum(A(i,i));
     %compute diagonal elements for H
     kappa=max(a_inf*r+0.5*a_inf^2*r^2, a_sup*r+0.5*a_sup^2*r^2);
-    H(i,i)=H(i,i)+interval(g(A(i,i),r),kappa);         
+    H(i,i)=H(i,i)+interval(aux_g(A(i,i),r),kappa);         
 end
 
 %write as interval matrices
@@ -84,7 +84,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function res = g(a,r)
+function res = aux_g(a,r)
     if isIntersecting(interval(-1/r,-1/r),a)
         res=-0.5;
     else
@@ -94,7 +94,7 @@ function res = g(a,r)
     end
 end
 
-function res= gu(a,r)
+function res= aux_gu(a,r)
     if in(interval(-3/(2*r)),a)
         res=-9/24*r;
     else
@@ -105,7 +105,7 @@ function res= gu(a,r)
     end    
 end
     
-function s=sum(A,i)
+function s=aux_sum(A,i)
 %sum function: s=0.5 \sum_{k:k\neq i,k\neq j} a_{ik}a_{kj}t^2
     n=length(A);
     k=0:n;
@@ -114,4 +114,4 @@ function s=sum(A,i)
     s=A(i,:)*A;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

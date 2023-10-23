@@ -1,7 +1,7 @@
 function res = test_compareMatrices
 % test_compareMatrices - unit test function for comparsion of matrices
 %
-% Syntax:  
+% Syntax:
 %    res = test_compareMatrices()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_compareMatrices
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-November-2022
-% Last update:  08-May-2023 (TL, ordered)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-November-2022
+% Last update:   08-May-2023 (TL, ordered)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true, wait for failure
 res = true;
@@ -130,4 +130,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

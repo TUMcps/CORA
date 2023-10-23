@@ -4,10 +4,10 @@ function zB = enclose(zB,varargin)
 %
 % Description:
 %    Computes the set
-%    { a x1 + (1 - a) * (M x1 + x2) | x1 \in zB, x2 \in S, a \in [0,1] }
+%    { a x1 + (1 - a) * x2 | x1 \in zB, x2 \in S, a \in [0,1] }
 %    where S = M*zB + Splus
 %
-% Syntax:  
+% Syntax:
 %    zB = enclose(zB,S)
 %    zB = enclose(zB,M,Splus)
 %
@@ -30,12 +30,12 @@ function zB = enclose(zB,varargin)
 %
 % See also: zonotope/enclose
 
-% Author:       Matthias Althoff
-% Written:      10-November-2010 
-% Last update:  25-January-2016
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       10-November-2010 
+% Last update:   25-January-2016
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 if nargin == 2
@@ -69,4 +69,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

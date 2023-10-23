@@ -3,7 +3,7 @@ function res = checkNameValuePairs(NVpairs,fullList)
 %    name-value pairs is part of the full list of admissible name-value
 %    pairs (check is case-insensitive and works for chars and strings)
 %
-% Syntax:  
+% Syntax:
 %    checkNameValuePairs(NVpairs,fullList)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function res = checkNameValuePairs(NVpairs,fullList)
 %
 % See also: readNameValuePairs
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       08-June-2022
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default result
 res = true;
@@ -46,4 +46,4 @@ for i=1:nrNVpairs
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

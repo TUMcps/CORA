@@ -1,7 +1,7 @@
 function res = test_emptySet_isFullDim
 % test_emptySet_isFullDim - unit test function of isFullDim
 %
-% Syntax:  
+% Syntax:
 %    res = test_emptySet_isFullDim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_emptySet_isFullDim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init empty set
 n = 2;
@@ -30,4 +30,4 @@ O = emptySet(n);
 % check result
 res = ~isFullDim(O);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

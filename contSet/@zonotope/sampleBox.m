@@ -2,7 +2,7 @@ function X = sampleBox(Z,N)
 % sampleBox - computes N samples uniformly distributed inside a
 %    parallelotope
 %
-% Syntax:  
+% Syntax:
 %    X = sampleBox(Z,N)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function X = sampleBox(Z,N)
 %
 % See also: none
 
-% Author:       Victor Gassmann
-% Written:      16-October-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       16-October-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 G = generators(Z);
 [n,nrGens] = size(G);
@@ -44,4 +44,4 @@ b = HS.halfspace.K;
 X = cprnd(N,A,b,options);
 X = X';
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

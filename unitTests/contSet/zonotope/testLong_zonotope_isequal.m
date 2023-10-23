@@ -1,7 +1,7 @@
 function res = testLong_zonotope_isequal
 % testLong_zonotope_isequal - unit test function of isequal
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_isequal
 %
 % Inputs:
@@ -16,13 +16,13 @@ function res = testLong_zonotope_isequal
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
-% Last update:  21-April-2020
-%               09-August-2020 (enhance randomness)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-September-2019
+% Last update:   21-April-2020
+%                09-August-2020 (enhance randomness)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -60,4 +60,4 @@ for i=1:nrTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function y0 = consistentInitialState(obj,x0,y0,u0)
 %    i.e., a value for y(0) for which all algebraic equations 0 = g(x,y,u)
 %    are fulfilled
 %
-% Syntax:  
+% Syntax:
 %    y0 = consistentInitialState(obj,x0,y0,u0)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function y0 = consistentInitialState(obj,x0,y0,u0)
 % Example: 
 %    -
 
-% Author:       Matthias Althoff
-% Written:      18-August-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-August-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %init
 converged = false;
@@ -42,5 +42,4 @@ while ~converged
     y0 = y0 + delta_y;
 end
 
-%------------- END OF CODE --------------
-        
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_reachSet_reachSet
 % test_reachSet_reachSet - unit test function for constructor
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_reachSet()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_reachSet_reachSet
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      11-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init result
 res = true;
@@ -97,4 +97,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

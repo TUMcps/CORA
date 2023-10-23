@@ -2,7 +2,7 @@ function obj = tie(obj,options)
 % tie - tie=time interval error; computes the error done by building the
 %    convex hull of time point solutions
 %
-% Syntax:  
+% Syntax:
 %    obj = tie(obj,options)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function obj = tie(obj,options)
 %
 % See also: expm, inputSol
 
-% Author:       Matthias Althoff
-% Written:      08-May-2007 
-% Last update:  10-August-2010
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       08-May-2007 
+% Last update:   10-August-2010
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %load data from object/options structure
 Apower=obj.taylor.powers;
@@ -64,4 +64,4 @@ Asum = interval(Asum_neg,Asum_pos);
 %write to object structure
 obj.taylor.F=Asum+obj.taylor.error;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

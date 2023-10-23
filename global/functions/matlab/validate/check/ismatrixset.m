@@ -3,7 +3,7 @@ function res = ismatrixset(S)
 %    intervalMatrix, matPolytope, or matZonotope classes); mainly used to
 %    avoid clutter in case differentations
 %
-% Syntax:  
+% Syntax:
 %    res = ismatrixset(S)
 %
 % Inputs:
@@ -25,12 +25,12 @@ function res = ismatrixset(S)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      17-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = false;
 
@@ -38,5 +38,4 @@ if isa(S,'intervalMatrix') || isa(S,'matPolytope') || isa(S,'matZonotope')
     res = true;
 end
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

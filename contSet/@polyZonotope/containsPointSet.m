@@ -2,7 +2,7 @@ function res = containsPointSet(pZ,points,varargin)
 % containsPointSet - checks if a point set is fully enclosed by a tight
 %    over-approximation of a polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    res = containsPointSet(pZ,points)
 %    res = containsPointSet(pZ,points,splits,order)
 %
@@ -27,12 +27,12 @@ function res = containsPointSet(pZ,points,varargin)
 %
 % See also: zonotope/containsPoint
 
-% Author:       Niklas Kochdumper
-% Written:      29-March-2018 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       29-March-2018 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default values
 [splits,order] = setDefaultValues({4,10},varargin);
@@ -53,7 +53,7 @@ for i=1:splits
         try
             res = splitLongestGen(pZsplit{j});
         catch
-            res = splitLongestIndepGen(pZsplit{j}); 
+            res = aux_splitLongestIndepGen(pZsplit{j}); 
         end
         qZnew{end+1} = res{1};
         qZnew{end+1} = res{2};
@@ -102,25 +102,25 @@ res = all(any(resTemp,1));
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function splits = splitLongestIndepGen(pZ)
+function splits = aux_splitLongestIndepGen(pZ)
 % split a polynomial zonotope at the longes independent generator
     
     % determine longest independent generator
-    len = sum(pZ.Grest.^2,1);
+    len = sum(pZ.GI.^2,1);
     [~,ind] = max(len);
     ind = ind(1);
-    g = pZ.Grest(:,ind);
+    g = pZ.GI(:,ind);
     
     % split the polynomial zonotope
     pZ1 = pZ;
     pZ2 = pZ;
     
-    pZ1.Grest(:,ind) = 0.5 * g;
+    pZ1.GI(:,ind) = 0.5 * g;
     pZ1.c = pZ.c + 0.5 * g;
     
-    pZ2.Grest(:,ind) = 0.5 * g;
+    pZ2.GI(:,ind) = 0.5 * g;
     pZ2.c = pZ.c - 0.5 * g;
 
     splits{1} = pZ1;
@@ -128,4 +128,4 @@ function splits = splitLongestIndepGen(pZ)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

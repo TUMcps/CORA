@@ -1,7 +1,7 @@
 function err = linError_constVel(obj,w,IH,IH_y)
 % linError_constVel - ?
 %
-% Syntax:  
+% Syntax:
 %    err = linError_constVel(obj,w,IH,IH_y)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function err = linError_constVel(obj,w,IH,IH_y)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      15-March-2012 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       15-March-2012 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % %compute intervals of total reachable set
@@ -144,4 +144,4 @@ err(6,1) = 0;
 %divide by 2 since the second order Taylor term has factor 1/2!
 err = 0.5*err;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

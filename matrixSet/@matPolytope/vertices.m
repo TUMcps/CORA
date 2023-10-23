@@ -1,7 +1,7 @@
 function matV = vertices(matP)
 % vertices - returns the vertices of a matrix polytope
 %
-% Syntax:  
+% Syntax:
 %    matV = vertices(matP)
 %
 % Inputs:
@@ -18,15 +18,15 @@ function matV = vertices(matP)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      24-June-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       24-June-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %return vertices
 matV=matP.vertex;
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

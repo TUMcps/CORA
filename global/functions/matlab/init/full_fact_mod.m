@@ -2,7 +2,7 @@ function des_mat = full_fact_mod(levels)
 % full_fact_mod - gives full factorial design matrix for any levels  
 %    more than 2 of any number of variables (minimum 2)
 %
-% Syntax:  
+% Syntax:
 %    des_mat = full_fact_mod(x1,x2,...);
 %
 % Inputs:
@@ -26,12 +26,12 @@ function des_mat = full_fact_mod(levels)
 %
 % See also: -
 
-% Author:       Bhaskar Dongare (bhaskar_dongare@yahoo.com), Matthias Althoff
-% Written:      17-November-2008
-% Last update:  08-April-2016 (MA)
-% Last revision:---
+% Authors:       Bhaskar Dongare, Matthias Althoff
+% Written:       17-November-2008
+% Last update:   08-April-2016 (MA)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if ~all(levels > 1)
     throw(CORAerror('CORA:wrongValue','first',...
@@ -60,4 +60,4 @@ for i=1:length(levels)
     des_mat=[des_mat temp];
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

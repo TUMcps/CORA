@@ -1,7 +1,7 @@
 function res = and_(hs,S,varargin)
 % and_ - computes the intersection of a halfspace with a set
 %
-% Syntax:  
+% Syntax:
 %    res = and_(hs,S)
 %
 % Inputs:
@@ -30,15 +30,15 @@ function res = and_(hs,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conZonotope/and_
+% See also: contSet/and, conZonotope/and_
 
-% Author:       Niklas Kochdumper
-% Written:      26-November-2019
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename and_)
+% Authors:       Niklas Kochdumper
+% Written:       26-November-2019
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename and_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = S & hs;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

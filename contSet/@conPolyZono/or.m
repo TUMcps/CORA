@@ -2,7 +2,7 @@ function cPZ = or(cPZ,S)
 % or - Computes the union of a constrained polynomial zonotope and another
 %    set representation
 %
-% Syntax:  
+% Syntax:
 %    cPZ = or(cPZ,S)
 %
 % Inputs:
@@ -29,12 +29,12 @@ function cPZ = or(cPZ,S)
 %
 % See also: and, zonotope/or
 
-% Author:       Niklas Kochdumper
-% Written:      07-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       07-November-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     if isemptyobject(cPZ) 
         cPZ = S; return
@@ -52,7 +52,7 @@ function cPZ = or(cPZ,S)
     end
     
     % consider the different cases of set representations
-    if isa(S,'conPolyZono') || isa(S,'mptPolytope') || ...
+    if isa(S,'conPolyZono') || isa(S,'polytope') || ...
        isa(S,'interval') || isa(S,'zonotope') || ...
        isa(S,'zonoBundle') || isa(S,'conZonotope') || ...
        isa(S,'ellipsoid') || isa(S,'capsule') || ...
@@ -62,36 +62,36 @@ function cPZ = or(cPZ,S)
         S = conPolyZono(S);
         
         % extract number of factors
-        p1 = size(cPZ.expMat,1);
-        p2 = size(S.expMat,1);
+        p1 = size(cPZ.E,1);
+        p2 = size(S.E,1);
         p = p1 + p2 + 2;     
         
         % construct the overall constraint matrices
-        [A_,b_,expMatTemp] = conMatrix(p1,p2);
+        [A_,b_,Etemp] = aux_conMatrix(p1,p2);
         
         A = blkdiag(1,A_,cPZ.A,S.A);
         A = [A, [0;0;-0.5*cPZ.b;0.5*S.b]];
         
         b = [1;b_;0.5*cPZ.b;0.5*S.b];
                 
-        if ~isempty(cPZ.expMat_)
-            if ~isempty(S.expMat_)
-                temp = blkdiag(cPZ.expMat_,S.expMat_);
+        if ~isempty(cPZ.EC)
+            if ~isempty(S.EC)
+                temp = blkdiag(cPZ.EC,S.EC);
                 E1 = [zeros(2,size(temp,2));temp];
             else
-                temp = size(cPZ.expMat_,2);
-                E1 = [zeros(2,temp);cPZ.expMat_;zeros(p2,temp)];
+                temp = size(cPZ.EC,2);
+                E1 = [zeros(2,temp);cPZ.EC;zeros(p2,temp)];
             end
         else
-            if ~isempty(S.expMat_)
-                E1 = [zeros(2+p1,size(S.expMat_,2));S.expMat_];
+            if ~isempty(S.EC)
+                E1 = [zeros(2+p1,size(S.EC,2));S.EC];
             else
                 E1 = [];
             end
         end
         E2 = zeros(p,1);
         E2(1,1) = 1;
-        expMat_ = [[1;1;zeros(p1+p2,1)],expMatTemp,E1,E2];
+        EC = [[1;1;zeros(p1+p2,1)],Etemp,E1,E2];
         
         % construct the overall state matrices
         c = (cPZ.c + S.c)/2;     
@@ -103,35 +103,35 @@ function cPZ = or(cPZ,S)
         temp2 = zeros(p,1);
         temp2(2) = 1;
         
-        if ~isempty(cPZ.expMat)
-            n = size(cPZ.expMat,2);
-            expMat1 = [zeros(2,n);cPZ.expMat;zeros(p2,n)];
+        if ~isempty(cPZ.E)
+            n = size(cPZ.E,2);
+            E1_ = [zeros(2,n);cPZ.E;zeros(p2,n)];
         else
-            expMat1 = []; 
+            E1_ = []; 
         end
         
-        if ~isempty(S.expMat)
-            n = size(S.expMat,2);
-            expMat2 = [zeros(2+p1,n);S.expMat];
+        if ~isempty(S.E)
+            n = size(S.E,2);
+            E2_ = [zeros(2+p1,n);S.E];
         else
-            expMat2 = []; 
+            E2_ = []; 
         end
         
-        expMat = [temp1, temp2, expMat1, expMat2];
+        E = [temp1, temp2, E1_, E2_];
 
         % construct new independent generators
         % compute independent part of the resulting set
-        if ~isempty(cPZ.Grest)
-            Grest = cPZ.Grest;
-            if ~isempty(S.Grest)
+        if ~isempty(cPZ.GI)
+            GI = cPZ.GI;
+            if ~isempty(S.GI)
                n = dim(cPZ); cen = zeros(n,1);
-               zono1 = zonotope(cen,cPZ.Grest);
-               zono2 = zonotope(cen,S.Grest);
+               zono1 = zonotope(cen,cPZ.GI);
+               zono2 = zonotope(cen,S.GI);
                zono = enclose(zono1,zono2);
-               Grest = generators(zono);
+               GI = zono.G;
             end
         else
-            Grest = S.Grest;
+            GI = S.GI;
         end
         
         % construct the combined id vector
@@ -140,10 +140,10 @@ function cPZ = or(cPZ,S)
         id = [id(end-1:end);id(1:end-2)];
         
         % construct the resulting conPolyZono object
-        cPZ = conPolyZono(c,G,expMat,A,b,expMat_,Grest,id);
+        cPZ = conPolyZono(c,G,E,A,b,EC,GI,id);
         
         % remove redundant monomials
-        cPZ = compact(cPZ);
+        cPZ = compact_(cPZ,'all',eps);
         
     else
         throw(CORAerror('CORA:noops',cPZ,S));
@@ -151,9 +151,9 @@ function cPZ = or(cPZ,S)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function [A,b,expMat_] = conMatrix(p1,p2)
+function [A,b,EC] = aux_conMatrix(p1,p2)
 
     % exponent matrix
     temp1 = ones(1,p1);
@@ -173,7 +173,7 @@ function [A,b,expMat_] = conMatrix(p1,p2)
             [0*temp1' 0*temp1' 2*eye(p1) 2*eye(p1) zeros(p1,2*p2)]; ...
             [0*temp2' 0*temp2' zeros(p2,2*p1) 2*eye(p2) 2*eye(p2)]];
     
-    expMat_ = [temp, ...
+    EC = [temp, ...
               [zeros(2,size(R,2));R], ...
               [ones(1,size(R,2));zeros(1,size(R,2));R]];
           
@@ -186,4 +186,4 @@ function [A,b,expMat_] = conMatrix(p1,p2)
     b = 0;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

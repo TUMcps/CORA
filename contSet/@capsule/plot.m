@@ -24,13 +24,13 @@ function han = plot(C, varargin)
 %
 % See also: polygon
 
-% Author:       Matthias Althoff
-% Written:      04-March-2019
-% Last update:  25-May-2022 (TL: 1D Plotting)
-%               05-April-2023 (TL: clean up using plotPolygon)
-% Last revision:12-July-2023 (TL, restructure)
+% Authors:       Matthias Althoff
+% Written:       04-March-2019
+% Last update:   25-May-2022 (TL, 1D Plotting)
+%                05-April-2023 (TL, clean up using plotPolygon)
+% Last revision: 12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input arguments
 [C, dims, NVpairs] = aux_parseInput(C, varargin{:});
@@ -45,13 +45,14 @@ end
 
 end
 
+
 % Auxiliary functions -----------------------------------------------------
 
 function [C, dims, NVpairs] = aux_parseInput(C, varargin)
     % parse input arguments
     dims = setDefaultValues({[1, 2]}, varargin);
     % check input arguments
-    inputArgsCheck({{C, 'att', 'capsule', 'nonempty'}; ...
+    inputArgsCheck({{C, 'att', 'capsule'}; ...
         {dims, 'att', 'numeric', {'nonempty', 'vector', 'integer', 'positive'}}});
     
     % check dimension
@@ -125,4 +126,4 @@ function han = aux_plot3d(C, dims, NVpairs)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

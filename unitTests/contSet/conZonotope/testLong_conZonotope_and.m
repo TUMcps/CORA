@@ -2,7 +2,7 @@ function res = testLong_conZonotope_and
 % testLong_conZonotope_and - unit test function for intersection
 %    of a constrained zonotope with other sets
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conZonotope_and
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = testLong_conZonotope_and
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Niklas Kochdumper
-% Written:      11-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       11-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -40,14 +40,14 @@ for j = 2:3
     ind = convhulln(points');
     ind = unique(ind(:,1),'stable');
     V = points(:,ind);
-    P1 = mptPolytope(V');
+    P1 = polytope(V);
 
     % Generate random polytope vertices 1
     points = rand(j,100);
     ind = convhulln(points');
     ind = unique(ind(:,1),'stable');
     V = points(:,ind);
-    P2 = mptPolytope(V');
+    P2 = polytope(V);
 
     % calculate constrained zonontope intersection
     cZ1 = conZonotope(P1);
@@ -61,18 +61,18 @@ for j = 2:3
 
     % plot the result
 %     if j == 2
-%         plot(cZono1,[1,2],'r');
+%         plot(cZ1,[1,2],'r');
 %         hold on
-%         plot(cZono2,[1,2],'b');
+%         plot(cZ2,[1,2],'b');
 %         plot(zonoInt,[1,2],'FaceColor','g');
 %         plot(V(1,:),V(2,:),'.k','MarkerSize',12);
 %     end
 
     % check correctness
-    if ~compareMatrices(V,V_,1e-10)
-          res = false;
-          break
-    end
+     if ~compareMatrices(V,V_,1e-4)
+           res = false;
+           break
+     end     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

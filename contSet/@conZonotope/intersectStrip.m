@@ -3,7 +3,7 @@ function cZ = intersectStrip(cZ,C,phi,y,varargin)
 %    and a list of strips according to [1] ; a strip is defined as 
 %    | Cx-y | <= phi
 %
-% Syntax:  
+% Syntax:
 %    Zres = intersectStrip(Z,C,phi,y,varargin)
 %
 % Inputs:
@@ -35,7 +35,7 @@ function cZ = intersectStrip(cZ,C,phi,y,varargin)
 %    res_zono = intersectStrip(cZ,C,phi,y);
 % 
 %    % just for comparison
-%    poly = mptPolytope([1 0;-1 0; 0 1;0 -1; 1 1;-1 -1],[3;7;5;1;5;1]);
+%    poly = polytope([1 0;-1 0; 0 1;0 -1; 1 1;-1 -1],[3;7;5;1;5;1]);
 %    Zpoly = cZ & poly;
 % 
 %    figure; hold on;
@@ -50,7 +50,7 @@ function cZ = intersectStrip(cZ,C,phi,y,varargin)
 %   [1] Amr Alanwar, Victor Gassmann, Xingkang He, Hazem Said,
 %       Henrik Sandberg, Karl Henrik Johansson, and Matthias
 %       Althoff. Privacy preserving set-based estimation using
-%       partially homomorphic encryption. arXiV.org.
+%       partially homomorphic encryption. arXiv.org.
 %   [2-5] ???
 %
 % Other m-files required: none
@@ -59,12 +59,12 @@ function cZ = intersectStrip(cZ,C,phi,y,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      05-March-2020
-% Last update:  29-March-2023 (TL: clean up)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-March-2020
+% Last update:   29-March-2023 (TL, clean up)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
 if nargin < 4
@@ -129,10 +129,11 @@ elseif strcmp(method,'normGen')
     cZ = aux_methodNormGen(cZ, C, phi, y);
 
 else
-    throw(CORAerror('CORA:wrongValue', sprintf("Unkown method '%s'.", method)))
+    throw(CORAerror('CORA:wrongValue', sprintf("Unknown method '%s'.", method)))
 end
 
 end
+
 
 % Auxiliary functions -----------------------------------------------------
 
@@ -302,7 +303,7 @@ function cZ = aux_conZonotopeFromLambda(cZ,phi,C,y,Lambda)
     n = dim(cZ);
     
     % new center
-    c = cZ.Z(:,1);
+    c = cZ.c;
     c_new = c + Lambda*(y-C*c);
 
     % compute new generators
@@ -318,14 +319,15 @@ function cZ = aux_conZonotopeFromLambda(cZ,phi,C,y,Lambda)
     for i=1:nrOfStrips
         part1 = part1 - Lambda(:,i)*C(i,:);
         part2(:,i) = phi(i)*Lambda(:,i);
-        A_new = [A_new ; C(i,:)*cZ.Z(:,2:end) , zeros(1,i-1),-phi(i),zeros(1,length(phi)-i)];
-        b_new = [b_new; y(i)-(C(i,:)*cZ.Z(:,1))];
+        A_new = [A_new; C(i,:)*cZ.G , zeros(1,i-1),-phi(i),zeros(1,length(phi)-i)];
+        b_new = [b_new; y(i)-(C(i,:)*cZ.c)];
     end
-    part1 = part1 * cZ.Z(:,2:end);
+    part1 = part1 * cZ.G;
     H_new = [part1 part2];
 
     % resulting constrained zonotope
-    cZ.Z = [c_new H_new];
+    cZ.c = c_new;
+    cZ.G = H_new;
     cZ.A = A_new;
     cZ.b = b_new;
 
@@ -351,4 +353,4 @@ function aux_checkAuxStruct(aux)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

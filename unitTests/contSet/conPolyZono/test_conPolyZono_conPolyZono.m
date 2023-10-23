@@ -1,7 +1,7 @@
 function res = test_conPolyZono_conPolyZono
 % test_conPolyZono_conPolyZono - unit test function of constructor
 %
-% Syntax:  
+% Syntax:
 %    res = test_conPolyZono_conPolyZono
 %
 % Inputs:
@@ -16,33 +16,33 @@ function res = test_conPolyZono_conPolyZono
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      15-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       15-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % test example in doctring
 c = [0;0];
 G = [1 0 1 -1; 0 1 1 1];
-expMat = [1 0 1 2; 0 1 1 0; 0 0 1 1];
+E = [1 0 1 2; 0 1 1 0; 0 0 1 1];
 A = [1 -0.5 0.5];
 b = 0.5;
-expMat_ = [0 1 2; 1 0 0; 0 1 0];
+EC = [0 1 2; 1 0 0; 0 1 0];
 
-cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+cPZ = conPolyZono(c,G,E,A,b,EC);
 
 % test variants in syntax of docstring
-Grest = [4 1; 0 2];
+GI = [4 1; 0 2];
 id = [1;2;4];
 
-cPZ = conPolyZono(c,G,expMat);
-cPZ = conPolyZono(c,G,expMat,Grest);
-cPZ = conPolyZono(c,G,expMat,Grest,id);
-cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
-cPZ = conPolyZono(c,G,expMat,A,b,expMat_,Grest);
-cPZ = conPolyZono(c,G,expMat,A,b,expMat_,Grest,id);
+cPZ = conPolyZono(c,G,E);
+cPZ = conPolyZono(c,G,E,GI);
+cPZ = conPolyZono(c,G,E,GI,id);
+cPZ = conPolyZono(c,G,E,A,b,EC);
+cPZ = conPolyZono(c,G,E,A,b,EC,GI);
+cPZ = conPolyZono(c,G,E,A,b,EC,GI,id);
 
 % test copy constructor
 cPZ = conPolyZono(cPZ);
@@ -52,4 +52,4 @@ cPZ = conPolyZono();
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

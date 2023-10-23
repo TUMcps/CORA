@@ -2,7 +2,7 @@ function res = test_nonlinearSysDT_reach_01_cstrDisc
 % test_nonlinearSysDT_reach_01_cstrDisc - unit test for nonlinear 
 %    discrete time reachability analysis from [1, Sec.6]. 
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSysDT_reach_01_cstrDisc
 %
 % Inputs:
@@ -15,13 +15,13 @@ function res = test_nonlinearSysDT_reach_01_cstrDisc
 %    [1] J.M. Bravo, Robust MPC of constrained discrete-time
 %        nonlinear systems based on approximated reachable sets, 2006.
 
-% Author:       Niklas Kochdumper, Matthias Althoff
-% Written:      30-January-2018
-% Last update:  20-March-2020 (MA, simulateRandomDT from inherited class)
-%               23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Matthias Althoff
+% Written:       30-January-2018
+% Last update:   20-March-2020 (MA, simulateRandomDT from inherited class)
+%                23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -64,4 +64,4 @@ simRes = simulateRandom(sysDisc, params, simOpt);
 
 res = contains(R,simRes);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

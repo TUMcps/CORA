@@ -2,7 +2,7 @@ function han = plotTimeStep(simRes,varargin)
 % plotTimeStep - plots the time step size used in individual
 %    simulations over time (all simulations in one graph)
 %
-% Syntax:  
+% Syntax:
 %    han = plotTimeStep(simRes)
 %    han = plotTimeStep(simRes,type)
 %
@@ -19,12 +19,12 @@ function han = plotTimeStep(simRes,varargin)
 %
 % See also:
 
-% Author:       Mark Wetzlinger
-% Written:      18-June-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       18-June-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{simRes,'att','simResult','nonempty'}});
@@ -89,4 +89,4 @@ if nargout == 0
     clear han;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

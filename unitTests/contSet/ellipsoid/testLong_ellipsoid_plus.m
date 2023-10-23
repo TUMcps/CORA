@@ -1,7 +1,7 @@
 function res = testLong_ellipsoid_plus
 % testLong_ellipsoid_plus - unit test function of plus
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_plus
 %
 % Inputs:
@@ -16,12 +16,13 @@ function res = testLong_ellipsoid_plus
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      14-October-2019
-% Last update:  16-March-2021
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       14-October-2019
+% Last update:   16-March-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = true;
 nRuns = 2;
 for i=[2,10:5:15]
@@ -60,4 +61,4 @@ for i=[2,10:5:15]
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = contains(R,simRes,varargin)
 % contains - checks if reachable set contains all simulated
 %    points of a set of system trajectory; not for hybrid systems
 %
-% Syntax:  
+% Syntax:
 %    res = contains(R,simRes)
 %    res = contains(R,simRes,type)
 %    res = contains(R,simRes,type,tol)
@@ -22,14 +22,13 @@ function res = contains(R,simRes,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-February-2021
-% Last update:  28-April-2023 (MW, bug fix for only time-point reachable
-%                                  sets, speed up)
-%               16-May-2023 (MW, extend to hybrid systems)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-February-2021
+% Last update:   28-April-2023 (MW, bug fix for only time-point reachable sets, speed up)
+%                16-May-2023 (MW, extend to hybrid systems)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set default values
 [type,tol] = setDefaultValues({'exact',1e-10},varargin);
@@ -103,7 +102,6 @@ for i=1:size(allLoc,2)
     end
 
     
-
 end
 
 % check whether all points were checked
@@ -118,7 +116,7 @@ res = all(ptsContained);
 end
 
 
-% Auxiliary function ------------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [pts,ptsChecked] = aux_findPointsInInterval(simRes,nrPoints,time,loc,tol)
 
@@ -169,4 +167,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

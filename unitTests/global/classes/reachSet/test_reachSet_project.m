@@ -1,7 +1,7 @@
 function res = test_reachSet_project
 % test_reachSet_project - unit test function for project
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_project()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_reachSet_project
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      10-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       10-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate set, propagation matrix
 Z = zonotope([1;1;4],[1 0 -2; 2 -1 1; -2 4 -1]);
@@ -46,4 +46,4 @@ R_proj = project(R,projDim);
 % compare results
 res = isequal(R_true,R_proj);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

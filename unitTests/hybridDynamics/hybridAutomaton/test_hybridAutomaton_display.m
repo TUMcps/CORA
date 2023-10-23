@@ -1,7 +1,7 @@
 function res = test_hybridAutomaton_display
 % test_hybridAutomaton_display - test function for display
 %
-% Syntax:  
+% Syntax:
 %    res = test_hybridAutomaton_display
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_hybridAutomaton_display
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      08-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       08-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -30,7 +30,7 @@ res = true;
 hybridAutomaton()
 
 % single location
-inv = mptPolytope([-1,0],0);
+inv = polytope([-1,0],0);
 c = [-1;0]; d = 0; C = [0,1]; D = 0;
 guard = conHyperplane(c,d,C,D);
 reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
@@ -41,7 +41,7 @@ HA = hybridAutomaton(loc)
 
 
 % multiple locations
-inv = mptPolytope([-1,0,0],0);
+inv = polytope([-1,0,0],0);
 dynamics = linearSys([1 -2 1; 0 0 2; -1 0 1]);
 c = [-1;0;0]; d = 0; C = [0,0,1]; D = 0;
 guard = conHyperplane(c,d,C,D);
@@ -53,7 +53,7 @@ reset = struct('A',[-1 0 0;0 1 0]);
 trans(2) = transition(guard,reset,2);
 loc(1) = location('S1',inv,trans,dynamics);
 
-inv = mptPolytope([-1,0],0);
+inv = polytope([-1,0],0);
 dynamics = linearSys([-2 1; 0 -1]);
 c = [-1;0]; d = 0; C = [0,1]; D = 0;
 guard = conHyperplane(c,d,C,D);
@@ -64,4 +64,4 @@ loc(2) = location('S1',inv,trans_,dynamics);
 HA = hybridAutomaton(loc)
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

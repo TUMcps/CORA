@@ -1,7 +1,7 @@
 function G = generators(Z)
 % generators - returns the generator matrix of a zonotope
 %
-% Syntax:  
+% Syntax:
 %    G = generators(Z)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function G = generators(Z)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      28-November-2016 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       28-November-2016 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-G = Z.Z(:,2:end);
+G = Z.G;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

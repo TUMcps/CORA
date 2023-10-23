@@ -1,7 +1,7 @@
 function res = test_getUnboundedAxisLimits
 % test_getUnboundedAxisLimits - unit test function for getUnboundedAxisLimits
 %
-% Syntax:  
+% Syntax:
 %    res = test_getUnboundedAxisLimits
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_getUnboundedAxisLimits
 %
 % See also: none
 
-% Author:       Tobias Lader
-% Written:      26-July-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       26-July-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -65,4 +65,4 @@ end
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

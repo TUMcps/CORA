@@ -9,7 +9,7 @@ function res = cubMap(cZ,varargin)
 %    If three conZonotopes are provided, the function calculates the set:
 %    { z = (x1' T x2) * x3 | x1 \in cZ1, x2 \in cZ2, x3 \in cZ3 }
 %
-% Syntax:  
+% Syntax:
 %    res = cubMap(cZ,T)
 %    res = cubMap(cZ,T,ind)
 %    res = cubMap(cZ1,cZ2,cZ3,T)
@@ -56,12 +56,12 @@ function res = cubMap(cZ,varargin)
 %
 % See also: quadMap, zonotope/cubMap
 
-% Author:       Niklas Kochdumper
-% Written:      02-November-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       02-November-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % check number of input arguments
     if nargin < 2
@@ -96,7 +96,7 @@ function res = cubMap(cZ,varargin)
                         {ind,'att','cell'}});
         
         % mixed cubic multiplication
-        res = cubMapMixed(cZ,cZ2,cZ3,T,ind);
+        res = aux_cubMapMixed(cZ,cZ2,cZ3,T,ind);
         
     elseif nargin == 2 || nargin == 3
         % res = cubMap(cZ,T)
@@ -119,20 +119,20 @@ function res = cubMap(cZ,varargin)
                         {ind,'att',{'cell'},{''}}});
 
         % cubic multiplication
-        res = cubMapSingle(cZ,T,ind);       
+        res = aux_cubMapSingle(cZ,T,ind);       
     end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function res = cubMapSingle(cZ,T,ind)
+function res = aux_cubMapSingle(cZ,T,ind)
 % calculates the following set:      { z = (x' T x) * x | x \in cZ }
 
     if isempty(cZ.A) 
 
-        temp = cubMap(zonotope(cZ.Z),T,ind);
-        res = conZonotope(temp);
+        pZ = cubMap(zonotope(cZ.c,cZ.G),T,ind);
+        res = conZonotope(pZ);
         
     else
         
@@ -143,19 +143,19 @@ function res = cubMapSingle(cZ,T,ind)
         
         % compute cubic map for polynomial zonotope to keep track of
         % dependencies
-        pZ = polyZonotope(zonotope(cZ.Z));
-        temp = cubMap(pZ,T,ind);
+        pZ = polyZonotope(zonotope(cZ.c,cZ.G));
+        pZ = cubMap(pZ,T,ind);
 
         % compute constraint matrix from constraint matrix of original
         % constrained zonotope
-        index = find(sum(temp.expMat,1) == 1);
-        A = zeros(size(cZ.A,1),size(temp.G,2));
+        index = find(sum(pZ.E,1) == 1);
+        A = zeros(size(cZ.A,1),size(pZ.G,2));
         b = cZ.b;
 
-        for i = 1:size(temp.expMat,1)
-            ind_ = find(temp.id == i);
+        for i = 1:size(pZ.E,1)
+            ind_ = find(pZ.id == i);
             if ~isempty(ind_)
-                ind = find(temp.expMat(ind_,index) == 1);
+                ind = find(pZ.E(ind_,index) == 1);
                 if ~isempty(ind)
                    A(:,index(ind)) = cZ.A(:,i); 
                 end
@@ -163,10 +163,10 @@ function res = cubMapSingle(cZ,T,ind)
         end
 
         % compute zonotope enclosure of the polynomial zonotopes
-        ind = find(prod(ones(size(temp.expMat))-mod(temp.expMat,2),1) == 1);
+        ind = find(prod(ones(size(pZ.E))-mod(pZ.E,2),1) == 1);
 
-        c = temp.c + 0.5 * sum(temp.G(:,ind),2);
-        G = temp.G;
+        c = pZ.c + 0.5 * sum(pZ.G(:,ind),2);
+        G = pZ.G;
         G(:,ind) = 0.5*G(:,ind);
         
         % remove all-zero constraints
@@ -180,7 +180,7 @@ function res = cubMapSingle(cZ,T,ind)
     
 end
 
-function res = cubMapMixed(cZ1,cZ2,cZ3,T,ind)
+function res = aux_cubMapMixed(cZ1,cZ2,cZ3,T,ind)
 % calculates the following set:
 % { z = (x1' T x2) * x3 | x1 \in cZ1, x2 \in cZ2, x3 \in cZ3 }
 
@@ -197,18 +197,18 @@ function res = cubMapMixed(cZ1,cZ2,cZ3,T,ind)
 
     % compute cubic map for polynomial zonotope to keep track of
     % dependencies
-    m1 = size(cZ1.Z,2) - 1; ind1 = 1:m1;
-    m2 = size(cZ2.Z,2) - 1; ind2 = m1+1:m1+m2;
-    m3 = size(cZ3.Z,2) - 1; ind3 = m1+m2+1:m1+m2+m3;
+    m1 = size(cZ1.G,2); ind1 = 1:m1;
+    m2 = size(cZ2.G,2); ind2 = m1+1:m1+m2;
+    m3 = size(cZ3.G,2); ind3 = m1+m2+1:m1+m2+m3;
     
-    pZ1 = polyZonotope(cZ1.Z(:,1),cZ1.Z(:,2:end),[],eye(m1),ind1');
-    pZ2 = polyZonotope(cZ2.Z(:,1),cZ2.Z(:,2:end),[],eye(m2),ind2');
-    pZ3 = polyZonotope(cZ3.Z(:,1),cZ3.Z(:,2:end),[],eye(m3),ind3');
+    pZ1 = polyZonotope(cZ1.c,cZ1.G,[],eye(m1),ind1');
+    pZ2 = polyZonotope(cZ2.c,cZ2.G,[],eye(m2),ind2');
+    pZ3 = polyZonotope(cZ3.c,cZ3.G,[],eye(m3),ind3');
     
-    temp = cubMap(pZ1,pZ2,pZ3,T,ind);
+    pZ = cubMap(pZ1,pZ2,pZ3,T,ind);
 
     % compute constraint matrix from con. mat. of original conZonotope
-    index = find(sum(temp.expMat,1) == 1);
+    index = find(sum(pZ.E,1) == 1);
     A = []; b = [];
     
     list = {cZ1,cZ2,cZ3};
@@ -220,12 +220,12 @@ function res = cubMapMixed(cZ1,cZ2,cZ3,T,ind)
         
         if ~isempty(cZ.A)
             
-            Atemp = zeros(size(cZ.A,1),size(temp.G,2));
+            Atemp = zeros(size(cZ.A,1),size(pZ.G,2));
 
             for i = listInd{j}
-                ind_ = find(temp.id == i);
+                ind_ = find(pZ.id == i);
                 if ~isempty(ind_)
-                    ind = find(temp.expMat(ind_,index) == 1);
+                    ind = find(pZ.E(ind_,index) == 1);
                     if ~isempty(ind)
                        Atemp(:,index(ind)) = cZ.A(:,i-listInd{j}(1)+1); 
                     end
@@ -238,10 +238,10 @@ function res = cubMapMixed(cZ1,cZ2,cZ3,T,ind)
     end
 
     % compute zonotope enclosure of the polynomial zonotopes
-    ind = find(prod(ones(size(temp.expMat))-mod(temp.expMat,2),1) == 1);
+    ind = find(prod(ones(size(pZ.E))-mod(pZ.E,2),1) == 1);
 
-    c = temp.c + 0.5 * sum(temp.G(:,ind),2);
-    G = temp.G;
+    c = pZ.c + 0.5 * sum(pZ.G(:,ind),2);
+    G = pZ.G;
     G(:,ind) = 0.5*G(:,ind);
     
     % remove all-zero constraints
@@ -254,4 +254,4 @@ function res = cubMapMixed(cZ1,cZ2,cZ3,T,ind)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_partition_get_polytopes()
 % test_partition_get_polytopes - unit test cell polytopes
 %
-% Syntax:  
+% Syntax:
 %    res = test_partition_get_polytopes()
 %
 % Inputs:
@@ -10,12 +10,12 @@ function res = test_partition_get_polytopes()
 % Outputs:
 %    res - true/false 
 
-% Author:       Aaron Pereira, Matthias Althoff
-% Written:      02-August-2017
-% Last update:  02-August-2018 (MA)
-% Last revision:---
+% Authors:       Aaron Pereira, Matthias Althoff
+% Written:       02-August-2017
+% Last update:   02-August-2018 (MA)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %setup partitions
 threeDimField=partition([0,10; -3,3; 0,1],[5;10;3]);
@@ -49,7 +49,7 @@ res = res1&&res2;
 % cellPolytopes(threeDimField)
 % cellPolytopes(threeDimField,[1 5 3])
 % cellPolytopes(threeDimField)
-% P = mptPolytope([2 0 0.3;4 2 0.6;1 1 0.5; 1 1 0.1]);
+% P = polytope([2 0 0.3;4 2 0.6;1 1 0.5; 1 1 0.1]);
 % intersectingSegments(threeDimField,P)
 % [iS,percentages] = exactIntersectingCells(threeDimField,P)
 % plot(threeDimField,exactIntersectingCells(threeDimField,P))
@@ -58,4 +58,4 @@ res = res1&&res2;
 % 
 % %partition with 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

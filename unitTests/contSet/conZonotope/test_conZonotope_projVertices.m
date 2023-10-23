@@ -2,7 +2,7 @@ function res = test_conZonotope_projVertices
 % test_conZonotope_projVertices - unit test function for computation of
 %    vertices of a 2D projection
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_projVertices
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_conZonotope_projVertices
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      21-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       21-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -86,4 +86,4 @@ if ~compareMatrices(V_proj,V,1e-14,'subset')
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

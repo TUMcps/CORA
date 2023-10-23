@@ -2,7 +2,7 @@ function fs = project(fs,dims)
 % project - projects a full-dimensional space onto the specified dimensions
 %    case R^0: no dimensions for projection possible
 %
-% Syntax:  
+% Syntax:
 %    fs = project(fs,dims)
 %
 % Inputs:
@@ -14,7 +14,7 @@ function fs = project(fs,dims)
 %
 % Example: 
 %    fs = fullspace(4);
-%    val = project(fs);
+%    val = project(fs,1:2);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -22,12 +22,12 @@ function fs = project(fs,dims)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if fs.dimension == 0
     throw(CORAerror('CORA:notSupported','Projection of of R^0 not supported'));
@@ -37,4 +37,4 @@ else
     fs.dimension = length(dims);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

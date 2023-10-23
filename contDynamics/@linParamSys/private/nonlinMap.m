@@ -2,7 +2,7 @@ function obj = nonlinMap(obj,options)
 % nonlinMap - computes the interval matrix which abstracts the nonlinear
 %    map due to the higher order terms in the Taylor expansion
 %
-% Syntax:  
+% Syntax:
 %    obj = nonlinMap(obj,options)
 %
 % Inputs:
@@ -21,14 +21,14 @@ function obj = nonlinMap(obj,options)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      03-January-2009 
-% Last update:  22-June-2009
-%               22-July-2009
-%               03-February-2010
+% Authors:       Matthias Althoff
+% Written:       03-January-2009 
+% Last update:   22-June-2009
+%                22-July-2009
+%                03-February-2010
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     
 %load data from object/options structure
@@ -76,4 +76,4 @@ obj.taylor.powers=Apower;
 obj.taylor.error=E;    
 obj.taylor.sq=Asquare;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

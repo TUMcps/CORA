@@ -2,7 +2,7 @@ function pZ = restructureReduce(pZ, order, method, varargin)
 % restructureReduce - Calculate a new representation of a polynomial
 %    zonotope through reduction of the independent generators 
 %
-% Syntax:  
+% Syntax:
 %    pZ = restructureReduce(pZ, order, method)
 %    pZ = restructureReduce(pZ, order, method, genOrder)
 %
@@ -33,12 +33,12 @@ function pZ = restructureReduce(pZ, order, method, varargin)
 %
 % See also: polyZonotope/restructure, zonotope/reduce
 
-% Author:       Niklas Kochdumper
-% Written:      25-July-2018 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-July-2018 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 genOrder = setDefaultValues({Inf},varargin);
@@ -56,7 +56,7 @@ if o <= order    % max order satisfied
         
         % half the generator length for exponents that are all even
         Gtemp = pZ.G;         
-        temp = prod(ones(size(pZ.expMat))-mod(pZ.expMat,2),1);
+        temp = prod(ones(size(pZ.E))-mod(pZ.E,2),1);
         ind = find(temp == 1);
         Gtemp(:,ind) = 0.5 * Gtemp(:,ind);
        
@@ -68,14 +68,14 @@ if o <= order    % max order satisfied
         ind = ind(1:o_);
         
         Grem = pZ.G(:,ind);
-        expMatRem = pZ.expMat(:,ind);
+        ERem = pZ.E(:,ind);
         
         pZ.G(:,ind) = [];
-        pZ.expMat(:,ind) = [];  
+        pZ.E(:,ind) = [];  
         
         % reduce the polynomial zonotope that corresponds to the
         % generators that are removed
-        pZ_ = polyZonotope(zeros(dim_x,1),Grem,pZ.Grest,expMatRem);
+        pZ_ = polyZonotope(zeros(dim_x,1),Grem,pZ.GI,ERem);
         
         zono = zonotope(pZ_);
         zono = reduce(zono,method,1);
@@ -83,18 +83,18 @@ if o <= order    % max order satisfied
     else       
     
         % reduce the zonotope that corresponds to the independent generators
-        zono_ = zonotope([zeros(dim_x,1),pZ.Grest]);
+        zono_ = zonotope([zeros(dim_x,1),pZ.GI]);
         zono = reduce(zono_,method,1);
     end
     
     
     % construct the restructured polynomial zonotope
-    Gzono = generators(zono);
+    Gzono = zono.G;
     G = [pZ.G, Gzono];
-    expMat = [pZ.expMat, zeros(size(pZ.expMat,1),size(Gzono,2)); ...
-              zeros(size(Gzono,2),size(pZ.expMat,2)), eye(size(Gzono,2))];
+    E = [pZ.E, zeros(size(pZ.E,1),size(Gzono,2)); ...
+              zeros(size(Gzono,2),size(pZ.E,2)), eye(size(Gzono,2))];
 
-    pZ = polyZonotope(pZ.c+center(zono),G,[],expMat);
+    pZ = polyZonotope(pZ.c+center(zono),G,[],E);
     
 else            % max order exceeded
     
@@ -113,10 +113,10 @@ else            % max order exceeded
     for i = 1:length(Vdep)
         
         % find all generators that that depend on the current factor
-        ind = find(pZ.expMat(i,:) > 0);
+        ind = find(pZ.E(i,:) > 0);
         indicesDep{i} = ind';
         pZ_ = polyZonotope(zeros(dim_x,1),pZ.G(:,ind), ...
-              generators(zonoRef),pZ.expMat(:,ind));
+              generators(zonoRef),pZ.E(:,ind));
         
         zono_ = zonotope(pZ_);
         
@@ -137,8 +137,8 @@ else            % max order exceeded
     Grem = pZ.G(:,indDep);
     pZ.G(:,indDep) = [];
     
-    expMatRem = pZ.expMat(:,indDep);
-    pZ.expMat(:,indDep) = [];
+    ERem = pZ.E(:,indDep);
+    pZ.E(:,indDep) = [];
     
     % check if additional generators need to be removed
     o_ = (size(pZ.G,2) + dim_x) - genOrder*dim_x;
@@ -147,7 +147,7 @@ else            % max order exceeded
        
         % half the generator length for exponents that are all even
         Gtemp = pZ.G;         
-        temp = prod(ones(size(pZ.expMat))-mod(pZ.expMat,2),1);
+        temp = prod(ones(size(pZ.E))-mod(pZ.E,2),1);
         ind = find(temp == 1);
         Gtemp(:,ind) = 0.5 * Gtemp(:,ind);
         
@@ -159,29 +159,28 @@ else            % max order exceeded
         ind = ind(1:o_);
         
         Grem = [Grem, pZ.G(:,ind)];
-        expMatRem = [expMatRem, pZ.expMat(:,ind)];
+        ERem = [ERem, pZ.E(:,ind)];
         
         pZ.G(:,ind) = [];
-        pZ.expMat(:,ind) = [];   
+        pZ.E(:,ind) = [];   
     end
     
     % construct a polynomial zonotope with all generators that are
     % removed and reduce it to order 1
-    pZ_ = polyZonotope(zeros(dim_x,1), Grem ,pZ.Grest, expMatRem);
+    pZ_ = polyZonotope(zeros(dim_x,1), Grem ,pZ.GI, ERem);
     zono_ = zonotope(pZ_);
     zono = reduce(zono_,method,1);
     
-    if ~isempty(pZ.expMat)
-        pZ.expMat(ind1,:) = [];
+    if ~isempty(pZ.E)
+        pZ.E(ind1,:) = [];
     end
     
     % construct the restructured polynomial zonotope
-    Gzono = generators(zono);
+    Gzono = zono.G;
     G = [pZ.G, Gzono];
-    expMat = [pZ.expMat, zeros(size(pZ.expMat,1),size(Gzono,2)); ...
-              zeros(size(Gzono,2),size(pZ.expMat,2)), eye(size(Gzono,2))];
+    E = blkdiag(pZ.E, eye(size(Gzono,2)));
     
-    pZ = polyZonotope(pZ.c+center(zono),G,[],expMat);   
+    pZ = polyZonotope(pZ.c+zono.c,G,[],E);   
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

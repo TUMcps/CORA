@@ -2,7 +2,7 @@ function dimForSplit = select(obj,options,Rinit,Rinit_y,iter)
 % select - selects the split strategy of the reachable set causing the
 %          least linearization error
 %
-% Syntax:  
+% Syntax:
 %    dimForSplit = select(obj,options,Rinit)
 %
 % Inputs:
@@ -22,15 +22,15 @@ function dimForSplit = select(obj,options,Rinit,Rinit_y,iter)
 %
 % See also: linReach
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      04-January-2008 
-% Last update:  29-January-2008
-%               29-June-2009
-%               12-September-2017
-%               02-January-2019 (NK, cleaned up the code)
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       04-January-2008 
+% Last update:   29-January-2008
+%                29-June-2009
+%                12-September-2017
+%                02-January-2019 (NK, cleaned up the code)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute all possible splits of the maximum reachable set
 Rtmp = split(Rinit);
@@ -56,4 +56,4 @@ end
 % find best performance index
 [~,dimForSplit] = min(perfInd);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

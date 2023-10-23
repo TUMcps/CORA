@@ -1,7 +1,7 @@
 function print(pZ,varargin)
 % print - prints a polynomial zonotope on the command window
 %
-% Syntax:  
+% Syntax:
 %    print(pZ)
 %    print(pZ,'Digits',digits)
 %    print(pZ,'Ids',ids,'Vars',vars)
@@ -29,12 +29,12 @@ function print(pZ,varargin)
 %
 % See also: ---
 
-% Author:       Victor Gassmann
-% Written:      12-January-2021 
-% Last update:  07-June-2022 (MW, switch to name-value syntax)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       12-January-2021 
+% Last update:   07-June-2022 (MW, switch to name-value syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always uneven
 if mod(nargin,2) ~= 1
@@ -75,9 +75,9 @@ for i=1:length(ids)
 end
 res = f(x);
 
-% check if pZ has Grest
-if ~isempty(pZ.Grest) && ~all(pZ.Grest==0,'all')
-    ind_zero = all(pZ.Grest==0,2);
+% check if pZ has GI
+if ~isempty(pZ.GI) && ~all(pZ.GI==0,'all')
+    ind_zero = all(pZ.GI==0,2);
     Zrest = sym('Zrest',[sum(~ind_zero),1]);
     res(~ind_zero) = res(~ind_zero) + Zrest;
 end
@@ -85,4 +85,4 @@ end
 % display object
 disp(vpa(res,digits));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

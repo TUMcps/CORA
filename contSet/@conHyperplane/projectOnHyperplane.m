@@ -1,7 +1,7 @@
 function S = projectOnHyperplane(hyp,S)
 % projectOnHyperplane - projects a set onto a hyperplane
 %
-% Syntax:  
+% Syntax:
 %    S = projectOnHyperplane(hyp, S)
 %
 % Inputs:
@@ -27,12 +27,12 @@ function S = projectOnHyperplane(hyp,S)
 %
 % See also: zonotope/project
 
-% Author:       Niklas Kochdumper
-% Written:      13-December-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       13-December-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get object properties
 c = hyp.h.c;
@@ -51,4 +51,4 @@ b = d*c;
 % project the set
 S = A*S + b;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -4,8 +4,8 @@ function [trueError, VerrorDyn, VerrorStat] = abstrerr_poly(obj, options, ...
 %    approach introduced in [1]
 %
 % Syntax:
-%    [trueError, VerrorDyn, VerrorStat] =
-%           abstrerr_poly(obj, options, Rall, Rdiff, H, Zdelta,
+%    [trueError, VerrorDyn, VerrorStat] = ...
+%           abstrerr_poly(obj, options, Rall, Rdiff, H, Zdelta, ...
 %                               VerrorStat, T, ind3, Zdelta3)
 %
 % Inputs:
@@ -40,16 +40,16 @@ function [trueError, VerrorDyn, VerrorStat] = abstrerr_poly(obj, options, ...
 %       "Reachability Analysis of Nonlinear Systems using
 %           Conservative Polynomialization and Non-Convex Sets"
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      21-August-2012
-% Last update:  18-March-2016
-%               25-July-2016 (intervalhull replaced by interval)
-%               22-January-2018 (NK, fixed error for the sets)
-%               08-February-2018 (NK, higher-order-tensors + clean-up)
-%               21-April-2020 (simplification)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       21-August-2012
+% Last update:   18-March-2016
+%                25-July-2016 (intervalhull replaced by interval)
+%                22-January-2018 (NK, fixed error for the sets)
+%                08-February-2018 (NK, higher-order-tensors + clean-up)
+%                21-April-2020 (simplification)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute interval of reachable set
 dx = interval(Rall);
@@ -168,4 +168,4 @@ VerrorDyn = reduce(VerrorDyn,options.reductionTechnique,options.intermediateOrde
 errorIHabs = abs(interval(VerrorDyn) + interval(VerrorStat));
 trueError = supremum(errorIHabs);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

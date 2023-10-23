@@ -2,7 +2,7 @@ function [Rti,Rtp,options] = linReach_adaptive(obj,options,Rstart)
 % linReach_adaptive - computes the reachable set after linearization;
 %    based on automated tuning from [3] applied to algorithms [1,2]
 %
-% Syntax:  
+% Syntax:
 %    [Rti,Rtp,options] = linReach_adaptive(obj,options,Rstart)
 %
 % Inputs:
@@ -29,13 +29,13 @@ function [Rti,Rtp,options] = linReach_adaptive(obj,options,Rstart)
 %
 % See also: ---
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       11-December-2020
 % Last update:   15-January-2021
 %                30-June-2021
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set linearization error
 error_adm = options.error_adm_horizon;
@@ -64,8 +64,13 @@ elseif options.i > 1
         (options.decrFactor - options.zetaphi(options.minorder+1)) / ...
         (options.decrFactor - options.varphi(options.i-1));
     options.timeStep = min([options.tFinal - options.t, finitehorizon]);
-%     options.timeStep = min([options.tFinal - options.t, ...
-%         max([finitehorizon, options.timeStep * 2])]);
+
+    % addition for ARCH'23: artificially enlarge time step if current
+    % finitehorizon almost same as last time step size
+    if withinTol(finitehorizon,options.stepsize(options.i-1),1e-3)
+        options.timeStep = options.finitehorizon(options.i-1) * 1.1;
+    end
+    % ---
     finitehorizon = options.timeStep;
     
     assert(options.timeStep > 0,'Tuning error.. report to devs');
@@ -79,7 +84,7 @@ elseif options.i > 1
 end
 
 % check if Rstart is degenerate (each dimension): order may change
-zeroWidthDim = sum(abs(generators(zonotope(Rstart))),2) == 0;
+zeroWidthDim = withinTol(sum(abs(generators(zonotope(Rstart))),2),0);
 
 % iteration counter run:
 % - 0: only for first step in lin, otherwise:
@@ -234,7 +239,7 @@ while true
     
     % measure abstraction error
     if isa(Rerror,'polyZonotope')
-        abstrerr = sum(abs(Rerror.Grest),2)';
+        abstrerr = sum(abs(Rerror.GI),2)';
         % Here, we take the independent generators, as they represent
         % relatively truthfully the part of the abstraction error
         % corresponding to the V^{\Delta} (see [2] Section 4.2). However,
@@ -387,12 +392,13 @@ end
 
 % save counter of how often Lagrange remainder was computed
 options.abscount(options.i,1) = abscount;
+% save time step size
+options.stepsize(options.i,1) = options.timeStep;
 
 end
 
 
-
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 % adaptation of tensorOrder: init step
 function options = aux_initStepTensorOrder(obj,options,Rstartset)
@@ -587,7 +593,7 @@ if isa(Rt,'zonotope') && isa(Rerr,'zonotope')
     rerr1 = vecnorm(sum(abs(generators(Rerr)),2),2);
 else
     rR = vecnorm(rad(interval(Rt)));
-    rerr1 = vecnorm(sum(abs(Rerr.Grest),2),2);
+    rerr1 = vecnorm(sum(abs(Rerr.GI),2),2);
 end
 
 % model varphi by linear interpolation over the gain
@@ -624,8 +630,8 @@ if isa(Rerr_h,'zonotope') && isa(Rerr_deltat,'zonotope')
     rerr1 = vecnorm(sum(abs(generators(Rerr_h)),2),2);
     rerrk = vecnorm(sum(abs(generators(Rerr_deltat)),2),2);
 else
-    rerr1 = vecnorm(sum(abs(Rerr_h.Grest),2),2);
-    rerrk = vecnorm(sum(abs(Rerr_deltat.Grest),2),2);
+    rerr1 = vecnorm(sum(abs(Rerr_h.GI),2),2);
+    rerrk = vecnorm(sum(abs(Rerr_deltat.GI),2),2);
 end
 
 % sanity check: rerr1 and rerrk are computed in the same time step,
@@ -849,4 +855,4 @@ options.minorder = min(options.orders);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

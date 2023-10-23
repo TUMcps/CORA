@@ -1,7 +1,7 @@
 function res = test_fullspace_generateRandom
 % test_fullspace_generateRandom - unit test function of generateRandom
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_generateRandom
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_generateRandom
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      25-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % without input arguments
 fs = fullspace.generateRandom();
@@ -31,4 +31,4 @@ n = 2;
 fs = fullspace.generateRandom('Dimension',n);
 res = dim(fs) == n;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

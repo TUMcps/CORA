@@ -1,7 +1,7 @@
 function res = testLong_spaceex2cora_nonlinear_vanDerPol()
 % testLong_spaceex2cora_nonlinear_vanDerPol - example of nonlinear reachability
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_spaceex2cora_nonlinear_vanDerPol
 %
 % Inputs:
@@ -10,12 +10,12 @@ function res = testLong_spaceex2cora_nonlinear_vanDerPol()
 % Outputs:
 %    res - true/false 
 
-% Author:       Matthias Althoff, Raja Judeh
-% Written:      26-June-2009
-% Last update:  13-September-2018
-% Last revision:15-January-2019 (SX_HA to SX_nonLin)
+% Authors:       Matthias Althoff, Raja Judeh
+% Written:       26-June-2009
+% Last update:   13-September-2018
+% Last revision: 15-January-2019 (changed SX_HA to SX_nonLin)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% Specify continuous dynamics
 
@@ -53,4 +53,4 @@ else
     res = true;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

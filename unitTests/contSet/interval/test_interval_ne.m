@@ -1,7 +1,7 @@
 function res = test_interval_ne
 % test_interval_ne - unit test function of ne, overloaded '~=' operator
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_ne
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_ne
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      29-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       29-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % TEST 1: Analytical ------------------------------------------------------
 % create interval
@@ -56,4 +56,4 @@ res(3) = res_rand == res_rand_true;
 % compare results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

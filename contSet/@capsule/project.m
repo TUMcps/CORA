@@ -1,7 +1,7 @@
 function C = project(C,dims)
 % project - projects a capsule onto the specified dimensions
 %
-% Syntax:  
+% Syntax:
 %    C = project(C,dims)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function C = project(C,dims)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      04-March-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-March-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %projection of center and generator; the radius is unchanged
 C.c = C.c(dims);
@@ -35,4 +35,4 @@ if ~isempty(C.g)
     C.g = C.g(dims);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

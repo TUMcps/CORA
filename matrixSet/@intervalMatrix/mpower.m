@@ -1,7 +1,7 @@
 function intMatPower = mpower(intMat,exponent)
 % mpower - Overloaded '^' operator for the power of an interval matrix
 %
-% Syntax:  
+% Syntax:
 %    intMatPower = mpower(intMat,exponent)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function intMatPower = mpower(intMat,exponent)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      21-June-2010 
-% Last update:  05-August-2010
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-June-2010 
+% Last update:   05-August-2010
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{intMat,'att','intervalMatrix'}, ...
@@ -46,4 +46,4 @@ else
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = isemptyobject(loc)
 % isemptyobject - checks if a location object is empty
 %
-% Syntax:  
+% Syntax:
 %    res = isemptyobject(loc)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function res = isemptyobject(loc)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 [r,c] = size(loc);
 res = false(r,c);
@@ -36,4 +36,4 @@ for i=1:r
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

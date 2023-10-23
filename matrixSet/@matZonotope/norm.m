@@ -2,7 +2,7 @@ function val = norm(matZ,varargin)
 % norm - computes approximately the maximum norm value of all possible
 %    matrices
 %
-% Syntax:  
+% Syntax:
 %    val = norm(matZ,varargin)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function val = norm(matZ,varargin)
 %
 % See also: @zonotope/norm
 
-% Author:       Matthias Althoff, Victor Gassmann
-% Written:      02-November-2017
-% Last update:  23-July-2020
-% Last revision:---
+% Authors:       Matthias Althoff, Victor Gassmann
+% Written:       02-November-2017
+% Last update:   23-July-2020
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % convert to interval matrix
 M = intervalMatrix(matZ);
@@ -34,4 +34,4 @@ M = intervalMatrix(matZ);
 % compute norm of interval matrix
 val = norm(M,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

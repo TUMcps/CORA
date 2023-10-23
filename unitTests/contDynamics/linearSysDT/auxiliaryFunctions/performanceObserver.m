@@ -2,7 +2,7 @@ function perf = performanceObserver(EstSet)
 % performanceObserver - evaluates the performance of guaranteed
 % state estimation of linear discrete-time systems according to [1].
 %
-% Syntax:  
+% Syntax:
 %    perf = performanceObserver(EstSet)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function perf = performanceObserver(EstSet)
 %        for Guaranteed State Estimation of Linear Disturbed Systems, 
 %        in preparation.
 
-% Author:       Matthias Althoff
-% Written:      16-Jan-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       16-January-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% Loop through all sets
 % initialize values
@@ -64,4 +64,4 @@ for i = 1:length(perf.rad(:,1))
     perf.IRadius(i) = sqrt(mean(perf.rad(i,:).^2));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = testLong_nonlinearSys_reach_07_VDP_linearRemainder
 % testLong_nonlinearSys_reach_07_VDP_linearRemainder -
 %    example of nonlinear reachability analysis;
 %
-% Syntax:  
+% Syntax:
 %    testLong_nonlinearSys_reach_07_VDP_linearRemainder
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = testLong_nonlinearSys_reach_07_VDP_linearRemainder
 % Outputs:
 %    res - true/false
 
-% Author:       Victor Gassmann
-% Written:      22-May-2019
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       22-May-2019
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -63,4 +63,4 @@ disp(['computation time of reachable set with remainder added to system matrices
 % example completed
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

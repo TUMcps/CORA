@@ -47,25 +47,25 @@ function Z = minkDiff(minuend, subtrahend, varargin)
 %
 % See also: mtimes, conZonotope/minkDiff
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Tobias Ladner
-% Written:      10-June-2015
-% Last update:  22-July-2015
-%               05-August-2015
-%               20-August-2015
-%               30-July-2016
-%               14-November-2016
-%               05-February-2021 (NK, added alternative algorithm)
-%               06-May-2021 (MA, check added whether minuend is full dimensional)
-%               17-June-2022 (MA, case added that minuend and subtrahend are degenerate)
-%               24-June-2022 (MA, under-approximation and over-approximation added)
-%               01-July-2022 (MA, coarser and faster method for over-approximation added)
-%               15-July-2022 (MA, method from Raghuraman & Koeln added)
-%               27-July-2022 (MA, method from Raghuraman & Koeln rewritten for linprog)
-%               09-November-2022 (MW, rename 'minkDiff', rename methods)
-%               25-May-2023 (TL, added 'exact' for aligned zonotopes)
-% Last revision:25-May-2023 (TL, restructuring; more descriptive error messages)
+% Authors:       Matthias Althoff, Niklas Kochdumper, Tobias Ladner
+% Written:       10-June-2015
+% Last update:   22-July-2015
+%                05-August-2015
+%                20-August-2015
+%                30-July-2016
+%                14-November-2016
+%                05-February-2021 (NK, added alternative algorithm)
+%                06-May-2021 (MA, check added whether minuend is full dimensional)
+%                17-June-2022 (MA, case added that minuend and subtrahend are degenerate)
+%                24-June-2022 (MA, under-approximation and over-approximation added)
+%                01-July-2022 (MA, coarser and faster method for over-approximation added)
+%                15-July-2022 (MA, method from Raghuraman & Koeln added)
+%                27-July-2022 (MA, method from Raghuraman & Koeln rewritten for linprog)
+%                09-November-2022 (MW, rename 'minkDiff', rename methods)
+%                25-May-2023 (TL, added 'exact' for aligned zonotopes)
+% Last revision: 25-May-2023 (TL, restructuring; more descriptive error messages)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % list implemented algorithms
 implementedAlgs = {'exact','inner','outer','outer:coarse','outer:scaling', ...
@@ -123,13 +123,13 @@ if isFullDim(minuend)
 
     % compute Minkowski difference with the approach from [1]
     if strcmpi(method, 'exact')
-        if areAligned(minuend, subtrahend)
+        if aux_areAligned(minuend, subtrahend)
             % exact solution for aligned sets according to [1,Prop.5]
-            Z = zonotope(minuend.Z - subtrahend.Z);
+            Z = zonotope(minuend.c - subtrahend.c, minuend.G - subtrahend.G);
 
         elseif n == 2
             % same method as 'inner' [1,Prop.6]
-            Z = minkDiffZono(minuend, subtrahend, method);
+            Z = aux_minkDiffZono(minuend, subtrahend, method);
 
         else
             throw(CORAerror('CORA:wrongValue', 'third', 'No exact algorithm found: Sets have to be 2-dimensional or algined.'))
@@ -137,19 +137,19 @@ if isFullDim(minuend)
 
     elseif strcmp(method, 'outer') || strcmp(method, 'outer:coarse') || ...
             strcmp(method, 'inner') || strcmp(method, 'approx')
-        Z = minkDiffZono(minuend, subtrahend, method);
+        Z = aux_minkDiffZono(minuend, subtrahend, method);
 
     elseif strcmp(method, 'inner:conZonotope')
         % compute Minkowski difference using constrained zonotopes
-        Z = minkDiffConZono(minuend, subtrahend);
+        Z = aux_minkDiffConZono(minuend, subtrahend);
 
     elseif strcmp(method, 'inner:RaghuramanKoeln')
         % compute Minkowski difference using [2]
-        Z = RaghuramanKoeln(minuend, subtrahend);
+        Z = aux_RaghuramanKoeln(minuend, subtrahend);
 
     elseif strcmp(method, 'outer:scaling')
         % compute  Minkowski difference using scaling
-        Z = minkDiffOuterInterval(minuend,subtrahend);
+        Z = aux_minkDiffOuterInterval(minuend,subtrahend);
     end
 
 else
@@ -199,25 +199,25 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function Z = minkDiffZono(minuend, subtrahend, method)
+function Z = aux_minkDiffZono(minuend, subtrahend, method)
 % compute Minkowski difference using the approach in [1]
 
 %% determine generators to be kept
 % obtain halfspace representation
-P = mptPolytope(minuend);
-HorigTwice = get(P, 'H');
-KorigTwice = get(P, 'K');
+P = polytope(minuend);
+HorigTwice = P.A;
+KorigTwice = P.b;
 Horig = HorigTwice(1:0.5*end, :);
 
 % nr of subtrahend generators
-subtrahendGens = length(subtrahend.Z(1, :)) - 1;
+subtrahendGens = size(subtrahend.G,2);
 
 % intersect polytopes according to Theorem 3 of [1]
-delta_K = HorigTwice * subtrahend.Z(:, 1);
+delta_K = HorigTwice * subtrahend.c;
 for i = 1:subtrahendGens
-    delta_K = delta_K + abs(HorigTwice*subtrahend.Z(:, i+1));
+    delta_K = delta_K + abs(HorigTwice*subtrahend.G(:, i));
 end
 Korig_new = KorigTwice - delta_K;
 
@@ -225,19 +225,19 @@ C = Horig;
 d = Korig_new(1:0.5*end, :);
 
 %compute center
-c = minuend.Z(:, 1) - subtrahend.Z(:, 1);
+c = minuend.c - subtrahend.c;
 
 %obtain minuend generators
-G = minuend.Z(:, 2:end);
+G = minuend.G;
 
 %% reverse computation from halfspace generation
 n = dim(minuend);
 if strcmp(method, 'inner') || (strcmp(method, 'exact') && n == 2)
-    delta_d = d - C * minuend.Z(:, 1) + C * subtrahend.Z(:, 1);
+    delta_d = d - C * minuend.c + C * subtrahend.c;
     A_abs = abs(C*G);
     dims = length(A_abs(1, :));
     % vector of cost function
-    f = vecnorm(minuend.Z(:, 2:end), 2, 1);
+    f = vecnorm(minuend.G, 2, 1);
     % A_abs x <= delta_d && x >= 0
     [alpha, ~, exitflag] = linprog(-f, [A_abs; -eye(dims)], [delta_d; zeros(dims, 1)]);
     if isempty(alpha) || exitflag ~= 1
@@ -249,7 +249,7 @@ if strcmp(method, 'inner') || (strcmp(method, 'exact') && n == 2)
 elseif strcmp(method, 'outer') || strcmp(method, 'outer:coarse')
     % reduce delta_d using linear programming
     if strcmp(method, 'outer')
-        d_shortened = tightenHalfspaces(HorigTwice, Korig_new);
+        d_shortened = aux_tightenHalfspaces(HorigTwice, Korig_new);
     else
         d_shortened = Korig_new;
     end
@@ -261,11 +261,11 @@ elseif strcmp(method, 'outer') || strcmp(method, 'outer:coarse')
         return
     else
         % vector of cost function
-        f = vecnorm(minuend.Z(:, 2:end), 2, 1);
+        f = vecnorm(minuend.G, 2, 1);
         % obtain unrestricted A_abs and delta_d
         C = Horig;
         d = d_shortened(1:0.5*end, :);
-        delta_d = d - C * minuend.Z(:, 1) + C * subtrahend.Z(:, 1);
+        delta_d = d - C * minuend.c + C * subtrahend.c;
         A_abs = abs(C*G);
         dims = length(A_abs(1, :));
         % A_abs x >= delta_d && x >= 0
@@ -273,14 +273,14 @@ elseif strcmp(method, 'outer') || strcmp(method, 'outer:coarse')
     end
 
 elseif strcmp(method, 'approx')
-    delta_d = d - C * minuend.Z(:, 1) + C * subtrahend.Z(:, 1);
+    delta_d = d - C * minuend.c + C * subtrahend.c;
     A_abs = abs(C*G);
     % use pseudoinverse to compute an approximation
     alpha = pinv(A_abs) * delta_d; %solve linear set of equations using the pseudoinverse
 
 else
-    % should already be catched before
-    throw(CORAerror('CORA:specialError',sprintf("Unkown method: '%s'",method)))
+    % should already be caught before
+    throw(CORAerror('CORA:specialError',sprintf("Unknown method: '%s'",method)))
 end
 
 % instantiate Z
@@ -290,11 +290,11 @@ Gnew = Gnew(:,~all(Gnew == 0,1));
 Z = zonotope(c, Gnew);
 end
 
-function Z = minkDiffOuterInterval(minuend,subtrahend)
+function Z = aux_minkDiffOuterInterval(minuend,subtrahend)
 % compute  Minkowski difference using scaling
 % subtrahend must be an interval
 
-if ~isInterval(subtrahend)
+if ~representsa_(subtrahend,'interval',eps)
     throw(CORAerror('CORA:wrongValue','second',sprintf("interval (using method='outer:scaling')")))
 end
 
@@ -306,7 +306,7 @@ Z = enlarge(minuend, scale); % outer
 
 end
 
-function Z = minkDiffConZono(Z1, Z2)
+function Z = aux_minkDiffConZono(Z1, Z2)
 % compute Minkowski difference based on constrained zonotopes
 
 % convert first zonotope to constrained zonotope
@@ -323,10 +323,10 @@ for i = 1:size(G, 2)
 end
 
 % compute zonotope inner-approximation of the constrained zonotope
-Z = innerApprox(cZ);
+Z = aux_innerApprox(cZ);
 end
 
-function Z = innerApprox(cZ)
+function Z = aux_innerApprox(cZ)
 % inner-approximate a constrained zonotope with a zonotope
 
 % compute point satisfying all constraints with pseudo inverse
@@ -351,7 +351,7 @@ A = [A; zeros(m_), -eye(m_)];
 b = [b_; zeros(m_, 1)];
 
 % construct objective function of the linear program
-f = -[zeros(1, m_), sum((cZ.Z(:, 2:end) * T).^2, 1)];
+f = -[zeros(1, m_), sum((cZ.G * T).^2, 1)];
 
 % solve linear program to get interval inner-approximation of polytope
 persistent options
@@ -378,13 +378,13 @@ off = p_ + T * center(int);
 S = T * diag(rad(int));
 
 % construct final zonotope
-c = cZ.Z(:, 1) + cZ.Z(:, 2:end) * off;
-G = cZ.Z(:, 2:end) * S;
+c = cZ.c + cZ.G * off;
+G = cZ.G * S;
 
 Z = zonotope(c, G);
 end
 
-function d_new = tightenHalfspaces(C, delta_d)
+function d_new = aux_tightenHalfspaces(C, delta_d)
 % tighten halfspaces so that the polytope is identical with the same number
 % of halfspaces
 
@@ -403,7 +403,7 @@ else
 end
 end
 
-function Z = RaghuramanKoeln(Z_m, Z_s)
+function Z = aux_RaghuramanKoeln(Z_m, Z_s)
 % Solves the Minkowski difference using the method described in
 % [2, Theorem 7]. A direct implementation of [2, Theorem 7] can be
 % found in the corresponding unit test. Here, we transform the linear
@@ -483,7 +483,7 @@ end
 
 end
 
-function res = areAligned(minuend, subtrahend)
+function res = aux_areAligned(minuend, subtrahend)
 % check if generators are aligned
 
 % extract generators
@@ -516,4 +516,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

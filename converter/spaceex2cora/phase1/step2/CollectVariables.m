@@ -2,7 +2,7 @@ function [listOfVars,listOfLabels] = CollectVariables(paramStruct)
 % CollectVariables - Collect list of variable names and synchronization
 %    labels occurring in a SpaceEx component (both base and network)
 %
-% Syntax:  
+% Syntax:
 %    [listOfVars,listOfLabels] = CollectVariables(paramStruct)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function [listOfVars,listOfLabels] = CollectVariables(paramStruct)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init struct for variables and labels
 listOfVars = struct('name',cell(1,0));
@@ -80,4 +80,4 @@ for i = 1:length(paramStruct)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

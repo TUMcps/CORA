@@ -1,7 +1,7 @@
 function c = center(intMat)
 % center - Returns the center of an intervalMatrix
 %
-% Syntax:  
+% Syntax:
 %    c = center(intMat)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function c = center(intMat)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      06-May-2021 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-May-2021 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 c = center(intMat.int);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

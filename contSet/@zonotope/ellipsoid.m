@@ -40,25 +40,25 @@ function E = ellipsoid(Z,varargin)
 %
 % See also: -
 
-% Author:       Victor Gassmann, Matthias Althoff
-% Written:      11-October-2019
-% Last update:  05-June-2021 (MA, include degenerate case)
-% Last revision:---
+% Authors:       Victor Gassmann, Matthias Althoff
+% Written:       11-October-2019
+% Last update:   05-June-2021 (MA, include degenerate case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set default method
 mode = setDefaultValues({'outer:norm_bnd'},varargin);
 
 % obtain rank of zonotope
 n = dim(Z);
-G = generators(Z);
-c = center(Z);
+G = Z.G;
+c = Z.c;
 Grank = rank(G);
 
 
 % zonotope is the origin
-if isZero(Z)
+if representsa_(Z,'origin',eps)
 
     E = ellipsoid(zeros(n),zeros(n,1));
     return
@@ -76,12 +76,12 @@ elseif n ~= Grank
     T = Q(:,1:Grank);
 end
 
-if size(generators(Z),2) == n
+if size(Z.G,2) == n
     fac = n;
     if startsWith(mode,'inner')
         fac = 1;
     end
-    E = ellipsoid(fac*(G*G'),center(Z));
+    E = ellipsoid(fac*(G*G'),Z.c);
 else
     switch mode
         case 'outer:exact'
@@ -108,4 +108,5 @@ end
 if n ~= Grank
     E = T*E + c;
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

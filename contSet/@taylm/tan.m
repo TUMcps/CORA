@@ -1,7 +1,7 @@
 function res = tan( obj )
 % tan - Overloaded 'tan()' operator for a Taylor model
 %
-% Syntax:  
+% Syntax:
 %    res = tan(obj)
 %
 % Inputs:
@@ -22,21 +22,24 @@ function res = tan( obj )
 %   [1] K. Makino et al. "Taylor Models and other validated functional 
 %       inclusion methods"
 
-% Author:       Dmitry Grebenyuk
-% Written:      15-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       15-August-2017
+% Last update:   ---
+% Last revision: ---
 
+% ------------------------------ BEGIN CODE -------------------------------
 
-%------------- BEGIN CODE --------------
+	res = arrayfun(@(a) aux_s_tan(a), obj, 'UniformOutput', 0);
 
-	res = arrayfun(@(a) s_tan(a), obj, 'UniformOutput', 0);
     A = cat(1, res{:});
     res = reshape(A, size(res));
 
 end
 
-function res = s_tan( obj )
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_s_tan( obj )
 
     if isempty(obj.monomials)    % Taylor model without polynomial part
 
@@ -48,5 +51,4 @@ function res = s_tan( obj )
     end
 end
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

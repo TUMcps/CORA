@@ -1,7 +1,7 @@
 function res = test_ellipsoid_distance
 % test_ellipsoid_distance - unit test function of distance
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_distance
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_distance
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      26-July-2021
-% Last update:  07-July-2022
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       26-July-2021
+% Last update:   07-July-2022
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 load cases.mat E_c
@@ -45,14 +45,14 @@ for i=1:length(E_c)
         break;
     end
     
-    % check mptPolytope: construct second hyperplane (also contains center
+    % check polytope: construct second hyperplane (also contains center
     % of ellipsoid)
     l2 = randn(n,1);
-    P = mptPolytope([l1';l2'],[l1'*E1.q;l2'*E1.q]);
+    P = polytope([l1';l2'],[l1'*E1.q;l2'*E1.q]);
     if distance(E1,P)>1e-6
         res = false;
         break;
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

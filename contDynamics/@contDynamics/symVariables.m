@@ -1,7 +1,7 @@
 function [vars,vars_der] = symVariables(varargin)
 % symVariables - generates symbolic variables of a continuous system 
 %
-% Syntax:  
+% Syntax:
 %    [vars,vars_der] = symVariables(varargin)
 %
 % Inputs:
@@ -29,15 +29,15 @@ function [vars,vars_der] = symVariables(varargin)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      18-January-2008
-% Last update:  06-July-2017
-%               05-November-2017
-%               14-January-2018
-%               19-November-2022 (MW, add outputs)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-January-2008
+% Last update:   06-July-2017
+%                05-November-2017
+%                14-January-2018
+%                19-November-2022 (MW, add outputs)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin==1
     obj=varargin{1};
@@ -186,4 +186,4 @@ vars_der.u = du;
 vars_der.y = dy;
 vars_der.o = do;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

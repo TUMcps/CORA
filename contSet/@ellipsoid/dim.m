@@ -1,7 +1,7 @@
 function n = dim(E)
 % dim - returns the dimension of the ambient space of an ellipsoid
 %
-% Syntax:  
+% Syntax:
 %    n = dim(E)
 %
 % Inputs:
@@ -20,19 +20,25 @@ function n = dim(E)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger, Victor Gassmann
-% Written:      15-Sep-2019 
-% Last update:  16-March-2021 (comp independent of property)
-%               04-July-2022 (VG: support class arrays)
-% Last revision:---
+% Authors:       Mark Wetzlinger, Victor Gassmann
+% Written:       15-September-2019 
+% Last update:   16-March-2021 (comp independent of property)
+%                04-July-2022 (VG, support class arrays)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
-if isempty(E)
-    n = 0;
-else
-    n = zeros(size(E));
-    for i=1:numel(E)
+% ------------------------------ BEGIN CODE -------------------------------
+
+n = zeros(size(E));
+for i=1:numel(E)
+    try
         n(i) = length(E(i).q);
+    catch ME
+        if isemptyobject(E(i))
+            n(i) = 0;
+        else
+            rethrow(ME);
+        end
     end
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

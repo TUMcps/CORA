@@ -1,7 +1,7 @@
 function res = kron(I1,I2)
 % kron - Kronecker product of two intervals
 %
-% Syntax:  
+% Syntax:
 %    intMatKron = kron(I1,I2)
 %
 % Inputs:
@@ -18,12 +18,13 @@ function res = kron(I1,I2)
 %
 % See also: times
 
-% Author:       Victor Gassmann
-% Written:      22-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       22-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 Vals = [];
 if ~isa(I1,'interval')
     sz = size(I1).*size(I2.inf);
@@ -47,4 +48,5 @@ inf_mat = reshape(min(Vals,[],2),sz);
 sup_mat = reshape(max(Vals,[],2),sz);
 
 res = interval(inf_mat,sup_mat);
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

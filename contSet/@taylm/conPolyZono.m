@@ -1,7 +1,7 @@
 function cPZ = conPolyZono(T)
 % conPolyZono - convert a Taylor model to a constrained polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    cPZ = conPolyZono(T)
 %
 % Inputs:
@@ -23,15 +23,15 @@ function cPZ = conPolyZono(T)
 %
 % See also: zonoBundle, conZonotope
 
-% Author:       Niklas Kochdumper
-% Written:      21-January-2020
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       21-January-2020
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     cPZ = conPolyZono(polyZonotope(T));
     
 end
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

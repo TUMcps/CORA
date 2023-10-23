@@ -4,7 +4,7 @@ function R = potOut(loc,R,minInd,maxInd)
 %    transitioned; the resulting reachable sets are all converted to
 %    polytopes
 %
-% Syntax:  
+% Syntax:
 %    R = potOut(loc,R,minInd,maxInd)
 %
 % Inputs:
@@ -24,15 +24,15 @@ function R = potOut(loc,R,minInd,maxInd)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      11-May-2007 
-% Last update:  18-September-2007
-%               21-October-2010
-%               30-July-2016
-%               17-May-2018 (NK, only change sets that intersect guards)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       11-May-2007 
+% Last update:   18-September-2007
+%                21-October-2010
+%                30-July-2016
+%                17-May-2018 (NK, only change sets that intersect guards)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % read out time-point and time-interval reachable sets
 timeInt = R.timeInterval;
@@ -54,8 +54,8 @@ for i=1:length(ind)
     iSet = ind(i);
         
     % overapproximate reachable set by a halfspace representation
-    timeInt.set{iSet} = mptPolytope(timeInt.set{iSet});
-    timePoint.set{iSet} = mptPolytope(timePoint.set{iSet});
+    timeInt.set{iSet} = polytope(timeInt.set{iSet});
+    timePoint.set{iSet} = polytope(timePoint.set{iSet});
         
     % intersect with invariant set
     timeInt.set{iSet} = and_(loc.invariant,timeInt.set{iSet},'exact');
@@ -80,4 +80,4 @@ end
 % construct modified reachSet object
 R = reachSet(timePoint,timeInt,R.parent);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

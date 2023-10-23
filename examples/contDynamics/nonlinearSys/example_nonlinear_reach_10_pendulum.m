@@ -2,7 +2,7 @@ function res = example_nonlinear_reach_10_pendulum()
 % example_nonlinear_reach_10_pendulum - example for nonlinear reachability
 %    analysis: a simple pendulum swinging in a 2D plane
 %
-% Syntax:  
+% Syntax:
 %    example_nonlinear_reach_10_pendulum
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = example_nonlinear_reach_10_pendulum()
 % Outputs:
 %    res - true/false
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       03-August-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -147,10 +147,9 @@ for i=1:totalSets
 end
 
 
-
 % example completed
 res = true;   
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

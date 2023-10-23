@@ -1,7 +1,7 @@
 function writeSparseMatrixOptimized(ind,var,fid,tayMod)
 % writeSparseMatrixOptimized - ???
 %
-% Syntax:  
+% Syntax:
 %    writeSparseMatrixOptimized(ind,var,fid,tayMod)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function writeSparseMatrixOptimized(ind,var,fid,tayMod)
 %
 % See also: ---
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % variable
 if contains(var,'Hf')
@@ -48,4 +48,4 @@ for i = 1:length(ind.row)
     fprintf(fid, '%s\n', str);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

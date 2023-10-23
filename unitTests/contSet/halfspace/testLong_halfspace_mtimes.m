@@ -1,7 +1,7 @@
 function res = testLong_halfspace_mtimes
 % testLong_halfspace_mtimes - unit test function of mtimes
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_halfspace_mtimes
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_halfspace_mtimes
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      16-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Random tests
 res = true;
@@ -77,4 +77,4 @@ end
 % turn warnings back on
 warning('on','all');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

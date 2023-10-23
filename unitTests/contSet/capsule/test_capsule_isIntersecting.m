@@ -2,7 +2,7 @@ function res = test_capsule_isIntersecting
 % test_capsule_isIntersecting - unit test function of isIntersecting
 %    note: only capsule-to-capsule tested
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_isIntersecting
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_capsule_isIntersecting
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = [];
 
@@ -125,4 +125,4 @@ end
 % combine tests
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

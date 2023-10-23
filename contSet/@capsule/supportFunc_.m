@@ -2,7 +2,7 @@ function [val,x] = supportFunc_(C,dir,type,varargin)
 % supportFunc_ - Calculate the upper or lower bound of a capsule along a
 %    certain direction
 %
-% Syntax:  
+% Syntax:
 %    [val,x] = supportFunc_(C,dir)
 %    [val,x] = supportFunc_(C,dir,type)
 %
@@ -29,15 +29,15 @@ function [val,x] = supportFunc_(C,dir,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conZonotope/supportFunc_
+% See also: contSet/supportFunc, conZonotope/supportFunc_
 
-% Author:       Niklas Kochdumper
-% Written:      19-November-2019
-% Last update:  10-December-2022 (MW, add type = 'range')
-%               25-April-2023 (MW, bug fix)
-% Last revision:27-March-2023 (MW, rename supportFunc_)
+% Authors:       Niklas Kochdumper
+% Written:       19-November-2019
+% Last update:   10-December-2022 (MW, add type = 'range')
+%                25-April-2023 (MW, bug fix)
+% Last revision: 27-March-2023 (MW, rename supportFunc_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get object properties
 c = C.c;
@@ -68,4 +68,4 @@ elseif strcmp(type,'range')
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

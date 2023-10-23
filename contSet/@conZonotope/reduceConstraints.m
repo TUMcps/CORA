@@ -2,7 +2,7 @@ function cZ = reduceConstraints(cZ,varargin)
 % reduceConstraints - reduce the number of constraints of a constrained 
 %    zonotope object
 %
-% Syntax:  
+% Syntax:
 %    cZ = reduceConstraints(cZ)
 %    cZ = reduceConstraints(cZ,nrCon)
 %
@@ -34,12 +34,12 @@ function cZ = reduceConstraints(cZ,varargin)
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Dmitry Grebenyuk, Niklas Kochdumper
-% Written:      11-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk, Niklas Kochdumper
+% Written:       11-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % Reduce the number of constraints of the constrained zonotope with the 
     % strategy described in section 4.2 in reference paper [1]
@@ -51,7 +51,7 @@ function cZ = reduceConstraints(cZ,varargin)
                     {nrCon,'att','numeric','nonnan'}});
 
     % remove the trivial constraints [0 0 ... 0]*beta = 0
-    cZ = deleteZeros(cZ);
+    cZ = compact_(cZ,'zeros',eps);
     
     % exit if the constraint matrix is already empty
     if isempty(cZ.A)
@@ -61,25 +61,25 @@ function cZ = reduceConstraints(cZ,varargin)
     % if no desired number of constraints is specified, remove all 
     % redundant constraints
     if isempty(nrCon)
-        cZ = redConRed(cZ);
+        cZ = aux_redConRed(cZ);
     else
-        cZ = conRed(cZ,nrCon);
+        cZ = aux_conRed(cZ,nrCon);
     end
     
     % After the actual reduction has been performed, we can check again if
     % there are some resulting, trivial constraints as above:
-    cZ = deleteZeros(cZ);
+    cZ = compact_(cZ,'zeros',eps);
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function res = conRed(obj,nrCon)
+function res = aux_conRed(obj,nrCon)
 % Reduce the number of constrains A*beta = b.
 
     % remove all constraints for which the elimination does not result in
     % an over-approximation
-    obj = redConRed(obj);
+    obj = aux_redConRed(obj);
 
     % remove constraints until the desired number of constraints is reached
     while size(obj.A,1) > nrCon
@@ -88,13 +88,14 @@ function res = conRed(obj,nrCon)
         obj = rescale(obj,'iter');
         
         % extract object properties
-        A = obj.A; b = obj.b; c = obj.Z(:,1); G = obj.Z(:,2:end);
+        A = obj.A; b = obj.b; 
+        c = obj.c; G = obj.G;
         
         % get measure for the over-approximation due to removal of factors
         r = max(0, max(abs(obj.R),[],2) - 1);
         
         % find the minimal Hausdorff error
-        H = hausdorffError(A,G,r);
+        H = aux_hausdorffError(A,G,r);
         [~,ind] = sort(H,'ascend');            
            
         % try to eliminate one constraint 
@@ -105,7 +106,7 @@ function res = conRed(obj,nrCon)
            suc = false;
 
            if ~isinf(r(ind(i)))
-              [G,c,A,b,suc] = eliminateConstraint(G,c,A,b,ind(i)); 
+              [G,c,A,b,suc] = aux_eliminateConstraint(G,c,A,b,ind(i)); 
            end
 
            if suc
@@ -123,13 +124,13 @@ function res = conRed(obj,nrCon)
     end
     
     % remove the trivial constraints [0 0 ... 0]*beta = 0
-    obj = deleteZeros(obj);
+    obj = compact_(obj,'zeros',eps);
 
     % construct the reduced constrained zonotope object
     res = obj;
 end
 
-function cZ = redConRed(cZ)
+function cZ = aux_redConRed(cZ)
 % Remove all constraints for which the elimination does not result in an
 % overapproximation
 
@@ -144,7 +145,8 @@ function cZ = redConRed(cZ)
     while ~isempty(ind)
        
         % extract object properties
-        A = cZ.A; b = cZ.b; c = cZ.Z(:,1); G = cZ.Z(:,2:end);
+        A = cZ.A; b = cZ.b; 
+        c = cZ.c; G = cZ.G;
         
         % try to remove constraint
         found = false;
@@ -154,7 +156,7 @@ function cZ = redConRed(cZ)
            suc = false;
 
            if ~isinf(r(ind(i)))
-              [G,c,A,b,suc] = eliminateConstraint(G,c,A,b,ind(i)); 
+              [G,c,A,b,suc] = aux_eliminateConstraint(G,c,A,b,ind(i)); 
            end
 
            if suc
@@ -178,7 +180,7 @@ function cZ = redConRed(cZ)
 
 end
 
-function H = hausdorffError(A,G,r)
+function H = aux_hausdorffError(A,G,r)
 % Calculate an approximation of the Hausdorff Error with the linear
 % equation system from equation (A.8) in reference paper [1]
 
@@ -205,7 +207,7 @@ function H = hausdorffError(A,G,r)
     end
 end
 
-function [G,c,A,b,suc] = eliminateConstraint(G,c,A,b,ind)
+function [G,c,A,b,suc] = aux_eliminateConstraint(G,c,A,b,ind)
 % Elimination of a constraint according to equations (27) and (29) in
 % reference paper [1]
 
@@ -252,4 +254,4 @@ function [G,c,A,b,suc] = eliminateConstraint(G,c,A,b,ind)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

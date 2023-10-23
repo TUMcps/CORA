@@ -1,7 +1,7 @@
 function res = test_nonlinParamSys_nonlinParamSys
 % test_nonlinParamSys_nonlinParamSys - unit test for constructor
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinParamSys_nonlinParamSys
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_nonlinParamSys_nonlinParamSys
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true, wait for failure
 res = true;
@@ -169,4 +169,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

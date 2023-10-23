@@ -1,7 +1,7 @@
 function res = test_fullspace_plus
 % test_fullspace_plus - unit test function of plus
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_plus
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_plus
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init fullspace
 n = 2;
@@ -55,4 +55,4 @@ res(end+1,1) = isequal(fs_,O);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

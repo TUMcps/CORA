@@ -3,7 +3,7 @@ function completed = example_linProbSys_reach_01_2dim()
 %    analysis of a linear system with uncertain inputs, taken from 
 %    [1, Sec. 4.2.8].
 %
-% Syntax:  
+% Syntax:
 %    completed = example_linProbSys_reach_01_2dim()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_linProbSys_reach_01_2dim()
 %    [1] M. Althoff, “Reachability analysis and its application to the 
 %        safety assessment of autonomous cars", Dissertation, TUM 2010
 
-% Author:       Matthias Althoff
-% Written:      16-July-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       16-July-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -72,21 +72,27 @@ simRes = simulateRandom(twoDimSys, params, simOpt);
 % plot different projections
 dims = {[1 2]};
 
+figure;
+
 % plot reachable set
 for k = 1:length(dims)
     
-    figure; hold on; box on
+    subplot(1,2,1); hold on; box on
     projDims = dims{k};
 
     % plot reachable sets 
-    plot(R,projDims,'b','m',2.5,'FaceColor','interp');
+    plot(R,projDims,'FaceColor','next','m',2.5,'FaceColor','interp','DisplayName','Reachable set');
     
     % plot initial set
-    plot(zonotope(params.R0,3),projDims,'k','Height',10); %change to 2D in 3D
+    plot(zonotope(params.R0,3),projDims,'k','FaceColor','w','ZPos',1,'DisplayName','Initial set');
     
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);
     ylabel(['x_{',num2str(projDims(2)),'}']);
+    legend('Location','east');
+
+    % set view
+    view(-35,30);
     
     % construct custom color map
     l=linspace(1,0,100)';
@@ -100,22 +106,27 @@ end
 % plot simulation runs
 for k = 1:length(dims)
     
-    figure; hold on; box on
+    subplot(1,2,2); hold on; box on
     projDims = dims{k};
     
     % plot initial set
-    plot(zonotope(params.R0,3),projDims,'k','Height',10); %change to 2D in 3D
+    plot(zonotope(params.R0,3),projDims,'k','FaceColor','w','ZPos',1,'DisplayName','Initial set');
     
     % plot simulation results
-    plot(simRes,projDims,'b');
+    plot(simRes,projDims,'k','DisplayName','Simulations');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);
     ylabel(['x_{',num2str(projDims(2)),'}']);
+    legend('Location','east')
+
+    % set view
+    view(-35,30);
+    xlim([-6,6]); ylim([-4,6]); zlim([0,1]);
 end
 
 % example completed
 completed = true;
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

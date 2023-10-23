@@ -1,7 +1,7 @@
 function completed = example_conZonotope()
 % example_conZonotope - example instantiation of a conZonotope object
 %
-% Syntax:  
+% Syntax:
 %    completed = example_conZonotope()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_conZonotope()
 %
 % See also: none
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       15-July-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 Z = [0 1 0 1; 0 1 2 -1]; % zonotope (center + generators)
 A = [-2 1 -1]; % constraints (matrix A)
@@ -35,4 +35,4 @@ plot(zonotope(cZ),[1,2],'Color',colorblind('r')); % visualize unconstrained zono
 
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

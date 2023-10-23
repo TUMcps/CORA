@@ -1,7 +1,7 @@
 function res = test_polyZonotope_polyZonotope
 % test_polyZonotope_polyZonotope - unit test function for constructor
 %
-% Syntax:  
+% Syntax:
 %    res = test_polyZonotope_polyZonotope
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_polyZonotope_polyZonotope
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % test all different syntaxes from constructor
 res = true;
@@ -32,8 +32,8 @@ pZ = polyZonotope();
 % create polynomial zonotope
 c = [0;0];
 G = [2 0 1;0 2 1];
-Grest = [0;0.5];
-expMat = [1 0 3;0 1 1];
+GI = [0;0.5];
+E = [1 0 3;0 1 1];
 id = [1;2];
 
 % only center and dependent generator matrix
@@ -43,21 +43,21 @@ pZ = polyZonotope(c,G);
 pZ = polyZonotope(pZ);
 
 % center and both generator matrices
-pZ = polyZonotope(c,G,Grest);
+pZ = polyZonotope(c,G,GI);
 
 % only independent generator matrix
-pZ = polyZonotope(c,[],Grest);
+pZ = polyZonotope(c,[],GI);
 
 % both generator matrices and exponent matrix
-pZ = polyZonotope(c,G,Grest,expMat);
+pZ = polyZonotope(c,G,GI,E);
 
 % no independent generator matrix
-pZ = polyZonotope(c,G,[],expMat);
+pZ = polyZonotope(c,G,[],E);
 
 % all input arguments
-pZ = polyZonotope(c,G,Grest,expMat,id);
+pZ = polyZonotope(c,G,GI,E,id);
 
 % no independent generator matrix, with identifiers
-pZ = polyZonotope(c,G,[],expMat,id);
+pZ = polyZonotope(c,G,[],E,id);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_reachSet_plotOverTime
 % test_reachSet_plotOverTime - unit test function for plotOverTime
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_plotOverTime()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_reachSet_plotOverTime
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      01-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       01-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init result
 res = true;
@@ -103,4 +103,4 @@ end
 % close figure;
 close;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

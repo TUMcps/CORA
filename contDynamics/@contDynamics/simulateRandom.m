@@ -5,14 +5,14 @@ function simRes = simulateRandom(obj, params, varargin)
 %    percentage of inputs should be chosen from vertices of the input set,
 %    and of how many piecewise constant parts the input is constructed.
 %
-% Syntax:  
+% Syntax:
 %    res = simulateRandom(obj, params, options)
 %
 % Inputs:
 %    obj - contDynamics object
 %    params - system parameters
 %    options - settings for random simulation, depending on .type (see below)
-%       .type = 'gaussian', 'standard' (default), 'rrt';
+%       .type = 'gaussian', 'standard' (default), 'rrt', 'constrained';
 %       .points - nr of simulation runs
 %       further options if .type = 'standard':
 %           .fracVert - fraction of initial states starting from vertices
@@ -30,21 +30,30 @@ function simRes = simulateRandom(obj, params, varargin)
 %           .stretchFac: stretching factor for enlarging the reachable sets 
 %                        during execution of the algorithm (scalar > 1).
 %           .R:          object of class reachSet storing the computed reachable set
+%       further options if .type = 'constrained':
+%           .R:          object of class reachSet storing the computed reachable set
 %
 % Outputs:
 %    simRes - object of class simResult storing time and states of the 
 %             simulated trajectories
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-% Author:       Matthias Althoff
-% Written:      17-August-2016
-% Last update:  08-May-2020 (MW, update interface)
-%               28-June-2021 (MP, unify random simulation functions)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       17-August-2016
+% Last update:   08-May-2020 (MW, update interface)
+%                28-June-2021 (MP, unify random simulation functions)
+%                05-January-2023 (MA, constrained simulation added)
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % input argument validation
+
 options = struct();
 if nargin == 3 && isstruct(varargin{1})
     options = varargin{1};
@@ -60,6 +69,8 @@ elseif strcmp(options.type,'gaussian')
     simRes = simulateGaussian(obj,options);
 elseif strcmp(options.type,'rrt')
     simRes = simulateRRT(obj,options);
+elseif strcmp(options.type,'constrained')
+    simRes = simulateConstrainedRandom(obj,options);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

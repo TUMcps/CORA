@@ -3,7 +3,7 @@ function fig = fig2tikz(varargin)
 %    currently, only polygon object are supported for conversion;
 %    additionally, line objects are simplified
 %
-% Syntax:  
+% Syntax:
 %    fig = fig2tikz
 %    fig = fig2tikz(fig)
 %    fig = fig2tikz(res)
@@ -22,12 +22,12 @@ function fig = fig2tikz(varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      29-October-2021
-% Last update:  03-November-2021
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       29-October-2021
+% Last update:   03-November-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default values
 fig = gcf;
@@ -209,4 +209,4 @@ end
 % return figure
 fig = gcf;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

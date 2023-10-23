@@ -2,7 +2,7 @@ function obj = highOrderMappingMatrix(obj,intermediateTerms)
 % highOrderMappingMatrix - computes a mapping matrix set without the first
 %    two orders
 %
-% Syntax:  
+% Syntax:
 %    obj = highOrderMappingMatrix(obj,intermediateTerms)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function obj = highOrderMappingMatrix(obj,intermediateTerms)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      05-August-2010
-% Last update:  15-February-2021 (MW, rename: intermediateTerms)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-August-2010
+% Last update:   15-February-2021 (MW, rename: intermediateTerms)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %powers
 zPow = obj.power.zono;
@@ -68,4 +68,4 @@ obj.mappingMatrixSet.highOrderInt = eI + (-eImid);
 obj.mappingMatrixSet.highOrderZonoInput = eZ_input + eImid_input;
 obj.mappingMatrixSet.highOrderIntInput = eI_input + (-eImid_input);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

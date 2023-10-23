@@ -1,7 +1,7 @@
 function [id_diff,id_param] = checkDiffParamIds(pZ,varargin)
 % checkDiffParamIds - ???
 %
-% Syntax:  
+% Syntax:
 %    [id_diff,id_param] = checkDiffParamIds(pZ,varargin)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function [id_diff,id_param] = checkDiffParamIds(pZ,varargin)
 %
 % See also: ---
 
-% Author:       Victor Gassmann
-% Written:      ---
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isempty(varargin)
     id_diff = pZ.id;
@@ -53,4 +53,4 @@ if ~isempty(setdiff(pZ.id,[id_diff;id_param]))
         'Ids need to contain all ids of pZ!'));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

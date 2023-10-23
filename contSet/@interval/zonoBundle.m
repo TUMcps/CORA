@@ -1,7 +1,7 @@
 function zB = zonoBundle(I)
-% conZonotope - converts an interval into a zonotope bundle
+% zonoBundle - converts an interval into a zonotope bundle
 %
-% Syntax:  
+% Syntax:
 %    zB = zonoBundle(I)
 %
 % Inputs:
@@ -18,15 +18,15 @@ function zB = zonoBundle(I)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mptPolytope/zonoBundle
+% See also: polytope/zonoBundle
 
-% Author:       Niklas Kochdumper
-% Written:      26-November-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-November-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 zB = zonoBundle({zonotope(I)});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

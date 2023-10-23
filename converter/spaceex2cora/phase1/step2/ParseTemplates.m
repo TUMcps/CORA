@@ -5,7 +5,7 @@ function [componentTemplates,templateIDs] = ParseTemplates(sxStruct)
 %    The order of templates reflects the order in the xml-file. References
 %    to other components are stored as indices in the resulting array.
 %
-% Syntax:  
+% Syntax:
 %    [componentTemplates,templateIDs] = ParseTemplates(sxStruct)
 %
 % Inputs:
@@ -36,12 +36,12 @@ function [componentTemplates,templateIDs] = ParseTemplates(sxStruct)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % remove redundant depths of input argument
 sxStruct = sxStruct.sspaceex{1};
@@ -90,4 +90,4 @@ end
 
 fprintf("done parsing: %i components parsed\n",length(templateIDs));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

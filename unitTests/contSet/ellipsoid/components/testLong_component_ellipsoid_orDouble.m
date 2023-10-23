@@ -2,7 +2,7 @@ function res = testLong_component_ellipsoid_orDouble
 % testLong_component_ellipsoid_orDouble - unit test function of 
 %    ellipsoid_orDouble
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_component_ellipsoid_orDouble
 %
 % Inputs:
@@ -17,12 +17,13 @@ function res = testLong_component_ellipsoid_orDouble
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      17-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       17-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = true;
 nRuns = 2;
 bools = [false,true];
@@ -58,4 +59,5 @@ for i=[2,5:5:10]
         end
     end
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

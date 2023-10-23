@@ -1,7 +1,7 @@
 function res = test_ellipsoid_isFullDim
 % test_ellipsoid_isFullDim - unit test function of isFullDim
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_isFullDim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_isFullDim
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 load cases.mat E_c
 
@@ -41,4 +41,4 @@ for i=1:length(E_c)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

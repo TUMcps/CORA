@@ -19,12 +19,12 @@ function res = testLong_linearSys_reach_07_constInput(~)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      07-January-2019
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       07-January-2019
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -98,4 +98,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

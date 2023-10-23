@@ -7,7 +7,7 @@ function res = testMosek_linearSysDT_observe_06_Hinf_G()
 % vehicle model against an alternative implementation of the Hinf-G method
 % published in [1].
 %
-% Syntax:  
+% Syntax:
 %    res = testMosek_linearSysDT_observe_06_Hinf_G
 %
 % Inputs:
@@ -22,12 +22,12 @@ function res = testMosek_linearSysDT_observe_06_Hinf_G()
 %        invariant systems. IEEE Transactions on Automatic Control,
 %        64(11):4717-4724, 2019.
 
-% Author:       Matthias Althoff
-% Written:      25-Feb-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-February-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %% enable access to private function "observe_gain_Hinf"
@@ -97,4 +97,4 @@ addpath(genpath(path));
 % end
 
         
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

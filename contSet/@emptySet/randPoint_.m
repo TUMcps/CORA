@@ -1,7 +1,7 @@
 function p = randPoint_(O,N,type,varargin)
 % randPoint_ - generates random points within an empty set
 %
-% Syntax:  
+% Syntax:
 %    p = randPoint_(O)
 %    p = randPoint_(O,N)
 %    p = randPoint_(O,N,type)
@@ -23,16 +23,16 @@ function p = randPoint_(O,N,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/randPoint
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       05-April-2023
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % unfortunately, we cannot concatentate empty column vectors...
 p = double.empty(O.dimension,0);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

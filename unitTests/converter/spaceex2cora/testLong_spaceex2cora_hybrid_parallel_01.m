@@ -12,12 +12,12 @@ function res = testLong_spaceex2cora_hybrid_parallel_01
 % Outputs:
 %    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      11-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -41,7 +41,7 @@ sys_spaceex = feval(filename);
 
 % first component, first location
 dynamics = linearSys([0 -1; 1 0],[1 0; 0 1],[],[0.05 0.05]);
-inv = mptPolytope(struct('A',[1 1],'b',0));
+inv = polytope([1 1],0);
 guard = conHyperplane([1 1],0);
 reset = struct('A',[1 0; 0 1],'c',[3;3]);
 trans = transition(guard,reset,2);
@@ -49,7 +49,7 @@ loc(1) = location('loc1',inv,trans,dynamics);
 
 % first component, second location
 dynamics = linearSys([0 -1; -1 0],[0 1; 1 0],[],[0.05 -0.05]);
-inv = mptPolytope(struct('A',[-1 -1],'b',0));
+inv = polytope([-1 -1],0);
 guard = conHyperplane([1 1],0);
 reset = struct('A',[1 0; 0 1],'c',[-3;3]);
 trans = transition(guard,reset,1);
@@ -60,7 +60,7 @@ HA1 = hybridAutomaton(loc);
 
 % second component, first location
 dynamics = linearSys([0 1 -1; 1 0 0; 0 1 0],[0;-1;0],[],[0 0 0.05; 0.05 0.05 0]);
-inv = mptPolytope(struct('A',[1 1 1],'b',1));
+inv = polytope([1 1 1],1);
 guard = conHyperplane([1 1 1],1);
 reset = struct('A',[1 0 0; 0 1 0; 0 0 1],'c',[1;1;1]);
 trans = transition(guard,reset,2);
@@ -68,7 +68,7 @@ loc(1) = location('loc1',inv,trans,dynamics);
 
 % second component, second location
 dynamics = linearSys([0 -1 1; 1 0 0; 0 1 0],[0;0;1],[],[0.05 0 0; 0 0.05 -0.05]);
-inv = mptPolytope(struct('A',[-1 -1 -1],'b',-1));
+inv = polytope([-1 -1 -1],-1);
 guard = conHyperplane([1 1 1],1);
 reset = struct('A',[1 0 0; 0 1 0; 0 0 1],'c',[-1;-1;-1]);
 trans = transition(guard,reset,1);
@@ -91,4 +91,4 @@ if ~isequal(sys_cora,sys_spaceex,1e-4)
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

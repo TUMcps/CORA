@@ -1,7 +1,7 @@
 function p = gridPoints(I,segments)
 % gridPoints - computes uniformly partitioned grid points of an interval;
 %
-% Syntax:  
+% Syntax:
 %    coordinateMat = gridPoints(I,segments)
 %
 % Inputs:
@@ -23,19 +23,19 @@ function p = gridPoints(I,segments)
 %
 % See also: ---
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      22-July-2016
-% Last update:  08-November-2021
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       22-July-2016
+% Last update:   08-November-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{I,'att','interval'};
                 {segments,'att','numeric',{'nonnan','positive'}}});
 
 % empty case
-if isempty(I)
+if representsa_(I,'emptySet',eps)
     p = [];
     return;
 end
@@ -152,4 +152,4 @@ if intMat
     p = temp;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

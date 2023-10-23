@@ -7,7 +7,7 @@ function res = testSDPT3_linearSysDT_observe_gain_04_PRadC()
 % test checks whether the same result as in a previous implementation is 
 % obtained
 %
-% Syntax:  
+% Syntax:
 %    res = testSDPT3_linearSysDT_observe_gain_04_PRadC
 %
 % Inputs:
@@ -26,12 +26,12 @@ function res = testSDPT3_linearSysDT_observe_gain_04_PRadC()
 %        zonotopes for discrete-time descriptor systems. Automatica,
 %        93:435-443, 2018.
 
-% Author:       Matthias Althoff
-% Written:      01-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       01-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "observe_gain_PRadB"
 path = CORAROOT;
@@ -70,4 +70,4 @@ delete(target);
 rmpath(genpath(path));
 addpath(genpath(path));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -21,12 +21,12 @@ function assignment_cora2spaceex(tran, docNode, reset)
 %
 % See also: none
 
-% Author:        Farah Atour
+% Authors:       Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty reset function (0x0 transition)
 if isempty(fields(reset))
@@ -66,4 +66,4 @@ tran.appendChild(assignment);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

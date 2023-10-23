@@ -3,7 +3,7 @@ function Zres = intersectStrip(Z,C,phi,y,varargin)
 %    list of strips according to [1] and [2]
 %    the strip is defined as | Cx-y | <= phi
 %
-% Syntax:  
+% Syntax:
 %    Zres = intersectStrip(Z,C,phi,y,varargin)
 %
 % Inputs:
@@ -33,7 +33,7 @@ function Zres = intersectStrip(Z,C,phi,y,varargin)
 %    res_zono = intersectStrip(Z,C,phi,y);
 % 
 %    % just for comparison
-%    poly = mptPolytope([1 0;-1 0; 0 1;0 -1; 1 1;-1 -1],[3;7;5;1;5;1]);
+%    poly = polytope([1 0;-1 0; 0 1;0 -1; 1 1;-1 -1],[3;7;5;1;5;1]);
 %    Zpoly = Z & poly;
 % 
 %    figure; hold on 
@@ -68,17 +68,17 @@ function Zres = intersectStrip(Z,C,phi,y,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      09-Mar-2020
-% Last update:  08-Sep-2020 (restructured, alamo method added)  
-%               10-Sep-2020 (bravo method added)
-%               17-Sep-2020 (wang and direct method added)
-%               04-Jan-2021 (bravo method robustified)
-%               02-Mar-2021 (notation changed)
-%               29-March-2023 (TL: clean up)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       09-March-2020
+% Last update:   08-September-2020 (restructured, alamo method added)  
+%                10-September-2020 (bravo method added)
+%                17-September-2020 (wang and direct method added)
+%                04-January-2021 (bravo method robustified)
+%                02-March-2021 (notation changed)
+%                29-March-2023 (TL, clean up)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
 if nargin < 4
@@ -147,10 +147,11 @@ elseif strcmp(method,'normGen')
     
 else
     % selected method does not exist
-    throw(CORAerror('CORA:wrongValue', sprintf("Unkown method '%s'.", method)))
+    throw(CORAerror('CORA:wrongValue', sprintf("Unknown method '%s'.", method)))
 end
 
 end
+
 
 % Auxiliary functions -----------------------------------------------------
 
@@ -196,7 +197,7 @@ function Zres = aux_methodAlamoVolume(Z, C, phi, y)
             'Alamo method should only be used for single strips to ensure convergence'));
     end
 
-    G = generators(Z);
+    G = Z.G;
     [dim, nrGens] = size(G);
 
     % implement volume expression from [3], Vol(\hat{X}(lambda)) (last eq.
@@ -317,8 +318,8 @@ function Zres = aux_methodBravo(Z, C, phi, y)
     
     % Property 1 in [5]  
     % obtain center of zonotope
-    p = center(Z);
-    G = generators(Z);
+    p = Z.c;
+    G = Z.G;
     [dim, nrGens] = size(G);
 
     c_cell = cell(1, nrGens+1);
@@ -366,7 +367,7 @@ end
 
 function Zres = aux_methodNormGen(Z, C, phi, y)
     % norm Gen method
-    G = generators(Z);
+    G = Z.G;
 
     % Find the analytical solution  
     gamma=eye(length(C(:,1)));
@@ -389,13 +390,14 @@ function Z = aux_zonotopeFromLambda(Z,phi,C,y,Lambda)
     % zonotope: Z = c+G[-1,1]^o
 
     % new center
-    c_new = Z.center + Lambda*(y-C*Z.center);
+    c_new = Z.c + Lambda*(y-C*Z.c);
     % new generators
     I = eye(length(c_new));
-    G_new = [(I - Lambda*C)*Z.generators, Lambda*diag(phi)];
+    G_new = [(I - Lambda*C)*Z.G, Lambda*diag(phi)];
 
     % resulting zonotope
-    Z.Z = [c_new G_new];
+    Z.c = c_new ;
+    Z.G = G_new;
 
 end
 
@@ -419,4 +421,4 @@ function aux_checkAuxStruct(aux)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -25,12 +25,12 @@ function [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,params,option
 %
 % See also: none
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       17-June-2021
 % Last update:   30-August-2021
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % initialize cell-arrays that store the reachable set
 timeInt.set = {};
@@ -100,7 +100,7 @@ while options.tFinal - options.t > 1e-12 && ~abortAnalysis
     options.R = Rnext.tp;
     
     % check for timeStep -> 0
-    abortAnalysis = checkForAbortion(tVec,options.t,options.tFinal);
+    abortAnalysis = aux_checkForAbortion(tVec,options.t,options.tFinal);
 end
 
 % log information
@@ -109,9 +109,9 @@ verboseLog(options.i,options.t,options);
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-% Auxiliary Functions -----------------------------------------------------
-function abortAnalysis = checkForAbortion(tVec,currt,tFinal)
+function abortAnalysis = aux_checkForAbortion(tVec,currt,tFinal)
 % check last N steps of time step vector: if those time steps are too small,
 % we expect this to continue so that the analysis will not terminate
 
@@ -136,4 +136,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

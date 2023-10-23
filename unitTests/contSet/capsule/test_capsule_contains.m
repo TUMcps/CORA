@@ -1,7 +1,7 @@
 function res = test_capsule_contains
 % test_capsule_contains - unit test function of contains
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_contains
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_capsule_contains
 %
 % See also: -
 
-% Author:       Mark Wetzlinger, Adrian Kulmburg
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger, Adrian Kulmburg
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. Same center, generator, different radius
 res(1) = true;
@@ -130,4 +130,4 @@ res(5) = res_single && ~any(res_array);
 % combine tests
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

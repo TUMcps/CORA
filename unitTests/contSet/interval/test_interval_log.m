@@ -2,7 +2,7 @@ function res = test_interval_log
 % test_interval_log - unit test function of natural logarithm for intervals
 %    overloaded 'log()' function for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_log
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = test_interval_log
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk, Mark Wetzlinger
-% Written:      07-February-2016
-% Last update:  08-June-2020 (MW, rewrite based on new NaN/Inf handling)
-% Last revision:---
+% Authors:       Dmitry Grebenyuk, Mark Wetzlinger
+% Written:       07-February-2016
+% Last update:   08-June-2020 (MW, rewrite based on new NaN/Inf handling)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 res = true;
@@ -49,4 +49,4 @@ if abs( infimum(c(1, 2)) - 0.0 ) > tol || abs( supremum(c(1, 2)) - 0.69314718055
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

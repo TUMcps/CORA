@@ -2,7 +2,7 @@ function res = test_nonlinearSys_reach_time
 % test_nonlinearSys_reach_time - unit test function of nonlinear
 %    reachability analysis with shifted start time
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSys_reach_time
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = test_nonlinearSys_reach_time
 % Outputs:
 %    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      05-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -50,4 +50,4 @@ if ~withinTol(R.timePoint.time{1},params.tStart) ...
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

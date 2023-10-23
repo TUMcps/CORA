@@ -1,7 +1,7 @@
 function res = isnan(hyp)
 % isnan - checks if a constrained hyperplane is defined using NaN
 %
-% Syntax:  
+% Syntax:
 %    res = isnan(hyp)
 %
 % Inputs:
@@ -20,14 +20,14 @@ function res = isnan(hyp)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      01-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       01-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % NaN values are not possible by constructor
 res = false;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

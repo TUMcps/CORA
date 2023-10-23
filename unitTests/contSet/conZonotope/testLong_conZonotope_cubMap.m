@@ -2,7 +2,7 @@ function res = testLong_conZonotope_cubMap
 % testLong_conZonotope_cubMap - unit test function for cubic
 %    multiplication of constrained zonotopes
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conZonotope_cubMap
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_conZonotope_cubMap
 %
 % See also: -
 
-% Author:       Niklas Kochdumper
-% Written:      30-October-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       30-October-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -128,4 +128,4 @@ for i = 1:3
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

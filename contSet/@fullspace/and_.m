@@ -26,18 +26,18 @@ function S = and_(fs,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/and
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  05-April-2023 (rename and_)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   05-April-2023 (rename and_)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % re-order sets due to class preference
 [fs,S] = findClassArg(fs,S,'fullspace');
 
 % intersection is always the other set
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

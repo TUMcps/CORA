@@ -2,7 +2,7 @@ function pZ = stack(varargin)
 % stack - stacks polynomial zonotopes to retain dependencies (in some sense
 %           a cartesian product which retains dependencies)
 %
-% Syntax:  
+% Syntax:
 %    pZ = stack(pZ1,pZ2,...)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function pZ = stack(varargin)
 %
 % See also: cartProd
 
-% Author:       Victor Gassmann
-% Written:      12-January-2021
-% Last update:  04-July-2022 (VG: input checks)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       12-January-2021
+% Last update:   04-July-2022 (VG, input checks)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 pZ = [];
 % add [] at the end if not even
@@ -48,19 +48,20 @@ for i=1:2:nargin
 
     if ~isempty(inp1) || ~isempty(inp2)
         % recursively build up pZ
-        pZ = stack2(pZ,stack2(inp1,inp2));
+        pZ = aux_stack2(pZ,aux_stack2(inp1,inp2));
     end
 end
 end
 
 
-% Auxiliary functions 
-function pZ = stack2(pZ1,pZ2)
+% Auxiliary functions -----------------------------------------------------
+
+function pZ = aux_stack2(pZ1,pZ2)
     % if either is empty, simply return the other
-    if isempty(pZ1)
+    if representsa_(pZ1,'emptySet',eps)
         pZ = pZ2;
         return;
-    elseif isempty(pZ2)
+    elseif representsa_(pZ2,'emptySet',eps)
         pZ = pZ1;
         return;
     end
@@ -71,22 +72,22 @@ function pZ = stack2(pZ1,pZ2)
     % extend both to final dimensions (n1+n2)
     pZ1t = polyZonotope([pZ1.c;zeros(n2,1)],...
                         [pZ1.G;zeros(n2,size(pZ1.G,2))],...
-                        [pZ1.Grest;zeros(n2,size(pZ1.Grest,2))],...
-                        pZ1.expMat,pZ1.id);
+                        [pZ1.GI;zeros(n2,size(pZ1.GI,2))],...
+                        pZ1.E,pZ1.id);
     pZ2t = polyZonotope([zeros(n1,1);pZ2.c],...
                         [zeros(n1,size(pZ2.G,2));pZ2.G],...
-                        [zeros(n1,size(pZ2.Grest,2));pZ2.Grest],...
-                        pZ2.expMat,pZ2.id);
+                        [zeros(n1,size(pZ2.GI,2));pZ2.GI],...
+                        pZ2.E,pZ2.id);
 
     % check if one of them is only a vertex
     if isempty(pZ1t.G)
-        pZ = polyZonotope(pZ2t.c+pZ1t.c,pZ2t.G,pZ2t.Grest,pZ2t.expMat,pZ2t.id);
+        pZ = polyZonotope(pZ2t.c+pZ1t.c,pZ2t.G,pZ2t.GI,pZ2t.E,pZ2t.id);
     elseif isempty(pZ2t.G)
-        pZ = polyZonotope(pZ1t.c+pZ2t.c,pZ1t.G,pZ1t.Grest,pZ1t.expMat,pZ1t.id);
+        pZ = polyZonotope(pZ1t.c+pZ2t.c,pZ1t.G,pZ1t.GI,pZ1t.E,pZ1t.id);
     else
         pZ = exactPlus(pZ1t,pZ2t);
     end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

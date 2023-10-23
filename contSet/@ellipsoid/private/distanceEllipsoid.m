@@ -20,13 +20,13 @@ function val = distanceEllipsoid(E1,E2)
 %
 % See also: none
 
-% Author:       Victor Gassmann
-% Written:      08-March-2021
-% Last update:  19-May-2022
-%               02-June-2022 (VG: complete rework)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       08-March-2021
+% Last update:   19-May-2022
+%                02-June-2022 (VG, complete rework)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % not supported for degenerate ellipsoids or of different size
 if dim(E1) ~= dim(E2)
@@ -148,4 +148,4 @@ else
     val = objval - 1;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

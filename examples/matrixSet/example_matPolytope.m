@@ -1,7 +1,7 @@
 function completed = example_matPolytope()
 % example_matPolytope - example for polytope matrices
 %
-% Syntax:  
+% Syntax:
 %    completed = example_matPolytope()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_matPolytope()
 %
 % See also: matPolytope
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       25-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 P1{1} = [1 2; 3 4]; % 1st vertex of matrix polytope P1
 P1{2} = [2 2; 3 3]; % 2nd vertex of matrix polytope P1
@@ -38,4 +38,4 @@ intP = intervalMatrix(matP1) % compute interval matrix and display result
 
 completed = 1;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

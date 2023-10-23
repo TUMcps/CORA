@@ -1,7 +1,7 @@
 function han = plot(Z,varargin)
 % plot - plots a projection of a zonotope
 %
-% Syntax:  
+% Syntax:
 %    han = plot(Z)
 %    han = plot(Z,dims)
 %    han = plot(Z,dims,type)
@@ -10,8 +10,6 @@ function han = plot(Z,varargin)
 %    Z - zonotope object
 %    dims - (optional) dimensions for projection
 %    type - (optional) plot settings (LineSpec and Name-Value pairs),
-%        including added pairs:
-%          'Height', <height> height of z-coordinate
 %
 % Outputs:
 %    han - handle to the graphics object
@@ -26,14 +24,14 @@ function han = plot(Z,varargin)
 %
 % See also: polygon
 
-% Author:       Matthias Althoff
-% Written:      27-July-2016
-% Last update:  14-July-2020 (merge with plotFilled)
-%               25-May-2022 (TL: 1D Plotting)
-%               05-April-2023 (TL: clean up using plotPolygon)
-% Last revision:12-July-2023 (TL, restructure)
+% Authors:       Matthias Althoff
+% Written:       27-July-2016
+% Last update:   14-July-2020 (merge with plotFilled)
+%                25-May-2022 (TL, 1D Plotting)
+%                05-April-2023 (TL, clean up using plotPolygon)
+% Last revision: 12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input
 [Z,dims,NVpairs] = aux_parseInput(Z,varargin{:});
@@ -50,6 +48,7 @@ if nargout == 0
 end
 
 end
+
 
 % Auxiliary functions -----------------------------------------------------
 
@@ -110,4 +109,4 @@ function han = aux_plotNd(Z,dims,NVpairs)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

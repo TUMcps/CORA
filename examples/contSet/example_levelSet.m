@@ -1,7 +1,7 @@
 function completed = example_levelSet()
 % example_levelSet - example instantiation of levelSet objects
 %
-% Syntax:  
+% Syntax:
 %    completed = example_levelSet()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_levelSet()
 %
 % See also: none
 
-% Author:        ---
+% Authors:       ---
 % Written:       ---
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % construct level sets
 syms x y
@@ -44,4 +44,4 @@ plot(ls2,[1,2],'Color',colorblind('r'));
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

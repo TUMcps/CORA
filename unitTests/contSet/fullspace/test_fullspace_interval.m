@@ -1,7 +1,7 @@
 function res = test_fullspace_interval
 % test_fullspace_interval - unit test function of interval
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_interval
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_interval
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init fullspace
 n = 3;
@@ -36,4 +36,4 @@ I_true = interval(-Inf(n,1),Inf(n,1));
 % compare results
 res = I == I_true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

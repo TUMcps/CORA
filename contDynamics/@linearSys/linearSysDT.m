@@ -2,7 +2,7 @@ function sys = linearSysDT(sys,dt)
 % linearSysDT - convert linear continuous-time system to discrete-time
 %               system
 %
-% Syntax:  
+% Syntax:
 %    sys = linearSysDT(sys,dt)
 %
 % Description:
@@ -39,12 +39,12 @@ function sys = linearSysDT(sys,dt)
 %
 % See also: linearSys
 
-% Author:       Niklas Kochdumper
-% Written:      21-November-2020 
-% Last update:  19-November-2021 (MW, minor fixes)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       21-November-2020 
+% Last update:   19-November-2021 (MW, minor fixes)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % convert system matrix A_ = e^A*dt
 A = expm(sys.A*dt);
@@ -76,4 +76,4 @@ sys = linearSysDT(A,B,c,sys.C,sys.D,sys.k,dt);
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

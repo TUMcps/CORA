@@ -1,7 +1,7 @@
 function E = exponentialRemainder(intMat,maxOrder)
 % exponentialRemainder - returns the remainder of the exponential matrix
 %
-% Syntax:  
+% Syntax:
 %    E = exponentialRemainder(intMat,maxOrder)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function E = exponentialRemainder(intMat,maxOrder)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      18-June-2010 
-% Last update:  14-November-2018
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-June-2010 
+% Last update:   14-November-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %compute absolute value bound
 M = abs(intMat);
@@ -52,4 +52,4 @@ else
     E = intervalMatrix(zeros(intMat.dim),Inf(intMat.dim));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

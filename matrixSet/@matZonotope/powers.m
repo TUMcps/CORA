@@ -1,7 +1,7 @@
 function pow = powers(matZ,maxOrder,varargin)
 % powers - computes the powers of a matrix zonotope
 %
-% Syntax:  
+% Syntax:
 %    matZ = powers(matZ,maxOrder)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function pow = powers(matZ,maxOrder,varargin)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      05-August-2010 
-% Last update:  24-September-2010
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-August-2010 
+% Last update:   24-September-2010
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set default values
 [initialOrder,initialPower] = setDefaultValues({1,matZ},varargin);
@@ -40,4 +40,4 @@ for i=(initialOrder+1):maxOrder
     pow{i} = pow{i-1}*matZ;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

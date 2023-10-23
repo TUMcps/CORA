@@ -22,12 +22,12 @@ function res = isequal(pHA1,pHA2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      10-January-2023
-% Last update:  21-May-2023 (MW, extend to arrays)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       10-January-2023
+% Last update:   21-May-2023 (MW, extend to arrays)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -58,7 +58,8 @@ end
 
 end
 
-% Auxiliary function ------------------------------------------------------
+
+% Auxiliary functions -----------------------------------------------------
 
 function res = aux_isequal(pHA1,pHA2,tol)
 
@@ -99,4 +100,4 @@ res = true;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

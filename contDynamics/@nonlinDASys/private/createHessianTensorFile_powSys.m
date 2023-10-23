@@ -2,7 +2,7 @@ function createHessianTensorFile_powSys(J2dyn,path,name,Ycomplex)
 % createHessianTensorFile_powSys - generates an mFile that allows to compute the
 % hessian tensor
 %
-% Syntax:  
+% Syntax:
 %    createHessianTensorFile_powSys(J2dyn,path,name,Ycomplex)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function createHessianTensorFile_powSys(J2dyn,path,name,Ycomplex)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      17-May-2013
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       17-May-2013
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     
 % %load second order jacobian
@@ -52,7 +52,7 @@ for k=1:length(Hdyn)
     %write in file
     fprintf(fid, '\n\n %s\n\n', str);
     % write rest of matrix
-    writeSparseMatrix(Hdyn{k},['Hf{',num2str(k),'}'],fid);
+    aux_writeSparseMatrix(Hdyn{k},['Hf{',num2str(k),'}'],fid);
     
     disp(['dynamic dim ',num2str(k)]);
 end
@@ -108,7 +108,7 @@ end
 %write precomputation to file: active power 
 for i = 1:nrOfBuses
     for n = 1:nrOfBuses
-        str = ['C(',num2str(i),',',num2str(n),') = ',bracketSubs(char(C(i,n))),';'];
+        str = ['C(',num2str(i),',',num2str(n),') = ',aux_bracketSubs(char(C(i,n))),';'];
         %write in file
         fprintf(fid, '%s\n', str);
     end
@@ -117,7 +117,7 @@ end
 %write precomputation to file: reactive power 
 for i = 1:nrOfBuses
     for n = 1:nrOfBuses
-        str = ['S(',num2str(i),',',num2str(n),') = ',bracketSubs(char(S(i,n))),';'];
+        str = ['S(',num2str(i),',',num2str(n),') = ',aux_bracketSubs(char(S(i,n))),';'];
         %write in file
         fprintf(fid, '%s\n', str);
     end
@@ -125,12 +125,12 @@ end
 
 %write Emax and Vmax values
 for i = 1:nrOfGenerators
-    str = ['E_max(',num2str(i),',1) = inf(',bracketSubs(char(E(i,1))),');'];
+    str = ['E_max(',num2str(i),',1) = inf(',aux_bracketSubs(char(E(i,1))),');'];
     %write in file
     fprintf(fid, '%s\n', str);
 end
 for i = 1:nrOfLoadBuses
-    str = ['V_max(',num2str(i),',1) = inf(',bracketSubs(char(V(i,1))),');'];
+    str = ['V_max(',num2str(i),',1) = inf(',aux_bracketSubs(char(V(i,1))),');'];
     %write in file
     fprintf(fid, '%s\n', str);
 end
@@ -145,7 +145,7 @@ for k=1:length(Hcon)
     %write in file
     fprintf(fid, '\n\n %s\n\n', str);
     % write rest of matrix
-    writeAlgebraicHessian(k);
+    aux_writeAlgebraicHessian(k);
     
     disp(['constraint dim ',num2str(k)]);
 end
@@ -157,7 +157,8 @@ end
 
 
 % Auxiliary functions -----------------------------------------------------
-function writeSparseMatrix(M,var,fid)
+
+function aux_writeSparseMatrix(M,var,fid)
 
 %write each row
 [row,col] = find(M~=0);
@@ -165,7 +166,7 @@ function writeSparseMatrix(M,var,fid)
 for i=1:length(row)
     iRow = row(i);
     iCol = col(i);
-    str=bracketSubs(char(M(iRow,iCol)));
+    str=aux_bracketSubs(char(M(iRow,iCol)));
     str=[var,'(',num2str(iRow),',',num2str(iCol),') = ',str,';'];
     %write in file
     fprintf(fid, '%s\n', str);
@@ -173,7 +174,7 @@ end
 
 end
 
-function writeAlgebraicHessian(k)
+function aux_writeAlgebraicHessian(k)
 
 %sector x-x
 for i = 1:nrOfGenerators
@@ -185,7 +186,7 @@ end
 end
 
 
-function str = bracketSubs(str)
+function str = aux_bracketSubs(str)
 
 %generate left and right brackets
 str=strrep(str,'L','(');
@@ -193,4 +194,4 @@ str=strrep(str,'R',')');
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

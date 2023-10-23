@@ -1,7 +1,7 @@
 function res = test_emptySet_center
 % test_emptySet_center - unit test function of center
 %
-% Syntax:  
+% Syntax:
 %    res = test_emptySet_center
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_emptySet_center
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init empty set
 n = 2;
@@ -31,4 +31,4 @@ O = emptySet(n);
 c = center(O);
 res = all(size(c) == [n,0]);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError_adaptive(obj,opt
 % precompStatError_adaptive - precompute the second order static error
 %    along with Hessian matrix, with adaptive zonotope order reduction
 %
-% Syntax:  
+% Syntax:
 %    [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError_adaptive(obj,options,Rdelta)
 %
 % Inputs:
@@ -34,12 +34,12 @@ function [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError_adaptive(obj,opt
 %
 % See also: linReach, linError_*, preCompStatError
 
-% Author:        Mark Wetzlinger
-% Written:       ???
+% Authors:       Mark Wetzlinger
+% Written:       ---
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % precompute the second order static error along with hessian matrix
 obj = setHessian(obj,'standard');
@@ -66,4 +66,4 @@ errorSecOrdStat = 0.5*quadMap(Z,H);
 % reduce the order of the set of static errors
 errorStat = reduce(errorSecOrdStat,'adaptive',sqrt(options.redFactor));
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

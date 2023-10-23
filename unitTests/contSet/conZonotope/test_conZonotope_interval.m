@@ -2,7 +2,7 @@ function res = test_conZonotope_interval
 % test_conZonotope_interval - unit test function for the caclulation of
 %                             a bounding box of a constrained zonotope object
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_interval
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = test_conZonotope_interval
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Niklas Kochdumper
-% Written:      22-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       22-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -54,7 +54,6 @@ if ~isequal(I,I_)
 end
 
 
-
 % TEST 2: Figure 2 in [1] -------------------------------------------------
 
 % construct zonotope
@@ -79,4 +78,4 @@ if ~isequal(I,I_)
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

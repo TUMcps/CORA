@@ -1,7 +1,7 @@
 function res = test_levelSet_isIntersecting
 % test_levelSet_isIntersecting - unit test function of isIntersecting
 %
-% Syntax:  
+% Syntax:
 %    res = test_levelSet_isIntersecting
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_levelSet_isIntersecting
 %
 % See also: isIntersecting
 
-% Author:       Maximilian Perschl
-% Written:      08-November-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Maximilian Perschl
+% Written:       08-November-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 % Define problem
@@ -58,6 +58,4 @@ if isIntersecting(ls,myInt,"approx")
 end
 
 
-
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

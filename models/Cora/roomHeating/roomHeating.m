@@ -50,7 +50,7 @@ c = [c1;c2];
 linSys = linearSys(A,B,c);
 
 % invariant set
-inv = mptPolytope([1 0; 0 1],[T_off;T_off]);
+inv = polytope([1 0; 0 1],[T_off;T_off]);
 
 % transition 1: room 1 on -> off
 guard = conHyperplane([1 0],T_off);
@@ -82,7 +82,7 @@ c = [0;c2];
 linSys = linearSys(A,B,c);
 
 % invariant set
-inv = mptPolytope([-1 0; 0 1],[-T_on;T_off]);
+inv = polytope([-1 0; 0 1],[-T_on;T_off]);
 
 % transition 1: room 1 off -> on
 guard = conHyperplane([1 0],T_on);
@@ -114,7 +114,7 @@ c = [c1;0];
 linSys = linearSys(A,B,c);
 
 % invariant set
-inv = mptPolytope([1 0; 0 -1],[T_off;-T_on]);
+inv = polytope([1 0; 0 -1],[T_off;-T_on]);
 
 % transition 1: room 1 on -> off
 guard = conHyperplane([1 0],T_off);
@@ -145,7 +145,7 @@ B = [b1;b2];
 linSys = linearSys(A,B);
 
 % invariant set
-inv = mptPolytope([-1 0; 0 -1],[-T_on;-T_on]);
+inv = polytope([-1 0; 0 -1],[-T_on;-T_on]);
 
 % transition 1: room 1 on -> off
 guard = conHyperplane([1 0],T_on);

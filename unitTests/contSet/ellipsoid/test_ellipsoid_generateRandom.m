@@ -2,7 +2,7 @@ function res = test_ellipsoid_generateRandom
 % test_ellipsoid_generateRandom - unit test function of 
 %    ellipsoid.generateRandom
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_generateRandom
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_ellipsoid_generateRandom
 %
 % See also: -
 
-% Author:       Victor Gassmann, Mark Wetzlinger
-% Written:      26-July-2021
-% Last update:  19-May-2022 (name-value pair syntax)
-% Last revision:---
+% Authors:       Victor Gassmann, Mark Wetzlinger
+% Written:       26-July-2021
+% Last update:   19-May-2022 (name-value pair syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty call
 E = ellipsoid.generateRandom();
@@ -79,4 +79,4 @@ res(end+1,1) = dim(E) == n && all(abs(E.q - q) < eps) && isFullDim(E);
 % unify results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

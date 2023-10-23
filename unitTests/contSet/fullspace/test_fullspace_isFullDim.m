@@ -1,7 +1,7 @@
 function res = test_fullspace_isFullDim
 % test_fullspace_isFullDim - unit test function of isFullDim
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_isFullDim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_isFullDim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init fullspace
 n = 2;
@@ -30,4 +30,4 @@ fs = fullspace(n);
 % check property
 res = isFullDim(fs);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

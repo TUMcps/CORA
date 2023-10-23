@@ -5,7 +5,7 @@ function [bc_out,warnings] = ComputeBaseComponent(bc_in)
 %    conversion to CORA format;
 %    note: only strings leave this function (no char arrays)!
 %
-% Syntax:  
+% Syntax:
 %    [bc_out,warnings] = ComputeBaseComponent(bc_in)
 %
 % Inputs:
@@ -28,12 +28,12 @@ function [bc_out,warnings] = ComputeBaseComponent(bc_in)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      ???
-% Last update:  12-January-2023 (MW, add read-out of output equations)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       ---
+% Last update:   12-January-2023 (MW, add read-out of output equations)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init warnings
 warnings = [];
@@ -276,4 +276,4 @@ outputEqStr = string(strjoin(outputEqs," && "));
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

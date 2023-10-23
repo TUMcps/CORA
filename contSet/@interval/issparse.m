@@ -20,14 +20,14 @@ function res = issparse(I)
 %
 % See also: ---
 
-% Author:       Tobias Ladner
-% Written:      06-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       06-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %return result
 res = issparse(I.inf) || issparse(I.sup);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

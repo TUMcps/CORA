@@ -2,7 +2,7 @@ function G = generators(probZ)
 % generators - Returns the generator matrix of a probabilistic zonotope
 %    using its covariance matrix Sigma
 %
-% Syntax:  
+% Syntax:
 %    G = generators(probZ)
 %
 % Inputs:
@@ -23,13 +23,13 @@ function G = generators(probZ)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      26-February-2008
-% Last update:  09-September-2009
-%               10-June-2020 (MW, rewrite using probZonotope object)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-February-2008
+% Last update:   09-September-2009
+%                10-June-2020 (MW, rewrite using probZonotope object)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %ensure symmetry for numerical stability
 Sigma=0.5*(probZ.cov+probZ.cov');
@@ -40,4 +40,4 @@ Sigma=0.5*(probZ.cov+probZ.cov');
 %compute new generators
 G=V*sqrt(W);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

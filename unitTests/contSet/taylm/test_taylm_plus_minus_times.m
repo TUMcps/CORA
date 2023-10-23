@@ -2,7 +2,7 @@ function res = test_taylm_plus_minus_times
 % test_taylm_plus_minus_times - unit-tests for Taylor models consisting of 
 %    plus, minus, and times operations
 %
-% Syntax:  
+% Syntax:
 %    res = test_taylm_plus_minus_times
 %
 % Inputs:
@@ -15,13 +15,12 @@ function res = test_taylm_plus_minus_times
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      07-August-2017
-%               14-Octover-2017 (DG) test for syms initialization are added
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       07-August-2017
+% Last update:   14-October-2017 (DG, test for syms initialization are added)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -349,4 +348,4 @@ if ~appeq( getCoef(t), [1; -3; 3], eps ) ||...
     res = false;
 end
 
-%------------- END OF CODE -----------
+% ------------------------------ END OF CODE ------------------------------

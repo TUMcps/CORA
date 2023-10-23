@@ -2,7 +2,7 @@ function res = test_polyZonotope_contains
 % test_polyZonotope_contains - unit test function for containment checks of
 %    polynomial zonotopes
 %
-% Syntax:  
+% Syntax:
 %    res = test_polyZonotope_contains
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_polyZonotope_contains
 %
 % See also: -
 
-% Author:       Niklas Kochdumper
-% Written:      13-January-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       13-January-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -49,4 +49,4 @@ if ~res1 || res2 || ~res3 || res4 % || ~res_e
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

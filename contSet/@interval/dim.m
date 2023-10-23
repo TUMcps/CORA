@@ -1,7 +1,7 @@
 function n = dim(I)
 % dim - returns the dimension of the ambient space of an interval
 %
-% Syntax:  
+% Syntax:
 %    n = dim(I)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function n = dim(I)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      15-Sep-2019
-% Last update:  09-June-2020 (handling of interval matrices)
-%               12-March-2021 (MW, empty intervals)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       15-September-2019
+% Last update:   09-June-2020 (handling of interval matrices)
+%                12-March-2021 (MW, empty intervals)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 infi = infimum(I); % equivalently: supremum(I)
 if isempty(infi)
@@ -43,4 +43,4 @@ else
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

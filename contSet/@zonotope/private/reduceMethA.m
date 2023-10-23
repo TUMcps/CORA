@@ -1,7 +1,7 @@
 function [Zred]=reduceMethA(Z,order)
 % reduceMethA - apply exhaustive search
 %
-% Syntax:  
+% Syntax:
 %    [Zred,t]=reduceMethA(Z)
 %
 % Inputs:
@@ -16,13 +16,13 @@ function [Zred]=reduceMethA(Z,order)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      11-September-2008
-% Last update:  06-March-2009
-%               27-June-2018
+% Authors:       Matthias Althoff
+% Written:       11-September-2008
+% Last update:   06-March-2009
+%                27-June-2018
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % initialize Z_red
 Zred=Z;
@@ -53,8 +53,8 @@ if ~isempty(Gred)
 end
 
 %build reduced zonotope
-Zred.Z=[center,Gunred,Gred];
+Zred.c = center;
+Zred.G = [Gunred,Gred];
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

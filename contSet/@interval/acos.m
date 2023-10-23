@@ -9,7 +9,7 @@ function I = acos(I)
 % [0, NaN] if (x_ in [-1, 1]) and (x-- > 1),
 % [acos(x--), acos(x_)] if (x >= -1) and (x <= 1).
 %
-% Syntax:  
+% Syntax:
 %    I = acos(I)
 %
 % Inputs:
@@ -28,15 +28,15 @@ function I = acos(I)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      05-February-2016
-% Last update:  06-February-2016 (DG, Matrix case and typos)
-%               20-February-2016 (DG, Errors are fixed, the matrix case is rewritten)
-%               05-May-2020 (MW, standardized error message)
-%               21-May-2022 (MW, remove new instantiation)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-February-2016
+% Last update:   06-February-2016 (DG, Matrix case and typos)
+%                20-February-2016 (DG, Errors are fixed, the matrix case is rewritten)
+%                05-May-2020 (MW, standardized error message)
+%                21-May-2022 (MW, remove new instantiation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % scalar case
 if isnumeric(I)
@@ -84,4 +84,4 @@ if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))
     throw(CORAerror('CORA:outOfDomain','validDomain','>= -1 && <= 1'));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

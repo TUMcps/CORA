@@ -1,7 +1,7 @@
 function n = dim(O)
 % dim - returns the dimension of the ambient space of an empty set
 %
-% Syntax:  
+% Syntax:
 %    n = dim(O)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function n = dim(O)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 n = O.dimension;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

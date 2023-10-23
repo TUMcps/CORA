@@ -1,7 +1,7 @@
 function res = test_contSet_times
 % test_contSet_times - unit test function of times
 %
-% Syntax:  
+% Syntax:
 %    res = test_contSet_times
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_contSet_times
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      06-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       06-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 resvec = true(0);
@@ -35,14 +35,14 @@ resvec(end+1) = all(MI.inf == [3;-5] & MI.sup == [6;-3], 'all');
 % test empty case
 I = interval();
 I = 2 .* I;
-resvec(end+1) = isempty(I);
+resvec(end+1) = representsa_(I,'emptySet',eps);
 
 % test zonotope
 Z = zonotope([1 0; 2 1]);
 M = [-1;2];
 MZ = M .* Z;
-resvec(end+1) = all(MZ.Z == [-1 0; 4 2], 'all');
+resvec(end+1) = all([MZ.c,MZ.G] == [-1 0; 4 2], 'all');
 
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

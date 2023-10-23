@@ -1,7 +1,7 @@
 function completed = example_affine()
 % example_affine - example instantiation of affine objects
 %
-% Syntax:  
+% Syntax:
 %    completed = example_affine()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_affine()
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       29-June-2018
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create affine object
 I = interval(-1,1);
@@ -40,4 +40,4 @@ intTay = interval(f(tay))
 
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function pZ = polyZonotope(E)
 % polyZonotope - enclose an ellipsoid by a polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    pZ = polyZonotope(E)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function pZ = polyZonotope(E)
 %
 % See also: interval, conPolyZono
 
-% Author:       Niklas Kochdumper
-% Written:      03-October-2022 
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       03-October-2022 
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE ---------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % read out dimension, fix order
 n = dim(E);
@@ -54,4 +54,4 @@ B = polyZonotope(B);
 [V,D] = eig(E.Q);
 pZ = E.q + (sqrt(D)*V)'*B;
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

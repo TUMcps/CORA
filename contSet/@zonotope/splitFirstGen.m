@@ -2,7 +2,7 @@ function Znew = splitFirstGen(Z)
 % splitFirstGen - splits first generator, which is in direction of the
 %    vector field
 %
-% Syntax:  
+% Syntax:
 %    Znew = splitFirstGen(Z)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function Znew = splitFirstGen(Z)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      09-October-2008
-% Last update:  14-March-2019 (sort removed)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       09-October-2008
+% Last update:   14-March-2019 (sort removed)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %initialize Znew
 Znew=[];
@@ -32,7 +32,7 @@ Znew=[];
 %split first generator
 for i=1:length(Z)
     %find longest generator
-    G=Z{i}.Z(:,2:end);
+    G=Z{i}.G;
     for j=1:length(G(1,:))
         h(j)=norm(G(:,j)'*G,1);
     end
@@ -47,4 +47,4 @@ for i=1:length(Z)
     Znew{counter+2}=Ztemp{2};
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

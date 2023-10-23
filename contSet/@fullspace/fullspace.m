@@ -29,12 +29,12 @@ classdef fullspace < contSet
 %
 % See also: emptySet
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  25-April-2023 (MW, disallow R^0)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   25-April-2023 (MW, disallow R^0)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = protected, GetAccess = public)
     % dimension of space
@@ -78,4 +78,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

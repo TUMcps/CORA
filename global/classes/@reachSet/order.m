@@ -2,7 +2,7 @@ function R = order(R)
 % order - orders the elements of a reachSet object chronologically;
 %    currently only supported for one branch
 %
-% Syntax:  
+% Syntax:
 %    R = order(R)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function R = order(R)
 %
 % See also: none
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       07-November-2022
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % only supported for one branch
 if length(R) > 1
@@ -68,4 +68,4 @@ if ~isempty(R.timeInterval)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

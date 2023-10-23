@@ -2,7 +2,7 @@ function pZ = restructure(pZ,method,order,varargin)
 % restructure - Calculates a new over-approxmiating representation of a
 %    polynomial zonotope so that there remain no independent generators
 %
-% Syntax:  
+% Syntax:
 %    pZ = restructure(pZ, method, order)
 %    pZ = restructure(pZ, method, order, genOrder)
 %
@@ -37,12 +37,12 @@ function pZ = restructure(pZ,method,order,varargin)
 %
 % See also: reduce
 
-% Author:       Niklas Kochdumper
-% Written:      25-July-2018 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-July-2018 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 genOrder = setDefaultValues({Inf},varargin);
@@ -89,4 +89,4 @@ else
     pZ = restructureReduce(pZ,order,redMeth,genOrder);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

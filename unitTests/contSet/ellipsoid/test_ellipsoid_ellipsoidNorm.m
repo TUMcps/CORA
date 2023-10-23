@@ -1,7 +1,7 @@
 function res = test_ellipsoid_ellipsoidNorm
 % test_ellipsoid_ellipsoidNorm - unit test
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_ellipsoidNorm
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_ellipsoidNorm
 %
 % See also: -
 
-% Author:       Adrian Kulmburg, Victor Gassmann
-% Written:      26-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Adrian Kulmburg, Victor Gassmann
+% Written:       26-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 load cases.mat E_c
@@ -77,4 +77,4 @@ for i=1:length(E_c)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

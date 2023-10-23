@@ -1,7 +1,7 @@
 function res = testLong_polyZonotope_randPoint
 % testLong_polyZonotope_randPoint - unit test function of randPoint
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polyZonotope_randPoint
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_polyZonotope_randPoint
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      02-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       02-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % tolerance
 tol = 1e-9;
@@ -45,14 +45,14 @@ for i=1:nrOfTests
     % random center, random generator matrices
     c = randn(n,1);
     G = randn(n,nrDepGens);
-    Grest = randn(n,nrIndepGens);
+    GI = randn(n,nrIndepGens);
     % random exponent matrix (no redudancies) and indentifiers
     counter = 0;
     while true
         counter = counter + 1;
-        expMat = randi(7,nrDepFactors,nrDepGens) - 2;
-        expMat(expMat < 0) = 0;
-        if size(unique(expMat','rows')',2) == size(expMat,2)
+        E = randi(7,nrDepFactors,nrDepGens) - 2;
+        E(E < 0) = 0;
+        if size(unique(E','rows')',2) == size(E,2)
             break;
         end
         if counter > 10
@@ -62,9 +62,9 @@ for i=1:nrOfTests
     id = randperm(nrDepFactors)';
     
     % center, dependent, independent generators, and exponent matrix
-    pZ = polyZonotope(c,G,Grest,expMat);
-    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.Grest,Grest,tol) ...
-            || ~compareMatrices([G;expMat],[pZ.G;pZ.expMat],tol)
+    pZ = polyZonotope(c,G,GI,E);
+    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.GI,GI,tol) ...
+            || ~compareMatrices([G;E],[pZ.G;pZ.E],tol)
         res = false; return;
     end
     
@@ -101,4 +101,4 @@ for i=1:nrOfTests
 %     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

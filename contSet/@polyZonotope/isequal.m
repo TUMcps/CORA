@@ -1,7 +1,7 @@
 function res = isequal(pZ1,pZ2,varargin)
 % isequal - checks if two polynomial zonotopes are equal
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(pZ1,pZ2)
 %    res = isequal(pZ1,pZ2,tol)
 %
@@ -24,12 +24,12 @@ function res = isequal(pZ1,pZ2,varargin)
 %
 % See also: zonotope/isequal
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       01-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -47,21 +47,17 @@ inputArgsCheck({{pZ1,'att','polyZonotope'};
 % assume false
 res = false;
 
-% remove redundancies in representation
-pZ1 = compact(pZ1);
-pZ2 = compact(pZ2);
-
 % compare dimensions (quick check)
 if dim(pZ1) ~= dim(pZ2)
     return
 end
 
-% remove redundancies
-pZ1 = compact(pZ1);
-pZ2 = compact(pZ2);
+% remove redundancies in representation
+pZ1 = compact_(pZ1,'all',eps);
+pZ2 = compact_(pZ2,'all',eps);
 
 % compare number of generators (quick check)
-if size(pZ1.G,2) ~= size(pZ2.G,2) || size(pZ1.Grest,2) ~= size(pZ2.Grest,2)
+if size(pZ1.G,2) ~= size(pZ2.G,2) || size(pZ1.GI,2) ~= size(pZ2.GI,2)
     return 
 end
 
@@ -70,16 +66,16 @@ temp1 = sort(pZ1.id); temp2 = sort(unique([pZ1.id;pZ2.id]));
 if length(temp1) ~= length(temp2) || ~all(temp1 == temp2)
     return;
 elseif ~all(pZ1.id == pZ2.id)
-    [~,E1,E2] = mergeExpMatrix(pZ1.id,pZ2.id,pZ1.expMat,pZ2.expMat);
+    [~,E1,E2] = mergeExpMatrix(pZ1.id,pZ2.id,pZ1.E,pZ2.E);
 else
-    E1 = pZ1.expMat; E2 = pZ2.expMat;
+    E1 = pZ1.E; E2 = pZ2.E;
 end
 
 % jointly compare dependent generators and exponent matrices
 if ~compareMatrices([pZ1.G;E1],[pZ2.G;E2], tol)
     return
 end
-if ~compareMatrices(pZ1.Grest,pZ2.Grest, tol)
+if ~compareMatrices(pZ1.GI,pZ2.GI, tol)
     return
 end
 if ~all(withinTol(pZ1.c, pZ2.c, tol))
@@ -89,4 +85,4 @@ end
 % all checks ok
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

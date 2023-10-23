@@ -2,7 +2,7 @@ function [Rnext,options] = post_Krylov(obj,options)
 % post_Krylov - computes the reachable continuous set for one time step in 
 % the Krylov subspace
 %
-% Syntax:  
+% Syntax:
 %    [Rnext,options] = post_Krylov(obj,R,options)
 %
 % Inputs:
@@ -21,14 +21,14 @@ function [Rnext,options] = post_Krylov(obj,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      22-December-2016
-% Last update:  03-March-2017
-%               21-August-2017
-%               02-November-2018
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-December-2016
+% Last update:   03-March-2017
+%                21-August-2017
+%                02-November-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % retrieve reachable set
 Rpar_proj = options.Rpar_proj;
@@ -66,4 +66,4 @@ options.Rhom_tp_proj = Rhom_tp_proj;
 options.Raux_proj = RV_proj;
 options.Rpar_proj = Rpar_proj;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

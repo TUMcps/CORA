@@ -3,7 +3,7 @@ function res = testLong_linearSys_reach_04_inputTrajectory()
 % analysis with an input trajectory uTransVec; this test should check 
 % whether correct the input trajectory is correctly considered
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_linearSys_reach_04_inputTrajectory()
 %
 % Inputs:
@@ -12,12 +12,12 @@ function res = testLong_linearSys_reach_04_inputTrajectory()
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      27-July-2018
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       27-July-2018
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % load data
 load data_Jean-MarcBiannic.mat A B uvec
@@ -66,4 +66,4 @@ res_2 = (IH_true <= enlarge(IH,factor));
 %final result
 res = res_1 && res_2;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

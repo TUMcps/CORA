@@ -1,7 +1,7 @@
 function res = test_interval_split
 % test_interval_split - unit test function of split
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_split
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_split
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      29-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       29-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create interval
 dim = 3;
@@ -65,4 +65,4 @@ for d=1:dim
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

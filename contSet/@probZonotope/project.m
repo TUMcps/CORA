@@ -1,7 +1,7 @@
 function probZ = project(probZ,dims)
 % project - projects a probabilistic zonotope onto the specified dimensions
 %
-% Syntax:  
+% Syntax:
 %    probZ = project(probZ,dims)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function probZ = project(probZ,dims)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      17-July-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       17-July-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % project set-based part
 probZ.Z = probZ.Z(dims,:);
@@ -36,4 +36,4 @@ probZ.Z = probZ.Z(dims,:);
 % project probabilistic part
 probZ.cov = probZ.cov(dims,dims);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

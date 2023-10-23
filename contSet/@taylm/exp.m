@@ -1,7 +1,7 @@
 function res = exp(obj)
 % exp - Overloaded 'exp()' operator for a Taylor model
 %
-% Syntax:  
+% Syntax:
 %    res = exp(obj)
 %
 % Inputs:
@@ -22,20 +22,23 @@ function res = exp(obj)
 %   [1] K. Makino et al. "Taylor Models and other validated functional 
 %       inclusion methods"
 
-% Author:       Dmitry Grebenyuk
-% Written:      31-July-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       31-July-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-	res = arrayfun(@(a) s_exp(a), obj, 'UniformOutput', 0);
+	res = arrayfun(@(a) aux_s_exp(a), obj, 'UniformOutput', 0);
     A = cat(1, res{:});
     res = reshape(A, size(res));
 
 end
 
-function res = s_exp(obj)
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_s_exp(obj)
     if obj.monomials(1,1) == 0                 
         c_f = obj.coefficients(1);
     else
@@ -74,4 +77,4 @@ function res = s_exp(obj)
         ( remPow .* exp( interval(0,1) .* rem ) );
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

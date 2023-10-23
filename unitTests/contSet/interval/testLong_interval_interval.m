@@ -1,7 +1,7 @@
 function res = testLong_interval_interval
 % testLong_interval_interval - unit test function of interval
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_interval_interval
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_interval_interval
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      20-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       20-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-12;
 
@@ -100,4 +100,4 @@ for i=1:nrOfTests
     end 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

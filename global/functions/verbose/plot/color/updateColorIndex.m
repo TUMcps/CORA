@@ -3,7 +3,7 @@ function updateColorIndex(oldColorIndex)
 %    by plotting nothing. Increases next chosen color of colororder by 1.
 % 
 %
-% Syntax:  
+% Syntax:
 %    updateColorIndex()
 %
 % Inputs:
@@ -18,13 +18,13 @@ function updateColorIndex(oldColorIndex)
 %
 % See also: colororder
 
-% Author:        Tobias Ladner
+% Authors:       Tobias Ladner
 % Written:       28-February-2023
 % Last update:   13-July-2023 (hold off case)
 %                26-July-2023 (reset order index)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin < 1
     ax = gca();
@@ -51,4 +51,4 @@ else
     set(gca(), 'ColorOrderIndex', 2);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

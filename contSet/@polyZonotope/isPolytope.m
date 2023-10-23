@@ -1,7 +1,7 @@
 function res = isPolytope(pZ)
 % isPolytope - Checks if a polynomial zonotope represents a polytope
 %
-% Syntax:  
+% Syntax:
 %    res = isPolytope(pZ)
 %
 % Inputs:
@@ -27,14 +27,14 @@ function res = isPolytope(pZ)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mptPolytope
+% See also: polytope
 
-% Author:       Niklas Kochdumper
-% Written:      08-November-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       08-November-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     res = true;
     
@@ -45,18 +45,18 @@ function res = isPolytope(pZ)
     end
 
     % compute vertices
-    [V,I] = polyVertices(pZ);
+    [V,I] = aux_polyVertices(pZ);
 
     % loop over all vertices
     for i = 1:size(V,2)
        
         % compute vectors of normal cone
-        N = normalCone(pZ,I{i});
+        N = aux_normalCone(pZ,I{i});
         
         % loop over all vertices
         for j = 1:size(V,2)
            if i ~= j
-               if ~inCone(N,V(:,i),V(:,j))
+               if ~aux_inCone(N,V(:,i),V(:,j))
                    res = false;
                    return;
                end
@@ -67,10 +67,9 @@ function res = isPolytope(pZ)
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-% Auxiliary Functions -----------------------------------------------------
-
-function res = inCone(N,v,v_)
+function res = aux_inCone(N,v,v_)
 % checks if a vertex is inside the normal cone
 
     % construct constraints and objective function
@@ -98,7 +97,7 @@ function res = inCone(N,v,v_)
 
 end
 
-function Nall = normalCone(pZ,Ilist)
+function Nall = aux_normalCone(pZ,Ilist)
 % compute the normal cone for a vertex
     
     % loop over all factor combinations resulting in the same vertex
@@ -128,7 +127,7 @@ function Nall = normalCone(pZ,Ilist)
     
 end
 
-function [V,Ilist] = polyVertices(pZ)
+function [V,Ilist] = aux_polyVertices(pZ)
 % compute the polytope vertices and store the corresponding factor values
 
     % determine all potential vertices
@@ -184,4 +183,4 @@ function [V,Ilist] = polyVertices(pZ)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

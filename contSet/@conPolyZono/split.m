@@ -7,7 +7,7 @@ function res = split(cPZ,varargin)
 %    second input argument, then the split at this specific dimension is
 %    calculated.
 %
-% Syntax:  
+% Syntax:
 %    res = split(cPZ)
 %    res = split(cPZ, splitDim)
 %
@@ -21,11 +21,11 @@ function res = split(cPZ,varargin)
 % Example: 
 %    c = [0;0];
 %    G = [1 0 1 -1; 0 2 1 2];
-%    expMat = [1 2 1 0; 0 0 1 2; 0 0 0 0];
+%    E = [1 2 1 0; 0 0 1 2; 0 0 0 0];
 %    A = [1 1 0.5];
 %    b = 0.5;
-%    expMat_ = [0 1 0;1 0 0; 0 0 1];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    EC = [0 1 0;1 0 0; 0 0 1];
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 %
 %    res = split(cPZ,1);
 %
@@ -40,12 +40,12 @@ function res = split(cPZ,varargin)
 %
 % See also: conZonotope/split
 
-% Author:       Niklas Kochdumper
-% Written:      08-February-2021
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       08-February-2021
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % calculate an interval that encloses the constrained polynomial zonotope
 int = interval(cPZ);
@@ -57,14 +57,14 @@ if nargin == 1
     res = cell(n,1);    
     
     for splitDim = 1:n
-        res{splitDim} = splitOneDim(cPZ,int,splitDim); 
+        res{splitDim} = aux_splitOneDim(cPZ,int,splitDim); 
     end
     
 % Case 2: split at the specified dimension
 elseif nargin == 2
     
     splitDim = varargin{1};
-    res = splitOneDim(cPZ,int,splitDim);
+    res = aux_splitOneDim(cPZ,int,splitDim);
     
 end
 
@@ -73,7 +73,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function cZsplit = splitOneDim(cZ,inter,splitDim)
+function cZsplit = aux_splitOneDim(cZ,inter,splitDim)
 
     % interval center and radius
     c = center(inter);
@@ -97,4 +97,4 @@ function cZsplit = splitOneDim(cZ,inter,splitDim)
     
 end
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

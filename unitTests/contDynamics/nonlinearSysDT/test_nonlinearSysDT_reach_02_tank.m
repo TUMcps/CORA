@@ -6,7 +6,7 @@ function res = test_nonlinearSysDT_reach_02_tank
 %    of the final reachable set is close to an interval provided
 %    by a previous solution that has been saved
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSysDT_reach_02_tank
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = test_nonlinearSysDT_reach_02_tank
 %        Linearization. Proc. of the 47th IEEE Conference on Decision and 
 %        Control, 2008.
 
-% Author:       Matthias Althoff
-% Written:      25-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -73,4 +73,4 @@ IH_saved = interval( ...
 %final result
 res = isequal(IH,IH_saved,1e-8);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

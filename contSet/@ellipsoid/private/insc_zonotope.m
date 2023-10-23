@@ -1,7 +1,7 @@
 function Z = insc_zonotope(E,m,comptype)
 % insc_zonotope - inner-approximates an ellipsoid by a zonotope
 %
-% Syntax:  
+% Syntax:
 %    Z = insc_zonotope(E,m,comptype)
 %
 % Inputs:
@@ -33,12 +33,12 @@ function Z = insc_zonotope(E,m,comptype)
 %
 % See also: enc_zonotope
 
-% Author:       Victor Gassmann, Matthias Althoff
-% Written:      18-September-2019
-% Last update:  27-January-2021 (MA, degenerate case implemented)
-% Last revision:---
+% Authors:       Victor Gassmann, Matthias Althoff
+% Written:       18-September-2019
+% Last update:   27-January-2021 (MA, degenerate case implemented)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if ~isFullDim(E)
     throw(CORAerror('CORA:degenerateSet','Should be handled in main file'));
@@ -77,4 +77,4 @@ end
 %unit hyper-sphere, and apply inverse transform
 Z = zonotope([c,1/R*Tinv*G]);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = testLong_zonotope_intersectStrip
 % testLong_zonotope_intersectStrip - unit test function of 
 % intersectStrip
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_intersectStrip
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_zonotope_intersectStrip
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      08-September-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       08-September-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check whether the over-approximation of intersectStrip encloses the
 % exact result
@@ -35,7 +35,7 @@ y = [-2; 2; 2];
 
 
 % polytope of intersected strips
-P = mptPolytope([1 0;-1 0; 0 1;0 -1; 1 1;-1 -1],[3;7;5;1;5;1]);
+P = polytope([1 0;-1 0; 0 1;0 -1; 1 1;-1 -1],[3;7;5;1;5;1]);
 
 % specify zonotope
 Z = zonotope([1 2 2 2 6 2 8; 1 2 2 0 5 0 6 ]);
@@ -48,7 +48,7 @@ Z_over{3} = intersectStrip(Z,C,phi,y,'radius');
 % Z_over{4} = intersectStrip(Z,C,phi,y,'alamo-volume');
 
 % obtain exact solution
-P_exact = mptPolytope(Z) & P;
+P_exact = polytope(Z) & P;
 
 %% testing methods for single strips
 % specify strip
@@ -57,7 +57,7 @@ phi_single = 5;
 y_single = -2;
 
 % polytope of intersected strips
-P_single = mptPolytope([1 0;-1 0],[3;7]);
+P_single = polytope([1 0;-1 0],[3;7]);
 
 % obtain over-approximative zonotope after intersection
 Z_over_single{1} = intersectStrip(Z,C_single,phi_single,y_single,'normGen');
@@ -68,7 +68,7 @@ Z_over_single{5} = intersectStrip(Z,C_single,phi_single,y_single,'alamo-FRad');
 Z_over_single{6} = intersectStrip(Z,C_single,phi_single,y_single,'bravo');
 
 % obtain exact solution
-P_exact_single = mptPolytope(Z) & P_single;
+P_exact_single = polytope(Z) & P_single;
 
 %% exact solution enclosed in over-approximation?
 % specify tolerance
@@ -78,11 +78,11 @@ Z_tol = zonotope([zeros(2,1),tol*eye(2)]);
 resVec = zeros(length(Z_over)+length(Z_over_single),1);
 % case for multiple strips
 for i = 1:length(Z_over)
-    resVec(i) = contains(mptPolytope(Z_over{i} + Z_tol),P_exact);
+    resVec(i) = contains(polytope(Z_over{i} + Z_tol),P_exact);
 end
 % case for single strip
 for i = 1:length(Z_over_single)
-    resVec(i+length(Z_over)) = contains(mptPolytope(Z_over_single{i} + Z_tol),P_exact_single);
+    resVec(i+length(Z_over)) = contains(polytope(Z_over_single{i} + Z_tol),P_exact_single);
 end
 
 % all methods over-aproximative?
@@ -105,4 +105,4 @@ res = all(resVec);
 % legend('zonotope','strips','zonoStrips','bravoMethod','exact');
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

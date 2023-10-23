@@ -2,7 +2,7 @@ function rotMat = rotationMatrix(h, newDir)
 % rotationMatrix - computes a rotation matrix to orient the normal vector
 % of a hyperplane to newDir
 %
-% Syntax:  
+% Syntax:
 %    rotMat = rotationMatrix(h, newDir)
 %
 % Inputs:
@@ -25,12 +25,12 @@ function rotMat = rotationMatrix(h, newDir)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      04-September-2013
-% Last update:  12-September-2013
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-September-2013
+% Last update:   12-September-2013
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get dimension
 dim_x = length(h.c);
@@ -70,4 +70,4 @@ else
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

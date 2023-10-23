@@ -1,7 +1,7 @@
 function res = test_emptySet_randPoint
 % test_emptySet_randPoint - unit test function of randPoint
 %
-% Syntax:  
+% Syntax:
 %    res = test_emptySet_randPoint
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_emptySet_randPoint
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init empty set
 n = 2;
@@ -31,4 +31,4 @@ O = emptySet(n);
 p = randPoint(O);
 res = all(size(p) == [n,0]);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

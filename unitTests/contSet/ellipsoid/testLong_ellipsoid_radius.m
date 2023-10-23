@@ -1,7 +1,7 @@
 function res = testLong_ellipsoid_radius
 % testLong_ellipsoid_radius - unit test function of radius
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_radius
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_ellipsoid_radius
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      19-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       19-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % random tests
 res = true;
@@ -48,4 +48,4 @@ for i=1:nrOfTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

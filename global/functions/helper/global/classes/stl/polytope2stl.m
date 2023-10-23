@@ -1,19 +1,19 @@
 function res = polytope2stl(obj,set)
-% polytope - convert polytope containment constraint to a STL-formula
+% polytope2stl - convert polytope containment constraint to a STL-formula
 %
-% Syntax:  
+% Syntax:
 %    res = polytope2stl(obj,set)
 %
 % Inputs:
 %    obj - logic formula (class stl)
-%    set - set (class mptPolytope)
+%    set - set (class polytope)
 %
 % Outputs:
 %    res - resulting stl formula (class stl)
 %
 % Example: 
 %    x = stl('x',2)
-%    set = mptPolytope([1 1; -2 1; 0 -1],[1;1;1]);
+%    set = polytope([1 1; -2 1; 0 -1],[1;1;1]);
 %    res = polytope2stl(x,set);
 %
 % Other m-files required: none
@@ -22,33 +22,44 @@ function res = polytope2stl(obj,set)
 %
 % See also: stl/in
 
-% Author:       Niklas Kochdumper
-% Written:      9-November-2022 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper, Benedikt Seidl
+% Written:       09-November-2022 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     res = [];
-    for i = 1:length(set.P.b)
-        res = res & halfspace2set(obj,set.P.A(i,:),set.P.b(i));
+    for i = 1:length(set.b)
+        res = res & aux_halfspace2set(obj,set.A(i,:),set.b(i));
     end
 
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function res = halfspace2set(x,c,d)
+function res = aux_halfspace2set(x,c,d)
 % convert halfspace containment to a STL-formula
 
-    rhs = c(1) * x(1);
+    ind = find(c ~= 0,1);
+    if c(ind) == 1
+        rhs = x(ind);
+    else
+        rhs = c(ind) * x(ind);
+    end
 
-    for i = 2:length(c)
-        rhs = rhs + c(i) * x(i);
+    for i = ind+1:length(c)
+        if c(i) ~= 0
+            if c(i) == 1
+                rhs = rhs + x(i);
+            else
+                rhs = rhs + c(i) * x(i);
+            end
+        end
     end
 
     res = rhs <= d;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

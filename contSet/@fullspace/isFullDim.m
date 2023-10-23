@@ -3,7 +3,7 @@ function res = isFullDim(fs)
 %    space is equal to the dimension of its ambient space
 %    case R^0: true
 %
-% Syntax:  
+% Syntax:
 %    res = isFullDim(fs)
 %
 % Inputs:
@@ -22,13 +22,13 @@ function res = isFullDim(fs)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

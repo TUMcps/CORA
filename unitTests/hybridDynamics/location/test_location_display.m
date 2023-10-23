@@ -1,7 +1,7 @@
 function res = test_location_display
 % test_location_display - test function for display
 %
-% Syntax:  
+% Syntax:
 %    res = test_location_display
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_location_display
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      08-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       08-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -35,7 +35,7 @@ sys_nonlin = nonlinearSys(f);
 sys_lin = linearSys([-4 1; 1 -4],[],[2;0]);
 
 % invariant
-inv_poly = mptPolytope([-1,0],0);
+inv_poly = polytope([-1,0],0);
 syms x y vx vy
 eq = -y + sin(x);
 inv_ls = levelSet(eq,[x;y;vx;vy],'<=');
@@ -68,4 +68,4 @@ loc_nonlin = location(inv_ls,trans_nonlin,sys_nonlin)
 % array of locations
 [loc_lin;loc_nonlin]
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

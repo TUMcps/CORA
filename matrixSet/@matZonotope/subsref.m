@@ -2,7 +2,7 @@ function newObj = subsref(matZ, S)
 % subsref - Overloads the opertor that selects elements, e.g. I(1,2),
 %    where the element of the first row and second column is referred to.
 %
-% Syntax:  
+% Syntax:
 %    newObj = subsref(matZ,S)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function newObj = subsref(matZ, S)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      09-November-2018 
-% Last update:  12-November-2018 (NK: default to build in for other cases)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       09-November-2018 
+% Last update:   12-November-2018 (NK, default to build in for other cases)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %check if parantheses are used to select elements
 if length(S) == 1 && strcmp(S.type,'()')
@@ -74,4 +74,4 @@ else
     newObj = builtin('subsref', matZ, S);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

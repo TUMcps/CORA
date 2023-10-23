@@ -1,7 +1,7 @@
 function res = test_mergeConflict
 % test_mergeConflict - check if any merge conflicts were left unresolved
 %
-% Syntax:  
+% Syntax:
 %    res = test_mergeConflict
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_mergeConflict
 %
 % See also: test_docstring
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023 
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
 % get all files
 files = findfiles(CORAROOT);
@@ -57,4 +57,4 @@ end
 % test is ok if no remaining unresolved merge conflicts
 res = isempty(unresolvedFiles);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

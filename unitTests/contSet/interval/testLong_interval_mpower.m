@@ -2,7 +2,7 @@ function res = testLong_interval_mpower
 % testLong_interval_mpower - unit_test_function of power,
 %    overloaded '^' operator for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_interval_mpower
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_interval_mpower
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk, Mark Wetzlinger
-% Written:      05-January-2016
-% Last update:  08-August-2020 (MW, extend by random tests)
-% Last revision:---
+% Authors:       Dmitry Grebenyuk, Mark Wetzlinger
+% Written:       05-January-2016
+% Last update:   08-August-2020 (MW, extend by random tests)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -88,4 +88,4 @@ for i=1:numberRandTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

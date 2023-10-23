@@ -3,7 +3,7 @@ function [Rend,options,linOptions] = initReach_adaptive(sys,Rstart,options,linOp
 %  from an originally nonlinear system (linearization error = 0),
 %  loops until time step found which satisfies abstraction error bound
 %
-% Syntax:  
+% Syntax:
 %    Rend = initReach_adaptive(sys,Rstart,linOptions)
 %
 % Inputs:
@@ -26,12 +26,12 @@ function [Rend,options,linOptions] = initReach_adaptive(sys,Rstart,options,linOp
 %
 % See also: linReach
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       25-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % exponential matrix and time interval error (incl. adaptive taylorTerms)
 [sys,linOptions] = expmtie_adaptive(sys,linOptions);
@@ -76,4 +76,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

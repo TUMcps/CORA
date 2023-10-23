@@ -1,7 +1,7 @@
 function val = radius(O)
 % radius - computes the radius of the enclosing hyperball of an empty set
 %
-% Syntax:  
+% Syntax:
 %    val = radius(O)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function val = radius(O)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 val = 0;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

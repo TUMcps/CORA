@@ -2,7 +2,7 @@ function [timeInt,timePoint,res] = reach_krylov(obj,options)
 % reach_krylov - computes the reachable set for linear systems using
 % 	 the krylov reachability algorithm for linear systems [1]
 %
-% Syntax:  
+% Syntax:
 %    [timeInt,timePoint,res] = reach_krylov(obj,options)
 %
 % Inputs:
@@ -27,14 +27,14 @@ function [timeInt,timePoint,res] = reach_krylov(obj,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      26-June-2019
-% Last update:  14-Aug-2019
-%               02-June-2020 (MA)
-%               19-November-2022 (MW, modularize specification check)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       26-June-2019
+% Last update:   14-August-2019
+%                02-June-2020 (MA)
+%                19-November-2022 (MW, modularize specification check)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain factors for initial state and input solution
 for i=1:(options.taylorTerms+1)
@@ -115,4 +115,4 @@ verboseLog(length(tVec),tVec(end),options);
 % specification fulfilled
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

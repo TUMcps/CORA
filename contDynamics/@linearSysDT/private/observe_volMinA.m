@@ -3,7 +3,7 @@ function [R,tcomp] = observe_volMinA(obj,options)
 % from [1].
 %
 %
-% Syntax:  
+% Syntax:
 %    [R,tcomp] = observe_volMinA(obj,options)
 %
 % Inputs:
@@ -26,15 +26,15 @@ function [R,tcomp] = observe_volMinA(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       08-Sep-2020
-% Last update:   15-Mar-2021
+% Authors:       Matthias Althoff
+% Written:       08-September-2020
+% Last update:   15-March-2021
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set intersection procedure
+
 options.intersectionType = 1;
 options.intersectionTechnique = 'alamo-volume';
 
@@ -45,4 +45,4 @@ tcomp = toc;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

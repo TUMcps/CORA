@@ -2,7 +2,7 @@ function fs = box(fs)
 % box - returns the box outer-approximation of a full-dimensional space
 %    case R^0: R^0
 %
-% Syntax:  
+% Syntax:
 %    fs = box(fs)
 %
 % Inputs:
@@ -21,13 +21,13 @@ function fs = box(fs)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % the fullspace is already its box outer-approximation
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

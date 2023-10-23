@@ -2,7 +2,7 @@ function Rhom_tp = dependentInputSol(obj,options)
 % dependentInputSol - computes the solution when the parameters of the
 %    system matrix and the constant input are dependent
 %
-% Syntax:  
+% Syntax:
 %    Rhom_tp = dependentInputSol(obj,options)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function Rhom_tp = dependentInputSol(obj,options)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      26-August-2011
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-August-2011
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain required variables
 Ac = obj.A.center;
@@ -96,4 +96,4 @@ R_hom_state = obj.mappingMatrixSet.zono*Rinit_noCenter + obj.mappingMatrixSet.in
 %FINAL SOLUTION
 Rhom_tp = R_hom_state + R_lowOrder + R_rem;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = testLong_conZonotope_interval
 % testLong_conZonotope_interval - unit test function for the
 %    calculation of a bounding box of a constrained zonotope object
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conZonotope_interval
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = testLong_conZonotope_interval
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Niklas Kochdumper
-% Written:      22-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       22-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -36,7 +36,7 @@ ind = convhulln(points');
 ind = unique(ind(:,1),'stable');
 V = points(:,ind);
 
-P = mptPolytope(V');
+P = polytope(V);
 cZ = conZonotope(P);
 
 % calculate interval
@@ -53,4 +53,4 @@ for i = 1:length(I)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

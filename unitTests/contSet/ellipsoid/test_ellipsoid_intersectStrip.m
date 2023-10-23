@@ -1,7 +1,7 @@
 function res = test_ellipsoid_intersectStrip
 % test_ellipsoid_intersectStrip - unit test function of intersetStrip
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_intersectStrip
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_intersectStrip
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      29-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       29-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % simple example
 C = [1 0; 0 1; 1 1];
@@ -38,4 +38,4 @@ res = true;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

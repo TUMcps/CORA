@@ -21,12 +21,12 @@ function docNode = hybrid_cora2spaceex(Obj, component, docNode)
 %
 % See also: none
 
-% Author:        Farah Atour
+% Authors:       Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 systems = Obj.location;
 trans = [];
@@ -86,4 +86,4 @@ for idx = 1:numel(trans)
     assignment_cora2spaceex(tran, docNode, reset) 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

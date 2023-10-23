@@ -1,7 +1,7 @@
 function res = testLong_ellipsoid_cartProd
 % testLong_ellipsoid_cartProd - unit test function of cartProd
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_cartProd
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_ellipsoid_cartProd
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      18-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       18-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 runs = 5;
 res = true;
@@ -42,7 +42,7 @@ for j=1:runs
             res = false;
             return;
         end
-        % "in" check only works if at least one ellipsoid is non-degenerate
+        % "contains" check only works if at least one ellipsoid is non-degenerate
         if ((isFullDim(E) || isFullDim(E1)) && ~contains(project(E,1:n1),E1)) ||...
            ((isFullDim(E) || isFullDim(E2)) && ~contains(project(E,n1+1:n1+n2),E2))
             res = false;
@@ -51,4 +51,4 @@ for j=1:runs
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

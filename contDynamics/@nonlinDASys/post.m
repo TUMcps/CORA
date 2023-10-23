@@ -3,7 +3,7 @@ function [Rnext,options] = post(obj,R,options)
 %    nonlinear differential-algebraic system by over-approximative
 %    abstraction
 %
-% Syntax:  
+% Syntax:
 %    [Rnext,options] = post(obj,R,options)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function [Rnext,options] = post(obj,R,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      22-November-2011
-% Last update:  08-August-2016
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-November-2011
+% Last update:   08-August-2016
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %despite the linear system: the nonlinear system has to be constantly
 %initialized due to the linearization procedure
@@ -47,4 +47,4 @@ end
 %delete redundant reachable sets
 Rnext = deleteRedundantSets(Rnext,R,options);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

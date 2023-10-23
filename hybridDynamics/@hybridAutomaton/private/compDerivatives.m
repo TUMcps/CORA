@@ -2,7 +2,7 @@ function compDerivatives(HA,options)
 % compDerivatives - computes the derivatives of the flow equation for every
 %    location with a nonlinear flow equation
 %
-% Syntax:  
+% Syntax:
 %    compDerivatives(HA,options)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function compDerivatives(HA,options)
 %
 % See also: hybridAutomaton/reach
 
-% Author:       Niklas Kochdumper
-% Written:      20-May-2020
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       20-May-2020
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % loop over all locations
 for i=1:length(HA.location)
@@ -41,4 +41,4 @@ for i=1:length(HA.location)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

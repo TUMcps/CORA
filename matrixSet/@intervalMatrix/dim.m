@@ -1,7 +1,7 @@
 function n = dim(intMat,rc)
 % dim - returns the dimension of the interval matrix
 %
-% Syntax:  
+% Syntax:
 %    n = dim(intMat)
 %    n = dim(intMat,rc)
 %
@@ -22,12 +22,12 @@ function n = dim(intMat,rc)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % choose wlog dimension of infimum
 if nargin == 1
@@ -39,4 +39,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

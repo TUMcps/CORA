@@ -1,7 +1,7 @@
 function res = det(obj)
 % det - Calculate the determinant of a taylor model matrix
 %
-% Syntax:  
+% Syntax:
 %    res = det(obj)
 %
 % Inputs:
@@ -21,15 +21,15 @@ function res = det(obj)
 %
 % See also: taylm, traace
 
-% Author:       Niklas Kochdumper
-% Written:      12-June-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       12-June-2018
+% Last update:   ---
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % get matrix size
+
     [~,n] = size(obj);
     
     % trivial case
@@ -45,4 +45,4 @@ function res = det(obj)
         end
     end
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

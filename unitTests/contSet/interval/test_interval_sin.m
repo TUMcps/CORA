@@ -2,7 +2,7 @@ function res = test_interval_sin
 % test_interval_sin - unit_test_function of sine for intervals,
 %    overloaded 'sin()' function for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_sin
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_interval_sin
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      13-January-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       13-January-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 res = true;
@@ -105,4 +105,4 @@ if abs( infimum(c(7)) + 1.0 ) > tol || abs( supremum(c(7)) - 1.0 ) > tol
 	return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

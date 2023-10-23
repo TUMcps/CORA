@@ -1,7 +1,7 @@
 function res = test_zonoBundle_project
 % test_zonoBundle_project - unit test function of project
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonoBundle_project
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonoBundle_project
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      24-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       24-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -54,4 +54,4 @@ res(end+1,1) = all(contains(zB_,p(projDim,:)));
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

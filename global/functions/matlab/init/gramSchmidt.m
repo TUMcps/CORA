@@ -1,7 +1,7 @@
 function Q = gramSchmidt(B)
 % gramSchmidt - construct an orthonormal basis Q from the vectors in B
 %
-% Syntax:  
+% Syntax:
 %    Q = gramSchmidt(B)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function Q = gramSchmidt(B)
 %
 % See also: ---
 
-% Author:       Niklas Kochdumper
-% Written:      23-January-2019 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       23-January-2019 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % construct suitable basis matrix if only a vector is provided
     if size(B,2) == 1
@@ -52,4 +52,4 @@ function Q = gramSchmidt(B)
  
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

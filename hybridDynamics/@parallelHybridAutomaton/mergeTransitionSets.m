@@ -2,11 +2,11 @@ function [transSet,mergedLabels] = mergeTransitionSets(pHA,transList,locID,allLa
 % mergeTransitionSets - computes the transition set of a combined location 
 %    from the transition sets of the subcomponents
 %
-% Syntax:  
+% Syntax:
 %    transSet = mergeTransitionSets(pHA,transList,locID,allLabels)
 %    [transSet,mergedLabels] = mergeTransitionSets(pHA,transList,locID,allLabels)
 %
-% Input:
+% Inputs:
 %    pHA - parallelHybridAutomaton object
 %    transList - A cell array containing the transition sets for all
 %                 components
@@ -24,12 +24,12 @@ function [transSet,mergedLabels] = mergeTransitionSets(pHA,transList,locID,allLa
 %
 % See also: parallelHybridAutomaton/mergeInvariants
 
-% Author:       Johann Schoepfer, Niklas Kochdumper, Maximilian Perschl
-% Written:      14-June-2018
-% Last update:  16-March-2022 (MP, implement synchronization labels)
-% Last revision:---
+% Authors:       Johann Schoepfer, Niklas Kochdumper, Maximilian Perschl
+% Written:       14-June-2018
+% Last update:   16-March-2022 (MP, implement synchronization labels)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % read out number of components
     numComp = length(pHA.components);
@@ -74,7 +74,7 @@ function [transSet,mergedLabels] = mergeTransitionSets(pHA,transList,locID,allLa
                     transSet(cnt) = projectInputDependentTrans(pHA,...
                         trans,pHA.dim,i,locID,resultingTarget,true);
                 else
-                    transSet(cnt) = projectHighDim(trans,pHA.dim,...
+                    transSet(cnt) = lift(trans,pHA.dim,...
                         stateBind,resultingTarget,true);
                 end
 
@@ -168,7 +168,7 @@ function [transSet,mergedLabels] = mergeTransitionSets(pHA,transList,locID,allLa
                             labelTransSet(j),pHA.dim,labelCompIdx(j),...
                             locID,resultingTarget,false);
                     else
-                        labelTransSet(j) = projectHighDim(labelTransSet(j),...
+                        labelTransSet(j) = lift(labelTransSet(j),...
                             pHA.dim,labelStateIndices{j},resultingTarget,false);
                     end
                 end
@@ -221,4 +221,4 @@ function [transSet,mergedLabels] = mergeTransitionSets(pHA,transList,locID,allLa
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

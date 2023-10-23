@@ -3,7 +3,7 @@ function completed = example_nonlinearSysDT_reach_tank
 %    of nonlinear reachability analysis with conservative linearization;
 %    the continuous-time version can be found in [1, Sec. 3.4.5] or in [2].
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinearSysDT_reach_tank
 %
 % Inputs:
@@ -18,12 +18,12 @@ function completed = example_nonlinearSysDT_reach_tank
 %    [2] M. Althoff et al. "Reachability analysis of nonlinear systems with 
 %        uncertain parameters using conservative linearization", CDC 2008
 
-% Author:       Matthias Althoff
-% Written:      25-Mar-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -91,4 +91,4 @@ end
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

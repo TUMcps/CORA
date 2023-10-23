@@ -2,7 +2,7 @@ function pZ = restructureReducePart(pZ, order, method)
 % restructureReducePart - Calculate a new representation of a polynomial
 %    zonotope through partial reduction of the independent generators 
 %
-% Syntax:  
+% Syntax:
 %    res = restructureReducePart(pZ, order, method)
 %
 % Inputs:
@@ -21,14 +21,14 @@ function pZ = restructureReducePart(pZ, order, method)
 %
 % See also: polyZonotope/restructure, zonotope/reduce
 
-% Author:       Niklas Kochdumper
-% Written:      18-January-2020 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       18-January-2020 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-if isempty(pZ.Grest)
+if isempty(pZ.GI)
     return; 
 end
 
@@ -36,7 +36,7 @@ end
 n = dim(pZ); p = length(pZ.id); 
 
 % reduce independent generators to order 1
-zono = zonotope(zeros(dim(pZ),1),pZ.Grest);
+zono = zonotope(zeros(dim(pZ),1),pZ.GI);
 zono_ = reduce(zono,method,1);
 
 % check if upper bound for dependent factors is violated
@@ -45,16 +45,16 @@ if p/n + 1 < order
     % order not violated -> define all independent generators as new
     % dependent genertors
     G = [pZ.G generators(zono_)];
-    expMat = blkdiag(pZ.expMat,eye(n));
+    E = blkdiag(pZ.E,eye(n));
     id = [pZ.id; (max(pZ.id)+1:max(pZ.id) + n)'];
     
-    pZ = polyZonotope(c,G,[],expMat,id);
+    pZ = polyZonotope(c,G,[],E,id);
     
 else
     
     % half the generator length for exponents that are all even
     Gtemp = pZ.G;         
-    temp = prod(ones(size(pZ.expMat))-mod(pZ.expMat,2),1);
+    temp = prod(ones(size(pZ.E))-mod(pZ.E,2),1);
     ind = find(temp == 1);
     Gtemp(:,ind) = 0.5 * Gtemp(:,ind);
     
@@ -63,13 +63,13 @@ else
     cost = zeros(p,1);
     
     for i = 1:p
-       cost(i) = sum(sum(Gtemp(:,pZ.expMat(i,:) > 0).^2,1));
+       cost(i) = sum(sum(Gtemp(:,pZ.E(i,:) > 0).^2,1));
     end
     
     % compare with cost (= length of genertors) of independent
     % generators
-    Grest = generators(zono_);
-    costInd = sum(Grest.^2,1)';
+    GI = zono_.G;
+    costInd = sum(GI.^2,1)';
     
     [~,ind] = sort([cost;costInd],'descend');
     
@@ -85,11 +85,11 @@ else
         
         index = indKeep(indKeep > p) - p;
         
-        G = [pZ.G Grest(:,index)];
-        expMat = blkdiag(pZ.expMat,eye(length(index)));
+        G = [pZ.G GI(:,index)];
+        E = blkdiag(pZ.E,eye(length(index)));
         id = [pZ.id; (max(pZ.id)+1:max(pZ.id) + length(index))'];
     
-        pZ = polyZonotope(pZ.c,G,Grest(:,indRem-p),expMat,id);
+        pZ = polyZonotope(pZ.c,G,GI(:,indRem-p),E,id);
         
     % remove smallest dependent generators    
     else
@@ -99,14 +99,14 @@ else
         ind = [];
         
         for i = index
-            ind = [ind, find(pZ.expMat(i,:) > 0)];
+            ind = [ind, find(pZ.E(i,:) > 0)];
         end
         
         ind = unique(ind);
         ind_ = setdiff(1:size(pZ.G,2),ind);
         
         % enclose generators that are removed with a zonotope
-        pZ_ = polyZonotope(pZ.c,pZ.G(:,ind),pZ.Grest,pZ.expMat(:,ind));
+        pZ_ = polyZonotope(pZ.c,pZ.G(:,ind),pZ.GI,pZ.E(:,ind));
         zono = zonotope(pZ_);
         zono_ = reduce(zono,method,1);
         
@@ -114,9 +114,8 @@ else
         temp = pmax - length(index);
         id = [pZ.id(index); (max(pZ.id)+1:max(pZ.id) + temp)'];
         
-        pZ = polyZonotope(center(zono_),pZ.G(:,ind_), ...
-                           generators(zono_),pZ.expMat(:,ind_),id);
+        pZ = polyZonotope(zono_.c, pZ.G(:,ind_), zono_.G, pZ.E(:,ind_),id);
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

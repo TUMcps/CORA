@@ -1,7 +1,7 @@
 function hyp = generateRandom(varargin)
 % generateRandom - Generates a random conHyperplane
 %
-% Syntax:  
+% Syntax:
 %    hs = conHyperplane.generateRandom()
 %    hs = conHyperplane.generateRandom('Dimension',n)
 %    hs = conHyperplane.generateRandom('Dimension',n,'NormalVector',c)
@@ -28,12 +28,12 @@ function hyp = generateRandom(varargin)
 %
 % See also: halfspace/generateRandom
 
-% Author:       Tobias Ladner
-% Written:      02-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       02-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -87,4 +87,4 @@ end
 % instantiate interval
 hyp = conHyperplane(hs,C,d);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

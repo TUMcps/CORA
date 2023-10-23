@@ -2,7 +2,7 @@ function display(S)
 % display - Displays the properties of a contSet object (dimension) on the
 %    command window
 %
-% Syntax:  
+% Syntax:
 %    display(S)
 %
 % Inputs:
@@ -12,7 +12,7 @@ function display(S)
 %    ---
 %
 % Example: 
-%    S = contSet(2);
+%    S = contSet();
 %    display(S);
 %
 % Other m-files required: none
@@ -21,14 +21,15 @@ function display(S)
 %
 % See also: none
 
-% Author:        Matthias Althoff, Victor Gassmann
+% Authors:       Matthias Althoff, Victor Gassmann
 % Written:       02-May-2007
-% Last update:   24-March-2022 (VG: replace property read by function call)
+% Last update:   24-March-2022 (VG, replace property read by function call)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % display dimension
-disp(['dimension: ', num2str(dim(S))]);
+disp('contSet:')
+disp(['- dimension: ', num2str(dim(S))]);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

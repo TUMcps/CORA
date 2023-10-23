@@ -2,7 +2,7 @@ function [Rin,Rout] = reachInnerProjection(sys,params,options)
 % reachInnerProjection - compute an inner-approximation of the reachable 
 %                        set using the algorithm in [1].
 %
-% Syntax:  
+% Syntax:
 %    [Rin,Rout] = reachInnerProjection(sys,options)
 %
 % Inputs:
@@ -26,12 +26,12 @@ function [Rin,Rout] = reachInnerProjection(sys,params,options)
 %
 % See also: reachInner
 
-% Author:       Niklas Kochdumper
-% Written:      21-October-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       21-October-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % options preprocessing
     options = validateOptions(sys,mfilename,params,options);
@@ -43,11 +43,11 @@ function [Rin,Rout] = reachInnerProjection(sys,params,options)
     T = options.tStart:options.timeStep:options.tFinal;
     
     % construct dynamic function for the jacobian
-    [fun,funJ] = dynamicFunction(sys);
+    [fun,funJ] = aux_dynamicFunction(sys);
     
     % compute Lie-derivatives
-    derLieFun = lieDerivative(fun,n,options.taylorOrder);
-    derLieJacFun = lieDerivativeJacobian(derLieFun,n);
+    derLieFun = aux_lieDerivative(fun,n,options.taylorOrder);
+    derLieJacFun = aux_lieDerivativeJacobian(derLieFun,n);
     
     % initialize cell array that stores the reachable sets
     RsetCont = cell(length(T)-1,1);
@@ -80,24 +80,24 @@ function [Rin,Rout] = reachInnerProjection(sys,params,options)
         
         t = interval(T(j),T(j+1));
         
-        r = picardLindeloef(fun,z,t);
-        r_ = picardLindeloef(fun,z_,t);
-        R = picardLindeloef(funJ,J,t,r);
+        r = aux_picardLindeloef(fun,z,t);
+        r_ = aux_picardLindeloef(fun,z_,t);
+        R = aux_picardLindeloef(funJ,J,t,r);
         
         
         % Step 2: Accurate Enclosure --------------------------------------
         
         % evaluate Lie-derivatives
-        derLie = evalLie(derLieFun,z,r,options.taylmOrder);
-        derLie_ = evalLie(derLieFun,z_,r_,options.taylmOrder);
-        derLieJ = evalLieJac(derLieJacFun,z,r,J,R,options.taylmOrder);
+        derLie = aux_evalLie(derLieFun,z,r,options.taylmOrder);
+        derLie_ = aux_evalLie(derLieFun,z_,r_,options.taylmOrder);
+        derLieJ = aux_evalLieJac(derLieJacFun,z,r,J,R,options.taylmOrder);
         
         % compute over-approximations for time interval
         t = taylm(t,options.taylmOrder,'t');
         
-        z_ = evalTaylor(derLie,t,T(j));
-        zt_ = evalTaylor(derLie_,t,T(j));
-        Jt = evalTaylor(derLieJ,t,T(j));
+        z_ = aux_evalTaylor(derLie,t,T(j));
+        zt_ = aux_evalTaylor(derLie_,t,T(j));
+        Jt = aux_evalTaylor(derLieJ,t,T(j));
         
         
         % Step 3: Inner Approximation -------------------------------------
@@ -126,9 +126,9 @@ function [Rin,Rout] = reachInnerProjection(sys,params,options)
         % Step 4: Update Outer Enclosures ---------------------------------
         
         % compute outer enclosure for time point
-        z = evalTaylor(derLie,T(j+1),T(j));
-        z_ = evalTaylor(derLie_,T(j+1),T(j));
-        J = evalTaylor(derLieJ,T(j+1),T(j));
+        z = aux_evalTaylor(derLie,T(j+1),T(j));
+        z_ = aux_evalTaylor(derLie_,T(j+1),T(j));
+        J = aux_evalTaylor(derLieJ,T(j+1),T(j));
         
         % compute inner enclosure for time point
         z_Int = intKaucher(infimum(z_),supremum(z_));
@@ -173,15 +173,15 @@ function [Rin,Rout] = reachInnerProjection(sys,params,options)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function res = picardLindeloef(fun,z0,t,varargin)
+function res = aux_picardLindeloef(fun,z0,t,varargin)
 
     try
-        res = picardLindeloefInt(fun,z0,t,varargin{:});
+        res = aux_picardLindeloefInt(fun,z0,t,varargin{:});
     catch ex
         if strcmp(ex.identifier,'CORA:notConverged')
-            res = picardLindeloefTaylm(fun,z0,t,varargin{:});
+            res = aux_picardLindeloefTaylm(fun,z0,t,varargin{:});
         else
             throw(CORAerror('CORA:notConverged'));
         end
@@ -189,7 +189,7 @@ function res = picardLindeloef(fun,z0,t,varargin)
 end
 
 
-function res = picardLindeloefInt(fun,z0,t,varargin)
+function res = aux_picardLindeloefInt(fun,z0,t,varargin)
 
     % add interval to function
     if nargin == 4
@@ -240,7 +240,7 @@ function res = picardLindeloefInt(fun,z0,t,varargin)
     end
 end
 
-function res = picardLindeloefTaylm(fun,z0,t,varargin)
+function res = aux_picardLindeloefTaylm(fun,z0,t,varargin)
 
     % add interval to function
     if nargin == 4
@@ -306,7 +306,7 @@ function res = picardLindeloefTaylm(fun,z0,t,varargin)
     end
 end
 
-function derLie = evalLie(derLieFun,z,r,tayOrd)
+function derLie = aux_evalLie(derLieFun,z,r,tayOrd)
 
     % initialization
     k = length(derLieFun);
@@ -327,7 +327,7 @@ function derLie = evalLie(derLieFun,z,r,tayOrd)
     derLie{k+1} = fun(r);
 end
 
-function derLie = evalLieJac(derLieFun,z,r,J,R,tayOrd)
+function derLie = aux_evalLieJac(derLieFun,z,r,J,R,tayOrd)
 
     % initialization
     k = length(derLieFun);
@@ -350,7 +350,7 @@ function derLie = evalLieJac(derLieFun,z,r,J,R,tayOrd)
     derLie{k+1} = fun(r,R);
 end
 
-function res = evalTaylor(der,t,t_)
+function res = aux_evalTaylor(der,t,t_)
 
     k = length(der)-1;
     
@@ -376,7 +376,7 @@ function res = evalTaylor(der,t,t_)
     
 end
 
-function res = lieDerivative(fun,n,order)
+function res = aux_lieDerivative(fun,n,order)
 
     % intialization
     res = cell(order,1);
@@ -403,7 +403,7 @@ function res = lieDerivative(fun,n,order)
     end
 end
 
-function res = lieDerivativeJacobian(der,n)
+function res = aux_lieDerivativeJacobian(der,n)
 
     % intialization
     res = cell(length(der),1);
@@ -433,7 +433,7 @@ function res = lieDerivativeJacobian(der,n)
     end
 end
 
-function [fun,funJ] = dynamicFunction(sys)
+function [fun,funJ] = aux_dynamicFunction(sys)
 
     % construct function handle for dynamic function
     fun = @(x) sys.mFile(x,0);
@@ -461,4 +461,4 @@ function [fun,funJ] = dynamicFunction(sys)
 
 end
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

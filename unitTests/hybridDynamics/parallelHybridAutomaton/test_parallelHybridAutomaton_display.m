@@ -1,7 +1,7 @@
 function res = test_parallelHybridAutomaton_display
 % test_parallelHybridAutomaton_display - test function for display
 %
-% Syntax:  
+% Syntax:
 %    res = test_parallelHybridAutomaton_display
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_parallelHybridAutomaton_display
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      08-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       08-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -107,5 +107,4 @@ inputBinds{2} = [1 1];
 pHA = parallelHybridAutomaton(components,inputBinds)
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

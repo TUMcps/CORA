@@ -3,7 +3,7 @@ function [Zred,t]=reduceMethC(Zbundle,filterLength)
 % maximize their spanned volume. Use exhaustive search on filtered
 % generators
 %
-% Syntax:  
+% Syntax:
 %    [Zred,t]=reduceMethC(Zbundle,filterLength)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function [Zred,t]=reduceMethC(Zbundle,filterLength)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      21-February-2011
-% Last update:  25-July-2016 (intervalhull replaced by interval)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-February-2011
+% Last update:   25-July-2016 (intervalhull replaced by interval)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tic;
 
@@ -110,4 +110,4 @@ Valt = volume(Zred_alt)
 %time measurement
 t=toc;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

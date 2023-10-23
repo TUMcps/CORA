@@ -1,7 +1,7 @@
 function res = isemptyobject(HA)
 % isemptyobject - checks if a hybrid automaton object is empty
 %
-% Syntax:  
+% Syntax:
 %    res = isemptyobject(HA)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function res = isemptyobject(HA)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 [r,c] = size(HA);
 res = false(r,c);
@@ -36,4 +36,4 @@ for i=1:r
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

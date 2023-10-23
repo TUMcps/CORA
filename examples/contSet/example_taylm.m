@@ -1,7 +1,7 @@
 function completed = example_taylm()
 % example_taylm - example instantiation of taylm objects
 %
-% Syntax:  
+% Syntax:
 %    completed = example_taylm()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_taylm()
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       29-June-2018
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 a1 = interval(-1, 2);   % generate a scalar interval [-1,2]
 a2 = interval(2, 3);    % generate a scalar interval [2,3]
@@ -49,4 +49,4 @@ sin(B1(1,1)) + B1(2,1).^2 - B1' * B2 % combination of functions
 
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

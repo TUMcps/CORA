@@ -1,7 +1,7 @@
 function res = test_emptySet_dim
 % test_emptySet_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = test_emptySet_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_emptySet_dim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init empty set
 n = 2;
@@ -30,4 +30,4 @@ O = emptySet(n);
 % check dimension
 res = dim(O) == n;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

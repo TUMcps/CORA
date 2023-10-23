@@ -1,7 +1,7 @@
 function C = generateRandom(varargin)
 % generateRandom - Generates a random capsule
 %
-% Syntax:  
+% Syntax:
 %    C = capsule.generateRandom()
 %    C = capsule.generateRandom('Dimension',n)
 %    C = capsule.generateRandom('Dimension',n,'Center',c)
@@ -25,12 +25,12 @@ function C = generateRandom(varargin)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
-% Last update:  19-May-2022 (name-value pairs syntax)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-September-2019
+% Last update:   19-May-2022 (name-value pairs syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -81,4 +81,4 @@ g = rand(n,1);
 C = capsule(c,g,r);
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

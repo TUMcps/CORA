@@ -1,7 +1,7 @@
 function res = test_interval_exp
 % test_interval_exp - unit test function of exponential function
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_exp
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_exp
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      14-January-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       14-January-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % define problem
 tol = 1e-9;
@@ -60,4 +60,4 @@ if abs( infimum(c(6)) - 148.4131591026 ) > tol || abs( supremum(c(6)) - 2980.957
 	return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

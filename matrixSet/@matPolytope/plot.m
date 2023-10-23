@@ -1,7 +1,7 @@
 function plot(matP,varargin)
 % plot - Plots 2-dimensional projection of a matrix polytope
 %
-% Syntax:  
+% Syntax:
 %    plot(matP,dimensions)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function plot(matP,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      22-June-2010
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-June-2010
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %plot vertices
 if nargin==1
@@ -54,4 +54,4 @@ V = unique(V, 'rows');
 %plot vertices
 plotPolygon(V',[1,2],style);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

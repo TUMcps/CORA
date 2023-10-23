@@ -1,7 +1,7 @@
 function res = test_linParamSys_linParamSys
 % test_linParamSys_linParamSys - unit test for linParamSys constructor
 %
-% Syntax:  
+% Syntax:
 %    res = test_linParamSys_linParamSys
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_linParamSys_linParamSys
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      18-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       18-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % no input arguments
 sys = linParamSys();
@@ -54,4 +54,4 @@ res(end+1,1) = strcmp(sys.name,'system') ...
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -5,7 +5,7 @@ function res = test_linearSys_reach_06_5dim_linAlg_all()
 %    reduced version of testLong_linearSys_reach_06
 %
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_reach_06_5dim_linAlg_all()
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_linearSys_reach_06_5dim_linAlg_all()
 % Outputs:
 %    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      26-June-2019
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       26-June-2019
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -168,4 +168,4 @@ for i=2:length(algs)
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

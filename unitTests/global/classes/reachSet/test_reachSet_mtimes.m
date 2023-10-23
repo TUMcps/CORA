@@ -1,7 +1,7 @@
 function res = test_reachSet_mtimes
 % test_reachSet_mtimes - unit test function for mtimes
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_mtimes()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_reachSet_mtimes
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      10-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       10-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init result
 res = true;
@@ -49,4 +49,4 @@ for i=1:steps-1
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

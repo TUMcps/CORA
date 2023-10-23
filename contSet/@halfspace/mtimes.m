@@ -2,7 +2,7 @@ function hs = mtimes(M,hs)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix with
 %    a halfspace
 %
-% Syntax:  
+% Syntax:
 %    hs = mtimes(M,hs)
 %
 % Inputs:
@@ -27,15 +27,15 @@ function hs = mtimes(M,hs)
 %
 % See also: plus
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      26-August-2013
-% Last update:  16-March-2021 (MW, add empty case)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       26-August-2013
+% Last update:   16-March-2021 (MW, add empty case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty case
-if isempty(hs)
+if representsa_(hs,'emptySet',eps)
     return
 end
 
@@ -69,4 +69,4 @@ catch ME
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

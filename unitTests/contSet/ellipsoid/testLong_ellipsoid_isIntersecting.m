@@ -2,7 +2,7 @@ function res = testLong_ellipsoid_isIntersecting
 % testLong_ellipsoid_isIntersecting - unit test function of
 %    isIntersecting
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_isIntersecting
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_ellipsoid_isIntersecting
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      18-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       18-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % point
 [~,res] = evalc('testLong_ellipsoid_contains');
@@ -34,4 +34,4 @@ res = res && res_;
 % mixed
 res = res && testLong_component_ellipsoid_isIntersectingMixed;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function B = calcBasis(loc,R,guard,options)
 % calcBasis - calculate orthogonal basis with the methods from [1]
 %
-% Syntax:  
+% Syntax:
 %    B = calcBasis(loc,R,guard,options)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function B = calcBasis(loc,R,guard,options)
 %
 % See also: location/guardIntersect
 
-% Author:       Niklas Kochdumper
-% Written:      05-November-2018             
-% Last update:  20-November-2019
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       05-November-2018             
+% Last update:   20-November-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % initialization
     sys = loc.contDynamics;
@@ -98,7 +98,8 @@ function B = calcBasis(loc,R,guard,options)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
+
 % TODO: move to global!
 
 function G = aux_extractGenerators(R)
@@ -112,12 +113,14 @@ function G = aux_extractGenerators(R)
         % different types of sets
         if isa(R{j},'zonoBundle')
             for i = 1:R{j}.parallelSets
-                G = [G,R{j}.Z{i}.Z(:,2:end)];
+                G = [G,R{j}.Z{i}.G];
             end
         elseif isa(R{j},'polyZonotope')
             temp = zonotope(R{j});
-            G = [G,temp.Z(:,2:end)];
-        else
+            G = [G,temp.G];
+        elseif isa(R{j},'zonotope') || isa(R{j},'conZonotope')
+            G = [G,R{j}.G];
+        else % ?
             G = [G,R{j}.Z(:,2:end)];
         end
     end
@@ -134,7 +137,7 @@ function c = aux_extractCenter(R)
         % different types of sets
         if isa(R{j},'zonoBundle')
             for i = 1:R{j}.parallelSets
-                c = [c,R{j}.Z{i}.Z(:,1)];
+                c = [c,R{j}.Z{i}.c];
             end
         else
             c = [c,center(R{j})];
@@ -145,4 +148,4 @@ function c = aux_extractCenter(R)
     c = mean(c,2);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function [obj,S] = findClassArg(obj1,obj2,classname)
 % findClassArg - finds the obj with specified class name, or throws error
 %    if neither object is of given class
 %
-% Syntax:  
+% Syntax:
 %    [obj,S] = findClassArg(obj1,obj2,classname)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function [obj,S] = findClassArg(obj1,obj2,classname)
 %
 % See also: ---
 
-% Author:       Victor Gassmann
-% Written:      04-July-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       04-July-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isa(obj1,classname)
     obj = obj1;
@@ -42,4 +42,4 @@ else
     throw(CORAerror('CORA:wrongValue','first/second',classname));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

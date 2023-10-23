@@ -4,7 +4,7 @@ function V = projVertices(S,varargin)
 %    vectors can be found, the algorithm terminates
 %    this function also supports degenerate sets (lines, points)
 %
-% Syntax:  
+% Syntax:
 %    V = projVertices(S)
 %
 % Inputs:
@@ -31,12 +31,12 @@ function V = projVertices(S,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      21-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       21-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 2
@@ -55,7 +55,7 @@ S = project(S,dims);
 
 % init vertices
 V = [];
-if isemptyobject(S) || isempty(S)
+if isemptyobject(S) || representsa_(S,'emptySet',1e-10)
     % no vertices if set is empty
     return
 end
@@ -173,7 +173,7 @@ V = aux_checkActualVertex(V,idx3);
 end
 
 
-% Auxiliary function ------------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function V = aux_checkActualVertex(V,idx)
 % check if vertex at position idx is an actual vertex or if its on the line
@@ -200,4 +200,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

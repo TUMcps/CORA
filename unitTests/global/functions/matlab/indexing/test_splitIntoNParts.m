@@ -1,7 +1,7 @@
 function res = test_splitIntoNParts
 % test_splitIntoNParts - unit test function for splitIntoNParts
 %
-% Syntax:  
+% Syntax:
 %    res = test_splitIntoNParts()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_splitIntoNParts
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % minimum number of parts
 K = 20;
@@ -58,5 +58,4 @@ end
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_linearSysDT_simulate
 % test_linearSysDT_simulate - unit test for simulate
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSysDT_simulate
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_linearSysDT_simulate
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-November-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-November-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = false;
 
@@ -49,7 +49,7 @@ C = [1 1 0 0;
      0 -0.5 0.5 0];
 y = 2;
 
-% throughput matrix: q x m
+% feedthrough matrix: q x m
 D = [0 0 1;
      0 0 0];
 
@@ -99,9 +99,9 @@ for j = 1:length(list)
     sys = list{j};
 
     % vectors for u, w, and v
-    u_sys = get_u(sys,n,m,u_n,u_m,u_n_noD,u_m_noD);
-    w_sys = get_w(sys,W,dt_steps);
-    v_sys = get_v(sys,n,y,V_n,V_y,dt_steps);
+    u_sys = aux_get_u(sys,n,m,u_n,u_m,u_n_noD,u_m_noD);
+    w_sys = aux_get_w(sys,W,dt_steps);
+    v_sys = aux_get_v(sys,n,y,V_n,V_y,dt_steps);
 
     % no input set, disturbance, or sensor noise
     simulate(sys,params);
@@ -153,9 +153,9 @@ res = true;
 end
 
 
-% Auxiliary function
+% Auxiliary functions -----------------------------------------------------
 
-function u = get_u(sys,n,m,u_n,u_m,u_n_noD,u_m_noD)
+function u = aux_get_u(sys,n,m,u_n,u_m,u_n_noD,u_m_noD)
 % return corresponding u based on system
 
     if sys.nrOfInputs == n
@@ -174,13 +174,13 @@ function u = get_u(sys,n,m,u_n,u_m,u_n_noD,u_m_noD)
 
 end
 
-function w = get_w(sys,W,dt_steps)
+function w = aux_get_w(sys,W,dt_steps)
 
     w = randPoint(W,dt_steps);
 
 end
 
-function v = get_v(sys,n,y,V_n,V_y,dt_steps)
+function v = aux_get_v(sys,n,y,V_n,V_y,dt_steps)
 
     if sys.nrOfOutputs == n
         v = randPoint(V_n,dt_steps+1);
@@ -190,4 +190,4 @@ function v = get_v(sys,n,y,V_n,V_y,dt_steps)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

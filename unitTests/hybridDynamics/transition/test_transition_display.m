@@ -1,7 +1,7 @@
 function res = test_transition_display
 % test_transition_display - test function for display
 %
-% Syntax:  
+% Syntax:
 %    res = test_transition_display
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_transition_display
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      08-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       08-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -54,5 +54,4 @@ trans_lin = transition(guard_hyp,reset_lin,target,syncLabel)
 trans_nonlin = transition(guard_ls,reset_nonlin,target)
 trans_nonlin = transition(guard_ls,reset_nonlin,target,syncLabel)
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

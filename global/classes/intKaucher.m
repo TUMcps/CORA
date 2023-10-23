@@ -2,7 +2,7 @@ classdef intKaucher
 % intKaucher - implementation of Kaucher arithmetic [1]. For demonstration
 %    purposes, we consider Example 1 in [2]
 %
-% Syntax:  
+% Syntax:
 %    obj = intKaucher(ll,rl)
 %
 % Inputs:
@@ -18,7 +18,7 @@ classdef intKaucher
 %
 %    % compute gradient
 %    syms x;
-%    df = gradient(f,x);
+%    df = gradient(f(x));
 %    df = matlabFunction(df);
 %
 %    % compute bounds for gradient
@@ -44,12 +44,12 @@ classdef intKaucher
 %
 % See also: interval
 
-% Author:       Niklas Kochdumper
-% Written:      18-October-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       18-October-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     inf = [];
@@ -107,13 +107,13 @@ methods
                res = obj1;
                
                % different cases of inervals
-               if inP(obj1) && inDualZ(obj2)
+               if aux_inP(obj1) && aux_inDualZ(obj2)
                     res.inf = obj1.inf * obj2.inf;
                     res.sup = obj1.inf * obj2.sup;
-               elseif inMinusP(obj1) && inDualZ(obj2)
+               elseif aux_inMinusP(obj1) && aux_inDualZ(obj2)
                     res.inf = obj1.sup * obj2.sup;
                     res.sup = obj1.sup * obj2.inf;
-               elseif inZ(obj1) && inDualZ(obj2)
+               elseif aux_inZ(obj1) && aux_inDualZ(obj2)
                     res.inf = 0;
                     res.sup = 0;
                else
@@ -203,7 +203,6 @@ methods
             res = intKaucher(infRes,supRes);
         end
     end
-    
     
     
     % Additional Methods --------------------------------------------------
@@ -318,22 +317,23 @@ methods
 end
 end
 
-% Auxiliary Functions -----------------------------------------------------
 
-function res = inP(obj)
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_inP(obj)
     res = obj.inf >= 0 && obj.sup >= 0;
 end
 
-function res = inMinusP(obj)
+function res = aux_inMinusP(obj)
     res = obj.inf <= 0 && obj.sup <= 0;
 end
 
-function res = inZ(obj)
+function res = aux_inZ(obj)
     res = obj.inf <= 0 && obj.sup >= 0;
 end
 
-function res = inDualZ(obj)
+function res = aux_inDualZ(obj)
     res = obj.inf >= 0 && obj.sup <= 0;
 end
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

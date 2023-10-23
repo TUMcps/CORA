@@ -37,13 +37,13 @@ function res = compareMatrices(M1,M2,varargin)
 %
 % See also: display
 
-% Author:       Mark Wetzlinger
-% Written:      13-November-2022
-% Last update:  22-November-2022 (MW, add subset variant)
-%               08-May-2023 (TL, ordered)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       13-November-2022
+% Last update:   22-November-2022 (MW, add subset variant)
+%                08-May-2023 (TL, ordered)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % initialize result
 res = true;
@@ -113,4 +113,4 @@ elseif strcmp(type,'subset')
     res = true;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

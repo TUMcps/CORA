@@ -2,7 +2,7 @@ function Rfirst = coreReach(obj,Rinit,options)
 % coreReach - computes the reachable continuous set for the next time step
 %    without considering uncertain inputs
 %
-% Syntax:  
+% Syntax:
 %    Rfirst = coreReach(obj,Rinit,options)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function Rfirst = coreReach(obj,Rinit,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      26-August-2011 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-August-2011 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %first time step homogeneous solution
 Rfirst = obj.mappingMatrixSet.zono*Rinit + obj.mappingMatrixSet.int*Rinit + obj.Rtrans;
@@ -63,4 +63,4 @@ Rfirst = obj.mappingMatrixSet.zono*Rinit + obj.mappingMatrixSet.int*Rinit + obj.
 % Rfirst = Rzono + obj.mappingMatrixSet.int*Rred{end} + obj.Rtrans;
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

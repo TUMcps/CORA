@@ -1,7 +1,7 @@
 function E = generateRandom(varargin)
 % generateRandom - Generates a random ellipsoid
 %
-% Syntax:  
+% Syntax:
 %    E = ellipsoid.generateRandom()
 %    E = ellipsoid.generateRandom('Dimension',n)
 %    E = ellipsoid.generateRandom('Center',c)
@@ -25,14 +25,15 @@ function E = generateRandom(varargin)
 %
 % See also: -
 
-% Author:       Victor Gassmann, Matthias Althoff
-% Written:      13-March-2019
-% Last update:  02-Sep-2019 (rename generate -> generateRandom)
-%               19-March-2021 (complete rewrite)
-%               30-July-2021 (removed "makedist" (to remove toolbox dep.))
-%               19-May-2022 (MW, name-value pair syntax)
-% Last revision:---
-%------------- BEGIN CODE --------------
+% Authors:       Victor Gassmann, Matthias Althoff
+% Written:       13-March-2019
+% Last update:   02-September-2019 (rename generate -> generateRandom)
+%                19-March-2021 (complete rewrite)
+%                30-July-2021 (removed "makedist" (to remove toolbox dep.))
+%                19-May-2022 (MW, name-value pair syntax)
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -108,4 +109,4 @@ Q = 1/2*(Q+Q');
 % instantiate ellipsoid
 E = ellipsoid(Q,q);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = testLong_polyZonotope_cubMap
 % testLong_polyZonotope_cubMap - unit test function for the cubic 
 %    multiplication of polynomial zonotopes with a tensor
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polyZonotope_cubMap
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_polyZonotope_cubMap
 %
 % See also: -
 
-% Author:       Niklas Kochdumper
-% Written:      17-August-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       17-August-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % TEST zonotope (cubic multiplication)
 
@@ -64,9 +64,9 @@ for i = 1:3
     % create random zonotope
     c = rand(2,1)-0.5*ones(2,1);
     G = rand(2,8)-0.5*ones(2,8);
-    Grest = rand(2,3)-0.5*ones(2,3);
-    expMat = [eye(3), round(rand(3,5)*10)];
-    pZ = polyZonotope(c,G,Grest,expMat);
+    GI = rand(2,3)-0.5*ones(2,3);
+    E = [eye(3), round(rand(3,5)*10)];
+    pZ = polyZonotope(c,G,GI,E);
 
     % create random third-order tensor
     T{1,1} = rand(2)-0.5*ones(2);
@@ -157,9 +157,9 @@ for i = 1:3
     for j = 1:3
         c = rand(2,1)-0.5*ones(2,1);
         G = rand(2,j+1+5)-0.5*ones(2,j+1+5);
-        Grest = rand(2,j+1)-0.5*ones(2,j+1);
-        expMat = [eye(j+1), round(rand(j+1,5)*10)];
-        pZ{j} = polyZonotope(c,G,Grest,expMat);
+        GI = rand(2,j+1)-0.5*ones(2,j+1);
+        E = [eye(j+1), round(rand(j+1,5)*10)];
+        pZ{j} = polyZonotope(c,G,GI,E);
     end
 
     % create random third-order tensor
@@ -206,4 +206,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

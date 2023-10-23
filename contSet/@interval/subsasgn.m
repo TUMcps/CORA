@@ -2,7 +2,7 @@ function I = subsasgn(I,S,val)
 % subsasgn - Overloads the operator that writes elements, e.g., I(1,2)=val,
 %    where the element of the first row and second column is referred to.
 %
-% Syntax:  
+% Syntax:
 %    I = subsasgn(I,S,val)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function I = subsasgn(I,S,val)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      26-June-2015 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-June-2015 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %check if value is an interval
 if ~isa(val,'interval')
@@ -67,4 +67,4 @@ if strcmp(S.type,'()')
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

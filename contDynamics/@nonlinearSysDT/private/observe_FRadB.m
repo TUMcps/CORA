@@ -3,7 +3,7 @@ function [R,tcomp] = observe_FRadB(obj,options)
 % from [1]; the approach is extended here for nonlinear systems.
 %
 %
-% Syntax:  
+% Syntax:
 %    [R,tcomp] = observe_FRadB(obj,options)
 %
 % Inputs:
@@ -28,15 +28,15 @@ function [R,tcomp] = observe_FRadB(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       27-Mar-2021
+% Authors:       Matthias Althoff
+% Written:       27-March-2021
 % Last update:   ---
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set intersection procedure
+
 options.intersectionType = 2;
 options.intersectionTechnique.method = 'wang-FRad'; % type
 options.intersectionTechnique.C = obj.C; % measurement matrix
@@ -50,4 +50,4 @@ tcomp = toc;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

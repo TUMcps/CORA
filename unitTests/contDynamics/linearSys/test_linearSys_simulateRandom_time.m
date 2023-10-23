@@ -2,7 +2,7 @@ function res = test_linearSys_simulateRandom_time
 % test_linearSys_simulateRandom_time - unit test for random simulation
 %    specifically checking whether start/end time and steps are correct
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_simulateRandom_time
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_linearSys_simulateRandom_time
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      05-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = [];
 
@@ -76,4 +76,4 @@ res(end+1,1) = all(arrayfun(@(z) isscalar(z.loc) && z.loc(1) == 0,simRes,'Unifor
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

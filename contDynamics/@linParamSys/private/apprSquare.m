@@ -1,7 +1,7 @@
 function Asquare = apprSquare(A)
 % apprSquare - computes the over-approximate square of an uncertain matrix 
 %
-% Syntax:  
+% Syntax:
 %    Asquare = apprSquare(A)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function Asquare = apprSquare(A)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      04-January-2009 
-% Last update:  13-September-2016
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-January-2009 
+% Last update:   13-September-2016
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %number of uncertain parameters
 nrOfParams=length(A)-1;
@@ -79,4 +79,4 @@ Asquare3=A{1}^2+A{1}*(Aint-A{1})+(Aint-A{1})*A{1}+Asum1+Asum2;
 %compute intersection to use tightest over-approximation of both routines
 Asquare=intersection(Asquare,Asquare3);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

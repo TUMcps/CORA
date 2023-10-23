@@ -2,7 +2,7 @@ function Zres = tensorMultiplication(Z,M,options)
 % tensorMultiplication - computes \{M_{ijk...l}*x_j*x_k*...*x_l|x \in Z\}
 %    when the center of Z is the origin
 %
-% Syntax:  
+% Syntax:
 %    Zres = tensorMultiplication(Z,M)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function Zres = tensorMultiplication(Z,M,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      10-October-2011
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       10-October-2011
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % retrieve dimension
 n = dim(Z);
@@ -57,9 +57,9 @@ if norm(c)==0
         end
         %do tensor multiplication
         if tensorOrder==2
-            tildeH = generatorMultiplication_2d(M,genComb);
+            tildeH = aux_generatorMultiplication_2d(M,genComb);
         elseif tensorOrder==3
-            tildeH = generatorMultiplication_3d(M,genComb);
+            tildeH = aux_generatorMultiplication_3d(M,genComb);
         end
         
         %add result to H
@@ -77,9 +77,9 @@ Zres = zonotope(zeros(n,1), H);
 end
 
 
-% Auxiliary functions
+% Auxiliary functions -----------------------------------------------------
 
-function res = generatorMultiplication_2d(M,genComb)
+function res = aux_generatorMultiplication_2d(M,genComb)
 
 %obtain data
 n = length(M);
@@ -96,7 +96,7 @@ end
 
 end
 
-function res = generatorMultiplication_3d(M,genComb)
+function res = aux_generatorMultiplication_3d(M,genComb)
 
 %obtain data
 n = length(M);
@@ -116,4 +116,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

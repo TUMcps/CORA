@@ -1,7 +1,7 @@
 function c = center(cPZ)
 % center - returns the starting point of a constrained polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    c = center(cPZ)
 %
 % Inputs:
@@ -13,11 +13,11 @@ function c = center(cPZ)
 % Example:
 %    A = 1/8 * [-10 2 2 3 3];
 %    b = -3/8;
-%    expMat_ = [1 0 1 2 0; 0 1 1 0 2; 0 0 0 0 0];
+%    EC = [1 0 1 2 0; 0 1 1 0 2; 0 0 0 0 0];
 %    c = [0;0];
 %    G = [1 0 1 -1/4;0 1 -1 1/4];
-%    expMat = [1 0 2 0;0 1 1 0; 0 0 0 1];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    E = [1 0 2 0;0 1 1 0; 0 0 0 1];
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 %    c = center(cPZ)
 %
 % Other m-files required: none
@@ -26,13 +26,13 @@ function c = center(cPZ)
 %
 % See also: zonotope/center, polyZonotope/center
 
-% Author:       Niklas Kochdumper
-% Written:      14-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       14-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
                      
 c = cPZ.c;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

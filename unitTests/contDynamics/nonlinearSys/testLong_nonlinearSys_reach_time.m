@@ -6,7 +6,7 @@ function res = testLong_nonlinearSys_reach_time
 % It is checked whether the final reachable set encloses the end points of
 % the simulated trajectories
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_nonlinearSys_reach_time
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = testLong_nonlinearSys_reach_time
 % Outputs:
 %    res - true/false
 
-% Author:       Niklas Kochdumper
-% Written:      23-March-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       23-March-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Parameters --------------------------------------------------------------
@@ -91,4 +91,4 @@ end
 %     counter = counter + 2;
 % end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

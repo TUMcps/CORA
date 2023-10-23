@@ -1,7 +1,7 @@
 function han = plot(hs,varargin)
 % plot - plots a projection of a halfspace
 %
-% Syntax:  
+% Syntax:
 %    han = plot(hs)
 %    han = plot(hs,dims)
 %    han = plot(hs,dims,type)
@@ -27,23 +27,23 @@ function han = plot(hs,varargin)
 %
 % See also: conHyperplane/plot
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      23-August-2013
-% Last update:  19-November-2019 (NK, plot area instead of line)
-%               25-May-2022 (TL: 1D Plotting)
-%               05-April-2023 (TL: clean up using plotPolygon)
-%               26-July-2023 (TL: getUnboundedAxisLimits)
-% Last revision:12-July-2023 (TL, restructure)
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       23-August-2013
+% Last update:   19-November-2019 (NK, plot area instead of line)
+%                25-May-2022 (TL, 1D Plotting)
+%                05-April-2023 (TL, clean up using plotPolygon)
+%                26-July-2023 (TL, getUnboundedAxisLimits)
+% Last revision: 12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input arguments
 [hs,dims,NVpairs] = aux_parseInput(hs,varargin{:});
 
-% 2. preprocess (and convert to mptPolytope)
+% 2. preprocess (and convert to polytope)
 [P,dims] = aux_preprocess(hs,dims);
 
-% 3. plot mptPolytope
+% 3. plot polytope
 han = plot(P,dims,NVpairs{:});
 
 % 4. clear han
@@ -52,6 +52,7 @@ if nargout == 0
 end
 
 end
+
 
 % Auxiliary functions -----------------------------------------------------
 
@@ -83,7 +84,7 @@ function [P,dims] = aux_preprocess(hs,dims)
     % get limits of current plot
     [xLim,yLim,zLim] = getUnboundedAxisLimits();
     
-    % convert to mptPolytope
+    % convert to polytope
     % projection with other dimensions = 0
     % and intersection with currently visible axis
     if length(dims) == 1
@@ -96,7 +97,7 @@ function [P,dims] = aux_preprocess(hs,dims)
         C = [hs.c(dims)';eye(3);-eye(3)];
         d = [hs.d;xLim(2);yLim(2);zLim(2);-xLim(1);-yLim(1);-zLim(1)];
     end
-    P = mptPolytope(C,d);
+    P = polytope(C,d);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

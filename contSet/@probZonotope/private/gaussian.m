@@ -1,7 +1,7 @@
 function f=gaussian(x,Sigma)
 % gaussian - computes the values of a Gaussian (normal) distribution
 %
-% Syntax:  
+% Syntax:
 %    f=gaussian(x,Sigma)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function f=gaussian(x,Sigma)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      10-October-2007
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       10-October-2007
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get dimension
 d=length(Sigma);
@@ -38,4 +38,4 @@ else
     f=1/((2*pi)^(d/2)*det(Sigma)^(1/2))*exp(-1/2*x'*inv(Sigma)*x);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

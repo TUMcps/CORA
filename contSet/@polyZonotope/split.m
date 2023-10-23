@@ -2,7 +2,7 @@ function [pZsplit] = split(pZ,varargin)
 % split - splits a polynomial zonotope into two or more polynomial
 %    zonotopes that jointly enclose that polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    [pZsplit] = split(pZ)
 %    [pZsplit] = split(pZ, gen)
 %
@@ -41,12 +41,12 @@ function [pZsplit] = split(pZ,varargin)
 %
 % See also: splitLongestGen, splitDepFactor, zonotope/split
 
-% Author:       Niklas Kochdumper
-% Written:      28-June-2018
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       28-June-2018
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % calculate a parallelotope that over-approximates the polynomial zonotope
 zono = zonotope(pZ);
@@ -61,22 +61,23 @@ if nargin == 1
     pZsplit = cell(n,1);    
     
     for iDim = 1:n
-        pZsplit{iDim} = splitOneDim(P,iDim); 
+        pZsplit{iDim} = aux_splitOneDim(P,iDim); 
     end
     
 % Case 2: split at the specified generator
 elseif nargin == 2
     
     gen = varargin{1};
-    pZsplit = splitOneDim(P,gen);
+    pZsplit = aux_splitOneDim(P,gen);
     
 end
 
 end
 
+
 % Auxiliary functions -----------------------------------------------------
 
-function Zsplit = splitOneDim(Z,splitDim)
+function Zsplit = aux_splitOneDim(Z,splitDim)
 
     % center and generator matrix
     c = center(Z);
@@ -96,4 +97,4 @@ function Zsplit = splitOneDim(Z,splitDim)
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

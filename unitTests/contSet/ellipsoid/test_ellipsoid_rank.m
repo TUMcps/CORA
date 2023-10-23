@@ -1,7 +1,7 @@
 function res = test_ellipsoid_rank
 % test_ellipsoid_rank - unit test function of rank
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_rank
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_rank
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty case: dim = 0
 res = true;
@@ -44,4 +44,4 @@ for i=1:length(E_c)
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

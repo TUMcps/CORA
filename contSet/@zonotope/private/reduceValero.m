@@ -22,12 +22,13 @@ function Zred = reduceValero(Z,order)
 %   [1]  C.E. Valero et al. "On minimal volume zonotope order reduction",
 %        Automatica 2021 (in revision)
 
-% Author:       Carlos Valero
-% Written:      04-October-2021
-% Last update:  ---
+% Authors:       Carlos Valero
+% Written:       04-October-2021
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 T=Z.generators;
 center=Z.center;
 [n,m]=size(T);
@@ -82,4 +83,4 @@ Tn=[alpha'.*Tr T];
 Zred=zonotope([center Tn]);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

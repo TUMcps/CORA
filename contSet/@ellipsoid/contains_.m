@@ -1,7 +1,7 @@
 function res = contains_(E,S,type,varargin)
 % contains_ - determines if an ellipsoid contains a set or a point
 %
-% Syntax:  
+% Syntax:
 %    res = contains_(E,S)
 %    res = contains_(E,S,type)
 %
@@ -35,20 +35,20 @@ function res = contains_(E,S,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: contSet/contains
 
-% Author:       Victor Gassmann, Niklas Kochdumper, Adrian Kulmburg
-% Written:      15-October-2019 
-% Last update:  21-November-2019 (NK, extend to other sets)
-%               09-March-2021 (included tolerance for q comparison)
-%               17-March-2021 (error handling)
-%               06-July-2021 (AK, merged containsPoint to in)
-%               04-July-2022 (VG: handle class array cases)
-%               25-November-2022 (MW, rename 'contains')
-%               25-April-2023 (VG, add method for capsule)
-% Last revision:27-March-2023 (MW, rename contains_)
+% Authors:       Victor Gassmann, Niklas Kochdumper, Adrian Kulmburg
+% Written:       15-October-2019 
+% Last update:   21-November-2019 (NK, extend to other sets)
+%                09-March-2021 (included tolerance for q comparison)
+%                17-March-2021 (error handling)
+%                06-July-2021 (AK, merged containsPoint to in)
+%                04-July-2022 (VG, handle class array cases)
+%                25-November-2022 (MW, rename 'contains')
+%                25-April-2023 (VG, add method for capsule)
+% Last revision: 27-March-2023 (MW, rename contains_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % containment check
 if isnumeric(S)
@@ -90,7 +90,7 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [res,val] = aux_containsPoint(E,Y)
 % gives an array of boolean values indicating whether points Y are
@@ -162,4 +162,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

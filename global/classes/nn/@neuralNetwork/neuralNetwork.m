@@ -1,4 +1,4 @@
-classdef neuralNetwork
+classdef neuralNetwork < handle
 % neuralNetwork - class that stores layer-based neural networks
 %
 % Syntax:
@@ -21,15 +21,16 @@ classdef neuralNetwork
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: NNLayer
+% See also: nnLayer
 
-% Author:       Tobias Ladner
-% Written:      28-March-2022
-% Last update:  30-March-2022
-%               23-November-2022 (polish)
-% Last revision:10-August-2022 (renamed)
+% Authors:       Tobias Ladner
+% Written:       28-March-2022
+% Last update:   30-March-2022
+%                23-November-2022 (polish)
+%                17-January-2023 (try to set input size)
+% Last revision: 10-August-2022 (renamed)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties
     layers = []
@@ -41,8 +42,10 @@ methods
     % constructor
     function obj = neuralNetwork(layers)
         % check inputs
-        if nargin ~= 1
-            throw(CORAerror('CORA:notEnoughInputArgs', 1));
+        if nargin < 1
+            layers = {};
+        elseif nargin > 1
+            throw(CORAerror('CORA:tooManyInputArgs', 1));
         end
 
         if ~(isa(layers, 'cell') ...
@@ -52,40 +55,85 @@ methods
         end
         obj.layers = reshape(layers, [], 1);
 
-        for i = 1:size(obj.layers, 1)
+        % simple neurons_in and _out computation
+        for i = 1:length(obj.layers)
             [nin, ~] = obj.layers{i}.getNumNeurons();
             if ~isempty(nin)
                 obj.neurons_in = nin;
                 break;
             end
         end
-
-        for i = size(obj.layers, 1):-1:1
+        for i = length(obj.layers):-1:1
             [~, nout] = obj.layers{i}.getNumNeurons();
             if ~isempty(nout)
                 obj.neurons_out = nout;
                 break;
             end
         end
+
+        try            
+            % to automatically determine input sizes of all layers
+            obj.setInputSize();
+        end
     end
 
-    % methods
-    r = evaluate(obj, input, evParams)
+    % evaluate ------------------------------------------------------------
+
+    r = evaluate(obj, input, varargin)
+    S = calcSensitivity(obj, x, varargin)
+    
+    % refine --------------------------------------------------------------
+    
+    refine(obj, max_order, type, method, x, verbose, force_bounds, gamma)
+    refinable_layers = getRefinableLayers(obj)
+
+    % reset ---------------------------------------------------------------
+
+    reset(obj)
+    resetApproxOrder(obj)
+    resetBounds(obj)
+
+    % verify --------------------------------------------------------------
+    
+    [res, x] = verify(nn, X0, spec, varargin)
+
+    % Auxiliary functions -------------------------------------------------
+
+    pattern = getOrderPattern(obj)
+    numNeurons = getNumNeurons(obj)
+    nn_normal = getNormalForm(obj)
+
+    function l = length(obj)
+        % returns the number of layers
+        l = length(obj.layers);
+    end
 end
+
+% Static functions --------------------------------------------------------
 
 methods (Static)
     obj = generateRandom(varargin)
 
-    % conversions methods
+    % read & convert ------------------------------------------------------
+    
     obj = readNetwork(file_path)
-    obj = readONNXNetwork(file_path, verbose, inputDataFormats, outputDataFormats)
+    obj = readONNXNetwork(file_path, varargin)
     obj = readNNetNetwork(file_path)
     obj = readYMLNetwork(file_path)
     obj = readSherlockNetwork(file_path)
+    obj = readGNNnetwork(file_path, varargin)
+    
+    % convert
     obj = convertDLToolboxNetwork(dltoolbox_layers, verbose)
-
-    obj = getFromOldNeuralNetwork(nn_old)
-end
+    obj = getFromCellArray(W, b, actFun)
 end
 
-%------------- END OF CODE --------------
+% internal functions ------------------------------------------------------
+
+methods (Access=protected)
+    propagateBounds(obj, i, evParams)
+end
+
+end
+
+% ------------------------------ END OF CODE ------------------------------

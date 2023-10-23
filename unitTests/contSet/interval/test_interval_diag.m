@@ -1,7 +1,7 @@
 function res = test_interval_diag
 % test_interval_diag - unit test function of interval/diag
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_diag
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_diag
 %
 % See also: interval/diag
 
-% Author:       Tobias Ladner
-% Written:      18-July-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       18-July-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -48,4 +48,4 @@ resvec(end+1) = isequal(diag(D,1),interval([0;0]));
 % combine results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = test_intervalMatrix_dim
 % test_intervalMatrix_dim - unit test function for dimension
 % 
 % 
-% Syntax:  
+% Syntax:
 %    res = test_intervalMatrix_dim
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_intervalMatrix_dim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty interval matrix
 intMat = intervalMatrix();
@@ -50,4 +50,4 @@ res(end+1,1) = all(dim(intMat) == [2,3]);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

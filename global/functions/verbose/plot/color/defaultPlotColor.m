@@ -2,7 +2,7 @@ function color = defaultPlotColor()
 % defaultPlotColor - returns next color according to the colororder 
 %     of the current axis
 %
-% Syntax:  
+% Syntax:
 %    color = defaultPlotColor()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function color = defaultPlotColor()
 %
 % See also: colororder, CORAcolor, useCORAcolors
 
-% Author:       Tobias Ladner
-% Written:      24-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       24-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % read current color order
 ax = gca;
@@ -37,4 +37,4 @@ end
 % select color
 color = colorOrder(colorIndex, :);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = testLong_nonlinearSysDT_reach_output
 % testLong_nonlinearSysDT_reach_output - tests if output equation works
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_nonlinearSysDT_reach_output
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_nonlinearSysDT_reach_output
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume satisfaction
 res = true;
@@ -60,4 +60,4 @@ reach(sys2,params,options);
 options.tensorOrderOutput = 3;
 reach(sys3,params,options);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

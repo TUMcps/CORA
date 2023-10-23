@@ -1,7 +1,7 @@
 function res = test_interval_subsref
 % test_interval_subsref - unit test function of subscripted reference
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_subsref
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_interval_subsref
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      19-January-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       19-January-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 res = true;
@@ -57,4 +57,4 @@ if abs( infimum(c(6,1)) - 5.0 ) > tol || abs( supremum(c(6,1)) - 8.0 ) > tol
 	return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

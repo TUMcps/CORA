@@ -1,4 +1,4 @@
-function flow_cora2spaceex(Obj, location, docNode)
+function flow_cora2spaceex(obj, location, docNode)
 % flow_cora2spaceex - 
 %
 % Syntax:
@@ -21,27 +21,27 @@ function flow_cora2spaceex(Obj, location, docNode)
 %
 % See also: none
 
-% Author:        Farah Atour
+% Authors:       Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-x = sym('x',[Obj.dim,1]);
-u = sym('u',[Obj.nrOfInputs,1]);
+x = sym('x',[obj.dim,1]);
+u = sym('u',[obj.nrOfInputs,1]);
 
 % ---------------------------------------------------------------------
 %   Linear differential equation
 %   eq: x' = A x + B u + c
 
-if isa(Obj,'linearSys')
+if isa(obj,'linearSys')
     
-    A   = Obj.A;
-    B   = Obj.B;
+    A   = obj.A;
+    B   = obj.B;
     
-    if ~isempty(Obj.c)
-       eq = A*x + B*u + Obj.c; 
+    if ~isempty(obj.c)
+       eq = A*x + B*u + obj.c; 
     else
        eq = A*x + B*u; 
     end
@@ -50,20 +50,20 @@ end
 % ---------------------------------------------------------------------
 %   Nonlinear differential equation
 
-if isa(Obj,'nonlinearSys')
+if isa(obj,'nonlinearSys')
     
-    eq = Obj.mFile(x,u);
+    eq = obj.mFile(x,u);
     
 end
 
 % ---------------------------------------------------------------------
 % convert the equation to a character sequence
 eqs ='';
-for idx = 1:Obj.dim
+for idx = 1:obj.dim
     x = sprintf('x%d''', idx); % first derivative of x_n
     eq_c = char(eq(idx));
     eq_c = [x, ' == ', eq_c];
-    if idx ~= Obj.dim;  eq_c = [eq_c,newline,' & ']; end
+    if idx ~= obj.dim;  eq_c = [eq_c,newline,' & ']; end
     eqs = [eqs,eq_c];
 end
 
@@ -75,4 +75,4 @@ location.appendChild(flow);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

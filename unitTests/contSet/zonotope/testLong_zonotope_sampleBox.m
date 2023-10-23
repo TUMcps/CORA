@@ -1,7 +1,7 @@
 function res = testLong_zonotope_sampleBox
 % testLong_zonotope_sampleBox - unit test function of sampleBox
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_sampleBox
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_zonotope_sampleBox
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      16-October-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       16-October-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -49,4 +49,4 @@ for i=2:5:30
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,params,options)
 % reach_adaptive - computes the reachable continuous set
 %
-% Syntax:  
+% Syntax:
 %    [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,params,options)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,params,option
 %
 % See also: none
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       27-May-2020
 % Last update:   25-February-2021 (merge to master)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % initialize cell-arrays that store the reachable set
 timeInt.set = {};
@@ -92,12 +92,12 @@ while options.tFinal - options.t > 1e-12 && ~abortAnalysis
     Rnext.tp = reduce(Rnext.tp,'adaptive',options.redFactor);
     % try: additional reduction for poly
     if isa(Rnext.tp,'polyZonotope')
-        Rnext.tp = reduceOnlyDep(Rnext.tp,options.polyZono.maxDepGenOrder);
+        Rnext.tp = aux_reduceOnlyDep(Rnext.tp,options.polyZono.maxDepGenOrder);
     end
     % track zonotope orders
     if isa(Rnext.tp,'polyZonotope')
         options.zonordersRtp(options.i,1) = size(Rnext.tp.G,2) / obj.dim;
-        options.zonordersRtp(options.i,2) = size(Rnext.tp.Grest,2) / obj.dim;
+        options.zonordersRtp(options.i,2) = size(Rnext.tp.GI,2) / obj.dim;
     else
         options.zonordersRtp(options.i,1) = size(generators(Rnext.tp),2) / obj.dim;
     end
@@ -123,7 +123,7 @@ while options.tFinal - options.t > 1e-12 && ~abortAnalysis
     options.R = Rnext.tp;
     
     % check for timeStep -> 0
-    abortAnalysis = checkForAbortion(tVec,options.t,options.tFinal);
+    abortAnalysis = aux_checkForAbortion(tVec,options.t,options.tFinal);
 end
 
 % log information
@@ -132,7 +132,9 @@ verboseLog(options.i,options.t,options);
 end
 
 
-function abortAnalysis = checkForAbortion(tVec,currt,tFinal)
+% Auxiliary functions -----------------------------------------------------
+
+function abortAnalysis = aux_checkForAbortion(tVec,currt,tFinal)
 % check last N steps of time step vector: if those time steps are too small,
 % we expect this to continue so that the analysis will not terminate
 
@@ -157,7 +159,7 @@ end
 
 end
 
-function Rnew = reduceOnlyDep(R,order)
+function Rnew = aux_reduceOnlyDep(R,order)
 
 [n, Gsize] = size(R.G);
 if Gsize / n < order + 1
@@ -174,26 +176,26 @@ ind = ind(order*n+1:end);
 
 % construct a zonotope from the generators that are removed
 Gred = R.G(:,ind);
-Ered = R.expMat(:,ind);
-pZtemp = polyZonotope(zeros(n,1),Gred,[],Ered);
+Ered = R.E(:,ind);
+pZred = polyZonotope(zeros(n,1),Gred,[],Ered);
 
 % zonotope over-approximation
-zono = zonotope(pZtemp);
-zono = zonotope(center(zono),diag(sum(abs(generators(zono)),2)));
+zono = zonotope(pZred);
+zono = zonotope(zono.c,diag(sum(abs(zono.G),2)));
 
 % remove the generators that got reduced from the generator matrices
 Grem = R.G;
 Grem(:,ind) = [];
-expMatrem = R.expMat;
-expMatrem(:,ind) = [];
+Erem = R.E;
+Erem(:,ind) = [];
 
 % add the reduced generators as new independent generators 
-newc = R.c + center(zono);
-Grestnew = [R.Grest, generators(zono)];
+newc = R.c + zono.c;
+GInew = [R.GI, zono.G];
 
 % instantiate new R
-Rnew = polyZonotope(newc,Grem,Grestnew,expMatrem);
+Rnew = polyZonotope(newc,Grem,GInew,Erem);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

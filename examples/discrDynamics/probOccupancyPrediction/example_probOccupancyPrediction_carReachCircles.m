@@ -1,7 +1,7 @@
 function example_probOccupancyPrediction_carReachCircles()
 % example_probOccupancyPrediction_carReachCircles - ???
 %
-% Syntax:  
+% Syntax:
 %    example_probOccupancyPrediction_carReachCircles()
 %
 % Inputs:
@@ -13,12 +13,12 @@ function example_probOccupancyPrediction_carReachCircles()
 % Example:
 %    carReachCircles();
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       19-August-2009
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %unknown plan
 
@@ -131,4 +131,4 @@ axis equal
 % 
 % axis equal
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

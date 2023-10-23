@@ -1,7 +1,7 @@
 function display(matZ)
 % display - Displays the center and generators of a matrix zonotope
 %
-% Syntax:  
+% Syntax:
 %    display(matZ)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function display(matZ)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      18-June-2010
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-June-2010
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isempty(matZ)
     
@@ -53,4 +53,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

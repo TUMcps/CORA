@@ -7,7 +7,7 @@ function res = testMosek_linearSysDT_observe_07_PRad_E()
 % vehicle model against an alternative implementation of the PRad-E method
 % published in [1].
 %
-% Syntax:  
+% Syntax:
 %    res = testMosek_linearSysDT_observe_07_PRad_E
 %
 % Inputs:
@@ -22,12 +22,12 @@ function res = testMosek_linearSysDT_observe_07_PRad_E()
 %        performance. In Proc. of the 36th IEEE Chinese Control
 %        Conference, pages 7230–7235, 2017.
 
-% Author:       Matthias Althoff
-% Written:      25-Feb-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-February-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %% enable access to private function "observe_gain_Hinf"
@@ -97,4 +97,4 @@ addpath(genpath(path));
 % end
 
         
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

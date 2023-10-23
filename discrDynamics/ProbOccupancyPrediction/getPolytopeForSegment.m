@@ -34,5 +34,5 @@ Prt = [xEnd; yEnd] + (devNumber - (0.5 * nrOfDevSegments)) * transLatEnd;
 V = [Plb, Prb, Plt, Prt];
 
 %Generate polytope
-P = mptPolytope(V.');
+P = polytope(V.');
 end

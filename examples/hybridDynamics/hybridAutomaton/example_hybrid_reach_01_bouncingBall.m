@@ -3,7 +3,7 @@ function res = example_hybrid_reach_01_bouncingBall
 %    Checks the solution of the hybrid system class for the classical
 %    bouncing ball example.
 %
-% Syntax:  
+% Syntax:
 %    res = example_hybrid_reach_01_bouncingBall
 %
 % Inputs:
@@ -12,12 +12,12 @@ function res = example_hybrid_reach_01_bouncingBall
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      27-July-2016
-% Last update:  23-December-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       27-July-2016
+% Last update:   23-December-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Parameter ---------------------------------------------------------------
@@ -52,7 +52,7 @@ linSys = linearSys('linearSys',A,B,c);
 alpha = -0.75;                  % rebound factor
 
 % invariant set 
-inv = mptPolytope([-1,0],0);
+inv = polytope([-1,0],0);
 
 % guard sets
 guard = conHyperplane([1,0],0,[0,1],0);
@@ -84,24 +84,21 @@ disp(['Computation time for reachable set: ',num2str(tComp),' s']);
 simRes = simulateRandom(HA,params); 
 
 
-
 % Visualization -----------------------------------------------------------
 
 figure; hold on;
+useCORAcolors("CORA:contDynamics")
 
 % plot reachable set
-plot(R,[1,2]);
+plotOverTime(R,[1],'DisplayName','Reachable set');
 
 % plot initial set
-plot(params.R0,[1,2],'FaceColor','w','EdgeColor','k');
+plotOverTime(R(1).R0,[1],'HandleVisibility','off');
 
 % plot simulated trajectories
-plot(simRes,[1,2]);
-
-axis([0,1.2,-6,4]);
-
+plotOverTime(simRes,[1],'DisplayName','Simulations');
 
 res = true;
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

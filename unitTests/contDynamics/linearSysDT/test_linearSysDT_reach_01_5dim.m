@@ -6,7 +6,7 @@ function res = test_linearSysDT_reach_01_5dim()
 % It is checked whether the enclosing interval of the final reachable set 
 % is close to an interval provided by a previous solution that has been saved
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSysDT_reach_01_5dim()
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = test_linearSysDT_reach_01_5dim()
 % Outputs:
 %    res - true/false 
 
-% Author:       Matthias Althoff
-% Written:      24-March-2020
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       24-March-2020
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % System Dynamics ---------------------------------------------------------
@@ -94,4 +94,4 @@ res_zonoBundles = isequal(IH,IH_saved,1e-8);
 %result of different set representations
 res = res_zono && res_zonoBundles;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

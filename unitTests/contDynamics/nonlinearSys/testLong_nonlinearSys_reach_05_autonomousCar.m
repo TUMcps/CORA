@@ -5,7 +5,7 @@ function res = testLong_nonlinearSys_reach_05_autonomousCar()
 %    trajectory; It is checked whether the reachable set is enclosed
 %    in the initial set after a certain amount of time.
 %
-% Syntax:   
+% Syntax:
 %    res = testLong_nonlinearSys_reach_05_autonomousCar()
 %
 % Inputs:
@@ -14,13 +14,13 @@ function res = testLong_nonlinearSys_reach_05_autonomousCar()
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      10-September-2015
-% Last update:  12-August-2016
-%               23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       10-September-2015
+% Last update:   12-August-2016
+%                23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -157,5 +157,4 @@ res = isequal(IH,IH_saved,1e-8);
 %     ylabel(['x_{',num2str(projectedDimensions(2)),'}']);
 % end
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

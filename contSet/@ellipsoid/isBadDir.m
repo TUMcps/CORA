@@ -2,7 +2,7 @@ function res = isBadDir(E1,E2,L)
 % isBadDir - checks if specified directions are bad directions for
 %               Minkowski difference of E1 and E2
 %
-% Syntax:  
+% Syntax:
 %    res = isBadDir(E1,E2,L)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function res = isBadDir(E1,E2,L)
 %
 % See also: none
 
-% Author:       Victor Gassmann
-% Written:      13-March-2019
-% Last update:  10-June-2022
-%               04-July-2022
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       13-March-2019
+% Last update:   10-June-2022
+%                04-July-2022
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % input check
 inputArgsCheck({{E1,'att','ellipsoid','scalar'};
@@ -48,4 +48,4 @@ for i=1:size(L,2)
     res(i) = sqrt(l'*E1.Q*l)/sqrt(l'*E2.Q*l) > r+TOL;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

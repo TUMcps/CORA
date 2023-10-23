@@ -22,12 +22,12 @@ function res = example_linear_reach_06_adaptive_electricCircuit
 %
 % See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      22-November-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       22-November-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -123,4 +123,4 @@ end
 % completed successfully
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

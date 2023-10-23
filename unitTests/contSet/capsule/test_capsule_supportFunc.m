@@ -1,7 +1,7 @@
 function res = test_capsule_supportFunc
 % test_capsule_supportFunc - unit test function of supportFunc
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_supportFunc
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_capsule_supportFunc
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      11-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Analytical test: generator aligned on x_1, unit length; unit radius
 res = true;
@@ -40,7 +40,6 @@ dir = [1;-2];
 if ~withinTol(dir'*xC,valC) || ~contains(C,xC)
     res = false;
 end
-
 
 
 % loop over different dimensions
@@ -81,4 +80,4 @@ for n = 2:4:30
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function display(trans)
 % display - Displays a transition object
 %
-% Syntax:  
+% Syntax:
 %    display(trans)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function display(trans)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      20-September-2007
-% Last update:  18-June-2022 (MW, improved formatting, empty cases)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       20-September-2007
+% Last update:   18-June-2022 (MW, improved formatting, empty cases)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 fprintf(newline);
 
@@ -43,7 +43,8 @@ if length(trans) > 1
 else
 
     % display guard set
-    if ~isempty(trans.guard)
+    if (isnumeric(trans.guard) && isempty(trans.guard)) ...
+            || (~isnumeric(trans.guard) && ~representsa_(trans.guard,'emptySet',eps))
         disp("Guard set:");
         display(trans.guard);
     else
@@ -126,4 +127,4 @@ end
 
 fprintf(newline);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

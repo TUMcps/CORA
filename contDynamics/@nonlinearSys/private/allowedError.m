@@ -1,7 +1,7 @@
 function [allErr] = allowedError(obj,linSys,options)
 % allowedError - computes the allowed linearization error
 %
-% Syntax:  
+% Syntax:
 %    [allErr] = allowedError(obj,linSys,options)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function [allErr] = allowedError(obj,linSys,options)
 %
 % See also: 
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       29-October-2007 
 % Last update:   22-January-2008
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %retrieve data
 f0=obj.linError.f0;
@@ -51,4 +51,4 @@ end
 allErr=inverse*A*deltaT*expFactor;
 allErr=abs(allErr);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

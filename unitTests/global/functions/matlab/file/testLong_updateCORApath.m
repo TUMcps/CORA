@@ -1,7 +1,7 @@
 function res = testLong_updateCORApath
 % testLong_updateCORApath - tests updating the CORA path
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_updateCORApath()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_updateCORApath
 %
 % See also: none
 
-% Author:       Tobias Ladner
-% Written:      23-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       23-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -65,4 +65,4 @@ warning(w)
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function Z = box(Z)
 % box - computes an enclosing axis-aligned box; the result is equivalent to
 %    a conversion to intervals but yields a zonotope representation
 %
-% Syntax:  
+% Syntax:
 %    Z = box(Z)
 %
 % Inputs:
@@ -25,17 +25,17 @@ function Z = box(Z)
 %
 % See also: ---
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       09-March-2009
-% Last update:   27-Aug-2019
+% Last update:   27-August-2019
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % determine new generator matrix
-G = diag(sum(abs(generators(Z)),2));
+G = diag(sum(abs(Z.G),2));
 
 % instantiate axis-aligned zonotope
-Z.Z = [center(Z),G];
+Z.G = G;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

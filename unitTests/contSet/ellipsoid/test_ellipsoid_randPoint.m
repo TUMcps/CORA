@@ -1,7 +1,7 @@
 function res = test_ellipsoid_randPoint
 % test_ellipsoid_randPoint - unit test function of randPoint
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_randPoint
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_randPoint
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 load cases.mat E_c
 
@@ -36,7 +36,7 @@ for i=1:length(E_c)
     n = dim(E1);
     N = 5*n;
     
-    if ~withinRange(E1,N) || ~withinRange(Ed1,N) || ~withinRange(E0,N)
+    if ~aux_withinRange(E1,N) || ~aux_withinRange(Ed1,N) || ~aux_withinRange(E0,N)
         res = false;
         break;
     end
@@ -44,8 +44,10 @@ end
 
 end
 
-% Auxiliary function ------------------------------------------------------
-function res = withinRange(E,N)
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_withinRange(E,N)
     % all extreme points need to be between min(radius) and max(radius)
     n = dim(E);
     Y = randPoint(E,N,'extreme');
@@ -55,4 +57,4 @@ function res = withinRange(E,N)
     res = all(contains(IntR,nY));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

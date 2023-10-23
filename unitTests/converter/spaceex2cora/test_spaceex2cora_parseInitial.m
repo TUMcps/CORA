@@ -10,12 +10,12 @@ function pass = test_spaceex2cora_parseInitial()
 % Outputs:
 %    pass - boolean
 
-% Author:       Maximilian Perschl
-% Written:      22-September-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Maximilian Perschl
+% Written:       22-September-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 pass = true;
 
@@ -77,4 +77,4 @@ for i = 1:length(test_case)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

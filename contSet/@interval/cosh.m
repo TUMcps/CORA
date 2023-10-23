@@ -7,7 +7,7 @@ function I = cosh(I)
 % [cosh(x_), cosh(x--)] if (x_ >= 0),
 % [1, max( acosh(x_), acosh(x--)] if (x_ < 0) and (x-- > 0).
 %
-% Syntax:  
+% Syntax:
 %    I = cosh(I)
 %
 % Inputs:
@@ -26,13 +26,13 @@ function I = cosh(I)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      05-February-2016
-% Last update:  21-February-2016 (DG, the matrix case is rewritten)
-%               21-May-2022 (MW, remove new instantiation)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-February-2016
+% Last update:   21-February-2016 (DG, the matrix case is rewritten)
+%                21-May-2022 (MW, remove new instantiation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % scalar case
 if isnumeric(I)
@@ -70,4 +70,4 @@ else
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

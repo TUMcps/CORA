@@ -19,12 +19,12 @@ function completed = example_neuralNet_reach_07_VCAS_middle()
 %       for Continuous and Hybrid Systems Plants."
 %       EPiC Series in Computing 80 (2021): 90-119.
 
-% Author:       Tobias Ladner
-% Written:      02-June-2022
-% Last update:  ---
-% Last revision:20-August-2022 (added verification)
+% Authors:       Tobias Ladner
+% Written:       02-June-2022
+% Last update:   ---
+% Last revision: 20-August-2022 (added verification)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 disp("BENCHMARK: Vertical Collision Avoidance System (VCAS_middle)")
 
@@ -106,7 +106,7 @@ for hdot0 = [-19.5, -22.5, -25.5, -28.5]
 
     % A1 = [0 1 0; 0 -1 0]; b1 = [0.5; 0.5];
     % A2 = [eye(3); -eye(3)]; b2 = ones(6,1);
-    % set = mptPolytope([blkdiag(A1,A2),zeros(8,6)],[b1;b2]);
+    % set = polytope([blkdiag(A1,A2),zeros(8,6)],[b1;b2]);
     unsafeSet = [; ...
         -100, 100; ... % h
         -inf, -inf; ... % h^.
@@ -260,13 +260,14 @@ for hdot0 = [-19.5, -22.5, -25.5, -28.5]
     title(sprintf('$\\dot{h}_0(0) = %.1f$', hdot0), 'interpreter', 'latex')
 
     % plot specification
-    us = plot(specification(unsafeSet), [3, 1]);
+    us = plot(unsafeSet, [3, 1], 'FaceColor', [0.8, 0, 0]);
+    alpha(us, .5)
 
     % plot reachable set
     rs = plot([], []);
     for i = 1:length(R)
         rs = plot(interval([0, 0, -1; 1, 0, 0]*R{i})+interval([0; 0], [1; 0]),...
-            [1,2],'FaceColor',CORAcolor("CORA:reachSet"));
+            [1,2],'FaceColor',[.8, .8, .8],'EdgeColor',[.8, .8, .8]);
     end
 
     for i = 1:length(simRes)
@@ -286,4 +287,4 @@ end
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

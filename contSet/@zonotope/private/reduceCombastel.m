@@ -2,7 +2,7 @@ function [Zred]=reduceCombastel(Z,order)
 % reduceCombastel - Reduce zonotope so that its order stays below a specified
 % limit 
 %
-% Syntax:  
+% Syntax:
 %    [Zred]=reduceCombastel(Z,order)
 %
 % Inputs:
@@ -18,20 +18,20 @@ function [Zred]=reduceCombastel(Z,order)
 %
 % See also: OTHER_FUNCTION_NAME1,  OTHER_FUNCTION_NAME2
 
-% Author:       Matthias Althoff
-% Written:      13-May-2009
-% Last update:  16-March-2019 (vnorm replaced, sort removed)
-%               27-Aug-2019
+% Authors:       Matthias Althoff
+% Written:       13-May-2009
+% Last update:   16-March-2019 (vnorm replaced, sort removed)
+%                27-August-2019
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %initialize Z_red
 Zred=Z;
 
 %extract center and generator matrix
-c = center(Z);
-G = generators(Z);
+c = Z.c;
+G = Z.G;
 
 % delete zero generators
 G = nonzeroFilter(G);
@@ -63,9 +63,10 @@ if length(G(1,:))>dim*order
     Gunred=G(:,indRemain);
 
     %build reduced zonotope
-    Zred.Z=[c,Gunred,Gbox];
+    Zred.c = c;
+    Zred.G = [Gunred,Gbox];
     
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

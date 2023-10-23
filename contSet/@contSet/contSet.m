@@ -1,7 +1,7 @@
 classdef contSet
 % contSet - abstract superclass for continuous sets
 %
-% Syntax:  
+% Syntax:
 %    S = contSet()
 %    S = contSet(S)
 %
@@ -17,14 +17,14 @@ classdef contSet
 %
 % See also: none
 
-% Author:        Matthias Althoff, Mark Wetzlinger
+% Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       02-May-2007 
 % Last update:   04-May-2020 (MW, transition to classdef)
 %                01-June-2022 (MW, add CORAerror)
 %                22-March-2023 (MW, remove deprecated property dimension)
 % Last revision: 16-June-2023 (MW, restructure using standardized workflow)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = protected, GetAccess = public)
     % no properties
@@ -50,9 +50,15 @@ methods
 end
 
 methods (Static = true)
+    S = enclosePoints(varargin) % encloses a point cloud with a set
     S = generateRandom(varargin) % generates a random contSet
+    S = initEmptySet(type) % instantiates an empty set of a contSet class
+end
+
+methods (Access = protected)
+    [empty,res,S_conv] = representsa_emptyObject(S,type)
 end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

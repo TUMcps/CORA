@@ -3,7 +3,7 @@ function Asq = exactSquare(intMat)
 %    to [1]. A more easily understandable implementation can be found in
 %    the unit test 'test_intervalMatrix_exactSquare'.
 %
-% Syntax:  
+% Syntax:
 %    Asq = exactSquare(intMat)
 %
 % Inputs:
@@ -26,12 +26,12 @@ function Asq = exactSquare(intMat)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      04-January-2009 
-% Last update:  02-November-2017
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-January-2009 
+% Last update:   02-November-2017
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %extract intervals
 A = intMat.int;
@@ -48,7 +48,7 @@ E=eye(n); %identity matrix
 for i=1:n
     %i neq j
     %auxiliary value s
-    s=sum(A,i);
+    s=aux_sum(A,i);
     %auxiliary value b
     b=A(i,:); b(i)=0;
     %auxiliary matrix C
@@ -67,8 +67,10 @@ Asq.int = sq;
 
 end
 
-% Auxiliary function ------------------------------------------------------
-function s=sum(A,i)
+
+% Auxiliary functions -----------------------------------------------------
+
+function s=aux_sum(A,i)
 %sum function: s=\sum_{k:k\neq i,k\neq j} a_{ik}a_{kj}
 % for k=1:length(A)
 %     A(k,k)=0;
@@ -84,4 +86,4 @@ s=A(i,:)*A;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

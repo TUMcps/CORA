@@ -21,12 +21,12 @@ function completed = example_hybrid_reach_03_PLLnoSat()
 %        Formal Verification of Phase-Locked Loops Using Reachability Analysis 
 %        and Continuization Communications of the ACM, 2013, 56, 97-104
 
-% Author:       Matthias Althoff
-% Written:      20-January-2010
-% Last update:  26-May-2018
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       20-January-2010
+% Last update:   26-May-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %initial state
 minPhase = -0.5;
@@ -65,7 +65,7 @@ options.Rlock=interval([-100; -100; -100; -1/3600],[100; 100; 100; 1/3600]);
 
 % no saturation
 tic
-R = reachPLL_general_noSat(A, c, params, options);
+R = aux_reachPLL_general_noSat(A, c, params, options);
 tComp_reach = toc;
 
 
@@ -100,7 +100,7 @@ for iSim = 1:samples
         end
     
         %simulate hybrid automaton
-        x_cycle = simulatePLL(HAsim,params,simCycles); 
+        x_cycle = aux_simulatePLL(HAsim,params,simCycles); 
 
         %get simulation results
         simRes{iSim} = x_cycle;
@@ -150,11 +150,10 @@ completed = true;
 end
 
 
-
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 % main function for reachability analysis
-function Rout = reachPLL_general_noSat(A_tmp, c_tmp, params, options)
+function Rout = aux_reachPLL_general_noSat(A_tmp, c_tmp, params, options)
 
 % projection to first four dimensions
 A = A_tmp(1:4, 1:4);
@@ -168,7 +167,7 @@ R{1} = params.R0;
 %compute phase and voltage velocity boundaries
 viInt = interval(0,0.7);
 vpInt = interval(-4,12);
-[vMinPhase,vMaxPhase]=phaseVelBound(A, c, viInt, vpInt);
+[vMinPhase,vMaxPhase]=aux_phaseVelBound(A, c, viInt, vpInt);
 
 %set cycle and delay time
 t_cycle = 1/27;
@@ -178,11 +177,11 @@ t_delay = 50e-6;
 iCycle = 1;
 
 %precompute constant matrices
-Apower = powers(A,30);
+Apower = aux_powers(A,30);
 prev_taylorterms = options.taylorTerms;
 taylorTerms = 30;
-eAtInt_delay = inputExponential(A, Apower, t_delay, taylorTerms);
-Rconst = inputExponential(A, Apower,t_cycle,taylorTerms)*zonotope(c);
+eAtInt_delay = aux_inputExponential(A, Apower, t_delay, taylorTerms);
+Rconst = aux_inputExponential(A, Apower,t_cycle,taylorTerms)*zonotope(c);
 taylorTerms = prev_taylorterms;
 
 notLocked = 1;
@@ -191,7 +190,7 @@ lockingViolation = 1;
 while notLocked
 
     %compute time limits when charge pump is on
-    [t_min,t_max] = timeBound_phase(R{iCycle},vMinPhase,vMaxPhase);
+    [t_min,t_max] = aux_timeBound_phase(R{iCycle},vMinPhase,vMaxPhase);
     
     %determine delta T
     deltaT = t_max - t_min;
@@ -200,22 +199,22 @@ while notLocked
     vInt = interval(vMinPhase,vMaxPhase);
     
     %compute time delay solution
-    eAt_unc = uncertainTimeExponential(A, Apower, deltaT, taylorTerms);
+    eAt_unc = aux_uncertainTimeExponential(A, Apower, deltaT, taylorTerms);
     Rdelay = expm(A*(t_cycle-t_max-t_delay)) * eAt_unc * eAtInt_delay* U_delay;
     
     %compute input matrix for t=[t_min, t_max] 
-    matZinput = inputMatrix(Apower, deltaT, U, vInt, taylorTerms);
+    matZinput = aux_inputMatrix(Apower, deltaT, U, vInt, taylorTerms);
     
     if t_min>0
     
         %compute input solution for t=[0,t_min] 
-        eAtInt_t_min = inputExponential(A, Apower, t_min, taylorTerms);
+        eAtInt_t_min = aux_inputExponential(A, Apower, t_min, taylorTerms);
         Rinput = eAtInt_t_min * (U + c);
 
         %complete solution
         prev_taylorterms = taylorTerms;
         taylorTerms = 30;
-        Rconst_2 = inputExponential(A, Apower,(t_cycle-t_min),taylorTerms)*zonotope(c);
+        Rconst_2 = aux_inputExponential(A, Apower,(t_cycle-t_min),taylorTerms)*zonotope(c);
         taylorTerms = prev_taylorterms;
 
         R_t_min = expm(A*t_min)*R{iCycle} + Rinput;
@@ -273,7 +272,7 @@ end
 
 
 %compute phase velocity boundaries
-function [vMin,vMax]=phaseVelBound(A,c,vpInt,viInt)
+function [vMin,vMax]=aux_phaseVelBound(A,c,vpInt,viInt)
 
 vInt = A(4,:)*[viInt; 0; vpInt; 0] + c(4);
 
@@ -284,7 +283,7 @@ end
 
 
 %compute time intervals for charge pump on and off
-function [t_min,t_max]=timeBound_phase(R,vMin,vMax)
+function [t_min,t_max]=aux_timeBound_phase(R,vMin,vMax)
 
 %obtain range of Phi_v
 Phi_IH = interval([0 0 0 1]*R);
@@ -302,10 +301,10 @@ t_max = PhiMax/vMin;
 end
 
 
-function eAtInt = inputExponential(A,Apower,r,taylorTerms)
+function eAtInt = aux_inputExponential(A,Apower,r,taylorTerms)
 
 %compute E
-E = remainder(A,r,taylorTerms);
+E = aux_remainder(A,r,taylorTerms);
 
 dim = length(Apower{1});
 Asum = r*eye(dim);
@@ -323,10 +322,10 @@ eAtInt = Asum + E*r;
 end
 
 
-function eAt = uncertainTimeExponential(A,Apower,deltaT,taylorTerms)
+function eAt = aux_uncertainTimeExponential(A,Apower,deltaT,taylorTerms)
 
 %compute Apowers
-E = remainder(A,deltaT,taylorTerms);
+E = aux_remainder(A,deltaT,taylorTerms);
 
 %define time interval as matrix zonotope
 for i=1:taylorTerms
@@ -351,7 +350,7 @@ eAt = intervalMatrix(Asum) + E;
 end
 
 
-function Apower = powers(A,taylorTerms)
+function Apower = aux_powers(A,taylorTerms)
 
 %initialize 
 Apower = cell(1,taylorTerms+1);
@@ -365,7 +364,7 @@ end
 
 end
 
-function E = remainder(A,r,taylorTerms)
+function E = aux_remainder(A,r,taylorTerms)
 
 %compute absolute value bound
 M = abs(A*r);
@@ -389,7 +388,7 @@ E = intervalMatrix(zeros(dim),W);
 
 end
 
-function E = expMatRemainder(Apower, t, taylorTerms)
+function E = aux_expMatRemainder(Apower, t, taylorTerms)
 
 %compute auxiliary matrix
 tmpMat = 1/factorial(4)*(t^4)*Apower{4};
@@ -417,7 +416,7 @@ E = intervalMatrix(E_zono) + Erem;
 
 end
 
-function matZinput = inputMatrix(Apower, Tmax, U, vInt, taylorTerms)
+function matZinput = aux_inputMatrix(Apower, Tmax, U, vInt, taylorTerms)
 
 %initialize
 dim = length(Apower{1});
@@ -435,7 +434,7 @@ for i=1:length(T)
 end
 
 %compute matrix zonotopes
-E = expMatRemainder(Apower, Tmax, taylorTerms);
+E = aux_expMatRemainder(Apower, Tmax, taylorTerms);
 
 %compute factor
 factor = (1/vInt);
@@ -469,7 +468,7 @@ matZinput = intervalMatrix(Acenter,Adelta);
 
 end
 
-function x_cycle = simulatePLL(obj,params,simCycles)
+function x_cycle = aux_simulatePLL(obj,params,simCycles)
 
 %initialize intermediate state
 x_cycle=params.x0'; %intermediate state at transitions
@@ -492,4 +491,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

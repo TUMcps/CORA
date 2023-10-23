@@ -1,7 +1,7 @@
 function res = test_ellipsoid_and
 % test_ellipsoid_and - unit test function of and
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_and
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_and
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      26-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       26-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 % empty set
@@ -55,7 +55,7 @@ for i=1:length(E_c)
             break;
         end
     else
-        if ~isempty(Eres_0)
+        if ~representsa_(Eres_0,'emptySet',eps)
             res = false;
             break;
         end
@@ -74,4 +74,4 @@ for i=1:length(E_c)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

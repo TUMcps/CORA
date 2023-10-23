@@ -2,7 +2,7 @@ function res = test_interval_mtimes
 % test_interval_mtimes - unit test function of mtimes,
 %    overloaded '*' operator for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_mtimes
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_interval_mtimes
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      05-August-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-August-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %init result vector
 resVec = [];
@@ -30,7 +30,7 @@ resVec = [];
 % empty set
 a = interval();
 b = 3;
-resVec(end+1) = isempty(b*a);
+resVec(end+1) = representsa(b*a,'emptySet');
 
 %SCALAR VALUES-------------------------------------------------------------
 %test 1: a: interval, b: numeric
@@ -131,7 +131,21 @@ c = a*b;
 c_true = interval([-11 -9; -5 3],[1 0; 5 10]);
 resVec(end+1) = (c == c_true);
 
+% Unbounded intervals and 0 -----------------------------------------------
+
+% scalar
+I0 = interval(0);
+I = interval(-inf,inf);
+resVec(end+1) = isequal(I0,0*I);
+
+% higher-dim
+I0 = interval(zeros(3,1));
+I = interval(-inf(3,1),inf(3,1));
+resVec(end+1) = isequal(I0,0*I);
+
+% -------------------------------------------------------------------------
+
 % check result
 res = all(resVec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

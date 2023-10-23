@@ -1,7 +1,7 @@
 function res = isSolverInstalled(varargin)
 % isSolverInstalled - checks if any of the specified solvers is installed
 %
-% Syntax:  
+% Syntax:
 %    res = isSolverInstalled(name1,name2,...)
 %
 % Inputs:
@@ -20,13 +20,12 @@ function res = isSolverInstalled(varargin)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      12-May-2022
-% Last update:  17-April-2023 (VG: added gurobi, support checking if one of
-%               many given solvers is supported)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       12-May-2022
+% Last update:   17-April-2023 (VG, added gurobi, check if any given solvers is supported)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 for i=1:length(varargin)
     name = varargin{i};
@@ -50,4 +49,4 @@ for i=1:length(varargin)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

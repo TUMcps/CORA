@@ -1,7 +1,7 @@
 function res = test_reachSet_plot
 % test_reachSet_plot - unit test function for plot
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_plot()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_reachSet_plot
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      01-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       01-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init result
 res = true;
@@ -101,4 +101,4 @@ end
 % close figure
 close
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = containsPoint(C,p)
 % containsPoint - determines if the point p is inside the capsule C
 %
-% Syntax:  
+% Syntax:
 %    result = containsPoint(C,p)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function res = containsPoint(C,p)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      05-March-2019
-% Last update:  15-September-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-March-2019
+% Last update:   15-September-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 numPoints = size(p,2);
 % set result to 0
@@ -76,4 +76,4 @@ for iPoint = 1:numPoints
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function Z = enc_zonotope(E,m,comptype)
 % enc_zonotope - over-approximates an ellipsoid by a zonotope
 %
-% Syntax:  
+% Syntax:
 %    Z = enc_zonotope(E,m,comptype)
 %
 % Inputs:
@@ -32,13 +32,13 @@ function Z = enc_zonotope(E,m,comptype)
 %
 % See also: insc_zonotope
 
-% Author:       Victor Gassmann, Matthias Althoff
-% Written:      18-September-2019
-% Last update:  27-January-2021 (MA, degenerate case implemented)
-%               08-June-2021 (VG, moved degeneracy to main file)
-% Last revision:---
+% Authors:       Victor Gassmann, Matthias Althoff
+% Written:       18-September-2019
+% Last update:   27-January-2021 (MA, degenerate case implemented)
+%                08-June-2021 (VG, moved degeneracy to main file)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if ~isFullDim(E)
     throw(CORAerror('CORA:degenerateSet','Should be handled in main file'));
@@ -72,4 +72,4 @@ end
 %norm computation) and apply retransform
 Z = zonotope([c,1/L*Tinv*G]);
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

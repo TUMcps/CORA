@@ -2,7 +2,7 @@ function res = test_conZonotope_supportFunc
 % test_conZonotope_supportFunc - unit test function for the evaluation of
 %    the support function
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_supportFunc
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = test_conZonotope_supportFunc
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Mark Wetzlinger
-% Written:      10-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       10-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -66,7 +66,7 @@ end
 
 % check direction with special handling
 dir = [1;1];
-a = dir' * cZ.Z(:,2:end);
+a = dir' * cZ.G;
 A = [A; a]; b = [b; 0];
 cZ = conZonotope(Z,A,b);
 
@@ -148,4 +148,4 @@ if ~withinTol(x(2),c(2))
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

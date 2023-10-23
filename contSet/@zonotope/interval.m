@@ -1,7 +1,7 @@
 function I = interval(Z)
 % interval - overapproximates a zonotope by an interval
 %
-% Syntax:  
+% Syntax:
 %    I = interval(Z)
 %
 % Inputs:
@@ -24,7 +24,7 @@ function I = interval(Z)
 %
 % See also: ---
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       14-September-2006 
 % Last update:   22-March-2007
 %                11-November-2010
@@ -32,17 +32,17 @@ function I = interval(Z)
 %                22-July-2016
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % extract center
-c = center(Z);
+c = Z.c;
 
 % determine lower and upper bounds in each dimension
-delta = sum(abs(Z.Z),2) - abs(c);
+delta = sum(abs(Z.G),2);
 leftLimit = c - delta;
 rightLimit = c + delta;
 
 % instantiate interval
 I = interval(leftLimit,rightLimit);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

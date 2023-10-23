@@ -1,7 +1,7 @@
 function res = testLong_zonotope_randPoint
 % testLong_zonotope_randPoint - unit test function of randPoint
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_randPoint
 %
 % Inputs:
@@ -16,12 +16,13 @@ function res = testLong_zonotope_randPoint
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
-% Last update:  14-March-2021 (MW, adapt to new syntax)
-% Last revision:---
+% Authors:       Mark Wetzlinger, Adrian Kulmburg
+% Written:       17-September-2019
+% Last update:   14-March-2021 (MW, adapt to new syntax)
+%                22-May-2023 (AK, added uniform sampling)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % tolerance
 tol = 1e-9;
@@ -34,6 +35,7 @@ res = isempty(randPoint(zonotope()));
 nrOfTests = 100;
 
 for i=1:nrOfTests
+
     % random dimension
     n = randi([2,8]); % small because of containment checks
     
@@ -43,11 +45,29 @@ for i=1:nrOfTests
     G = randn(n);
     
     % instantiate zonotope
-    Z = zonotope(c,G);
+    % For the first case, we try with an empty zonotope; for the second, we
+    % try with one that has no generators. For the third, we try with a
+    % zonotope that is degenerate
+    if i == 1
+        Z = zonotope();
+    elseif i == 2
+        Z = zonotope(c, []);
+    elseif i == 3
+        Z = zonotope([c;0], [G;zeros([1 size(G,2)])]);
+    else
+        Z = zonotope(c,G);
+    end
     
     % check 'standard' method
     nrPtsStandard = 25;
-    pNormal = randPoint(Z,nrPtsStandard,'standard');
+    pStandard = randPoint(Z,nrPtsStandard,'standard');
+    
+    % check 'uniform' methods
+    nrPtsUniform = 10;
+    pUniform = randPoint(Z,nrPtsUniform,'uniform');
+    pUniformHitAndRun = randPoint(Z,nrPtsUniform,'uniform:hitAndRun');
+    pUniformBilliard = randPoint(Z,nrPtsUniform,'uniform:billiardWalk');
+    
     
     % check 'extreme' method:
     % less points than extreme points
@@ -64,20 +84,33 @@ for i=1:nrOfTests
     % check 'gaussian' method:
     nrPtsGaussian = 25;
     pr = 0.8;
-    pGaussian = randPoint(Z,nrPtsGaussian,'gaussian',pr);
+    if i ~= 3
+        % TODO: Fix the Gaussian sampling, so that it also works for
+        % degenerate sets
+        pGaussian = randPoint(Z,nrPtsGaussian,'gaussian',pr);
+    end
     % note: these points are not checked for containment because there
     %       are not guaranteed to be inside of Z
     
+    
     % check for containment in zonotope
-    % (use containsPoint instead of in, since the latter has a bug)
-    if ~all(contains(Z,pNormal))
+    if ~all(contains(Z,pStandard))
         res = false; break;
     end
-    if ~all(contains(enlarge(Z,1+tol),pExtreme))
+    if ~all(contains(Z,pUniform))
+        res = false;break;
+    end
+    if ~all(contains(Z,pUniformHitAndRun))
+        res = false; break;
+    end
+    if ~all(contains(Z,pUniformBilliard))
+        res = false; break;
+    end
+    if ~all(contains(Z,pExtreme,'exact',tol))
         % enlarging Z is required, otherwise wrong result!
         res = false; break;
     end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

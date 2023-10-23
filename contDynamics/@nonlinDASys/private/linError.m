@@ -1,7 +1,7 @@
 function [Z_error, errorInt, errorInt_x, errorInt_y, R_y] = linError(obj, options, R, Verror_y)
 % linError - computes the linearization error
 %
-% Syntax:  
+% Syntax:
 %    [obj] = linError(obj,options)
 %
 % Inputs:
@@ -25,17 +25,17 @@ function [Z_error, errorInt, errorInt_x, errorInt_y, R_y] = linError(obj, option
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      29-October-2007 
-% Last update:  22-January-2008
-%               02-February-2010
-%               13-February-2012    
-%               15-June-2016
-%               25-July-2016 (intervalhull replaced by interval)
-%               04-August-2016
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       29-October-2007 
+% Last update:   22-January-2008
+%                02-February-2010
+%                13-February-2012    
+%                15-June-2016
+%                25-July-2016 (intervalhull replaced by interval)
+%                04-August-2016
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set handle to correct file
 obj = setHessian(obj,'int');
@@ -120,4 +120,4 @@ errorInt_y = supremum(errorIHabs_y);
 errorIHabs_x = abs(interval(Z_error_x));
 errorInt_x = supremum(errorIHabs_x);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

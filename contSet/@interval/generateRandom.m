@@ -1,7 +1,7 @@
 function I = generateRandom(varargin)
 % generateRandom - Generates a random interval
 %
-% Syntax:  
+% Syntax:
 %    I = interval.generateRandom()
 %    I = interval.generateRandom('Dimension',n)
 %    I = interval.generateRandom('Dimension',n,'Center',c)
@@ -26,14 +26,14 @@ function I = generateRandom(varargin)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger, Tobias Ladner
-% Written:      17-September-2019
-% Last update:  19-May-2022 (MW, name-value pair syntax)
-%               23-February-2023 (MW, add 'Center' and 'MaxRadius')
-%               22-May-2023 (TL, bugfix: all dimensions had same radius)
-% Last revision:---
+% Authors:       Mark Wetzlinger, Tobias Ladner
+% Written:       17-September-2019
+% Last update:   19-May-2022 (MW, name-value pair syntax)
+%                23-February-2023 (MW, add 'Center' and 'MaxRadius')
+%                22-May-2023 (TL, bugfix: all dimensions had same radius)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -101,4 +101,4 @@ rad = r/2 .* rand(n);
 % instantiate interval
 I = interval(c-rad,c+rad);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

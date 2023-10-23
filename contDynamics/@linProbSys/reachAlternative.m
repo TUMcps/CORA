@@ -2,7 +2,7 @@ function [Rnext,options] = reachAlternative(obj,R,options)
 % reachAlternative - computes the reachable continuous probabilistic set
 %    for one time step of a linear interval system
 %
-% Syntax:  
+% Syntax:
 %    [Rnext,options] = reachAlternative(obj,R,options)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function [Rnext,options] = reachAlternative(obj,R,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      27-September-2007 
-% Last update:  09-September-2009
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       27-September-2007 
+% Last update:   09-September-2009
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %next set (no input)
 R.ti=obj.taylor.eAt*R.ti;
@@ -39,4 +39,4 @@ R.ti=R.ti+obj.taylor.Rinput+obj.taylor.pRinput;
 Rnext.ti=reduce(R.ti,'girard',options.zonotopeOrder);
 Rnext.tp=[];
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

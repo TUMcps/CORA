@@ -2,7 +2,7 @@ function [Zred]=reduceMethE(Z,nrOfIntersections)
 % reduceMethE - like method C, but with intersection of several
 % parallelotopes
 %
-% Syntax:  
+% Syntax:
 %    [Zred,t]=reduceMethE(Z,nrOfIntersections)
 %
 % Inputs:
@@ -17,13 +17,13 @@ function [Zred]=reduceMethE(Z,nrOfIntersections)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      11-September-2008 
-% Last update:  26-February-2009
-%               27-Aug-2019
+% Authors:       Matthias Althoff
+% Written:       11-September-2008 
+% Last update:   26-February-2009
+%                27-August-2019
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %extract generator matrix
 G=generators(Z);
@@ -70,6 +70,4 @@ for iParallelotope=1:length(Gpicked)
 end
 
 
-
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

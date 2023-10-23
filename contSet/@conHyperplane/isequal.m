@@ -1,7 +1,7 @@
 function res = isequal(hyp1,hyp2,varargin)
 % isequal - checks if two constrained hyperplanes are equal
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(hyp1,hyp2)
 %    res = isequal(hyp1,hyp2,tol)
 %
@@ -27,12 +27,12 @@ function res = isequal(hyp1,hyp2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-September-2019
-% Last update:  06-June-2022
-% Last revision:10-January-2023 (MW, expand overly restrictive comparison)
+% Authors:       Mark Wetzlinger
+% Written:       16-September-2019
+% Last update:   06-June-2022
+% Last revision: 10-January-2023 (MW, expand overly restrictive comparison)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -44,13 +44,12 @@ tol = setDefaultValues({eps},varargin);
 
 % check input arguments
 inputArgsCheck({{hyp1,'att','conHyperplane'};
-                {hyp2,'att','conHyperplane'}; ...
+                {hyp2,'att',{'conHyperplane','polytope'}}; ...
                 {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
 
-% only implemented for two constrained hyperplanes
-if ~isa(hyp1,'conHyperplane') || ~isa(hyp2,'conHyperplane')
-    throw(CORAerror('CORA:noops',hyp1,hyp2));
-end
+% if second object is a polytope, check conversion to conHyperplane
+[res,hyp2] = representsa_(hyp2,'conHyperplane',tol);
+if ~res; return; end
 
 % assume true
 res = true;
@@ -143,4 +142,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

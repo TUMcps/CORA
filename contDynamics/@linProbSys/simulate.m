@@ -30,13 +30,13 @@ function [t,x,ind,y] = simulate(obj,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      16-May-2007 
-% Last update:  26-February-2008
-%               17-July-2020
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       16-May-2007 
+% Last update:   26-February-2008
+%                17-July-2020
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargout == 3
     ind = [];
@@ -67,4 +67,4 @@ for i=1:nrOfTimeSteps-1
 end
 x=x';
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

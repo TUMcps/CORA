@@ -3,7 +3,7 @@ function completed = example_nonlinearParam_reach_03_tank_linearRemainder()
 %     nonlinear reachability analysis with uncertain parameters, taken from
 %     [1, Sec. 3.4.5] or in [2].
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinearParam_reach_03_tank_linearRemainder
 %
 % Inputs:
@@ -19,13 +19,12 @@ function completed = example_nonlinearParam_reach_03_tank_linearRemainder()
 %        of nonlinear systems with uncertain parameters using
 %        conservative linearization. CDC 2008
 
-% Author:       Victor Gassmann
-% Written:      23-May-2019
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       23-May-2019
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -113,4 +112,4 @@ end
 %example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

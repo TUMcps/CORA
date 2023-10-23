@@ -2,7 +2,7 @@ function Z = convHull(Z,S)
 % convHull - computes an enclosure for the convex hull of a zonotope and
 %    another set or a point
 %
-% Syntax:  
+% Syntax:
 %    Z = convHull(Z,S)
 %
 % Inputs:
@@ -29,18 +29,15 @@ function Z = convHull(Z,S)
 %
 % See also: conZonotope/convHull
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       26-November-2019 
 % Last update:   05-May-2020 (MW, standardized error message)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 if nargin == 1
-    return;
-end 
-if isempty(S)
     return;
 end
 
@@ -48,11 +45,17 @@ end
 [Z,S] = findClassArg(Z,S,'zonotope');
 
 % different cases depending on the class of the second summand
-if isa(S,'zonotope') || isa(S,'interval') || isnumeric(S)
+if representsa_(S,'emptySet',eps)
+    % Z = Z;
+    
+elseif representsa_(Z,'emptySet',eps)
+    Z = zonotope(S);
+    
+elseif isa(S,'zonotope') || isa(S,'interval') || isnumeric(S)
 
     Z = enclose(Z,zonotope(S));
 
-elseif isa(S,'mptPolytope') || isa(S,'conZonotope') || ...
+elseif isa(S,'polytope') || isa(S,'conZonotope') || ...
        isa(S,'zonoBundle') || isa(S,'polyZonotope') || ...
        isa(S,'conPolyZono')
 
@@ -65,4 +68,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

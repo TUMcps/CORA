@@ -3,7 +3,7 @@ function completed = example_nonlinearParam_reach_01_tank()
 %    analysis with uncertain parameters, taken from [1], which can also be
 %    found in Sec. 3.4.5 of [2].
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinearParam_reach_01_tank()
 %
 % Inputs:
@@ -18,13 +18,12 @@ function completed = example_nonlinearParam_reach_01_tank()
 %   [2] M. Althoff “Reachability analysis and its application to the safety 
 %       assessment of autonomous cars"
 
-% Author:       Matthias Althoff
-% Written:      19-August-2016
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-August-2016
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -73,7 +72,7 @@ disp(['computation time of reachable set with uncertain parameters: ',num2str(tC
 % Simulation --------------------------------------------------------------
 
 % number of initial points
-simOpt.points = 60;
+simOpt.points = 10;
 
 % random simulation
 simRes = simulateRandom(tank,params,simOpt);
@@ -108,4 +107,4 @@ end
 
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

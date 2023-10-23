@@ -1,7 +1,7 @@
 function res = test_interval_supportFunc
 % test_interval_supportFunc - unit test function of supportFunc
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_supportFunc
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_supportFunc
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      06-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       06-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty set
 I = interval();
@@ -54,4 +54,4 @@ res(end+1,1) = all(x == [Inf;-Inf;2]);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

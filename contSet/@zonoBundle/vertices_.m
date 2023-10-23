@@ -3,7 +3,7 @@ function V = vertices_(zB,varargin)
 %    WARNING: Do not use this function for high order zonotope bundles as
 %    the computational complexity grows exponentially!
 %
-% Syntax:  
+% Syntax:
 %    V = vertices_(zB)
 %
 % Inputs:
@@ -26,17 +26,17 @@ function V = vertices_(zB,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: polytope
+% See also: contSet/vertices, polytope
 
-% Author:       Matthias Althoff
-% Written:      18-August-2016 
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename vertices_)
+% Authors:       Matthias Althoff
+% Written:       18-August-2016 
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename vertices_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain polytope
-P = mptPolytope(zB);
+P = polytope(zB);
 
 %obtain vertices (input check in polytope-function)
 V = vertices(P);
@@ -46,4 +46,4 @@ if isempty(V)
     V = double.empty(dim(zB),0);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

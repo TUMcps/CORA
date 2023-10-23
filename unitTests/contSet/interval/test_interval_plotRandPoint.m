@@ -3,7 +3,7 @@ function res = test_interval_plotRandPoint
 %    function aims to go through many variations of input arguments
 %    note: only run-time errors checked
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_plotRandPoint
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = test_interval_plotRandPoint
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      11-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -54,4 +54,4 @@ catch
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

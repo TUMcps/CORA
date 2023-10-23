@@ -1,7 +1,7 @@
 function zB = or(zB1, varargin)
 % or - Computes an over-approximation for the union of zonoBundle objects
 %
-% Syntax:  
+% Syntax:
 %    zB = or(zB1, zB2)
 %    zB = or(zB1, ... , zBm)
 %    zB = or(zB1, ... , zBm, alg)
@@ -34,16 +34,16 @@ function zB = or(zB1, varargin)
 %
 % See also: interval/or, zonotope/or
 
-% Author:       Niklas Kochdumper
-% Written:      26-November-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-November-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % convert to conZonotope and call conZonotope method
 zB1 = conZonotope(zB1);
 cZ = or(zB1, varargin{:});
 zB = zonoBundle(cZ);
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

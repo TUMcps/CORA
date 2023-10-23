@@ -2,7 +2,7 @@ function res = testLong_zonotope_cubMap
 % testLong_zonotope_cubMap - unit test function for cubic multiplication of 
 %                        zonotopes
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_cubMap
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_zonotope_cubMap
 %
 % See also: -
 
-% Author:       Niklas Kochdumper
-% Written:      16-August-2018
-% Last update:  01-May-2020 (MW, cubicMultiplication -> cubMap)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       16-August-2018
+% Last update:   01-May-2020 (MW, cubicMultiplication -> cubMap)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % TEST 1: Mixed Multiplication
 
@@ -93,8 +93,6 @@ for i = 1:10
 end
 
 
-
-
 % TEST 2: Cubic Multiplication
 
 for i = 1:10
@@ -153,4 +151,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

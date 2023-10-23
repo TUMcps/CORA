@@ -1,7 +1,7 @@
 function res = testLong_zonotope_reduce
 % testLong_zonotope_reduce - unit test function of reduce
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_reduce
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_zonotope_reduce
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      26-July-2016
-% Last update:  27-June-2018
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-July-2016
+% Last update:   27-June-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % create zonotope
@@ -44,7 +44,7 @@ method = 1;
 Zred = reduce(Zorig,'cluster',1,[],method);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -65,7 +65,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig,'cluster',3,[],method);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -81,7 +81,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig,'combastel',1);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -97,7 +97,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig,'combastel',3);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -115,7 +115,7 @@ warning('off');
 Zred = reduce(Zorig_2D,'constOpt',1);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -129,7 +129,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig_2D,'constOpt',3);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -144,7 +144,7 @@ warning(w);
 Zred = reduce(Zorig,'girard',1);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -161,7 +161,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig,'girard',3);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -177,7 +177,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig,'methA',1);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -193,7 +193,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig,'methA',3);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -209,7 +209,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig,'methB',1,6);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -225,7 +225,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig,'methB',3,6);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -241,7 +241,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig,'methC',1,[12,6]);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -257,7 +257,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig,'methC',3,[12,6]);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -273,7 +273,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig,'pca',1);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -289,7 +289,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig,'pca',3);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -305,7 +305,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig,'redistribute',1);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 
 % true result
 true_mat = [ ...
@@ -321,7 +321,7 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 Zred = reduce(Zorig,'redistribute',3);
 
 % obtain zonotope matrix
-Zmat = round(Zred.Z,3);
+Zmat = round([Zred.c,Zred.G],3);
 % Zmat_sorted = sortMat(Zmat);
 
 % true result
@@ -343,4 +343,4 @@ res(end+1) = compareMatrices(Zmat,true_mat);
 
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

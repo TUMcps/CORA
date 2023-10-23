@@ -12,12 +12,12 @@ function res = testLong_linParamSys_F
 %    res - true/false if successfully completed
 %
 
-% Author:       Matthias Althoff
-% Written:      19-January-2007
-% Last update:  28-July-2020
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-January-2007
+% Last update:   28-July-2020
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "tie" and "mappingMatrix"
 path = CORAROOT;
@@ -138,4 +138,4 @@ res(4) = all(all(supremum(expm_int.int) >= Expm_max));
 % check if lower and upper bound holds
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

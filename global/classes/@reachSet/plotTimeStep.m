@@ -2,7 +2,7 @@ function han = plotTimeStep(R,varargin)
 % plotTimeStepVector - plots the time step size used in reachSet object
 %    over time (all in one graph)
 %
-% Syntax:  
+% Syntax:
 %    han = plotTimeStep(R)
 %    han = plotTimeStep(R,type)
 %
@@ -19,12 +19,12 @@ function han = plotTimeStep(R,varargin)
 %
 % See also: @simResult/plotTimeStep
 
-% Author:       Mark Wetzlinger
-% Written:      18-June-2020
-% Last update:  15-February-2022 (add case where no R.timePoint given)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       18-June-2020
+% Last update:   15-February-2022 (add case where no R.timePoint given)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse plot options
 NVpairs = readPlotOptions(varargin(2:end));
@@ -80,4 +80,4 @@ if nargout == 0
     clear han;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

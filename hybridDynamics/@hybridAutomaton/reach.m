@@ -1,7 +1,7 @@
 function [R,res] = reach(HA,params,options,varargin)
 % reach - computes the reachable set of a hybrid automaton
 %
-% Syntax:  
+% Syntax:
 %    R = reach(HA,params,options)
 %    [R,res] = reach(HA,params,options,spec)
 %
@@ -21,19 +21,18 @@ function [R,res] = reach(HA,params,options,varargin)
 %
 % See also: location/reach
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      07-May-2007 
-% Last update:  16-August-2007
-%               20-August-2013
-%               30-October-2015
-%               22-August-2016
-%               19-December-2019 (NK, restructured the algorithm)
-%               13-October-2021 (MP, implemented location-specific
-%                                specifications)
-%               27-November-2022 (MW, restructure specification syntax)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       07-May-2007 
+% Last update:   16-August-2007
+%                20-August-2013
+%                30-October-2015
+%                22-August-2016
+%                19-December-2019 (NK, restructured the algorithm)
+%                13-October-2021 (MP, location-specific specifications)
+%                27-November-2022 (MW, restructure specification syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     res = true;
     
@@ -181,8 +180,7 @@ function [R,res] = reach(HA,params,options,varargin)
 end
 
 
-
-% Auxiliary Function ------------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function options = aux_check_flatHA_specification(options,HA,spec)
 % rewrites specifications in the correct format
@@ -203,7 +201,7 @@ function options = aux_check_flatHA_specification(options,HA,spec)
         % checks
         for i=1:length(spec)
             % ensure that time information is not provided (unsupported)
-            if ~isempty(spec(i).time)
+            if ~representsa_(spec(i).time,'emptySet',eps)
                 throw(CORAerror('CORA:notSupported',...
                     'Timed specifications are not yet supported for hybrid automata!')); 
             end
@@ -234,7 +232,7 @@ function options = aux_check_flatHA_specification(options,HA,spec)
         % check if time information is provided
         for i = 1:length(spec)
             for j = 1:length(spec{i})
-                if ~isempty(spec{i}(j).time)
+                if ~representsa_(spec{i}(j).time,'emptySet',eps)
                     throw(CORAerror('CORA:notSupported',...
                         'Timed specifications are not yet supported for hybrid automata!')); 
                 end
@@ -326,4 +324,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

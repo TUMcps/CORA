@@ -3,10 +3,10 @@ function cZ = enclose(cZ,varargin)
 %
 % Description:
 %    Computes the set
-%    { a x1 + (1 - a) * (M x1 + x2) | x1 \in cZ, x2 \in cZ2, a \in [0,1] }
+%    { a x1 + (1 - a) * x2 | x1 \in cZ, x2 \in cZ2, a \in [0,1] }
 %    where cZ2 = M*cZ + cZplus
 %
-% Syntax:  
+% Syntax:
 %    cZ = enclose(cZ,cZ2)
 %    cZ = enclose(cZ,M,cZplus)
 %
@@ -45,12 +45,12 @@ function cZ = enclose(cZ,varargin)
 %
 % See also: zonotope/enclose
 
-% Author:       Niklas Kochdumper
-% Written:      28-June-2018 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       28-June-2018 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 if nargin == 2
@@ -63,14 +63,14 @@ else
 end
 
 % retrieve number of generators of the zonotopes
-g1 = length(cZ.Z(1,:));
-g2 = length(cZ2.Z(1,:));
+g1 = size(cZ.G,2);
+g2 = size(cZ2.G,2);
 
 % check if the constraints of both zonotopes are identical (otherwise it is
 % not possible that they are linear transformations of each other)
 if ~isempty(cZ.A)
     
-    g = min(g1,g2)-1;
+    g = min(g1,g2);
     A1 = cZ.A(:,1:g);
     A2 = cZ2.A(:,1:g);
     
@@ -85,22 +85,25 @@ end
 
 % divide generators into blocks
 if g2 <= g1
-    Z1 = cZ.Z(:,1:g2);
-    Zadd = cZ.Z(:,(g2+1):end);
-    Z2 = cZ2.Z;
+    cG = (cZ.c-cZ2.c)/2;
+    G1 = cZ.G(:,1:g2);
+    Gadd = cZ.G(:,(g2+1):end);
+    G2 = cZ2.G;
     A = cZ2.A;
 else
-    Z2 = cZ2.Z(:,1:g1);
-    Zadd = cZ2.Z(:,(g1+1):end);
-    Z1 = cZ.Z;
+    cG = (cZ2.c-cZ.c)/2;
+    G2 = cZ2.G(:,1:g1);
+    Gadd = cZ2.G(:,(g1+1):end);
+    G1 = cZ.G;
     A = cZ.A;
 end
 
 % construct enclosing constrained zonotope
-cZ.Z = [(Z1+Z2)/2, (Z1-Z2)/2, Zadd];
-cZ.A = [A, zeros(size(A,1),size(Z1,2) + size(Zadd,2))];
+cZ.c = (cZ.c+cZ2.c)/2;
+cZ.G = [(G1+G2)/2, cG, (G1-G2)/2, Gadd];
+cZ.A = [A, zeros(size(A,1),size(G1,2) + 1 + size(Gadd,2))];
 
 cZ.R = [];
 cZ.ksi = [];
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

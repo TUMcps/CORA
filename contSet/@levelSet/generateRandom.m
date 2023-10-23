@@ -1,7 +1,7 @@
 function ls = generateRandom(varargin)
 % generateRandom - Generates a random halfspace
 %
-% Syntax:  
+% Syntax:
 %    ls = levelSet.generateRandom()
 %    ls = levelSet.generateRandom('Dimension',n)
 %
@@ -27,12 +27,12 @@ function ls = generateRandom(varargin)
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      19-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       19-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -103,4 +103,4 @@ end
 % instantiate interval
 ls = levelSet(eq,vars,eqCompOp);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

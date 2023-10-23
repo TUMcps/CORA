@@ -2,7 +2,7 @@ function res = testSpecial_markovchain_carReach
 % testSpecial_markovchain_carReach - unit_test_function for building a
 % Markov chain of a car using simulation results
 %
-% Syntax:  
+% Syntax:
 %    res = testSpecial_markovchain_carReach
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = testSpecial_markovchain_carReach
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      31-July-2016
-% Last update:  07-July-2021
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       31-July-2016
+% Last update:   07-July-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set path
 global filePath
@@ -161,4 +161,4 @@ resPartial(end+1) = (maxError < accuracy);
 % final result
 res = all(resPartial);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = mrdivide(numerator,denominator)
 % mrdivide - Overload '/' operator for Taylor models
 %
-% Syntax:  
+% Syntax:
 %    res = mrdivide(numerator,denominator)
 %
 % Inputs:
@@ -17,12 +17,13 @@ function res = mrdivide(numerator,denominator)
 %
 % See also: taylm
 
-% Author:       Dmitry Grebenyuk
-% Written:      14-June-2017
-% Last update:  ---  
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       14-June-2017
+% Last update:   ---  
+% Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
+
     if isscalar(denominator)
         res = numerator ./ denominator;
     else
@@ -30,4 +31,4 @@ function res = mrdivide(numerator,denominator)
     end
 end
 
-%------------ END OF CODE ------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function res = checkLivelock(tracker)
 %    hybrid automaton
 % note: currently only designed for one branch in the reachable set
 %
-% Syntax:  
+% Syntax:
 %    res = checkLivelock(tracker)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function res = checkLivelock(tracker)
 %
 % See also: parallelHybridAutomaton/reach
 
-% Author:       Mark Wetzlinger
-% Written:      01-July-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       01-July-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume no livelock
 res = false;
@@ -79,4 +79,4 @@ for i=numIter-1:-1:1
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

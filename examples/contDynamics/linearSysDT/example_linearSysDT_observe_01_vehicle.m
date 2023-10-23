@@ -4,7 +4,7 @@ function completed = example_linearSysDT_observe_01_vehicle()
 %    function exists; shows the solution of the linearSysDT class for a
 %    vehicle example.
 %
-% Syntax:  
+% Syntax:
 %    completed = example_linearSysDT_observe_01_vehicle()
 %
 % Inputs:
@@ -13,12 +13,12 @@ function completed = example_linearSysDT_observe_01_vehicle()
 % Outputs:
 %    completed - true/false
 
-% Author:       Matthias Althoff
-% Written:      30-Apr-2021
-% Last update:  13-July-2021
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       30-April-2021
+% Last update:   13-July-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% Load vehicle model
 load vehicleModel_dim6 vehicle params options simRes
@@ -89,4 +89,4 @@ end
 completed = true;
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

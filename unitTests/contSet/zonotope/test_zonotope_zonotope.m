@@ -1,7 +1,7 @@
 function res = test_zonotope_zonotope
 % test_zonotope_zonotope - unit test function of zonotope (constructor)
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_zonotope
 %
 % Inputs:
@@ -16,18 +16,18 @@ function res = test_zonotope_zonotope
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-12;
 
 % empty zonotope
 Z = zonotope();
-res = isempty(Z);
+res = representsa(Z,'emptySet');
 
 
 % random center, random generator matrix
@@ -37,18 +37,18 @@ Zmat = [c,G];
 
 % admissible initializations
 Z = zonotope(c,G);
-if ~compareMatrices(center(Z),c) || ~compareMatrices(generators(Z),G)
+if ~compareMatrices(Z.c,c) || ~compareMatrices(Z.G,G)
     res = false;
 end
 
 Z = zonotope(c);
-if ~compareMatrices(center(Z),c) || ~isempty(generators(Z))
+if ~compareMatrices(Z.c,c) || ~isempty(Z.G)
     res = false;
 end
 
 Z = zonotope(Zmat);
-if ~compareMatrices(center(Z),Zmat(:,1)) ...
-        || ~compareMatrices(generators(Z),Zmat(:,2:end))
+if ~compareMatrices(Z.c,Zmat(:,1)) ...
+        || ~compareMatrices(Z.G,Zmat(:,2:end))
     res = false;
 end
 
@@ -98,4 +98,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

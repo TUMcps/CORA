@@ -1,7 +1,7 @@
 function Glength = generatorLength(Z)
 % generatorLength - returns the lengths of the generators
 %
-% Syntax:  
+% Syntax:
 %    Glength = generatorLength(Z)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function Glength = generatorLength(Z)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      19-July-2010
-% Last update:  14-March-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-July-2010
+% Last update:   14-March-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-Glength = vecnorm(Z.Z(:,2:end));
+Glength = vecnorm(Z.G);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function p = randPoint_(E,N,type,varargin)
 % randPoint_ - generates a random point within an ellipsoid
 %
-% Syntax:  
+% Syntax:
 %    p = randPoint_(E)
 %    p = randPoint_(E,N)
 %    p = randPoint_(E,N,type)
@@ -26,15 +26,15 @@ function p = randPoint_(E,N,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval/randPoint
+% See also: contSet/randPoint, interval/randPoint_
 
-% Author:        Victor Gassmann
+% Authors:       Victor Gassmann
 % Written:       18-March-2021
 % Last update:   25-June-2021 (MP, add type gaussian)
 %                19-August-2022 (MW, integrate standardized pre-processing)
 % Last revision: 28-March-2023 (MW, rename randPoint_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 'all' vertices not supported
 if ischar(N) && strcmp(N,'all')
@@ -68,7 +68,7 @@ E = G*E;
 
 
 % generate different types of extreme points
-if strcmp(type,'standard')
+if strcmp(type,'standard') || startsWith(type,'uniform')
     % generate points uniformely distributed (with N -> infinity)
     % on the unit hypersphere
     X = randn(dim(E),N);
@@ -88,4 +88,4 @@ elseif strcmp(type,'extreme')
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

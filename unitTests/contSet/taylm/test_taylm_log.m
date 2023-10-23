@@ -1,7 +1,7 @@
 function res = test_taylm_log
 % test_taylm_log - unit-test for Taylor models consisting of log functions
 %
-% Syntax:  
+% Syntax:
 %    res = test_taylm_log
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_taylm_log
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      14-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       14-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -45,4 +45,4 @@ if ~appeq( getCoef(t), [log(2); 1/2; -1/8; 1/24], eps ) ||...
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_reachSet_plus
 % test_reachSet_plus - unit test function for plus
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_plus()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_reachSet_plus
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      10-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       10-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate set, propagation matrix
 Z = zonotope([1;1],[1 0 -2; 2 -1 1]);
@@ -47,4 +47,4 @@ for i=1:steps-1
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

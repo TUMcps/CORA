@@ -2,7 +2,7 @@ function [val,x] = supportFunc_(zB,dir,type,varargin)
 % supportFunc_ - Calculate the upper or lower bound of a zonotope bundle
 %    along a certain direction
 %
-% Syntax:  
+% Syntax:
 %    val = supportFunc_(zB,dir)
 %    [val,x] = supportFunc_(zB,dir,type)
 %
@@ -30,14 +30,14 @@ function [val,x] = supportFunc_(zB,dir,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conZonotope/supportFunc_
+% See also: contSet/supportFunc, conZonotope/supportFunc_
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      19-November-2019
-% Last update:  23-April-2023 (MW, fix empty case)
-% Last revision:27-March-2023 (MW, rename supportFunc_)
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       19-November-2019
+% Last update:   23-April-2023 (MW, fix empty case)
+% Last revision: 27-March-2023 (MW, rename supportFunc_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
 if zB.parallelSets == 0
@@ -147,4 +147,4 @@ if nargout > 1
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

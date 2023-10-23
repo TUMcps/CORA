@@ -1,4 +1,4 @@
-classdef parallelHybridAutomaton
+classdef parallelHybridAutomaton < hybridDynamics
 % parallelHybridAutomaton - Object and Copy Constructor 
 %
 % Syntax:
@@ -21,36 +21,36 @@ classdef parallelHybridAutomaton
 %    T_off = 21; T_on = 20;
 %
 %    % first component, first location
-%    inv = mptPolytope(1,T_off);
+%    inv = polytope(1,T_off);
 %    guard = conHyperplane(1,T_off);
 %    reset = struct('A',1,'c',0);
-%    trans = transition(guard,reset,2);
+%    trans(1) = transition(guard,reset,2);
 %    linSys = linearSys(-(a1 + b1),[b1,a1],c1,1);
 %    loc(1) = location('on',inv,trans,linSys);
 %
 %    % first component, second location
-%    inv = mptPolytope(-1,-T_on);
+%    inv = polytope(-1,-T_on);
 %    guard = conHyperplane(1,T_on);
 %    reset = struct('A',1,'c',0);
-%    trans = transition(guard,reset,1);
+%    trans(1) = transition(guard,reset,1);
 %    linSys = linearSys(-(a1 + b1),[b1,a1],[],1);
 %    loc(2) = location('off',inv,trans,linSys);
 %
 %    HA1 = hybridAutomaton(loc);
 %
 %    % second component, first location
-%    inv = mptPolytope(1,T_off);
+%    inv = polytope(1,T_off);
 %    guard = conHyperplane(1,T_off);
 %    reset = struct('A',1,'c',0);
-%    trans = transition(guard,reset,2);
+%    trans(1) = transition(guard,reset,2);
 %    linSys = linearSys(-(a2 + b2),[b2,a2],c2,1);
 %    loc(1) = location('on',inv,trans,linSys);
 %
 %    % second component, second location
-%    inv = mptPolytope(-1,-T_on);
+%    inv = polytope(-1,-T_on);
 %    guard = conHyperplane(1,T_on);
 %    reset = struct('A',1,'c',0);
-%    trans = transition(guard,reset,1);
+%    trans(1) = transition(guard,reset,1);
 %    linSys = linearSys(-(a2 + b2),[b2,a2],[],1);
 %    loc(2) = location('off',inv,trans,linSys);
 %
@@ -70,14 +70,14 @@ classdef parallelHybridAutomaton
 %
 % See also: hybridAutomaton, location
 
-% Author:       Johann Schoepfer, Niklas Kochdumper, Mark Wetzlinger
-% Written:      05-June-2018
-% Last update:  16-June-2022 (MW, add input argument checks)
-%               06-June-2023 (MW, add mergedTrans property)
-%               21-June-2023 (MW, add/rename dim/nrOfInputs/nrOfOutputs)
-% Last revision:21-June-2023 (MW, restructure, integrate validateBinds)
+% Authors:       Johann Schoepfer, Niklas Kochdumper, Mark Wetzlinger
+% Written:       05-June-2018
+% Last update:   16-June-2022 (MW, add input argument checks)
+%                06-June-2023 (MW, add mergedTrans property)
+%                21-June-2023 (MW, add/rename dim/nrOfInputs/nrOfOutputs)
+% Last revision: 21-June-2023 (MW, restructure, integrate validateBinds)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = protected, GetAccess = public)
     
@@ -277,4 +277,4 @@ function [stateBinds,n,m,r] = aux_computeProperties(comps,inputBinds)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

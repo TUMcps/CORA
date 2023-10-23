@@ -1,7 +1,7 @@
 function res = test_zonoBundle_uplus
 % test_zonoBundle_uplus - unit test function of uplus
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonoBundle_uplus
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonoBundle_uplus
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      06-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       06-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = true(0);
 
@@ -42,4 +42,4 @@ resvec(end+1) = isemptyobject(+zonoBundle());
 % add results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

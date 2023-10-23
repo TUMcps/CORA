@@ -5,7 +5,7 @@ function res = test_nonlinearSys_evalNthTensor
 % funcitons "generateNthTensor" and "evalNthTensor" is compared to the
 % evaluation using the corresponding closed-expression equation
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSys_evalNthTensor
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_nonlinearSys_evalNthTensor
 % Outputs:
 %    res - true/false
 
-% Author:       Niklas Kochdumper
-% Written:      08-February-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       08-February-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % 2D-example --------------------------------------------------------------
@@ -106,4 +106,4 @@ for i = 1:N
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

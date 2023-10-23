@@ -1,7 +1,7 @@
 function res = testLong_zonotope_minkDiff
 % testLong_zonotope_minkDiff - unit test function of minkDiff
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_minkDiff
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_zonotope_minkDiff
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      25-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       25-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -81,7 +81,7 @@ for i=1:10
     difference = minkDiff(minuend,subtrahend,method);
 
     % min - sub = diff => diff + sub = min
-    minuend_restored = zonotope(difference.Z+subtrahend.Z);
+    minuend_restored = zonotope(difference.c+subtrahend.c, difference.G+subtrahend.G);
     resvec(end+1) = isequal(minuend_restored,minuend,1e-12);
 end
 
@@ -157,4 +157,4 @@ end
 % gather results ----------------------------------------------------------
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

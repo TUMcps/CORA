@@ -2,7 +2,7 @@ function createJacobianFile_freeParam(Jdyn,path,name)
 % createJacobianFile_freeParam - generates an mFile that allows to compute
 %    the jacobian for a certain state, input, and parameter value
 %
-% Syntax:  
+% Syntax:
 %    createJacobianFile_freeParam(obj)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function createJacobianFile_freeParam(Jdyn,path,name)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      07-June-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-June-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % open file
 fid = fopen([path filesep name '.m'],'w');
@@ -57,4 +57,4 @@ end
 % close file
 fclose(fid);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

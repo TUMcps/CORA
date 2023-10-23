@@ -1,7 +1,7 @@
 function cPZ = generateRandom(varargin)
 % generateRandom - Generates a random constrained polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    cPZ = conPolyZono.generateRandom()
 %    cPZ = conPolyZono.generateRandom('Dimension',n)
 %    cPZ = conPolyZono.generateRandom('Dimension',n,'nrGenerators',nrGens)
@@ -32,12 +32,12 @@ function cPZ = generateRandom(varargin)
 %
 % See also: polyZonotope/generateRandom
 
-% Author:       Niklas Kochdumper
-% Written:      26-January-2020
-% Last update:  19-May-2022 (name-value pair syntax)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-January-2020
+% Last update:   19-May-2022 (name-value pair syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -90,13 +90,13 @@ end
 
 % adapt the constraints to guarantee that the resulting set is non-empty
 a = -1 + 2*rand(nrFac,1);
-b = sum(pZcon.G.*prod(a.^pZcon.expMat,1),2);
+b = sum(pZcon.G.*prod(a.^pZcon.E,1),2);
 
 % instantiate constrained polynomial zonotope
 try
-    cPZ = conPolyZono(pZ.c,pZ.G,pZ.expMat,pZcon.G,b,pZcon.expMat,pZ.Grest);
+    cPZ = conPolyZono(pZ.c,pZ.G,pZ.E,pZcon.G,b,pZcon.E,pZ.GI);
 catch
-    cPZ = conPolyZono(pZ.c,pZ.G,pZ.expMat,pZ.Grest);
+    cPZ = conPolyZono(pZ.c,pZ.G,pZ.E,pZ.GI);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function R = guardIntersect_pancake(loc,R0,guard,guardID,options)
 % guardIntersect_pancake - implementation of the time scaling approach
 %    described in [1]
 %
-% Syntax:  
+% Syntax:
 %    R = guardIntersect_pancake(loc,R0,guard,options)
 %
 % Inputs:
@@ -25,12 +25,12 @@ function R = guardIntersect_pancake(loc,R0,guard,guardID,options)
 %   [1] S. Bak et al. "Time-Triggered Conversion of Guards for Reachability
 %       Analysis of Hybrid Automata"
 
-% Author:       Niklas Kochdumper
-% Written:      05-November-2018             
-% Last update:  20-November-2019
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       05-November-2018             
+% Last update:   20-November-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % initialization
     sys = loc.contDynamics;
@@ -73,7 +73,7 @@ function R = guardIntersect_pancake(loc,R0,guard,guardID,options)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [sys,params] = aux_scaledSystem(sys,hs,R0,guardID,params)
 % Scale the system dynamics using the distance to the hyperplane as a 
@@ -264,4 +264,4 @@ function f = aux_dynamicsLinSys(x,u,sys)
     end
 end
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

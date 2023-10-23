@@ -1,7 +1,7 @@
 function res = testLong_linearSys_simulateRandom_03
 % testLong_linearSys_simulateRandom_03 - unit test for simulateRandom
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_linearSys_simulateRandom_03
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_linearSys_simulateRandom_03
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-November-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-November-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = false;
 
@@ -49,7 +49,7 @@ C = [1 1 0 0;
      0 -0.5 0.5 0];
 y = 2;
 
-% throughput matrix: q x m
+% feedthrough matrix: q x m
 D = [0 0 1;
      0 0 0];
 
@@ -171,4 +171,4 @@ res = true;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

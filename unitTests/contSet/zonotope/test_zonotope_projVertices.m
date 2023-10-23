@@ -2,7 +2,7 @@ function res = test_zonotope_projVertices
 % test_zonotope_projVertices - unit test function for computation of
 %    vertices of a 2D projection
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_projVertices
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_zonotope_projVertices
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      21-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       21-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -88,4 +88,4 @@ if ~compareMatrices(V,V_proj,1e-14)
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_capsule_isequal
 % test_capsule_isequal - unit test function of isequal
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_isequal
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_capsule_isequal
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -70,4 +70,4 @@ if isequal(C,C_red)
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

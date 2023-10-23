@@ -1,8 +1,8 @@
 function res = ne(sys1,sys2,varargin)
-% eq - overloads '~=' operator to check if two nonlinear systems are not
+% ne - overloads '~=' operator to check if two nonlinear systems are not
 %   equal
 %
-% Syntax:  
+% Syntax:
 %    res = ne(sys1,sys2)
 %    res = ne(sys1,sys2,tol)
 %
@@ -27,13 +27,13 @@ function res = ne(sys1,sys2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      09-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       09-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = ~isequal(sys1,sys2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

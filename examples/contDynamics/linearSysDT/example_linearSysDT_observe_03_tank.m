@@ -3,7 +3,7 @@ function completed = example_linearSysDT_observe_03_tank
 %    estimation of linear discrete-time systems from a unit test; shows the
 %    solution of the linearSysDT class for a linearized tank example from [1].
 %
-% Syntax:  
+% Syntax:
 %    completed = example_linearSysDT_observe_03_tank
 %
 % Inputs:
@@ -17,12 +17,12 @@ function completed = example_linearSysDT_observe_03_tank
 %        Proc. of the 8th International Workshop on Applied Verification 
 %        for Continuous and Hybrid Systems, 2021.
 
-% Author:       Matthias Althoff
-% Written:      12-Jun-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       12-June-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % load pedestrian model
 load tankModel_lin_dim30 tank params options simRes
@@ -48,4 +48,4 @@ end
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

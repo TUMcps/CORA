@@ -2,7 +2,7 @@ function res = test_polyZonotope_zonotope
 % test_polyZonotope_zonotope - unit test function for zonotope
 %    over-approximation of a polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    res = test_polyZonotope_zonotope
 %
 % Inputs:
@@ -17,21 +17,21 @@ function res = test_polyZonotope_zonotope
 %
 % See also: -
 
-% Author:       Niklas Kochdumper
-% Written:      26-June-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-June-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
 % create polynomial zonotope
 c = [1;2];
 G = [1 2 1 -3; 1 -1 2 -1];
-expMat = [1 0 0 2; 0 1 2 1];
-Grest = [];
-pZ = polyZonotope(c,G,Grest,expMat);
+E = [1 0 0 2; 0 1 2 1];
+GI = [];
+pZ = polyZonotope(c,G,GI,E);
 
 % reduce the polynomial zonotope
 Z = zonotope(pZ);
@@ -46,4 +46,4 @@ if ~isequal(Z,Z_true)
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

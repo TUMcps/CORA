@@ -2,7 +2,7 @@ function res = testLong_conPolyZono_reduce
 % testLong_conPolyZono_reduce - unit test function for 
 %    generator reduction of constrained polynomial zonotopes
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conPolyZono_reduce()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_conPolyZono_reduce
 %
 % See also: conPolyZono/reduce
 
-% Author:       Niklas Kochdumper
-% Written:      26-January-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-January-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 splits = 4;
@@ -38,7 +38,7 @@ for i = 1:5
         'NrGenerators',randi([10,20]));
     
     % draw desired reduced order at random
-    temp = size(cPZ1.G,2) + size(cPZ1.Grest,2) + size(cPZ1.A,2);
+    temp = size(cPZ1.G,2) + size(cPZ1.GI,2) + size(cPZ1.A,2);
     order = rand() * temp/2;
     
     % compute random points inside the original set
@@ -59,4 +59,4 @@ for i = 1:5
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

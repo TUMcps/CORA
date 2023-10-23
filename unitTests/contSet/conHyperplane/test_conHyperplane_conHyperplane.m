@@ -1,7 +1,7 @@
 function res = test_conHyperplane_conHyperplane
 % test_conHyperplane_conHyperplane - unit test function of conHyperplane
 %
-% Syntax:  
+% Syntax:
 %    res = test_conHyperplane_conHyperplane
 %
 % Inputs:
@@ -16,18 +16,18 @@ function res = test_conHyperplane_conHyperplane
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
 % empty conHyperplane
 hyp = conHyperplane();
-if ~isempty(hyp)
+if ~representsa_(hyp,'emptySet',eps)
     res = false;
 end
 
@@ -125,4 +125,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

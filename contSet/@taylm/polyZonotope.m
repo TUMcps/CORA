@@ -1,7 +1,7 @@
 function res = polyZonotope(obj)
 % polyZonotope - convert a Taylor model to a polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    res = polyZonotope(obj)
 %
 % Inputs:
@@ -26,12 +26,12 @@ function res = polyZonotope(obj)
 %
 % See also: quadZonotope/polyZonotope, zonotope/polyZonotope
 
-% Author:       Niklas Kochdumper
-% Written:      12-October-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       12-October-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
     % get names of all variables
@@ -54,7 +54,7 @@ function res = polyZonotope(obj)
     n = size(obj,1);
     E = [];
     G = [];
-    Grest = zeros(n,n);
+    GI = zeros(n,n);
     c = zeros(n,1);
     
     % loop over all taylor model dimensions
@@ -92,7 +92,7 @@ function res = polyZonotope(obj)
        
        % convert remainder part
        c(i) = center(temp.remainder);
-       Grest(i,i) = rad(temp.remainder);
+       GI(i,i) = rad(temp.remainder);
     end
     
     % add all constant monomials to the center vector
@@ -103,8 +103,8 @@ function res = polyZonotope(obj)
     G(:,ind) = [];
     
     % construct resulting polynomial zonotope object
-    res = polyZonotope(c,G,Grest,E) + polyZonotope(zeros(n,1),[],[]);
+    res = polyZonotope(c,G,GI,E) + polyZonotope(zeros(n,1),[],[]);
     
 end
 
-%------------- END OF CODE --------------    
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function [Y,L] = boundary(E,N)
 % boundary - Deterministically computes N uniformly distributed points on 
 %    the boundary of an ellipsoid
 %
-% Syntax:  
+% Syntax:
 %    [Y,L] = boundary(E,N)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function [Y,L] = boundary(E,N)
 %
 % See also: ellipsoid/randPoint_
 
-% Author:       Victor Gassmann
-% Written:      13-March-2019
-% Last update:  12-March-2021
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       13-March-2019
+% Last update:   12-March-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if N==0
     throw(CORAerror('CORA:wrongValue','second','positive integer value'));
@@ -78,4 +78,4 @@ L_t = [L_nd;zeros(length(x_rem),N)];
 Y = T*Y_t + E.q;
 L = T*L_t;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

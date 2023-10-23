@@ -1,7 +1,7 @@
 function [Zenclose,rotMatrixInv] = encloseMany(Z,direction)
 % encloseMany - function for the enclosure of many zonotopes
 %
-% Syntax:  
+% Syntax:
 %    [Zenclose,rotMatrixInv] = encloseMany(Z,direction)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function [Zenclose,rotMatrixInv] = encloseMany(Z,direction)
 %
 % See also: dirPolytope
 
-% Author:       Matthias Althoff
-% Written:      15-January-2008
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       15-January-2008
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get dimension and original axis aligned orientation
 n = length(direction);
@@ -64,4 +64,4 @@ Z = zonotope(I);
 % rotate zonotope back
 Zenclose = rotMatrix*Z;
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

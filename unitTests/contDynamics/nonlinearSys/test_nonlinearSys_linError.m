@@ -2,7 +2,7 @@ function res = test_nonlinearSys_linError()
 % test_nonlinearSys_linError - test if the linearization error for nonlinear
 %                           systems is computed correctly
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSys_linError()
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = test_nonlinearSys_linError()
 % Outputs:
 %    res - true/false 
 
-% Author:       Niklas Kochdumper
-% Written:      12-November-2018
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       12-November-2018
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -109,4 +109,4 @@ for i = 1:N
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

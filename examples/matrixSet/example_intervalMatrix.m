@@ -1,7 +1,7 @@
 function completed = example_intervalMatrix()
 % example_intervalMatrix - example for interval matrices
 %
-% Syntax:  
+% Syntax:
 %    completed = example_intervalMatrix()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_intervalMatrix()
 %
 % See also: intervalMatrix
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       25-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 Mcenter = [1 2; 3 4]; % center of interval matrix M1
 Mdelta = [1 0; 1 1]; % delta of interval matrix M1
@@ -38,4 +38,4 @@ matZ = matZonotope(intM1) % compute matrix zonotope and display result
 
 completed = 1;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

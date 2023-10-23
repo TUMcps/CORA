@@ -2,7 +2,7 @@ function S=dominantDirections(Z,varargin)
 % dominantDirections - computes the directions that span a parallelotope
 %    which tightly encloses a zonotope Z
 %
-% Syntax:  
+% Syntax:
 %    S = dominantDirections(Z,varargin)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function S=dominantDirections(Z,varargin)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      19-July-2010
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-July-2010
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % dimension
 n = dim(Z);
@@ -37,12 +37,12 @@ n = dim(Z);
 [filterLength1,filterLength2] = setDefaultValues({n+5,n+3},varargin);
 
 % check input arguments
-inputArgsCheck({{Z,'att','zonotope','nonempty'};
+inputArgsCheck({{Z,'att','zonotope'};
                 {filterLength1,'att','numeric',{'nonnan','scalar','positive'}};
                 {filterLength2,'att','numeric',{'nonnan','scalar','positive'}}});
 
 %extract generator matrix
-G = generators(Z);
+G = Z.G;
 
 %Delete zero-generators
 G=nonzeroFilter(G);
@@ -80,4 +80,4 @@ Gpicked=Gtemp{1};
 %Select dominant directions S
 S(:,1:n)=Gpicked(:,1:n);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

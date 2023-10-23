@@ -2,7 +2,7 @@ function E_cell = lminkDiff(E1,E2,L,mode)
 % lminkDiff - Approximate the Minkowski difference of an ellipsoid and
 %    another ellipsoid or a vector
 %
-% Syntax:  
+% Syntax:
 %    E_cell = lminkDiff(E1,E2,L,mode)
 %
 % Inputs:
@@ -26,13 +26,13 @@ function E_cell = lminkDiff(E1,E2,L,mode)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      09-March-2021
-% Last update:  13-June-2022 (VG: Bugfix)
-%               09-November-2022 (MW, rename 'lminkDiff')
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       09-March-2021
+% Last update:   13-June-2022 (VG, Bugfix)
+%                09-November-2022 (MW, rename 'lminkDiff')
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check if we have a bad direction in L
 if any(isBadDir(E1,E2,L))
@@ -64,4 +64,4 @@ for i=1:size(L,2)
     E_cell{i} = ellipsoid(Q,q);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

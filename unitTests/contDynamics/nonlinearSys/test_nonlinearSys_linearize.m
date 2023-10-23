@@ -4,7 +4,7 @@ function res = test_nonlinearSys_linearize
 %    for the 6 tank example; It is checked whether the A and B matrix
 %    are correct for a particular linearization point
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSys_linearize
 %
 % Inputs:
@@ -13,12 +13,12 @@ function res = test_nonlinearSys_linearize
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      30-July-2017
-% Last update:  12-September-2017
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       30-July-2017
+% Last update:   12-September-2017
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 dim_x=6;
 
@@ -58,4 +58,4 @@ res_3 = (max(abs(generators(linOptions.U) - U_true_generator)) <= 1e-12);
 %final result
 res = res_1 && res_2 && res_3;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

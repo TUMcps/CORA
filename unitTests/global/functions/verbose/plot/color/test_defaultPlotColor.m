@@ -1,7 +1,7 @@
 function res = test_defaultPlotColor
 % test_defaultPlotColor - unit test function for test_defaultPlotColor
 %
-% Syntax:  
+% Syntax:
 %    res = test_defaultPlotColor()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_defaultPlotColor
 %
 % See also: test_defaultPlotColor
 
-% Author:       Tobias Ladner
-% Written:      05-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       05-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -47,4 +47,4 @@ close;
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

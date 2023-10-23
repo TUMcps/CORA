@@ -2,7 +2,7 @@ function C = convHull(C,S)
 % convHull - computes an enclosure for the convex hull of a zonotope and
 %    another set or a point
 %
-% Syntax:  
+% Syntax:
 %    C = convHull(C,S)
 %
 % Inputs:
@@ -28,18 +28,18 @@ function C = convHull(C,S)
 %
 % See also: conZonotope/convHull
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       17-March-2023
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 if nargin == 1
     return;
 end 
-if isempty(S)
+if representsa_(S,'emptySet',eps)
     return;
 end
 
@@ -68,4 +68,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

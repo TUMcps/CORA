@@ -1,7 +1,7 @@
 function x_ = reset(trans,x,varargin)
 % reset - resets the continuous state according the reset function
 %
-% Syntax:  
+% Syntax:
 %    x_ = reset(trans,x)
 %    x_ = reset(trans,x,u)
 %
@@ -29,15 +29,15 @@ function x_ = reset(trans,x,varargin)
 %
 % See also: transition
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      04-May-2007 
-% Last update:  07-October-2008
-%               10-December-2021 (NK, added nonlinear reset functions)
-%               11-February-2022 (MP, added input dependence)
-%               11-May-2023 (MW, recursive call for cells, bug fixes)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       04-May-2007 
+% Last update:   07-October-2008
+%                10-December-2021 (NK, added nonlinear reset functions)
+%                11-February-2022 (MP, added input dependence)
+%                11-May-2023 (MW, recursive call for cells, bug fixes)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check whether multiple points/sets given
 if iscell(x)
@@ -97,7 +97,7 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function X_ = aux_nonlinearReset(trans,Z)
 % compute the resulting set for a nonlinear reset function using the
@@ -162,4 +162,4 @@ function X_ = aux_nonlinearReset(trans,Z)
     X_ = f + J * (Z + (-p)) + 0.5*quadMap((Z + (-p)),Q) + rem;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

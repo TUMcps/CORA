@@ -1,7 +1,7 @@
 function res = testLong_conZonotope_center
 % testLong_conZonotope_center - unit test function for center computation
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conZonotope_center
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_conZonotope_center
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 nrTests = 100;
@@ -64,4 +64,4 @@ for i=1:nrTests
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function [t,x,ind,y] = simulate(obj,params)
 % simulate - simulates a nonlinear discrete-time system
 %
-% Syntax:  
+% Syntax:
 %    [t,x] = simulate(obj,params)
 %    [t,x,ind,y] = simulate(obj,params)
 %
@@ -40,16 +40,16 @@ function [t,x,ind,y] = simulate(obj,params)
 %
 % See also: linearSysDT/simulate
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      22-August-2012
-% Last update:  29-January-2018 (NK)
-%               24-March-2020 (NK)
-%               08-May-2020 (MW, update interface)
-%               25-March-2021 (MA, initial state and time removed)
-%               22-June-2023 (LL, keep initial state and time, add output)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       22-August-2012
+% Last update:   29-January-2018 (NK)
+%                24-March-2020 (NK)
+%                08-May-2020 (MW, update interface)
+%                25-March-2021 (MA, initial state and time removed)
+%                22-June-2023 (LL, keep initial state and time, add output)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargout == 3
     ind = [];
@@ -117,4 +117,4 @@ for i = 1:length(t)-1
     x(i+1,:) = temp';
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function O = generateRandom(varargin)
 % generateRandom - generates a random empty set
 %
-% Syntax:  
+% Syntax:
 %    O = generateRandom()
 %    O = generateRandom('Dimension',n)
 %
@@ -21,12 +21,12 @@ function O = generateRandom(varargin)
 %
 % See also: none
 
-% Author:       Tobias Ladner
-% Written:      02-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       02-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -49,4 +49,4 @@ end
 % init emptySet object
 O = emptySet(n);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

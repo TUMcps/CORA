@@ -1,7 +1,7 @@
 function obj = mergeProperties(obj,inp1,inp2)
 % mergeProperties - Merge the object properties of two taylor model objects
 %
-% Syntax:  
+% Syntax:
 %    obj = mergeProperties(obj,inp1,inp2)
 %
 % Inputs:
@@ -19,16 +19,16 @@ function obj = mergeProperties(obj,inp1,inp2)
 %
 % See also: taylm
 
-% Author:       Niklas Kochdumper
-% Written:      06-April-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       06-April-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     obj.max_order = max(inp1.max_order,inp2.max_order);
     obj.opt_method = inp1.opt_method;
     obj.eps = min(inp1.eps,inp2.eps);
     obj.tolerance = min(inp1.tolerance,inp2.tolerance);
 
-%------------ END OF CODE ------------
+% ------------------------------ END OF CODE ------------------------------

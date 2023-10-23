@@ -1,4 +1,4 @@
-classdef hybridAutomaton
+classdef hybridAutomaton < hybridDynamics
 % hybridAutomaton - constructor for class hybridAutomaton
 %
 % Syntax:
@@ -13,19 +13,19 @@ classdef hybridAutomaton
 %
 % Example:
 %    % invariant
-%    inv = mptPolytope([-1,0],0);
+%    inv = polytope([-1,0],0);
 % 
 %    % transition
 %    c = [-1;0]; d = 0; C = [0,1]; D = 0;
 %    guard = conHyperplane(c,d,C,D);
 %    reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
-%    trans = transition(guard,reset,1);
+%    trans(1) = transition(guard,reset,1);
 % 
 %    % flow equation
 %    dynamics = linearSys([0,1;0,0],[0;0],[0;-9.81]);
 %
 %    % define location
-%    loc = location('S1',inv,trans,dynamics);
+%    loc(1) = location('S1',inv,trans,dynamics);
 % 
 %    % instantiate hybrid automaton
 %    HA = hybridAutomaton(loc);
@@ -36,13 +36,13 @@ classdef hybridAutomaton
 %
 % See also: parallelHybridAutomaton, location, transition
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      03-May-2007 
-% Last update:  16-June-2022 (MW, add checks for object properties)
-%               21-June-2023 (MW, add internal properties, restructure)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       03-May-2007 
+% Last update:   16-June-2022 (MW, add checks for object properties)
+%                21-June-2023 (MW, add internal properties, restructure)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     location = location();	    % cell-array of location objects
@@ -89,6 +89,7 @@ end
 
 end
 
+
 % Auxiliary functions -----------------------------------------------------
 
 function aux_checkInputArgs(locs,n_in)
@@ -96,8 +97,14 @@ function aux_checkInputArgs(locs,n_in)
     if CHECKS_ENABLED && n_in > 0
 
         if ~isa(locs,'location')
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                'Input argument has to be an array of location objects.'));
+            if iscell(locs)
+                % legacy error message
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Locations have to be an object array instead of a cell array.'));
+            else
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Locations have to be a location object array.'));
+            end
         end
 
         % number of locations
@@ -202,4 +209,4 @@ function [n,m,r] = aux_computeProperties(locs)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

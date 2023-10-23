@@ -1,7 +1,7 @@
 function res = test_equalDimCheck
 % test_equalDimCheck - unit test function for dimensionality check
 %
-% Syntax:  
+% Syntax:
 %    res = test_equalDimCheck()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_equalDimCheck
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -109,4 +109,4 @@ try
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

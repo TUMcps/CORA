@@ -2,7 +2,7 @@ function obj = pexpm(obj,options)
 % pexpm - computes the overapproximation of the exponential of a system 
 %    matrix up to a certain accuracy
 %
-% Syntax:  
+% Syntax:
 %    obj = pexpm(obj,options)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function obj = pexpm(obj,options)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      07-May-2007 
-% Last update:  08-September-2009
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-May-2007 
+% Last update:   08-September-2009
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
    
 %load data from object/options structure
 A=obj.A;
@@ -53,4 +53,4 @@ obj.taylor.eAt=expm(A*r);
 obj.taylor.powers=Apower;
 obj.taylor.error=E;      
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

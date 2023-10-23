@@ -30,12 +30,12 @@ function ls = not(ls)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      25-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % only supported for single-equation level sets
 compOp = ls.compOp;
@@ -65,4 +65,4 @@ end
 % init complement
 ls = levelSet(eq_,ls.vars,compOp_);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

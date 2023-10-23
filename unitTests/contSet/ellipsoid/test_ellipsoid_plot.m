@@ -1,7 +1,7 @@
 function res = test_ellipsoid_plot
 % test_ellipsoid_plot - unit test function of plot
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_plot
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_plot
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      27-July-2021
-% Last update:  09-May-2023 (TL: added plotted point checks)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       27-July-2021
+% Last update:   09-May-2023 (TL, added plotted point checks)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 load cases.mat E_c
@@ -31,7 +31,7 @@ for i=1:length(E_c)
     Ed1 = E_c{i}.Ed1;
     E0 = E_c{i}.E0;
     
-    resvec(end+1) = tryPlot(E1) && tryPlot(Ed1) && tryPlot(E0);
+    resvec(end+1) = aux_tryPlot(E1) && aux_tryPlot(Ed1) && aux_tryPlot(E0);
 
     % check if plotted correctly
     figure;
@@ -59,8 +59,9 @@ res = all(resvec);
 end
 
 
-% Auxiliary function ------------------------------------------------------
-function res = tryPlot(E)
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_tryPlot(E)
 
 resvec = [];
 try
@@ -103,4 +104,4 @@ res = all(resvec);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

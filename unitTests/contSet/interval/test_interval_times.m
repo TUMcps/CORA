@@ -2,7 +2,7 @@ function res = test_interval_times
 % test_interval_times - unit test function of times,
 %    overloaded '.*' operator for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_times
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_interval_times
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      04-January-2016
-% Last update:  13-January-2016 (DG)
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       04-January-2016
+% Last update:   13-January-2016 (DG)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 res = true;
@@ -61,4 +61,4 @@ if abs( infimum(c(6)) - 25.0 ) > tol || abs( supremum(c(6)) - 65.6 ) > tol
 	return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

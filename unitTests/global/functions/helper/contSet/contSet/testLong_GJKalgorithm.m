@@ -1,7 +1,7 @@
 function res = testLong_GJKalgorithm()
 % testLong_GJKalgorithm - unit test function for the GJK algorithm
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_GJKalgorithm()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_GJKalgorithm()
 %
 % See also: GJKalgorithm
 
-% Author:       Niklas Kochdumper
-% Written:      21-April-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       21-April-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 dims = [2 3 4 10];
 
@@ -70,4 +70,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

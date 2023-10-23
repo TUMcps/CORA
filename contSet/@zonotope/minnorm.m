@@ -4,7 +4,7 @@ function [val,x] = minnorm(Z)
 %    representation of the zonotope and thus scales exponentially with
 %    respect to the dimension
 %
-% Syntax:  
+% Syntax:
 %    [val,x] = minnorm(Z)
 %
 % Inputs:
@@ -29,12 +29,12 @@ function [val,x] = minnorm(Z)
 %
 % See also: norm
 
-% Author:       Victor Gassmann
-% Written:      18-September-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       18-September-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % extract zonotope info
 G = generators(Z);
@@ -42,8 +42,7 @@ c = center(Z);
 n = dim(Z);
 
 % get halfspace rep
-P = mptPolytope(zonotope([zeros(n,1),G]));
-P = get(P,'P');
+P = polytope(zonotope([zeros(n,1),G]));
 A = P.A;
 b = P.b;
 
@@ -53,4 +52,4 @@ b = P.b;
 x = A(ind,:)'*b(ind) + c;
 val = sqrt(val2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

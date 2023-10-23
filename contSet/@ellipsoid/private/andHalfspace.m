@@ -2,7 +2,7 @@ function E = andHalfspace(E,h,mode)
 % andHalfspace - Computes an inner-approximation or outer-approximation of
 %    the intersection between an ellipsoid and a halfspace
 %
-% Syntax:  
+% Syntax:
 %    E = andHalfspace(E,h,mode)
 %
 % Inputs:
@@ -26,12 +26,13 @@ function E = andHalfspace(E,h,mode)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      10-March-2021
-% Last update:  04-July-2022 (VG: input checks)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       10-March-2021
+% Last update:   04-July-2022 (VG, input checks)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 % compute distance to hyperplane defined by halfspace
 hyp = conHyperplane(h.c,h.d);
 d = distance(E,hyp);
@@ -139,4 +140,4 @@ Et = S'*E_nd + d*c;
 E_t = ellipsoid([Et.Q,zeros(n_nd,n_rem);zeros(n_rem,n)],[Et.q;x_rem]);
 E = T*E_t;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

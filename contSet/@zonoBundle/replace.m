@@ -1,7 +1,7 @@
 function zB = replace(zB,index,Z)
 % replace - replaces a zonotope at an index position by another zonotope
 %
-% Syntax:  
+% Syntax:
 %    zB = replace(zB,index,Z)
 %
 % Inputs:
@@ -18,14 +18,14 @@ function zB = replace(zB,index,Z)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      01-December-2010
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       01-December-2010
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %replace zonotope
 zB.Z{index} = Z;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function [res,rest] = compress(obj)
 % compress - remove redundant as well as very small coefficients from the 
 %            talyor model
 %
-% Syntax:  
+% Syntax:
 %    [res, rest] = compress(obj)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function [res,rest] = compress(obj)
 %
 % See also: taylm
 
-% Author:       Niklas Kochdumper, Dmitry Grebenyuk
-% Written:      14-June-2017
-% Last update:  01-December-2017 (DG)  
-% Last revision:---
+% Authors:       Niklas Kochdumper, Dmitry Grebenyuk
+% Written:       14-June-2017
+% Last update:   01-December-2017 (DG)  
+% Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % extract coefficients 
     c = obj.coefficients;
@@ -35,11 +35,11 @@ function [res,rest] = compress(obj)
     c = c(ind);
     
     % add coefficients with the same exponent.
-    [c,e] = addCoefficients(c,e);
+    [c,e] = aux_addCoefficients(c,e);
     
     % remove small coefficients and the last coefficients if the order of
     % coefficients is larger then the threshold
-    [c,e,cRem,eRem] = removeCoefficients(c,e,obj.max_order,obj.tolerance);
+    [c,e,cRem,eRem] = aux_removeCoefficients(c,e,obj.max_order,obj.tolerance);
     
     % compute interval overapproximation for the discarded terms
     if isempty(cRem)
@@ -54,7 +54,7 @@ function [res,rest] = compress(obj)
     end
     
     % remove empty variables
-    [e, names_of_var] = removeZeroVar(e, obj.names_of_var);
+    [e, names_of_var] = aux_removeZeroVar(e, obj.names_of_var);
     
     % assamble resulting taylm
     res = obj;
@@ -65,9 +65,9 @@ function [res,rest] = compress(obj)
 end
 
 
-%% Auxiliary functions
+% Auxiliary functions -----------------------------------------------------
     
-function [c,e] = addCoefficients(cOld,eOld)
+function [c,e] = aux_addCoefficients(cOld,eOld)
 
     % initialize output variables
     [len, width] = size(eOld);
@@ -109,7 +109,7 @@ function [c,e] = addCoefficients(cOld,eOld)
      
 end 
 
-function [c,e,cRem,eRem] = removeCoefficients(c,e,N,tolerance)
+function [c,e,cRem,eRem] = aux_removeCoefficients(c,e,N,tolerance)
     
      % intialize remainder coefficients
      [len, width] = size(e);
@@ -148,7 +148,7 @@ function [c,e,cRem,eRem] = removeCoefficients(c,e,N,tolerance)
 
 end
 
-function [e, names] = removeZeroVar(e, names)
+function [e, names] = aux_removeZeroVar(e, names)
     % find zero columns
     ind = any(e,1);
     if any(ind == 0)
@@ -162,4 +162,5 @@ function [e, names] = removeZeroVar(e, names)
         end
     end
 end
-%------------ END OF CODE ------------
+
+% ------------------------------ END OF CODE ------------------------------

@@ -11,7 +11,7 @@ function res = cos(I)
 % [min(cos(inf),cos(sup)), 1]   if (sup - inf) < 2*pi and inf > pi and sup <= pi,
 % [cos(inf), cos(sup)]          if (sup - inf) < 2*pi and inf > pi and sup > pi and sup >= inf.
 %
-% Syntax:  
+% Syntax:
 %    res = cos(I)
 %
 % Inputs:
@@ -30,14 +30,14 @@ function res = cos(I)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff, Dmitry Grebenyuk
-% Written:      25-June-2015
-% Last update:  06-January-2016 (DG)
-%               05-February-2016 (MA)
-%               22-February-2016 (DG, the matrix case is rewritten)
-% Last revision:---
+% Authors:       Matthias Althoff, Dmitry Grebenyuk
+% Written:       25-June-2015
+% Last update:   06-January-2016 (DG)
+%                05-February-2016 (MA)
+%                22-February-2016 (DG, the matrix case is rewritten)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % scalar case
 if isnumeric(I)
@@ -126,4 +126,4 @@ else
        
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

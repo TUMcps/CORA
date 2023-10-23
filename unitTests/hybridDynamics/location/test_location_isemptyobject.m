@@ -1,7 +1,7 @@
 function res = test_location_isemptyobject
 % test_location_isemptyobject - test function for isemptyobject
 %
-% Syntax:  
+% Syntax:
 %    res = test_location_isemptyobject
 %
 % Inputs:
@@ -16,18 +16,18 @@ function res = test_location_isemptyobject
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty location
 res = isemptyobject(location());
 
 % non-empty location
-inv = mptPolytope([-1,0],0);
+inv = polytope([-1,0],0);
 guard = conHyperplane([-1;0],0,[0,1],0);
 reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
 trans = transition(guard,reset,1);
@@ -39,4 +39,4 @@ res(end+1,1) = all(isemptyobject([location(),location(inv,trans,dynamics)]) == [
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

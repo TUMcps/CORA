@@ -2,7 +2,7 @@ function res = isemptyobject(S)
 % isemptyobject - this function overloads the contSet/isemptyobject for
 %    'numeric' variables
 %
-% Syntax:  
+% Syntax:
 %    res = isemptyobject(S)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = isemptyobject(S)
 %
 % See also: isempty, contSet/isemptyobject
 
-% Author:       Mark Wetzlinger
-% Written:      03-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % numeric (point instead of set)
 if isnumeric(S)
@@ -40,4 +40,4 @@ else
         'Function ''isemptyobject'' only supports contSet objects and numeric data types.'));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

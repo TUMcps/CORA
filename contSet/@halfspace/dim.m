@@ -1,7 +1,7 @@
 function n = dim(hs)
 % dim - returns the dimension of the ambient space of a halfspace
 %
-% Syntax:  
+% Syntax:
 %    n = dim(hs)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function n = dim(hs)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      27-Sep-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-September-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 n = length(hs.c);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

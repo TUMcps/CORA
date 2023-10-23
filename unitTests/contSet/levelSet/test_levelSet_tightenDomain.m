@@ -1,7 +1,7 @@
 function res = test_levelSet_tightenDomain
 % test_levelSet_tightenDomain - unit test function of tightenDomain
 %
-% Syntax:  
+% Syntax:
 %    res = test_levelSet_tightenDomain
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_levelSet_tightenDomain
 %
 % See also: tightenDomain.m
 
-% Author:       Maximilian Perschl
-% Written:      08-November-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Maximilian Perschl
+% Written:       08-November-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -49,4 +49,4 @@ for i = 1:length(expectedSolution_nonlinear)
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

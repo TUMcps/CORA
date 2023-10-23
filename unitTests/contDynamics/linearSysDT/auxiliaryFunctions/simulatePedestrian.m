@@ -2,7 +2,7 @@ function simulatePedestrian
 % simulatePedestrian - simulates a pedestrian subject to disturbances and 
 % sensor noise
 %
-% Syntax:  
+% Syntax:
 %    simulatePedestrian(options)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function simulatePedestrian
 % References: 
 %   -
 
-% Author:       Matthias Althoff
-% Written:      03-Mar-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set path
 savepath = [CORAROOT filesep 'unitTests' filesep 'contDynamics' filesep 'linearSysDT' filesep 'models'];
@@ -104,7 +104,6 @@ params.W = W_d; % disturbance set
 params.u = acceleration; %input transition
 
 
-
 %% Simulation Settings
 
 options.points = 1;
@@ -124,4 +123,4 @@ end
 
 save([savepath '/' 'pedestrianModel_new'], 'pedestrian', 'params', 'options', 'simRes');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

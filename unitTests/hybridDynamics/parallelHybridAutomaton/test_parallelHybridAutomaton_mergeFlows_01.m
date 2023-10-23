@@ -2,7 +2,7 @@ function res = test_parallelHybridAutomaton_mergeFlows_01
 % test_parallelHybridAutomaton_mergeFlows_01 - test function for merging
 %    flow equations in the location product; all flow equations are linear
 %
-% Syntax:  
+% Syntax:
 %    res = test_parallelHybridAutomaton_mergeFlows_01
 %
 % Inputs:
@@ -17,18 +17,18 @@ function res = test_parallelHybridAutomaton_mergeFlows_01
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      15-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       15-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = [];
 
 % first component, first location
 dynamics{1,1} = linearSys([0 -1; 1 0],[1 0; 0 1],[],[0.05 0.05]);
-inv{1,1} = mptPolytope(struct('A',[1 1],'b',0));
+inv{1,1} = polytope([1 1],0);
 guard = conHyperplane([1 1],0);
 reset = struct('A',[1 0; 0 1],'c',[3;3]);
 trans = transition(guard,reset,2);
@@ -36,7 +36,7 @@ loc = location('loc1',inv{1,1},trans,dynamics{1,1});
 
 % first component, second location
 dynamics{1,2} = linearSys([0 -1; -1 0],[0 1; 1 0],[],[0.05 -0.05]);
-inv{1,2} = mptPolytope(struct('A',[-1 -1],'b',0));
+inv{1,2} = polytope([-1 -1],0);
 guard = conHyperplane([1 1],0);
 reset = struct('A',[1 0; 0 1],'c',[-3;3]);
 trans = transition(guard,reset,1);
@@ -47,7 +47,7 @@ HA1 = hybridAutomaton(loc);
 
 % second component, first location
 dynamics{2,1} = linearSys([0 1 -1; 1 0 0; 0 1 0],[0;-1;0],[],[0 0 0.05; 0.05 0.05 0]);
-inv{2,1} = mptPolytope(struct('A',[1 1 1],'b',1));
+inv{2,1} = polytope([1 1 1],1);
 guard = conHyperplane([1 1 1],1);
 reset = struct('A',[1 0 0; 0 1 0; 0 0 1],'c',[1;1;1]);
 trans = transition(guard,reset,2);
@@ -55,7 +55,7 @@ loc(1) = location('loc1',inv{2,1},trans,dynamics{2,1});
 
 % second component, second location
 dynamics{2,2} = linearSys([0 -1 1; 1 0 0; 0 1 0],[0;0;1],[],[0.05 0 0; 0 0.05 -0.05]);
-inv{2,2} = mptPolytope(struct('A',[-1 -1 -1],'b',-1));
+inv{2,2} = polytope([-1 -1 -1],-1);
 guard = conHyperplane([1 1 1],1);
 reset = struct('A',[1 0 0; 0 1 0; 0 0 1],'c',[-1;-1;-1]);
 trans = transition(guard,reset,1);
@@ -99,4 +99,4 @@ end
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function names_out = applyRenames(names_in,keys,renames)
 % applyRenames - applies a list of name changes to a string array
 %
-% Syntax:  
+% Syntax:
 %    names_out = applyRenames(names_in,keys,renames)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function names_out = applyRenames(names_in,keys,renames)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 names_out = names_in;
 % iterate over names_in and find the rename
@@ -41,4 +41,4 @@ for i = 1:numel(names_in)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

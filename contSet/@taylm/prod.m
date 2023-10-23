@@ -1,7 +1,7 @@
 function res = prod(obj,varargin)
 % prod - product of array elements
 %
-% Syntax:  
+% Syntax:
 %    res = prod(obj)
 %    res = prod(obj,n)
 %
@@ -22,12 +22,12 @@ function res = prod(obj,varargin)
 %
 % See also: interval/prod
 
-% Author:       Niklas Kochdumper
-% Written:      20-December-2020
-% Last update:  
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       20-December-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 n = 1;
@@ -63,4 +63,4 @@ else
     error ('Wrong input')
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

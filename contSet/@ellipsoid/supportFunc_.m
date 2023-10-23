@@ -2,7 +2,7 @@ function [val,x] = supportFunc_(E,dir,type,varargin)
 % supportFunc_ - Calculate the upper or lower bound of an ellipsoid along a
 %    certain direction (see Def. 2.1.2 in [1]) 
 %
-% Syntax:  
+% Syntax:
 %    val = supportFunc_(E,dir)
 %    [val,x] = supportFunc_(E,dir,type)
 %
@@ -35,20 +35,20 @@ function [val,x] = supportFunc_(E,dir,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/supportFunc_
+% See also: contSet/supportFunc, zonotope/supportFunc_
 
-% Author:       Victor Gassmann
-% Written:      20-November-2019
-% Last update:  12-March-2021
-%               27-July-2021 (fixed degenerate case)
-%               04-July-2022 (VG: class array case)
-%               29-March-2023 (VG: changed to explicit comp of x vector)
-% Last revision:27-March-2023 (MW, rename supportFunc_)
+% Authors:       Victor Gassmann
+% Written:       20-November-2019
+% Last update:   12-March-2021
+%                27-July-2021 (fixed degenerate case)
+%                04-July-2022 (VG, class array case)
+%                29-March-2023 (VG, changed to explicit comp of x vector)
+% Last revision: 27-March-2023 (MW, rename supportFunc_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set is just a point
-if isZero(E+(-E.q))
+if representsa_(E+(-E.q),'origin',eps)
     val = dir'*E.q; x = E.q; return
 end
 
@@ -65,4 +65,4 @@ elseif strcmp(type,'range')
          E.q+E.Q*dir/sqrt(dir'*E.Q*dir)];
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

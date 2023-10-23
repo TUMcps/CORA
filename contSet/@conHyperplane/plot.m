@@ -1,7 +1,7 @@
 function han = plot(hyp,varargin)
 % plot - plots a projection of a constrained hyperplane
 %
-% Syntax:  
+% Syntax:
 %    han = plot(hyp)
 %    han = plot(hyp,dims)
 %    han = plot(hyp,dims,type)
@@ -22,7 +22,7 @@ function han = plot(hyp,varargin)
 %    hyp = conHyperplane(halfspace([1;1],2),C,d);
 % 
 %    figure; hold on; xlim([-4,4]); ylim([-4,4]);
-%    plot(mptPolytope(C,d),[1,2],'g');
+%    plot(polytope(C,d),[1,2],'g');
 %    plot(hyp,[1,2],'r');
 %
 % Other m-files required: none
@@ -31,14 +31,14 @@ function han = plot(hyp,varargin)
 %
 % See also: halfspace/plot
 
-% Author:       Niklas Kochdumper
-% Written:      19-November-2019
-% Last update:  25-May-2022 (TL: 1D Plotting)
-%               05-April-2023 (TL: clean up using plotPolygon)
-%               26-July-2023 (TL: getUnboundedAxisLimits)
-% Last revision:12-July-2023 (TL, restructure)
+% Authors:       Niklas Kochdumper
+% Written:       19-November-2019
+% Last update:   25-May-2022 (TL, 1D Plotting)
+%                05-April-2023 (TL, clean up using plotPolygon)
+%                26-July-2023 (TL, getUnboundedAxisLimits)
+% Last revision: 12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input arguments
 [hyp, dims, NVpairs] = aux_parseInput(hyp,varargin{:});
@@ -55,6 +55,7 @@ if nargout == 0
 end
 
 end
+
 
 % Auxiliary functions -----------------------------------------------------
 
@@ -122,4 +123,4 @@ function han = aux_plotNd(hyp,V,dims,NVpairs)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

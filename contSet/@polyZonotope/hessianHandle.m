@@ -2,7 +2,7 @@ function [H_handle,H_str] = hessianHandle(pZ,varargin)
 % hessianHandle - computes the function handle for the hessian of a
 %    one-dimensional polynomial zonotope with respect to id
 %
-% Syntax:  
+% Syntax:
 %    [H_handle,H_str] = hessianHandle(pZ)
 %    [H_handle,H_str] = hessianHandle(pZ,tol)
 %    [H_handle,H_str] = hessianHandle(pZ,id_diff,id_param)
@@ -36,14 +36,15 @@ function [H_handle,H_str] = hessianHandle(pZ,varargin)
 %
 % See also: jacobianHandle
 
-% Author:       Victor Gassmann
-% Written:      12-January-2021
-% Last update:  29-November-2021
-%               25-February-2022
-%               04-July-2022 (VG: moved id-check to common function)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       12-January-2021
+% Last update:   29-November-2021
+%                25-February-2022
+%                04-July-2022 (VG, moved id-check to common function)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 if isempty(varargin)
     tol = 0;
     [id_diff,id_param] = checkDiffParamIds(pZ);
@@ -70,19 +71,19 @@ d = length(id_diff);
 ind_d = ismember(pZ.id,id_diff);
 
 % remove any constant or "linear" generators
-ind_cut_g = all(withinTol(pZ.G,0,tol),1) | sum(pZ.expMat(ind_d,:),1)<=1;
+ind_cut_g = all(withinTol(pZ.G,0,tol),1) | sum(pZ.E(ind_d,:),1)<=1;
 G = pZ.G(:,~ind_cut_g);
-expMat = pZ.expMat(:,~ind_cut_g);
+E = pZ.E(:,~ind_cut_g);
 
 % remove any unnecessary ids
-ind_cut_id = all(expMat==0,2);
+ind_cut_id = all(E==0,2);
 id = pZ.id(~ind_cut_id);
-expMat = expMat(~ind_cut_id,:);
+E = E(~ind_cut_id,:);
 
 % find used id_diff
 id_d = id_diff(ismember(id_diff,id));
 
-pZ.G = G; pZ.expMat = expMat; pZ.id = id;
+pZ.G = G; pZ.E = E; pZ.id = id;
 if isempty(pZ.G)
     H_str = zeros(d);
     if isempty(id_param)
@@ -104,9 +105,9 @@ for i=1:length(pZ_diff_cell)
     index_col = ii_diff_d(i);
     pZd_i = pZ_diff_cell{i};
     % remove redundant generators (constant)
-    ind_cut_gi = withinTol(pZd_i.G,0,tol) | sum(pZd_i.expMat,1)==0;
+    ind_cut_gi = withinTol(pZd_i.G,0,tol) | sum(pZd_i.E,1)==0;
     Gi = pZd_i.G(:,~ind_cut_gi);
-    eMi = pZd_i.expMat(:,~ind_cut_gi);
+    eMi = pZd_i.E(:,~ind_cut_gi);
     % remove redundant ids
     ind_cut_i = all(eMi==0,2);
     % used ids
@@ -115,8 +116,8 @@ for i=1:length(pZ_diff_cell)
     % used diff ids
     id_di = id_diff(ismember(id_diff,id_i));
     assert(~isempty(id_di),'Further reduction possible!');
-    pZ_diff_i = polyZonotope(0*pZd_i.c,Gi,pZd_i.Grest,eMi,id_i); % 0*.. test
-    assert(~isZero(pZ_diff_i,tol),'Bug: Can be simplified further beforehand!');
+    pZ_diff_i = polyZonotope(0*pZd_i.c,Gi,pZd_i.GI,eMi,id_i); % 0*.. test
+    assert(~representsa_(pZ_diff_i,'origin',tol),'Bug: Can be simplified further beforehand!');
     
     % get indices at which to start computation (due to symmetry of hessian)
     % get id_di as it occurs in id_diff 
@@ -130,7 +131,7 @@ for i=1:length(pZ_diff_cell)
     pZHi_cell = jacobian(pZ_diff_i,id_diff_rem); 
     for j=1:length(id_diff_rem)
         index_row = ii_diff_rem(j);
-        %assert(~isZero(pZHi_cell{j}),'Bug: Should be true?');
+        %assert(~representsa_(pZHi_cell{j},'origin',eps),'Bug: Should be true?');
         H_str(index_row,index_col) = 1;
         % find which ids remain of id_diff and id_param
         id_dij = id_diff(ismember(id_diff,pZHi_cell{j}.id));
@@ -154,7 +155,7 @@ end
 
 %% construct handle
 symmetric = @(M) tril(M) + triu(M',1);
-H_handle = @(x,p) symmetric(symwrap(cellfun(@(f)f(x,p),H_cell,'Uni',false)));
+H_handle = @(x,p) symmetric(aux_symwrap(cellfun(@(f)f(x,p),H_cell,'Uni',false)));
 H_str = symmetric(H_str);
 if isempty(id_param)
     H_handle = @(x) H_handle(x,[]);
@@ -163,8 +164,9 @@ end
 end
 
 
-% Auxiliary functions
-function M = symwrap(M)
+% Auxiliary functions -----------------------------------------------------
+
+function M = aux_symwrap(M)
 
     if any(cellfun(@(cc)isa(cc,'sym'),M(:)))
         M = cellfun(@(cc)sym(cc),M);
@@ -174,4 +176,4 @@ function M = symwrap(M)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

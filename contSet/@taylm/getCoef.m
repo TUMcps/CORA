@@ -1,7 +1,7 @@
 function res = getCoef(obj)
 % getCoef - returns coefficients
 %
-% Syntax:  
+% Syntax:
 %    res = getCoef(obj)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = getCoef(obj)
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      06-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       06-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %	res = arrayfun(@(a) s_getCoef(a), obj, 'UniformOutput', 0);
 %
@@ -33,4 +33,4 @@ function res = getCoef(obj)
 %
 res = obj.coefficients;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

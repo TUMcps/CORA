@@ -2,7 +2,7 @@ function res = test_contSet_generateRandom
 % test_contSet_generateRandom - unit test function of
 %    contSet.generateRandom
 %
-% Syntax:  
+% Syntax:
 %    res = test_contSet_generateRandom
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_contSet_generateRandom
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true(0);
@@ -51,4 +51,4 @@ res(end+1) = isa(S, 'interval') || isa(S, 'zonotope');
 % test if all were successfull
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

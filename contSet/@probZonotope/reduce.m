@@ -1,7 +1,7 @@
 function probZred = reduce(probZ,option,order)
 % reduce - Reduces the order of a probabilistic zonotope
 %
-% Syntax:  
+% Syntax:
 %    probZred = reduce(probZ,option,order)
 %
 % Inputs:
@@ -30,12 +30,12 @@ function probZred = reduce(probZ,option,order)
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       27-September-2007 
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{probZ,'att','probZonotope'};
@@ -53,4 +53,4 @@ else
     probZred=probZ;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = testLong_ellipsoid_minkDiff
 % testLong_ellipsoid_minkDiff - unit test function of minkDiff
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_minkDiff
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_ellipsoid_minkDiff
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      15-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       15-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -31,4 +31,4 @@ res = res && testLong_component_ellipsoid_minkDiffDouble;
 % ellipsoid
 res = res && testLong_component_ellipsoid_minkDiffEllipsoid;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

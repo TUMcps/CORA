@@ -2,7 +2,7 @@ function [R,R_Krylov] = exponential_Krylov(obj,R,options)
 % exponential_Krylov - computes the overapproximation of the exponential of 
 %    a system matrix up to a certain accuracy using a Krylov subspace
 %
-% Syntax:  
+% Syntax:
 %    [R,R_Krylov] = exponential_Krylov(obj,options)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function [R,R_Krylov] = exponential_Krylov(obj,R,options)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      03-March-2017 
-% Last update:  25-October-2018
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-March-2017 
+% Last update:   25-October-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Multiply previous reachable set with exponential matrix
 
@@ -93,4 +93,4 @@ else
     R = zonotope([c_new,G_new]);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

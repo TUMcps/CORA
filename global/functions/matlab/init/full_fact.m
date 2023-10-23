@@ -2,7 +2,7 @@ function des_mat = full_fact(varargin)
 % full_fact - gives full factorial design matrix for any levels  
 %    more than 2 of any number of variables (minimum 2)
 %
-% Syntax:  
+% Syntax:
 %    des_mat = full_fact(x1,x2,x3);
 %    des_mat = full_fact([-1 1],[100 200 300],[1:4]);
 %
@@ -28,12 +28,12 @@ function des_mat = full_fact(varargin)
 %
 % See also: ---
 
-% Author:       Bhaskar Dongare <bhaskar_dongare@yahoo.com>
-% Written:      17-November-2008
-% Last update:  17-June-2022 (MW, formatting)
-% Last revision:---
+% Authors:       Bhaskar Dongare
+% Written:       17-November-2008
+% Last update:   17-June-2022 (MW, formatting)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 for i=1:nargin
     levels(i)=length(varargin{i});
@@ -73,4 +73,4 @@ for i=1:nargin
     des_mat=[des_mat temp];
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

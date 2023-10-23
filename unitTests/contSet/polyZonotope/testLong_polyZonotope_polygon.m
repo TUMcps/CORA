@@ -17,28 +17,28 @@ function res = testLong_polyZonotope_polygon
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      11-July-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       11-July-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = true;
 
 % empty case
 pgon = polygon(polyZonotope());
-resvec(end+1) = isempty(pgon) && isa(pgon, 'polygon');
+resvec(end+1) = representsa_(pgon,'emptySet',eps);
 
 % point case
 pgon = polygon(polyZonotope([1; 2]));
-resvec(end+1) = ~isempty(pgon) && isa(pgon, 'polygon');
+resvec(end+1) = ~representsa_(pgon,'emptySet',eps);
 
 % line case
 pgon = polygon(polyZonotope([1; 2], [1; 1]));
-resvec(end+1) = ~isempty(pgon);
+resvec(end+1) = ~representsa_(pgon,'emptySet',eps);
 pgon = polygon(polyZonotope([1; 2], [2, 4; 1, 2]));
-resvec(end+1) = ~isempty(pgon);
+resvec(end+1) = ~representsa_(pgon,'emptySet',eps);
 
 % complex cases
 pgon = polygon(polyZonotope([1; 2], [1, -1; 1, 3]));
@@ -71,4 +71,4 @@ resvec(end+1) = compareMatrices( ...
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = testINTLAB_asin_random(~)
 % testINTLAB_asin_random - unit_test_function for comparing to IntLabV6
 %
-% Syntax:  
+% Syntax:
 %    res = testINTLAB_asin_random
 %
 % Inputs:
@@ -15,12 +15,13 @@ function res = testINTLAB_asin_random(~)
 % MAT-files required: none
 %
 
-% Author:       Dmitry Grebenyuk
-% Written:      06-February-2016
-% Last update:  
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       06-February-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 tol = 1e-9;
 res = true;
 
@@ -75,6 +76,4 @@ if ( isempty(bad_ones_max) ~= true)
     res = false;
 end
 
-%------------- END OF CODE --------------
-
-
+% ------------------------------ END OF CODE ------------------------------

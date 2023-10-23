@@ -9,7 +9,7 @@ function res = simulateGaussian(obj, options)
 %    size. Proper white noise simulations are provided in the class
 %    linProbSys.
 %
-% Syntax:  
+% Syntax:
 %    res = simulateGaussian(obj, options)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function res = simulateGaussian(obj, options)
 %    res - object of class simResult storing time and states of the 
 %          simulated trajectories.
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      19-November-2020
-% Last update:  04-January-2021
-%               10-November-2021 (MW, adapt to updated input handling)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       19-November-2020
+% Last update:   04-January-2021
+%                10-November-2021 (MW, adapt to updated input handling)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check if trajectory tracking is required
 tracking = isfield(options,'uTransVec');
@@ -68,7 +68,7 @@ for r = 1:options.points
         options.tFinal = options.tu(block+1);
         
         % obtain random input
-        if ~isempty(options.U)
+        if ~representsa_(options.U,'emptySet',eps)
             % set input
             uRand = randPoint(options.U,1,'gaussian',options.p_conf);
 
@@ -140,4 +140,4 @@ function ylast = aux_outputTrajectoryEnd(obj,options,xtraj)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

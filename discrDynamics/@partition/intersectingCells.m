@@ -37,6 +37,8 @@ function [cells,error] = intersectingCells(obj,contSet,varargin)
 
 %------------- BEGIN CODE --------------
 
+tol = 1e-12;
+
 if nargin > 2
     switch varargin{1}
         case 'subscripts'
@@ -54,11 +56,8 @@ end
 
 
 if isa(contSet,'zonotope')
-    I=interval(contSet);
+    I=interval(contSet);  
 elseif isa(contSet,'polytope')
-    V=vertices(extreme(contSet)');
-    I=interval.enclosePoints(V);    
-elseif isa(contSet,'mptPolytope')
     I=interval(contSet);  
 else
     I=contSet;
@@ -97,9 +96,9 @@ for iDim= 1:length(obj.dividers)
     lower=bounds(iDim,1);
     upper=bounds(iDim,2);
     % find those above the lower bound
-    E=obj.dividers{iDim}>=lower;
+    E=obj.dividers{iDim}>=lower-tol;
     % find those above the upper bound
-    F=obj.dividers{iDim}<=upper;
+    F=obj.dividers{iDim}<=upper+tol;
     % bitshift and add it to the list of those already there
     currentIndex{iDim}=unique([currentIndex{iDim},find(E(2:end)&F(1:(end-1)))]);
    % if isempty(currentIndex{iDim})||E(1)||F(end)

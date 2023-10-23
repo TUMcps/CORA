@@ -1,8 +1,10 @@
 function res = testnn_requiredToolboxes
 % testnn_requiredToolboxes - checks if required toolboxes are installed
-% including the toolboxes for neural network verification
+%    including the toolboxes for neural network verification.
+%    Unit tests requiring these additional toolboxes are indicated by
+%    'testnn' instead of 'test_nn.
 %
-% Syntax:  
+% Syntax:
 %    res = testnn_requiredToolboxes
 %
 % Inputs:
@@ -14,12 +16,12 @@ function res = testnn_requiredToolboxes
 % Example: 
 %
 
-% Author:       Tobias Ladner
-% Written:      02-November-2022
-% Last update:  --
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       02-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % test general toolboxes
 res_partial(1) = test_requiredToolboxes;
@@ -31,11 +33,11 @@ if ~res_partial(2)
 end
 
 addons = matlabshared.supportpkg.getInstalled;
-res_partial(3) = any(strcmp("Deep Learning Toolbox Converter for ONNX Model Format", addons.Name));
+res_partial(3) = any(strcmp("Deep Learning Toolbox Converter for ONNX Model Format", [addons.Name]));
 if ~res_partial(3)
     disp('"Deep Learning Toolbox Converter for ONNX Model Format" missing!');
 end
 
 res = all(res_partial);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

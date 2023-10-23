@@ -1,7 +1,7 @@
 function V = vertices_(I,varargin)
 % vertices_ - Computes vertices of an interval object
 %
-% Syntax:  
+% Syntax:
 %    V = vertices_(I)
 %
 % Inputs:
@@ -18,15 +18,15 @@ function V = vertices_(I,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/vertices_
+% See also: contSet/vertices, zonotope/vertices_
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      24-July-2006 
-% Last update:  27-March-2023 (MW, rename vertices_)
-%               28-April-2023 (MW, remove duplicates in degenerate case)
-% Last revision:05-April-2023 (MW, rewrite to support unbounded intervals)
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       24-July-2006 
+% Last update:   27-March-2023 (MW, rename vertices_)
+%                28-April-2023 (MW, remove duplicates in degenerate case)
+% Last revision: 05-April-2023 (MW, rewrite to support unbounded intervals)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty case
 if dim(I) == 0
@@ -83,4 +83,4 @@ end
 %     V(:,i) = Z*Iextended(:,i);
 % end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function completed = example_nonlinear_reach_15_infiniteBusRoA
 %    the region of attraction of a single-machine-infinite-bus system from
 %    [1]
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinear_reach_15_infiniteBusRoA
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_nonlinear_reach_15_infiniteBusRoA
 %    [1] M. Althoff. "Formal Verification of Power Systems", submitted to
 %        ARCH 2022.
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       02-June-2022
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -107,9 +107,7 @@ plot(specification(E, 'safeSet'),[1 2]);
 plot(R.timePoint.set{end},[1,2],'FaceColor',CORAcolor("CORA:reachSet"));
 
 
-
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

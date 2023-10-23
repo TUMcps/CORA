@@ -1,7 +1,7 @@
 function C = capsule(I)
 % capsule - Encloses an interval with a capsule
 %
-% Syntax:  
+% Syntax:
 %    C = capsule(I)
 %
 % Inputs:
@@ -25,12 +25,12 @@ function C = capsule(I)
 %
 % See also: vertices, polytope
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       23-December-2019
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
 % dimension with largest width -> generator of capsule
 width = rad(I);
@@ -46,4 +46,4 @@ r = radius(int_);
 % construct capsule object
 C = capsule(center(I),g,r);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

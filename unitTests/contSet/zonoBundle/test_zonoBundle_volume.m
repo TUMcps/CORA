@@ -1,7 +1,7 @@
 function res = test_zonoBundle_volume
 % test_zonoBundle_volume - unit test function of volume
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonoBundle_volume
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonoBundle_volume
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
 zB = zonoBundle();
@@ -46,4 +46,4 @@ res(end+1,1) = val == 0;
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

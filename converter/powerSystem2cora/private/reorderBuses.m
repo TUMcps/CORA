@@ -8,7 +8,7 @@ function scenarioNew = reorderBuses(scenario)
 %
 % More information can be found in [1, Sec. VII].
 %
-% Syntax:  
+% Syntax:
 %    scenarioNew = reorderBuses(scenario)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function scenarioNew = reorderBuses(scenario)
 %        Verification of Continuous and Hybrid Systems, 
 %        2022, x-x
 
-% Author:       Matthias Althoff
-% Written:      14-April-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       14-April-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % copy old values
 scenarioNew = scenario;
@@ -74,4 +74,4 @@ for i=1:length(bus.generator)
     scenarioNew.VM(i) = scenario.VM(i_old);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

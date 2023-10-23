@@ -2,7 +2,7 @@ function res = example_nonlinearSysDT_reach_adaptive
 % example_nonlinearSysDT_reach_adaptive - numerous examples for nonlinear
 %    reachability analysis to test the adaptive parameter tuning approach
 %
-% Syntax:  
+% Syntax:
 %    res = example_nonlinearSysDT_reach_adaptive
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = example_nonlinearSysDT_reach_adaptive
 % Outputs:
 %    res - true/false
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       21-September-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -40,11 +40,18 @@ options.alg = 'lin-adaptive';
 
 R = reach(sys,params,options);
 
+% Simulations -------------------------------------------------------------
+
+simOpts.points = 10;
+simRes = simulateRandom(sys,params,simOpts);
+
 % Visualization -----------------------------------------------------------
 
 figure; hold on;
 useCORAcolors("CORA:contDynamics")
 plot(R,[1 2],'DisplayName','Reachable set')
 plot(R.R0,[1 2],'DisplayName','Initial set')
+plot(simRes,[1 2],'DisplayName','Simulations')
+legend()
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function [Rti,Rtp,Rti_y,perfInd,dimForSplit,options] = linReach(obj,options,Rini
 %    the initial set has to be split in order to control the linearization
 %    error
 %
-% Syntax:  
+% Syntax:
 %    [Rti,Rtp,perfInd,dimForSplit,options] = linReach(obj,options,Rinit,Rinit_y,iter)
 %
 % Inputs:
@@ -30,17 +30,15 @@ function [Rti,Rtp,Rti_y,perfInd,dimForSplit,options] = linReach(obj,options,Rini
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      21-November-2011
-% Last update:  28-May-2013
-%               19-May-2020 (MW, error handling for exploding sets)
-%               11-January-2021 (MW, syntax change for reachSet
-%                                    instantiation)
-%               26-May-2022 (MA, explicit selection of linearization error
-%                                computation)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-November-2011
+% Last update:   28-May-2013
+%                19-May-2020 (MW, error handling for exploding sets)
+%                11-January-2021 (MW, syntax change for reachSet init)
+%                26-May-2022 (MA, explicit selection of linearization error computation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % extract start set and abstraction error
 abstrerr_x = Rinit.error_x;
@@ -149,4 +147,4 @@ Rtp_.error_x = error_x;
 Rtp_.error_y = error_y;
 Rtp = Rtp_;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

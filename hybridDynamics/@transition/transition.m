@@ -35,16 +35,15 @@ classdef transition
 %
 % See also: hybridAutomaton, location, parallelHybridAutomaton
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
-% Written:      02-May-2007 
-% Last update:  30-July-2016
-%               10-December-2021 (NK, enable nonlinear reset functions)
-%               04-April-2022 (MP, add fields .hasInput/.inputDim to reset)
-%               16-June-2022 (MW, add checks for object properties,
-%                                 update handling of reset struct fields)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
+% Written:       02-May-2007 
+% Last update:   30-July-2016
+%                10-December-2021 (NK, enable nonlinear reset functions)
+%                04-April-2022 (MP, add fields .hasInput/.inputDim to reset)
+%                16-June-2022 (MW, add checks for object properties, update handling of reset struct fields)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     % guard set (empty, linear, or nonlinear)
@@ -94,7 +93,7 @@ methods
         end
         
         % 1. check guard set: either empty or admissible set representation
-        guardlist = {'interval','mptPolytope','levelSet','conHyperplane','fullspace'};
+        guardlist = {'interval','polytope','levelSet','conHyperplane','fullspace'};
         if ~any(ismember(class(trans.guard),guardlist))
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 ['Property ''guard'' has to be one of the following classes:\n'...
@@ -254,4 +253,4 @@ methods
 end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -5,7 +5,7 @@ function res = testLong_converter_powerSystem2cora_indexForSubsystems()
 %    checked whether the steady state is correctly computed for each
 %    subsystem
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_converter_powerSystem2cora_indexForSubsystems
 %
 % Inputs:
@@ -19,12 +19,12 @@ function res = testLong_converter_powerSystem2cora_indexForSubsystems()
 %        using Reachable Sets", IEEE Transactions on Power Systems 29 (5), 
 %        2014, 2270-2280
 
-% Author:       Matthias Althoff
-% Written:      27-May-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       27-May-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % load model parameters to obtain Vgen
 load IEEE30
@@ -125,4 +125,4 @@ end
 % final result
 res = all(resPartial);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

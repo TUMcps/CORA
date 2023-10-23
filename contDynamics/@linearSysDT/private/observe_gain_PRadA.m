@@ -2,7 +2,7 @@ function [OGain, tComp] = observe_gain_PRadA(obj,options)
 % observe_gain_PRadA - computes the gain for the guaranteed state estimation
 % approach according to Sec. 4.1 of [1].
 %
-% Syntax:  
+% Syntax:
 %    [R,Rout] = observe_gain_PRadA(obj,options)
 %
 % Inputs:
@@ -32,13 +32,13 @@ function [OGain, tComp] = observe_gain_PRadA(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       12-Sep-2020
-% Last update:   02-Jan-2021
-%                25-Feb-2021
+% Authors:       Matthias Althoff
+% Written:       12-September-2020
+% Last update:   02-January-2021
+%                25-February-2021
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tic;
 
@@ -68,4 +68,4 @@ obj.C = tmpC;
 % computation time
 tComp = toc;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

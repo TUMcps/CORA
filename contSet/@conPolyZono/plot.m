@@ -2,7 +2,7 @@ function han = plot(cPZ,varargin)
 % plot - plots an over-approximative projection of a constrained polynomial
 %    zonotope
 %
-% Syntax:  
+% Syntax:
 %    han = plot(cPZ)
 %    han = plot(cPZ,dims)
 %    han = plot(cPZ,dims,type)
@@ -20,13 +20,13 @@ function han = plot(cPZ,varargin)
 % Example: 
 %    c = [0;0];
 %    G = [2 0 1;0 2 1];
-%    expMat = [1 0 3;0 1 1;0 0 0];
+%    E = [1 0 3;0 1 1;0 0 0];
 %    A = [1 -2 1 -2 -0.5];
 %    b = 3/2;
-%    expMat_ = [2 1 0 0 0; 0 0 2 1 0; 0 0 0 0 1];
-%    Grest = [0;0.5];
+%    EC = [2 1 0 0 0; 0 0 2 1 0; 0 0 0 0 1];
+%    GI = [0;0.5];
 %    
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_,Grest);
+%    cPZ = conPolyZono(c,G,E,A,b,EC,GI);
 %     
 %    figure; hold on;
 %    plot(cPZ,[1,2],'b','Splits',8);
@@ -40,13 +40,13 @@ function han = plot(cPZ,varargin)
 %
 % See also: polyZonotope/plot
 
-% Author:       Niklas Kochdumper
-% Written:      19-January-2020
-% Last update:  25-May-2022 (TL: 1D Plotting)
-%               05-April-2023 (TL: clean up using plotPolygon)
-% Last revision:12-July-2023 (TL, restructure)
+% Authors:       Niklas Kochdumper
+% Written:       19-January-2020
+% Last update:   25-May-2022 (TL, 1D Plotting)
+%                05-April-2023 (TL, clean up using plotPolygon)
+% Last revision: 12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input
 [cPZ,dims,NVpairs,splits] = aux_parseInput(cPZ,varargin{:});
@@ -64,7 +64,8 @@ end
 
 end
 
-% Auxiliary Functions -----------------------------------------------------
+
+% Auxiliary functions -----------------------------------------------------
 
 function [cPZ,dims,NVpairs,splits] = aux_parseInput(cPZ,varargin)
     % parse input 
@@ -119,8 +120,8 @@ function han = aux_plot3d(cPZ,dims,NVpairs,splits)
     % transform to equivalent higher-dimensional polynomial zonotope
     c = [cPZ.c; -cPZ.b];
     G = blkdiag(cPZ.G,cPZ.A);
-    expMat = [cPZ.expMat,cPZ.expMat_];
-    pZ = polyZonotope(c,G,[],expMat);
+    E = [cPZ.E,cPZ.EC];
+    pZ = polyZonotope(c,G,[],E);
     
     % split the polynomial zonotope multiple times to obtain a better 
     % over-approximation of the real shape
@@ -160,7 +161,7 @@ function han = aux_plot3d(cPZ,dims,NVpairs,splits)
         Zi = zonotope(pZi);
 
         % add independent generators
-        Zi = zonotope([Zi.Z,cPZ.Grest]);
+        Zi = zonotope(Zi.c, [Zi.G,cPZ.GI]);
 
         % add to list
         Zs{i} = Zi;
@@ -192,4 +193,4 @@ function res = aux_intersectsNullSpace(obj)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = testLong_zonotope_plus
 % testLong_zonotope_plus - unit test function of plus
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_plus
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_zonotope_plus
 %
 % See also: -
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      26-July-2016
-% Last update:  09-August-2020
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       26-July-2016
+% Last update:   09-August-2020
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -61,4 +61,4 @@ for i=1:nrTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

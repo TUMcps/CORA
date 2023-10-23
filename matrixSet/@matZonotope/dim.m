@@ -1,7 +1,7 @@
 function n = dim(matZ,rc)
 % dim - returns the dimension of the matrix zonotope
 %
-% Syntax:  
+% Syntax:
 %    n = dim(matZ)
 %    n = dim(matZ,rc)
 %
@@ -24,12 +24,12 @@ function n = dim(matZ,rc)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin == 1
     % read dimension from center
@@ -41,4 +41,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

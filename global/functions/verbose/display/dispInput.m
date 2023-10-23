@@ -2,7 +2,7 @@ function dispInput(varname)
 % dispInput - Displays 'varname =' at the start of display() if not called
 %    from other display() operation
 %
-% Syntax:  
+% Syntax:
 %    dispInput(varname)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function dispInput(varname)
 %
 % See also: none
 
-% Author:       Tobias Ladner
-% Written:      23-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       23-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check if called from display of hybridAutomaton
 st = dbstack("-completenames");
@@ -37,4 +37,4 @@ if ~callFromOtherDisplay
     fprintf(newline);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

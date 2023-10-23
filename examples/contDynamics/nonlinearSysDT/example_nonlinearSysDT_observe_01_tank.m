@@ -3,7 +3,7 @@ function completed = example_nonlinearSysDT_observe_01_tank()
 %    estimation of nonlinear discrete-time systems from a unit test; shows
 %    the solution of the nonlinearSysDT class for a tank example from [1].
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinearSysDT_observe_01_tank
 %
 % Inputs:
@@ -17,12 +17,12 @@ function completed = example_nonlinearSysDT_observe_01_tank()
 %        Proc. of the 8th International Workshop on Applied Verification 
 %        for Continuous and Hybrid Systems, 2021.
 
-% Author:       Matthias Althoff
-% Written:      14-Jun-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       14-June-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %% Load tank model
@@ -80,4 +80,4 @@ end
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = testLong_interval_projVertices
 % testLong_interval_projVertices - unit test function for
 %    computation of vertices of a 2D projection
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_interval_projVertices
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_interval_projVertices
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      21-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       21-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -63,4 +63,4 @@ for i=1:nrTests
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

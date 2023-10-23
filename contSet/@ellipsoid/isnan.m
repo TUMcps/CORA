@@ -1,7 +1,7 @@
 function res = isnan(E)
 % isnan - checks if any value in the ellipsoid is NaN
 %
-% Syntax:  
+% Syntax:
 %    res = isnan(E)
 %
 % Inputs:
@@ -20,11 +20,13 @@ function res = isnan(E)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      01-June-2022
-% Last update:  04-July-2022 (VG: support class arrays)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       01-June-2022
+% Last update:   04-July-2022 (VG, support class arrays)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = false(size(E));
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

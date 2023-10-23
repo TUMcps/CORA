@@ -3,7 +3,7 @@ function res = test_linearSys_reach_05_inputTrajectoryOnly()
 % reachability analysis with an input trajectory uTransVec; this test 
 % should check whether correct the input trajectory is correctly considered
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_reach_05_inputTrajectoryOnly
 %
 % Inputs:
@@ -12,12 +12,12 @@ function res = test_linearSys_reach_05_inputTrajectoryOnly()
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      18-September-2018
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-September-2018
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 dim_x = 5;
@@ -55,4 +55,4 @@ IH_true = interval( ...
 % final result
 res = isequal(IH,IH_true,1e-8);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

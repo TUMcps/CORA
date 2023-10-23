@@ -1,7 +1,7 @@
 function [obj] = sample(obj)
 % sample - computes a sample of the system matrix
 %
-% Syntax:  
+% Syntax:
 %    [obj] = sample(obj)
 %
 % Inputs:
@@ -18,13 +18,13 @@ function [obj] = sample(obj)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      16-May-2007 
-% Last update:  15-June-2016
-%               25-July-2016 (intervalhull replaced by interval)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       16-May-2007 
+% Last update:   15-June-2016
+%                25-July-2016 (intervalhull replaced by interval)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get left and right system matrix
 [Aleft,Aright]=interval(obj.A);
@@ -45,4 +45,4 @@ for i=1:length(W(1,:))
     obj.sample.A{i}=reshape(W(:,i),rows,cols);
 end
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

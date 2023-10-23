@@ -1,7 +1,7 @@
 function res = test_interval_enlarge
 % test_interval_enlarge - unit test function of enlarge
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_enlarge
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_enlarge
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      29-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       29-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % TEST 1: Analytical ------------------------------------------------------
 % create interval
@@ -69,4 +69,4 @@ res_rand = all(infimum(IntEnlarge) == infimum(IntEnlarge_true)) && ...
 % add results
 res = res_analytical && res_rand;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

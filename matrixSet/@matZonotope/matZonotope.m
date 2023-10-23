@@ -1,7 +1,7 @@
 classdef (InferiorClasses = {?mp}) matZonotope
 % matZonotope class 
 %
-% Syntax:  
+% Syntax:
 %    obj = matZonotope()
 %    obj = matZonotope(C,G)
 %
@@ -25,15 +25,15 @@ classdef (InferiorClasses = {?mp}) matZonotope
 %
 % See also: intervalMatrix, matPolytope
 
-% Author:       Matthias Althoff
-% Written:      14-September-2006 
-% Last update:  22-March-2007
-%               04-June-2010
-%               27-August-2019
-%               03-April-2023 (MW, remove property dim)
+% Authors:       Matthias Althoff
+% Written:       14-September-2006 
+% Last update:   22-March-2007
+%                04-June-2010
+%                27-August-2019
+%                03-April-2023 (MW, remove property dim)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     gens = 0;
@@ -126,4 +126,4 @@ methods
 end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

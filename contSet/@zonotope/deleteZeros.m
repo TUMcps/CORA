@@ -1,9 +1,7 @@
 function Z = deleteZeros(Z)
-% deleteZeros - removes all generators from a zonotope with zeros in all
-%    dimensions, so that every generator the resulting zonotope has at
-%    least one non-zero entry
+% deleteZeros - (DEPRECATED -> compact)
 %
-% Syntax:  
+% Syntax:
 %    Z = deleteZeros(Z)
 %
 % Inputs:
@@ -12,31 +10,23 @@ function Z = deleteZeros(Z)
 % Outputs:
 %    Z - zonotope object
 %
-% Example:
-%    Z1 = zonotope([0;0],[1 0 -2 0 3 4; 0 0 1 0 -2 1]);
-%    Z2 = deleteZeros(Z1);
-%    
-%    plot(Z1); hold on;
-%    plot(Z2,[1,2],'r');
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: zonotope/compact_
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       15-January-2009
-% Last update:   27-Aug-2019
-% Last revision: ---
+% Last update:   27-August-2019
+% Last revision: 29-July-2023 (MW, merged into compact)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-% extract center and generator matrix
-c = center(Z);
-G = generators(Z);
+funcname = mfilename;
+warning(sprintf(['The function ''' funcname ''' is deprecated (since CORA 2024) and has been replaced by ''compact''.\n' ...
+    '         When updating the code, please rename every function call ''' funcname '(Z)'' -> ''compact(Z,''zeros'')''.\n' ...
+    '         Note that the function ''' funcname ''' will be removed in a future release.']));
+Z = compact_(Z,'zeros',eps);
 
-% assemble without empty generators
-Z.Z = [c,nonzeroFilter(G)];
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

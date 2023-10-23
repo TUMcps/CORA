@@ -5,7 +5,7 @@ function res = test_nonlinearSys_initReach
 %    It is checked whether partial reachable sets and the set
 %    of linearization errors are correctly obtained
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSys_initReach
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_nonlinearSys_initReach
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      31-July-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       31-July-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Model Parameters --------------------------------------------------------
 
@@ -82,4 +82,4 @@ linErrors_true = 1e-3*[0.206863683556226; 0.314066832661960; 0.161658399976593; 
 res = isequal(IH_tp,IH_tp_true,1e-8) && isequal(IH_ti,IH_ti_true,1e-8) ...
     && compareMatrices(linErrors,linErrors_true,1e-12);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

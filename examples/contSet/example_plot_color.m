@@ -1,7 +1,7 @@
 function example_plot_color()
 % example_plot_color - shows how the color of the plots can be configured
 %
-% Syntax:  
+% Syntax:
 %    completed = example_plot_color()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function example_plot_color()
 %
 % See also: colororder
 
-% Author:        Tobias Ladner
+% Authors:       Tobias Ladner
 % Written:       28-February-2023
 % Last update:   24-March-2023
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init
 Z0 = zonotope([-3;3], [1 0 1; 0 1 1]/5);
@@ -77,17 +77,17 @@ for i=1:3
     Z = M * Z;
 end
 
-% or explicitly specify the EdgeColor with CORAcolor('CORA:next')
+% or explicitly specify the EdgeColor according to colororder
 for i=1:3
-    plot(Z, [1 2], 'EdgeColor', CORAcolor('CORA:next'), ...
+    plot(Z, [1 2], 'EdgeColor', 'next', ...
         'DisplayName', 'EdgeColor')
     Z = M * Z;
 end
 
 
-% or fill with 'FaceColor' and CORAcolor('CORA:next')
+% or fill with 'FaceColor' and 'next'
 for i=1:3
-    plot(Z, [1 2], 'FaceColor', CORAcolor('CORA:next'), ...
+    plot(Z, [1 2], 'FaceColor', 'next', ...
         'DisplayName', 'FaceColor')
     Z = M * Z;
 end
@@ -101,4 +101,4 @@ end
 legend('Location', 'eastoutside')
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

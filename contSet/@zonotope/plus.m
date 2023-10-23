@@ -2,7 +2,7 @@ function Z = plus(summand1,summand2)
 % plus - overloaded '+' operator for the Minkowski addition of two
 %    zonotopes or a zonotope with a vector
 %
-% Syntax:  
+% Syntax:
 %    Z = plus(summand1,summand2)
 %
 % Inputs:
@@ -34,15 +34,15 @@ function Z = plus(summand1,summand2)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      30-September-2006 
-% Last update:  23-March-2007
-%               14-August-2016
-%               04-March-2019
-%               13-August-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       30-September-2006 
+% Last update:   23-March-2007
+%                14-August-2016
+%                04-March-2019
+%                13-August-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % determine zonotope object
 [Z,summand] = findClassArg(summand1,summand2,'zonotope');
@@ -53,18 +53,18 @@ try
     if isa(summand,'zonotope')
     
         % see Equation 2.1 in [1]
-        Z.Z(:,1) = Z.Z(:,1)+summand.Z(:,1);
-        Z.Z(:,(end+1):(end+length(summand.Z(1,2:end)))) = summand.Z(:,2:end);
+        Z.c = Z.c+summand.c;
+        Z.G(:,(end+1):(end+size(summand.G,2))) = summand.G;
     
     elseif isnumeric(summand)
     
-        Z.Z(:,1) = Z.Z(:,1)+summand;
+        Z.c = Z.c+summand;
     
     elseif isa(summand,'interval')
     
         Z = Z + zonotope(summand);
-    
-    elseif isa(summand,'mptPolytope') || isa(summand,'conZonotope') || ...
+
+    elseif isa(summand,'polytope') || isa(summand,'conZonotope') || ...
            isa(summand,'zonoBundle') || isa(summand,'polyZonotope') || ...
            isa(summand,'conPolyZono')
     
@@ -85,7 +85,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(Z)
+    if representsa_(Z,'emptySet',eps)
         return
     elseif (isnumeric(summand) && isempty(summand)) || ...
             (isa(summand,'contSet') && isemptyobject(summand))
@@ -100,4 +100,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

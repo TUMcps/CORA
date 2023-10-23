@@ -35,15 +35,15 @@ function [val,x,ksi] = supportFunc_(cZ,dir,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/supportFunc_
+% See also: contSet/supportFunc, zonotope/supportFunc_
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      22-May-2018
-% Last update:  10-December-2022 (MW, add type = 'range')
-%               16-December-2022 (MW, simplify code, add call to MOSEK)
-% Last revision:27-March-2023 (MW, rename supportFunc_)
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       22-May-2018
+% Last update:   10-December-2022 (MW, add type = 'range')
+%                16-December-2022 (MW, simplify code, add call to MOSEK)
+% Last revision: 27-March-2023 (MW, rename supportFunc_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % non-constrained case
 if isempty(cZ.A) || all(all(cZ.A == 0)) 
@@ -55,18 +55,18 @@ if isempty(cZ.A) || all(all(cZ.A == 0))
     % determine upper or lower bound
     if strcmp(type,'upper')
         val = supremum(I);
-        ksi = sign(temp.Z(2:end))';
+        ksi = sign(temp.G)';
     elseif strcmp(type,'lower')
         val = infimum(I); 
-        ksi = -sign(temp.Z(2:end))';
+        ksi = -sign(temp.G)';
     elseif strcmp(type,'range')
         val = I;
-        ksi = [-sign(temp.Z(2:end))', sign(temp.Z(2:end))'];
+        ksi = [-sign(temp.G)', sign(temp.G)'];
     end
 
     % calculate support vector
     if nargout >= 2
-        x = cZ.Z(:,1) + cZ.Z(:,2:end)*ksi;
+        x = cZ.c + cZ.G*ksi;
     end
     return
 
@@ -82,7 +82,7 @@ lb = -ones(n,1);
 ub = ones(n,1);
 
 % project the zonotope onto the direction
-f = dir' * cZ.Z(:,2:end);
+f = dir' * cZ.G;
 
 % init values for better code logic
 fval = [];
@@ -102,13 +102,17 @@ elseif nargout == 1
     % a constraint -> only one solution
     idxPos = all(withinTol(f,A),2);
     idxNeg = all(withinTol(-f,A),2);
-    if any(idxPos)
-        fval = b(idxPos);
-    elseif any(idxNeg)
-        fval = -b(idxNeg);
-    end
-    if strcmp(type,'range')
-        fval = [fval fval];
+    % if more than one constraint eligible, skip this variant and go for
+    % linear program evaluation
+    if nnz(idxPos) + nnz(idxNeg) == 1
+        if any(idxPos)
+            fval = b(idxPos);
+        elseif any(idxNeg)
+            fval = -b(idxNeg);
+        end
+        if strcmp(type,'range')
+            fval = [fval fval];
+        end
     end
 end
 
@@ -176,7 +180,7 @@ if isempty(fval)
         % linear program options
         persistent options
         if isempty(options)
-            options = optimoptions('linprog','display','off');
+            options = optimoptions('linprog','Algorithm','dual-simplex','display','off');
         end
 
         % lower bound
@@ -224,15 +228,15 @@ end
 
 % calculate bound by adding the zonotope center
 if strcmp(type,'range')
-    temp = dir' * cZ.Z(:,1) + fval;
+    temp = dir' * cZ.c + fval;
     val = interval(temp(1),temp(2));
 elseif any(strcmp(type,{'upper','lower'}))
-    val = dir' * cZ.Z(:,1) + fval;
+    val = dir' * cZ.c + fval;
 end
 
 % calculate support vector
 if nargout >= 2
-    x = cZ.Z(:,1) + cZ.Z(:,2:end)*ksi;
+    x = cZ.c + cZ.G*ksi;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

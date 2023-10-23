@@ -4,7 +4,7 @@ function res = testLong_polyZonotope_plotRandPoint
 %    input arguments
 %    note: only run-time errors checked, manual bug check necessary
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polyZonotope_plotRandPoint
 %
 % Inputs:
@@ -19,12 +19,12 @@ function res = testLong_polyZonotope_plotRandPoint
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      11-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -33,9 +33,9 @@ c = rand(4,1)-0.5*ones(4,1);
 G = rand(4,6)-0.5*ones(4,6);
 ind = datasample(1:6,4,'Replace',false);
 G(:,ind) = G(:,ind)./10;
-Grest = rand(4,2)-0.5*ones(4,2);
-expMat = [eye(4), round(rand(4,2)*5)];
-pZ = polyZonotope(c,G,Grest,expMat);
+GI = rand(4,2)-0.5*ones(4,2);
+E = [eye(4), round(rand(4,2)*5)];
+pZ = polyZonotope(c,G,GI,E);
 
 try
     % try all variations in plotting
@@ -61,5 +61,4 @@ catch
     res = false;
 end
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

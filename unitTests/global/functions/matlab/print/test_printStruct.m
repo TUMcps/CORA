@@ -1,7 +1,7 @@
 function res = test_printStruct
 % test_printStruct - unit test function for printStruct
 %
-% Syntax:  
+% Syntax:
 %    res = test_printStruct()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_printStruct
 %
 % See also: none
 
-% Author:       Tobias Ladner
-% Written:      31-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       31-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -68,4 +68,4 @@ resvec(end+1) = true;
 % combine results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

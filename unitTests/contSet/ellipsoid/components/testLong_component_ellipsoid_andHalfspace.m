@@ -2,7 +2,7 @@ function res = testLong_component_ellipsoid_andHalfspace
 % testLong_component_ellipsoid_andHalfspace - unit test function of
 %    andHalfspace
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_component_ellipsoid_andHalfspace
 %
 % Inputs:
@@ -17,12 +17,13 @@ function res = testLong_component_ellipsoid_andHalfspace
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      17-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       17-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = true;
 nRuns = 2;
 bools = [false,true];
@@ -57,7 +58,7 @@ for i=10:5:15
             % choose random point within E
             s = E.q + fac_s*(B(:,m)-E.q);
             h3 = halfspace(v,v'*s);
-            if isempty(E&h3)
+            if representsa_(E&h3,'emptySet',eps)
                 res = false;
                 return;
             end
@@ -65,4 +66,4 @@ for i=10:5:15
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

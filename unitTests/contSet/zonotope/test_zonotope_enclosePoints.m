@@ -1,7 +1,7 @@
 function res = test_zonotope_enclosePoints
 % test_zonotope_enclosePoints - unit test function of enclosePoints
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_enclosePoints
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_enclosePoints
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % points
 p = [1  3 -2  4 3 -1 1 0;...
@@ -40,4 +40,4 @@ Z_ = zonotope.enclosePoints(p,'stursberg');
 % check if all points are contained
 res = all(contains(Z,p)) && all(contains(Z_,p));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

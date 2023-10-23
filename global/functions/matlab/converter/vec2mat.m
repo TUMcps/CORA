@@ -1,7 +1,7 @@
 function mat = vec2mat(varargin)
 % vec2mat - Stores entries of a vector in a matrix
 %
-% Syntax:  
+% Syntax:
 %    mat = vec2mat(varargin)
 %
 % Inputs:
@@ -19,14 +19,14 @@ function mat = vec2mat(varargin)
 %
 % See also: mat2vec
 
-% Author:       Matthias Althoff, Tobias Ladner
-% Written:      18-June-2010 
-% Last update:  22-June-2010
-%               05-October-2010
-%               20-April-2023 (TL, simplified)
-% Last revision:---
+% Authors:       Matthias Althoff, Tobias Ladner
+% Written:       18-June-2010 
+% Last update:   22-June-2010
+%                05-October-2010
+%                20-April-2023 (TL, simplified)
+% Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 vec = varargin{1};
 
@@ -41,4 +41,4 @@ end
 % reshape
 mat = reshape(vec, [], cols);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

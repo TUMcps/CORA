@@ -1,7 +1,7 @@
 function p = commonPoint(hs1,hs2)
 % commonPoint - find arbitrary common point of two halfspaces
 %
-% Syntax:  
+% Syntax:
 %    p = commonPoint(hs1,hs2)
 %
 % Inputs:
@@ -27,12 +27,12 @@ function p = commonPoint(hs1,hs2)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      27-August-2013
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       27-August-2013
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % dimension
 n = dim(hs1);
@@ -55,4 +55,4 @@ alpha_2 = hs2.d - hs2.c.'*x_1/(hs2.c.'*n_2);
 % second projection
 p = x_1 + alpha_2*n_2;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

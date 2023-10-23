@@ -7,7 +7,7 @@ function [isLinear,A,B,c,formalEqs,containsInput] = ...
 %    WARNING: could produce incorrect results, if any variables are named 
 %       "xL<number>R" or "uL<number>R
 %
-% Syntax:  
+% Syntax:
 %    [isLinear,A,B,c,formalEqs,containsInput] = ...
 %       eq2linSys(exprNames,exprs,states,inputs,parseMode)
 %
@@ -43,12 +43,12 @@ function [isLinear,A,B,c,formalEqs,containsInput] = ...
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set default value
 parseMode = setDefaultValues({'flow'},varargin);
@@ -168,4 +168,4 @@ end
 
 formalEqs = join(eqs,newline);
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

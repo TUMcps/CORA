@@ -1,7 +1,7 @@
 function writeMatrix(M,fid)
 % writeMatrix - ???
 %
-% Syntax:  
+% Syntax:
 %    writeMatrix(M,fid)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function writeMatrix(M,fid)
 %
 % See also: ---
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %write each row
 for iRow=1:(length(M(:,1)))
@@ -51,4 +51,4 @@ for iRow=1:(length(M(:,1)))
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

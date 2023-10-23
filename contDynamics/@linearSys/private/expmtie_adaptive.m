@@ -2,7 +2,7 @@ function [obj,options] = expmtie_adaptive(obj,options)
 % expmtie_adaptive - computes the remainder of the exponential matrix
 %    and the correction matrix
 %
-% Syntax:  
+% Syntax:
 %    obj = expmtie_adaptive(obj,options)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function [obj,options] = expmtie_adaptive(obj,options)
 %
 % See also: -
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       26-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % load data from object/options structure
 A = obj.A;
@@ -110,4 +110,4 @@ obj.taylor.F = Asum + E;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

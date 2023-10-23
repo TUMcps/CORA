@@ -2,7 +2,7 @@ function simRes = simulateRandom(HA,params,varargin)
 % simulateRandom - simulates a hybrid automaton for random initial points
 %    and random inputs
 %
-% Syntax:  
+% Syntax:
 %    res = simulateRandom(HA,params,options)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function simRes = simulateRandom(HA,params,varargin)
 %
 % See also: none
 
-% Author:        Niklas Kochdumper, Mark Wetzlinger
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
 % Written:       03-December-2019 
 % Last update:   08-May-2020 (MW, update interface)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % input argument validation
 options = struct();
@@ -111,4 +111,4 @@ for i = 1:options.points
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

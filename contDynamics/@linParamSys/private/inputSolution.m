@@ -1,7 +1,7 @@
 function obj = inputSolution(obj,options)
 % inputSolution - computes the bloating due to the input 
 %
-% Syntax:  
+% Syntax:
 %    obj = inputSolution(obj,options)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function obj = inputSolution(obj,options)
 %
 % See also: expm, tie
 
-% Author:       Matthias Althoff
-% Written:      06-August-2010 
-% Last update:  25-July-2016 (intervalhull replaced by interval)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-August-2010 
+% Last update:   25-July-2016 (intervalhull replaced by interval)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set of possible inputs
 V=obj.B*options.U;
@@ -66,8 +66,8 @@ intM = intM + obj.E*r;
 inputSetTrans = intM*zonotope(vTrans);
 
 %delete zero generators in zonotope representation
-inputSet=deleteZeros(inputSet);
-inputSetTrans=deleteZeros(inputSetTrans);
+inputSet=compact_(inputSet,'zeros',eps);
+inputSetTrans=compact_(inputSetTrans,'zeros',eps);
 
 %compute additional uncertainty if origin is not contained in input set
 if options.originContained
@@ -84,4 +84,4 @@ obj.Rtrans = inputSetTrans;
 obj.RV = reduce(inputSet,options.reductionTechnique,options.zonotopeOrder);
 obj.inputCorr = inputCorr;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function [eP,eI] = expmIndMixed(matP,intermediateOrder,maxOrder)
 %    evaluated independently; higher-order terms are computed via interval
 %    arithmetic.
 %
-% Syntax:  
+% Syntax:
 %    [eP,eI] = expmIndMixed(matP,intermediateOrder,maxOrder)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function [eP,eI] = expmIndMixed(matP,intermediateOrder,maxOrder)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      02-July-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       02-July-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %compute finite Taylor series
 %initialize matrix polytope
@@ -46,4 +46,4 @@ end
 intMat = intervalMatrix(matP);
 eI = expmInd(intMat, maxOrder, intermediateOrder+1, intMat*intervalMatrix(ePpow));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

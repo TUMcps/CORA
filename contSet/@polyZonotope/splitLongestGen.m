@@ -2,7 +2,7 @@ function [pZsplit,factor] = splitLongestGen(pZ,varargin)
 % splitLongestGen - Splits the longest generator dependent generator with a 
 %    polynomial order of 1 for a polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    [pZsplit,factor] = splitLongestGen(pZ)
 %    [pZsplit,factor] = splitLongestGen(pZ,polyOrd)
 %
@@ -36,22 +36,22 @@ function [pZsplit,factor] = splitLongestGen(pZ,varargin)
 %
 % See also: split, splitDepFactor
 
-% Author:       Niklas Kochdumper
-% Written:      29-March-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       29-March-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % determine longest generator
 len = sum(pZ.G.^2,1);
 [~,ind] = max(len);
 
 % find factor with the largest exponent
-[~,factor] = max(pZ.expMat(:,ind));
+[~,factor] = max(pZ.E(:,ind));
 factor = pZ.id(factor);
 
 % split the zonotope at the determined generator
 pZsplit = splitDepFactor(pZ,factor, varargin{:}); 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

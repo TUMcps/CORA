@@ -1,7 +1,7 @@
 function res = taylm(pZ)
 % taylm - encloses a polynomial zonotope with a Taylor model
 %
-% Syntax:  
+% Syntax:
 %    res = taylm(pZ)
 %
 % Inputs:
@@ -20,19 +20,19 @@ function res = taylm(pZ)
 %
 % See also: interval, zonotope
 
-% Author:       Niklas Kochdumper
-% Written:      13-August-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       13-August-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
 % introduce independent factors as new dependent factors
-G = [pZ.G,pZ.Grest];
-expMat = blkdiag(pZ.expMat,eye(size(pZ.Grest,2)));
+G = [pZ.G,pZ.GI];
+E = blkdiag(pZ.E,eye(size(pZ.GI,2)));
 
 % create Taylor model for factors
-p = length(pZ.id) + size(pZ.Grest,2);
+p = length(pZ.id) + size(pZ.GI,2);
 int = interval(-ones(p,1),ones(p,1));
 
 tay = taylm(int);
@@ -42,10 +42,10 @@ res = pZ.c;
 
 for i = 1:size(G,2)
     temp = 1;
-    for j = 1:size(expMat,1)
-       temp = temp * tay(j)^expMat(j,i); 
+    for j = 1:size(E,1)
+       temp = temp * tay(j)^E(j,i); 
     end
     res = res + G(:,i) * temp;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

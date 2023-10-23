@@ -2,7 +2,7 @@ function vol = volume(matZ)
 % volume - computes the volume of a matrix zonotope by computing the volume
 %    of the corresponding zonotope
 %
-% Syntax:  
+% Syntax:
 %    vol = volume(matZ)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function vol = volume(matZ)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      24-June-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       24-June-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %conversion to a zonotope
 Z = zonotope(matZ);
@@ -32,4 +32,4 @@ Z = zonotope(matZ);
 %compute volume of the zonotope
 vol = volume(Z);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

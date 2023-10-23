@@ -2,7 +2,7 @@ function res = test_parallelHybridAutomaton_isemptyobject
 % test_parallelHybridAutomaton_isemptyobject - test function for
 %    isemptyobject
 %
-% Syntax:  
+% Syntax:
 %    res = test_parallelHybridAutomaton_isemptyobject
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_parallelHybridAutomaton_isemptyobject
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty parallel hybrid automata
 res = isemptyobject(parallelHybridAutomaton());
@@ -34,4 +34,4 @@ res(end+1,1) = ~isemptyobject(pHA);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

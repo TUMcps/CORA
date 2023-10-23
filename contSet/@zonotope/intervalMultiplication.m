@@ -2,7 +2,7 @@ function Z = intervalMultiplication(Z,I)
 % intervalMultiplication - computes the multiplication of an interval with
 %    a zonotope
 %
-% Syntax:  
+% Syntax:
 %    Z = intervalMultiplication(Z,I)
 %
 % Inputs:
@@ -27,26 +27,28 @@ function Z = intervalMultiplication(Z,I)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      26-July-2016 
-% Last update:  20-Aug-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-July-2016 
+% Last update:   20-August-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get center of interval matrix
 T=center(I);
 %get radius of interval matrix
 S=rad(I);
 %auxiliary value
-Zabssum=sum(abs(Z.Z),2);
+Zabssum=sum(abs([Z.c,Z.G]),2);
 
 %compute new zonotope
 if ~any(T)
     % no empty generators if interval matrix is symmetric
-    Z.Z = [0*center(Z),diag(S*Zabssum)];
+    Z.c = 0*Z.c;
+    Z.G = diag(S*Zabssum);
 else
-    Z.Z = [T*Z.Z,diag(S*Zabssum)];
+    Z.c = T*Z.c;
+    Z.G = [T*Z.G,diag(S*Zabssum)];
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

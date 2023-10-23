@@ -44,13 +44,13 @@ classdef nonlinDASys < contDynamics
 %
 % See also: ---
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      27-October-2011
-% Last update:  02-February-2021 (MW, add switching between tensor files)
-%               18-November-2022 (MW, add output equation)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       27-October-2011
+% Last update:   02-February-2021 (MW, add switching between tensor files)
+%                18-November-2022 (MW, add output equation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     % dynamic and constraint equations
@@ -144,7 +144,6 @@ methods
     
 end
 end
-
 
 
 % Auxiliary functions -----------------------------------------------------
@@ -337,4 +336,4 @@ function [states,inputs,constraints,outFun,outputs,out_isLinear] = ...
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

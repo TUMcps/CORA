@@ -7,7 +7,7 @@ function [isLin_out,C,D,k,eqs_out] = ...
 %
 % Remark: broadly copied syntax from eq2polytope.m (now eq2set.m)
 %
-% Syntax:  
+% Syntax:
 %    [isLin_out,C,D,k,eqs_out] = ...
 %       outputMatrices(EqExprs,states,inputs,outputsLocal,map,outputsGlobal)
 %
@@ -26,7 +26,7 @@ function [isLin_out,C,D,k,eqs_out] = ...
 % Outputs:
 %    isLin_out - true/false whether output equation linear
 %    C - output matrix
-%    D - throughput matrix
+%    D - feedthrough matrix
 %    k - output offset
 %    eqs_out - output equation in text form
 %
@@ -36,12 +36,12 @@ function [isLin_out,C,D,k,eqs_out] = ...
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      26-December-2018 
-% Last update:  ---
-% Last revision:22-January-2023 (MW, rewrite & additional output arguments)
+% Authors:       Mark Wetzlinger
+% Written:       26-December-2018 
+% Last update:   ---
+% Last revision: 22-January-2023 (MW, rewrite & additional output arguments)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % if no outputs, then no equation y = Cx + Du + k
 % hence, return empty matrices (see processing in data2parallelHA.m)
@@ -190,4 +190,4 @@ catch
     isLin_out = false; C = []; D = []; k = [];
 end
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,6 @@
-function completed = example_neuralNet_reach_02_ACC
+function [completed,res,tTotal] = example_neuralNet_reach_02_ACC
 % example_neuralNet_reach_02_ACC - example of reachability analysis for a
 %    neural network adaptive cruise control
-%
 %
 % Syntax:
 %    completed = example_neuralNet_reach_02_ACC()
@@ -11,6 +10,8 @@ function completed = example_neuralNet_reach_02_ACC
 %
 % Outputs:
 %    completed - true/false
+%    res - verification result
+%    tTotal - total time
 %
 % Reference:
 %   [1] Johnson, Taylor T., et al. "ARCH-COMP21 Category Report:
@@ -21,12 +22,13 @@ function completed = example_neuralNet_reach_02_ACC
 %       The MathWorks Inc., Natick, Massachusetts (2019).
 %       https://www.mathworks.com/help/mpc/ug/adaptive-cruisecontrol-using-model-predictive-controller.html
 
-% Author:       Niklas Kochdumper, Tobias Ladner
-% Written:      08-November-2021
-% Last update:  20-May-2022 (TL: ARCH'22 Revisions)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Tobias Ladner
+% Written:       08-November-2021
+% Last update:   20-May-2022 (TL, ARCH'22 revisions)
+%                30-March-2022 (TL, ARCH'23 revisions)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 disp("BENCHMARK: Adaptive Cruise Controller (ACC)")
 
@@ -37,21 +39,18 @@ R0 = interval([90; 32; 0; 10; 30; 0], [110; 32.2; 0; 11; 30.2; 0]);
 params.tFinal = 5;
 params.R0 = polyZonotope(R0);
 
-
 % Reachability Settings ---------------------------------------------------
 
 options.timeStep = 0.1;
-options.taylorTerms = 4;
-options.zonotopeOrder = 20;
 options.alg = 'lin';
 options.tensorOrder = 2;
-
+options.taylorTerms = 4;
+options.zonotopeOrder = 20;
 
 % Parameters for NN evaluation --------------------------------------------
-evParams = struct();
-evParams.bound_approx = true;
-evParams.polynomial_approx = "lin";
 
+evParams = struct();
+evParams.poly_method = "singh";
 
 % System Dynamics ---------------------------------------------------------
 
@@ -83,11 +82,9 @@ actFun = [{'identity'}, repmat({'ReLU'}, [1, length(W)])];
 W = [{C}, W];
 b = [{k}, b];
 
-nn = neuralNetworkOld(W, b, actFun);
+nn = neuralNetwork.getFromCellArray(W, b, actFun);
 
-% construct neural network controlled system
 sys = neurNetContrSys(sys, nn, 0.1);
-
 
 % Simulation --------------------------------------------------------------
 
@@ -102,30 +99,35 @@ tic;
 simResDistances = [];
 isVio = false;
 for i = 1:length(simRes)
-    x = simRes(i).x{1};
-    x = DM * x' + Db;
-    
-    simResDistances_i = simResult({x'}, simRes(i).t);
-    if isempty(simResDistances)
-        simResDistances = simResDistances_i;
-    else
-        simResDistances = add(simResDistances, simResDistances_i);
-    end
+    simRes_i = simRes(i);
+    for j = 1:length(simRes_i.x)
+        x = simRes_i.x{j};
+        x = DM * x' + Db;
         
-    % relative distance D_rel
-    distance = x(1, :);
-    safe_distance = x(2, :);
-    % safe distance D_safe
-    isVio = isVio || ~all(distance >= safe_distance);
+        simResDistances_ij = simResult({x'}, simRes_i.t(j));
+        if isempty(simResDistances)
+            simResDistances = simResDistances_ij;
+        else
+            simResDistances = add(simResDistances, simResDistances_ij);
+        end
+            
+        % relative distance D_rel
+        distance = x(1, :);
+        safe_distance = x(2, :);
+        % safe distance D_safe
+        isVio = isVio || ~all(distance >= safe_distance);
+
+    end
 end
 tVio = toc;
 disp(['Time to check violation in simulations: ', num2str(tVio)]);
 
 if isVio
-    disp("Result: VIOLATED")
+    res = 'VIOLATED';
     R = params.R0;
     tComp = 0;
     tVeri = 0;
+    
 else
     % Reachability Analysis -----------------------------------------------
 
@@ -157,13 +159,15 @@ else
     disp(['Time to check verification: ', num2str(tVeri)]);
 
     if isVeri
-        disp('Result: VERIFIED');
+        res = 'VERIFIED';
     else
-        disp('Result: UNKNOWN');
+        res = 'UNKNOWN';
     end
 end
 
-disp(['Total Time: ', num2str(tSim+tVio+tComp+tVeri)]);
+tTotal = tSim+tVio+tComp+tVeri;
+disp(['Total Time: ', num2str(tTotal)]);
+disp(['Result: ', res]);
 
 % Visualization -----------------------------------------------------------
 
@@ -179,14 +183,26 @@ plotOverTime(R_distances, 1, 'DisplayName', 'Distance', 'FaceColor', CORAcolor("
 plotOverTime(R_distances, 2, 'DisplayName', 'Safe distance', 'FaceColor', CORAcolor("CORA:unsafe"));
 
 % plot simulations
-plotOverTime(simResDistances, 1, 'k', 'DisplayName', 'Simulations');
+plotOverTime(simResDistances, 1, 'DisplayName', 'Simulations', 'Color', CORAcolor("CORA:simulations"));
 
 % labels and legend
 xlabel('time');
 ylabel('distance');
 legend();
 
-% example completed
+
+% example completed -------------------------------------------------------
+
 completed = true;
 
-%------------- END OF CODE --------------
+% handling for ARCH competition
+if nargout < 2
+    clear res;
+end
+if nargout < 3
+    clear tTotal;
+end
+
+end
+
+% ------------------------------ END OF CODE ------------------------------

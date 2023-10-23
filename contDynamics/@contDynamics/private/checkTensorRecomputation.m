@@ -3,7 +3,7 @@ function [requiredFiles, requiredFiles_out, allnew, storedData, filepathOld] = .
 % checkTensorRecomputation - checks whether symbolic computations have to
 %    be performed or whether the old derivations have remained unchanged
 %
-% Syntax:  
+% Syntax:
 %    [generateFiles, requiredFiles_out, allnew, storedData, filepathOld] = ...
 %       checkTensorRecomputation(obj,fdyn,fcon,fout,vars,options)
 %
@@ -28,13 +28,13 @@ function [requiredFiles, requiredFiles_out, allnew, storedData, filepathOld] = .
 % References:
 %    -
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
-% Written:      ---
-% Last update:  01-February-2021 (MW, introduction of requiredFiles)
-%               18-November-2022 (MW, integrate output equation)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
+% Written:       ---
+% Last update:   01-February-2021 (MW, introduction of requiredFiles)
+%                18-November-2022 (MW, integrate output equation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set standard path
 path = [CORAROOT filesep 'models' filesep 'auxiliary' filesep obj.name];
@@ -56,13 +56,13 @@ requiredFiles_out = requiredFiles;
 allnew = true;
 
 % check required files for dynamic/constaint equation
-requiredFiles = checkRequiredFiles(obj,options,requiredFiles,'dynamic');
+requiredFiles = aux_checkRequiredFiles(obj,options,requiredFiles,'dynamic');
 % check required files for output equation
 if all(obj.out_isLinear)
     % only Jacobian required
     requiredFiles_out.standard(1) = true;
 else
-    requiredFiles_out = checkRequiredFiles(obj,options,requiredFiles_out,'output');
+    requiredFiles_out = aux_checkRequiredFiles(obj,options,requiredFiles_out,'output');
 end
 
 % perform a number of checks to see if all / some files need recomputation
@@ -201,7 +201,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function requiredFiles = checkRequiredFiles(obj,options,requiredFiles,eq)
+function requiredFiles = aux_checkRequiredFiles(obj,options,requiredFiles,eq)
 
 if ( isa(obj,'nonlinearSys') || isa(obj,'nonlinDASys') || isa(obj,'nonlinearSysDT') ) ...
         && isfield(options,'alg') && contains(options.alg,'adaptive')
@@ -232,4 +232,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

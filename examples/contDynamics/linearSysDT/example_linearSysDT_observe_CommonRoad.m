@@ -3,7 +3,7 @@ function completed = example_linearSysDT_observe_CommonRoad
 %     estimation of linear discrete-time systems; the dynamics of traffic
 %     participants from a CommonRoad file is estimated.
 %
-% Syntax:  
+% Syntax:
 %    completed = example_linearSysDT_observe_CommonRoad
 %
 % Inputs:
@@ -12,12 +12,12 @@ function completed = example_linearSysDT_observe_CommonRoad
 % Outputs:
 %    completed - true/false
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Carlos Valero
-% Written:      15-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper, Carlos Valero
+% Written:       15-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% System Dynamics
 
@@ -125,5 +125,4 @@ axis equal;
 completed = true;
 
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

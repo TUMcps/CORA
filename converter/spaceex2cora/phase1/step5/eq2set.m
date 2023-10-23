@@ -5,7 +5,7 @@ function set = eq2set(ineqExprs,eqExprs,states,outputs)
 %    WARNING: could produce incorrect results, if any variables are named 
 %             "xL<number>R"
 %
-% Syntax:  
+% Syntax:
 %    set = eq2set(ineqExprs,eqExprs,states,outputs)
 %
 % Inputs:
@@ -17,7 +17,7 @@ function set = eq2set(ineqExprs,eqExprs,states,outputs)
 %    outputs - list of outputs of the component which the equation belongs to
 %
 % Outputs:
-%    set - mptPolytope or levelSet object
+%    set - polytope or levelSet object
 %
 % Example: 
 %    set = eq2set('x <= eps & v < 0',struct('name',{'x','v'}),...
@@ -29,12 +29,12 @@ function set = eq2set(ineqExprs,eqExprs,states,outputs)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create symbolic variables for states + outputs
 numStates = length(states);
@@ -128,18 +128,18 @@ Ae_sym = jacobian(eqExprs,x);
 b_sym = subs(ineqExprs,x,zeros(length(x),1));
 be_sym = subs(eqExprs,x,zeros(length(x),1));
 
-% equations are linear -> construct mptPolytope
+% equations are linear -> construct polytope
 try
     % reminder: IneqExprs = A*x - b
-    Opts.A = double(A_sym);
-    Opts.b = double(b_sym) * -1;
+    P_A = double(A_sym);
+    P_b = double(b_sym) * -1;
     
     % reminder: EqExprs = Ae*x - be
-    Opts.Ae = double(Ae_sym);
-    Opts.be = double(be_sym) * -1;
+    P_Ae = double(Ae_sym);
+    P_be = double(be_sym) * -1;
     
     % instantiate polytope
-    set = mptPolytope(Opts);
+    set = polytope(P_A,P_b,P_Ae,P_be);
 
 % equations are nonlinear -> construct levelSet
 catch
@@ -164,4 +164,4 @@ catch
     end    
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function completed = example_ellipsoid()
 % example_ellipsoid - example demonstrating set based computation with
 %                     ellispoids
 %
-% Syntax:  
+% Syntax:
 %    completed = example_ellipsoid()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function completed = example_ellipsoid()
 %
 % See also: none
 
-% Author:        ---
+% Authors:       ---
 % Written:       ---
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 E1 = ellipsoid(diag([1/2,2])) % create ellipsoid E1 and display it
 A = diag([2,0.5]);
@@ -60,4 +60,4 @@ plot(E5);
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

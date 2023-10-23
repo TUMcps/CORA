@@ -26,12 +26,12 @@ function eqs = conHyperplane_cora2spaceex(obj)
 %
 % See also: cora2spaceex
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       18-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % hyperplane equation c*x = d
     c      = obj.h.c;
@@ -56,4 +56,4 @@ function eqs = conHyperplane_cora2spaceex(obj)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

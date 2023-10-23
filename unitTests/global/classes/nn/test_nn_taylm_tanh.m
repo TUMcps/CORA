@@ -1,7 +1,7 @@
 function res = test_nn_taylm_tanh()
 % test_nn_taylm_tanh - tests nn with tanh activation using taylor models 
 %
-% Syntax:  
+% Syntax:
 %    res = test_nn_taylm_tanh()
 %
 % Inputs:
@@ -16,15 +16,15 @@ function res = test_nn_taylm_tanh()
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      17-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       17-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % load W, b, input_ref, output_ref (from previous model)
-model = "model_test_nn_taym_tanh.mat";
+model = "model_test_nn_taylm_taylor_tanh.mat";
 load(model)
 
 % build the new layer based model
@@ -41,16 +41,13 @@ end
 nn_new = neuralNetwork(layers);
 
 % calculate output
+
+% evParams = struct;
+evParams.poly_method = 'singh';
 output_new = nn_new.evaluate(input_ref, evParams);
-res = [; ...
-    is_close(infimum(interval(output_ref)), infimum(interval(output_new))); ...
-    is_close(supremum(interval(output_ref)), supremum(interval(output_new))); ...
-    ];
-res = all(res);
-if ~res
-    disp(["Failed!", model])
-end
+
+res = isequal(interval(output_ref), interval(output_new), 1e-12);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

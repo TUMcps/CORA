@@ -3,10 +3,10 @@ function C = enclose(C,varargin)
 %
 % Description:
 %    Computes the set
-%    { a x1 + (1 - a) * (M x1 + x2) | x1 \in C, x2 \in C2, a \in [0,1] }
+%    { a x1 + (1 - a) * x2 | x1 \in C, x2 \in C2, a \in [0,1] }
 %    where C2 = M*C + Cplus
 %
-% Syntax:  
+% Syntax:
 %    E = enclose(C,C2)
 %    E = enclose(C,M,Cplus)
 %
@@ -36,12 +36,12 @@ function C = enclose(C,varargin)
 %
 % See also: capsule/convHull, ellipsoid/enclose
 
-% Author:       Mark Wetzlinger
-% Written:      17-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 if length(varargin) == 1
@@ -65,4 +65,4 @@ end
 % compute enclosure using convex hull
 C = convHull(C,C2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

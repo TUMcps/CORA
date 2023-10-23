@@ -3,7 +3,7 @@ function res = test_linearSys_reach_03_doubleIntegrator()
 % analysis with uncertain inputs; this test should check whether correct
 % results are returned when the system matrix only consists of zeros
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_reach_03_doubleIntegrator()
 %
 % Inputs:
@@ -12,12 +12,12 @@ function res = test_linearSys_reach_03_doubleIntegrator()
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      12-November-2017
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       12-November-2017
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % System Dynamics ---------------------------------------------------------
@@ -55,4 +55,4 @@ IH_true = ones(dim_x,1)*interval(1.76, 2.2);
 % final result
 res = isequal(IH,IH_true,1e-8);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

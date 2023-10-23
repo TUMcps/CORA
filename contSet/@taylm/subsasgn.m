@@ -2,7 +2,7 @@ function obj = subsasgn(obj, S, value)
 % subsasgn - Overloads the operator that writes elements, e.g. T(1,2)=value,
 % where the element of the first row and second column is referred to.
 %
-% Syntax:  
+% Syntax:
 %    obj = subsasgn(obj, S, value)
 %
 % Inputs:
@@ -19,16 +19,16 @@ function obj = subsasgn(obj, S, value)
 %
 % See also: taylm
 
-% Author:       Dmitry Grebenyuk
-% Written:      20-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       20-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % call built-in function
     obj = builtin('subsasgn', obj, S, value);
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

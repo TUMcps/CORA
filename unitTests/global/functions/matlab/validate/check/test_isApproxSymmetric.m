@@ -1,7 +1,7 @@
 function res = test_isApproxSymmetric
 % test_isApproxSymmetric - unit test function for symmetry check
 %
-% Syntax:  
+% Syntax:
 %    res = test_isApproxSymmetric()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_isApproxSymmetric
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % identity matrix
 Q = eye(2);
@@ -36,4 +36,4 @@ res(end+1,1) = isApproxSymmetric(Q,skew);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

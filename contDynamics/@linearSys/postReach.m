@@ -2,7 +2,7 @@ function [Rnext,IH] = postReach(obj,Rinit,R_tp,c)
 % postReach - computes the reachable continuous set for the first time
 % interval as a postprocessing step
 %
-% Syntax:  
+% Syntax:
 %    [Rnext] = postReach(obj,Rinit,R_tp)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function [Rnext,IH] = postReach(obj,Rinit,R_tp,c)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      03-May-2011
-% Last update:  25-July-2016 (intervalhull replaced by interval)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-May-2011
+% Last update:   25-July-2016 (intervalhull replaced by interval)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %load data from object structure
@@ -53,4 +53,4 @@ IH = or(IH_init,IH_tp) + IH_err;
 %IH_alt = interval(R_ti);
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

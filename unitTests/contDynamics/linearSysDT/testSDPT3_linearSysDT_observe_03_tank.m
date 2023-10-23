@@ -7,7 +7,7 @@ function res = testSDPT3_linearSysDT_observe_03_tank()
 % It is checked whether the enclosing interval of the final observed set 
 % is close to an interval provided by a previous solution that has been saved
 %
-% Syntax:  
+% Syntax:
 %    res = testSDPT3_linearSysDT_observe_03_tank
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testSDPT3_linearSysDT_observe_03_tank()
 % Outputs:
 %    res - boolean 
 
-% Author:       Matthias Althoff
-% Written:      07-Jul-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %% Load pedestrian model
@@ -131,4 +131,4 @@ end
 res = all(resPartial);
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

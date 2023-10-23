@@ -27,7 +27,7 @@ classdef linearSys < contDynamics
 %    B - input matrix
 %    c - constant input
 %    C - output matrix
-%    D - throughput matrix
+%    D - feedthrough matrix
 %    k - output offset
 %
 % Outputs:
@@ -46,28 +46,28 @@ classdef linearSys < contDynamics
 %
 % See also: linearSysDT
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
-% Written:      23-January-2007 
-% Last update:  30-April-2007
-%               04-August-2016 (changed to new OO format)
-%               01-November-2017 (constant input added)
-%               20-March-2018 (NK, output equation parameter added)
-%               07-November-2018 (MA, default values for B and C changed)
-%               04-March-2019 (MA, default IDs for inputs and outputs)
-%               20-May-2020 (NK, name now optional)
-%               19-November-2021 (MW, default values for c, D, k)
-%               14-December-2022 (TL, property check in inputArgsCheck)
-%               15-January-2023 (MW, allow 0 and 1 input arguments)
-% Last revision:18-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
+% Written:       23-January-2007 
+% Last update:   30-April-2007
+%                04-August-2016 (changed to new OO format)
+%                01-November-2017 (constant input added)
+%                20-March-2018 (NK, output equation parameter added)
+%                07-November-2018 (MA, default values for B and C changed)
+%                04-March-2019 (MA, default IDs for inputs and outputs)
+%                20-May-2020 (NK, name now optional)
+%                19-November-2021 (MW, default values for c, D, k)
+%                14-December-2022 (TL, property check in inputArgsCheck)
+%                15-January-2023 (MW, allow 0 and 1 input arguments)
+% Last revision: 18-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     A     % system matrix: n x n
     B     % input matrix: n x m
     c     % constant input: n x 1
     C     % output matrix: q x n
-    D     % throughput matrix: q x m
+    D     % feedthrough matrix: q x m
     k     % output offset: q x 1
 
     % internally-set properties
@@ -109,7 +109,7 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [name,A,B,c,C,D,k] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
@@ -207,7 +207,7 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,n_in)
             if ~isempty(D) && ~isscalar(D) && inputs ~= size(D,2)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     ['Column dimension of input matrix B must match '...
-                    'column dimension of throughput matrix D.']));
+                    'column dimension of feedthrough matrix D.']));
             end
         end
 
@@ -224,7 +224,7 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,n_in)
             end
             if ~isempty(D) && ~isscalar(D) && outputs ~= size(D,1)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
-                    ['Row dimension of throughput matrix D must match '...
+                    ['Row dimension of feedthrough matrix D must match '...
                     'row dimension of output matrix C.']));
             end
             if ~isempty(k) && outputs ~= length(k)
@@ -273,7 +273,7 @@ function [name,A,B,c,C,D,k,states,inputs,outputs] = ...
         outputs = size(C,1);
     end
 
-    % throughput matrix
+    % feedthrough matrix
     if isempty(D)
         D = zeros(outputs,inputs);
     end
@@ -285,4 +285,4 @@ function [name,A,B,c,C,D,k,states,inputs,outputs] = ...
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

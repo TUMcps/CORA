@@ -1,6 +1,5 @@
 function pZ = deleteZeros(pZ)
-% deleteZeros - deletes all dependent and independent generators with
-%    length zero
+% deleteZeros - (DEPRECATED -> compact)
 %
 % Syntax:
 %    pZ = deleteZeros(pZ)
@@ -11,43 +10,23 @@ function pZ = deleteZeros(pZ)
 % Outputs:
 %    pZ - polyZonotope object
 %
-% Example:
-%    pZ = polyZonotope([1;3],[1 2 0;1 -2 0],[1 0 2;0 0 -1], ...
-%                      [1 0 1;0 0 1;1 2 1]);
-%    pZ = deleteZeros(pZ)
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/deleteZeros
+% See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      20-April-2020 
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       20-April-2020 
+% Last update:   ---
+% Last revision: 30-July-2023 (MW, merged into compact)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-% indices with non-zero generators
-idxD = any(pZ.G,1);
-idxI = any(pZ.Grest,1);
+funcname = mfilename;
+warning(sprintf(['The function ''' funcname ''' is deprecated (since CORA 2024) and has been replaced by ''compact''.\n' ...
+    '         When updating the code, please rename every function call ''' funcname '(pZ)'' -> ''compact(pZ,''zeros'')''.\n' ...
+    '         Note that the function ''' funcname ''' will be removed in a future release.']));
+pZ = compact_(pZ,'zeros',eps);
 
-% if all non-zero, skip
-if ~( all(idxD) && all(idxI) ) 
-    % delete zero generators
-    pZ.G = pZ.G(:,idxD);
-    pZ.expMat = pZ.expMat(:,idxD);
-    pZ.Grest = pZ.Grest(:,idxI);
-    
-    % delete zero exponents
-    idxE = any(pZ.expMat,2);
-    if ~all(idxE)
-        pZ.expMat = pZ.expMat(idxE,:);
-        pZ.id = pZ.id(idxE);
-    end
-else
-    return
-end
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

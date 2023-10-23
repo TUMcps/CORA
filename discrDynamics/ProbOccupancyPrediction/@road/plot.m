@@ -112,8 +112,8 @@ for iInd=1:length(ind)
                 plot(P,options);
             catch %MPT3
                 try
-                plot(P,'Color',options.color,'LineStyle',options.linestyle,'Alpha',options.shade);
-                catch
+                    plot(P,1:2,'Color',options.color,'LineStyle',options.linestyle,'FaceAlpha',options.shade);
+                catch ME
                     disp('display error')
                 end
             end

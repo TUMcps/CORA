@@ -1,7 +1,7 @@
 function res = test_batchCombinator()
 % test_batchCombinator - unit test function for batchCombinator
 %
-% Syntax:  
+% Syntax:
 %    res = test_batchCombinator()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_batchCombinator()
 %
 % See also: batchCombinator
 
-% Author:       Michael Eichelbeck
-% Written:      02-August-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Michael Eichelbeck
+% Written:       02-August-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -82,4 +82,4 @@ end
 
 res = res & res_minmax & res_unique;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

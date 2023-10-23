@@ -1,7 +1,7 @@
 function Z = zonotope(C,varargin)
 % zonotope - Over-approximates a capsule by a zonotope
 %
-% Syntax:  
+% Syntax:
 %    Z = zonotope(C)
 %    Z = zonotope(C,order)
 %
@@ -28,32 +28,28 @@ function Z = zonotope(C,varargin)
 %
 % See also: interval, polytope
 
-% Author:       Niklas Kochdumper
-% Written:      20-Nov-2019 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       20-November-2019 
+% Last update:   21-July-2023 (MW, exact conversion for radius = 0)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default input arguments
 order = setDefaultValues({5},varargin);
 
-% parse input arguments
-if nargin >= 2
-    order = varargin{1}; 
-end
-
 % compute zonotope enclosing the hypersphere
-n = length(C.c);
-m = order*n-1;
+n = dim(C);
 
-Z = zonotope(ellipsoid(C.r^2*eye(n)),m,'outer:norm');
+% exact conversion of center and generator
+Z = zonotope(C.c,C.g);
 
-% constuct enclosing zonotope object
-if isempty(C.g)
-    Z = Z + C.c; 
-else
-    Z = zonotope([C.c,C.g,Z.Z(:,2:end)]); 
+if ~withinTol(C.r,0)
+
+    % enclose capsule by ellipsoid and resulting ellipsoid by capsule
+    m = order*n-1;
+    Z = Z + zonotope(ellipsoid(C.r^2*eye(n)),m,'outer:norm');
+    
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

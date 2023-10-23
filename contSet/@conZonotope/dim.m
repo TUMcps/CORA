@@ -1,7 +1,7 @@
 function n = dim(cZ)
 % dim - returns the dimension of the ambient space of a constrained zonotope
 %
-% Syntax:  
+% Syntax:
 %    n = dim(cZ)
 %
 % Inputs:
@@ -23,17 +23,13 @@ function n = dim(cZ)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      15-Sep-2019 
-% Last update:  14-March-2021 (MW, different approach)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       15-September-2019 
+% Last update:   14-March-2021 (MW, different approach)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-if ~isempty(cZ.Z)
-    n = size(cZ.Z,1);
-else
-    n = 0;
-end
+n = size(cZ.c,1);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

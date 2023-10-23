@@ -1,7 +1,7 @@
 function [Rti,Rtp,options] = linReach_adaptive_old(obj,options,Rstart)
 % linReach_adaptive_old - computes the reachable set after linearization
 %
-% Syntax:  
+% Syntax:
 %    [Rti,Rtp,options] = linReach_adaptive_old(obj,options,Rstart)
 %
 % Inputs:
@@ -26,12 +26,12 @@ function [Rti,Rtp,options] = linReach_adaptive_old(obj,options,Rstart)
 %
 % See also: ---
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       11-December-2020
 % Last update:   15-January-2021
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set linearization error
 error_adm = zeros(obj.dim,1);
@@ -67,7 +67,7 @@ options.run = 0;
 % adaptive tensor order (first step: pre-computation by comparison on start sets)
 if veryfirststep && strcmp(options.alg,'lin')
     % compute L for start set to decide abstraction order
-    options = lbL(obj,options,Rstart);
+    options = aux_lbL(obj,options,Rstart);
 end
 thistO = options.tensorOrder;
 options.run = options.run + 1;
@@ -214,7 +214,7 @@ while true
     
     if veryfirststep
         % very first run through here
-        options = getPowers(linSys,options,VerrorDyn);
+        options = aux_getPowers(linSys,options,VerrorDyn);
     end
     
     % compute set of abstraction errors
@@ -222,7 +222,7 @@ while true
     
     % measure abstraction error
     if isa(Rerror,'polyZonotope')
-        abstrerr = sum(abs(Rerror.Grest),2)';
+        abstrerr = sum(abs(Rerror.GI),2)';
     else
         abstrerr = sum(abs(generators(Rerror)),2)';
     end
@@ -260,7 +260,7 @@ while true
             end
             options.finitehorizon(options.i,1) = finitehorizon;
             % estimate near-optimal delta t from optimization function
-            [options.timeStep,~] = optimaldeltat(Rstart,Rerror_Delta,...
+            [options.timeStep,~] = aux_optimaldeltat(Rstart,Rerror_Delta,...
                 finitehorizon,varphi,zetaP_Delta,options);
             % reuse information (scrap once pre-computation replaced)
             error_adm = zeros(obj.dim,1);
@@ -270,7 +270,7 @@ while true
             Rerror_Delta = Rerror;
             Rti_Delta = Rlinti; Rtp_Delta = Rlintp;
             linx_Delta = obj.linError.p.x;
-            [options.timeStep,~] = optimaldeltat(Rstart,Rerror_Delta,...
+            [options.timeStep,~] = aux_optimaldeltat(Rstart,Rerror_Delta,...
                 finitehorizon,options.varphi(options.i-1),zetaP,options);
             error_adm = zeros(obj.dim,1);
         end
@@ -281,7 +281,7 @@ while true
             options.varphi(options.i,1) = ...
                 max( abstrerr(options.lindims) ./ abstrerr_Delta(options.lindims) );
         elseif ~lastStep
-            options.varphi(options.i,1) = varphiest(finitehorizon,options.timeStep,...
+            options.varphi(options.i,1) = aux_varphiest(finitehorizon,options.timeStep,...
                 Rerror_Delta,Rerror,options.decrFactor);
         end
         options.finitehorizon(options.i,1) = finitehorizon;
@@ -331,19 +331,17 @@ end
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-
-% Auxiliary Functions -----------------------------------------------------
-
-function varphi = varphiest(Delta,deltatlast,Rerr,Rerrlast,decrFactor)
+function varphi = aux_varphiest(Delta,deltatlast,Rerr,Rerrlast,decrFactor)
 
 % compute set sizes
 if isa(Rerr,'zonotope') && isa(Rerrlast,'zonotope')
     rerr1 = vecnorm(sum(abs(generators(Rerr)),2),2);
     rerrk = vecnorm(sum(abs(generators(Rerrlast)),2),2);
 else
-    rerr1 = vecnorm(sum(abs(Rerr.Grest),2),2);
-    rerrk = vecnorm(sum(abs(Rerrlast.Grest),2),2);
+    rerr1 = vecnorm(sum(abs(Rerr.GI),2),2);
+    rerrk = vecnorm(sum(abs(Rerrlast.GI),2),2);
 end
 
 k = Delta / deltatlast;
@@ -401,7 +399,7 @@ varphi = varphi_floor + (kprime - floor(kprime)) * (varphi_ceil - varphi_floor);
 
 end
 
-function [deltatest,kprimeest] = optimaldeltat(Rt,Rerr,deltat,varphimin,zetaP,opt)
+function [deltatest,kprimeest] = aux_optimaldeltat(Rt,Rerr,deltat,varphimin,zetaP,opt)
 
 % read from options struct
 mu = opt.decrFactor;
@@ -426,7 +424,7 @@ if isa(Rt,'zonotope') && isa(Rerr,'zonotope')
     rerr1 = vecnorm(sum(abs(generators(Rerr)),2),2);
 else
     rR = vecnorm(rad(interval(Rt)));
-    rerr1 = vecnorm(sum(abs(Rerr.Grest),2),2);
+    rerr1 = vecnorm(sum(abs(Rerr.GI),2),2);
 end
 
 % model varphi by linear interpolation over the gain
@@ -455,7 +453,7 @@ rabskest = rerr1 / k(bestIdxnew) * varphiprod(bestIdxnew);
 
 end
 
-function options = lbL(obj,options,Rstartset)
+function options = aux_lbL(obj,options,Rstartset)
 % computes the lower bound for the Lagrange remainder
 % ... that is, L and Rerr for the start set of the current step
 
@@ -483,7 +481,7 @@ end
 
 end
 
-function options = getPowers(obj,options,Vdyn)
+function options = aux_getPowers(obj,options,Vdyn)
 % computes linear exponents for convergence of abstraction error
 % only called once!
 
@@ -501,4 +499,4 @@ options.lindims = powers == 1;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

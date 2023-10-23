@@ -1,7 +1,7 @@
 function simRes = simulateRandom(pHA,params,varargin)
 % simulateRandom - simulates a trajectory of a parallel hybrid automaton
 %
-% Syntax:  
+% Syntax:
 %    simRes = simulateRandom(pHA,params)
 %    simRes = simulateRandom(pHA,params,options)
 %
@@ -24,13 +24,13 @@ function simRes = simulateRandom(pHA,params,varargin)
 %
 % See also: none
 
-% Author:        Niklas Kochdumper, Mark Wetzlinger
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
 % Written:       04-July-2018 
 % Last update:   08-May-2020 (MW, update interface)
 %                19-May-2023 (MW, return correct number of trajectories)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % input argument validation
 options = struct();
@@ -103,7 +103,7 @@ end
 end
     
     
-% Auxiliary Function ------------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function uLoc = aux_generateRandomInputs(options,flag)
 
@@ -125,4 +125,4 @@ function uLoc = aux_generateRandomInputs(options,flag)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

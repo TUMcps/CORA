@@ -2,7 +2,7 @@ function display(fs)
 % display - displays the properties of a fullspace object (dimension) on
 %    the command window
 %
-% Syntax:  
+% Syntax:
 %    display(fs)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function display(fs)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isemptyobject(fs)
     
@@ -44,4 +44,4 @@ else
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

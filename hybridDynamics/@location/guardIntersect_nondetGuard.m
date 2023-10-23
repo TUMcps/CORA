@@ -2,7 +2,7 @@ function R = guardIntersect_nondetGuard(loc,R,guard,options)
 % guardIntersect_nondetGuard - enclosure of guard intersections for 
 %    non-deterministic guard sets with large uncertainty
 %
-% Syntax:  
+% Syntax:
 %    R = guardIntersect_nondetGuard(loc,R,guard,options)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function R = guardIntersect_nondetGuard(loc,R,guard,options)
 %   [1] M. Althoff et al. "Zonotope bundles for the efficient computation 
 %       of reachable sets", 2011
 
-% Author:       Niklas Kochdumper
-% Written:      19-December-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       19-December-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % calc. orthogonal basis with the methods described in Sec. V.A in [1]
 B = calcBasis(loc,R,guard,options);
@@ -38,7 +38,7 @@ for i = 1:length(B)
     
     for j = 1:length(R)
         intnew = interval(B{i}'*R{j});
-        if isempty(intnew) && isempty(I)
+        if representsa_(intnew,'emptySet',eps) && representsa_(I,'emptySet',eps)
             I = I | B{i}'*interval(R{j});
         else
             I = I | intnew;
@@ -65,4 +65,4 @@ else
     R = zonoBundle(Z); 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

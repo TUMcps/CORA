@@ -3,7 +3,7 @@ function han = plotAsGraph(R)
 %    one time-point solution (due to an instant outgoing transition) are
 %    marked in red
 %
-% Syntax:  
+% Syntax:
 %    han = plotAsGraph(R)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function han = plotAsGraph(R)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      07-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       07-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if length(R) == 1
 
@@ -64,4 +64,4 @@ if nargout == 0
     clear han;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

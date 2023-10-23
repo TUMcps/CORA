@@ -1,7 +1,7 @@
 function C = enlarge(C,factor)
 % enlarge - enlarges the capsule around its center
 %
-% Syntax:  
+% Syntax:
 %    C = enlarge(C,factor)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function C = enlarge(C,factor)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      15-Sep-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       15-September-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{C,'att','capsule'};
@@ -36,4 +36,4 @@ inputArgsCheck({{C,'att','capsule'};
 % enlarge capsule
 C = capsule(center(C),factor*C.g,factor*C.r);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

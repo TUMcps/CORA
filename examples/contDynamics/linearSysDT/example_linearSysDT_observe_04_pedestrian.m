@@ -3,7 +3,7 @@ function completed = example_linearSysDT_observe_04_pedestrian
 %    estimation of linear discrete-time systems from a unit test; provides
 %    the solution of the linearSysDT class for a pedestrian example
 %
-% Syntax:  
+% Syntax:
 %    completed = example_linearSysDT_observe_04_pedestrian
 %
 % Inputs:
@@ -12,12 +12,12 @@ function completed = example_linearSysDT_observe_04_pedestrian
 % Outputs:
 %    completed - true/false
 
-% Author:       Matthias Althoff
-% Written:      03-Mar-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % load pedestrian model
@@ -48,7 +48,6 @@ options.solver = 'sdpt3';
 if ~isSolverInstalled('sdpt3')
     throw(CORAerror('CORA:noSuitableSolver','sdpt3'));
 end
-
 
 
 %% perform evaluation
@@ -92,4 +91,4 @@ end
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

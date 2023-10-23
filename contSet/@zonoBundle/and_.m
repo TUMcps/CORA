@@ -1,7 +1,7 @@
 function zB = and_(zB,S,varargin)
 % and_ - returns the intersection of a zonotope bundle and another set
 %
-% Syntax: 
+% Syntax:
 %    zB = and_(zB,S)
 %
 % Inputs:
@@ -28,14 +28,14 @@ function zB = and_(zB,S,varargin)
 % Subfunctions: ---
 % MAT-files required: none
 %
-% See also: zonotope/and_
+% See also: contSet/and, zonotope/and_
 
-% Author:       Matthias Althoff
-% Written:      16-November-2010 
-% Last update:  05-May-2020 (MW, standardized error message)
-% Last revision:27-March-2023 (MW, rename and_)
+% Authors:       Matthias Althoff
+% Written:       16-November-2010 
+% Last update:   05-May-2020 (MW, standardized error message)
+% Last revision: 27-March-2023 (MW, rename and_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % different cases for the different types of objects
 if isa(S,'zonotope')
@@ -57,7 +57,7 @@ elseif isa(S,'interval')
     zB.Z{end+1} = zonotope(S);
     zB.parallelSets = zB.parallelSets + 1;
     
-elseif isa(S,'mptPolytope') || isa(S,'conZonotope')
+elseif isa(S,'polytope') || isa(S,'conZonotope')
     
     zB = and_(zB,zonoBundle(S),'exact');
     
@@ -143,5 +143,4 @@ else
     
 end
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

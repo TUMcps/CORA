@@ -2,7 +2,7 @@ function intMat = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of matrix or an 
 %    interval matrix with an interval matrix
 %
-% Syntax:  
+% Syntax:
 %    intMat = mtimes(factor1,factor2)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function intMat = mtimes(factor1,factor2)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      18-June-2010 
-% Last update:  05-August-2010
-%               03-April-2022 (MW, remove setting check)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-June-2010 
+% Last update:   05-August-2010
+%                03-April-2022 (MW, remove setting check)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %factor1 is a numeric matrix
 if isnumeric(factor1)
@@ -63,4 +63,4 @@ else
     intMat.int=factor1.int*factor2.int;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

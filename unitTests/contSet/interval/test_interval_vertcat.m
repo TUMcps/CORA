@@ -2,7 +2,7 @@ function res = test_interval_vertcat
 % test_interval_vertcat - unit test function of the operator for
 %    vertical concatenation, e.g. a = [b;c;d];
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_vertcat
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_interval_vertcat
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      19-January-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       19-January-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % define problem
 tol = 1e-9;
@@ -123,4 +123,4 @@ if abs( infimum(c(3, 6)) - 8.0 ) > tol || abs( supremum(c(3, 6)) - 11.0 ) > tol
 	return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

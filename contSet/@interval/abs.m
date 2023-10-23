@@ -1,7 +1,7 @@
 function res = abs(I)
 % abs - returns the absolute value of an interval
 %
-% Syntax:  
+% Syntax:
 %    res = abs(I)
 %
 % Inputs:
@@ -24,13 +24,13 @@ function res = abs(I)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      26-June-2015
-% Last update:  14-February-2015
-%               12-October-2015
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-June-2015
+% Last update:   14-February-2015
+%                12-October-2015
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init resulting interval object
 res = interval();
@@ -65,4 +65,4 @@ else
     res.inf(ind1) = abs(I.sup(ind1));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

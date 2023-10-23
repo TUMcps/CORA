@@ -1,7 +1,7 @@
 function Z = project(Z,dims)
 % project - projects a zonotope onto the specified dimensions
 %
-% Syntax:  
+% Syntax:
 %    Z = project(Z,dims)
 %
 % Inputs:
@@ -21,13 +21,16 @@ function Z = project(Z,dims)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      15-September-2008
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       15-September-2008
+% Last update:   20-October-2023 (TL, correct projection for G\in\R^{n x 0})
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-Z.Z = Z.Z(dims,:);
+Z.c = Z.c(dims,:);
+if size(Z.G,1) > 0
+    Z.G = Z.G(dims,:);
+end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function res = test_linearSys_reach_12_setreps()
 %    reachability analysis with uncertain inputs for different set
 %    representations for the initial set and uncertain inputs
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_reach_12_setreps()
 %
 % Inputs:
@@ -12,12 +12,12 @@ function res = test_linearSys_reach_12_setreps()
 % Outputs:
 %    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      17-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -38,7 +38,6 @@ options.linAlg = 'standard';
 A = [-1 -4; 4 -1];
 B = [1; 0.5];
 sys = linearSys('twoDimSys',A,B);
-
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -68,12 +67,12 @@ params.R0 = capsule([10;5],[0.2;-0.1],0.1);
 params.U = capsule(U);
 R = reach(sys, params, options);
 
-% mptPolytope: no convex hull function...
-% params.R0 = [10;5] + mptPolytope([1 1; 0 -1; 1 -1],ones(3,1));
-% params.U = mptPolytope(U);
+% polytope: no convex hull function...
+% params.R0 = [10;5] + polytope([1 1; 0 -1; 1 -1],ones(3,1));
+% params.U = polytope(U);
 % R = reach(sys, params, options);
 
 % all executed successfully
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

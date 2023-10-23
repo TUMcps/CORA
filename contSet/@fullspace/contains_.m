@@ -3,7 +3,7 @@ function res = contains_(fs,S,varargin)
 %    point
 %    case R^0: only contains R^0, 0 (not representable in MATLAB), and []
 %
-% Syntax:  
+% Syntax:
 %    res = contains_(fs,S)
 %    res = contains_(fs,S,type)
 %    res = contains_(fs,S,type,tol)
@@ -26,14 +26,14 @@ function res = contains_(fs,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/contains
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  05-April-2023 (MW, rename contains_)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   05-April-2023 (MW, rename contains_)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if fs.dimension == 0
     throw(CORAerror('CORA:notSupported',...
@@ -43,4 +43,4 @@ end
 % full-dimensional space contains all other sets, including itself
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

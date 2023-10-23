@@ -1,7 +1,7 @@
 function Z = zonotope(matZ)
 % zonotope - Converts a matrix zonotope to a zonotope 
 %
-% Syntax:  
+% Syntax:
 %    Z = zonotope(matZ)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function Z = zonotope(matZ)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      18-June-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-June-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %concert center
 center=mat2vec(matZ.center);
@@ -36,4 +36,4 @@ end
 %instantiate zonotope
 Z=zonotope([center,generatorMatrix]);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_capsule_reduce
 % test_capsule_reduce - unit test function of reduce
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_reduce
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_capsule_reduce
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate capsule
 C = capsule([1;4],[1;-2],2);
@@ -32,4 +32,4 @@ C_ = reduce(C);
 % compare
 res = isequal(C,C_);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

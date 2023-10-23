@@ -1,0 +1,16 @@
+{
+  "_schemaVersion": "1.0.0",
+
+  "nnActivationLayer.computeApproxPoly":
+  {
+     "inputs":
+     [
+        {"name":"obj", "kind":"required", "type":["nnLayer"], "purpose":"nnActivationLayer"},
+        {"name":"l", "kind":"required", "type":["numeric"], "purpose":"lower bound"},
+        {"name":"u", "kind":"required", "type":["numeric"], "purpose":"upper bound"},
+        {"name":"order", "kind":"ordered", "type":["numeric"], "purpose":"polynomial order"},
+        {"name":"poly_method", "kind":"ordered", "type":["char", "choices={'regression','ridgeregression','bernstein','taylor','throw-catch','hand-crafted'}"], "purpose":"evaluation parameter"}
+     ]
+  }
+
+}

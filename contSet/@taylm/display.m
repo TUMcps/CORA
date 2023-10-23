@@ -1,7 +1,7 @@
 function display(obj)
 % display - Displays the properties of a taylm object on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(obj)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function display(obj)
 %
 % See also: none
 
-% Author:       Dmitry Grebenyuk, Niklas Kochdumper
-% Written:      31-March-2016
-%               18-July-2017 (DG) Multivariable polynomial pack is added
-% Last update:  11-April-2018 (NK) Sort variables in the polynomial part
-% Last revision:---
+% Authors:       Dmitry Grebenyuk, Niklas Kochdumper
+% Written:       31-March-2016
+% Last update:   18-July-2017 (DG, multivariable polynomial pack is added)
+%                11-April-2018 (NK, sort variables in the polynomial part)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 name = [inputname(1), ' = '];
 disp(name)
@@ -39,7 +39,7 @@ for i = 1:mi
     for j = 1:mj
         % get a polynomial part; show ratinal numbers as decimals with 5
         % digits
-        poly = displayPoly(obj(i,j));
+        poly = aux_displayPoly(obj(i,j));
         
         % get an interval part
         remainder = sprintf('[%0.4f,%0.4f]',...
@@ -57,7 +57,10 @@ end
 
 end
 
-function str = displayPoly(obj)
+
+% Auxiliary functions -----------------------------------------------------
+
+function str = aux_displayPoly(obj)
 
     % get coefficients
     c = obj.coefficients;
@@ -108,4 +111,4 @@ function str = displayPoly(obj)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

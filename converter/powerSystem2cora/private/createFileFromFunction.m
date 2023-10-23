@@ -1,7 +1,7 @@
 function createFileFromFunction(f,name,output,input)
 % createFileFromFunction - generates an m-file of a specified function
 %
-% Syntax:  
+% Syntax:
 %    createFileFromFunction(f,name,output,input)
 %
 % Inputs:
@@ -22,15 +22,15 @@ function createFileFromFunction(f,name,output,input)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      16-April-2022
-% Last update:  25-April-2023 (MW, update path)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       16-April-2022
+% Last update:   25-April-2023 (MW, update path)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set path
-path = [CORAROOT filesep 'models' filesep 'powerSystems'];
+path = [CORAROOT filesep 'models' filesep 'powerSystemsConverted'];
 if ~exist(path,'dir')
    mkdir(path); 
 end
@@ -66,4 +66,4 @@ rmpath(path);
 warning(warOrig);
 addpath(path);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

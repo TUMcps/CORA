@@ -2,7 +2,7 @@ function res = example_nonlinearDA_reach_09_SMIB_adaptive()
 % example_nonlinearDA_reach_09_SMIB_adaptive - example of nonlinear
 %    differential-algebraic reachability analysis
 %
-% Syntax:  
+% Syntax:
 %    example_nonlinearDA_reach_09_SMIB_adaptive()
 %
 % Inputs:
@@ -11,19 +11,19 @@ function res = example_nonlinearDA_reach_09_SMIB_adaptive()
 % Outputs:
 %    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      30-August-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       30-August-2021
+% Last update:   ---
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % SMIB system with 3 diff. variables and 8 alg. variables
+
 dim_x = 3;
 dim_y = 8;
 
-[P,x0,y0] = aux3_modelParameters();
+[P,x0,y0] = aux_aux3_modelParameters();
 params.P = P;
 
 % Parameters --------------------------------------------------------------
@@ -162,13 +162,18 @@ end
 figure;
 for p=1:size(theta,2)
     subplot(3,1,p); hold on; box on;
+    useCORAcolors("CORA:contDynamics");
+    color = CORAcolor('CORA:next');
     curr_theta = theta(:,p);
     for i=1:length(curr_theta)
         IH = interval([infimum(curr_theta{i}); infimum(curr_theta{i})],...
             [supremum(curr_theta{i});supremum(curr_theta{i})]);
         IH = interval([tVec(i);infimum(IH(1))], [tVec(i+1);supremum(IH(1))]);
-        plot(IH,[1 2],'FaceColor',colorblind('b'));
-    end
+        plot(IH,[1 2],'FaceColor',color);
+    end 
+    % label
+    xlabel('time')
+    ylabel(p)
 end
 
 % second plot
@@ -196,7 +201,8 @@ end
 
 
 % Auxiliary functions -----------------------------------------------------
-function [P,x0,y0] = aux3_modelParameters()
+
+function [P,x0,y0] = aux_aux3_modelParameters()
 % define parameter of the model
 
     % Assign fixed parameters ---------------------------------------------
@@ -234,13 +240,13 @@ function [P,x0,y0] = aux3_modelParameters()
     % Set options for nonlinear solver to obtain initial variables of
     % remaining variables of the system
     options_fsolve = optimoptions('fsolve','Display','off');
-    X0netz = fsolve(@(X)aux3_init_sim_netzwerk(X,P),ones(4,1),options_fsolve);
+    X0netz = fsolve(@(X)aux_aux3_init_sim_netzwerk(X,P),ones(4,1),options_fsolve);
 
     P.theta1  = X0netz(1);     % phase at bus-1
     P.q1      = X0netz(2);     % reactive power at bus-1
 
     % Generator Initinal values -------------------------------------------
-    X0gen=fsolve(@(X)aux3_init_generator(X,P),ones(10,1),options_fsolve);
+    X0gen=fsolve(@(X)aux_aux3_init_generator(X,P),ones(10,1),options_fsolve);
 
     % diff. variables
     delta0  = X0gen(1);        % state variable
@@ -261,7 +267,7 @@ function [P,x0,y0] = aux3_modelParameters()
     y0 = [ed0 eq0 id0 iq0 P.p1 P.q1 P.theta1 P.v1];
 end
 
-function X0 = aux3_init_sim_netzwerk(X,P)
+function X0 = aux_aux3_init_sim_netzwerk(X,P)
 % Initialisation of the grid, POWER FLOW
     theta1 = X(1);
     q1     = X(2);
@@ -275,7 +281,7 @@ function X0 = aux3_init_sim_netzwerk(X,P)
     ];
 end
 
-function X0 = aux3_init_generator(X,P)
+function X0 = aux_aux3_init_generator(X,P)
 % Assignment of the variables
 
     delta=X(1);
@@ -302,5 +308,4 @@ function X0 = aux3_init_generator(X,P)
     ];
 end
 
-%------------- END OF CODE --------------
-        
+% ------------------------------ END OF CODE ------------------------------

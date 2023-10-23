@@ -1,7 +1,7 @@
 function Z = enclosePoints(points,varargin)
 % enclosePoints - enclose a point cloud with a zonotope
 %
-% Syntax:  
+% Syntax:
 %    Z = zonotope.enclosePoints(points)
 %    Z = zonotope.enclosePoints(points,method)
 %
@@ -37,12 +37,12 @@ function Z = enclosePoints(points,varargin)
 %
 % See also: ---
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       05-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
     % parse input arguments
     method = setDefaultValues({'maiga'},varargin);
@@ -53,17 +53,17 @@ function Z = enclosePoints(points,varargin)
 
     % compute enclosing zonotope with the selected method
     if strcmp(method,'stursberg')
-        Z = enclosePointsStursberg(points);
+        Z = aux_enclosePointsStursberg(points);
     elseif strcmp(method,'maiga')
-        Z = enclosePointsMaiga(points);
+        Z = aux_enclosePointsMaiga(points);
     end
 
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function Z = enclosePointsStursberg(points)
+function Z = aux_enclosePointsStursberg(points)
 % Computes an enclosing zonotope using the method from [1]
 
     % compute the arithmetic mean of the points
@@ -96,7 +96,7 @@ function Z = enclosePointsStursberg(points)
     Z = zonotope([c,G]);
 end
 
-function Zopt = enclosePointsMaiga(points)
+function Zopt = aux_enclosePointsMaiga(points)
 % Computes an enclosing zonotope using the method from [2]
 
     % initialization
@@ -111,10 +111,10 @@ function Zopt = enclosePointsMaiga(points)
         r = i/N;
 
         % compute enclosing zonotope
-        Z = cloud2zonotope(points,r,size(points,1));
+        Z = aux_cloud2zonotope(points,r,size(points,1));
 
         % estimate the volume of the zonotope using the trace
-        G = generators(Z);
+        G = Z.G;
         tr = trace(G' * G);
 
         % update the minimum value
@@ -125,7 +125,7 @@ function Zopt = enclosePointsMaiga(points)
     end
 end
 
-function Z = cloud2zonotope(X,ratio,s1)
+function Z = aux_cloud2zonotope(X,ratio,s1)
 % implementation of the cloud2zonotope function in [2]
 
     n = size(X,1);
@@ -147,7 +147,7 @@ function Z = cloud2zonotope(X,ratio,s1)
         [U,~] = svd(X);
         u = U(:,1);
         g = ratio * abs(dot(u , r)) * u;
-        X = compress(X,g);
+        X = aux_compress(X,g);
         c = c + mid;
         R = [R g];
     end
@@ -159,7 +159,7 @@ function Z = cloud2zonotope(X,ratio,s1)
     Z = zonotope([c,R]);
 end
 
-function X = compress(X,g)
+function X = aux_compress(X,g)
 % implementation of the compress function in [2]
     
     u = g/norm(g);
@@ -171,4 +171,4 @@ function X = compress(X,g)
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

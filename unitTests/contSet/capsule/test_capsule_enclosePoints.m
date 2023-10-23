@@ -1,7 +1,7 @@
 function res = test_capsule_enclosePoints
 % test_capsule_enclosePoints - unit test function of enclosePoints
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_enclosePoints
 %
 % Inputs:
@@ -16,18 +16,17 @@ function res = test_capsule_enclosePoints
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty set case
 p = [];
 C = capsule.enclosePoints(p);
-
-res = isempty(C);
+res = representsa_(C,'emptySet',eps);
 
 % points
 p = [-1  1 2 3 2  1 -2 -4 3;...
@@ -52,4 +51,4 @@ res(end+1,1) = all(p == center(C)) && C.r == 0 && ~any(C.g);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

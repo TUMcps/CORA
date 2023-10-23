@@ -3,7 +3,7 @@ function [Rguard,actGuards,minInd,maxInd] = ...
 % guardIntersect - computes an enclosure of the intersection between the
 %    reachable set and the guard sets
 %
-% Syntax:  
+% Syntax:
 %    [Rguard,actGuards,minInd,maxInd] = 
 %       guardIntersect(loc,guards,setInd,setType,Rcont,options)
 %
@@ -40,16 +40,16 @@ function [Rguard,actGuards,minInd,maxInd] = ...
 %
 % See also: location/reach
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      08-May-2007 
-% Last update:  21-September-2007
-%               30-July-2016
-%               23-November-2017
-%               20-April-2018 (intersect guard sets with invariant)
-%               23-December-2019 (restructured the code)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       08-May-2007 
+% Last update:   21-September-2007
+%                30-July-2016
+%                23-November-2017
+%                20-April-2018 (intersect guard sets with invariant)
+%                23-December-2019 (restructured the code)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % check if there exist guard intersections
     relIndex = unique(setInd);
@@ -170,8 +170,7 @@ function [Rguard,actGuards,minInd,maxInd] = ...
 end
 
 
-
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [minInd,maxInd,P,guards] = aux_groupSets(Pset,guards,setIndices)
 % group the reachable sets which intersect guard sets. The sets in one
@@ -245,10 +244,10 @@ function [R,minInd,maxInd,actGuards] = aux_removeEmptySets(R,minInd,maxInd,actGu
     
     for i = 1:length(R)
        if isa(R{i},'zonoBundle')
-           if any(cellfun(@isempty,R{i}.Z))
+           if any(cellfun(@(S) representsa_(S,'emptySet',eps),R{i}.Z))
                continue;
            end
-       elseif isempty(R{i})
+       elseif representsa_(R{i},'emptySet',eps)
            continue;
        end
        ind(counter) = i;
@@ -275,4 +274,4 @@ function R0 = aux_getInitialSet(Rtp,minInd)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

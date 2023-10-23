@@ -2,7 +2,7 @@ function res = test_linearSys_reach_08_adaptive
 % test_linearSys_reach_08_adaptive - unit test for adaptive reachability 
 %   analysis; reduced version of testLong_linearSys_reach_08
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_reach_08_adaptive
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_linearSys_reach_08_adaptive
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      08-October-2019
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       08-October-2019
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -80,4 +80,4 @@ disp("Computation time (specification): " + tComp);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

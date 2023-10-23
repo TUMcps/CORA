@@ -12,12 +12,12 @@ function res = testLong_spaceex2cora_hybrid_parallel_02
 % Outputs:
 %    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      12-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       12-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -104,4 +104,4 @@ if ~isequal(sys_cora,sys_spaceex,1e-4)
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

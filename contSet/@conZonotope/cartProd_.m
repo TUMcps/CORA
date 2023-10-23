@@ -2,7 +2,7 @@ function cZ = cartProd_(cZ,S,varargin)
 % cartProd_ - Returns the Cartesian product of a constrained zonotope and
 %    other set representations or points
 % 
-% Syntax:  
+% Syntax:
 %    cZ = cartProd_(cZ,S)
 %
 % Inputs:
@@ -26,14 +26,14 @@ function cZ = cartProd_(cZ,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/cartProd_
+% See also: contSet/cartProd, zonotope/cartProd_
 
-% Author:       Niklas Kochdumper
-% Written:      10-August-2018
-% Last update:  05-May-2020 (MW, standardized error message)
-% Last revision:27-March-2023 (MW, rename cartProd_)
+% Authors:       Niklas Kochdumper
+% Written:       10-August-2018
+% Last update:   05-May-2020 (MW, standardized error message)
+% Last revision: 27-March-2023 (MW, rename cartProd_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % first or second set is constrained zonotope
 if isa(cZ,'conZonotope')
@@ -42,17 +42,17 @@ if isa(cZ,'conZonotope')
     if isa(S,'conZonotope')
 
         % new center vector
-        c = [cZ.Z(:,1); S.Z(:,1)];
+        c = [cZ.c; S.c];
 
         % new generator matrix
-        G = blkdiag(cZ.Z(:,2:end),S.Z(:,2:end));
+        G = blkdiag(cZ.G,S.G);
 
         % new constraint matrix
         h1 = size(cZ.A,1);
         h2 = size(S.A,1);
 
-        m1 = size(cZ.Z,2)-1;
-        m2 = size(S.Z,2)-1;
+        m1 = size(cZ.G,2);
+        m2 = size(S.G,2);
 
         if isempty(cZ.A)
            if isempty(S.A)
@@ -75,7 +75,7 @@ if isa(cZ,'conZonotope')
         cZ = conZonotope([c,G],A,b);
 
     elseif isnumeric(S) || isa(S,'zonotope') || ...
-           isa(S,'interval') || isa(S,'mptPolytope') || ...
+           isa(S,'interval') || isa(S,'polytope') || ...
            isa(S,'zonoBundle')
 
         cZ = cartProd_(cZ,conZonotope(S),'exact');
@@ -103,4 +103,4 @@ else
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

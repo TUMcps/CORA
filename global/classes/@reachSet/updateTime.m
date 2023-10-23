@@ -2,7 +2,7 @@ function R = updateTime(R,time)
 % updateTime - updates the times of the reachable set due to the uncertain
 %    initial time (currently only supported for one branch in reachSet)
 %
-% Syntax:  
+% Syntax:
 %    R = updateTime(R,time)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function R = updateTime(R,time)
 %
 % See also: location/reach
 
-% Author:       Niklas Kochdumper
-% Written:      08-June-2020
-% Last update:  18-June-2022 (MW, move from location/reach, simplify)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       08-June-2020
+% Last update:   18-June-2022 (MW, move from location/reach, simplify)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % time shift
 deltaT = time - infimum(time);
@@ -41,4 +41,4 @@ if ~isempty(R.timeInterval)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

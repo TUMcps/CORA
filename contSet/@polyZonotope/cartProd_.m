@@ -2,7 +2,7 @@ function pZ = cartProd_(pZ,S,varargin)
 % cartProd_ - Returns the Cartesian product a polynomial zonotope and
 %    another set representation
 %
-% Syntax:  
+% Syntax:
 %    pZ = cartProd_(pZ,S)
 %
 % Inputs:
@@ -25,14 +25,14 @@ function pZ = cartProd_(pZ,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/cartProd_
+% See also: contSet/cartProd, zonotope/cartProd_
 
-% Author:       Niklas Kochdumper
-% Written:      25-June-2018
-% Last update:  05-May-2020 (MW, standardized error message)
-% Last revision:27-March-2023 (MW, rename cartProd_)
+% Authors:       Niklas Kochdumper
+% Written:       25-June-2018
+% Last update:   05-May-2020 (MW, standardized error message)
+% Last revision: 27-March-2023 (MW, rename cartProd_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % convert other set representations to polyZonotopes (first set)
 if ~isa(pZ,'polyZonotope')
@@ -47,7 +47,7 @@ if ~isa(pZ,'polyZonotope')
         pZ = cartProd_(pZ,S,'exact'); 
         return;
         
-    elseif isa(pZ,'mptPolytope') || isa(pZ,'zonoBundle') || ...
+    elseif isa(pZ,'polytope') || isa(pZ,'zonoBundle') || ...
            isa(pZ,'conZonotope')
 
         pZ = polyZonotope(pZ);
@@ -73,7 +73,7 @@ if ~isa(S,'polyZonotope')
         pZ = cartProd_(pZ,S,'exact'); 
         return;
         
-    elseif isa(S,'mptPolytope') || isa(S,'zonoBundle') || ...
+    elseif isa(S,'polytope') || isa(S,'zonoBundle') || ...
            isa(S,'conZonotope')
 
         S = polyZonotope(S);
@@ -97,41 +97,41 @@ c = [pZ.c;S.c];
 if isempty(pZ.G)
     if isempty(S.G)
        G = []; 
-       expMat = []; 
+       E = []; 
        id = [];
     else
        G = [zeros(n1,size(S.G,2));S.G];
-       expMat = S.expMat;
+       E = S.E;
        id = S.id;
     end
 else
     if isempty(S.G)
        G = [pZ.G;zeros(n2,size(pZ.G,2))];
-       expMat = pZ.expMat;
+       E = pZ.E;
        id = pZ.id;
     else
        G = blkdiag(pZ.G,S.G);
-       expMat = blkdiag(pZ.expMat,S.expMat);
+       E = blkdiag(pZ.E,S.E);
        id = [pZ.id;max(pZ.id)+S.id];
     end
 end
 
 % matrix of independent generators
-Grest = [];
+GI = [];
 
-if isempty(pZ.Grest)
-   if ~isempty(S.Grest)
-       Grest = [zeros(n1,size(S.Grest,2));S.Grest];
+if isempty(pZ.GI)
+   if ~isempty(S.GI)
+       GI = [zeros(n1,size(S.GI,2));S.GI];
    end
 else
-   if isempty(S.Grest)
-       Grest = [pZ.Grest;zeros(n2,size(pZ.Grest,2))];
+   if isempty(S.GI)
+       GI = [pZ.GI;zeros(n2,size(pZ.GI,2))];
    else
-       Grest = blkdiag(pZ.Grest,S.Grest);
+       GI = blkdiag(pZ.GI,S.GI);
    end
 end       
     
 % generate new polyZonotope
-pZ = polyZonotope(c,G,Grest,expMat,id);
+pZ = polyZonotope(c,G,GI,E,id);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

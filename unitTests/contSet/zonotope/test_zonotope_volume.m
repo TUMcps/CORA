@@ -1,7 +1,7 @@
 function res = test_zonotope_volume
 % test_zonotope_volume - unit test function of volume
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_volume
 %
 % Inputs:
@@ -16,13 +16,13 @@ function res = test_zonotope_volume
 %
 % See also: -
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      26-July-2016
-% Last update:  01-May-2020 (MW, add second case)
-%               09-September-2020 (MA, approximate computation added)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       26-July-2016
+% Last update:   01-May-2020 (MW, add second case)
+%                09-September-2020 (MA, approximate computation added)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty set
 res_e = (volume(zonotope()) == 0);
@@ -62,4 +62,4 @@ res_int(5) = withinTol(volApprox_red,true_vol_approx_red);
 %% final result
 res = all(res_int) && res_e;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

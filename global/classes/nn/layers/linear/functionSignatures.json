@@ -1,0 +1,14 @@
+{
+  "_schemaVersion": "1.0.0",
+
+  "nnLinearLayer.nnLinearLayer":
+  {
+     "inputs":
+     [
+        {"name":"W", "kind":"required", "type":["numeric"], "purpose":"weight matrix"},
+        {"name":"b", "kind":"ordered", "type":["numeric", "column"], "purpose":"bias"},
+        {"name":"name", "kind":"ordered", "type":["char"], "purpose":"name of the layer"}
+     ]
+  }
+
+}

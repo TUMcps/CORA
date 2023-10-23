@@ -1,7 +1,7 @@
 function c = center(O)
 % center - returns the center of an empty set
 %
-% Syntax:  
+% Syntax:
 %    c = center(O)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function c = center(O)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 c = double.empty(O.dimension,0);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

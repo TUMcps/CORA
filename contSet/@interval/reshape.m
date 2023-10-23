@@ -1,7 +1,7 @@
 function I = reshape(I,varargin)
 % reshape - Overloads the operator 'reshape' for reshaping matrices
 %
-% Syntax:  
+% Syntax:
 %    I = reshape(I,varargin)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function I = reshape(I,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      05-August-2015 
-% Last update:  14-December-2022 (TL, use constructor)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-August-2015 
+% Last update:   14-December-2022 (TL, use constructor)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %apply reshaping for infimum and supremum
 inf = reshape(I.inf, varargin{1:end});
@@ -34,4 +34,4 @@ sup = reshape(I.sup, varargin{1:end});
 
 I = interval(inf, sup);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

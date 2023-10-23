@@ -1,7 +1,7 @@
 function I = enclosePoints(points)
 % enclosePoints - enclose a point cloud with an interval
 %
-% Syntax:  
+% Syntax:
 %    I = enclosePoints(points)
 %
 % Inputs:
@@ -24,13 +24,13 @@ function I = enclosePoints(points)
 %
 % See also: interval
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       05-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 I = interval(min(points,[],2),max(points,[],2));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

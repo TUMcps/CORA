@@ -2,7 +2,7 @@ function p = randPoint_(fs,N,type,varargin)
 % randPoint_ - generates random points within a full-dimensional space
 %    case R^0: only point is 0 (not representable in MATLAB)
 %
-% Syntax:  
+% Syntax:
 %    p = randPoint_(fs)
 %    p = randPoint_(fs,N)
 %    p = randPoint_(fs,N,type)
@@ -24,14 +24,14 @@ function p = randPoint_(fs,N,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/randPoint
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       05-April-2023
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if fs.dimension == 0
     throw(CORAerror('CORA:notSupported','Sampling of R^0 not supported'));
@@ -61,4 +61,4 @@ elseif strcmp(type,'extreme')
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

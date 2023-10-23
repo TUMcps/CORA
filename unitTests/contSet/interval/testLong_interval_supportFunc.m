@@ -1,7 +1,7 @@
 function res = testLong_interval_supportFunc
 % testLong_interval_supportFunc - unit test function of supportFunc
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_interval_supportFunc
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_interval_supportFunc
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      12-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       12-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 
@@ -106,4 +106,4 @@ for i=1:nrOfTests
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

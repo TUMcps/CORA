@@ -5,7 +5,7 @@ function V = underapproximate(Z,S)
 %    If S is not specified, it is constructed by the vectors spanning an
 %    over-approximative parallelotope.
 %
-% Syntax:  
+% Syntax:
 %    V = underapproximate(Z,S)
 %
 % Inputs:
@@ -23,16 +23,16 @@ function V = underapproximate(Z,S)
 %
 % See also: vertices
 
-% Author:       Matthias Althoff
-% Written:      19-July-2010
-% Last update:  28-Aug-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-July-2010
+% Last update:   28-August-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %extract center and generators
-c = center(Z);
-G = generators(Z);
+c = Z.c;
+G = Z.G;
 
 if nargin==1
     [rows,cols] = size(G);
@@ -57,4 +57,4 @@ for i=1:length(S(1,:))
     V(:,2*i) = negVertex;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function display(pHA)
 % display - Displays the properties of a parallelHybridAutomaton object on
 %    the command window
 %
-% Syntax:  
+% Syntax:
 %    display(pHA)
 %
 % Inputs:
@@ -18,7 +18,7 @@ function display(pHA)
 %    T_off = 21; T_on = 20;
 % 
 %    % first component, first location
-%    inv = mptPolytope(1,T_off);
+%    inv = polytope(1,T_off);
 %    guard = conHyperplane(1,T_off);
 %    reset = struct('A',1,'c',0);
 %    trans = transition(guard,reset,2);
@@ -26,7 +26,7 @@ function display(pHA)
 %    loc(1) = location('on',inv,trans,linSys);
 % 
 %    % first component, second location
-%    inv = mptPolytope(-1,-T_on);
+%    inv = polytope(-1,-T_on);
 %    guard = conHyperplane(1,T_on);
 %    reset = struct('A',1,'c',0);
 %    trans = transition(guard,reset,1);
@@ -36,7 +36,7 @@ function display(pHA)
 %    HA1 = hybridAutomaton(loc);
 % 
 %    % second component, first location
-%    inv = mptPolytope(1,T_off);
+%    inv = polytope(1,T_off);
 %    guard = conHyperplane(1,T_off);
 %    reset = struct('A',1,'c',0);
 %    trans = transition(guard,reset,2);
@@ -44,7 +44,7 @@ function display(pHA)
 %    loc(1) = location('on',inv,trans,linSys);
 % 
 %    % second component, second location
-%    inv = mptPolytope(-1,-T_on);
+%    inv = polytope(-1,-T_on);
 %    guard = conHyperplane(1,T_on);
 %    reset = struct('A',1,'c',0);
 %    trans = transition(guard,reset,1);
@@ -68,12 +68,12 @@ function display(pHA)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      18-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       18-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 fprintf(newline);
 
@@ -203,4 +203,4 @@ for i=1:numComp
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

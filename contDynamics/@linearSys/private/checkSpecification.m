@@ -2,7 +2,7 @@ function [res,YtimeInt,YtimePoint] = checkSpecification(spec,XtimeInt,YtimeInt,Y
 % checkSpecification - check safety properties for current time-interval
 %    reachable set; if a violation occurs, return truncated structs
 %
-% Syntax:  
+% Syntax:
 %    [res,timeInt,timePoint] = checkSpecification(spec,timeInt,timePoint,idx)
 %
 % Inputs:
@@ -28,13 +28,12 @@ function [res,YtimeInt,YtimePoint] = checkSpecification(spec,XtimeInt,YtimeInt,Y
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-November-2022
-% Last update:  07-December-2022 (MW, if spec.type = 'invariant', check
-%                                     state set, not output set)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-November-2022
+% Last update:   07-December-2022 (MW, bug fix for spec.type = 'invariant')
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init satisfaction
 res = true;
@@ -81,4 +80,4 @@ for i=1:length(spec)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

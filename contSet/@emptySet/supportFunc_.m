@@ -23,14 +23,14 @@ function [val,x] = supportFunc_(O,dir,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/supportFunc
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  05-April-2023 (rename supportFunc_)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   05-April-2023 (rename supportFunc_)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % bounds are fixed by theory
 if strcmp(type,'upper')
@@ -48,4 +48,4 @@ elseif strcmp(type,'range')
     x = double.empty(O.dimension,0);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

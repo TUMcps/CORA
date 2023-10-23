@@ -3,7 +3,7 @@ function Z = andAveraging(zonolist,varargin)
 %    according to [1]
 %
 % Syntax:
-%    Z = and(zonolist,options)
+%    Z = andAveraging(zonolist,options)
 %
 % Inputs:
 %    zonolist    - list of zonotopes
@@ -40,14 +40,13 @@ function Z = andAveraging(zonolist,varargin)
 %
 % See also: none
 
-% Author:        Amr Alanwar
-% Written:       9-Feb-2020
-% Last update:   9-Mar-2020 (add closed form to normGen)
-% Last update:   22-Mar-2020 (add free parameter sum of w's and ability to
-%                   switch between closed form and optimization technique)
+% Authors:       Amr Alanwar
+% Written:       09-February-2020
+% Last update:   09-March-2020 (add closed form to normGen)
+% Last update:   22-March-2020 (sum of w's and switch between closed form/optimization)
 % Last revision: ---
-%
-%------------- BEGIN CODE --------------
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %2 inputs
 if nargin==1 %default
@@ -141,4 +140,4 @@ Z = zonotope([cen,gen]);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

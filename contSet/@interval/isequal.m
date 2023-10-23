@@ -1,7 +1,7 @@
 function res = isequal(I1,I2,varargin)
 % isequal - checks if two intervals are equal
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(I1,I2)
 %    res = isequal(I1,I2,tol)
 %
@@ -24,13 +24,13 @@ function res = isequal(I1,I2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-September-2019
-% Last update:  12-March-2021 (MW, add dimension mismatch)
-%               03-December-2022 (MW, add check for infinity)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-September-2019
+% Last update:   12-March-2021 (MW, add dimension mismatch)
+%                03-December-2022 (MW, add check for infinity)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -77,4 +77,4 @@ end
 % assume true
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

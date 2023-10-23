@@ -3,7 +3,7 @@ function [xLim,yLim,zLim] = getUnboundedAxisLimits(V)
 %    Background: just using xlim/ylim is not sufficient as plotting at
 %    axis limits might auto-adjust them.
 %
-% Syntax:  
+% Syntax:
 %    [xLim,yLim] = getUnboundedAxisLimits()
 %
 % Inputs:
@@ -15,12 +15,12 @@ function [xLim,yLim,zLim] = getUnboundedAxisLimits(V)
 %    zLim - z-axis limits
 %
 
-% Author:        Tobias Ladner
+% Authors:       Tobias Ladner
 % Written:       26-July-2023
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % idea: plot at axis limits and see if they are auto adjusted
 
@@ -34,9 +34,12 @@ if size(V,1) < 2 || size(V,1) > 3
 end
 
 % append boundary
-if plotDim == 2 && size(V,1) == 2
+if size(V,1) == 2 && plotDim == 2
     V = [V, [xlim;ylim]];
-else
+elseif size(V,1) == 2 % && plotDim == 3
+    V = [V;zeros(1,size(V,2))];
+    V = [V, [xlim;ylim;zlim]];
+else % size(V,1) == 3 && plotDim == 3
     V = [V, [xlim;ylim;zlim]];
 end
 
@@ -78,4 +81,4 @@ zlim(zmode);
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

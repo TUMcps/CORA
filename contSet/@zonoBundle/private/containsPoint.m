@@ -1,7 +1,7 @@
 function res = containsPoint(Z,p)
 % containsPoint - checks if p inside zonoBundle
 %
-% Syntax:  
+% Syntax:
 %    res = containsPoint(Z,p)
 %
 % Inputs:
@@ -27,12 +27,12 @@ function res = containsPoint(Z,p)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      18-Sep-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       18-September-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 numPoints = size(p,2);
 res = false(numPoints,1);
@@ -48,4 +48,4 @@ for iPoint = 1:numPoints
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

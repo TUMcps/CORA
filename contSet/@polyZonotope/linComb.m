@@ -1,7 +1,7 @@
 function pZ = linComb(pZ1,S)
-% linComb - Computes the linear combination of two polynomial zonotopes
+% linComb - computes the linear combination of two polynomial zonotopes
 %
-% Syntax:  
+% Syntax:
 %    pZ = linComb(pZ1,S)
 %
 % Inputs:
@@ -28,12 +28,12 @@ function pZ = linComb(pZ1,S)
 %
 % See also: zonotope/enclose
 
-% Author:       Niklas Kochdumper
-% Written:      25-June-2018
-% Last update:  05-May-2020 (MW, standardized error message)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-June-2018
+% Last update:   05-May-2020 (MW, standardized error message)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % determine polyZonotope object
 if ~isa(pZ1,'polyZonotope')
@@ -45,7 +45,7 @@ end
 % convert other set representations to polynomial zonotopes
 if ~isa(S,'polyZonotope')
     if isa(S,'zonotope') || isa(S,'interval') || ...
-       isa(S,'mptPolytope') || isa(S,'zonoBundle') || ...
+       isa(S,'polytope') || isa(S,'zonoBundle') || ...
        isa(S,'conZonotope')
 
         S = polyZonotope(S);
@@ -69,44 +69,44 @@ end
 G1 = [pZ1.c, pZ1.G];
 G2 = [S.c, S.G];
 
-expMat1 = [zeros(size(pZ1.expMat,1),1),pZ1.expMat];
-expMat2 = [zeros(size(S.expMat,1),1),S.expMat];
+E1 = [zeros(size(pZ1.E,1),1),pZ1.E];
+E2 = [zeros(size(S.E,1),1),S.E];
 
 % compute linear comb. of the dependent generators according to the
 % equation comb = (0.5 + 0.5 a)*pZ1 + (0.5 - 0.5 a)*pZ2, a \in [-1,1]
 G = 0.5 * [G1, G1, G2, -G2];
 
-h1 = size(expMat1,2);
-h2 = size(expMat2,2);
+h1 = size(E1,2);
+h2 = size(E2,2);
 
-zero1 = zeros(size(expMat1,1),size(expMat2,2));
-zero2 = zeros(size(expMat2,1),size(expMat1,2));
+zero1 = zeros(size(E1,1),size(E2,2));
+zero2 = zeros(size(E2,1),size(E1,2));
 
-expMat = [expMat1, expMat1, zero1, zero1; ...
-          zero2, zero2, expMat2 expMat2; ...
+E = [E1, E1, zero1, zero1; ...
+          zero2, zero2, E2 E2; ...
           zeros(1,h1), ones(1,h1), zeros(1,h2), ones(1,h2)];
 
 % compute convex hull of the independent generators by using the
 % enclose function for linear zonotopes
 temp = zeros(length(pZ1.c),1);
-Z1 = zonotope([temp, pZ1.Grest]);
-Z2 = zonotope([temp, S.Grest]);
+Z1 = zonotope([temp, pZ1.GI]);
+Z2 = zonotope([temp, S.GI]);
 
 Z = enclose(Z1,Z2);
-Grest = generators(Z);
+GI = Z.G;
 
 % add up all generators that belong to identical exponents
-[ExpNew,Gnew] = removeRedundantExponents(expMat,G);
+[Enew,Gnew] = removeRedundantExponents(E,G);
 
 % extract the center vector
-ind = find(sum(ExpNew,1) == 0);
+ind = find(sum(Enew,1) == 0);
 
 c = sum(Gnew(:,ind),2);
 Gnew(:,ind) = [];
-ExpNew(:,ind) = [];
+Enew(:,ind) = [];
 
 % construct resulting polynomial zonotope object
-pZ = polyZonotope(c,Gnew,Grest,ExpNew);
-pZ.id = (1:size(ExpNew,1))';
+pZ = polyZonotope(c,Gnew,GI,Enew);
+pZ.id = (1:size(Enew,1))';
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

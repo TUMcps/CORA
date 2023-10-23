@@ -2,7 +2,7 @@ function res = isempty(fs)
 % isempty - checks if a full-dimensional space is the empty set
 %    case R^0: false
 %
-% Syntax:  
+% Syntax:
 %    res = isempty(fs)
 %
 % Inputs:
@@ -21,13 +21,13 @@ function res = isempty(fs)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = false;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

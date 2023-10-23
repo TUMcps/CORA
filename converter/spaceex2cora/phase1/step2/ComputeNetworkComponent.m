@@ -5,7 +5,7 @@ function nc_out = ComputeNetworkComponent(nc_in,templateIDs)
 %    conversion to CORA format
 %    note: only strings leave this function (no char arrays)!
 %
-% Syntax:  
+% Syntax:
 %    nc_out = ComputeNetworkComponent(nc_in,templateIDs)
 %
 % Inputs:
@@ -28,12 +28,12 @@ function nc_out = ComputeNetworkComponent(nc_in,templateIDs)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Assign meta information
 nc_out.id = string(nc_in.Attributes.id);
@@ -99,4 +99,4 @@ for i = 1:num_binds
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

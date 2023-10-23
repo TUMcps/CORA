@@ -2,7 +2,7 @@ function V = orthVectors(Z)
 % orthVectors - computes remaining orthogonal vectors when the zonotope is
 %    not full dimensional
 %
-% Syntax:  
+% Syntax:
 %    V = orthVectors(Z)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function V = orthVectors(Z)
 %
 % See also: interval,  vertices
 
-% Author:       Matthias Althoff
-% Written:      17-January-2012 
-% Last update:  27-Aug-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       17-January-2012 
+% Last update:   27-August-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %determine missing vectors
 n = dim(Z);
@@ -55,4 +55,4 @@ else
     V = [];
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

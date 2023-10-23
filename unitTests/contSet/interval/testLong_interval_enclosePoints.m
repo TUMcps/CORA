@@ -2,7 +2,7 @@ function res = testLong_interval_enclosePoints
 % testLong_interval_enclosePoints - unit test function of
 %    enclosePoints
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_interval_enclosePoints
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_interval_enclosePoints
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      12-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       12-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % random cases
 res = true;
@@ -53,4 +53,4 @@ for i=1:nrOfTests
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

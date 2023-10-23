@@ -1,20 +1,20 @@
-function V = lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
+function V = lcon2vert(A,b,varargin)
 % lcon2vert - compute the vertices of a polytope
 %
-% Syntax:  
+% Syntax:
 %    V = lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
 %
 % Inputs:
-%    A - inequality constraint matrix ( A*x < b )
-%    b - inequality constraint vector ( A*x < b )
-%    Aeq - equality constraint matrix ( A*x = b )
-%    beq - equality constraint vector ( A*x = b )
-%    TOL - tolerance for vertex computation
-%    checkbounds - check if the polytope is bounded before the vertices are
-%                  computed (0 or 1)
+%    A - inequality constraint matrix ( A*x <= b )
+%    b - inequality constraint vector ( A*x <= b )
+%    Aeq - (optional) equality constraint matrix ( Aeq*x == beq )
+%    beq - (optional) equality constraint vector ( Aeq*x == beq )
+%    TOL - (optional) tolerance for vertex computation, default: 1e-10
+%    checkbounds - (optional) check if the polytope is bounded before the
+%                  vertices are computed (true/false, default = true)
 %
 % Outputs:
-%    V - matrix containing the vertices
+%    V - matrix containing the vertices as column vectors
 %
 % Example: 
 %    ---
@@ -23,183 +23,178 @@ function V = lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      09-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Michael Kleder, Matt Jacobson, Niklas Kochdumper
+% Written:       09-May-2018
+% Last update:   08-December-2022 (MW, polish syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
+    % set default values
+    [Aeq,beq,TOL,checkbounds] = setDefaultValues({[],[],1e-10,true},varargin);
 
-  % initial argument parsing
-  if nargin<5 || isempty(TOL), TOL=1e-10; end
-  if nargin<6, checkbounds=true; end
+    % check if this can be removed:
+    if isempty(TOL)
+        TOL = 1e-10;
+    end
   
-  switch nargin 
-      
-      case 0
-            throw(CORAerror('CORA:notEnoughInputArgs',1));
-
-      case 1
-            b=[]; Aeq=[]; beq=[]; 
-        
-      case 2       
-            Aeq=[]; beq=[];
-          
-      case 3
-          throw(CORAerror('CORA:specialError',...
-              'Since argument Aeq specified, beq must also be specified'));
-  end
+    % check number of input arguments
+    if nargin == 0
+        throw(CORAerror('CORA:notEnoughInputArgs',1));
+    elseif nargin == 3
+        throw(CORAerror('CORA:specialError',...
+            'Since argument Aeq specified, beq must also be specified'));
+    elseif nargin > 6
+        throw(CORAerror('CORA:tooManyInputArgs',6));
+    end
   
-  b=b(:); beq=beq(:);
-  
-  if xor(isempty(A), isempty(b))
-      throw(CORAerror('CORA:specialError',...
-        'Since argument A specified, b must also be specified'));
-  end
-      
-  if xor(isempty(Aeq), isempty(beq))
-      throw(CORAerror('CORA:specialError',...
-        'Since argument Aeq specified, beq must also be specified'));
-  end
-  
-  nn=max(size(A,2)*~isempty(A),size(Aeq,2)*~isempty(Aeq));
-  
-  if ~isempty(A) && ~isempty(Aeq) && ( size(A,2)~=nn || size(Aeq,2)~=nn)   
-      throw(CORAerror('CORA:dimensionMismatch',A,Aeq));
-  end
-  
-  
- % normalize constraints
- [A,b]=rownormalize(A,b);
- [Aeq,beq]=rownormalize(Aeq,beq);
- 
- % extract all inequality constraints that describe equality constraints
- [A,b,Aeq,beq] = extractEqConstr(A,b,Aeq,beq,TOL);
- 
- inequalityConstrained=~isempty(A);  
- equalityConstrained=~isempty(Aeq);
-
-  
- % solve equality constraints        
- if equalityConstrained
-
-   Neq=null(Aeq);   
-   x0=pinv(Aeq)*beq;
-
-   if norm(Aeq*x0-beq)>TOL*norm(beq)  % infeasible
-
-      V=[]; 
-      return;
-
-   elseif isempty(Neq)
-
-       if inequalityConstrained && ~all(A*x0<=b)
-
-          V=[]; 
-          return;              
-
-       else % inequality constraints all satisfied, including vacuously
-
-           V=x0(:).';           
-           return
-       end
-   end
- end  
-   
- % transform inequality constraints to the null-space from equality constr.
- if inequalityConstrained && equalityConstrained
-     
-   AAA=A*Neq;
-   bbb=b-A*x0;
+    % flatten vectors
+    b = b(:); beq = beq(:);
     
- elseif inequalityConstrained
-      
-    AAA=A;
-    bbb=b;
-   
- elseif equalityConstrained && ~inequalityConstrained
-     throw(CORAerror('CORA:specialError',...
-         'Non-bounding constraints detected. (Consider box constraints on variables.)'));
- end
-  
- % remove redundant constraints
- poly = Polyhedron(AAA,bbb);
- poly.minHRep();
- AAA = poly.A;
- bbb = poly.b;
-  
-  
- % calculat the vertices from the inequality constraints
- nnn=size(AAA,2);
-  
- if nnn==1      % Special case
-      
-     idxu=sign(AAA)==1;
-     idxl=sign(AAA)==-1;
-     idx0=sign(AAA)==0;
-     
-     Q=bbb./AAA;
-     U=Q; 
-     U(~idxu)=inf;
-     L=Q;
-     L(~idxl)=-inf;
+    % inputs regarding constraints have to come in pairs
+    if xor(isempty(A), isempty(b))
+        throw(CORAerror('CORA:specialError',...
+            'Since argument A specified, b must also be specified'));
+    elseif xor(isempty(Aeq), isempty(beq))
+        throw(CORAerror('CORA:specialError',...
+            'Since argument Aeq specified, beq must also be specified'));
+    end
+    
+    % ensure that dimension of inequality and equality constraints is equal
+    if ~isempty(A) && ~isempty(Aeq) && (size(A,2) ~= size(Aeq,2))
+        % dimension of inequality and equality constraints do not match
+        throw(CORAerror('CORA:dimensionMismatch',A,Aeq));
+    end
+    
+    % normalize constraints such that norm of each row in A is 0 or 1
+    [A,b] = aux_rownormalize(A,b);
+    [Aeq,beq] = aux_rownormalize(Aeq,beq);
+    
+    % extract all inequality constraints that describe equality constraints
+    [A,b,Aeq,beq] = aux_extractEqConstr(A,b,Aeq,beq,TOL);
+    
+    % check if inequality/equality constraints are given
+    inequalityConstrained = ~isempty(A);  
+    equalityConstrained = ~isempty(Aeq);
+    
+    % solve equality constraints        
+    if equalityConstrained
+    
+        % compute null space
+        Neq = null(Aeq);
+        % compute a solution to the set of equality constraints
+        x0 = pinv(Aeq)*beq;
+    
+        if norm(Aeq*x0 - beq) > TOL*norm(beq)
+            % infeasible
+            V = []; return
+    
+        elseif isempty(Neq)
+    
+            Ax0 = A*x0;
+            if inequalityConstrained && ~all( Ax0 < b | withinTol(Ax0,b,TOL) )
+                % solution to set of equality constraints does not satisfy
+                % the inequality constraints -> infeasible
+                V = []; return
+            else
+                % inequality constraints are all satisfied, including
+                % vacuously... transpose
+                V = x0(:).'; return
+            end
+        end
+    end
+    
+    
+    if inequalityConstrained && equalityConstrained
+        % transform inequality constraints to the null-space from equality
+        % constraints
+        b = b - A*x0;
+        A = A*Neq;
+    
+    elseif equalityConstrained && ~inequalityConstrained
+        throw(CORAerror('CORA:specialError',...
+            ['Non-bounding constraints detected. '...
+            '(Consider box constraints on variables.)']));
 
-     [ub,uloc]=min(U);
-     [lb,lloc]=max(L);
+    end
+    
+    % remove redundant constraints
+    P = polytope(A,b);
+    P = compact_(P,'all',1e-9);
+    % read out inequality constraints
+    A = P.A;
+    b = P.b;
+  
+    % calculate the vertices from the inequality constraints
+    if size(A,2) == 1
+        % Special case: 1D
+        
+        idx_u = sign(A) == 1;
+        idx_l = sign(A) == -1;
+        idx_0 = sign(A) == 0;
+        
+        Q = b ./ A;
+        U = Q; 
+        U(~idx_u) = Inf;
+        L = Q;
+        L(~idx_l) = -Inf;
+        
+        [ub,uloc] = min(U);
+        [lb,lloc] = max(L);
      
-     if ~all(bbb(idx0)>=0) || ub<lb %infeasible
+        if ~all(b(idx_0) > 0 | withinTol(b(idx_0),0)) || ub < lb
+            % infeasible
+            V=[]; return
+            % previously: nr=[]; nre=[];
          
-         V=[]; nr=[]; nre=[];
-         return
-         
-     elseif ~isfinite(ub) || ~isfinite(lb)      
-         throw(CORAerror('CORA:specialError',...
-            'Non-bounding constraints detected. (Consider box constraints on variables.)'));
-     end
+        elseif ~isfinite(ub) || ~isfinite(lb)      
+            throw(CORAerror('CORA:specialError',...
+                'Non-bounding constraints detected. (Consider box constraints on variables.)'));
+        end
       
-     Zt=[lb;ub];
-     
-     if nargout>1
-        nr=unique([lloc,uloc]); nr=nr(:);
-     end   
-      
- else           % Convert inequality constraints   
+        Zt = [lb;ub];
+        
+        % previously:
+%         if nargout > 1
+%             nr=unique([lloc,uloc]); nr=nr(:);
+%         end
+    else
+        % Convert inequality constraints   
+        Zt = aux_con2vert(A,b,TOL,checkbounds); 
+    end
+    
+    % convert vertices from null-space back to original space
+    if equalityConstrained && ~isempty(Zt)     
+        V = bsxfun(@plus, Zt*Neq.', x0(:).');      
+    else     
+        V = Zt;  
+    end
+  
+end
+  
+  
+% Auxiliary functions -----------------------------------------------------
 
-     Zt=con2vert(AAA,bbb,TOL,checkbounds); 
- end
-  
-
- % convert vertices from null-space back to original space
-  if equalityConstrained && ~isempty(Zt)     
-      V=bsxfun(@plus,Zt*Neq.',x0(:).');      
-  else     
-      V=Zt;  
-  end
-  
-  
-  
-  
- % AUXILIARY FUNCTIONS ----------------------------------------------------
-
- function [V,nr] = con2vert(A,b,TOL,checkbounds)
-% CON2VERT - convert a convex set of constraint inequalities into the set
-%            of vertices at the intersections of those inequalities;i.e.,
-%            solve the "vertex enumeration" problem. Additionally,
-%            identify redundant entries in the list of inequalities.
+function [V,nr] = aux_con2vert(A,b,TOL,checkbounds)
+% con2vert - convert a convex set of constraint inequalities into the set
+%     of vertices at the intersections of those inequalities; i.e., solve
+%     the "vertex enumeration" problem. Additionally, identify redundant
+%     entries in the list of inequalities.
 % 
-% V = con2vert(A,b)
-% [V,nr] = con2vert(A,b)
+% Syntax:
+%     V = aux_con2vert(A,b)
+%     [V,nr] = aux_con2vert(A,b)
 % 
-% Converts the polytope (convex polygon, polyhedron, etc.) defined by the
-% system of inequalities A*x <= b into a list of vertices V. Each ROW
-% of V is a vertex. For n variables:
-% A = m x n matrix, where m >= n (m constraints, n variables)
-% b = m x 1 vector (m constraints)
-% V = p x n matrix (p vertices, n variables)
-% nr = list of the rows in A which are NOT redundant constraints
+% Inputs:
+%     A - constraint matrix (m x n with m constraints and n dimensions)
+%     b - constraint vector (m x 1 with m constraints)
+%
+% Outputs:
+%     V - vertices (p x n, where p is the number of vertices and n is the
+%         dimension)
+%     nr - list of the rows in A which are NOT redundant constraints
 % 
 % NOTES: (1) This program employs a primal-dual polytope method.
 %        (2) In dimensions higher than 2, redundant vertices can
@@ -222,96 +217,93 @@ function V = lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
 %        (6) See companion function VERT2CON.
 %        (7) ver 1.0: initial version, June 2005
 %        (8) ver 1.1: enhanced redundancy checks, July 2005
-%        (9) Written by Michael Kleder
-%
-%Modified by Matt Jacobson - March 30, 2011
-% 
+%        (9) Written by Michael Kleder,
+%            Modified by Matt Jacobson - March 30, 2011
 
 
-   % Check if the polytope is bounded
-   if checkbounds
-       
-        [~,bb,~,bbeq]=vert2lcon(A,TOL);
-
+    % Check if the polytope is bounded
+    if checkbounds
+        
+        [~,bb,~,bbeq] = aux_vert2lcon(A,TOL);
+    
         if any(bb<=0) || ~isempty(bbeq)
             throw(CORAerror('CORA:specialError',...
                 'Non-bounding constraints detected. (Consider box constraints on variables.)'));
         end
-
+    
         clear bb bbeq
-   end
- 
+    end
+
    
-   
-   % Initialization -------------------------------------------------------
-   
-   % determine a point that is located inside the polytope and that is far
-   % enough away from the facets of the polytope
-   
-   dim=size(A,2);
-   
-   if strictinpoly(b,TOL)  
+    % Initialization ------------------------------------------------------
+    
+    % determine a point that is located inside the polytope and that is far
+    % enough away from the facets of the polytope
+    
+    % dimension in which the polytope is defined
+    n = size(A,2);
+    
+    if aux_pointInPoly_interior(b,TOL)  
        
-       c=zeros(dim,1);
+        c = zeros(n,1);
    
-   else
+    else
             
         % slackfun > 0 => point c is located inside the polytope
-        slackfun=@(c)b-A*c;
+        % slackfun = 0 (at any entry) => point c is located on the boundary
+        slackfun = @(x) b - A*x;
 
         % Initializer 0
-        c = pinv(A)*b; 
-        s=slackfun(c);
+        c = pinv(A)*b;
+        s = slackfun(c);
 
-        % Initializer 1
-        if ~approxinpoly(s,TOL) 
-
-            c=Initializer1(TOL,A,b,c);
-            s=slackfun(c);
-        end
-
-        % Attempt refinement (Initializer 2)
-        if  ~approxinpoly(s,TOL)  
-
-            c=Initializer2(TOL,A,b,c);
-            s=slackfun(c);
-        end
-
-        % Attempt refinement (Chebychef center)
-        if ~approxinpoly(s,TOL) 
-            
-            poly = Polyhedron(A,b);
-            temp = chebyCenter(poly);
-            c = temp.x;
+        % use three different methods to compute a point inside the
+        % polytope; take 'best' one afterward to avoid refine-branch below
+        if ~aux_pointInPoly_approx(s,TOL)
+            c = [aux_Initializer1(A,b,c,TOL),...
+                 aux_Initializer2(A,b,c,TOL),...
+                 center(polytope(A,b))];
             s = slackfun(c);
+
+            % no point inside the polytope could be found
+            if ~any(aux_pointInPoly_approx(s,TOL))
+                throw(CORAerror('CORA:specialError',...
+                    ['Unable to locate a point near '...
+                    'the interior of the feasible region.']));
+            end
+
+            % choose best one via largest minimum value in s
+            [~,idx] = max(min(s,[],1));
+            s = s(:,idx);
+            c = c(:,idx);
+            
         end
-
-        % No point inside the polytope could be cound
-        if ~approxinpoly(s,TOL)
-            throw(CORAerror('CORA:specialError',...
-                'Unable to locate a point near the interior of the feasible region.'));
-        end
-
-
+        
         % Refinement: If the determined point is located too close to the
-        % polyotpe surface, push it to the interior to increase the
+        % polytope surface, push it to the interior to increase the
         % numerical stability
-        if ~strictinpoly(s,TOL) 
+        refine = ~aux_pointInPoly_interior(s,TOL);
+        if refine
 
             % determine the surfaces that are too close to the point c
-            idx=(  abs(s)<=max(s)*TOL );
+            TOL_ = max(s)*TOL;
+            idx = abs(s) < TOL_ | withinTol(abs(s),0,TOL_);
 
             % Treat the close surfaces as equality constraints
-            Amod=A; bmod=b; 
-            Amod(idx,:)=[]; 
-            bmod(idx)=[];
+            Amod = A; bmod = b; 
+            Amod(idx,:) = []; 
+            bmod(idx) = [];
 
-            Aeq=A(idx,:);
-            beq=b(idx);
+            Aeq = A(idx,:);
+            beq = b(idx);
 
             % Calculate the vertices to the newly generated polytope which
             % is a subspace of the original polytope
-            faceVertices=lcon2vert(Amod,bmod,Aeq,beq,TOL,1);
+            if all(size(A) == size(Amod)) && all(withinTol(A,Amod))
+                throw(CORAerror('CORA:specialError',...
+                    'Could not find face vertices.'));
+            end
+            faceVertices = lcon2vert(Amod,bmod,Aeq,beq,TOL,1);
             
             if isempty(faceVertices)
                 throw(CORAerror('CORA:specialError',...
@@ -319,59 +311,66 @@ function V = lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
             end
 
             % loop over all possible vertices (choose a feasible vertex)
-            foundSolution = 0;
+            foundSolution = false;
 
             for i = 1:size(faceVertices,1)
                 
                 try
                     
                     % find the local recession cone vector 
-                    c=faceVertices(i,:).';
-                    s=slackfun(c);
-
-                    idx=(  abs(s)<=max(s)*TOL );
-
-                    Asub=A(idx,:); bsub=b(idx,:);
-
-                    [aa,bb,aaeq,bbeq]=vert2lcon(Asub);
-                    aa=[aa;aaeq;-aaeq];
-                    bb=[bb;bbeq;-bbeq];
-
+                    c = faceVertices(i,:).';
+                    s = slackfun(c);
+                    
+                    TOL_ = max(s)*TOL;
+                    idx = abs(s) < 0 | withinTol(abs(s),0,TOL_);
+                    
+                    Asub = A(idx,:);
+                    bsub = b(idx,:);
+                    
+                    [aa,bb,aaeq,bbeq] = aux_vert2lcon(Asub);
+                    aa = [aa;aaeq;-aaeq];
+                    bb = [bb;bbeq;-bbeq];
+                    
                     clear aaeq bbeq
-
-                    [bmin,idx]=min(bb);
-
-                     if bmin>=-TOL
-                         throw(CORAerror('CORA:specialError',...
-                             'We should have found a recession vector (bb<0).'));
-                     end      
-
-
-                    % find intersection of polytope with line through facet centroid.
-                    Aeq2=null(aa(idx,:)).';
-                    beq2=Aeq2*c;  
-
-                    linetips = lcon2vert(A,b,Aeq2,beq2,TOL,1);
-
-                    if size(linetips,1)<2
+                    
+                    [bmin,idx] = min(bb);
+                    
+                    if bmin > -TOL || withinTol(bmin,0,TOL)
                         throw(CORAerror('CORA:specialError',...
-                            'Failed to identify line segment through interior. Possibly {x: Aeq*x=beq} has weak intersection with interior({x: Ax<=b}).'));
+                            'We should have found a recession vector (bb<0).'));
                     end
+                    
+                    
+                    % find intersection of polytope with line through facet
+                    % centroid
+                    Aeq2 = null(aa(idx,:)).';
+                    beq2 = Aeq2*c;  
+                    
 
-                    % Take midpoint to the line as the refined point
-                    lineCentroid=mean(linetips);
-
+                    linetips = lcon2vert(A,b,Aeq2,beq2,TOL,true);
+                    
+                    if size(linetips,1) < 2
+                        throw(CORAerror('CORA:specialError',...
+                            ['Failed to identify line segment through interior. '...
+                            'Possibly {x: Aeq*x=beq} has weak intersection with interior({x: Ax<=b}).']));
+                    end
+                    
+                    % take midpoint to the line as the refined point
+                    lineCentroid = mean(linetips);
+                    
                     clear aa bb
-
-                    c=lineCentroid(:);
-                    s=slackfun(c);
-
-                    % suitable point was found => end search
-                    foundSolution = 1;
+                    
+                    c = lineCentroid(:);
+                    s = slackfun(c);
+                    
+                    % suitable point was found -> end search
+                    foundSolution = true;
                     break;
+                catch ME
+                    % no feasible solution found (?)
                 end
             end
-
+            
             if ~foundSolution
                 throw(CORAerror('CORA:specialError',...
                     'Could not determine a point inside the polytope!'));
@@ -379,329 +378,390 @@ function V = lcon2vert(A,b,Aeq,beq,TOL,checkbounds)
         end
 
         b = s;
-   end
+    end
 
    
-   % Calculate Vertices ---------------------------------------------------
-   
-   % Normalize the constraints (unit vector b)
-   D=bsxfun(@rdivide,A,b); 
+    % Calculate Vertices --------------------------------------------------
     
-   % Determine the combinations of inequalies that form a vertex
-   try
+    % Normalize the constraints (unit vector b)
+    D = bsxfun(@rdivide,A,b); 
+    
+    % Determine the combinations of inequalies that form a vertex
+    try
         k = convhulln(D);
-   catch 
+    catch ME
         k = convhulln(D,{'Qs'});
-   end
-   nr = unique(k(:));
+    end
+    nr = unique(k(:));
     
-   % For each vertex, combine the inequalities that form the vertex and
-   % solve a system of linear equations to determine the point
+    % For each vertex, combine the inequalities that form the vertex and
+    % solve a system of linear equations to determine the point
+    G = zeros(size(k,1),n);
+    ee = ones(size(k,2),1);
+    discard = false(1,size(k,1));
     
-   G  = zeros(size(k,1),dim);
-   ee=ones(size(k,2),1);
-   discard=false( 1, size(k,1) );
+    for ix = 1:size(k,1)
     
-   for ix = 1:size(k,1)
-        
         F = D(k(ix,:),:);
-        if lindep(F,TOL)<dim
-            discard(ix)=1;
-            continue; 
+        % check if the inequalities are linearly dependent -> remove
+        if aux_lindep(F,TOL) < n
+            discard(ix) = true; continue
         end
-
-        G(ix,:)=F\ee;     
-   end
+        
+        G(ix,:) = F\ee;
+    end
     
-   G(discard,:)=[];
-   
-   % shift the vertices by the initialization point (back to original
-   % space)
-   V = bsxfun(@plus, G, c.'); 
+    G(discard,:) = [];
     
-   % discard all vertices that are identical
-   [~,I]=unique( round(V*1e6),'rows');
-   V=V(I,:);
+    % shift the vertices by the initialization point (to original space)
+    V = bsxfun(@plus, G, c.'); 
     
-return
+    % discard all vertices that are identical
+    [~,I] = unique(round(V*1e6),'rows');
+    V = V(I,:);
+    
+end
 
-
-function [c,fval]=Initializer1(TOL, A,b,c,maxIter)
+function [c,fval] = aux_Initializer1(A,b,c,TOL,maxIter)
 % Try to determine a point inside the polytope by iterative minimization of
 % objective function
 
-    thresh=-10*max(eps(b));
-    
-    if nargin>4
-     [c,fval]=fminsearch(@(x) max([thresh;A*x-b]), c,optimset('MaxIter',maxIter));
+    threshold = -10*max(eps(b));
+    if nargin > 4
+        [c,fval] = fminsearch(@(x) max([threshold;A*x-b]),c,...
+            optimset('MaxIter',maxIter));
     else
-     [c,fval]=fminsearch(@(x) max([thresh;A*x-b]), c); 
+        [c,fval] = fminsearch(@(x) max([threshold;A*x-b]),c); 
     end
     
-return          
+end
 
 
-function c=Initializer2(TOL,A,b,c)
-% Try to determine a point inside the polytope by iterative minimization of
+function c = aux_Initializer2(A,b,c,TOL)
+% Determine a point inside the polytope by iterative minimization of
 % objective function
     
-    maxIter=10000;
-    [mm,~]=size(A);
+    % maximum number of iterations
+    maxIter = 10000;
+    % number of constraints
+    nrCon = size(A,1);
     
-    Ap=pinv(A);        
-    Aaug=speye(mm)-A*Ap;
-    Aaugt=Aaug.';
+    % compute psuedo-inverse and augmented constraint matrix
+    Ap = pinv(A);        
+    Aaug = speye(nrCon) - A*Ap;
+    % transpose augmented constraint matrix
+    Aaugt = Aaug.';
     
-    M=Aaugt*Aaug;
-    C=sum(abs(M),2);
-    C(C<=0)=min(C(C>0));
+    M = Aaugt*Aaug;
+    C = sum(abs(M),2);
+    C(C<=0) = min(C(C>0));
     
-    slack=b-A*c;
-    slack(slack<0)=0;
+    slack = b - A*c;
+    slack(slack<0) = 0;
      
-    IterThresh=maxIter; 
-    s=slack; 
-    ii=0;
+    IterThresh = maxIter; 
+    s = slack; 
+    ii = 0;
     
-    while ii<=2*maxIter 
+    while ii <= 2*maxIter 
         
-       ii=ii+1; 
-       if ii>IterThresh
-           IterThresh=IterThresh+maxIter;
-       end          
-          
-       s=s-Aaugt*(Aaug*(s-b))./C;   
-       s(s<0)=0;
-       c=Ap*(b-s);
+        ii = ii + 1; 
+        if ii > IterThresh
+            IterThresh = IterThresh + maxIter;
+        end          
+        
+        s = s - Aaugt*(Aaug*(s-b))./C;   
+        s(s<0) = 0;
+        c = Ap*(b-s);
     end
    
-return 
+end
 
-
-
-
-function [r,idx,Xsub]=lindep(X,tol)
-%Extract a linearly independent set of columns of a given matrix X
+function [r,idx,Xsub] = aux_lindep(X,varargin)
+% Extract a linearly independent set of columns of a given matrix X
 %
-%    [r,idx,Xsub]=lindep(X)
+% Syntax:
+%    [r,idx,Xsub] = aux_lindep(X)
+%    [r,idx,Xsub] = aux_lindep(X,tol)
 %
-%in:
+% Inputs:
+%    X - matrix
+%    tol - rank estimation tolerance (default = 1e-10)
 %
-%  X: The given input matrix
-%  tol: A rank estimation tolerance. Default=1e-10
-%
-%out:
-%
-% r: rank estimate
-% idx:  Indices (into X) of linearly independent columns
-% Xsub: Extracted linearly independent columns of X
+% Outputs:
+%    r - rank estimate
+%    idx - indices (into X) of linearly independent columns
+%    Xsub - extracted linearly independent columns of X
 
-   if ~nnz(X) % X has no non-zeros and hence no independent columns
-       
-       Xsub=[]; idx=[];
-       return
-   end
+    % set default values
+    tol = setDefaultValues({1e-10},varargin{:});
 
-   if nargin<2, tol=1e-10; end
-   
-
-           
-     [~, R, E] = qr(X,0); 
-     
-     diagr = abs(diag(R));
-
-
-     % Rank estimation
-     r = find(diagr >= tol*diagr(1), 1, 'last'); % rank estimation
-
-     if nargout>1
-      idx=sort(E(1:r));
+    if ~nnz(X)
+        % X has no non-zeros and hence no independent columns
+        Xsub = []; idx = []; return
+    end    
+    
+    % QR decomposition
+    [~,R,E] = qr(X,0);
+    diagr = abs(diag(R));
+    
+    % Rank estimation
+    r = find(diagr >= tol*diagr(1),1,'last');
+    
+    % set optional output arguments
+    if nargout > 1
+        idx=sort(E(1:r));
         idx=idx(:);
-     end
-     
-     
-     if nargout>2
-      Xsub=X(:,idx);                      
-     end                     
+        if nargout > 2
+            Xsub=X(:,idx);
+        end
+    end                
 
+end
      
- function [A,b]=rownormalize(A,b)
- % Modifies A,b data pair so that norm of rows of A is either 0 or 1
- 
-  if isempty(A), return; end
- 
-  normsA=sqrt(sum(A.^2,2));
-  idx=normsA>0;
-  A(idx,:)=bsxfun(@rdivide,A(idx,:),normsA(idx));
-  b(idx)=b(idx)./normsA(idx);       
-        
- function tf=approxinpoly(s,TOL)
- % Determines if a point is approximateley (up to tolerance) located inside 
- % the polytope
-     
-   smax=max(s);
-   
-   if smax<=0
-      tf=false; return 
-   end
-   
-   tf=all(s>=-smax*TOL);
-   
-  function tf=strictinpoly(s,TOL)
-      
-   smax=max(s);
-   
-   if smax<=0
-      tf=false; return 
-   end
-   
-   tf=all(s>=smax*TOL);
-   
-function [A,b,Aeq,beq]=vert2lcon(V,tol)
-%An extension of Michael Kleder's vert2con function, used for finding the 
-%linear constraints defining a polyhedron in R^n given its vertices. This 
-%wrapper extends the capabilities of vert2con to also handle cases where the 
-%polyhedron is not solid in R^n, i.e., where the polyhedron is defined by 
-%both equality and inequality constraints.
+function [A,b] = aux_rownormalize(A,b)
+% Modifies A,b data pair so that norm of each row in A is either 0 or 1
+
+    % return if no constraints given
+    if isempty(A)
+        return
+    end
+    
+    normsA = sqrt(sum(A.^2,2));
+    idx = normsA>0;
+    A(idx,:) = bsxfun(@rdivide,A(idx,:),normsA(idx));
+    b(idx) = b(idx) ./ normsA(idx);
+
+end
+
+function res = aux_pointInPoly_approx(s,TOL)
+% Determines if a point is approximately (up to tolerance) located inside 
+%    the polytope; since
+%        s(x) = b - A*x,  with s \in R^m (m ... number of constraints) 
+%    and we need to fulfill
+%        A*x <= b + tol <=>  -tol <= b - A*x  <=>  -tol <= s(x)
+%    the point is contained if all constraints are fulfilled, i.e.,
+%        \forall i \in {1,...,m}: -tol <= s_i(x)
+%    or definitely not contained if
+%        \exists i \in {1,...,m}: -tol > s_i(x)
 % 
-%SYNTAX:
+% Syntax:
+%    res = approxinpoly(s,TOL)
 %
-%  [A,b,Aeq,beq]=vert2lcon(V,TOL)
+% Inputs:
+%    s - slack value of the point x (= b - A*x from inequality A*x <= b)
+%    TOL - tolerance
 %
-%The rows of the N x n matrix V are a series of N vertices of a polyhedron
-%in R^n. TOL is a rank-estimation tolerance (Default = 1e-10).
-%
-%Any point x inside the polyhedron will/must satisfy
-%  
-%   A*x  <= b
-%   Aeq*x = beq
-%
-%up to machine precision issues.
-%
-%
-%EXAMPLE: 
-%
-%Consider V=eye(3) corresponding to the 3D region defined 
-%by x+y+z=1, x>=0, y>=0, z>=0.
-%
+% Outputs:
+%    res - true/false
+    
+    if any(-TOL > s)
+        % one violation found
+        res = false;
+    else
+        % adapt tolerance
+        TOL_ = abs(max(max(s))*TOL);
+        % check all inequalities
+        res = all( 0 < s | withinTol(s,0,TOL_) );
+    end
+
+    % old version:
+%     smax = max(s);   
+%     if smax <= 0
+%         res = false;
+%     else
+%         res = all(s >= -smax*TOL);
+%     end
+    
+end
+   
+function res = aux_pointInPoly_interior(s,TOL)
+% Determines if a point is an interior point of the polytope (up to
+%    tolerance); since
+%        s(x) = b - A*x,  with s \in R^m (m ... number of constraints) 
+%    and we need to fulfill
+%        A*x < b + tol <=>  -tol < b - A*x  <=>  -tol < s(x)
+%    the point is contained if all constraints are fulfilled, i.e.,
+%        \forall i \in {1,...,m}: -tol < s_i(x)
+%    or definitely not contained if
+%        \exists i \in {1,...,m}: -tol >= s_i(x)
 % 
-%   >>[A,b,Aeq,beq]=vert2lcon(eye(3))
+% Syntax:
+%    res = strictinpoly(s,TOL)
 %
+% Inputs:
+%    s - slack value of the point x (b - A*x from inequality A*x <= b)
+%    TOL - tolerance
 %
-%     A =
-% 
+% Outputs:
+%    res - true/false
+
+    if any(-TOL > s | withinTol(0,s,TOL))
+        res = false;
+    else
+        res = all(-TOL < s);
+    end
+
+    % old version:
+%     smax = max(s);
+%     if smax <= 0
+%         res = false;
+%     else
+%         res = all(s >= smax*TOL);
+%     end
+
+end
+   
+function [A,b,Aeq,beq] = aux_vert2lcon(V,varargin)
+% vert2lcon - an extension of Michael Kleder's vert2con function, used for
+%    finding the linear constraints defining a polytope in R^n given its
+%    vertices. This wrapper extends the capabilities of vert2con to also
+%    handle cases where the polytope is not solid in R^n, i.e., where the
+%    polytope is defined by both equality and inequality constraints.
+%    Any point x inside the polytope will/must satisfy
+%       A*x  <= b
+%       Aeq*x = beq
+%    up to machine precision issues.
+%
+% Syntax:
+%    [A,b,Aeq,beq] = aux_vert2lcon(V,TOL)
+%
+% Inputs:
+%    V - vertices (N x n, where N is the number of vertices and n the
+%                  dimension)
+%    tol - rank estimation tolerance (default = 1e-10)
+%
+% Outputs:
+%    A - inequality constraint matrix
+%    b - inequality constraint vector
+%    Aeq - equality constraint matrix
+%    beq - equality constraint vector
+%
+% Example:
+%    % 3D region defined by x+y+z = 1, x >= 0, y >= 0, z >= 0
+%    V = eye(3);
+%    [A,b,Aeq,beq] = aux_vert2lcon(V);
+%
+%    % output
+%    A =
 %         0.4082   -0.8165    0.4082
 %         0.4082    0.4082   -0.8165
 %        -0.8165    0.4082    0.4082
-% 
-% 
-%     b =
-% 
+%    b =
 %         0.4082
 %         0.4082
 %         0.4082
-% 
-% 
-%     Aeq =
-% 
+%    Aeq =
 %         0.5774    0.5774    0.5774
-% 
-% 
-%     beq =
-% 
+%    beq =
 %         0.5774
 
-
-  % initialization
-  
-  if nargin<2, tol=1e-10; end
-
-  [M,N]=size(V);
+    % set default values
+    tol = setDefaultValues({1e-10},varargin);
     
-  if M==1
-      A=[];b=[];
-      Aeq=eye(N); beq=V(:);
-      return
-  end
+    % number of vertices and dimension
+    [M,N] = size(V);
+    
+    if M == 1
+        A = []; b = [];
+        Aeq = eye(N); beq=V(:);
+        return
+    end
+    
+    p = V(1,:).';
+    X = bsxfun(@minus,V.',p);
+    
+    % from now on, we need Q to be full column rank and prefer E to be compact
+    
+    if M > N
+        % X is wide
 
-  p=V(1,:).';
-  X=bsxfun(@minus,V.',p);
+        % QR decomposition
+        [Q, R, E] = qr(X,0);  
+        % ...economy-QR ensures that E is compact
+        % ...Q automatically full column rank since X wide
     
-  % In the following, we need Q to be full column rank 
-  % and we prefer E compact.
+    else
+        % X is tall, hence non-solid polytope
     
-  if M>N  % X is wide
-        
-     [Q, R, E] = qr(X,0);  % economy-QR ensures that E is compact.
-                           % Q automatically full column rank since X wide
-                           
-  else % X is tall, hence non-solid polytope
-        
-     [Q, R, P]=qr(X);  % non-economy-QR so that Q is full-column rank.
-     
-     [~,E]=max(P);  % No way to get E compact. This is the alternative. 
+        % QR decomposition
+        [Q, R, P] = qr(X);
+        % ...non-economy-QR so that Q is full-column rank
+    
+        % No way to get E compact, this is the alternative:
+        [~,E] = max(P);
+    
         clear P
-  end 
+    end 
     
-  diagr = abs(diag(R));
-
+    diagr = abs(diag(R));
     
-  if nnz(diagr)    
+    
+    if nnz(diagr)    
+    
+        % rank estimation
+        r = find(diagr >= tol*diagr(1), 1, 'last');
         
-        % Rank estimation
-        r = find(diagr >= tol*diagr(1), 1, 'last'); %rank estimation   
+        iE = 1:length(E);
+        iE(E) = iE;
+        
+        Rsub = R(1:r,iE).';
     
-        iE=1:length(E);
-        iE(E)=iE;
-       
-        Rsub=R(1:r,iE).';
-
-        if r>1
-
-          [A,b]=vert2con(Rsub,tol);
-         
-        elseif r==1
-            
-           A=[1;-1];
-           b=[max(Rsub);-min(Rsub)];
+        if r > 1
+        
+            [A,b] = aux_vert2con(Rsub,tol);
+        
+        elseif r == 1
+        
+            A = [1;-1];
+            b = [max(Rsub);-min(Rsub)];
+    
         end
-
-        A=A*Q(:,1:r).';
-        b=bsxfun(@plus,b,A*p);
         
-        if r<N
-           Aeq=Q(:,r+1:end).';      
-           beq=Aeq*p;
+        % inequality constraints
+        A = A*Q(:,1:r).';
+        b = bsxfun(@plus,b,A*p);
+        
+        % equality constraints
+        if r < N
+            Aeq = Q(:,r+1:end).';      
+            beq = Aeq*p;
         else
-           Aeq=[];
-           beq=[];
+            Aeq = [];
+            beq = [];
         end
-
-   else % Rank=0. All points are identical
-      
-       A=[]; b=[];
-       Aeq=eye(N);
-       beq=p;
-   end
+    
+    else
+        % rank = 0 -> all points are identical
+    
+        % no inequality constraints
+        A = []; b = [];
+        % only equality constraints
+        Aeq = eye(N); beq = p;
+    end
    
+end
            
-           
-function [A,b] = vert2con(V,tol)
+function [A,b] = aux_vert2con(V,tol)
 % VERT2CON - convert a set of points to the set of inequality constraints
 %            which most tightly contain the points; i.e., create
 %            constraints to bound the convex hull of the given points
 %
-% [A,b] = vert2con(V)
+% Syntax:
+%     [A,b] = aux_vert2con(V)
+%     [A,b] = aux_vert2con(V,tol)
 %
-% V = a set of points, each ROW of which is one point
-% A,b = a set of constraints such that A*x <= b defines
-%       the region of space enclosing the convex hull of
-%       the given points
+% Inputs:
+%     V - a set of points, each ROW of which is one point
 %
-% For n dimensions:
-% V = p x n matrix (p vertices, n dimensions)
-% A = m x n matrix (m constraints, n dimensions)
-% b = m x 1 vector (m constraints)
+% Outputs
+%     A,b - a set of constraints such that A*x <= b defines the region of
+%           of space enclosing the convex hull of the given points
+%
+% For dimension n:
+%     V = p x n matrix (p vertices in dimension n)
+%     A = m x n matrix (m constraints in dimension n)
+%     b = m x 1 vector (m constraints)
 %
 % NOTES: (1) In higher dimensions, duplicate constraints can
 %            appear. This program detects duplicates at up to 6
@@ -709,50 +769,51 @@ function [A,b] = vert2con(V,tol)
 %        (2) See companion function CON2VERT.
 %        (3) ver 1.0: initial version, June 2005.
 %        (4) ver 1.1: enhanced redundancy checks, July 2005
-%        (5) Written by Michael Kleder, 
-%
-%Modified by Matt Jacobson - March 29,2011
-% 
+%        (5) Written by Michael Kleder,
+%            Modified by Matt Jacobson - March 29, 2011
 
-try
-    k = convhulln(V);
-catch
-    k = convhulln(V,{'Qs'});
-end
-c = mean(V(unique(k),:));
-
-
-V = bsxfun(@minus,V,c);
-A  = nan(size(k,1),size(V,2));
-
-dim=size(V,2);
-ee=ones(size(k,2),1);
-rc=0;
-
-for ix = 1:size(k,1)
-    F = V(k(ix,:),:);
-    if lindep(F,tol) == dim
-        rc=rc+1;
-        A(rc,:)=F\ee;
+    try
+        k = convhulln(V);
+    catch
+        k = convhulln(V,{'Qs'});
     end
+    c = mean(V(unique(k),:));
+    
+    
+    V = bsxfun(@minus,V,c);
+    A = NaN(size(k,1),size(V,2));
+    
+    n = size(V,2);
+    ee = ones(size(k,2),1);
+    rc = 0;
+    
+    for ix = 1:size(k,1)
+        F = V(k(ix,:),:);
+        if aux_lindep(F,tol) == n
+            rc = rc + 1;
+            A(rc,:) = F\ee;
+        end
+    end
+    
+    A = A(1:rc,:);
+    b = ones(size(A,1),1);
+    b = b + A*c';
+    
+    % eliminate duplicate constraints:
+    [A,b] = aux_rownormalize(A,b);
+    [~,I] = unique(round([A,b]*1e6),'rows');
+    
+    A = A(I,:); % NOTE: rounding is NOT done for actual returned results
+    b = b(I);
+
 end
-
-A=A(1:rc,:);
-b=ones(size(A,1),1);
-b=b+A*c';
-
-% eliminate duplicate constraints:
-[A,b]=rownormalize(A,b);
-[~,I]=unique( round([A,b]*1e6),'rows');
-
-A=A(I,:); % NOTE: rounding is NOT done for actual returned results
-b=b(I);
-return
          
          
-function [A,b,Aeq,beq] = extractEqConstr(A,b,Aeq,beq,tol)
-% Extract all inequality constraints that combined form an equality
-% constraint and replace them by the respective equality constraint
+function [A,b,Aeq,beq] = aux_extractEqConstr(A,b,Aeq,beq,tol)
+% Extract all inequality constraints of the form
+%    a*x <= b  &&  a*x >= b <=> -a*x <= -b
+% as they can be described by an equivalent equality constraint of the form
+%    a*x = b
     
     % Heuristic: sort the constraints according to a hash function to make
     % it easier to identify similar constraints
@@ -767,37 +828,45 @@ function [A,b,Aeq,beq] = extractEqConstr(A,b,Aeq,beq,tol)
     i = 1;
     while i < size(A,1)
         
-       % get index of last row that has the same hash value as the current 
-       % row
-       lInd = i;
-       for k = i+1:size(A,1)
-           if A_(k,1) ~= A_(i,1)
-              break; 
-           else
-              lInd = lInd + 1;
-           end
-       end
-       
-       % compare all rows that have the same hash value to detect possible
-       % equality constraints
-       indRem = [];
-       
-       for j = i:lInd
-          for k = j+1:lInd
-              if all(abs(A(j,:)+A(k,:)) < tol) && abs(b(j)+b(k)) < tol
-                 indRem = [indRem;j;k];
-                 Aeq = [Aeq;A(j,:)];
-                 beq = [beq;b(j)];
-              end
-          end
-       end
-       
-       indRem = unique(indRem);
-       A(indRem,:) = [];
-       b(indRem) = [];
-       A_(indRem,:) = [];
-       
-       i = lInd + 1 - length(indRem);
-    end 
- 
-%------------- END OF CODE --------------
+        % get index of last row that has the same hash value as the current 
+        % row
+        lInd = i;
+        for k = i+1:size(A,1)
+            if A_(k,1) ~= A_(i,1)
+                break; 
+            else
+                lInd = lInd + 1;
+            end
+        end
+        
+        % compare all rows that have the same hash value to detect possible
+        % equality constraints
+        indRem = [];
+        
+        for j = i:lInd
+            for k = j+1:lInd
+%                 if all(withinTol(abs(A(j,:)+A(k,:)),0,tol)) ...
+%                         && withinTol(abs(b(j)+b(k)),0,tol)
+                if all(abs(A(j,:)+A(k,:)) < tol) && abs(b(j)+b(k)) < tol
+                    indRem = [indRem;j;k];
+                    Aeq = [Aeq;A(j,:)];
+                    beq = [beq;b(j)];
+                end
+                cond_old = all(abs(A(j,:)+A(k,:)) < tol) && abs(b(j)+b(k)) < tol;
+                cond_new = all(withinTol(abs(A(j,:)+A(k,:)),0,tol)) && withinTol(abs(b(j)+b(k)),0,tol);
+                if cond_old ~= cond_new
+                    disp(" check methods ");
+                end
+            end
+        end
+        
+        indRem = unique(indRem);
+        A(indRem,:) = [];
+        b(indRem) = [];
+        A_(indRem,:) = [];
+        
+        i = lInd + 1 - length(indRem);
+    end
+end
+
+% ------------------------------ END OF CODE ------------------------------

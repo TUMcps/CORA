@@ -2,7 +2,7 @@ function res = test_partition()
 % test_partition - unit test for the partition class and the functions 
 % cellSegments and cellIndices.
 %
-% Syntax:  
+% Syntax:
 %    res = test_partition()
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = test_partition()
 % Outputs:
 %    res - true/false 
 
-% Author:       Aaron Pereira, Matthias Althoff
-% Written:      02-August-2017
-% Last update:  02-August-2018 (MA)
-% Last revision:---
+% Authors:       Aaron Pereira, Matthias Althoff
+% Written:       02-August-2017
+% Last update:   02-August-2018 (MA)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % test of the partition class and the functions cellSegments and cellIndices
 
@@ -76,4 +76,4 @@ res12 = norm(inds - [87    46   109     0   150     0     0     0]) < 1e-15;
 
 res = res1&&res2&&res3&&res4&&res5&&res6&&res7&&res8&&res9&&res10&&res11&&res12;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

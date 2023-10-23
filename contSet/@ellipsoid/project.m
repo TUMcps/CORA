@@ -1,7 +1,7 @@
 function E = project(E,dims)
 % project - projects an ellipsoid onto the specified dimensions
 %
-% Syntax:  
+% Syntax:
 %    E = project(E,dims)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function E = project(E,dims)
 %
 % See also: none
 
-% Author:       Victor Gassmann
-% Written:      13-March-2019
-% Last update:  04-July-2022 (VG: input checks)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       13-March-2019
+% Last update:   04-July-2022 (VG, input checks)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'};
@@ -38,4 +38,4 @@ I = eye(length(E.Q));
 P = I(:,dims);
 E = P'*E;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

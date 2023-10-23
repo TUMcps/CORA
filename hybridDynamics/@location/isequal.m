@@ -2,7 +2,7 @@ function res = isequal(loc1,loc2,varargin)
 % isequal - checks if two locations are equal by comparing the invariants,
 %    transitions, flow equations, and names
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(loc1,loc2)
 %    res = isequal(loc1,loc2,tol)
 %
@@ -16,7 +16,7 @@ function res = isequal(loc1,loc2,varargin)
 %
 % Example:
 %    % invariant
-%    inv = mptPolytope([-1,0],0);
+%    inv = polytope([-1,0],0);
 %    
 %    % transition
 %    c = [-1;0]; d = 0; C = [0,1]; D = 0;
@@ -45,12 +45,12 @@ function res = isequal(loc1,loc2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      26-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       26-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -81,7 +81,8 @@ end
 
 end
 
-% Auxiliary function ------------------------------------------------------
+
+% Auxiliary functions -----------------------------------------------------
 
 function res = aux_isequal(loc1,loc2,tol)
 
@@ -94,7 +95,7 @@ res = true;
 % end
 
 % compare invariants: 
-% note: we use 'eq' instead of 'isequal' as long as the mptPolytope class
+% note: we use 'eq' instead of 'isequal' as long as the polytope class
 % exists, once the switch to the polytope class is done, use 'isequal' in
 % accordance with other calls
 if any([isnumeric(loc1.invariant),isnumeric(loc2.invariant)])
@@ -146,4 +147,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

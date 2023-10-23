@@ -3,7 +3,7 @@ function result = expmDifferentAlgorithms(intMat,maxOrder,styleOfCalculation,var
 %    different algorithms with maxOrder iterations. It is used as a wrapper
 %    to access the algorithms in the private directory
 %
-% Syntax:  
+% Syntax:
 %    result = expmDifferentAlgorithms(intMat,maxOrder,styleOfCalculation,varargin);
 %
 % Inputs:
@@ -27,12 +27,12 @@ function result = expmDifferentAlgorithms(intMat,maxOrder,styleOfCalculation,var
 %
 % See also: 
 
-% Author:       Ivan Brkan
-% Written:      23-April-2019
-% Last update:  29-April-2019
-% Last revision:---
+% Authors:       Ivan Brkan
+% Written:       23-April-2019
+% Last update:   29-April-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 try
 
@@ -70,4 +70,4 @@ catch
     result = [];
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

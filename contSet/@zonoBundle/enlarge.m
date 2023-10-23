@@ -2,7 +2,7 @@ function zB = enlarge(zB,factor)
 % enlarge - enlarges the generators of a zonotope bundle by a vector of
 %    scaling factors
 %
-% Syntax:  
+% Syntax:
 %    zB = enlarge(zB,factor)
 %
 % Inputs:
@@ -30,15 +30,15 @@ function zB = enlarge(zB,factor)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      20-November-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       20-November-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 for i=1:zB.parallelSets
     zB.Z{i} = enlarge(zB.Z{i},factor);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

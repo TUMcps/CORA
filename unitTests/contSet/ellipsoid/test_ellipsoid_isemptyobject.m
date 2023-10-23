@@ -1,7 +1,7 @@
 function res = test_ellipsoid_isemptyobject
 % test_ellipsoid_isemptyobject - unit test function of isemptyobject
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_isemptyobject
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_isemptyobject
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate ellipsoids
 E1 = ellipsoid();
@@ -33,4 +33,4 @@ E2 = ellipsoid(Q,q);
 % check results
 res = isemptyobject(E1) && ~isemptyobject(E2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

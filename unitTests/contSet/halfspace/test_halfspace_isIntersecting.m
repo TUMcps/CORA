@@ -1,7 +1,7 @@
 function res = test_halfspace_isIntersecting
 % test_halfspace_isIntersecting - unit test function of isIntersecting
 %
-% Syntax:  
+% Syntax:
 %    res = test_halfspace_isIntersecting
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_halfspace_isIntersecting
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      02-September-2019
-% Last update:  04-May-2020 (adapt acc. to new definition of isIntersecting)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       02-September-2019
+% Last update:   04-May-2020 (adapt acc. to new definition of isIntersecting)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % intersection with empty set
 % res_e = ~isIntersecting(halfspace([1 1],2),zonotope());
@@ -87,4 +87,4 @@ res_int = res_above && res_upperboundary && res_through && ...
 % combine tests
 res = res_zon && res_int; %% res_e;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

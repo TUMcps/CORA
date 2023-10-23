@@ -2,7 +2,7 @@ function intMat = intervalMatrix(matZ)
 % intervalMatrix - computes an enclosing interval matrix of a matrix
 %    zonotope
 %
-% Syntax:  
+% Syntax:
 %    intMat = intervalMatrix(matZ)
 %
 % Inputs:
@@ -19,14 +19,14 @@ function intMat = intervalMatrix(matZ)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      21-June-2010 
-% Last update:  06-October-2010
-%               26-August-2011
-%               03-April-2023 (MW, remove setting property)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-June-2010 
+% Last update:   06-October-2010
+%                26-August-2011
+%                03-April-2023 (MW, remove setting property)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % center matrix
 C = center(matZ);
@@ -41,4 +41,4 @@ end
 intMat = intervalMatrix(C, D);
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

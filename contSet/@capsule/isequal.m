@@ -1,7 +1,7 @@
 function res = isequal(C1,C2,varargin)
 % isequal - checks if two capsules are equal
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(C1,C2)
 %    res = isequal(C1,C2,tol)
 %
@@ -24,13 +24,13 @@ function res = isequal(C1,C2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-Sep-2019
-% Last update:  12-March-2021 (MW, add dimension mismatch)
-%               01-June-2022 (MW, correct dimension mismatch case)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-September-2019
+% Last update:   12-March-2021 (MW, add dimension mismatch)
+%                01-June-2022 (MW, correct dimension mismatch case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -54,4 +54,4 @@ res = all(abs(center(C1) - center(C2)) < tol) && ... % center
     all(abs(C1.g - C2.g) < tol) && ... % generator
     abs(C1.r - C2.r) < tol; % radius
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = testLong_taylm_division
 % testLong_taylm_division - unit-tests for Taylor models consisting
 %    of division operation
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_taylm_division
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = testLong_taylm_division
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      06-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       06-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -75,4 +75,4 @@ for i = 1:5
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

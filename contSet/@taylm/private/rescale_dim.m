@@ -1,7 +1,7 @@
 function [res_t1, res_t2] = rescale_dim( t1, t2 )
 % rescale_dim creates a new dimention space containing all unique variables
 %
-% Syntax:  
+% Syntax:
 %    [res_t1, res_t2] = rescale_dim( t1, t2 )
 %
 % Inputs:
@@ -18,14 +18,13 @@ function [res_t1, res_t2] = rescale_dim( t1, t2 )
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      20-April-2016
-%               21-July-2016 (DG) the polynomial part is changed to syms
-%               18-July-2017 (DG) Multivariable polynomial pack is added
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       20-April-2016
+% Last update:   21-July-2016 (DG, the polynomial part is changed to syms)
+%                18-July-2017 (DG, multivariable polynomial pack is added) 
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 x1 = t1.monomials(:, 2:end);
@@ -92,4 +91,4 @@ t2.names_of_var = united_names;
 res_t1 = t1;
 res_t2 = t2;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

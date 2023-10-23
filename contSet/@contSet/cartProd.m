@@ -1,6 +1,9 @@
 function res = cartProd(S1,S2,varargin)
 % cartProd - computes the Cartesian product of two sets
 %
+% Description:
+%    computes the set { [s_1 s_2 ]^T | s_1 \in \mathcal{S}_1, s_2 \in \mathcal{S}_2 }.
+%
 % Syntax:
 %    res = cartProd(S1,S2)
 %    res = cartProd(S1,S2,type)
@@ -18,13 +21,13 @@ function res = cartProd(S1,S2,varargin)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      18-August-2022
-% Last update:  23-November-2022 (MW, add classname as input argument)
-%               03-January-2023 (MW, fix bug regarding reordering of args)
-% Last revision:27-March-2023 (MW, restructure relation to subclass)
+% Authors:       Mark Wetzlinger
+% Written:       18-August-2022
+% Last update:   23-November-2022 (MW, add classname as input argument)
+%                03-January-2023 (MW, fix bug regarding reordering of args)
+% Last revision: 27-March-2023 (MW, restructure relation to subclass)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
 if nargin < 2
@@ -84,4 +87,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

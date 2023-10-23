@@ -1,7 +1,7 @@
 function estSet = intervalObserver_unitTest(obj,params,options)
 % intervalObserver_unitTest - realizes the interval observer in [1].
 %
-% Syntax:  
+% Syntax:
 %    estSet = intervalObserver_unitTest(obj,params,options)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function estSet = intervalObserver_unitTest(obj,params,options)
 %        invariant systems. IEEE Transactions on Automatic Control,
 %        64(11):4717-4724, 2019.
 
-% Author:        ???
-% Written:       ???
+% Authors:       ???
+% Written:       ---
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %time period
 tVec = params.tStart:options.timeStep:params.tFinal-options.timeStep;
@@ -73,4 +73,4 @@ end
 estSet = reachSet([], timeInt);
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

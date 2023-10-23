@@ -1,7 +1,7 @@
 function res = split(I,n)
 % split - split an interval in one dimension
 %
-% Syntax:  
+% Syntax:
 %    res = split(I,n)
 %
 % Inputs:
@@ -26,12 +26,12 @@ function res = split(I,n)
 %
 % See also: zonotope/split
 
-% Author:       Niklas Kochdumper
-% Written:      25-July-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-July-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 m = center(I);
 
@@ -43,4 +43,4 @@ infi(n) = m(n);
 
 res = {interval(I.inf,sup),interval(infi,I.sup)};
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -5,7 +5,7 @@ function dispUpToLength(strList,maxLength,varargin)
 %    vertically aligned with the end of the first string in the first line;
 %    the maximum length is exceeded if the next chosen string is too long
 %
-% Syntax:  
+% Syntax:
 %    dispUpToLength(strList,maxLength,initString)
 %
 % Inputs:
@@ -29,12 +29,12 @@ function dispUpToLength(strList,maxLength,varargin)
 %
 % See also: parallelHybridAutomaton/display, location/display
 
-% Author:       Mark Wetzlinger
-% Written:      03-July-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-July-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set default value
 initString = setDefaultValues({""},varargin);
@@ -92,4 +92,4 @@ while ~isempty(strList)
     line = line + 1;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

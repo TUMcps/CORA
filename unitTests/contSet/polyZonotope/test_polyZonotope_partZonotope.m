@@ -2,7 +2,7 @@ function res = test_polyZonotope_partZonotope
 % test_polyZonotope_partZonotope - unit test function for computing a
 %    partial zonotope overapproximation
 %
-% Syntax:  
+% Syntax:
 %    res = test_polyZonotope_partZonotope
 %
 % Inputs:
@@ -17,18 +17,18 @@ function res = test_polyZonotope_partZonotope
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      24-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       24-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % simple test for given polyZonotope
 G = [-8,8,-10,3;6,-7,3,-4];
 c = [-1;2];
-expMat = [2,1,3,3;0,2,1,2;4,2,2,1];
-pZ = polyZonotope(c,G,zeros(2,0),expMat);
+E = [2,1,3,3;0,2,1,2;4,2,2,1];
+pZ = polyZonotope(c,G,zeros(2,0),E);
 id = pZ.id;
 % overapproximate in second id entry
 [pZ_res,pZ_gi_c_] = partZonotope(pZ,pZ.id(2));
@@ -41,17 +41,17 @@ ii_even = [2,4];
 ii_single = 3;
 % center first (b_2 = 0) + all even exponents
 G1 = [G(:,ii_center),1/2*G(:,ii_even)];
-eM1 = expMat(ii,[ii_center,ii_even]);
+eM1 = E(ii,[ii_center,ii_even]);
 pZ_g1 = polyZonotope(c,G1,zeros(2,0),eM1,id(ii));
 
 % all with b_2=1
 G2 = G(:,ii_single);
-eM2 = expMat(ii,ii_single);
+eM2 = E(ii,ii_single);
 pZ_g2 = polyZonotope(zeros(2,1),G2,zeros(2,0),eM2,id(ii));
 
 % all with b_2=2
 G3 = 1/2*G(:,ii_even);
-eM3 = expMat(ii,ii_even);
+eM3 = E(ii,ii_even);
 pZ_g3 = polyZonotope(zeros(2,1),G3,zeros(2,0),eM3,id(ii));
 pZ_gi_c = {pZ_g1,pZ_g2,pZ_g3};
 pZ_gi_c_save = pZ_gi_c;
@@ -108,4 +108,4 @@ if res
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

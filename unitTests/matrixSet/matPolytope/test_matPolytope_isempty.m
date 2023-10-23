@@ -1,7 +1,7 @@
 function res = test_matPolytope_isempty
 % test_matPolytope_isempty - unit test function for emptiness check
 % 
-% Syntax:  
+% Syntax:
 %    res = test_matPolytope_isempty
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_matPolytope_isempty
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty matrix zonotope
 matP = matPolytope();
@@ -47,4 +47,4 @@ res(end+1,1) = ~isempty(matP);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function matZ = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix or a 
 %    matrix zonotope with a matrix zonotope
 %
-% Syntax:  
+% Syntax:
 %    matZ = mtimes(factor1,factor2)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function matZ = mtimes(factor1,factor2)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      18-June-2010 
-% Last update:  05-August-2010
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-June-2010 
+% Last update:   05-August-2010
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %factor1 is a numeric matrix
 if isnumeric(factor1)
@@ -80,4 +80,4 @@ else
     matZ.gens=(matZ1.gens+1)*(matZ2.gens+1)-1;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

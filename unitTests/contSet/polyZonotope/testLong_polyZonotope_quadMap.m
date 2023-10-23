@@ -1,7 +1,7 @@
 function res = testLong_polyZonotope_quadMap
 % testLong_polyZonotope_quadMap - unit test function of quadMap
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polyZonotope_quadMap
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_polyZonotope_quadMap
 %
 % See also: -
 
-% Author:       Niklas Kochdumper
-% Written:      23-March-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       23-March-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -32,9 +32,9 @@ for i = 1:3
     % create random zonotope
     c = rand(2,1)-0.5*ones(2,1);
     G = rand(2,8)-0.5*ones(2,8);
-    Grest = rand(2,3)-0.5*ones(2,3);
-    expMat = [eye(3), round(rand(3,5)*10)];
-    pZ = polyZonotope(c,G,Grest,expMat);
+    GI = rand(2,3)-0.5*ones(2,3);
+    E = [eye(3), round(rand(3,5)*10)];
+    pZ = polyZonotope(c,G,GI,E);
 
     % create random matrices
     Q{1} = rand(2)-0.5*ones(2);
@@ -75,7 +75,6 @@ for i = 1:3
 end
 
 
-
 % TEST 2-dimensional (mixed multiplication)
 
 for i = 1:3
@@ -83,15 +82,15 @@ for i = 1:3
     % create tow random zonotopes
     c = rand(2,1)-0.5*ones(2,1);
     G = rand(2,8)-0.5*ones(2,8);
-    Grest = rand(2,3)-0.5*ones(2,3);
-    expMat = [eye(3), round(rand(3,5)*10)];
-    pZ1 = polyZonotope(c,G,Grest,expMat);
+    GI = rand(2,3)-0.5*ones(2,3);
+    E = [eye(3), round(rand(3,5)*10)];
+    pZ1 = polyZonotope(c,G,GI,E);
 
     c = rand(2,1)-0.5*ones(2,1);
     G = rand(2,6)-0.5*ones(2,6);
-    Grest = rand(2,2)-0.5*ones(2,2);
-    expMat = [eye(3), round(rand(3,3)*10)];
-    pZ2 = polyZonotope(c,G,Grest,expMat);
+    GI = rand(2,2)-0.5*ones(2,2);
+    E = [eye(3), round(rand(3,3)*10)];
+    pZ2 = polyZonotope(c,G,GI,E);
 
     % create random matrices
     Q{1} = rand(2)-0.5*ones(2);
@@ -135,7 +134,6 @@ for i = 1:3
 end
 
 
-
 % TEST 4-dimensional (quadratic multiplication)
 
 for i = 1:3
@@ -143,9 +141,9 @@ for i = 1:3
     % create random zonotope
     c = rand(4,1)-0.5*ones(4,1);
     G = rand(4,8)-0.5*ones(4,8);
-    Grest = rand(4,3)-0.5*ones(4,3);
-    expMat = [eye(5), round(rand(5,3)*10)];
-    pZ = polyZonotope(c,G,Grest,expMat);
+    GI = rand(4,3)-0.5*ones(4,3);
+    E = [eye(5), round(rand(5,3)*10)];
+    pZ = polyZonotope(c,G,GI,E);
 
     % create random matrices
     Q{1} = rand(4)-0.5*ones(4);
@@ -175,4 +173,4 @@ for i = 1:3
     end  
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

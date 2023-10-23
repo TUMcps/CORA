@@ -2,7 +2,7 @@ function cPZ = convHull(cPZ,S)
 % convHull - Computes the convex hull of a constrained polynomial zonotope
 %    and another set representation or point
 %
-% Syntax:  
+% Syntax:
 %    cPZ = convHull(cPZ)
 %    cPZ = convHull(cPZ,S)
 %
@@ -16,11 +16,11 @@ function cPZ = convHull(cPZ,S)
 % Example: 
 %    c = [0;0];
 %    G = [2 0 1;0 2 1];
-%    expMat = [1 0 3;0 1 1];
+%    E = [1 0 3;0 1 1];
 %    A = [1 -1];
 %    b = 0;
-%    expMat_ = [2 0; 0 1];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    EC = [2 0; 0 1];
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 % 
 %    res = convHull(cPZ);
 % 
@@ -34,28 +34,28 @@ function cPZ = convHull(cPZ,S)
 %
 % See also: linComb, enclose, polyZonotope/convHull
 
-% Author:       Niklas Kochdumper
-% Written:      21-January-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       21-January-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parse input arguments
     if nargin > 1
         if isemptyobject(cPZ)
             cPZ = S; return;
         end
-        cPZ = convHullMult(cPZ,S);
+        cPZ = aux_convHullMult(cPZ,S);
     else
-        cPZ = convHullSingle(cPZ);
+        cPZ = aux_convHullSingle(cPZ);
     end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function res = convHullMult(cPZ,S)
+function res = aux_convHullMult(cPZ,S)
 % compute the convex hull of a constrained polynomial zonotope and another
 % set representation
 
@@ -65,7 +65,7 @@ function res = convHullMult(cPZ,S)
     % convert other set representations to constrained polynomial zonotope
     if ~isa(S,'conPolyZono')
         if isa(S,'zonotope') || isa(S,'interval') || ...
-           isa(S,'mptPolytope') || isa(S,'zonoBundle') || ...
+           isa(S,'polytope') || isa(S,'zonoBundle') || ...
            isa(S,'conZonotope') || isa(S,'polyZonotope') || ...
            isa(S,'capsule') || isa(S,'ellipsoid') || ...
            isa(S,'taylm')
@@ -81,54 +81,54 @@ function res = convHullMult(cPZ,S)
     end
 
     % remove independent generators
-    Grest1 = cPZ.Grest; Grest2 = S.Grest;
-    cPZ.Grest = []; S.Grest = [];
+    GI1 = cPZ.GI; GI2 = S.GI;
+    cPZ.GI = []; S.GI = [];
     
     % compute convex hull of depenent part using the linear combination
-    res = convHullSingle(linComb(cPZ,S));
+    res = aux_convHullSingle(linComb(cPZ,S));
     
     % compute convex hull of the independent part using the convex hull for
     % zonotopes
     temp = zeros(length(cPZ.c),1);
-    Z1 = zonotope([temp, Grest1]);
-    Z2 = zonotope([temp, Grest2]);
+    Z1 = zonotope([temp, GI1]);
+    Z2 = zonotope([temp, GI2]);
 
     Z = enclose(Z1,Z2);
 
     % construct the resulting set
-    res.Grest = generators(Z);
+    res.GI = Z.G;
 end
 
 
 % Auxiliary Functions -----------------------------------------------------
 
-function res = convHullSingle(cPZ)
+function res = aux_convHullSingle(cPZ)
 % compute the convex hull of a single constrained polynomial zonotope
 
     % properties
-    n = dim(cPZ); a = n + 1; h = size(cPZ.G,2); p = size(cPZ.expMat,1);
+    n = dim(cPZ); a = n + 1; h = size(cPZ.G,2); p = size(cPZ.E,1);
     m = size(cPZ.A,1); q = size(cPZ.A,2);
     
     % construct auxiliary matrices
     c_ = repmat(cPZ.c,[1,a]);
     G_ = repmat(cPZ.G,[1,a]);
-    temp = repmat({cPZ.expMat},[1,a]); E_ = blkdiag(temp{:});
+    temp = repmat({cPZ.E},[1,a]); E_ = blkdiag(temp{:});
     temp = repmat({ones(1,h)},[1,a]); Eh = blkdiag(temp{:});
     temp = repmat({cPZ.A},[1,a]); A_ = blkdiag(temp{:});
     b_ = repmat(cPZ.b,[a,1]);
-    temp = repmat({cPZ.expMat_},[1,a]); R_ = blkdiag(temp{:});
+    temp = repmat({cPZ.EC},[1,a]); R_ = blkdiag(temp{:});
 
     % construct resulting constrained polynomial zonotope
     c = a*cPZ.c; 
     G = [c_ G_ G_];
-    expMat = [zeros(a*p,a),E_,E_; eye(a) zeros(a,h*a) Eh];
+    E = [zeros(a*p,a),E_,E_; eye(a) zeros(a,h*a) Eh];
     A = [A_ zeros(a*m, a); zeros(1,a*q) ones(1,a)];
     b = [b_; -n];
-    expMat_ = [R_ zeros(p*a,a); zeros(a,q*a) eye(a)];
+    EC = [R_ zeros(p*a,a); zeros(a,q*a) eye(a)];
     
     % instantiate constrained polynomial zonotope
-    res = conPolyZono(c,G,expMat,A,b,expMat_);
+    res = conPolyZono(c,G,E,A,b,EC);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

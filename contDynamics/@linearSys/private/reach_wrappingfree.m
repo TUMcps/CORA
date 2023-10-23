@@ -2,7 +2,7 @@ function [timeInt,timePoint,res] = reach_wrappingfree(obj,options)
 % reach_wrappingfree - computes the reachable set for linear systems using
 %    the wrapping-free reachability algorithm for linear systems [1]
 %
-% Syntax:  
+% Syntax:
 %    [timeInt,timePoint,res] = reach_wrappingfree(obj,options)
 %
 % Inputs:
@@ -29,12 +29,12 @@ function [timeInt,timePoint,res] = reach_wrappingfree(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff, Mark Wetzlinger
+% Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       26-June-2019 (from @contDynamics > reach.m)
-% Last update:   14-Aug-2019
+% Last update:   14-August-2019
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain factors for initial state and input solution
 for i=1:(options.taylorTerms+1)
@@ -110,9 +110,9 @@ for i = 2:steps
     Rpar = Rpar + interval(Raux) + interval(Rtrans) + (-center(Rtrans));
     
     %write results to reachable set struct Rnext
-    if isa(Rhom,'mptPolytope')
-        Rnext.ti = Rhom + mptPolytope(Rpar) + mptPolytope(inputCorr);
-        Rnext.tp = Rhom_tp + mptPolytope(Rpar);
+    if isa(Rhom,'polytope')
+        Rnext.ti = Rhom + polytope(Rpar) + polytope(inputCorr);
+        Rnext.tp = Rhom_tp + polytope(Rpar);
     else
         Rnext.ti = Rhom + zonotope(Rpar) + inputCorr;
         Rnext.tp = Rhom_tp + zonotope(Rpar);
@@ -146,4 +146,4 @@ timePoint.set{end} = outputSet(obj,options,Rstart);
 % specification fulfilled
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

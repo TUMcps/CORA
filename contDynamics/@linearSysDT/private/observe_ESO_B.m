@@ -3,7 +3,7 @@ function [R,tcomp] = observe_ESO_B(obj,options)
 % from [1].
 %
 %
-% Syntax:  
+% Syntax:
 %    [R,tcomp] = observe_ESO_B(obj,options)
 %
 % Inputs:
@@ -28,13 +28,12 @@ function [R,tcomp] = observe_ESO_B(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       03-Mar-2021
-% Last update:   26-Mar-2021
+% Authors:       Matthias Althoff
+% Written:       03-March-2021
+% Last update:   26-March-2021
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tic
 
@@ -85,4 +84,4 @@ for k = 1:length(tVec)-1
 end
 tcomp = toc;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

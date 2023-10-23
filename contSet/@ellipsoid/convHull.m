@@ -2,8 +2,8 @@ function E = convHull(E,S)
 % convHull - computes an overapproximation of the convex hull of an
 %    ellipsoid and another set representation
 %
-% Syntax:  
-%    E = or(E,S)
+% Syntax:
+%    E = convHull(E,S)
 %
 % Inputs:
 %    E - ellipsoid object
@@ -23,20 +23,20 @@ function E = convHull(E,S)
 %
 % See also: ellipsoid/or
 
-% Author:       Victor Gassmann
-% Written:      13-March-2019
-% Last update:  19-March-2021 (complete rewrite)
-%               04-July-2022 (input checks)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       13-March-2019
+% Last update:   19-March-2021 (complete rewrite)
+%                04-July-2022 (input checks)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check inputs
 inputArgsCheck({{E,'att','ellipsoid','scalar'};
                 {S,'att',{'contSet','numeric'}}});
 
 % convex hull with empty set
-if isempty(S)
+if representsa_(S,'emptySet',eps)
     return;
 end
 
@@ -46,4 +46,4 @@ equalDimCheck(E,S);
 % simply call "or"
 E = or(E,S,'outer');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

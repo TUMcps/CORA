@@ -1,7 +1,7 @@
 function cZ = project(cZ,dims)
 % project - projects a constrained zonotope onto the specified dimensions
 %
-% Syntax:  
+% Syntax:
 %    cZ = project(cZ,dims)
 %
 % Inputs:
@@ -23,19 +23,20 @@ function cZ = project(cZ,dims)
 %
 % See also: ---
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      11-May-2018
-% Last update:  14-March-2021 (MW, input args handling, empty set)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       11-May-2018
+% Last update:   14-March-2021 (MW, input args handling, empty set)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 try
     % try projection first, as isempty() can be quite costly
-    cZ.Z = cZ.Z(dims,:);
+    cZ.c = cZ.c(dims,:);
+    cZ.G = cZ.G(dims,:);
 catch ME
     % now check if conZonotope was empty
-    if isempty(cZ)
+    if representsa_(cZ,'emptySet',eps)
         throw(CORAerror('CORA:emptySet'));
     elseif any(dims > dim(cZ))
         throw(CORAerror('CORA:wrongValue','second','should not exceed dimension of conZonotope'));
@@ -44,4 +45,4 @@ catch ME
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

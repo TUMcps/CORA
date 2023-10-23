@@ -2,7 +2,7 @@ function res = testLong_taylm_reexpand
 % testLong_taylm_reexpand - unit_test_function that tests the
 %    re-expansion of a taylor model at the center of a new domain
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_taylm_reexpand
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_taylm_reexpand
 %
 % See also: mtimes
 
-% Author:       Niklas Kochdumper
-% Written:      14-April-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       14-April-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -45,8 +45,8 @@ y = zeros(size(x));
 y_ = zeros(size(x));
 
 for i = 1:length(x)
-    y(i) = evalTaylm(T,x(i));
-    y_(i) = evalTaylm(T_,x(i)-1);
+    y(i) = aux_evalTaylm(T,x(i));
+    y_(i) = aux_evalTaylm(T_,x(i)-1);
 end
 
 if any(abs(y-y_) > 1e-10)
@@ -57,7 +57,6 @@ end
 % hold on
 % plot(x,y,'r');
 % plot(x,y_,'b');
-
 
 
 % Test 2: 2D-function -----------------------------------------------------
@@ -90,8 +89,8 @@ for i = 1:size(X1,1)
     for j = 1:size(X1,2)
         x1 = [X1(i,j);Y1(i,j)];
         x2 = [X2(i,j);Y2(i,j)];
-        Z1(i,j) = evalTaylm(T,x1);
-        Z2(i,j) = evalTaylm(T_,x2);
+        Z1(i,j) = aux_evalTaylm(T,x1);
+        Z2(i,j) = aux_evalTaylm(T_,x2);
     end
 end
 
@@ -110,7 +109,6 @@ end
 % s2 = surf(X1,Y1,Z2);
 % set(s2,'EdgeColor','none');
 % set(s2,'FaceColor','b');
-
 
 
 % Test 3: 3D-function -----------------------------------------------------
@@ -147,8 +145,8 @@ for i = 1:size(X1,1)
         for k = 1:size(X1,3)
             x1 = [X1(i,j,k);Y1(i,j,k);Z1(i,j,k)];
             x2 = [X2(i,j,k);Y2(i,j,k);Z2(i,j,k)];
-            t1 = evalTaylm(T,x1);
-            t2 = evalTaylm(T_,x2);
+            t1 = aux_evalTaylm(T,x1);
+            t2 = aux_evalTaylm(T_,x2);
 
             diffMax = max(abs(t1-t2),diffMax);
         end
@@ -162,10 +160,9 @@ end
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-% Auxiliary Functions -----------------------------------------------------
-
-function res = evalTaylm(obj,x)
+function res = aux_evalTaylm(obj,x)
 
     mon = obj.monomials;
     coeff = obj.coefficients;
@@ -179,4 +176,4 @@ function res = evalTaylm(obj,x)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

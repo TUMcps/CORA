@@ -1,7 +1,7 @@
 function res = test_taylm_sin
 % test_taylm_sin - unit test of sine function
 %
-% Syntax:  
+% Syntax:
 %    res = test_taylm_sin
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_taylm_sin
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      15-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       15-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -63,4 +63,4 @@ for i = 1:10
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

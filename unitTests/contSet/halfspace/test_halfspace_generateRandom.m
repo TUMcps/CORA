@@ -1,7 +1,7 @@
 function res = test_halfspace_generateRandom
 % test_halfspace_generateRandom - unit test function of generateRandom
 %
-% Syntax:  
+% Syntax:
 %    res = test_halfspace_generateRandom
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_halfspace_generateRandom
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-September-2019
-% Last update:  19-May-2022 (name-value pair syntax)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-September-2019
+% Last update:   19-May-2022 (name-value pair syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty call
 h = halfspace.generateRandom();
@@ -63,4 +63,4 @@ res(end+1,1) = dim(h) == n && compareMatrices(h.c,c) && withinTol(h.d,d);
 % unify results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

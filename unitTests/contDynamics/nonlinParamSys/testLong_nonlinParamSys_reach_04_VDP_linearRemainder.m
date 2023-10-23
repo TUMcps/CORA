@@ -2,7 +2,7 @@ function completed = testLong_nonlinParamSys_reach_04_VDP_linearRemainder
 % testLong_nonlinParamSys_reach_04_VDP_linearRemainder - example of
 %    nonlinear reachability analysis with uncertain parameters; 
 %
-% Syntax:  
+% Syntax:
 %    completed = testLong_nonlinParamSys_reach_04_VDP_linearRemainder
 %
 % Inputs:
@@ -11,12 +11,12 @@ function completed = testLong_nonlinParamSys_reach_04_VDP_linearRemainder
 % Outputs:
 %    res - true/false
 
-% Author:       Victor Gassmann
-% Written:      17-May-2019
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       17-May-2019
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Parameters --------------------------------------------------------------
@@ -100,4 +100,4 @@ end
 %example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

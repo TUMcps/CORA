@@ -2,8 +2,8 @@ function R = append(R,Radd)
 % append - appends one reachSet object at the end of another one
 %    (currently, only one branch supported)
 %
-% Syntax:  
-%    obj = add(R,Radd)
+% Syntax:
+%    obj = append(R,Radd)
 %
 % Inputs:
 %    R - reachSet object
@@ -18,12 +18,12 @@ function R = append(R,Radd)
 %
 % See also: reachSet
 
-% Author:       Mark Wetzlinger
-% Written:      18-May-2021         
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       18-May-2021         
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % currently, only one branch per reachSet object
 if length(R) > 1 || length(Radd) > 1
@@ -68,4 +68,4 @@ else
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

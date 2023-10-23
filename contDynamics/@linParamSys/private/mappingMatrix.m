@@ -2,7 +2,7 @@ function obj = mappingMatrix(obj,options)
 % mappingMatrix - computes the set of matrices which map the states for the
 %    next point in time.
 %
-% Syntax:  
+% Syntax:
 %    obj = mappingMatrix(obj,options)
 %
 % Inputs:
@@ -21,14 +21,14 @@ function obj = mappingMatrix(obj,options)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      05-August-2010
-% Last update:  02-November-2017
-%               03-November-2017
-%               15-February-2021 (MW, rename: intermediateTerms)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-August-2010
+% Last update:   02-November-2017
+%                03-November-2017
+%                15-February-2021 (MW, rename: intermediateTerms)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isa(obj.A,'matZonotope') && (obj.A.gens==1) && obj.constParam
     [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(obj.A,obj.stepSize,obj.taylorTerms,options);
@@ -71,4 +71,4 @@ end
 %remainder
 obj.E = E;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

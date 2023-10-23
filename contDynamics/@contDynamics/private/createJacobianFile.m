@@ -2,7 +2,7 @@ function createJacobianFile(Jdyn,Jcon,Jp,path,name,vars)
 % createJacobianFile - generates an mFile that allows to compute the
 %    jacobian at a certain state and input
 %
-% Syntax:  
+% Syntax:
 %    createJacobianFile(Jdyn,Jcon,Jp,path,name,vars)
 %
 % Inputs:
@@ -25,14 +25,14 @@ function createJacobianFile(Jdyn,Jcon,Jp,path,name,vars)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      21-August-2012
-% Last update:  05-August-2016
-%               05-November-2017
-%               03-December-2017
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-August-2012
+% Last update:   05-August-2016
+%                05-November-2017
+%                03-December-2017
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % open file
 fid = fopen([path filesep name '.m'],'w');
@@ -138,4 +138,4 @@ end
 % close file
 fclose(fid);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

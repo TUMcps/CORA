@@ -1,9 +1,9 @@
-function [f,fvec,fGrest] = fhandle(pZ,varargin)
+function [f,fvec,fGI] = fhandle(pZ,varargin)
 % fhandle - returns the function handle for a given polyZonotope
 %
-% Syntax:  
-%    [f,fvec,fGrest] = fhandle(pZ)
-%    [f,fvec,fGrest] = fhandle(pZ,ids)
+% Syntax:
+%    [f,fvec,fGI] = fhandle(pZ)
+%    [f,fvec,fGI] = fhandle(pZ,ids)
 %
 % Inputs:
 %    pZ - polyZonotope object
@@ -14,7 +14,7 @@ function [f,fvec,fGrest] = fhandle(pZ,varargin)
 %             length(ids) number of arguments
 %    fvec - same as f, but only has one argument sorted according to
 %             vertcat(ids{:})
-%    fGrest - function handle for rest zonotope
+%    fGI - function handle for rest zonotope
 %
 % Example: 
 %    pZ = polyZonotope([0;0;0],diag([1,2,3]),zeros(3,0),eye(3),[1;2;3]);
@@ -27,13 +27,13 @@ function [f,fvec,fGrest] = fhandle(pZ,varargin)
 %
 % See also: subs
 
-% Author:       Victor Gassmann
-% Written:      12-January-2021
-% Last update:  11-March-2022
-%               04-July-2022 (VG: update input check)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       12-January-2021
+% Last update:   11-March-2022
+%                04-July-2022 (VG, update input check)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 if nargin > 2
@@ -71,7 +71,7 @@ if isempty(pZ.G)
     fGt = @(x) fc;
 else
     % compute function handle
-    fGt = @(x) fc + sum(pZ.G.*prod(x(indid).^pZ.expMat(indpz,:),1),2);
+    fGt = @(x) fc + sum(pZ.G.*prod(x(indid).^pZ.E(indpz,:),1),2);
 end
 
 % return from single id vector to number of specified inputs for function
@@ -81,6 +81,6 @@ f = @(varargin) fG(varargin{:});
 % return alternatively single-id-vector version
 fvec = @(x) fGt(x);
 % return function handle for rest zonotope
-fGrest = @(r) pZ.Grest*r;
+fGI = @(r) pZ.GI*r;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

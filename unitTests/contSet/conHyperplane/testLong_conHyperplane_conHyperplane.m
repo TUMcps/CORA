@@ -2,7 +2,7 @@ function res = testLong_conHyperplane_conHyperplane
 % testLong_conHyperplane_conHyperplane - unit test function of
 %    conHyperplane (constructor)
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conHyperplane_conHyperplane
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_conHyperplane_conHyperplane
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      19-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -129,4 +129,4 @@ for i=1:nrOfTests
     end 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

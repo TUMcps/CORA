@@ -1,7 +1,7 @@
 function res = isIntersecting_(cZ,S,type,varargin)
 % isIntersecting_ - determines if a constrained zonotope intersects a set
 %
-% Syntax:  
+% Syntax:
 %    res = isIntersecting_(cZ,S)
 %    res = isIntersecting_(cZ,S,type)
 %
@@ -44,18 +44,18 @@ function res = isIntersecting_(cZ,S,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/isIntersecting_
+% See also: contSet/isIntersecting, zonotope/isIntersecting_
 
-% Author:       Niklas Kochdumper
-% Written:      21-November-2019
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename isIntersecting_)
+% Authors:       Niklas Kochdumper
+% Written:       21-November-2019
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % intersection with halfspace, hyperplane or polytope
 if isa(S,'halfspace') || isa(S,'conHyperplane') || ...
-   isa(S,'mptPolytope') || isa(S,'ellipsoid')
+   isa(S,'polytope') || isa(S,'ellipsoid')
 
     res = isIntersecting_(S,cZ,type);
 
@@ -71,7 +71,7 @@ else
         
         % conZonotope and conZonotope intersection
         if isa(S,'conZonotope')
-           res = ~isempty(and_(cZ,S,'exact'));
+           res = ~representsa_(and_(cZ,S,'exact'),'emptySet',eps);
         elseif isa(S,'zonoBundle')
            res = isIntersecting_(S,cZ,type); 
         else
@@ -87,4 +87,4 @@ else
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

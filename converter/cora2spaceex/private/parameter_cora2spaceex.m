@@ -21,15 +21,15 @@ function parameter_cora2spaceex(Obj, component, docNode)
 %
 % See also: none
 
-% Author:        Farah Atour
+% Authors:       Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get number of states and inputs
-[nx,nu] = numberOfParams(Obj);
+[nx,nu] = aux_numberOfParams(Obj);
 params = [nx;nu];
 
 parameters = {'x', 'u'}; % two types of parameters (x and u)
@@ -57,9 +57,9 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function [nx,nu] = numberOfParams(obj)
+function [nx,nu] = aux_numberOfParams(obj)
 % get the number of inputs and number of states. Only inputs that really
 % act on the system dynamics and are not just dummy inputs are considered.
 
@@ -82,7 +82,7 @@ function [nx,nu] = numberOfParams(obj)
         nu = 0;
         for i = 1:length(locs)
            sys = locs(i).contDynamics;
-           [nxTemp,nuTemp] = numberOfParams(sys);
+           [nxTemp,nuTemp] = aux_numberOfParams(sys);
            nx = max(nx,nxTemp);
            nu = max(nu,nuTemp);
         end
@@ -91,4 +91,4 @@ function [nx,nu] = numberOfParams(obj)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

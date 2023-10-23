@@ -1,7 +1,7 @@
 function zB = zonoBundle(Z)
-% conZonotope - convert a zonotope object into a zonotope bundle object
+% zonoBundle - convert a zonotope object into a zonotope bundle object
 %
-% Syntax:  
+% Syntax:
 %    zB = zonoBundle(Z)
 %
 % Inputs:
@@ -14,15 +14,15 @@ function zB = zonoBundle(Z)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mptPolytope/zonoBundle
+% See also: polytope/zonoBundle
 
-% Author:       Niklas Kochdumper
-% Written:      26-November-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-November-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
 zB = zonoBundle({Z});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

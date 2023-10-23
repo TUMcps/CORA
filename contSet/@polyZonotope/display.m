@@ -3,7 +3,7 @@ function display(pZ)
 %    dependent generator matrix, exponent matrix, independent generator
 %    matrix, identifiers) on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(pZ)
 %
 % Inputs:
@@ -21,14 +21,14 @@ function display(pZ)
 %
 % See also: none
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       02-May-2020
 % Last update:   09-June-2020 (show values)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-if isempty(pZ)
+if representsa_(pZ,'emptySet',eps)
     
     dispEmptyObj(pZ,inputname(1));
     
@@ -43,22 +43,19 @@ else
     disp(center(pZ));
     
     % display dependent generators
-    G = pZ.G;
-    displayGenerators(G,DISPLAYDIM_MAX,'G');
+    displayGenerators(pZ.G,DISPLAYDIM_MAX,'G');
     
     % display independent generators
-    Grest = pZ.Grest;
-    displayGenerators(Grest,DISPLAYDIM_MAX,'Grest');
+    displayGenerators(pZ.GI,DISPLAYDIM_MAX,'GI');
     
     % display exponential matrix
-    expMat = pZ.expMat;
-    displayGenerators(expMat,DISPLAYDIM_MAX,'expMat');
+    displayGenerators(pZ.E,DISPLAYDIM_MAX,'E');
     
     % display id
-    displayIds(pZ.id,'id')
+    displayIds(pZ.id,'id');
    
-    end
+end
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

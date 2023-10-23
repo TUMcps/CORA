@@ -6,7 +6,7 @@ function completed = example_nonlinearParam_reach_02_tank_certainCase()
 %    value is fixed. Unlike the example in the class nonlinearSys, one can
 %    change the parameter values using options.paramInt.
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinearParam_reach_02_tank_certainCase()
 %
 % Inputs:
@@ -21,12 +21,12 @@ function completed = example_nonlinearParam_reach_02_tank_certainCase()
 %    [2] M. Althoff et al. "Reachability analysis of nonlinear systems with 
 %        uncertain parameters using conservative linearization", CDC 2008 
 
-% Author:       Matthias Althoff
-% Written:      19-August-2016
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-August-2016
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -126,4 +126,4 @@ end
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

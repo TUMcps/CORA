@@ -1,7 +1,7 @@
 function createTableObservers
 % createTableObservers - creates table for the performance of set-based observers
 %
-% Syntax:  
+% Syntax:
 %    createTableObservers()
 %
 % Inputs:
@@ -19,12 +19,12 @@ function createTableObservers
 % References: 
 %   -
 
-% Author:       Matthias Althoff
-% Written:      18-Mar-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set path
 path = [CORAROOT filesep 'unitTests' filesep 'contDynamics' filesep 'linearSysDT' filesep 'results'];
@@ -47,7 +47,7 @@ for iObserver = 1:length(estSet)
     % write name
     fprintf(fid, '%-13s', [currObserver.Name,' & ']);
     % write type
-    fprintf(fid, '%-17s', [determineType(currObserver),' & ']);
+    fprintf(fid, '%-17s', [aux_determineType(currObserver),' & ']);
     % add ready for control option
     if iObserver <= 10
         fprintf(fid, '%-15s', '\xmark & ');
@@ -90,7 +90,7 @@ for iObserver = 1:length(estSet)
     % write name
     fprintf(fid, '%-13s', [currObserver.Name,' & ']);
     % write type
-    fprintf(fid, '%-17s', [determineType(currObserver),' & ']);
+    fprintf(fid, '%-17s', [aux_determineType(currObserver),' & ']);
     % add ready for control option
     if iObserver <= 10
         fprintf(fid, '%-15s', '\xmark & ');
@@ -129,7 +129,6 @@ end
 fclose(fid);
 
 
-
 %% relative values without average
 % create file for table
 fid = fopen([path filesep 'table_' name '_relativeNoAverage.m'],'w');
@@ -149,7 +148,7 @@ for iObserver = 1:length(estSet)
     % write name
     fprintf(fid, '%-13s', [currObserver.Name,' & ']);
     % write type
-    fprintf(fid, '%-17s', [determineType(currObserver),' & ']);
+    fprintf(fid, '%-17s', [aux_determineType(currObserver),' & ']);
     % add ready for control option
     if iObserver <= 10
         fprintf(fid, '%-15s', '\xmark & ');
@@ -188,8 +187,11 @@ fclose(fid);
 
 end
 
+
+% Auxiliary functions -----------------------------------------------------
+
 % determine type of observer
-function type = determineType(observer)
+function type = aux_determineType(observer)
     % obtain first set
     firstSet = observer.EstStates.timePoint.set{1};
     % zonotope?
@@ -203,4 +205,4 @@ function type = determineType(observer)
         
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

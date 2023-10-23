@@ -1,7 +1,7 @@
 function display(sys)
 % display - Displays a linParamSys object on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(sys)
 %
 % Inputs:
@@ -23,13 +23,13 @@ function display(sys)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      05-Aug-2010
-% Last update:  19-June-2022
-%               23-November-2022 (TL: dispInput)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       05-August-2010
+% Last update:   19-June-2022
+%                23-November-2022 (TL, dispInput)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % disp input if necessary
 dispInput(inputname(1))
@@ -55,4 +55,4 @@ displayMatrixVector(sys.A,"A");
 disp("Input matrix:");
 displayMatrixVector(sys.B,"B");
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

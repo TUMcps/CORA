@@ -1,7 +1,7 @@
 function Gcells = reorderingFilter(G)
 % reorderingFilter - saves combinations of generators to matrix cells
 %
-% Syntax:  
+% Syntax:
 %    Gcells = reorderingFilter(G)
 %
 % Inputs:
@@ -16,13 +16,13 @@ function Gcells = reorderingFilter(G)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      12-September-2008
-% Last update:  20-July-2010
-%               28-September-2010
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       12-September-2008
+% Last update:   20-July-2010
+%                28-September-2010
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain combinations
 [rows,cols]=size(G);
@@ -38,4 +38,4 @@ for i=1:nrOfComb
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

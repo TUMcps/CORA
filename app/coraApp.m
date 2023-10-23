@@ -57,10 +57,22 @@ if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
 
-if nargout
-    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+if nargin > 1 && ismember( ...
+        varargin{1},{ ...
+        'txtIC_RSim_Hybrid_CreateFcn' ...
+        'txtIC_RSim_Linear_CreateFcn' ...
+        'txtIC_RSim_Nonlinear_CreateFcn'...
+        })
+    % TL: not sure what these are. Throw an error when gui_mainfcn is
+    % called but they don't seem to be required anyway (?), skipping ...
 else
-    gui_mainfcn(gui_State, varargin{:});
+    % call main func
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+
+    % clear output
+    if nargout == 0
+        clear varargout
+    end
 end
 
 % Opening function --- Executes before coraApp is made visible
@@ -94,6 +106,19 @@ handles.initial_set_hybrid = {};
 handles.initial_set_hybrid_type = {};
 handles.input_set_hybrid = {};
 handles.input_set_hybrid_type = {};
+
+% TL: some control handles are missing (?), init dummy handles ..
+dummyUIControl = uicontrol(gcf,'String','10');
+set(dummyUIControl,'Visible','off');    
+handles.txtNCI_RSim_Linear = dummyUIControl;
+handles.txtNCI_RSim_Nonlinear = dummyUIControl;
+handles.txtNCI_RSim_Hybrid = dummyUIControl;
+handles.pbUpNCI_RSim_Linear = dummyUIControl;
+handles.pbDownNCI_RSim_Linear = dummyUIControl;
+handles.pbUpNCI_RSim_Nonlinear = dummyUIControl;
+handles.pbDownNCI_RSim_Nonlinear = dummyUIControl;
+handles.pbUpNCI_RSim_Hybrid = dummyUIControl;
+handles.pbDownNCI_RSim_Hybrid = dummyUIControl;
 
 WS_vars = evalin('base', 'who');
 WS_vars = [{''}; WS_vars];

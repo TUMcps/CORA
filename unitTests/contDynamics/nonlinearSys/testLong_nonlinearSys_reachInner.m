@@ -2,7 +2,7 @@ function res = testLong_nonlinearSys_reachInner
 % testLong_nonlinearSys_reachInner - test if the computed
 %    inner-approximation of the reachable set is correct
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_nonlinearSys_reachInner
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = testLong_nonlinearSys_reachInner
 % Outputs:
 %    res - true/false 
 
-% Author:       Niklas Kochdumper
-% Written:      26-August-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-August-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -100,4 +100,4 @@ res2 = isequal(I,I_saved,1e-3);
 % combine results
 res = res1 && res2;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

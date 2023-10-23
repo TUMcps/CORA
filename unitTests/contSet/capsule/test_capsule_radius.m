@@ -1,7 +1,7 @@
 function res = test_capsule_radius
 % test_capsule_radius - unit test function of radius
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_radius
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_capsule_radius
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      28-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate capsule
 C = capsule([0;0],[1;0],0.5);
@@ -34,4 +34,4 @@ C_rad_true = 1.5;
 % compare results
 res = withinTol(C_rad,C_rad_true);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

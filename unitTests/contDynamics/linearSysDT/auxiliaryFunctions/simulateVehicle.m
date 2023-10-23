@@ -2,7 +2,7 @@ function simulateVehicle
 % simulateVehicle - simulates a vehicle subject to disturbances and sensor
 % noise
 %
-% Syntax:  
+% Syntax:
 %    simulateVehicle
 %
 % Inputs:
@@ -20,13 +20,13 @@ function simulateVehicle
 % References: 
 %   -
 
-% Author:       Matthias Althoff
-% Written:      08-Sep-2020
-% Last update:  10-Jan-2021
-%               04-Jun-2021
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       08-September-2020
+% Last update:   10-January-2021
+%                04-June-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set path
 savepath = [CORAROOT filesep 'unitTests' filesep 'contDynamics' filesep 'linearSysDT' filesep 'models'];
@@ -160,4 +160,4 @@ end
 save([savepath '/' 'vehicleModel_dim_new', num2str(dim)], 'vehicle', 'params', 'options', 'simRes');
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

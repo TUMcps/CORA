@@ -2,7 +2,7 @@ function printStruct(S,varargin)
 % printStruct - prints a struct such that if one executes this command
 %    in the workspace, this struct would be created
 %
-% Syntax:  
+% Syntax:
 %    printStruct(S)
 %    printStruct(S,'high')
 %
@@ -19,12 +19,12 @@ function printStruct(S,varargin)
 %    printStruct(S)
 %
 
-% Author:       Tobias Ladner
-% Written:      31-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       31-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
 if nargin > 3
@@ -129,4 +129,4 @@ if clearLine
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

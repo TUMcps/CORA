@@ -1,7 +1,7 @@
 function res = test_fullspace_plot
 % test_fullspace_plot - unit test function of plot
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_plot
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_plot
 %
 % See also: -
 
-% Author:       Tpbias Ladner
-% Written:      03-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       03-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -110,4 +110,4 @@ end
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

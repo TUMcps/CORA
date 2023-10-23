@@ -2,7 +2,7 @@ function display(HA)
 % display - Displays the properties of a hybridAutomaton object on the
 %    command window
 %
-% Syntax:  
+% Syntax:
 %    display(HA)
 %
 % Inputs:
@@ -13,19 +13,19 @@ function display(HA)
 %
 % Example: 
 %    % invariant
-%    inv = mptPolytope([-1,0],0);
+%    inv = polytope([-1,0],0);
 % 
 %    % transition
 %    c = [-1;0]; d = 0; C = [0,1]; D = 0;
 %    guard = conHyperplane(c,d,C,D);
 %    reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
-%    trans{1} = transition(guard,reset,1);
+%    trans(1) = transition(guard,reset,1);
 % 
 %    % flow equation
 %    dynamics = linearSys([0,1;0,0],[0;0],[0;-9.81]);
 % 
 %    % define location
-%    loc{1} = location('S1',inv,trans,dynamics);
+%    loc(1) = location('S1',inv,trans,dynamics);
 % 
 %    % instantiate hybrid automaton (and display)
 %    HA = hybridAutomaton(loc)
@@ -36,12 +36,12 @@ function display(HA)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      18-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       18-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 fprintf(newline);
 
@@ -74,4 +74,4 @@ end
 
 fprintf(newline);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

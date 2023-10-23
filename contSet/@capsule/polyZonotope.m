@@ -1,7 +1,7 @@
 function pZ = polyZonotope(C)
 % polyZonotope - enclose a capsule by a polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    pZ = polyZonotope(C)
 %
 % Inputs:
@@ -11,7 +11,7 @@ function pZ = polyZonotope(C)
 %    pZ - polyZonotope object
 %
 % Example: 
-%    C = capsule([1;2],[4,2],1.2);
+%    C = capsule([1;2],[4;2],1.2);
 %    pZ = polyZonotope(C);
 % 
 %    figure; hold on; box on;
@@ -24,12 +24,12 @@ function pZ = polyZonotope(C)
 %
 % See also: interval, conPolyZono
 
-% Author:       Niklas Kochdumper
-% Written:      03-October-2022 
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       03-October-2022 
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE ---------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 n = dim(C);
 order = 10;
@@ -67,4 +67,4 @@ pZ = linComb(B1,B2);
 T = gramSchmidt(C.g);
 pZ = C.c + T * pZ;
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

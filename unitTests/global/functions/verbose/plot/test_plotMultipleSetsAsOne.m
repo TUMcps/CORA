@@ -1,7 +1,7 @@
 function res = test_plotMultipleSetsAsOne
 % test_plotMultipleSetsAsOne - unit test function for plotMultipleSetsAsOne
 %
-% Syntax:  
+% Syntax:
 %    res = test_plotMultipleSetsAsOne
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_plotMultipleSetsAsOne
 %
 % See also: none
 
-% Author:       Tobias Lader
-% Written:      13-July-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       13-July-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -91,4 +91,4 @@ end
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

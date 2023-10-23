@@ -2,7 +2,7 @@ function res = containsPoint(I,p)
 % containsPoint - determines if an interval contains a point cloud p, where
 %    the result is evaluated for each point
 %
-% Syntax:  
+% Syntax:
 %    result = containsPoint(I,p)
 %
 % Inputs:
@@ -30,12 +30,12 @@ function res = containsPoint(I,p)
 %
 % See also: ---
 
-% Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-September-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{I,'att','interval'};
@@ -51,4 +51,4 @@ for iPoint = 1:numPoints
     res(iPoint) = all(lb <= p_curr) && all(ub >= p_curr);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

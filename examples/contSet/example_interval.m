@@ -1,7 +1,7 @@
 function completed = example_interval()
 % example_interval - example instantiation of interval objects
 %
-% Syntax:  
+% Syntax:
 %    completed = example_interval()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_interval()
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       21-April-2018
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 I1 = interval([0; -1], [3; 1]); % create interval I1
 I2 = interval([-1; -1.5], [1; -0.5]); % create interval I2
@@ -38,4 +38,4 @@ plot(I2); % plot I2
 %example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -4,7 +4,7 @@ function res = testMP_Krylov_homogeneousSolution_iss(~)
 %    larger ISS system used.
 %    This test requires the multiple precision toolbox.
 %
-% Syntax:  
+% Syntax:
 %    res = testMP_Krylov_homogeneousSolution_iss(~)
 %
 % Inputs:
@@ -13,12 +13,12 @@ function res = testMP_Krylov_homogeneousSolution_iss(~)
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      23-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       23-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "initReach_Krylov"
 path = CORAROOT;
@@ -77,4 +77,4 @@ addpath(genpath(path));
 % Is exact solution in zonotope?
 res = (R_exact_box <= Rnext_box);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function n = dim(matP,rc)
 % dim - returns the dimension of the matrix polytope
 %
-% Syntax:  
+% Syntax:
 %    n = dim(matP,rc)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function n = dim(matP,rc)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin == 1
     if matP.verts == 0
@@ -48,4 +48,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function p = randPoint_(I,N,type,varargin)
 % randPoint_ - computes random point in interval
 %
-% Syntax:  
+% Syntax:
 %    p = randPoint_(I)
 %    p = randPoint_(I,N)
 %    p = randPoint_(I,N,type)
@@ -27,21 +27,21 @@ function p = randPoint_(I,N,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/randPoint_
+% See also: contSet/randPoint, zonotope/randPoint_
 
-% Author:       Mark Wetzlinger
-% Written:      17-September-2019
-% Last update:  25-June-2021 (MP, add type gaussian)
-%               19-August-2022 (MW, integrate standardized pre-processing)
-% Last revision:27-March-2023 (MW, rename randPoint_)
+% Authors:       Mark Wetzlinger
+% Written:       17-September-2019
+% Last update:   25-June-2021 (MP, add type gaussian)
+%                19-August-2022 (MW, integrate standardized pre-processing)
+% Last revision: 27-March-2023 (MW, rename randPoint_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get object properties
 c = center(I); r = rad(I); n = dim(I);
 
 % generate different types of extreme points
-if strcmp(type,'standard')
+if strcmp(type,'standard') || startsWith(type,'uniform')
     
     if size(r,2) > 1
         if size(r,1) > 1
@@ -106,4 +106,4 @@ elseif strcmp(type,'extreme')
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

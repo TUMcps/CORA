@@ -2,7 +2,7 @@ function cZsplit = split(cZ,varargin)
 % split - splits a constrained zonotope into two or more constrained
 %    zonotopes that enclose the original conZonotope object
 %
-% Syntax:  
+% Syntax:
 %    cZsplit = split(cZ)
 %    cZsplit = split(cZ,splitDim)
 %
@@ -44,12 +44,12 @@ function cZsplit = split(cZ,varargin)
 %
 % See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      27-July-2018
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       27-July-2018
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % calculate an interval that over-approximates the constrained zonotope
 I = interval(cZ);
@@ -63,22 +63,23 @@ if nargin == 1
     cZsplit = cell(n,1);    
     
     for splitDim = 1:n
-        cZsplit{splitDim} = splitOneDim(cZ,I,splitDim); 
+        cZsplit{splitDim} = aux_splitOneDim(cZ,I,splitDim); 
     end
     
 % Case 2: split at the specified generator
 elseif nargin == 2
     
     splitDim = varargin{1};
-    cZsplit = splitOneDim(cZ,I,splitDim);
+    cZsplit = aux_splitOneDim(cZ,I,splitDim);
     
 end
 
 end
 
+
 % Auxiliary functions -----------------------------------------------------
 
-function cZsplit = splitOneDim(cZ,I,splitDim)
+function cZsplit = aux_splitOneDim(cZ,I,splitDim)
 
     % interval center and radius
     c = center(I);
@@ -102,4 +103,4 @@ function cZsplit = splitOneDim(cZ,I,splitDim)
     
 end
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

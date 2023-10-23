@@ -2,7 +2,7 @@ function res = isequal(trans1,trans2,varargin)
 % isequal - checks if two transitions are equal by comparing the guard
 %    sets, reset functions, target locations, and synchronization labels
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(trans1,trans2)
 %    res = isequal(trans1,trans2,tol)
 %
@@ -36,12 +36,12 @@ function res = isequal(trans1,trans2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      26-November-2022
-% Last update:  21-May-2023 (MW, extend to arrays)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       26-November-2022
+% Last update:   21-May-2023 (MW, extend to arrays)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -72,7 +72,8 @@ end
 
 end
 
-% Auxiliary function ------------------------------------------------------
+
+% Auxiliary functions -----------------------------------------------------
 
 function res = aux_isequal(trans1,trans2,tol)
 
@@ -148,12 +149,7 @@ for i=1:length(reset1fields)
 end
 
 % guard set
-if isa(trans1.guard,'mptPolytope')
-    if ~(trans1.guard == trans2.guard)
-        % can be replaced once polytope class is there...
-        res = false; return
-    end
-elseif any([isnumeric(trans1.guard),isnumeric(trans2.guard)])
+if any([isnumeric(trans1.guard),isnumeric(trans2.guard)])
     % empty transition object may have .guard = []
     if xor(isnumeric(trans1.guard),isnumeric(trans2.guard))
         res = false; return
@@ -164,4 +160,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

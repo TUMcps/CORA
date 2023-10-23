@@ -2,7 +2,7 @@ function E = plusEllipsoidOA(E)
 % plusEllipsoidOA - Computes the smallest-volume outer-approximation of the
 %    Minkowski sum of ellipsoids
 %
-% Syntax:  
+% Syntax:
 %    E = plusEllipsoidOA(E)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function E = plusEllipsoidOA(E)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      09-March-2021
-% Last update:  05-July-2022 (VG: class array support)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       09-March-2021
+% Last update:   05-July-2022 (VG, class array support)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % no error checking, already done in parent function
 
@@ -483,4 +483,4 @@ else
     throw(CORAerror('CORA:noSuitableSolver','SDP'));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

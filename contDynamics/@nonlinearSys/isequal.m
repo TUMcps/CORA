@@ -1,7 +1,7 @@
 function res = isequal(sys1,sys2,varargin)
 % isequal - checks if two nonlinear systems are equal
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(sys1,sys2)
 %    res = isequal(sys1,sys2,tol)
 %
@@ -26,12 +26,12 @@ function res = isequal(sys1,sys2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger, Victor Gassmann
-% Written:      10-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger, Victor Gassmann
+% Written:       10-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -137,4 +137,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

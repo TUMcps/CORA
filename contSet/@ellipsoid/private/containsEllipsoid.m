@@ -1,7 +1,7 @@
 function res = containsEllipsoid(E1,E2)
 % containsEllipsoid - checks whether an ellipsoid contains another ellipsoid
 %
-% Syntax:  
+% Syntax:
 %    E = containsEllipsoid(E1,E2)
 %
 % Inputs:
@@ -20,16 +20,14 @@ function res = containsEllipsoid(E1,E2)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      16-March-2021
-% Last update:  27-July-2021 (allowed both E1,E2 to be degenerate)
-%               23-May-2022 (solver-specific implementation of SDP to avoid
-%                            yalmip)
-%               06-July-2022 (VG: rescaling of M, Ms to avoid numerical
-%               issues)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       16-March-2021
+% Last update:   27-July-2021 (allowed both E1,E2 to be degenerate)
+%                23-May-2022 (solver-specific implementation of SDP to avoid yalmip)
+%                06-July-2022 (VG, rescaling of M/Ms to avoid numerical issues)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 n = dim(E1);
 
@@ -93,7 +91,7 @@ elseif isFullDim(E1) && ~isFullDim(E2) % E2 is degenerate
         Hi = conHyperplane(I(nt+i,:),x2_rem(i));
         E1 = and_(E1,Hi,'outer');
         % if intersection is empty, E2 cannot be contained in E1
-        if isempty(E1)
+        if representsa_(E1,'emptySet',eps)
             res = false;
             return;
         end
@@ -288,4 +286,4 @@ else
     throw(CORAerror('CORA:noSuitableSolver','SDP'));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

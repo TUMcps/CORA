@@ -1,7 +1,7 @@
 function [Gred]=lengthFilter(G,rem)
 % lengthFilter - filters out short generators
 %
-% Syntax:  
+% Syntax:
 %    [Gred]=lengthFilter(G,rem)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function [Gred]=lengthFilter(G,rem)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      12-September-2008
-% Last update:  14-March-2019 (norm and sort removed)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       12-September-2008
+% Last update:   14-March-2019 (norm and sort removed)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %prefilter generators
 h = vecnorm(G);
@@ -31,4 +31,4 @@ h = vecnorm(G);
 [~,index]=maxk(h,rem);
 Gred=G(:,index);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

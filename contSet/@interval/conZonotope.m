@@ -1,7 +1,7 @@
 function cZ = conZonotope(I)
 % conZonotope - Converts an interval object into a conZonotope object
 %
-% Syntax:  
+% Syntax:
 %    cZ = conZonotope(I)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function cZ = conZonotope(I)
 %
 % See also: interval, polytope
 
-% Author:       Niklas Kochdumper
-% Written:      21-Nov-2019 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       21-November-2019 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 cZ = conZonotope(zonotope(I));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

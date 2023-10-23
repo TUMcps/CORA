@@ -1,7 +1,7 @@
 function I = transpose(I)
 % transpose - Overloaded '.'' operator for single operand
 %
-% Syntax:  
+% Syntax:
 %    I = transpose(I)
 %
 % Inputs:
@@ -20,14 +20,14 @@ function I = transpose(I)
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      07-February-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       07-February-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 I.inf = I.inf.';
 I.sup = I.sup.';
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

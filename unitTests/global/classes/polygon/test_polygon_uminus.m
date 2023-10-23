@@ -1,7 +1,7 @@
 function res = test_polygon_uminus()
 % test_polygon_uminus - unit test function for polygon/uminus
 %
-% Syntax:  
+% Syntax:
 %    res = test_polygon_uminus()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_polygon_uminus()
 %
 % See also: polygon
 
-% Author:       Tobias Ladner
-% Written:      28-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       28-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -43,4 +43,4 @@ resvec(end+1) = isequal(-1 * pgon, -pgon);
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

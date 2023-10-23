@@ -2,7 +2,7 @@ function Z = enlarge(Z,f)
 % enlarge - enlarges the generators of a zonotope by a scalar factor or
 %    independently in each dimension by a vector of factors
 %
-% Syntax:  
+% Syntax:
 %    Z = enlarge(Z,f)
 %
 % Inputs:
@@ -28,13 +28,17 @@ function Z = enlarge(Z,f)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      20-November-2010 
-% Last update:  21-April-2020 (.* instead of diag())
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       20-November-2010 
+% Last update:   21-April-2020 (MA, .* instead of diag())
+%                13-September-2023 (TL, empty check)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-Z.Z(:,2:end) = f .* Z.Z(:,2:end);
+G = Z.G;
+if ~isempty(G)
+    Z.G = f .* Z.G;
+end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 classdef linParamSys < contDynamics
 % linParamSys class (linear parametric system)
 %
-% Syntax:  
+% Syntax:
 %    obj = linParamSys(A,B)
 %    obj = linParamSys(A,B,type)
 %    obj = linParamSys(name,A,B)
@@ -30,13 +30,12 @@ classdef linParamSys < contDynamics
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      23-September-2010
-% Last update:  01-November-2017 (add possibility to change between
-%                                 constant and varying parameters)
-% Last revision:18-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Matthias Althoff
+% Written:       23-September-2010
+% Last update:   01-November-2017 (constant and varying parameters)
+% Last revision: 18-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
   
 
 properties (SetAccess = private, GetAccess = public)
@@ -91,7 +90,7 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [name,A,B,type] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
@@ -192,4 +191,4 @@ function [name,A,B,type,states,inputs] = aux_computeProperties(name,A,B,type)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

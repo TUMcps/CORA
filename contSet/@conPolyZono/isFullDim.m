@@ -2,7 +2,7 @@ function res = isFullDim(cPZ)
 % isFullDim - checks if the dimension of the affine hull of a constrained
 %    polynomial zonotope is equal to the dimension of its ambient space
 %
-% Syntax:  
+% Syntax:
 %    res = isFullDim(cPZ)
 %
 % Inputs:
@@ -24,21 +24,21 @@ function res = isFullDim(cPZ)
 %
 % See also: polyZonotope/isFullDim
 
-% Author:       Niklas Kochdumper
-% Written:      08-February-2020 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       08-February-2020 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get dimension and rank
-if isempty(cPZ)
+if representsa_(cPZ,'emptySet',eps)
     res = false; return;
 end
 n = length(cPZ.c);
-rk = rank([cPZ.G,cPZ.Grest]);
+rk = rank([cPZ.G,cPZ.GI]);
 
 % compare dimension and rank
 res = n == rk;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

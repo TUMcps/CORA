@@ -1,7 +1,7 @@
 function matV = vertices(intMat)
 % vertices - computes the vertices of an interval matrix
 %
-% Syntax:  
+% Syntax:
 %    matV = vertices(intMat)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function matV = vertices(intMat)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      21-June-2010 
-% Last update:  25-July-2016 (intervalhull replaced by interval)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-June-2010 
+% Last update:   25-July-2016 (intervalhull replaced by interval)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %conversion to an interval
 V = vertices(interval(intMat));
@@ -37,4 +37,4 @@ for i=1:length(V(1,:))
     matV{i}=vec2mat(V(:,i));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

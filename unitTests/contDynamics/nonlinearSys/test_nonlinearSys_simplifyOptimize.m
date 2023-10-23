@@ -4,7 +4,7 @@ function res = test_nonlinearSys_simplifyOptimize
 %    results with options.simplify = 'optimize' are identical to the
 %    results without optimization
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSys_simplifyOptimize
 %
 % Inputs:
@@ -13,12 +13,12 @@ function res = test_nonlinearSys_simplifyOptimize
 % Outputs:
 %    res - true/false 
 
-% Author:       Niklas Kochdumper
-% Written:      12-March-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       12-March-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % general parameter
     N = 10;
@@ -41,8 +41,8 @@ function res = test_nonlinearSys_simplifyOptimize
     options_.tensorOrder = 2;
     
     % create nonlinear system objects
-    sys1 = nonlinearSys(@testDyn1);
-    sys2 = nonlinearSys(@testDyn2);
+    sys1 = nonlinearSys(@aux_testDyn1);
+    sys2 = nonlinearSys(@aux_testDyn2);
     
     % call reach so that tensors are created
     reach(sys1,params,options_);
@@ -74,7 +74,6 @@ function res = test_nonlinearSys_simplifyOptimize
     end
     
     
-    
     % Third-Order Tensor --------------------------------------------------
 
     options_ = options;
@@ -83,8 +82,8 @@ function res = test_nonlinearSys_simplifyOptimize
     options_.tensorOrder = 3;
     
     % create nonlinear system objects
-    sys1 = nonlinearSys(@testDyn1);
-    sys2 = nonlinearSys(@testDyn2);
+    sys1 = nonlinearSys(@aux_testDyn1);
+    sys2 = nonlinearSys(@aux_testDyn2);
     
     % call reach so that tensors are created
     reach(sys1,params,options_);
@@ -122,9 +121,9 @@ function res = test_nonlinearSys_simplifyOptimize
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function dx = testDyn1(x,u)
+function dx = aux_testDyn1(x,u)
 
     dx(1,1) = x(3);
     dx(2,1) = x(4);
@@ -139,7 +138,7 @@ function dx = testDyn1(x,u)
     
 end
 
-function dx = testDyn2(x,u)
+function dx = aux_testDyn2(x,u)
 
     dx(1,1) = x(3);
     dx(2,1) = x(4);
@@ -154,4 +153,4 @@ function dx = testDyn2(x,u)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

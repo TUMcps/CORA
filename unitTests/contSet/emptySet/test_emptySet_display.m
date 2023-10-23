@@ -1,7 +1,7 @@
 function res = test_emptySet_display
 % test_emptySet_display - unit test function of display
 %
-% Syntax:  
+% Syntax:
 %    res = test_emptySet_display
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_emptySet_display
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = false;
 
@@ -35,4 +35,4 @@ O = emptySet(2);
 % only has to run through without errors...
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

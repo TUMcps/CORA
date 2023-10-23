@@ -2,7 +2,7 @@ function E = intervalMatrixRemainder(intMat,matrixNorm,maxOrder)
 % intervalMatrixRemainder - calculates the remainder for the exponantiation
 %    of an interval matrix depending on the order of the series
 %
-% Syntax:  
+% Syntax:
 %    E = intervalMatrixRemainder(intMat,matrixNorm,maxOrder)
 %
 % Inputs:
@@ -10,7 +10,7 @@ function E = intervalMatrixRemainder(intMat,matrixNorm,maxOrder)
 %    matrixNorm - ???
 %    maxOrder - maximum Taylor series order
 %
-% Outputs
+% Outputs:
 %    E - matrix or intervalMatrix with the remainder for the
 %        exponentiation of an intervalMatrix
 %
@@ -21,12 +21,12 @@ function E = intervalMatrixRemainder(intMat,matrixNorm,maxOrder)
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Ivan Brkan
-% Written:      03-April-2019 
-% Last update:  ---
-% Last revision:---
+% Authors:       Ivan Brkan
+% Written:       03-April-2019 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Compute the norm 
 % a = norm(intMatr,inf);
@@ -73,4 +73,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function pZsum = sum(pZ,pZlist)
 % sum - computes the sum of multiple polynomial zonotopes
 %
-% Syntax:  
+% Syntax:
 %    pZsum = sum(pZ,pZlist)
 %
 % Inputs:
@@ -30,44 +30,44 @@ function pZsum = sum(pZ,pZlist)
 %
 % See also: plus
 
-% Author:       Niklas Kochdumper
-% Written:      17-August-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       17-August-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % initialize variables
-expMatList = cell(length(pZlist)+1,1);
+EList = cell(length(pZlist)+1,1);
 G = pZ.G;
-Grest = pZ.Grest;
+GI = pZ.GI;
 c = pZ.c;
 
 % bring exponent matrices to a common representation
-expMatList{1} = pZ.expMat;
+EList{1} = pZ.E;
 id = pZ.id;
 
 for i = 1:length(pZlist)
-    [id,~,expMatList{i+1}] = mergeExpMatrix(id,pZlist{i}.id, ...
-                                    expMatList{i},pZlist{i}.expMat);
+    [id,~,EList{i+1}] = mergeExpMatrix(id,pZlist{i}.id, ...
+                                    EList{i},pZlist{i}.E);
 end
 
 % concatenate exponent and generator matrices and sum up center
 M = length(id);
-expMat = [pZ.expMat;zeros(M-size(pZ.expMat,1),size(pZ.expMat,2))];
+E = [pZ.E;zeros(M-size(pZ.E,1),size(pZ.E,2))];
 
 for i = 1:length(pZlist)
    G = [G,pZlist{i}.G];
-   Grest = [Grest,pZlist{i}.Grest];
-   eTemp = expMatList{i+1};
-   expMat = [expMat,[eTemp;zeros(M-size(eTemp,1),size(eTemp,2))]];
+   GI = [GI,pZlist{i}.GI];
+   eTemp = EList{i+1};
+   E = [E,[eTemp;zeros(M-size(eTemp,1),size(eTemp,2))]];
    c = c + pZlist{1}.c;
 end
 
 % add up all generators that belong to identical exponents
-[ExpNew,Gnew] = removeRedundantExponents(expMat,G);
+[ExpNew,Gnew] = removeRedundantExponents(E,G);
 
 % construct the resulting polynomial zonotope
-pZsum = polyZonotope(c,Gnew,Grest,ExpNew,id);
+pZsum = polyZonotope(c,Gnew,GI,ExpNew,id);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

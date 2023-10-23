@@ -1,7 +1,7 @@
 function han = plot(cZ,varargin)
 % plot - plots a projection of a constrained zonotope
 %
-% Syntax:  
+% Syntax:
 %    han = plot(cZ)
 %    han = plot(cZ,dims)
 %    han = plot(cZ,dims,type)
@@ -37,18 +37,17 @@ function han = plot(cZ,varargin)
 %
 % See also:
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      11-May-2018
-% Last update:  15-July-2020 (MW, merge with plotFilled|Template|Split)
-%               25-May-2022 (TL: 1D Plotting)
-%               16-December-2022 (MW, add iterative method for 2D plots)
-%               05-April-2023 (TL: clean up using plotPolygon)
-%               27-April-2023 (VG: check if cZ is feasible to avoid
-%               nondescript error message
-%               09-May-2023 (TL: bugfix split plotting)
-% Last revision:12-July-2023 (TL, restructure)
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       11-May-2018
+% Last update:   15-July-2020 (MW, merge with plotFilled|Template|Split)
+%                25-May-2022 (TL, 1D Plotting)
+%                16-December-2022 (MW, add iterative method for 2D plots)
+%                05-April-2023 (TL, clean up using plotPolygon)
+%                27-April-2023 (VG, check if cZ is feasible)
+%                09-May-2023 (TL, bugfix split plotting)
+% Last revision: 12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input
 [cZ,dims,NVpairs,mode,splits,numDir] = aux_parseInput(cZ,varargin{:});
@@ -66,7 +65,8 @@ end
 
 end
 
-% Auxiliary Functions -----------------------------------------------------
+
+% Auxiliary functions -----------------------------------------------------
 
 function [cZ,dims,NVpairs,mode,splits,numDir] = aux_parseInput(cZ,varargin)
     % parse input
@@ -114,27 +114,27 @@ end
 
 function han = aux_plotNd(cZ,dims,NVpairs,mode,splits,numDir)
     % check if constraints are feasible
-    if isempty(cZ)
+    if representsa_(cZ,'emptySet',eps)
         % plot empty set
         han = plotPolygon(zeros(length(dims), 0), NVpairs{:});
     
     else        
         % plot modes: standard (1), template (2), splits (3)
         if mode == 2
-            han = plotSplit(cZ,splits,dims,NVpairs);
+            han = aux_plotSplit(cZ,splits,dims,NVpairs);
         elseif mode == 3
-            han = plotTemplate(cZ,numDir,dims,NVpairs);
+            han = aux_plotTemplate(cZ,numDir,dims,NVpairs);
         else
             % default plot mode
-            han = plotStandard(cZ,dims,NVpairs);
+            han = aux_plotStandard(cZ,dims,NVpairs);
         end
     end
 end
 
-function han = plotStandard(cZ,dims,NVpairs)
+function han = aux_plotStandard(cZ,dims,NVpairs)
 
     if isempty(cZ.A) || ( ~any(any(cZ.A)) && ~any(cZ.b) )
-        han = plot(zonotope(cZ.Z),dims,NVpairs{:});
+        han = plot(zonotope(cZ.c,cZ.G),dims,NVpairs{:});
     elseif length(dims) == 2
         % 2D projection can be computed efficiently using support functions
         
@@ -156,15 +156,31 @@ function han = plotStandard(cZ,dims,NVpairs)
     else
         % other projections
         
-        % convert to polytope
-        poly = mptPolytope(cZ);
+        try 
+            % convert to polytope
+            poly = polytope(cZ);
+        catch ME
+            % if conversion to polytope fails (e.g., because the
+            % constrained zonotope has too many generators), use vertices
+            try
+                V = vertices(cZ);
+                % remove duplicates
+                VV = uniquetol(V',1e-8,'ByRows',true)';
+                han = plotPolytope3D(VV,NVpairs{:});
+                return
+            catch ME
+                throw(CORAerror('CORA:specialIssue',...
+                    ['Plotting of constrained zonotope failed! '...
+                    'Neither polytope conversion nor vertex enumeration successful.']));
+            end
+        end
         
         % plot the polytope
-        han = plot(poly,dims,NVpairs{:});        
+        han = plot(poly,dims,NVpairs{:});
     end
 end
 
-function han = plotSplit(cZ,splits,dims,NVpairs)
+function han = aux_plotSplit(cZ,splits,dims,NVpairs)
 
     % recursively split the constrained zonotope
     cZSplit = {cZ};
@@ -206,7 +222,7 @@ function han = plotSplit(cZ,splits,dims,NVpairs)
 end
 
 
-function han = plotTemplate(cZ,numDir,dims,NVpairs)
+function han = aux_plotTemplate(cZ,numDir,dims,NVpairs)
 
     % select directions for template polyhedron
     if length(dims) == 2
@@ -280,4 +296,4 @@ function han = plotTemplate(cZ,numDir,dims,NVpairs)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

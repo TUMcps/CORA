@@ -1,7 +1,7 @@
 function Z = zonotope(I)
 % zonotope - Converts an interval object into a zonotope object
 %
-% Syntax:  
+% Syntax:
 %    Z = zonotope(I)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function Z = zonotope(I)
 %
 % See also: interval, polytope
 
-% Author:       Matthias Althoff
-% Written:      22-July-2016 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-July-2016 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % obtain center
 c = center(I);
@@ -37,4 +37,4 @@ G = diag(r);
 % instantiate zonotope
 Z = zonotope([c,G(:,r ~= 0)]);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

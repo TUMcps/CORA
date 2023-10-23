@@ -3,7 +3,7 @@ function [Z,dHerror,gredIdx] = reduceAdaptive(Z,diagpercent,varargin)
 %    over-approximation defined by the Hausdorff distance between the
 %    original zonotope and the reduced zonotope; based on [Thm 3.2,1]
 %
-% Syntax:  
+% Syntax:
 %    Z = reduceAdaptive(Z,diagpercent)
 %
 % Inputs:
@@ -30,12 +30,12 @@ function [Z,dHerror,gredIdx] = reduceAdaptive(Z,diagpercent,varargin)
 %
 % See also: reduce
 
-% Author:       Mark Wetzlinger
-% Written:      01-October-2020
-% Last update:  16-June-2021 (restructure input/output args)
+% Authors:       Mark Wetzlinger
+% Written:       01-October-2020
+% Last update:   16-June-2021 (restructure input/output args)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default type
 type = 'girard';
@@ -77,7 +77,8 @@ if strcmp(type, 'penven')
     if ~any(h)
         % no generators or all are h=0
         newG = diag(Gbox);
-        Z.Z = [center(Z),newG(:,any(newG,1))];
+        % Z.c = Z.c;
+        Z.G = newG(:,any(newG,1));
         return
     end
 
@@ -108,7 +109,8 @@ else % 'girard'
     if ~any(h)
         % no generators or all are h=0
         newG = diag(Gbox);
-        Z.Z = [center(Z),newG(:,any(newG,1))];
+        % Z.c = Z.c
+        Z.G = newG(:,any(newG,1));
         % no over-approximation
         dHerror = 0;
         gredIdx = idx;
@@ -148,9 +150,8 @@ Gred = sum(gensred(:,1:redIdx),2);
 % sort to keep correspondances!
 Gunred = G(:,sort(idx(last0Idx+redIdx+1:end)));
 
-Z.Z = [center(Z),[Gunred,diag(Gred+Gzeros)]];
-
-
+% Z.c = Z.c;
+Z.G = [Gunred,diag(Gred+Gzeros)];
 
 % just for performance evaluation -----------------------------------------
 
@@ -163,4 +164,4 @@ Z.Z = [center(Z),[Gunred,diag(Gred+Gzeros)]];
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

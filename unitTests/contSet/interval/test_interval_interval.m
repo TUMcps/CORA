@@ -1,7 +1,7 @@
 function res = test_interval_interval
 % test_interval_interval - unit test function of interval
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_interval
 %
 % Inputs:
@@ -16,18 +16,18 @@ function res = test_interval_interval
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-12;
 
 % empty interval
 I = interval();
-res = isempty(I);
+res = representsa(I,'emptySet');
 
 
 % random lower bound, random upper bound
@@ -101,4 +101,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -8,7 +8,7 @@ function I = sqrt(I)
 % [NaN, sqrt(x--)] if (x_ < 0) and (x-- >= 0),
 % [sqrt(x_), sqrt(x--)] if (x_ >= 0).
 %
-% Syntax:  
+% Syntax:
 %    res = sqrt(I)
 %
 % Inputs:
@@ -27,14 +27,13 @@ function I = sqrt(I)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      20-January-2016
-%               21-February-2016 (DG, the matrix case is rewritten)
-%               05-May-2020 (MW, standardized error message)
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       20-January-2016
+% Last update:   21-February-2016 (DG, the matrix case is rewritten)
+%                05-May-2020 (MW, standardized error message)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % scalar case
 if isnumeric(I)
@@ -76,4 +75,4 @@ if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))
 	throw(CORAerror('CORA:outOfDomain','validDomain','>= 0'));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

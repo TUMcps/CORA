@@ -1,7 +1,7 @@
 function completed = example_probZonotope()
 % example_probZonotope - example instantiation of probZonotope objects
 %
-% Syntax:  
+% Syntax:
 %    completed = example_probZonotope()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_probZonotope()
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       21-April-2018
 % Last update:   10-August-2020
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 Z1 = [10; 0]; % uncertain center
 Z2 = [0.6 1.2; 0.6 -1.2]; % generators with normally distributed factors
@@ -48,4 +48,4 @@ drawnow; % draw 3D view
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

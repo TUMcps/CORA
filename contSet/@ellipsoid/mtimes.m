@@ -2,7 +2,7 @@ function E = mtimes(A,E)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix with
 %    an ellipsoid
 %
-% Syntax:  
+% Syntax:
 %    E = mtimes(A,E)
 %
 % Inputs:
@@ -26,14 +26,14 @@ function E = mtimes(A,E)
 %
 % See also: plus
 
-% Author:       Victor Gassmann
-% Written:      13-March-2019 
-% Last update:  15-October-2019
-%               07-June-2022 (avoid construction of new ellipsoid object)
-%               04-July-2022 (VG: input checks, allow E to be class array)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       13-March-2019 
+% Last update:   15-October-2019
+%                07-June-2022 (avoid construction of new ellipsoid object)
+%                04-July-2022 (VG, input checks, allow E to be class array)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % if A is scalar, transform to appropriate diagonal matrix
 if isnumeric(A) && numel(A)==1
@@ -45,7 +45,7 @@ inputArgsCheck({{A,'att','numeric',{'ncols',dim(E(1))}};
                 {E,'att','ellipsoid'}});
 
 % empty set: result is empty set
-if isempty(E)
+if representsa_(E,'emptySet',eps)
     return
 end
 
@@ -70,4 +70,4 @@ for i=1:numel(E)
     E(i).q = A*E(i).q;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

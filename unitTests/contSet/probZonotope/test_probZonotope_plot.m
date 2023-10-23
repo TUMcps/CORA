@@ -3,7 +3,7 @@ function res = test_probZonotope_plot
 %    to go through many variations of input arguments
 %    note: only run-time errors checked, go through manually to check for bugs
 %
-% Syntax:  
+% Syntax:
 %    res = test_probZonotope_plot
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = test_probZonotope_plot
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      25-May-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       25-May-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -54,4 +54,4 @@ catch ME
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

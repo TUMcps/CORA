@@ -2,7 +2,7 @@ function probZ = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix or an
 %    interval matrix with a probabilistic zonotope according to [1,(4)]
 %
-% Syntax:  
+% Syntax:
 %    probZ = mtimes(factor1,factor2)
 %
 % Inputs:
@@ -29,13 +29,13 @@ function probZ = mtimes(factor1,factor2)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      29-August-2007
-% Last update:  27-September-2007
-%               16-June-2016
+% Authors:       Matthias Althoff
+% Written:       29-August-2007
+% Last update:   27-September-2007
+%                16-June-2016
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %Find a probabilistic zonotope object
 [probZ,matrix] = findClassArg(factor1,factor2,'probZonotope');
@@ -78,7 +78,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(probZ)
+    if representsa_(probZ,'emptySet',eps)
         return
     end
 
@@ -90,4 +90,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

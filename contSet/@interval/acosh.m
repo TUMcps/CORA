@@ -7,7 +7,7 @@ function I = acosh(I)
 % [NaN, acosh(x--)] if (x_ < 1) and (x-- >= 1),
 % [acosh(x_), acosh(x--)] if (x_ >= 1).
 %
-% Syntax:  
+% Syntax:
 %    I = acosh(I)
 %
 % Inputs:
@@ -26,14 +26,14 @@ function I = acosh(I)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      12-February-2016
-% Last update:  21-February-2016 (DG, the matrix case is rewritten)
-%               05-May-2020 (MW, standardized error message)
-%               21-May-2022 (MW, remove new instantiation)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       12-February-2016
+% Last update:   21-February-2016 (DG, the matrix case is rewritten)
+%                05-May-2020 (MW, standardized error message)
+%                21-May-2022 (MW, remove new instantiation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % scalar case
 if isnumeric(I)
@@ -75,4 +75,4 @@ if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))
     throw(CORAerror('CORA:outOfDomain','validDomain','>= -1 && <= 1'));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function results = testSuiteCore(prefix,varargin)
 % testSuiteCore - runs functions starting with a certain prefix contained 
 %    in the directory and recursively searches all subfolders for same prefix
 %
-% Syntax:  
+% Syntax:
 %    results = testSuiteCore(prefix)
 %    results = testSuiteCore(prefix,verbose)
 %    results = testSuiteCore(prefix,verbose,directory)
@@ -22,12 +22,12 @@ function results = testSuiteCore(prefix,varargin)
 % Example:
 %    -
 
-% Author:       Dmitry Grebenyuk, Matthias Althoff
-% Written:      31-August-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk, Matthias Althoff
+% Written:       31-August-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default values
 [verbose,directory] = setDefaultValues(...
@@ -39,15 +39,24 @@ prefix = [prefix '_'];
 % list all files
 files = findfiles(directory,true,prefix);
 
-% init struct
-results = struct('fname',[],'ok',[],'seed',[],'time',[]);
+% list of currently open figures
+prevFigures = get(groot, 'Children');
 
 % number of files
 nrTests = size(files,1);
+
+% generate random testSuite seed from current time
+% (required for CI to run different seeds every time)
+rng(convertTo(datetime(),'posixtime'))
+
 % generate test seeds
 testseeds = randi(2^32,nrTests,1);
 
+% init empty struct
+results = struct('fname',{},'ok',{},'seed',{},'time',{});
+
 % loop over all test files
+fprintf("Running %g tests:\n", nrTests)
 for i=1:nrTests
 
     % extract the function name
@@ -59,7 +68,7 @@ for i=1:nrTests
     try
         % print current test on command window
         if verbose
-            fprintf(['run ' fname ': ']);
+            fprintf(['.. run ' fname ': ']);
         end
 
         % set semi-random seed
@@ -68,7 +77,23 @@ for i=1:nrTests
 
         tic;
         % supress output of tests by usage of evalc
-        [~,res] = evalc(fname);
+        if startsWith(fname,'test')
+            % evaluate unit test
+            [~,res] = evalc(fname);
+
+        else
+            % no output required for examples/benchmarks/...
+            try
+                evalc(fname);
+            catch ME
+                if strcmp(ME.identifier, 'CORA:noSuitableSolver') ...
+                   % missing solver is ok
+                else
+                    rethrow(ME)                    
+                end
+            end
+            res = true;
+        end
 
         % save time
         results(i,1).time = toc;
@@ -86,12 +111,16 @@ for i=1:nrTests
         results(i,1).time = toc;
         res = false;
         if verbose
-            fprintf('%s\n','failed');
+            fprintf('%s\n','exception');
         end
     end
 
     % save result to struct
     results(i,1).ok = res;
+
+    % close opened figures within test/examples
+    figures = get(groot, 'Children');
+    close(figures(1:(length(figures)-length(prevFigures))))
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

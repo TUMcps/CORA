@@ -25,14 +25,14 @@ function res = isIntersecting_(fs,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/isIntersecting
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  05-April-2023 (MW, rename isIntersecting_)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   05-April-2023 (MW, rename isIntersecting_)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 [fs,S] = findClassArg(fs,S,'fullspace');
 
@@ -46,7 +46,7 @@ if isa(S,'emptySet')
 
 elseif isa(S,'contSet')
     % other set must not be empty
-    res = ~isemptyobject(S) && ~isempty(S);
+    res = ~representsa_(S,'emptySet',eps);
 
 elseif isnumeric(S)
     % all singletons intersect the full space
@@ -54,4 +54,4 @@ elseif isnumeric(S)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_interval_isemptyobject
 % test_interval_isemptyobject - unit test function of isemptyobject
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_isemptyobject
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_isemptyobject
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate intervals
 I1 = interval();
@@ -33,4 +33,4 @@ I2 = interval(lb,ub);
 % check results
 res = isemptyobject(I1) && ~isemptyobject(I2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_location_isequal
 % test_location_isequal - test function for isequal
 %
-% Syntax:  
+% Syntax:
 %    res = test_location_isequal
 %
 % Inputs:
@@ -16,19 +16,19 @@ function res = test_location_isequal
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      26-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       26-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty locations
 res = isequal(location(),location());
 
 % invariant
-inv1 = mptPolytope([-1,0],0);
-inv2 = mptPolytope([-1,0],0.5);
+inv1 = polytope([-1,0],0);
+inv2 = polytope([-1,0],0.5);
 
 % transition
 guard = conHyperplane([-1;0],0,[0,1],0);
@@ -82,4 +82,4 @@ res(end+1,1) = ~isequal(location(inv1,trans1,dynamics1),...
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,5 +1,5 @@
 function res = ne(sys1,sys2,varargin)
-% eq - overloads '~=' operator to check if two linear systems are not equal
+% ne - overloads '~=' operator to check if two linear systems are not equal
 %
 % Syntax:
 %    res = sys1 ~= sys2
@@ -25,13 +25,13 @@ function res = ne(sys1,sys2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      09-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       09-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = ~isequal(sys1,sys2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function taylor = taylorSeries(intMat,maxOrder)
 % taylorSeries - returns the approximation of e^intMat using the truncated
 %    Taylor series with maxOrder iterations.
 %
-% Syntax:  
+% Syntax:
 %    taylor = taylorSeries(intMat,maxOrder)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function taylor = taylorSeries(intMat,maxOrder)
 %
 % See also: 
 
-% Author:       Ivan Brkan
-% Written:      06-April-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Ivan Brkan
+% Written:       06-April-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get norm and size of the matrix
 % needs to be symbolic otherwise it's impossible to calculate the result,
@@ -62,4 +62,4 @@ taylor = plus(taylor,pow);
 % watch out, if maxOrder is too low, the result won't be helpful
 taylor = plus(taylor, intervalMatrixRemainder(intMat,alpha,maxOrder));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

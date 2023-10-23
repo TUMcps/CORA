@@ -2,7 +2,7 @@ function [Rnext,options] = post_Euclidean(obj,options)
 % post_Euclidean - computes the reachable continuous set for one time step
 % in the untransformed space
 %
-% Syntax:  
+% Syntax:
 %    [Rnext,options] = post_Euclidean(obj,options)
 %
 % Inputs:
@@ -21,19 +21,19 @@ function [Rnext,options] = post_Euclidean(obj,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      07-May-2007 
-% Last update:  27-April-2009
-%               29-June-2009
-%               08-August-2011
-%               25-July-2016 (intervalhull replaced by interval)
-%               07-July-2018 (wrapping-free approach is no longer the default option)
-%               27-July-2018 (changing input updated)
-%               18-September-2018 (changing input again updated)
-%               07-November-2018 (arguments of function updated)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-May-2007 
+% Last update:   27-April-2009
+%                29-June-2009
+%                08-August-2011
+%                25-July-2016 (intervalhull replaced by interval)
+%                07-July-2018 (wrapping-free approach is no longer the default option)
+%                27-July-2018 (changing input updated)
+%                18-September-2018 (changing input again updated)
+%                07-November-2018 (arguments of function updated)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %load data
 eAt=obj.taylor.eAt;
@@ -42,8 +42,8 @@ eAt=obj.taylor.eAt;
 if strcmp(options.linAlg,'wrapping-free')
     % option 1 (wrapping free)
     % method implemented from Algorithm 2 in
-    % A. Girard, C. Le Guernic, and O. Maler, 鈥淓fficient computation of 
-    % reachable sets of linear time-invariant systems with inputs,鈥? in 
+    % A. Girard, C. Le Guernic, and O. Maler, “Efficient computation of 
+    % reachable sets of linear time-invariant systems with inputs,�? in 
     % Hybrid Systems: Computation and Control, ser. LNCS 3927. Springer, 
     % 2006, pp. 257鈥�271.
     if isfield(options,'uTransVec') % check whether input vector changes
@@ -62,9 +62,9 @@ if strcmp(options.linAlg,'wrapping-free')
 elseif strcmp(options.linAlg,'standard')
     % option 2 (not wrapping-free)
     % method implemented from Algorithm 1 in
-    % A. Girard, 鈥淩eachability of uncertain linear systems using 
-    % zonotopes,鈥? in Hybrid Systems: Computation and Control, 
-    % ser. LNCS 3414. Springer, 2005, pp. 291鈥�305.
+    % A. Girard, “Reachability of uncertain linear systems using 
+    % zonotopes,�? in Hybrid Systems: Computation and Control, 
+    % ser. LNCS 3414. Springer, 2005, pp. 291–305.
     if isfield(options,'uTransVec') % check whether input vector changes
         [Rhom,Rhom_tp,~,inputCorr] = inputInducedUpdates(obj,options);
     else
@@ -105,10 +105,10 @@ options.Rpar=Rpar;
 options.Raux=Raux;
 
 %write results to reachable set struct Rnext
-if isa(Rhom,'mptPolytope')
-    Rnext.ti = Rhom+mptPolytope(Rpar)+mptPolytope(inputCorr);
+if isa(Rhom,'polytope')
+    Rnext.ti=Rhom+polytope(Rpar)+polytope(inputCorr);
     if options.compTimePoint
-        Rnext.tp=Rhom_tp+mptPolytope(Rpar);
+        Rnext.tp=Rhom_tp+polytope(Rpar);
     else
         Rnext.tp = [];
     end
@@ -124,5 +124,4 @@ end
 end
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

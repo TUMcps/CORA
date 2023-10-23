@@ -4,7 +4,7 @@ function res = example_hybrid_reach_06_bouncingBallSineWave
 %    resulting hybrid system has nonlienar guard set and nonlinear reset
 %    functions
 %
-% Syntax:  
+% Syntax:
 %    res = example_hybrid_reach_06_bouncingBallSineWave
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = example_hybrid_reach_06_bouncingBallSineWave
 %    [1] D. Ishii and et al. "An interval-based SAT modulo ODE solver for 
 %        model checking nonlinear hybrid systems", 2011
 
-% Author:       Niklas Kochdumper
-% Written:      10-December-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       10-December-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Parameters --------------------------------------------------------------
@@ -113,4 +113,4 @@ plot(simRes);
 % completed successfully
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

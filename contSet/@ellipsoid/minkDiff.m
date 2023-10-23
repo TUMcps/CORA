@@ -2,7 +2,7 @@ function E = minkDiff(E,S,varargin)
 % minkDiff - computes the Minkowski difference of an ellipsoid as a minuend
 %    and a set as a subtrahend
 %
-% Syntax:  
+% Syntax:
 %    E = minkDiff(E,S)
 %    E = minkDiff(E,S,mode)
 %    E = minkDiff(E,S,L)
@@ -38,13 +38,13 @@ function E = minkDiff(E,S,varargin)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      09-March-2021
-% Last update:  04-July-2022 (VG: class array instead of cell array)
-%               09-November-2022 (MW, rename 'minkDiff')
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       09-March-2021
+% Last update:   04-July-2022 (VG, class array instead of cell array)
+%                09-November-2022 (MW, rename 'minkDiff')
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% parsing and checking
 % check input arguments
@@ -83,7 +83,7 @@ end
 
 
 % subtrahend is the empty set
-if all(isempty(S))
+if all(representsa_(S,'emptySet',eps))
     return;
 end
 
@@ -106,11 +106,10 @@ if isa(S,'double')
 end
 
 if isa(S,'ellipsoid')
-    E = minkDiffEllipsoid(E,S(1),L,mode);
-    for i=2:N
+    for i=1:N
         E = minkDiffEllipsoid(E,S(i),L,mode);
     end
     return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_conZonotope_contains
 % test_conZonotope_contains - unit test function for containment check
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_contains
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_conZonotope_contains
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty set
 % cZ = conZonotope();
@@ -51,4 +51,4 @@ res(end+1,1) = ~any(contains(cZ,p_out));
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

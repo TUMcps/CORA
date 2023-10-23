@@ -5,7 +5,7 @@ function res = testLong_nonlinearSys_simplifyOptimize
 % Checks if the results with options.simplify = 'optimize' are identical to
 % the results without optimization
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_nonlinearSys_simplifyOptimize
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = testLong_nonlinearSys_simplifyOptimize
 % Outputs:
 %    res - true/false 
 
-% Author:       Niklas Kochdumper
-% Written:      12-March-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       12-March-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % general parameter
     N = 100;
@@ -42,8 +42,8 @@ function res = testLong_nonlinearSys_simplifyOptimize
     options_.tensorOrder = 2;
     
     % create nonlinear system objects
-    sys1 = nonlinearSys(@testDyn1);
-    sys2 = nonlinearSys(@testDyn2);
+    sys1 = nonlinearSys(@aux_testDyn1);
+    sys2 = nonlinearSys(@aux_testDyn2);
     
     % call reach so that tensors are created
     reach(sys1,params,options_);
@@ -75,7 +75,6 @@ function res = testLong_nonlinearSys_simplifyOptimize
     end
     
     
-    
     % Third-Order Tensor --------------------------------------------------
 
     options_ = options;
@@ -84,8 +83,8 @@ function res = testLong_nonlinearSys_simplifyOptimize
     options_.tensorOrder = 3;
     
     % create nonlinear system objects
-    sys1 = nonlinearSys(@testDyn1);
-    sys2 = nonlinearSys(@testDyn2);
+    sys1 = nonlinearSys(@aux_testDyn1);
+    sys2 = nonlinearSys(@aux_testDyn2);
     
     % call reach so that tensors are created
     reach(sys1,params,options_);
@@ -123,23 +122,9 @@ function res = testLong_nonlinearSys_simplifyOptimize
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function dx = testDyn1(x,u)
-
-    dx(1,1) = x(3);
-    dx(2,1) = x(4);
-    dx(3,1) = 0.0002624*x(2) - 0.576038456806855922248709263104*x(1) - ...
-              19.2299796*x(3) + 0.008750586984672*x(4) - ...
-              (1434960000000000000.0*(x(1) + 42164000))/((x(1) + ...
-              42164000)^2 - x(2)^2)^(3/2) + 807.15359572684597539321366928407;
-    dx(4,1) = - 0.0002624*x(1) - 0.575980856806855922248709263104*x(2) - ...
-              0.008750586984672*x(3) - 19.2299766*x(4) - ...
-              (1434960000000000000.0*x(2))/((x(1) + 42164000)^2 - x(2)^2)^(3/2);
-    dx(5,1) = 1;
-end
-
-function dx = testDyn2(x,u)
+function dx = aux_testDyn1(x,u)
 
     dx(1,1) = x(3);
     dx(2,1) = x(4);
@@ -153,4 +138,18 @@ function dx = testDyn2(x,u)
     dx(5,1) = 1;
 end
 
-%------------- END OF CODE --------------
+function dx = aux_testDyn2(x,u)
+
+    dx(1,1) = x(3);
+    dx(2,1) = x(4);
+    dx(3,1) = 0.0002624*x(2) - 0.576038456806855922248709263104*x(1) - ...
+              19.2299796*x(3) + 0.008750586984672*x(4) - ...
+              (1434960000000000000.0*(x(1) + 42164000))/((x(1) + ...
+              42164000)^2 - x(2)^2)^(3/2) + 807.15359572684597539321366928407;
+    dx(4,1) = - 0.0002624*x(1) - 0.575980856806855922248709263104*x(2) - ...
+              0.008750586984672*x(3) - 19.2299766*x(4) - ...
+              (1434960000000000000.0*x(2))/((x(1) + 42164000)^2 - x(2)^2)^(3/2);
+    dx(5,1) = 1;
+end
+
+% ------------------------------ END OF CODE ------------------------------

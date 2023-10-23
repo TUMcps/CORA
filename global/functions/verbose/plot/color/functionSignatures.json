@@ -14,7 +14,7 @@
   {
      "inputs":
      [
-        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:default'}"], "purpose":"ID of CORA color map"}
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:default','CORA:manual','CORA:manual-result'}"], "purpose":"ID of CORA color map"}
      ]
   },
   

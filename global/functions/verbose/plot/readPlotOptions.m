@@ -1,8 +1,10 @@
 function NVpairs = readPlotOptions(plotOptions,varargin)
 % readPlotOptions - reads all plot options (LineSpecification and
 %    name-value pairs) and returns only non-redundant name-value pairs
+%    Colors can be numeric, hex, matlab colors (e.g., 'r') or 'next' for
+%    next color in colororder.
 %
-% Syntax:  
+% Syntax:
 %    NVpairs = readPlotOptions(plotOptions)
 %
 % Inputs:
@@ -31,17 +33,18 @@ function NVpairs = readPlotOptions(plotOptions,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: contSet/plot (all classes)
+% See also: contSet/plot (all classes), colororder
 
-% Author:        Mark Wetzlinger, Tobias Ladner
+% Authors:       Mark Wetzlinger, Tobias Ladner
 % Written:       14-July-2020 
 % Last update:   29-October-2021 (only name-value pairs as output args)
 %                01-June-2022 (allow empty plotOptions as input argument)
-%                28-February-2023 (TL: use axis default colors)
-%                24-March-2023 (TL: defaultPlotColor)
+%                28-February-2023 (TL, use axis default colors)
+%                24-March-2023 (TL, defaultPlotColor)
+%                04-October-2023 (TL, aux_correctColorToNumeric)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % input argument validation
 purpose = setDefaultValues({'none'},varargin);
@@ -178,7 +181,7 @@ switch purpose
         if ~isempty(facecolor)
             NVpairs = [NVpairs, 'FaceColor', facecolor];
             % warning if filled is false
-            filledWarning(filled,facecolor);
+            aux_filledWarning(filled,facecolor);
         elseif ~isempty(color)
             NVpairs = [NVpairs, 'FaceColor', color];
         elseif (~isempty(filled) && ~filled) || ~isempty(edgecolor)
@@ -209,7 +212,7 @@ switch purpose
         if ~isempty(facecolor)
             NVpairs = [NVpairs, 'FaceColor', facecolor];
             % warning if filled is false
-            filledWarning(filled,facecolor);
+            aux_filledWarning(filled,facecolor);
         elseif ~isempty(color)
             NVpairs = [NVpairs, 'FaceColor', color];
         else
@@ -254,7 +257,7 @@ switch purpose
         if ~isempty(facecolor)
             safeColor = facecolor;
             % warning if filled is false
-            filledWarning(filled,facecolor);
+            aux_filledWarning(filled,facecolor);
         elseif ~isempty(color)
             safeColor = color;
         else
@@ -267,7 +270,7 @@ switch purpose
         if ~isempty(edgecolor)
             NVpairs = [NVpairs, 'EdgeColor', edgecolor];
             % warning if filled is false
-            filledWarning(filled,facecolor);
+            aux_filledWarning(filled,facecolor);
         elseif ~isempty(color)
             NVpairs = [NVpairs, 'EdgeColor', color];
         else
@@ -280,7 +283,7 @@ switch purpose
         if ~isempty(facecolor)
             unsafeColor = facecolor;
             % warning if filled is false
-            filledWarning(filled,facecolor);
+            aux_filledWarning(filled,facecolor);
         elseif ~isempty(color)
             unsafeColor = color;
         else
@@ -292,7 +295,7 @@ switch purpose
         if ~isempty(edgecolor)
             NVpairs = [NVpairs, 'EdgeColor', edgecolor];
             % warning if filled is false
-            filledWarning(filled,facecolor);
+            aux_filledWarning(filled,facecolor);
         elseif ~isempty(color)
             NVpairs = [NVpairs, 'EdgeColor', color];
         else
@@ -344,7 +347,7 @@ switch purpose
                 NVpairs = [NVpairs, 'EdgeColor', facecolor];
             end
             % warning if filled is false
-            filledWarning(filled,facecolor);
+            aux_filledWarning(filled,facecolor);
         else
             % only color: 'EdgeColor' > 'Color' > default color
             usedColor = defaultPlotColor();
@@ -364,18 +367,19 @@ switch purpose
 end
 
 % convert char hex color to dec due to 'fill'
-NVpairs = aux_convertHex2Dec(NVpairs, 'FaceColor');
-NVpairs = aux_convertHex2Dec(NVpairs, 'EdgeColor');
-NVpairs = aux_convertHex2Dec(NVpairs, 'Color');
+NVpairs = aux_correctColorToNumeric(NVpairs, 'FaceColor');
+NVpairs = aux_correctColorToNumeric(NVpairs, 'EdgeColor');
+NVpairs = aux_correctColorToNumeric(NVpairs, 'Color');
 
 % add remaining plotOptions
 NVpairs = [NVpairs, plotOptions];
 
 end
 
+
 % Auxiliary functions -----------------------------------------------------
 
-function filledWarning(filled,facecolor)
+function aux_filledWarning(filled,facecolor)
 % print warning that name-value pair 'Filled',false is overwritten if the
 % name-value pair 'FaceColor'-<color> is given (unless <color>='none')
 
@@ -391,11 +395,11 @@ end
 
 end
 
-function NVpairs = aux_convertHex2Dec(NVpairs, label)
+function NVpairs = aux_correctColorToNumeric(NVpairs, label)
     [NVpairs,color] = readNameValuePair(NVpairs,label);
     
     if~isempty(color)
-        % try to convert hex to dec
+        % try to convert char to numeric
         if ischar(color) || isstring(color)
             % keep old color if unsuccessful
             % error might be thrown during Matlab plot/fill
@@ -417,6 +421,48 @@ function NVpairs = aux_convertHex2Dec(NVpairs, label)
                     % convert hex to dec
                     color = hex2dec(color_new)'/255;
                 end
+            else
+                % convert single character to numeric
+                % this conversion is not necessary, but can cause weird
+                % behavior with the current color index
+                switch color
+                    case 'red'
+                        color = [1 0 0];
+                    case 'r'
+                        color = [1 0 0];
+                    case 'green'
+                        color = [0 1 0];
+                    case 'g'
+                        color = [0 1 0];
+                    case 'blue'
+                        color = [0 0 1];
+                    case 'b'
+                        color = [0 0 1];
+                    case 'cyan'
+                        color = [0 1 1];
+                    case 'c'
+                        color = [0 1 1];
+                    case 'magenta'
+                        color = [1 0 1];
+                    case 'm'
+                        color = [1 0 1];
+                    case 'yellow'
+                        color = [1 1 0];
+                    case 'y'
+                        color = [1 1 0];
+                    case 'black'
+                        color = [0 0 0];
+                    case 'k'
+                        color = [0 0 0];
+                    case 'white'
+                        color = [1 1 1];
+                    case 'w'
+                        color = [1 1 1];
+                    case 'next'
+                        color = defaultPlotColor();
+                    otherwise
+                        % keep as is
+                end
             end
         end
 
@@ -425,4 +471,4 @@ function NVpairs = aux_convertHex2Dec(NVpairs, label)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

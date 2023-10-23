@@ -1,13 +1,13 @@
 function ratio = volumeRatio(Z,P,dims)
-% volume - computes the approximate volume ratio of a zonotope and its
+% volumeRatio - computes the approximate volume ratio of a zonotope and its
 %    over-approximating polytope
 %
-% Syntax:  
+% Syntax:
 %    ratio = volumeRatio(Z,P,dims)
 %
 % Inputs:
 %    Z - zonotope object
-%    P - mptPolytope object
+%    P - polytope object
 %    dims - considered dimensions for the approximation
 %
 % Outputs:
@@ -15,7 +15,7 @@ function ratio = volumeRatio(Z,P,dims)
 %
 % Example:
 %    Z = zonotope([1;0],rand(2,5));
-%    P = mptPolytope(Z);
+%    P = polytope(Z);
 %    ratio = volumeRatio(Z,P,1)
 %
 % Other m-files required: none
@@ -24,12 +24,12 @@ function ratio = volumeRatio(Z,P,dims)
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       12-September-2008 
-% Last update:   28-Aug-2019
+% Last update:   28-August-2019
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %write inputs to variables
 if nargin == 1
@@ -53,7 +53,7 @@ for i=1:iterations
     %projected dimensions
     projDims=dimVector+i-1;
     %project zonotope
-    Zproj.Z=Z.Z(projDims,:);
+    Zproj = project(Z, projDims);
     %project polytope
     Pproj=project(P,projDims);
     
@@ -68,4 +68,4 @@ end
 %final ratio is the mean value of the partial ratios
 ratio=mean(partialRatio);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

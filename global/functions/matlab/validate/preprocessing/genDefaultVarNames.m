@@ -2,7 +2,7 @@ function names = genDefaultVarNames(mat,names,inputname)
 % genDefaultVarNames - generate default variable names for an taylm-,
 %    affine- or zoo-object 
 %
-% Syntax:  
+% Syntax:
 %    names = genDefaultVarNames(mat,names,inputname)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function names = genDefaultVarNames(mat,names,inputname)
 %
 % See also: taylm, affine, zoo
 
-% Author:       Niklas Kochdumper
-% Written:      10-April-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       10-April-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     
    % no names provided -> create default names
@@ -43,7 +43,7 @@ function names = genDefaultVarNames(mat,names,inputname)
 
        % input interval is a matrix => add indices to name 
        else                  
-           names = addMatIndicesToName(text,mat);
+           names = aux_addMatIndicesToName(text,mat);
        end
 
    % names provided -> check for correctness
@@ -51,7 +51,7 @@ function names = genDefaultVarNames(mat,names,inputname)
        
        % single string instead of cell-array => add matrix indices
        if ~isscalar(mat) && ~iscell(names)
-          names = addMatIndicesToName(names,mat); 
+          names = aux_addMatIndicesToName(names,mat); 
        end
 
        if iscell(names) && any(size(names) ~= size(mat))
@@ -61,9 +61,10 @@ function names = genDefaultVarNames(mat,names,inputname)
    end
 end
 
-% Auxiliary Functions -----------------------------------------------------
 
-function nameMat = addMatIndicesToName(name,mat)
+% Auxiliary functions -----------------------------------------------------
+
+function nameMat = aux_addMatIndicesToName(name,mat)
 % add the matrix indices to the names of the variables
 
    x = 1:size(mat,1);
@@ -77,4 +78,4 @@ function nameMat = addMatIndicesToName(name,mat)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

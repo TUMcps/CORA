@@ -3,7 +3,7 @@ function res = example_parallel_hybrid_03_roomHeating()
 %    parallel hybrid automaton considering the room heating benchmark
 %    described in Sec. 2.3 in [1] with two rooms
 %
-% Syntax:  
+% Syntax:
 %    res = example_parallel_hybrid_03_roomHeating
 %
 % Inputs:
@@ -22,12 +22,12 @@ function res = example_parallel_hybrid_03_roomHeating()
 %
 % See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      26-June-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-June-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % System Dynamics ---------------------------------------------------------
@@ -80,4 +80,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

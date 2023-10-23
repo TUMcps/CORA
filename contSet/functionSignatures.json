@@ -40,6 +40,36 @@
      ]
   },
 
+  "contSet.representsa":
+  {
+     "inputs":
+     [
+        {"name":"obj", "kind":"required", "type":["contSet"], "purpose":"contSet"},
+        {"name":"type", "kind":"required", "type":["char","choices={'capsule','conPolyZono','conHyperplane','conZonotope','ellipsoid','halfspace','interval','levelSet','polytope','polyZonotope','probZonotope','zonoBundle','zonotope','origin','point','hyperplane','emptySet','fullspace'}"],"purpose":"type"},
+        {"name":"tol", "kind":"ordered", "type":["numeric"],"purpose":"tolerance"},
+        {"name":"varargin", "kind":"ordered","purpose":"varargin"}
+     ],
+     "outputs": [
+         {"name":"res", "type":"logical"},
+         {"name":"S", "type":"contSet"}
+     ]
+  },
+
+  "contSet.representsa_":
+  {
+     "inputs":
+     [
+        {"name":"obj", "kind":"required", "type":["contSet"], "purpose":"contSet"},
+        {"name":"type", "kind":"required", "type":["char","choices={'capsule','conPolyZono','conHyperplane','conZonotope','ellipsoid','halfspace','interval','levelSet','polytope','polyZonotope','probZonotope','zonoBundle','zonotope','origin','point','hyperplane','emptySet','fullspace'}"],"purpose":"type"},
+        {"name":"tol", "kind":"ordered", "type":["numeric"],"purpose":"tolerance"},
+        {"name":"varargin", "kind":"ordered","purpose":"varargin"}
+     ],
+     "outputs": [
+         {"name":"res", "type":"logical"},
+         {"name":"S", "type":"contSet"}
+     ]
+  },
+
   "_comment": "capsule --------------------------------------------------", 
   "capsule.generateRandom":
   {

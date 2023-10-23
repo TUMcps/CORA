@@ -3,7 +3,7 @@ function res = test_linearSys_trajectoryError()
 %    function required for the mapping-based guard intersection
 %    as described in [1].
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_trajectoryError()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_linearSys_trajectoryError()
 %    [1] M. Althoff, B. Krogh, Avoiding Geometric Intersection Operations
 %        in Reachability Analysis of Hybrid Systems, HSCC'12
 
-% Author:       Matthias Althoff
-% Written:      23-August-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       23-August-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % obtain linear system
 A = [-1 -4; 4 -1];
@@ -104,4 +104,4 @@ res_2 = (I_err_calc <= enlarge(I_err,1+1e-8));
 % final result
 res = res_1 && res_2;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

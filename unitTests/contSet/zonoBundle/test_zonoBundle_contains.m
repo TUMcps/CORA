@@ -1,7 +1,7 @@
 function res = test_zonoBundle_contains
 % test_zonoBundle_contains - unit test function of contains
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonoBundle_contains
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonoBundle_contains
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      16-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate zonotope bundle
 Z1 = zonotope([1;-1;2],[2 -1 3; 0 1 -1; -1 4 2]);
@@ -61,4 +61,4 @@ res(end+1) = contains(zB,E);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

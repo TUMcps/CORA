@@ -2,7 +2,7 @@ function cZ = conZonotope(cPZ,varargin)
 % conZonotope - Computes a constrained zonotope that over-approximates the 
 %    constrained polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    cZ = conZonotope(cPZ)
 %    cZ = conZonotope(cPZ,type)
 %    cZ = conZonotope(cPZ,type,method)
@@ -20,11 +20,11 @@ function cZ = conZonotope(cPZ,varargin)
 % Example: 
 %    A = 1/8 * [-10 2 2 3 3];
 %    b = -3/8;
-%    expMat_ = [1 0 1 2 0; 0 1 1 0 2; 0 0 0 0 0];
+%    EC = [1 0 1 2 0; 0 1 1 0 2; 0 0 0 0 0];
 %    c = [0;0];
 %    G = [1 0 1 -1/4;0 1 -1 1/4];
-%    expMat = [1 0 2 0;0 1 1 0; 0 0 0 1];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    E = [1 0 2 0;0 1 1 0; 0 0 0 1];
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 %
 %    cZ = conZonotope(cPZ);
 %
@@ -42,12 +42,12 @@ function cZ = conZonotope(cPZ,varargin)
 %
 % See also: zonotope, interval, polyZonotope
 
-% Author:       Niklas Kochdumper
-% Written:      07-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       07-November-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parse input arguments
     [type,method] = setDefaultValues({'all','linearize'},varargin); 
@@ -82,7 +82,7 @@ function cZ = conZonotope(cPZ,varargin)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function res = aux_conZonotopeExtend(cPZ)
 % enclose set with a constrained zonotope based on an extension to a higher
@@ -91,9 +91,9 @@ function res = aux_conZonotopeExtend(cPZ)
     % transform to equivalent higher-dimensional polynomial zonotope
     c = [cPZ.c; -cPZ.b];
     G = blkdiag(cPZ.G,cPZ.A);
-    expMat = [cPZ.expMat,cPZ.expMat_];
+    E = [cPZ.E,cPZ.EC];
     
-    pZ = polyZonotope(c,G,[],expMat);
+    pZ = polyZonotope(c,G,[],E);
     
     % enclose higher dimensional polynomial zonotope with a zonotope
     Z = zonotope(pZ);
@@ -108,8 +108,8 @@ function res = aux_conZonotopeExtend(cPZ)
     res = conZonotope([c,G],A,b);
     
     % add independent generators
-    if ~isempty(cPZ.Grest)
-       res = res + zonotope(zeros(n,1),cPZ.Grest); 
+    if ~isempty(cPZ.GI)
+       res = res + zonotope(zeros(n,1),cPZ.GI); 
     end
 end
 
@@ -121,15 +121,15 @@ function res = aux_conZonotopeLinearize(cPZ)
     % over-approximate the unconstrained poly. zonotope with a zonotope
     G = cPZ.G;
     
-    temp = prod(ones(size(cPZ.expMat))-mod(cPZ.expMat,2),1);
+    temp = prod(ones(size(cPZ.E))-mod(cPZ.E,2),1);
     ind_ = find(temp == 1);
     Gquad = G(:,ind_);
 
-    ind = find(sum(cPZ.expMat,1) == 1);
+    ind = find(sum(cPZ.E,1) == 1);
     G1 = zeros(size(G,1),length(cPZ.id));
     
     for i = 1:length(cPZ.id)
-        index = find(cPZ.expMat(i,ind) == 1);
+        index = find(cPZ.E(i,ind) == 1);
         if ~isempty(index)
             G1(:,i) = G(:,ind(index));   
         end
@@ -142,8 +142,8 @@ function res = aux_conZonotopeLinearize(cPZ)
     
     % enclose each nonlinear constraint f(x) by two parallel hyperplanes 
     % defined as J*x + l <= f(x) <= J*x + b (see Eq. (4.93) in [1])
-    jacHan = aux_funHanJacobian(cPZ.A,cPZ.expMat_);
-    funHan = @(x) aux_funCon(x,cPZ.b,cPZ.A,cPZ.expMat_);
+    jacHan = aux_funHanJacobian(cPZ.A,cPZ.EC);
+    funHan = @(x) aux_funCon(x,cPZ.b,cPZ.A,cPZ.EC);
     
     temp = ones(length(cPZ.id),1);
     dom = interval(-temp,temp);
@@ -163,8 +163,8 @@ function res = aux_conZonotopeLinearize(cPZ)
     res = conZonotope([c,G],A,b);    
     
     % add independent generators
-    if ~isempty(cPZ.Grest)
-       res = res + zonotope(zeros(size(c)),cPZ.Grest); 
+    if ~isempty(cPZ.GI)
+       res = res + zonotope(zeros(size(c)),cPZ.GI); 
     end
 end
 
@@ -182,7 +182,7 @@ function res = aux_conZonotopeAll(obj)
     res = and_(res1,res2,'exact');
 end
 
-function f = aux_funCon(x,b,A,expMat_)
+function f = aux_funCon(x,b,A,EC)
 % evaluate the constrataints of a constratined polynomial zonotope
 
     % initialization
@@ -190,11 +190,11 @@ function f = aux_funCon(x,b,A,expMat_)
     
     % loop over all dependent generators
     for i = 1:size(A,2)
-        f = f + A(:,i)*prod(x.^expMat_(:,i),1); 
+        f = f + A(:,i)*prod(x.^EC(:,i),1); 
     end
 end
 
-function J = aux_jacobianCon(x,A,expMat_)
+function J = aux_jacobianCon(x,A,EC)
 % compute the jacobian matrix of the polynomial constraints for a
 % constrained polynomial zonotope
 
@@ -202,30 +202,30 @@ function J = aux_jacobianCon(x,A,expMat_)
     J = 0 * repmat(x(1),[size(A{1},1),length(x)]);
     
     % loop over all variables
-    for i = 1:length(expMat_)
-       for j = 1:size(expMat_{i},2)
-          J(:,i) = J(:,i) + A{i}(:,j)*prod(x.^expMat_{i}(:,j),1); 
+    for i = 1:length(EC)
+       for j = 1:size(EC{i},2)
+          J(:,i) = J(:,i) + A{i}(:,j)*prod(x.^EC{i}(:,j),1); 
        end
     end
 end
 
-function jacHan = aux_funHanJacobian(A,expMat_)
+function jacHan = aux_funHanJacobian(A,EC)
 % compute a function handle for the jacobian matrix of the constraints
 
     % compute exponent matrix differentiazed for each variable
-    Elist = cell(size(expMat_,1),1);
-    Alist = cell(size(expMat_,1),1);
+    Elist = cell(size(EC,1),1);
+    Alist = cell(size(EC,1),1);
 
     for i = 1:length(Elist)
-       ind = find(expMat_(i,:) > 0);
-       temp = expMat_(:,ind);
+       ind = find(EC(i,:) > 0);
+       temp = EC(:,ind);
        temp(i,:) = temp(i,:) - 1;
        Elist{i} = temp;
-       Alist{i} = A(:,ind) * diag(expMat_(i,ind));
+       Alist{i} = A(:,ind) * diag(EC(i,ind));
     end
 
     % function handle for jacobian matrix
     jacHan=@(x)aux_jacobianCon(x,Alist,Elist);
 end
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

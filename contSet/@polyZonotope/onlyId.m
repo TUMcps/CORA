@@ -1,7 +1,7 @@
 function [pZ_id,pZ_r] = onlyId(pZ,id)
 % onlyId - splits pZ into part only dependent on 'id' and rest
 %
-% Syntax:  
+% Syntax:
 %    [pZ_id,pZ_r] = onlyId(pZ,id)
 %
 % Inputs:
@@ -25,14 +25,15 @@ function [pZ_id,pZ_r] = onlyId(pZ,id)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope, isPolytope
+% See also: zonotope
 
-% Author:       Victor Gassmann
-% Written:      12-January-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       12-January-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 % check input arguments
 inputArgsCheck({{id,'att','double',{'integer','ncols',1}}});
 
@@ -52,14 +53,14 @@ end
 ind_id = ismember(pZ.id,id);
 n = dim(pZ);
 % extract all exponent vectors which only have ids from 'id'
-ind_mask = sum(pZ.expMat(~ind_id,:),1)==0;
+ind_mask = sum(pZ.E(~ind_id,:),1)==0;
 G_id = pZ.G(:,ind_mask);
-eM_id = pZ.expMat(ind_id,ind_mask);
+eM_id = pZ.E(ind_id,ind_mask);
 % put everything containing also ids not in 'id' into rest polyZonotope
 G_r = pZ.G(:,~ind_mask);
-eM_r = pZ.expMat(:,~ind_mask);
+eM_r = pZ.E(:,~ind_mask);
 % construct results
 pZ_id = polyZonotope(pZ.c,G_id,zeros(n,0),eM_id,pZ.id(ind_id));
-pZ_r = polyZonotope(zeros(n,1),G_r,pZ.Grest,eM_r,pZ.id);
+pZ_r = polyZonotope(zeros(n,1),G_r,pZ.GI,eM_r,pZ.id);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

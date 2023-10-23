@@ -2,7 +2,7 @@ function cZ = plus(summand1,summand2)
 % plus - Overloaded '+' operator for the Minkowski addition of a
 %    constrained zonotope with other set representations
 %
-% Syntax:  
+% Syntax:
 %    cZ = plus(summand1,summand2)
 %
 % Inputs:
@@ -32,13 +32,13 @@ function cZ = plus(summand1,summand2)
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Dmitry Grebenyuk, Niklas Kochdumper
-% Written:      05-December-2017 
-% Last update:  15-May-2018
-%               05-May-2020 (MW, standardized error message)
-% Last revision:---
+% Authors:       Dmitry Grebenyuk, Niklas Kochdumper
+% Written:       05-December-2017 
+% Last update:   15-May-2018
+%                05-May-2020 (MW, standardized error message)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % find a conZonotope object
 [cZ,summand] = findClassArg(summand1,summand2,'conZonotope');
@@ -49,18 +49,18 @@ try
     if isa(summand,'conZonotope')
         
         % Calculate minkowski sum (Equation (12) in reference paper [1])
-        cZ.Z(:,1)=cZ.Z(:,1)+summand.Z(:,1);
-        cZ.Z(:,(end+1):(end+length(summand.Z(1,2:end)))) = summand.Z(:,2:end);
+        cZ.c=cZ.c+summand.c;
+        cZ.G(:,(end+1):(end+size(summand.G,2))) = summand.G;
         
         if isempty(cZ.A)
             if ~isempty(summand.A)
                 cZ.A = [zeros(size(summand.A,1), ...
-                       size(cZ.Z,2)-1-size(summand.A,2)),summand.A]; 
+                       size(cZ.G,2)-size(summand.A,2)),summand.A]; 
                 cZ.b = summand.b;
             end
         else
             if isempty(summand.A)
-                cZ.A = [cZ.A,zeros(size(cZ.A,1),size(summand.Z,2)-1)];
+                cZ.A = [cZ.A,zeros(size(cZ.A,1),size(summand.G,2))];
             else
                 cZ.A = blkdiag(cZ.A, summand.A);
                 cZ.b = [cZ.b; summand.b];
@@ -72,10 +72,10 @@ try
         
     elseif isnumeric(summand) 
         
-        cZ.Z(:,1) = cZ.Z(:,1) + summand;
+        cZ.c = cZ.c + summand;
         
     elseif isa(summand,'zonotope') || isa(summand,'interval') || ...
-           isa(summand,'mptPolytope') || isa(summand,'zonoBundle')
+           isa(summand,'polytope') || isa(summand,'zonoBundle')
         
         cZ = cZ + conZonotope(summand);
         
@@ -100,7 +100,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(cZ)
+    if representsa_(cZ,'emptySet',eps)
         return
     elseif isemptyobject(summand)
         cZ = conZonotope(); return
@@ -114,4 +114,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

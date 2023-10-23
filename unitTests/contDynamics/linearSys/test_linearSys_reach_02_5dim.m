@@ -6,7 +6,7 @@ function res = test_linearSys_reach_02_5dim()
 % It is checked whether the enclosing interval of the final reachable set 
 % is close to an interval provided by a previous solution that has been saved
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_reach_02_5dim()
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = test_linearSys_reach_02_5dim()
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      09-August-2016
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       09-August-2016
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -43,7 +43,6 @@ options.linAlg = 'wrapping-free'; % algorithm
 A = [-1 -4 0 0 0; 4 -1 0 0 0; 0 0 -3 1 0; 0 0 -1 -3 0; 0 0 0 0 -2];
 B = 1;
 fiveDimSys=linearSys('fiveDimSys',A,B);
-
 
 
 % Reachability Analysis (zonotope) ----------------------------------------
@@ -83,4 +82,4 @@ res_zonoBundles = isequal(IH,IH_saved,1e-8);
 % result of different set representations
 res = res_zono && res_zonoBundles;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function Rint = observe_intersectionMethod_I(obj,R,y,options)
 % observe_intersectionMethod_I - intersects the reachable set with
 %    measurement strips according to intersection method I in [1]. 
 %
-% Syntax:  
+% Syntax:
 %    Rint = observe_intersectionMethod_I(obj,R,y,options)
 %
 % Inputs:
@@ -28,12 +28,12 @@ function Rint = observe_intersectionMethod_I(obj,R,y,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       08-September-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init intersection zonotope
 Rint = R;
@@ -55,7 +55,7 @@ end
 % % convert strip to polytope
 % C = [c{1}; -c{1}];
 % d = [sigma{1} + y_strip{1}; sigma{1} - y_strip{1}];
-% P = mptPolytope(C,d);
+% P = polytope(C,d);
 % 
 % % plot
 % figure
@@ -64,4 +64,4 @@ end
 % plot(P,[1 2],'k');
 % plot(Rint,[1 2],'r--');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

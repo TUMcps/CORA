@@ -1,7 +1,7 @@
 function res = test_emptySet_project
 % test_emptySet_project - unit test function of project
 %
-% Syntax:  
+% Syntax:
 %    res = test_emptySet_project
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_emptySet_project
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init empty set
 n = 4;
@@ -58,4 +58,4 @@ end
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

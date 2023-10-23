@@ -1,7 +1,7 @@
 function res = test_hybridAutomaton_simulate
 % test_hybridAutomaton_simulate - test function for simulate
 %
-% Syntax:  
+% Syntax:
 %    res = test_hybridAutomaton_simulate
 %
 % Inputs:
@@ -16,19 +16,19 @@ function res = test_hybridAutomaton_simulate
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % generate simple automaton:
 % - 1st median is guard set
 % - right part moves clockwise
 % - left part moves counter-clockwise
-inv1 = mptPolytope([-1 1]/sqrt(2),0);
-inv2 = mptPolytope([1 -1]/sqrt(2),0);
+inv1 = polytope([-1 1]/sqrt(2),0);
+inv2 = polytope([1 -1]/sqrt(2),0);
 
 guard = conHyperplane([-1 1]/sqrt(2),0);
 reset1 = struct('A',eye(2),'c',[-1;1]);
@@ -70,8 +70,8 @@ end
 
 
 % automaton with different number of states per location
-inv1 = mptPolytope([-1 1]/sqrt(2),0);
-inv2 = mptPolytope([1 -1 0]/sqrt(2),0);
+inv1 = polytope([-1 1]/sqrt(2),0);
+inv2 = polytope([1 -1 0]/sqrt(2),0);
 
 guard1 = conHyperplane([-1 1]/sqrt(2),0);
 guard2 = conHyperplane([-1 1 0]/sqrt(2),0);
@@ -116,4 +116,4 @@ end
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

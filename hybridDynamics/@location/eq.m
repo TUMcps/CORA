@@ -1,7 +1,7 @@
 function res = eq(loc1,loc2,varargin)
 % eq - overloads '==' operator to check if two locations objects are equal
 %
-% Syntax:  
+% Syntax:
 %    res = eq(loc1,loc2)
 %    res = eq(loc1,loc2,tol)
 %
@@ -22,13 +22,13 @@ function res = eq(loc1,loc2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      10-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       10-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = isequal(loc1,loc2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

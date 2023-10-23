@@ -2,7 +2,7 @@ function res = isequal(cZ,S,varargin)
 % isequal - checks if a constrained zonotope represents the same set as
 %    another set
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(cZ,S)
 %    res = isequal(cZ,S,tol)
 %
@@ -28,12 +28,12 @@ function res = isequal(cZ,S,varargin)
 %
 % See also: ---
 
-% Author:       Mark Wetzlinger
-% Written:      19-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -68,13 +68,13 @@ end
 % two constrained zonotopes
 
 % centers have to be the same
-if ~withinTol(cZ.Z(:,1),S.Z(:,1),tol)
+if ~withinTol(cZ.c,S.c,tol)
     res = false;
     return
 end
 
 % check if both are represented completely equally
-if compareMatrices([cZ.Z(:,2:end); cZ.A],[S.Z(:,2:end); S.A],tol) ...
+if compareMatrices([cZ.G; cZ.A],[S.G; S.A],tol) ...
         && compareMatrices([cZ.A cZ.b],[S.A S.b],tol)
     res = true;
     return
@@ -83,4 +83,4 @@ end
 % last resort: check vertices (computationally expensive!)
 res = compareMatrices(vertices(cZ),vertices(S),tol);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

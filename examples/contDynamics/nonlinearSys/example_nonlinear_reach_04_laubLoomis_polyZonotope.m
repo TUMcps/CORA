@@ -5,7 +5,7 @@ function completed = example_nonlinear_reach_04_laubLoomis_polyZonotope()
 %    Example from [1] demonstrating reachability analysis for nonlinear
 %    systems using polynomial zonotopes for the Laub-Loomis system.
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinear_reach_04_laubLoomis_polyZonotope()
 %
 % Inputs:
@@ -18,12 +18,12 @@ function completed = example_nonlinear_reach_04_laubLoomis_polyZonotope()
 %   [1] N. Kochdumper et al. "Sparse Polynomial Zonotopes: A Novel Set 
 %       Representation for Reachability Analysis"
 
-% Author:       Matthias Althoff
-% Written:      18-August-2016
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-August-2016
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -59,7 +59,6 @@ options.polyZono = polyZono;
 sys = nonlinearSys(@laubLoomis);
 
 
-
 % Reachability Analysis ---------------------------------------------------
 
 tic
@@ -69,14 +68,12 @@ tComp = toc;
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 
-
 % Simulation --------------------------------------------------------------
 
 % number of initial points
-simOpt.points = 60;
+simOpt.points = 10;
 % random simulation
 simRes = simulateRandom(sys,params,simOpt); 
-
 
 
 % Visualization -----------------------------------------------------------
@@ -135,4 +132,4 @@ end
 
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

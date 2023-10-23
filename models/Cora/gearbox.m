@@ -175,7 +175,7 @@ trans(3) = transition(guard3,reset3,2);
 Cinv = [-C1(1,:); -C2(1,:); -C1(3,:)];
 dinv = [d1(1); d2(1); d1(3)];
 dinv = dinv + ones(length(dinv),1)*1e-3;
-inv = mptPolytope(Cinv,dinv);
+inv = polytope(Cinv,dinv);
 
 % location
 loc(1) = location('loc1',inv,trans,linSys);

@@ -1,7 +1,10 @@
-function S = minkDiff(S1,S2,varargin)
+function S = minkDiff(varargin)
 % minkDiff - Minkowski difference
 %
-% Syntax:  
+% Description:
+%    computes the set { s | s \oplus \mathcal{S}_2 \subseteq \mathcal{S}_1 }
+%
+% Syntax:
 %    S = minkDiff(S1,S2)
 %
 % Inputs:
@@ -16,16 +19,16 @@ function S = minkDiff(S1,S2,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: minkDiff
+% See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      02-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       02-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-% throw error if minkDiff is not implemented by subclass
-throw(CORAerror('CORA:noops',S1,S2));
+% is overridden in subclass if implemented; throw error
+throw(CORAerror('CORA:noops',varargin{:}));
 
-%------------ END OF CODE ------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = subsref(tay,S)
 % subsref - Overloads the operator that selects elements, e.g. T(1,2),
 % where the element of the first row and second column is referred to.
 %
-% Syntax:  
+% Syntax:
 %    res = subsref(tay,S)
 %
 % Inputs:
@@ -23,14 +23,14 @@ function res = subsref(tay,S)
 %
 % See also: taylm
 
-% Author:       Dmitry Grebenyuk
-% Written:      20-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       20-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % call built-in function
 res = builtin('subsref', tay, S);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

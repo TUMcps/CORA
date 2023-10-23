@@ -1,8 +1,8 @@
 function res = testSpecial_road_intersection
-%  testSpecial_road_intersection - unit_test_function for checking
-%  whether the intersection computation is correct
+% testSpecial_road_intersection - unit_test_function for checking
+% whether the intersection computation is correct
 %
-% Syntax:  
+% Syntax:
 %    res = testSpecial_road_intersection
 %
 % Inputs:
@@ -11,13 +11,13 @@ function res = testSpecial_road_intersection
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      18-August-2016
-% Last update:  01-September-2016
-%               12-July-2021
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-August-2016
+% Last update:   01-September-2016
+%                12-July-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %load probabilistic model
 load probModel_car_sim_02September2016_newPartitionFormat probModel
@@ -104,7 +104,7 @@ for i = 1:runs
         resPartial(end) = 0;
         
         %plot for debugging
-        plotForDebugging(Zcenter, ZcenterEgo, bodyZono, ZcenterCurr, ...
+        aux_plotForDebugging(Zcenter, ZcenterEgo, bodyZono, ZcenterCurr, ...
                 ZcenterEgoCurr, rect1, rect2, pos1, pos2, rot1, rot2);
     else
         relDiff = abs(intersected_db - intersected_MC)/max(intersected_MC,intersected_db);
@@ -115,7 +115,7 @@ for i = 1:runs
             resPartial(end) = 0;
             
             %plot for debugging
-            plotForDebugging(Zcenter, ZcenterEgo, bodyZono, ZcenterCurr, ...
+            aux_plotForDebugging(Zcenter, ZcenterEgo, bodyZono, ZcenterCurr, ...
                 ZcenterEgoCurr, rect1, rect2, pos1, pos2, rot1, rot2);
         end
     end
@@ -127,7 +127,9 @@ res = all(resPartial);
 end
 
 
-function plotForDebugging(Zcenter, ZcenterEgo, bodyZono, ZcenterCurr, ...
+% Auxiliary functions -----------------------------------------------------
+
+function aux_plotForDebugging(Zcenter, ZcenterEgo, bodyZono, ZcenterCurr, ...
     ZcenterEgoCurr, rect1, rect2, pos1, pos2, rot1, rot2)
 
     % plot situation
@@ -142,4 +144,4 @@ function plotForDebugging(Zcenter, ZcenterEgo, bodyZono, ZcenterCurr, ...
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

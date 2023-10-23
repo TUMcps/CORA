@@ -1,7 +1,7 @@
 function [PZ,pZ_gi_cell,ind_constGen,EM,indexE] = partZonotope(pZ,id)
 % partZonotope - computes a zonotope overapproximation in id
 %
-% Syntax:  
+% Syntax:
 %    [PZ,pZ_gi_cell] = partZonotope(pZ,id)
 %    [PZ,pZ_gi_cell,ind_constGen,EM,indexE] = partZonotope(pZ,id)
 %
@@ -28,14 +28,14 @@ function [PZ,pZ_gi_cell,ind_constGen,EM,indexE] = partZonotope(pZ,id)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval, mptPolytope
+% See also: interval, polytope
 
-% Author:       Victor Gassmann
-% Written:      24-March-2020
-% Last update:  07-March-2022 (simplify)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       24-March-2020
+% Last update:   07-March-2022 (simplify)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % overapproximates pZ as a zonotope only in id_part
 % pZ_gi_cell: generators of {pZ}_w which are non-constant in p
@@ -49,19 +49,19 @@ nx = dim(pZ);
 idv = id;
 idp = pZ.id(~ismember(pZ.id,idv));
 G = [pZ.c,pZ.G];
-expMat = [zeros(size(pZ.expMat,1),1),pZ.expMat];
+E = [zeros(size(pZ.E,1),1),pZ.E];
 ind_v = ismember(pZ.id,idv);
 ind_p = ismember(pZ.id,idp);
 np = length(idp);
 
 %% compute overapproximation
-eM_v = expMat(ind_v,:);
+eM_v = E(ind_v,:);
 [~,~,Indc] = unique(eM_v','rows','stable');
-indexE = accumarray(Indc,(1:size(expMat,2))',[],@(x){x});
+indexE = accumarray(Indc,(1:size(E,2))',[],@(x){x});
 % first is all-zero vector by design (see l.45, l.47)
 % extract all constant-in-v generators (includes center of course)
 G_0 = G(:,indexE{1});
-eMp_0 = expMat(ind_p,indexE{1});
+eMp_0 = E(ind_p,indexE{1});
 [eMp_0,G_0,c_0] = removeZeroExponents(eMp_0,G_0);
 % center zonotope only dependent on constants and p
 pZ_cp = polyZonotope(c_0,G_0,zeros(nx,0),eMp_0,idp);
@@ -75,10 +75,10 @@ ido = (max([idp;idv])+1:max([idp;idv])+length(indexE)-1)';
 PZ = polyZonotope(zeros(nx,1),zeros(nx,0),zeros(nx,0),zeros(length(ido),0),ido);
 for i=2:length(indexE)
     % unique v exponent vector
-    e_vi = expMat(ind_v,indexE{i}(1));
+    e_vi = E(ind_v,indexE{i}(1));
     EM(:,i) = e_vi;
     % all exponents with same v part
-    eMp_i = expMat(ind_p,indexE{i});
+    eMp_i = E(ind_p,indexE{i});
     Gi = G(:,indexE{i});
     [eMp_i,Gi,ci] = removeZeroExponents(eMp_i,Gi);
     if sum(mod(e_vi,2))==0
@@ -105,9 +105,9 @@ end
 % add center
 PZ = exactPlus(PZ,pZ_cp);
 % add rest matrix
-PZ.Grest = pZ.Grest;
+PZ.GI = pZ.GI;
 
 % order important (center first important!)
 pZ_gi_cell{1} = pZ_cp;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

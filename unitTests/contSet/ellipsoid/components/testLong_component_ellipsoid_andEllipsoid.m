@@ -2,7 +2,7 @@ function res = testLong_component_ellipsoid_andEllipsoid
 % testLong_component_ellipsoid_andEllipsoid - unit test function of
 %    testLong_component_ellipsoid_andEllipsoid
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_component_ellipsoid_andEllipsoid
 %
 % Inputs:
@@ -17,12 +17,13 @@ function res = testLong_component_ellipsoid_andEllipsoid
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      17-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       17-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = true;
 nRuns = 2;
 bools = [false,true];
@@ -47,7 +48,7 @@ for i=10:5:15
                 % empty
                 E2 = ellipsoid(E2.Q,Y(:,m));
                 Eo = E1&E2;
-                if isempty(Eo)
+                if representsa_(Eo,'emptySet',eps)
                     res = false;
                     return;
                 end
@@ -55,7 +56,8 @@ for i=10:5:15
                 % Check that any point of Y that is both in E1 and E2 is
                 % also in the intersection, i.e., Eo
                 for i_y = 1:size(Y,2)
-                    if contains(E1,Y(:,i_y)) && contains(E2,Y(:,i_y)) && ~contains(Eo,Y(:,i_y))
+                    if contains(E1,Y(:,i_y)) && contains(E2,Y(:,i_y)) ...
+                            && ~contains(Eo,Y(:,i_y))
                         res = false;
                         return;
                     end
@@ -65,7 +67,7 @@ for i=10:5:15
                 % only works if E1 and E2 full-dimensional, otherwise Eo and Ei
                 % are both degenerate
                 if ~bools(k)
-                    Ei = and(E1,E2,'inner');
+                    Ei = and_(E1,E2,'inner');
                     if ~contains(Eo,Ei)
                         res = false;
                         return;
@@ -82,4 +84,4 @@ for i=10:5:15
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

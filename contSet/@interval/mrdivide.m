@@ -1,7 +1,7 @@
 function res = mrdivide(numerator,denominator)
 % mrdivide - Overloaded matrix division '/' operator for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = mrdivide(numerator, denominator)
 %
 % Inputs:
@@ -22,14 +22,14 @@ function res = mrdivide(numerator,denominator)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      25-June-2015
-% Last update:  01-July-2015
-%               10-September-2015
-%               13-March-2016 (speed improvement)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-June-2015
+% Last update:   01-July-2015
+%                10-September-2015
+%                13-March-2016 (speed improvement)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isscalar(denominator)
     res = numerator ./ denominator;
@@ -37,4 +37,4 @@ else
     throw(CORAerror('CORA:noops',numerator,denominator));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

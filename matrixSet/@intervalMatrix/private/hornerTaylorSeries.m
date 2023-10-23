@@ -2,7 +2,7 @@ function horner = hornerTaylorSeries(intMat,maxOrder)
 % hornerTaylorSeries - returns the approximation of e^intMat using the
 %    horner scheme evaluation of the taylorSeries and the 
 %
-% Syntax:  
+% Syntax:
 %    horner = hornerTaylorSeries(intMat,maxOrder)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function horner = hornerTaylorSeries(intMat,maxOrder)
 %
 % See also: 
 
-% Author:       Ivan Brkan
-% Written:      14-April-2019 
-% Last update:  ---
-% Last revision:---
+% Authors:       Ivan Brkan
+% Written:       14-April-2019 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get norm and size of the matrix
 alpha = norm(intMat,Inf);
@@ -51,4 +51,4 @@ end
 % Remainder has to be added on the solution, in order to minimize the error
 horner = plus(horner, intervalMatrixRemainder(intMat,alpha,maxOrder));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

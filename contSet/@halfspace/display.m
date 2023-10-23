@@ -2,7 +2,7 @@ function display(hs)
 % display - Displays the properties of a halfspace object (normal vector
 %    and distance to the origin) on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(hs)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function display(hs)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      06-June-2011
-% Last update:  02-May-2020 (MW, add empty case)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-June-2011
+% Last update:   02-May-2020 (MW, add empty case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isemptyobject(hs)
     
@@ -48,4 +48,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

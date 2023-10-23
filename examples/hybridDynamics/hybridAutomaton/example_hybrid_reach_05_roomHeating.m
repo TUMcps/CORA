@@ -3,7 +3,7 @@ function res = example_hybrid_reach_05_roomHeating()
 %    hybrid automaton considering the room heating benchmark described in 
 %    Sec. 2.3 in [1] with two rooms
 %
-% Syntax:  
+% Syntax:
 %    example_hybrid_reach_05_roomHeating
 %
 % Inputs:
@@ -16,13 +16,12 @@ function res = example_hybrid_reach_05_roomHeating()
 %   [1] A. Fehnker and F. Ivancic. "Benchmarks for Hybrid Systems 
 %       Verification", HSCC 2004
 
-% Author:       Niklas Kochdumper
-% Written:      26-June-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-June-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
-
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % System Dynamics ---------------------------------------------------------
@@ -81,4 +80,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

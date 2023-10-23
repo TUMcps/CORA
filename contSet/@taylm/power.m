@@ -1,7 +1,7 @@
 function res = power(base,exponent)
 % power - Overloaded '.^' operator for taylm (power)
 %
-% Syntax:  
+% Syntax:
 %    res = power(base,exponent)
 %
 % Inputs:
@@ -19,16 +19,16 @@ function res = power(base,exponent)
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      06-August-2017
-% Last update:  ---               
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       06-August-2017
+% Last update:   ---               
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     if isscalar(exponent)
 
-        res = arrayfun(@(a) s_power(a,exponent),base,'UniformOutput',false);
+        res = arrayfun(@(a) aux_s_power(a,exponent),base,'UniformOutput',false);
         A = cat(1, res{:});
         res = reshape(A, size(res));
     
@@ -45,7 +45,10 @@ function res = power(base,exponent)
 
 end
 
-function res = s_power(base,exponent)
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_s_power(base,exponent)
 
     res = base;
 
@@ -81,4 +84,4 @@ function res = s_power(base,exponent)
 
 end
 
-%------------ END OF CODE ------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = example_linear_reach_04_adaptive
 % example_linear_reach_04_adaptive - example for adaptive parameter tuning
 %                                    for linear time-invariant systems
 %
-% Syntax:  
+% Syntax:
 %    res = example_linear_reach_04_adaptive
 %
 % Inputs:
@@ -17,13 +17,13 @@ function res = example_linear_reach_04_adaptive
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      08-October-2019
-% Last update:  23-April-2020 (restructure params/options)
-%               07-November-2022 (change colors)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       08-October-2019
+% Last update:   23-April-2020 (restructure params/options)
+%                07-November-2022 (change colors)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % System Dynamics ---------------------------------------------------------
 
@@ -97,4 +97,4 @@ res = true;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function createHigherOrderTensorFiles(fdyn,vars,varsDer,path,name,options)
 % createHigherOrderTensorFiles - create tensor files with order > 3
 %
-% Syntax:  
+% Syntax:
 %    createHigherOrderTensorFiles(fdyn,vars,varsDer,path,name,options)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function createHigherOrderTensorFiles(fdyn,vars,varsDer,path,name,options)
 %
 % See also: 
 
-% Author:       Niklas Kochdumper
-% Written:      08-February-2018
-% Last update:  02-February-2021 (MW, remove code duplicates)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       08-February-2018
+% Last update:   02-February-2021 (MW, remove code duplicates)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------   
+% ------------------------------ BEGIN CODE -------------------------------
 
     % construct auxiliary variables
     N = options.tensorOrder;
@@ -40,7 +40,7 @@ function createHigherOrderTensorFiles(fdyn,vars,varsDer,path,name,options)
     for i = 4:N
         tensor = generateNthTensor(fdyn,z,i,tensor);
         func = evalNthTensor(tensor,dz,i);
-        func = simplification(func,options,dz);
+        func = aux_simplification(func,options,dz);
         str = sprintf('tensor%i_%s',i,name);
         pathFile = [path, filesep, str];
         if ~isempty(vars.p)
@@ -54,7 +54,9 @@ function createHigherOrderTensorFiles(fdyn,vars,varsDer,path,name,options)
 end
 
 
-function func = simplification(func,options,dz)
+% Auxiliary functions -----------------------------------------------------
+
+function func = aux_simplification(func,options,dz)
 % simplifies the symbolic expression "func" with the specified method
     
     if isfield(options,'lagrangeRem')
@@ -70,4 +72,4 @@ function func = simplification(func,options,dz)
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

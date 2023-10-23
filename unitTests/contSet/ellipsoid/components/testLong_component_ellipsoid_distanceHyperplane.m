@@ -2,7 +2,7 @@ function res = testLong_component_ellipsoid_distanceHyperplane
 % testLong_component_ellipsoid_distanceHyperplane - unit test
 %    function of distanceHyperplane
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_component_ellipsoid_distanceHyperplane
 %
 % Inputs:
@@ -17,12 +17,13 @@ function res = testLong_component_ellipsoid_distanceHyperplane
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      18-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       18-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = true;
 nRuns = 2;
 bools = [false,true];
@@ -61,4 +62,5 @@ for i=5:5:20
         end
     end
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

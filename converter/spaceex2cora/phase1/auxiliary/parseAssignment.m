@@ -3,7 +3,7 @@ function [varnames,exprs,warnings] = parseAssignment(str)
 %    they occur in, e.g., resets of transitions) into an array of symbolic
 %    expressions and a list of assigned variable names
 %
-% Syntax:  
+% Syntax:
 %    [varnames,exprs,warnings] = parseAssignment(str)
 %
 % Inputs:
@@ -26,12 +26,12 @@ function [varnames,exprs,warnings] = parseAssignment(str)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 warnings = struct([]);
 warn_ct = 0;
@@ -88,4 +88,4 @@ varnames = varnames(1:numExpr,1);
 % convert expressions to symbolic
 exprs = str2symbolic(exprStrings(1:numExpr,1));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

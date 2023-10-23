@@ -1,7 +1,7 @@
 function res = isequal(zB1,zB2,varargin)
 % isequal - checks if two zonotope bundles are equal
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(zB1,zB2)
 %    res = isequal(zB1,zB2,tol)
 %
@@ -25,12 +25,12 @@ function res = isequal(zB1,zB2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      17-September-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-September-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -63,4 +63,4 @@ end
 % all comparisons ok
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = contains_(cZ,S,type,tol,varargin)
 % contains_ - determines if a constrained zonotope contains a set or a
 %    point
 %
-% Syntax:  
+% Syntax:
 %    res = contains_(cZ,S)
 %    res = contains_(cZ,S,type)
 %    res = contains_(cZ,S,type,tol)
@@ -46,20 +46,24 @@ function res = contains_(cZ,S,type,tol,varargin)
 % References:
 %    [1] Sadraddini et. al: Linear Encodings for Polytope Containment
 %        Problems, CDC 2019
+%    [2] JK Scott, DM Raimondo, GR Marseglia, RD Braatz: Constrained 
+%        zonotopes: A new tool for set-based estimation and fault
+%        detection, Automatica 69, 126-136
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/contains_
+% See also: contSet/contains, zonotope/contains_
 
-% Author:       Niklas Kochdumper
-% Written:      14-November-2019 
-% Last update:  15-November-2022 (MW, return logical array for points)
-%               25-November-2022 (MW, rename 'contains')
-% Last revision:27-March-2023 (MW, rename contains_)
+% Authors:       Niklas Kochdumper
+% Written:       14-November-2019 
+% Last update:   15-November-2022 (MW, return logical array for points)
+%                25-November-2022 (MW, rename 'contains')
+%                09-March-2023 (MA, added reference for point enclosure)
+% Last revision: 27-March-2023 (MW, rename contains_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % enlarge constrained zonotope by tolerance
     n = dim(cZ);
@@ -76,7 +80,7 @@ function res = contains_(cZ,S,type,tol,varargin)
     % capsule/ellipsoid in constrained zonotope containment
     elseif isa(S,'capsule') || isa(S,'ellipsoid')
         
-        P = mptPolytope(cZ);
+        P = polytope(cZ);
         res = contains_(P,S,type,tol);
 
     else
@@ -90,14 +94,14 @@ function res = contains_(cZ,S,type,tol,varargin)
             elseif isa(S,'interval')
                 res = contains_(cZ,vertices(S),type,tol);
             else
-                P = mptPolytope(cZ);
+                P = polytope(cZ);
                 res = contains_(P,S,type,tol); 
             end
             
         else
             
             if isa(S,'taylm') || isa(S,'polyZonotope')
-                P = mptPolytope(cZ);
+                P = polytope(cZ);
                 res = contains_(P,S,type,tol); 
             else
                 S = conZonotope(S);
@@ -108,17 +112,17 @@ function res = contains_(cZ,S,type,tol,varargin)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function res = aux_containsPoint(cZ,p)
 % use linear programming to check if a point is located inside a
-% constrained zonotope
+% constrained zonotope; see (20) in [2]
 
     % get object properties
-    nrGens = size(cZ.Z,2)-1;
+    nrGens = size(cZ.G,2);
     
-    c = cZ.Z(:,1);
-    G = cZ.Z(:,2:end);
+    c = cZ.c;
+    G = cZ.G;
 
     % construct inequality constraints
     A = [eye(nrGens);-eye(nrGens)];
@@ -232,4 +236,4 @@ function res = aux_containsSet(cZ1,cZ2)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

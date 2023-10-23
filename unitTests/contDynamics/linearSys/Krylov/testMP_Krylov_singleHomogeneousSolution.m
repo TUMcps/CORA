@@ -4,7 +4,7 @@ function res = testMP_Krylov_singleHomogeneousSolution(~)
 %    state.
 %    This test requires the multiple precision toolbox.
 %
-% Syntax:  
+% Syntax:
 %    res = testMP_Krylov_singleHomogeneousSolution(~)
 %
 % Inputs:
@@ -13,12 +13,12 @@ function res = testMP_Krylov_singleHomogeneousSolution(~)
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      23-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       23-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "initReach_Krylov"
 path = CORAROOT;
@@ -55,7 +55,6 @@ options.x0 = [...
 0.151346020427518];
 
 
-
 %set options --------------------------------------------------------------
 options.timeStep=0.1; %time step size for reachable set computation
 options.tFinal = options.timeStep;
@@ -90,4 +89,4 @@ delete(target);
 rmpath(genpath(path));
 addpath(genpath(path));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

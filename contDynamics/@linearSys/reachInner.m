@@ -1,7 +1,7 @@
 function Rin = reachInner(sys,params,options)
 % reachInner - compute an inner-approximation of the reachable set
 %
-% Syntax:  
+% Syntax:
 %    Rin = reachInner(sys,params,options)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function Rin = reachInner(sys,params,options)
 %
 % See also: nonlinearSys/reachInner
 
-% Author:       Niklas Kochdumper
-% Written:      27-August-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       27-August-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % options preprocessing
     options = validateOptions(sys,mfilename,params,options);
@@ -68,7 +68,7 @@ function Rin = reachInner(sys,params,options)
     end
     
     % compute output set
-    timePoint.set = compOutputSet(sys,set,V_,options);
+    timePoint.set = aux_compOutputSet(sys,set,V_,options);
     timePoint.time = num2cell(t');
     
     % construct reachSet object
@@ -76,9 +76,10 @@ function Rin = reachInner(sys,params,options)
     
 end
 
-% Auxiliary Functions -----------------------------------------------------
 
-function set = compOutputSet(sys,set,V_,options)
+% Auxiliary functions -----------------------------------------------------
+
+function set = aux_compOutputSet(sys,set,V_,options)
 % compute the output set from the reachable set
 
     % check if output is not the identity
@@ -109,4 +110,4 @@ function set = compOutputSet(sys,set,V_,options)
     end
 end
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

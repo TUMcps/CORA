@@ -3,7 +3,7 @@ function [R,R_Krylov] = exponential_Krylov_precomputed(obj,R0,options,stateFlag)
 %    exponential of a system matrix up to a certain accuracy using a Krylov 
 %    subspace; the subspace is already precomputed
 %
-% Syntax:  
+% Syntax:
 %    [R,R_Krylov] = exponential_Krylov_precomputed(obj,options)
 %
 % Inputs:
@@ -25,12 +25,12 @@ function [R,R_Krylov] = exponential_Krylov_precomputed(obj,R0,options,stateFlag)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      02-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       02-November-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Multiply previous reachable set with exponential matrix------------------
 % obtain center and generators of previous reachable set
@@ -99,5 +99,4 @@ else
 end
 
   
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

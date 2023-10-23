@@ -1,7 +1,7 @@
 function [Rti,Rtp,dimForSplit,options] = linReach(obj,options,Rstart)
 % linReach - computes the reachable set after linearization
 %
-% Syntax:  
+% Syntax:
 %    [Rti,Rtp,dimForSplit,options] = linReach(obj,options,Rstart)
 %
 % Inputs:
@@ -18,7 +18,7 @@ function [Rti,Rtp,dimForSplit,options] = linReach(obj,options,Rstart)
 % References: 
 %   [1] M. Althoff et al. "Reachability analysis of nonlinear systems with 
 %       uncertain parameters using conservative linearization"
-%   [2] M. Althoff et al. "Reachability analysis of nonlinear systems using 
+%   [2] M. Althoff. "Reachability analysis of nonlinear systems using 
 %       conservative polynomialization and non-convex sets"
 %
 % Other m-files required: none
@@ -27,19 +27,19 @@ function [Rti,Rtp,dimForSplit,options] = linReach(obj,options,Rstart)
 %
 % See also: initReach, post
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
-% Written:      17-January-2008
-% Last update:  29-June-2009
-%               23-July-2009
-%               10-July-2012
-%               18-September-2012
-%               09-August-2016
-%               12-September-2017
-%               02-January-2020 (NK, restructured the function)
-%               22-April-2020 (MW, simplification)
+% Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
+% Written:       17-January-2008
+% Last update:   29-June-2009
+%                23-July-2009
+%                10-July-2012
+%                18-September-2012
+%                09-August-2016
+%                12-September-2017
+%                02-January-2020 (NK, restructured the function)
+%                22-April-2020 (MW, simplification)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % extract initial set and abstraction error
 Rinit = Rstart.set;
@@ -79,13 +79,13 @@ if isfield(options,'approxDepOnly') && options.approxDepOnly
     if ~exist('errorStat','var')
         errorStat = [];
     end
-    [Rtp,Rti,dimForSplit,options] = approxDepReachOnly(linSys,obj,R,options,errorStat);
+    [Rtp,Rti,dimForSplit,options] = aux_approxDepReachOnly(linSys,obj,R,options,errorStat);
     return;
 end
 % compute reachable set of the abstracted system including the
 % abstraction error using the selected algorithm
 if strcmp(options.alg,'linRem')
-    [Rtp,Rti,perfInd] = linReach_linRem(obj,R,Rinit,Rdelta,options);
+    [Rtp,Rti,perfInd] = aux_linReach_linRem(obj,R,Rinit,Rdelta,options);
 else
 
     % loop until the actual abstraction error is smaller than the 
@@ -189,10 +189,9 @@ Rtp = Rtp_;
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-% Auxiliary Functions -----------------------------------------------------
-
-function [Rtp,Rti,perfInd] = linReach_linRem(obj,R,Rinit,Rdelta,options)
+function [Rtp,Rti,perfInd] = aux_linReach_linRem(obj,R,Rinit,Rdelta,options)
 % Compute the reachable set for the linearized system using an algorithm
 % that is based on the linearization of the Lagrange remainder
     
@@ -225,10 +224,10 @@ function [Rtp,Rti,perfInd] = linReach_linRem(obj,R,Rinit,Rdelta,options)
     
 end
 
-function [Rtp,Rti,dimForSplit,options] = approxDepReachOnly(linSys,obj,R,options,errorStat)
+function [Rtp,Rti,dimForSplit,options] = aux_approxDepReachOnly(linSys,obj,R,options,errorStat)
     R_tp = R.tp;
     R_ti = R.ti;
-    if ~isempty(errorStat) && ~all(isZero(errorStat))
+    if ~representsa_(errorStat,'emptySet',eps) && ~all(representsa_(errorStat,'origin',eps))
         Rerror = linSys.taylor.eAtInt*errorStat;
         R_tp = exactPlus(R_tp,Rerror) + obj.linError.p.x;
         R_ti = exactPlus(R_ti,Rerror) + obj.linError.p.x;
@@ -244,4 +243,5 @@ function [Rtp,Rti,dimForSplit,options] = approxDepReachOnly(linSys,obj,R,options
     Rtp = Rtp_;
     dimForSplit = [];
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

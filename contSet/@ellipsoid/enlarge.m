@@ -1,7 +1,7 @@
 function E = enlarge(E,factor)
 % enlarge - enlarge ellipsoid by a factor
 %
-% Syntax:  
+% Syntax:
 %    E = enlarge(E,factor)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function E = enlarge(E,factor)
 %
 % See also: ---
 
-% Author:       Mark Wetzlinger
-% Written:      15-Sep-2019
-% Last update:  04-July-2022 (VG: input checks)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       15-September-2019
+% Last update:   04-July-2022 (VG, input checks)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'}; ...
@@ -36,4 +36,4 @@ inputArgsCheck({{E,'att','ellipsoid','scalar'}; ...
 % enlarge shape matrix
 E = ellipsoid(factor^2*E.Q,center(E),E.TOL);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = test_linearSys_generateRandom
 % test_linearSys_generateRandom - unit test for random generation of linear
 %    systems
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_generateRandom
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_linearSys_generateRandom
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      13-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       13-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init result
 res = true;
@@ -96,4 +96,4 @@ if linSys.dim ~= n || linSys.nrOfInputs ~= nrInputs || ...
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

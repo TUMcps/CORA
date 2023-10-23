@@ -1,7 +1,7 @@
 function cZ = quadMap(cZ,varargin)
 % quadMap - computes the quadratic map of a constrained zonotope
 %
-% Syntax:  
+% Syntax:
 %    cZquad = quadMap(cZ,Q)
 %    cZquad = quadMap(cZ,cZ2,Q)
 %
@@ -33,19 +33,19 @@ function cZ = quadMap(cZ,varargin)
 %
 % See also: zonotope/quadMap
 
-% Author:       Niklas Kochdumper
-% Written:      13-August-2018
-% Last update:  22-November-2019 (NK, integrated mixed quad. mul.)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       13-August-2018
+% Last update:   22-November-2019 (NK, integrated mixed quad. mul.)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     if nargin == 1
         throw(CORAerror('CORAerror:notEnoughInputArgs',2));
     elseif nargin == 2
-        cZ = quadMapSingle(cZ,varargin{1});
+        cZ = aux_quadMapSingle(cZ,varargin{1});
     elseif nargin == 3
-        cZ = quadMapMixed(cZ,varargin{1},varargin{2});
+        cZ = aux_quadMapMixed(cZ,varargin{1},varargin{2});
     else
         throw(CORAerror('CORAerror:tooManyInputArgs',3));
     end
@@ -53,9 +53,9 @@ function cZ = quadMap(cZ,varargin)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function cZquad = quadMapSingle(cZ,Q)
+function cZquad = aux_quadMapSingle(cZ,Q)
 % comptue the quadratic map {x_i = x^T Q x | x \in Z} of a zonotope
 
     % rescale the constrained zonotope to reduce the over-approximation of
@@ -65,7 +65,7 @@ function cZquad = quadMapSingle(cZ,Q)
     end
 
     % get generator matrix of constrained zonotope
-    Zmat = cZ.Z;
+    Zmat = [cZ.c,cZ.G];
     dimQ = length(Q);
     gens = length(Zmat(1,:)) - 1;
 
@@ -106,7 +106,7 @@ function cZquad = quadMapSingle(cZ,Q)
     cZquad = conZonotope([c, G],A,cZ.b);
 end
 
-function cZquad = quadMapMixed(cZ1,cZ2,Q)
+function cZquad = aux_quadMapMixed(cZ1,cZ2,Q)
 % comptue the quadratic map {x_i = x1^T Q x2 | x1 \in Z1, x2 \in Z2} of two
 % zonotope objects
 
@@ -121,8 +121,8 @@ function cZquad = quadMapMixed(cZ1,cZ2,Q)
     end
 
     % get generator matrices of the constrained zonotopes
-    Zmat1 = cZ1.Z;
-    Zmat2 = cZ2.Z;
+    Zmat1 = [cZ1.c,cZ1.G];
+    Zmat2 = [cZ2.c,cZ2.G];
     dimQ = length(Q);
 
     % initialize variables
@@ -163,8 +163,8 @@ function cZquad = quadMapMixed(cZ1,cZ2,Q)
     end
 
     % generate the resulting constrained zonotope
-    cZquad = conZonotope([c, G],A,b);
+    cZquad = conZonotope(c,G,A,b);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

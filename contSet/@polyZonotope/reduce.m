@@ -1,7 +1,7 @@
 function pZ = reduce(pZ,option,order,varargin)
-% reduce - Reduces the order of a polynomial zonotope
+% reduce - reduces the order of a polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    pZ = reduce(pZ,option,order)
 %
 % Inputs:
@@ -26,12 +26,12 @@ function pZ = reduce(pZ,option,order,varargin)
 %
 % See also: zonotope/reduce
 
-% Author:       Niklas Kochdumper
-% Written:      23-March-2018 
-% Last update:  06-July-2021 (MW, add adaptive)
+% Authors:       Niklas Kochdumper
+% Written:       23-March-2018 
+% Last update:   06-July-2021 (MW, add adaptive)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % adaptive order reduction
     if strcmp(option,'adaptive')
@@ -42,12 +42,12 @@ function pZ = reduce(pZ,option,order,varargin)
 
     if contains(option,'approxdep_')
         % remove independent generators
-        pZ.Grest = zeros(dim(pZ),0);
+        pZ.GI = zeros(dim(pZ),0);
     end
     % extract dimensions
     N = length(pZ.c);
     P = size(pZ.G,2);
-    Q = size(pZ.Grest,2);
+    Q = size(pZ.GI,2);
 
     % number of generators that stay unreduced (N generators are added again
     % after reduction)
@@ -57,10 +57,10 @@ function pZ = reduce(pZ,option,order,varargin)
     if P + Q > N*order && K >= 0
         
         % concatenate all generators
-        G = [pZ.G,pZ.Grest];
+        G = [pZ.G,pZ.GI];
 
         % half the generator length for exponents that are all even
-        ind = ~any(mod(pZ.expMat,2),1);
+        ind = ~any(mod(pZ.E,2),1);
         G(:,ind) = 0.5 * G(:,ind);
 
         % calculate the length of the generator vectors with a special metric
@@ -78,11 +78,11 @@ function pZ = reduce(pZ,option,order,varargin)
 
         % construct a zonotope from the generators that are removed
         Grem = pZ.G(:,indDep);
-        Erem = pZ.expMat(:,indDep);
+        Erem = pZ.E(:,indDep);
 
-        GrestRem = pZ.Grest(:,indInd);
+        GIrem = pZ.GI(:,indInd);
 
-        pZtemp = polyZonotope(zeros(N,1),Grem,GrestRem,Erem);
+        pZtemp = polyZonotope(zeros(N,1),Grem,GIrem,Erem);
 
         zono = zonotope(pZtemp);    % zonotope over-approximation
 
@@ -92,25 +92,25 @@ function pZ = reduce(pZ,option,order,varargin)
 
         % remove the generators that got reduced from the generator matrices
         pZ.G(:,indDep) = [];
-        pZ.expMat(:,indDep) = [];
-        pZ.Grest(:,indInd) = [];
+        pZ.E(:,indDep) = [];
+        pZ.GI(:,indInd) = [];
 
         % add the reduced generators as new independent generators 
         pZ.c = pZ.c + center(zonoRed);
-        pZ.Grest = [pZ.Grest, generators(zonoRed)];
+        pZ.GI = [pZ.GI, generators(zonoRed)];
 
     end
     
     if contains(option,'approxdep_')
         % again remove rest generators
-        pZ.Grest = zeros(dim(pZ),0);
+        pZ.GI = zeros(dim(pZ),0);
     end
     
     % remove all exponent vector dimensions that have no entries
-    ind = sum(pZ.expMat,2)>0;
-    pZ.expMat = pZ.expMat(ind,:);
+    ind = sum(pZ.E,2)>0;
+    pZ.E = pZ.E(ind,:);
     pZ.id = pZ.id(ind);
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -4,7 +4,7 @@ function child = InstantiateBC(parent,template,bind)
 %    in the invariant/flow/guard/reset equations; additionally, all
 %    constant parameters are removed from the list of variables
 %
-% Syntax:  
+% Syntax:
 %    child = InstantiateBC(parent,template,bind)
 %
 % Inputs:
@@ -26,12 +26,12 @@ function child = InstantiateBC(parent,template,bind)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  13-January-2023 (MW, save constants for completeness)
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   13-January-2023 (MW, save constants for completeness)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % start with a copy of the template
 child = template;
@@ -76,4 +76,4 @@ end
 
 % constants are mapped in resolveBinds
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

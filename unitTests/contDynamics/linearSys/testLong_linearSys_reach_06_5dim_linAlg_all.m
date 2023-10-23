@@ -4,7 +4,7 @@ function res = testLong_linearSys_reach_06_5dim_linAlg_all()
 %    all linear reach algorithms used (except krylov due to system size)
 %
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_linearSys_reach_06_5dim_linAlg_all()
 %
 % Inputs:
@@ -13,12 +13,12 @@ function res = testLong_linearSys_reach_06_5dim_linAlg_all()
 % Outputs:
 %    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      26-June-2019
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       26-June-2019
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -167,4 +167,4 @@ for i=2:length(algs)
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

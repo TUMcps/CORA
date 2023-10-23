@@ -2,7 +2,7 @@ function res = testLong_conPolyZono_supportFunc
 % testLong_conPolyZono_supportFunc - unit test function for 
 %    support function enclosure of constrained polynomial zonotopes
 %
-% Syntax:  
+% Syntax:
 %    testLong_conPolyZono_supportFunc
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_conPolyZono_supportFunc
 %
 % See also: conPolyZono/supportFunc
 
-% Author:       Niklas Kochdumper
-% Written:      26-January-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-January-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 tol = 1e-6;
@@ -41,11 +41,11 @@ for i = 1:5
     
     % compute inner-approximation of the bound using linear programming
     cPZ_ = d'*cPZ;
-    objFun = @(x) cPZ_.c + sum(cPZ_.G.*prod(x.^cPZ_.expMat,1),2);
+    objFun = @(x) cPZ_.c + sum(cPZ_.G.*prod(x.^cPZ_.E,1),2);
     conFun = [];
     if ~isempty(cPZ.A)
         conFun = @(x) deal([],-cPZ_.b + sum(cPZ_.A.* ...
-                              prod(x.^cPZ_.expMat_,1),2));
+                              prod(x.^cPZ_.EC,1),2));
     end
     p = length(cPZ.id);
     lb = -ones(p,1); ub = ones(p,1);
@@ -69,4 +69,4 @@ for i = 1:5
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

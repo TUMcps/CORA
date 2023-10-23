@@ -1,7 +1,7 @@
 function I = interval(z)
 % interval - calculate the bounding interval of a zoo-object
 %
-% Syntax:  
+% Syntax:
 %    I = interval(z)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function I = interval(z)
 %
 % See also: zoo
 
-% Author:       Niklas Kochdumper
-% Written:      10-April-2018
-% Last update:  --- 
+% Authors:       Niklas Kochdumper
+% Written:       10-April-2018
+% Last update:   --- 
 % Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     I = arrayfun(@(a) aux_zoo2int(a), z, 'UniformOutput', false);
     A = [I{:}];
@@ -29,7 +29,8 @@ function I = interval(z)
     
 end
 
-% Auxiliary function ------------------------------------------------------
+
+% Auxiliary functions -----------------------------------------------------
 
 function res = aux_zoo2int(z)
 
@@ -40,4 +41,4 @@ function res = aux_zoo2int(z)
     
 end
     
-%------------ END OF CODE ------------ 
+% ------------------------------ END OF CODE ------------------------------

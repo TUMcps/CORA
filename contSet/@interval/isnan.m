@@ -1,7 +1,7 @@
 function res = isnan(I)
 % isnan - checks if any value in the interval is NaN
 %
-% Syntax:  
+% Syntax:
 %    res = isnan(I)
 %
 % Inputs:
@@ -20,14 +20,14 @@ function res = isnan(I)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      01-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       01-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % NaN values are not possible by constructor
 res = false;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

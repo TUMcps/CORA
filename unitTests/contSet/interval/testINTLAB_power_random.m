@@ -1,7 +1,7 @@
 function res = testINTLAB_power_random(~)
 % testINTLAB_power_random - unit_test_function for comparing to IntLabV6
 %
-% Syntax:  
+% Syntax:
 %    res = testINTLAB_power_random
 %
 % Inputs:
@@ -15,12 +15,13 @@ function res = testINTLAB_power_random(~)
 % MAT-files required: none
 %
 
-% Author:       Dmitry Grebenyuk
-% Written:      10-February-2016
-% Last update:  
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       10-February-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 tol = 1e-2;
 res = true;
 
@@ -83,4 +84,4 @@ if ( isempty(bad_ones_max) ~= true)
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function val = distance(hyp,S)
 % distance - computes the distance from a constrained hyperplane to a set
 %    or a point
 %
-% Syntax:  
+% Syntax:
 %    val = distance(hyp,S)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function val = distance(hyp,S)
 %
 % See also: none
 
-% Author:       Victor Gassmann
-% Written:      08-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       08-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute distance
 if isa(S,'double')
@@ -37,4 +37,4 @@ else
     throw(CORAerror('CORA:noops',hyp,S));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

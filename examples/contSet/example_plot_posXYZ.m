@@ -1,7 +1,7 @@
 function completed = example_plot_posXYZ()
 % example_plot_posXYZ - shows how sets can be plotted in the XYZ space
 %
-% Syntax:  
+% Syntax:
 %    completed = example_plot_posXYZ()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_plot_posXYZ()
 %
 % See also: colororder
 
-% Author:        Tobias Ladner
-% Written:       05-Aril-2023
+% Authors:       Tobias Ladner
+% Written:       05-April-2023
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 figure
 
@@ -61,4 +61,4 @@ end
 
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

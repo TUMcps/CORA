@@ -24,12 +24,12 @@ function eqs = levelSet_cora2spaceex(obj)
 %
 % See also: cora2spaceex
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       18-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     eqs = [];
 
@@ -63,4 +63,4 @@ function eqs = levelSet_cora2spaceex(obj)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

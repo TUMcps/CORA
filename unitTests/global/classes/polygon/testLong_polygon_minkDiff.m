@@ -16,12 +16,12 @@ function res = testLong_polygon_minkDiff()
 %
 % See also: polygon
 
-% Author:       Niklas Kochdumper
-% Written:      16-June-2021
-% Last update:  27-June-2023 (TL, comments)
-% Last revision:25-May-2023 (TL, split unit tests)
+% Authors:       Niklas Kochdumper
+% Written:       16-June-2021
+% Last update:   27-June-2023 (TL, comments)
+% Last revision: 25-May-2023 (TL, split unit tests)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % test if the Minkowski difference yields a correct result
 
@@ -67,4 +67,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

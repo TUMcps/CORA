@@ -1,7 +1,7 @@
 function varargout = size(matZ,varargin)
-% dim - returns the dimension of the matrix zonotope
+% size - returns the dimension of the matrix zonotope
 %
-% Syntax:  
+% Syntax:
 %    n = size(matZ)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function varargout = size(matZ,varargin)
 %
 % See also: none
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       17-January-2023
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin > 2
     throw(CORAerror('CORA:tooManyInputArgs',2));
@@ -39,4 +39,4 @@ else
     [varargout{1:nargout}] = size(matZ.center);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

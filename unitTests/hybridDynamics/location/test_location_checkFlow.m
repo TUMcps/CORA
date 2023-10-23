@@ -3,7 +3,7 @@ function res = test_location_checkFlow
 %    intersecting reachable sets to determine which ones can be exempt from
 %    reset function (to avoid infinite splitting due to over-approximation)
 %
-% Syntax:  
+% Syntax:
 %    res = test_location_checkFlow
 %
 % Inputs:
@@ -18,15 +18,15 @@ function res = test_location_checkFlow
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init location with simple dynamics
-inv = mptPolytope([1 0],0);
+inv = polytope([1 0],0);
 guard = conHyperplane([1 0],0);
 reset = struct('A',eye(2),'c',zeros(2,1));
 trans = transition(guard,reset,1);
@@ -72,4 +72,4 @@ res(end+1,1) = res_ && length(R_) == 2 && ...
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

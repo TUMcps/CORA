@@ -2,7 +2,7 @@ function res = test_inputArgsLength
 % test_inputArgsLength - unit test function for automated read out of
 %    number of input arguments to a function handle
 %
-% Syntax:  
+% Syntax:
 %    res = test_inputArgsLength()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_inputArgsLength
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      20-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       20-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true, wait for failure
 res = true;
@@ -155,4 +155,4 @@ if length(inputArgs) ~= 3 || n ~= 2 || y ~= 0 || m ~= 1 || r ~= 2
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -25,12 +25,12 @@ function res = isequal(O,S,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isa(S,'emptySet')
     % note: tolerance has no effect, only for overloading purposes
@@ -42,10 +42,10 @@ elseif isnumeric(S)
 
 elseif isa(S,'contSet')
     % contSet objects...
-    res = dim(S) == O.dimension && isempty(S);
+    res = dim(S) == O.dimension && representsa_(S,'emptySet',eps);
     
 else
     throw(CORAerror('CORA:noops',O,S));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

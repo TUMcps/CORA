@@ -1,5 +1,6 @@
 function res = test_neurNetContrSys_reach_01_toyExample
-% test_neurNetContrSys_reach_01_toyExample - unit test function of neurNetContrSys
+% test_neurNetContrSys_reach_01_toyExample - unit test function of 
+%    neurNetContrSys
 %
 % toy example for neurNetContrSys - car example
 %
@@ -12,12 +13,12 @@ function res = test_neurNetContrSys_reach_01_toyExample
 % Outputs:
 %    res - true/false
 
-% Author:       Tobias Ladner
-% Written:      02-November-2022
-% Last update:  ---
-% Last revision:---
-%
-%------------- BEGIN CODE --------------
+% Authors:       Tobias Ladner
+% Written:       02-November-2022
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -37,7 +38,7 @@ options.tensorOrder = 2;
 % Parameters for NN evaluation --------------------------------------------
 evParams = struct();
 evParams.bound_approx = true;
-evParams.polynomial_approx = "lin";
+evParams.poly_method = "singh";
 
 % System Dynamics ---------------------------------------------------------
 
@@ -90,4 +91,4 @@ R = reach(sys, params, options, evParams);
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -4,7 +4,7 @@ function Z = exactPlus(Z,Z2,varargin)
 %    has to be ensured before calling the function; this function is not a
 %    replacement for the Minkowski sum
 %
-% Syntax:  
+% Syntax:
 %    Z = exactPlus(Z,Z2)
 %
 % Inputs:
@@ -34,30 +34,27 @@ function Z = exactPlus(Z,Z2,varargin)
 %
 % See also: zonotope/plus
 
-% Author:       Matthias Althoff
-% Written:      30-August-2013
-% Last update:  06-September-2013
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       30-August-2013
+% Last update:   06-September-2013
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-% obtain matrix
-Zmat1 = Z.Z;
-Zmat2 = Z2.Z;
-
-% number of vectors
-nrOfVecs1 = length(Zmat1(1,:));
-nrOfVecs2 = length(Zmat2(1,:));
+% number of generators
+nrOfgens1 = size(Z.G,2);
+nrOfgems2 = size(Z2.G,2);
 
 if nargin == 2
-    maxVecs = min([nrOfVecs1, nrOfVecs2]);
+    nrOfGens = min([nrOfgens1, nrOfgems2]);
 elseif nargin == 3
-    maxVecs = min([nrOfVecs1, nrOfVecs2, varargin{1}+1]);
+    nrOfGens = min([nrOfgens1, nrOfgems2, varargin{1}]);
 end
 
 % resulting zonotope
-Z.Z = [Zmat1(:,1:maxVecs) + Zmat2(:,1:maxVecs),...
-    Zmat1(:,maxVecs+1:end), ...
-    Zmat2(:,maxVecs+1:end)];
+Z.c = Z.c + Z2.c;
+Z.G = [Z.G(:,1:nrOfGens) + Z2.G(:,1:nrOfGens),...
+    Z.G(:,nrOfGens+1:end), ...
+    Z2.G(:,nrOfGens+1:end)];
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

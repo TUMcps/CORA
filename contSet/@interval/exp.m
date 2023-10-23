@@ -5,7 +5,7 @@ function I = exp(I)
 %
 % [exp(x_), exp(x--)].
 %
-% Syntax:  
+% Syntax:
 %    I = exp(I)
 %
 % Inputs:
@@ -24,14 +24,14 @@ function I = exp(I)
 %
 % See also: interval
 
-% Author:       Matthias Althoff
-% Written:      25-June-2015
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-June-2015
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %exponential function is monotonic -> apply exp to infima/suprema
 I = interval(exp(I.inf), exp(I.sup));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

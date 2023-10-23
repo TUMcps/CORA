@@ -1,7 +1,7 @@
 function Zrem = filterOut(Z)
 % filterOut - deletes parallelotopes that are covered by other parallelotopes
 %
-% Syntax:  
+% Syntax:
 %    Zrem = filterOut(Z)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function Zrem = filterOut(Z)
 %
 % See also: ---
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       09-October-2008
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %initialize Zrem
 Zrem=[];
@@ -36,7 +36,7 @@ end
 
 %convert to halfspace representation
 for i=1:length(Z)
-    P{i} = mptPolytope(Z{i});
+    P{i} = polytope(Z{i});
 end
 
 %intersect parallelotopes
@@ -59,4 +59,4 @@ for i=1:length(Z)
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

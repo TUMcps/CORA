@@ -2,7 +2,7 @@ function res = test_interval_acos
 % test_interval_acos - unit test function of sine for intervals,
 %    overloaded 'acos()' function for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_acos
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_interval_acos
 %
 % See also: mtimes
 
-% Author:       Mark Wetzlinger
-% Written:      08-August-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       08-August-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 
@@ -47,4 +47,4 @@ end
 % final test result
 res = all(res_val);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

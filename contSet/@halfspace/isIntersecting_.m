@@ -1,7 +1,7 @@
 function res = isIntersecting_(hs,S,type,varargin)
 % isIntersecting_ - determines if a halfspace intersects a set
 %
-% Syntax:  
+% Syntax:
 %    res = isIntersecting_(hs,S)
 %    res = isIntersecting_(hs,S,type)
 %
@@ -33,15 +33,22 @@ function res = isIntersecting_(hs,S,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conHyperplane/isIntersecting_
+% See also: contSet/isIntersecting, conHyperplane/isIntersecting_
 
-% Author:       Niklas Kochdumper
-% Written:      16-May-2018
-% Last update:  14-September-2019
-%               20-November-2019
-% Last revision:27-March-2023 (MW, rename isIntersecting_)
+% Authors:       Niklas Kochdumper
+% Written:       16-May-2018
+% Last update:   14-September-2019
+%                20-November-2019
+% Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
+% halsfspace forms a special case
+if isa(S,'halfspace')
+    res = sum(abs(S.c/norm(S.c) + hs.c/norm(hs.c))) > 1e-10 | ...
+                                S.d/norm(S.c) + hs.d/norm(hs.c) > 0;
+    return;
+end
 
 % check user input for correctness
 if strcmp(type,'exact')
@@ -55,4 +62,4 @@ end
 bound = supportFunc_(S,hs.c,'lower','interval',8,1e-3);
 res = bound <= hs.d;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

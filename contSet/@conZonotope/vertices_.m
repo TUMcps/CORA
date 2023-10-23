@@ -1,7 +1,7 @@
 function V = vertices_(cZ,varargin)
 % vertices_ - calculate the vertices of a constrained zonotope object
 %
-% Syntax:  
+% Syntax:
 %    V = vertices_(cZ)
 %
 % Inputs:
@@ -24,14 +24,14 @@ function V = vertices_(cZ,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/vertices
 
-% Author:       Niklas Kochdumper
-% Written:      11-May-2018
-% Last update:  25-April-2023 (TL, 2d support func computation)
-% Last revision:27-March-2023 (MW, rename vertices_)
+% Authors:       Niklas Kochdumper
+% Written:       11-May-2018
+% Last update:   25-April-2023 (TL, 2d support func computation)
+% Last revision: 27-March-2023 (MW, rename vertices_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if dim(cZ) == 2
     % Vertices of a 2D cZ can be computed efficiently using support functions
@@ -47,15 +47,16 @@ else
     
     if ~isempty(cZ.A)
         
-        % Calculate potential vertices of the constrained zonotope (vertices + 
-        % points inside the set)
+        % Calculate potential vertices of the constrained zonotope
+        % (vertices + points inside the set)
         V = potVertices(cZ);
     
         % Compute the convex hull to eliminate points located in the interior of
         % the constrained zonotope
         n = size(V,1);
     
-        if size(V,2) > n+1    % set is full-dimensional
+        % set is full-dimensional
+        if rank(V,1e-6) > n+1
             ind = convhulln(V');
             ind = unique(ind,'stable');
             V = V(:,ind);
@@ -64,9 +65,9 @@ else
     else
         
        % no constraints -> call zonotope/vertices
-       V = vertices(zonotope(cZ.Z));
+       V = vertices(zonotope(cZ.c,cZ.G));
     
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

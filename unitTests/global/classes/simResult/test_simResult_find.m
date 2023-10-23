@@ -1,7 +1,7 @@
 function res = test_simResult_find
 % test_simResult_find - unit test function for find
 %
-% Syntax:  
+% Syntax:
 %    res = test_simResult_find()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_simResult_find
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = [];
 
@@ -76,4 +76,4 @@ res(end+1,1) = all(cellfun(@(x) all(x' == [1;2]),simRes_.loc,'UniformOutput',tru
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

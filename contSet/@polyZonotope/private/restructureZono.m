@@ -2,7 +2,7 @@ function pZ = restructureZono(pZ, order, method)
 % restructureZono - Calculates a new representation of a polynomial
 %    zonotope through over-approximation with a linear zonotope
 %
-% Syntax:  
+% Syntax:
 %    res = restructureZono(pZ, order)
 %
 % Inputs:
@@ -31,12 +31,12 @@ function pZ = restructureZono(pZ, order, method)
 %
 % See also: polyZonotope/restructure
 
-% Author:       Niklas Kochdumper
-% Written:      25-July-2018 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-July-2018 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % calculate zonotope over-approximation
 Z = zonotope(pZ);
@@ -47,4 +47,4 @@ Z = reduce(Z,method,order);
 % construct the new polynomial zonotope object
 pZ = polyZonotope(Z);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

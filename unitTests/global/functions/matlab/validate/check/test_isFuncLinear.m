@@ -2,7 +2,7 @@ function res = test_isFuncLinear
 % test_isFuncLinear - unit test function for automated check if a function
 %    is linear
 %
-% Syntax:  
+% Syntax:
 %    res = test_isFuncLinear()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_isFuncLinear
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      20-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       20-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true, wait for failure
 res = true;
@@ -142,4 +142,4 @@ if ~all(all(isLin == true_isLin))
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

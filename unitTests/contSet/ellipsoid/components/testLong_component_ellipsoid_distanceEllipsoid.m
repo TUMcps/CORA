@@ -2,7 +2,7 @@ function res = testLong_component_ellipsoid_distanceEllipsoid
 % testLong_component_ellipsoid_distanceEllipsoid - unit test 
 %    function of distanceEllipsoid
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_component_ellipsoid_distanceEllipsoid
 %
 % Inputs:
@@ -17,12 +17,13 @@ function res = testLong_component_ellipsoid_distanceEllipsoid
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      18-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       18-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = true;
 nRuns = 2;
 bools = [false,true];
@@ -68,4 +69,5 @@ for i=5:5:10
         end
     end
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

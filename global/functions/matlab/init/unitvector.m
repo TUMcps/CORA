@@ -1,7 +1,7 @@
 function v = unitvector(i,n)
 % unitvector - returns the i-th standard unit vector of dimension n
 %
-% Syntax:  
+% Syntax:
 %    v = unitvector(i,n)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function v = unitvector(i,n)
 %
 % See also: ---
 
-% Author:       Tobias Ladner
-% Written:      27-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       27-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % omit checks for performance 
 
@@ -39,4 +39,4 @@ else
     v(i) = 1;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

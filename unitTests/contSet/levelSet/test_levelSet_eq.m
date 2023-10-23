@@ -1,7 +1,7 @@
 function res = test_levelSet_eq
 % test_levelSet_eq - unit test function of '==' operator
 %
-% Syntax:  
+% Syntax:
 %    res = test_levelSet_eq
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_levelSet_eq
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -71,4 +71,4 @@ res(end+1,1) = ls1 == ls2;
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

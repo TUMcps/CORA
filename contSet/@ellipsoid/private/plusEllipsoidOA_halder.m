@@ -2,7 +2,7 @@ function E = plusEllipsoidOA_halder(E)
 % plusEllipsoidOA_halder - Computes an approximation to the smallest-volume
 %    outer-approximation of the Minkowski sum of ellipsoids
 %
-% Syntax:  
+% Syntax:
 %    E = plusEllipsoidOA_halder(E)
 %
 % Inputs:
@@ -21,13 +21,12 @@ function E = plusEllipsoidOA_halder(E)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      25-May-2022
-%               05-July-2022 (VG: class array support)
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       25-May-2022
+% Last update:   05-July-2022 (VG, class array support)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % no error checking, already done in parent function
 
@@ -65,4 +64,4 @@ end
 % instantiate resulting ellipsoid
 E = ellipsoid(Q,q);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

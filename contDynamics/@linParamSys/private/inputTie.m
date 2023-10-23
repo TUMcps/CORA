@@ -2,7 +2,7 @@ function obj = inputTie(obj,options)
 % inputTie - tie: time interval error; computes the error done by the
 %    linear assumption of the constant input solution
 %
-% Syntax:  
+% Syntax:
 %    obj = inputTie(obj,options)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function obj = inputTie(obj,options)
 %
 % See also: expm, inputSol
 
-% Author:       Matthias Althoff
-% Written:      22-June-2009
-% Last update:  13-November-2017
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-June-2009
+% Last update:   13-November-2017
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain powers and convert them to interval matrices
 Apower=cell(1,length(obj.power.int));
@@ -78,4 +78,4 @@ end
 obj.inputF=Asum+Einput;
 %obj.inputF=Asum+obj.E*r;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_interval_isequal
 % test_interval_isequal - unit test function of isequal
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_isequal
 %
 % Inputs:
@@ -16,13 +16,13 @@ function res = test_interval_isequal
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      17-September-2019
-% Last update:  03-December-2022 (MW, add Inf case)
-%               23-December-2022 (MW, add matrix case)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-September-2019
+% Last update:   03-December-2022 (MW, add Inf case)
+%                23-December-2022 (MW, add matrix case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -62,4 +62,4 @@ if ~isequal(I1,I1) || isequal(I1,I2) || isequal(I1,I3)
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

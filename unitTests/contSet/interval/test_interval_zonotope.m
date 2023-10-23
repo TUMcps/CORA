@@ -1,7 +1,7 @@
 function res = test_interval_zonotope
 % test_interval_zonotope - unit test function of zonotope
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_zonotope
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_zonotope
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      28-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % TEST 1: Analytical ------------------------------------------------------
 % create interval
@@ -69,4 +69,4 @@ res_rand = all(abs(center(Zrand) - center(Zrand_true)) < tol) && ...
 % add results
 res = res_analytical && res_rand;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

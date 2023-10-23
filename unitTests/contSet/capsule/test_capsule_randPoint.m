@@ -1,7 +1,7 @@
 function res = test_capsule_randPoint
 % test_capsule_randPoint - unit test function of randPoint
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_randPoint
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_capsule_randPoint
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty case
 C = capsule();
@@ -58,4 +58,4 @@ res(3) = all(contains(C,p));
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

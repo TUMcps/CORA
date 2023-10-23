@@ -1,7 +1,7 @@
 function res = testLong_contract()
 % testLong_contract - unit test function for contractors
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_contract()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_contract()
 %
 % See also: contract, contractPoly
 
-% Author:       Niklas Kochdumper
-% Written:      18-December-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       18-December-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = false;
 
@@ -68,7 +68,7 @@ f = @(x) x(1)^2 + x(2)^2 - 4;
 dom = interval([1;1],[3;3]);
 
 % equivalent formulation with a polynomial function
-c = -4; G = [1 1]; Grest = []; expMat = 2*eye(2);
+c = -4; G = [1 1]; GI = []; E = 2*eye(2);
 
 % contractors
 cont = {'forwardBackward','polynomial','linearize','interval','all'};
@@ -82,7 +82,7 @@ for i = 1:length(cont)
     res1 = contract(f,dom,cont{i},iter,splits);
     
     % contract with "contractPoly"
-    res2 = contractPoly(c,G,Grest,expMat,dom,cont{i},iter,splits);
+    res2 = contractPoly(c,G,GI,E,dom,cont{i},iter,splits);
     
     % check the result for correctness
     res1_ = enlarge(res1,1+1e-10);
@@ -102,7 +102,7 @@ f = @(x) [x(1)^2 - 4*x(2);
 dom = interval([-0.1;-0.1],[0.1;0.1]);
 
 % equivalent formulation with a polynomial function
-c = [0;0]; G = [1 0 0 -4;0 1 -2 4]; expMat = [2 0 1 0;0 2 0 1]; Grest = [];
+c = [0;0]; G = [1 0 0 -4;0 1 -2 4]; E = [2 0 1 0;0 2 0 1]; GI = [];
 
 % contractors
 cont = {'forwardBackward','polynomial','linearize','interval','all'};
@@ -116,7 +116,7 @@ for i = 1:length(cont)
     res1 = contract(f,dom,cont{i},iter,splits);
     
     % contract with "contractPoly"
-    res2 = contractPoly(c,G,Grest,expMat,dom,cont{i},iter,splits);
+    res2 = contractPoly(c,G,GI,E,dom,cont{i},iter,splits);
     
     % check the result for correctness
     res1_ = enlarge(res1,1+1e-10);
@@ -131,4 +131,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

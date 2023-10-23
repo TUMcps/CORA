@@ -2,7 +2,7 @@ function [errorZon,errorInt] = linError_mixed_noInt(obj,options,R)
 % linError_mixed_noInt - computes the linearization error without use of
 % interval arithmetic (see Theorem 1 in [1])
 %
-% Syntax:  
+% Syntax:
 %    [error,errorInt] = linError_mixed_noInt(obj,options,R)
 %
 % Inputs:
@@ -26,13 +26,13 @@ function [errorZon,errorInt] = linError_mixed_noInt(obj,options,R)
 %   [1] M. Althoff and B. Krogh
 %       "Reachability Analysis of Nonlinear Differential-Algebraic Systems"
 
-% Author:       Matthias Althoff
-% Written:      11-July-2012
-% Last update:  25-July-2016 (intervalhull replaced by interval)
-%               21-April-2020 (added reference, simplification)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       11-July-2012
+% Last update:   25-July-2016 (intervalhull replaced by interval)
+%                21-April-2020 (added reference, simplification)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %compute interval of reachable set
@@ -95,4 +95,4 @@ errorZon = reduce(errorZon,options.reductionTechnique,options.intermediateOrder)
 
 errorInt = supremum(abs(interval(errorZon)));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

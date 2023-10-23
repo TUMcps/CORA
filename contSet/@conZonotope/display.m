@@ -2,7 +2,7 @@ function display(cZ)
 % display - Displays the properties of a conZonotope object (center,
 %    generators, and constraints for the factors) on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(cZ)
 %
 % Inputs:
@@ -22,13 +22,13 @@ function display(cZ)
 %
 % See also: none
 
-% Author:        Dmitry Grebenyuk, Mark Wetzlinger
+% Authors:       Dmitry Grebenyuk, Mark Wetzlinger
 % Written:       20-December-2017
 % Last update:   01-May-2020 (MW, added empty case)
 %                09-June-2020 (MW, restrict number of shown generators)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isemptyobject(cZ)
     
@@ -42,9 +42,9 @@ else
 
     % display center and generators
     disp('c: ');
-    disp(cZ.Z(:,1));
+    disp(cZ.c);
 
-    G = cZ.Z(:,2:end);
+    G = cZ.G;
     displayGenerators(G,DISPLAYDIM_MAX,'G');
     
     %display constraint system
@@ -65,4 +65,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

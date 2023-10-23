@@ -2,7 +2,7 @@ function R = guardIntersect_conZonotope(loc,R,guard,options)
 % guardIntersect_conZonotope - constrained zonotope based enclosure of 
 %    guard intersections
 %
-% Syntax:  
+% Syntax:
 %    R = guardIntersect_conZonotope(loc,R,guard,options)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function R = guardIntersect_conZonotope(loc,R,guard,options)
 %   [1] M. Althoff et al. "Zonotope bundles for the efficient computation 
 %       of reachable sets", 2011
 
-% Author:       Niklas Kochdumper
-% Written:      19-December-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       19-December-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % convert all relevant reachable sets to constrained zonotopes
 for i=1:length(R)
@@ -74,4 +74,4 @@ else
     R = zonoBundle(Z); 
 end 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

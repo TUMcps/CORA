@@ -1,7 +1,7 @@
 function Z = zonotope(cZ,varargin)
 % zonotope - over-approximates a constrained zonotope with a zonotope
 %
-% Syntax:  
+% Syntax:
 %    Z = zonotope(cZ)
 %    Z = zonotope(cZ,alg)
 %
@@ -31,21 +31,21 @@ function Z = zonotope(cZ,varargin)
 %
 % See also: interval
 
-% Author:       Niklas Kochdumper
-% Written:      13-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       13-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % handle trivial cases
-    if isempty(cZ)
+    if representsa_(cZ,'emptySet',1e-10)
         Z = zonotope();
         return;
     end
 
     if isempty(cZ.A)
-       Z = zonotope(cZ.Z);
+       Z = zonotope(cZ.c,cZ.G);
        return;
     end
     
@@ -58,16 +58,16 @@ function Z = zonotope(cZ,varargin)
     
     % compute over-approximation using the selected algorithm
     if strcmp(alg,'nullSpace')
-        Z = zonotopeNullSpace(cZ);
+        Z = aux_zonotopeNullSpace(cZ);
     elseif strcmp(alg,'reduce')
-        Z = zonotopeReduce(cZ);
+        Z = aux_zonotopeReduce(cZ);
     end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function res = zonotopeNullSpace(obj)
+function res = aux_zonotopeNullSpace(obj)
 
     % compute point satisfying all constraints with pseudo inverse
     p_ = pinv(obj.A)*obj.b;
@@ -122,22 +122,22 @@ function res = zonotopeNullSpace(obj)
     S = T*diag(rad(int));
     
     % construct final zonotope
-    c = obj.Z(:,1) + obj.Z(:,2:end)*off;
-    G = obj.Z(:,2:end)*S;
+    c = obj.c + obj.G*off;
+    G = obj.G*S;
     
-    res = zonotope([c,G]);
+    res = zonotope(c,G);
 
 end
 
-function res = zonotopeReduce(obj)
+function res = aux_zonotopeReduce(obj)
 
     % remove all constraints of the constrained zonotope
-    ng = floor((size(obj.Z,2)-1)/size(obj.Z,1)) + 1;
+    ng = floor((size(obj.G,2))/length(obj.c)) + 1;
 
     obj = reduce(obj,'girard',ng,0);
 
     % construct the resulting zonotope object
-    res = zonotope(obj.Z);
+    res = zonotope(obj.c,obj.G);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

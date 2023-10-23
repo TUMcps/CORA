@@ -1,7 +1,7 @@
 function cZ = conZonotope(zB)
 % conZonotope - convert a zonotope bundle to a constrained zonotope
 %
-% Syntax:  
+% Syntax:
 %    cZ = conZonotope(zB)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function cZ = conZonotope(zB)
 %
 % See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      23-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       23-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if zB.parallelSets == 0
     cZ = conZonotope(); return
@@ -36,4 +36,4 @@ for i = 2:zB.parallelSets
     cZ = and_(cZ,temp,'exact');
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

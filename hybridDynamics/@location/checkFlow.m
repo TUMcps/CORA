@@ -2,7 +2,7 @@ function [res,R] = checkFlow(loc,guard,R,options)
 % checkFlow - remove all intersections for which the flow of the system
 %    does not point toward the guard set (see Sec. 4.4.4 in [1])
 %
-% Syntax:  
+% Syntax:
 %    [res,R] = checkFlow(loc,guard,R,options)
 %
 % Inputs:
@@ -26,12 +26,12 @@ function [res,R] = checkFlow(loc,guard,R,options)
 %
 % See also: location/guardIntersect
 
-% Author:       Niklas Kochdumper
-% Written:      23-December-2019             
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       23-December-2019             
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % read out continuous dynamics
     sys = loc.contDynamics;
@@ -74,7 +74,8 @@ function [res,R] = checkFlow(loc,guard,R,options)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
+
 % TODO: move to contDynamics?
 
 function res = aux_flowInDirection(sys,guard,R,options)
@@ -222,4 +223,4 @@ function outside = aux_getOutside(loc,guard,R)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

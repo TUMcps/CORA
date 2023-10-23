@@ -2,7 +2,7 @@ function P = enclosingPolytope(probZ)
 % enclosingPolytope - Converts the mean of a probabilistic zonotope
 %    to a polytope representation
 %
-% Syntax:  
+% Syntax:
 %    P = enclosingPolytope(probZ)
 %
 % Inputs:
@@ -23,14 +23,14 @@ function P = enclosingPolytope(probZ)
 %
 % See also: interval,  vertices
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       18-September-2007
 % Last update:   17-August-2020
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %reduce probabilistic zonotope
 P = reduce(zonotope(probZ.Z),'pca');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

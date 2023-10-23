@@ -1,7 +1,7 @@
 function res = test_capsule_mtimes
 % test_capsule_mtimes - unit test function of mtimes
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_mtimes
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_capsule_mtimes
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      28-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate capsule
 C = capsule([1; 0], [1; -1], 2);
@@ -40,9 +40,9 @@ res(2) = compareMatrices(C_mtimes.g,C_mtimes_true.g);
 res(3) = withinTol(C_mtimes.r,C_mtimes_true.r);
 
 % empty set
-res(4) = isempty(R * capsule());
+res(4) = representsa_(R * capsule(),'emptySet',eps);
 
 % add results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

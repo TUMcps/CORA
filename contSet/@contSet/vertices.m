@@ -18,13 +18,13 @@ function res = vertices(S,varargin)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      18-August-2022
-% Last update:  23-November-2022 (MW, add classname as input argument)
-%               12-July-2023 (TL, corrected dimension of empty vertices)
-% Last revision:27-March-2023 (MW, restructure relation to subclass)
+% Authors:       Mark Wetzlinger
+% Written:       18-August-2022
+% Last update:   23-November-2022 (MW, add classname as input argument)
+%                12-July-2023 (TL, corrected dimension of empty vertices)
+% Last revision: 27-March-2023 (MW, restructure relation to subclass)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
 if nargin < 1
@@ -33,12 +33,16 @@ elseif nargin > 2
     throw(CORAerror('CORA:tooManyInputArgs',2));
 end
 
-% parse input arguments
-method = setDefaultValues({'convHull'},varargin); 
-
-% check input arguments
-inputArgsCheck({{S,'att','contSet'};
-                {method,'str',{'convHull','iterate','polytope'}}});
+% default values and input argument check
+if isa(S,'polytope')
+    method = setDefaultValues({'lcon2vert'},varargin);
+    inputArgsCheck({{S,'att','polytope'}, ...
+                    {method,'str',{'lcon2vert','comb'}}});
+else
+    method = setDefaultValues({'convHull'},varargin);
+    inputArgsCheck({{S,'att','contSet'};
+                    {method,'str',{'convHull','iterate','polytope'}}});
+end
 
 % call subclass method
 try
@@ -46,7 +50,7 @@ try
 
 catch ME
     % catch empty set case
-    if isempty(S)
+    if representsa_(S,'emptySet',eps)
         res = [];
     else
         rethrow(ME);
@@ -60,4 +64,4 @@ end
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

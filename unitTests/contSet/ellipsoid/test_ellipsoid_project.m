@@ -1,7 +1,7 @@
 function res = test_ellipsoid_project
 % test_ellipsoid_project - unit test function of project
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_project
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_project
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create a random psd Q matrix
 n = 4;
@@ -52,4 +52,4 @@ res(4) = E_true.dim == E_proj2.dim;
 % summary of checks
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function [Dksi,R] = ksi_iterative(cZ,varargin)
 % ksi_iterative - determine the tighend domains for the zonotope factors
 %                 with an iterative method based on interval arithmetic
 %
-% Syntax:  
+% Syntax:
 %    Dksi = ksi_iterative(cZ)
 %    Dksi = ksi_iterative(cZ,iter)
 %
@@ -26,12 +26,12 @@ function [Dksi,R] = ksi_iterative(cZ,varargin)
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Dmitry Grebenyuk, Niklas Kochdumper
-% Written:      11-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk, Niklas Kochdumper
+% Written:       11-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 iter = setDefaultValues({1},varargin);
@@ -74,4 +74,4 @@ end
 
 Dksi = E;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

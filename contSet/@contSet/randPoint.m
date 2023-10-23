@@ -1,7 +1,7 @@
 function x = randPoint(S,varargin)
 % randPoint - generates a random point within a given continuous set
 %
-% Syntax:  
+% Syntax:
 %    x = randPoint(S)
 %    x = randPoint(S,N)
 %    x = randPoint(S,N,'gaussian',pr)
@@ -9,7 +9,8 @@ function x = randPoint(S,varargin)
 % Inputs:
 %    S - contSet object
 %    N - number of random points
-%    type - type of the random point ('standard', 'extreme', or 'gaussian')
+%    type - type of the random point ('standard', 'extreme', 'gaussian',
+%           'uniform' or 'uniform:hitAndRun', 'uniform:billiardWalk')
 %    pr - probability that a value is within the set (only type = 'gaussian') 
 %
 % Outputs:
@@ -26,13 +27,15 @@ function x = randPoint(S,varargin)
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       19-November-2020
 % Last update:   19-June-2021 (MP, generalization)
 %                08-March-2023 (MW, reduce number of contains-calls)
-% Last revision: 28-March-2023 (MW, restructure relation to subclass)
+%                28-March-2023 (MW, restructure relation to subclass)
+%                22-May-2023 (AK, added 'uniform' sampling methods)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
 if nargin < 1
@@ -53,7 +56,7 @@ end
 % check input arguments
 inputArgsCheck({{S,'att','contSet'};
                  checkN; % see above...
-                {type,'str',{'standard','extreme','gaussian'}};
+                {type,'str',{'standard','extreme','gaussian','uniform','uniform:hitAndRun','uniform:billiardWalk'}};
                 {pr,'att','numeric',{'<=',1,'>=',0}}});
 
 % if N = 'all', then type has to be 'extreme' (nargin ensures that type has
@@ -68,9 +71,9 @@ if ~strcmp(type,'gaussian')
     try
         x = randPoint_(S,N,type);
     catch ME
-        if isempty(S)
+        if representsa_(S,'emptySet',eps)
             x = double.empty(dim(S),0);
-        elseif isZero(S)
+        elseif representsa_(S,'origin',eps)
             x = repmat(zeros(dim(S),1),1,N);
         else
             rethrow(ME);
@@ -82,7 +85,7 @@ end
 
 % randPoint with type gaussian currently not supported for all contSet
 % subclasses, therefore check if subclass is supported
-if ~(isa(S,'zonotope') || isa(S,'interval') || isa(S,'ellipsoid') || isa(S,'mptPolytope'))
+if ~(isa(S,'zonotope') || isa(S,'interval') || isa(S,'ellipsoid') || isa(S,'polytope'))
     throw(CORAerror('CORA:notSupported',"The function randPoint for " + class(S) + ...
         " does not support the type = 'gaussian'."));
 end
@@ -150,4 +153,4 @@ if isa(S,'ellipsoid')
     x = T*[inv(G)*pt;zeros(n_rem,N)] + c;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

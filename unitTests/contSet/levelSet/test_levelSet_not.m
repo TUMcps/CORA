@@ -1,7 +1,7 @@
 function res = test_levelSet_not
 % test_levelSet_not - unit test function of complement operation
 %
-% Syntax:  
+% Syntax:
 %    res = test_levelSet_not
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_levelSet_not
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      25-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -62,4 +62,4 @@ res(end+1,1) = isequal(ls_,ls_true);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

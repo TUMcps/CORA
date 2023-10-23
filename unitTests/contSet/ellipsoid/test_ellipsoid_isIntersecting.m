@@ -1,7 +1,7 @@
 function res = test_ellipsoid_isIntersecting
 % test_ellipsoid_isIntersecting - unit test function of isIntersecting
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_isIntersecting
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_isIntersecting
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 load cases.mat E_c
 res = true;
@@ -52,4 +52,4 @@ for i=1:length(E_c)
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

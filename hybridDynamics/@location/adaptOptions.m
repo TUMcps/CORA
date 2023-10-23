@@ -2,7 +2,7 @@ function [params,options] = adaptOptions(loc,options)
 % adaptOptions - extract the settings for continous reachability from the
 %    settings for hybrid reachability
 %
-% Syntax:  
+% Syntax:
 %    [params,options] = adaptOptions(loc,options)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function [params,options] = adaptOptions(loc,options)
 %
 % See also: location/reach
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      09-June-2020 
-% Last update:  08-February-2021 (MW, adapt to new params/options check)
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       09-June-2020 
+% Last update:   08-February-2021 (MW, adapt to new params/options check)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % read params and options from contDynamics
 [paramsList,optionsList] = feval(['config_' class(loc.contDynamics) '_reach'],...
@@ -76,4 +76,4 @@ if isa(loc.contDynamics,'linParamSys')
     options.compTimePoint = true;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

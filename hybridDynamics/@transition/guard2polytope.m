@@ -1,7 +1,7 @@
 function trans = guard2polytope(trans)
-% guard2polytope - convert the guard set of a transition to a mptPolytope
+% guard2polytope - convert the guard set of a transition to a polytope
 %
-% Syntax:  
+% Syntax:
 %    trans = guard2polytope(trans)
 %
 % Inputs:
@@ -16,15 +16,15 @@ function trans = guard2polytope(trans)
 %
 % See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      16-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       16-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-if ~isa(trans.guard,'levelSet') && ~isa(trans.guard,'mptPolytope')
-    trans.guard = mptPolytope(trans.guard);
+if ~isa(trans.guard,'levelSet') && ~isa(trans.guard,'polytope')
+    trans.guard = polytope(trans.guard);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

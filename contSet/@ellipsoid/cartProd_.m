@@ -2,7 +2,7 @@ function E = cartProd_(E,S,type)
 % cartProd_ - returns an over-approximation for the Cartesian product 
 %    between two ellipsoids
 %
-% Syntax:  
+% Syntax:
 %    E = cartProd_(E,S)
 %    E = cartProd_(E,S,type)
 %
@@ -23,14 +23,14 @@ function E = cartProd_(E,S,type)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/cartProd
 
-% Author:       Victor Gassmann
-% Written:      19-March-2021
-% Last update:  02-June-2022 (VG: handle empty case)
-% Last revision:27-March-2023 (MW, rename cartProd_)
+% Authors:       Victor Gassmann
+% Written:       19-March-2021
+% Last update:   02-June-2022 (VG, handle empty case)
+% Last revision: 27-March-2023 (MW, rename cartProd_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % currently only 'outer' supported
 if any(strcmp(type,{'inner','exact'}))
@@ -80,4 +80,4 @@ end
 % all other cases: throw error
 throw(CORAerror('CORA:noops',E,S,type));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

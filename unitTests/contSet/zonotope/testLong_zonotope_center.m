@@ -1,7 +1,7 @@
 function res = testLong_zonotope_center
 % testLong_zonotope_center - unit test function of center
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_center
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_zonotope_center
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      09-August-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       09-August-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -50,4 +50,4 @@ for i=1:nrTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

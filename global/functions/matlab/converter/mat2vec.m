@@ -1,7 +1,7 @@
 function vec = mat2vec(mat)
 % mat2vec - Stores entries of a matrix into a vector
 %
-% Syntax:  
+% Syntax:
 %    vec = mat2vec(mat)
 %
 % Inputs:
@@ -18,14 +18,14 @@ function vec = mat2vec(mat)
 %
 % See also: vec2mat
 
-% Author:       Matthias Althoff, Tobias Ladner
-% Written:      18-June-2010 
-% Last update:  20-April-2023 (TL, simplified)
-% Last revision:---
+% Authors:       Matthias Althoff, Tobias Ladner
+% Written:       18-June-2010 
+% Last update:   20-April-2023 (TL, simplified)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % reshape
 vec = reshape(mat, [], 1);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

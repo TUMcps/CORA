@@ -1,7 +1,7 @@
 function zB = zonoBundle(cZ)
 % zonoBundle - converts an constrained zonotope to a zonotope bundle
 %
-% Syntax:  
+% Syntax:
 %    zB = zonoBundle(cZ)
 %
 % Inputs:
@@ -21,18 +21,18 @@ function zB = zonoBundle(cZ)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mptPolytope/zonoBundle
+% See also: polytope/zonoBundle
 
-% Author:       Niklas Kochdumper
-% Written:      26-November-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-November-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
 if isempty(cZ.A)
     
-    zB = zonoBundle(zonotope(cZ.Z)); 
+    zB = zonoBundle(zonotope(cZ.c,cZ.G)); 
    
 else
     
@@ -73,11 +73,11 @@ else
     zB_ = zonoBundle(Z);
 
     % transform back to original space
-    c = cZ.Z(:,1);
-    G = cZ.Z(:,2:end);
+    c = cZ.c;
+    G = cZ.G;
     
     zB = c + G * p_ + (G * T) * zB_;     
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

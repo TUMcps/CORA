@@ -2,7 +2,7 @@ function [Gred]=generatorVolumeFilter(G,rem)
 % generatorVolumeFilter - filters out generators by finding the
 % combinations returning the biggest volume
 %
-% Syntax:  
+% Syntax:
 %    [Gred]=generatorVolumeFilter(G,rem)
 %
 % Inputs:
@@ -18,13 +18,13 @@ function [Gred]=generatorVolumeFilter(G,rem)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      12-September-2008
-% Last update:  19-July-2010
-%               14-March-2019 (sort removed)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       12-September-2008
+% Last update:   19-July-2010
+%                14-March-2019 (sort removed)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %determine generators by volume maximation:
 %possible combinations of n=dim generators from all generators
@@ -59,4 +59,4 @@ for i=1:length(index)
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

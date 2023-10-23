@@ -1,7 +1,7 @@
 function p = randPoint_(cZ,N,type,varargin)
 % randPoint_ - generates a random point inside a constrained zonotope
 %
-% Syntax:  
+% Syntax:
 %    p = randPoint_(cZ)
 %    p = randPoint_(cZ,N)
 %    p = randPoint_(cZ,N,type)
@@ -10,7 +10,8 @@ function p = randPoint_(cZ,N,type,varargin)
 % Inputs:
 %    cZ - conZonotope object
 %    N - number of random points
-%    type - type of the random point ('standard' or 'extreme')
+%    type - type of the random point ('standard', 'extreme', 'hit-and-run'
+%       or 'billiard-walk')
 %
 % Outputs:
 %    p - random point in the constrained zonotope
@@ -29,18 +30,27 @@ function p = randPoint_(cZ,N,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/randPoint
+% References:
+%    [1] Robert L. Smith: Efficient Monte Carlo Procedures for Generating
+%    Points Uniformly Distributed Over Bounded Regions, Operations Research
+%    1984
+%    [2] Boris T. Polyak, E. N. Gryazina: Billiard Walk - a New Sampling
+%    Algorithm for Control and Optimization, IFAC, 2014
+%
+% See also: contSet/randPoint, zonotope/randPoint
 
-% Author:       Niklas Kochdumper
-% Written:      30-October-2020
-% Last update:  19-August-2022 (MW, integrate standardized pre-processing)
-% Last revision:27-March-2023 (MW, rename randPoint_)
+% Authors:       Niklas Kochdumper, Severin Prenitzer, Adrian Kulmburg
+% Written:       30-October-2020
+% Last update:   19-August-2022 (MW, integrate standardized pre-processing)
+%                27-March-2023 (MW, rename randPoint_)
+%                22-May-2023 (SP, implementing uniform sampling)
+% Last revision: --- 
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % call zonotope method if no constraints are present
     if isempty(cZ.A)
-        p = randPoint_(zonotope(cZ.Z),N,type); return
+        p = randPoint_(zonotope(cZ.c,cZ.G),N,type); return
     end
     
     % return all extreme points 
@@ -53,23 +63,80 @@ function p = randPoint_(cZ,N,type,varargin)
     
     if strcmp(type,'standard')
         for i = 1:N
-            p(:,i) = aux_randPointNormal(cZ);
+            p(:,i) = aux_randPointStandard(cZ);
         end
     elseif strcmp(type,'extreme')
         for i = 1:N
             p(:,i) = aux_randPointExtreme(cZ);
         end
+    % The default uniform sampler is hitAndRun, as otherwise we need to
+    % transform it into a polytope
+    elseif strcmp(type,'uniform') || strcmp(type,'uniform:hitAndRun')
+        % G - generator matrix, n - dimension, c - center, 
+        % m - generators number, nc - linear equality constraints number, 
+        % p0 - start point, p - return matrix
+        n = dim(cZ);
+        c = cZ.c;
+        G = cZ.G;s
+        m = size(G,2);
+        nc = size(cZ.A,1);
+        
+        % Try to sample at least one point; if this leads to an error, this
+        % will be caught by the global function randPoint.m (for example,
+        % if cZ is empty)
+        p0 = cZ.randPoint(1);
+        
+        p = zeros(n,N);
+        
+        % create option to suppress command line output of linprog
+        persistent suppressPrint
+        if isempty(suppressPrint)
+            suppressPrint = optimoptions('linprog', 'Display', 'off');
+        end
+        
+        % sample N points
+        for i = 1:N
+            % sample movement vector
+            d = zeros(n,1);
+            for j = 1:n
+                d(j) = normrnd(0,1);
+            end
+            
+            % define parameters for linear programs
+            f = vertcat(1, zeros(m,1));
+            A = horzcat(zeros(2*m,1), vertcat(eye(m), -eye(m)));
+            b = ones(2*m,1);
+            Aeq = vertcat(horzcat(d, -G), horzcat(zeros(nc,1), cZ.A));
+            beq = vertcat(c - p0, cZ.b);
+            
+            % execute linear programs
+            minZ = linprog(f,A,b,Aeq,beq,[],[],suppressPrint);
+            maxZ = linprog(-f,A,b,Aeq,beq,[],[],suppressPrint);
+    
+            % sample line segment uniformly
+            minC = minZ(1);
+            maxC = maxZ(1);
+            samplePoint = p0 + d * (minC + unifrnd(0,1) * (maxC - minC));
+            
+            % return sample point
+            p(:,i) = samplePoint;
+            p0 = samplePoint;
+        end
+    elseif strcmp(type, 'uniform:billiardWalk')
+        p = randPoint(polytope(cZ),N,'uniform:billiardWalk');
+    else
+        throw(CORAerror('CORA:noSpecificAlg',type,cZ));
     end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function p = aux_randPointNormal(cZ)    
+function p = aux_randPointStandard(cZ)    
 % generate random point within the constrained zonotope
 
     % construct inequality constraints for the unit cube
-    n = size(cZ.Z,2)-1;
+    n = size(cZ.G,2);
     A = [eye(n);-eye(n)];
     b = [ones(n,1);ones(n,1)];
 
@@ -83,8 +150,8 @@ function p = aux_randPointNormal(cZ)
     A_ = A*Neq;
     b_ = b-A*x0;
 
-    % instantiate mptPolytope
-    P = mptPolytope(A_,b_);
+    % instantiate polytope
+    P = polytope(A_,b_);
 
     % compute Chebychev center in the zonotope-factor null-space
     p = randPoint_(P,1,'standard');
@@ -94,7 +161,7 @@ function p = aux_randPointNormal(cZ)
 
     % compute center of the constraint zonotope using the factors from the
     % Chebychev center in the factor space
-    p = cZ.Z(:,1) + cZ.Z(:,2:end) * p_;
+    p = cZ.c + cZ.G * p_;
 end
 
 function p = aux_randPointExtreme(cZ)
@@ -114,4 +181,4 @@ function p = aux_randPointExtreme(cZ)
     p = x + c;
 end
 
-%------------- END OF CODE ----------
+% ------------------------------ END OF CODE ------------------------------

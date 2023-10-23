@@ -2,7 +2,7 @@ function zB = project(zB,dims)
 % project - projects a zonotope bundle onto the specified dimensions; note
 %    that this returns an outer-approximation
 %
-% Syntax:  
+% Syntax:
 %    zB = project(zB,dims)
 %
 % Inputs:
@@ -24,16 +24,16 @@ function zB = project(zB,dims)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      04-February-2011
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-February-2011
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % project for each zonotope
 for i=1:zB.parallelSets
     zB.Z{i} = project(zB.Z{i},dims);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

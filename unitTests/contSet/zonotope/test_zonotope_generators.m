@@ -1,7 +1,7 @@
 function res = test_zonotope_generators
 % test_zonotope_generators - unit test function of generators
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_generators
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_generators
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty zonotope
 Z = zonotope();
@@ -44,4 +44,4 @@ res(end+1,1) = all(size(G_) == [4,0]);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

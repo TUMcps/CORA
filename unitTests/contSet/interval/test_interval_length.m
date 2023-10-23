@@ -1,7 +1,7 @@
 function res = test_interval_length
 % test_interval_length - unit_test_function of length
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_length
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_interval_length
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      19-January-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       19-January-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 res = true;
@@ -48,4 +48,4 @@ if c ~= 0
 	return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = testLong_zonotope_box
 % testLong_zonotope_box - unit test function of box
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_box
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_zonotope_box
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      26-August-2019
-% Last update:  09-August-2020 (enhance randomness of test)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       26-August-2019
+% Last update:   09-August-2020 (enhance randomness of test)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -55,4 +55,4 @@ for i=1:nrTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

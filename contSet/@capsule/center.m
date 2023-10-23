@@ -1,7 +1,7 @@
 function c = center(C)
 % center - Returns the center of a capsule
 %
-% Syntax:  
+% Syntax:
 %    c = center(C)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function c = center(C)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      05-March-2019 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-March-2019 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 c = C.c;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

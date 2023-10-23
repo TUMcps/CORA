@@ -6,7 +6,7 @@ function res = testMosek_linearSysDT_observe_gain_03_PRadC()
 % Checks the offline computation of the gain as presented in [1]; the unit 
 % test checks whether the same result as in Sec. 5 of [1] is obtained
 %
-% Syntax:  
+% Syntax:
 %    res = testMosek_linearSysDT_observe_gain_03_PRadC
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = testMosek_linearSysDT_observe_gain_03_PRadC()
 %        zonotopes for interconnected systems. In Proc. of the IEEE
 %        Conference on Decision and Control (CDC), pages 668–673, 2018.
 
-% Author:       Matthias Althoff
-% Written:      18-September-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-September-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "observe_gain_PRadC"
 path = CORAROOT;
@@ -102,5 +102,4 @@ rmpath(genpath(path));
 addpath(genpath(path));
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

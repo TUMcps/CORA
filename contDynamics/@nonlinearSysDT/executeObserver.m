@@ -1,7 +1,7 @@
 function [R,tcomp] = executeObserver(obj,options)
 % executeObserver - calls the appropriate observer
 %
-% Syntax:  
+% Syntax:
 %    [R,tcomp] = executeObserver(obj,options)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function [R,tcomp] = executeObserver(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       25-March-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % decide which observer to execute by options.alg
 if strcmp(options.alg,'VolMin-A') 
@@ -40,4 +40,4 @@ elseif strcmp(options.alg,'FRad-C')
     [R,tcomp] = observe_FRadC(obj, options);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

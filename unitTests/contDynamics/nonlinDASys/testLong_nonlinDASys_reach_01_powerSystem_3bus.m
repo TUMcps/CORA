@@ -6,7 +6,7 @@ function res = testLong_nonlinDASys_reach_01_powerSystem_3bus
 % It is checked whether the enclosing interval of the final reachable set 
 % is close to an interval provided by a previous solution that has been saved
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_nonlinDASys_reach_01_powerSystem_3bus
 %
 % Inputs:
@@ -15,14 +15,14 @@ function res = testLong_nonlinDASys_reach_01_powerSystem_3bus
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      04-August-2016
-% Last update:  19-August-2016
-%               23-April-2020 (restructure params/options)
-%               26-May-2022 (tighter computation)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-August-2016
+% Last update:   19-August-2016
+%                23-April-2020 (restructure params/options)
+%                26-May-2022 (tighter computation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Parameters --------------------------------------------------------------
@@ -71,5 +71,4 @@ IH_saved = interval( ...
 % compare results
 res = isequal(IH,IH_saved,1e-8);
 
-%------------- END OF CODE --------------
-        
+% ------------------------------ END OF CODE ------------------------------

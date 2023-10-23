@@ -3,7 +3,7 @@ function completed = example_nonlinear_reach_16_infiniteBusRoA_polynomialized
 %    verifying the region of attraction of a single-machine-infinite-bus 
 %    system from [1] after polynomialization
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinear_reach_16_infiniteBusRoA_polynomialized
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_nonlinear_reach_16_infiniteBusRoA_polynomialized
 %    [1] M. Althoff. "Formal Verification of Power Systems", submitted to
 %        ARCH 2022.
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       02-June-2022
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -99,4 +99,4 @@ ylabel('x_{2}');
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = testLong_conZonotope_dim
 % testLong_conZonotope_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conZonotope_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_conZonotope_dim
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      03-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -57,4 +57,4 @@ for i=1:nrOfTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

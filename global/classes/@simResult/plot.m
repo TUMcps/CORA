@@ -1,7 +1,7 @@
 function han = plot(simRes,varargin)
 % plot - plots a projection of the simulated trajectories
 %
-% Syntax:  
+% Syntax:
 %    han = plot(simRes)
 %    han = plot(simRes,dims)
 %    han = plot(simRes,dims,type)
@@ -10,7 +10,6 @@ function han = plot(simRes,varargin)
 %    simRes - simResult object
 %    dims - (optional) dimensions for projection
 %    type - (optional) plot settings (LineSpec and Name-Value pairs)
-%          'Height', <height> height of z-coordinate
 %          'Traj', <whichtraj> corresponding to
 %                   x ... state trajectory (default)
 %                   y ... output trajectory (default if no ti)
@@ -25,12 +24,12 @@ function han = plot(simRes,varargin)
 %
 % See also: simResult, simulateRandom
 
-% Author:       Niklas Kochdumper, Matthias Althoff
-% Written:      06-June-2020
-% Last update:  28-July-2020 (MA, 3D plots added)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Matthias Althoff
+% Written:       06-June-2020
+% Last update:   28-July-2020 (MA, 3D plots added)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set default input arguments
 dims = setDefaultValues({[1,2]},varargin);
@@ -59,7 +58,7 @@ elseif length(dims) > 3
 end
 
 % check which trajectory has to be plotted
-whichtraj = checkTraj(simRes,whichtraj);
+whichtraj = aux_checkTraj(simRes,whichtraj);
 
 % save color index
 ax = gca();
@@ -100,9 +99,9 @@ end
 end
 
 
-% Auxiliary function ------------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function whichtraj = checkTraj(simRes,whichtraj)
+function whichtraj = aux_checkTraj(simRes,whichtraj)
 
 % must be character vector for switch-expression to work properly
 if isempty(whichtraj)
@@ -131,4 +130,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

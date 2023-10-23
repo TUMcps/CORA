@@ -2,7 +2,7 @@ function completed = example_linearParam_reach_02_5dim_var()
 % example_linearParam_reach_02_5dim_var - example of linear parametric 
 %    reachability analysis with time-varying parameters, taken from [1].
 %
-% Syntax:  
+% Syntax:
 %    completed - example_linearParam_reach_02_5dim_var()
 %
 % Inputs:
@@ -15,12 +15,12 @@ function completed = example_linearParam_reach_02_5dim_var()
 %    [1] Althoff, M.; Le Guernic, C. & Krogh, B. H. "Reachable Set
 %        Computation for Uncertain Time-Varying Linear Systems", HSCC 2011
 
-% Author:       Matthias Althoff
-% Written:      03-October-2017
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-October-2017
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Parameters --------------------------------------------------------------
@@ -101,4 +101,4 @@ end
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

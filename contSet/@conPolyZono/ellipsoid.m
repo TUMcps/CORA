@@ -2,7 +2,7 @@ function E = ellipsoid(cPZ,varargin)
 % ellipsoid - computes an enclosing ellipsoid of a constrained polynomial 
 %    zonotope
 %
-% Syntax:  
+% Syntax:
 %    E = ellipsoid(cPZ)
 %    E = ellipsoid(cPZ,method)
 %
@@ -17,11 +17,11 @@ function E = ellipsoid(cPZ,varargin)
 % Example: 
 %    c = [2;-1];
 %    G = [2 1 2 1; 0 2 2 1];
-%    expMat = [1 0 2 0; 0 1 1 0; 0 0 0 1];
+%    E = [1 0 2 0; 0 1 1 0; 0 0 0 1];
 %    A = [1 -0.5 0.5];
 %    b = 0.5;
-%    expMat_ = [1 0 0; 0 1 2; 0 1 0];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    EC = [1 0 0; 0 1 2; 0 1 0];
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 %
 %    E = ellipsoid(cPZ);
 %
@@ -35,12 +35,12 @@ function E = ellipsoid(cPZ,varargin)
 %
 % See also: supportFunc, interval, zonotope
 
-% Author:       Niklas Kochdumper
-% Written:      05-February-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       05-February-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 method = setDefaultValues({'split'},varargin); 
@@ -51,7 +51,7 @@ inputArgsCheck({{cPZ,'att','conPolyZono'};
                     'conZonotope','interval'}}});
 
 % compute basis with Principal Component Analysis
-G = [cPZ.G,cPZ.Grest];
+G = [cPZ.G,cPZ.GI];
 [B,~,~] = svd([-G,G]); 
 
 % compute interval enclosure in the transformed space
@@ -72,4 +72,4 @@ r = supportFunc_(cPZ_,1,'upper',method,8);
 % construct final ellipsoid
 E = ellipsoid((E.Q)*r,B*center(I));
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = testLong_component_ellipsoid_andHyperplane
 % testLong_component_ellipsoid_andHyperplane - unit test function
 %    of andHyperplane
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_component_ellipsoid_andHyperplane
 %
 % Inputs:
@@ -17,12 +17,13 @@ function res = testLong_component_ellipsoid_andHyperplane
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      17-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       17-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = true;
 nRuns = 2;
 bools = [false,true];
@@ -43,11 +44,12 @@ for i=10:5:15
             d = d/norm(d);
             % generate hyperplane
             H = conHyperplane(d',d'*s);
-            if isempty(E&H)
+            if representsa_(E&H,'emptySet',eps)
                 res = false;
                 return;
             end
         end
     end
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

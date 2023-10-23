@@ -1,7 +1,7 @@
 function R = reach(obj,params,options,varargin)
 % reach - computes the reachable sets of the discrete time system
 %
-% Syntax:  
+% Syntax:
 %    R = reach(obj,params,options)
 %    [R,res] = reach(obj,params,options,spec)
 %
@@ -21,14 +21,14 @@ function R = reach(obj,params,options,varargin)
 %
 % See also: nonlinearSysDT
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      21-August-2012
-% Last update:  29-January-2018
-%               19-November-2022 (MW, integrate output equation)
-%               10-May-2023 (LL, integrate uTrans in U)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       21-August-2012
+% Last update:   29-January-2018
+%                19-November-2022 (MW, integrate output equation)
+%                10-May-2023 (LL, integrate uTrans in U)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % options preprocessing
 options = validateOptions(obj,mfilename,params,options);
@@ -98,4 +98,4 @@ R = reachSet(timePoint);
 % log information
 verboseLog(length(t),t(end),options);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

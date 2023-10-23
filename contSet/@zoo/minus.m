@@ -1,7 +1,7 @@
 function res = minus(factor1, factor2)
-% plus - Overloaded '-' operator
+% minus - Overloaded '-' operator
 %
-% Syntax:  
+% Syntax:
 %    res = minus(factor1, factor2)
 %
 % Inputs:
@@ -18,32 +18,32 @@ function res = minus(factor1, factor2)
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      06-November-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       06-November-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
    
     if isa(factor1, 'zoo') && isa(factor2, 'zoo')
         
-        res = arrayfun(@(a, b) s_minus_zz(a, b), factor1, factor2, 'UniformOutput', 0);
+        res = arrayfun(@(a, b) aux_s_minus_zz(a, b), factor1, factor2, 'UniformOutput', 0);
 
     elseif isa(factor1,'zoo') && isa(factor2,'double')
         
-        res = arrayfun(@(a) s_minus_zd(a, factor2), factor1, 'UniformOutput', 0);
+        res = arrayfun(@(a) aux_s_minus_zd(a, factor2), factor1, 'UniformOutput', 0);
         
     elseif isa(factor1,'double') && isa(factor2,'zoo')
         
-        res = arrayfun(@(b) s_minus_dz(factor1, b), factor2, 'UniformOutput', 0);
+        res = arrayfun(@(b) aux_s_minus_dz(factor1, b), factor2, 'UniformOutput', 0);
      
     elseif isa(factor1,'zoo') && isa(factor2,'interval')
         
-        res = arrayfun(@(a) s_minus_zd(a, factor2), factor1, 'UniformOutput', 0);
+        res = arrayfun(@(a) aux_s_minus_zd(a, factor2), factor1, 'UniformOutput', 0);
         
     elseif isa(factor1,'interval') && isa(factor2,'zoo') 
         
-        res = arrayfun(@(b) s_minus_dz(factor1, b), factor2, 'UniformOutput', 0);
+        res = arrayfun(@(b) aux_s_minus_dz(factor1, b), factor2, 'UniformOutput', 0);
         
     else
          throw(CORAerror('CORA:wrongValue','first/second',...
@@ -55,8 +55,11 @@ function res = minus(factor1, factor2)
     
 end
 
-%% --------------- Implementation for a scalar --------------
-function res = s_minus_zz(factor1, factor2)
+
+% Auxiliary functions -----------------------------------------------------
+
+% Implementation for a scalar
+function res = aux_s_minus_zz(factor1, factor2)
 
     [factor1,factor2] = combineZooObjects(factor1,factor2);
     res = factor1;
@@ -66,7 +69,7 @@ function res = s_minus_zz(factor1, factor2)
         
 end
 
-function res = s_minus_zd(factor1, factor2)
+function res = aux_s_minus_zd(factor1, factor2)
         
     res = factor1;
     for i = 1:length(res.method)
@@ -75,7 +78,7 @@ function res = s_minus_zd(factor1, factor2)
  
 end
 
-function res = s_minus_dz(factor1, factor2)
+function res = aux_s_minus_dz(factor1, factor2)
         
     res = factor2;
     for i = 1:length(res.method)
@@ -83,5 +86,5 @@ function res = s_minus_dz(factor1, factor2)
     end 
 
 end
-%------------ END OF CODE ------------
- 
+
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function Z = halfspace(Z)
 % halfspace - generates the halfspace representation of the zonotope,
 %    which is stored in the zonotope object (Z.halfspace)
 %
-% Syntax:  
+% Syntax:
 %    Z = halfspace(Z)
 %
 % Inputs:
@@ -21,18 +21,18 @@ function Z = halfspace(Z)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      07-May-2007 
-% Last update:  06-April-2017
-%               16-October-2019: added box case (VG)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-May-2007 
+% Last update:   06-April-2017
+%                16-October-2019 (VG, added box case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %check if zonotope is a parallelepiped
-G = generators(Z);
+G = Z.G;
 if all(size(G)==size(G,1)) && rank(G)==size(G,1)
-    c = center(Z);
+    c = Z.c;
     n = size(G,1);
     %x=c+G*u, |u|<=1 -> [I;-I]*inv(G)*(x-c)<=1
     A = [eye(n);-eye(n)];
@@ -44,9 +44,9 @@ if all(size(G)==size(G,1)) && rank(G)==size(G,1)
     K = K./hn;
 else
     %convert zonotope to polytope and retrieve halfspace representation
-    P = mptPolytope(Z);
-    H = get(P,'H');
-    K = get(P,'K');
+    P = polytope(Z);
+    H = P.A;
+    K = P.b;
 end
 
 % write to object structure
@@ -54,4 +54,4 @@ Z.halfspace.H=H;
 Z.halfspace.K=K;
 Z.halfspace.equations=length(K);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

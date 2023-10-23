@@ -2,7 +2,7 @@ function createRemainderFile_certainInput(obj)
 % createRemainderFile_certainInput - generates an mFile that allows to
 %    compute the lagrange remainder
 %
-% Syntax:  
+% Syntax:
 %    createRemainderFile_certainInput(obj)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function createRemainderFile_certainInput(obj)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      29-October-2007 
-% Last update:  03-February-2011
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       29-October-2007 
+% Last update:   03-February-2011
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     
 %load second order jacobian
@@ -68,4 +68,4 @@ end
 %close file
 status = fclose(fid);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

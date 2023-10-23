@@ -1,7 +1,7 @@
 function [obj] = constInputSolution(obj,options)
 % constInputSolution - computes the bloating due to constant input 
 %
-% Syntax:  
+% Syntax:
 %    [obj] = constInputSolution(obj,options)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function [obj] = constInputSolution(obj,options)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      03-May-2011
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-May-2011
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 vTrans=obj.B*options.uTrans;
@@ -64,4 +64,4 @@ end
 obj.taylor.Rtrans=inputSolVtrans;
 obj.taylor.inputCorr=inputCorr;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

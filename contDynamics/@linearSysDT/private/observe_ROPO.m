@@ -28,12 +28,13 @@ function [R,tcomp] = observe_ROPO(obj,options)
 %
 % See also: none
 
-% Author:        Carlos Valero
-% Written:       09-Mar-2021
-% Last update:   09-Mar-2021
+% Authors:       Carlos Valero
+% Written:       09-March-2021
+% Last update:   09-March-2021
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 tic
 %time period
 tVec = options.tStart:options.timeStep:options.tFinal-options.timeStep;
@@ -66,7 +67,7 @@ for k = 1:length(tVec)-1
     thetac = Rnext.center;
     no=size(p0,2);
     for i=1:no
-        [T, thetac,~,~]=Parallelotope(T,thetac,c0(i),p0(:,i));
+        [T, thetac,~,~]=aux_Parallelotope(T,thetac,c0(i),p0(:,i));
     end
     Rnext=zonotope([thetac,T]);
     % Store result
@@ -75,10 +76,10 @@ end
 tcomp=toc;
 end
 
-%------------- END OF MAIN CODE --------------
-%------------ Auxiliary function -------------
-%
-function [T, thetac,p0,c0]=Parallelotope(t,thetac,c0,p0)
+
+% Auxiliary functions -----------------------------------------------------
+
+function [T, thetac,p0,c0]=aux_Parallelotope(t,thetac,c0,p0)
     %This function make one iteration and find the 
     %minimum parallelotope for n+1 strips
     %t E to R(nxn)
@@ -157,4 +158,4 @@ function [T, thetac,p0,c0]=Parallelotope(t,thetac,c0,p0)
     end
 end
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

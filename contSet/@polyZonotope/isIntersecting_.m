@@ -1,7 +1,7 @@
 function res = isIntersecting_(pZ,S,type,varargin)
 % isIntersecting_ - determines if a polynomial zonotope intersects a set
 %
-% Syntax:  
+% Syntax:
 %    res = isIntersecting_(pZ,S)
 %    res = isIntersecting_(pZ,S,type)
 %
@@ -39,14 +39,14 @@ function res = isIntersecting_(pZ,S,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conZonotope/isIntersecting_
+% See also: contSet/isIntersecting, conZonotope/isIntersecting_
 
-% Author:       Niklas Kochdumper
-% Written:      21-November-2019
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename isIntersecting_)
+% Authors:       Niklas Kochdumper
+% Written:       21-November-2019
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if strcmp(type,'exact')
     throw(CORAerror('CORA:noExactAlg',S,pZ));
@@ -66,21 +66,21 @@ if isa(S,'polyZonotope')
     % construct polynomial constraint for the intersection
     c = pZ.c - S.c;
     G = [pZ.G -S.G];
-    Grest = [pZ.Grest,-S.Grest];
-    expMat = blkdiag(pZ.expMat,S.expMat);
+    GI = [pZ.GI,-S.GI];
+    E = blkdiag(pZ.E,S.E);
     
     % contract the factor domain \alpha_k in [-1,1] based on the
     % polynomial constraint
-    n = size(expMat,1) + size(Grest,2);
+    n = size(E,1) + size(GI,2);
     dom = interval(-ones(n,1),ones(n,1));
     
-    I = contractPoly(c,G,Grest,expMat,dom,'linearize',3,7);
+    I = contractPoly(c,G,GI,E,dom,'linearize',3,7);
     
     % check if polynomial zonotopes are intersecting
-    res = ~isempty(I);
+    res = ~representsa_(I,'emptySet',eps);
     
 elseif isa(S,'halfspace') || isa(S,'conHyperplane') || ...
-       isa(S,'mptPolytope') || isa(S,'zonotope') || ...
+       isa(S,'polytope') || isa(S,'zonotope') || ...
        isa(S,'interval') || isa(S,'zonoBundle') || ...
        isa(S,'conZonotope') || isa(S,'ellipsoid') || ...
        isa(S,'conPolyZono')
@@ -93,4 +93,4 @@ else
     throw(CORAerror('CORA:noops',pZ,S));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

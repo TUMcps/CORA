@@ -2,7 +2,7 @@ function [Rfirst] = coreReach(obj,Rinit)
 % coreReach - computes the reachable continuous set for the next time step
 % without considering uncertain inputs
 %
-% Syntax:  
+% Syntax:
 %    [Rfirst] = coreReach(obj,Rinit,options)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function [Rfirst] = coreReach(obj,Rinit)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      03-May-2011 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-May-2011 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %load data from object structure
 eAt=obj.taylor.eAt;
@@ -38,4 +38,4 @@ Rhom_tp=eAt*Rinit + Rtrans;
 Rfirst=Rhom_tp;
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

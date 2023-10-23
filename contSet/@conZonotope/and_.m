@@ -2,7 +2,7 @@ function res = and_(cZ,S,varargin)
 % and_ - Computes the intersection of a constrained zonotope with
 %    other set representations
 %
-% Syntax:  
+% Syntax:
 %    res = and_(cZ,S)
 %
 % Inputs:
@@ -53,23 +53,23 @@ function res = and_(cZ,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/and
 %
 % References: 
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:        Dmitry Grebenyuk, Niklas Kochdumper
+% Authors:       Dmitry Grebenyuk, Niklas Kochdumper
 % Written:       13-May-2018
 % Last update:   05-May-2020 (MW, standardized error message)
 % Last revision: 27-March-2023 (MW, rename and_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Add trivial constraint if the conZonotope object does not have
 % constraints (for easier implementation of the following operations)
 if isempty(cZ.A)
-    cZ.A = zeros(1,size(cZ.Z,2)-1);
+    cZ.A = zeros(1,size(cZ.G,2));
     cZ.b = 0;
 end
 
@@ -77,21 +77,21 @@ end
 if isa(S, 'conZonotope') 
     
     if isempty(S.A)
-       S.A = zeros(1,size(S.Z,2)-1);
+       S.A = zeros(1,size(S.G,2));
        S.b = 0;
     end
     
     % Calculate intersection according to equation (13) at Proposition 1 in
     % reference paper [1]
-    Z = [cZ.Z, zeros(size(S.Z)-[0,1])];
+    Z = [cZ.c, cZ.G, zeros(size(S.G))];
     A = blkdiag(cZ.A,S.A);
-    A = [A; cZ.Z(:,2:end), -S.Z(:,2:end)];
-    b = [cZ.b; S.b; S.Z(:,1) - cZ.Z(:,1)];
+    A = [A; cZ.G, -S.G];
+    b = [cZ.b; S.b; S.c - cZ.c];
 
     res = conZonotope(Z,A,b);
     
     % delete all zero constraints and generators
-    res = deleteZeros(res);
+    res = compact_(res,'zeros',eps);
     
 
 elseif isa(S, 'halfspace')
@@ -100,8 +100,8 @@ elseif isa(S, 'halfspace')
     C = S.c';
     d = S.d;
 
-    G = cZ.Z(:,2:end);
-    c = cZ.Z(:,1);
+    G = cZ.G;
+    c = cZ.c;
 
     % compute lower bound
     l = supportFunc_(cZ,C','lower');
@@ -120,8 +120,8 @@ elseif isa(S, 'conHyperplane')
     C = (S.h.c)';
     d = S.h.d;
 
-    G = cZ.Z(:,2:end);
-    c = cZ.Z(:,1);
+    G = cZ.G;
+    c = cZ.c;
 
     A = [cZ.A; C*G];
     b = [cZ.b; d - C*c];
@@ -145,11 +145,11 @@ elseif isa(S, 'conHyperplane')
        end
     end
 
-elseif isa(S,'mptPolytope')
+elseif isa(S,'polytope')
     
     % get matrices for inequality constraints A*x <= b
-    A = S.P.A;
-    b = S.P.b;
+    A = S.A;
+    b = S.b;
     
     res = cZ;
     
@@ -181,4 +181,4 @@ else
     throw(CORAerror('CORA:noops',cZ,S));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

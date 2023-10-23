@@ -2,7 +2,7 @@ function res = subsref(obj, S)
 % subsref - Overloads the operator that selects elements, e.g. T(1,2),
 % where the element of the first row and second column is referred to.
 %
-% Syntax:  
+% Syntax:
 %    res = subsref(obj, S)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function res = subsref(obj, S)
 %
 % See also: zoo
 
-% Author:       Niklas Kochdumper
-% Written:      10-April-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       10-April-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = obj;
 
@@ -45,4 +45,4 @@ for j = 1:length(S)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

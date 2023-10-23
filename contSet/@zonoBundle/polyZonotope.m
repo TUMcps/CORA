@@ -1,7 +1,7 @@
 function pZ = polyZonotope(zB)
 % polyZonotope - Convert zonotope bundle to a polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    pZ = polyZonotope(zB)
 %
 % Inputs:
@@ -25,16 +25,16 @@ function pZ = polyZonotope(zB)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/polyZonotope, mptPolytope/polyZonotope
+% See also: zonotope/polyZonotope, polytope/polyZonotope
 
-% Author:       Niklas Kochdumper
-% Written:      26-October-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-October-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-poly = mptPolytope(zB);
+poly = polytope(zB);
 pZ = polyZonotope(poly);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

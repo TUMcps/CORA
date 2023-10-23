@@ -25,13 +25,13 @@ function res = eq(hyp1,hyp2,varargin)
 %
 % See also: conHyperplane/isequal
 
-% Author:       Mingrui Wang
-% Written:      21-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mingrui Wang
+% Written:       21-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = isequal(hyp1,hyp2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

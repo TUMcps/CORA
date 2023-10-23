@@ -12,12 +12,12 @@ function res = test_neurNetContrSys_simulate
 % Outputs:
 %    res - true/false
 
-% Author:       Tobias Ladner
-% Written:      28-November-2022
-% Last update:  ---
-% Last revision:---
-%
-%------------- BEGIN CODE --------------
+% Authors:       Tobias Ladner
+% Written:       28-November-2022
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 % dynamic system
 f = @(x,u) [x(2) + u(2); (1-x(1)^2)*x(2) - x(1) + u(1)];
@@ -49,4 +49,4 @@ close(gcf);
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

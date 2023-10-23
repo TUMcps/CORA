@@ -1,7 +1,7 @@
 function S = getSubset(cPZ,id,val)
 % getSubset - extract a subset by specifying new ranges for the factors
 %
-% Syntax:  
+% Syntax:
 %    S = getSubset(cPZ,id,val)
 %
 % Inputs:
@@ -15,11 +15,11 @@ function S = getSubset(cPZ,id,val)
 % Example: 
 %    c = [0;0];
 %    G = [2 0 2; 0 2 2];
-%    expMat = [1 0 1; 0 1 1; 0 0 0];
+%    E = [1 0 1; 0 1 1; 0 0 0];
 %    A = [1 -0.5 0.5];
 %    b = 0.5;
-%    expMat_ = [0 1 2; 1 0 0; 0 1 0];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    EC = [0 1 2; 1 0 0; 0 1 0];
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 %    
 %    S = getSubset(cPZ,2,interval(-0.5,0.3));
 %
@@ -33,12 +33,12 @@ function S = getSubset(cPZ,id,val)
 %
 % See also: conPolyZono, polyZonotope/getSubset
 
-% Author:       Niklas Kochdumper
-% Written:      20-January-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       20-January-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{cPZ,'att','conPolyZono'};
@@ -46,21 +46,21 @@ inputArgsCheck({{cPZ,'att','conPolyZono'};
                 {val,'att',{'numeric','interval'},'vector'}});
 
 % get subset for states by calling get subset method for polyZonotope
-pZ = polyZonotope(cPZ.c,cPZ.G,cPZ.Grest,cPZ.expMat,cPZ.id);
+pZ = polyZonotope(cPZ.c,cPZ.G,cPZ.GI,cPZ.E,cPZ.id);
 pZ = getSubset(pZ,id,val);
 
 % get subset for constraints 
 if ~isempty(cPZ.A)
     
    % construct polynomial zonotope for constraints
-   temp = polyZonotope(-cPZ.b,cPZ.A,[],cPZ.expMat_,cPZ.id);
+   conPZ = polyZonotope(-cPZ.b,cPZ.A,[],cPZ.EC,cPZ.id);
    
    % get subset for polynomial zonotope of the constraints
-   conSet = getSubset(temp,id,val);
+   subConPZ = getSubset(conPZ,id,val);
    
    % check for emptyness
-   if isnumeric(conSet) 
-       if ~all(abs(conSet) < 1e-8)
+   if isnumeric(subConPZ) 
+       if ~all(abs(subConPZ) < 1e-8)
             S = []; return; 
        else
             S = conPolyZono(pZ); return; 
@@ -68,32 +68,31 @@ if ~isempty(cPZ.A)
    end 
    
    % add subsets for states and constraints
-   if all(size(pZ.id) - size(conSet.id) == 0) && ...
-      all(pZ.id -conSet.id == 0)
-       S = conPolyZono(pZ.c,pZ.G,pZ.expMat,conSet.G,-conSet.c, ...
-                       conSet.expMat,pZ.Grest,pZ.id);
+   if all(size(pZ.id) - size(subConPZ.id) == 0) && ...
+      all(pZ.id -subConPZ.id == 0)
+       S = conPolyZono(pZ.c,pZ.G,pZ.E,subConPZ.G,-subConPZ.c, ...
+                       subConPZ.E,pZ.GI,pZ.id);
    else
        % merge identifier vectors
-       id = unique([pZ.id;conSet.id]);
+       id = unique([pZ.id;subConPZ.id]);
        
        % adapt state exponent matrices
-       expMat = pZ.expMat;
-       temp = abs(length(pZ.id) - length(id));
+       E = pZ.E;
+       conPZ = abs(length(pZ.id) - length(id));
        
-       if temp > 0
-           expMat = [expMat; zeros(temp,size(expMat,2))];
+       if conPZ > 0
+           E = [E; zeros(conPZ,size(E,2))];
        end
        
        % adapt constraint exponent matrix
-       expMat_ = zeros(length(id),size(conSet.expMat,2));
+       E_ = zeros(length(id),size(subConPZ.E,2));
        
-       for i = 1:length(conSet.id)
-          expMat_(id == conSet.id(i),:) = conSet.expMat(i,:);
+       for i = 1:length(subConPZ.id)
+          E_(id == subConPZ.id(i),:) = subConPZ.E(i,:);
        end
        
        % construct resulting set
-       S = conPolyZono(pZ.c,pZ.G,expMat,conSet.G,-conSet.c, ...
-                       expMat_,pZ.Grest,id);
+       S = conPolyZono(pZ.c,pZ.G,E,subConPZ.G,-subConPZ.c,E_,pZ.GI,id);
        
    end
    
@@ -105,4 +104,4 @@ else
    end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

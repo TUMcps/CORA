@@ -1,7 +1,7 @@
 function res = isIntersecting_(C,S,varargin)
 % isIntersecting_ - determines if a capsule intersects a set
 %
-% Syntax:  
+% Syntax:
 %    res = isIntersecting_(C,S)
 %    res = isIntersecting_(C,S,type)
 %
@@ -33,14 +33,14 @@ function res = isIntersecting_(C,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conZonotope/isIntersecting_
+% See also: contSet/isIntersecting, conZonotope/isIntersecting_
 
-% Author:       Niklas Kochdumper
-% Written:      21-November-2019 
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename isIntersecting_)
+% Authors:       Niklas Kochdumper
+% Written:       21-November-2019 
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
-%------------- BEGIN CODE --------------    
+% ------------------------------ BEGIN CODE -------------------------------
     
     % check for intersection
     if isa(S,'capsule')
@@ -61,7 +61,7 @@ function res = isIntersecting_(C,S,varargin)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function res = aux_intersectionCapsule(C1,C2)
 % check if two capsules C1 and C2 intersect
@@ -105,4 +105,4 @@ function res = aux_intersectionCapsule(C1,C2)
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

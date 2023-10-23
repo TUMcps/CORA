@@ -2,7 +2,7 @@ function C = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix with 
 %    a capsule
 %
-% Syntax:  
+% Syntax:
 %    C = mtimes(factor1,factor2)
 %
 % Inputs:
@@ -27,12 +27,12 @@ function C = mtimes(factor1,factor2)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      04-March-2019
-% Last update:  05-May-2020 (MW, standardized error message)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-March-2019
+% Last update:   05-May-2020 (MW, standardized error message)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %Find a capsule object
 [C,matrix] = findClassArg(factor1,factor2,'capsule');
@@ -65,7 +65,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(C)
+    if representsa_(C,'emptySet',eps)
         return
     end
 
@@ -77,4 +77,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

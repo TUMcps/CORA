@@ -1,7 +1,7 @@
 function res = test_emptySet_supportFunc
 % test_emptySet_supportFunc - unit test function of and
 %
-% Syntax:  
+% Syntax:
 %    res = test_emptySet_supportFunc
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_emptySet_supportFunc
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init empty set
 n = 2;
@@ -45,4 +45,4 @@ res(end+1,1) = val == interval(-Inf,Inf);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

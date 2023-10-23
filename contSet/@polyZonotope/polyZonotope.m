@@ -7,21 +7,21 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) polyZonotope < cont
 %    obj = polyZonotope()
 %    obj = polyZonotope(pZ)
 %    obj = polyZonotope(c,G)
-%    obj = polyZonotope(c,G,Grest)
-%    obj = polyZonotope(c,[],Grest)
-%    obj = polyZonotope(c,G,Grest,expMat)
-%    obj = polyZonotope(c,G,[],expMat)
-%    obj = polyZonotope(c,G,Grest,expMat,id)
-%    obj = polyZonotope(c,G,[],expMat,id)
+%    obj = polyZonotope(c,G,GI)
+%    obj = polyZonotope(c,[],GI)
+%    obj = polyZonotope(c,G,GI,E)
+%    obj = polyZonotope(c,G,[],E)
+%    obj = polyZonotope(c,G,GI,E,id)
+%    obj = polyZonotope(c,G,[],E,id)
 %
 % Inputs:
 %    pZ - polyZonotope object
 %    c - center of the polynomial zonotope (dimension: [nx,1])
 %    G - generator matrix containing the dependent generators 
 %       (dimension: [nx,N])
-%    Grest - generator matrix containing the independent generators
+%    GI - generator matrix containing the independent generators
 %            (dimension: [nx,M])
-%    expMat - matrix containing the exponents for the dependent generators
+%    E - matrix containing the exponents for the dependent generators
 %             (dimension: [p,N])
 %    id - vector containing the integer identifiers for the dependent
 %         factors (dimension: [p,1])
@@ -32,10 +32,10 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) polyZonotope < cont
 % Example: 
 %    c = [0;0];
 %    G = [2 0 1;0 2 1];
-%    Grest = [0;0.5];
-%    expMat = [1 0 3;0 1 1];
+%    GI = [0;0.5];
+%    E = [1 0 3;0 1 1];
 % 
-%    pZ = polyZonotope(c,G,Grest,expMat);
+%    pZ = polyZonotope(c,G,GI,E);
 % 
 %    plot(pZ,[1,2],'FaceColor','r');
 %
@@ -45,22 +45,27 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) polyZonotope < cont
 %
 % See also: zonotope
 
-% Author:        Niklas Kochdumper, Mark Wetzlinger, Tobias Ladner
+% Authors:       Niklas Kochdumper, Mark Wetzlinger, Tobias Ladner
 % Written:       26-March-2018 
 % Last update:   02-May-2020 (MW, add property validation, def constructor)
 %                21-March-2021 (MW, error messages, size checks, restructuring)
 %                14-December-2022 (TL, restructuring)
-%                29-March-2023 (TL: optimized constructor)
+%                29-March-2023 (TL, optimized constructor)
+%                13-September-2023 (TL, replaced Grest/expMat properties with GI/E)
 % Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = protected, GetAccess = public)
-    c = [];
-    G = [];
+    c;      % center
+    G;      % dependent generator matrix
+    GI;     % independent generator matrix
+    E;      % exponent matrix
+    id;     % identifier vector
+
+    % legacy
     Grest = [];
     expMat = [];
-    id = [];
 end
    
 methods
@@ -73,21 +78,21 @@ methods
         end
 
         % 1. parse input arguments: varargin -> vars
-        [c,G,Grest,expMat,id] = aux_parseInputArgs(varargin{:});
+        [c,G,GI,E,id] = aux_parseInputArgs(varargin{:});
 
         % 2. check correctness of input arguments
-        aux_checkInputArgs(c,G,Grest,expMat,id,nargin);
+        aux_checkInputArgs(c,G,GI,E,id,nargin);
 
         % 3. remove redundancies
-        if ~isempty(expMat)
-            [expMat,G] = removeRedundantExponents(expMat,G);
+        if ~isempty(E)
+            [E,G] = removeRedundantExponents(E,G);
         end
 
         % 4. assign properties
         obj.c = c;
         obj.G = G;
-        obj.Grest = Grest;
-        obj.expMat = expMat;
+        obj.GI = GI;
+        obj.E = E;
         obj.id = id;
 
     end
@@ -97,12 +102,51 @@ methods (Static = true)
     Z = generateRandom(varargin) % generate random polyZonotope
 end
 
+
+% getter & setter ---------------------------------------------------------
+
+methods
+    % getter & setter for legacy Grest property
+    function Grest = get.Grest(obj)
+        warning(['CORA: The property polyZonotope.Grest is deprecated (since CORA 2024) and will be removed in a future release. ' ...
+            'Please use polyZonotope.GI instead. ' ...
+            'This change was made to be consistent with the notation in papers.']);
+
+        Grest = obj.GI;
+    end
+
+    function obj = set.Grest(obj, Grest)
+        warning(['CORA: The property polyZonotope.Grest is deprecated (since CORA 2024) and will be removed in a future release. ' ...
+            'Please use polyZonotope.GI instead. ' ...
+            'This change was made to be consistent with the notation in papers.']);
+
+        obj.GI = Grest;
+    end
+
+    % getter & setter for legacy expMat property
+    function expMat = get.expMat(obj)
+        warning(['CORA: The property polyZonotope.expMat is deprecated (since CORA 2024) and will be removed in a future release. ' ...
+            'Please use polyZonotope.E instead. ' ...
+            'This change was made to be consistent with the notation in papers.']);
+
+        expMat = obj.E;
+    end
+
+    function obj = set.expMat(obj, expMat)
+        warning(['CORA: The property polyZonotope.expMat is deprecated (since CORA 2024) and will be removed in a future release. ' ...
+            'Please use polyZonotope.E instead. ' ...
+            'This change was made to be consistent with the notation in papers.']);
+
+        obj.E = expMat;
+    end
+end
+
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function [c,G,Grest,expMat,id] = aux_parseInputArgs(varargin)
+function [c,G,GI,E,id] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
 
     % check number of input arguments
@@ -112,28 +156,28 @@ function [c,G,Grest,expMat,id] = aux_parseInputArgs(varargin)
 
     % no input arguments
     if nargin == 0
-        c = []; G = []; Grest = []; expMat = []; id = []; 
+        c = []; G = []; GI = []; E = []; id = []; 
         return
     end
 
     % set default values
-    [c,G,Grest,expMat,id] = setDefaultValues({[],[],[],[],[]},varargin);
+    [c,G,GI,E,id] = setDefaultValues({[],[],[],[],[]},varargin);
 
     % default value for exponent matrix
-    if all(size(expMat) == [0,0])
+    if all(size(E) == [0,0])
         h = size(G,2);
-        expMat = eye(h);
+        E = eye(h);
     end
 
     % number of dependent factors
     if isempty(id)
-        p = size(expMat,1);
+        p = size(E,1);
         id = (1:p)'; % column vector
     end
 
 end
 
-function aux_checkInputArgs(c,G,Grest,expMat,id,n_in)
+function aux_checkInputArgs(c,G,GI,E,id,n_in)
 % check correctness of input arguments
 
     % only check if macro set to true
@@ -142,8 +186,8 @@ function aux_checkInputArgs(c,G,Grest,expMat,id,n_in)
         inputArgsCheck({ ...
             {c, 'att', 'numeric', 'finite'};
             {G, 'att', 'numeric', {'finite', 'matrix'}};
-            {Grest, 'att', 'numeric', {'finite', 'matrix'}};
-            {expMat, 'att', 'numeric', ...
+            {GI, 'att', 'numeric', {'finite', 'matrix'}};
+            {E, 'att', 'numeric', ...
                 {'integer', 'nonnegative', 'matrix'}};
             {id, 'att', 'numeric', 'integer'};
         })
@@ -161,15 +205,15 @@ function aux_checkInputArgs(c,G,Grest,expMat,id,n_in)
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 'Dimension mismatch between center and dependent generator matrix.'));
         end
-        if ~isempty(Grest) && size(Grest,1) ~= size(c,1)
+        if ~isempty(GI) && size(GI,1) ~= size(c,1)
              throw(CORAerror('CORA:wrongInputInConstructor',...
                  'Dimension mismatch between center and independent generator matrix.'));
         end
-        if size(expMat,2) ~= size(G,2)
+        if size(E,2) ~= size(G,2)
              throw(CORAerror('CORA:wrongInputInConstructor',...
                  'Dimension mismatch between dependent generator matrix and exponent matrix.'));
         end
-        if size(id, 1) ~= size(expMat,1)
+        if size(id, 1) ~= size(E,1)
              throw(CORAerror('CORA:wrongInputInConstructor',...
                  'Dimension mismatch between exponent matrix and identifier vector.'));
         end
@@ -177,4 +221,4 @@ function aux_checkInputArgs(c,G,Grest,expMat,id,n_in)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

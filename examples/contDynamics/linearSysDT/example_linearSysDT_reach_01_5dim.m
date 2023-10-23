@@ -2,7 +2,7 @@ function completed = example_linearSysDT_reach_01_5dim()
 % example_linearSysDT_reach_01_5dim - example of discrete-time linear 
 %    reachability analysis with uncertain inputs
 %
-% Syntax:  
+% Syntax:
 %    example_linearSysDT_reach_01_5dim
 %
 % Inputs:
@@ -11,12 +11,12 @@ function completed = example_linearSysDT_reach_01_5dim()
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      20-March-2020
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       20-March-2020
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % System Dynamics ---------------------------------------------------------
@@ -77,13 +77,14 @@ dims = {[1 2]};
 for k = 1:length(dims)
     
     figure; hold on; box on
+    useCORAcolors("CORA:contDynamics")
     projDims = dims{k};
 
     % plot reachable set
     plot(R,projDims);
     
     % plot initial output set
-    plot(R.timePoint.set{1},projDims,'FaceColor','w','EdgeColor','k');
+    plot(R.timePoint.set{1},projDims);
     
     % plot simulation results
     plot(simRes,projDims,'Traj','y','Marker','.');
@@ -96,4 +97,4 @@ end
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

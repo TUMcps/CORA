@@ -4,7 +4,7 @@ function res = testMP_Krylov_errorBounds(~)
 %    The exact error bounds are taken from Tab. 1 of [1].
 %    This test requires the multiple precision toolbox.
 %
-% Syntax:  
+% Syntax:
 %    res = testMP_Krylov_errorBounds(~)
 %
 % Inputs:
@@ -17,15 +17,15 @@ function res = testMP_Krylov_errorBounds(~)
 %    [1] Saad, Y. Analysis of Some Krylov Subspace Approximations to the Matrix 
 %        Exponential Operator, SIAM Journal on Numerical Analysis, 1992, 29, 209-228.
 
-% Author:       Matthias Althoff
-% Written:      13-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       13-November-2018
+% Last update:   ---
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "initReach_Krylov"
+
 path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSys','private','initReach_Krylov.m');
 target = fullfile(path,'contDynamics','@linearSys','initReach_Krylov.m');
@@ -116,4 +116,4 @@ addpath(genpath(path));
 % All orders larger or equal?
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

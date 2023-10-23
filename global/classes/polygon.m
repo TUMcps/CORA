@@ -30,14 +30,14 @@ classdef polygon
 %
 % See also: interval, polytope, polyshape
 
-% Author:       Niklas Kochdumper
-% Written:      13-March-2020
-% Last update:  09-May-2023 (TL: constructor, plotPolygon)
-%               28-June-2023 (TL: minkDiff, minus, uplus, uminus)
-%               27-May-2023 (MW, isequal, removeCollinearPoints)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       13-March-2020
+% Last update:   09-May-2023 (TL, constructor, plotPolygon)
+%                28-June-2023 (TL, minkDiff, minus, uplus, uminus)
+%                27-May-2023 (MW, isequal, removeCollinearPoints)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     set = []
@@ -186,9 +186,9 @@ methods
     function pgon = or(pgon1, pgon2)
         % computes the union of two polygons
 
-        if isempty(pgon1)
+        if isemptyobject(pgon1) || representsa_(pgon1,'emptySet',eps)
             pgon = pgon2;
-        elseif isempty(pgon2)
+        elseif isemptyobject(pgon2) || representsa_(pgon2,'emptySet',eps)
             pgon = pgon1;
         else
             temp = union(pgon1.set, pgon2.set);
@@ -384,10 +384,6 @@ methods
         pgon = -1 * pgon;
     end
 
-    function res = isempty(pgon)
-        res = isempty(pgon.set.Vertices);
-    end
-
     function pgon = convHull(pgon, varargin)
         % compute convex hull of a polygon
 
@@ -433,20 +429,18 @@ methods
             pgon = [];
 
             for i = 1:length(list)
-
-                % convert current triangle to polynomial zonotope
-                poly = mptPolytope(list{i}.set.Vertices);
+                % convert current triangle to polynomial zonotope 
+                poly = polytope(list{i}.set.Vertices');
                 pZ = polyZonotope(poly);
-
+                
                 % compute quadratic map
-                temp = quadMap(pZ, Q);
-
+                temp = quadMap(pZ,Q);
+                
                 % compute polygon enclousre of the result
                 temp = polygon(temp);
-
+                
                 % unite with results for other triangles
                 pgon = pgon | temp;
-
             end
 
         elseif nargin == 3
@@ -468,26 +462,26 @@ methods
             pgon = [];
 
             for i = 1:length(list1)
-
-                % convert current triangle to polynomial zonotope
-                poly = mptPolytope(list1{i}.set.Vertices);
+                
+                % convert current triangle to polynomial zonotope 
+                poly = polytope(list1{i}.set.Vertices);
                 pZ1 = polyZonotope(poly);
-
+                
                 for j = 1:length(list2)
-
-                    % convert current triangle to polynomial zonotope
-                    poly = mptPolytope(list2{i}.set.Vertices);
+               
+                    % convert current triangle to polynomial zonotope 
+                    poly = polytope(list2{i}.set.Vertices);
                     pZ2 = polyZonotope(poly);
-
+                    
                     % compute quadratic map
-                    temp = quadMap(pZ1, pZ2, Q);
-
+                    temp = quadMap(pZ1,pZ2,Q);
+                    
                     % compute polygon enclosure of the result
                     temp = polygon(temp);
-
+                    
                     % unite with results for other triangles
                     pgon = pgon | temp;
-
+               
                 end
             end
 
@@ -521,14 +515,14 @@ methods
         I = interval(min(V, [], 1)', max(V, [], 1)');
     end
 
-    function P = mptPolytope(pgon)
-        % convert a convex polygon to a mptPolytope
-
+    function P = polytope(pgon)
+    % convert a convex polygon to a polytope object
         if isConvex(pgon)
-            P = mptPolytope(pgon.set.Vertices);
+            P = polytope(pgon.set.Vertices');
         else
-            P = mptPolytope(convHull(pgon));
+            P = polytope(convHull(pgon)');
         end
+
     end
 
     function p = randPoint(pgon, varargin)
@@ -795,6 +789,24 @@ methods
         end
 
     end
+
+    function res = isemptyobject(pgon)
+        res = isempty(pgon.set.Vertices);
+    end
+
+    function [res,S] = representsa_(pgon,type,tol,varargin)
+
+        switch type
+            case 'emptySet'
+                res = isempty(pgon.set.Vertices);
+                S = [];
+            otherwise
+                throw(CORAerror('CORA:notSupported',...
+                    'only type = ''emptySet'' supported'));
+
+        end
+
+    end
 end
 
 methods (Static = true)
@@ -816,4 +828,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

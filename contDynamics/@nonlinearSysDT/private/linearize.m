@@ -1,7 +1,7 @@
 function [obj,A_lin,U] = linearize(obj,R,options)
 % linearize - linearizes the nonlinearSysDT object
 %
-% Syntax:  
+% Syntax:
 %    [obj,A_lin,U] = linearize(obj,R,options)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function [obj,A_lin,U] = linearize(obj,R,options)
 %
 % See also: 
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      21-August-2012
-% Last update:  29-January-2018
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       21-August-2012
+% Last update:   29-January-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %linearization point p.u of the input is the center of the input u
 p.u = center(options.U) + options.uTrans;
@@ -49,4 +49,4 @@ U = Udelta + uTrans;
 %save linearization point
 obj.linError.p=p;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

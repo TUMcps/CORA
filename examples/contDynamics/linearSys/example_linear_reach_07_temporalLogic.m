@@ -22,12 +22,12 @@ function res = example_linear_reach_07_temporalLogic
 %
 % See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      16-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       16-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -96,4 +96,4 @@ plot(R.R0,[1,2],'DisplayName','Initial set');
 % example completed
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_plotPolygon
 % test_plotPolygon - unit test function for plotting of 2D/3D polygons
 %
-% Syntax:  
+% Syntax:
 %    res = test_plotPolygon
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_plotPolygon
 %
 % See also: none
 
-% Author:       Mark Wetzlinger, Tobias Lader
-% Written:      30-April-2023
-% Last update:  05-May-2023 (TL: check if plotted correctly)
-% Last revision:---
+% Authors:       Mark Wetzlinger, Tobias Ladner
+% Written:       30-April-2023
+% Last update:   05-May-2023 (TL, check if plotted correctly)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -119,4 +119,4 @@ end
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

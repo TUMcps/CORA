@@ -6,7 +6,7 @@ function res = testLong_linearSysDT_observe_01_vehicle()
 % It is checked whether the enclosing interval of the final observed set 
 % is close to an interval provided by a previous solution that has been saved
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_linearSysDT_observe_01_vehicle()
 %
 % Inputs:
@@ -15,13 +15,13 @@ function res = testLong_linearSysDT_observe_01_vehicle()
 % Outputs:
 %    res - true/false 
 
-% Author:       Matthias Althoff
-% Written:      08-Sep-2020
-% Last update:  16-Jan-2021
-%               04-Jun-2021
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       08-September-2020
+% Last update:   16-January-2021
+%                04-June-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% Load vehicle model
 load vehicleModel_dim2 vehicle params options
@@ -145,4 +145,4 @@ end
 % final result
 res = all(resPartial);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

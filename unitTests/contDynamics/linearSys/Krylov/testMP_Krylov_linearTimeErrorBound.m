@@ -4,7 +4,7 @@ function res = testMP_Krylov_linearTimeErrorBound(~)
 % as derived in Appendix B of [1].
 % This test requires the multiple precision toolbox.
 %
-% Syntax:  
+% Syntax:
 %    res = testMP_Krylov_linearTimeErrorBound(~)
 %
 % Inputs:
@@ -18,15 +18,15 @@ function res = testMP_Krylov_linearTimeErrorBound(~)
 %        Uncertain Inputs in the Krylov Subspace , IEEE Transactions on 
 %        Automatic Control 65(2), 477–492, 2020.
 
-% Author:       Matthias Althoff
-% Written:      17-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       17-November-2018
+% Last update:   ---
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "initReach_Krylov"
+
 path = CORAROOT;
 source = fullfile(path,'contDynamics','@linearSys','private','initReach_Krylov.m');
 target = fullfile(path,'contDynamics','@linearSys','initReach_Krylov.m');
@@ -84,7 +84,7 @@ end
 linDyn = linearSys('KrylovTest',A,1); %initialize quadratic dynamics
 
 % test errors of first system
-res_1 = testProcedure(linDyn, options);
+res_1 = aux_testProcedure(linDyn, options);
 
 % system with nu(A)>0 -----------------------------------------------------
 N = 100;
@@ -115,7 +115,7 @@ end
 linDyn = linearSys('KrylovTest',A,1); %initialize quadratic dynamics
 
 % test errors of second system
-res_2 = testProcedure(linDyn, options);
+res_2 = aux_testProcedure(linDyn, options);
 
 % final result
 res = res_1 && res_2;
@@ -128,9 +128,9 @@ addpath(genpath(path));
 end
 
 
-% Auxiliary Functions
+% Auxiliary functions -----------------------------------------------------
 
-function res = testProcedure(linDyn, options)
+function res = aux_testProcedure(linDyn, options)
 
 % compute overapproximation
 initReach_Krylov(linDyn, options.R0, options);
@@ -150,7 +150,7 @@ for i=1:length(t)
     errorBound = options.krylovError*t(i);
     
     % compute Krylov error
-    error = KrylovError(linDyn,linDyn.A,options.x0,t(i),krylovOrder,options);
+    error = aux_KrylovError(linDyn,linDyn.A,options.x0,t(i),krylovOrder,options);
     
     % check whether error is within bounds
     res(end+1) = (error <= errorBound);
@@ -162,7 +162,7 @@ res = all(res);
 end
 
 
-function error = KrylovError(linDyn,A,v,t_f,krylovOrder,options)
+function error = aux_KrylovError(linDyn,A,v,t_f,krylovOrder,options)
 
     % set precision for variable precison toolbox
     precision = 100;
@@ -235,4 +235,4 @@ function error = KrylovError(linDyn,A,v,t_f,krylovOrder,options)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

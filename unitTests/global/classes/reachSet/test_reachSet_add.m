@@ -1,7 +1,7 @@
 function res = test_reachSet_add
 % test_reachSet_add - unit test function for add
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_add()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_reachSet_add
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      06-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       06-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -96,4 +96,4 @@ for i=1:length(R2)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

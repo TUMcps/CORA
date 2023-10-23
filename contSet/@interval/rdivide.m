@@ -13,7 +13,7 @@ function res = rdivide(numerator, denominator)
 % [NaN, NaN]                                        if inf = 0 and sup = 0;
 % [-Inf, +Inf]                                      if inf < 0 and sup > 0.
 %
-% Syntax:  
+% Syntax:
 %    res = rdivide(numerator, denominator)
 %
 % Inputs:
@@ -34,13 +34,13 @@ function res = rdivide(numerator, denominator)
 %
 % See also: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      07-February-2016
-% Last update:  13-March-2016 (speed improvement)
-%               05-May-2020 (MW, added error message)
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       07-February-2016
+% Last update:   13-March-2016 (speed improvement)
+%                05-May-2020 (MW, added error message)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % an interval / a (matrix of) scalar(s)
 if isa(numerator, 'interval') && ~isa(denominator, 'interval')
@@ -130,4 +130,4 @@ if any(any(isnan(res.inf))) || any(any(isnan(res.sup)))
     throw(CORAerror('CORA:outOfDomain','validDomain','inf ~= 0 && sup ~= 0'));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

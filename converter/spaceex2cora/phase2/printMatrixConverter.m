@@ -4,7 +4,7 @@ function str = printMatrixConverter(M,maxLineLength)
 %    2nd function: ensure result string has no exessively long lines
 %    split into multiple lines via '...' if necessary
 %
-% Syntax:  
+% Syntax:
 %    str = printMatrixConverter(M,maxLineLength)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function str = printMatrixConverter(M,maxLineLength)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if(nargin<2)
     maxLineLength = 75;
@@ -106,4 +106,4 @@ if strlength(str) > maxLineLength
    str = str + chars(chars_pointer:end);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function E = MVEE(Z)
 % MVEE - Computes the Minimum-Volume-Enclosing ellipsoid (enclosing Z)
 %
-% Syntax:  
+% Syntax:
 %    E = MVEE(Z)
 %
 % Inputs:
@@ -28,15 +28,15 @@ function E = MVEE(Z)
 %
 % See also: enc_ellipsoid, inc_ellipsoid
 
-% Author:        Victor Gassmann
+% Authors:       Victor Gassmann
 % Written:       18-September-2019
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-c = center(Z);
-G = generators(Z);
+c = Z.c;
+G = Z.G;
 [n,m] = size(G);
 
 %check if efficient computation is possible
@@ -53,4 +53,4 @@ V = unique(vertices(Z)','stable','rows')';
 assert(all(abs(mean(V,2)-c)<=1e-10),'mean of vertices must result in center');
 E = ellipsoid.enclosePoints(V,'min-vol');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

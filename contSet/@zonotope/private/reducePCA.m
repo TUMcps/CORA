@@ -1,7 +1,7 @@
 function Zred = reducePCA(Z,order)
 % reducePCA - apply principal component analysis
 %
-% Syntax:  
+% Syntax:
 %    [Zred,t]=reducePCA(Z)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function Zred = reducePCA(Z,order)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      18-October-2013
-% Last update:  11-October-2017
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-October-2013
+% Last update:   11-October-2017
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % initialize Z_red
 Zred=Z;
@@ -58,6 +58,7 @@ if ~isempty(Gred)
 end
 
 %build reduced zonotope
-Zred.Z=[center,Gunred,Gred];
+Zred.c = center;
+Zred.G = [Gunred,Gred];
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

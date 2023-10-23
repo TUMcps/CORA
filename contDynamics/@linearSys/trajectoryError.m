@@ -4,7 +4,7 @@ function [E_err, c_tilde, d_tilde] = trajectoryError(obj,f,u,R0,tmin,tmax,tc,ord
 % the error for the mapping-based approach for guard intersection as
 % presented at HSCC'12.
 %
-% Syntax:  
+% Syntax:
 %    E_err = trajectoryError(A,f,u,R0,tmin,tmax,tc,order,n)
 %
 % Inputs:
@@ -28,12 +28,12 @@ function [E_err, c_tilde, d_tilde] = trajectoryError(obj,f,u,R0,tmin,tmax,tc,ord
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      23-August-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       23-August-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %in case there is no flow correction
 if ~iscell(f)
@@ -48,7 +48,7 @@ dim = length(u);
 A = obj.A;
 
 %compute powers of tmin and tmax
-tZono = timePowers(tmin,tmax,order);
+tZono = aux_timePowers(tmin,tmax,order);
 
 %obtain center and delta set
 x0 = center(R0);
@@ -104,11 +104,12 @@ c_tilde = c_tilde.int;
 d_tilde = -n.'*u_tilde;
 d_tilde = interval(d_tilde);
 
+end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-function tZono = timePowers(tmin,tmax,order)
-
+function tZono = aux_timePowers(tmin,tmax,order)
 
 %first order
 tminPow(1) = tmin;
@@ -132,7 +133,6 @@ for i=1:order
     tZono{i+1} = matZonotope(tmidPow(i+1),tRad);
 end
 
+end
 
-
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -16,12 +16,12 @@ function res = test_contDynamics_isemptyobject
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty object
 res = isemptyobject(contDynamics());
@@ -38,4 +38,4 @@ res(end+1,1) = ~isemptyobject(contDynamics('sys',1));
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

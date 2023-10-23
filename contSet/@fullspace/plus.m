@@ -4,7 +4,7 @@ function res = plus(summand1,summand2)
 %    case R^0: can only be added to another R^0, resulting in R^0;
 %              or to the empty set, resulting in the empty set
 %
-% Syntax:  
+% Syntax:
 %    res = plus(summand1,summand2)
 %
 % Inputs:
@@ -25,12 +25,12 @@ function res = plus(summand1,summand2)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % determine fullspace object
 [res,summand] = findClassArg(summand1,summand2,'fullspace');
@@ -42,17 +42,11 @@ end
 % check dimensions of ambient space
 equalDimCheck(res,summand);
 
-if isnumeric(summand)
-    % add a point
-    if ~isempty(summand)
-        % return fs as before
-    else
-        res = emptySet(res.dimension);
-    end
-elseif isemptyobject(summand) || isempty(summand)
+if representsa_(summand,'emptySet',eps)
+    % return empty set
     res = emptySet(res.dimension);
 else
     % return fs as before
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

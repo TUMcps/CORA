@@ -1,7 +1,7 @@
 function Z = generateRandom(varargin)
 % generateRandom - Generates a random zonotope
 %
-% Syntax:  
+% Syntax:
 %    Z = zonotope.generateRandom()
 %    Z = zonotope.generateRandom('Dimension',n)
 %    Z = zonotope.generateRandom('Dimension',n,'NrGenerators',nrGens)
@@ -30,14 +30,14 @@ function Z = generateRandom(varargin)
 %
 % See also: -
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      17-Sep-2019
-% Last update:  24-Sep-2019
-%               01-May-2020 (integration of randomZonotope.m)
-%               19-May-2022 (name-value pair syntax)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       17-September-2019
+% Last update:   24-September-2019
+%                01-May-2020 (integration of randomZonotope.m)
+%                19-May-2022 (name-value pair syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -56,7 +56,6 @@ else
     % distribution for generators given?
     [NVpairs,type] = readNameValuePair(NVpairs,'Distribution');
 end
-
 
 
 % default computation for dimension
@@ -115,4 +114,4 @@ Z = zonotope(c,G);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

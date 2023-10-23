@@ -44,14 +44,14 @@ function [H,H_str] = addedTermsHessian(pZ,varargin)
 %
 % See also: ---
 
-% Author:       Victor Gassmann
-% Written:      22-December-2021
-% Last update:  04-July-2022 (VG: error handeling, allowing additional
-%                               parameters)
-%               16-November-2022 (LS: return structure matrix)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       22-December-2021
+% Last update:   04-July-2022 (VG, error handeling, additional parameters)
+%                16-November-2022 (LS, return structure matrix)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 if isempty(varargin)
     tol = 0;
     [id_diff,id_param] = checkDiffParamIds(pZ);
@@ -78,7 +78,7 @@ id = pZ.id;
 ind_diff = ismember(id,id_diff);
 
 % cut all terms that would vanish if differentiated twice
-ind_cut = sum(pZ.expMat(ind_diff,:),1)<=1 | all(withinTol(pZ.G,0,tol),1);
+ind_cut = sum(pZ.E(ind_diff,:),1)<=1 | all(withinTol(pZ.G,0,tol),1);
 if ~all(ind_cut)
     pZ_gsum = [];
     % ids for lambda
@@ -86,18 +86,18 @@ if ~all(ind_cut)
     for i=1:Nt
         pZ_i = project(pZ,i);
         % again, cut all terms that would vanish if differentiated twice
-        ind_cut_i = withinTol(pZ_i.G,0,tol) | sum(pZ_i.expMat(ind_diff,:),1)<=1;
+        ind_cut_i = withinTol(pZ_i.G,0,tol) | sum(pZ_i.E(ind_diff,:),1)<=1;
 
         % remove <= linear generators
         if ~all(ind_cut_i)
             pZ_i.G = pZ_i.G(:,~ind_cut_i);
-            pZ_i.expMat = pZ_i.expMat(:,~ind_cut_i);
+            pZ_i.E = pZ_i.E(:,~ind_cut_i);
 
             pZ_i_ext = pZ_i;
             % add dep factor used to input weight later on (will not be
             % differentiated against)
-            mi = size(pZ_i.expMat,2);
-            pZ_i_ext.expMat = [pZ_i.expMat;ones(1,mi)];
+            mi = size(pZ_i.E,2);
+            pZ_i_ext.E = [pZ_i.E;ones(1,mi)];
             pZ_i_ext.id = [pZ_i.id;idl(i)];
             % remove center (since it will be thrown away anyway)
             pZ_i_ext.c = 0;
@@ -139,4 +139,4 @@ else
     H_str = zeros(length(id_diff));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

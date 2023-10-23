@@ -3,7 +3,7 @@ function linSys = generateRandom(varargin)
 %    x' = Ax + Bu
 %    y  = Cx
 %
-% Syntax:  
+% Syntax:
 %    linSys = linearSys.generateRandom()
 %    linSys = linearSys.generateRandom('Dimension',n)
 %    linSys = linearSys.generateRandom('Dimension',n,...
@@ -35,12 +35,12 @@ function linSys = generateRandom(varargin)
 %
 % See also: -
 
-% Author:       Victor Gassmann, Mark Wetzlinger
-% Written:      07-November-2022
-% Last update:  11-November-2022 (MW, integrate into linearSys)
-% Last revision:---
+% Authors:       Victor Gassmann, Mark Wetzlinger
+% Written:       07-November-2022
+% Last update:   11-November-2022 (MW, integrate into linearSys)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -76,11 +76,11 @@ if isempty(nrOutputs)
     nrOutputs = randi([1,2]);
 end
 
-if isempty(realInt)
+if representsa_(realInt,'emptySet',eps)
     realInt = interval(-1-10*rand(1),-rand(1));
 end
 
-if isempty(imagInt)
+if representsa_(imagInt,'emptySet',eps)
     % only one value needed...
     imagMax = 10*rand(1);
     imagInt = interval(-imagMax,imagMax);
@@ -144,4 +144,4 @@ C = randn(nrOutputs,n);
 % instantiate linear system​
 linSys = linearSys(A,B,[],C);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

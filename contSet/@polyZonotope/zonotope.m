@@ -1,7 +1,7 @@
 function Z = zonotope(pZ)
 % zonotope - computes an enclosing zonotope of the polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    Z = zonotope(pZ)
 %
 % Inputs:
@@ -22,32 +22,31 @@ function Z = zonotope(pZ)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval, mptPolytope
+% See also: interval, polytope
 
-% Author:       Niklas Kochdumper
-% Written:      24-March-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       24-March-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if ~isempty(pZ.G)
-    
     % determine dependent generators with exponents that are all even
-    isEvenColumn = all(mod(pZ.expMat, 2) == 0, 1);
+    isEvenColumn = all(mod(pZ.E, 2) == 0, 1);
     Gquad = pZ.G(:, isEvenColumn);
 
     % compute zonotope parameter
     c = pZ.c + 0.5 * sum(Gquad,2);
-    G = [pZ.G(:, ~isEvenColumn), 0.5*Gquad, pZ.Grest];
+    G = [pZ.G(:, ~isEvenColumn), 0.5*Gquad, pZ.GI];
 
     % generate zonotope
     Z = zonotope(c,G);
     
 else
-    
-    Z = zonotope(pZ.c,pZ.Grest);
+    % only independent generators
+    Z = zonotope(pZ.c,pZ.GI);
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

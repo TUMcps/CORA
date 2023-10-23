@@ -27,15 +27,15 @@ function han = plot(zB,varargin)
 %
 % See also: 
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      09-November-2010 
-% Last update:  13-February-2012
-%               19-October-2015 (NK, accelerate by using polyshape class)
-%               22-May-2022 (TL, 1D plots)
-%               05-April-2023 (TL: clean up using plotPolygon)
-% Last revision:12-July-2023 (TL, restructure)
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       09-November-2010 
+% Last update:   13-February-2012
+%                19-October-2015 (NK, accelerate by using polyshape class)
+%                22-May-2022 (TL, 1D plots)
+%                05-April-2023 (TL, clean up using plotPolygon)
+% Last revision: 12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input
 [zB,dims,NVpairs] = aux_parseInput(zB,varargin{:});
@@ -52,6 +52,7 @@ if nargout == 0
 end
 
 end
+
 
 % Auxiliary functions -----------------------------------------------------
 
@@ -181,4 +182,4 @@ function han = aux_plot3d(zB,dims,NVpairs)
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

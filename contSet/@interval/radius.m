@@ -1,7 +1,7 @@
 function r = radius(I)
 % radius - Computes radius of enclosing hyperball of an interval 
 %
-% Syntax:  
+% Syntax:
 %    r = radius(I)
 %
 % Inputs:
@@ -25,13 +25,13 @@ function r = radius(I)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      22-July-2016
-% Last update:  02-Sep-2019 (rename enclosingRadius -> radius)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-July-2016
+% Last update:   02-September-2019 (rename enclosingRadius -> radius)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 r = sqrt(sum(rad(I).^2));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

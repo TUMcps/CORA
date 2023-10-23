@@ -2,7 +2,7 @@ function res = testLong_spaceex2cora_linear_building()
 % testLong_spaceex2cora_linear_building - example of linear reachability 
 % analysis from the ARCH17 friendly competition (building example)
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_spaceex2cora_linear_building
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = testLong_spaceex2cora_linear_building()
 % Outputs:
 %    res - true/false 
 
-% Author:       Matthias Althoff, Raja Judeh
-% Written:      09-February-2017
-% Last update:  02-September-2018
-% Last revision:15-January-2019 (SX_HA to SX_lin)
+% Authors:       Matthias Althoff, Raja Judeh
+% Written:       09-February-2017
+% Last update:   02-September-2018
+% Last revision: 15-January-2019 (changed SX_HA to SX_lin)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% Specify continuous dynamics
 
@@ -64,4 +64,4 @@ end
 disp('Successful Conversion: error = ' + string(error))
 res = true;
 
-%------------- END OF CODE --------------  
+% ------------------------------ END OF CODE ------------------------------

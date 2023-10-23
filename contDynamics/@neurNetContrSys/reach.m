@@ -3,8 +3,8 @@ function [R, res] = reach(obj, params, options, evParams, varargin)
 %    of a continuous system
 %
 % Syntax:
-%    R = reach(obj,params,options)
-%    [R,res] = reach(obj,params,options,spec)
+%    R = reach(obj,params,options,evParams)
+%    [R,res] = reach(obj,params,options,evParams,spec)
 %
 % Inputs:
 %    obj - neurNetContrSys object
@@ -25,79 +25,71 @@ function [R, res] = reach(obj, params, options, evParams, varargin)
 %
 % See also: neurNetContrSys
 
-% Author:       Niklas Kochdumper, Tobias Ladner
-% Written:      17-September-2021
-% Last update:  05-April-2022 (TL)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Tobias Ladner
+% Written:       17-September-2021
+% Last update:   05-April-2022 (TL)
+%                28-March-2023 (TL, parse input, clean up)
+%                20-July-2023 (TL, bugfix: mismatch time horizon & sampling)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
-options = aux_parseSettings(obj, params, options);
+% parse input
+if nargin < 4
+    throw(CORAerror("CORA:notEnoughInputArgs", 4))
+elseif nargin > 5
+    throw(CORAerror('CORA:tooManyInputArgs', 5));
+end
+spec = setDefaultValues({[]}, varargin);
+inputArgsCheck({ ...
+    {obj, 'att', 'neurNetContrSys'}; ...
+    {params, 'att', 'struct'}; ...
+    {options, 'att', 'struct'}; ...
+    {evParams, 'att', 'struct'}; ...
+    {spec, 'att', {'specification', 'numeric'}, {{}, {'empty'}}}; ...
+})
 
-% adapt specification to extended system dimension
-spec = [];
-if nargin >= 5
-    spec = aux_adaptSpecification(varargin{1}, obj.dim, obj.nn.neurons_out);
+% validate input
+[options,evParams] = aux_parseSettings(obj, params, options, evParams);
+
+% adapt specification
+if isnumeric(spec)
+    spec = [];
+else
+    spec = aux_adaptSpecification(spec, obj.dim, obj.nn.neurons_out);
 end
 
-% loop over the whole time horizon
+% init
 tVec = options.tStart:obj.dt:options.tFinal;
 if tVec(end) ~= options.tFinal
-    tVec = [tVec, options.tFinal];
+    % add tFinal if sampling time and time horizon don't match
+    % resulting in a partial time step at the end.
+    tVec(end+1) = options.tFinal;
 end
 X = options.R0;
 R = [];
 
 for i = 1:length(tVec) - 1
+    % compute next time step
+    options.tStart = tVec(i);
+    options.tFinal = tVec(i+1);
 
     % get control input = ouput of neural network
     U = obj.nn.evaluate(X, evParams);
 
-    % update initial set and time
-    if isa(X, 'zonotope')
-        Z = [X.Z, zeros(size(X.Z, 1), size(U.Z, 2)-size(X.Z, 2)); U.Z];
-        options.R0 = zonotope(Z);
-    elseif isa(X, 'polyZonotope')
-        if ~isempty(X.Grest)
-            diffXU = max(size(X.Grest, 2)-size(U.Grest, 2), 0);
-            diffUX = max(size(U.Grest, 2)-size(X.Grest, 2), 0);
-            Grest = [X.Grest, zeros(size(X.Grest, 1), diffUX); ...
-                zeros(size(U.Grest, 1), diffXU), U.Grest];
-        else
-            Grest = [zeros(dim(X), size(U.Grest, 2)); U.Grest];
-        end
+    % append control input to initial set
+    options.R0 = aux_appendU2X(X, U);
 
-        if all(size(X.expMat) == size(U.expMat)) ...
-                && all(all(X.expMat == U.expMat)) ... 
-                && all(size(X.id) == size(U.id)) ...
-                && all(X.id == U.id)
-            options.R0 = polyZonotope([X.c; U.c], [X.G; U.G], Grest, ...
-                X.expMat, X.id);
-        else
-            ids = unique([X.id; U.id]);
-            
-            c = [X.c; U.c];
-            G = blkdiag(X.G, U.G);
-
-            expMat = zeros(length(ids), size(G, 2));
-            expMat(ismember(ids, X.id), 1:size(X.expMat, 2)) = X.expMat;
-            expMat(ismember(ids, U.id), end-size(U.expMat, 2)+1:end) = U.expMat;
-
-            options.R0 = polyZonotope(c, G, Grest, expMat, ids);
-        end
-    end
-    options.tStart = tVec(i);
-    options.tFinal = tVec(i+1);
-
-    % compute reachable set for the controlled system
-    [Rtemp, res] = aux_reachability(obj.sys, options, spec);
+    % compute reachable set for the controlled system of the next step
+    % with constant input U
+    [R_i, res] = aux_reachability(obj.sys, options, spec);
 
     % store reachable set
-    R = add(R, project(Rtemp, 1:obj.dim));
-    X = project(Rtemp.timePoint.set{end}, 1:obj.nn.neurons_in);
-    X = X.replaceId(1:length(X.id));
+    R_i = project(R_i, 1:obj.dim);
+    R = add(R, R_i);
+    X = R_i.timePoint.set{end};
 
     % terminate if specifications are violated
     if ~res
@@ -107,20 +99,20 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function spec = aux_adaptSpecification(spec, n, m)
 % adapt the specifications to the extended system dimensions that include
 % the control input as additional states
 
 for i = 1:length(spec)
-    poly = mptPolytope(spec(i).set);
-    poly = projectHighDim(poly, n+m, 1:n);
+    poly = polytope(spec(i).set);
+    poly = lift_(poly, n+m, 1:n);
     spec(i) = specification(poly, spec(i).type, spec(i).time);
 end
 end
 
-function options = aux_parseSettings(obj, params, options)
+function [options, evParams] = aux_parseSettings(obj, params, options, evParams)
 % initilize the algorithm settings
 
 % check if the algorithm settings provided by the user are correct
@@ -136,8 +128,13 @@ end
 
 % initialize time-varying inputs
 if ~isfield(options, 'uTransVec')
-    temp = options.tStart:options.timeStep:options.tFinal;
-    options.uTransVec = repmat(options.uTrans, [1, length(temp)]);
+    tVec = options.tStart:options.timeStep:options.tFinal;
+    if tVec(end) ~= options.tFinal
+        % add tFinal if sampling time and time horizon don't match
+        % resulting in a partial time step at the end.
+        tVec(end+1) = options.tFinal;
+    end
+    options.uTransVec = repmat(options.uTrans, [1, length(tVec)]);
 end
 
 % check if splitting is turned off
@@ -147,16 +144,73 @@ if ~all(isinf(options.maxError))
         ' network controlled systems!']));
 end
 
+% parse evParams ----------------------------------
+
+if ~isfield(evParams, 'add_approx_error_to_GI')
+    % to reduce computational overhead
+    evParams.add_approx_error_to_GI = true;
+end
+
 % pre-compute derivatives
 derivatives(obj.sys, options);
 end
 
-function [R, res] = aux_reachability(obj, options, spec)
+function R0 = aux_appendU2X(X, U)
+    if isa(X, 'zonotope')
+        % TODO: only works if no order reduction is applied within nn
+        G = [X.G, zeros(size(X.G, 1), size(U.G, 2)-size(X.G, 2)); U.G];
+        R0 = zonotope([X.c;U.c],G);
+    elseif isa(X, 'polyZonotope')
+        if ~isempty(X.GI)
+            if size(X.GI, 2) > size(U.GI, 2)
+                throw(CORAerror("CORA:wrongValue", ...
+                    ['Not all generations in X.GI are still present' ...
+                    ' in U.GI. Might be due to order reductions ' ...
+                    'with the nn evaluation'] ...
+                    ))
+            end
+
+            % TODO: only works if no order reduction is applied within nn
+            diffUX = max(size(U.GI, 2)-size(X.GI, 2), 0);
+            GI = [X.GI, zeros(size(X.GI, 1), diffUX); U.GI];
+        else
+            GI = [zeros(dim(X), size(U.GI, 2)); U.GI];
+        end
+
+        % TODO: exactPlus using right ids
+        if all(size(X.E) == size(U.E)) ...
+                && all(all(X.E == U.E)) ... 
+                && all(size(X.id) == size(U.id)) ...
+                && all(X.id == U.id)
+            R0 = polyZonotope([X.c; U.c], [X.G; U.G], GI, X.E, X.id);
+        else
+            ids = unique([X.id; U.id]);
+            
+            c = [X.c; U.c];
+            G = blkdiag(X.G, U.G);
+
+            E = zeros(length(ids), size(G, 2));
+            E(ismember(ids, X.id), 1:size(X.E, 2)) = X.E;
+            E(ismember(ids, U.id), end-size(U.E, 2)+1:end) = U.E;
+
+            R0 = polyZonotope(c, G, GI, E, ids);
+        end
+    end
+end
+
+function [R, res] = aux_reachability(sys, options, spec)
 % compute the reachable set of the controlled system (without performing
 % option checks)
 
 res = true;
+
+% init time steps
 tVec = options.tStart:options.timeStep:options.tFinal;
+if tVec(end) ~= options.tFinal
+    % add tFinal if sampling time and intermediate time horizon don't match
+    % resulting in a partial time step at the end.
+    tVec(end+1) = options.tFinal;
+end
 
 % initialize cell-arrays that store the reachable set
 Rint.set = cell(length(tVec)-1, 1);
@@ -168,14 +222,15 @@ Rpoint.time{1} = options.tStart;
 
 % loop over all reachability steps
 for i = 1:length(tVec) - 1
+    options.timeStep = tVec(i+1) - tVec(i);
 
     % compute reachable set for one reachability step
     try
         options.uTrans = options.uTransVec(:, i);
         if i == 1
-            [Rnext, options] = initReach(obj, options.R0, options);
+            [Rnext, options] = initReach(sys, options.R0, options);
         else
-            [Rnext, options] = post(obj, Rnext, options);
+            [Rnext, options] = post(sys, Rnext, options);
         end
     catch ME
         R = aux_constructReachSet(Rpoint, Rint, i-1);
@@ -227,4 +282,4 @@ Rint.time = Rint.time(1:i);
 R = reachSet(Rpoint, Rint);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

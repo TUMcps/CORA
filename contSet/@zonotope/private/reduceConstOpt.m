@@ -5,7 +5,7 @@ function [Zred]=reduceConstOpt(Z,order, method, alg)
 % Subect to all Points of the Zonotope are inside 
 % sum(abs(C^-1 * G)) <= 1
 %
-% Syntax:  
+% Syntax:
 %    [Zred]=reduceConstOpt(Z,order, method, alg)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function [Zred]=reduceConstOpt(Z,order, method, alg)
 %
 % See also: 
 
-% Author:       Anna Kopetzki, Matthias Althoff
-% Written:      11-September-2016 (AK)
-% Last update:  27-June-2018 (MA)
-% Last revision:---
+% Authors:       Anna Kopetzki, Matthias Althoff
+% Written:       11-September-2016 (AK)
+% Last update:   27-June-2018 (MA)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % initialize Z_red
 Zred=Z;
@@ -72,7 +72,7 @@ if ~isempty(Gred)
     elseif strcmp(method, 'svd')
         [U0, S0, V0] = svd(C0);
         X0 = [reshape(U0, dim*dim, 1); reshape(S0, dim*dim, 1); reshape(V0, dim*dim, 1)];
-        Y_vec = fmincon(@(X)svdLogVol(X,G),X0,[],[],[],[],[],[], @(X)zonoSVDConst(X,G),options);
+        Y_vec = fmincon(@(X)aux_svdLogVol(X,G),X0,[],[],[],[],[],[], @(X)aux_zonoSVDConst(X,G),options);
         Y = reshape(Y_vec, dim, 3*dim);
         U = Y(:,1:dim);
         S = Y(:,(dim+1):2*dim);
@@ -87,7 +87,9 @@ Zred.Z=[cen,Gunred,Gred];
 end
 
 
-function vol=svdLogVol(X, G)
+% Auxiliary functions -----------------------------------------------------
+
+function vol=aux_svdLogVol(X, G)
     n = size(G,1);
     Y = reshape(X, n, 3*n);
     S = Y(:,(n+1):2*n);
@@ -95,7 +97,7 @@ function vol=svdLogVol(X, G)
     vol = sum(log(diag(abs(S)))); % log(diag(abs(S))) can be < 0
 end
 
-function [c, ceq]=zonoSVDConst(X, G)
+function [c, ceq]=aux_zonoSVDConst(X, G)
     n = size(G,1);
     Y = reshape(X, n, 3*n);
     U = Y(:,1:n);
@@ -109,4 +111,4 @@ function [c, ceq]=zonoSVDConst(X, G)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

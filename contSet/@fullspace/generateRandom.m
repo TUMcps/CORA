@@ -1,7 +1,7 @@
 function fs = generateRandom(varargin)
 % generateRandom - generates a random full-dimensional space
 %
-% Syntax:  
+% Syntax:
 %    fs = generateRandom()
 %    fs = generateRandom('Dimension',n)
 %
@@ -21,12 +21,12 @@ function fs = generateRandom(varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      25-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -49,4 +49,4 @@ end
 % init fullspace object
 fs = fullspace(n);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function hs = generateRandom(varargin)
 % generateRandom - Generates a random halfspace
 %
-% Syntax:  
+% Syntax:
 %    hs = halfspace.generateRandom()
 %    hs = halfspace.generateRandom('Dimension',n)
 %    hs = halfspace.generateRandom('Dimension',n,'NormalVector',c)
@@ -26,12 +26,12 @@ function hs = generateRandom(varargin)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
-% Last update:  19-May-2022 (name-value pair syntax)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-September-2019
+% Last update:   19-May-2022 (name-value pair syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -80,4 +80,4 @@ end
 % instantiate interval
 hs = halfspace(c,d);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

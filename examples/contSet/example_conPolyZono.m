@@ -2,7 +2,7 @@ function completed = example_conPolyZono()
 % example_conPolyZono - example demonstrating set based computation with 
 %                       constrained polynomial zonotopes
 %
-% Syntax:  
+% Syntax:
 %    completed = example_conPolyZono()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function completed = example_conPolyZono()
 %
 % See also: example_polyZonotope
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       08-February-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % construct zonotope
 Z = zonotope([0;0],[1 1;0 1]);
@@ -70,4 +70,4 @@ plot(res,[1,2],'Color',colorblind('r'),'Splits',25);
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

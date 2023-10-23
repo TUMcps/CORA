@@ -1,7 +1,7 @@
 function res = prod(I,varargin)
 % prod - product of array elements
 %
-% Syntax:  
+% Syntax:
 %    res = prod(I)
 %    res = prod(I,n)
 %
@@ -24,12 +24,12 @@ function res = prod(I,varargin)
 %
 % See also:
 
-% Author:       Dmitry Grebenyuk
-% Written:      24-October-2017
-% Last update:  
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       24-October-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 n = 1;
@@ -65,4 +65,4 @@ elseif n == 2 % reduce to a column
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

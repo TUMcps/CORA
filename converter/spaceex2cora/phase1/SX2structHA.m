@@ -37,12 +37,12 @@ function [automaton,componentTemplates,componentInstances] = ...
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if convtype
     disp("--------------------CONVERSION TO PARALLEL HA--------------------");
@@ -169,4 +169,4 @@ disp("-----------------------SX2structHA COMPLETE----------------------");
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

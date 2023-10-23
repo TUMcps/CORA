@@ -24,12 +24,12 @@ function han = plot(I,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Tobias Ladner
-% Written:      31-July-2016
-% Last update:  12-July-2023 (TL, use vertices)
-% Last revision:12-July-2023 (TL, restructure)
+% Authors:       Matthias Althoff, Tobias Ladner
+% Written:       31-July-2016
+% Last update:   12-July-2023 (TL, use vertices)
+% Last revision: 12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input
 [I,dims,NVpairs] = aux_parseInput(I,varargin{:});
@@ -46,6 +46,7 @@ if nargout == 0
 end
 
 end
+
 
 % Auxiliary functions -----------------------------------------------------
 
@@ -80,4 +81,4 @@ function V = aux_preprocess(I,dims)
     % infinity values in V will be considered in plotPolygon    
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------
