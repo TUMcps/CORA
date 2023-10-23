@@ -7,7 +7,7 @@ function [mergedTrans,tracker] = instantTransition(pHA,locID,allLabels,tracker)
 %    this transition is constructed here; any subsequent instant
 %    transitions are executed in the next iteration of the main loop
 %
-% Syntax:  
+% Syntax:
 %    [mergedTrans,tracker] = instantTransition(pHA,list,locID,allLabels,tracker)
 %
 % Inputs:
@@ -26,13 +26,12 @@ function [mergedTrans,tracker] = instantTransition(pHA,locID,allLabels,tracker)
 %
 % See also: parallelHybridAutomaton/reach, labelOccurrences
 
-% Author:       Mark Wetzlinger
-% Written:      20-June-2022
-% Last update:  ---
-% Last revision:06-June-2023 (MW, return merged transition, which will be
-%                                 saved in the pHA variable)
+% Authors:       Mark Wetzlinger
+% Written:       20-June-2022
+% Last update:   ---
+% Last revision: 06-June-2023 (MW, return merged transition)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % logical indices for instant transitions in currently active locations
 immTransNoLabel = cell(length(pHA.components),1);
@@ -244,7 +243,7 @@ mergedTrans = mergeTransitionSets(pHA,transList,locID,allLabels);
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function skip = aux_skipTransition(currComp,locID,syncLabel,allLabels)
 % check whether current transition is an instant transition: we have to
@@ -292,4 +291,4 @@ function skip = aux_skipTransition(currComp,locID,syncLabel,allLabels)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

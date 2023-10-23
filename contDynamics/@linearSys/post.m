@@ -1,7 +1,7 @@
 function [Rnext,options] = post(obj,~,options)
 % post - calls the post functions in the standard or Krylov space
 %
-% Syntax:  
+% Syntax:
 %    [Rnext,options] = post(obj,R,options)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function [Rnext,options] = post(obj,~,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      07-November-2018 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-November-2018 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check whether error specification for Krylov space exists
 if isfield(options,'krylovError')
@@ -37,4 +37,4 @@ else
     [Rnext,options] = post_Euclidean(obj,options);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

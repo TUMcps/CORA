@@ -2,7 +2,7 @@ function res = le(I1,I2)
 % le - Overloads the <= operator, checks whether one interval is a subset
 %    or equal to another interval
 %
-% Syntax:  
+% Syntax:
 %    res = le(I1,I2)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function res = le(I1,I2)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      22-July-2016 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-July-2016 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %all left borders of obj1 bigger than obj2?
 leftResult = all(infimum(I1) >= infimum(I2));
@@ -39,4 +39,4 @@ rightResult = all(supremum(I1) <= supremum(I2));
 %left and right interval test must be true
 res = leftResult & rightResult;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

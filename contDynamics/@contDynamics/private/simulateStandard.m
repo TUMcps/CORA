@@ -6,7 +6,7 @@ function res = simulateStandard(obj, options)
 %    and of how many different constant inputs the input trajectory
 %    consists.
 %
-% Syntax:  
+% Syntax:
 %    res = simulateStandard(obj, options)
 %
 % Inputs:
@@ -17,13 +17,13 @@ function res = simulateStandard(obj, options)
 %    res - object of class simResult storing time and states of the 
 %          simulated trajectories.
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      17-August-2016
-% Last update:  08-May-2020 (MW, update interface)
-%               28-June-2021 (MP, unify random simulation functions)
-% Last revision:10-November-2021 (MW, input trajectory handling)
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       17-August-2016
+% Last update:   08-May-2020 (MW, update interface)
+%                28-June-2021 (MP, unify random simulation functions)
+% Last revision: 10-November-2021 (MW, input trajectory handling)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % trajectory tracking
 tracking = isfield(options,'uTransVec');
@@ -120,7 +120,7 @@ for r = 1:options.points
         % note: for correct vector lengths in simulate, we require an
         % additional dummy entry in u and v (this is due to the evaluation
         % of the output equation at the end of the current [tStart,tFinal])
-        % ONLY for linear systems, and only if there is a throughput matrix
+        % ONLY for linear systems, and only if there is a feedthrough matrix
         if comp_y && any(any(obj.D))
             if size(options.u) > 1
                 dummy_u = ones(obj.nrOfInputs,1) * pi/2;
@@ -184,7 +184,8 @@ end
 end
 
 
-% Auxiliary function ------------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
+
 function ylast = aux_outputTrajectoryEnd(obj,options,xtraj)
 
     if isfield(options,'uTransVec')
@@ -196,4 +197,4 @@ function ylast = aux_outputTrajectoryEnd(obj,options,xtraj)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

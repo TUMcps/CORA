@@ -4,7 +4,7 @@ function [Rdelta,options] = deltaReach_adaptive(obj,Rinit,options)
 % implemented only in adaptive nonlinear analysis: no reduction,
 % less options for chosen set representation
 %
-% Syntax:  
+% Syntax:
 %    [Rdelta,options] = deltaReach_adaptive(obj,Rinit,options)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function [Rdelta,options] = deltaReach_adaptive(obj,Rinit,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      15-June-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       15-June-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %compute delta reachable set
 %load data from object structure
@@ -54,4 +54,4 @@ if options.isRV
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

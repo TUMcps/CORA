@@ -2,7 +2,7 @@ function res = project(cPZ,dims)
 % projects - Projects a constrained polynomial zonotope onto the specified
 %    dimensions
 %
-% Syntax:  
+% Syntax:
 %    res = project(cPZ,dims)
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = project(cPZ,dims)
 % Example: 
 %    c = [0;0;0];
 %    G = [2 0 1;0 2 1;1 0 0];
-%    expMat = [1 0 3;0 1 1;0 0 0];
+%    E = [1 0 3;0 1 1;0 0 0];
 %    A = [1 1 -1.5];
 %    b = 0.5;
-%    expMat_ = [1 0 0; 0 1 0; 0 0 1];
-%    Grest = [0.5 0.2; 0 0.1; 0.2 0];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_,Grest);
+%    EC = [1 0 0; 0 1 0; 0 0 1];
+%    GI = [0.5 0.2; 0 0.1; 0.2 0];
+%    cPZ = conPolyZono(c,G,E,A,b,EC,GI);
 %     
 %    cPZ_ = project(cPZ,[1,2]);
 %
@@ -34,12 +34,12 @@ function res = project(cPZ,dims)
 %
 % See also: zonotope/project, conZonotope/project
 
-% Author:       Niklas Kochdumper
-% Written:      07-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       07-November-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 % inputArgsCheck({{cPZ,'att','conPolyZono'};
@@ -51,8 +51,8 @@ res = cPZ;
 res.c = cPZ.c(dims);
 res.G = cPZ.G(dims,:);
 
-if ~isempty(cPZ.Grest)
-    res.Grest = res.Grest(dims,:); 
+if ~isempty(cPZ.GI)
+    res.GI = res.GI(dims,:); 
 end
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

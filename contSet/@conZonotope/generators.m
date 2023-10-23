@@ -2,7 +2,7 @@ function G = generators(cZ)
 % generators - returns the generators of a constrained zonotope as a matrix
 %    whose column vectors are the generators
 %
-% Syntax:  
+% Syntax:
 %    G = generators(cZ)
 %
 % Inputs:
@@ -23,13 +23,13 @@ function G = generators(cZ)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-March-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-March-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-G = cZ.Z(:,2:end);
+G = cZ.G;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

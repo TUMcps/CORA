@@ -3,7 +3,7 @@ function C = reduce(C,varargin)
 %    function exists only for operator overloading purposes as the set
 %    representation size of a capsule object is static
 %
-% Syntax:  
+% Syntax:
 %    C = reduce(C)
 %
 % Inputs:
@@ -22,13 +22,13 @@ function C = reduce(C,varargin)
 %
 % See also: ---
 
-% Author:       Mark Wetzlinger
-% Written:      17-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % no content...
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function res = test_probZonotope_pyramid
 %    intersection of a probabilistic zonotope with a polytope can be
 %    appropriately computed by the pyramid function
 %
-% Syntax:  
+% Syntax:
 %    res = test_probZonotope_pyramid
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = test_probZonotope_pyramid
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      17-August-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       17-August-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % generate probabilistic zonotope
 Z1 = [0 1 0; 0 0 1];
@@ -36,7 +36,7 @@ pZ3 = probZonotope(Z1,Z2,2);
 
 % polytope to be intersected
 I = interval([-10; -5],[10; -3]);
-P = mptPolytope(I);
+P = polytope(I);
 
 % provide mArray to determine accuracy of over-approximation
 mArray = [3 2 1];
@@ -49,4 +49,4 @@ intersectionProb_saved = 0.4867005538850111;
 
 res = withinTol(intersectionProb,intersectionProb_saved,1e-8);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

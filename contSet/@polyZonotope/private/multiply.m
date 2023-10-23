@@ -1,7 +1,7 @@
 function [G,E] = multiply(G1,E1,G2,E2)
 % multiply - ???
 %
-% Syntax:  
+% Syntax:
 %    [G,E] = multiply(G1,E1,G2,E2)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function [G,E] = multiply(G1,E1,G2,E2)
 %
 % See also: 
 
-% Author:       Victor Gassmann
-% Written:      ---
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if size(G1,2)~=size(E1,2) || size(G2,2)~=size(E2,2)
     if size(G1,2)~=size(E1,2)
@@ -60,4 +60,4 @@ if isempty(G)
     E = zeros(size(E,1),1);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

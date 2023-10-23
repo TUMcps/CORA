@@ -1,7 +1,7 @@
 function zB = quadMap(zB,Q)
 % quadMap - computes \{Q_{ijk}*x_j*x_k|x \in Z\}
 %
-% Syntax:  
+% Syntax:
 %    zB = quadMap(zB,Q)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function zB = quadMap(zB,Q)
 %
 % See also: zonotope/quadMap
 
-% Author:       Niklas Kochdumper
-% Written:      13-June-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       13-June-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{zB,'att','zonoBundle'}; ...
@@ -32,4 +32,4 @@ for i=1:zB.parallelSets
     zB.Z{i} = quadMap(zB.Z{i},Q);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

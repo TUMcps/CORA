@@ -1,7 +1,7 @@
 function [error, errorInt, errorInt_x, errorInt_y, R_y] = linError_mixed_noInt(obj, options, R, Verror_y)
 % linError_mixed_noInt - computes the linearization error
 %
-% Syntax:  
+% Syntax:
 %    [error, errorInt, errorInt_x, errorInt_y, R_y] = ...
 %           linError_mixed_noInt(obj, options, R, Verror_y)
 %
@@ -26,13 +26,13 @@ function [error, errorInt, errorInt_x, errorInt_y, R_y] = linError_mixed_noInt(o
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      21-November-2011
-% Last update:  23-May-2013
-%               25-July-2016 (intervalhull replaced by interval)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-November-2011
+% Last update:   23-May-2013
+%                25-July-2016 (intervalhull replaced by interval)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %compute set of algebraic variables
 f0_con = obj.linError.f0_con;
@@ -62,9 +62,9 @@ obj.setHessian('int');
 [Hf, Hg] = obj.hessian(totalInt_x, totalInt_y, totalInt_u);
 
 %compute zonotope of state, constarint variables, and input
-Z_x = R.Z;
-Z_y_cor = R_y_cor.Z;
-Z_y_add = R_y_add.Z;
+Z_x = [R.c,R.G];
+Z_y_cor = [R_y_cor.c,R_y_cor.G];
+Z_y_add = [R_y_add.c,R_y_add.G];
 Z_0 = zeros(length(Z_x(:,1)), length(Z_y_add(1,:)));
 R_xy = zonotope([Z_x, Z_0; Z_y_cor, Z_y_add]);
 R_xyu = cartProd(R_xy, options.U);
@@ -103,8 +103,8 @@ error_x = error_x_mid + error_x_rad_zono;
 error_y = error_y_mid + error_y_rad_zono;
 
 %compute final error: to be CHECKED IF CORRELATION APPLIES
-Z_err_x_mid = error_x_mid.Z;
-Z_err_x_add_mid = obj.linError.CF_inv*error_y_mid.Z;
+Z_err_x_mid = [error_x_mid.c,error_x_mid.G];
+Z_err_x_add_mid = obj.linError.CF_inv*[error_y_mid.c,error_y_mid.G];
 error_mid = zonotope(Z_err_x_mid + Z_err_x_add_mid);
 error_rad = error_x_rad_zono + obj.linError.CF_inv*error_y_rad_zono;
 error = error_mid + error_rad;
@@ -127,4 +127,4 @@ errorInt_y = supremum(errorIHabs_y);
 errorIHabs_x = abs(interval(error_x));
 errorInt_x = supremum(errorIHabs_x);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

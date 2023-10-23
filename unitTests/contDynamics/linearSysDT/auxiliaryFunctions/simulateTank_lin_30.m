@@ -2,7 +2,7 @@ function simulateTank_lin_30(options)
 % simulateTank_lin_30 - simulates a linearized tank system to disturbances and 
 % sensor noise
 %
-% Syntax:  
+% Syntax:
 %    simulateTank_lin_30(options)_12
 %
 % Inputs:
@@ -21,12 +21,12 @@ function simulateTank_lin_30(options)
 % References: 
 %   -
 
-% Author:       Matthias Althoff
-% Written:      28-Mar-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       28-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % set path
@@ -195,7 +195,6 @@ params.W = W; % disturbance set
 params.u = u; %input transition --> remove after fixing options checks
 
 
-
 %% Simulation Settings
 
 options.points = 1;
@@ -218,4 +217,4 @@ end
 
 save([savepath '/' 'tankModel_lin_dim30_new'], 'tank', 'params', 'options', 'simRes');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

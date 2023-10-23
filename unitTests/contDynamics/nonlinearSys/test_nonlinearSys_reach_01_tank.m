@@ -5,7 +5,7 @@ function res = test_nonlinearSys_reach_01_tank
 %    interval of the final reachable set is close to an interval provided
 %    by a previous solution that has been saved
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSys_reach_01_tank
 %
 % Inputs:
@@ -20,12 +20,12 @@ function res = test_nonlinearSys_reach_01_tank
 %        Linearization. Proc. of the 47th IEEE Conference on Decision and 
 %        Control, 2008.
 
-% Author:       Matthias Althoff
-% Written:      21-July-2016
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-July-2016
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -50,7 +50,6 @@ options.tensorOrder = 2;
 tank = nonlinearSys(@tank6Eq); %initialize tank system
 
 
-
 % Reachability Analysis ---------------------------------------------------
 
 R = reach(tank,params,options);
@@ -67,4 +66,4 @@ IH_saved = interval( ...
 %final result
 res = isequal(IH,IH_saved,1e-8);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

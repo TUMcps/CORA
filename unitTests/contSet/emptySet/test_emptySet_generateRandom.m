@@ -1,7 +1,7 @@
 function res = test_emptySet_generateRandom
 % test_emptySet_generateRandom - unit test function of generateRandom
 %
-% Syntax:  
+% Syntax:
 %    res = test_emptySet_generateRandom
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_emptySet_generateRandom
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      02-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       02-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % without input arguments
 O = emptySet.generateRandom();
@@ -31,4 +31,4 @@ n = 2;
 O = emptySet.generateRandom('Dimension',n);
 res = dim(O) == n;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

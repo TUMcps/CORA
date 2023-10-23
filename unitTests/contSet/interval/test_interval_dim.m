@@ -1,7 +1,7 @@
 function res = test_interval_dim
 % test_interval_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_dim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. Empty case
 I = interval();
@@ -44,4 +44,4 @@ res(2) = dim(I) == 3;
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -25,12 +25,12 @@ classdef emptySet < contSet
 %
 % See also: ---
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = protected, GetAccess = public)
     % dimension of space
@@ -71,4 +71,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

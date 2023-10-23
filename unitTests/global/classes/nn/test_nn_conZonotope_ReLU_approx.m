@@ -2,7 +2,7 @@ function res = test_nn_conZonotope_ReLU_approx()
 % test_nn_conZonotope_ReLU_approx - tests nn with relu activation using
 % conZonotopes (approx)
 %
-% Syntax:  
+% Syntax:
 %    res = test_nn_conZonotope_ReLU_approx()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_nn_conZonotope_ReLU_approx()
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      24-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       24-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % load W, b, input_ref, output_ref (from previous model)
 model = "model_test_nn_conZonotope_ReLU_approx.mat";
@@ -44,16 +44,11 @@ nn_new = neuralNetwork(layers);
 % calculate output
 output_new = nn_new.evaluate(input_ref, evParams);
 
-res = [; ...
-    is_close(output_ref.Z, output_new.Z); ...
-    is_close(output_ref.A, output_new.A); ...
-    is_close(output_ref.b, output_new.b); ...
-    ];
-res = all(res);
+res = isequal(output_ref, output_new);
 if ~res
     disp(["Failed!", model])
 end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

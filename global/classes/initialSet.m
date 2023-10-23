@@ -1,7 +1,7 @@
 classdef initialSet
 % initialSet - class that stores the initial set of a reachSet object
 %
-% Syntax:  
+% Syntax:
 %    R0 = initialSet(set)
 %
 % Inputs:
@@ -16,12 +16,12 @@ classdef initialSet
 %
 % See also: reach
 
-% Author:       Tobias Ladner
-% Written:      01-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       01-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
     properties
         set
@@ -67,5 +67,4 @@ classdef initialSet
     end
 end
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_taylm_matrix
 % test_taylm_matrix - unit-tests for Taylor models
 %
-% Syntax:  
+% Syntax:
 %    res = test_taylm_matrix
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_taylm_matrix
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      15-October-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       15-October-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -122,4 +122,4 @@ if ~appeq( getCoef(t(1,1)),1, eps ) ||...
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

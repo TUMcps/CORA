@@ -23,12 +23,12 @@ function plot(matZ,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      22-June-2010
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-June-2010
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %convert from matrix zonotope to zonotope
 Z=zonotope(matZ);
@@ -36,4 +36,4 @@ Z=zonotope(matZ);
 %plot zonotope
 plot(Z,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

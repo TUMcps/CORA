@@ -17,7 +17,7 @@ function res = power(base,exponent)
 % [min(base.^exp), max(base.^exp)   if base.inf >= 0;
 % [NaN, NaN]                        if otherwise.
 %
-% Syntax:  
+% Syntax:
 %    res = power(base,exponent)
 %
 % Inputs:
@@ -38,13 +38,13 @@ function res = power(base,exponent)
 %
 % See also: 
 
-% Author:       Dmitry Grebenyuk
-% Written:      10-February-2016
-% Last update:  15-March-2016 (DG, speed up)
-%               05-May-2020 (MW, standardized error message)
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       10-February-2016
+% Last update:   15-March-2016 (DG, speed up)
+%                05-May-2020 (MW, standardized error message)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % an interval .^ a number
 if isnumeric(exponent)
@@ -266,4 +266,4 @@ if any(any(isnan(res.inf))) || any(any(isnan(res.sup)))
     throw(CORAerror('CORA:outOfDomain','validDomain','base >= 0'));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

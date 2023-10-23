@@ -4,7 +4,7 @@ function [R,tcomp] = observe_CZN_B(obj,options)
 % propagation is described in [2].
 %
 %
-% Syntax:  
+% Syntax:
 %    [R,tcomp] = observe_CZN_B(obj,options)
 %
 % Inputs:
@@ -33,13 +33,12 @@ function [R,tcomp] = observe_CZN_B(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       04-Mar-2021
+% Authors:       Matthias Althoff
+% Written:       04-March-2021
 % Last update:   ---
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tic;
 
@@ -58,7 +57,7 @@ E = generators(options.W);
 Qv = F*F';
 Qw = E*E';
 % generators
-G = options.R0.Z(:,2:end);  
+G = options.R0.G;  
 Pbar = G*G';
 Rbar = obj.A*Pbar*obj.A' +Qw; 
 S = obj.C*Rbar*obj.C' + Qv;
@@ -81,7 +80,7 @@ for k = 1:length(tVec)-1
     
     %% Update gain for intersection
     % generators
-    G = Rnext.tp.Z(:,2:end);  
+    G = Rnext.tp.G;  
     Pbar = G*G';
     Rbar = obj.A*Pbar*obj.A' +Qw; 
     S = obj.C*Rbar*obj.C' + Qv;
@@ -100,4 +99,4 @@ for k = 1:length(tVec)-1
 end
 tcomp = toc;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

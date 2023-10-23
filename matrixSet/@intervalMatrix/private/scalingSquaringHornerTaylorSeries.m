@@ -3,7 +3,7 @@ function scaling = scalingSquaringHornerTaylorSeries(intMat,maxOrder,potentiatio
 %    using different algorithms  with maxOrder iterations. It is used as a
 %    wrapper to access the algorithms in the private directory
 %
-% Syntax:  
+% Syntax:
 %    scaling = scalingSquaringHornerTaylorSeries(intMat,maxOrder,potentiation)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function scaling = scalingSquaringHornerTaylorSeries(intMat,maxOrder,potentiatio
 %
 % See also: 
 
-% Author:       Ivan Brkan
-% Written:      23-April-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Ivan Brkan
+% Written:       23-April-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 potential = 2^potentiation;
 if((maxOrder+2)*potential<=norm(intMat,inf))
@@ -37,4 +37,4 @@ else
     scaling = mpower(hornerTaylorSeries(mtimes(intMat,potential^-1),maxOrder), potential);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function res = testLong_conZonotope_mtimes
 %    multiplication of a numerical or interval matrix with a contrained
 %    zonotope object
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conZonotope_mtimes
 %
 % Inputs:
@@ -22,12 +22,12 @@ function res = testLong_conZonotope_mtimes
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Niklas Kochdumper
-% Written:      03-July-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       03-July-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -52,12 +52,10 @@ for k = 1:5
     cZ_ = M * cZ;
     
     % check if the results are equal
-    if ~compareMatrices(Z_.Z,cZ_.Z)
+    if ~compareMatrices([Z_.c,Z_.G],[cZ_.c,cZ_.G])
         throw(CORAerror('CORA:testFailed'));
     end   
 end
-
-
 
 
 % TEST 2: Random Test (interval matrix, zonotope) -------------------------
@@ -82,7 +80,7 @@ for k = 1:5
     cZ_ = I * cZ;
     
     % check if the results are equal
-    if ~compareMatrices(Z_.Z,cZ_.Z)
+    if ~compareMatrices([Z_.c,Z_.G],[cZ_.c,cZ_.G])
        file_name = strcat('testLong_conZonotope_mtimes_2_', ...
                           datestr(now,'mm-dd-yyyy_HH-MM'));
                   
@@ -95,8 +93,6 @@ for k = 1:5
 end
 
 
-
-
 % TEST 3: Random Test (interval matrix 2D) --------------------------------
 
 for k = 1:5
@@ -107,7 +103,7 @@ for k = 1:5
     ind = unique(ind(:,1),'stable');
     V = points(:,ind);
 
-    P = mptPolytope(V');
+    P = polytope(V);
     cZ = conZonotope(P);
 
     % generate random interval matrix
@@ -151,14 +147,13 @@ for k = 1:5
         end
     end
 
-    % convert the resulting conZonotope to a mptPolytope (to easily check if
+    % convert the resulting conZonotope to a polytope (to easily check if
     % a point is located inside the conZonotope)
-    P = mptPolytope(cZ_);
+    P = polytope(cZ_);
 
     % extract inequality constraints
-    temp = get(P,'P');
-    A = temp.A;
-    b = temp.b;
+    A = P.A;
+    b = P.b;
 
 %     % visualize result
 %     plot(points(1,:),points(2,:),'.k');
@@ -173,4 +168,4 @@ for k = 1:5
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

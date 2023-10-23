@@ -2,7 +2,7 @@ function res = zonotopeNorm(Z,p)
 % zonotopeNorm - computes the norm of the point p w.r.t. the zonotope-norm
 %    induced by the zonotope Z (see [1, Definition 4])
 %
-% Syntax:  
+% Syntax:
 %    res = zonotopeNorm(Z,p)
 %
 % Inputs:
@@ -38,15 +38,15 @@ function res = zonotopeNorm(Z,p)
 %
 % See also: ---
 
-% Author:       Adrian Kulmburg
-% Written:      14-May-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Adrian Kulmburg
+% Written:       14-May-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
-inputArgsCheck({{Z,'att','zonotope','nonempty'};
+inputArgsCheck({{Z,'att','zonotope'};
                 {p,'att','numeric','column'}});
 
 % Retrieve generator-representation of Z
@@ -89,4 +89,4 @@ elseif exitflag ~= 1
     throw(CORAerror('CORA:solverIssue'));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

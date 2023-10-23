@@ -3,7 +3,7 @@ function [V,H,krylovOrder] = subspace_Krylov_individual_Wang(A,nu_A,v,initKrylov
 %    single vector given the accuracy to be achieved; the a-posteriori
 %    approach in Theorem 3.1 of [1] is used for tight error computation
 %
-% Syntax:  
+% Syntax:
 %    [V,H,KrylovOrder] = subspace_Krylov_individual_Wang(obj,v,options)
 %
 % Inputs:
@@ -32,12 +32,12 @@ function [V,H,krylovOrder] = subspace_Krylov_individual_Wang(A,nu_A,v,initKrylov
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      06-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-November-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set precision for variable precison toolbox
 precision = 100;
@@ -102,4 +102,4 @@ while errorBound_normalized > maxRelError
     krylovOrder = krylovOrder + options.krylovStep;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

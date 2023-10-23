@@ -12,12 +12,12 @@ function res = test_neurNetContrSys_neurNetContrSys
 % Outputs:
 %    res - true/false
 
-% Author:       Tobias Ladner
-% Written:      23-November-2022
-% Last update:  ---
-% Last revision:---
-%
-%------------- BEGIN CODE --------------
+% Authors:       Tobias Ladner
+% Written:       23-November-2022
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 % contDynamics
 f = @(x,u) [x(2) + u(2); (1-x(1)^2)*x(2) - x(1) + u(1)];
@@ -79,4 +79,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

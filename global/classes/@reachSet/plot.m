@@ -1,7 +1,7 @@
 function han = plot(R,varargin)
 % plot - plots a projection of the reachable set
 %
-% Syntax:  
+% Syntax:
 %    han = plot(R)
 %    han = plot(R,dims)
 %    han = plot(R,dims,plotOptions)
@@ -28,14 +28,14 @@ function han = plot(R,varargin)
 %
 % See also: reachSet
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      02-June-2020
-% Last update:  15-July-2020 (MW, merge with plotFilled, plotOptions)
-%               29-October-2021 (MW, remove linespec, 'Filled')
-%               11-July-2023 (VG, bug fix unify last set not plotted)
-% Last revision:12-July-2023 (TL, restructure)
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       02-June-2020
+% Last update:   15-July-2020 (MW, merge with plotFilled, plotOptions)
+%                29-October-2021 (MW, remove linespec, 'Filled')
+%                11-July-2023 (VG, bug fix unify last set not plotted)
+% Last revision: 12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % 1. parse input
@@ -85,6 +85,11 @@ function [R,dims,NVpairs,order,splits,unify,totalsets,whichset] = aux_preprocess
     whichset = aux_checkSet(R,whichset);
 end
 
+function res = aux_hasTimeInterval(R)
+    % check whether reachSet has a time interval set
+    res = ~isempty(R(1).timeInterval);
+end
+
 function whichset = aux_checkSet(R,whichset)
 
 % must be character vector for switch-expression to work properly
@@ -99,7 +104,7 @@ end
 
 switch whichset
     case 'ti'
-        if isempty(R(1).timeInterval) && ~isempty(R(1).timePoint)
+        if ~aux_hasTimeInterval(R) && ~isempty(R(1).timePoint)
             warning("No time-interval reachable set. Time-point reachable set plotted instead.");
             whichset = 'tp';
         end
@@ -198,7 +203,7 @@ function han = aux_plotUnified(R,dims,NVpairs,order,splits,totalsets,whichset)
                     temp = polygon(temp,splits);   
                 end
             elseif isa(temp,'zonotope') || isa(temp,'interval') || ...
-                   isa(temp,'mptPolytope') || isa(temp,'conZonotope')
+                   isa(temp,'polytope') || isa(temp,'conZonotope')
                 V = vertices(temp);
                 temp = polygon(V(1,:),V(2,:));
             elseif isa(temp,'zonoBundle')                
@@ -206,7 +211,7 @@ function han = aux_plotUnified(R,dims,NVpairs,order,splits,totalsets,whichset)
                 P = cell(temp.parallelSets,1);
                 for p = 1:temp.parallelSets
                     % delete zero-length generators
-                    Z = deleteZeros(temp.Z{p});
+                    Z = compact_(temp.Z{p},'zeros',eps);
                     % convert to polyshape (Matlab built-in class)
                     temp_poly = polygon(Z);
                     V = temp_poly(:,2:end);
@@ -223,8 +228,9 @@ function han = aux_plotUnified(R,dims,NVpairs,order,splits,totalsets,whichset)
                 V = Pint.Vertices';
                 temp = polygon(V(1,:),V(2,:));
             else
-                throw(CORAerror('CORA:specialError',['Setting "Unify" is '...
-                    'not supported for this set representation!']));
+                warning('CORA: Setting "Unify" is not supported for this set representation (%s)! Plotting them individually instead.', class(temp));
+                han = aux_plotSingle(R,dims,NVpairs,order,splits,whichset);
+                return
             end
             
             % unite all polygons
@@ -324,4 +330,4 @@ function han = aux_plotSingle(R,dims,NVpairs_base,order,splits,whichset)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

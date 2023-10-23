@@ -3,7 +3,7 @@ function res = testLong_taylm_optimizer
 %    optimization techniques that can be used to determine the bounds of a
 %    taylor model on some domain
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_taylm_optimizer
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = testLong_taylm_optimizer
 %
 % See also: mtimes
 
-% Author:       Niklas Kochdumper
-% Written:      14-April-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       14-April-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Test 1: 1D-Function -----------------------------------------------------
 
@@ -53,17 +53,14 @@ T = f(t);
 intLinQuad = interval(T);
 
 % check if the computed bounds are all over-approximative
-checkOverapproximation(intReal,intInt);
-checkOverapproximation(intReal,intBnb);
-checkOverapproximation(intReal,intBnbAdv);
-checkOverapproximation(intReal,intLinQuad);
+aux_checkOverapproximation(intReal,intInt);
+aux_checkOverapproximation(intReal,intBnb);
+aux_checkOverapproximation(intReal,intBnbAdv);
+aux_checkOverapproximation(intReal,intLinQuad);
 
 % check if the computed bounds for 'linQuad'-optimization are close enought
 % to the real boundaries
-checkDiffToOpt(intReal,intLinQuad,t.eps);
-
-
-
+aux_checkDiffToOpt(intReal,intLinQuad,t.eps);
 
 
 % Test 2: Beale-Function (2D) ---------------------------------------------
@@ -110,17 +107,14 @@ T = f(t1,t2);
 intLinQuad = interval(T);
 
 % check if the computed bounds are all over-approximative
-checkOverapproximation(intReal,intInt);
-checkOverapproximation(intReal,intBnb);
-checkOverapproximation(intReal,intBnbAdv);
-checkOverapproximation(intReal,intLinQuad);
+aux_checkOverapproximation(intReal,intInt);
+aux_checkOverapproximation(intReal,intBnb);
+aux_checkOverapproximation(intReal,intBnbAdv);
+aux_checkOverapproximation(intReal,intLinQuad);
 
 % check if the computed bounds for 'linQuad'-optimization are close enought
 % to the real boundaries
-checkDiffToOpt(intReal,intLinQuad,t1.eps);
-
-
-
+aux_checkDiffToOpt(intReal,intLinQuad,t1.eps);
 
 
 % Test 3: 2D-function -----------------------------------------------------
@@ -169,17 +163,14 @@ T = f(t1,t2);
 intLinQuad = interval(T);
 
 % check if the computed bounds are all over-approximative
-checkOverapproximation(intReal,intInt);
-checkOverapproximation(intReal,intBnb);
-checkOverapproximation(intReal,intBnbAdv);
-checkOverapproximation(intReal,intLinQuad);
+aux_checkOverapproximation(intReal,intInt);
+aux_checkOverapproximation(intReal,intBnb);
+aux_checkOverapproximation(intReal,intBnbAdv);
+aux_checkOverapproximation(intReal,intLinQuad);
 
 % check if the computed bounds for 'linQuad'-optimization are close enought
 % to the real boundaries
-checkDiffToOpt(intReal,intLinQuad,t1.eps);
-
-
-
+aux_checkDiffToOpt(intReal,intLinQuad,t1.eps);
 
 
 % Test 4: Lennard-Jones Potential (6D) ------------------------------------
@@ -187,25 +178,21 @@ checkDiffToOpt(intReal,intLinQuad,t1.eps);
 % x = interval([0.8;0.4;0.7;0.4;0.2;0.7],[1.2;0.6;1;0.6;0.4;1]);
 % tx = taylm(x,10,'x','linQuad');
 % 
-% T = lennardJonesPotential(tx);
+% T = aux_lennardJonesPotential(tx);
 % 
 % int = globalOptimizer(T)
 % 
 % 
-
-
-
 res = true;
 
 
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-% Auxiliary Functions -----------------------------------------------------
 
-
-function f = lennardJonesPotential(x)
+function f = aux_lennardJonesPotential(x)
 
     a{1} = {0;0;0};
     a{2} = {x(1);0;0};
@@ -223,14 +210,14 @@ function f = lennardJonesPotential(x)
     end
 end
 
-function checkOverapproximation(intReal,int)
+function aux_checkOverapproximation(intReal,int)
     
     if any(infimum(int) > infimum(intReal)) || any(supremum(int) < supremum(intReal))
         throw(CORAerror('CORA:testFailed'));
     end
 end
 
-function checkDiffToOpt(intReal,int,tol)
+function aux_checkDiffToOpt(intReal,int,tol)
 % check if the computed boundaries are close enough to the real boundaries
 % of the function
 
@@ -239,4 +226,4 @@ function checkDiffToOpt(intReal,int,tol)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

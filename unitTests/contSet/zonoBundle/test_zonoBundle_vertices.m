@@ -1,7 +1,7 @@
 function res = test_zonoBundle_vertices
 % test_zonoBundle_vertices - unit test function of vertices
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonoBundle_vertices
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonoBundle_vertices
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
 zB = zonoBundle();
@@ -45,4 +45,4 @@ res(end+1,1) = isnumeric(V) && isempty(V);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = hashFunction(monomials)
 % hashFunction - adds the sum of all columns as the first column
 %
-% Syntax:  
+% Syntax:
 %    value = hashFunction(monomials)
 %
 % Inputs:
@@ -18,14 +18,13 @@ function res = hashFunction(monomials)
 %
 % See also: taylm
 
-% Author:       Niklas Kochdumper, Dmitry Grebenyuk
-% Written:      14-June-2017
-%               02-December-2017 (DG) New rank evaluation
-% Last update:  ---  
-% Last revision:---
+% Authors:       Niklas Kochdumper, Dmitry Grebenyuk
+% Written:       14-June-2017
+% Last update:   02-December-2017 (DG, new rank evaluation)
+% Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
  
 res = [sum(monomials, 2), monomials];
 
-%------------ END OF CODE ------------
+% ------------------------------ END OF CODE ------------------------------

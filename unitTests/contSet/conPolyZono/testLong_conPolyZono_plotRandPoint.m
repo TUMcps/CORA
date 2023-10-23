@@ -19,23 +19,23 @@ function res = testLong_conPolyZono_plotRandPoint
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      11-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
 % construct constrained polynomial zonotope
 c = [0;0];
 G = [1 0;0 1];
-expMat = [1 0;0 1];
+E = [1 0;0 1];
 A = [1 -1];
 b = 0;
-expMat_ = [2 0;0 1];
-cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+EC = [2 0;0 1];
+cPZ = conPolyZono(c,G,E,A,b,EC);
 
 try
     % try all variations in plotting
@@ -60,4 +60,4 @@ catch
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

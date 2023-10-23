@@ -3,7 +3,7 @@ function [eZ,eI,zPow,iPow,E] = expmIndMixed(matZ,intermediateOrder,maxOrder)
 %    evaluated independently. Higher order terms are computed via interval
 %    arithmetic.
 %
-% Syntax:  
+% Syntax:
 %    [eZ,eI,zPow,iPow,E] = expmIndMixed(matZ,intermediateOrder,maxOrder)
 %
 % Inputs:
@@ -28,12 +28,12 @@ function [eZ,eI,zPow,iPow,E] = expmIndMixed(matZ,intermediateOrder,maxOrder)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      18-June-2010 
-% Last update:  05-August-2010
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-June-2010 
+% Last update:   05-August-2010
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %compute powers
 zPow=powers(matZ,intermediateOrder);
@@ -52,4 +52,4 @@ intMat = intervalMatrix(matZ);
 [eI,iPow,E] = expmInd(intMat, maxOrder, intermediateOrder+1, ...
     intMat*intervalMatrix(zPow{intermediateOrder}));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

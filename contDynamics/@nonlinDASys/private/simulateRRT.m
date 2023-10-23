@@ -2,7 +2,7 @@ function [X_full,zTraj] = simulateRRT(obj,Rcont,params,options)
 % simulateRRT - simulates a DAE system using rapidly exploring random trees
 %    (partially deterministic sampling)
 %
-% Syntax:  
+% Syntax:
 %    [X_full,zTraj] = simulateRRT(obj,Rcont,params,options)
 %
 % Inputs:
@@ -30,12 +30,12 @@ function [X_full,zTraj] = simulateRRT(obj,Rcont,params,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      06-December-2011
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-December-2011
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % new options preprocessing
 options = validateOptions(obj,mfilename,params,options);
@@ -78,7 +78,7 @@ for iStep = 1:timeSteps
         x_sample = randPoint(options.X_sample) + xCenter;
 
         %nearest neighbor and selected state
-        ind = nearestNeighbor(x_sample,X_full,xCenter,normMatrix);
+        ind = aux_nearestNeighbor(x_sample,X_full,xCenter,normMatrix);
         ind
         x0 = X_full(:,ind);
         y0 = Y_full(:,ind);
@@ -87,16 +87,16 @@ for iStep = 1:timeSteps
         for iInput = 1:nrOfExtrInputs
             %set input
             par_options.u = options.uTrans + U_input_mat(:,iInput);
-            %[x0_ss,y0] = initialState(obj, x0, y0, par_options.u);
+            %[x0_ss,y0] = aux_initialState(obj, x0, y0, par_options.u);
             %simulate
-            z{iInput} = par_simulate(obj,par_options,options.timeStep,x0,y0);
+            z{iInput} = aux_par_simulate(obj,par_options,options.timeStep,x0,y0);
             %convert to states
             x_end(:,iInput) = z{iInput}(end,1:obj.dim);   
             y_end(:,iInput) = z{iInput}(end,obj.dim+1:obj.dim + obj.nrOfConstraints); 
         end
 
         %nearest neighbor and selected state
-        ind_input = nearestNeighbor(x_sample,x_end,xCenter,normMatrix);
+        ind_input = aux_nearestNeighbor(x_sample,x_end,xCenter,normMatrix);
         ind_input
 
         %add selected state 
@@ -114,7 +114,9 @@ end
 end
 
 
-function ind = nearestNeighbor(x_sample,X,c,normMatrix)
+% Auxiliary functions -----------------------------------------------------
+
+function ind = aux_nearestNeighbor(x_sample,X,c,normMatrix)
 
 %normalize set of points
 X_delta = X - c*ones(1,length(X(1,:)));
@@ -135,7 +137,7 @@ end
 
 
 %simulate
-function z_full = par_simulate(obj,par_options,timeStep,x0,y0)
+function z_full = aux_par_simulate(obj,par_options,timeStep,x0,y0)
 
 par_options.timeStep = timeStep;
 par_options.tStart = 0;
@@ -146,9 +148,8 @@ par_options.y0 = y0;
 end
 
 
-
 %steady state solution
-function [x0,y0] = initialState(obj, x0, y0, u0)
+function [x0,y0] = aux_initialState(obj, x0, y0, u0)
 
 converged = 0;
 
@@ -176,4 +177,4 @@ end
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

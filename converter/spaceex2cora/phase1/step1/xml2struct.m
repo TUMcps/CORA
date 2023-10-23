@@ -30,14 +30,14 @@ function s = xml2struct(file)
 % Please note that the following characters are substituted
 % '-' by '_dash_', ':' by '_colon_' and '.' by '_dot_'
 
-% Author:        W. Falkena, ASTI, TUDelft
+% Authors:       Wouter Falkena
 % Written:       21-August-2010
-% Last update:   14-June-2011 (A. Wanner, increase parsing speed)
-%                20-March-2012 (I. Smirnow, added CDATA support)
-%                12-May-2012 (X. Mo)
+% Last update:   14-June-2011 (AW, increase parsing speed)
+%                20-March-2012 (IS, added CDATA support)
+%                12-May-2012 (XM)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if (nargin < 1)
     clc;
@@ -65,15 +65,16 @@ else
     %read the xml file
     xDoc = xmlread(file);
 end
-xDoc = cleanXML(xDoc);
+xDoc = aux_cleanXML(xDoc);
 %parse xDoc into a MATLAB structure
-s = parseChildNodes(xDoc);
+s = aux_parseChildNodes(xDoc);
     
 end
 
+
 % Auxiliary functions -----------------------------------------------------
 
-function [children,ptext,textflag] = parseChildNodes(theNode)
+function [children,ptext,textflag] = aux_parseChildNodes(theNode)
     % Recurse over node children.
     children = struct;
     ptext = struct; 
@@ -84,7 +85,7 @@ function [children,ptext,textflag] = parseChildNodes(theNode)
 
         for count = 1:numChildNodes
             theChild = item(childNodes,count-1); % Remember that java arrays are zero-based
-            [text,name,attr,childs,textflag] = getNodeData(theChild);
+            [text,name,attr,childs,textflag] = aux_getNodeData(theChild);
             
             if (~strcmp(name,'#text') && ~strcmp(name,'#comment') && ~strcmp(name,'#cdata_dash_section'))
                 %XML allows the same elements to be defined multiple times,
@@ -148,7 +149,7 @@ function [children,ptext,textflag] = parseChildNodes(theNode)
     end
 end
 
-function [text,name,attr,childs,textflag] = getNodeData(theNode)
+function [text,name,attr,childs,textflag] = aux_getNodeData(theNode)
     % Create structure of node info.
     
     %make sure name is allowed as structure name
@@ -157,13 +158,13 @@ function [text,name,attr,childs,textflag] = getNodeData(theNode)
     name = strrep(name, ':', '_colon_');
     name = strrep(name, '.', '_dot_');
     name = strrep(name, '\n', '');
-    attr = parseAttributes(theNode);
+    attr = aux_parseAttributes(theNode);
     if (isempty(fieldnames(attr))) 
         attr = []; 
     end
     
     %parse child nodes
-    [childs,text,textflag] = parseChildNodes(theNode);
+    [childs,text,textflag] = aux_parseChildNodes(theNode);
     
     if (isempty(fieldnames(childs)) && isempty(fieldnames(text)))
         %get the data of any childless nodes
@@ -175,7 +176,7 @@ function [text,name,attr,childs,textflag] = getNodeData(theNode)
     
 end
 
-function attributes = parseAttributes(theNode)
+function attributes = aux_parseAttributes(theNode)
     % Create attributes structure.
 
     attributes = struct;
@@ -202,7 +203,7 @@ function attributes = parseAttributes(theNode)
 end
 
 
-function node = cleanXML(node)
+function node = aux_cleanXML(node)
 % removes the whitespace nodes from matlab xmlread
 for x = 1:node.getLength
     child=node.item(x-1);
@@ -211,13 +212,13 @@ for x = 1:node.getLength
         if(isempty(newChr))
             node.removeChild(child);
             % element removed, length is no longer valid -- recurse
-            cleanXML(node);
+            aux_cleanXML(node);
         end
         break;
     else
-        cleanXML(child);
+        aux_cleanXML(child);
     end
 end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

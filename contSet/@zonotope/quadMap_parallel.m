@@ -1,7 +1,7 @@
 function Z = quadMap_parallel(Z,Q)
 % quadMap_parallel - computes \{Q_{ijk}*x_j*x_k|x \in Z\} using parfor
 %
-% Syntax:  
+% Syntax:
 %    Z = quadMap_parallel(Z,Q)
 %
 % Inputs:
@@ -30,17 +30,17 @@ function Z = quadMap_parallel(Z,Q)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      07-December-2011
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-December-2011
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get center and generator matrix of zonotope
-Zmat = Z.Z;
+Zmat = [Z.c,Z.G];
 dimQ = length(Q);
-gens = length(Zmat(1,:)) - 1;
+gens = size(Zmat,2) - 1;
 
 %for each dimension, compute generator elements
 parfor i = 1:dimQ
@@ -75,4 +75,4 @@ end
 % generate new zonotope
 Z = zonotope(c, Gmat);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

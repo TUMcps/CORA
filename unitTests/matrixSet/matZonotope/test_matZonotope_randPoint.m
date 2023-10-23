@@ -1,7 +1,7 @@
 function res = test_matZonotope_randPoint
 % test_matZonotope_randPoint - unit test function for random sampling
 % 
-% Syntax:  
+% Syntax:
 %    res = test_matZonotope_randPoint
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_matZonotope_randPoint
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty matrix zonotope
 matZ = matZonotope();
@@ -42,4 +42,4 @@ randPoint(matZ,5,'standard');
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

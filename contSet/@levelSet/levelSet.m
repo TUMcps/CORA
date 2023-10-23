@@ -38,12 +38,12 @@ classdef levelSet < contSet
 %
 % See also: halfspace, conHyperplane
 
-% Author:       Niklas Kochdumper
-% Written:      19-July-2019
-% Last update:  ---
-% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Niklas Kochdumper
+% Written:       19-July-2019
+% Last update:   ---
+% Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     
@@ -100,7 +100,7 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [eq,vars,compOp,solved] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
@@ -270,4 +270,4 @@ function [eq,grad,hess,third] = aux_derivatives(eq,vars,i)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

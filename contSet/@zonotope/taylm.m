@@ -1,7 +1,7 @@
 function t = taylm(Z)
 % taylm - enclose a zonotope object with a Taylor model
 %
-% Syntax:  
+% Syntax:
 %    t = taylm(Z)
 %
 % Inputs:
@@ -16,19 +16,19 @@ function t = taylm(Z)
 %
 % See also: ---
 
-% Author:       Niklas Kochdumper
-% Written:      13-August-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       13-August-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
 % create taylor models for factors
-m = size(Z.Z,2)-1;
+m = size(Z.G,2);
 dom = interval(-ones(m,1),ones(m,1));
 t = taylm(dom);
 
 % create taylor model for the zonotope
-t = Z.Z(:,1) + Z.Z(:,2:end)*t;
+t = Z.c + Z.G*t;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

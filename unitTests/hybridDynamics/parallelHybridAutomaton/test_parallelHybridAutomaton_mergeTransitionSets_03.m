@@ -2,7 +2,7 @@ function res = test_parallelHybridAutomaton_mergeTransitionSets_03
 % test_parallelHybridAutomaton_mergeTransitionSets_03 - test function for
 %    merging transitions in the location product
 %
-% Syntax:  
+% Syntax:
 %    res = test_parallelHybridAutomaton_mergeTransitionSets_03
 %
 % Inputs:
@@ -17,18 +17,18 @@ function res = test_parallelHybridAutomaton_mergeTransitionSets_03
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      24-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       24-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = [];
 
 % first component, first location
 dynamics{1,1} = linearSys([0 -1; 1 0],[1 0; 0 1],[],[0.05 0.05]);
-inv{1,1} = mptPolytope(struct('A',[1 1],'b',0));
+inv{1,1} = polytope([1 1],0);
 guard = conHyperplane([1 1],0);
 reset = struct('A',[1 0; 0 1],'c',[3;3]);
 trans{1,1} = transition(guard,reset,2,'sync1');
@@ -36,7 +36,7 @@ loc = location('loc1',inv{1,1},trans{1,1},dynamics{1,1});
 
 % first component, second location
 dynamics{1,2} = linearSys([0 -1; -1 0],[0 1; 1 0],[],[0.05 -0.05]);
-inv{1,2} = mptPolytope(struct('A',[-1 -1],'b',0));
+inv{1,2} = polytope([-1 -1],0);
 guard = conHyperplane([1 1],0);
 reset = struct('A',[1 0; 0 1],'c',[-3;3]);
 trans{1,2} = transition(guard,reset,1,'sync2');
@@ -47,7 +47,7 @@ HA1 = hybridAutomaton(loc);
 
 % second component, first location
 dynamics{2,1} = linearSys([0 1 -1; 1 0 0; 0 1 0],[0;-1;0],[],[0 0 0.05; 0.05 0.05 0]);
-inv{2,1} = mptPolytope(struct('A',[1 1 1],'b',1));
+inv{2,1} = polytope([1 1 1],1);
 guard = conHyperplane([1 1 1],1);
 reset = struct('A',[1 0 0; 0 1 0; 0 0 1],'c',[1;1;1]);
 trans{2,1} = transition(guard,reset,2,'sync1');
@@ -55,7 +55,7 @@ loc(1) = location('loc1',inv{2,1},trans{2,1},dynamics{2,1});
 
 % second component, second location
 dynamics{2,2} = linearSys([0 -1 1; 1 0 0; 0 1 0],[0;0;1],[],[0.05 0 0; 0 0.05 -0.05]);
-inv{2,2} = mptPolytope(struct('A',[-1 -1 -1],'b',-1));
+inv{2,2} = polytope([-1 -1 -1],-1);
 guard = conHyperplane([1 1 1],1);
 reset = struct('A',[1 0 0; 0 1 0; 0 0 1],'c',[-1;-1;-1]);
 trans{2,2} = transition(guard,reset,1);
@@ -66,7 +66,7 @@ HA2 = hybridAutomaton(loc);
 
 % third component, first location
 dynamics{3,1} = linearSys([0 1; 1 0],[0;1],[],[0 0.05; 0.05 0]);
-inv{3,1} = mptPolytope(struct('A',[1 1],'b',1));
+inv{3,1} = polytope([1 1],1);
 guard = conHyperplane([1 1],1);
 reset = struct('A',[1 0; 0 1],'c',[1;1]);
 trans{3,1} = transition(guard,reset,2,'sync2');
@@ -74,7 +74,7 @@ loc(1) = location('loc1',inv{3,1},trans{3,1},dynamics{3,1});
 
 % third component, second location
 dynamics{3,2} = linearSys([0 -1; 1 0],[0;1],[],[0.05 0; 0 -0.05]);
-inv{3,2} = mptPolytope(struct('A',[-1 -1],'b',-1));
+inv{3,2} = polytope([-1 -1],-1);
 guard = conHyperplane([1 1],1);
 reset = struct('A',[1 0; 0 1],'c',[-1;-1]);
 trans{3,2} = transition(guard,reset,1);
@@ -131,8 +131,8 @@ mergedTrans = mergeTransitionSets(pHA,...
 target = [2;2;2];
 
 % guard set
-guard = projectHighDim(mptPolytope(trans{1,locID(1)}.guard),7,1:2) ...
-    & projectHighDim(mptPolytope(trans{2,locID(2)}.guard),7,3:5);
+guard = lift(polytope(trans{1,locID(1)}.guard),7,1:2) ...
+    & lift(polytope(trans{2,locID(2)}.guard),7,3:5);
 
 % reset function: identity for third component
 reset.A = blkdiag(trans{1,locID(1)}.reset.A,...
@@ -150,7 +150,7 @@ mergedTrans_(1) = transition(guard,reset,target);
 target = [1;1;1];
 
 % guard set
-guard = projectHighDim(trans{3,locID(3)}.guard,7,6:7);
+guard = lift(trans{3,locID(3)}.guard,7,6:7);
 
 % reset function: identity for first/second component
 reset.A = blkdiag(eye(length(trans{1,locID(1)}.reset.A)),...
@@ -202,7 +202,7 @@ mergedTrans = mergeTransitionSets(pHA,...
 target = [2;1;1];
 
 % guard set
-guard = projectHighDim(trans{3,locID(3)}.guard,7,6:7);
+guard = lift(trans{3,locID(3)}.guard,7,6:7);
 
 % reset function: identity for third component
 reset.A = blkdiag(eye(length(trans{1,locID(1)}.reset.A)),...
@@ -224,4 +224,4 @@ res(end+1,1) = isequal(mergedTrans,mergedTrans_,1e-14);
 res = all(res);
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = testLong_capsule_convHull
 % testLong_capsule_convHull - unit test function of convHull
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_capsule_convHull
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_capsule_convHull
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 nrTests = 1000;
@@ -53,4 +53,4 @@ for i=1:nrTests
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

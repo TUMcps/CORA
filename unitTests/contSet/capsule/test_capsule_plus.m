@@ -1,7 +1,7 @@
 function res = test_capsule_plus
 % test_capsule_plus - unit test function of plus
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_plus
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_capsule_plus
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      28-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate random capsule
 C = capsule([1; 0], [-4; 3], 1);
@@ -47,9 +47,9 @@ res_caps(2) = compareMatrices(C_caps.g,C_caps_true.g);
 res_caps(3) = withinTol(C_caps.r,C_caps_true.r);
 
 % empty set
-res_e = isempty(C_add + capsule());
+res_e = representsa_(C_add + capsule(),'emptySet',eps);
 
 % add results
 res = all([res_vect, res_caps, res_e]);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

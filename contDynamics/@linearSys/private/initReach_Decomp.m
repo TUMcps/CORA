@@ -2,7 +2,7 @@ function [Yhat0,options] = initReach_Decomp(obj,Rinit,options)
 % initReach_Decomp - computes the reachable continuous output set
 %  for the first time step (time interval and time point)
 %
-% Syntax:  
+% Syntax:
 %    [Yhat0,options] = initReach_Decomp(obj,Rinit,options)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function [Yhat0,options] = initReach_Decomp(obj,Rinit,options)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-May-2019 
-% Last update:  09-Aug-2019
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-May-2019 
+% Last update:   09-August-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % decide sparsity ---------------------------------------------------------
@@ -117,9 +117,9 @@ options.Rtrans = obj.taylor.Rtrans;
 
 
 %total solution -----------------------------------------------------------
-if isa(Rinit,'mptPolytope')
+if isa(Rinit,'polytope')
     %convert zonotopes to polytopes
-    Radd = mptPolytope(RV);
+    Radd = polytope(RV);
     Rtotal = Rhom + Radd;
     Rtotal_tp = Rhom_tp + Radd;
 else
@@ -285,5 +285,4 @@ options.Rinhom  = Rinhom;
 % -------------------------------------------------------------------------
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

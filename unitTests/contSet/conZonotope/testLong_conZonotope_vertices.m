@@ -2,7 +2,7 @@ function res = testLong_conZonotope_vertices
 % testLong_conZonotope_vertices - unit test function for the 
 %    calculation of vertices of a constrained zonotope object
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conZonotope_vertices
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = testLong_conZonotope_vertices
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Niklas Kochdumper
-% Written:      24-August-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       24-August-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -43,9 +43,9 @@ for i = 1:100
     p = randPoint(cZ,100,'extreme');
 
     % check if all points are in the convex hull of the vertices
-    if ~contains(mptPolytope(V'), p)
+    if ~contains(polytope(V), p)
         res = false; break
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

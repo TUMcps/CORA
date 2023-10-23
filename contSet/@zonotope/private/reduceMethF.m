@@ -2,7 +2,7 @@ function [Zred]=reduceMethF(Z)
 % reduceMethF - reduces a zonotope to a parallelotope by finding dominant
 % directions
 %
-% Syntax:  
+% Syntax:
 %    [Zred,t]=reduceMethF(Z)
 %
 % Inputs:
@@ -17,13 +17,13 @@ function [Zred]=reduceMethF(Z)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      08-February-2011
-% Last update:  16-March-2019 (vnorm replaced, sort removed)
-%               27-Aug-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       08-February-2011
+% Last update:   16-March-2019 (vnorm replaced, sort removed)
+%                27-August-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %extract generator matrix
 G=generators(Z);
@@ -61,5 +61,4 @@ Zinterval=interval(Ztrans);
 Zred=P*zonotope(Zinterval);
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

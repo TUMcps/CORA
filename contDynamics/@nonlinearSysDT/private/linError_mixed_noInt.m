@@ -1,7 +1,7 @@
 function error_zono = linError_mixed_noInt(obj,options,R)
 % linError_mixed_noInt - computes the linearization error
 %
-% Syntax:  
+% Syntax:
 %    error_zono = linError_mixed_noInt(obj,options,R)
 %
 % Inputs:
@@ -21,13 +21,13 @@ function error_zono = linError_mixed_noInt(obj,options,R)
 %
 % See also: 
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      21-August-2012
-% Last update:  25-July-2016 (intervalhull replaced by interval)
-%               29-January-2018 (NK)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       21-August-2012
+% Last update:   25-July-2016 (intervalhull replaced by interval)
+%                29-January-2018 (NK)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % use correct Hessian file
 obj = setHessian(obj,'int');
@@ -92,4 +92,4 @@ else
     error_zono = reduce(error_zono,options.reductionTechnique,options.zonotopeOrder);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

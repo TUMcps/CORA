@@ -2,7 +2,7 @@ function res = example_nonlinearDA_reach_02_swing1bus
 % example_nonlinearDA_reach_02_swing1bus - example of nonlinear DAE
 %    reachability analysis from [1], single machine infinite bus (SMIB)
 %
-% Syntax:  
+% Syntax:
 %    res = example_nonlinearDA_reach_02_swing1bus
 %
 % Inputs:
@@ -15,18 +15,18 @@ function res = example_nonlinearDA_reach_02_swing1bus
 %    [1] Ahmed El-Guindy, Control and Stability of Power Systems
 %        using Reachability Analysis, PhD Thesis, TUM 2017
 
-% Author:       Ahmed El-Guindy, Mark Wetzlinger
-% Written:      18-May-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Ahmed El-Guindy, Mark Wetzlinger
+% Written:       18-May-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % SMIB system with 2 diff. variables and 4 alg. variables
 dim_x = 2;
 dim_y = 4;
 
-[P,I,x0,y0] = modelParameters();
+[P,I,x0,y0] = aux_modelParameters();
 
 
 % Parameters --------------------------------------------------------------
@@ -159,9 +159,9 @@ res = true;
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function [P,I,x0,y0] = modelParameters()
+function [P,I,x0,y0] = aux_modelParameters()
 % defines the parameters for the model
 
     %  Example 13.2 p. 864
@@ -194,7 +194,7 @@ function [P,I,x0,y0] = modelParameters()
 
     % Use fsolve to get theta1 and q1
     % Phase angle and reactive power at bus 1 (Unknown for PV-bus)
-    X0net       = fsolve(@(X) init_network(X,P),ones(2,1),options_fsolve);
+    X0net       = fsolve(@(X) aux_init_network(X,P),ones(2,1),options_fsolve);
     I.theta1    = X0net(1);
     I.Q1        = X0net(2);      
 
@@ -202,7 +202,7 @@ function [P,I,x0,y0] = modelParameters()
     I.V1        = 1;
 
     % Use fsolve to get synchrous generator paramters
-    X0gen       = fsolve(@(X) init_generator(X,P,I),ones(4,1),options_fsolve);
+    X0gen       = fsolve(@(X) aux_init_generator(X,P,I),ones(4,1),options_fsolve);
     % assignment of variables
     I.E1        = X0gen(3);        % q-axis transient voltage (diff. variable)
     I.Pm1       = X0gen(4);        % d-axis machine voltage (alg. varaible)
@@ -211,7 +211,7 @@ function [P,I,x0,y0] = modelParameters()
     y0 = [I.P1 I.Q1 I.theta1 I.V1];
 end
 
-function X0=init_network(X,P)
+function X0=aux_init_network(X,P)
 
     % Variables
     theta1 = X(1);
@@ -223,7 +223,7 @@ function X0=init_network(X,P)
     ];
 end
 
-function X0=init_generator(X,P,I)
+function X0=aux_init_generator(X,P,I)
 
     % Variables
     delta1  = X(1);
@@ -239,4 +239,4 @@ function X0=init_generator(X,P,I)
     ];
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

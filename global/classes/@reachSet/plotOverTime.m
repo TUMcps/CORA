@@ -1,7 +1,7 @@
 function han = plotOverTime(R,varargin)
 % plotOverTime - plots the reachable set over time
 %
-% Syntax:  
+% Syntax:
 %    han = plotOverTime(R)
 %    han = plotOverTime(R,dims)
 %    han = plotOverTime(R,dims,type)
@@ -26,15 +26,15 @@ function han = plotOverTime(R,varargin)
 %
 % See also: plot, reachSet
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      02-June-2020
-% Last update:  15-July-2020 (MW, handling of plot options)
-%               01-July-2021 (MP, adding improved unify algorithm)
-%               01-April-2023 (MW, speed up fastUnify plotting)
-% Last revision:01-May-2023 (MW, restructure, add unify for tp solutions)
-%               12-July-2023 (TL, restructure)
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       02-June-2020
+% Last update:   15-July-2020 (MW, handling of plot options)
+%                01-July-2021 (MP, adding improved unify algorithm)
+%                01-April-2023 (MW, speed up fastUnify plotting)
+% Last revision: 01-May-2023 (MW, restructure, add unify for tp solutions)
+%                12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input
 [R,dims,NVpairs,unify,totalsets,whichset] = aux_parseInput(R,varargin{:});
@@ -169,8 +169,8 @@ function [intXmin,intXmax] = aux_getXminmax(set,dims)
 if isa(set,'zonotope')
     % faster conversion than calling interval constructor
     % (especially, if there are many sets to plot)
-    intXmin = set.Z(dims,1) - sum(abs(set.Z(dims,2:end)));
-    intXmax = set.Z(dims,1) + sum(abs(set.Z(dims,2:end)));
+    intXmin = set.c(dims) - sum(abs(set.G(dims,:)));
+    intXmax = set.c(dims) + sum(abs(set.G(dims,:)));
 else
     intX = interval(project(set,dims));
     intXmax = supremum(intX);
@@ -247,7 +247,7 @@ end
 % which checks for shape simplification)
 
 [NVpairs,facecolor] = readNameValuePair(NVpairs,'FaceColor',{},CORAcolor("CORA:next"));
-han = patch(x_merged,y_merged,facecolor,NVpairs{:});
+han = plotPolygon([x_merged;y_merged],NVpairs{:},'FaceColor',facecolor);
 
 end
 
@@ -389,4 +389,4 @@ han = plotMultipleSetsAsOne(sets,[1,2],NVpairs);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

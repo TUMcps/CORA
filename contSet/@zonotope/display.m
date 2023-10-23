@@ -2,7 +2,7 @@ function display(Z)
 % display - Displays the properties of a zonotope object (center and
 %    generator matrix) on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(Z)
 %
 % Inputs:
@@ -21,15 +21,15 @@ function display(Z)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      14-September-2006 
-% Last update:  22-March-2007
-%               27-Aug-2019
-%               01-May-2020 (MW, add empty case)
-%               09-June-2020 (MW, restrict number of shown generators)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       14-September-2006 
+% Last update:   22-March-2007
+%                27-August-2019
+%                01-May-2020 (MW, add empty case)
+%                09-June-2020 (MW, restrict number of shown generators)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isemptyobject(Z)
     
@@ -47,12 +47,11 @@ else
     
     %display center
     disp('c: ');
-    disp(center(Z));
+    disp(Z.c);
 
     %display generators
-    G = generators(Z);
-    displayGenerators(G,DISPLAYDIM_MAX,'G');
+    displayGenerators(Z.G,DISPLAYDIM_MAX,'G');
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

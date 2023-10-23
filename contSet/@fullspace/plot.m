@@ -1,7 +1,7 @@
 function han = plot(fs,varargin)
 % plot - plots a projection of an fullspace
 %
-% Syntax:  
+% Syntax:
 %    han = plot(fs)
 %    han = plot(fs,dims)
 %    han = plot(fs,dims,type)
@@ -27,12 +27,12 @@ function han = plot(fs,varargin)
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      03-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       03-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input arguments
 [fs,dims,NVpairs] = aux_parseInput(fs,varargin{:});
@@ -49,6 +49,7 @@ if nargout == 0
 end
 
 end
+
 
 % Auxiliary functions -----------------------------------------------------
 
@@ -88,4 +89,4 @@ function [I,dims] = aux_preprocess(fs,dims)
     I = interval(fs);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

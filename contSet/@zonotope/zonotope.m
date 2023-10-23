@@ -30,24 +30,25 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonotope < contSet
 %
 % See also: ---
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      14-September-2006 
-% Last update:  22-March-2007
-%               04-June-2010
-%               08-February-2011
-%               18-November-2015
-%               05-December-2017 (DG) class is redefined in compliance with
-%               the new standard.
-%               28-April-2019 code shortened
-%               1-May-2020 (NK) new constructor + removed orientation prop.
-%               14-December-2022 (TL, property check in inputArgsCheck)
-%               29-March-2023 (TL: optimized constructor)
-% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Matthias Althoff, Niklas Kochdumper, Tobias Ladner
+% Written:       14-September-2006 
+% Last update:   22-March-2007
+%                04-June-2010
+%                08-February-2011
+%                18-November-2015
+%                05-December-2017 (DG, redefined class with the new standard)
+%                28-April-2019 (code shortened)
+%                01-May-2020 (NK, new constructor + removed orientation prop.)
+%                14-December-2022 (TL, property check in inputArgsCheck)
+%                29-March-2023 (TL, optimized constructor)
+%                13-September-2023 (TL, replaced Z property with c and G)
+% Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = protected, GetAccess = public)
-    Z;          % zonotope center and generator Z = [c,g_1,...,g_p]
+    c, G; % zonotope center and generator 
+    Z; % legacy Z = [c,g_1,...,g_p]
 
     % internally-set properties
     halfspace;  % halfspace representation of the zonotope
@@ -69,7 +70,8 @@ methods
         aux_checkInputArgs(c,G,nargin);
 
         % 4. assign properties
-        obj.Z = [c,G];
+        obj.c = c;
+        obj.G = G;
         obj.halfspace = [];
     end
 end
@@ -79,10 +81,43 @@ methods (Static = true)
     Z = enclosePoints(points,varargin) % enclose point cloud with zonotope
 end
 
+
+% getter & setter ---------------------------------------------------------
+
+methods
+    function obj = set.G(obj,G)
+        % fix dimension if empty
+        if isempty(G)
+            G = zeros(dim(obj),0);
+        end
+        obj.G = G;
+    end
+
+    % getter & setter for legacy Z property
+    function Z = get.Z(obj)
+        warning(['CORA: The property zonotope.Z is deprecated (since CORA 2024) and will be removed in a future release. ' ...
+            'Please use zonotope.c and zonotope.G instead. ' ...
+            'This change was made to be consistent with the notation in papers.']);
+
+        Z = [obj.c, obj.G];
+    end
+
+    function obj = set.Z(obj, Z)
+        warning(['CORA: The property zonotope.Z is deprecated (since CORA 2024) and will be removed in a future release. ' ...
+            'Please use zonotope.c and zonotope.G instead. ' ...
+            'This change was made to be consistent with the notation in papers.']);
+
+        if ~isempty(Z)
+            obj.c = Z(:,1);
+            obj.G = Z(:,2:end);
+        end
+    end
+end
+
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [c,G] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
@@ -147,4 +182,4 @@ function aux_checkInputArgs(c,G,n_in)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

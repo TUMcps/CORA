@@ -2,7 +2,7 @@ function Z = zonotope(cPZ,varargin)
 % zonotope - Computes a zonotope that over-approximates the constrained
 %    polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    Z = zonotope(cPZ)
 %    Z = zonotope(cPZ,method)
 %
@@ -17,12 +17,12 @@ function Z = zonotope(cPZ,varargin)
 % Example:  
 %    c = [0;0];
 %    G = [2 1 2 1; 0 2 2 1];
-%    expMat = [1 0 2 0; 0 1 1 0; 0 0 0 1];
+%    E = [1 0 2 0; 0 1 1 0; 0 0 0 1];
 %    A = [1 -0.5 0.5];
 %    b = 0.5;
-%    expMat_ = [1 0 0; 0 1 2; 0 1 0];
+%    EC = [1 0 0; 0 1 2; 0 1 0];
 %
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 %
 %    Z = zonotope(cPZ);
 %   
@@ -36,12 +36,12 @@ function Z = zonotope(cPZ,varargin)
 %
 % See also: conZonotope, interval, polyZonotope
 
-% Author:       Niklas Kochdumper
-% Written:      07-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       07-November-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 method = setDefaultValues({'linearize'},varargin);
@@ -56,16 +56,16 @@ temp = ones(length(cPZ.id),1);
 dom = interval(-temp,temp);
 
 if ~isempty(cPZ.A) && ~strcmp(method,'none')
-	dom = contractPoly(-cPZ.b,cPZ.A,[],cPZ.expMat_,dom,method);
+	dom = contractPoly(-cPZ.b,cPZ.A,[],cPZ.EC,dom,method);
 end
 
-if isempty(dom)
+if representsa_(dom,'emptySet',eps)
     throw(CORAerror('CORA:emptySet'));
 end
 
 % construct enclosing zonotope
-pZ = polyZonotope(cPZ.c,cPZ.G,cPZ.Grest,cPZ.expMat,cPZ.id);
+pZ = polyZonotope(cPZ.c,cPZ.G,cPZ.GI,cPZ.E,cPZ.id);
 S = getSubset(pZ,pZ.id,dom);
 Z = zonotope(S);
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

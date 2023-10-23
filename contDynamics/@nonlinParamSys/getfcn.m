@@ -2,7 +2,7 @@ function han = getfcn(obj,options)
 % getfcn - returns the function handle of the continuous function specified
 %    by the nonlinear parametric system
 %
-% Syntax:  
+% Syntax:
 %    han = getfcn(obj,options)
 %
 % Inputs:
@@ -20,19 +20,19 @@ function han = getfcn(obj,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      17-October-2007 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       17-October-2007 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-function dxdt = f(t,x)
-    dxdt = obj.mFile(x,options.u,options.p);
+    function dxdt = f(t,x)
+        dxdt = obj.mFile(x,options.u,options.p);
+    end
+    
+    han = @f;
+
 end
 
-han = @f;
-
-end
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

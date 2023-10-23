@@ -1,7 +1,7 @@
 function E = ellipsoid(C,varargin)
 % ellipsoid - converts a capsule to an ellipsoid object
 %
-% Syntax:  
+% Syntax:
 %    E = ellipsoid(C)
 %    E = ellipsoid(C,method)
 %
@@ -27,12 +27,12 @@ function E = ellipsoid(C,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger, Victor Gassmann
-% Written:      25-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger, Victor Gassmann
+% Written:       25-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default method: 'exact'
 method = setDefaultValues({'exact'},varargin);
@@ -45,7 +45,7 @@ if any(C.g)
     % if the capsule is not a ball (non-zero generator), exact conversion
     % is impossible
     if strcmp(method,'exact')
-        throw(CORAerror('CORA:noExactAlg'));
+        throw(CORAerror('CORA:noExactAlg',C));
     end
 else
     % reset method since exact conversion is possible
@@ -57,7 +57,7 @@ n = dim(C);
 
 if strcmp(method,'exact')
     % C.g is an all-zero vector -> capsule is a ball (or empty)
-    if isempty(C)
+    if representsa_(C,'emptySet',eps)
         E = ellipsoid(); return
     end
     % square radius to get correct shape matrix
@@ -91,4 +91,4 @@ elseif strcmp(method,'inner')
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

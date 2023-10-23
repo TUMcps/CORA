@@ -2,7 +2,7 @@ function matZ = plus(summand1,summand2)
 % plus - Overloaded '+' operator for the Minkowski addition of two matrix
 %    zonotopes or a matrix zonotope with a matrix
 %
-% Syntax:  
+% Syntax:
 %    matZ = plus(summand1,summand2)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function matZ = plus(summand1,summand2)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      18-June-2010 
-% Last update:  05-August-2010
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-June-2010 
+% Last update:   05-August-2010
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %Find a matrix zonotope object
 [matZ,summand] = findClassArg(summand1,summand2,'matZonotope');
@@ -51,4 +51,4 @@ elseif isnumeric(summand)
     matZ.center = matZ.center + summand;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

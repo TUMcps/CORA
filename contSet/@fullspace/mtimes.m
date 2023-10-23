@@ -3,7 +3,7 @@ function res = mtimes(factor1,factor2)
 %    space
 %    case R^0: can only be multiplied by 0 (not representable in MATLAB)
 %
-% Syntax:  
+% Syntax:
 %    fs = mtimes(factor1,factor2)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function res = mtimes(factor1,factor2)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check dimensions
 equalDimCheck(factor1,factor2);
@@ -69,4 +69,4 @@ elseif isa(M,'intervalMatrix') || isa(M,'matZonotope') || isa(M,'matPolytope')
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

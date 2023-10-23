@@ -1,7 +1,7 @@
 function res = test_halfspace_contains
 % test_halfspace_contains - unit test function of containss
 %
-% Syntax:  
+% Syntax:
 %    res = test_halfspace_contains
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_halfspace_contains
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      02-September-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       02-September-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % TEST 1: Zonotopes -------------------------------------------------------
 % instantiate zonotope
@@ -85,4 +85,4 @@ res_int = res_above && res_upperboundary && ~res_through && ...
 % combine tests
 res = res_zon && res_int;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

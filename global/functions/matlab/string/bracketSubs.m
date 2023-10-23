@@ -1,7 +1,7 @@
 function str = bracketSubs(str)
 % bracketSubs - substitute 'L' and 'R' by opening/closing parenthesis
 %
-% Syntax:  
+% Syntax:
 %    str = bracketSubs(str)
 %
 % Inputs:
@@ -20,15 +20,15 @@ function str = bracketSubs(str)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  01-May-2020 (MW, added header)
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   01-May-2020 (MW, added header)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % generate left and right brackets
 str = strrep(str,'L','(');
 str = strrep(str,'R',')');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

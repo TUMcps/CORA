@@ -24,12 +24,12 @@ function BClist = classifyVariablesParallel(BClist)
 % References: 
 %   -
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       25-June-2022
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % number of base components
 numBC = length(BClist);
@@ -189,4 +189,4 @@ for i=1:numBC
 
 end
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

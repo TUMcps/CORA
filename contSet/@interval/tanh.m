@@ -5,7 +5,7 @@ function I = tanh(I)
 %
 % [tanh(x_), tanh(x--)].
 %
-% Syntax:  
+% Syntax:
 %    I = tanh(I)
 %
 % Inputs:
@@ -24,15 +24,15 @@ function I = tanh(I)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      05-February-2016
-% Last update:  22-February-2016 (DG, the matrix case is rewritten)
-%               21-May-2022 (MW, remove new instantiation)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-February-2016
+% Last update:   22-February-2016 (DG, the matrix case is rewritten)
+%                21-May-2022 (MW, remove new instantiation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 I.inf = tanh(I.inf);
 I.sup = tanh(I.sup);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,9 +1,9 @@
 function pZ = restructureReduceDI(pZ, dfOrder, method, varargin)
-% restructureReduce - Calculate a new representation of a polynomial
+% restructureReduceDI - Calculate a new representation of a polynomial
 %    zonotope through simultanious reduction of dependent and independent
 %    generators
 %
-% Syntax:  
+% Syntax:
 %    pZ = restructureReduceDI(pZ, order, method)
 %    pZ = restructureReduceDI(pZ, order, method, genOrder)
 %
@@ -13,7 +13,8 @@ function pZ = restructureReduceDI(pZ, dfOrder, method, varargin)
 %            resulting polynomial zonotope 
 %    method - reduction technique for linear zonotopes
 %             (see zonotope/reduce)
-%    genOrder - desired zonotope order of the resulting polynomial zonotope
+%    genOrder - (optional) desired zonotope order of the resulting
+%               polynomial zonotope
 %
 % Outputs:
 %    pZ - polyZonotope object over-approximating input polynomial zonotope
@@ -34,36 +35,37 @@ function pZ = restructureReduceDI(pZ, dfOrder, method, varargin)
 %
 % See also: polyZonotope/restructure, zonotope/reduce
 
-% Author:       Victor Gassmann
-% Written:      29-October-2021 
-% Last update:  26-October-2022 (VG: retain existing ids)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       29-October-2021 
+% Last update:   26-October-2022 (VG, retain existing ids)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parse input arguments
     genOrder = setDefaultValues({Inf},varargin);
     
     % make sure that polyZonotope is irreducible
-    pZ = deleteZeros(pZ);
+    pZ = compact_(pZ,'states',eps);
     
-    n = length(pZ.c);
+    % read out dimension of polynomial zonotope
+    n = dim(pZ);
     
     % construct equivalent polyZonotope without indep. generators
-    G = [pZ.G,pZ.Grest];
-    expMat = blkdiag(pZ.expMat,eye(size(pZ.Grest,2)));
+    G = [pZ.G,pZ.GI];
+    E = blkdiag(pZ.E,eye(size(pZ.GI,2)));
     if ~isempty(pZ.id)
-        id = [pZ.id;max(abs(pZ.id))+(1:size(pZ.Grest,2))'];
+        id = [pZ.id;max(abs(pZ.id))+(1:size(pZ.GI,2))'];
     else
-        id = (1:size(pZ.Grest,2))';
+        id = (1:size(pZ.GI,2))';
     end
-    [d,m] = size(expMat);
+    [d,m] = size(E);
     
     % case 1: everything is within limits
     if d <= dfOrder*n && m <= genOrder*n
         pZ.G = G;
-        pZ.Grest = zeros(n,0);
-        pZ.expMat = expMat;
+        pZ.GI = zeros(n,0);
+        pZ.E = E;
         pZ.id = id;
         return;
     end
@@ -77,16 +79,16 @@ function pZ = restructureReduceDI(pZ, dfOrder, method, varargin)
         % number of generators that need to be reduced to n generators
         M = m-(genOrder-1)*n;
         
-        ind_r = Gens2Reduce(G,expMat,M);
+        ind_r = aux_gens2reduce(G,E,M);
         
         % reduce resulting generators to n generators
         G_ = generators(reduce(zonotope(zeros(n,1),G(:,ind_r)),method,1));
         m = size(G_,2);
         pZ.G = [G(:,~ind_r),G_];
-        pZ.Grest = zeros(n,0);
-        pZ.expMat = blkdiag(expMat(:,~ind_r),eye(m));
+        pZ.GI = zeros(n,0);
+        pZ.E = blkdiag(E(:,~ind_r),eye(m));
         pZ.id = [id;max(abs(id))+(1:m)'];
-        pZ = deleteZeros(pZ);
+        pZ = compact_(pZ,'states',eps);
                         
     %case 3+4: generators fit/dont fit, but too many dep. factors
     elseif d>dfOrder*n
@@ -100,10 +102,10 @@ function pZ = restructureReduceDI(pZ, dfOrder, method, varargin)
         for i = 1:d
             
             % find all generators that depend on the current factor
-            ind = expMat(i,:) > 0;
+            ind = E(i,:) > 0;
             Ind(i,:) = ind;
             pZ_ = polyZonotope(zeros(n,1),G(:,ind), ...
-                  zeros(n,0),expMat(:,ind),id);
+                  zeros(n,0),E(:,ind),id);
             
             % calculate "volume" of the zonotope over-approximation
             V(i) = sum(rad(interval(zonotope(pZ_))));
@@ -129,7 +131,7 @@ function pZ = restructureReduceDI(pZ, dfOrder, method, varargin)
             ii_mask_not = tmp(~indMask);
             
             % find indices of generators to reduce
-            ind_r = Gens2Reduce(G(:,~indMask),expMat(:,~indMask),N);
+            ind_r = aux_gens2reduce(G(:,~indMask),E(:,~indMask),N);
             
             % convert ind_r to mask in original "G" space
             ind_gr = ismember(1:m,ii_mask_not(ind_r));
@@ -139,16 +141,16 @@ function pZ = restructureReduceDI(pZ, dfOrder, method, varargin)
         end    
         
         Zr = reduce(zonotope(polyZonotope(zeros(n,1),G(:,indMask),...
-                    zeros(n,0),expMat(:,indMask))),method,1);
+                    zeros(n,0),E(:,indMask))),method,1);
         Gr = generators(Zr);
         m = size(Gr,2);
         G = [G(:,~indMask),Gr];
-        expMat = blkdiag(expMat(ii(D+1:end),~indMask),eye(m));
+        E = blkdiag(E(ii(D+1:end),~indMask),eye(m));
         id = [id(ii(D+1:end));
               max(abs(id(ii(D+1:end))))+(1:m)'];
         % construct resulting polyZonotope
-        pZ = polyZonotope(pZ.c+center(Zr),G,zeros(n,0),expMat,id);
-        pZ = deleteZeros(pZ);
+        pZ = polyZonotope(pZ.c+Zr.c, G, zeros(n,0), E, id);
+        pZ = compact_(pZ,'states',eps);
     else
         throw(CORAerror('CORA:specialError',...
             'Bug in restructureReduceDI: Check logic!'));
@@ -156,12 +158,13 @@ function pZ = restructureReduceDI(pZ, dfOrder, method, varargin)
 end
 
 
-% Auxiliary function ------------------------------------------------------
-function ind_r = Gens2Reduce(G,expMat,M)
+% Auxiliary functions -----------------------------------------------------
+
+function ind_r = aux_gens2reduce(G,E,M)
     % sort generators according to metric
     m = size(G,2);
     Gtemp = G;         
-    ind = all(mod(expMat,2)==0,1);
+    ind = all(mod(E,2)==0,1);
     Gtemp(:,ind) = 0.5 * Gtemp(:,ind);
     
     % determine length of the generators
@@ -170,4 +173,4 @@ function ind_r = Gens2Reduce(G,expMat,M)
     ind_r = ismember(1:m,ii_s(1:M));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

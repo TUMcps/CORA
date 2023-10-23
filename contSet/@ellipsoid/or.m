@@ -2,7 +2,7 @@ function E = or(E,S,varargin)
 % or - overloads '|' operator to compute an inner-/outer-approximation of
 %    the union of an ellipsoid and another set representation
 %
-% Syntax:  
+% Syntax:
 %    E = or(E,S)
 %    E = or(E,S,mode)
 %
@@ -30,13 +30,13 @@ function E = or(E,S,varargin)
 %
 % See also: none
 
-% Author:       Victor Gassmann
-% Written:      09-March-2021 
-% Last update:  15-March-2021
-%               04-July-2022 (VG: class array; fixed small bug)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       09-March-2021 
+% Last update:   15-March-2021
+%                04-July-2022 (VG, class array; fixed small bug)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% parsing and checking
 % make sure first argument is class argument 
@@ -49,7 +49,7 @@ inputArgsCheck({{E,'att','ellipsoid','scalar'};
                 {mode,'str',{'outer','inner'}}});
 
 % empty set case
-if all(isempty(S)) && ~isempty(E)
+if ~representsa_(E,'emptySet',eps) && all(representsa_(S,'emptySet',eps))
     return;
 end
 
@@ -57,7 +57,7 @@ end
 equalDimCheck(E,S);
 
 
-if all(isempty(S))
+if all(representsa_(S,'emptySet',eps))
     return;
 end
 
@@ -69,7 +69,7 @@ if isa(S,'double')
         E = orEllipsoidOA([E,E_p]);
         return;
     else
-        P = mptPolytope.enclosePoints(V);
+        P = polytope.enclosePoints(V);
         E = or(E,P,'inner');
         return;
     end
@@ -84,7 +84,7 @@ if isa(S,'ellipsoid')
     end
 end
 
-if isa(S,'mptPolytope')
+if isa(S,'polytope')
     if strcmp(mode,'outer')
         E_S = ellipsoid.array(1,numel(S));
         for i=1:numel(S)
@@ -101,4 +101,4 @@ end
 % throw error for all other combinations
 throw(CORAerror('CORA:noops',E,S));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

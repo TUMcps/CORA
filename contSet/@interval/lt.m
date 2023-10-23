@@ -2,7 +2,7 @@ function res = lt(I1,I2)
 % lt - Overloads the '<'-operator, checks whether one interval is the
 %    subset of another interval
 %
-% Syntax:  
+% Syntax:
 %    res = lt(I1,I2)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function res = lt(I1,I2)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      22-July-2016 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-July-2016 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % all infima of I1 bigger than I2?
 leftResult = all(infimum(I1) > infimum(I2));
@@ -39,4 +39,4 @@ rightResult = all(supremum(I1) < supremum(I2));
 % both tests must be true
 res = leftResult & rightResult;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

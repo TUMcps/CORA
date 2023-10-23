@@ -2,7 +2,7 @@ function res = isFullDim(cZ)
 % isFullDim - checks if the dimension of the affine hull of a constrained
 %    zonotope is equal to the dimension of its ambient space
 %
-% Syntax:  
+% Syntax:
 %    res = isFullDim(cZ)
 %
 % Inputs:
@@ -28,17 +28,17 @@ function res = isFullDim(cZ)
 %
 % See also: zonotope/isFullDim
 
-% Author:       Niklas Kochdumper
-% Written:      02-January-2020 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       02-January-2020 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isempty(cZ.A)
     
     % call zonotope isFullDim method
-    res = isFullDim(zonotope(cZ.Z));
+    res = isFullDim(zonotope(cZ.c,cZ.G));
     
 else
 
@@ -46,7 +46,7 @@ else
     T = null(cZ.A);
 
     % transform generator matrix into the null-space
-    G_ = cZ.Z(:,2:end) * T;
+    G_ = cZ.G * T;
 
     % check if rank of generator matrix is equal to the dimension
     dimG = size(G_,1);
@@ -56,4 +56,4 @@ else
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

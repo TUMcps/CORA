@@ -24,12 +24,12 @@ function C = capsule(Z)
 %
 % See also: ---
 
-% Author:       Niklas Kochdumper
-% Written:      23-December-2019
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       23-December-2019
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute orthogonal basis using PCA
 G = generators(Z);
@@ -44,4 +44,4 @@ C = capsule(int);
 % back-transformation to original space
 C = B*C;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

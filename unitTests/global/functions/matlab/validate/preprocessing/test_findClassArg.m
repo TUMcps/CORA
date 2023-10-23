@@ -1,7 +1,7 @@
 function res = test_findClassArg
 % test_findClassArg - unit test function for finding class arguments
 %
-% Syntax:  
+% Syntax:
 %    res = test_findClassArg()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_findClassArg
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate class objects
 Z = zonotope([2;-1],[2 4 1; 0 -2 1]);
@@ -41,4 +41,4 @@ end
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError(obj,Rdelta,optio
 % precompStatError - precompute the second order static error along with 
 %    Hessian matrix
 %
-% Syntax:  
+% Syntax:
 %    [H,Zdelta,errorStat,T,ind3] = precompStatError(obj,Rdelta,options)
 %
 % Inputs:
@@ -26,12 +26,12 @@ function [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError(obj,Rdelta,optio
 %
 % See also: 
 
-% Author:       Niklas Kochdumper
-% Written:      27-July-2018
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       27-July-2018
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set handle to correct file
 obj = setHessian(obj,'standard');
@@ -113,4 +113,4 @@ end
 % reduce the complexity of the set of static errors
 errorStat = reduce(errorStat,options.reductionTechnique,options.intermediateOrder);
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

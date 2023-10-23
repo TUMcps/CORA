@@ -2,7 +2,7 @@ function [obj] = inputSolution_Krylov(obj, options)
 % inputSolution_Krylov - computes the set of input solutions in the Krylov
 % subspace
 %
-% Syntax:  
+% Syntax:
 %    [obj] = inputSolution_Krylov(obj,options)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function [obj] = inputSolution_Krylov(obj, options)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      19-December-2016
-% Last update:  28-October-2017
-%               25-October-2018
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-December-2016
+% Last update:   28-October-2017
+%                25-October-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % set of possible inputs
@@ -51,7 +51,7 @@ KrylovOrder = 1;
 if ~all(U_c == 0)
     % obtain constant input solution
     [Usum, errorTaylor_c, ~, KrylovOrderConst] = ...
-        constInputSolution(obj, U_c, KrylovOrder, options, 0);
+        aux_constInputSolution(obj, U_c, KrylovOrder, options, 0);
 else
     Usum = zeros(length(obj.A),1);
     errorTaylor_c = zeros(length(obj.A),1);
@@ -121,12 +121,12 @@ if ~all(vTrans == 0) % input trajectory not yet implemented
     %compute additional uncertainty if origin is not contained in input set
     if options.originContained
         [inputSolVtrans, errorTaylor_vTrans] = ...
-            constInputSolution(obj, vTrans, KrylovOrderConst, options, 0);
+            aux_constInputSolution(obj, vTrans, KrylovOrderConst, options, 0);
         inputCorr=zeros(dim,1);
     else
         % obtain constant input solution
         [inputSolVtrans, errorTaylor_vTrans, inputCorr] = ...
-            constInputSolution(obj, vTrans, KrylovOrderConst, options, 1);
+            aux_constInputSolution(obj, vTrans, KrylovOrderConst, options, 1);
     end
 else
     inputSolVtrans = zeros(length(obj.A),1);
@@ -159,8 +159,10 @@ obj.taylor.eAtInt = [];
 end
 
 
+% Auxiliary functions -----------------------------------------------------
+
 function [Usum, errorTaylor, inputCorr, KrylovOrder] = ...
-    constInputSolution(obj, input, KrylovOrder, options, inputTieFlag)
+    aux_constInputSolution(obj, input, KrylovOrder, options, inputTieFlag)
 
     inputCorr = [];
 
@@ -223,4 +225,4 @@ function [Usum, errorTaylor, inputCorr, KrylovOrder] = ...
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

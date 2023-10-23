@@ -1,7 +1,7 @@
 function res = testLong_zonotope_minnorm
 % testLong_zonotope_minnorm - unit test function of minnorm
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_minnorm
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_zonotope_minnorm
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      15-October-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       15-October-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -49,4 +49,4 @@ for i=2:7
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

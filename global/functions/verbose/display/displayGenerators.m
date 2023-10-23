@@ -1,7 +1,7 @@
 function displayGenerators(G,maxGens,varName)
 % displayGenerators - Displays the center and generators of a zonotope
 %
-% Syntax:  
+% Syntax:
 %    displayGenerators(G,maxGens,varName)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function displayGenerators(G,maxGens,varName)
 %
 % See also: contSet/display
 
-% Author:       Mark Wetzlinger
-% Written:      09-June-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       09-June-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %display generators
 nrOfGens = size(G,2);
@@ -46,4 +46,4 @@ else
         "-" + nrOfGens + ") not shown. Check workspace.\n\n");
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

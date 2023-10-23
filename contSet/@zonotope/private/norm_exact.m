@@ -1,7 +1,7 @@
 function [val,x] = norm_exact(Z,type)
 % norm_exact - computes the exact maximum norm
 %
-% Syntax:  
+% Syntax:
 %    [val,x] = norm_exact(Z)
 %
 % Inputs:
@@ -20,13 +20,12 @@ function [val,x] = norm_exact(Z,type)
 %
 % See also: minnorm
 
-% Author:       Victor Gassmann
-% Written:      18-September-2019
-% Last update:  21-April-2023 (VG: reworked completely; not sure what I did
-%                   there initially, but it was wrong)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       18-September-2019
+% Last update:   21-April-2023 (VG, reworked completely)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if ~isYalmipInstalled()
      throw(CORAerror('CORA:YALMIP',...
@@ -42,14 +41,14 @@ if type~=2
     throw(CORAerror('CORA:notSupported','Only Euclidean norm supported.'));
 end
 
-G = generators(Z);
+G = Z.G;
 if isempty(G)
-    x = center(Z);
+    x = Z.c;
     val = norm(x);
     return;
 end
 [~,m] = size(G);
-c = center(Z);
+c = Z.c;
 
 GG = G'*G;
 lmax = max(eig(GG));
@@ -138,4 +137,5 @@ else
 end
 
 val = norm(x);
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

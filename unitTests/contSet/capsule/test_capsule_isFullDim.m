@@ -1,7 +1,7 @@
 function res = test_capsule_isFullDim
 % test_capsule_isFullDim - unit test function of isFullDim
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_isFullDim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_capsule_isFullDim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -55,4 +55,4 @@ res(5) = ~isFullDim(C);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

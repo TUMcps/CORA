@@ -2,7 +2,7 @@ function R = mtimes(M,R)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix or an
 %    with a reachSet object
 %
-% Syntax:  
+% Syntax:
 %    R = mtimes(M,R)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function R = mtimes(M,R)
 %
 % See also: plus
 
-% Author:       Niklas Kochdumper
-% Written:      04-March-2021
-% Last update:  10-November-2022 (MW, add checks for empty structs)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       04-March-2021
+% Last update:   10-November-2022 (MW, add checks for empty structs)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 for i = 1:size(R,1)
     if ~isempty(R(i).timeInterval)
@@ -36,4 +36,4 @@ for i = 1:size(R,1)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

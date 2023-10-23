@@ -3,7 +3,7 @@ function [obj,Rfirst,options] = initReach_inputDependence(obj,Rinit,options)
 %    for the first time step when the constant input is parameterized and
 %    correlated to the parameters of the system
 %
-% Syntax:  
+% Syntax:
 %    [obj,Rfirst,options] = initReach_inputDependence(obj,Rinit,options)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function [obj,Rfirst,options] = initReach_inputDependence(obj,Rinit,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      01-June-2011
-% Last update:  15-February-2021 (MW, rename: intermediateTerms)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       01-June-2011
+% Last update:   15-February-2021 (MW, rename: intermediateTerms)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
  
 % store taylor terms and time step as object properties
 obj.stepSize = options.timeStep;
@@ -60,4 +60,4 @@ Rtotal_tp = Rhom_tp + obj.RV;
 Rfirst.tp = reduce(Rtotal_tp,options.reductionTechnique,options.zonotopeOrder);
 Rfirst.ti = reduce(Rtotal,options.reductionTechnique,options.zonotopeOrder);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

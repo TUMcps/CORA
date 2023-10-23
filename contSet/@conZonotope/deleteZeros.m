@@ -7,7 +7,7 @@ function cZ = deleteZeros(cZ)
 %    values of beta (-1 to 1), but this would require much more
 %    computational effort and is thus omitted in this function
 %
-% Syntax:  
+% Syntax:
 %    cZ = deleteZeros(cZ)
 %
 % Inputs:
@@ -31,31 +31,24 @@ function cZ = deleteZeros(cZ)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/deleteZeros
+% See also: conZonotope/compact_
 %
 % References: 
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      04-January-2020
-% Last update:  28-March-2022 (MW, fix bugs for special cases)
-%               22-May-2022
-% Last revision:---
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       04-January-2020
+% Last update:   28-March-2022 (MW, fix bugs for special cases)
+%                22-May-2022
+% Last revision: 29-July-2023 (MW, merged to compact)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-% constraints that are trivially true: 0 * beta = 0
-idx = ~any([cZ.A,cZ.b],2);
-cZ.A(idx,:) = []; cZ.b(idx) = [];
+funcname = mfilename;
+warning(sprintf(['The function ''' funcname ''' is deprecated (since CORA 2024) and has been replaced by ''compact''.\n' ...
+    '         When updating the code, please rename every function call ''' funcname '(cZ)'' -> ''compact(cZ,''zeros'')''.\n' ...
+    '         Note that the function ''' funcname ''' will be removed in a future release.']));
+cZ = compact_(cZ,'zeros',eps);
 
-% zero-length generators (corresponding columns in constraint matrix A need
-% to be all-zero as well)
-idx = ~any([cZ.Z(:,2:end);cZ.A],1);
-% remove zero-length generators and corresponding constraints
-cZ.Z(:,[false,idx]) = [];
-if ~isempty(cZ.A)
-    cZ.A(:,idx) = [];
-end
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

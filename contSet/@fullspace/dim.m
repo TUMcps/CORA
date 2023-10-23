@@ -3,7 +3,7 @@ function n = dim(fs)
 %    space
 %    case R^0: 0
 %
-% Syntax:  
+% Syntax:
 %    n = dim(fs)
 %
 % Inputs:
@@ -22,13 +22,13 @@ function n = dim(fs)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 n = fs.dimension;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

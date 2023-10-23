@@ -24,16 +24,16 @@ function [t,x,nextloc,xJump] = simulate(loc,params)
 %
 % See also: reach
 
-% Author:       Matthias Althoff
-% Written:      03-May-2007
-% Last update:  10-August-2011
-%               13-March-2015
-%               17_August-2015
-%               10-September-2015
-%               19-April-2016
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-May-2007
+% Last update:   10-August-2011
+%                13-March-2015
+%                17-August-2015
+%                10-September-2015
+%                19-April-2016
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get current location
 currentLoc = params.loc;
@@ -102,4 +102,4 @@ else
     nextloc = []; xJump = [];
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

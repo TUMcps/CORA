@@ -5,7 +5,7 @@ function res = test_linearSysDT_observe_05_FRad_C()
 %    vehicle model against an alternative implementation of the FRad-C
 %    method published in [1].
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSysDT_observe_05_FRad_C
 %
 % Inputs:
@@ -19,12 +19,12 @@ function res = test_linearSysDT_observe_05_FRad_C()
 %        Gain optimality under distinct uncertainty paradigms and
 %        robust convergence. Automatica, 55:265-273, 2015.
 
-% Author:       Matthias Althoff
-% Written:      25-February-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-February-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %% Load side slip model
@@ -60,7 +60,6 @@ end
 res = all(resPartial);
 
 
-
 % %% Plot results of estimated states
 % % create time vector
 % t = 0:options.timeStep:params.tFinal;
@@ -80,4 +79,4 @@ res = all(resPartial);
 % end
 
         
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -6,7 +6,7 @@ function res = testLong_hybridAutomaton_reach_02_powerTrain
 %    example in [1]. It is checked if the computed guard intersection
 %    encloses all simulated trajectories.
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_hybridAutomaton_reach_02_powerTrain
 %
 % Inputs:
@@ -19,12 +19,12 @@ function res = testLong_hybridAutomaton_reach_02_powerTrain
 %   [1] M. Althoff et al. "Avoiding Geometic Intersection Operations in 
 %       Reachability Analysis of Hybrid Systems"
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      21-September-2011
-% Last update:  23-December-2019
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       21-September-2011
+% Last update:   23-December-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Hybrid Automaton --------------------------------------------------------
@@ -195,10 +195,10 @@ for i = 1:length(guardIntersect)
     % check if all simulated points are located inside the computed guard
     % intersection
     R = project(Rjump(1).set,2:11);
-    if size(R.Z,2) > 12
+    if size(R.G,2) > 11
         R = reduce(R,'pca',1);
     end
-    poly = mptPolytope(R);
+    poly = polytope(R);
     
     if ~contains(poly,points,'exact',1e-10)
         res = false; return
@@ -208,4 +208,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

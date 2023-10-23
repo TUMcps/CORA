@@ -1,13 +1,15 @@
 function pZ = quadMap(pZ,varargin)
 % quadMap - computes the quadratic map of a polyZonotope
 %
-% Syntax:  
+% Syntax:
 %    pZ = quadMap(pZ,Q)
 %    pZ = quadMap(pZ,pZ2,Q)
+%    pZ = quadMap(pZ,pZ2,Q,dep)
 %
 % Inputs:
 %    pZ, pZ2 - polyZonotope objects
 %    Q - quadratic coefficients as a cell of matrices
+%    dep - keep dependencies (dep = true) or not (dep = false) 
 %
 % Outputs:
 %    pZ - polyZonotope object
@@ -46,28 +48,34 @@ function pZ = quadMap(pZ,varargin)
 %
 % See also: zonotope/quadMap, cubMap
 
-% Author:       Niklas Kochdumper
-% Written:      23-March-2018
-% Last update:  21-April-2020 (remove zero-length independent generators)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       23-March-2018
+% Last update:   21-April-2020 (remove zero-length independent generators)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     if nargin == 1
         throw(CORAerror('CORAerror:notEnoughInputArgs',2));
     elseif nargin == 2
-        pZ = quadMapSingle(pZ,varargin{1});
+        pZ = aux_quadMapSingle(pZ,varargin{1});
     elseif nargin == 3
-        pZ = quadMapMixed(pZ,varargin{1},varargin{2});
+        pZ = aux_quadMapMixed(pZ,varargin{1},varargin{2},false);
+    elseif nargin == 4
+        if ~isscalar(varargin{3}) || ~islogical(varargin{3})
+            throw(CORAerror('CORA:wrongValue', 'fourth', ...
+                                            'has to be boolean.'));
+        end
+        pZ = aux_quadMapMixed(pZ,varargin{1},varargin{2},varargin{3});
     else
         throw(CORAerror('CORA:tooManyInputArgs',3));
     end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function pZ = quadMapSingle(pZ,Q)
+function pZ = aux_quadMapSingle(pZ,Q)
 % compute an over-approximation of the quadratic map 
 %
 % {x_i = x^T Q{i} x | x \in pZ} 
@@ -78,23 +86,23 @@ function pZ = quadMapSingle(pZ,Q)
     %       Z' Q Z  +  Zrem' Q Z  +  Z' Q Zrem  +  Zrem' Q Zrem 
     
     pZtemp = pZ;
-    pZtemp.Grest = [];
+    pZtemp.GI = [];
 
     Z = zonotope(pZtemp);
-    Zrem = zonotope([0*pZ.c, pZ.Grest]);
+    Zrem = zonotope([0*pZ.c, pZ.GI]);
     
     % return directly if pZ is a zonotope (rest matrix only)
     if isempty(pZ.G)
-        Zrem_ = zonotope([pZ.c, pZ.Grest]);
+        Zrem_ = zonotope([pZ.c, pZ.GI]);
         Zr = quadMap(Zrem_,Q);
-        pZ.c = center(Zr);
-        pZ.Grest = generators(Zr);
+        pZ.c = Zr.c;
+        pZ.GI = Zr.G;
         return;
     end
 
     % extend generator and exponent matrix by center
     Gext = [pZ.c, pZ.G];
-    Eext = [zeros(size(pZ.expMat,1),1), pZ.expMat];
+    Eext = [zeros(size(pZ.E,1),1), pZ.E];
 
 
     % initialize the resulting generator and exponent matrix 
@@ -102,7 +110,7 @@ function pZ = quadMapSingle(pZ,Q)
     dim = length(Q);
     M = N*(N+1)/2;
 
-    Equad = zeros(size(pZ.expMat,1),M);
+    Equad = zeros(size(pZ.E,1),M);
     Gquad = zeros(dim,M);
 
     % create the exponent matrix that corresponds to the quadratic map
@@ -132,11 +140,11 @@ function pZ = quadMapSingle(pZ,Q)
     end
 
     % add up all generators that belong to identical exponents
-    [ExpNew,Gnew] = removeRedundantExponents(Equad,Gquad);
+    [Enew,Gnew] = removeRedundantExponents(Equad,Gquad);
     
     
     % quadratic and mixed multiplication of remaining generators
-    if ~isempty(pZ.Grest)
+    if ~isempty(pZ.GI)
 
         % quadratic multiplication
         Ztemp1 = quadMap(Zrem,Q);
@@ -145,31 +153,31 @@ function pZ = quadMapSingle(pZ,Q)
         Ztemp2 = quadMap(Z,Zrem,Q);
         Ztemp3 = quadMap(Zrem,Z,Q);
 
-        pZ.c = center(Ztemp1) + center(Ztemp2) + center(Ztemp3);
-        Grest = [generators(Ztemp1), generators(Ztemp2), generators(Ztemp3)];
+        pZ.c = Ztemp1.c + Ztemp2.c + Ztemp3.c;
+        GI = [Ztemp1.G, Ztemp2.G, Ztemp3.G];
         
         % delete generators of length zero
-        Grest = Grest(:,any(Grest,1));
+        GI = GI(:,any(GI,1));
 
     else
         pZ.c = zeros(length(Q),1);
-        Grest = [];
+        GI = [];
     end
 
     % assemble the properties of the resulting polynomial zonotope
-    if sum(ExpNew(:,1)) == 0
+    if sum(Enew(:,1)) == 0
         pZ.c = pZ.c + Gnew(:,1);
         pZ.G = Gnew(:,2:end);
-        pZ.expMat = ExpNew(:,2:end);
-        pZ.Grest = Grest;
+        pZ.E = Enew(:,2:end);
+        pZ.GI = GI;
     else
         pZ.G = Gnew;
-        pZ.expMat = ExpNew;
-        pZ.Grest = Grest;
+        pZ.E = Enew;
+        pZ.GI = GI;
     end
 end
 
-function pZ = quadMapMixed(pZ1,pZ2,Q)
+function pZ = aux_quadMapMixed(pZ1,pZ2,Q,dep)
 % compute an over-approximation of the quadratic map 
 %
 % {x_i = x1^T Q{i} x2 | x1 \in pZ1, x2 \in pZ2} 
@@ -177,28 +185,31 @@ function pZ = quadMapMixed(pZ1,pZ2,Q)
 % of two polyZonotope objects.
 
     % bring the exponent matrices to a common representation
-    pZ2.id = max(pZ1.id) + pZ2.id;
-    [id,expMat1,expMat2] = mergeExpMatrix(pZ1.id,pZ2.id,pZ1.expMat,pZ2.expMat);
+    if ~dep
+        pZ2.id = max(pZ1.id) + pZ2.id;
+    end
+
+    [id,E1,E2] = mergeExpMatrix(pZ1.id,pZ2.id,pZ1.E,pZ2.E);
     id = (1:length(id))';
     
     % split into a zonotope Z that overapproximates the dependent generators,
     % and a zonotope Zrem that contains the independent generators
     pZtemp = pZ1;
-    pZtemp.Grest = [];
+    pZtemp.GI = [];
     Z1 = zonotope(pZtemp);
-    Zrem1 = zonotope([0*pZ1.c, pZ1.Grest]);
+    Zrem1 = zonotope([0*pZ1.c, pZ1.GI]);
     
     pZtemp = pZ2;
-    pZtemp.Grest = [];
+    pZtemp.GI = [];
     Z2 = zonotope(pZtemp);
-    Zrem2 = zonotope([0*pZ2.c, pZ2.Grest]);
+    Zrem2 = zonotope([0*pZ2.c, pZ2.GI]);
 
     % construct extended generator and exponent matrix (extendet by center)
     Gext1 = [pZ1.c, pZ1.G];
-    Eext1 = [zeros(size(expMat1,1),1), expMat1];
+    Eext1 = [zeros(size(E1,1),1), E1];
     
     Gext2 = [pZ2.c, pZ2.G];
-    Eext2 = [zeros(size(expMat2,1),1), expMat2];
+    Eext2 = [zeros(size(E2,1),1), E2];
 
     % initialize the resulting generator and exponent matrix 
     N1 = size(Gext1,2);
@@ -207,7 +218,7 @@ function pZ = quadMapMixed(pZ1,pZ2,Q)
     dim = length(Q);
     M = N1*N2;
 
-    Equad = zeros(size(expMat1,1),M);
+    Equad = zeros(size(E1,1),M);
     Gquad = zeros(dim,M);
 
     % create the exponent matrix that corresponds to the quadratic map
@@ -228,35 +239,35 @@ function pZ = quadMapMixed(pZ1,pZ2,Q)
     end
 
     % add up all generators that belong to identical exponents
-    [ExpNew,Gnew] = removeRedundantExponents(Equad,Gquad);
+    [Enew,Gnew] = removeRedundantExponents(Equad,Gquad);
 
     % mixed multiplication of remaining generators
-    Grest = [];
+    GI = [];
     Zquad_rest = quadMap(Zrem1,Zrem2,Q);
-    G_add = generators(Zquad_rest);
-    c = center(Zquad_rest);
-    Grest(:,end+1:end+length(G_add(1,:))) = G_add;
+    G_add = Zquad_rest.G;
+    c = Zquad_rest.c;
+    GI(:,end+1:end+size(G_add,2)) = G_add;
 
     Zquad_mixed1 = quadMap(Z1,Zrem2,Q);
-    G_add = generators(Zquad_mixed1);
-    c = c + center(Zquad_rest);
-    Grest(:,end+1:end+length(G_add(1,:))) = G_add;
+    G_add = Zquad_mixed1.G;
+    c = c + Zquad_rest.c;
+    GI(:,end+1:end+size(G_add,2)) = G_add;
 
     Zquad_mixed2 = quadMap(Zrem1,Z2,Q);
-    G_add = generators(Zquad_mixed2);
-    c = c + center(Zquad_rest);
-    Grest(:,end+1:end+length(G_add(1,:))) = G_add;
+    G_add = Zquad_mixed2.G;
+    c = c + Zquad_rest.c;
+    GI(:,end+1:end+size(G_add,2)) = G_add;
     
-    % remove zero-length generators
-    Grest = Grest(:,any(Grest,1));
+    % remove zero-length independent generators
+    GI = GI(:,any(GI,1));
 
     % assemble the properties of the resulting polynomial zonotope
-    if sum(ExpNew(:,1)) == 0
-        pZ = polyZonotope(c + Gnew(:,1),Gnew(:,2:end),Grest,ExpNew(:,2:end),id);
+    if sum(Enew(:,1)) == 0
+        pZ = polyZonotope(c + Gnew(:,1),Gnew(:,2:end),GI,Enew(:,2:end),id);
     else
-        pZ = polyZonotope(c,Gnew,Grest,ExpNew,id);
+        pZ = polyZonotope(c,Gnew,GI,Enew,id);
     end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

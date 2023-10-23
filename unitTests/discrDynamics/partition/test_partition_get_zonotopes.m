@@ -1,7 +1,7 @@
 function res = test_partition_get_zonotopes()
 % test_partition_get_zonotopes - unit test cell zonotopes
 %
-% Syntax:  
+% Syntax:
 %    res = test_partition_get_zonotopes()
 %
 % Inputs:
@@ -10,14 +10,12 @@ function res = test_partition_get_zonotopes()
 % Outputs:
 %    res - true/false
 
-% Author:       Aaron Pereira, Matthias Althoff
-% Written:      02-August-2017
-% Last update:  02-August-2018 (MA)
-% Last revision:---
+% Authors:       Aaron Pereira, Matthias Althoff
+% Written:       02-August-2017
+% Last update:   02-August-2018 (MA)
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
-
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %setup partitions
@@ -52,7 +50,7 @@ res = res1&&res2;
 % segmentPolytope(threeDimField)
 % cellZonotopes(threeDimField,[1 5 3])
 % cellZonotopes(threeDimField)
-% P = mptPolytope([2 0 0.3;4 2 0.6;1 1 0.5; 1 1 0.1]);
+% P = polytope([2 0 0.3;4 2 0.6;1 1 0.5; 1 1 0.1]);
 % intersectingSegments(threeDimField,P)
 % [iS,percentages] = exactIntersectingCells(threeDimField,P)
 % plot(threeDimField,exactIntersectingCells(threeDimField,P))
@@ -61,4 +59,4 @@ res = res1&&res2;
 % 
 % %partition with 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

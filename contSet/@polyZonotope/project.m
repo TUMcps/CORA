@@ -1,7 +1,7 @@
 function pZ = project(pZ,dims)
 % project - projects a polynomial zonotope onto the specified dimensions
 %
-% Syntax:  
+% Syntax:
 %    pZ = project(pZ,dims)
 %
 % Inputs:
@@ -29,12 +29,12 @@ function pZ = project(pZ,dims)
 %
 % See also: zonotope/project
 
-% Author:       Niklas Kochdumper
-% Written:      25-June-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-June-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 pZ.c = pZ.c(dims,:);
 
@@ -42,8 +42,8 @@ if ~isempty(pZ.G)
     pZ.G = pZ.G(dims,:);
 end
 
-if ~isempty(pZ.Grest)
-    pZ.Grest = pZ.Grest(dims,:);
+if ~isempty(pZ.GI)
+    pZ.GI = pZ.GI(dims,:);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

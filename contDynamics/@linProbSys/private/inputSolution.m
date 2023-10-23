@@ -1,7 +1,7 @@
 function obj = inputSolution(obj,options)
 % inputSolution - computes the bloating due to the input 
 %
-% Syntax:  
+% Syntax:
 %    obj = inputSolution(obj,options)
 %
 % Inputs:
@@ -20,14 +20,14 @@ function obj = inputSolution(obj,options)
 %
 % See also: expm, tie
 
-% Author:       Matthias Althoff
-% Written:      13-February-2007 
-% Last update:  26-February-2008
-%               08-September-2009
-%               17-July-2020
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       13-February-2007 
+% Last update:   26-February-2008
+%                08-September-2009
+%                17-July-2020
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set of possible inputs
 V = obj.B*options.U;
@@ -72,7 +72,7 @@ end
 %write to object structure
 obj.taylor.V=V;
 uncertainMean=inputSolV+inputSolVtrans;
-obj.taylor.Rinput=probZonotope(uncertainMean.Z,zeros(n,1),options.gamma);
+obj.taylor.Rinput=probZonotope([uncertainMean.c,uncertainMean.G],zeros(n,1),options.gamma);
 obj.taylor.Rtrans=inputSolVtrans;
 obj.taylor.inputCorr=inputCorr;
 %----------------------------------------------------------
@@ -94,26 +94,32 @@ for i=1:length(lambda)
 end
 %Sigma in original coordinates
 Sigma=V*Sigma*V.';
-G=generators(Sigma);
+G=aux_generators(Sigma);
 
 %instantiate probabilistic zonotope
 ProbInputSol=probZonotope(zeros(n,1),G,options.gamma);
 
 %write to object structure
 obj.taylor.pRinput=ProbInputSol;
-%----------------------------------------------------------
 
-function [G]=generators(Sigma)
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function [G]=aux_generators(Sigma)
 % returns the generator matrix of a probabilistic zonotope if
 % the covariance matrix Sigma is given
 
-%ensure symmetry for numerical stability
-Sigma=0.5*(Sigma+Sigma');
+    %ensure symmetry for numerical stability
+    Sigma=0.5*(Sigma+Sigma');
+    
+    %get eigenvalue, eigenvectors of Sigma
+    [V,W]=eig(Sigma);
+    
+    %compute new generators
+    G=V*sqrt(W);
 
-%get eigenvalue, eigenvectors of Sigma
-[V,W]=eig(Sigma);
+end
 
-%compute new generators
-G=V*sqrt(W);
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

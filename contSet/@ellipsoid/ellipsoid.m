@@ -9,7 +9,7 @@ classdef ellipsoid < contSet
 %    of ellipsoids (see ellipsoid/supportFunc.m for details) in the general
 %    case.
 %
-% Syntax:  
+% Syntax:
 %    ellipsoid:           Empty set
 %    ellipsoid(E):        E-ellipsoids object
 %    ellipsoid(Q):        Q positive semidefinite, symmetric matrix
@@ -40,15 +40,15 @@ classdef ellipsoid < contSet
 %       toolbox (ET). In Proceedings of the 45th IEEE Conference on
 %       Decision and Control (pp. 1498-1503). IEEE.
 
-% Author:       Victor Gassmann, Matthias Althoff
-% Written:      13-March-2019
-% Last update:  16-October-2019
-%               02-May-2020 (MW, add property validation)
-%               29-Mar-2021 (MA, faster eigenvalue computation)
-%               14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Victor Gassmann, Matthias Althoff
+% Written:       13-March-2019
+% Last update:   16-October-2019
+%                02-May-2020 (MW, add property validation)
+%                29-March-2021 (MA, faster eigenvalue computation)
+%                14-December-2022 (TL, property check in inputArgsCheck)
+% Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = protected, GetAccess = public)
     Q;      % shape matrix
@@ -87,7 +87,8 @@ end
 
 end
 
-% Auxiliary Functions -----------------------------------------------------
+
+% Auxiliary functions -----------------------------------------------------
 
 function [Q,q,TOL] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
@@ -137,4 +138,4 @@ function aux_checkInputArgs(Q,q,TOL,n_in)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

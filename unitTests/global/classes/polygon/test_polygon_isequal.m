@@ -1,7 +1,7 @@
 function res = test_polygon_isequal()
 % test_polygon_isequal - unit test function for equality check of polygons
 %
-% Syntax:  
+% Syntax:
 %    res = test_polygon_isequal
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_polygon_isequal()
 %
 % See also: polygon
 
-% Author:       Mark Wetzlinger
-% Written:      27-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = [];
 
@@ -54,4 +54,4 @@ res(end+1,1) = ~isequal(P1,P2);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = testLong_matZonotope_norm
 % testLong_matZonotope_norm - unit test function of norm; the result is
 %    compared to the norm of all vertices
 % 
-% Syntax:  
+% Syntax:
 %    res = testLong_matZonotope_norm
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_matZonotope_norm
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      02-November-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       02-November-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create interval matrix
 % center
@@ -103,4 +103,4 @@ res_2 = all(n_inf_sample <= n_inf*1+1e-8);
 %result of different computation techniques
 res = res_1 && res_2;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

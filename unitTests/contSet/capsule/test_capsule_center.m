@@ -1,7 +1,7 @@
 function res = test_capsule_center
 % test_capsule_center - unit test function of center
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_center
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_capsule_center
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -43,4 +43,4 @@ if ~withinTol(c,c_true)
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

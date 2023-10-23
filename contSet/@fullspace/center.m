@@ -3,7 +3,7 @@ function c = center(fs)
 %    to be the origin
 %    case R^0: 0 (not representable in MATLAB)
 %
-% Syntax:  
+% Syntax:
 %    c = center(fs)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function c = center(fs)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if fs.dimension == 0
     c = NaN;
@@ -35,4 +35,4 @@ else
     c = zeros(fs.dimension,1);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

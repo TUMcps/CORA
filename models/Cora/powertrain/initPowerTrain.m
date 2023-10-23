@@ -119,7 +119,7 @@ h2 = conHyperplane(n,-p.alpha);
 
 %loc1:
 %invariant
-inv = mptPolytope(-n',-p.alpha);
+inv = polytope(-n',-p.alpha);
 %guard sets
 guard1 = h1;
 %resets
@@ -132,7 +132,7 @@ loc = location('loc1',inv,trans,linSys1);
 
 %loc2:
 %invariant
-inv = mptPolytope([n';-n'],[p.alpha;p.alpha]);
+inv = polytope([n';-n'],[p.alpha;p.alpha]);
 %guard set 1
 guard1 = h1;
 guard2 = h2;
@@ -148,7 +148,7 @@ loc(2)=location('loc2',inv,trans,linSys2);
 
 %loc3:
 %invariant
-inv = mptPolytope(n',-p.alpha);
+inv = polytope(n',-p.alpha);
 %guard set 1
 guard1 = h2;
 %reset 1

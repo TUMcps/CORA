@@ -2,7 +2,7 @@ function res = test_unitvector()
 % test_unitvector - unit test function for instantiation of the standard
 %    unit vector
 %
-% Syntax:  
+% Syntax:
 %    res = test_unitvector()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_unitvector()
 %
 % See also: none
 
-% Author:       Tobias Ladner
-% Written:      27-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       27-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -45,4 +45,4 @@ res = all(resvec);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

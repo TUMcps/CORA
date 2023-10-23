@@ -1,7 +1,7 @@
 function res = test_reachSet_isequal
 % test_reachSet_isequal - unit test function for isequal
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_isequal()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_reachSet_isequal
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      01-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       01-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate set, propagation matrix
 Z = zonotope([1;1],[1 0 -2; 2 -1 1]);
@@ -104,4 +104,4 @@ res(end+1,1) = isequal(R1,R7,1e-4);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

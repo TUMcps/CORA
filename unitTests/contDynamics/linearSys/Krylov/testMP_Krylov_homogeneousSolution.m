@@ -3,7 +3,7 @@ function res = testMP_Krylov_homogeneousSolution(~)
 %    the Krylov method for the homegeneous solution of an initial set.
 %    This test requires the multiple precision toolbox.
 %
-% Syntax:  
+% Syntax:
 %    res = testMP_Krylov_homogeneousSolution(~)
 %
 % Inputs:
@@ -12,12 +12,12 @@ function res = testMP_Krylov_homogeneousSolution(~)
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      23-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       23-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "initReach_Krylov"
 path = CORAROOT;
@@ -90,4 +90,4 @@ addpath(genpath(path));
 % Is exact solution in zonotope?
 res = contains(Rnext.tp,R_exact);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

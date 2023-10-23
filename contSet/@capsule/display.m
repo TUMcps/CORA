@@ -2,7 +2,7 @@ function display(C)
 % display - Displays the properties of a capsule object (center, generator,
 %    radius) on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(C)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function display(C)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      04-March-2019
-% Last update:  02-May-2020 (MW, add empty case)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-March-2019
+% Last update:   02-May-2020 (MW, add empty case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isemptyobject(C)
     
@@ -56,4 +56,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

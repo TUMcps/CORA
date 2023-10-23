@@ -1,7 +1,7 @@
 function res = test_interval_contains
 % test_interval_contains - unit test function of contains
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_contains
 %
 % Inputs:
@@ -16,14 +16,13 @@ function res = test_interval_contains
 %
 % See also: -
 
-% Author:       Mark Wetzlinger, Adrian Kulmburg
-% Written:      27-September-2019
-% Last update:  12-March-2021 (MW, add empty case)
-%               01-July-2021 (AK, merged test_interval_containsPoint with
-%                                 test_interval_in)
-% Last revision:---
+% Authors:       Mark Wetzlinger, Adrian Kulmburg
+% Written:       27-September-2019
+% Last update:   12-March-2021 (MW, add empty case)
+%                01-July-2021 (AK, integrated test_interval_containsPoint)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. empty case
 I = interval();
@@ -66,4 +65,4 @@ res_point = res_inside && res_outside;
 
 res = res & res_point;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

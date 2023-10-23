@@ -1,7 +1,7 @@
 function res = testLong_conHyperplane_contains
 % testLong_conHyperplane_contains - unit test function of contains
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conHyperplane_contains
 %
 % Inputs:
@@ -16,14 +16,14 @@ function res = testLong_conHyperplane_contains
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      19-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       19-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % combine tests
-[~,res] = evalc('testLong_mptPolytope_contains');
+[~,res] = evalc('testLong_polytope_contains');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

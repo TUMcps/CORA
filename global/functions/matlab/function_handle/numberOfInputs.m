@@ -3,7 +3,7 @@ function [count,out] = numberOfInputs(f,varargin)
 %    this function is kept for legacy reasons -> use 'inputArgsLength'
 %    instead (to avoid confusion regarding the function name)
 %
-% Syntax:  
+% Syntax:
 %    [count,out] = numberOfInputs(f)
 %    [count,out] = numberOfInputs(f,inpArgs)
 %
@@ -25,14 +25,14 @@ function [count,out] = numberOfInputs(f,varargin)
 %
 % See also: nonlinearSys
 
-% Author:       Mark Wetzlinger
-% Written:      22-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 warning("Function has been renamed to 'inputArgsLength' to avoid confusion.");
 [count,out] = inputArgsLength(f,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

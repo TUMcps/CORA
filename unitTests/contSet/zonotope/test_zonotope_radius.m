@@ -1,7 +1,7 @@
 function res = test_zonotope_radius
 % test_zonotope_radius - unit test function of radius
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_radius
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_radius
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create a zonotope
 Z = zonotope(zeros(2,1),[1 3; 2 1]);
@@ -35,4 +35,4 @@ r_true = 5;
 % check results
 res = withinTol(r,r_true);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

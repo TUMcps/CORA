@@ -1,7 +1,7 @@
 function res = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = mtimes(factor1,factor2)
 %
 % Inputs:
@@ -22,23 +22,22 @@ function res = mtimes(factor1,factor2)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      19-June-2015
-% Last update:  25-June-2015
-%               18-November-2015
-%               01-February-2016 (DG, Fixed a matrix case)
-%               27-February-2016(DG, New matrix case)
-%               21-July-2016 (MA, case that factor1 is a scalar interval
-%                                 and factor 2 is numeric added)
-%               22-July-2016 (MA, case that factor1 is numeric has been added)
-%               26-July-2016 (multiplication with zonotope added)
-%               05-August-2016 (simplified some cases; matrix case corrected)
-%               23-June-2022 (VG: added support for appropriate empty
-%                                 matrices/intervals)
-%               04-April-2023 (TL: vectorized matrix case)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-June-2015
+% Last update:   25-June-2015
+%                18-November-2015
+%                01-February-2016 (DG, Fixed a matrix case)
+%                27-February-2016 (DG, New matrix case)
+%                21-July-2016 (MA, case scalar and numeric added)
+%                22-July-2016 (MA, case that factor1 is numeric has been added)
+%                26-July-2016 (multiplication with zonotope added)
+%                05-August-2016 (simplified some cases; matrix case corrected)
+%                23-June-2022 (VG, added support for empty matrices/intervals)
+%                04-April-2023 (TL, vectorized matrix case)
+%                10-October-2023 (TL, fix for scalar 0*[inf,-inf])
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %non-interval case
 if isa(factor1,'interval') && ~isa(factor2,'interval')
@@ -59,10 +58,21 @@ if isscalar(factor1) && isscalar(factor2)
     %obtain possible values
     if isnumeric(factor1)
         res = factor2;
-        possibleValues = [factor1*factor2.inf, factor1*factor2.sup];
+        if factor1 == 0
+            % as 0*[-inf,inf] = {0*x|-inf<x<inf}={0}
+            possibleValues = 0;
+        else
+            possibleValues = [factor1*factor2.inf, factor1*factor2.sup];
+        end
     elseif isnumeric(factor2)
         res = factor1;
-        possibleValues = [factor1.inf*factor2, factor1.sup*factor2];
+
+        if factor2 == 0
+            % as 0*[-inf,inf] = {0*x|-inf<x<inf}={0}
+            possibleValues = 0;
+        else
+            possibleValues = [factor1.inf*factor2, factor1.sup*factor2];
+        end
     else
         res = factor1;
         possibleValues = [factor1.inf*factor2.inf, factor1.inf*factor2.sup, ...
@@ -80,18 +90,21 @@ elseif isscalar(factor1)
     
     %obtain possible values
     if isnumeric(factor1) 
-        if factor1<0
+        if factor1 < 0
             %infimum and supremum
             res = interval( ...
                 factor1*factor2.sup, ...
                 factor1*factor2.inf ...
             );
-        else
+        elseif factor1 > 0
             %infimum and supremum
             res = interval( ...
                 factor1*factor2.inf, ...
                 factor1*factor2.sup ...
             );
+        else % factor1 == 0
+            % as 0*[-inf,inf] = {0*x|-inf<x<inf}={0}
+            res = interval(zeros(size(factor2.inf)));
         end
     else
         res = factor1.*factor2;
@@ -102,18 +115,21 @@ elseif isscalar(factor2)
     
     %obtain possible values
     if isnumeric(factor2)
-        if factor2<0
+        if factor2 < 0
             %infimum and supremum
             res = interval( ...
                 factor2*factor1.sup, ...
                 factor2*factor1.inf ...
             );
-        else
+        elseif factor2 > 0
             %infimum and supremum
             res = interval( ...
                 factor2*factor1.inf, ...
                 factor2*factor1.sup ...
             );
+        else % factor2 == 0
+            % as 0*[-inf,inf] = {0*x|-inf<x<inf}={0}
+            res = interval(zeros(size(factor1.inf)));
         end
     else
         res = factor1.*factor2;
@@ -122,6 +138,7 @@ elseif isscalar(factor2)
 % matrix case
 else
     if ~issparse(factor1) && ~issparse(factor2)
+        % compute fast algorithm
         % [m, k] * [k, n] = [m, n]
         % -> [m, k, 1] .* [1, k, n] = [m, k, n]
 
@@ -150,11 +167,12 @@ else
 
         end
     else
+        % sparse only supports 2d arrays, keeping old algorithm..
+
         % convert both to interval
         factor1 = interval(factor1);
         factor2 = interval(factor2);
 
-        % sparse only supports 2d arrays, keeping old algorithm..
         I1 = factor1.inf;
         S1 = factor1.sup;
     
@@ -181,4 +199,4 @@ else
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

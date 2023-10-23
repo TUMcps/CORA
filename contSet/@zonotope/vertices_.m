@@ -25,20 +25,20 @@ function V = vertices_(Z,alg,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval,  polytope
+% See also: contSet/vertices, interval, polytope
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      14-September-2006 
-% Last update:  30-January-2008
-%               23-June-2009
-%               24-June-2010
-%               11-July-2012
-%               30-July-2016
-%               28-October-2019 (NK, added new algorithm)
-%               02-June-2023 (TL, convHull with degenerate zonotopes)
-% Last revision:27-March-2023 (MW, rename vertices_)
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       14-September-2006 
+% Last update:   30-January-2008
+%                23-June-2009
+%                24-June-2010
+%                11-July-2012
+%                30-July-2016
+%                28-October-2019 (NK, added new algorithm)
+%                02-June-2023 (TL, convHull with degenerate zonotopes)
+% Last revision: 27-March-2023 (MW, rename vertices_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % different cases for different dimensions
     n = dim(Z);
@@ -46,8 +46,8 @@ function V = vertices_(Z,alg,varargin)
     if n == 1
 
         % compute the two vertices for one-dimensional case
-        c = center(Z);
-        temp = sum(abs(generators(Z)),2);
+        c = Z.c;
+        temp = sum(abs(Z.G),2);
         V = [c - temp,c + temp];
 
     elseif n == 2
@@ -59,11 +59,11 @@ function V = vertices_(Z,alg,varargin)
         
         % apply the selected algorithm
         if strcmp(alg,'iterate')
-            V = verticesIterate(Z);
+            V = aux_verticesIterate(Z);
         elseif strcmp(alg,'polytope')
-            V = verticesPolytope(Z);
+            V = aux_verticesPolytope(Z);
         else
-            V = verticesConvHull(Z);
+            V = aux_verticesConvHull(Z);
         end
     end
 
@@ -73,21 +73,20 @@ function V = vertices_(Z,alg,varargin)
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-% Auxiliary Functions -----------------------------------------------------
+function V = aux_verticesPolytope(Z)
 
-function V = verticesPolytope(Z)
-
-    P = mptPolytope(Z);
+    P = polytope(Z);
     V = vertices(P);
 
 end
 
-function V = verticesConvHull(Z)
+function V = aux_verticesConvHull(Z)
 
     % first vertex is the center of the zonotope
-    c = center(Z);
-    G = generators(Z);
+    c = Z.c;
+    G = Z.G;
     n = dim(Z);
     nrGens = size(G,2);
 
@@ -110,7 +109,7 @@ function V = verticesConvHull(Z)
                 % assuming it still is; project to lower-dim
 
                 % shift by center
-                c = center(Z);
+                c = Z.c;
                 
                 % compute projection matrix via SVD
                 [U,S] = svd(V-c,'vector');
@@ -149,11 +148,11 @@ function V = verticesConvHull(Z)
     end
 end
 
-function V = verticesIterate(Z)
+function V = aux_verticesIterate(Z)
 
     % delete aligned and all-zero generators
-    Z = deleteAligned(Z);
-    Z = deleteZeros(Z);
+    Z = compact_(Z,'zeros',eps);
+    Z = compact_(Z,'aligned',1e-3);
 
     % extract object data
     G = generators(Z);
@@ -162,7 +161,7 @@ function V = verticesIterate(Z)
     
     % catch the case where the zonotope is not full-dimensional
     if size(G,2) < n
-        V = verticesIterateSVG(Z);
+        V = aux_verticesIterateSVG(Z);
         return;
     end
 
@@ -171,12 +170,12 @@ function V = verticesIterate(Z)
     V = c + G(:,1:n)*vert;
     
     % compute halfspaces of the parallelotope
-    [poly,~,isDeg] = mptPolytope(zonotope([c,G(:,1:n)]));
+    [poly,~,isDeg] = polytope(zonotope([c,G(:,1:n)]));
     if isDeg
-        V = verticesIterateSVG(Z);
+        V = aux_verticesIterateSVG(Z);
         return;
     else
-        A = poly.P.A;
+        A = poly.A;
     end
     
     % loop over all remaining generators 
@@ -214,7 +213,7 @@ function V = verticesIterate(Z)
         
         % remove redundant vertices
         temp = max(A*V-b,[],1); 
-        nV = numVertices(i,n);
+        nV = aux_numVertices(i,n);
         [~,ind] = sort(temp,'descend');
         V = V(:,ind(1:nV));
         
@@ -222,7 +221,7 @@ function V = verticesIterate(Z)
 
 end
 
-function [res,suc] = verticesIterateSVG(Z)
+function [res,suc] = aux_verticesIterateSVG(Z)
 % compute vertices for the case that zonotope is not full-dimensional
 
     suc = true;
@@ -258,7 +257,7 @@ function [res,suc] = verticesIterateSVG(Z)
     end 
 end
 
-function res = numVertices(m,n)
+function res = aux_numVertices(m,n)
 % compute number of zonotope vertices
 
     res = 0;
@@ -268,4 +267,4 @@ function res = numVertices(m,n)
     res = 2*res;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

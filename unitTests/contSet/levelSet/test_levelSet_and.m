@@ -1,7 +1,7 @@
 function res = test_levelSet_and
 % test_levelSet_and - unit test function of intersection
 %
-% Syntax:  
+% Syntax:
 %    res = test_levelSet_and
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_levelSet_and
 %
 % See also: ------
 
-% Author:       Maximilian Perschl
-% Written:      08-November-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Maximilian Perschl
+% Written:       08-November-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 % Define problem
@@ -45,4 +45,4 @@ if ~isequal(intSet,expectedSolution,1e-10)
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

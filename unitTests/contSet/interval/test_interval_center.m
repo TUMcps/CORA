@@ -1,7 +1,7 @@
 function res = test_interval_center
 % test_interval_center - unit test function of center
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_center
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_interval_center
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      15-January-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       15-January-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 res = true;
@@ -63,4 +63,4 @@ if abs( c(6) - 6.5 ) > tol
 	return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

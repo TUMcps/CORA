@@ -1,7 +1,7 @@
 function res = isscalar(I)
 % isscalar - check if an interval is one-dimensional
 %
-% Syntax:  
+% Syntax:
 %    res = isscalar(I)
 %
 % Inputs:
@@ -20,14 +20,14 @@ function res = isscalar(I)
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      25-June-2015
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-June-2015
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check of infimum sufficient
 res = isscalar(I.inf);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

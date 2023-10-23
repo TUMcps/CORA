@@ -1,7 +1,7 @@
 function res = test_ellipsoid_plotRandPoint
 % test_ellipsoid_plotRandPoint - unit test function of plotRandPoint
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_plotRandPoint
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_plotRandPoint
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      11-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 load cases.mat E_c
@@ -31,7 +31,7 @@ for i=1:length(E_c)
     Ed1 = E_c{i}.Ed1;
     E0 = E_c{i}.E0;
     
-    res = tryPlot(E1) && tryPlot(Ed1) && tryPlot(E0);
+    res = aux_tryPlot(E1) && aux_tryPlot(Ed1) && aux_tryPlot(E0);
     
     if ~res
         break;
@@ -41,8 +41,9 @@ end
 end
 
 
-% Auxiliary function ------------------------------------------------------
-function res = tryPlot(E)
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_tryPlot(E)
 
 res = true;
 try
@@ -70,4 +71,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

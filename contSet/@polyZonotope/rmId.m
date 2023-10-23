@@ -1,7 +1,7 @@
 function pZ = rmId(pZ,id)
 % rmId - removes identifiers from polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    pZ = rmId(pZ,id)
 %
 % Inputs:
@@ -23,18 +23,18 @@ function pZ = rmId(pZ,id)
 %
 % See also: ---
 
-% Author:        Victor Gassmann
+% Authors:       Victor Gassmann
 % Written:       16-February-2022 
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 [~,ii_rm] = intersect(pZ.id,id,'stable');
-pZ.expMat(ii_rm,:) = [];
+pZ.E(ii_rm,:) = [];
 pZ.id(ii_rm) = [];
 
 % remove any possibly-generated same-exponent vector entries
-[pZ.expMat,pZ.G] = removeRedundantExponents(pZ.expMat,pZ.G);
+[pZ.E,pZ.G] = removeRedundantExponents(pZ.E,pZ.G);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

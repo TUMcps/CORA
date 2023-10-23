@@ -2,7 +2,7 @@ function [newObj] = pruneDynamics(obj,options)
 % pruneDynamics - removes part of the system dynamics, which is irrelevant
 % for the reachable set of output values (this is only a prototype)
 %
-% Syntax:  
+% Syntax:
 %    [newObj] = pruneDynamics(obj,options)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function [newObj] = pruneDynamics(obj,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      04-March-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-March-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % instantiate newObj
@@ -67,4 +67,4 @@ statesForOutputs = sum(stateToOutput)~=0;
 relevantStates = sum(stateToState(statesForOutputs,:))~=0;
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

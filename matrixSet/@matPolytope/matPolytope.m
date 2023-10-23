@@ -1,7 +1,7 @@
 classdef matPolytope
 % matPolytope class 
 %
-% Syntax:  
+% Syntax:
 %    obj = matPolytope(V)
 %
 % Inputs:
@@ -21,12 +21,12 @@ classdef matPolytope
 %
 % See also: intervalMatrix, matZonotope
 
-% Author:       Matthias Althoff
-% Written:      21-June-2010
-% Last update:  03-April-2023 (MW, remove property dim)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-June-2010
+% Last update:   03-April-2023 (MW, remove property dim)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     verts = 0; % number of vertices
@@ -41,9 +41,9 @@ methods
             % take default values
 
         elseif nargin == 1
-            if isa(input,'mptPolytope')
+            if isa(input,'polytope')
                 %get vertices from polytope class
-                V=extreme(input);
+                V=vertices(input);
                 %rewrite vertices as matrices
                 for i=1:length(V(:,1))
                     matrixVertex{i} = vec2mat(V(i,:));
@@ -67,7 +67,7 @@ methods
     intMat = intervalMatrix(matP) % conversion to interval matrix
     matZ = matZonotope(matP) % conversion to matrix polytope
     matP = mpower(matP,exponent) % exponentiation
-    matP = mptPolytope(matP) % conversion to polytope
+    matP = polytope(matP) % conversion to polytope
     matP = mtimes(factor1,factor2) % linear map
     plot(matP,varargin) % plot
     matP = plus(summand1,summand2) % Minkowski addition
@@ -81,4 +81,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

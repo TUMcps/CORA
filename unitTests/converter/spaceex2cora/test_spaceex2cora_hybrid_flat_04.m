@@ -11,12 +11,12 @@ function res = test_spaceex2cora_hybrid_flat_04
 % Outputs:
 %    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      11-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -39,7 +39,7 @@ sys_spaceex = feval(filename);
 % instantiate equivalent CORA model
 
 % top-left
-inv = mptPolytope(struct('A',[1 0; 0 -1],'b',[0; 0]));
+inv = polytope([1 0; 0 -1],[0; 0]);
 dynamics = linearSys([0 0; 0 0],[1; 0],[0; -1]);
 % transitions
 guard = conHyperplane([-1 0],0,[0 -1],0);
@@ -52,7 +52,7 @@ trans(2) = transition(guard,reset,3);
 loc = location('topleft',inv,trans,dynamics);
 
 % top-right
-inv = mptPolytope(struct('A',[-1 0; 0 -1],'b',[0; 0]));
+inv = polytope([-1 0; 0 -1],[0; 0]);
 dynamics = linearSys([0 0; 0 0],[0; 1],[-1; 0]);
 % transitions
 guard = conHyperplane([1 0],0,[0 -1],0);
@@ -65,7 +65,7 @@ trans(2) = transition(guard,reset,4);
 loc(2) = location('topright',inv,trans,dynamics);
 
 % bottom-left
-inv = mptPolytope(struct('A',[1 0; 0 1],'b',[0; 0]));
+inv = polytope([1 0; 0 1],[0; 0]);
 dynamics = linearSys([0 0; 0 0],[0; 1],[1; 0]);
 % transitions
 guard = conHyperplane([0 -1],0,[1 0],0);
@@ -78,7 +78,7 @@ trans(2) = transition(guard,reset,4);
 loc(3) = location('bottomleft',inv,trans,dynamics);
 
 % bottom-right
-inv = mptPolytope(struct('A',[-1 0; 0 1],'b',[0; 0]));
+inv = polytope([-1 0; 0 1],[0; 0]);
 dynamics = linearSys([0 0; 0 0],[1; 0],[0; 1]);
 % transitions
 guard = conHyperplane([0 -1],0,[-1 0],0);
@@ -99,4 +99,4 @@ if sys_cora ~= sys_spaceex
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function [R,Rjump,res] = instantReset(loc,R0,tStart,options)
 %    with a full-dimensional set, leading to a reset at time 0 using the
 %    initial set
 %
-% Syntax:  
+% Syntax:
 %    [R,Rjump,res] = instantReset(loc,R0,tStart,options)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function [R,Rjump,res] = instantReset(loc,R0,tStart,options)
 %
 % See also: location/reach
 
-% Author:       Mark Wetzlinger
-% Written:      18-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       18-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create 'reachable set' from instant reset
 timePoint.set = {R0};
@@ -54,4 +54,4 @@ Rjump{1,1}.time = tStart;
 % no violation of any specification, since no time has passed
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

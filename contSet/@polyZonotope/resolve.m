@@ -2,7 +2,7 @@ function res = resolve(pZ,x,varargin)
 % resolve - computes result of inserting a value for the identifiers into a
 %    polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    res = resolve(pZ,x)
 %    res = resolve(pZ,x,id)
 %
@@ -25,12 +25,12 @@ function res = resolve(pZ,x,varargin)
 %
 % See also: subs
 
-% Author:       Victor Gassmann
-% Written:      12-January-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       12-January-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default value
 id = pZ.id;
@@ -55,12 +55,11 @@ if sum(ismember(pZ.id,id))~=length(id) || length(unique(id))~=length(id)
 end
 
 
-
 %% sort in ascending order such that ismember later on is enough
 [id,indid] = sort(id);
 x = x(indid);
 [Id,ind] = sort(pZ.id);
-eM = pZ.expMat(ind,:);
+eM = pZ.E(ind,:);
 %% resolve pZ
 indx = ismember(Id,id);
 eMx = eM(indx,:);
@@ -68,25 +67,25 @@ G = pZ.G;
 if ~isempty(eMx)
     G = pZ.G.*prod(x.^eMx,1);
 end
-ExpMat = eM;
-ExpMat(indx,:) = [];
-[ExpMat,G,c] = removeZeroExponents(ExpMat,G);
-C = c + pZ.c;
-if isempty(ExpMat) || all(ExpMat(:)==0)
-    C = C + sum(G,2);
+E = eM;
+E(indx,:) = [];
+[E,G,c] = removeZeroExponents(E,G);
+c = c + pZ.c;
+if isempty(E) || all(E(:)==0)
+    c = c + sum(G,2);
     G = [];
-    ExpMat = [];
-    if isempty(pZ.Grest) || all(pZ.Grest(:)==0)
-        res = C;
+    E = [];
+    if isempty(pZ.GI) || all(pZ.GI(:)==0)
+        res = c;
         return;
     end
 end
-[ExpMat,G] = removeRedundantExponents(ExpMat,G);
+[E,G] = removeRedundantExponents(E,G);
 
 %% revert sort order
-idr = pZ.id(~ismember(pZ.id,id));
-[~,tmp1] = sort(idr);
-indr_rev(tmp1) = (1:length(tmp1));
-res = polyZonotope(C,G,pZ.Grest,ExpMat(indr_rev,:),idr);
+ids = pZ.id(~ismember(pZ.id,id));
+[~,idx] = sort(ids);
+indr_rev(idx) = (1:length(idx));
+res = polyZonotope(c, G, pZ.GI, E(indr_rev,:), ids);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

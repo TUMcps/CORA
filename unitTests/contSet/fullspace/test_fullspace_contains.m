@@ -1,7 +1,7 @@
 function res = test_fullspace_contains
 % test_fullspace_contains - unit test function of contains
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_contains
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_contains
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init fullspace
 n = 2;
@@ -46,4 +46,4 @@ res(end+1,1) = contains(fs,O);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

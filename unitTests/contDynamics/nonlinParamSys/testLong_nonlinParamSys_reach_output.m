@@ -1,7 +1,7 @@
 function res = testLong_nonlinParamSys_reach_output
 % testLong_nonlinParamSys_reach_output - tests if output equation works
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_nonlinParamSys_reach_output
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_nonlinParamSys_reach_output
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume satisfaction
 res = true;
@@ -65,4 +65,4 @@ for p=1:2
     reach(sys3,params,options);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

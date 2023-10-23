@@ -1,7 +1,7 @@
 function sparse2ascii
 % sparse2ascii - ???
 %
-% Syntax:  
+% Syntax:
 %    sparse2ascii
 %
 % Inputs:
@@ -18,12 +18,12 @@ function sparse2ascii
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      ???
-% Last update:  28-August-2008
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       ---
+% Last update:   28-August-2008
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %create dummy Markov chain to avoid errors while loading
 MCdummy=markovchain([],[]);
@@ -46,7 +46,7 @@ for carMode=1:nrOfModes
     %open file for writing
     fid = fopen(fName,'w');
     %write to file
-    saveMatrix(fid,T.T{carMode});
+    aux_saveMatrix(fid,T.T{carMode});
     %close file
     status = fclose(fid)
     
@@ -56,7 +56,7 @@ for carMode=1:nrOfModes
     %open file for writing
     fid = fopen(fName,'w');
     %write to file
-    saveMatrix(fid,T.OT{carMode});
+    aux_saveMatrix(fid,T.OT{carMode});
     %close file
     status = fclose(fid)    
 end
@@ -64,9 +64,9 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function saveMatrix(fid,T)
+function aux_saveMatrix(fid,T)
 %1. value: nr of rows
 %2. value: nr of columns
 %3. value: nr of non-zero elements
@@ -92,4 +92,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_emptySet_isequal
 % test_emptySet_isequal - unit test function of isequal
 %
-% Syntax:  
+% Syntax:
 %    res = test_emptySet_isequal
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_emptySet_isequal
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init empty set
 n = 2;
@@ -38,10 +38,10 @@ Z = zonotope(zeros(2,1));
 res(end+1,1) = ~isequal(O,Z);
 
 % init empty polytope
-P = mptPolytope([1 1;-1 -1],[1;-2]);
+P = polytope([1 1;-1 -1],[1;-2]);
 res(end+1,1) = isequal(O,P);
 
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

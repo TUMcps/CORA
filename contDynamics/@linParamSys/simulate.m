@@ -1,7 +1,7 @@
 function [t,x,ind,y] = simulate(obj,params,varargin)
 % simulate - simulates the linear interval system within a location
 %
-% Syntax:  
+% Syntax:
 %    [t,x] = simulate(obj,params)
 %    [t,x,ind] = simulate(obj,params,options)
 %    [t,x,ind,y] = simulate(obj,params,options)
@@ -31,13 +31,13 @@ function [t,x,ind,y] = simulate(obj,params,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      16-May-2007 
-% Last update:  07-January-2009
-%               08-May-2020 (MW, update interface)
+% Authors:       Matthias Althoff
+% Written:       16-May-2007 
+% Last update:   07-January-2009
+%                08-May-2020 (MW, update interface)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargout == 4
     warning("Output trajectories not supported for class linParamSys!");
@@ -114,4 +114,4 @@ for i = 1:size(params.u,2)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = test_linParamSys_reach_02_5dim_var()
 % test_linParamSys_reach_02_5dim_var - unit test of linear parametric
 %    reachability analysis from [1] where the parameters vary over time
 %
-% Syntax:  
+% Syntax:
 %    res = test_linParamSys_reach_02_5dim_var
 %
 % Inputs:
@@ -15,13 +15,13 @@ function res = test_linParamSys_reach_02_5dim_var()
 %    [1] Althoff, M.; Le Guernic, C. & Krogh, B. H. Reachable Set Computation
 %        for Uncertain Time-Varying Linear Systems. HSCC 2011, 93-102
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      03-October-2017
-% Last update:  23-April-2020 (restructure params/options)
-%               05-June-2020 (NK, adapted to bug fix in commit fdc7bba)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       03-October-2017
+% Last update:   23-April-2020 (restructure params/options)
+%                05-June-2020 (NK, adapted to bug fix in commit fdc7bba)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Parameters --------------------------------------------------------------
@@ -83,4 +83,4 @@ IH_saved_int = interval( ...
 %final result
 res = isequal(IH_zono,IH_saved_zono,1e-8) && isequal(IH_int,IH_saved_int,1e-8);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

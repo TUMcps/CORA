@@ -1,7 +1,7 @@
 function res = testLong_zonotope_supportFunc
 % testLong_zonotope_supportFunc - unit test function of support function
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_supportFunc
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = testLong_zonotope_supportFunc
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      11-October-2019
-% Last update:  21-April-2023 (VG: more understandable)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       11-October-2019
+% Last update:   21-April-2023 (VG, more understandable)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 dims = 2:5;
 dGen = 5;
@@ -60,4 +60,4 @@ for i=dims
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

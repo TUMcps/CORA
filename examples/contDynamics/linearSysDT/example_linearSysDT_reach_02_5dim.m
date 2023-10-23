@@ -2,7 +2,7 @@ function completed = example_linearSysDT_reach_02_5dim()
 % example_linearSysDT_reach_02_5dim - example for linear reachability 
 %    analysis using discrete time
 %
-% Syntax:  
+% Syntax:
 %    completed = example_linearSysDT_reach_02_5dim()
 %
 % Inputs:
@@ -11,13 +11,12 @@ function completed = example_linearSysDT_reach_02_5dim()
 % Outputs:
 %    completed - true/false 
 
-% Author:       Matthias Althoff
-% Written:      31-July-2018
-% Last update:  23-April-2020 (moved here from contDynamics/linearSys)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       31-July-2018
+% Last update:   23-April-2020 (moved here from contDynamics/linearSys)
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % System Dynamics ---------------------------------------------------------
 
@@ -72,13 +71,14 @@ dims = {[1 2],[3 4]};
 for k = 1:length(dims)
     
     figure; hold on; box on
+    useCORAcolors("CORA:contDynamics")
     projDims = dims{k};
 
     % plot reachable set
     plot(R,projDims);
     
     % plot initial set
-    plot(params.R0,projDims,'FaceColor','w','EdgeColor','k');
+    plot(R(1).R0,projDims);
     
     % plot simulation results
     plot(simRes,projDims,'Marker','.');
@@ -91,4 +91,4 @@ end
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

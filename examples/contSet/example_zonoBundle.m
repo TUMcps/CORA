@@ -1,7 +1,7 @@
 function completed = example_zonoBundle()
 % example_zonoBundle - example instantiation of zonoBundle objects
 %
-% Syntax:  
+% Syntax:
 %    completed = example_zonoBundle()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_zonoBundle()
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       21-April-2018
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 Z{1} = zonotope([1 1 1; 1 -1 1]); % create zonotope Z1;
 Z{2} = zonotope([-1 1 0; 1 0 1]); % create zonotope Z2;
@@ -36,4 +36,4 @@ plot(Z{2}); % plot Z2
 %example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_interval_infimum
 % test_interval_infimum - unit test function of the infimum of an interval
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_infimum
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_infimum
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      14-January-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       14-January-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 res = true;
@@ -58,4 +58,4 @@ if abs( infimum(c(6)) - 5.0 ) > tol
 	return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

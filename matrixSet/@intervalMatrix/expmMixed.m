@@ -1,7 +1,7 @@
 function [eI,eI2,iPow,iPow2,E] = expmMixed(intMat,r,intermediateOrder,maxOrder)
 % expmMixed - ?
 %
-% Syntax:  
+% Syntax:
 %    [eI,eI2,iPow,iPow2,E] = expmMixed(intMat,r,intermediateOrder,maxOrder)
 %
 % Inputs:
@@ -27,12 +27,12 @@ function [eI,eI2,iPow,iPow2,E] = expmMixed(intMat,r,intermediateOrder,maxOrder)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      13-September-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       13-September-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if intermediateOrder >= 2
     
@@ -62,4 +62,4 @@ else
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

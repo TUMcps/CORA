@@ -3,7 +3,7 @@ function [Z_error, errorInt, errorInt_x, errorInt_y, R_y, options] = ...
 % abstractionError_adaptive - computes the abstraction error
 % note: no Taylor Model or zoo integration
 %
-% Syntax:  
+% Syntax:
 %    [Verror, errorInt, errorInt_x, errorInt_y, R_y] = ...
 %            	abstractionError_adaptive(obj, options, R, Verror_y)
 %
@@ -33,12 +33,12 @@ function [Z_error, errorInt, errorInt_x, errorInt_y, R_y, options] = ...
 %
 % See also: linReach, linError_*
 
-% Author:        Matthias Althoff, Mark Wetzlinger
+% Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       30-August-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % read out variables
 f0_con = obj.linError.f0_con;
@@ -129,9 +129,9 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
     [Tf, Tg] = obj.thirdOrderTensor(totalInt_x, totalInt_y, totalInt_u);
     
     % compute zonotope of state, constraint variables, and input
-    Z_x = R.Z;
-    Z_y_cor = R_y_cor.Z;
-    Z_y_add = R_y_add.Z;
+    Z_x = [R.c,R.G];
+    Z_y_cor = [R_y_cor.c,R_y_cor.G];
+    Z_y_add = [R_y_add.c,R_y_add.G];
     Z_0 = zeros(length(Z_x(:,1)), length(Z_y_add(1,:)));
     R_xy = zonotope([Z_x, Z_0; Z_y_cor, Z_y_add]);     % see [1, Prop. 2]
     R_xyu = cartProd(R_xy, options.U);
@@ -154,9 +154,9 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
     
     % compute full second-order error
     % including correlation: exactplus (bug if quadMap used!)
-    Z_err_x = error_x_secondOrder.Z;
+    Z_err_x = [error_x_secondOrder.c,error_x_secondOrder.G];
     Z_err_x_add = obj.linError.CF_inv*error_y_secondOrder;
-    Z_err_x_add = Z_err_x_add.Z;
+    Z_err_x_add = [Z_err_x_add.c,Z_err_x_add.G];
     error_secondOrder = zonotope(Z_err_x + Z_err_x_add);
     % remove 0-generators here... (remove zonotope-constructor above)
 %     error_secondOrder = zonotope(error_secondOrder(:,any(error_secondOrder,1)));
@@ -231,9 +231,9 @@ end
 end
 
 
-% Auxiliary Function --------------
+% Auxiliary functions -----------------------------------------------------
 
-function options = checkIfHessianConst(obj,options,H,totalInt_x,totalInt_u)
+function options = aux_checkIfHessianConst(obj,options,H,totalInt_x,totalInt_u)
 % check if hessian is constant --- only once executed! (very first step)
 % returns: isHessianConst, hessianCheck, hessianConst
 
@@ -261,4 +261,4 @@ options.hessianCheck = true;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

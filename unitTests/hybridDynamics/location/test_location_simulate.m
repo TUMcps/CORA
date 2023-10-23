@@ -1,7 +1,7 @@
 function res = test_location_simulate
 % test_location_simulate - test function for simulate
 %
-% Syntax:  
+% Syntax:
 %    res = test_location_simulate
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_location_simulate
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init location with simple dynamics
 inv = interval([-1;-1],[1;1]);
@@ -56,4 +56,4 @@ res(end+1,1) = compareMatrices(xJump,trans(2).reset.c);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

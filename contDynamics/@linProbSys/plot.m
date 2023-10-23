@@ -1,7 +1,7 @@
 function plot(varargin)
 % plot - Plots projections of a probabilistic zonotope
 %
-% Syntax:  
+% Syntax:
 %    plot(obj,dimensions)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function plot(varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      30-April-2007
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       30-April-2007
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %If only one argument is passed
 if nargin==1
@@ -64,4 +64,4 @@ for i=1:length(obj.reachSet)
     hold on
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

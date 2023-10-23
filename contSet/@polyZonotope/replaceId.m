@@ -1,7 +1,7 @@
 function pZ = replaceId(pZ,varargin)
 % replaceId - replace all or some of the identifiers with new ones
 %
-% Syntax:  
+% Syntax:
 %    pZ = replaceId(pZ,id_part_new)
 %    pZ = replaceId(pZ,id_part_old,id_part_new)
 %
@@ -24,12 +24,12 @@ function pZ = replaceId(pZ,varargin)
 %
 % See also: ---
 
-% Author:        Victor Gassmann
+% Authors:       Victor Gassmann
 % Written:       12-January-2021 
 % Last update:   28-February-2022
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 if length(varargin) == 1
@@ -56,13 +56,13 @@ pZ.id(ii_o) = id_part_new;
 % remove possibly duplicate entries from id
 [id_new,~,iic] = unique(pZ.id,'stable'); 
 ii_id = accumarray(iic,(1:length(pZ.id))',[],@(x){x});
-expMat = zeros(length(ii_id),size(pZ.expMat,2));
+E = zeros(length(ii_id),size(pZ.E,2));
 for i=1:length(ii_id)
-    expMat(i,:) = sum(pZ.expMat(ii_id{i},:),1);
+    E(i,:) = sum(pZ.E(ii_id{i},:),1);
 end
 
 % assign identifiers and exponent matrix
 pZ.id = id_new;
-pZ.expMat = expMat;
+pZ.E = E;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = isequal(E1,E2,varargin)
 % isequal - checks if two ellipsoids are equal
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(E1,E2)
 %    res = isequal(E1,E2,tol)
 %
@@ -24,14 +24,14 @@ function res = isequal(E1,E2,varargin)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      13-March-2019
-% Last update:  15-October-2019
-%               19-March-2021 (use 'eq')
-%               04-July-2022 (VG: class array case)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       13-March-2019
+% Last update:   15-October-2019
+%                19-March-2021 (use 'eq')
+%                04-July-2022 (VG, class array case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -55,9 +55,10 @@ if dim(E1) ~= dim(E2)
 end
 
 % check for emptyness
-if (isempty(E1) && ~isempty(E2)) || (~isempty(E1) && isempty(E2))
+if (representsa_(E1,'emptySet',eps) && ~representsa_(E2,'emptySet',eps)) ...
+        || (~representsa_(E1,'emptySet',eps) && representsa_(E2,'emptySet',eps))
     return;
-elseif isempty(E1) && isempty(E2)
+elseif representsa_(E1,'emptySet',eps) && representsa_(E2,'emptySet',eps)
     res = true;
     return;
 end
@@ -65,4 +66,4 @@ end
 % compare shape matrix and center numerically
 res = all(all(withinTol(E1.Q,E2.Q,tol))) && all(withinTol(E1.q,E2.q,tol));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

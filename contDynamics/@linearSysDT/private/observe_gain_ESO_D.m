@@ -3,7 +3,7 @@ function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_D(obj,options)
 % approach from [1]. 
 %
 %
-% Syntax:  
+% Syntax:
 %    [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_D(obj,options)
 %
 % Inputs:
@@ -31,13 +31,12 @@ function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_D(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       04-Mar-2021
+% Authors:       Matthias Althoff
+% Written:       04-March-2021
 % Last update:   ---
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tic
 
@@ -54,7 +53,7 @@ options_sdp.verbose = 0;
 % initialization of Alg. 1
 Q = eye(n); 
 % solve LMI, line 1 of Alg. 1
-[P,Y] = solveLMI(obj,Q,options,options_sdp);
+[P,Y] = aux_solveLMI(obj,Q,options,options_sdp);
 % compute L, line 2 of Alg. 1
 L = P\Y;
 % Compute observer matrix, line 3 of Alg. 1
@@ -71,7 +70,7 @@ V = value(V);
 % Obtain matrix Q, line 6 of Alg. 1
 Q = inv(V);
 % solve LMI, line 7 of Alg. 1
-[P,Y,gamma] = solveLMI(obj,Q,options,options_sdp);
+[P,Y,gamma] = aux_solveLMI(obj,Q,options,options_sdp);
 % compute gain, line 8 of Alg. 1
 OGain = P\Y;
 % Compute lambda as the minimum generalised eigenvalue of the pair (Q,P), line 9 of Alg. 1
@@ -84,7 +83,9 @@ tComp = toc;
 end
 
 
-function [P,Y,gamma] = solveLMI(obj,Q,options,options_sdp)
+% Auxiliary functions -----------------------------------------------------
+
+function [P,Y,gamma] = aux_solveLMI(obj,Q,options,options_sdp)
     
 % shape matrices of the disturbance and process noise sets
 F = options.W.Q;
@@ -141,4 +142,4 @@ end
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

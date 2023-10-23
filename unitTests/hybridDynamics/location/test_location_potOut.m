@@ -1,7 +1,7 @@
 function res = test_location_potOut
 % test_location_potOut - test function for potOut
 %
-% Syntax:  
+% Syntax:
 %    res = test_location_potOut
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_location_potOut
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init location
 inv = interval([-2;-1],[3;5]);
@@ -68,8 +68,8 @@ Rtp = R.timePoint.set(3:8);
 Rti = R.timeInterval.set(3:8);
 
 % all intersecting sets must be polytopes
-res = all(cellfun(@(x) isa(x,'mptPolytope'),Rtp,'UniformOutput',true));
-res(end+1,1) = all(cellfun(@(x) isa(x,'mptPolytope'),Rti,'UniformOutput',true));
+res = all(cellfun(@(x) isa(x,'polytope'),Rtp,'UniformOutput',true));
+res(end+1,1) = all(cellfun(@(x) isa(x,'polytope'),Rti,'UniformOutput',true));
 % all intersecting sets must be contained in invariant
 res(end+1,1) = all(cellfun(@(x) contains(inv,x),Rtp,'UniformOutput',true));
 res(end+1,1) = all(cellfun(@(x) contains(inv,x),Rti,'UniformOutput',true));
@@ -78,4 +78,4 @@ res(end+1,1) = all(cellfun(@(x) contains(inv,x),Rti,'UniformOutput',true));
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

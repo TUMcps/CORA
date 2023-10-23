@@ -2,7 +2,7 @@ function allLabels = labelOccurrences(pHA)
 % labelOccurrences - create list of label occurences to check whether all
 %    labeled transitions are enabled at the same time
 %
-% Syntax:  
+% Syntax:
 %    allLabels = labelOccurrences(pHA)
 %
 % Inputs:
@@ -23,14 +23,14 @@ function allLabels = labelOccurrences(pHA)
 %
 % See also: ---
 
-% Author:       Maximilian Perschl, Mark Wetzlinger
-% Written:      03-March-2022
-% Last update:  19-June-2022 (MW, add warning for lonely syncLabels)
-%               23-June-2022 (MW, output argument now struct, not only map)
-%               06-April-2023 (MW, rename 'guardempty' -> 'instant')
-% Last revision:---
+% Authors:       Maximilian Perschl, Mark Wetzlinger
+% Written:       03-March-2022
+% Last update:   19-June-2022 (MW, add warning for lonely syncLabels)
+%                23-June-2022 (MW, output argument now struct, not only map)
+%                06-April-2023 (MW, rename 'guardempty' -> 'instant')
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init struct for all labels
 allLabels = struct([]);
@@ -95,4 +95,4 @@ if any(onlyOnce)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

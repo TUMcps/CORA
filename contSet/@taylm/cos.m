@@ -1,7 +1,7 @@
 function res = cos(obj)
 % cos - Overloaded 'cos()' operator for a taylm expression
 %
-% Syntax:  
+% Syntax:
 %    res = cos(obj)
 %
 % Inputs:
@@ -22,21 +22,24 @@ function res = cos(obj)
 %   [1] K. Makino et al. "Taylor Models and other validated functional 
 %       inclusion methods"
 
-% Author:       Dmitry Grebenyuk
-% Written:      09-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       09-August-2017
+% Last update:   ---
+% Last revision: ---
 
+% ------------------------------ BEGIN CODE -------------------------------
 
-%------------- BEGIN CODE --------------
+	res = arrayfun(@(a) aux_s_cos(a), obj, 'UniformOutput', 0);
 
-	res = arrayfun(@(a) s_cos(a), obj, 'UniformOutput', 0);
     A = cat(1, res{:});
     res = reshape(A, size(res));
 
 end
 
-function res = s_cos(obj)
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_s_cos(obj)
     
     if obj.monomials(1,1) == 0                 
         c_f = obj.coefficients(1);
@@ -64,9 +67,9 @@ function res = s_cos(obj)
         factor = factor * i;
         T_factor = T_factor .* T;
         if mod(i,2) == 0
-            T1 = T1 + sgn_cs(i) .* cs_cf .* T_factor ./ factor;
+            T1 = T1 + aux_sgn_cs(i) .* cs_cf .* T_factor ./ factor;
         else
-            T1 = T1 + sgn_cs(i) .* sn_cf .* T_factor ./ factor;
+            T1 = T1 + aux_sgn_cs(i) .* sn_cf .* T_factor ./ factor;
         end
     end   
 
@@ -95,7 +98,7 @@ function res = s_cos(obj)
         remPow .* J;
 end
 
-function res = sgn_cs(n)
+function res = aux_sgn_cs(n)
     if mod(n,4) == 0 || mod(n,4) == 3
         res = 1;
     else
@@ -103,4 +106,4 @@ function res = sgn_cs(n)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

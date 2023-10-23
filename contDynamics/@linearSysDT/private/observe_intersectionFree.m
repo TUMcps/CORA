@@ -3,7 +3,7 @@ function R = observe_intersectionFree(obj,options)
 % approach according to the intersection-free approach, see [1].
 %
 %
-% Syntax:  
+% Syntax:
 %    R = observe_intersectionFree(obj,options)
 %
 % Inputs:
@@ -26,17 +26,17 @@ function R = observe_intersectionFree(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       18-Sep-2020
-% Last update:   05-Jan-2021
-%                25-Feb-2021
-%                26-Feb-2021
+% Authors:       Matthias Althoff
+% Written:       18-September-2020
+% Last update:   05-January-2021
+%                25-February-2021
+%                26-February-2021
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %%initialize computation
+
 %time period
 tVec = options.tStart:options.timeStep:options.tFinal-options.timeStep;
 timeSteps = length(tVec);
@@ -64,4 +64,4 @@ for k = 1:timeSteps-1
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

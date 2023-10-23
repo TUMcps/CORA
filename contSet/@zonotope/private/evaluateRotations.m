@@ -19,12 +19,12 @@ function [iAxis,relImpr] = evaluateRotations(V,deltaAngle)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      06-October-2008
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-October-2008
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %compute volume before rotation
 IH=interval.enclosePoints(V);
@@ -70,4 +70,4 @@ else
     relImpr=(origVol-vol2(iAxis))/origVol;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

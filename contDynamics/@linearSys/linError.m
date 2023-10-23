@@ -1,7 +1,7 @@
 function [obj] = linError(obj,R,normRatio,evolRatio)
 % linError - computes the linearization error
 %
-% Syntax:  
+% Syntax:
 %    [obj] = linError(obj,options)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function [obj] = linError(obj,R,normRatio,evolRatio)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      03-January-2008 
-% Last update:  15-June-2016
-%               25-July-2016 (intervalhull replaced by interval)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-January-2008 
+% Last update:   15-June-2016
+%                25-July-2016 (intervalhull replaced by interval)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %determine maximum allowed enlargement of reachable set
 %compute travelled vector of zonotope center
@@ -64,4 +64,4 @@ error=lagrangeRemainder(totalInt,inputInt);
 IHerror=interval(infimum(error),supremum(error));
 obj.linError.error=zonotope(IHerror); %add interval to constant value due to the linearization
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

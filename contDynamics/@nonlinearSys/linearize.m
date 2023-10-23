@@ -2,7 +2,7 @@ function [obj,linSys,linOptions] = linearize(obj,options,R)
 % linearize - linearizes the nonlinear system; linearization error is not
 %    included yet
 %
-% Syntax:  
+% Syntax:
 %    [obj,linSys,linOptions] = linearize(obj,options,R)
 %
 % Inputs:
@@ -24,16 +24,16 @@ function [obj,linSys,linOptions] = linearize(obj,options,R)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      29-October-2007 
-% Last update:  22-January-2008
-%               29-June-2009
-%               04-August-2016
-%               15-August-2016
-%               12-September-2017
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       29-October-2007 
+% Last update:   22-January-2008
+%                29-June-2009
+%                04-August-2016
+%                15-August-2016
+%                12-September-2017
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %linearization point p.u of the input is the center of the input set
 p.u = options.uTrans;
@@ -92,4 +92,4 @@ obj.linError.f0=f0;
 %save linearization point
 obj.linError.p=p;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

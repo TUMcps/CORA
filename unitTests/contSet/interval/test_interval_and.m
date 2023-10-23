@@ -2,7 +2,7 @@ function res = test_interval_and
 % test_interval_and - unit test function of logical conjunction,
 %    overloaded '&' operator for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_and
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_interval_and
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk, Mark Wetzlinger
-% Written:      05-January-2016
-% Last update:  23-April-2023 (MW, add empty set cases)
-% Last revision:---
+% Authors:       Dmitry Grebenyuk, Mark Wetzlinger
+% Written:       05-January-2016
+% Last update:   23-April-2023 (MW, add empty set cases)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -37,9 +37,9 @@ res(end+1,1) = isequal(I,I_true);
 I1 = interval([-5;-2],[2;4]);
 I2 = interval([-7;6],[-3;8]);
 I = I1 & I2;
-res(end+1,1) = isempty(I);
+res(end+1,1) = representsa(I,'emptySet');
 
 % combine results 
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

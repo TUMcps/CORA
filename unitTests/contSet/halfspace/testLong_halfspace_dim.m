@@ -1,7 +1,7 @@
 function res = testLong_halfspace_dim
 % testLong_halfspace_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_halfspace_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_halfspace_dim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-Sep-2019
-% Last update:  16-March-2021 (MW, add empty case)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-September-2019
+% Last update:   16-March-2021 (MW, add empty case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 nrTests = 1000;
 res = true;
@@ -42,4 +42,5 @@ for i=1:nrTests
         res = false; break;
     end
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

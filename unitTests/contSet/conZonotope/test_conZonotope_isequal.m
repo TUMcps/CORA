@@ -1,7 +1,7 @@
 function res = test_conZonotope_isequal
 % test_conZonotope_isequal - unit test function for set equality check
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_isequal
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_conZonotope_isequal
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -66,4 +66,4 @@ if isequal(cZ1,cZ2)
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

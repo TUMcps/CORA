@@ -1,7 +1,7 @@
 function res = contains_(Z,S,type,tol,maxEval,varargin)
 % contains_ - determines if a zonotope contains a set or a point
 %
-% Syntax:  
+% Syntax:
 %    res = contains_(Z,S)
 %    res = contains_(Z,S,type)
 %    res = contains_(Z,S,type,tol)
@@ -74,21 +74,20 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval/contains_, conZonotope/contains_
+% See also: contSet/contains, interval/contains_, conZonotope/contains_
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Adrian Kulmburg
-% Written:      07-May-2007 
-% Last update:  06-April-2017
-%               14-September-2019
-%               19-November-2019 (NK, changed to header format)
-%               01-July-2021 (AK, modified input parsing, and implemented
-%                               new methods from [2])
-%               22-July-2022 (MA, method 'st' no longer requires YALMIP)
-%               25-November-2022 (LS, method 'st' using sparse matrices)
-%               25-November-2022 (MW, rename 'contains')
-% Last revision:27-March-2023 (MW, rename contains_)
+% Authors:       Matthias Althoff, Niklas Kochdumper, Adrian Kulmburg
+% Written:       07-May-2007 
+% Last update:   06-April-2017
+%                14-September-2019
+%                19-November-2019 (NK, changed to header format)
+%                01-July-2021 (AK, modified input parsing, implemented methods from [2])
+%                22-July-2022 (MA, method 'st' no longer requires YALMIP)
+%                25-November-2022 (LS, method 'st' using sparse matrices)
+%                25-November-2022 (MW, rename 'contains')
+% Last revision: 27-March-2023 (MW, rename contains_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % init result
     res = true;
@@ -99,8 +98,8 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
         res = false(1,size(S,2));
 
         % special case: check if outer-body is only a point
-        if isempty(generators(Z))
-            res = all(withinTol(center(Z),S),1);
+        if isempty(Z.G)
+            res = all(withinTol(Z.c,S),1);
             return
         end
 
@@ -111,20 +110,20 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
         % maximal number of facets of the zonotope.
         % If the zonotope is non-degenerate (which we may assume if
         % #generators >= dim), then this is given as follows:
-        if size(Z.generators,2) >= size(Z.generators,1)
-            numberOfFacets = 2*nchoosek(size(Z.generators, 2), size(Z.generators,1)-1);
+        if size(Z.G,2) >= size(Z.G,1)
+            numberOfFacets = 2*nchoosek(size(Z.G, 2), size(Z.G,1)-1);
         else
             % If the zonotope is degenerate, we need to replace the dim by
             % the rank
-            numberOfFacets = 2*nchoosek(size(Z.generators,2),rank(Z)-1);
+            numberOfFacets = 2*nchoosek(size(Z.G,2),rank(Z)-1);
         end
         % We can now estimate the approximate runtime of the halfspace
         % method:
-        runtime_halfspaceMethod = numberOfFacets * size(Z.generators,1)^4;
+        runtime_halfspaceMethod = numberOfFacets * size(Z.G,1)^4;
         % The runtime of the linprog method on the other hand mainly
         % depends on the number of generators, but also on the number of
         % points we are evaluating this on:
-        runtime_linprogMethod = (size(Z.generators, 2)+1)^(3.5) * size(S,2);
+        runtime_linprogMethod = (size(Z.G, 2)+1)^(3.5) * size(S,2);
         
         % We can now compare runtimes. Additionally, we need to
         % double-check that the halfspace method does not lead to an
@@ -138,7 +137,7 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
         % halfspace conversion always preferrable if the zonotope is in
         % fact a parallelotope
         
-        if isParallelotope(Z) || (isempty(Z.halfspace) && ...
+        if representsa_(Z,'parallelotope',eps) || (isempty(Z.halfspace) && ...
                 numberOfFacets < 100000 && runtime_halfspaceMethod < runtime_linprogMethod)
             Z = halfspace(Z);
         end
@@ -156,14 +155,14 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
         else
             % check for each point whether zonotope norm is <= 1
             for i = 1:size(S,2)
-                tmp = zonotopeNorm(Z,S(:,i)-Z.center);
+                tmp = zonotopeNorm(Z,S(:,i)-Z.c);
                 res(i) = tmp < 1 | withinTol(tmp,1,tol);
             end
         end
         
     % capsule/ellipsoid in zonotope containment
     elseif isa(S,'capsule') || isa(S,'ellipsoid')      
-        P = mptPolytope(Z);
+        P = polytope(Z);
         res = contains_(P,S,'exact',tol);
         
     % taylm/polyZonotope in zonotope containment
@@ -171,7 +170,7 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
         if strcmp(type,'exact')
             throw(CORAerror('CORA:noops',S,Z));
         elseif strcmp(type,'approx')
-            P = mptPolytope(Z);
+            P = polytope(Z);
             res = contains_(P,S,'exact',tol);
         else
             throw(CORAerror('CORA:noops',S,Z));
@@ -195,8 +194,8 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
         
         % Now, either S is a zonotope, and we can use the different
         % methods for zonotope containment, or it is something else. In the
-        % latter case, we can send it to conZonotope.in, since it contains
-        % all the instructions for the general case.
+        % latter case, we can send it to conZonotope.contains, since it 
+        % contains all the instructions for the general case.
         if ~isa(S, 'zonotope')
             cZ = conZonotope(Z);
             % Here, we need to check that only the methods 'exact' or
@@ -207,34 +206,35 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
                     "not yet implemented for containment checks other than zonotope-in-zonotope!"));
             end
             res = contains_(cZ,S,type,tol);
+
         else
             % We may now assume that S is a zonotope
             
             % Set adaptive maxEval, if needed
             if strcmp(type, 'opt') && maxEval == -1
-                m1 = size(S.generators, 2);
+                m1 = size(S.G, 2);
                 maxEval = max(500, 200 * m1);
             end
             
             % Simplify the zonotopes as much as possible, and rename them
             % to Z1 and Z2, to match the notation in [2]
-            Z1 = deleteZeros(S);
-            Z2 = deleteZeros(Z);
+            Z1 = compact_(S,'zeros',eps);
+            Z2 = compact_(Z,'zeros',eps);
 
             % special case: inner zonotope is just a point
-            if isempty(generators(S))
-                res = contains_(Z,center(S),'exact',tol);
+            if isempty(Z1.G)
+                res = contains_(Z2,Z1.c,'exact',tol);
                 return
             end
             
             % Depending on the method, choose the right subfunction
             switch type
                 case {'exact', 'polymax'}
-                    res = polyhedralMaximization(Z1, Z2, tol);
+                    res = aux_polyhedralMaximization(Z1, Z2, tol);
                 case 'venum'
-                    res = vertexEnumeration(Z1, Z2, tol);
+                    res = aux_vertexEnumeration(Z1, Z2, tol);
                 case {'approx', 'st'}
-                    res = SadraddiniTedrake(Z1, Z2, tol);
+                    res = aux_SadraddiniTedrake(Z1, Z2, tol);
                 case 'opt'
                     % Check if surrogate optimization is available
                     GOT_installed = true;
@@ -256,16 +256,19 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
                         % Right after the first warning, disable it, so as
                         % to not clutter the command window
                         warning('off', warn_id);
-                        res = DIRECTMaximization(Z1, Z2, tol, maxEval);
+                        res = aux_DIRECTMaximization(Z1, Z2, tol, maxEval);
                     else
-                        res = surrogateMaximization(Z1, Z2, tol, maxEval);
+                        res = aux_surrogateMaximization(Z1, Z2, tol, maxEval);
                     end
             end
         end
     end
 end
 
-function isIn = vertexEnumeration(Z1, Z2, tol)
+
+% Auxiliary functions -----------------------------------------------------
+
+function isIn = aux_vertexEnumeration(Z1, Z2, tol)
 % Solves the zonotope containment problem by checking whether the maximum
 % value of the Z2-norm at one of the vertices of Z1 exceeds 1+tol. Checks
 % every vertex until an answer is found (see also [2, Algorithm 1]).
@@ -275,8 +278,8 @@ function isIn = vertexEnumeration(Z1, Z2, tol)
 % of Z1. Since v = c1 +- g_1 +- ... +- g_m, where g_i are the generators of
 % Z1, the norm of v-c2 is the same as the norm of G*nu + c1-c2, where
 % G is the generator matrix of Z1, nu = [+-1;...;+-1].
-G = Z1.generators;
-norm_Z2_nu = @(nu) zonotopeNorm(Z2, G*nu + Z1.center-Z2.center);
+G = Z1.G;
+norm_Z2_nu = @(nu) zonotopeNorm(Z2, G*nu + Z1.c-Z2.c);
 
 % Number of generators of Z1
 m = size(G, 2);
@@ -301,12 +304,12 @@ end
 isIn = true;
 end
 
-function isIn = polyhedralMaximization(Z1, Z2, tol)
+function isIn = aux_polyhedralMaximization(Z1, Z2, tol)
 % Solves the zonotope containment problem by computing the maximal value of
 % the polyhedral norm over Z1 w.r.t. Z2 (see also [2, Algorithm 2]).
 
 % First, we need to shift Z2 so that it is centered around the origin
-Z = Z2 - Z2.center;
+Z = Z2 - Z2.c;
 % Then, we compute the halfspace representation, if it is not already
 % computed
 if isempty(Z.halfspace)
@@ -319,7 +322,7 @@ H_norm = Z.halfspace.H ./ Z.halfspace.K;
 % Similarly to vertexEnum, we need to create combinations from the pool of
 % vectors given by [G c1-c2], where G is the generator matrix of Z1, and
 % c1, c2 are the centers of Z1, Z2.
-V = [Z1.generators Z1.center-Z2.center];
+V = [Z1.G Z1.c-Z2.c];
 
 % Polyhedral norm at a point p
 poly_norm = @(p) max([0 max(H_norm * p)]);
@@ -345,20 +348,20 @@ end
 isIn = true;
 end
 
-function isIn = surrogateMaximization(Z1, Z2, tol, maxEval)
+function isIn = aux_surrogateMaximization(Z1, Z2, tol, maxEval)
 % Solves the zonotope containment problem by checking whether the maximum
 % value of the Z2-norm at one of the vertices of Z1 exceeds 1+tol, using
 % surrogate optimization, see also [2].
 
 % Retrieve the generator matrix of Z1 and determine its size
-G = Z1.generators;
+G = Z1.G;
 m = size(G, 2);
 
 % Prepare objective function to be minimized (see [2], or also
 % vertexEnumeration above, since the idea is similar).
 % Note that we need to use nu' here instead of nu, since for surrogateopt
 % the points are given as 1xn-arrays, unlike fmincon for example.
-norm_Z2_nu = @(nu) -zonotopeNorm(Z2, G*nu' + Z1.center-Z2.center);
+norm_Z2_nu = @(nu) -zonotopeNorm(Z2, G*nu' + Z1.c-Z2.c);
 
 % Setting up options
 persistent options
@@ -387,20 +390,20 @@ end
     
 end
 
-function isIn = DIRECTMaximization(Z1, Z2, tol, maxEval)
+function isIn = aux_DIRECTMaximization(Z1, Z2, tol, maxEval)
 % Solves the zonotope containment problem by checking whether the maximum
 % value of the Z2-norm at one of the vertices of Z1 exceeds 1+tol, using
 % DIRECT optimization, in case surrogate optimization is not available.
 
 % Retrieve the generator matrix of Z1 and determine its size
-G = Z1.generators;
+G = Z1.G;
 m = size(G, 2);
 
 % Prepare objective function to be minimized (see [2], or also
 % vertexEnumeration above, since the idea is similar).
 % Note that we need to use nu' here instead of nu, since for surrogateopt
 % the points are given as 1xn-arrays, unlike fmincon for example.
-Problem.f = @(nu) -zonotopeNorm(Z2, G*nu + Z1.center-Z2.center);
+Problem.f = @(nu) -zonotopeNorm(Z2, G*nu + Z1.c-Z2.c);
 
 bounds = [-ones(m,1) ones(m,1)];
 opts.maxevals = maxEval;
@@ -423,7 +426,7 @@ end
     
 end
 
-function isIn = SadraddiniTedrake(Z1, Z2, tol)
+function isIn = aux_SadraddiniTedrake(Z1, Z2, tol)
 % Solves the containment problem using the method described in
 % [1, Corollary 4]. A direct implementation of [1, Corollary 4] can be 
 % found in the corresponding unit test. Here, we transform the linear 
@@ -433,10 +436,10 @@ function isIn = SadraddiniTedrake(Z1, Z2, tol)
 % Implemented by Matthias Althoff, Lukas Schäfer
 
 % extract data
-c_s = Z1.center; % s: small, assuming that Z1 is contained in Z2
-c_l = Z2.center; % l: large, assuming that Z1 is contained in Z2
-G_s = Z1.generators; % s: small, assuming that Z1 is contained in Z2
-G_l = Z2.generators; % l: large, assuming that Z1 is contained in Z2
+c_s = Z1.c; % s: small, assuming that Z1 is contained in Z2
+c_l = Z2.c; % l: large, assuming that Z1 is contained in Z2
+G_s = Z1.G; % s: small, assuming that Z1 is contained in Z2
+G_l = Z2.G; % l: large, assuming that Z1 is contained in Z2
 n_s = size(G_s, 2); % nr of generators of small zonotope
 n_l = size(G_l, 2); % nr of generators of large zonotope
 n = size(G_s, 1); % system dimension
@@ -561,4 +564,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

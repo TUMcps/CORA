@@ -2,7 +2,7 @@ function condition = applyMappingToCondition(condition,bind)
 % applyMappingToCondition - Applies the variable mapping of a Bind struct
 %    to a Invariant or Guard struct
 %
-% Syntax:  
+% Syntax:
 %    condition = applyMappingToCondition(condition,bind)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function condition = applyMappingToCondition(condition,bind)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % substitute variables for mapped values in Inequations
 condition.inequalities = applySymMapping(condition.inequalities,...
@@ -37,4 +37,4 @@ condition.inequalities = applySymMapping(condition.inequalities,...
 condition.equalities = applySymMapping(condition.equalities,...
     bind.keys,bind.values);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

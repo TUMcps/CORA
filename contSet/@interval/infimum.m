@@ -1,8 +1,8 @@
 function res = infimum(I)
 % infimum - returns the infimum of an interval
 %
-% Syntax:  
-%    res = inf(I)
+% Syntax:
+%    res = infimum(I)
 %
 % Inputs:
 %    I - interval object
@@ -20,13 +20,13 @@ function res = infimum(I)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      25-June-2015
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-June-2015
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = I.inf;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

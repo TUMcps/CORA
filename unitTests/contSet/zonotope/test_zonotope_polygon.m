@@ -1,7 +1,7 @@
 function res = test_zonotope_polygon
 % test_zonotope_polygon - unit test function of polygon
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_polygon
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_polygon
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty zonotope
 Z = zonotope();
@@ -65,4 +65,4 @@ end
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

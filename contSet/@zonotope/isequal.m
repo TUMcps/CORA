@@ -2,7 +2,7 @@ function res = isequal(Z1,Z2,varargin)
 % isequal - checks if two zonotopes are equal (note: no deletion of aligned
 %    generators since this is quite costly)
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(Z1,Z2)
 %    res = isequal(Z1,Z2,tol)
 %
@@ -17,7 +17,7 @@ function res = isequal(Z1,Z2,varargin)
 % Example: 
 %    Z1 = zonotope(zeros(2,1),[1 0 2; 2 0 1]);
 %    Z2 = zonotope(zeros(2,1),[1 2 0; 2 1 0]);
-%    isequal(Z1,Z2);
+%    isequal(Z1,Z2)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,13 +25,13 @@ function res = isequal(Z1,Z2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-September-2019
-% Last update:  09-June-2020 (include re-ordering of generators)
-%               13-November-2022 (MW, integrate modular check)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-September-2019
+% Last update:   09-June-2020 (include re-ordering of generators)
+%                13-November-2022 (MW, integrate modular check)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -60,13 +60,13 @@ if dim(Z1) ~= dim(Z2)
 end
 
 % compare centers (quick check)
-if ~all(withinTol(center(Z1),center(Z2),tol))
+if ~all(withinTol(Z1.c,Z2.c,tol))
     return
 end
 
 % delete zeros from generator matrices
-G1 = generators(deleteZeros(Z1));
-G2 = generators(deleteZeros(Z2));
+G1 = compact_(Z1,'zeros',0).G;
+G2 = compact_(Z2,'zeros',0).G;
 
 % compare number of generators
 if size(G1,2) ~= size(G2,2)
@@ -76,4 +76,4 @@ end
 % compare generator matrices
 res = compareMatrices(G1,G2,tol);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

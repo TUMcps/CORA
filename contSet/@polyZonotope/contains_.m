@@ -1,7 +1,7 @@
 function res = contains_(pZ,S,type,varargin)
 % contains_ - determines if a polynomial zonotope contains a set or a point
 %
-% Syntax:  
+% Syntax:
 %    res = contains_(pZ,S)
 %    res = contains_(pZ,S,type)
 %
@@ -41,14 +41,14 @@ function res = contains_(pZ,S,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval/contains, conZonotope/contains
+% See also: contSet/contains, interval/contains, conZonotope/contains
 
-% Author:       Niklas Kochdumper
-% Written:      13-January-2020 
-% Last update:  25-November-2022 (MW, rename 'contains')
-% Last revision:27-March-2023 (MW, rename contains_)
+% Authors:       Niklas Kochdumper
+% Written:       13-January-2020 
+% Last update:   25-November-2022 (MW, rename 'contains')
+% Last revision: 27-March-2023 (MW, rename contains_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % init result
     res = false;
@@ -59,10 +59,10 @@ function res = contains_(pZ,S,type,varargin)
     end
     
     % initialize variables
-    fHan = @(x) aux_funcPoly(x,pZ.c,pZ.G,pZ.Grest,pZ.expMat);
-    jacHan = aux_funHanJacobian(pZ.G,pZ.Grest,pZ.expMat);
+    fHan = @(x) aux_funcPoly(x,pZ.c,pZ.G,pZ.GI,pZ.E);
+    jacHan = aux_funHanJacobian(pZ.G,pZ.GI,pZ.E);
         
-    temp = ones(length(pZ.id) + size(pZ.Grest,2),1);
+    temp = ones(length(pZ.id) + size(pZ.GI,2),1);
     X = interval(-temp,temp);
         
     % point in polynomial zonotope containment
@@ -88,7 +88,7 @@ function res = contains_(pZ,S,type,varargin)
         
     % set in zonotope containment
     elseif isa(S,'interval') || isa(S,'zonotope') || ...
-           isa(S,'mptPolytope') || isa(S,'zonoBundle') || ...
+           isa(S,'polytope') || isa(S,'zonoBundle') || ...
            isa(S,'conZonotope') || isa(S,'taylm') || ...
            isa(S,'polyZonotope') || isa(S,'conPolyZono')
         
@@ -111,7 +111,7 @@ function res = contains_(pZ,S,type,varargin)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function res = aux_disproveContainment(pZ1,pZ2)
 % use contraction to prove that pZ2 is not a subset of pZ1
@@ -119,21 +119,21 @@ function res = aux_disproveContainment(pZ1,pZ2)
     % construct polynomial constraint for the intersection
     c = pZ1.c - pZ2.c;
     G = [pZ1.G -pZ2.G];
-    Grest = [pZ1.Grest,-pZ2.Grest];
-    expMat = blkdiag(pZ1.expMat,pZ2.expMat);
+    GI = [pZ1.GI,-pZ2.GI];
+    E = blkdiag(pZ1.E,pZ2.E);
         
     % contract the factor domain \alpha_k in [-1,1] based on the
     % polynomial constraint
-    n = size(expMat,1) + size(Grest,2);
+    n = size(E,1) + size(GI,2);
     dom = interval(-ones(n,1),ones(n,1));
 
-    I = contractPoly(c,G,Grest,expMat,dom,'all',3);
+    I = contractPoly(c,G,GI,E,dom,'all',3);
 
     % pZ2 is proven to be not contained in pZ1 -> res = true
-    temp = I(size(expMat,1)+1:end);
+    temp = I(size(E,1)+1:end);
     res = false;
     
-    if isempty(temp) || any(supremum(temp) < 1) || any(infimum(temp) > -1)
+    if representsa_(temp,'emptySet',eps) || any(supremum(temp) < 1) || any(infimum(temp) > -1)
        res = true; 
     end
 end
@@ -192,62 +192,62 @@ function res = aux_proveContainment(obj,fHan,jacHan,X)
     res = isempty(list_);
 end
 
-function f = aux_funcPoly(x,c,G,Grest,expMat)
+function f = aux_funcPoly(x,c,G,GI,E)
 % evaluate the mapping function of a polynomial zonotope
 
     % initialization
     f = c;
-    n = size(expMat,1);
+    n = size(E,1);
     x1 = x(1:n); x2 = x(n+1:end);
     
     % loop over all dependent generators
     for i = 1:size(G,2)
-        f = f + G(:,i)*prod(x1.^expMat(:,i),1); 
+        f = f + G(:,i)*prod(x1.^E(:,i),1); 
     end
 
     % add independent generators
-    if ~isempty(Grest)
-        f = f + Grest*x2;
+    if ~isempty(GI)
+        f = f + GI*x2;
     end
 end
 
-function J = aux_jacobianPoly(x,G,Grest,expMat,n,p)
+function J = aux_jacobianPoly(x,G,GI,E,n,p)
 % compute the jacobian matrix for the mapping function of a polynomial
 % zonotope
 
     % initialization
-    J = 0 * repmat(x(1),[n,length(expMat)]);
+    J = 0 * repmat(x(1),[n,length(E)]);
     x_ = x(1:p);
     
     % loop over all variables
-    for i = 1:length(expMat)
-       for j = 1:size(expMat{i},2)
-          J(:,i) = J(:,i) + G{i}(:,j)*prod(x_.^expMat{i}(:,j),1); 
+    for i = 1:length(E)
+       for j = 1:size(E{i},2)
+          J(:,i) = J(:,i) + G{i}(:,j)*prod(x_.^E{i}(:,j),1); 
        end
     end
     
     % consider independent generators
-    J = [J,Grest];
+    J = [J,GI];
 end
 
-function jacHan = aux_funHanJacobian(G,Grest,expMat)
+function jacHan = aux_funHanJacobian(G,GI,E)
 % compute a function handle for the jacobian matrix for the mapping 
 % function of a polynomial zonotope
 
     % compute exponent matrix differentiazed for each variable
-    Elist = cell(size(expMat,1),1);
-    Glist = cell(size(expMat,1),1);
+    Elist = cell(size(E,1),1);
+    Glist = cell(size(E,1),1);
 
     for i = 1:length(Elist)
-       ind = find(expMat(i,:) > 0);
-       temp = expMat(:,ind);
+       ind = find(E(i,:) > 0);
+       temp = E(:,ind);
        temp(i,:) = temp(i,:) - 1;
        Elist{i} = temp;
-       Glist{i} = G(:,ind) * diag(expMat(i,ind));
+       Glist{i} = G(:,ind) * diag(E(i,ind));
     end
 
     % function handle for jacobian matrix
-    jacHan=@(x)aux_jacobianPoly(x,Glist,Grest,Elist,size(G,1),size(expMat,1));
+    jacHan=@(x)aux_jacobianPoly(x,Glist,GI,Elist,size(G,1),size(E,1));
 end
 
 function res = aux_containsInterval(f,df,X,X_,Y_,varargin)
@@ -425,7 +425,7 @@ function list = aux_splitLongestGen_(pZ)
 % considered
 
     % determine generator with maximum length
-    G = [pZ.G,pZ.Grest];
+    G = [pZ.G,pZ.GI];
     len = sum(G.^2,1);
     [~,ind] = max(len);
     
@@ -437,21 +437,21 @@ function list = aux_splitLongestGen_(pZ)
         
         % get object properties
         c = pZ.c;
-        Grest = pZ.Grest;
+        GI = pZ.GI;
         
         % split the longest independent generator
         ind = ind - size(pZ.G,2);
         
-        c1 = c + 0.5*Grest(:,ind);
-        c2 = c - 0.5*Grest(:,ind);
-        Grest(:,ind) = 0.5*Grest(:,ind);
+        c1 = c + 0.5*GI(:,ind);
+        c2 = c - 0.5*GI(:,ind);
+        GI(:,ind) = 0.5*GI(:,ind);
         
         % construct the splitted polynomial zonotopes
         list = cell(2,1);
         
-        list{1} = polyZonotope(c1,pZ.G,Grest,pZ.expMat);
-        list{2} = polyZonotope(c2,pZ.G,Grest,pZ.expMat);
+        list{1} = polyZonotope(c1,pZ.G,GI,pZ.E);
+        list{2} = polyZonotope(c2,pZ.G,GI,pZ.E);
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

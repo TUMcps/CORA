@@ -1,7 +1,7 @@
 function err = linError(obj,options,R)
 % linError - computes the linearization error
 %
-% Syntax:  
+% Syntax:
 %    err = linError(obj,options)
 %
 % Inputs:
@@ -24,16 +24,15 @@ function err = linError(obj,options,R)
 %
 % See also: linReach
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      29-October-2007 
-% Last update:  22-January-2008
-%               02-February-2010
-%               25-July-2016 (intervalhull replaced by interval)
-%               12-November-2018 (NK: changed method for remainder
-%                                 over-approximation)
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       29-October-2007 
+% Last update:   22-January-2008
+%                02-February-2010
+%                25-July-2016 (intervalhull replaced by interval)
+%                12-November-2018 (NK, changed remainder over-approximation)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute interval of reachable set
 IHx = interval(R);
@@ -80,4 +79,4 @@ for i = 1:length(H)
     err(i) = 0.5 * dz' * H_ * dz;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

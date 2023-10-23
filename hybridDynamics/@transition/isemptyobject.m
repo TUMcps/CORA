@@ -1,7 +1,7 @@
 function res = isemptyobject(trans)
 % isemptyobject - checks if a transition object is empty
 %
-% Syntax:  
+% Syntax:
 %    res = isemptyobject(trans)
 %
 % Inputs:
@@ -19,7 +19,7 @@ function res = isemptyobject(trans)
 %    reset1 = struct('A',[1,0;0,-0.75],'c',[0;0]);
 %
 %    % transition
-%    trans = transition(guard,reset,1);
+%    trans = transition(guard,reset1,1);
 %
 %    % comparison
 %    res = isemptyobject(trans)
@@ -31,12 +31,12 @@ function res = isemptyobject(trans)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      15-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       15-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init logical array
 [r,c] = size(trans);
@@ -53,4 +53,4 @@ for i=1:r
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

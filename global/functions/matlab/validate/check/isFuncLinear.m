@@ -3,7 +3,7 @@ function res = isFuncLinear(f,varargin)
 %    function handle depend linearly on the input arguments
 %    caution: this function is only probabilistically correct!
 %
-% Syntax:  
+% Syntax:
 %    res = isFuncLinear(f)
 %    res = isFuncLinear(f,inputArgs)
 %
@@ -24,12 +24,12 @@ function res = isFuncLinear(f,varargin)
 %
 % See also: withinTol, inputArgsLength
 
-% Author:       Mark Wetzlinger
-% Written:      05-July-2022
-% Last update:  06-June-2023 (MW, add quick check for constant functions)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-July-2022
+% Last update:   06-June-2023 (MW, add quick check for constant functions)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check if vector length for each input argument of f is given
 if nargin == 1
@@ -148,4 +148,4 @@ end
 % % check criteria: use relative floating-point accuracy
 % res = withinTol(fx+fy,fxy,10*eps) & withinTol(alpha*fx,falphax,10*eps);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

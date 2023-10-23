@@ -2,7 +2,7 @@ function Y = combineVec(varargin)
 % combineVec - returns all possible (cartesian product) combinations of
 %    arguments (same behavior as of combvec)
 %
-% Syntax:  
+% Syntax:
 %    Y = combineVec(varargin)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function Y = combineVec(varargin)
 %
 % See also: ---
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if ~all(cellfun(@(y)isa(y,'double'),varargin))
     throw(CORAerror('CORA:wrongValue','some',...
@@ -58,4 +58,4 @@ for i=1:N2
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

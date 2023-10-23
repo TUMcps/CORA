@@ -11,12 +11,12 @@ function res = test_spaceex2cora_parseForbidden()
 % Outputs:
 %    res - true/false
 
-% Author:       Maximilian Perschl
-% Written:      22-September-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Maximilian Perschl
+% Written:       22-September-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -26,7 +26,7 @@ res = true;
 
 % linear constraint, no spec_map, equality
 test_case(1) = "forbidden = ""x==10""";
-solution{1}.specs = specification(buildSolutionSet(zeros(0,2),[],[1 0],100));
+solution{1}.specs = specification(polytope([],[],[1 0],100));
 solution{1}.mapping = {};
 state_names{1} = struct('name',{'x','v'});
 component_names{1} = "comp1";
@@ -34,7 +34,7 @@ location_names{1} = {"loc1"};
 error_expected(1) = false;
 % linear constraint, no spec_map, inequality
 test_case(2) = "forbidden = ""x<=10""";
-solution{2}.specs = specification(buildSolutionSet([1 0],10,zeros(0,2),[]));
+solution{2}.specs = specification(polytope([1 0],10));
 solution{2}.mapping = {};
 state_names{2} = struct('name',{'x','v'});
 component_names{2} = "comp1";
@@ -42,7 +42,7 @@ location_names{2} = {"loc1"};
 error_expected(2) = false;
 % linear constraint, no spec_map, inequality and equality
 test_case(3) = "forbidden = ""x>=10&v==30""";
-solution{3}.specs = specification(buildSolutionSet([-1 0],-10,[0 1],30));
+solution{3}.specs = specification(polytope([-1 0],-10,[0 1],30));
 solution{3}.mapping = {};
 state_names{3} = struct('name',{'x','v'});
 component_names{3} = "comp1";
@@ -50,8 +50,8 @@ location_names{3} = {"loc1"};
 error_expected(3) = false;
 % linear constraint, with spec_map, inequality and equality
 test_case(4) = "forbidden = ""x>=10&loc(comp1)=loc1|x==30&loc(comp1)=loc2""";
-solution{4}.specs = specification(buildSolutionSet([-1 0],-10,zeros(0,2),[]));
-solution{4}.specs(2) = specification(buildSolutionSet(zeros(0,2),[],[1 0],30));
+solution{4}.specs = specification(polytope([-1 0],-10));
+solution{4}.specs(2) = specification(polytope([],[],[1 0],30));
 solution{4}.mapping = {{2,3}};
 state_names{4} = struct('name',{'x','v'});
 component_names{4} = "comp1";
@@ -73,7 +73,7 @@ for i = 5:length(test_case)
         [result_specs,result_mapping] = parseForbidden(test_case(i),...
             state_names{i},component_names{i},location_names{i});
         % compare result to expected result
-        if ~( compSpecs(result_specs(2:end),solution{i}.specs) ...
+        if ~( aux_compSpecs(result_specs(2:end),solution{i}.specs) ...
                 && isequal(result_mapping,solution{i}.mapping) )
             res = false;
         end
@@ -91,18 +91,8 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-% Construct mpt polytope as the solution of the testcase expects
-function solSet = buildSolutionSet(A,b,Ae,be)
-    setOptions.A = A;
-    setOptions.Ae = Ae;
-    setOptions.b = b;
-    setOptions.be = be;
-    
-    solSet = mptPolytope(setOptions);
-end
-
 % Compare specification objects to interpret results
-function equal = compSpecs(spec1,spec2)
+function equal = aux_compSpecs(spec1,spec2)
     equal = true;
     if length(spec1) ~= length(spec2)
         equal = false;
@@ -117,4 +107,4 @@ function equal = compSpecs(spec1,spec2)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

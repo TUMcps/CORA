@@ -2,7 +2,7 @@ function list = indexList(loc)
 % indexList - returns a list that relates active events to guards; an
 %    invariant is defined as 0, other numbers refer to the guard number
 %
-% Syntax:  
+% Syntax:
 %    list = indexList(loc)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function list = indexList(loc)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      07-May-2007 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-May-2007 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % get indices of the invariant
     eq = aux_getEquations(loc.invariant);
@@ -36,13 +36,13 @@ function list = indexList(loc)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function eq = aux_getEquations(S)
 % get number of inequality constraints describing the set representation
 
-    if isa(S,'mptPolytope')
-    
+    if isa(S,'polytope')
+
         eq = length(get(S,'b'));
     
     elseif isa(S,'levelSet')
@@ -55,8 +55,8 @@ function eq = aux_getEquations(S)
     
     else
         throw(CORAerror('CORA:specialError',...
-            'Guard set has to be mptPolytope object or levelSet object'));
+            'Guard set has to be polytope object or levelSet object'));
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

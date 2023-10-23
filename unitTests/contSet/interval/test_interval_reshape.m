@@ -1,7 +1,7 @@
 function res = test_interval_reshape
 % test_interval_reshape - unit test function of reshape
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_reshape
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_reshape
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      29-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       29-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create interval
 initSize = [6, 4];
@@ -63,4 +63,4 @@ end
 % add results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function R = observe_interval(obj,options)
 % approach according to the interval approach, see Alg. 1 in [1].
 %
 %
-% Syntax:  
+% Syntax:
 %    R = observe_interval(obj,options)
 %
 % Inputs:
@@ -26,15 +26,15 @@ function R = observe_interval(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       05-Jan-2021
-% Last update:   25-Feb-2021
+% Authors:       Matthias Althoff
+% Written:       05-January-2021
+% Last update:   25-February-2021
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %%initialize computation
+
 %time period
 tVec = options.tStart:options.timeStep:options.tFinal-options.timeStep;
 timeSteps = length(tVec);
@@ -72,4 +72,4 @@ for i = 1:timeSteps-1
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

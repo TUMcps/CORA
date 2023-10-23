@@ -1,7 +1,7 @@
 function res = test_interval_size
 % test_interval_size - unit test function of size
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_size
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_size
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      28-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create interval
 dim = 1 + floor(5 * rand(1));
@@ -39,4 +39,4 @@ cols_true = 1;
 % compare results
 res = rows == rows_true && cols == cols_true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

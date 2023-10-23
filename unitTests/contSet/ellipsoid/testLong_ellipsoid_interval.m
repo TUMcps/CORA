@@ -1,7 +1,7 @@
 function res = testLong_ellipsoid_interval
 % testLong_ellipsoid_interval - unit test function of interval
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_interval
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_ellipsoid_interval
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      16-October-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       16-October-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 nRuns = 2;
@@ -39,4 +39,4 @@ for i=10:5:15
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

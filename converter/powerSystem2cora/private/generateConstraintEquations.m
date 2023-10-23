@@ -2,7 +2,7 @@ function generateConstraintEquations(scenario,powVariables)
 % generateConstraintEquations - generates the constraint equations of a 
 %    power system, more information can be found in [1, Sec. VII].
 %
-% Syntax:  
+% Syntax:
 %    generateConstraintEquations(scenario,powVariables)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function generateConstraintEquations(scenario,powVariables)
 %        Verification of Continuous and Hybrid Systems, 
 %        2022, x-x
 
-% Author:       Matthias Althoff
-% Written:      15-April-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       15-April-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % obtain certain structs and variables
 bus = scenario.bus;
@@ -111,4 +111,4 @@ end
 % create file
 createFileFromFunction(g,[scenario.name,'_con'],'g','x,y,u');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

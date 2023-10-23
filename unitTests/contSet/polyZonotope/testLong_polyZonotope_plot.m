@@ -3,7 +3,7 @@ function res = testLong_polyZonotope_plot
 %    this function aims to go through many variations of input arguments
 %    note: only run-time errors checked, manual bug check necessary
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polyZonotope_plot
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = testLong_polyZonotope_plot
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      04-August-2020
-% Last update:  09-May-2023 (TL: added plotted point checks)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       04-August-2020
+% Last update:   09-May-2023 (TL, added plotted point checks)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -32,9 +32,9 @@ c = rand(4,1)-0.5*ones(4,1);
 G = rand(4,6)-0.5*ones(4,6);
 ind = datasample(1:6,4,'Replace',false);
 G(:,ind) = G(:,ind)./10;
-Grest = rand(4,2)-0.5*ones(4,2);
-expMat = [eye(4), round(rand(4,2)*5)];
-pZ = polyZonotope(c,G,Grest,expMat);
+GI = rand(4,2)-0.5*ones(4,2);
+E = [eye(4), round(rand(4,2)*5)];
+pZ = polyZonotope(c,G,GI,E);
 
 try
     % try all variations in plotting
@@ -74,9 +74,9 @@ try
     % the polyZonotope
     c = [4;4];
     G = [2 1 2; 0 2 2];
-    expMat = [1 0 3;0 1 1];
-    Grest = [0.5;0];
-    pZ = polyZonotope(c,G,Grest,expMat);
+    E = [1 0 3;0 1 1];
+    GI = [0.5;0];
+    pZ = polyZonotope(c,G,GI,E);
 
     % check if plotted correctly
     ax = gca();
@@ -113,5 +113,4 @@ end
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

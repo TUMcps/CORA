@@ -1,7 +1,7 @@
 function res = test_interval_generateRandom
 % test_interval_generateRandom - unit test function of generateRandom
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_generateRandom
 %
 % Inputs:
@@ -16,14 +16,14 @@ function res = test_interval_generateRandom
 %
 % See also: none
 
-% Author:       Mark Wetzlinger, Tobias Ladner
-% Written:      27-September-2019
-% Last update:  19-May-2022 (MW,name-value pair syntax)
-%               23-February-2023 (MW, more cases)
-%               22-May-2023 (TL: tests for interval matrices)
-% Last revision:---
+% Authors:       Mark Wetzlinger, Tobias Ladner
+% Written:       27-September-2019
+% Last update:   19-May-2022 (MW, name-value pair syntax)
+%                23-February-2023 (MW, more cases)
+%                22-May-2023 (TL, tests for interval matrices)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -113,4 +113,4 @@ resvec(end+1) = all(dim(I) == n) && all(withinTol(center(I),c),'all') && r >= ma
 % unify results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

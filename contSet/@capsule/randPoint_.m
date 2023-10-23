@@ -1,7 +1,7 @@
 function p = randPoint_(C,N,type,varargin)
 % randPoint_ - Returns a random point of a capsule
 %
-% Syntax:  
+% Syntax:
 %    p = randPoint_(C)
 %    p = randPoint_(C,N)
 %    p = randPoint_(C,N,type)
@@ -22,19 +22,19 @@ function p = randPoint_(C,N,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/randPoint_
+% See also: contSet/randPoint, zonotope/randPoint_
 
-% Author:       Mark Wetzlinger
-% Written:      17-September-2019
-% Last update:  19-August-2022 (MW, integrate preprocessing)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-September-2019
+% Last update:   19-August-2022 (MW, integrate preprocessing)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 'all' vertices not supported
 if ischar(N) && strcmp(N,'all')
     throw(CORAerror('CORA:notSupported',...
-        "Number of vertices 'all' is not supported for class probZonotope."));
+        "Number of vertices 'all' is not supported for class capsule."));
 end
 
 % dimension of capsule
@@ -68,6 +68,8 @@ elseif strcmp(type,'extreme')
         p(:,i) = x; 
     end
     
+else
+    throw(CORAerror('CORA:noSpecificAlg',type,C));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

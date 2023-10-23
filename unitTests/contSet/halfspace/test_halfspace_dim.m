@@ -1,7 +1,7 @@
 function res = test_halfspace_dim
 % test_halfspace_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = test_halfspace_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_halfspace_dim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-September-2019
-% Last update:  16-March-2021 (MW, add empty case)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-September-2019
+% Last update:   16-March-2021 (MW, add empty case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. empty case
 h = halfspace();
@@ -47,4 +47,4 @@ res_analytical = h_dim == true_dim;
 % combine tests
 res = res_empty && res_analytical;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

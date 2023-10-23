@@ -1,7 +1,7 @@
 function S = and_(hyp,S,varargin)
 % and_ - computes the intersection of a constrained hyperplane with a set
 %
-% Syntax:  
+% Syntax:
 %    S = and_(hyp,S)
 %
 % Inputs:
@@ -12,7 +12,7 @@ function S = and_(hyp,S,varargin)
 %    S - contSet object
 %
 % Example: 
-%    P = mptPolytope([-1 -1; 1 0;-1 0; 0 1; 0 -1],[2;3;2;3;2]);
+%    P = polytope([-1 -1; 1 0;-1 0; 0 1; 0 -1],[2;3;2;3;2]);
 %    hyp = conHyperplane([1 1],2,[-1 0],-1);
 %
 %    res = hyp & P;
@@ -28,19 +28,19 @@ function S = and_(hyp,S,varargin)
 %
 % See also: contSet/and, conZonotope/and_
 
-% Author:       Niklas Kochdumper
-% Written:      26-November-2019
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename and_)
+% Authors:       Niklas Kochdumper
+% Written:       26-November-2019
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename and_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % convert second set to polytope, otherwise infinite loop
 if isa(S,'conHyperplane')
-    S = mptPolytope(S);
+    S = polytope(S);
 end
 
 % input argument check happens there
-S = S & hyp;
+S = and_(S,hyp,'exact');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

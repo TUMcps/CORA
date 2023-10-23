@@ -8,7 +8,7 @@ function BC = FormalizeBaseComponent(BC,convtype)
 %    eq2polytope to:   BC.States{*}.Invariant
 %                      BC.States{*}.Trans{*}.guard
 %
-% Syntax:  
+% Syntax:
 %    BC = FormalizeBaseComponent(comp,convtype)
 %
 % Inputs:
@@ -29,12 +29,12 @@ function BC = FormalizeBaseComponent(BC,convtype)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  22-June-2022 (MW, empty sets for invariants, guards)
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   22-June-2022 (MW, empty sets for invariants, guards)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Unfortunately, CORA does not support 0-input systems yet.
 % If the system does not have inputs, we add a dummy input without effect.
@@ -161,4 +161,4 @@ for i = 1:length(BC.States)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

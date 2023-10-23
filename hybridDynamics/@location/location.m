@@ -9,7 +9,7 @@ classdef location
 % Inputs:
 %    name - name of the location
 %    invSet - invariant set
-%    trans - cell-array containing all transitions
+%    trans - object-array containing all transitions
 %    sys - continuous dynamics
 %
 % Outputs:
@@ -20,8 +20,7 @@ classdef location
 %    name = 'S1';
 %
 %    % invariant
-%    polyOpt = struct('A',[-1,0],'b',0);
-%    inv = mptPolytope(polyOpt);
+%    inv = polytope([-1,0],0);
 %    
 %    % transition
 %    c = [-1;0]; d = 0; C = [0,1]; D = 0;
@@ -31,7 +30,7 @@ classdef location
 %    reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
 %
 %    % transition
-%    trans{1} = transition(guard,reset,2);
+%    trans(1) = transition(guard,reset,2);
 %
 %    % flow equation
 %    dynamics = linearSys([0,1;0,0],[0;0],[0;-9.81]);
@@ -45,12 +44,12 @@ classdef location
 %
 % See also: hybridAutomaton, transition
 
-% Author:       Matthias Althoff
-% Written:      02-May-2007 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       02-May-2007 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     % name of the location
@@ -59,7 +58,7 @@ properties (SetAccess = private, GetAccess = public)
     % invariant set 
     invariant = [];
 
-    % cell-array storing the transitions
+    % array storing the transitions
     transition (:,1) = transition();
 
     % system dynamics
@@ -94,20 +93,26 @@ methods
 
         % loc.transition has to be an array of transition objects
         if ~isa(loc.transition,'transition')
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                'All elements of transition have to be transition objects.'));
+            if iscell(loc.transition)
+                % legacy error message
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Transitions have to be an object array instead of a cell array.'));
+            else
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Transitions have to be a transition object array.'));
+            end
         end
 
         % convert invariant sets to polytopes if possible
-        if isa(invSet,'fullspace') || isa(invSet,'mptPolytope') ...
+        if isa(invSet,'fullspace') || isa(invSet,'polytope') ...
                 || isa(invSet,'levelSet') || isa(invSet,'emptySet')
-            % keep mptPolytopes, levelSet, and empty invariants as is
+            % keep polytopes, levelSet, and empty invariants as is
             loc.invariant = invSet;
         else
-            loc.invariant = mptPolytope(invSet);
+            loc.invariant = polytope(invSet);
         end
     end
 end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

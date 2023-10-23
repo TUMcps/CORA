@@ -3,7 +3,7 @@ function derivatives(obj,options)
 %    of nonlinear systems in a symbolic way; the result is stored in
 %    m-files to which obj has access via handles in its properties
 %
-% Syntax:  
+% Syntax:
 %    derivatives(obj,options)
 %
 % Inputs:
@@ -22,27 +22,27 @@ function derivatives(obj,options)
 %
 % See also: 
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
-% Written:      29-October-2007 (MA)
-% Last update:  07-September-2012 (MA)
-%               12-October-2015 (MA)
-%               08-April-2016 (MA)
-%               10-June-2017 (NK)
-%               15-June-2017 (NK)
-%               28-June-2017 (NK)
-%               06-July-2017
-%               15-July-2017 (NK)
-%               16-July-2017 (NK)
-%               05-November-2017 (MA, generalization for all contDynamics classes)
-%               12-November-2017 (MA)
-%               03-December-2017 (MA)
-%               14-January-2018 (MA)
-%               12-November-2018 (NK, removed lagrange remainder files)
-%               29-January-2021 (MW, simplify checks, outsource tensor check)
-%               18-November-2022 (MW, integrate output equation)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
+% Written:       29-October-2007 (MA)
+% Last update:   07-September-2012 (MA)
+%                12-October-2015 (MA)
+%                08-April-2016 (MA)
+%                10-June-2017 (NK)
+%                15-June-2017 (NK)
+%                28-June-2017 (NK)
+%                06-July-2017
+%                15-July-2017 (NK)
+%                16-July-2017 (NK)
+%                05-November-2017 (MA, generalization for all contDynamics classes)
+%                12-November-2017 (MA)
+%                03-December-2017 (MA)
+%                14-January-2018 (MA)
+%                12-November-2018 (NK, removed lagrange remainder files)
+%                29-January-2021 (MW, simplify checks, outsource tensor check)
+%                18-November-2022 (MW, integrate output equation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set standard path
 path = [CORAROOT filesep 'models' filesep 'auxiliary' filesep obj.name];
@@ -145,7 +145,7 @@ end
 if requiredFiles.standard(1)
     disp('  .. compute symbolic Jacobian');
     name = ['jacobian_' obj.name];
-    [Jdyn,Jcon,Jp] = jacobians(obj,fdyn,fcon,vars,options,simplify);
+    [Jdyn,Jcon,Jp] = aux_jacobians(obj,fdyn,fcon,vars,options,simplify);
     createJacobianFile(Jdyn,Jcon,Jp,path,name,vars);
     if ~isempty(vars.p)
         if ~isempty(Jp)
@@ -160,7 +160,7 @@ end
 if requiredFiles_out.standard(1)
     disp('  .. compute symbolic Jacobian (output)');
     name = ['out_jacobian_' obj.name];
-    [Jout,~,Jpout] = jacobians(obj,fout,[],vars,options,simplify);
+    [Jout,~,Jpout] = aux_jacobians(obj,fout,[],vars,options,simplify);
     createJacobianFile(Jout,[],Jpout,path,name,vars);
     if ~isempty(vars.p)
         if ~isempty(Jpout)
@@ -176,7 +176,7 @@ end
 if any([requiredFiles.standard(2:3); requiredFiles.int(2:3)])
     % compute Hessians
     disp('  .. compute symbolic Hessians');
-    [J2dyn,J2con] = hessians(fdyn,fcon,vars,simplify);
+    [J2dyn,J2con] = aux_hessians(fdyn,fcon,vars,simplify);
 
     if requiredFiles.standard(2)
         % Hessian without interval arithmetic
@@ -192,7 +192,7 @@ if any([requiredFiles.standard(2:3); requiredFiles.int(2:3)])
     if any([requiredFiles.standard(3); requiredFiles.int(3)])
         % compute third-order derivatives
         disp('  .. compute symbolic third-order derivatives'); 
-        [J3dyn,J3con] = thirdOrderDerivatives(J2dyn,J2con,vars,simplify);
+        [J3dyn,J3con] = aux_thirdOrderDerivatives(J2dyn,J2con,vars,simplify);
     
         if requiredFiles.standard(3)
             % third-order tensor without interval arithmetic
@@ -214,7 +214,7 @@ end
 if any([requiredFiles_out.standard(2:3); requiredFiles_out.int(2:3)])
     % compute Hessians
     disp('  .. compute symbolic Hessians (output)');
-    J2out = hessians(fout,[],vars,simplify);
+    J2out = aux_hessians(fout,[],vars,simplify);
 
     if requiredFiles_out.standard(2)
         % Hessian without interval arithmetic
@@ -230,7 +230,7 @@ if any([requiredFiles_out.standard(2:3); requiredFiles_out.int(2:3)])
     if any([requiredFiles_out.standard(3); requiredFiles_out.int(3)])
         % compute third-order derivatives
         disp('  .. compute symbolic third-order derivatives (output)'); 
-        J3out = thirdOrderDerivatives(J2out,[],vars,simplify);
+        J3out = aux_thirdOrderDerivatives(J2out,[],vars,simplify);
     
         if requiredFiles_out.standard(3)
             % third-order tensor without interval arithmetic
@@ -264,9 +264,9 @@ fprintf("Done.\n")
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function [Jdyn,Jcon,Jp] = jacobians(obj,fdyn,fcon,vars,options,simplifyOpt)
+function [Jdyn,Jcon,Jp] = aux_jacobians(obj,fdyn,fcon,vars,options,simplifyOpt)
 % jacobians - compute symbolic Jacobians of differential equation,
 %    constraint equation and w.r.t parameter uncertainties
 %
@@ -390,7 +390,7 @@ end
 
 end
 
-function [Hdyn, Hcon] = hessians(fdyn,fcon,vars,simplifyOpt)
+function [Hdyn, Hcon] = aux_hessians(fdyn,fcon,vars,simplifyOpt)
 % hessians - compute Hessian tensors for differential equation and
 %    constraint equation (only nonlinDASys)
 %
@@ -450,7 +450,7 @@ end
     
 end
 
-function [J3dyn, J3con] = thirdOrderDerivatives(J2dyn,J2con,vars,simplifyOpt)
+function [J3dyn, J3con] = aux_thirdOrderDerivatives(J2dyn,J2con,vars,simplifyOpt)
 % thirdOrderDerivatives - compute third-order derivatives for
 %    differential equation and constraint equation (only nonlinDASys)
 %
@@ -526,4 +526,4 @@ end
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

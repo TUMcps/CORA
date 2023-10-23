@@ -1,7 +1,7 @@
 function r = radius(Z)
 % radius - computes the radius of a hypersphere enclosing a zonotope
 %
-% Syntax:  
+% Syntax:
 %    r = radius(Z)
 %
 % Inputs:
@@ -20,16 +20,16 @@ function r = radius(Z)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      19-April-2010
-% Last update:  27-July-2016
-%               27-Aug-2019 (MW)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-April-2010
+% Last update:   27-July-2016
+%                27-August-2019 (MW)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %extract generators
-G = generators(Z);
+G = Z.G;
 
 %method 1
 %add length of generators
@@ -46,4 +46,4 @@ rAlt=norm(l);
 %choose minimum
 r=min(r,rAlt);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

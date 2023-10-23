@@ -1,7 +1,7 @@
 function han = plotRandPoint(S,varargin)
 % plotRandPoint - Plots a point cloud of random points from inside a set
 %
-% Syntax:  
+% Syntax:
 %    han = plotRandPoint(S)
 %    han = plotRandPoint(S,dims,N,type)
 %
@@ -27,12 +27,12 @@ function han = plotRandPoint(S,varargin)
 %
 % See also: plot
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      11-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       11-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default values for the optional input arguments
 [dims,N,type] = setDefaultValues({[1,2],1000,'.k'},varargin);
@@ -54,4 +54,4 @@ if nargout == 0
     clear han;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

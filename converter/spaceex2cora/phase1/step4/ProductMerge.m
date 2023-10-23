@@ -5,7 +5,7 @@ function mergedBC = ProductMerge(instances)
 %    note: Function does not check whether input is a tree structure.
 %          All contained Base Components are assumed to be tree leaves.
 %
-% Syntax:  
+% Syntax:
 %    mergedBC = ProductMerge(instances)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function mergedBC = ProductMerge(instances)
 %
 % See also: none
 
-% Author:        Johann Schoepfer
+% Authors:       Johann Schoepfer
 % Written:       09-April-2018 
 % Last update:   09-April-2018 
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % output on command window
 disp("merge components into flat automaton using automaton product...");
@@ -52,4 +52,4 @@ mergedBC.listOfVar = instances{1}.listOfVar;
 fprintf("done. %i BC instances merged into monolithic automaton instance.\n",...
         numel(BCinstances));
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

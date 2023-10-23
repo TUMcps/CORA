@@ -1,7 +1,7 @@
 function han = plotCircle(center,radius,NOP,style)
 % plotCircle - plots a circle
 %
-% Syntax:  
+% Syntax:
 %    han = plotCircle(center,radius,NOP,style)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function han = plotCircle(center,radius,NOP,style)
 %     plotCircle([1,3],3,1000,':'); 
 %     plotCircle([2,4],2,1000,'--');
 
-% Author:        Zhenhai Wang <zhenhai@ieee.org>
+% Authors:       Zhenhai Wang
 % Written:       December-2002
 % Last update:   17-June-2022 (MW, only formatting)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin < 3
     throw(CORAerror('CORA:notEnoughInputArgs',3));
@@ -46,4 +46,4 @@ end
 
 %axis square;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

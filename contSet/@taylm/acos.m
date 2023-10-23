@@ -1,7 +1,7 @@
 function res = acos(obj)
 % acos - Overloaded 'acos()' operator for a taylm expression
 %
-% Syntax:  
+% Syntax:
 %    res = acos(obj)
 %
 % Inputs:
@@ -22,13 +22,13 @@ function res = acos(obj)
 %   [1] K. Makino et al. "Taylor Models and other validated functional 
 %       inclusion methods"
 
-% Author:       Dmitry Grebenyuk
-% Written:      19-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       19-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = pi/2 - asin(obj);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

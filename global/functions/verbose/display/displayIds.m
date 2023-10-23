@@ -1,7 +1,7 @@
 function displayIds(id,varName)
 % displayIds - Displays the center and generators of a zonotope
 %
-% Syntax:  
+% Syntax:
 %    displayIds(id,varName)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function displayIds(id,varName)
 %
 % See also: contSet/display
 
-% Author:       Tobias Ladner
-% Written:      31-July-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       31-July-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 idMin = min(id); idMax = max(id);
 disp(varName + ": (" + length(id) + " ids)");
@@ -37,4 +37,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

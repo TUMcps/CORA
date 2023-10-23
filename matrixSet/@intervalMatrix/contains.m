@@ -1,7 +1,7 @@
 function res = contains(intMat,M,varargin)
 % contains - returns if an interval matrix contains a given matrix
 %
-% Syntax:  
+% Syntax:
 %    res = contains(intMat,M)
 %    res = contains(intMat,M,type)
 %    res = contains(intMat,M,type,tol)
@@ -26,12 +26,12 @@ function res = contains(intMat,M,varargin)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set default values
 [type,tol] = setDefaultValues({'exact',1e-12},varargin);
@@ -54,4 +54,4 @@ for j=1:n(2)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

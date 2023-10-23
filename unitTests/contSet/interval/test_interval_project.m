@@ -1,7 +1,7 @@
 function res = test_interval_project
 % test_interval_project - unit test function of project
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_project
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_project
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      17-September-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-September-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create interval
 lower = [-3; -9; -4; -7; -1];
@@ -44,4 +44,4 @@ I_true = interval(lower, upper);
 % check if all points are in interval
 res = isequal(I_proj1,I_true) && isequal(I_proj2,I_true);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

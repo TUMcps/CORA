@@ -2,7 +2,7 @@ function res = test_polyZonotope_supportFunc
 % test_polyZonotope_supportFunc - unit test function for calculating bounds
 %    of the polynomial zonotope along a specific direction 
 %
-% Syntax:  
+% Syntax:
 %    res = test_polyZonotope_supportFunc
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_polyZonotope_supportFunc
 %
 % See also: -
 
-% Author:       Niklas Kochdumper, Tobias Ladner
-% Written:      30-July-2018
-% Last update:  06-December-2022 (TL: more tests)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Tobias Ladner
+% Written:       30-July-2018
+% Last update:   06-December-2022 (TL, more tests)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -31,9 +31,9 @@ res = true;
 % create polynomial zonotope
 c = [3;4];
 G = [2 0 1;0 2 1];
-expMat = [1 0 1;0 1 1];
-Grest = [0;0];
-pZ = polyZonotope(c,G,Grest,expMat);
+E = [1 0 1;0 1 1];
+GI = [0;0];
+pZ = polyZonotope(c,G,GI,E);
 
 % calculate enclosing interval
 I = interval(pZ,'bnb');
@@ -68,9 +68,9 @@ end
 
 c = [0;-1];
 G = [-0.5 0.4 0.04 -0.04; 0.6 1.9 1.7 -0.2];
-Grest = [];
+GI = [];
 E = [0 4 2 1; 1 0 3 2];
-pZ = polyZonotope(c, G, Grest, E);
+pZ = polyZonotope(c, G, GI, E);
 
 % slightly under-approximative
 ground_truth = interval([-0.5059;-2.1168], [0.9; 3.34]);
@@ -87,4 +87,4 @@ for method = methods
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

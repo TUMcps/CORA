@@ -3,7 +3,7 @@ function res = test_linearSys_simulateRandom_01
 %    where many possible different setting are checked for completion;
 %    note: the numerical correctness of the result is not (yet) checked!
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_simulateRandom_01
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = test_linearSys_simulateRandom_01
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      18-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       18-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -85,7 +85,6 @@ simOpt{3}.fracInpVert = 1;
 simOpt{3}.nrConstInp = 10;
 
 
-
 % Check for completion ----------------------------------------------------
 
 res = [];
@@ -110,7 +109,6 @@ end
 res = all(res);
 
 
-
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

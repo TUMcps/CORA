@@ -1,7 +1,7 @@
 function ub = norm_ub(Z,type)
 % norm_ub - computes bound on the maximum norm value
 %
-% Syntax:  
+% Syntax:
 %    ub = norm_ub(Z)
 %
 % Inputs:
@@ -20,23 +20,24 @@ function ub = norm_ub(Z,type)
 %
 % See also: norm
 
-% Author:       Victor Gassmann
-% Written:      18-September-2019
-% Last update:  23-May-2022 (VG: model optimization problem directly)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       18-September-2019
+% Last update:   23-May-2022 (VG, model optimization problem directly)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 if ~exist('type','var')
     type = 2;
 end
 if type~=2
     throw(CORAerror('CORA:notSupported','Only Euclidean norm supported'));
 end
-if ~all(center(Z)==0)
+if ~all(Z.c==0)
     throw(CORAerror('CORA:notSupported','Not implemented for non-zero center'));
 end
 
-G = generators(Z);
+G = Z.G;
 [~,m] = size(G);
 GG = G'*G;
 
@@ -184,4 +185,4 @@ else
     throw(CORAerror('CORA:noSuitableSolver','SDP'));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_parallelHybridAutomaton_simulate
 % test_parallelHybridAutomaton_simulate - test function for simulate
 %
-% Syntax:  
+% Syntax:
 %    res = test_parallelHybridAutomaton_simulate
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_parallelHybridAutomaton_simulate
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      20-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       20-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % system dynamics
 pHA = roomHeatingParallel();
@@ -53,4 +53,4 @@ res(end+1,1) = compareMatrices(loc(1,:)',params.startLoc);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = isIntersecting_(I,S,type,varargin)
 % isIntersecting_ - determines if an interval intersects a set
 %
-% Syntax:  
+% Syntax:
 %    res = isIntersecting_(I,S)
 %    res = isIntersecting_(I,S,type)
 %
@@ -33,16 +33,16 @@ function res = isIntersecting_(I,S,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/isIntersecting_
+% See also: contSet/isIntersecting, zonotope/isIntersecting_
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      22-July-2016
-% Last update:  14-September-2019
-%               21-November-2019 (NK, added intersection with other sets)
-%               12-March-2021 (MW, add empty case)
-% Last revision:27-March-2023 (MW, rename isIntersecting_)
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       22-July-2016
+% Last update:   14-September-2019
+%                21-November-2019 (NK, added intersection with other sets)
+%                12-March-2021 (MW, add empty case)
+% Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
     % interval and interval intersection
     if isa(S,'interval')
@@ -64,7 +64,7 @@ function res = isIntersecting_(I,S,type,varargin)
         end
         
     elseif isa(S,'halfspace') || isa(S,'conHyperplane') || ...
-           isa(S,'mptPolytope') || isa(S,'ellipsoid')
+           isa(S,'polytope') || isa(S,'ellipsoid')
         
         res = isIntersecting_(S,I,type);
         
@@ -74,14 +74,14 @@ function res = isIntersecting_(I,S,type,varargin)
         if strcmp(type,'exact')           
             res = isIntersecting_(S,I,type);
         else
-            res = isIntersecting_(mptPolytope(I),S,type);
+            res = isIntersecting_(polytope(I),S,type);
         end
     end
     
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function res = aux_isIntersecting1D(inf1,sup1,inf2,sup2)
 % check if two one-dimensional intervals intersect
@@ -101,4 +101,4 @@ function res = aux_isIntersecting1D(inf1,sup1,inf2,sup2)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

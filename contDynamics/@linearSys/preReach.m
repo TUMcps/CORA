@@ -1,7 +1,7 @@
 function [obj] = preReach(obj,options)
 % preReach - prepares reachable set computation for linear systems
 %
-% Syntax:  
+% Syntax:
 %    [obj] = preReach(obj,options)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function [obj] = preReach(obj,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      03-May-2011
-% Last update:  29-October-2017
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-May-2011
+% Last update:   29-October-2017
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % compute exponential matrix
@@ -39,4 +39,4 @@ obj.taylor.timeStep=options.timeStep;
 obj.taylor.eAt=expm(obj.A*options.timeStep);
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

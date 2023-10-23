@@ -3,7 +3,7 @@ function [R,tcomp] = observe_FRadC(obj,options)
 % from [1]; the approach is extended here for nonlinear systems.
 %
 %
-% Syntax:  
+% Syntax:
 %    [R,tcomp] = observe_FRadC(obj,options)
 %
 % Inputs:
@@ -27,15 +27,15 @@ function [R,tcomp] = observe_FRadC(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       25-Mar-2021
+% Authors:       Matthias Althoff
+% Written:       25-March-2021
 % Last update:   ---
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set gain
+
 options.observerType = 1; % combastel
 
 % apply set-membership approach
@@ -43,4 +43,4 @@ tic
 R = observe_intersectionFreeAdaptive(obj,options);
 tcomp = toc;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

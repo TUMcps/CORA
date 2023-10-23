@@ -1,7 +1,7 @@
 function res = plus(factor1, factor2)
 % plus - Overloaded '+' operator for a Taylor model
 %
-% Syntax:  
+% Syntax:
 %    res = plus(factor1, factor2)
 %
 % Inputs:
@@ -24,32 +24,33 @@ function res = plus(factor1, factor2)
 %   [1] K. Makino et al. "Taylor Models and other validated functional 
 %       inclusion methods"
 
-% Author:       Dmitry Grebenyuk
-% Written:      20-April-2016
-%               21-July-2016 (DG) the polynomial part is changed to syms
-%               18-July-2017 (DG) Multivariable polynomial pack is added
-%               21-August-2017 (DG) Implementation fot matrices
-%               02-December-2017 (DG) New rank evaluation
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       20-April-2016
+% Last update:   21-July-2016 (DG, the polynomial part is changed to syms)
+%                18-July-2017 (DG, multivariable polynomial pack is added)
+%                21-August-2017 (DG, implementation fot matrices) 
+%                02-December-2017 (DG, new rank evaluation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
     if isscalar(factor1) && ~isscalar(factor2)
-        res = arrayfun(@(b) s_plus(factor1, b), factor2, 'UniformOutput', false);
+        res = arrayfun(@(b) aux_s_plus(factor1, b), factor2, 'UniformOutput', false);
     elseif ~isscalar(factor1) && isscalar(factor2)
-        res = arrayfun(@(a) s_plus(a, factor2), factor1, 'UniformOutput', false);
+        res = arrayfun(@(a) aux_s_plus(a, factor2), factor1, 'UniformOutput', false);
     else
-        res = arrayfun(@(a, b) s_plus(a, b), factor1, factor2, 'UniformOutput', false);
+        res = arrayfun(@(a, b) aux_s_plus(a, b), factor1, factor2, 'UniformOutput', false);
     end
     A = cat(1, res{:});
     res = reshape(A, size(res));
     
 end
 
-%% --------------- Implementation for a scalar --------------
 
-function res = s_plus(factor1, factor2)
+% Auxiliary functions -----------------------------------------------------
+
+% Implementation for a scalar
+function res = aux_s_plus(factor1, factor2)
     if isa(factor1, 'taylm') && isa(factor2, 'taylm')
         
         % find the common variables 
@@ -76,11 +77,11 @@ function res = s_plus(factor1, factor2)
 
     elseif isa(factor1,'taylm') && isa(factor2,'double')
 
-        res = addConst(factor1,factor2);
+        res = aux_addConst(factor1,factor2);
     
     elseif isa(factor1,'double') && isa(factor2,'taylm')
         
-        res = addConst(factor2,factor1);
+        res = aux_addConst(factor2,factor1);
         
     elseif isa(factor1,'taylm') && isa(factor2,'interval')
         
@@ -100,10 +101,7 @@ function res = s_plus(factor1, factor2)
 
 end
 
-
-% Auxiliary functions -----------------------------------------------------
-
-function res = addConst(obj,const)
+function res = aux_addConst(obj,const)
 
     res = obj;
         
@@ -116,4 +114,4 @@ function res = addConst(obj,const)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

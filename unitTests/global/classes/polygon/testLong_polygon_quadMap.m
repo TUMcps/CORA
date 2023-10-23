@@ -1,7 +1,7 @@
 function res = testLong_polygon_quadMap()
 % testLong_polygon_quadMap - unit test function for polygon/quadMap
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polygon_quadMap()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_polygon_quadMap()
 %
 % See also: polygon
 
-% Author:       Niklas Kochdumper
-% Written:      16-June-2021
-% Last update:  ---
-% Last revision:25-May-2023 (TL, split unit tests)
+% Authors:       Niklas Kochdumper
+% Written:       16-June-2021
+% Last update:   ---
+% Last revision: 25-May-2023 (TL, split unit tests)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % test if the function quadMap is over-approximative
 
@@ -54,4 +54,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function corapath = CORAROOT()
 % CORAROOT - returns the CORA root path
 %
-% Syntax:  
+% Syntax:
 %    corapath = CORAROOT()
 %
 % Inputs:
@@ -16,14 +16,14 @@ function corapath = CORAROOT()
 %
 % See also: ---
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 s = which('coraroot');
 corapath = fileparts(fileparts(fileparts(s)));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

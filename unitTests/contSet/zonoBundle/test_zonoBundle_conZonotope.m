@@ -1,7 +1,7 @@
 function res = test_zonoBundle_conZonotope
 % test_zonoBundle_conZonotope - unit test function of conZonotope
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonoBundle_conZonotope
 %
 % Inputs:
@@ -16,17 +16,17 @@ function res = test_zonoBundle_conZonotope
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      24-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       24-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
 zB = zonoBundle();
 cZ = conZonotope(zB);
-res = isempty(cZ);
+res = representsa(cZ,'emptySet');
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);
@@ -54,4 +54,4 @@ res(end+1,1) = compareMatrices(V,V_,1e-12);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

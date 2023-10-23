@@ -1,7 +1,7 @@
 function n = dim(tay)
 % dim - returns the dimension of the ambient space of a taylor model
 %
-% Syntax:  
+% Syntax:
 %    n = dim(tay)
 %
 % Inputs:
@@ -11,7 +11,7 @@ function n = dim(tay)
 %    n - dimension
 %
 % Example: 
-%    tay = emptySet(interval(2,3));
+%    tay = taylm(interval(2,3));
 %    n = dim(tay);
 %
 % Other m-files required: none
@@ -20,12 +20,12 @@ function n = dim(tay)
 %
 % See also: none
 
-% Author:       Tobias Ladner
-% Written:      02-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       02-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isempty(tay)
     n = 0; return;
@@ -40,4 +40,4 @@ else
     n = [rows, cols];
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

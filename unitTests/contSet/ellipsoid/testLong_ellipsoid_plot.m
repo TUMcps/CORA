@@ -3,7 +3,7 @@ function res = testLong_ellipsoid_plot
 %    this function aims to go through many variations of input arguments
 %    note: only run-time errors checked, manual bug check
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_plot
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = testLong_ellipsoid_plot
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      04-August-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       04-August-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -65,5 +65,4 @@ catch
     res = false;
 end
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

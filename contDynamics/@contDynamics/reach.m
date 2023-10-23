@@ -2,7 +2,7 @@ function [R,res,options] = reach(obj,params,options,varargin)
 % reach - computes the reachable continuous set for the entire time horizon
 %         of a continuous system
 %
-% Syntax:  
+% Syntax:
 %    R = reach(obj,params,options)
 %    [R,res] = reach(obj,params,options,spec)
 %    [R,res,options] = reach(obj,params,options,spec)
@@ -27,16 +27,16 @@ function [R,res,options] = reach(obj,params,options,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      08-August-2016
-% Last update:  22-September-2016
-%               28-July-2017 (Elguindy, include algebraic reachable set)
-%               20-March-2018 (NK, output sets as additional output)
-%               19-May-2020 (MW, error handling for exploding sets)
-%               19-November-2022 (MW, include output set computation)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       08-August-2016
+% Last update:   22-September-2016
+%                28-July-2017 (EL, include algebraic reachable set)
+%                20-March-2018 (NK, output sets as additional output)
+%                19-May-2020 (MW, error handling for exploding sets)
+%                19-November-2022 (MW, include output set computation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -212,4 +212,4 @@ end
 % log information
 verboseLog(i+1,tVec(end),options);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -9,7 +9,7 @@ function res = cubMap(Z,varargin)
 %    If three polyZonotopes are provided, the function calculates the set:
 %    { z = (x1' T x2) * x3 | x1 \in Z1, x2 \in Z2, x3 \in Z3 }
 %
-% Syntax:  
+% Syntax:
 %    res = cubMap(Z,T)
 %    res = cubMap(Z,T,ind)
 %    res = cubMap(Z1,Z2,Z3,T)
@@ -50,12 +50,12 @@ function res = cubMap(Z,varargin)
 %
 % See also: quadMap
 
-% Author:       Niklas Kochdumper
-% Written:      17-August-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       17-August-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % check number of input arguments
     if nargin < 2
@@ -88,7 +88,7 @@ function res = cubMap(Z,varargin)
                         {ind,'att','cell'}});
         
         % mixed cubic multiplication
-        res = cubMapMixed(Z,Z2,Z3,T,ind);
+        res = aux_cubMapMixed(Z,Z2,Z3,T,ind);
         
     elseif nargin == 2 || nargin == 3
         % res = cubMap(Z,T)
@@ -111,19 +111,19 @@ function res = cubMap(Z,varargin)
                         {ind,'att','cell'}});
 
         % cubic multiplication
-        res = cubMapSingle(Z,T,ind);       
+        res = aux_cubMapSingle(Z,T,ind);       
     end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function res = cubMapSingle(Z,T,ind)
+function res = aux_cubMapSingle(Z,T,ind)
 % calulates the following set:      { z = (x' T x) * x | x \in Z }
 
     % initialize variables
     n = length(ind);
-    N = size(Z.Z,2);
+    N = size(Z.G,2)+1;
     Zcub = zeros(n,N^3);
 
     % loop over all system dimensions
@@ -135,7 +135,7 @@ function res = cubMapSingle(Z,T,ind)
        for k = 1:length(ind{i})
 
            % quadratic evaluation
-           quadMat = Z.Z' * T{i,ind{i}(k)} * Z.Z;
+           quadMat = [Z.c,Z.G]' * T{i,ind{i}(k)} * [Z.c,Z.G];
 
            % add up all entries that correspond to identical factors
            temp = tril(quadMat,-1);
@@ -145,7 +145,8 @@ function res = cubMapSingle(Z,T,ind)
            % multiply with the zonotope generators of the corresponding
            % dimension
            for j = 1:N
-              listQuad{j} = listQuad{j} + quadMat * Z.Z(ind{i}(k),j);
+               Zj = [Z.c,Z.G];
+               listQuad{j} = listQuad{j} + quadMat * Zj(ind{i}(k),j);
            end
        end 
 
@@ -196,15 +197,15 @@ function res = cubMapSingle(Z,T,ind)
     res = zonotope(Zcub);
 end
 
-function res = cubMapMixed(Z1,Z2,Z3,T,ind)
+function res = aux_cubMapMixed(Z1,Z2,Z3,T,ind)
 % calculates the following set:
 % { z = (x1' T x2) * x3 | x1 \in pZ1, x2 \in pZ2, x3 \in pZ3 }
 
     % initialize variables
     n = length(ind);
-    N1 = size(Z1.Z,2);
-    N2 = size(Z2.Z,2);
-    N3 = size(Z3.Z,2);
+    N1 = size(Z1.G,2)+1;
+    N2 = size(Z2.G,2)+1;
+    N3 = size(Z3.G,2)+1;
     Nq = N1*N2;
 
     Zcub = zeros(n,N1*N2*N3);
@@ -216,13 +217,14 @@ function res = cubMapMixed(Z1,Z2,Z3,T,ind)
        for k = 1:length(ind{i})
 
            % quadratic evaluation
-           quadMat = Z1.Z' * T{i,ind{i}(k)} * Z2.Z;
+           quadMat = [Z1.c,Z1.G]' * T{i,ind{i}(k)} * [Z2.c,Z2.G];
            quadVec = reshape(quadMat,1,[]);   
 
            % multiply with Z3
            for j = 1:N3
-              Zcub(i,(j-1)*Nq + 1 : j*Nq) = Zcub(i,(j-1)*Nq + 1 : j*Nq) + ...
-                                            quadVec * Z3.Z(ind{i}(k),j);
+               Z3j = [Z3.c,Z3.G];
+               Zcub(i,(j-1)*Nq + 1 : j*Nq) = Zcub(i,(j-1)*Nq + 1 : j*Nq) + ...
+                                            quadVec * Z3j(ind{i}(k),j);
            end
        end 
     end
@@ -231,4 +233,4 @@ function res = cubMapMixed(Z1,Z2,Z3,T,ind)
     res = zonotope(Zcub);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = testLong_interval_dim
 % testLong_interval_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_interval_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_interval_dim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      12-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       12-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. Empty case
 I = interval();
@@ -59,4 +59,4 @@ end
 % combine results
 res = res_empty && res_rand;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function E = andHyperplane(E,H)
 % andHyperplane - computes the exact intersection of an ellipsoid and a
 %    hyperplane
 %
-% Syntax:  
+% Syntax:
 %    E = andHyperplane(E,H)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function E = andHyperplane(E,H)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      09-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       09-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if distance(E,H)>E.TOL
     E = ellipsoid;
@@ -114,4 +114,4 @@ end
 E = ellipsoid([E_t.Q,zeros(n_nd,n_rem);zeros(n_rem,n)],[E_t.q;x_rem]);
 E = T*E;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

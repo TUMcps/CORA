@@ -2,7 +2,7 @@ function comp = AssignTemplate(template,bind,listOfVar,listOfLab)
 % AssignTemplate - Resolves variable and constant names to their original
 %                  name/constant values
 %
-% Syntax:  
+% Syntax:
 %    comp = AssignTemplate(template,bind,listOfVar,listOfLab)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function comp = AssignTemplate(template,bind,listOfVar,listOfLab)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 comp = template;
 
@@ -103,4 +103,4 @@ for i = 1:length(map)
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

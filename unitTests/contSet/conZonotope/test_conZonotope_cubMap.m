@@ -2,7 +2,7 @@ function res = test_conZonotope_cubMap
 % test_conZonotope_cubMap - unit test function for cubic multiplication of 
 %    constrained zonotopes
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_cubMap
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_conZonotope_cubMap
 %
 % See also: -
 
-% Author:       Niklas Kochdumper
-% Written:      30-October-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       30-October-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -64,7 +64,6 @@ if ~isequal(cZres,cZ)
 end
 
 
-
 % TEST 2: Cubic Multiplication
 
 % define zonotope
@@ -95,4 +94,4 @@ if ~isequal(cZres,cZ)
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

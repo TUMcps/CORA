@@ -2,7 +2,7 @@ function res = testLong_polyZonotope_reduce
 % testLong_polyZonotope_reduce - unit test function of order
 %    reduction of a polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polyZonotope_reduce
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_polyZonotope_reduce
 %
 % See also: -
 
-% Author:       Niklas Kochdumper
-% Written:      29-March-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       29-March-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -35,9 +35,9 @@ for i = 1:5
     G = rand(2,7)-0.5*ones(2,7);
     ind = datasample(1:7,4,'Replace',false);
     G(:,ind) = G(:,ind)./10;
-    Grest = rand(2,1)-0.5*ones(2,1);
-    expMat = [eye(2), round(rand(2,5)*5)];
-    pZ = polyZonotope(c,G,Grest,expMat);
+    GI = rand(2,1)-0.5*ones(2,1);
+    E = [eye(2), round(rand(2,5)*5)];
+    pZ = polyZonotope(c,G,GI,E);
 
     % reduce the polynomial zonotope
     pZred = reduce(pZ,'girard',2);
@@ -67,9 +67,9 @@ for i = 1:5
     G = rand(4,6)-0.5*ones(4,6);
     ind = datasample(1:6,4,'Replace',false);
     G(:,ind) = G(:,ind)./10;
-    Grest = rand(4,2)-0.5*ones(4,2);
-    expMat = [eye(4), round(rand(4,2)*5)];
-    pZ = polyZonotope(c,G,Grest,expMat);
+    GI = rand(4,2)-0.5*ones(4,2);
+    E = [eye(4), round(rand(4,2)*5)];
+    pZ = polyZonotope(c,G,GI,E);
 
     % reduce the polynomial zonotope
     pZred = reduce(pZ,'girard',2);
@@ -89,4 +89,4 @@ for i = 1:5
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function zB = reduce(zB,option,varargin)
 % reduce - Reduces the order of a zonotope bundle
 %
-% Syntax:  
+% Syntax:
 %    zB = reduce(zB,option,order,filterLength)
 %
 % Inputs:
@@ -19,16 +19,16 @@ function zB = reduce(zB,option,varargin)
 %
 % See also: zonotope/reduce
 
-% Author:       Matthias Althoff
-% Written:      09-November-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       09-November-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % reduce order of each zonotope
 for i=1:zB.parallelSets
     zB.Z{i} = reduce(zB.Z{i},option,varargin{:});
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

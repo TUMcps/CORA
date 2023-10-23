@@ -1,7 +1,7 @@
 function res = test_polygon_plot()
 % test_polygon_plot - unit test function for polygon/plot
 %
-% Syntax:  
+% Syntax:
 %    res = test_polygon_plot()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_polygon_plot()
 %
 % See also: polygon
 
-% Author:       Tobias Ladner
-% Written:      25-May-2023 (TL, split unit tests)
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       25-May-2023 (TL, split unit tests)
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -69,4 +69,4 @@ close
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

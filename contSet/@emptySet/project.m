@@ -1,7 +1,7 @@
 function O = project(O,dims)
 % project - projects an empty set onto the specified dimensions
 %
-% Syntax:  
+% Syntax:
 %    O = project(O,dims)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function O = project(O,dims)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if any(dims < 0 | dims > O.dimension)
     throw(CORAerror('CORA:outOfDomain','validDomain',['1:' num2str(O.dimension)]));
@@ -34,4 +34,4 @@ else
     O.dimension = length(dims);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

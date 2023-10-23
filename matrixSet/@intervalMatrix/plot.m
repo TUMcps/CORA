@@ -1,7 +1,7 @@
 function plot(varargin)
 % plot - Plots 2-dimensional projection of an interval matrix
 %
-% Syntax:  
+% Syntax:
 %    plot(intMat,dimensions)
 %
 % Inputs:
@@ -19,14 +19,14 @@ function plot(varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      22-June-2010
-% Last update:  25-July-2016 (intervalhull replaced by interval)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-June-2010
+% Last update:   25-July-2016 (intervalhull replaced by interval)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % convert to interval and plot
 plot(interval(intMat),varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

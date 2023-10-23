@@ -1,7 +1,7 @@
 function varargout = norm_(Z,type,mode,varargin)
-% norm - computes maximum norm value
+% norm_ - computes maximum norm value
 %
-% Syntax:  
+% Syntax:
 %    val = norm_(Z,type,mode)
 %
 % Inputs:
@@ -22,14 +22,14 @@ function varargout = norm_(Z,type,mode,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: minnorm
+% See also: contSet/norm, minnorm
 
-% Author:       Victor Gassmann
-% Written:      31-July-2020
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename norm_)
+% Authors:       Victor Gassmann
+% Written:       31-July-2020
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename norm_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if strcmp(mode,'exact')
     [varargout{1:2}] = norm_exact(Z,type);
@@ -39,4 +39,4 @@ elseif strcmp(mode,'ub_convex')
     varargout{1} = norm_ub(Z,type);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

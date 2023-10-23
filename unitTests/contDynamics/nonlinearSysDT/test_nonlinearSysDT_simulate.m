@@ -1,7 +1,7 @@
 function res = test_nonlinearSysDT_simulate
 % test_nonlinearSysDT_simulate - unit test for simulate
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSysDT_simulate
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_nonlinearSysDT_simulate
 %
 % See also: none
 
-% Author:       Laura Luetzow
-% Written:      23-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Laura Luetzow
+% Written:       23-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = false;
 
@@ -46,7 +46,7 @@ C = [1 1 0 0;
      0 -0.5 0.5 0];
 n_y = 2;
 
-% throughput matrix: q x m
+% feedthrough matrix: q x m
 D = [0 0 1;
      0 0 0];
 
@@ -109,4 +109,4 @@ end
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -4,7 +4,7 @@ function completed = example_nonlinear_reach_03_vanDerPol_splitting()
 %    or in [2]. A new technique for computing this example with less
 %    spliiting has been published in [3].
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinear_reach_03_vanDerPol_splitting()
 %
 % Inputs:
@@ -21,12 +21,12 @@ function completed = example_nonlinear_reach_03_vanDerPol_splitting()
 %    [3] M. Althoff. "Reachability analysis of nonlinear systems using 
 %        conservative polynomialization and non-convex sets", HSCC 2013
 
-% Author:       Matthias Althoff
-% Written:      26-June-2009
-% Last update:  23-April-2020 (restucture params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-June-2009
+% Last update:   23-April-2020 (restucture params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -97,4 +97,4 @@ ylabel(['x_{',num2str(projDim(2)),'}']);
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

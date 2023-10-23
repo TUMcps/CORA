@@ -1,7 +1,7 @@
 function res = test_polygon_polygon()
 % test_polygon_polygon - unit test function for the polygon constructor
 %
-% Syntax:  
+% Syntax:
 %    res = test_polygon_polygon()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_polygon_polygon()
 %
 % See also: polygon
 
-% Author:       Tobias Ladner
-% Written:      25-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       25-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -49,4 +49,4 @@ resvec(end+1) = isequal(V,pgon.set.Vertices');
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

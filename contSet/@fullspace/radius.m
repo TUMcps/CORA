@@ -3,7 +3,7 @@ function val = radius(fs)
 %    full-dimensional space
 %    case R^0: NaN
 %
-% Syntax:  
+% Syntax:
 %    val = radius(fs)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function val = radius(fs)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  25-April-2023 (MW, integrate R^0 case)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   25-April-2023 (MW, integrate R^0 case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if fs.dimension == 0
     val = NaN;
@@ -35,4 +35,4 @@ else
     val = Inf;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

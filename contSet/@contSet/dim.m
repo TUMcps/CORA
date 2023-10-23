@@ -2,7 +2,7 @@ function n = dim(S)
 % dim - returns the dimension of the ambient space of a continuous set;
 %    currently only used for the empty set constructor contSet()
 %
-% Syntax:  
+% Syntax:
 %    n = dim(S)
 %
 % Inputs:
@@ -21,13 +21,13 @@ function n = dim(S)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      17-June-2022
-% Last update:  22-March-2023 (MW, adapt to new constructor syntax)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-June-2022
+% Last update:   22-March-2023 (MW, adapt to new constructor syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 n = 0;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

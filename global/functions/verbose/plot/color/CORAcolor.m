@@ -1,7 +1,7 @@
 function color = CORAcolor(identifier, varargin)
 % CORAcolor - returns the CORA default colors by identifier
 %
-% Syntax:  
+% Syntax:
 %    color = getCORAcolor(identifier)
 %
 % Inputs:
@@ -24,14 +24,14 @@ function color = CORAcolor(identifier, varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: useCORAcolors
+% See also: useCORAcolors, readPlotOptions
 
-% Author:       Tobias Ladner
-% Written:      02-March-2023
-% Last update:  24-March-2023 ('CORA:next')
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       02-March-2023
+% Last update:   24-March-2023 (TL, 'CORA:next')
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin < 1
     throw(CORAerror("CORA:notEnoughInputArgs", 1))
@@ -63,7 +63,7 @@ switch identifier
         end
 
         colorMain  = [0.2706 0.5882 1.0000]; % blue
-        colorWorse = [0.0353 0.2510 0.4549]; % dark blue
+        colorWorse = [0.6902 0.8235 1.0000]; % light blue
 
         if cidx == numColors
             color = colorMain;
@@ -86,7 +86,7 @@ switch identifier
     case 'CORA:highlight1'
         color = [1.0000 0.6824 0.2980]; % orange
     case 'CORA:highlight2'
-        color = [0.3804 0.6275 1.0000]; % light blue
+        color = [0.6235 0.7294 0.2118]; % light green
     case 'CORA:next'
         color = defaultPlotColor();
         
@@ -94,4 +94,4 @@ end
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

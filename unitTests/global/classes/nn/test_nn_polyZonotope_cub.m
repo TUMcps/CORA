@@ -2,7 +2,7 @@ function res = test_nn_polyZonotope_cub()
 % test_nn_polyZonotope_cub - tests nn using polyZonotopes with 'cub' approx
 %    
 %
-% Syntax:  
+% Syntax:
 %    res = test_nn_polyZonotope_cub()
 %
 % Inputs:
@@ -17,15 +17,15 @@ function res = test_nn_polyZonotope_cub()
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      24-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       24-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 evParams = struct;
-evParams.polynomial_approx = "cub";
+evParams.order = 3;
 
 res = true;
 for attention = ["ReLU", "sigmoid", "tanh"]
@@ -35,4 +35,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

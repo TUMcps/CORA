@@ -1,7 +1,7 @@
 function display(obj)
 % display - displays the properties of a neuralNetwork object
 %
-% Syntax:  
+% Syntax:
 %    display(obj)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function display(obj)
 %
 % See also: none
 
-% Author:        Tobias Ladner
+% Authors:       Tobias Ladner
 % Written:       23-November-2022
-% Last update:   ---
+% Last update:   17-January-2023 (TL, better layer output)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % disp input if necessary
@@ -37,7 +37,8 @@ fprintf(newline);
 fprintf("layers: (%d layers)\n", length(obj.layers))
 for i = 1:length(obj.layers)
     layer_i = obj.layers{i};
-    fprintf("- %s (%s)\n", class(layer_i), layer_i.name)
+    fprintf(" (%d)\t %s\n", i, layer_i.getLayerInfo())
 end
+fprintf("\n")
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

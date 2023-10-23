@@ -1,7 +1,7 @@
 function zB = cartProd_(zB,S,varargin)
 % cartProd_ - Cartesian product of a zonotope bundle and a set
 %
-% Syntax:  
+% Syntax:
 %    zB = cartProd_(zB,S)
 %
 % Inputs:
@@ -24,15 +24,15 @@ function zB = cartProd_(zB,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/cartProd_
+% See also: contSet/cartProd, zonotope/cartProd_
 
-% Author:       Niklas Kochdumper
-% Written:      13-June-2018
-% Last update:  24-Sep-2019 (renaming)
-%               05-May-2020 (MW, standardized error message)
-% Last revision:27-March-2023 (MW, rename cartProd_)
+% Authors:       Niklas Kochdumper
+% Written:       13-June-2018
+% Last update:   24-September-2019 (renaming)
+%                05-May-2020 (MW, standardized error message)
+% Last revision: 27-March-2023 (MW, rename cartProd_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % first or second set is zonotope
 if isa(zB,'zonoBundle')
@@ -59,7 +59,7 @@ if isa(zB,'zonoBundle')
             zB.Z{i} = cartProd_(zB.Z{i},S,'exact'); 
         end
 
-    elseif isa(S,'conZonotope') || isa(S,'mptPolytope')
+    elseif isa(S,'conZonotope') || isa(S,'polytope')
         
         zB = cartProd_(zB,zonoBundle(S),'exact');
         
@@ -96,4 +96,4 @@ else
     end  
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

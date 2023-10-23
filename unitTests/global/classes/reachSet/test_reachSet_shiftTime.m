@@ -1,7 +1,7 @@
 function res = test_reachSet_shiftTime
 % test_reachSet_shiftTime - unit test function for shiftTime
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_shiftTime()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_reachSet_shiftTime
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      05-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate set, propagation matrix
 Z = zonotope([1;1],[1 0 -2; 2 -1 1]);
@@ -49,4 +49,4 @@ for i=1:steps-1
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

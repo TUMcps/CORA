@@ -3,10 +3,10 @@ function E = enclose(E,varargin)
 %
 % Description:
 %    Computes the set
-%    { a x1 + (1 - a) * (M x1 + x2) | x1 \in E, x2 \in E2, a \in [0,1] }
+%    { a x1 + (1 - a) * x2 | x1 \in E, x2 \in E2, a \in [0,1] }
 %    where E2 = M*E + Eplus
 %
-% Syntax:  
+% Syntax:
 %    E = enclose(E,E2)
 %    E = enclose(E,M,Eplus)
 %
@@ -36,12 +36,12 @@ function E = enclose(E,varargin)
 %
 % See also: zonotope/enclose
 
-% Author:       Victor Gassmann
-% Written:      13-March-2019
-% Last update:  04-July-2022 (VG: CORAerror and argument check)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       13-March-2019
+% Last update:   04-July-2022 (VG, CORAerror and argument check)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 if length(varargin) == 1
@@ -65,4 +65,4 @@ end
 % compute enclosure using convex hull
 E = convHull(E,E2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_checks_enabled
 % test_checks_enabled - tests the macro CHECKS_ENABLED
 %
-% Syntax:  
+% Syntax:
 %    res = test_checks_enabled()
 %
 % Inputs:
@@ -16,13 +16,13 @@ function res = test_checks_enabled
 %
 % See also: CHECKS_ENABLED
 
-% Author:       Tobias Ladner
-% Written:      29-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       29-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = CHECKS_ENABLED;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

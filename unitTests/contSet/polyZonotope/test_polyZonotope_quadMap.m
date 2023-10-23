@@ -1,7 +1,7 @@
 function res = test_polyZonotope_quadMap
 % test_polyZonotope_quadMap - unit test function of quadMap
 %
-% Syntax:  
+% Syntax:
 %    res = test_polyZonotope_quadMap
 %
 % Inputs:
@@ -16,19 +16,19 @@ function res = test_polyZonotope_quadMap
 %
 % See also: -
 
-% Author:       Niklas Kochdumper
-% Written:      23-March-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       23-March-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate polynomial zonotope
 c = [1;2];
 G = [1 -2 1;2 3 -1];
-Grest = [0;0];
-expMat = [1 0 2; 0 1 1];
-pZ = polyZonotope(c,G,Grest,expMat);
+GI = [0;0];
+E = [1 0 2; 0 1 1];
+pZ = polyZonotope(c,G,GI,E);
 
 % create matrices of the quadratic map
 Q{1} = [1 2;-1 2];
@@ -40,16 +40,16 @@ pZres = quadMap(pZ,Q);
 % define ground truth
 G = [22 19 -5 11 19 -5 16 -11 2; 6 23 -9 3 23 -9 -9 11 -3];
 c = [11;3];
-expMat = [1 0 2 2 1 3 0 2 4; 0 1 1 0 1 1 2 2 2];
+E = [1 0 2 2 1 3 0 2 4; 0 1 1 0 1 1 2 2 2];
 
 % check for correctness
 if ~all(withinTol(pZres.c,c))
     throw(CORAerror('CORA:testFailed'));
 end
 
-for i = 1:size(expMat,2)
+for i = 1:size(E,2)
     
-    ind = ismember(pZres.expMat',expMat(:,i)','rows');  
+    ind = ismember(pZres.E',E(:,i)','rows');  
     ind_ = find(ind > 0);
     
     if isempty(ind_)
@@ -62,4 +62,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

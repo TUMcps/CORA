@@ -2,7 +2,7 @@ function res = test_conZonotope_convHull
 % test_conZonotope_convHull - unit test function for convex hull of a
 %    constrained zonotope with other sets
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_convHull
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_conZonotope_convHull
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      21-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       21-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -47,7 +47,7 @@ V_ = vertices(cZ_);
 resvec(end+1) = compareMatrices(V_,[V1,V2],1e-14,'subset');
 
 % convert second constrained zonotope to polytope and check again
-P2 = mptPolytope(V2');
+P2 = polytope(cZ2);
 cZ_ = convHull(cZ1,P2);
 
 
@@ -73,4 +73,4 @@ resvec(end+1) = compareMatrices(V_,[V1,V2,V3],1e-14,'subset');
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

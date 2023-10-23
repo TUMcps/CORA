@@ -1,7 +1,7 @@
 function res = and_(I,S,varargin)
 % and_ - computes intersection, overloades '&' operator of intervals
 %
-% Syntax:  
+% Syntax:
 %    res = and_(I,S)
 %
 % Inputs:
@@ -20,14 +20,14 @@ function res = and_(I,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/and_
+% See also: contSet/and, zonotope/and_
 
-% Author:       Matthias Althoff
-% Written:      26-June-2015
-% Last update:  05-May-2020 (MW, standardized error message)
-% Last revision:27-March-2023 (MW, rename and_)
+% Authors:       Matthias Althoff
+% Written:       26-June-2015
+% Last update:   05-May-2020 (MW, standardized error message)
+% Last revision: 27-March-2023 (MW, rename and_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % different cases depending on the class of the summand
 if isa(S,'interval')
@@ -60,7 +60,7 @@ elseif isa(S,'levelSet')
     res = and_(S,I,'exact');
 
 elseif isa(S,'zonotope') || isa(S,'conZonotope') || ...
-       isa(S,'zonoBundle') || isa(S,'mptPolytope') || ...
+       isa(S,'zonoBundle') || isa(S,'polytope') || ...
        isa(S,'conPolyZono')
 
     res = and_(S,I,'exact');
@@ -72,4 +72,4 @@ else
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

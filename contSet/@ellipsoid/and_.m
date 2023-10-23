@@ -2,7 +2,7 @@ function E = and_(E,S,mode)
 % and_ - overloads '&' operator to compute the intersection an ellipsoid
 %    and another set representation
 %
-% Syntax:  
+% Syntax:
 %    E = and_(E,S)
 %    E = and_(E,S,mode)
 %
@@ -32,16 +32,16 @@ function E = and_(E,S,mode)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: contSet/and
 
-% Author:       Victor Gassmann
-% Written:      13-March-2019
-% Last update:  15-October-2019
-%               15-March-2021
-%               04-July-2022 (VG: replaced cell arrays by class arrays)
-% Last revision:27-March-2023 (MW, rename and_)
+% Authors:       Victor Gassmann
+% Written:       13-March-2019
+% Last update:   15-October-2019
+%                15-March-2021
+%                04-July-2022 (VG, replaced cell arrays by class arrays)
+% Last revision: 27-March-2023 (MW, rename and_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 N = length(S);
 % if only center remains
@@ -90,7 +90,7 @@ if isa(S,'ellipsoid')
     if strcmp(mode,'outer')
         E = andEllipsoidOA(E,S(1));
         for i=2:N
-            if isempty(E)
+            if representsa_(E,'emptySet',eps)
                 break;
             end
             E = andEllipsoidOA(E,S(i));
@@ -104,20 +104,20 @@ end
 % ellipsoid and conHyperplane
 if isa(S,'conHyperplane')
     for i=1:N
-        if isHyperplane(S(i))
+        if representsa_(S(i),'hyperplane',eps)
             E = andHyperplane(E,S(i));
         else
-            E = and(E,mptPolytope(S(i)),mode);
+            E = and_(E,polytope(S(i)),mode);
         end
     end
     return;
 end
 
-% ellipsoid and mptPolytope
-if isa(S,'mptPolytope')
-    E = andMptPolytope(E,S(1),mode);
+% ellipsoid and polytope
+if isa(S,'polytope')
+    E = andPolytope(E,S(1),mode);
     for i=2:N
-        E = andMptPolytope(E,S(i),mode);
+        E = andPolytope(E,S(i),mode);
     end
     return;
 end
@@ -134,4 +134,4 @@ end
 % throw error for remaining combinations
 throw(CORAerror('CORA:noops',E,S));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function Zsplit = split(Z,varargin)
 % split - splits a zonotope into two or more enclosing zonotopes
 %
-% Syntax:  
+% Syntax:
 %    Zsplit = split(Z,varargin)
 %
 % Inputs:
@@ -27,26 +27,26 @@ function Zsplit = split(Z,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      04-January-2008
-% Last update:  09-October-2008
-%               26-June-2009
-%               02-February-2011
-%               27-August-2013
-%               11-September-2013
-%               25-January-2016
-%               25-July-2016 (intervalhull replaced by interval)
+% Authors:       Matthias Althoff
+% Written:       04-January-2008
+% Last update:   09-October-2008
+%                26-June-2009
+%                02-February-2011
+%                27-August-2013
+%                11-September-2013
+%                25-January-2016
+%                25-July-2016 (intervalhull replaced by interval)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %initialize
 if nargin == 1
     %split all dimensions
     Z=zonotope(interval(Z));
-    for N=1:length(center(Z))
+    for N=1:length(Z.c)
         %split one dimension
-        Zsplit{N}=splitOneDim(Z,N); 
+        Zsplit{N}=aux_splitOneDim(Z,N); 
     end
 elseif nargin==2
     %no splitting halfspace is passed 
@@ -54,29 +54,29 @@ elseif nargin==2
         if isscalar(varargin{1})
             N=varargin{1};
             Z=zonotope(interval(Z));
-            Zsplit=splitOneDim(Z,N);
+            Zsplit=aux_splitOneDim(Z,N);
         else
             %split halfway in a direction
             dir = varargin{1};
-            Zsplit = directionSplit(Z,dir);
+            Zsplit = aux_directionSplit(Z,dir);
         end
     %split according to halfspace 
     else
         %obtain halfspace
         h = varargin{1};
-        Zsplit = halfspaceSplit(Z,h);
+        Zsplit = aux_halfspaceSplit(Z,h);
     end
 elseif nargin==3
     if strcmp(varargin{2},'bundle')
         %split halfway in a direction using a zonotope bundle
         dir = varargin{1};
-        Zsplit = directionSplitBundle(Z,dir);
+        Zsplit = aux_directionSplitBundle(Z,dir);
     elseif isscalar(varargin{1})
         N = varargin{1};
         maxOrder = varargin{2}; 
         %Zpp=pinv(options.W)*reduce(options.W*Z,'methD',maxOrder);
         Z=reduceGirard(Z,maxOrder); %<-- changed
-        Zsplit=splitOneDim(Z,N);
+        Zsplit=aux_splitOneDim(Z,N);
     else
         %compute split in perpendicular direction
         origDir = varargin{1};
@@ -87,20 +87,20 @@ elseif nargin==3
         perpDir = auxDir -  projVal*origDir/norm(origDir);
         
         %split halfway in perpendicular direction
-        Zsplit = directionSplit(Z,perpDir);
+        Zsplit = aux_directionSplit(Z,perpDir);
     end
 end
 
 end
 
 
-% Auxiliary functions
+% Auxiliary functions -----------------------------------------------------
 
-function Zsplit = splitOneDim(Z,dim)
+function Zsplit = aux_splitOneDim(Z,dim)
 
 %center and generator matrix
-c=center(Z);
-G=generators(Z);
+c=Z.c;
+G=Z.G;
 
 %compute centers of splitted parallelpiped
 c1=c-G(:,dim)/2;
@@ -116,12 +116,12 @@ Zsplit{2}=zonotope([c2,Gnew]);
 
 end
 
-function Zsplit = directionSplit(Z,dir)
+function Zsplit = aux_directionSplit(Z,dir)
 
 
 %center and generator matrix
-c = center(Z);
-G = generators(Z);
+c = Z.c;
+G = Z.G;
 
 %aligned generator
 alignedVal = 0;
@@ -162,14 +162,14 @@ end
 
 end
 
-function Zsplit = directionSplitBundle(Z,dir)
+function Zsplit = aux_directionSplitBundle(Z,dir)
 
 %obtain dimension
 N = length(dir);
 
 %obtain rotation matrix
 newDir = [1; zeros(N-1,1)];
-rotMat = rotationMatrix(dir, newDir);
+rotMat = aux_rotationMatrix(dir, newDir);
 
 %obtain enclosing interval
 IH = interval(rotMat*Z);
@@ -194,15 +194,15 @@ Zsplit{2} = zonoBundle(Z2);
 
 end
 
-function Zsplit = halfspaceSplit(Z,h)
+function Zsplit = aux_halfspaceSplit(Z,h)
 
 %halfspace values
 dir = h.c;
 d = h.d;
 
 %center and generator matrix
-c = center(Z);
-G = generators(Z);
+c = Z.c;
+G = Z.G;
 
 %aligned generator
 alignedVal = 0;
@@ -244,7 +244,7 @@ end
 end
 
 
-function rotMat = rotationMatrix(dir, newDir)
+function rotMat = aux_rotationMatrix(dir, newDir)
 
 %get dimension
 N = length(dir);
@@ -285,4 +285,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

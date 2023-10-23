@@ -2,7 +2,7 @@ function val = sup(probZ)
 % sup - Determines $sup(||x||_\infty),x in Z$, whereas sup is the operator
 %    determining the supremum of its argument.
 %
-% Syntax:  
+% Syntax:
 %    val = sup(probZ)
 %
 % Inputs:
@@ -23,13 +23,13 @@ function val = sup(probZ)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      30-September-2006 
-% Last update:  22-March-2007
-%               25-July-2016 (intervalhull replaced by interval)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       30-September-2006 
+% Last update:   22-March-2007
+%                25-July-2016 (intervalhull replaced by interval)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % convert probabilistic zonotope to interval
 I = interval(probZ);
@@ -39,4 +39,4 @@ N1 = norm(infimum(I),Inf);
 N2 = norm(supremum(I),Inf);
 val = max([N1,N2]);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

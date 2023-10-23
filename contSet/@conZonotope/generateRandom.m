@@ -1,7 +1,7 @@
 function cZ = generateRandom(varargin)
 % generateRandom - Generates a random constrained zonotope
 %
-% Syntax:  
+% Syntax:
 %    cZ = conZonotope.generateRandom()
 %    cZ = conZonotope.generateRandom('Dimension',n)
 %    cZ = conZonotope.generateRandom('Dimension',n,'NrGenerators',nrGens)
@@ -27,12 +27,12 @@ function cZ = generateRandom(varargin)
 %
 % See also: zonotope/generateRandom
 
-% Author:       Niklas Kochdumper
-% Written:      30-Oct-2020
-% Last update:  19-May-2022 (name-value pair syntax)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       30-October-2020
+% Last update:   19-May-2022 (name-value pair syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -106,4 +106,4 @@ else
     cZ = conZonotope(Z); 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

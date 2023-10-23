@@ -1,7 +1,7 @@
 function res = test_nonlinDASys_display
 % test_nonlinDASys_display - unit test for display function
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinDASys_display
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_nonlinDASys_display
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % basic
 f = @(x,y,u) x(1) - y(1) + u(1);
@@ -50,4 +50,4 @@ sys = nonlinDASys(f,g,h)
 % code executed successfully
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function c = center(probZ)
 % center - Returns the center of a probabilistic zonotope
 %
-% Syntax:  
+% Syntax:
 %    c = center(probZ)
 %
 % Inputs:
@@ -22,14 +22,14 @@ function c = center(probZ)
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       30-September-2006 
 % Last update:   22-March-2007
 %                10-June-2020 (MW, update header)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 c=probZ.Z(:,1);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

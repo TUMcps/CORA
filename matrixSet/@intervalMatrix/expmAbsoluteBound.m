@@ -3,7 +3,7 @@ function absBound = expmAbsoluteBound(intMat,t)
 %    of the symmetric solution of the computation of the mapping mimicing
 %    the exponential
 %
-% Syntax:  
+% Syntax:
 %    absBound = expmAbsoluteBound(intMat,t)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function absBound = expmAbsoluteBound(intMat,t)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      02-July-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       02-July-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %extract nominal matrix and symmetric interval matrix
 infA = infimum(intMat.int);
@@ -85,4 +85,4 @@ auxMat = Ginf*auxMat;
 %get absolue bound
 absBound = auxMat((2*n+1):(3*n),:);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

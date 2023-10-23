@@ -1,7 +1,7 @@
 function E = array(varargin)
 % array - returns an array of empty ellipsoids of specified size
 %
-% Syntax:  
+% Syntax:
 %    c = array(n)
 %    c = array(n1,n2,...)
 %
@@ -22,11 +22,13 @@ function E = array(varargin)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      06-July-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       06-July-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 E = emptyClassArray('ellipsoid',varargin{:});
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

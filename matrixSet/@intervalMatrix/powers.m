@@ -1,7 +1,7 @@
 function pow = powers(intMat,varargin)
 % powers - computes the powers of an interval matrix
 %
-% Syntax:  
+% Syntax:
 %    pow = powers(intMat,varargin)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function pow = powers(intMat,varargin)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      18-June-2010 
-% Last update:  06-July-2010
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-June-2010 
+% Last update:   06-July-2010
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin==2
     maxOrder = varargin{1};
@@ -46,4 +46,4 @@ for i=(initialOrder+1):maxOrder
     pow{i} = pow{i-1}*intMat;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

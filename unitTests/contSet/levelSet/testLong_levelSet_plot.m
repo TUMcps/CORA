@@ -1,7 +1,7 @@
 function res = testLong_levelSet_plot
 % testLong_levelSet_plot - unit test function of plot
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_levelSet_plot
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_levelSet_plot
 %
 % See also: plot.m
 
-% Author:       Maximilian Perschl
-% Written:      08-November-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Maximilian Perschl
+% Written:       08-November-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -95,4 +95,4 @@ close;
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

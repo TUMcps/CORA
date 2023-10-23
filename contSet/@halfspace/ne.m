@@ -25,13 +25,13 @@ function res = ne(hs1,hs2,varargin)
 %
 % See also: halfspace/isequal
 
-% Author:       Mark Wetzlinger
-% Written:      23-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = ~isequal(hs1,hs2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

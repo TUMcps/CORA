@@ -3,7 +3,7 @@ function res = example_nonlinear_reach_14_adaptiveHSCC2
 %    reachability analysis using adaptive parameter tuning,
 %    reproducing results from [1]
 %
-% Syntax:  
+% Syntax:
 %    res = example_nonlinear_reach_14_adaptiveHSCC2
 %
 % Inputs:
@@ -16,17 +16,17 @@ function res = example_nonlinear_reach_14_adaptiveHSCC2
 %    [1] M. Wetzlinger, A. Kulmburg, M. Althoff. "Adaptive Parameter Tuning
 %        for Reachability Analysis of Nonlinear Systems", HSCC 2021.
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       02-February-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
 % system and options from subfiles
-prefix = 'adaptive_';
+prefix = 'aux_adaptive_';
 handles = [ % dimensions
     "jetEngine()"; % 2
     "vanDerPol()"; % 2
@@ -116,9 +116,11 @@ end
 end
 
 
+% Auxiliary functions -----------------------------------------------------
+
 % Investigated Systems ----------------------------------------------------
 
-function [sys, params] = adaptive_vanDerPol()
+function [sys, params] = aux_adaptive_vanDerPol()
 
 params.tFinal = 6.74;
 params.R0 = zonotope([[1.4;2.4],diag([0.14,0.05])]);
@@ -126,7 +128,7 @@ sys = nonlinearSys(@vanderPolEq,2,1);
 
 end
 
-function [sys, params] = adaptive_brusselator()
+function [sys, params] = aux_adaptive_brusselator()
 
 params.tFinal = 5; 
 params.R0 = zonotope(interval([0.9;0],[1;0.1]));
@@ -134,7 +136,7 @@ sys = nonlinearSys(@brusselator,2,1);
 
 end
 
-function [sys, params] = adaptive_jetEngine()
+function [sys, params] = aux_adaptive_jetEngine()
 
 params.tFinal = 8;
 params.R0 = zonotope([[1;1],0.1*diag(ones(2,1))]);
@@ -142,7 +144,7 @@ sys = nonlinearSys(@jetEngine,2,1);
 
 end
 
-function [sys, params] = adaptive_lorenz()
+function [sys, params] = aux_adaptive_lorenz()
 
 params.tFinal = 2;
 params.R0 = zonotope([[15;15;35],0.1*diag(ones(3,1))]);
@@ -150,7 +152,7 @@ sys = nonlinearSys(@lorenz,3,1);
 
 end
 
-function [sys, params] = adaptive_biologicalModel()
+function [sys, params] = aux_adaptive_biologicalModel()
 
 params.tFinal = 2;
 params.R0 = zonotope([ones(7,1),0.01*diag(ones(7,1))]);
@@ -158,7 +160,7 @@ sys = nonlinearSys(@biologicalModel,7,1);
 
 end
 
-function [sys, params] = adaptive_roessler()
+function [sys, params] = aux_adaptive_roessler()
 
 params.tFinal = 6;
 params.R0 = zonotope([[0;-8.4;0],0.2*diag(ones(3,1))]);
@@ -166,7 +168,7 @@ sys = nonlinearSys(@roessler,3,1);
 
 end
 
-function [sys, params] = adaptive_lotkaVolterra()
+function [sys, params] = aux_adaptive_lotkaVolterra()
 
 params.tFinal = 5;
 params.R0 = zonotope([0.95*ones(5,1),0.05*diag(ones(5,1))]);
@@ -174,7 +176,7 @@ sys = nonlinearSys(@lotkaVolterraCont,5,1);
 
 end
 
-function [sys, params] = adaptive_genetic()
+function [sys, params] = aux_adaptive_genetic()
 
 params.tFinal = 0.1;
 centerR0 = [1;1.3;0.1;0.1;0.1;1.3;2.5;0.6;1.3];
@@ -184,7 +186,7 @@ sys = nonlinearSys(@genetic,9,1);
 
 end
 
-function [sys, params] = adaptive_springpendulum()
+function [sys, params] = aux_adaptive_springpendulum()
 
 params.tFinal = 1;
 params.R0 = zonotope([1.2;0.5;0.05;0.05],diag([0.1,0.1,0.05,0.05]));
@@ -192,5 +194,4 @@ sys = nonlinearSys(@springpendulum,4,1);
 
 end
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

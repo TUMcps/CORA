@@ -40,12 +40,13 @@ classdef (InferiorClasses = {?interval}) affine < taylm
 %
 % See also: interval
 
-% Author:       Dmitry Grebenyuk, Niklas Kochdumper
-% Written:      22-September-2017
-% Last update:  08-April-2018 (NK, extended constructor syntax)
-% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Dmitry Grebenyuk, Niklas Kochdumper
+% Written:       22-September-2017
+% Last update:   08-April-2018 (NK, extended constructor syntax)
+%                24-July-2023 (MW, integrate isemptyobject_)
+% Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     % inherits properties from taylm
@@ -91,11 +92,18 @@ methods
         end
 
     end
+
+    % determine whether an affine object is fully empty
+    function res = isemptyobject(aff)
+        % no empty object allowed
+        res = false;
+    end
              
 end
 end
 
-% Auxiliary Functions -----------------------------------------------------
+
+% Auxiliary functions -----------------------------------------------------
 
 function [int,name,opt_method,eps,tolerance] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
@@ -149,4 +157,4 @@ function [int,name,opt_method,eps,tolerance] = ...
 
 end
 
-%------------- END OF CODE -------
+% ------------------------------ END OF CODE ------------------------------

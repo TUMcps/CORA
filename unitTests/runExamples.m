@@ -2,7 +2,7 @@ function runExamples(varargin)
 % runExamples - runs all examples (files starting with 'example') in the
 %    folder cora/examples
 %
-% Syntax:  
+% Syntax:
 %    runExamples(varargin)
 %
 % Inputs:
@@ -12,12 +12,12 @@ function runExamples(varargin)
 % Outputs:
 %    -
 
-% Author:       Dmitry Grebenyuk, Matthias Althoff
-% Written:      20-September-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk, Matthias Althoff
+% Written:       20-September-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get the original working directory
 currentDirectory = pwd;
@@ -37,4 +37,4 @@ disp(strjoin(failed, ',\n'));
 % return to original working directory
 cd(currentDirectory);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

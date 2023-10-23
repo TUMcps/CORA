@@ -2,7 +2,7 @@ function res = testLong_globalOptimizer
 % testLong_globalOptimizer - unit_test_function that tests the 
 %    verified computation of bounds of a function on some domain
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_globalOptimizer
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_globalOptimizer
 %
 % See also: mtimes
 
-% Author:       Niklas Kochdumper
-% Written:      14-April-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       14-April-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 res = false;
@@ -42,12 +42,11 @@ intReal = interval(0.91808,1);
 [int,xMin,domMin,xMax,domMax] = globVerBounds(f,x,tol);
 
 % check if the computed bounds are all over-approximative
-checkOverapproximation(intReal,int);
+aux_checkOverapproximation(intReal,int);
 
 % check if the computed bounds for 'linQuad'-optimization are close enought
 % to the real boundaries
-checkDiffToOpt(intReal,int,tol);
-
+aux_checkDiffToOpt(intReal,int,tol);
 
 
 % Test 2: Beale-Function (2D) ---------------------------------------------
@@ -82,12 +81,11 @@ x = interval([-4.5;-4.5],[4.5;4.5]);
 intReal = interval(0,1.818536132812500e+05);
 
 % check if the computed bounds are all over-approximative
-checkOverapproximation(intReal,int);
+aux_checkOverapproximation(intReal,int);
 
 % check if the computed bounds for 'linQuad'-optimization are close enought
 % to the real boundaries
-checkDiffToOpt(intReal,int,tol);
-
+aux_checkDiffToOpt(intReal,int,tol);
 
 
 % Test 3: 2D-function -----------------------------------------------------
@@ -123,8 +121,7 @@ intReal = interval(-5,120);
 
 % check if the computed bounds for 'linQuad'-optimization are close enought
 % to the real boundaries
-checkDiffToOpt(intReal,int,tol);
-
+aux_checkDiffToOpt(intReal,int,tol);
 
 
 % Test 4: Benchmark models ------------------------------------------------
@@ -149,7 +146,7 @@ int = globVerBounds(@bspline0,i_a,1e-10);
 % plot(x,infimum(int)*ones(size(x)),'r');
 % plot(x,supremum(int)*ones(size(x)),'r');
 
-checkOverapproximationTol(interval(min(z),max(z)),int,1e-10);
+aux_checkOverapproximationTol(interval(min(z),max(z)),int,1e-10);
 
 % bspline1
 z = zeros(size(x));
@@ -164,7 +161,7 @@ int = globVerBounds(@bspline1,i_a,1e-10);
 % plot(x,infimum(int)*ones(size(x)),'r');
 % plot(x,supremum(int)*ones(size(x)),'r');
 
-checkOverapproximationTol(interval(min(z),max(z)),int,1e-10);
+aux_checkOverapproximationTol(interval(min(z),max(z)),int,1e-10);
 
 % bspline2
 z = zeros(size(x));
@@ -179,7 +176,7 @@ int = globVerBounds(@bspline2,i_a,1e-10);
 % plot(x,infimum(int)*ones(size(x)),'r');
 % plot(x,supremum(int)*ones(size(x)),'r');
 
-checkOverapproximationTol(interval(min(z),max(z)),int,1e-10);
+aux_checkOverapproximationTol(interval(min(z),max(z)),int,1e-10);
 
 % bspline3
 z = zeros(size(x));
@@ -194,7 +191,7 @@ int = globVerBounds(@bspline3,i_a,1e-10);
 % plot(x,infimum(int)*ones(size(x)),'r');
 % plot(x,supremum(int)*ones(size(x)),'r');
 
-checkOverapproximationTol(interval(min(z),max(z)),int,1e-10);
+aux_checkOverapproximationTol(interval(min(z),max(z)),int,1e-10);
 
 % himmilbeau
 [X,Y] = meshgrid(x,y);
@@ -221,21 +218,15 @@ int = globVerBounds(func,[i_a;i_b],1e-10);
 % set(s2,'EdgeColor','none');
 % set(s2,'FaceColor','r');
 
-checkOverapproximationTol(interval(min(min(Z)),max(max(Z))),int,1e-10);
-
-
-
+aux_checkOverapproximationTol(interval(min(min(Z)),max(max(Z))),int,1e-10);
 
 
 % Test 5: Lennard-Jones Potential (6D) ------------------------------------
 
-% f = @(x) lennardJonesPotential(x);
+% f = @(x) aux_lennardJonesPotential(x);
 % x = interval([0.8;0.4;0.7;0.4;0.2;0.7],[1.2;0.6;1;0.6;0.4;1]);
 % 
 % [int,xMin,domMin,xMax,domMax] = globVerBounds(f,x,tol,[],'linQuad');
-
-
-
 
 
 res = true;
@@ -244,11 +235,10 @@ res = true;
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-% Auxiliary Functions -----------------------------------------------------
 
-
-function f = lennardJonesPotential(x)
+function f = aux_lennardJonesPotential(x)
 
     a{1} = {0;0;0};
     a{2} = {x(1);0;0};
@@ -266,14 +256,14 @@ function f = lennardJonesPotential(x)
     end
 end
 
-function checkOverapproximation(intReal,int)
+function aux_checkOverapproximation(intReal,int)
     
     if any(infimum(int) > infimum(intReal)) || any(supremum(int) < supremum(intReal))
         throw(CORAerror('CORA:testFailed'));
     end
 end
 
-function checkOverapproximationTol(intReal,int,tol)
+function aux_checkOverapproximationTol(intReal,int,tol)
     
     if any(infimum(int) > infimum(intReal)+ones(size(intReal))*tol) || ...
        any(supremum(int) < supremum(intReal)-ones(size(intReal))*tol)
@@ -281,7 +271,7 @@ function checkOverapproximationTol(intReal,int,tol)
     end
 end
 
-function checkDiffToOpt(intReal,int,tol)
+function aux_checkDiffToOpt(intReal,int,tol)
 % check if the computed boundaries are close enough to the real boundaries
 % of the function
 
@@ -290,4 +280,4 @@ function checkDiffToOpt(intReal,int,tol)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

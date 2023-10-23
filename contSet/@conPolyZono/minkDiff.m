@@ -2,7 +2,7 @@ function cPZ = minkDiff(cPZ1,cPZ2,varargin)
 % minkDiff - compute the Minkowski difference of two conPolyZono objects:
 %         cPZ1 - cPZ2 = cPZ <-> cPZ + cPZ2 \subseteq cPZ1
 %
-% Syntax:  
+% Syntax:
 %    cPZ = minkDiff(cPZ1,cPZ2)
 %    cPZ = minkDiff(cPZ1,cPZ2,type)
 %
@@ -33,12 +33,12 @@ function cPZ = minkDiff(cPZ1,cPZ2,varargin)
 %
 % See also: zonotope/minkDiff, conZonotope/minkDiff
 
-% Author:       Niklas Kochdumper
-% Written:      04-February-2021
-% Last update:  09-November-2022 (MW, rename 'minkDiff')
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       04-February-2021
+% Last update:   09-November-2022 (MW, rename 'minkDiff')
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parse input arguments
     type = setDefaultValues({'exact'},varargin);
@@ -55,10 +55,10 @@ function cPZ = minkDiff(cPZ1,cPZ2,varargin)
     else
         
         % consider independent generators
-        if strcmp(type,'exact') && ~isempty(cPZ1.Grest)
+        if strcmp(type,'exact') && ~isempty(cPZ1.GI)
             cPZ1 = aux_removeIndepGens(cPZ1);
         else
-            cPZ1.Grest = [];
+            cPZ1.GI = [];
         end
         
         % different cases for different set representations
@@ -68,8 +68,8 @@ function cPZ = minkDiff(cPZ1,cPZ2,varargin)
             Z = zonotope(cPZ2);
 
             % compute Minkowski difference according to Theorem 1 in [1]
-            c = center(Z);
-            G = generators(Z);
+            c = Z.c;
+            G = Z.G;
 
             cPZ = cPZ1 + (-c);
 
@@ -77,7 +77,7 @@ function cPZ = minkDiff(cPZ1,cPZ2,varargin)
                 cPZ = and_(cPZ + G(:,i),cPZ + (-G(:,i)),'exact');
             end
 
-        elseif isa(cPZ2,'conZonotope') || isa(cPZ2,'mptPolytope') || ...
+        elseif isa(cPZ2,'conZonotope') || isa(cPZ2,'polytope') || ...
                isa(cPZ2,'zonoBundle')
            
             % compute exact result or fast inner-approximation
@@ -108,21 +108,19 @@ function cPZ = minkDiff(cPZ1,cPZ2,varargin)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function cPZ = aux_removeIndepGens(cPZ)
 % redefine independent generators as new dependent generators
 
-    E = eye(size(cPZ.Grest,2));
-    id = [cPZ.id;(max(cPZ.id)+1:max(cPZ.id+size(cPZ.Grest,2)))'];
+    E = eye(size(cPZ.GI,2));
+    id = [cPZ.id;(max(cPZ.id)+1:max(cPZ.id+size(cPZ.GI,2)))'];
     if isempty(cPZ.A)
-       cPZ = conPolyZono(cPZ.c,[cPZ.G,cPZ.Grest], ...
-                          blkdiag(cPZ.expMat,E),[],id);
+       cPZ = conPolyZono(cPZ.c,[cPZ.G,cPZ.GI], blkdiag(cPZ.E,E),[],id);
     else
-       cPZ = conPolyZono(cPZ.c,[cPZ.G,cPZ.Grest], ...
-                          blkdiag(cPZ.expMat,E),[cPZ.A,zeros(1,size(cPZ.Grest,2))],cPZ.b, ...
-                          blkdiag(cPZ.expMat_,E),[],id);
+       cPZ = conPolyZono(cPZ.c,[cPZ.G,cPZ.GI], blkdiag(cPZ.E,E), ...
+           [cPZ.A,zeros(1,size(cPZ.GI,2))],cPZ.b, blkdiag(cPZ.EC,E),[],id);
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

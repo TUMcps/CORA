@@ -1,7 +1,7 @@
 function res = test_conHyperplane_isemptyobject
 % test_conHyperplane_isemptyobject - unit test function of isemptyobject
 %
-% Syntax:  
+% Syntax:
 %    res = test_conHyperplane_isemptyobject
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_conHyperplane_isemptyobject
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate constrained hyperplanes
 hyp1 = conHyperplane();
@@ -35,4 +35,4 @@ hyp2 = conHyperplane(a,b,C,d);
 % check results
 res = isemptyobject(hyp1) && ~isemptyobject(hyp2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

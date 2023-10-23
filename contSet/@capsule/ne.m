@@ -25,13 +25,13 @@ function res = ne(C1,C2,varargin)
 %
 % See also: capsule/isequal
 
-% Author:       Mark Wetzlinger
-% Written:      23-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = ~isequal(C1,C2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

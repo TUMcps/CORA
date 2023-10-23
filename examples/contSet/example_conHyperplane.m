@@ -1,7 +1,7 @@
 function completed = example_conHyperplane()
 % example_conHyperplane - example instantiation of conHyperplane objects
 %
-% Syntax:  
+% Syntax:
 %    completed = example_conHyperplane()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_conHyperplane()
 %
 % See also: none
 
-% Author:        ---
+% Authors:       ---
 % Written:       ---
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % construct constrained hyperplane
 c = [1;1];
@@ -32,17 +32,17 @@ b = [3;1;2;2;2];
 hyp = conHyperplane(c,d,A,b);
 
 % visualize the constrained hyperplane
-figure; hold on;
+figure; hold on
 xlim([-2,4]); ylim([-3,3]);
 
 % unconstrained hyperplane
 plot(conHyperplane(c,d));
 % inequality constraints
-plot(mptPolytope(A,b),[1,2],'FaceColor',colorblind('gray'));
+plot(polytope(A,b),[1,2],'FaceColor',colorblind('gray'));
 % constrained hyperplane
 plot(hyp,[1,2],'Color',colorblind('r'));
 
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function pZ = restructureReduceFull(pZ,order,method)
 % restructureReduceFull - Calculates a new representation of a polynomial
 %    zonotope through reduction of the independent generators 
 %
-% Syntax:  
+% Syntax:
 %    pZ = restructureReduceFull(pZ,order,method)
 %
 % Inputs:
@@ -31,12 +31,12 @@ function pZ = restructureReduceFull(pZ,order,method)
 %
 % See also: polyZonotope/restructure, zonotope/reduce
 
-% Author:       Niklas Kochdumper
-% Written:      25-July-2018 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-July-2018 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % determine how many generators have to be reduced
 dim_x = length(pZ.c);
@@ -47,21 +47,21 @@ o_ = order - o;
 if o_ >= 1
     
     % reduce the independent generators
-    zono = zonotope([zeros(dim_x,1),pZ.Grest]);
+    zono = zonotope([zeros(dim_x,1),pZ.GI]);
     zono = reduce(zono,method,o_);
     
     % construct the new polynomial zonotope 
     Gzono = generators(zono);
     G = [pZ.G, Gzono];
-    expMat = [pZ.expMat, zeros(size(pZ.expMat,1),size(Gzono,2)); ...
-              zeros(size(Gzono,2),size(pZ.expMat,2)), eye(size(Gzono,2))];
+    E = [pZ.E, zeros(size(pZ.E,1),size(Gzono,2)); ...
+              zeros(size(Gzono,2),size(pZ.E,2)), eye(size(Gzono,2))];
     
-    pZ = polyZonotope(pZ.c,G,[],expMat);
+    pZ = polyZonotope(pZ.c,G,[],E);
     
 else
     
     % reduce the independent generators
-    zono = zonotope([zeros(dim_x,1),pZ.Grest]);
+    zono = zonotope([zeros(dim_x,1),pZ.GI]);
     zono = reduce(zono,method,1);       
     
     % calculate reference zonotope that is added to the generators in
@@ -74,7 +74,7 @@ else
     Vind = zeros(dim_x,1);
     
     for i = 1:size(Gind,2)
-        zono_ = zonotope([zonoRef.Z,Gind(:,i)]);
+        zono_ = zonotope(zonoRef.c,[zonoRef.G,Gind(:,i)]);
         Vind(i) = volume_(interval(zono_)); 
     end
     
@@ -85,10 +85,10 @@ else
     for i = 1:length(Vdep)
         
         % find all generators that that depend on the current factor
-        ind = find(pZ.expMat(i,:) > 0);
+        ind = find(pZ.E(i,:) > 0);
         indicesDep{i} = ind';
         pZ_ = polyZonotope(zeros(dim_x,1),pZ.G(:,ind), ...
-              generators(zonoRef),pZ.expMat(:,ind));
+              generators(zonoRef),pZ.E(:,ind));
         
         zono_ = zonotope(pZ_);
         
@@ -110,43 +110,41 @@ else
     indicesDep_ = indicesDep(indTemp);
     indDep = unique(vertcat(indicesDep_{:}));
     
-    pZ_ = polyZonotope(zeros(dim_x,1), pZ.G(:,indDep),[], pZ.expMat(:,indDep));
+    pZ_ = polyZonotope(zeros(dim_x,1), pZ.G(:,indDep),[], pZ.E(:,indDep));
     zono_ = zonotope(pZ_);
     
     indTemp = ind2(ind2 > length(pZ.id));
     indTemp = indTemp - length(pZ.id)*ones(size(indTemp));
     
-    c = center(zono_);
-    Grest = [generators(zono_),Gind(:,indTemp)];
+    GI = [zono_.G,Gind(:,indTemp)];
     
     % construct the dependent part of the new polynomial zonotope
     indTemp = setdiff(1:size(pZ.G,2),indDep);
     G1 = pZ.G(:,indTemp);
-    expMat1 = pZ.expMat(:,indTemp);
+    E1 = pZ.E(:,indTemp);
     
     indTemp = ind1(ind1 > length(pZ.id));
     indTemp = indTemp - length(pZ.id)*ones(size(indTemp));
     
     G2 = Gind(:,indTemp);
-    expMat2 = eye(size(G2,2));
+    E2 = eye(size(G2,2));
     
     G = [G1,G2];
     
-    if isempty(expMat1)
-        expMat = expMat2;
-    elseif isempty(expMat2)
-        expMat = expMat1;
+    if isempty(E1)
+        E = E2;
+    elseif isempty(E2)
+        E = E1;
     else         
-        expMat = [expMat1, zeros(size(expMat1,1),size(expMat2,2)); ...
-                  zeros(size(expMat2,1),size(expMat1,2)), expMat2 ];
+        E = blkdiag(E1, E2);
     end 
     
     % remove redundant rows from the exponent matrix
-    temp = sum(expMat,2);
-    expMat = expMat(temp > 0,:);
+    temp = sum(E,2);
+    E = E(temp > 0,:);
     
     % construct the resulting restructured polynomial zonotope
-    pZ = polyZonotope(pZ.c+c, G, Grest, expMat);
+    pZ = polyZonotope(pZ.c+zono_.c, G, GI, E);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

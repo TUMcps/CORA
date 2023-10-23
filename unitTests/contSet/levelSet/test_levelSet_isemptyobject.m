@@ -1,7 +1,7 @@
 function res = test_levelSet_isemptyobject
 % test_levelSet_isemptyobject - unit test function of isemptyobject
 %
-% Syntax:  
+% Syntax:
 %    res = test_levelSet_isemptyobject
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_levelSet_isemptyobject
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate level sets
 ls1 = levelSet();
@@ -33,4 +33,4 @@ ls2 = levelSet(eq,[x;y],'==');
 % check results
 res = isemptyobject(ls1) && ~isemptyobject(ls2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

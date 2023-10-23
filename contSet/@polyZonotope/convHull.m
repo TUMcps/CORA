@@ -2,7 +2,7 @@ function pZ = convHull(pZ,S)
 % convHull - Computes the convex hull of a polynomial zonotope and another
 %    set representation
 %
-% Syntax:  
+% Syntax:
 %    pZ = convHull(pZ)
 %    pZ = convHull(pZ,S)
 %
@@ -28,28 +28,28 @@ function pZ = convHull(pZ,S)
 %
 % See also: zonotope/enclose
 
-% Author:       Niklas Kochdumper
-% Written:      25-June-2018
-% Last update:  05-May-2020 (MW, standardized error message)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-June-2018
+% Last update:   05-May-2020 (MW, standardized error message)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parse input arguments
     if nargin > 1
-        pZ = convHullMult(pZ,S);
+        pZ = aux_convHullMult(pZ,S);
     else
         pZ = linComb(pZ,pZ);
     end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function pZ = convHullMult(pZ1,S)
+function pZ = aux_convHullMult(pZ1,S)
 % compute the convex hull of two polynomial zonotopes
 
-    if isempty(S)
+    if representsa_(S,'emptySet',eps)
         pZ = pZ1; return;
     end
 
@@ -59,7 +59,7 @@ function pZ = convHullMult(pZ1,S)
     % convert other set representations to polynomial zonotopes
     if ~isa(S,'polyZonotope')
         if isa(S,'zonotope') || isa(S,'interval') || ...
-           isa(S,'mptPolytope') || isa(S,'zonoBundle') || ...
+           isa(S,'polytope') || isa(S,'zonoBundle') || ...
            isa(S,'conZonotope')
 
             S = polyZonotope(S);
@@ -80,24 +80,24 @@ function pZ = convHullMult(pZ1,S)
     end
 
     % remove independent generatros
-    pZ1_ = polyZonotope(pZ1.c,pZ1.G,[],pZ1.expMat,pZ1.id);
-    pZ2_ = polyZonotope(S.c,S.G,[],S.expMat,S.id);
+    pZ1_ = polyZonotope(pZ1.c,pZ1.G,[],pZ1.E,pZ1.id);
+    pZ2_ = polyZonotope(S.c,S.G,[],S.E,S.id);
     
     % compute convex hull of depenent part using the linear combination
     pZ = linComb(linComb(pZ1_,pZ1_),linComb(pZ2_,pZ2_));
     
     % compute convex hull of the independent part using the convex hull for
     % zonotopes
-    temp = zeros(length(pZ1.c),1);
-    Z1 = zonotope([temp, pZ1.Grest]);
-    Z2 = zonotope([temp, S.Grest]);
+    c0 = zeros(length(pZ1.c),1);
+    Z1 = zonotope(c0, pZ1.GI);
+    Z2 = zonotope(c0, S.GI);
 
     Z = enclose(Z1,Z2);
-    Grest = generators(Z);
+    GI = Z.G;
 
     % construct the resulting set
-    pZ.Grest = Grest;
+    pZ.GI = GI;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

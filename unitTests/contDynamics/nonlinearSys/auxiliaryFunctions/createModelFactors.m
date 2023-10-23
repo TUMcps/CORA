@@ -1,7 +1,7 @@
 function createModelFactors(c)
 % createModelFactors - creates file returning model factors
 %
-% Syntax:  
+% Syntax:
 %    createModelFactors(c)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function createModelFactors(c)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      04-May-2011
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-May-2011
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 path = [CORAROOT filesep 'models' filesep 'auxiliary'];
 cd(path);
@@ -41,4 +41,4 @@ end
 %close file
 status = fclose(fid);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

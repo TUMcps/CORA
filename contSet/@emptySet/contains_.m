@@ -1,7 +1,7 @@
 function res = contains_(O,S,type,tol,varargin)
 % contains_ - determines if an empty set contains a set or a point
 %
-% Syntax:  
+% Syntax:
 %    res = contains_(O,S)
 %    res = contains_(O,S,type)
 %    res = contains_(O,S,type,tol)
@@ -26,12 +26,12 @@ function res = contains_(O,S,type,tol,varargin)
 %
 % See also: contSet/contains
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  05-April-2023 (MW, rename contains_)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   05-April-2023 (MW, rename contains_)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % dimensions are already checked...
 res = false;
@@ -39,7 +39,7 @@ if isa(S,'emptySet')
     % empty set contains the empty set
     res = true;
 
-elseif isa(S,'contSet') && (isemptyobject(S) || isempty(S))
+elseif isa(S,'contSet') && representsa_(S,'emptySet',eps)
     % empty set contains contSet objects if they also represent the empty
     % set
     res = true;
@@ -50,4 +50,4 @@ elseif isnumeric(S) && isempty(S)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

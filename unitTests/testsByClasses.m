@@ -2,7 +2,7 @@ function testsByClasses
 % testsByClasses - print on command window the number of tests for each
 %    CORA class
 %
-% Syntax:  
+% Syntax:
 %    testsByClasses
 %
 % Inputs:
@@ -11,12 +11,12 @@ function testsByClasses
 % Outputs:
 %    -
 
-% Author:       Mark Wetzlinger
-% Written:      09-April-2023 (moved from printTestOverview and unitTestsOverview)
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       09-April-2023 (moved from printTestOverview and unitTestsOverview)
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % switch to directory of unit tests
 directory = [CORAROOT filesep 'unitTests'];
@@ -48,9 +48,9 @@ for i=1:length(foldernames)
     tempfiles = listFolderContent([CORAROOT filesep foldernames{i}]);
     temptests = listFolderContent([CORAROOT filesep 'unitTests' filesep foldernames{i}]);
     % collapse lists into one list
-    tempfiles = functionList(tempfiles);
+    tempfiles = aux_functionList(tempfiles);
     allfuncs = [allfuncs; tempfiles];
-    temptests = functionList(temptests);
+    temptests = aux_functionList(temptests);
     alltests = [alltests; temptests];
 end
 
@@ -71,7 +71,7 @@ end
 fullList.func = allfuncs;
 % find unit test for each function
 for i=1:length(allfuncs)
-    fullList.test{i,1} = findUnitTest(allfuncs{i},alltests);
+    fullList.test{i,1} = aux_findUnitTest(allfuncs{i},alltests);
     % check if run was successful in last run
     if strcmp(fullList.test{i},'---')
         fullList.status(i,1) = -1; % no information
@@ -235,16 +235,16 @@ fprintf('-*---------------------------------------------------*-\n');
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function funclist = functionList(funcs)
+function funclist = aux_functionList(funcs)
 % funcs must be struct with fields "dir", "files"
 % caution: recursive calls
 
 funclist = {};
 for i=1:length(funcs.files)
     if isstruct(funcs.files{i}) % directory / class
-        temp = functionList(funcs.files{i});
+        temp = aux_functionList(funcs.files{i});
         funclist = [funclist; temp];
     else % file
         funclist{end+1,1} = [funcs.dir filesep funcs.files{i}];
@@ -253,7 +253,7 @@ end
 
 end
 
-function unittestname = findUnitTest(func,testlist)
+function unittestname = aux_findUnitTest(func,testlist)
 % find unit tests for given function (cell-array), admissible syntax:
 %   test_classname_functionname(_...)   if function part of a class
 %   test_functionname(_...)             if function not part of a class
@@ -301,4 +301,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

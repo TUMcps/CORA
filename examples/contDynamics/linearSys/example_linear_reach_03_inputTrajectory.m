@@ -2,7 +2,7 @@ function res = example_linear_reach_03_inputTrajectory()
 % example_linear_reach_03_inputTrajectory - example for linear reachability 
 %    analysis with an input trajectory 
 %
-% Syntax:  
+% Syntax:
 %    res = example_linear_reach_03_inputTrajectory()
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = example_linear_reach_03_inputTrajectory()
 % Outputs:
 %    res - true/false 
 
-% Author:       Matthias Althoff
-% Written:      27-July-2018
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       27-July-2018
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -86,4 +86,4 @@ end
 % example completed
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

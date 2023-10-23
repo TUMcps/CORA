@@ -1,7 +1,7 @@
 function Verr = linError_thirdOrder(obj, options, R)
 % linError_thirdOrder - computes the linearization error
 %
-% Syntax:  
+% Syntax:
 %    Verr = linError_thirdOrder(obj,options,R)
 %
 % Inputs:
@@ -18,14 +18,14 @@ function Verr = linError_thirdOrder(obj, options, R)
 %
 % See also: 
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      21-August-2012
-% Last update:  25-July-2016 (intervalhull replaced by interval)
-%               29-January-2018 (NK)
-%               08-April-2021 (NK, removed separated eval. of Lag. rem)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       21-August-2012
+% Last update:   25-July-2016 (intervalhull replaced by interval)
+%                29-January-2018 (NK)
+%                08-April-2021 (NK, removed separated eval. of Lag. rem)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set correct tensor files
 obj = setHessian(obj,'standard');
@@ -85,4 +85,4 @@ else
     Verr = reduce(Verr,options.reductionTechnique,options.zonotopeOrder);    
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function [forbiddenSpecs,spec_mapping] = ...
 % parseForbidden - Constructs CORA specifications from forbidden states
 %    given in a SpaceEx-ConfigFile
 %
-% Syntax:  
+% Syntax:
 %    [forbiddenSpecs,spec_mapping] = ...
 %       parseForbidden(configLine,state_names,component_names,location_names)
 %
@@ -36,12 +36,12 @@ function [forbiddenSpecs,spec_mapping] = ...
 %
 % See also: ---
 
-% Author:       Maximilian Perschl
-% Written:      08-September-2021
-% Last update:  24-Sep-2021
-% Last revision:---
+% Authors:       Maximilian Perschl
+% Written:       08-September-2021
+% Last update:   24-September-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % cut irrelevant parts off the string
 configLine_split = split(configLine,'"');
@@ -184,16 +184,16 @@ for i = 1:length(forbiddenTerms)
     % if no restriction on the location has been made, the specification
     % holds for all locations and components
     if ~loc_restriction && ~no_mapping
-        spec_mapping = createMapEntryForAll(spec_mapping,spec_index,component_names,location_names);
+        spec_mapping = aux_createMapEntryForAll(spec_mapping,spec_index,component_names,location_names);
     end
 end
 
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function resulting_map = createMapEntryForAll(prev_map,constr_index,component_names,location_names)
+function resulting_map = aux_createMapEntryForAll(prev_map,constr_index,component_names,location_names)
 % create an entry for a specification that is relevant to all locations and
 % components
     n_components = length(component_names);
@@ -208,4 +208,4 @@ function resulting_map = createMapEntryForAll(prev_map,constr_index,component_na
     resulting_map = prev_map;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

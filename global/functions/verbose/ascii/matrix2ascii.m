@@ -1,7 +1,7 @@
 function matrix2ascii(matrix)
 % matrix2ascii - ???
 %
-% Syntax:  
+% Syntax:
 %    matrix2ascii(matrix)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function matrix2ascii(matrix)
 %
 % See also: -
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       29-October-2008
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %create filename
 fName=[pwd,'/matrix.txt'];
@@ -48,4 +48,4 @@ end
 %close file
 status = fclose(fid);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

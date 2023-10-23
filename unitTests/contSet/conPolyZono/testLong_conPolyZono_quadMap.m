@@ -2,7 +2,7 @@ function res = testLong_conPolyZono_quadMap
 % testLong_conPolyZono_quadMap - unit test function for 
 %    quadratic map of constrained polynomial zonotopes
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conPolyZono_quadMap()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_conPolyZono_quadMap
 %
 % See also: conPolyZono/or
 
-% Author:       Niklas Kochdumper
-% Written:      03-February-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       03-February-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 splits = 4;
@@ -100,4 +100,4 @@ for i = 1:10
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

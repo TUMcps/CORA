@@ -3,7 +3,7 @@ function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_C(obj,options)
 % approach from [1]. 
 %
 %
-% Syntax:  
+% Syntax:
 %    [OGain,tComp]= observe_gain_ESO_C(obj,options)
 %
 % Inputs:
@@ -30,13 +30,12 @@ function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_C(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       04-Mar-2021
-% Last update:   16-Mar-2021
+% Authors:       Matthias Althoff
+% Written:       04-March-2021
+% Last update:   16-March-2021
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tic
 
@@ -53,7 +52,7 @@ options_sdp.verbose = 1;
 Q = eye(n); 
 
 % line 2-6 of Alg. 1 in [1]
-[~, ~, ~, ~, Ao] = compute_Q(obj,Q,options,options_sdp);
+[~, ~, ~, ~, Ao] = aux_compute_Q(obj,Q,options,options_sdp);
 
 % Compute the disturbance variance W; we use a more precise method compared
 % to using (27) in [1]. Quantile function for probability p of the 
@@ -75,7 +74,7 @@ V = value(V);
 Q = inv(V);
 
 % go back to line 2-6 of Alg. 1 in [1]
-[Q, P, Y, gamma] = compute_Q(obj,Q,options,options_sdp);
+[Q, P, Y, gamma] = aux_compute_Q(obj,Q,options,options_sdp);
 
 % Compute λ as the minimum generalized eigenvalue of the pair (Q,P), line 7
 lambda = min(eigs(Q,P));
@@ -89,10 +88,12 @@ tComp = toc;
 end
 
 
+% Auxiliary functions -----------------------------------------------------
+
 % This function realizes line 2-6 of Alg. 1 in [1]
-function [Q, P, Y, gamma, Ao] = compute_Q(obj,Q,options,options_sdp)
+function [Q, P, Y, gamma, Ao] = aux_compute_Q(obj,Q,options,options_sdp)
     % solve LMI, line 2 of Alg. 1
-    [P,Y,gamma] = solveLMI(obj,Q,options,options_sdp);
+    [P,Y,gamma] = aux_solveLMI(obj,Q,options,options_sdp);
 
     % compute L, line 3 of Alg. 1
     L = P\Y;
@@ -131,8 +132,9 @@ function [Q, P, Y, gamma, Ao] = compute_Q(obj,Q,options,options_sdp)
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-function [P,Y,gamma] = solveLMI(obj,Q,options,options_sdp)
+function [P,Y,gamma] = aux_solveLMI(obj,Q,options,options_sdp)
     
     % shape matrices of the disturbance and porcess noise sets
     F = options.W.Q;
@@ -185,5 +187,4 @@ function [P,Y,gamma] = solveLMI(obj,Q,options,options_sdp)
 end
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

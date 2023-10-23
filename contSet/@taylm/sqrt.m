@@ -1,7 +1,7 @@
 function res = sqrt( obj )
 % sqrt - compute formula the square root for Taylor models
 %
-% Syntax:  
+% Syntax:
 %    res = sqrt(obj)
 %
 % Inputs:
@@ -20,20 +20,23 @@ function res = sqrt( obj )
 %   [1] K. Makino et al. "Taylor Models and other validated functional 
 %       inclusion methods"
 
-% Author:       Dmitry Grebenyuk
-% Written:      14-August-2017
-% Last update:  ---  
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       14-August-2017
+% Last update:   ---  
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-	res = arrayfun(@(a) s_sqrt(a), obj, 'UniformOutput', 0);
+	res = arrayfun(@(a) aux_s_sqrt(a), obj, 'UniformOutput', 0);
     A = cat(1, res{:});
     res = reshape(A, size(res));
 
 end
 
-function res = s_sqrt( obj )        
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_s_sqrt( obj )        
     if isempty(obj.monomials)    % Taylor model without polynomial part
         
         res = obj;
@@ -74,14 +77,14 @@ function res = s_sqrt( obj )
         for i = 1:obj.max_order
             factor = factor .* i;
             factor1 = factor1 .* 2;
-            factor2 = factor2 .* two_k_m_3(i);
+            factor2 = factor2 .* aux_two_k_m_3(i);
             T_factor = T_factor .* T .* c_f; 
             T1 = T1 + (-1).^(i-1) .* T_factor .* factor2 ./ factor1 ./ factor;
         end
         
         factor = factor .* (obj.max_order + 1);
         factor1 = factor1 .* 2;
-        factor2 = factor2 .* two_k_m_3(obj.max_order + 1);
+        factor2 = factor2 .* aux_two_k_m_3(obj.max_order + 1);
         
         % temporaly increase max-order to get tight bounds for interval "remPow"
         T_factor.max_order = T_factor.max_order + T.max_order;
@@ -95,7 +98,7 @@ function res = s_sqrt( obj )
     end
 end
 
-function res = two_k_m_3(k)
+function res = aux_two_k_m_3(k)
     if k > 1
         res = (2 .* k - 3);
     else
@@ -103,6 +106,4 @@ function res = two_k_m_3(k)
     end
 end
 
-%------------ END OF CODE ------------
-
-
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function completed = example_nonlinearParam_reach_04_vanderPol_linearRemainder()
 % example_nonlinearParam_reach_04_vanderPol_linearRemainder - example
 %    of nonlinear reachability analysis with uncertain parameters; 
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinearParam_reach_04_vanderPol_linearRemainder
 %
 % Inputs:
@@ -11,12 +11,12 @@ function completed = example_nonlinearParam_reach_04_vanderPol_linearRemainder()
 % Outputs:
 %    completed - true/false
 
-% Author:       Victor Gassmann
-% Written:      17-May-2019
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       17-May-2019
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -96,4 +96,4 @@ ylabel(['x_{',num2str(projDims(2)),'}']);
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

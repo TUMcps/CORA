@@ -3,21 +3,21 @@ function res = test_parallelHybridAutomaton_reach_01_emptyInvGuard()
 %    reachability of hybrid dynamics, where the parallel hybrid automaton
 %    contains empty invariants and guard sets
 %
-% Syntax:  
+% Syntax:
 %    test_parallelHybridAutomaton_reach_01_emptyInvGuard
 %
 % Inputs:
 %    no
 %
 % Outputs:
-%    res - true/false  
+%    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      25-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -67,7 +67,7 @@ linSys_left = linearSys('left',A,B,c_left);
 linSys_down = linearSys('down',A,B,c_down);
 
 % invariant set 
-inv = mptPolytope(interval([-1;-1],[1;1]));
+inv = polytope(interval([-1;-1],[1;1]));
 inv_fullspace = fullspace(2);
 
 % guard sets (boundary of box)
@@ -154,30 +154,19 @@ R_HA = reach(HA1,paramsHA,options);
 % end
 
 
-
 % Numerical check ---------------------------------------------------------
 
 % since instant transitions do not effect additional branches in the
 % reachSet object, both reachSet objects have to have the same length
 res = length(R) == length(R_HA);
 
-
-% all sets need to be equal as well (only check first and last time point)
+% ensure that start sets after transitions are equal
 for i=1:length(R)
-    % same number of sets per branch
-    if length(R(i).timePoint.set) ~= length(R_HA(i).timePoint.set)
-        res = false;
-        break
-    end
-
-    % same start set and end set (faster than checking all, and should
-    % catch any potential errors)
-    if ~isequal(project(R(i).timePoint.set{1},[1,2]),R_HA(i).timePoint.set{1}) || ...
-            ~isequal(project(R(i).timePoint.set{end},[1,2]),R_HA(i).timePoint.set{end})
+    if ~isequal(project(R(i).timePoint.set{1},[1,2]),...
+            R_HA(i).timePoint.set{1},1e-14)
         res = false;
         break
     end
 end
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

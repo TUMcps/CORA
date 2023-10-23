@@ -18,12 +18,12 @@ function files = findfiles(path,varargin)
 %
 % See also: none
 
-% Author:        Tobias Ladner
+% Authors:       Tobias Ladner
 % Written:       18-November-2022
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default values
 [includeSubfolders,prefix] = setDefaultValues({true,''},varargin);
@@ -38,4 +38,4 @@ end
 % list files
 files = dir([path filesep subpath prefix '*.m']);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

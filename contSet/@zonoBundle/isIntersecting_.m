@@ -1,7 +1,7 @@
 function res = isIntersecting_(zB,S,varargin)
 % isIntersecting_ - determines if zonotope bundle intersects a set
 %
-% Syntax:  
+% Syntax:
 %    res = isIntersecting_(zB,S)
 %
 % Inputs:
@@ -34,18 +34,18 @@ function res = isIntersecting_(zB,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conZonotope/isIntersecting_
+% See also: contSet/isIntersecting, conZonotope/isIntersecting_
 
-% Author:       Niklas Kochdumper
-% Written:      21-November-2019
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename isIntersecting_)
+% Authors:       Niklas Kochdumper
+% Written:       21-November-2019
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % call function for other set representations
 if isa(S,'halfspace') || isa(S,'conHyperplane') || ...
-   isa(S,'mptPolytope') || isa(S,'ellipsoid')
+   isa(S,'polytope') || isa(S,'ellipsoid')
 
     res = isIntersecting_(S,zB,varargin{:});
 
@@ -55,4 +55,4 @@ else
     
 end     
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

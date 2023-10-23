@@ -1,7 +1,7 @@
 function res = isequal(hs1,hs2,varargin)
 % isequal - checks if two halfspaces are equal
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(hs1,hs2)
 %    res = isequal(hs1,hs2,tol)
 %
@@ -24,12 +24,12 @@ function res = isequal(hs1,hs2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-Sep-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-September-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -48,4 +48,4 @@ inputArgsCheck({{hs1,'att','halfspace'};
 res = all(withinTol(hs1.c,hs2.c,tol)) && ... % normal vectors
     withinTol(hs1.d,hs2.d,tol); % distances to origin
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

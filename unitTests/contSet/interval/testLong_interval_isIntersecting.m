@@ -2,7 +2,7 @@ function res = testLong_interval_isIntersecting
 % testLong_interval_isIntersecting - unit test function of
 %    isIntersecting, note: only interval-to-interval tested!
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_interval_isIntersecting
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_interval_isIntersecting
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      12-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       12-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Random cases
@@ -72,6 +72,4 @@ for i=1:nrOfTests
 
 end
 
-%------------- END OF CODE --------------
-
-
+% ------------------------------ END OF CODE ------------------------------

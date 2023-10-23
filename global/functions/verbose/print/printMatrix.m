@@ -2,7 +2,7 @@ function printMatrix(M,varargin)
 % printMatrix - prints an matrix such that if one executes this command
 %    in the workspace, this matrix would be created
 %
-% Syntax:  
+% Syntax:
 %    printMatrix(M)
 %
 % Inputs:
@@ -17,14 +17,14 @@ function printMatrix(M,varargin)
 %    M = [2 3; -2 1];
 %    printMatrix(M)
 
-% Author:       Matthias Althoff
-% Written:      01-November-2017
-% Last update:  27-June-2018
-%               04-Jan-2021
-%               17-June-2022 (MW, parsing of accuracy)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       01-November-2017
+% Last update:   27-June-2018
+%                04-January-2021
+%                17-June-2022 (MW, parsing of accuracy)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
 if nargin > 3
@@ -96,4 +96,4 @@ if clearLine
     fprintf('\n')
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

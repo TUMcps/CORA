@@ -2,7 +2,7 @@ function res = example_nonlinear_reach_08_subset()
 % example_nonlinear_reach_08_subset - example that demonstrates how to 
 %    extract subsets of reachable sets as described in [1].
 %
-% Syntax:  
+% Syntax:
 %    example_nonlinear_reach_08_subset()
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = example_nonlinear_reach_08_subset()
 %
 % See also: polyZonotope/getSubset
 
-% Author:       Niklas Kochdumper
-% Written:      28-January-2020
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       28-January-2020
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -105,7 +105,6 @@ xlabel('$x_1$','FontSize',20,'interpreter','latex');
 ylabel('$x_2$','FontSize',20,'interpreter','latex');
 
 
-
 % Falsification -----------------------------------------------------------
 
 % compute a falsifying trajectory as described in Sec. 4.1 in [1]
@@ -117,15 +116,15 @@ hs = halfspace(-[1,2],-6.4);
 % construct objective function
 Rproj = -hs.c' * Rfin;
 
-b = -hs.d - Rproj.c - sum(abs(Rproj.Grest));
-x = sym('x',[size(Rproj.expMat,1),1]);
+b = -hs.d - Rproj.c - sum(abs(Rproj.GI));
+x = sym('x',[size(Rproj.E,1),1]);
 
 objSym = -b;
 
 for i = 1:length(Rproj.G)
-   temp = x(1)^Rproj.expMat(1,i);
+   temp = x(1)^Rproj.E(1,i);
    for j = 2:length(x)
-       temp = temp*x(j)^Rproj.expMat(j,i);
+       temp = temp*x(j)^Rproj.E(j,i);
    end
    objSym = objSym + Rproj.G(i)*temp;
 end
@@ -133,10 +132,10 @@ end
 objFun = matlabFunction(-objSym,'Vars',{x});
 
 % compute most critical initial point by optimization (see (28) in [1])
-lb = -ones(size(Rproj.expMat,1),1);
-ub = ones(size(Rproj.expMat,1),1);
+lb = -ones(size(Rproj.E,1),1);
+ub = ones(size(Rproj.E,1),1);
 
-x0 = zeros(size(Rproj.expMat,1),1);
+x0 = zeros(size(Rproj.E,1),1);
 
 tic
 alpha = fmincon(objFun,x0,[],[],[],[],lb,ub);
@@ -177,7 +176,6 @@ xlabel('$x_1$','FontSize',20,'interpreter','latex');
 ylabel('$x_2$','FontSize',20,'interpreter','latex');
 
 
-
 % Optimization ------------------------------------------------------------
 
 % optimization over reachable sets as described in Sec. 4.2 in [1]
@@ -191,7 +189,7 @@ b = [0;0];
 
 % solve optimization problem (see (24) in [1])
 tic
-x = fmincon(fun,[-1;1;-1;1],A,b,[],[],-ones(4,1),ones(4,1),@conFun);
+x = fmincon(fun,[-1;1;-1;1],A,b,[],[],-ones(4,1),ones(4,1),@aux_conFun);
 topt1 = toc;
 disp(['Computation time (optimization): ',num2str(topt1)]);
 
@@ -234,9 +232,9 @@ res = 1;
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function [c,ceq] = conFun(x)
+function [c,ceq] = aux_conFun(x)
 % constrained function for the optimization problem (see (31) in [1])
 
     % compute maximum
@@ -253,4 +251,4 @@ function [c,ceq] = conFun(x)
     ceq = [];
 end
     
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

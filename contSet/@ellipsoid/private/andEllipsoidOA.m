@@ -2,7 +2,7 @@ function E = andEllipsoidOA(E1,E2)
 % andEllipsoidOA - Computes an outer-approximation of the intersection
 %    of an ellipsoid and another ellipsoid or a vector
 %
-% Syntax:  
+% Syntax:
 %    E = andEllipsoidOA(E1,E2)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function E = andEllipsoidOA(E1,E2)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      09-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       09-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if ~isFullDim(E1) && ~isFullDim(E2)
     throw(CORAerror('CORA:degenerateSet',...
@@ -78,7 +78,7 @@ if ~isFullDim(E2)
         Hi = conHyperplane(I(nt+i,:)',x2_rem(i));
         E1 = and_(E1,Hi,'outer');
         % since they are intersecting, E1 will not be empty
-        assert(~isempty(E1),'Bug: Intersection should not be empty');
+        assert(~representsa_(E1,'emptySet',eps),'Bug: Intersection should not be empty');
     end
 
     if nt==1
@@ -112,4 +112,4 @@ else
     E = T*ellipsoid([Qt,zeros(n_nd,n-n_nd);zeros(n-n_nd,n)],[qt;x2_rem]);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

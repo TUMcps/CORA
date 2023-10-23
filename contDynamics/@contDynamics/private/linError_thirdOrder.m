@@ -3,7 +3,7 @@ function [errorStat, errorDyn, errorInt] = ...
     H, Zdelta, errorStat, T, ind3, Zdelta3)
 % linError_thirdOrder - computes the linearization error
 %
-% Syntax:  
+% Syntax:
 %    [errorStat, errorDyn, errorInt] = 
 %           linError_thirdOrder(obj, options, Rall, Rdiff, H, Zdelta, 
 %                               errorStat, T, ind3, Zdelta3)
@@ -40,16 +40,16 @@ function [errorStat, errorDyn, errorInt] = ...
 %       "Reachability Analysis of Nonlinear Systems using
 %           Conservative Polynomialization and Non-Convex Sets"
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      21-August-2012
-% Last update:  18-March-2016
-%               25-July-2016 (intervalhull replaced by interval)
-%               22-January-2018 (NK, fixed error for the sets)
-%               08-February-2018 (NK, higher-order-tensors + clean-up)
-%               21-April-2020 (simplification)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       21-August-2012
+% Last update:   18-March-2016
+%                25-July-2016 (intervalhull replaced by interval)
+%                22-January-2018 (NK, fixed error for the sets)
+%                08-February-2018 (NK, higher-order-tensors + clean-up)
+%                21-April-2020 (simplification)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute interval of reachable set
 dx = interval(Rall);
@@ -165,4 +165,4 @@ errorDyn = reduce(errorDyn,options.reductionTechnique,options.intermediateOrder)
 errorIHabs = abs(interval(errorDyn) + interval(errorStat));
 errorInt = supremum(errorIHabs);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

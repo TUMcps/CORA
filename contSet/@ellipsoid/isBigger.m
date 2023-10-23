@@ -1,7 +1,7 @@
 function res = isBigger(obj,E)
 % isBigger - checks if ellipsoid(E2.Q) \subseteq ellipsoid(E1.Q) 
 %
-% Syntax:  
+% Syntax:
 %    res = isBigger(obj,E)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = isBigger(obj,E)
 %
 % See also: none
 
-% Author:       Victor Gassmann
-% Written:      10-June-2022
-% Last update:  20-March-2023 (VG: allow degeneracy)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       10-June-2022
+% Last update:   20-March-2023 (VG, allow degeneracy)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input
 inputArgsCheck({{obj,'att','ellipsoid','scalar'};
@@ -82,4 +82,4 @@ end
 tmp = max(diag(D));
 res = tmp < 1+tol | withinTol(tmp,1+tol);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function Int = interval(probZ)
 % interval - Overapproximates a probabilistic zonotope by an interval
 %
-% Syntax:  
+% Syntax:
 %    Int = interval(probZ)
 %
 % Inputs:
@@ -22,14 +22,14 @@ function Int = interval(probZ)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      14-September-2006 
-% Last update:  22-March-2007
-%               25-July-2016 (intervalhull replaced by interval)
-%               27-Aug-2019 (generators, center)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       14-September-2006 
+% Last update:   22-March-2007
+%                25-July-2016 (intervalhull replaced by interval)
+%                27-August-2019 (generators, center)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %extract center and generators
 c = center(probZ);
@@ -42,4 +42,4 @@ rightLimit = c + sum(abs(G),2);
 %instantiate interval
 Int = interval(leftLimit,rightLimit);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

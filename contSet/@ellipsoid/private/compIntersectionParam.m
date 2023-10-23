@@ -2,7 +2,7 @@ function val = compIntersectionParam(W1,q1,W2,q2)
 % compIntersectionParam - computes zero root of 'rootfnc' and returns the
 %    corresponding argument
 %
-% Syntax:  
+% Syntax:
 %    val = compIntersectionParam(W1,q1,W2,q2)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function val = compIntersectionParam(W1,q1,W2,q2)
 %
 % See also: and
 
-% Author:       Victor Gassmann
-% Written:      14-October-2019
-% Last update:  20-May-2022 (VG: use interval functionality of fzero)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       14-October-2019
+% Last update:   20-May-2022 (VG, use interval functionality of fzero)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 f = @(p) rootfnc(p,W1,q1,W2,q2);
 try
@@ -106,4 +106,4 @@ end
 %     val = r(ii);
 % end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function fs = enclosePoints(points)
 % enclosePoints - enclose a point cloud with a fullspace object
 %
-% Syntax:  
+% Syntax:
 %    fs = enclosePoints(points)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function fs = enclosePoints(points)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      25-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 fs = fullspace(size(points,1));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

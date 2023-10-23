@@ -1,7 +1,7 @@
 function Znew = splitLongestGen(Z)
 % splitLongestGen - splits the longest generator
 %
-% Syntax:  
+% Syntax:
 %    Znew = splitLongestGen(Z)
 %
 % Inputs:
@@ -26,12 +26,12 @@ function Znew = splitLongestGen(Z)
 %
 % See also: zonotope/splitFirstGen, zonotope/split
 
-% Author:       Niklas Kochdumper
-% Written:      31-May-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       31-May-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
 % object properties
 c = center(Z);
@@ -52,4 +52,4 @@ G2(:,ind) = 0.5*G2(:,ind);
 
 Znew = {zonotope(c1,G1), zonotope(c2,G2)};
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_zonoBundle_generateRandom
 % test_zonoBundle_generateRandom - unit test function of generateRandom
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonoBundle_generateRandom
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonoBundle_generateRandom
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -46,4 +46,4 @@ res(end+1,1) = dim(zB) == n && zB.parallelSets == nrZonos;
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

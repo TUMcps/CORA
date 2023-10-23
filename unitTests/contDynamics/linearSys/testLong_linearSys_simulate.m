@@ -1,7 +1,7 @@
 function res = testLong_linearSys_simulate
 % testLong_linearSys_simulate - unit test for simulate
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_linearSys_simulate
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_linearSys_simulate
 %
 % See also: none
 
-% Author:       Mark Wetzlinger, Laura Luetzow
-% Written:      16-February-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger, Laura Luetzow
+% Written:       16-February-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % system matrix
 A = [-0.3780    0.2839    0.5403   -0.2962
@@ -41,7 +41,7 @@ dim_u = size(B,2);
 C = [1 1 0 0;
      0 -0.5 0.5 0];
 
-% throughput matrix: q x m
+% feedthrough matrix: q x m
 D = [0 0 1;
      0 0 0];
 dim_y = size(D,1);
@@ -122,4 +122,4 @@ for k=1:length(y_lin)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

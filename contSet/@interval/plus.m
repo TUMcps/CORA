@@ -1,7 +1,7 @@
 function res = plus(summand1,summand2)
 % plus - Overloaded '+' operator for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = plus(summand1,summand2)
 %
 % Inputs:
@@ -22,15 +22,15 @@ function res = plus(summand1,summand2)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      19-June-2015
-% Last update:  23-June-2015
-%               10-August-2016
-%               24-August-2016
-%               05-May-2020 (MW, standardized error message)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-June-2015
+% Last update:   23-June-2015
+%                10-August-2016
+%                24-August-2016
+%                05-May-2020 (MW, standardized error message)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % determine the interval object
 [res,summand] = findClassArg(summand1,summand2,'interval');
@@ -50,7 +50,7 @@ try
     
     elseif isa(summand,'zonotope') || isa(summand,'conZonotope') || ...
            isa(summand,'zonoBundle') || isa(summand,'polyZonotope') || ...
-           isa(summand,'mptPolytope') || isa(summand,'conPolyZono')
+           isa(summand,'polytope') || isa(summand,'conPolyZono')
     
         res = summand + res;
     
@@ -70,7 +70,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(res)
+    if representsa_(res,'emptySet',eps)
         return
     elseif isemptyobject(summand)
         res = interval(); return
@@ -84,4 +84,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

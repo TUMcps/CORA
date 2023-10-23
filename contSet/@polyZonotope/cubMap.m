@@ -59,12 +59,12 @@ function pZ = cubMap(pZ, varargin)
 %
 % See also: quadMap, zonotope/cubMap
 
-% Author:       Niklas Kochdumper
-% Written:      17-August-2018
-% Last update:  25-May-2023 (TL: bugfix unique ids for Grest)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       17-August-2018
+% Last update:   25-May-2023 (TL, bugfix unique ids for GI)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
 if nargin < 2
@@ -100,7 +100,7 @@ if nargin == 4 || nargin == 5
         {ind, 'att', 'cell'}});
 
     % mixed cubic multiplication
-    pZ = cubMapMixed(pZ, pZ2, pZ3, T, ind);
+    pZ = aux_cubMapMixed(pZ, pZ2, pZ3, T, ind);
 
 elseif nargin == 2 || nargin == 3
     % syntax cases:
@@ -124,14 +124,14 @@ elseif nargin == 2 || nargin == 3
         {ind, 'att', 'cell'}});
 
     % cubic multiplication
-    pZ = cubMapSingle(pZ, T, ind);
+    pZ = aux_cubMapSingle(pZ, T, ind);
 end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function res = cubMapSingle(pZ, T, ind)
+function res = aux_cubMapSingle(pZ, T, ind)
 % calculates the following set:      { z = (x' T x) * x | x \in pZ }
 
 % split pZ into pZdep that contains the dependent generators,
@@ -139,25 +139,25 @@ function res = cubMapSingle(pZ, T, ind)
 
 % remove independent generators for pZdep
 pZdep = pZ;
-pZdep.Grest = [];
+pZdep.GI = [];
 
 % create new pZ with unique ids for indepedent generators
 % this makes the computation more accurate but will be removed later
-m = size(pZ.Grest, 2);
+m = size(pZ.GI, 2);
 maxId = max(pZ.id);
 indIds = (maxId + 1:maxId + m)';
-pZind = polyZonotope(0*pZ.c, pZ.Grest, [], eye(m), indIds);
+pZind = polyZonotope(0*pZ.c, pZ.GI, [], eye(m), indIds);
 
 % construct extended generator and exponent matrix (extended by center)
 Gext = [pZ.c, pZ.G];
-Eext = [zeros(size(pZ.expMat, 1), 1), pZ.expMat];
+Eext = [zeros(size(pZ.E, 1), 1), pZ.E];
 
 % initialize the resulting generator and exponent matrix
 N = size(Gext, 2);
 n = length(ind);
 M = N * (N + 1) / 2;
 
-Equad = zeros(size(pZ.expMat, 1), M);
+Equad = zeros(size(pZ.E, 1), M);
 Ecub = zeros(size(Equad, 1), size(Equad, 2)*N);
 Gcub = zeros(n, size(Equad, 2)*N);
 
@@ -205,7 +205,7 @@ end
 [ExpNew, Gnew] = removeRedundantExponents(Ecub, Gcub);
 
 % mixed multiplication with the zonotope from the independent terms
-if ~isempty(pZ.Grest) && ~all(all(pZ.Grest == 0))
+if ~isempty(pZ.GI) && ~all(all(pZ.GI == 0))
 
     % cubic map of pZind with itself
     pZindMap = cubMap(pZind, T, ind);
@@ -225,59 +225,59 @@ if ~isempty(pZ.Grest) && ~all(all(pZ.Grest == 0))
     % remove dependencies of previously independent generators
     Zind = zonotope(pZindSum);
 
-    % get resulting c and Grest
-    Grestnew = generators(Zind);
-    cnew = center(Zind);
+    % get resulting c and GI
+    GInew = Zind.G;
+    cnew = Zind.c;
 
 else
-    Grestnew = [];
+    GInew = [];
     cnew = zeros(n, 1);
 end
 
 % construct the resulting polynomial zonotope
 if all(ExpNew(:, 1) == 0)
     res = polyZonotope(cnew+Gnew(:, 1), ...
-        Gnew(:, 2:end), Grestnew, ExpNew(:, 2:end), pZ.id);
+        Gnew(:, 2:end), GInew, ExpNew(:, 2:end), pZ.id);
 else
-    res = polyZonotope(cnew, Gnew, Grestnew, ExpNew, pZ.id);
+    res = polyZonotope(cnew, Gnew, GInew, ExpNew, pZ.id);
 end
 end
 
-function res = cubMapMixed(pZ1, pZ2, pZ3, T, ind)
+function res = aux_cubMapMixed(pZ1, pZ2, pZ3, T, ind)
 % calculates the following set:
 % { z = (x1' T x2) * x3 | x1 \in pZ1, x2 \in pZ2, x3 \in pZ3 }
 
 % bring the exponent matrices to a common representation
-[id_, expMat1, expMat2] = mergeExpMatrix(pZ1.id, pZ2.id, pZ1.expMat, pZ2.expMat);
-[id, expMat1, expMat3] = mergeExpMatrix(id_, pZ3.id, expMat1, pZ3.expMat);
-[~, expMat2, ~] = mergeExpMatrix(id_, pZ3.id, expMat2, pZ3.expMat);
+[id_, E1, E2] = mergeExpMatrix(pZ1.id, pZ2.id, pZ1.E, pZ2.E);
+[id, E1, E3] = mergeExpMatrix(id_, pZ3.id, E1, pZ3.E);
+[~, E2, ~] = mergeExpMatrix(id_, pZ3.id, E2, pZ3.E);
 
 % split into a zonotope Z that over-approximates the dependent generators,
 % and a zonotope Zrem that contains the independent generators
 pZtemp = pZ1;
-pZtemp.Grest = [];
+pZtemp.GI = [];
 Z1 = zonotope(pZtemp);
-Zrem1 = zonotope([0 * pZ1.c, pZ1.Grest]);
+Zrem1 = zonotope([0 * pZ1.c, pZ1.GI]);
 
 pZtemp = pZ2;
-pZtemp.Grest = [];
+pZtemp.GI = [];
 Z2 = zonotope(pZtemp);
-Zrem2 = zonotope([0 * pZ2.c, pZ2.Grest]);
+Zrem2 = zonotope([0 * pZ2.c, pZ2.GI]);
 
 pZtemp = pZ3;
-pZtemp.Grest = [];
+pZtemp.GI = [];
 Z3 = zonotope(pZtemp);
-Zrem3 = zonotope([0 * pZ3.c, pZ3.Grest]);
+Zrem3 = zonotope([0 * pZ3.c, pZ3.GI]);
 
 % construct extended generator and exponent matrix (extended by center)
 Gext1 = [pZ1.c, pZ1.G];
-Eext1 = [zeros(size(expMat1, 1), 1), expMat1];
+Eext1 = [zeros(size(E1, 1), 1), E1];
 
 Gext2 = [pZ2.c, pZ2.G];
-Eext2 = [zeros(size(expMat2, 1), 1), expMat2];
+Eext2 = [zeros(size(E2, 1), 1), E2];
 
 Gext3 = [pZ3.c, pZ3.G];
-Eext3 = [zeros(size(expMat3, 1), 1), expMat3];
+Eext3 = [zeros(size(E3, 1), 1), E3];
 
 % initialize the resulting generator and exponent matrix
 N1 = size(Gext1, 2);
@@ -287,7 +287,7 @@ N3 = size(Gext3, 2);
 n = length(ind);
 M = N1 * N2;
 
-Equad = zeros(size(expMat1, 1), M);
+Equad = zeros(size(E1, 1), M);
 Ecub = zeros(size(Equad, 1), size(Equad, 2)*N3);
 Gcub = zeros(n, size(Equad, 2)*N3);
 
@@ -327,7 +327,7 @@ end
 [ExpNew, Gnew] = removeRedundantExponents(Ecub, Gcub);
 
 % mixed multiplication with the zonotope from the independent terms
-zonoTemp = cubMap(Z1, Zrem2, Z3, T, ind) + ...
+zonoInd = cubMap(Z1, Zrem2, Z3, T, ind) + ...
     cubMap(Zrem1, Z2, Z3, T, ind) + ...
     cubMap(Zrem1, Zrem2, Z3, T, ind) + ...
     cubMap(Z1, Z2, Zrem3, T, ind) + ...
@@ -335,19 +335,19 @@ zonoTemp = cubMap(Z1, Zrem2, Z3, T, ind) + ...
     cubMap(Zrem1, Z2, Zrem3, T, ind) + ...
     cubMap(Zrem1, Zrem2, Zrem3, T, ind);
 
-Grest = generators(zonoTemp);
-c = center(zonoTemp);
+c = zonoInd.c;
+GI = zonoInd.G;
 
 % remove zero generators
-Grest(:, sum(abs(Grest), 1) == 0) = [];
+GI(:, sum(abs(GI), 1) == 0) = [];
 
 % construct the resulting polynomial zonotope
 if all(ExpNew(:, 1) == 0)
-    res = polyZonotope(c+Gnew(:, 1), Gnew(:, 2:end), Grest, ...
+    res = polyZonotope(c+Gnew(:, 1), Gnew(:, 2:end), GI, ...
         ExpNew(:, 2:end), id);
 else
-    res = polyZonotope(c, Gnew, Grest, ExpNew, id);
+    res = polyZonotope(c, Gnew, GI, ExpNew, id);
 end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

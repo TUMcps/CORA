@@ -2,7 +2,7 @@ function R = guardIntersect_polytope(loc,R,guard,options)
 % guardIntersect_polytope - enclosure of guard intersections based on
 %    using a combination of zonotopes and polytopes as described in [1]
 %
-% Syntax:  
+% Syntax:
 %    R = guardIntersect_polytope(loc,R,options)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function R = guardIntersect_polytope(loc,R,guard,options)
 %   [2] M. Althoff et al. "Zonotope bundles for the efficient computation 
 %       of reachable sets", 2011
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      19-December-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       19-December-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % enclose all relevant reachable sets by polytopes
     for i = 1:length(R)
@@ -79,7 +79,7 @@ function R = guardIntersect_polytope(loc,R,guard,options)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function Z = aux_flowEnclosure(sys,V,options)
 % Flow method for enclosing a set of vertices with a zonotope as described 
@@ -115,7 +115,7 @@ function P = aux_conv2polytope(R)
     Zred2 = zonotope(interval(R));
     
     % compute intersection of the two reduced sets
-    P = and_(mptPolytope(Zred1),mptPolytope(Zred2),'exact');
+    P = and_(polytope(Zred1),polytope(Zred2),'exact');
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -6,7 +6,7 @@ function [zSq,zH] = dependentTerms(matZ,r)
 %    time: the for loop has to be executed only once and help functions do
 %    not have to be called so often
 %
-% Syntax:  
+% Syntax:
 %    [zSq,zH] = dependentTerms(matZ,r)
 %
 % Inputs:
@@ -25,12 +25,12 @@ function [zSq,zH] = dependentTerms(matZ,r)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      24-September-2010
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       24-September-2010
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %load data from object structure
 C=matZ.center;
@@ -86,4 +86,4 @@ end
 zSq=matZonotope(sqC,sqG);
 zH=matZonotope(HC,HG);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

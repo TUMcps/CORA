@@ -1,7 +1,7 @@
 function res = test_reachSet_find
 % test_reachSet_find - unit test function for find
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_find()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_reachSet_find
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      10-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       10-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init result
 res = true;
@@ -59,4 +59,4 @@ if ~isequal(R_parent,R1)
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

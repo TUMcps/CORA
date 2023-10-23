@@ -1,7 +1,7 @@
 function obj = set(obj,property,value)
 % set - Set properties of a taylm object
 %
-% Syntax:  
+% Syntax:
 %    obj = set(obj,property,value)
 %
 % Inputs:
@@ -28,20 +28,23 @@ function obj = set(obj,property,value)
 %
 % See also: taylm
 
-% Author:       Niklas Kochdumper
-% Written:      06-April-2018
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       06-April-2018
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-    obj = arrayfun(@(a) s_set(a,property,value), obj, 'UniformOutput', 0);
+    obj = arrayfun(@(a) aux_s_set(a,property,value), obj, 'UniformOutput', 0);
     A = cat(1, obj{:});
     obj = reshape(A, size(obj));
     
 end
 
-function obj = s_set(obj,property,value)
+
+% Auxiliary functions -----------------------------------------------------
+
+function obj = aux_s_set(obj,property,value)
 
     if strcmp(property,'max_order')
         obj.max_order = value;
@@ -59,4 +62,4 @@ function obj = s_set(obj,property,value)
     end
 end
 
-%------------ END OF CODE ------------
+% ------------------------------ END OF CODE ------------------------------

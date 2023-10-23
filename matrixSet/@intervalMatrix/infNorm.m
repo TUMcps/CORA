@@ -1,7 +1,7 @@
 function val = infNorm(A)
 % infNorm - returns the maximum of the infinity norm of an interval matrix
 %
-% Syntax:  
+% Syntax:
 %    val = infNorm(A)
 %
 % Inputs:
@@ -20,14 +20,13 @@ function val = infNorm(A)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      12-February-2007 
-% Last update:  13-April-2023 (MW, move from linProbSys/private ->
-%                                  intervalMatrix)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       12-February-2007 
+% Last update:   13-April-2023 (MW, move from linProbSys/private -> intervalMatrix)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 val = norm(abs(A),Inf);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

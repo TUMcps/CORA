@@ -1,7 +1,7 @@
 function res = test_fullspace_dim
 % test_fullspace_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_dim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -33,4 +33,4 @@ res(end+1,1) = dim(fs) == n;
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

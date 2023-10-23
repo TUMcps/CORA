@@ -2,7 +2,7 @@ function zB = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix or an
 %    interval matrix with a zonotope bundle (see Prop. 1 in [1])
 %
-% Syntax:  
+% Syntax:
 %    zB = mtimes(factor1,factor2)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function zB = mtimes(factor1,factor2)
 %
 % See also: zonotope/mtimes
 
-% Author:       Matthias Althoff
-% Written:      09-November-2010
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       09-November-2010
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % determine zonotope bundle object
 [zB,factor] = findClassArg(factor1,factor2,'zonoBundle');
@@ -49,7 +49,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(zB)
+    if representsa_(zB,'emptySet',eps)
         return
     end
 
@@ -61,4 +61,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

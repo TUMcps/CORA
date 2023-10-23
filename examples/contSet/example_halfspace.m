@@ -1,7 +1,7 @@
 function completed = example_halfspace()
 % example_halfspace - example instantiation of halfspace objects
 %
-% Syntax:  
+% Syntax:
 %    completed = example_halfspace()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_halfspace()
 %
 % See also: none
 
-% Author:        ---
+% Authors:       ---
 % Written:       ---
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % construct halfspace object
 c = [1;1];
@@ -37,7 +37,7 @@ ylim([-3,3]);
 plot(hs,[1,2],'FaceColor',colorblind('r'));
 
 % intersect halfspace with polytope
-poly = mptPolytope([1 0;-1 0;0 1;0 -1;1 1],[3;1;2;2;2]);
+poly = polytope([1 0;-1 0;0 1;0 -1;1 1],[3;1;2;2;2]);
 
 poly_ = hs & poly;
 
@@ -48,4 +48,4 @@ plot(poly);
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

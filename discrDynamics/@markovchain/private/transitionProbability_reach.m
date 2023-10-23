@@ -47,7 +47,7 @@ for k=1:length(R)
     %polytope conversion if niP{k} is a zonotope
     niP_tp = R(k).timePoint.set{end};
     if isa(niP_tp,'zonotope')
-        niP_tp = mptPolytope(niP_tp);
+        niP_tp = polytope(niP_tp);
     end
     % intersection probabilities
     [~, iP_tp] = exactIntersectingCells(field, niP_tp);
@@ -62,7 +62,7 @@ for k=1:length(R)
         %polytope conversion if niP{k} is a zonotope
         niP_ti = R(k).timeInterval.set{i};
         if isa(niP_ti,'zonotope')
-            niP_ti = mptPolytope(niP_ti);
+            niP_ti = polytope(niP_ti);
         end
         % intersection probabilities
         [~, iP_ti] = exactIntersectingCells(field, niP_ti);

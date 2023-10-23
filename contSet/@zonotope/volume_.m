@@ -1,7 +1,7 @@
 function vol = volume_(Z,method,order,varargin)
 % volume_ - computes the volume of a zonotope
 %
-% Syntax:  
+% Syntax:
 %    vol = volume_(Z,method,order)
 %
 % Inputs:
@@ -29,22 +29,22 @@ function vol = volume_(Z,method,order,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/volume
 
-% Author:       Matthias Althoff
-% Written:      24-August-2007 
-% Last update:  19-July-2010
-%               02-September-2019 (incl. approx)
-%               04-May-2020 (MW, add vol=0 cases)
-%               09-September-2020 (MA, Alamo approx added, reduce changed)
-%               27-July-2022 (ME, included batchCombinator)
-%               18-August-2022 (MW, include standardized preprocessing)
-% Last revision:27-March-2023 (MW, rename volume_)
+% Authors:       Matthias Althoff
+% Written:       24-August-2007 
+% Last update:   19-July-2010
+%                02-September-2019 (incl. approx)
+%                04-May-2020 (MW, add vol=0 cases)
+%                09-September-2020 (MA, Alamo approx added, reduce changed)
+%                27-July-2022 (ME, included batchCombinator)
+%                18-August-2022 (MW, include standardized preprocessing)
+% Last revision: 27-March-2023 (MW, rename volume_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % dimension and nrOfGenerators
-G = generators(Z);
+G = Z.G;
 [n,nrOfGens] = size(G);
 
 % non full-dimensional set
@@ -97,4 +97,4 @@ elseif strcmp(method,'alamo')
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

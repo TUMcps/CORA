@@ -1,7 +1,7 @@
 function display(sys)
 % display - Displays a linearSysDT object on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(sys)
 %
 % Inputs:
@@ -32,14 +32,13 @@ function display(sys)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      16-May-2007
-% Last update:  19-June-2022
-%               23-November-2022 (TL: dispInput)
-% Last revision:---
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       16-May-2007
+% Last update:   19-June-2022
+%                23-November-2022 (TL, dispInput)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % disp input if necessary
 dispInput(inputname(1))
@@ -79,8 +78,8 @@ if isOutput
     disp("Output matrix:");
     displayMatrixVector(sys.C,"C");
     
-    % display throughput matrix
-    disp("Throughput matrix:");
+    % display feedthrough matrix
+    disp("Feedthrough matrix:");
     displayMatrixVector(sys.D,"D");
     
     % display constant offset
@@ -88,4 +87,4 @@ if isOutput
     displayMatrixVector(sys.k,"k");
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

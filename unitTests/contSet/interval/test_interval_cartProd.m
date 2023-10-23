@@ -1,7 +1,7 @@
 function res = test_interval_cartProd
 % test_interval_cartProd - unit test function of Cartesian product
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_cartProd
 %
 % Inputs:
@@ -16,13 +16,13 @@ function res = test_interval_cartProd
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-September-2019
-% Last update:  24-September-2019
-%               03-January-2023 (MW, add interval-numeric cases)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-September-2019
+% Last update:   24-September-2019
+%                03-January-2023 (MW, add interval-numeric cases)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. vertcat:
 % create intervals
@@ -107,4 +107,4 @@ res_num2 = isequal(I_,I_true);
 
 res = res_vertcat && res_horzcat && res_num1 && res_num2; % && res_empty;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

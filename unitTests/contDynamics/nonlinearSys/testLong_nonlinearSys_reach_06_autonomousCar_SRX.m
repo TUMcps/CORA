@@ -11,7 +11,7 @@ function res = testLong_nonlinearSys_reach_06_autonomousCar_SRX()
 %    trajectory; It is checked whether the reachable set is enclosed in the
 %    initial set after a certain amount of time.
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_nonlinearSys_reach_06_autonomousCar_SRX()
 %
 % Inputs:
@@ -20,12 +20,12 @@ function res = testLong_nonlinearSys_reach_06_autonomousCar_SRX()
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      15-March-2012
-% Last update:  16-August-2016
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       15-March-2012
+% Last update:   16-August-2016
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 dim_x=6;
 
@@ -60,7 +60,6 @@ options.alg = 'lin';
 options.tensorOrder = 2;
 
 options.X_sample = zonotope([zeros(dim_x,1),1.8*diag([0.1, 0.1, 1, 0.5, 1, 1])]);
-
 
 
 %load reference trajectory
@@ -118,8 +117,7 @@ options.tFinal = finalTime;
 
 
 % Reachability Analysis ---------------------------------------------------
-Rcont = parallelReach(carDyn, options);
-
+Rcont = aux_parallelReach(carDyn, options);
 
 
 % Verification ------------------------------------------------------------
@@ -136,10 +134,9 @@ IH_saved = interval( ...
 res = isequal(IH,IH_saved,1e-8);
 
 
+% Auxiliary functions -----------------------------------------------------
 
-% Auxiliary Functions -----------------------------------------------------
-
-function Rcont = parallelReach(sys_init, options)
+function Rcont = aux_parallelReach(sys_init, options)
 
 derivatives(sys_init,options); 
 
@@ -260,4 +257,4 @@ while (t<options.tFinal) && perfInd<1
 end
 toc
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = testLong_capsule_radius
 % testLong_capsule_radius - unit test function of radius
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_capsule_radius
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_capsule_radius
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      12-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       12-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % random tests
 res = true;
@@ -37,4 +37,4 @@ for n=1:2:30
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

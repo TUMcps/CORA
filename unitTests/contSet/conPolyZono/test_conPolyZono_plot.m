@@ -18,23 +18,23 @@ function res = test_conPolyZono_plot
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      25-May-2022
-% Last update:  09-May-2023 (TL: added plotted point checks)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-May-2022
+% Last update:   09-May-2023 (TL, added plotted point checks)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
 % construct constrained polynomial zonotope
 c = [0;0];
 G = [1 0 1 -1; 0 1 1 1];
-expMat = [1 0 1 2; 0 1 1 0; 0 0 1 1];
+E = [1 0 1 2; 0 1 1 0; 0 0 1 1];
 A = [1 -0.5 0.5];
 b = 0.5;
-expMat_ = [0 1 2; 1 0 0; 0 1 0];
-cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+EC = [0 1 2; 1 0 0; 0 1 0];
+cPZ = conPolyZono(c,G,E,A,b,EC);
 
 try
     % try all variations in plotting
@@ -78,4 +78,4 @@ end
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

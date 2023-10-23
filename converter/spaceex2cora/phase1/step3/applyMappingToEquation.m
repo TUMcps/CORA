@@ -2,7 +2,7 @@ function equation = applyMappingToEquation(equation,bind)
 % applyMappingToEquation - Applies the variable mapping of a Bind struct to
 %    a Flow or Reset struct
 %
-% Syntax:  
+% Syntax:
 %    equation = applyMappingToEquation(equation,bind)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function equation = applyMappingToEquation(equation,bind)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % rename left-side variables
 equation.varNames = applyRenames(equation.varNames,bind.keys,bind.renames);
@@ -36,4 +36,4 @@ equation.varNames = applyRenames(equation.varNames,bind.keys,bind.renames);
 equation.expressions = applySymMapping(equation.expressions,...
     bind.keys,bind.values);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

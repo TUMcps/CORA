@@ -1,7 +1,7 @@
 function res = contains_(C,S,varargin)
 % contains_ - determines if a capsule contains a set or a point
 %
-% Syntax:  
+% Syntax:
 %    res = contains_(C,S)
 %
 % Inputs:
@@ -31,15 +31,15 @@ function res = contains_(C,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/contains_
+% See also: contSet/contains, zonotope/contains_
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      20-November-2019
-% Last update:  15-November-2022 (MW, return logical array for points)
-%               25-November-2022 (MW, rename 'contains')
-% Last revision:27-March-2023 (MW, rename contains_)
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       20-November-2019
+% Last update:   15-November-2022 (MW, return logical array for points)
+%                25-November-2022 (MW, rename 'contains')
+% Last revision: 27-March-2023 (MW, rename contains_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
     % init result
     res = true;
@@ -80,7 +80,7 @@ function res = contains_(C,S,varargin)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function res = aux_containsCapsule(C1,C2)
 % checks if the capsule obj2 is contained in the capsule obj2
@@ -179,4 +179,4 @@ function res = aux_inSphere(c,r,p)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

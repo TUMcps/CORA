@@ -1,7 +1,7 @@
 function res = testLong_capsule_randPoint
 % testLong_capsule_randPoint - unit test function of randPoint
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_capsule_randPoint
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_capsule_randPoint
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
-% Last update:  12-March-2021 (MW, more thorough testing)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-September-2019
+% Last update:   12-March-2021 (MW, more thorough testing)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 numPoints = 100;
 
@@ -45,4 +45,4 @@ for n=1:2:20
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function pZ = noIndep(pZ)
 % noIndep - removes independent generator matrix from polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    pZ = noIndep(pZ)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function pZ = noIndep(pZ)
 %
 % See also: none
 
-% Author:        Victor Gassmann
+% Authors:       Victor Gassmann
 % Written:       21-January-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-pZ.Grest = zeros(dim(pZ),0);
+pZ.GI = zeros(dim(pZ),0);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = testLong_zonotope_dim
 % testLong_zonotope_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_zonotope_dim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      11-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -52,4 +52,4 @@ for i=1:nrOfTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

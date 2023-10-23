@@ -7,7 +7,7 @@ function res = testSDPT3_linearSysDT_observe_gain_05_PRadD()
 % test checks whether the same result as in a previous implementation is 
 % obtained
 %
-% Syntax:  
+% Syntax:
 %    res = testSDPT3_linearSysDT_observe_gain_05_PRadD
 %
 % Inputs:
@@ -22,12 +22,12 @@ function res = testSDPT3_linearSysDT_observe_gain_05_PRadD()
 %        discrete-time descriptor LPV systems. IEEE Transactions
 %        on Automatic Control, 64(5):2092-2099, 2019.
 
-% Author:       Matthias Althoff
-% Written:      01-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       01-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "observe_gain_PRadD"
 path = CORAROOT;
@@ -66,4 +66,4 @@ delete(target);
 rmpath(genpath(path));
 addpath(genpath(path));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

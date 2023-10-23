@@ -1,7 +1,7 @@
 function [Zred]=reduceMethB(Z,order,filterLength)
 % reduceMethB - prefilters longest generators and use exhaustive search
 %
-% Syntax:  
+% Syntax:
 %    [Zred]=reduceMethB(Z,order,filterLength)
 %
 % Inputs:
@@ -18,14 +18,14 @@ function [Zred]=reduceMethB(Z,order,filterLength)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      11-September-2008
-% Last update:  06-March-2009
-%               28-September-2010
-%               27-June-2018
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       11-September-2008
+% Last update:   06-March-2009
+%                28-September-2010
+%                27-June-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % initialize Z_red
 Zred=Z;
@@ -66,7 +66,8 @@ if ~isempty(Gred)
 end
 
 %build reduced zonotope
-Zred.Z=[c,Gunred,Gred];
+Zred.c = c;
+Zred.G = [Gunred,Gred];
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

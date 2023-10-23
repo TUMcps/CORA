@@ -2,7 +2,7 @@ function [Rnext, options] = initReach(obj, Rstart, options)
 % initReach - computes the reachable continuous set for the next step
 %    given the current set as the start set
 %
-% Syntax:  
+% Syntax:
 %    [Rnext, options] = initReach(obj, Rstart, options)
 %
 % Inputs:
@@ -22,13 +22,13 @@ function [Rnext, options] = initReach(obj, Rstart, options)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      22-November-2011
-% Last update:  08-August-2016
-%               11-January-2021 (MW, enable splitting)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       22-November-2011
+% Last update:   08-August-2016
+%                11-January-2021 (MW, enable splitting)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % regular iteration (incl. splits)
 if isstruct(Rstart)
@@ -104,4 +104,4 @@ Rnext.tp = Rtotal_tp;
 Rnext.ti = Rtotal_ti;
 Rnext.y = Rtotal_y;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

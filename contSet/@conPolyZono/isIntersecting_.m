@@ -2,7 +2,7 @@ function res = isIntersecting_(cPZ,S,type,varargin)
 % isIntersecting_ - determines if a constrained polynomial zonotope
 %    intersects a set
 %
-% Syntax:  
+% Syntax:
 %    res = isIntersecting_(cPZ,S)
 %    res = isIntersecting_(cPZ,S,type)
 %
@@ -17,11 +17,11 @@ function res = isIntersecting_(cPZ,S,type,varargin)
 % Example: 
 %    c = [0;0];
 %    G = [8 4; 0 8];
-%    expMat = [1 0; 0 1; 0 0];
+%    E = [1 0; 0 1; 0 0];
 %    A = [1 1 -0.25];
 %    b = 0.75;
-%    expMat_ = [2 0 0; 0 2 0; 0 0 1];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    EC = [2 0 0; 0 2 0; 0 0 1];
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 %    pZ1 = polyZonotope([0;0],0.5*[1 -2 1; 2 3 1],[],[1 0 2;0 1 1]);
 %    pZ2 = polyZonotope([0;0],[1 -2 1; 2 3 1],[],[1 0 2;0 1 1]);
 %
@@ -37,14 +37,14 @@ function res = isIntersecting_(cPZ,S,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: polyZonotope/isIntersecting_, isempty
+% See also: contSet/isIntersecting, polyZonotope/isIntersecting_, isempty
 
-% Author:       Niklas Kochdumper
-% Written:      04-February-2021
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename isIntersecting_)
+% Authors:       Niklas Kochdumper
+% Written:       04-February-2021
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if strcmp(type,'exact')
     throw(CORAerror('CORA:noExactAlg',cPZ,S));
@@ -68,11 +68,11 @@ if isa(S,'conPolyZono') || isa(S,'polyZonotope') || ...
     I = and_(cPZ,S,'exact');
     
     % check if the intersection is empty
-    res = ~isempty(I);
+    res = ~representsa_(I,'emptySet',eps);
     
     
 elseif isa(S,'halfspace') || isa(S,'conHyperplane') || ...
-       isa(S,'mptPolytope') || isa(S,'zonotope') || ...
+       isa(S,'polytope') || isa(S,'zonotope') || ...
        isa(S,'interval') || isa(S,'zonoBundle') || ...
        isa(S,'conZonotope') || isa(S,'ellipsoid')
 
@@ -84,4 +84,4 @@ else
     throw(CORAerror('CORA:noops',cPZ,S));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

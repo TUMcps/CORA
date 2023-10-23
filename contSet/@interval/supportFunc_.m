@@ -2,7 +2,7 @@ function [val,x] = supportFunc_(I,dir,type,varargin)
 % supportFunc_ - Calculate the upper or lower bound of an interval along a
 %    certain direction
 %
-% Syntax:  
+% Syntax:
 %    val = supportFunc_(I,dir,type)
 %    [val,x] = supportFunc_(I,dir,type)
 %
@@ -24,17 +24,17 @@ function [val,x] = supportFunc_(I,dir,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/supportFunc_
+% See also: contSet/supportFunc, zonotope/supportFunc_
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      19-November-2019
-% Last update:  27-March-2023 (MW, rename supportFunc_)
-% Last revision:06-April-2023 (MW, rewrite function)
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       19-November-2019
+% Last update:   27-March-2023 (MW, rename supportFunc_)
+% Last revision: 06-April-2023 (MW, rewrite function)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % special handling for empty set
-if isempty(I)
+if isemptyobject(I)
     x = [];
     if strcmp(type,'upper')
         val = -Inf;
@@ -71,4 +71,4 @@ end
 %     [val,x] = supportFunc_(zonotope(I),dir,varargin{:});
 % end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

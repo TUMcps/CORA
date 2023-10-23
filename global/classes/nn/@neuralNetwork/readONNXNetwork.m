@@ -1,5 +1,8 @@
-function obj = readONNXNetwork(file_path, verbose, inputDataFormats, outputDataFormats)
+function obj = readONNXNetwork(file_path, varargin)
 % readONNXNetwork - reads and converts a network saved in onnx format
+%    Note: If the onnx network contains a custom layer, this function will
+%    create a +CustomLayer package folder containing all custom layers in
+%    your current MATLAB directory.
 %
 % Syntax:
 %    res = neuralNetwork.readONNXNetwork(file_path)
@@ -17,98 +20,110 @@ function obj = readONNXNetwork(file_path, verbose, inputDataFormats, outputDataF
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: neuralnetwork2cora
+% See also: -
 
-% Author:       Tobias Ladner
-% Written:      30-March-2022
-% Last update:  07-June-2022 (specify in- & outputDataFormats)
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       30-March-2022
+% Last update:   07-June-2022 (specify in- & outputDataFormats)
+%                30-November-2022 (removed neuralNetworkOld)
+%                13-February-2023 (simplified function)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % validate parameters
-if nargin < 2
-    verbose = false;
+if nargin < 1
+    throw(CORAerror("CORA:notEnoughInputArgs", 1))
+elseif nargin > 5
+    throw(CORAerror("CORA:tooManyInputArgs", 5))
 end
-if nargin < 3
-    inputDataFormats = 'BC';
-end
-if nargin < 4
-    outputDataFormats = 'BC';
+[verbose, inputDataFormats, outputDataFormats, targetNetwork] = ...
+    setDefaultValues({false, 'BC', 'BC', 'dagnetwork'}, varargin);
+
+% valid in-/outputDataFormats for importONNXNetwork
+validDataFormats = {'','BC','BCSS','BSSC','CSS','SSC','BCSSS','BSSSC', ...
+    'CSSS','SSSC','TBC','BCT','BTC','1BC','T1BC','TBCSS','TBCSSS'};
+inputArgsCheck({ ...
+    {verbose, 'att', 'logical'}; ...
+    {inputDataFormats, 'str', validDataFormats}; ...
+    {outputDataFormats, 'str', validDataFormats}; ...
+    {targetNetwork, 'str', {'dagnetwork', 'dlnetwork'}}; ...
+})
+
+
+if verbose
+    disp("Reading network...")
 end
 
+% try to read ONNX network using dltoolbox
 try
-    if verbose
-        disp("Reading Network: Try #1 ...")
-    end
+    dltoolbox_net = aux_readONNXviaDLT(file_path,inputDataFormats,outputDataFormats,targetNetwork);
 
-    dltoolbox_net = importONNXNetwork(file_path, ...
-        'InputDataFormats', inputDataFormats, 'OutputDataFormats', outputDataFormats);
-    obj = neuralNetwork.convertDLToolboxNetwork(dltoolbox_net.Layers, verbose);
-catch ex
-    try
-        if verbose
-            disp("Reading Network: Try #2 ...")
-        end
+catch ME
+    if strcmp(ME.identifier, 'MATLAB:javachk:thisFeatureNotAvailable') && ...
+            contains(ME.message,'Swing is not currently available.')
+        % matlab tries to indent the code of the generated files for 
+        % custom layers, for which (somehow?) a gui is required.
+        % As e.g. docker runs don't have a gui, we just try to remove the
+        % 'indentcode' function call here ...
+        aux_removeIndentCodeLines(ME);
 
-        dltoolbox_net = importONNXNetwork(input, 'OutputLayerType', 'regression');
-        obj = neuralNetwork.convertDLToolboxNetwork(dltoolbox_net.Layers, verbose);
-    catch
-        try
-            if verbose
-                disp("Reading Network: Try #3 ...")
-            end
+        % re-read network
+        dltoolbox_net = aux_readONNXviaDLT(file_path,inputDataFormats,outputDataFormats,targetNetwork);
 
-            dltoolbox_net = importONNXNetwork(input, 'OutputLayerType', ...
-                'regression', 'TargetNetwork', 'dlnetwork');
-            % TODO: remove dependency on neuralNetworkOld
-            nn_old = aux_constructFromParams(dltoolbox_net.Learnables.Value);
-            obj = neuralNetwork.getFromOldNeuralNetwork(nn_old);
-        catch
-            try
-                if verbose
-                    disp("Reading Network: Try #4 ...")
-                end
-
-                L = importONNXLayers(input, 'OutputLayerType', ...
-                    'regression', 'ImportWeights', true);
-                obj = neuralNetwork.convertDLToolboxNetwork(L, verbose);
-            catch
-                rethrow(ex);
-            end
-        end
+    else
+        rethrow(ME)
     end
 end
+
+% convert DLT network to CORA network
+obj = neuralNetwork.convertDLToolboxNetwork(dltoolbox_net.Layers, verbose);
+
 
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function NN = aux_constructFromParams(params)
-% construct a neural network from the learnable parameters
+function dltoolbox_net = aux_readONNXviaDLT(file_path,inputDataFormats,outputDataFormats,targetNetwork)
+    % custom layers will be stored in this folder
+    customLayerName = 'CustomLayers';
 
-% TODO: remove dependency on neuralNetworkOld
+    % read ONNX network via DLT
+    dltoolbox_net = importONNXNetwork(file_path, ...
+        'InputDataFormats', inputDataFormats, ...
+        'OutputDataFormats', outputDataFormats, ...
+        'PackageName', customLayerName, ...
+        'TargetNetwork', targetNetwork);
+end
 
-% extract weights and biases from the learnable parameters
-W = {};
-b = {};
+function aux_removeIndentCodeLines(ME)
 
-for i = 1:length(params)
-    if size(params{i}, 2) == 1
-        b{end+1, 1} = double(extractdata(params{i}));
-    else
-        W{end+1, 1} = double(extractdata(params{i}))';
+    % remove 'indentcode' function call 
+
+    files = {'nnet.internal.cnn.onnx.fcn.ModelTranslation', 'nnet.internal.cnn.onnx.CustomLayerManager'};
+
+    for i=1:length(files)
+        % error happens in this file
+        internalPath = which(files{i});
+    
+        % read text and comment failing line
+        filetext = fileread(internalPath);
+        filetext = strrep(filetext,"indentcode(","(");
+    
+        % try to read file with write permission
+        fid  = fopen(internalPath,'w');
+        if fid == -1
+            % rethrowing error
+            rethrow(ME)
+        end
+    
+        % write new filetext
+        fprintf(fid,'%s',filetext);
+        fclose(fid);
+
     end
+
 end
 
-% try to construct a neuralNetworkOld object
-actFun = [repmat({'ReLU'}, [length(W) - 1, 1]); {'identity'}];
-
-NN = neuralNetworkOld(W, b, actFun);
-
-warning(['Could not determine activation functions,', ...
-    ' so ReLUs are used as a default.']);
-end
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

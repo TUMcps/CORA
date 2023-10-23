@@ -2,7 +2,7 @@ function res = testLong_conZonotope_conZonotope
 % testLong_conZonotope_conZonotope - unit test function of
 %    conZonotope (constructor)
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conZonotope_conZonotope
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_conZonotope_conZonotope
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      19-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 nrOfTests = 1000;
@@ -46,26 +46,26 @@ for i=1:nrOfTests
     % admissible initializations
     % only zonotope matrix
     cZ = conZonotope(Z);
-    if ~compareMatrices(cZ.Z,Z)
+    if ~compareMatrices([cZ.c,cZ.G],Z)
         res = false; break;
     end
 
     % center and generator matrix
     cZ = conZonotope(c,G);
-    if ~all(all(withinTol(cZ.Z,Z)))
+    if ~all(all(withinTol([cZ.c,cZ.G],Z)))
         res = false; break;
     end
 
     % zonotope matrix, constraint matrix, constraint vector
     cZ = conZonotope(Z,A,b);
-    if ~all(all(withinTol(cZ.Z,Z))) || ~all(all(withinTol(cZ.A,A))) ...
+    if ~all(all(withinTol([cZ.c,cZ.G],Z))) || ~all(all(withinTol(cZ.A,A))) ...
             || ~all(withinTol(cZ.b,b))
         res = false; break;
     end
     
     % center, generator matrix, constraint matrix, constraint vector
     cZ = conZonotope(c,G,A,b);
-    if ~all(all(withinTol(cZ.Z,Z))) || ~all(all(withinTol(cZ.A,A))) ...
+    if ~all(all(withinTol([cZ.c,cZ.G],Z))) || ~all(all(withinTol(cZ.A,A))) ...
             || ~all(withinTol(cZ.b,b))
         res = false; break;
     end
@@ -116,4 +116,4 @@ for i=1:nrOfTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

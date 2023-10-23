@@ -18,19 +18,19 @@ function invariant_cora2spaceex(Obj,location, docNode, inv)
 %
 % See also: cora2spaceex
 
-% Author:        Farah Atour
+% Authors:       Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isa(Obj,'hybridAutomaton')
     
         % convert invariant set to polytope if possible
     if isa(inv,'interval') || isa(inv,'zonotope') || ...
        isa(inv,'conZonotope') || isa(inv,'zonoBundle')
-       inv = mptPolytope(inv);
+       inv = polytope(inv);
     end
     
     % convert the different types of invariant sets
@@ -38,9 +38,9 @@ if isa(Obj,'hybridAutomaton')
         
         eqs = conHyperplane_cora2spaceex(inv);
         
-    elseif isa(inv,'mptPolytope')
+    elseif isa(inv,'polytope')
         
-        eqs = mptPolytope_cora2spaceex(inv);
+        eqs = polytope_cora2spaceex(inv);
         
     elseif isa(inv,'levelSet')
         
@@ -66,4 +66,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

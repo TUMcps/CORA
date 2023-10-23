@@ -25,13 +25,13 @@ function res = ne(I1,I2,varargin)
 %
 % See also: interval/isequal
 
-% Author:       Dmitry Grebenyuk
-% Written:      06-August-2017
-% Last update:  23-December-2022 (MW, call isequal)
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       06-August-2017
+% Last update:   23-December-2022 (MW, call isequal)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = ~isequal(I1,I2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

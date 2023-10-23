@@ -4,7 +4,7 @@ function res = testLong_nonlinearSys_reach_poly
 %
 % Checks if the reachable set contains all simulated points
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_nonlinearSys_reach_poly
 %
 % Inputs:
@@ -13,12 +13,12 @@ function res = testLong_nonlinearSys_reach_poly
 % Outputs:
 %    res - true/false 
 
-% Author:       Niklas Kochdumper
-% Written:      04-August-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       04-August-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -94,4 +94,4 @@ res = all(contains(pgon,points));
 % plot(R.timePoint.set{end},[1,2],'r','Splits',12);
 % plot(points(1,:),points(2,:),'.k');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

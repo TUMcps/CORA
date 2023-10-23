@@ -2,7 +2,7 @@ function matP = plus(summand1,summand2)
 % plus - Overloaded '+' operator for the Minkowski addition of two matrix
 %    polytopes or a matrix polytope with a matrix
 %
-% Syntax:  
+% Syntax:
 %    matP = plus(summand1,summand2)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function matP = plus(summand1,summand2)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      21-June-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-June-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %Find a matrix polytope object
 [matP,summand] = findClassArg(summand1,summand2,'matPolytope');
@@ -79,4 +79,4 @@ elseif isnumeric(summand)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

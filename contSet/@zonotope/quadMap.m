@@ -1,7 +1,7 @@
 function Zquad = quadMap(Z1,varargin)
 % quadMap - computes the quadratic map of a zonotope
 %
-% Syntax:  
+% Syntax:
 %    Zquad = quadMap(Z1,Q)
 %    Zquad = quadMap(Z1,Z2,Q)
 %
@@ -36,32 +36,32 @@ function Zquad = quadMap(Z1,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      07-December-2011
-% Last update:  22-November-2019 (NK, combined with mixed quad. mul.)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       07-December-2011
+% Last update:   22-November-2019 (NK, combined with mixed quad. mul.)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     if nargin == 1
         throw(CORAerror('CORAerror:notEnoughInputArgs',2));
     elseif nargin == 2
         if isa(varargin{1}{1},'matZonotope')
-            Zquad = quadMapSingleMatZono(Z1,varargin{1});
+            Zquad = aux_quadMapSingleMatZono(Z1,varargin{1});
         else
-            Zquad = quadMapSingle(Z1,varargin{1});
+            Zquad = aux_quadMapSingle(Z1,varargin{1});
         end
     elseif nargin == 3
-        Zquad = quadMapMixed(Z1,varargin{1},varargin{2});
+        Zquad = aux_quadMapMixed(Z1,varargin{1},varargin{2});
     else
         throw(CORAerror('CORA:tooManyInputArgs',3));
     end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function Zquad = quadMapSingle(Z,Q)
+function Zquad = aux_quadMapSingle(Z,Q)
 % compute an over-approximation of the quadratic map 
 %
 % {x_i = x^T Q{i} x | x \in Z} 
@@ -69,9 +69,9 @@ function Zquad = quadMapSingle(Z,Q)
 % of a zonotope according to Lemma 1 in [1]
 
     % get matrix of zonotope
-    Zmat = Z.Z;
+    Zmat = [Z.c,Z.G];
     dimQ = length(Q);
-    gens = length(Zmat(1,:)) - 1;
+    gens = size(Z.G,2);
 
     % init solution
     c = zeros(dimQ,1);
@@ -115,7 +115,7 @@ function Zquad = quadMapSingle(Z,Q)
     
 end
 
-function Zquad = quadMapMixed(Z1,Z2,Q)
+function Zquad = aux_quadMapMixed(Z1,Z2,Q)
 % compute an over-approximation of the quadratic map 
 %
 % {x_i = x1^T Q{i} x2 | x1 \in Z1, x2 \in Z2} 
@@ -123,8 +123,8 @@ function Zquad = quadMapMixed(Z1,Z2,Q)
 % of two zonotope objects.
 
     % get matrix of zonotope
-    Zmat1 = Z1.Z;
-    Zmat2 = Z2.Z;
+    Zmat1 = [Z1.c,Z1.G];
+    Zmat2 = [Z2.c,Z2.G];
     dimQ = length(Q);
     
     % init solution (center + generator matrix)
@@ -155,7 +155,7 @@ function Zquad = quadMapMixed(Z1,Z2,Q)
 
 end
 
-function Zquad = quadMapSingleMatZono(Z,Q)
+function Zquad = aux_quadMapSingleMatZono(Z,Q)
 % compute an over-approximation of the quadratic map
 %
 % {x_i = x^T Q{i} x | x \in Z} 
@@ -180,12 +180,12 @@ function Zquad = quadMapSingleMatZono(Z,Q)
         end
         
         temp = quadMap(Z,Q_);
-        Z_K{j} = temp.Z;
+        Z_K{j} = [temp.c,temp.G];
     end
     
     % overall zonotope
-    Zquad = zonotope([Z_D.Z,[Z_K{:}]]);
-    Zquad = deleteZeros(Zquad);
+    Zquad = zonotope(Z_D.c, [Z_D.G,[Z_K{:}]]);
+    Zquad = compact_(Zquad,'zeros',eps);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

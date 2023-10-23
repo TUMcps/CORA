@@ -1,7 +1,7 @@
 function res = test_zonoBundle_dim
 % test_zonoBundle_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonoBundle_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonoBundle_dim
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
 zB = zonoBundle();
@@ -44,4 +44,4 @@ res(end+1,1) = n == 2;
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

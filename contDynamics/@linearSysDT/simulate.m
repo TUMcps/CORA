@@ -15,8 +15,8 @@ function [t,x,ind,y] = simulate(obj,params)
 %               m x z, where
 %               m = number of system inputs, and
 %               z = 1 (fixed input) or
-%                   s (if no throughput matrix given)
-%                   s+1 (if throughput matrix given)
+%                   s (if no feedthrough matrix given)
+%                   s+1 (if feedthrough matrix given)
 %                   where s is the number of steps
 %       .w: disturbance of dimension n x s (n = system dimension)
 %       .v: sensor noise of dimension n_out x s+1 (n_out = output dimension)
@@ -47,16 +47,14 @@ function [t,x,ind,y] = simulate(obj,params)
 %
 % See also: nonlinearSysDT/simulate
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
-% Written:      20-March-2020
-% Last update:  24-March-2020 (NK)
-%               08-May-2020 (MW, update interface)
-%               12-Jan-2021 (MA, disturbance input added; needs to be moved
-%                                outside this function in the future)
-% Last revision:16-November-2021 (MW, simplify loop, rewrite handling of
-%                                     params.u|w|v, integrate output)
+% Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
+% Written:       20-March-2020
+% Last update:   24-March-2020 (NK)
+%                08-May-2020 (MW, update interface)
+%                12-January-2021 (MA, disturbance input added)
+% Last revision: 16-November-2021 (MW, simplify loop, rewrite handling of params.u|w|v, integrate output)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 if ~isfield(params,'tStart')
@@ -111,7 +109,7 @@ end
 end
 
 
-% Auxiliary function ------------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function params = aux_uwv(obj,params,steps)
 
@@ -121,7 +119,7 @@ if ~isfield(params,'u')
     % if an output equation is given, but we keep it simple
     params.u = zeros(obj.nrOfInputs,steps+1);
 else
-    % length depends on whether throughput matrix is all-zero or not
+    % length depends on whether feedthrough matrix is all-zero or not
     if any(any(obj.D))
         columns_u = steps+1;
     else
@@ -130,7 +128,7 @@ else
 	if size(params.u,2) == 1
         % length always steps+1
         params.u = repmat(params.u,1,steps+1);
-    elseif size(params.u,2) ~= columns_u
+    elseif size(params.u,2) ~= columns_u && size(params.u,2) ~= steps+1
         throw(CORAerror('CORA:wrongFieldValue','params.u',...
             'has to be of size(2) of steps+1'));
     elseif ~any(any(obj.D))
@@ -166,4 +164,4 @@ end
 
 end
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

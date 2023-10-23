@@ -1,7 +1,7 @@
 function res = rdivide(numerator, denominator)
 % rdivide - Overload './' operator for Taylor models
 %
-% Syntax:  
+% Syntax:
 %    res = rdivide(numerator,denominator)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = rdivide(numerator, denominator)
 %
 % See also: taylm
 
-% Author:       Niklas Kochdumper
-% Written:      14-June-2017
-% Last update:  ---  
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       14-June-2017
+% Last update:   ---  
+% Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     if isa(numerator,'taylm') && isa(denominator,'taylm')
         
@@ -49,4 +49,4 @@ function res = rdivide(numerator, denominator)
     res = reshape(A, size(res));
 end
 
-%------------ END OF CODE ------------
+% ------------------------------ END OF CODE ------------------------------

@@ -20,13 +20,13 @@ function res = VALIDATEOPTIONS_ERRORS
 %
 % See also: validateOptions.m
 
-% Author:       Mark Wetzlinger
-% Written:      19-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

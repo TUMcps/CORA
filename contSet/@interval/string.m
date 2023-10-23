@@ -1,7 +1,7 @@
 function str = string(I)
 % string - conversion of an interval to a string
 %
-% Syntax:  
+% Syntax:
 %    str = string(I)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function str = string(I)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      27-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % read out rows and columns
 [rows,cols] = size(I);
@@ -37,4 +37,4 @@ for i=1:rows
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

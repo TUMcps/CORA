@@ -1,7 +1,7 @@
 function res = test_nn_zonotope_relu()
 % test_nn_zonotope_relu - tests nn with relu activation using zonotopes
 %
-% Syntax:  
+% Syntax:
 %    res = test_nn_zonotope_relu()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_nn_zonotope_relu()
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      24-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       24-June-2022
+% Last update:   30-November-2022 (point inclusion check)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % load W, b, input_ref, output_ref (from previous model)
 load('model_test_nn_zonotope_relu.mat');
@@ -38,10 +38,18 @@ for i = 1:length(W)
 end
 nn_new = neuralNetwork(layers);
 
-% calculate output
-output_new = nn_new.evaluate(input_ref);
+evParams = struct;
+evParams.poly_method = 'singh';
 
-res = is_close(output_ref.Z, output_new.Z);
+% calculate output
+output_new = nn_new.evaluate(input_ref, evParams);
+res = isequal(output_ref, output_new, 1e-15);
+
+% compute points
+points = [input_ref.randPoint(500), input_ref.randPoint(500, 'extreme')];
+points = nn_new.evaluate(points);
+res = res && all(contains(output_ref, points));
+
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

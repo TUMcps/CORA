@@ -1,7 +1,7 @@
 function res = contains_(ls,S,type,tol,varargin)
 % contains_ - determines if a level set contains a set or a point
 %
-% Syntax:  
+% Syntax:
 %    res = contains_(ls,S)
 %    res = contains_(ls,S,type)
 %    res = contains_(ls,S,type,tol)
@@ -38,15 +38,15 @@ function res = contains_(ls,S,type,tol,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: halfspace/contains_, conHyperplane/contains_
+% See also: contSet/contains, halfspace/contains_, conHyperplane/contains_
 
-% Author:       Niklas Kochdumper
-% Written:      19-July-2019
-% Last update:  15-November-2022 (MW, return logical array for points)
-%               25-November-2022 (MW, rename 'contains')
-% Last revision:27-March-2023 (MW, rename contains_)
+% Authors:       Niklas Kochdumper
+% Written:       19-July-2019
+% Last update:   15-November-2022 (MW, return logical array for points)
+%                25-November-2022 (MW, rename 'contains')
+% Last revision: 27-March-2023 (MW, rename contains_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set or single point 
 if ~isnumeric(S)                                     % set
@@ -136,4 +136,4 @@ else                                                    % array of points
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

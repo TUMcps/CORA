@@ -1,7 +1,7 @@
 function res = test_interval_capsule
 % test_interval_capsule - unit test function of conversion to capsules
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_capsule
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_capsule
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init interval
 I = interval([-2;-1],[4;7]);
@@ -52,4 +52,4 @@ res(end+1,1) = all(contains(C,V));
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

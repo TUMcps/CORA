@@ -1,7 +1,7 @@
 function han = plot(probZ,varargin)
 % plot - plots a projection of a probabilistic zonotope
 %
-% Syntax:  
+% Syntax:
 %    han = plot(probZ)
 %    han = plot(probZ,dims)
 %    han = plot(probZ,dims,type)
@@ -28,13 +28,13 @@ function han = plot(probZ,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      03-August-2007
-% Last update:  17-July-2020
-%               25-May-2022 (TL: 1D Plotting)
-% Last revision:12-July-2023 (TL, restructure)
+% Authors:       Matthias Althoff
+% Written:       03-August-2007
+% Last update:   17-July-2020
+%                25-May-2022 (TL, 1D Plotting)
+% Last revision: 12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input
 [probZ,dims,NVpairs,m,facecolor] = aux_parseInput(probZ,varargin{:});
@@ -51,6 +51,7 @@ if nargout == 0
 end
 
 end
+
 
 % Auxiliary functions -----------------------------------------------------
 
@@ -93,4 +94,4 @@ function han = aux_plotNd(eP,NVpairs,facecolor)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -6,7 +6,7 @@ function res = testLong_linParamSys_reach_01_rlc_const()
 % It is checked whether the enclosing interval of the final reachable set 
 % is close to an interval provided by a previous solution that has been saved
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_linParamSys_reach_01_rlc_const()
 %
 % Inputs:
@@ -15,13 +15,13 @@ function res = testLong_linParamSys_reach_01_rlc_const()
 % Outputs:
 %    res - true/false 
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      05-August-2016
-% Last update:  23-April-2020 (restructure params/options)
-%               05-June-2020 (NK, adapted to bug fix in commit fdc7bba)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       05-August-2016
+% Last update:   23-April-2020 (restructure params/options)
+%                05-June-2020 (NK, adapted to bug fix in commit fdc7bba)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %init: get matrix zonotopes of the model
@@ -82,4 +82,4 @@ IH_saved2 = interval( ...
 %final result
 res = isequal(IH,IH_saved,1e-8) && isequal(IH2,IH_saved2,1e-8);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

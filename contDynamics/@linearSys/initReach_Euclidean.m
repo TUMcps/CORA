@@ -2,7 +2,7 @@ function [Rfirst,options] = initReach_Euclidean(obj,Rinit,options)
 % initReach_Euclidean - computes the reachable continuous set for the first
 %    time step in the untransformed space
 %
-% Syntax:  
+% Syntax:
 %    [Rfirst,options] = initReach_Euclidean(obj,Rinit,options)
 %
 % Inputs:
@@ -22,19 +22,19 @@ function [Rfirst,options] = initReach_Euclidean(obj,Rinit,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      07-May-2007 
-% Last update:  03-January-2008
-%               04-May-2009
-%               29-June-2009
-%               08-August-2011
-%               25-July-2016 (intervalhull replaced by interval)
-%               06-April-2017
-%               28-October-2017
-%               07-November-2018
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-May-2007 
+% Last update:   03-January-2008
+%                04-May-2009
+%                29-June-2009
+%                08-August-2011
+%                25-July-2016 (intervalhull replaced by interval)
+%                06-April-2017
+%                28-October-2017
+%                07-November-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute exponential matrix
 obj = exponential(obj,options);
@@ -93,9 +93,9 @@ end
 options.Rtrans=obj.taylor.Rtrans;
 
 %total solution
-if isa(Rinit,'mptPolytope')
+if isa(Rinit,'polytope')
     %convert zonotopes to polytopes
-    Radd=mptPolytope(RV);
+    Radd=polytope(RV);
     Rtotal=Rhom+Radd;
     Rtotal_tp=Rhom_tp+Radd;
 else
@@ -108,4 +108,4 @@ end
 Rfirst.tp=Rtotal_tp;
 Rfirst.ti=Rtotal;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

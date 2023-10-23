@@ -2,7 +2,7 @@ function listFin = analyticalConstraintElimination(cPZ)
 % analyticalConstraintElimination - Eliminates some special cases of
 %    constraints that can be solved analytically
 %
-% Syntax:  
+% Syntax:
 %    listFin = analyticalConstraintElimination(cPZ)  
 %
 % Inputs:
@@ -19,12 +19,12 @@ function listFin = analyticalConstraintElimination(cPZ)
 %
 % See also: ---
 
-% Author:       Niklas Kochdumper
-% Written:      30-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       30-November-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     list{1} = cPZ;
     listFin = {};
@@ -45,14 +45,14 @@ function listFin = analyticalConstraintElimination(cPZ)
             
             for j = 1:length(ind)
                
-                [val_,ind_,empty] = elimSingleEntryConstraint(...
-                    objTemp.A(ind(j),:),objTemp.b(ind(j)),objTemp.expMat_);
+                [val_,ind_,empty] = aux_elimSingleEntryConstraint(...
+                    objTemp.A(ind(j),:),objTemp.b(ind(j)),objTemp.EC);
                 
                 if empty
                     continue;
                 elseif ~isempty(val_)
                 
-                    [val,indices] = updateValues(val,indices,val_,ind_);
+                    [val,indices] = aux_updateValues(val,indices,val_,ind_);
 
                     if isempty(val)
                        continue; 
@@ -63,15 +63,15 @@ function listFin = analyticalConstraintElimination(cPZ)
             % quadratic constraints
             for j = 1:size(objTemp.A,1)
                ind = find(objTemp.A(j,:) ~= 0);
-               if max(sum(objTemp.expMat_(:,ind),1)) == 2
-                   [val_,ind_,empty] = elimQuadConstraint(objTemp.A(j,ind),...
-                    objTemp.b(j),objTemp.expMat_(:,ind));
+               if max(sum(objTemp.EC(:,ind),1)) == 2
+                   [val_,ind_,empty] = aux_elimQuadConstraint(objTemp.A(j,ind),...
+                    objTemp.b(j),objTemp.EC(:,ind));
                                         
                    if empty
                       continue;
                    elseif ~isempty(val_)
                        
-                      [val,indices] = updateValues(val,indices,val_,ind_);
+                      [val,indices] = aux_updateValues(val,indices,val_,ind_);
 
                       if isempty(val)
                          continue; 
@@ -84,12 +84,12 @@ function listFin = analyticalConstraintElimination(cPZ)
             for j = 1:size(objTemp.A,1)
                 if objTemp.b(j) == 0
                     ind = find(objTemp.A(j,:) ~= 0);
-                    if all(objTemp.expMat_(:,ind) == 0 | objTemp.expMat_(:,ind) == 2)
-                        [val_,ind_] = elimSpecialCase(objTemp.A(ind),...
-                            objTemp.expMat_(:,ind));
+                    if all(objTemp.EC(:,ind) == 0 | objTemp.EC(:,ind) == 2)
+                        [val_,ind_] = aux_elimSpecialCase(objTemp.A(ind),...
+                            objTemp.EC(:,ind));
                         
                         if ~isempty(val_)
-                            [val,indices] = updateValues(val,indices,val_,ind_);
+                            [val,indices] = aux_updateValues(val,indices,val_,ind_);
 
                              if isempty(val)
                                 continue; 
@@ -106,7 +106,7 @@ function listFin = analyticalConstraintElimination(cPZ)
                 listTemp = cell(size(val,2),1);
                 
                 for j = 1:length(listTemp)
-                    listTemp{j} = subsFactorValue(objTemp,indices,val(:,j));
+                    listTemp{j} = aux_subsFactorValue(objTemp,indices,val(:,j));
                 end
                 
                  % update list
@@ -124,27 +124,25 @@ function listFin = analyticalConstraintElimination(cPZ)
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-
-% Auxiliary Functions -----------------------------------------------------
-
-function [val_,ind_,empty] = elimSingleEntryConstraint(A,b,expMat)
+function [val_,ind_,empty] = aux_elimSingleEntryConstraint(A,b,E)
 
     empty = false; val_ = [];
 
     index = find(A);
-    ind_ = find(expMat(:,index));
+    ind_ = find(E(:,index));
 
     % fix a single factor
     if length(ind_) == 1
 
-        temp = nthroot(b/A(index),expMat(ind_,index));
+        temp = nthroot(b/A(index),E(ind_,index));
 
         if temp > 1     % value located outside the domain
            empty = true;
            return;
         else
-           if mod(expMat(ind_,index),2) == 0
+           if mod(E(ind_,index),2) == 0
                val_ = [-temp,temp];
            else
                val_ = temp;
@@ -154,7 +152,7 @@ function [val_,ind_,empty] = elimSingleEntryConstraint(A,b,expMat)
     % fix two factors
     elseif length(ind_) == 2
 
-        if expMat(ind_(1),index) == 1 && expMat(ind_(2),index) == 1
+        if E(ind_(1),index) == 1 && E(ind_(2),index) == 1
 
            if b/A(index) == 1
                val_ = [1 -1;1 -1];
@@ -168,23 +166,23 @@ function [val_,ind_,empty] = elimSingleEntryConstraint(A,b,expMat)
     end 
 end
     
-function [val,ind,empty] = elimQuadConstraint(A,b,expMat)
+function [val,ind,empty] = aux_elimQuadConstraint(A,b,E)
 
     empty = false;
     val = [];
     
     % eliminate zero rows from the exponent matrix
-    ind = find(sum(expMat,2) > 0);
-    expMat = expMat(ind,:);
+    ind = find(sum(E,2) > 0);
+    E = E(ind,:);
 
     % check for positive or negative definitness
-    H = hessian(A,expMat); 
+    H = aux_hessian(A,E); 
     [~,p] = chol(H);
     
     if p == 0   % Hessian matrix positive definite
 
         % compute point where the function reaches its maximum
-        l = linPart(A,expMat);
+        l = aux_linPart(A,E);
         x = linsolve(H,l);
         
         % check if maximum is located inside the domain
@@ -208,7 +206,7 @@ function [val,ind,empty] = elimQuadConstraint(A,b,expMat)
         if p == 0   % Hessian matrix negative definite
             
             % compute point where the function reaches its minimum
-            l = linPart(A,expMat);
+            l = aux_linPart(A,E);
             x = linsolve(H,l);
 
             % check if minimum is located inside the domain
@@ -230,20 +228,20 @@ function [val,ind,empty] = elimQuadConstraint(A,b,expMat)
 end
 
 
-function [val,ind] = elimSpecialCase(A,expMat)
+function [val,ind] = aux_elimSpecialCase(A,E)
 
     val = [];
 
     % substitue all square terms by new variables
-    expMat_ = double(expMat > 0);
+    EC = double(E > 0);
     
     % compute the gradients at [0;0; ... ;0]
-    grad = zeros(size(expMat,1),1);
+    grad = zeros(size(E,1),1);
     z = zeros(length(grad),1);
     
     for i = 1:length(grad)
-       indTemp = find(expMat_(i,:) > 0);
-       Etemp = expMat_(:,indTemp);
+       indTemp = find(EC(i,:) > 0);
+       Etemp = EC(:,indTemp);
        Etemp(i,:) = zeros(1,size(Etemp,2));
        Atemp = A(indTemp);
        
@@ -257,13 +255,13 @@ function [val,ind] = elimSpecialCase(A,expMat)
     
     if ~isempty(ind)
         % evaluate gradient on the whole domain using interval arithmetic
-        temp = ones(size(expMat,1),1);
+        temp = ones(size(E,1),1);
         dom = interval(0*temp,temp);
         gradInt = interval(zeros(length(ind),1));
 
         for i = 1:length(ind)
-           indTemp = find(expMat_(i,:) > 0);
-           Etemp = expMat_(:,indTemp);
+           indTemp = find(EC(i,:) > 0);
+           Etemp = EC(:,indTemp);
            Etemp(i,:) = zeros(1,size(Etemp,2));
            Atemp = A(indTemp);        
 
@@ -285,11 +283,11 @@ function [val,ind] = elimSpecialCase(A,expMat)
 end
 
 
-function H = hessian(A,expMat)
+function H = aux_hessian(A,E)
 
-    H = zeros(size(expMat,1));
-    for i = 1:size(expMat,2)
-       ind = find(expMat(:,i) > 0);
+    H = zeros(size(E,1));
+    for i = 1:size(E,2)
+       ind = find(E(:,i) > 0);
        if length(ind) == 2
           H(ind(1),ind(2)) = A(i);
           H(ind(2),ind(1)) = A(i);
@@ -299,23 +297,23 @@ function H = hessian(A,expMat)
     end
 end
 
-function b = linPart(A,expMat)
+function b = aux_linPart(A,E)
 
     % find monomials with polynomial degree 1
-    ind = find(sum(expMat,1) == 1);
+    ind = find(sum(E,1) == 1);
     
     % determine slope for each factor
-    b = zeros(size(expMat,1),1);
+    b = zeros(size(E,1),1);
     
     for i = 1:length(b)
-        indTemp = find(expMat(i,ind) > 0);
+        indTemp = find(E(i,ind) > 0);
         if ~isempty(indTemp)
            b(i) = sum(A(:,ind(indTemp)),2); 
         end
     end
 end
 
-function [val,indices] = updateValues(val,indices,val_,ind_)
+function [val,indices] = aux_updateValues(val,indices,val_,ind_)
 
     % no stored values exist
     if isempty(indices)
@@ -362,49 +360,49 @@ function [val,indices] = updateValues(val,indices,val_,ind_)
     end
 end
 
-function res = subsFactorValue(obj,ind,val)
+function res = aux_subsFactorValue(obj,ind,val)
 % substitute factors with a numerical values
 
     % extract object properties
-    expMat = obj.expMat;
+    E = obj.E;
     G = obj.G;
-    expMat_ = obj.expMat_;
+    EC = obj.EC;
     A = obj.A;
 
     % substite value into generators
-    temp = val.^obj.expMat(ind,:);
+    temp = val.^obj.E(ind,:);
     
     for i = 1:size(temp,1)
         G = G * diag(temp(i,:));
     end
     
-    expMat(ind,:) = [];
+    E(ind,:) = [];
     
     % substite value into constraints
-    temp = val.^obj.expMat_(ind,:);
+    temp = val.^obj.EC(ind,:);
     
     for i = 1:size(temp,1)
         A = A * diag(temp(i,:));
     end
     
-    expMat_(ind,:) = [];
+    EC(ind,:) = [];
     
     % remove factor identifier
     id = obj.id;
     id(ind) = [];
     
     % construct resulting conPolyZono object
-    res = conPolyZono(obj.c,G,expMat,A,obj.b,expMat_,obj.Grest,id);
+    res = conPolyZono(obj.c,G,E,A,obj.b,EC,obj.GI,id);
     
     % remove redundant monomials
-    res = compact(res);
+    res = compact_(res,'all',eps);
     
     % remove trivial constriants
-    res = removeTrivialConstraints(res);
+    res = aux_removeTrivialConstraints(res);
 
 end
 
-function res = removeTrivialConstraints(obj)
+function res = aux_removeTrivialConstraints(obj)
 % remove the trivial constraint 0 = 0*a1 + 0*a2 + ...
 
     temp = sum(abs(obj.A),2);
@@ -422,11 +420,10 @@ function res = removeTrivialConstraints(obj)
     if ~isempty(ind)
         A(ind,:) = [];
         b(ind) = [];
-        res = conPolyZono(obj.c,obj.G,obj.expMat,A,b,obj.expMat_, ...
-                          obj.Grest,obj.id);
+        res = conPolyZono(obj.c,obj.G,obj.E,A,b,obj.EC, obj.GI,obj.id);
     else
         res = obj; 
     end
 end
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

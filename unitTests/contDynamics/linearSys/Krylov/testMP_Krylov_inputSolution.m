@@ -3,7 +3,7 @@ function res = testMP_Krylov_inputSolution(~)
 %    method for the homegeneous solution of a single initial state.
 %    This test requires the multiple precision toolbox.
 %
-% Syntax:  
+% Syntax:
 %    res = testMP_Krylov_inputSolution(~)
 %
 % Inputs:
@@ -12,12 +12,12 @@ function res = testMP_Krylov_inputSolution(~)
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      24-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       24-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "initReach_Krylov"
 path = CORAROOT;
@@ -91,4 +91,4 @@ delete(target);
 rmpath(genpath(path));
 addpath(genpath(path));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function simulate_2dim
 % simulate_2dim - simulates a two-dimensional system to disturbances and 
 % sensor noise
 %
-% Syntax:  
+% Syntax:
 %    simulate_2dim
 %
 % Inputs:
@@ -20,12 +20,12 @@ function simulate_2dim
 % References: 
 %   -
 
-% Author:       Matthias Althoff
-% Written:      04-Jun-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-June-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set path
 savepath = [CORAROOT filesep 'unitTests' filesep 'contDynamics' filesep 'linearSysDT' filesep 'models'];
@@ -76,4 +76,4 @@ end
 save([savepath '/' 'twoDimSys_new'], 'sys', 'params', 'options', 'simRes');
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function [t,z,ind] = simulate(obj,params,varargin)
 % simulate - simulates the system within a location
 %
-% Syntax:  
+% Syntax:
 %    [t,z] = simulate(obj,params)
 %    [t,z,ind] = simulate(obj,params,options)
 %    [t,z,ind,y] = simulate(obj,params,options)
@@ -32,14 +32,14 @@ function [t,z,ind] = simulate(obj,params,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      03-May-2007 
-% Last update:  12-March-2008
-%               19-August-2016
-%               08-May-2020 (MW, update interface)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-May-2007 
+% Last update:   12-March-2008
+%                19-August-2016
+%                08-May-2020 (MW, update interface)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargout == 4
     warning("Output trajectories not supported for class nonlinDASys!");
@@ -81,4 +81,4 @@ catch
     ind=[];
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

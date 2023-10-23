@@ -1,7 +1,7 @@
 function fArray2ascii
 % fArray2ascii - ???
 %
-% Syntax:  
+% Syntax:
 %    fArray2ascii
 %
 % Inputs:
@@ -19,12 +19,12 @@ function fArray2ascii
 %
 % See also: -
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       23-May-2008
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %open .mat file
 [FileName,PathName] = uigetfile();
@@ -60,4 +60,4 @@ end
 %close file
 status = fclose(fid)
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

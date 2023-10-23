@@ -1,7 +1,7 @@
 function res = isemptyobject(R)
 % isemptyobject - checks if a reachSet object is empty
 %
-% Syntax:  
+% Syntax:
 %    res = isemptyobject(R)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function res = isemptyobject(R)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      01-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       01-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = all(arrayfun(@(x) isempty(x.timePoint),R,'UniformOutput',true));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

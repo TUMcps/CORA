@@ -25,13 +25,13 @@ function res = eq(I1,I2,varargin)
 %
 % See also: interval/isequal
 
-% Author:       Matthias Althoff
-% Written:      05-August-2016 
-% Last update:  23-December-2022 (MW, call isequal)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-August-2016 
+% Last update:   23-December-2022 (MW, call isequal)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = isequal(I1,I2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

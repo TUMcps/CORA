@@ -2,7 +2,7 @@ function han = plotZono(cZ,varargin)
 % plotZono - Visualizes a 2D-projection of the constraint zonotope and the
 %    zonotope without constraints
 %
-% Syntax:  
+% Syntax:
 %    plotZono(cZ)
 %    plotZono(cZ,dims,plotOptZ,plotOptCon)
 %
@@ -33,12 +33,12 @@ function han = plotZono(cZ,varargin)
 %
 % See also: plot
 
-% Author:       Niklas Kochdumper
-% Written:      11-May-2018
-% Last update:  ---
-% Last revision:12-July-2023 (TL, restructure)
+% Authors:       Niklas Kochdumper
+% Written:       11-May-2018
+% Last update:   ---
+% Last revision: 12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input
 [cZ,dims,plotOptZ,plotOptCon] = aux_parseInput(cZ,varargin{:});
@@ -56,6 +56,7 @@ end
 
 end
 
+
 % Auxiliary functions -----------------------------------------------------
 
 function [cZ,dims,plotOptZ,plotOptCon] = aux_parseInput(cZ,varargin)
@@ -72,7 +73,7 @@ end
 
 function Z = aux_preprocess(cZ)
     % preprocess
-    Z = zonotope(cZ.Z);
+    Z = zonotope(cZ.c,cZ.G);
 end
 
 function han = aux_plotNd(cZ,Z,dims,plotOptZ,plotOptCon)
@@ -89,7 +90,11 @@ function han = aux_plotNd(cZ,Z,dims,plotOptZ,plotOptCon)
     han = plot(cZ,dims,plotOptCon{:});
     
     % restore hold status
-    hold(holdStatus)
+    if holdStatus
+        hold on;
+    else
+        hold off;
+    end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

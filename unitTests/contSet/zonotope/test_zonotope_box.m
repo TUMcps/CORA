@@ -1,7 +1,7 @@
 function res = test_zonotope_box
 % test_zonotope_box - unit test function of box
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_box
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_box
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      26-August-2019
-% Last update:  09-August-2020 (enhance randomness of test)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       26-August-2019
+% Last update:   09-August-2020 (enhance randomness of test)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set tolerance
 tol = 1e-9;
@@ -36,6 +36,6 @@ Zbox = box(Z);
 Ztrue = zonotope([1;0],[3 0; 0 5]);
 
 % check if axis-aligned box same as interval
-res = compareMatrices(Zbox.Z,Ztrue.Z,tol);
+res = compareMatrices([Zbox.c, Zbox.G],[Ztrue.c, Ztrue.G],tol);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

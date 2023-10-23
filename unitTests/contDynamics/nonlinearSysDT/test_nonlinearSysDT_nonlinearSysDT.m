@@ -1,7 +1,7 @@
 function res = test_nonlinearSysDT_nonlinearSysDT
 % test_nonlinearSysDT_nonlinearSysDT - unit test for constructor
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSysDT_nonlinearSysDT
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_nonlinearSysDT_nonlinearSysDT
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true, wait for failure
 res = true;
@@ -152,4 +152,4 @@ try
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

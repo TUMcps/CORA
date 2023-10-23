@@ -2,7 +2,7 @@ function displayMatrixVector(x,varname)
 % displayMatrixVector - displays a matrix or vector on the command window
 %    up to a certain maximum size and abbreviated when all-zero
 %
-% Syntax:  
+% Syntax:
 %    displayMatrixVector(x,varname)
 %
 % Inputs:
@@ -22,12 +22,13 @@ function displayMatrixVector(x,varname)
 %
 % See also: linearSys/display, linearSysDT/display
 
-% Author:       Mark Wetzlinger
-% Written:      19-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 % x ... matrix/vector to be displayed
 
 % get size and text for display
@@ -95,4 +96,4 @@ else
     fprintf(newline);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

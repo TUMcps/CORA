@@ -1,7 +1,7 @@
 function varargout = size(matP,varargin)
-% dim - returns the dimension of the matrix polytope
+% size - returns the dimension of the matrix polytope
 %
-% Syntax:  
+% Syntax:
 %    n = size(matP)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function varargout = size(matP,varargin)
 %
 % See also: none
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       17-January-2023
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % take first vertex (all vertices have to have same dimension)
 if nargin > 2
@@ -45,4 +45,4 @@ else
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

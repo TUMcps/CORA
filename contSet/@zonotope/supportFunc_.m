@@ -2,7 +2,7 @@ function [val,x,fac] = supportFunc_(Z,dir,type,varargin)
 % supportFunc_ - calculates the upper or lower bound of a zonotope along a
 %    certain direction
 %
-% Syntax:  
+% Syntax:
 %    [val,x,fac] = supportFunc_(Z,dir)
 %    [val,x,fac] = supportFunc_(Z,dir,type)
 %
@@ -20,18 +20,18 @@ function [val,x,fac] = supportFunc_(Z,dir,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conZonotope/supportFunc_
+% See also: contSet/supportFunc, conZonotope/supportFunc_
 
-% Author:       Niklas Kochdumper
-% Written:      19-November-2019
-% Last update:  10-December-2022 (MW, add type = 'range')
-% Last revision:27-March-2023 (MW, rename supportFunc_)
+% Authors:       Niklas Kochdumper
+% Written:       19-November-2019
+% Last update:   10-December-2022 (MW, add type = 'range')
+% Last revision: 27-March-2023 (MW, rename supportFunc_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get object properties
-c = center(Z);
-G = generators(Z);
+c = Z.c;
+G = Z.G;
 
 % project zonotope onto the direction
 c_ = dir'*c;
@@ -55,4 +55,4 @@ end
 % compute support vector
 x = c + G*fac;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

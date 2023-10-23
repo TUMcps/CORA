@@ -1,7 +1,7 @@
 function res = test_interval_issparse
 % test_interval_issparse - unit test function of issparse
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_issparse
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_issparse
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      06-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       06-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = true(0);
 
@@ -43,4 +43,4 @@ resvec(end+1) = ~issparse(I);
 res = all(resvec);
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

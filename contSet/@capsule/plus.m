@@ -3,7 +3,7 @@ function C = plus(summand1,summand2)
 %    addition of two capsules or the exact translation of a capsule by a 
 %    vector
 %
-% Syntax:  
+% Syntax:
 %    C = plus(summand1,summand2)
 %
 % Inputs:
@@ -28,12 +28,12 @@ function C = plus(summand1,summand2)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      04-March-2019 
-% Last update:  05-May-2020 (MW, standardized error message)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-March-2019 
+% Last update:   05-May-2020 (MW, standardized error message)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %Find a capsule object
 [C,summand] = findClassArg(summand1,summand2,'capsule');
@@ -76,7 +76,7 @@ try
         % outer-approximate zonotope by interval and use interval method
         C = C + interval(summand);
     
-    elseif isZero(summand,1e-12)
+    elseif representsa_(summand,'origin',eps)
         % addition of only the origin (note: for some set representations,
         % this is a bit slow, so we put it at the end of the list...)
         return
@@ -97,7 +97,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(C)
+    if representsa_(C,'emptySet',eps)
         return
     elseif isemptyobject(summand)
         C = conZonotope(); return
@@ -111,4 +111,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

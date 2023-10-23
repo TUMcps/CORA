@@ -2,7 +2,7 @@ function [Gfinal]=volumeFilter(varargin)
 % volumeFilter - filters out generators by directly choosing the smallest
 % volume
 %
-% Syntax:  
+% Syntax:
 %    [Gred]=volumeFilter(G)
 %
 % Inputs:
@@ -19,14 +19,14 @@ function [Gfinal]=volumeFilter(varargin)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      12-September-2008
-% Last update:  15-September-2008
-%               25-July-2016 (intervalhull replaced by interval)
-%               16-March-2019 (sort removed)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       12-September-2008
+% Last update:   15-September-2008
+%                25-July-2016 (intervalhull replaced by interval)
+%                16-March-2019 (sort removed)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %read inputs
 if nargin==2
@@ -70,4 +70,4 @@ for i=1:nrOfPicks
     Gfinal{i}=G{index(i)};
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

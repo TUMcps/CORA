@@ -3,7 +3,7 @@ function estSet = setPropagationObserver_FRad_C_unitTest(obj,params,options)
 % estimation approach according to the intersection-free approach
 % when the gain changes in each iteration, see [1].
 %
-% Syntax:  
+% Syntax:
 %    estSet = setPropagationObserver_FRad_C_unitTest(obj,params,options)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function estSet = setPropagationObserver_FRad_C_unitTest(obj,params,options)
 %        Gain optimality under distinct uncertainty paradigms and
 %        robust convergence. Automatica, 55:265-273, 2015.
 
-% Author:        ???
-% Written:       ???
+% Authors:       ???
+% Written:       ---
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %time period
 tVec = params.tStart:options.timeStep:params.tFinal-options.timeStep;
@@ -73,4 +73,4 @@ timePoint.time = num2cell(tVec');
 % construct object of class reachSet
 estSet = reachSet(timePoint);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

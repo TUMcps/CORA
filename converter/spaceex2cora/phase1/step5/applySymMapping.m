@@ -1,7 +1,7 @@
 function sym_out = applySymMapping(sym_in,keys,values)
 % applySymMapping - substitute variables with symbolic values
 %
-% Syntax:  
+% Syntax:
 %    sym_out = applySymMapping(sym_in,keys,values)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function sym_out = applySymMapping(sym_in,keys,values)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % convert parameters to cell array if necessary, (required for subs)
 if iscell(keys)
@@ -52,4 +52,4 @@ end
 % use symbolic kit substitution function
 sym_out = subs(sym_in,keys_c,values_c);
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

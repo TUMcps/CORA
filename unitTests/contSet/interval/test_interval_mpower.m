@@ -2,7 +2,7 @@ function res = test_interval_mpower
 % test_interval_mpower - unit_test_function of power,
 %    overloaded '^' operator for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_mpower
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_interval_mpower
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk, Mark Wetzlinger
-% Written:      05-January-2016
-% Last update:  08-August-2020 (MW, extend by random tests)
-% Last revision:---
+% Authors:       Dmitry Grebenyuk, Mark Wetzlinger
+% Written:       05-January-2016
+% Last update:   08-August-2020 (MW, extend by random tests)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 res = true;
@@ -97,4 +97,4 @@ if abs( infimum(c) - 8.0 ) > tol || abs( supremum(c) - 27.0 ) > tol
 	return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function completed = example_converter_powerSystem2cora_IEEE30()
 % example_converter_powerSystem2cora_IEEE30 - example for creating the IEEE
 %    30 bus power system benchmark, can be found in [1, Sec. VII].
 %
-% Syntax:  
+% Syntax:
 %    completed = example_converter_powerSystem2cora_IEEE30()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_converter_powerSystem2cora_IEEE30()
 %        using Reachable Sets", IEEE Transactions on Power Systems 29 (5), 
 %        2014, 2270-2280
 
-% Author:       Matthias Althoff
-% Written:      14-April-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       14-April-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% create CORA models
 % full system
@@ -34,4 +34,4 @@ powerSystem2cora('IEEE30_sub2')
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

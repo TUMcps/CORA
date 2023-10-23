@@ -24,14 +24,14 @@ function [val,x] = supportFunc_(fs,dir,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/supportFunc
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  05-April-2023 (rename supportFunc_)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   05-April-2023 (rename supportFunc_)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if fs.dimension == 0 && nargout == 2
     throw(CORAerror('CORA:notSupported',...
@@ -59,4 +59,4 @@ elseif strcmp(type,'range')
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function R = project(R,dims)
 % project - projects reachable set in reachSet object to specified
 %    dimensions
 %
-% Syntax:  
+% Syntax:
 %    R = project(R,dims)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function R = project(R,dims)
 %
 % See also: mtimes
 
-% Author:       Mark Wetzlinger
-% Written:      18-November-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       18-November-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % project 
 for i = 1:size(R,1)
@@ -41,4 +41,4 @@ for i = 1:size(R,1)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

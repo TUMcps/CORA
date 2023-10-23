@@ -1,7 +1,7 @@
 function c = center(I)
 % center - returns the center of an interval
 %
-% Syntax:  
+% Syntax:
 %    c = center(I)
 %
 % Inputs:
@@ -20,16 +20,17 @@ function c = center(I)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      26-June-2015
-% Last update:  02-Sep-2019 (rename mid -> center)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-June-2015
+% Last update:   02-September-2019 (rename mid -> center)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
-if isempty(I)
+% ------------------------------ BEGIN CODE -------------------------------
+
+if representsa_(I,'emptySet',eps)
     c = []; return ;
 end
 
 c = 0.5*(I.inf + I.sup);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

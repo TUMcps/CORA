@@ -2,7 +2,7 @@ function res = testLong_polyZonotope_contains
 % testLong_polyZonotope_contains - unit test function for containment
 %    checks of polynomial zonotopes
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polyZonotope_contains
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_polyZonotope_contains
 %
 % See also: -
 
-% Author:       Niklas Kochdumper
-% Written:      13-January-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       13-January-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -46,4 +46,4 @@ for i = 1:100
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function rem = getRem(tay)
 % getRem - returns remainder
 %
-% Syntax:  
+% Syntax:
 %    rem = getRem(tay)
 %
 % Inputs:
@@ -22,13 +22,13 @@ function rem = getRem(tay)
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      06-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       06-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 rem = tay.remainder;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

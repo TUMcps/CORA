@@ -1,7 +1,7 @@
 function res = times(factor1,factor2)
 % times - Overload '.*' operator for Taylor models
 %
-% Syntax:  
+% Syntax:
 %    res = times(factor1,factor2)
 %
 % Inputs:
@@ -21,66 +21,65 @@ function res = times(factor1,factor2)
 %   [1] K. Makino et al. "Taylor Models and other validated functional 
 %       inclusion methods"
 
-% Author:       Niklas Kochdumper, Dmitry Grebenyuk
-% Written:      14-June-2017
-%               11-November-2017 (DG) extra cases are added
-%               02-December-2017 (DG) New rank evaluation
-% Last update:  ---  
-% Last revision:---
+% Authors:       Niklas Kochdumper, Dmitry Grebenyuk
+% Written:       14-June-2017
+% Last update:   11-November-2017 (DG, extra cases are added)
+%                02-December-2017 (DG, new rank evaluation)
+% Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
     
     if isa(factor1,'taylm') && isa(factor2,'taylm') && all(size(factor1) == size(factor2))
         
-        res = arrayfun(@(a, b) s_times_tt(a, b), factor1, factor2, 'UniformOutput', 0);
+        res = arrayfun(@(a, b) aux_s_times_tt(a, b), factor1, factor2, 'UniformOutput', 0);
         
     elseif isa(factor1,'taylm') && isa(factor2,'double') && isscalar(factor2)
         
-        res = arrayfun(@(a) s_times_td(a, factor2), factor1, 'UniformOutput', 0);
+        res = arrayfun(@(a) aux_s_times_td(a, factor2), factor1, 'UniformOutput', 0);
         
     elseif isa(factor1,'taylm') && isscalar(factor1) && isa(factor2,'double')
         
-        res = arrayfun(@(b) s_times_td(factor1, b), factor2, 'UniformOutput', 0);
+        res = arrayfun(@(b) aux_s_times_td(factor1, b), factor2, 'UniformOutput', 0);
         
     elseif isa(factor1,'taylm') && isa(factor2,'double') && all(size(factor1) == size(factor2))
         
-        res = arrayfun(@(a, b) s_times_td(a, b), factor1, factor2, 'UniformOutput', 0);
+        res = arrayfun(@(a, b) aux_s_times_td(a, b), factor1, factor2, 'UniformOutput', 0);
         
     elseif isa(factor1,'double') && isscalar(factor1) && isa(factor2,'taylm') 
 
-        res = arrayfun(@(b) s_times_dt(factor1, b), factor2, 'UniformOutput', 0);
+        res = arrayfun(@(b) aux_s_times_dt(factor1, b), factor2, 'UniformOutput', 0);
         
     elseif isa(factor1,'double') && isa(factor2,'taylm') && isscalar(factor2)
 
-        res = arrayfun(@(a) s_times_dt(a, factor2), factor1, 'UniformOutput', 0);
+        res = arrayfun(@(a) aux_s_times_dt(a, factor2), factor1, 'UniformOutput', 0);
         
     elseif isa(factor1,'double') && isa(factor2,'taylm') && all(size(factor1) == size(factor2))
 
-        res = arrayfun(@(a, b) s_times_dt(a, b), factor1, factor2, 'UniformOutput', 0);
+        res = arrayfun(@(a, b) aux_s_times_dt(a, b), factor1, factor2, 'UniformOutput', 0);
         
     %elseif isa(factor1,'taylm') && isa(factor2,'interval') && all(size(factor1) == size(factor2))
         
-    %    res = arrayfun(@(a, b) s_times_ti(a, b), factor1, factor2, 'UniformOutput', 0);
+    %    res = arrayfun(@(a, b) aux_s_times_ti(a, b), factor1, factor2, 'UniformOutput', 0);
         
     %elseif isa(factor1,'taylm') && isscalar(factor1) && isa(factor2,'interval') 
         
-    %    res = arrayfun(@(b) s_times_ti(factor1, b), factor2,'UniformOutput', 0);
+    %    res = arrayfun(@(b) aux_s_times_ti(factor1, b), factor2,'UniformOutput', 0);
         
     %elseif isa(factor1,'taylm') && isa(factor2,'interval') && isscalar(factor2)
         
-    %    res = arrayfun(@(a) s_times_ti(a, factor2), factor1,'UniformOutput', 0);
+    %    res = arrayfun(@(a) aux_s_times_ti(a, factor2), factor1,'UniformOutput', 0);
         
     %elseif isa(factor1,'interval') && isa(factor2,'taylm') && all(size(factor1) == size(factor2))
         
-    %    res = arrayfun(@(a, b) s_times_it(a, b), factor1, factor2, 'UniformOutput', 0);
+    %    res = arrayfun(@(a, b) aux_s_times_it(a, b), factor1, factor2, 'UniformOutput', 0);
         
     %elseif isa(factor1,'interval') && isscalar(factor1) && isa(factor2,'taylm')
         
-    %    res = arrayfun(@(b) s_times_it(factor1, b), factor2, 'UniformOutput', 0);
+    %    res = arrayfun(@(b) aux_s_times_it(factor1, b), factor2, 'UniformOutput', 0);
         
     %elseif isa(factor1,'interval') && isa(factor2,'taylm') && isscalar(factor2)
         
-    %    res = arrayfun(@(a) s_times_it(a, factor2), factor1, 'UniformOutput', 0);
+    %    res = arrayfun(@(a) aux_s_times_it(a, factor2), factor1, 'UniformOutput', 0);
         
     else
         throw(CORAerror('CORA:wrongValue','first/second',"check documentation"));
@@ -91,14 +90,17 @@ function res = times(factor1,factor2)
     
 end
 
-%% --------------- Implementation for a scalar --------------
-function res = s_times_tt(factor1, factor2)
+
+% Auxiliary functions -----------------------------------------------------
+
+% Implementation for a scalar
+function res = aux_s_times_tt(factor1, factor2)
             
     [factor1, factor2] = rescale_dim(factor1, factor2);
     res = factor1;
 
     % Multiplication
-    [res.coefficients, res.monomials] = multiply ( ...
+    [res.coefficients, res.monomials] = aux_multiply ( ...
                         factor1.coefficients, factor1.monomials, ...
                         factor2.coefficients, factor2.monomials);
 
@@ -124,7 +126,7 @@ function res = s_times_tt(factor1, factor2)
     
 end
 
-function res = s_times_td(factor1, factor2)
+function res = aux_s_times_td(factor1, factor2)
 
     res = factor1;
     res.coefficients = res.coefficients * factor2;
@@ -132,7 +134,7 @@ function res = s_times_td(factor1, factor2)
     
 end
 
-function res = s_times_dt(factor1, factor2)
+function res = aux_s_times_dt(factor1, factor2)
 
     res = factor2;
     res.coefficients = res.coefficients * factor1;
@@ -140,7 +142,7 @@ function res = s_times_dt(factor1, factor2)
     
 end
 
-function res = s_times_ti(factor1, factor2)
+function res = aux_s_times_ti(factor1, factor2)
 
     tolerance = 1e-8;
 
@@ -159,14 +161,14 @@ function res = s_times_ti(factor1, factor2)
     
 end
 
-function res = s_times_it(factor1, factor2)
+function res = aux_s_times_it(factor1, factor2)
 
     res = factor2 .* factor1;
 
 end
 %% Auxiliary functions
 
-function [c,e] = multiply(c1,e1,c2,e2)
+function [c,e] = aux_multiply(c1,e1,c2,e2)
 
   [len, width] = size(e1);
   len =  len * length(c2);
@@ -185,5 +187,4 @@ function [c,e] = multiply(c1,e1,c2,e2)
 
 end
 
-%------------ END OF CODE ------------
-    
+% ------------------------------ END OF CODE ------------------------------

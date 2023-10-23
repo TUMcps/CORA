@@ -26,12 +26,12 @@ function BC = classifyVariablesFlat(BC)
 % References: 
 %   -
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       25-June-2022
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % names of states (left-hand side in flow equations)
 allStateNames = [];
@@ -123,4 +123,4 @@ BC.outputsLocal = BC.listOfVar(flowrightIdx & invleftIdx);
 % 4. global outputs: outputs of the entire automaton
 BC.outputsGlobal = BC.listOfVar(~flowrightIdx & invleftIdx);
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

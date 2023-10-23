@@ -1,5 +1,5 @@
 function res = contains(S1,S2,varargin)
-% contains - determines if a set contains another set or point
+% contains - determines if a set contains another set or a point
 %
 % Syntax:
 %    res = contains(S1,S2)
@@ -23,12 +23,12 @@ function res = contains(S1,S2,varargin)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      18-August-2022
-% Last update:  23-November-2022 (MW, add classname as input argument)
-% Last revision:27-March-2023 (MW, restructure relation to subclass)
+% Authors:       Mark Wetzlinger
+% Written:       18-August-2022
+% Last update:   23-November-2022 (MW, add classname as input argument)
+% Last revision: 27-March-2023 (MW, restructure relation to subclass)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
 if nargin < 2
@@ -74,29 +74,28 @@ else
 end
 
 
-
 % check dimension mismatch (has to come after empty set case!)
 equalDimCheck(S1,S2);
 
 % call subclass method
-try
+% try
     res = contains_(S1,S2,type,tol,maxEval);
 
-catch ME
-    % empty set cases
+% catch ME
+%     % empty set cases
+% 
+%     % inner-body is point = [] or empty set of any contSet class
+%     if (isnumeric(S2) && isempty(S2)) || (isa(S2,'contSet') && isemptyobject(S2))
+%         res = true;
+% 
+%     elseif isemptyobject(S1)
+%         % outer body is empty: containment would only be fulfilled if inner
+%         % body is empty too, which is handled above
+%         res = false;
+%         
+%     else
+%         rethrow(ME);
+%     end
+% end
 
-    % inner-body is point = [] or empty set of any contSet class
-    if (isnumeric(S2) && isempty(S2)) || (isa(S2,'contSet') && isemptyobject(S2))
-        res = true;
-
-    elseif isemptyobject(S1)
-        % outer body is empty: containment would only be fulfilled if inner
-        % body is empty too, which is handled above
-        res = false;
-        
-    else
-        rethrow(ME);
-    end
-end
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

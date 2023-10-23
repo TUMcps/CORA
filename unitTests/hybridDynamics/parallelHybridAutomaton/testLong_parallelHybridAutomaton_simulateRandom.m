@@ -2,7 +2,7 @@ function res = testLong_parallelHybridAutomaton_simulateRandom
 % testLong_parallelHybridAutomaton_simulateRandom - test function for
 %    random simulation
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_parallelHybridAutomaton_simulateRandom
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_parallelHybridAutomaton_simulateRandom
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % system dynamics
 PHA = roomHeatingParallel();
@@ -57,4 +57,4 @@ res(end+1,1) = contains(R,simRes);
 
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

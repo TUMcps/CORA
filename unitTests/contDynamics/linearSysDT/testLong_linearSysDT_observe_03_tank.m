@@ -6,7 +6,7 @@ function res = testLong_linearSysDT_observe_03_tank()
 % It is checked whether the enclosing interval of the final observed set 
 % is close to an interval provided by a previous solution that has been saved
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_linearSysDT_observe_03_tank
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = testLong_linearSysDT_observe_03_tank()
 % Outputs:
 %    res - true/false 
 
-% Author:       Matthias Althoff
-% Written:      26-Mar-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %% Load pedestrian model
@@ -130,4 +130,4 @@ end
 % final result
 res = all(resPartial);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

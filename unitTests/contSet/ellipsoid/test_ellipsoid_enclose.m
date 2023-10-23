@@ -1,7 +1,7 @@
 function res = test_ellipsoid_enclose
 % test_ellipsoid_enclose - unit test function of enclose
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_enclose
 %
 % Inputs:
@@ -16,12 +16,13 @@ function res = test_ellipsoid_enclose
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      26-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       26-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = true;
 load cases.mat E_c
 for i=1:length(E_c)
@@ -49,4 +50,4 @@ for i=1:length(E_c)
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

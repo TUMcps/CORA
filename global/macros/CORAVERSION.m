@@ -1,7 +1,7 @@
 function version = CORAVERSION()
 % CORAVERSION - returns the current CORA version
 %
-% Syntax:  
+% Syntax:
 %    version = CORAVERSION()
 %
 % Inputs:
@@ -16,13 +16,13 @@ function version = CORAVERSION()
 %
 % See also: ---
 
-% Author:       Tobias Ladner
-% Written:      07-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       07-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-version = 'CORA v2022.2.3';
+version = 'CORA v2024.0.0';
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

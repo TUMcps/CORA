@@ -22,14 +22,14 @@ function fs = not(O)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      07-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       07-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % complement is an empty set of same dimension
 fs = fullspace(O.dimension);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

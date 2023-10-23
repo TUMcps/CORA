@@ -2,7 +2,7 @@ function zB = plus(summand1,summand2)
 % plus - Overloaded '+' operator for the Minkowski addition of a zonotope
 %        bundle with a zonotope or with a vector (see Prop. 2 in [1])
 %
-% Syntax:  
+% Syntax:
 %    zB = plus(summand1,summand2)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function zB = plus(summand1,summand2)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      09-November-2010
-% Last update:  05-May-2020 (MW, standarized error message)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       09-November-2010
+% Last update:   05-May-2020 (MW, standarized error message)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % determine zonotope bundle object
 [zB,summand] = findClassArg(summand1,summand2,'zonoBundle');
@@ -45,8 +45,8 @@ try
         for i = 1:zB.parallelSets
             zB.Z{i} = zB.Z{i} + summand;
         end
-    
-    elseif isa(summand,'mptPolytope') || isa(summand,'conZonotope') 
+
+    elseif isa(summand,'polytope') || isa(summand,'conZonotope') 
     
         for i = 1:zB.parallelSets
             zB.Z{i} = zB.Z{i} + zonoBundle(summand);
@@ -71,7 +71,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(zB)
+    if representsa_(zB,'emptySet',eps)
         return
     elseif isemptyobject(summand)
         zB = zonoBundle(); return
@@ -85,4 +85,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

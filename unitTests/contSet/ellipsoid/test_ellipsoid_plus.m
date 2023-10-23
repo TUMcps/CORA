@@ -1,7 +1,7 @@
 function res = test_ellipsoid_plus
 % test_ellipsoid_plus - unit test function of plus
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_plus
 %
 % Inputs:
@@ -16,18 +16,18 @@ function res = test_ellipsoid_plus
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 load cases.mat E_c
 
 % empty set
-if ~isempty(plus(E_c{1}.E1,ellipsoid()))
+if ~representsa(plus(E_c{1}.E1,ellipsoid()),'emptySet')
     res = false;
 end
 
@@ -48,4 +48,4 @@ for i=1:length(E_c)
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

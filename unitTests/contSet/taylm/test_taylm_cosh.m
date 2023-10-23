@@ -1,7 +1,7 @@
 function res = test_taylm_cosh
 % test_taylm_cosh - unit tests of hyperbolic cosine function
 %
-% Syntax:  
+% Syntax:
 %    res = test_taylm_cosh
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_taylm_cosh
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      15-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       15-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
     
@@ -49,4 +49,4 @@ if ~appeq( getCoef(t),[c; s; c/2; s/6], eps ) ||...
     res = false;
 end  
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

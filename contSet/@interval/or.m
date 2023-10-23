@@ -1,7 +1,7 @@
 function res = or(I,S)
 % or - computes the union of an interval and a set
 %
-% Syntax:  
+% Syntax:
 %    res = or(I,S)
 %
 % Inputs:
@@ -27,22 +27,20 @@ function res = or(I,S)
 %
 % See also: zonotope/split
 
-% Author:       Niklas Kochdumper
-% Written:      25-July-2019
-% Last update:  05-May-2020 (MW, standardized error message)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-July-2019
+% Last update:   05-May-2020 (MW, standardized error message)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
-if isempty(S) && ~isempty(I)
+% ------------------------------ BEGIN CODE -------------------------------
+
+if ~representsa_(I,'emptySet',eps) && ...
+        ((isnumeric(S) && isempty(S)) || (~isnumeric(S) && representsa_(S,'emptySet',eps)))
     res = I; return;
 end
     
 % determine the interval object
-if ~isa(I,'interval')
-    temp = I;
-    I = S;
-    S = temp;
-end
+[I,S] = findClassArg(I,S,'interval');
 
 % different cases depending on the class of the summand
 if isa(S,'interval')
@@ -61,7 +59,7 @@ elseif isnumeric(S)
 
 elseif isa(S,'zonotope') || isa(S,'conZonotope') || ...
        isa(S,'zonoBundle') || isa(S,'polyZonotope') || ...
-       isa(S,'mptPolytope') || isa(S,'conPolyZono')
+       isa(S,'polytope') || isa(S,'conPolyZono')
 
     res = S | I;
 
@@ -70,4 +68,4 @@ else
     throw(CORAerror('CORA:noops',I,S));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

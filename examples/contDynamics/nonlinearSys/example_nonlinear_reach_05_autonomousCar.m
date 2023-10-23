@@ -10,7 +10,7 @@ function completed = example_nonlinear_reach_05_autonomousCar()
 %     Further accelerations, such as taking advantage of monotonicity
 %     in the Lagrange remainder are also not considered.
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinear_reach_05_autonomousCar()
 %
 % Inputs:
@@ -24,12 +24,12 @@ function completed = example_nonlinear_reach_05_autonomousCar()
 %        road vehicles using reachability analysis.
 %        IEEE Transactions on Robotics, 30(4):903-918, 2014.
 
-% Author:       Matthias Althoff
-% Written:      18-August-2016
-% Last update:  23-April-2020 (restucture params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-August-2016
+% Last update:   23-April-2020 (restucture params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -72,7 +72,7 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % Simulation --------------------------------------------------------------
 
 % simulation settings
-simOpt.points = 60;
+simOpt.points = 10;
 % random simulation
 simRes = simulateRandom(vehicle, params, simOpt);
 
@@ -110,4 +110,4 @@ end
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

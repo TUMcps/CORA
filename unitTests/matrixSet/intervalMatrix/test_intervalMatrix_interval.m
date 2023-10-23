@@ -2,7 +2,7 @@ function res = test_intervalMatrix_interval
 % test_intervalMatrix_interval - unit test function for conversion to
 %    interval objects
 % 
-% Syntax:  
+% Syntax:
 %    res = test_intervalMatrix_interval
 %
 % Inputs:
@@ -17,17 +17,17 @@ function res = test_intervalMatrix_interval
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      18-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       18-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty interval matrix
 intMat = intervalMatrix();
 I = interval(intMat);
-res = isempty(I);
+res = representsa(I,'emptySet');
 
 % only one row
 c = [1 2 3 4];
@@ -56,4 +56,4 @@ res(end+1,1) = isequal(I,I_);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

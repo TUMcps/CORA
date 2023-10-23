@@ -2,7 +2,7 @@ function res = test_interval_isIntersecting
 % test_interval_isIntersecting - unit test function of isIntersecting
 %    note: only interval-to-interval tested!
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_isIntersecting
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_interval_isIntersecting
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      12-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       12-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % 1. Empty case: isIntersecting has to be false
@@ -49,6 +49,4 @@ end
 % combine results
 res = res_mismatch; % && res_empty;
 
-%------------- END OF CODE --------------
-
-
+% ------------------------------ END OF CODE ------------------------------

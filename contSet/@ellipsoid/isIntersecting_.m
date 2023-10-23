@@ -1,7 +1,7 @@
 function res = isIntersecting_(E,S,type,varargin)
 % isIntersecting_ - determines if an ellipsoid intersects a set
 %
-% Syntax:  
+% Syntax:
 %    res = isIntersecting_(E,S)
 %    res = isIntersecting_(E,S,type)
 %
@@ -39,18 +39,17 @@ function res = isIntersecting_(E,S,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conZonotope/isIntersecting_
+% See also: contSet/isIntersecting, conZonotope/isIntersecting_
 
-% Author:       Victor Gassmann, Niklas Kochdumper
-% Written:      13-March-2019 
-% Last update:  21-November-2019 (NK: extended to other sets)
-%               10-March-2021 (refactored, simplified)
-%               19-May-2022 (VG: removed try-catch)
-%               04-July-2022 (VG: adapted to class array definitions of
-%               some functions)
-% Last revision:27-March-2023 (MW, rename isIntersecting_)
+% Authors:       Victor Gassmann, Niklas Kochdumper
+% Written:       13-March-2019 
+% Last update:   21-November-2019 (NK, extended to other sets)
+%                10-March-2021 (refactored, simplified)
+%                19-May-2022 (VG, removed try-catch)
+%                04-July-2022 (VG, adapted to class array definitions of some functions)
+% Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % all-zero shape matrix -> ellipsoid is just a point, check containment
 if rank(E)==0
@@ -88,4 +87,4 @@ catch
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_taylm_atan
 % test_taylm_atan - unit test of inverse tangent function
 %
-% Syntax:  
+% Syntax:
 %    res = test_taylm_atan
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_taylm_atan
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      16-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       16-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
     
@@ -45,4 +45,4 @@ if ~appeq( getCoef(t), [0; 1; -1/3; 1/5; -1/7], eps ) ||...
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

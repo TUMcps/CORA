@@ -1,7 +1,7 @@
 function res = testLong_hybridAutomaton_simulateRandom
 % testLong_hybridAutomaton_simulateRandom - test function for simulateRandom
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_hybridAutomaton_simulateRandom
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_hybridAutomaton_simulateRandom
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % continuous dynamics 
 A = [0 1; 0 0];
@@ -33,7 +33,7 @@ linSys = linearSys('linearSys',A,B,c);
 alpha = -0.75;
 
 % invariant set 
-inv = mptPolytope([-1,0],0);
+inv = polytope([-1,0],0);
 
 % guard sets
 guard = conHyperplane([1,0],0,[0,1],0);
@@ -96,4 +96,4 @@ res(end+1,1) = contains(R,simRes);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

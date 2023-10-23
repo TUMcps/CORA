@@ -1,7 +1,7 @@
 function I = interval(E)
 % interval - Over-approximates an ellipsoid by an interval
 %
-% Syntax:  
+% Syntax:
 %    I = interval(E)
 %
 % Inputs:
@@ -24,12 +24,13 @@ function I = interval(E)
 %
 % See also: vertices, polytope
 
-% Author:       Victor Gassmann
-% Written:      13-March-2019
-% Last update:  04-July-2022 (VG: input checks)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       13-March-2019
+% Last update:   04-July-2022 (VG, input checks)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 % check inputs
 inputArgsCheck({{E,'att','ellipsoid','scalar'}});
 
@@ -46,4 +47,4 @@ end
 % construct the resulting interval
 I = interval(-dI,dI) + E.q;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

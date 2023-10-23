@@ -21,12 +21,12 @@ function cora2spaceex(Obj,filename,filepath)
 %
 % See also: none
 
-% Author:        Farah Atour
+% Authors:       Farah Atour
 % Written:       24-February-2020
 % Last update:   08-June-2020 (MW, add filepath)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin < 3
     % if no resultpath is given, use default: "cora/models/CoraConverted"
@@ -70,4 +70,4 @@ xmlwrite(fname,docNode);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -195,6 +195,36 @@
   {
      "inputs":
      [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:notDefined'}"], "purpose":"ID of error"},
+        {"name":"desc", "kind":"required", "type":["char"], "purpose":"description of undefined functionality"},
+        {"name":"seealso", "kind":"ordered", "type":["char"], "purpose":"See also: "}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:outOfMemory'}"], "purpose":"ID of error"},
+        {"name":"desc", "kind":"required", "type":["char"], "purpose":"description"},
+        {"name":"ME", "kind":"ordered", "type":["MException"], "purpose":"MException object"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:nnLayerNotSupported'}"], "purpose":"ID of error"},
+        {"name":"layer", "kind":"required", "type":["nnLayer"], "purpose":"nnLayer"},
+        {"name":"unsupComp", "kind":"required", "type":["char"], "purpose":"unsupported computation"}
+     ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
         {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:reachSetExplosion'}"], "purpose":"ID of error"}
      ]
   },

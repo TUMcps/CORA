@@ -1,7 +1,7 @@
 function res = log( obj )
 % log - compute formula 'log' for Taylor models
 %
-% Syntax:  
+% Syntax:
 %    res = log(obj)
 %
 % Inputs:
@@ -20,20 +20,23 @@ function res = log( obj )
 %   [1] K. Makino et al. "Taylor Models and other validated functional 
 %       inclusion methods"
 
-% Author:       Dmitry Grebenyuk
-% Written:      13-August-2017
-% Last update:  ---  
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       13-August-2017
+% Last update:   ---  
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-	res = arrayfun(@(a) s_log(a), obj, 'UniformOutput', 0);
+	res = arrayfun(@(a) aux_s_log(a), obj, 'UniformOutput', 0);
     A = cat(1, res{:});
     res = reshape(A, size(res));
 
 end
 
-function res = s_log( obj )
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_s_log( obj )
         
     if isempty(obj.monomials)    % Taylor model without polynomial part
         
@@ -86,4 +89,4 @@ function res = s_log( obj )
     end
 end
 
-%------------ END OF CODE ------------
+% ------------------------------ END OF CODE ------------------------------

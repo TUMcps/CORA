@@ -1,7 +1,7 @@
 function res = test_zonotope_dim
 % test_zonotope_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_dim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -44,4 +44,4 @@ res(3) = dim(Z) == 2;
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

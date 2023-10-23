@@ -2,7 +2,7 @@ function display(zB)
 % display - Displays the properties of a zonoBundle object (center and 
 %    generator matrix of each zonotope) on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(zB)
 %
 % Inputs:
@@ -23,13 +23,13 @@ function display(zB)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      09-November-2010
-% Last update:  02-May-2020 (MW, add empty case)
-%               09-June-2020 (MW, remove dependency from zonotope/display)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       09-November-2010
+% Last update:   02-May-2020 (MW, add empty case)
+%                09-June-2020 (MW, remove dependency from zonotope/display)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isemptyobject(zB)
     
@@ -65,4 +65,4 @@ else
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_zonoBundle_supportFunc
 % test_zonoBundle_supportFunc - unit test function of supportFunc
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonoBundle_supportFunc
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonoBundle_supportFunc
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 % fully-empty set
@@ -63,4 +63,4 @@ res(end+1,1) = isequal(val,interval(-Inf,Inf));
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

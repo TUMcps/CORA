@@ -2,7 +2,7 @@ function Y = outputSet(obj,options,R)
 % outputSet - calculates output set based on output equation given by
 %    y = Cx + Du + k + v and sets for x (R) and u (options.U + options.uTrans)
 %
-% Syntax:  
+% Syntax:
 %    Y = outputSet(obj,options,R)
 %
 % Inputs:
@@ -25,16 +25,16 @@ function Y = outputSet(obj,options,R)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      12-August-2019
-% Last update:  20-August-2019
-%               16-November-2021 (MW, add sensor noise V)
-%               19-November-2021 (MW, shift index of time-point solution)
-%               19-November-2022 (MW, remove double computation)
-%               07-December-2022 (MW, allow to skip output set)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       12-August-2019
+% Last update:   20-August-2019
+%                16-November-2021 (MW, add sensor noise V)
+%                19-November-2021 (MW, shift index of time-point solution)
+%                19-November-2022 (MW, remove double computation)
+%                07-December-2022 (MW, allow to skip output set)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % skip computation of output set
 if ~options.compOutputSet
@@ -44,7 +44,7 @@ end
 % output equation is not provided or y = x
 if isempty(obj.C) || ...
         ( isscalar(obj.C) && obj.C == 1 && ~any(any(obj.D)) ...
-        && ~any(obj.k) && isZero(options.V) )
+        && ~any(obj.k) && representsa_(options.V,'origin',eps) )
     Y = R;
     return;
 end
@@ -77,4 +77,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

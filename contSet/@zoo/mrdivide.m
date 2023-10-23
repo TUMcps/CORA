@@ -1,7 +1,7 @@
 function res = mrdivide(numerator,denominator)
 % mrdivide - Overload '/' operator
 %
-% Syntax:  
+% Syntax:
 %    res = mrdivide(numerator,denominator)
 %
 % Inputs:
@@ -17,13 +17,13 @@ function res = mrdivide(numerator,denominator)
 %
 % See also: taylm, interval
 
-% Author:       Dmitry Grebenyuk
-% Written:      06-November-2017
-% Last update:  ---  
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       06-November-2017
+% Last update:   ---  
+% Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = numerator ./ denominator;
 
-%------------ END OF CODE ------------
+% ------------------------------ END OF CODE ------------------------------

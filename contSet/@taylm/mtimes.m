@@ -1,7 +1,7 @@
 function res = mtimes(factor1, factor2)
 % mtimes - Overloaded '*' operator for a Taylor model
 %
-% Syntax:  
+% Syntax:
 %    res = mtimes(factor1, factor2)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function res = mtimes(factor1, factor2)
 %
 % See also: taylm
 
-% Author:       Dmitry Grebenyuk
-% Written:      20-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       20-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 [m1,n1] = size(factor1);
 [m2,n2] = size(factor2);
@@ -48,4 +48,4 @@ else
     throw(CORAerror('CORA:dimensionMismatch',factor1,factor2));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

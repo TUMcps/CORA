@@ -1,7 +1,7 @@
 function res = test_interval_isscalar
 % test_interval_isscalar - unit test function of isscalar
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_isscalar
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_interval_isscalar
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      16-January-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       16-January-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % define problem
 res = true;
@@ -48,4 +48,4 @@ if c ~= true
 	return;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

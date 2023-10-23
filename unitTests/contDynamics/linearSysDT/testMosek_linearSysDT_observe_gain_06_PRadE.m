@@ -7,7 +7,7 @@ function res = testMosek_linearSysDT_observe_gain_06_PRadE()
 % test checks whether the same result as in a previous implementation is 
 % obtained
 %
-% Syntax:  
+% Syntax:
 %    res = testMosek_linearSysDT_observe_gain_06_PRadE
 %
 % Inputs:
@@ -22,12 +22,12 @@ function res = testMosek_linearSysDT_observe_gain_06_PRadE()
 %        performance. In Proc. of the 36th IEEE Chinese Control
 %        Conference, pages 7230–7235, 2017.
 
-% Author:       Matthias Althoff
-% Written:      01-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       01-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "observe_gain_PRadE"
 path = CORAROOT;
@@ -60,4 +60,4 @@ delete(target);
 rmpath(genpath(path));
 addpath(genpath(path));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

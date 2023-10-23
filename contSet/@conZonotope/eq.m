@@ -32,13 +32,13 @@ function res = eq(cZ,S,varargin)
 %
 % See also: conZonotope/isequal
 
-% Author:       Mark Wetzlinger
-% Written:      19-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = isequal(cZ,S,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

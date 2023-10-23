@@ -1,7 +1,7 @@
 function res = testLong_ellipsoid_contains
 % testLong_ellipsoid_contains - unit test function of contains
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_contains
 %
 % Inputs:
@@ -16,13 +16,13 @@ function res = testLong_ellipsoid_contains
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      15-October-2019
-% Last update:  07-August-2020
-%               19-March-2021
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       15-October-2019
+% Last update:   07-August-2020
+%                19-March-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check ellipsoid 
 res = testLong_component_ellipsoid_inEllipsoid;
@@ -49,4 +49,4 @@ for i=1:5:30
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

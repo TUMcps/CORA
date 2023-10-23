@@ -16,12 +16,12 @@ function res = test_location_location
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      26-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       26-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = [];
 
@@ -32,7 +32,7 @@ loc = location();
 name = 'S1';
 
 % invariant
-inv = mptPolytope([-1,0],0);
+inv = polytope([-1,0],0);
 
 % transition
 c = [-1;0]; d = 0; C = [0,1]; D = 0;
@@ -59,4 +59,4 @@ res(end+1,1) = isequal(loc.contDynamics,linearSys([0,1;0,0],[0;0],[0;-9.81]));
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

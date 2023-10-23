@@ -2,7 +2,7 @@ function R = deleteRedundantSets(R,Rold,options)
 % deleteRedundantSets - delete reachable sets that are already covered by
 %    other sets
 %
-% Syntax:  
+% Syntax:
 %    R = deleteRedundantSets(R,Rold,options)
 %
 % Inputs:
@@ -22,13 +22,13 @@ function R = deleteRedundantSets(R,Rold,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      29-June-2009
-% Last update:  03-February-2011
-%               29-June-2018
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       29-June-2009
+% Last update:   03-February-2011
+%                29-June-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set reduction method
 redMethod='pca';
@@ -51,7 +51,7 @@ if R.internalCount==options.reductionInterval
     for i=1:length(R.tp)
         R.tp{i}.set=reduce(R.tp{i}.set,redMethod,1);
         %generate polytope
-        R.P{i} = mptPolytope(R.tp{i}.set);
+        R.P{i}=polytope(R.tp{i}.set);
     end    
 elseif R.internalCount==2
     %intersect each reachable set with each previous reachable set
@@ -59,7 +59,7 @@ elseif R.internalCount==2
         %approximate new set of time points by parallelpiped 
         R.tp{iNewSet}.set=reduce(R.tp{iNewSet}.set,redMethod,1);
         %generate mpt polytope
-        Pnew{iNewSet}=mptPolytope(R.tp{iNewSet}.set);
+        Pnew{iNewSet}=polytope(R.tp{iNewSet}.set);
     end
     %initialize Pcut
     Pcut=Pnew;
@@ -83,7 +83,9 @@ elseif R.internalCount==2
             end
         end
         %is polytope empty?
-        if ~isempty(Pcut{iNewSet})
+        % note: new polytope toolbox does not support mldivide, so we skip
+        % this check (unclear if formally correct, too)
+        if true % ~representsa_(Pcut{iNewSet},'emptySet',eps)
             Rnew{iChecked}.set = R.tp{iNewSet}.set;
             Rnew{iChecked}.error = 0*options.maxError;
             Rnew{iChecked}.prev = iNewSet;
@@ -103,4 +105,4 @@ elseif R.internalCount==2
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

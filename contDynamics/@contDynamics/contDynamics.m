@@ -1,7 +1,7 @@
 classdef contDynamics < matlab.mixin.Copyable
 % contDynamics - basic class for continuous dynamics
 %
-% Syntax:  
+% Syntax:
 %    obj = contDynamics()
 %    obj = contDynamics(name)
 %    obj = contDynamics(name,states)
@@ -26,16 +26,16 @@ classdef contDynamics < matlab.mixin.Copyable
 %
 % See also: ---
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      02-May-2007 
-% Last update:  18-March-2016
-%               04-August-2016 (changed to new OO format)
-%               04-March-2019 (number of outputs added)
-%               22-May-2020 (NK, deleted stateID, inputID, etc. properties)
-%               14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       02-May-2007 
+% Last update:   18-March-2016
+%                04-August-2016 (changed to new OO format)
+%                04-March-2019 (number of outputs added)
+%                22-May-2020 (NK, deleted stateID, inputID, etc. properties)
+%                14-December-2022 (TL, property check in inputArgsCheck)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
   
 
 properties (SetAccess = private, GetAccess = public)
@@ -84,4 +84,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

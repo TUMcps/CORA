@@ -2,7 +2,7 @@ function generateDynamicEquations(scenario, powVariables)
 % generateDynamicEquations - generates the dynamic equations of a power 
 %    system, more information can be found in [1, Sec. VII].
 %
-% Syntax:  
+% Syntax:
 %    generateDynamicEquations(scenario, powVariables)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function generateDynamicEquations(scenario, powVariables)
 %        Verification of Continuous and Hybrid Systems, 
 %        2022, x-x
 
-% Author:       Matthias Althoff
-% Written:      15-April-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       15-April-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % obtain bus and genParam struct
 bus = scenario.bus;
@@ -83,4 +83,4 @@ end
 createFileFromFunction(f,[scenario.name,'_dyn'],'f','x,y,u');
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

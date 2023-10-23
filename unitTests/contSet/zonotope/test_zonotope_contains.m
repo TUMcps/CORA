@@ -1,7 +1,7 @@
 function res = test_zonotope_contains
 % test_zonotope_contains - unit test function of contains
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_contains
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_contains
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      12-July-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       12-July-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty zonotope
 % Z = zonotope();
@@ -49,4 +49,4 @@ res(end+1,1) = ~contains(Z1,Z2);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

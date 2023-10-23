@@ -5,7 +5,7 @@ function [tHit,xHit,xHit_] = extractHits(simRes,varargin)
 %    state vectors before and after jumping since subsequent locations need
 %    not have the same number of states
 %
-% Syntax:  
+% Syntax:
 %    [tHit,xHit,xHit_] = extractHits(simRes)
 %    [tHit,xHit,xHit_] = extractHits(simRes,locIDstart)
 %    [tHit,xHit,xHit_] = extractHits(simRes,locIDstart,locIDend)
@@ -26,12 +26,12 @@ function [tHit,xHit,xHit_] = extractHits(simRes,varargin)
 %
 % See also: simResult, hybridAutomaton/simulateRandom
 
-% Author:       Mark Wetzlinger
-% Written:      21-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       21-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin > 3
     throw(CORAerror('CORA:tooManyInputArgs',3));
@@ -89,4 +89,4 @@ for r=1:length(simRes)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

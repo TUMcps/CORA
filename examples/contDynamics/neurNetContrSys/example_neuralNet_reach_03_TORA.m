@@ -1,7 +1,6 @@
-function completed = example_neuralNet_reach_03_TORA
+function  [completed,res,tTotal] = example_neuralNet_reach_03_TORA
 % example_neuralNet_reach_03_TORA - example of reachability analysis for a
 %    neural network controlled cart
-%
 %
 % Syntax:
 %    completed = example_neuralNet_reach_03_TORA()
@@ -11,6 +10,8 @@ function completed = example_neuralNet_reach_03_TORA
 %
 % Outputs:
 %    completed - true/false
+%    res - verification result
+%    tTotal - total time
 %
 % Reference:
 %   [1] Johnson, Taylor T., et al. "ARCH-COMP21 Category Report:
@@ -25,12 +26,13 @@ function completed = example_neuralNet_reach_03_TORA
 %       cascade-and passivity-based control designs."
 %       IEEE Transactions on Control Systems Technology 4.3 (1996): 292-297
 
-% Author:       Niklas Kochdumper, Tobias Ladner
-% Written:      08-November-2021
-% Last update:  20-May-2022 (TL: ARCH'22 Revisions)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Tobias Ladner
+% Written:       08-November-2021
+% Last update:   20-May-2022 (TL, ARCH'22 revisions)
+%                30-March-2022 (TL, ARCH'23 revisions)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 disp("BENCHMARK: Sherlock-Benchmark-9 (TORA)")
 
@@ -41,23 +43,20 @@ R0 = interval([0.6;-0.7;-0.4;0.5],[0.7;-0.6;-0.3;0.6]);
 params.tFinal = 20;
 params.R0 = polyZonotope(R0);
 
-
 % Reachability Settings ---------------------------------------------------
 
 options.timeStep = 0.05;
-options.taylorTerms = 4;
-options.zonotopeOrder = 200;
 options.alg = 'lin';
 options.tensorOrder = 3;
+options.taylorTerms = 4;
+options.zonotopeOrder = 200;
 options.errorOrder = 10;
 options.intermediateOrder = 50;
 
-
 % Parameters for NN evaluation --------------------------------------------
-evParams = struct();
-evParams.bound_approx = true;
-evParams.polynomial_approx = "lin";
 
+evParams = struct();
+evParams.poly_method = "singh";
 
 % System Dynamics ---------------------------------------------------------
 
@@ -68,75 +67,22 @@ sys = nonlinearSys(f);
 % load neural network controller
 % [4, 100, 100, 100, 1]
 load('controllerTORA.mat');
-nn = neuralNetworkOld(W, b, 'ReLU');
+nn = neuralNetwork.getFromCellArray(W, b, 'ReLU');
 
 % construct neural network controlled system
 sys = neurNetContrSys(sys, nn, 1);
-
 
 % Specification -----------------------------------------------------------
 
 safeSet = 2 * interval(-ones(4, 1), ones(4, 1));
 spec = specification(safeSet, 'safeSet');
 
+% Verification ------------------------------------------------------------
 
-% Simulation --------------------------------------------------------------
-
-tic
-simRes = simulateRandom(sys, params);
-tSim = toc;
-disp(['Time to compute random simulations: ', num2str(tSim)]);
-
-
-% Check Violation --------------------------------------------------------
-
-tic
-isVio = false;
-for i = 1:length(simRes)
-    x = simRes(i).x{1};
-    for j=1:length(safeSet)
-        isVio = isVio || ~all( ...
-            (infimum(safeSet(j)) <= x(:, j)) & ...
-            (x(:, j) <= supremum(safeSet(j))));
-    end
-end
-tVio = toc;
-disp(['Time to check violation in simulations: ', num2str(tVio)]);
-
-if isVio
-    disp("Result: VIOLATED")
-    R = params.R0;
-    tComp = 0;
-    tVeri = 0;
-else
-    % Reachability Analysis -----------------------------------------------
-
-    tic
-    R = reach(sys, params, options, evParams);
-    tComp = toc;
-    disp(['Time to compute reachable set: ', num2str(tComp)]);
-
-    % Verification --------------------------------------------------------
-
-    tic
-    isVeri = true;
-    for i = 1:length(R)
-        R_i = R(i);
-        for j = 1:length(R_i.timeInterval)
-            isVeri = isVeri & safeSet.contains(R_i.timeInterval.set{j});
-        end
-    end
-    tVeri = toc;
-    disp(['Time to check verification: ', num2str(tVeri)]);
-
-    if isVeri
-        disp('Result: VERIFIED');
-    else
-        disp('Result: UNKNOWN');
-    end
-end
-disp(['Total Time: ', num2str(tSim+tVio+tComp+tVeri)]);
-
+t = tic;
+[res, R, simRes] = verify(sys, spec, params, options, evParams, true);
+tTotal = toc(t);
+disp(['Result: ' res])
 
 % Visualization -----------------------------------------------------------
 
@@ -187,7 +133,20 @@ xlim([-2.5, 2.5]);
 ylim([-2.5, 2.5]);
 legend()
 
-% example completed
+
+% example completed -------------------------------------------------------
+
 completed = true;
 
-%------------- END OF CODE --------------
+% handling for ARCH competition
+if nargout < 2
+    clear res;
+end
+if nargout < 3
+    clear tTotal;
+end
+
+end
+
+
+% ------------------------------ END OF CODE ------------------------------

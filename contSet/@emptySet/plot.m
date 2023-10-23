@@ -1,7 +1,7 @@
 function han = plot(O,varargin)
 % plot - plots a projection of an emptySet
 %
-% Syntax:  
+% Syntax:
 %    han = plot(O)
 %    han = plot(O,dims)
 %    han = plot(O,dims,type)
@@ -27,12 +27,12 @@ function han = plot(O,varargin)
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      03-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       03-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input arguments
 [O,dims,NVpairs] = aux_parseInput(O,varargin{:});
@@ -46,6 +46,7 @@ if nargout == 0
 end
 
 end
+
 
 % Auxiliary functions -----------------------------------------------------
 
@@ -68,11 +69,7 @@ function [O,dims,NVpairs] = aux_parseInput(O,varargin)
     end
     
     % read additional name-value pairs
-    if size(dims) == 1
-        NVpairs = readPlotOptions(varargin(2:end),'contour');
-    else
-        NVpairs = readPlotOptions(varargin(2:end),'fill');
-    end
+    NVpairs = readPlotOptions(varargin(2:end),'contour');
 end
 
 function han = aux_plot(O,dims,NVpairs)
@@ -87,4 +84,4 @@ function han = aux_plot(O,dims,NVpairs)
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

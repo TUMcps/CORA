@@ -1,7 +1,7 @@
 function Y = outputSet(obj,options,R)
 % outputSet - calculates output set based on a (non-)linear output equation
 %
-% Syntax:  
+% Syntax:
 %    Y = outputSet(obj,options,R)
 %
 % Inputs:
@@ -24,13 +24,13 @@ function Y = outputSet(obj,options,R)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-November-2022
-% Last update:  07-December-2022 (MW, allow to skip output set)
-%               23-June-2023 (LL, consider inputs in first-order term)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-November-2022
+% Last update:   07-December-2022 (MW, allow to skip output set)
+%                23-June-2023 (LL, consider inputs in first-order term)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % skip computation of output set
 if ~options.compOutputSet
@@ -216,4 +216,4 @@ Y = zerothorder + firstorder + secondorder + thirdorder;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

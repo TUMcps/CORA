@@ -1,7 +1,7 @@
 function rgb = colorblind(color)
 % colorblind - colors suitable for colorblind people
 %
-% Syntax:  
+% Syntax:
 %    rgb = colorblind('b')
 %
 % Inputs:
@@ -19,12 +19,12 @@ function rgb = colorblind(color)
 %       figures. Research and practice in thrombosis and haemostasis 4(2),
 %       pp. 176-180, 2020.
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       24-September-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % provided colors
 colors = {'blue','b','red','r','yellow','y','green','g','gray'};
@@ -45,4 +45,4 @@ elseif any(ismember({'gray'},color))
     rgb = [230, 241, 238] ./ 255;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

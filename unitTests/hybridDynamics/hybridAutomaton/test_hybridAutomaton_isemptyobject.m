@@ -1,7 +1,7 @@
 function res = test_hybridAutomaton_isemptyobject
 % test_hybridAutomaton_isemptyobject - test function for emptiness check
 %
-% Syntax:  
+% Syntax:
 %    res = test_hybridAutomaton_isemptyobject
 %
 % Inputs:
@@ -16,18 +16,18 @@ function res = test_hybridAutomaton_isemptyobject
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty automaton
 res = isemptyobject(hybridAutomaton());
 
 % invariant
-inv_2D_poly = mptPolytope([-1,0],0);
+inv_2D_poly = polytope([-1,0],0);
 inv_3D_int = interval([-1;0;0],[1;2;3]);
 
 % transitions
@@ -59,4 +59,4 @@ res(end+1,1) = all(isemptyobject([hybridAutomaton(),HA]) == [true false]);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

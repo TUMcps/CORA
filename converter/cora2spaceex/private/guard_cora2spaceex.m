@@ -18,18 +18,18 @@ function guard_cora2spaceex(tran, docNode, guard)
 %
 % See also: none
 
-% Author:        Farah Atour
+% Authors:       Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
     % convert guard sets to polytopes if possible
     if isa(guard,'interval') || isa(guard,'zonotope') || ...
        isa(guard,'conZonotope') || isa(guard,'zonoBundle')
-       guard = mptPolytope(guard);
+       guard = polytope(guard);
     end
     
     % convert the different types of guard sets
@@ -37,9 +37,9 @@ function guard_cora2spaceex(tran, docNode, guard)
         
         eqs = conHyperplane_cora2spaceex(guard);
         
-    elseif isa(guard,'mptPolytope')
+    elseif isa(guard,'polytope')
         
-        eqs = mptPolytope_cora2spaceex(guard);
+        eqs = polytope_cora2spaceex(guard);
         
     elseif isa(guard,'levelSet')
         
@@ -61,4 +61,4 @@ function guard_cora2spaceex(tran, docNode, guard)
     tran.appendChild(guard);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

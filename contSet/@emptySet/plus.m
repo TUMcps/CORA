@@ -2,7 +2,7 @@ function res = plus(summand1,summand2)
 % plus - overloaded '+' operator for the Minkowski addition of a
 %    full-dimensional space and another set or vector
 %
-% Syntax:  
+% Syntax:
 %    fs = plus(summand1,summand2)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function res = plus(summand1,summand2)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % determine emptySet object
 [res,summand] = findClassArg(summand1,summand2,'emptySet');
@@ -36,4 +36,4 @@ function res = plus(summand1,summand2)
 % check dimensions of ambient space
 equalDimCheck(res,summand);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

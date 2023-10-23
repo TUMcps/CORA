@@ -1,7 +1,7 @@
 function res = minus(factor1, factor2)
-% plus - Overloaded '-' operator for a Taylor model
+% minus - Overloaded '-' operator for a Taylor model
 %
-% Syntax:  
+% Syntax:
 %    res = minus(factor1, factor2)
 %
 % Inputs:
@@ -24,29 +24,31 @@ function res = minus(factor1, factor2)
 %   [1] K. Makino et al. "Taylor Models and other validated functional 
 %       inclusion methods"
 
-% Author:       Dmitry Grebenyuk
-% Written:      20-April-2016
-%               30-July-2017 (DG) Multivariable polynomial pack is added
-%               02-December-2017 (DG) New rank evaluation
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       20-April-2016
+% Last update:   30-July-2017 (DG, multivariable polynomial pack is added)
+%                02-December-2017 (DG, new rank evaluation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     if isscalar(factor1) && ~isscalar(factor2)
-        res = arrayfun(@(b) s_minus(factor1, b), factor2, 'UniformOutput', 0);
+        res = arrayfun(@(b) aux_s_minus(factor1, b), factor2, 'UniformOutput', 0);
     elseif ~isscalar(factor1) && isscalar(factor2)
-        res = arrayfun(@(a) s_minus(a, factor2), factor1, 'UniformOutput', 0);  
+        res = arrayfun(@(a) aux_s_minus(a, factor2), factor1, 'UniformOutput', 0);  
     else
-        res = arrayfun(@(a, b) s_minus(a, b), factor1, factor2, 'UniformOutput', 0);  
+        res = arrayfun(@(a, b) aux_s_minus(a, b), factor1, factor2, 'UniformOutput', 0);  
     end
     A = cat(1, res{:});
     res = reshape(A, size(res));
     
 end
 
-%% --------------- Implementation for a scalar --------------
-function res = s_minus(factor1, factor2)
+
+% Auxiliary functions -----------------------------------------------------
+
+% Implementation for a scalar
+function res = aux_s_minus(factor1, factor2)
 
     if isa(factor1, 'taylm') && isa(factor2, 'taylm')
 
@@ -73,11 +75,11 @@ function res = s_minus(factor1, factor2)
     
     elseif isa(factor1,'taylm') && isa(factor2,'double')
         
-        res = substractConst(factor1,factor2);
+        res = aux_substractConst(factor1,factor2);
         
     elseif isa(factor1,'double') && isa(factor2,'taylm')
         
-        res = substractFromConst(factor2,factor1);
+        res = aux_substractFromConst(factor2,factor1);
      
     elseif isa(factor1,'taylm') && isa(factor2,'interval')
         
@@ -94,10 +96,9 @@ function res = s_minus(factor1, factor2)
             "be 'taylm ' or 'interval'"));
         
     end
-end    
-%% Auxiliary fuctions
+end
     
-function res = substractConst(obj,const)
+function res = aux_substractConst(obj,const)
 
     res = obj;
         
@@ -110,7 +111,7 @@ function res = substractConst(obj,const)
 
 end
 
-function res = substractFromConst(obj,const)
+function res = aux_substractFromConst(obj,const)
 
     res = obj;
         
@@ -125,5 +126,4 @@ function res = substractFromConst(obj,const)
 
 end
 
-%------------ END OF CODE ------------
- 
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function completed = example_nonlinearSysDT_reach_cstrDisc
 %    time reachability analysis, can be found in [1, Sec. 6].
 % 
 %
-% Syntax:  
+% Syntax:
 %    example_nonlinearSysDT_reach_cstrDisc
 %
 % Inputs:
@@ -16,14 +16,13 @@ function completed = example_nonlinearSysDT_reach_cstrDisc
 %    [1] J.M. Bravo, Robust MPC of constrained discrete-time
 %        nonlinear systems based on approximated reachable sets, 2006
 
-% Author:       Niklas Kochdumper, Matthias Althoff
-% Written:      30-January-2018
-% Last update:  20-March-2020 (MA, simulateRandomDT from inherited class)
-%               23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Matthias Althoff
+% Written:       30-January-2018
+% Last update:   20-March-2020 (MA, simulateRandomDT from inherited class)
+%                23-April-2020 (restructure params/options)
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -69,20 +68,20 @@ figure; hold on; box on;
 useCORAcolors("CORA:contDynamics")
 
 % plot reachable set
-plot(R,[1 2]);
+plot(R,[1 2],'DisplayName','Reachable set');
 
 % plot initial set
-plot(R.R0,[1,2]);
+plot(R.R0,[1,2],'DisplayName','Initial set');
 
 % plot simulation
-plot(simRes,[1,2],'Marker','.');
+plot(simRes,[1,2],'Marker','.','LineStyle','none','DisplayName','Simulations');
 
 % formatting
 xlabel('T-T_0');
 ylabel('C-C_0');
-
+legend()
 
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

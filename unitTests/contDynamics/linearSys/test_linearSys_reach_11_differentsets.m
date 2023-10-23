@@ -2,7 +2,7 @@ function res = test_linearSys_reach_11_differentsets
 % test_linearSys_reach_11_differentsets - unit test for reach,
 %    where many possible different sets (U,W,V) are checked for completion;
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_reach_11_differentsets
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_linearSys_reach_11_differentsets
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-November-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-November-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = false;
 
@@ -50,7 +50,7 @@ C = [1 1 0 0;
      0 -0.5 0.5 0];
 y = 2;
 
-% throughput matrix: q x m
+% feedthrough matrix: q x m
 D = [0 0 1;
      0 0 0];
 
@@ -166,4 +166,4 @@ res = true;
 end
 
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

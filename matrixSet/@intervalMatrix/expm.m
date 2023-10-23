@@ -2,7 +2,7 @@ function [eI,iPow,E] = expm(intMat,varargin)
 % expm - operator for the exponential matrix of an interval matrix,
 %    evaluated dependently
 %
-% Syntax:  
+% Syntax:
 %    eI = expm(intMat)
 %    eI = expm(intMat,maxOrder)
 %    [eI, iPow, E] = expm(intMat,r,maxOrder)
@@ -31,13 +31,13 @@ function [eI,iPow,E] = expm(intMat,varargin)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      18-June-2010 
-% Last update:  06-July-2010
-%               05-August-2010
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-June-2010 
+% Last update:   06-July-2010
+%                05-August-2010
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin == 1
     
@@ -105,4 +105,4 @@ E = exponentialRemainder(intMat,maxOrder);
 %final result
 eI = eI+E;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

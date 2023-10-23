@@ -2,7 +2,7 @@ function [trueError,VerrorDyn] = abstrerr_lin(obj,options,R)
 % abstrerr_lin - computes the abstraction error for linearization approach;
 %    to enter, options.alg = 'lin' and options.tensorOrder = 2|3
 %
-% Syntax:  
+% Syntax:
 %    [trueError,VerrorDyn] = abstrerr_lin(obj,options,R)
 %
 % Inputs:
@@ -30,12 +30,12 @@ function [trueError,VerrorDyn] = abstrerr_lin(obj,options,R)
 %
 % Former files: linError.m, linError_higherOrder.m
 
-% Author:        Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
+% Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
 % Written:       21-April-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute interval of reachable set
 IHx = interval(R);
@@ -209,4 +209,4 @@ else
         "No abstraction error computation for chosen tensor order!"));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

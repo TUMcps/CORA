@@ -1,7 +1,7 @@
 function res = test_zonotope_plus
 % test_zonotope_plus - unit test function of plus
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_plus
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_plus
 %
 % See also: -
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      26-July-2016
-% Last update:  09-August-2020
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       26-July-2016
+% Last update:   09-August-2020
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create zonotopes
 Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
@@ -31,8 +31,8 @@ Z2 = zonotope([1 10; -1 -10]);
 Z_ = Z1+Z2;
 
 % obtain center and generator matrix
-c_ = center(Z_);
-G_ = generators(Z_);
+c_ = Z_.c;
+G_ = Z_.G;
 
 % true result
 true_c = [-3; 0];
@@ -43,9 +43,9 @@ true_G = [-3, -2, -1, 10; ...
 res_val = compareMatrices(c_,true_c) && compareMatrices(G_,true_G);
 
 % empty set
-res_e = isempty(Z1+zonotope());
+res_e = representsa(Z1+zonotope(),'emptySet');
 
 % add results
 res = res_val && res_e;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

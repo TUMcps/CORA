@@ -1,7 +1,7 @@
 function I = enlarge(I,factor)
 % enlarge - Enlarges an interval object around its center
 %
-% Syntax:  
+% Syntax:
 %    obj = enlarge(I,factor)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function I = enlarge(I,factor)
 %
 % See also:
 
-% Author:       Matthias Althoff
-% Written:      22-July-2016 
-% Last update:  28-Aug-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-July-2016 
+% Last update:   28-August-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get center and radius
 c = center(I);
@@ -36,4 +36,4 @@ r = rad(I);
 I.inf = c-r.*factor; 
 I.sup = c+r.*factor;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

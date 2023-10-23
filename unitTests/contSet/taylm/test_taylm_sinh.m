@@ -1,7 +1,7 @@
 function res = test_taylm_sinh
 % test_taylm_sinh - unit test of hyperbolic sine function
 %
-% Syntax:  
+% Syntax:
 %    res = test_taylm_sinh
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_taylm_sinh
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      15-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       15-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
     
@@ -49,4 +49,4 @@ if ~appeq( getCoef(t),[s; c; s/2; c/6], eps ) ||...
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

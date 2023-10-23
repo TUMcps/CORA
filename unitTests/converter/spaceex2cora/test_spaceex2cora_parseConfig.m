@@ -11,13 +11,12 @@ function pass = test_spaceex2cora_parseConfig()
 % Outputs:
 %    pass - boolean
 
-% Author:       Maximilian Perschl
-% Written:      23-September-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Maximilian Perschl
+% Written:       23-September-2021
+% Last update:   ---
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 pass = true;
 
@@ -42,11 +41,8 @@ end
 
 % specifications
 expectedSpecs = specification(halfspace());
-expectedForbiddenSet.A = [-1 0];
-expectedForbiddenSet.b = -100;
-expectedForbiddenSet.Ae = zeros(0,2);
-expectedForbiddenSet.be = [];
-expectedSpecs = add(expectedSpecs,specification(mptPolytope(expectedForbiddenSet)));
+A = [-1 0]; b = -100;
+expectedSpecs = add(expectedSpecs,specification(polytope(A,b)));
 % Specifciations are compared for number of specifications, type, and
 % corresponding set
 if length(expectedSpecs) ~= length(configSpecs)
@@ -69,4 +65,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,17 +1,24 @@
-function [R,tcomp] = observe(obj,params,options)
+function [R,tcomp] = observe(sys,params,options)
 % observe - computes the set of possible states of a set-based observer 
 %
-% Syntax:  
-%    R = observe(obj,params,options)
+% Syntax:
+%    R = observe(sys,params,options)
 %
 % Inputs:
-%    obj - linearSysDT or nonlinearSysDT object
+%    sys - linearSysDT or nonlinearSysDT object
 %    params - model parameters
 %    options - options for bounding the set of states
 %
 % Outputs:
 %    R - set of possible states of the observer
 %    tcomp - computation time
+%
+%    [1] M. Althoff and J. J. Rath. Comparison of Set-Based Techniques 
+%        for Guaranteed State Estimation of Linear Disturbed Systems. 
+%        Automatica, 130, article no. 109662, 2021.
+%    [2] M. Althoff. Guaranteed state estimation in CORA 2021. In Proc. 
+%        of the 8th International Workshop on Applied Verification for 
+%        Continuous and Hybrid Systems, 2021
 %
 % Example: 
 %
@@ -21,40 +28,40 @@ function [R,tcomp] = observe(obj,params,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       14-Jun-2021
+% Authors:       Matthias Althoff
+% Written:       14-June-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % currently only implemented for linearSysDT and nonlinearSysDT
-if ~(isa(obj,'linearSysDT') || isa(obj,'nonlinearSysDT'))
-    throw(CORAerror('CORA:noExactAlg',obj));
+if ~(isa(sys,'linearSysDT') || isa(sys,'nonlinearSysDT'))
+    throw(CORAerror('CORA:noExactAlg',sys));
 end
 
 % options preprocessing
-options = validateOptions(obj,mfilename,params,options);
+options = validateOptions(sys,mfilename,params,options);
 
 % create vector of time points
 tVec = (options.tStart:options.timeStep:options.tFinal-options.timeStep)';
 
 % compute symbolic derivatives for nonlinear systems
-if isa(obj,'nonlinearSysDT')
-    derivatives(obj,options);
+if isa(sys,'nonlinearSysDT')
+    derivatives(sys,options);
     % check output function of nonlinear system
-    if ~all(obj.out_isLinear)
+    if ~all(sys.out_isLinear)
         throw(CORAerror('CORA:notSupported',...
             'Set-based observers only support linear output equations.'));
     end
 end
 
 % execute observer 
-[R,tcomp] = executeObserver(obj,options);
+[R,tcomp] = executeObserver(sys,options);
 
 % create object of class reachSet
 timePoint.set = R;
 timePoint.time = num2cell(tVec);
 R = reachSet(timePoint);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

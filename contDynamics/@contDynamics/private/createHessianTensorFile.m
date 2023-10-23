@@ -2,7 +2,7 @@ function createHessianTensorFile(J2dyn,J2con,path,name,vars,infsupFlag,options)
 % createHessianTensorFile - generates an mFile that allows to compute the
 %    hessian tensor
 %
-% Syntax:  
+% Syntax:
 %    createHessianTensorFile(J2dyn,J2con,path,name,vars,infsupFlag,options)
 %
 % Inputs:
@@ -26,18 +26,19 @@ function createHessianTensorFile(J2dyn,J2con,path,name,vars,infsupFlag,options)
 %
 % See also: ---
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
-% Written:      21-August-2012
-% Last update:  08-March-2017
-%               05-November-2017
-%               03-December-2017
-%               13-March-2020 (NK, implemented options.simplify = optimize)
-%               01-February-2021 (MW, different filename due to infsupFlag)
-%               01-June-2022 (MW, optimize for constraint part)
-%               09-June-2022 (MA, considered case that only constraint part is non-empty)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
+% Written:       21-August-2012
+% Last update:   08-March-2017
+%                05-November-2017
+%                03-December-2017
+%                13-March-2020 (NK, implemented options.simplify = optimize)
+%                01-February-2021 (MW, different filename due to infsupFlag)
+%                01-June-2022 (MW, optimize for constraint part)
+%                09-June-2022 (MA, considered case that only constraint part is non-empty)
+%                10-October-2023 (TL, fix missing end in optimized function)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default options
 taylMod = false;
@@ -198,7 +199,7 @@ if ~isempty(vars.y)
             writeSparseMatrixOptimized(indCon{k},['Hg{',num2str(k),'}'],fid,taylMod);
         end
         
-        disp(['constraint dim ',num2str(k)]);
+        disp(['     .. constraint dim ',num2str(k)]);
     end
 end
 
@@ -209,19 +210,11 @@ fprintf(fid,'\nend');
 if opt
     % dynamic part
     if ~isempty(vars.x)
-        pathTemp = fullfile(path,'funOptimizeDyn.m');
-        eval(['matlabFunction(outDyn,''File'',pathTemp,''Vars'',{',symVars,'});']);
+        pathOpt = fullfile(path,'funOptimizeDyn.m');
+        eval(['matlabFunction(outDyn,''File'',pathOpt,''Vars'',{',symVars,'});']);
 
-        % print text from 'funOptimizeDyn' to hessian tensor file
-        text = fileread(pathTemp);
-
-        % last two chars in 'text' always make up linebreak, thus check indices
-        % end-4 until end-2 for 'end' to see whether 'end' is still required
-        if strcmp(text(end-4:end-2),'end')
-            fprintf(fid,'\n\n%s\n',text);
-        else
-            fprintf(fid,'\n\n%s\nend',text);
-        end
+        % fix missing 'end' etc.
+        aux_fix_optimizedFuncs(pathOpt,fid);
 
         % delete funOptimizeDyn file
         delete([path filesep 'funOptimizeDyn.m']);
@@ -229,19 +222,11 @@ if opt
 
     % constraint part
     if ~isempty(vars.y)
-        pathTemp = fullfile(path,'funOptimizeCon.m');
-        eval(['matlabFunction(outCon,''File'',pathTemp,''Vars'',{',symVars,'});']);
-        
-        % print text from 'funOptimizeCon' to hessian tensor file
-        text = fileread(pathTemp);
-        
-        % last two chars in 'text' always make up linebreak, thus check indices
-        % end-4 until end-2 for 'end' to see whether 'end' is still required
-        if strcmp(text(end-4:end-2),'end')
-            fprintf(fid,'\n\n%s\n',text);
-        else
-            fprintf(fid,'\n\n%s\nend',text);
-        end
+        pathOpt = fullfile(path,'funOptimizeCon.m');
+        eval(['matlabFunction(outCon,''File'',pathOpt,''Vars'',{',symVars,'});']);
+
+        % fix missing 'end' etc.
+        aux_fix_optimizedFuncs(pathOpt,fid);
     
         % delete funOptimizeCon file
         delete([path filesep 'funOptimizeCon.m']);
@@ -258,4 +243,31 @@ end
 % close file
 fclose(fid);
 
-%------------- END OF CODE --------------
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function aux_fix_optimizedFuncs(pathOpt,fid)
+    
+    % print text from pathOpt to hessian tensor file
+    text = fileread(pathOpt);
+
+    % find last non-empty line
+    idx = 0;
+    while strcmp(text(end-idx),compose('\n')) || strcmp(text(end-idx),compose('\r'))
+        idx = idx + 1;
+    end
+    
+    % check if end is missing
+    if ~strcmp(text(end-idx-2:end-idx),'end')
+        % print with missing end
+        fprintf(fid,'\n\n%s\nend\n',text);
+    else
+        % print without extra end
+        fprintf(fid,'\n\n%s\n',text);
+    end
+
+end
+
+% ------------------------------ END OF CODE ------------------------------

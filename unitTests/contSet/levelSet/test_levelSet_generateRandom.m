@@ -1,7 +1,7 @@
 function res = test_levelSet_generateRandom
 % test_levelSet_generateRandom - unit test function of generateRandom
 %
-% Syntax:  
+% Syntax:
 %    res = test_levelSet_generateRandom
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_levelSet_generateRandom
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      19-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       19-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -58,4 +58,4 @@ end
 % unify results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

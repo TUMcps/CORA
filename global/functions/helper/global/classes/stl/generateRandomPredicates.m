@@ -1,7 +1,7 @@
 function list = generateRandomPredicates(n,nrPred,dom)
 % generateRandomPredicates - generate random predicates for an STL formula
 %
-% Syntax:  
+% Syntax:
 %    list = generateRandomPredicates(n,nrOps,dom)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function list = generateRandomPredicates(n,nrPred,dom)
 %
 % See also: stl
 
-% Author:       Niklas Kochdumper
-% Written:      15-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       15-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % generate predicates
     x = stl('x',n);
@@ -45,7 +45,7 @@ function list = generateRandomPredicates(n,nrPred,dom)
             ind = randi(n);
 
             % generate offset
-            if isempty(dom)
+            if representsa_(dom,'emptySet',eps)
                 offset = -5 + 10*rand();
             else
                 offset = randPoint(dom(ind));
@@ -60,7 +60,7 @@ function list = generateRandomPredicates(n,nrPred,dom)
             c = -2 + 4*rand(n,1);
 
             % choose offset
-            if isempty(dom)
+            if representsa_(dom,'emptySet',eps)
                 offset = -2 + 4*rand();
             else
                 offset = randPoint(c'*zonotope(dom));
@@ -78,4 +78,4 @@ function list = generateRandomPredicates(n,nrPred,dom)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

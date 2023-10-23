@@ -1,7 +1,7 @@
 function res = test_nn_random()
 % test_nn_random - tests a random network using a numeric input
 %
-% Syntax:  
+% Syntax:
 %    res = test_nn_random()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_nn_random()
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      24-June-2022
-% Last update:  28-November-2022 (name-value pair syntax)
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       24-June-2022
+% Last update:   28-November-2022 (name-value pair syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -58,4 +58,4 @@ res = res & nn.neurons_in == nrOfInputs ...
     & isa(nn.layers{2}, 'nnTanhLayer');
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

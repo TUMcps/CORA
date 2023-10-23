@@ -1,7 +1,7 @@
 function res = optBernstein( obj )
 % optBernstein - range bound using bernstein polynomials
 %
-% Syntax:  
+% Syntax:
 %    res = optBernstein( obj )
 %
 % Inputs:
@@ -35,12 +35,12 @@ function res = optBernstein( obj )
 %
 % See also: taylm, taylm/interval, optBnbAdv, optLinQuad
 
-% Author:       Niklas Kochdumper
-% Written:      03-February-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       03-February-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
    
     % convert polynomial part of the taylor model to a bernstein polynomial
     p = size(obj.monomials,2)-1;
@@ -51,4 +51,4 @@ function res = optBernstein( obj )
     % compute enclosing interval
     res = interval(min(min(B)),max(max(B))) + obj.remainder;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

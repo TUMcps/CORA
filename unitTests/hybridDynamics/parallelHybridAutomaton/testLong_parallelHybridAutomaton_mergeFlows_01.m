@@ -3,7 +3,7 @@ function res = testLong_parallelHybridAutomaton_mergeFlows_01
 %    for merging flow equations in the location product; all flow equations
 %    are nonlinear
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_parallelHybridAutomaton_mergeFlows_01
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = testLong_parallelHybridAutomaton_mergeFlows_01
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      15-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       15-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = [];
 
@@ -145,4 +145,4 @@ res(end+1,1) = isequal(mergedFlow,mergedFlow_,1e-14);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

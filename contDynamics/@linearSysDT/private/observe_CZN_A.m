@@ -3,7 +3,7 @@ function [R,tcomp] = observe_CZN_A(obj,options)
 % from [1].
 %
 %
-% Syntax:  
+% Syntax:
 %    [R,tcomp] = observe_CZN_A(obj,options)
 %
 % Inputs:
@@ -28,13 +28,12 @@ function [R,tcomp] = observe_CZN_A(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       04-Mar-2021
+% Authors:       Matthias Althoff
+% Written:       04-March-2021
 % Last update:   ---
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tic
 
@@ -71,4 +70,4 @@ for k = 1:length(tVec)-1
 end
 tcomp = toc;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function res = test_zonoBundle_plot
 %    to go through many variations of input arguments
 %    note: only run-time errors checked, go through manually to check for bugs
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonoBundle_plot
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = test_zonoBundle_plot
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      25-May-2022
-% Last update:  09-May-2023 (TL: added plotted point checks)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-May-2022
+% Last update:   09-May-2023 (TL, added plotted point checks)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -83,4 +83,4 @@ end
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

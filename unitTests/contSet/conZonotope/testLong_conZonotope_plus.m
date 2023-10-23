@@ -3,7 +3,7 @@ function res = testLong_conZonotope_plus
 %    calculation of the Minkowski sum of a constrained zonotope object with
 %    another set
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conZonotope_plus
 %
 % Inputs:
@@ -22,12 +22,12 @@ function res = testLong_conZonotope_plus
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Niklas Kochdumper
-% Written:      28-June-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       28-June-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % TEST 1: Random Test (zonotope 2D) ---------------------------------------
@@ -38,7 +38,7 @@ ind = convhulln(points');
 ind = unique(ind(:,1),'stable');
 V = points(:,ind);
 
-P = mptPolytope(V');
+P = polytope(V);
 cZ = conZonotope(P);
 
 % generate random zonotope object
@@ -62,14 +62,13 @@ for i = 1:size(V,2)
     end
 end
 
-% convert the resulting conZonotope to a mptPolytope (to easily check if
+% convert the resulting conZonotope to a polytope (to easily check if
 % a point is located inside the conZonotope)
-P = mptPolytope(cZ_);
+P = polytope(cZ_);
 
 % extract inequality constraints
-temp = get(P,'P');
-A = temp.A;
-b = temp.b;
+A = P.A;
+b = P.b;
 
 % % visualize result
 % plot(points(1,:),points(2,:),'.k');
@@ -84,8 +83,6 @@ for i = 1:size(points,2)
 end
 
 
-
-
 % TEST 2: Random Test (interval 2D) ---------------------------------------
 
 % Generate random conZonotope object
@@ -94,7 +91,7 @@ ind = convhulln(points');
 ind = unique(ind(:,1),'stable');
 V = points(:,ind);
 
-P = mptPolytope(V');
+P = polytope(V);
 cZ = conZonotope(P);
 
 % generate random interval object
@@ -121,14 +118,13 @@ for i = 1:size(V,2)
     end
 end
 
-% convert the resulting conZonotope to a mptPolytope (to easily check if
+% convert the resulting conZonotope to a polytope (to easily check if
 % a point is located inside the conZonotope)
-P = mptPolytope(cZ_);
+P = polytope(cZ_);
 
 % extract inequality constraints
-temp = get(P,'P');
-A = temp.A;
-b = temp.b;
+A = P.A;
+b = P.b;
 
 % % visualize result
 % plot(points(1,:),points(2,:),'.k');
@@ -143,9 +139,6 @@ for i = 1:size(points,2)
 end
 
 
-
-
-
 % TEST 3: Random Test (conZonotope 2D) ------------------------------------
 
 % Generate random conZonotope object
@@ -154,7 +147,7 @@ ind = convhulln(points');
 ind = unique(ind(:,1),'stable');
 V = points(:,ind);
 
-P = mptPolytope(V');
+P = polytope(V);
 cZ = conZonotope(P);
 
 % generate a second random conZonotope object
@@ -163,7 +156,7 @@ ind = convhulln(points');
 ind = unique(ind(:,1),'stable');
 V2 = points(:,ind);
 
-P = mptPolytope(V2');
+P = polytope(V2);
 cZ2 = conZonotope(P);
 
 % Minkowski sum of constrained zonotope and zonotope object
@@ -182,14 +175,13 @@ for i = 1:size(V,2)
     end
 end
 
-% convert the resulting conZonotope to a mptPolytope (to easily check if
+% convert the resulting conZonotope to a polytope (to easily check if
 % a point is located inside the conZonotope)
-P = mptPolytope(cZ_);
+P = polytope(cZ_);
 
 % extract inequality constraints
-temp = get(P,'P');
-A = temp.A;
-b = temp.b;
+A = P.A;
+b = P.b;
 
 % % visualize result
 % plot(points(1,:),points(2,:),'.k');
@@ -204,8 +196,6 @@ for i = 1:size(points,2)
 end
 
 
-
-
 % TEST 4: Random Test (vector 2D) -----------------------------------------
 
 % Generate random conZonotope object
@@ -214,7 +204,7 @@ ind = convhulln(points');
 ind = unique(ind(:,1),'stable');
 V = points(:,ind);
 
-P = mptPolytope(V');
+P = polytope(V);
 cZ = conZonotope(P);
 
 % generate a random vector
@@ -228,14 +218,13 @@ for i = 1:size(points,2)
    points(:,i) = points(:,i) + vec; 
 end
 
-% convert the resulting conZonotope to a mptPolytope (to easily check if
+% convert the resulting conZonotope to a polytope (to easily check if
 % a point is located inside the conZonotope)
-P = mptPolytope(cZ_);
+P = polytope(cZ_);
 
 % extract inequality constraints
-temp = get(P,'P');
-A = temp.A;
-b = temp.b;
+A = P.A;
+b = P.b;
 
 % % visualize result
 % plot(points(1,:),points(2,:),'.k');
@@ -253,4 +242,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

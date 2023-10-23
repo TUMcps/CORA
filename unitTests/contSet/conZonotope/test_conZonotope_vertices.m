@@ -2,7 +2,7 @@ function res = test_conZonotope_vertices
 % test_conZonotope_vertices - unit test function for the caclulation of
 %                             vertices of a constrained zonotope object
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_vertices
 %
 % Inputs:
@@ -21,20 +21,18 @@ function res = test_conZonotope_vertices
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Niklas Kochdumper
-% Written:      11-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       11-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
+res = true(0);
 
 % empty set
 vertEmptycZ = vertices(conZonotope());
-if ~isnumeric(vertEmptycZ) || ~isempty(vertEmptycZ)
-    res = false;
-end
+res(end+1,1) = isnumeric(vertEmptycZ) && isempty(vertEmptycZ);
 
 % TEST 1: Figure 1 in [1] -------------------------------------------------
 
@@ -52,11 +50,7 @@ V = vertices(cZono);
 
 % compare with ground-truth
 V_ = [-0.5 3.5 -2.5;2.5 -0.5 -1.5];
-
-if ~compareMatrices(V,V_)
-    res = false;
-end
-
+res(end+1,1) = compareMatrices(V,V_);
 
 
 % TEST 2: Figure 2 in [1] -------------------------------------------------
@@ -75,11 +69,7 @@ V = vertices(cZono);
 
 % compare with ground-truth
 V_ = [-1 0 -2;3 0 -2];
-
-if ~compareMatrices(V,V_)
-    res = false;
-end
-
+res(end+1,1) = compareMatrices(V,V_);
 
 
 % TEST 3 ------------------------------------------------------------------
@@ -98,10 +88,7 @@ V = vertices(cZono);
 
 % compare with ground-truth
 V_ = [-4 -4 -2 4 4 2;-3 1 3 3 -1 -3] + [-1;0.5]*ones(1,6);
-
-if ~compareMatrices(V,V_)
-    res = false;
-end
+res(end+1,1) = compareMatrices(V,V_);
 
 
 % TEST 4 ------------------------------------------------------------------
@@ -120,9 +107,10 @@ V = vertices(cZono);
 
 % compare with ground-truth
 V_ = [1 1 3 3;3 -1 2 -2];
+res(end+1,1) = compareMatrices(V,V_);
 
-if ~compareMatrices(V,V_)
-    res = false;
-end
 
-%------------- END OF CODE --------------
+% combine results
+res = all(res);
+
+% ------------------------------ END OF CODE ------------------------------

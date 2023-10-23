@@ -1,7 +1,7 @@
 function res = testLong_ellipsoid_ellipsoid
 % testLong_ellipsoid_ellipsoid - unit test function of ellipsoid
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_ellipsoid
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_ellipsoid_ellipsoid
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      19-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-12;
 
@@ -91,4 +91,4 @@ for i=1:nrOfTests
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

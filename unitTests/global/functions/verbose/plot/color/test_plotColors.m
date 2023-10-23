@@ -1,7 +1,7 @@
 function res = test_plotColors
 % test_plotColors - unit test function for various color plotting functions
 %
-% Syntax:  
+% Syntax:
 %    res = test_plotColors()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_plotColors
 %
 % See also: CORAcolor, useCORAcolors, colororder
 
-% Author:       Tobias Ladner
-% Written:      24-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       24-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -79,4 +79,4 @@ res = res && all(CORAcolor('CORA:next') == CORAcolor('CORA:simulations'));
 
 close(f);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

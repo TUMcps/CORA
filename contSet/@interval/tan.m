@@ -9,7 +9,7 @@ function res = tan(I)
 % [-Inf, Inf]                   if (sup - inf) < pi) and inf >= pi/2 and (sup < inf and sup > pi/2),
 % [tan(inf), tan(sup)]          if (sup - inf) < pi and inf >= pi/2 and (sup >= inf or sup <= pi/2).
 %
-% Syntax:  
+% Syntax:
 %    res = tan(I)
 %
 % Inputs:
@@ -28,15 +28,15 @@ function res = tan(I)
 %
 % See also: mtimes
 
-% Author:       Daniel Althoff, Dmitry Grebenyuk, Matthias Althoff
-% Written:      03-November-2015
-% Last update:  14-January-2016 (DG)
-%               05-February-2016 (MA)
-%               17-March-2016 (DA, Speed improvement)
-%               12-September-2016 (DG, fixed tan([-pi/2, ...]) )
-% Last revision:---
+% Authors:       Daniel Althoff, Dmitry Grebenyuk, Matthias Althoff
+% Written:       03-November-2015
+% Last update:   14-January-2016 (DG)
+%                05-February-2016 (MA)
+%                17-March-2016 (DA, Speed improvement)
+%                12-September-2016 (DG, fixed tan([-pi/2, ...]) )
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = I;   % to preserve the shape of the imput matrix
 
@@ -68,4 +68,4 @@ res.sup(ind1) = tan(sup(ind1));
 ind1 = res.sup < res.inf;
 res.inf(ind1) = -res.inf(ind1);
  
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

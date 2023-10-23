@@ -1,7 +1,7 @@
 function Z = mean(probZ)
 % mean - Returns the uncertain mean of a probabilistic zonotope
 %
-% Syntax:  
+% Syntax:
 %    Z = mean(probZ)
 %
 % Inputs:
@@ -22,13 +22,13 @@ function Z = mean(probZ)
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       27-September-2007 
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 Z=zonotope(probZ.Z);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

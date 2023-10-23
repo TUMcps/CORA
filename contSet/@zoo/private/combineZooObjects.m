@@ -18,12 +18,12 @@ function [obj1,obj2] = combineZooObjects(obj1,obj2)
 %
 % See also: none
 
-% Author:        ---
+% Authors:       ---
 % Written:       ---
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % find all methods that appear in both zoo-objects
 objects1 = cell(length(obj1.objects),1);
@@ -47,4 +47,4 @@ obj1.method = methods(1:counter-1);
 obj1.objects = objects1(1:counter-1);
 obj2.objects = objects2(1:counter-1);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -25,13 +25,13 @@ function res = eq(sys1,sys2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      09-January-2023
-% Last update:  10-January-2023 (MW, move code to isequal)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       09-January-2023
+% Last update:   10-January-2023 (MW, move code to isequal)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = isequal(sys1,sys2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

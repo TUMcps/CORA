@@ -1,7 +1,7 @@
 function res = test_intervalMatrix_randPoint
 % test_intervalMatrix_randPoint - unit test function for random sampling
 % 
-% Syntax:  
+% Syntax:
 %    res = test_intervalMatrix_randPoint
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_intervalMatrix_randPoint
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate interval matrix
 intMat = intervalMatrix([2 3; 1 2],[1 0; 1 1]);
@@ -44,4 +44,4 @@ end
 M = randPoint(intMat,1,'extreme');
 res = res & contains(intMat,M{1},'exact',1e-8);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

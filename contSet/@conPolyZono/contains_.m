@@ -2,7 +2,7 @@ function res = contains_(cPZ,S,type,varargin)
 % contains_ - determines if a constrained polynomial zonotope contains a set
 %    or a point
 %
-% Syntax:  
+% Syntax:
 %    res = contains_(cPZ,S)
 %    res = contains_(cPZ,S,type)
 %
@@ -17,21 +17,21 @@ function res = contains_(cPZ,S,type,varargin)
 % Example: 
 %    c = [0;0];
 %    G = [2 0 1;0 2 1];
-%    expMat = [1 0 3; 0 1 1; 0 0 0];
-%    Grest = [0.5;0]; 
+%    E = [1 0 3; 0 1 1; 0 0 0];
+%    GI = [0.5;0]; 
 %    A = [1 1 -1.5];
 %    b = 0.5;
-%    expMat_ = [1 0 0;0 1 0;0 0 1];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    EC = [1 0 0;0 1 0;0 0 1];
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 % 
 %    c = [0;0];
 %    G = [1 -2 1; 2 3 1];
-%    expMat = [1 0 2;0 1 1; 0 0 0];
+%    E = [1 0 2;0 1 1; 0 0 0];
 %    A = [1 -1 0.5];
 %    b = -0.5;
-%    expMat_ = [2 0 0;0 1 0; 0 0 1];
-%    cPZ1 = conPolyZono(c,0.3*G,expMat,A,b,expMat_);
-%    cPZ2 = conPolyZono(c,0.5*G,expMat,A,b,expMat_);
+%    EC = [2 0 0;0 1 0; 0 0 1];
+%    cPZ1 = conPolyZono(c,0.3*G,E,A,b,EC);
+%    cPZ2 = conPolyZono(c,0.5*G,E,A,b,EC);
 % 
 %    p1 = [1;1];
 %    p2 = [-1;3];
@@ -52,14 +52,14 @@ function res = contains_(cPZ,S,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval/contains_, conZonotope/contains_
+% See also: contSet/contains, interval/contains_, conZonotope/contains_
 
-% Author:       Niklas Kochdumper
-% Written:      05-February-2020 
-% Last update:  25-November-2022 (MW, rename 'contains')
-% Last revision:27-March-2023 (MW, rename contains_)
+% Authors:       Niklas Kochdumper
+% Written:       05-February-2020 
+% Last update:   25-November-2022 (MW, rename 'contains')
+% Last revision: 27-March-2023 (MW, rename contains_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check user inputs 
 if strcmp(type,'exact')
@@ -70,14 +70,14 @@ end
 m = size(cPZ.A,1);
 c = [cPZ.c; -cPZ.b];
 G = blkdiag(cPZ.G,cPZ.A);
-expMat = [cPZ.expMat,cPZ.expMat_];
+E = [cPZ.E,cPZ.EC];
 
-Grest = cPZ.Grest;
-if ~isempty(Grest)
-    Grest = [Grest; zeros(m,size(Grest,2))];
+GI = cPZ.GI;
+if ~isempty(GI)
+    GI = [GI; zeros(m,size(GI,2))];
 end
 
-pZ = polyZonotope(c,G,Grest,expMat,cPZ.id);
+pZ = polyZonotope(c,G,GI,E,cPZ.id);
 
 % increase dimension of the second set to match dim. of first set
 if ~isempty(cPZ.A)
@@ -92,4 +92,4 @@ end
 % check containment using the function for higher-dimensional zonotopes
 res = contains_(pZ,S,'approx');
 
-%------------- END OF CODE -------------- 
+% ------------------------------ END OF CODE ------------------------------

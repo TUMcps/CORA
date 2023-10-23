@@ -2,7 +2,7 @@ function res = testLong_sparseOrthMatrix
 % testLong_sparseOrthMatrix - unit test function for instantiation of
 %    sparse orthogonal matrices
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_sparseOrthMatrix()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_sparseOrthMatrix
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true, wait for failure
 res = true;
@@ -42,4 +42,4 @@ for i=1:nrTests
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

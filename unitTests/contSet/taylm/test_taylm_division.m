@@ -2,7 +2,7 @@ function res = test_taylm_division
 % test_taylm_division - unit-tests for Taylor models consisting of 
 %    division operation
 %
-% Syntax:  
+% Syntax:
 %    res = test_taylm_division
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = test_taylm_division
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      06-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       06-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 %% One-dimensional case
@@ -68,4 +68,4 @@ if ~appeq(getCoef(t), [4/3; 1/3], eps) ||...
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

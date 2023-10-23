@@ -1,7 +1,7 @@
 function res = testLong_halfspace_plus
 % testLong_halfspace_plus - unit test function of plus
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_halfspace_plus
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_halfspace_plus
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      16-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Random tests
 res = true;
@@ -58,4 +58,4 @@ for i=1:nrTests
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

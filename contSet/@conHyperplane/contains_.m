@@ -2,7 +2,7 @@ function res = contains_(hyp,S,varargin)
 % contains_ - determines if a constrained hyperplane contains a set or a
 %    point
 %
-% Syntax:  
+% Syntax:
 %    res = contains_(hyp,S)
 %
 % Inputs:
@@ -21,16 +21,16 @@ function res = contains_(hyp,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conHyperplane/isIntersecting_
+% See also: contSet/contains, conHyperplane/isIntersecting_
 
-% Author:       Victor Gassmann
-% Written:      19-July-2021
-% Last update:  25-November-2022 (MW, rename 'contains')
-% Last revision:27-March-2023 (MW, rename contains_)
+% Authors:       Victor Gassmann
+% Written:       19-July-2021
+% Last update:   25-November-2022 (MW, rename 'contains')
+% Last revision: 27-March-2023 (MW, rename contains_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % containment check (input arguments are checked there)
-res = contains_(mptPolytope(hyp),S,varargin{:});
+res = contains_(polytope(hyp),S,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

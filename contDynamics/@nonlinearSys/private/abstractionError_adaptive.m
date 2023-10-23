@@ -3,7 +3,7 @@ function [VerrorDyn,VerrorStat,err,options] = abstractionError_adaptive(obj,opti
 % abstractionError_adaptive - computes the abstraction error
 % note: no Taylor Model or zoo integration
 %
-% Syntax:  
+% Syntax:
 %    [VerrorDyn,VerrorStat,err,options] = abstractionError_adaptive(obj,options,R,Rdiff,...
 %     H,Zdelta,VerrorStat,T,ind3,Zdelta3)
 %
@@ -35,12 +35,12 @@ function [VerrorDyn,VerrorStat,err,options] = abstractionError_adaptive(obj,opti
 %
 % See also: linReach, linError_*, preCompStatError
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       14-January-2020
 % Last update:   14-April-2020
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute interval of reachable set and input (at origin)
 IH_x = interval(R);
@@ -75,7 +75,7 @@ if strcmp(options.alg,'lin') && options.tensorOrder == 2
             H = obj.hessian(totalInt_x,totalInt_u);
             % very first step: check if Hessian is constant
             if ~options.hessianCheck
-                options = checkIfHessianConst(obj,options,H,totalInt_x,totalInt_u);
+                options = aux_checkIfHessianConst(obj,options,H,totalInt_x,totalInt_u);
             end
         end
     catch ME
@@ -239,9 +239,9 @@ end
 end
 
 
-% Auxiliary Function --------------
+% Auxiliary functions -----------------------------------------------------
 
-function options = checkIfHessianConst(obj,options,H,totalInt_x,totalInt_u)
+function options = aux_checkIfHessianConst(obj,options,H,totalInt_x,totalInt_u)
 % check if hessian is constant --- only once executed! (very first step)
 % returns: isHessianConst, hessianCheck, hessianConst
 
@@ -269,4 +269,4 @@ options.hessianCheck = true;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

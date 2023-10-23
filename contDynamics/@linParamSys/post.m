@@ -2,7 +2,7 @@ function [Rnext,options] = post(obj,R,options)
 % post - computes the reachable continuous set for one time step of a
 %    linear parametric system
 %
-% Syntax:  
+% Syntax:
 %    [Rnext] = post(obj,R,options)
 %
 % Inputs:
@@ -22,18 +22,18 @@ function [Rnext,options] = post(obj,R,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      15-May-2007 
-% Last update:  07-January-2009
-%               22-June-2009
-%               29-June-2009
-%               06-August-2010
-%               08-August-2016
-%               09-February-2016
-%               19-May-2020 (MW, error handling for exploding sets)
+% Authors:       Matthias Althoff
+% Written:       15-May-2007 
+% Last update:   07-January-2009
+%                22-June-2009
+%                29-June-2009
+%                06-August-2010
+%                08-August-2016
+%                09-February-2016
+%                19-May-2020 (MW, error handling for exploding sets)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % rename for readability
 M1 = obj.mappingMatrixSet.zono;
@@ -107,4 +107,4 @@ if isa(R.ti,'zonotope')
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

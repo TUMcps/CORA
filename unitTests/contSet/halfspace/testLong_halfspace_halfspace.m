@@ -1,7 +1,7 @@
 function res = testLong_halfspace_halfspace
 % testLong_halfspace_halfspace - unit test function of halfspace
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_halfspace_halfspace
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_halfspace_halfspace
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      20-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       20-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -84,4 +84,4 @@ for i=1:nrOfTests
     end 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

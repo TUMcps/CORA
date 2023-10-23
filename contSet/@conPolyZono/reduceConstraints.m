@@ -2,7 +2,7 @@ function cPZ = reduceConstraints(cPZ,varargin)
 % reduceConstraints - reduce the number of constraints of a constrained 
 %                     polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    cPZ = reduceConstraints(cPZ)
 %    cPZ = reduceConstraints(cPZ,nrCon)
 %
@@ -16,12 +16,12 @@ function cPZ = reduceConstraints(cPZ,varargin)
 % Example: 
 %    c = [0;0];
 %    G = [1 0 0.1;-2 1 0.2];
-%    expMat = [1 2 2;0 1 0;0 0 0];
+%    E = [1 2 2;0 1 0;0 0 0];
 %    A = [1 0.25 0.2];
 %    b = 1;
-%    expMat_ = [0 0 2;1 0 0;0 1 0];
-%    Grest = [0;0.1];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_,Grest);
+%    E_ = [0 0 2;1 0 0;0 1 0];
+%    GI = [0;0.1];
+%    cPZ = conPolyZono(c,G,E,A,b,E_,GI);
 %
 %    cPZ_ = reduceConstraints(cPZ,0);
 %
@@ -35,12 +35,12 @@ function cPZ = reduceConstraints(cPZ,varargin)
 %
 % See also: reduce, conZonotope/reduceConstraints
 
-% Author:       Niklas Kochdumper
-% Written:      25-January-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-January-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
     % parse input arguments
     nrCon = []; redOnly = true;
@@ -58,15 +58,15 @@ function cPZ = reduceConstraints(cPZ,varargin)
     n = dim(cPZ);
     c = [cPZ.c; -cPZ.b];
     G = blkdiag(cPZ.G,cPZ.A);
-    expMat = [cPZ.expMat,cPZ.expMat_];
+    E = [cPZ.E,cPZ.EC];
     
-    pZ = polyZonotope(c,G,[],expMat);
+    pZ = polyZonotope(c,G,[],E);
     
     % reduce number of constraints until desired number is reached
     while redOnly || length(pZ.c) - n > nrCon
 
         % select monomial whos removal results in the least over-approx.
-        [res,ind,index,expo,exact] = selectMonomial(pZ,n,redOnly);
+        [res,ind,index,expo,exact] = aux_selectMonomial(pZ,n,redOnly);
         
         if ~res || (redOnly && ~exact)
             break;
@@ -79,49 +79,50 @@ function cPZ = reduceConstraints(cPZ,varargin)
         coeff = -1./pZ.G(n+con,ind);
         Gcon = coeff*pZ.G(n+con,:); Gcon(:,ind) = []; 
         cCon = coeff*pZ.c(n+con);
-        Econ = pZ.expMat; Econ(:,ind) = [];
+        Econ = pZ.E; Econ(:,ind) = [];
         
-        Gcon = [Gcon,cCon]; Econ = [Econ,zeros(size(Econ,1),1)];
+        Gcon = [Gcon,cCon]; 
+        Econ = [Econ,zeros(size(Econ,1),1)];
         
         % remove selected constraint
-        c = pZ.c; G = pZ.G; expMat = pZ.expMat;
+        c = pZ.c; G = pZ.G; E = pZ.E;
         c(con+n) = []; G(con+n,:) = [];
         
         % insert solved constrained for all occurancies of monomials
-        temp = find(pZ.expMat(:,ind) > 0);
+        temp = find(pZ.E(:,ind) > 0);
         
         for i = 1:length(index)
             if expo(i) <= 2           % to prevent exposion of comp. time
-                [Gcon_,Econ_] = getPolynomial(Gcon,Econ,expo(i));
+                [Gcon_,Econ_] = aux_getPolynomial(Gcon,Econ,expo(i));
                 G = [G, G(:,index(i)) * Gcon_]; 
                 G(:,index(i)) = zeros(size(G,1),1);
-                e = expMat(:,index(i)); e(temp) = zeros(length(temp),1);
-                expMat = [expMat, e*ones(1,size(Econ_,2)) + Econ_];
+                e = E(:,index(i)); e(temp) = zeros(length(temp),1);
+                E = [E, e*ones(1,size(Econ_,2)) + Econ_];
             end
         end
 
-        pZ = polyZonotope(c,G,[],expMat);
-        pZ = compact(pZ);
+        pZ = polyZonotope(c,G,[],E);
+        pZ = compact_(pZ,'all',eps);
     end
     
     % transform back to constrained polynomial zonotope
     c = pZ.c(1:n); G = pZ.G(1:n,:); 
     if length(pZ.c) > n
-        b = -pZ.c(n+1:end); A = pZ.G(n+1:end,:); expMat_ = pZ.expMat;
+        b = -pZ.c(n+1:end); A = pZ.G(n+1:end,:); EC = pZ.E;
     else
-        b = []; A = []; expMat_ = []; 
+        b = []; A = []; EC = []; 
     end
     
-    cPZ = conPolyZono(c,G,pZ.expMat,A,b,expMat_,cPZ.Grest,pZ.id);
+    cPZ = conPolyZono(c,G,pZ.E,A,b,EC,cPZ.GI,pZ.id);
     
     % remove redundancies from the representation
-    cPZ = compact(cPZ);
+    cPZ = compact_(cPZ,'all',eps);
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function [res,ind,index,expo,exact] = selectMonomial(pZ,n,red)
+function [res,ind,index,expo,exact] = aux_selectMonomial(pZ,n,red)
 % select the monomial whos removal results in the least over-approximation
 
     exact = false; res = true; index = []; expo = [];
@@ -135,16 +136,16 @@ function [res,ind,index,expo,exact] = selectMonomial(pZ,n,red)
     
     for i = indCon
         
-        temp = find(pZ.expMat(:,i) > 0);
+        temp = find(pZ.E(:,i) > 0);
         index = []; expo = [];
         
         % determine monomials containing multiples of the current monomial
         for j = indGen
             
-            if all(pZ.expMat(temp,j) > 0)
-                coeff = pZ.expMat(temp(1),j) / pZ.expMat(temp(1),i);
+            if all(pZ.E(temp,j) > 0)
+                coeff = pZ.E(temp(1),j) / pZ.E(temp(1),i);
                 if mod(coeff,1) == 0 && ... 
-                   all(coeff*pZ.expMat(temp,i) == pZ.expMat(temp,j))
+                   all(coeff*pZ.E(temp,i) == pZ.E(temp,j))
                     index = [index, j];
                     expo = [expo, coeff];
                 end
@@ -169,7 +170,7 @@ function [res,ind,index,expo,exact] = selectMonomial(pZ,n,red)
     
     for i = 1:length(ind)
         temp1 = setdiff(1:size(pZ.G,2),indList{i});
-        temp2 = any(pZ.expMat(pZ.expMat(:,ind(i)) > 0,temp1) > 0);
+        temp2 = any(pZ.E(pZ.E(:,ind(i)) > 0,temp1) > 0);
         if ~isempty(temp2)
             val(i) = sum(sum(pZ.G(:,temp1(temp2)).^2,1));
         end
@@ -193,14 +194,14 @@ function [res,ind,index,expo,exact] = selectMonomial(pZ,n,red)
     % computed an estimate for the expected Hausdorff-distance error
     % introduced by the removal of the selected constraints according to
     % the method descriped in Appendix IV in [1]
-    cZ = conZonoEnclosure(pZ,n);
-    r = rescaleIterative(cZ);
+    cZ = aux_conZonoEnclosure(pZ,n);
+    r = aux_rescaleIterative(cZ);
     [val,temp] = min(r(ind));
     
     if val ~= 0
         % determine monomial whos removal results in the least over-approx.
-        A = cZ.A; G = cZ.Z(:,2:end);
-        H = hausdorffError(A,G,r,ind');
+        A = cZ.A; G = cZ.G;
+        H = aux_hausdorffError(A,G,r,ind');
         [~,temp] = sort(H(ind),'ascend');  
     else
         exact = true;
@@ -211,7 +212,7 @@ function [res,ind,index,expo,exact] = selectMonomial(pZ,n,red)
     res = true;
 end
 
-function cZ = conZonoEnclosure(pZ,n)
+function cZ = aux_conZonoEnclosure(pZ,n)
 % enclose conPolyZono object with a constrained zonotope. It is important
 % that the order of the generators is preserved, therefore we can not use
 % the conPolyZono/conZonotope method.
@@ -219,7 +220,7 @@ function cZ = conZonoEnclosure(pZ,n)
     % enclose higher dimensional polynomial zonotope with a zonotope
     c_ = pZ.c; G_ = pZ.G;
     
-    ind = find(prod(ones(size(pZ.expMat))-mod(pZ.expMat,2),1) == 1);
+    ind = find(prod(ones(size(pZ.E))-mod(pZ.E,2),1) == 1);
     
     c_ = c_ + 0.5*sum(pZ.G(:,ind),2);
     G_(:,ind) = 0.5*G_(:,ind);
@@ -231,7 +232,7 @@ function cZ = conZonoEnclosure(pZ,n)
     cZ = conZonotope([c,G],A,b);
 end
 
-function H = hausdorffError(A,G,r,ind)
+function H = aux_hausdorffError(A,G,r,ind)
 % calculate an approximation of the Hausdorff Error with the linear
 % equation system from equation (A.8) in reference paper [1]
 
@@ -258,7 +259,7 @@ function H = hausdorffError(A,G,r,ind)
     end
 end
 
-function r = rescaleIterative(cZ)
+function r = aux_rescaleIterative(cZ)
 % compute a measure of how far the values for the factors would reach
 % outside the box [-1,1] if the corresponding constraint would be removed
 
@@ -297,19 +298,19 @@ function r = rescaleIterative(cZ)
     r = max(0, max(abs([infimum(R),supremum(R)]),[],2) - 1 );
 end
 
-function [G_,expMat_] = getPolynomial(G,expMat,e)
-% compute x^e, where x = sum_i G(:,i).^prod(expMat(:,i))
+function [G_,E_] = aux_getPolynomial(G,E,e)
+% compute x^e, where x = sum_i G(:,i).^prod(E(:,i))
     
-    G_ = G; expMat_ = expMat;
+    G_ = G; E_ = E;
 
     for i = 2:e
         Gtemp = []; Etemp = [];
         for j = 1:length(G_)
            Gtemp = [Gtemp, G_(j)*G];
-           Etemp = [Etemp, expMat_(:,j)*ones(1,size(expMat,2)) + expMat];
+           Etemp = [Etemp, E_(:,j)*ones(1,size(E,2)) + E];
         end
-        G_ = Gtemp; expMat_ = Etemp;
+        G_ = Gtemp; E_ = Etemp;
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

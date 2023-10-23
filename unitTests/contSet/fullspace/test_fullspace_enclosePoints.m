@@ -16,12 +16,12 @@ function res = test_fullspace_enclosePoints
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      25-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % points
 p = [2 -4 1; -4 3 2; 0 1 9];
@@ -32,4 +32,4 @@ fs = fullspace.enclosePoints(p);
 % check result
 res = dim(fs) == 3;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

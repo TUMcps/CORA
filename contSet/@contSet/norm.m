@@ -22,12 +22,12 @@ function varargout = norm(S,varargin)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      17-August-2022
-% Last update:  23-November-2022 (MW, add classname as input argument)
-% Last revision:27-March-2023 (MW, restructure relation to subclass)
+% Authors:       Mark Wetzlinger
+% Written:       17-August-2022
+% Last update:   23-November-2022 (MW, add classname as input argument)
+% Last revision: 27-March-2023 (MW, restructure relation to subclass)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
 if nargin < 1
@@ -62,7 +62,7 @@ try
     [varargout{:}] = norm_(S,type,mode);
 catch ME
     % empty set case
-    if isempty(S)
+    if representsa_(S,'emptySet',eps)
         varargout{1} = -Inf;
         varargout{2} = [];
     else
@@ -71,4 +71,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

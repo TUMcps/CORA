@@ -2,7 +2,7 @@ function printTestOverview(varargin)
 % printTestOverview - print information about the current state
 %    of unit testing to the console
 %
-% Syntax:  
+% Syntax:
 %    printTestOverview()
 %    printTestOverview(format)
 %    printTestOverview(format,')
@@ -22,13 +22,13 @@ function printTestOverview(varargin)
 %    printTestOverview('long');
 %    printTestOverview('long','LongestTests',10);
 
-% Author:       Mark Wetzlinger
-% Written:      22-January-2021
-% Last update:  09-April-2023 (MW, remove 'classes', integrate other test suites)
-%               28-April-2023 (MW, add name-value pairs)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-January-2021
+% Last update:   09-April-2023 (MW, remove 'classes', integrate other test suites)
+%                28-April-2023 (MW, add name-value pairs)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin > 1 && mod(nargin-1,2) ~= 0
     throw(CORAerror('CORA:oddNumberInputArgs'));
@@ -42,7 +42,7 @@ format = setDefaultValues({'short'},varargin);
 % more leniency in writing of identifiers
 format = lower(format);
 % check if correct identifier provided
-inputArgsCheck({{format,'str',{'short','long','intlab','mosek','mp','sdpt3','nn'}}});
+inputArgsCheck({{format,'str',{'short','long','intlab','mosek','mp','sdpt3','nn','examples','benchmarks'}}});
 
 % check list of name-value pairs
 checkNameValuePairs(NVpairs,{'LongestTests'});
@@ -124,4 +124,4 @@ end
 % print footer
 fprintf('-*---------------------------------*-\n');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

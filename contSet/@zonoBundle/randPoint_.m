@@ -1,7 +1,7 @@
 function p = randPoint_(zB,N,type,varargin)
 % randPoint_ - generates a random point within a zonotope bundle
 %
-% Syntax:  
+% Syntax:
 %    p = randPoint_(zB)
 %    p = randPoint_(zB,N)
 %    p = randPoint_(zB,N,type)
@@ -30,14 +30,14 @@ function p = randPoint_(zB,N,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conZonotope/randPoint_
+% See also: contSet/randPoint, conZonotope/randPoint_
 
-% Author:       Matthias Althoff
-% Written:      18-August-2016 
-% Last update:  19-August-2022 (MW, integrate standardized pre-processing)
-% Last revision:27-March-2023 (MW, rename randPoint_)
+% Authors:       Matthias Althoff
+% Written:       18-August-2016 
+% Last update:   19-August-2022 (MW, integrate standardized pre-processing)
+% Last revision: 27-March-2023 (MW, rename randPoint_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % return all extreme points 
 if ischar(N) && strcmp(N,'all')
@@ -82,6 +82,8 @@ elseif strcmp(type,'extreme')
         p(:,i) = x + c;     
     end
     
+else
+    throw(CORAerror('CORA:noSpecificAlg',type,zB));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

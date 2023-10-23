@@ -1,7 +1,7 @@
 function res = testLong_ellipsoid_volume
 % testLong_ellipsoid_volume - unit test function of volume
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_volume
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_ellipsoid_volume
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      13-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       13-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % random tests
 res = true;
@@ -54,4 +54,4 @@ for i=1:nrOfTests
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

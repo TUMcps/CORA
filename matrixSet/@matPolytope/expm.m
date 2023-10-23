@@ -25,12 +25,12 @@ function eP = expm(matP,varargin)
 %
 % See also: intervalMatrix/expm
 
-% Author:       Niklas Kochdumper
-% Written:      26-May-2020 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-May-2020 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 maxOrder = setDefaultValues({10},varargin);
@@ -38,4 +38,4 @@ maxOrder = setDefaultValues({10},varargin);
 % compute matrix exponential
 eP = expmInd(matP,maxOrder);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

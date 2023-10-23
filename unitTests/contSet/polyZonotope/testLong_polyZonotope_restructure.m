@@ -2,7 +2,7 @@ function res = testLong_polyZonotope_restructure
 % testLong_polyZonotope_restructure - unit test function for
 %    over-approximative polynomial zonotope restructuring
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polyZonotope_restructure
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_polyZonotope_restructure
 %
 % See also: -
 
-% Author:       Niklas Kochdumper
-% Written:      29-March-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       29-March-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -38,15 +38,15 @@ for j = 1:length(methods)
         G = rand(2,9)-0.5*ones(2,9);
         ind = datasample(1:7,4,'Replace',false);
         G(:,ind) = G(:,ind)./10;
-        Grest = (rand(2,3)-0.5*ones(2,3))*2;
-        expMat = [eye(4), zeros(4,5)];
+        GI = (rand(2,3)-0.5*ones(2,3))*2;
+        E = [eye(4), zeros(4,5)];
         for k = 5:9
            ind1 = 1 + round(rand()*3); 
            ind2 = 1 + round(rand()*3);
-           expMat(ind1,k) = round(rand()*5);
-           expMat(ind2,k) = round(rand()*5);
+           E(ind1,k) = round(rand()*5);
+           E(ind2,k) = round(rand()*5);
         end
-        pZ = polyZonotope(c,G,Grest,expMat);
+        pZ = polyZonotope(c,G,GI,E);
 
         % restructure the polynomial zonotope
         if strcmp(methods{j},'reduceGirard') && i >= 2
@@ -88,9 +88,9 @@ for j = 1:length(methods)
         G = rand(4,8)-0.5*ones(4,8);
         ind = datasample(1:6,4,'Replace',false);
         G(:,ind) = G(:,ind)./10;
-        Grest = (rand(4,5)-0.5*ones(4,5))*2;
-        expMat = [eye(6), round(rand(6,2)*5)];
-        pZ = polyZonotope(c,G,Grest,expMat);
+        GI = (rand(4,5)-0.5*ones(4,5))*2;
+        E = [eye(6), round(rand(6,2)*5)];
+        pZ = polyZonotope(c,G,GI,E);
 
         % restructure the polynomial zonotope
         pZres = restructure(pZ,methods{j},1);
@@ -111,4 +111,4 @@ for j = 1:length(methods)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

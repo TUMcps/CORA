@@ -1,7 +1,7 @@
 function han = plot(E,varargin)
 % plot - plots a projection of an ellipsoid
 %
-% Syntax:  
+% Syntax:
 %    han = plot(E)
 %    han = plot(E,dims)
 %    han = plot(E,dims,type)
@@ -24,16 +24,16 @@ function han = plot(E,varargin)
 %
 % See also: -
 
-% Author:       Victor Gassmann, Mark Wetzlinger
-% Written:      13-March-2019
-% Last update:  14-July-2020 (merge with plotFilled)
-%               12-March-2021
-%               19-May-2022 (plot marker if ellipsoid is point)
-%               25-May-2022 (TL: 1D Plotting)
-%               05-April-2023 (TL: clean up using plotPolygon)
-% Last revision:12-July-2023 (TL, restructure)
+% Authors:       Victor Gassmann, Mark Wetzlinger
+% Written:       13-March-2019
+% Last update:   14-July-2020 (merge with plotFilled)
+%                12-March-2021
+%                19-May-2022 (plot marker if ellipsoid is point)
+%                25-May-2022 (TL, 1D Plotting)
+%                05-April-2023 (TL, clean up using plotPolygon)
+% Last revision: 12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input arguments
 [E,dims,NVpairs] = aux_parseInput(E,varargin{:});
@@ -47,6 +47,7 @@ if nargout == 0
 end
 
 end
+
 
 % Auxiliary functions -----------------------------------------------------
 
@@ -91,4 +92,4 @@ function han = aux_plotNd(E,dims,NVpairs)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

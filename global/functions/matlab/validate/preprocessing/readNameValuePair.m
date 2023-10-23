@@ -5,7 +5,7 @@ function [NVpairs,value] = readNameValuePair(NVpairs,name,varargin)
 %    provided value can be checked by a function handle and one may also
 %    return a default value if the desired name-value pair is not given
 %
-% Syntax:  
+% Syntax:
 %    [NVpairs,value] = readNameValuePair(NVpairs,name)
 %    [NVpairs,value] = readNameValuePair(NVpairs,name,check)
 %    [NVpairs,value] = readNameValuePair(NVpairs,name,check,def)
@@ -31,13 +31,13 @@ function [NVpairs,value] = readNameValuePair(NVpairs,name,varargin)
 %
 % See also: readPlotOptions, polyZonotope/plot
 
-% Author:       Mark Wetzlinger, Niklas Kochdumper
-% Written:      15-July-2020
-% Last update:  24-November-2021 (allow cell-array of check functions)
-%               07-July-2022 (MW, case-insensitive, string compatibility)
-% Last revision:---
+% Authors:       Mark Wetzlinger, Niklas Kochdumper
+% Written:       15-July-2020
+% Last update:   24-November-2021 (allow cell-array of check functions)
+%                07-July-2022 (MW, case-insensitive, string compatibility)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % write function into cell-array
 funcs = [];
@@ -80,4 +80,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

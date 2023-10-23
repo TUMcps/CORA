@@ -2,7 +2,7 @@ function getModelFactors(p,mu_max)
 % getModelFactors - obtains model factors for computing the linearization
 % error
 %
-% Syntax:  
+% Syntax:
 %    getModelFactors(p,mu_max)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function getModelFactors(p,mu_max)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      04-May-2011
-% Last update:  31-August-2011
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-May-2011
+% Last update:   31-August-2011
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %create equivalent bicycle parameters
@@ -55,4 +55,4 @@ c(7,1) = -mu*m/(I*(lr+lf))*(lf^2*C_Sf*(g*lr-uL6R*h) + lr^2*C_Sr*(g*lf + uL6R*h))
 %write mfile for model factors
 createModelFactors(c);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

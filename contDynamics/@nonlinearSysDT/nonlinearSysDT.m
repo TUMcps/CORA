@@ -42,18 +42,18 @@ classdef nonlinearSysDT < contDynamics
 %
 % See also: linearSysDT
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
-% Written:      21-August-2012
-% Last update:  29-January-2018
-%               20-March-2020 (MA, simulate random removed, now provided by inherinted class)
-%               19-May-2020 (NK, changed constructor syntax)
-%               02-February-2021 (MW, add switching between tensor files)
-%               25-March-2021 (MA, measurement matrix added)
-%               18-November-2022 (MW, add output equation)
-%               26-June-2023 (LL, support of 2D out_isLinear-array)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
+% Written:       21-August-2012
+% Last update:   29-January-2018
+%                20-March-2020 (MA, simulate random removed, now provided by inherinted class)
+%                19-May-2020 (NK, changed constructor syntax)
+%                02-February-2021 (MW, add switching between tensor files)
+%                25-March-2021 (MA, measurement matrix added)
+%                18-November-2022 (MW, add output equation)
+%                26-June-2023 (LL, support of 2D out_isLinear-array)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
   
 
 properties (SetAccess = private, GetAccess = public)
@@ -161,6 +161,7 @@ end
 
 
 % Auxiliary functions -----------------------------------------------------
+
 function [name,fun,dt,states,inputs,out_fun,outputs] = aux_parseInputArgs(varargin)
 
     if nargin ~= 0 && nargin < 2
@@ -380,4 +381,4 @@ function [states,inputs,out_fun,outputs,out_isLinear,rewriteAsC,C] = ...
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

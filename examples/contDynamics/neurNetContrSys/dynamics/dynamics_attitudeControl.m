@@ -1,7 +1,7 @@
 function f = dynamics_attitudeControl(x,u)
 % dynamics_attitudeControl - attitude control of a rigid body [1]
 %
-% Syntax:  
+% Syntax:
 %    f = dynamics_attitudeControl(x,u)
 %
 % Inputs:
@@ -15,12 +15,12 @@ function f = dynamics_attitudeControl(x,u)
 %   [1] Prajna et al.: Nonlinear control synthesis by convex optimization. 
 %       IEEE Transactions on Automatic Control 49(2), 310–314 (2004)
 
-% Author:       Tobias Ladner
-% Written:      20-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       20-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parameters
 
@@ -49,4 +49,4 @@ function f = dynamics_attitudeControl(x,u)
      
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

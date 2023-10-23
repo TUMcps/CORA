@@ -2,7 +2,7 @@ function res = test_interval_atan
 % test_interval_atan - unit test function of sine for intervals,
 %    overloaded 'atan()' function for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_atan
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_interval_atan
 %
 % See also: mtimes
 
-% Author:       Mark Wetzlinger
-% Written:      08-August-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       08-August-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % tolerance
 tol = 1e-9;
@@ -64,4 +64,4 @@ end
 % final test result
 res = all(res_val);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

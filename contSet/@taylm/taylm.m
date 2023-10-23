@@ -1,7 +1,7 @@
 classdef (InferiorClasses = {?interval}) taylm
 % taylm (Taylor model) class.
 %
-% Syntax:  
+% Syntax:
 %    obj = taylm()
 %    obj = taylm(int)
 %    obj = taylm(int,max_order,names,opt_method,eps,tolerance)
@@ -59,16 +59,16 @@ classdef (InferiorClasses = {?interval}) taylm
 %   [2] M. Althoff et al. "Implementation of Taylor models in CORA 2018
 %       (Tool Presentation)"
 
-% Author:       Dmitry Grebenyuk, Niklas Kochdumper
-% Written:      29-March-2016             
-% Last update:  18-July-2017 (DG) Multivariable polynomial pack is added
-%               29-July-2017 (DG, NK) The NK' code is imerged with the DG'
-%               11-October-2017 (DG) Syms as an input
-%               3-April-2018 (NK) Restructured constructor
-%               02-May-2020 (MW) add property validation 
-% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Dmitry Grebenyuk, Niklas Kochdumper
+% Written:       29-March-2016             
+% Last update:   18-July-2017 (DG, multivariable polynomial pack is added)
+%                29-July-2017 (NK, The NK' code is imerged with the DG') 
+%                11-October-2017 (DG, syms as an input)
+%                03-April-2018 (NK, restructured constructor)
+%                02-May-2020 (MW, add property validation)
+% Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     % coefficients of polynomial terms. 
@@ -184,7 +184,7 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [func,int,max_order,names,opt_method,eps,tolerance] = ...
     aux_parseInputArgs(varargin)
@@ -298,7 +298,7 @@ end
 function obj = aux_computeObject(obj,func,int,max_order,names,opt_method,eps,tolerance,varname)
 % compute properties of taylm object
 
-    if isempty(func) && isempty(int)
+    if isempty(func) && representsa_(int,'emptySet',eps)
         % immediate exit
         obj.coefficients = 0;
         obj.max_order = max_order;
@@ -308,7 +308,7 @@ function obj = aux_computeObject(obj,func,int,max_order,names,opt_method,eps,tol
         return
     end
 
-    if isempty(func) && ~isempty(int)
+    if isempty(func) && ~representsa_(int,'emptySet',eps)
         % varargin{1} was an interval
 
         % generate variable names if they are not provided
@@ -427,4 +427,4 @@ function obj = aux_computeObject(obj,func,int,max_order,names,opt_method,eps,tol
 
 end
 
-%------------- END OF CODE -------
+% ------------------------------ END OF CODE ------------------------------

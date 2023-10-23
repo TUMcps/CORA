@@ -1,7 +1,7 @@
 function res = test_fullspace_volume
 % test_fullspace_volume - unit test function of volume
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_volume
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_volume
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init fullspace
 n = 2;
@@ -33,4 +33,4 @@ val = volume(fs);
 % check result
 res = val == Inf;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

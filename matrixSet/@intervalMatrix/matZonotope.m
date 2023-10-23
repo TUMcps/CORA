@@ -1,7 +1,7 @@
 function matZ = matZonotope(intMat)
 % matZonotope - converts an interval matrix to a matrix zonotope
 %
-% Syntax:  
+% Syntax:
 %    matZ = matZonotope(intMat)
 %
 % Inputs:
@@ -22,13 +22,13 @@ function matZ = matZonotope(intMat)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      21-June-2010 
-% Last update:  25-July-2016 (intervalhull replaced by interval)
-%               18-June-2023 (MW, fix conversion of interval matrices(!))
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       21-June-2010 
+% Last update:   25-July-2016 (intervalhull replaced by interval)
+%                18-June-2023 (MW, fix conversion of interval matrices(!))
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % convert to interval
 I = interval(intMat);
@@ -62,4 +62,4 @@ G(reshape(r'==0,n*m,1)) = [];
 % instantiate matrix zonotope
 matZ = matZonotope(C,G);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

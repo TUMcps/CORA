@@ -4,7 +4,7 @@ function res = test_linearSys_reach_01
 % Checks the solution of the linearSys class for a small example
 % with constant input against the analytical solution
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_reach_01
 %
 % Inputs:
@@ -13,17 +13,16 @@ function res = test_linearSys_reach_01
 % Outputs:
 %    res - true/false
 
-% Author:       Hendrik Roehm, Matthias Althoff
-% Written:      02-March-2016
-% Last update:  03-March-2016 (HR)
-%               12-August-2016 (MA)
-% Last revision:---
+% Authors:       Hendrik Roehm, Matthias Althoff
+% Written:       02-March-2016
+% Last update:   03-March-2016 (HR)
+%                12-August-2016 (MA)
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Define acceptable reachability overapproximation error
 % Since a linear system is tested this can be small
-
-%------------- BEGIN CODE --------------
-
 eps = 1e-10;
 
 timeStep = 0.1;
@@ -78,5 +77,4 @@ Vcomputed = sortrows(Vcomputed')';
 res = all(all(abs(Vexact - Vcomputed) < eps));
 
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

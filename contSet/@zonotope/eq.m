@@ -25,13 +25,13 @@ function res = eq(Z1,Z2,varargin)
 %
 % See also: zonotope/isequal
 
-% Author:       Mark Wetzlinger
-% Written:      20-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       20-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = isequal(Z1,Z2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

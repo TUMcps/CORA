@@ -5,7 +5,7 @@ function res = testLong_parallelHybridAutomaton_reach_comparison
 %    using the room heating benchmark described in Sec. 2.3 in [1] with two
 %    rooms
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_parallelHybridAutomaton_reach_comparison
 %
 % Inputs:
@@ -24,12 +24,12 @@ function res = testLong_parallelHybridAutomaton_reach_comparison
 %   [1] A. Fehnker and F. Ivancic. "Benchmarks for Hybrid Systems 
 %       Verification", HSCC 2004
 
-% Author:       Niklas Kochdumper
-% Written:      29-June-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       29-June-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -83,4 +83,4 @@ res_2 = (I_PHA <= enlarge(I_HA,1+1e-10));
 % final result
 res = res_1 && res_2;
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

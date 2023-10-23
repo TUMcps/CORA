@@ -4,7 +4,7 @@ function completed = example_nonlinearDA_reach_05_powerSystem_14bus_compositiona
 %    system from [1], where the abstraction error is computed 
 %    compositionally.
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinearDA_reach_05_powerSystem_14bus_compositional()
 %
 % Inputs:
@@ -18,13 +18,12 @@ function completed = example_nonlinearDA_reach_05_powerSystem_14bus_compositiona
 %        using Reachable Sets", IEEE Transactions on Power Systems 29 (5), 
 %        2014, 2270-2280
 
-% Author:       Matthias Althoff
-% Written:      08-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       08-June-2022
+% Last update:   ---
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Bus Parameters ----------------------------------------------------------
 
@@ -49,7 +48,7 @@ options.maxError_y = 0.01*ones(27,1);
 % System Dynamics ---------------------------------------------------------
 
 % set path
-path = [CORAROOT filesep 'models' filesep 'Cora' filesep 'powerSystems'];
+path = [CORAROOT filesep 'models' filesep 'powerSystemsConverted'];
 
 % create models (normal and faulty operation)
 if ~isfile([path filesep 'IEEE14_model.mat'])
@@ -328,7 +327,6 @@ for plotRun=1:19
     plot(R_1, projDim, 'Order', 10, 'FaceColor',[.6 .6 .6]);
     
     
-    
     % plot initial set
     plot(params.R0,projDim,'EdgeColor','k','FaceColor','w');
 
@@ -447,5 +445,4 @@ end
 completed = 1;
 
 
-%------------- END OF CODE --------------
-        
+% ------------------------------ END OF CODE ------------------------------

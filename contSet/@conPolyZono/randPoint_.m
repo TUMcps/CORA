@@ -2,7 +2,7 @@ function p = randPoint_(cPZ,N,type,varargin)
 % randPoint_ - generates a random point or point cloud within a constrained
 %    polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    p = randPoint_(cPZ)
 %    p = randPoint_(cPZ,N)
 %    p = randPoint_(cPZ,N,type)
@@ -18,12 +18,12 @@ function p = randPoint_(cPZ,N,type,varargin)
 % Example: 
 %    c = [0;0];
 %    G = [1 0 1;0 -2 -1];
-%    expMat = [1 0 3;0 1 1;0 0 0];
+%    E = [1 0 3;0 1 1;0 0 0];
 %    A = [1 0.5];
 %    b = 0;
-%    expMat_ = [1 0;1 0;0 1];
-%    Grest = [0;0.1];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_,Grest);
+%    EC = [1 0;1 0;0 1];
+%    GI = [0;0.1];
+%    cPZ = conPolyZono(c,G,E,A,b,EC,GI);
 %
 %    points = randPoint(cPZ,10,'extreme');
 %
@@ -35,14 +35,14 @@ function p = randPoint_(cPZ,N,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: polyZonotope/randPoint_
+% See also: contSet/randPoint, polyZonotope/randPoint_
 
-% Author:       Niklas Kochdumper
-% Written:      25-January-2020
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename randPoint_)
+% Authors:       Niklas Kochdumper
+% Written:       25-January-2020
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename randPoint_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % 'all' vertices not supported
     if ischar(N) && strcmp(N,'all')
@@ -71,12 +71,14 @@ function p = randPoint_(cPZ,N,type,varargin)
                 i = i + 1;
             end
         end
+    else
+        throw(CORAerror('CORA:noSpecificAlg',type,cPZ));
     end
     
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function p = aux_randPointStandard(cPZ)
 % generate a random point inside a constrained polynomial zonotope
@@ -92,7 +94,7 @@ function p = aux_randPointStandard(cPZ)
         objFun = @(x) sum((x-a).^2);
         
         if ~isempty(cPZ.A)
-            conFun = @(x) deal([],sum(cPZ.A.*prod(x.^cPZ.expMat_,1),2)-cPZ.b);
+            conFun = @(x) deal([],sum(cPZ.A.*prod(x.^cPZ.EC,1),2)-cPZ.b);
         else
             conFun = []; 
         end
@@ -112,14 +114,14 @@ function p = aux_randPointStandard(cPZ)
         p = []; return
     end
     
-    p = cPZ.c + sum(cPZ.G.*prod(a_.^cPZ.expMat,1),2);
+    p = cPZ.c + sum(cPZ.G.*prod(a_.^cPZ.E,1),2);
     
     % consider the indepenent generators
-    if ~isempty(cPZ.Grest)
-        q = size(cPZ.Grest,2);
+    if ~isempty(cPZ.GI)
+        q = size(cPZ.GI,2);
         b = -1 + 2*rand(q,1);
 
-        p = p + cPZ.Grest * b;
+        p = p + cPZ.GI * b;
     end
 end
 
@@ -127,8 +129,8 @@ function p = aux_randPointExtreme(cPZ)
 % generate a random point on the boundary of a constrained polynomial
 % zonotope
 
-    Grest = cPZ.Grest;
-    cPZ.Grest = [];
+    GI = cPZ.GI;
+    cPZ.GI = [];
     res = 0;
     
     % loop until a suitable point was found
@@ -141,11 +143,11 @@ function p = aux_randPointExtreme(cPZ)
         % find minium of dependent part along this direction
         cPZ_ = d'*cPZ;
 
-        objFun = @(x) cPZ_.c + sum(cPZ_.G.*prod(x.^cPZ_.expMat,1),2);
+        objFun = @(x) cPZ_.c + sum(cPZ_.G.*prod(x.^cPZ_.E,1),2);
 
         if ~isempty(cPZ.A)
             conFun = @(x) deal([],-cPZ_.b + sum(cPZ_.A.* ...
-                                  prod(x.^cPZ_.expMat_,1),2));
+                                  prod(x.^cPZ_.EC,1),2));
         else
             conFun = [];
         end
@@ -178,17 +180,17 @@ function p = aux_randPointExtreme(cPZ)
     if res <= 0
         p = []; return
     else
-        p = cPZ.c + sum(cPZ.G.*prod(x.^cPZ.expMat,1),2);
+        p = cPZ.c + sum(cPZ.G.*prod(x.^cPZ.E,1),2);
         if isempty(p)
             return
         end
     end
     
     % find maximum of the independent part along this direction
-    if ~isempty(Grest)
-       [~,p_] = supportFunc_(zonotope(zeros(n,1),Grest),d,'lower');
+    if ~isempty(GI)
+       [~,p_] = supportFunc_(zonotope(zeros(n,1),GI),d,'lower');
        p = p + p_;
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

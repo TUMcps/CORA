@@ -2,7 +2,7 @@ function res = test_taylm_exp
 % test_taylm_exp - unit-tests for Taylor models consisting of exponential
 %    functions
 %
-% Syntax:  
+% Syntax:
 %    res = test_taylm_exp
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = test_taylm_exp
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      07-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       07-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -46,4 +46,4 @@ if ~appeq( getCoef(t), exp(1)*[1; 1; 1/2; 1/6], eps ) ||...
     res = false;
 end 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

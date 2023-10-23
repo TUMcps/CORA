@@ -25,7 +25,7 @@ function index = indexForSubsystems(sys, subsystem, bus, bus_subsystem, statesPe
 % u(nrOfGenerators + 2*nrOfBuses + nrOfInputs + i) = Theta(i), i = 1...nrOfInputs; input phases
 %
 %
-% Syntax:  
+% Syntax:
 %    index = indexForSubsystems(sys, subsystem, bus, bus_subsystem, statesPerBus)
 %
 % Inputs:
@@ -50,12 +50,12 @@ function index = indexForSubsystems(sys, subsystem, bus, bus_subsystem, statesPe
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       05-May-2022
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % returns the inputs to the goalSubsystem; the function also works for sets
 % as inputs
@@ -175,4 +175,4 @@ for iSys = 1:length(subsystem)
     index{iSys}.Uu = indUu;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

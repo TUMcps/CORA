@@ -2,7 +2,7 @@ function E = minkDiffEllipsoid(E1,E2,L,mode)
 % minkDiffEllipsoid - Computes an inner- or outer-approximation of the
 %    Minkowski difference between two ellipsoids
 %
-% Syntax:  
+% Syntax:
 %    E = minkDiffEllipsoid(E,E2,L,mode)
 %
 % Inputs:
@@ -25,13 +25,13 @@ function E = minkDiffEllipsoid(E1,E2,L,mode)
 %
 % See also: ellipsoid/minkDiff
 
-% Author:       Victor Gassmann
-% Written:      15-March-2021
-% Last update:  27-July-2021 (VG: added zero cases)
-%               09-November-2022 (MW, rename 'minkDiffEllipsoid')
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       15-March-2021
+% Last update:   27-July-2021 (VG, added zero cases)
+%                09-November-2022 (MW, rename 'minkDiffEllipsoid')
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % simply center difference if both are simply their respective centers
 if rank(E1)==0 && rank(E2)==0
@@ -92,10 +92,10 @@ if length(E_cell)==1
 elseif strcmp(mode','outer')
     % compute intersection (outer approx)
     E = E_cell{1};
-    E = and(E,E_cell(2:end),'outer');
+    E = and_(E,[E_cell{2:end}],'outer');
 else
     % bulk inner union
-    E = or(E_cell{1},E_cell(2:end),'inner');
+    E = or(E_cell{1},[E_cell{2:end}],'inner');
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

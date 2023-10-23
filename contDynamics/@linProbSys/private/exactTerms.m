@@ -8,7 +8,7 @@ function obj = exactTerms(obj,options)
 %    time: the for loop has to be executed only once and help functions do
 %    not have to be called so often
 %
-% Syntax:  
+% Syntax:
 %    obj = exactTerms(obj,options)
 %
 % Inputs:
@@ -26,13 +26,13 @@ function obj = exactTerms(obj,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      20-February-2007 
-% Last update:  30-April-2007
-%               15-June-2016
+% Authors:       Matthias Althoff
+% Written:       20-February-2007 
+% Last update:   30-April-2007
+%                15-June-2016
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %load data from object structure
 A=obj.A;
@@ -55,7 +55,7 @@ end
 for i=1:n
     %i neq j
     %auxiliary value s
-    s=sum(A,i);
+    s=aux_sum(A,i);
     %auxiliary value b
     b=A(i,:); b(i)=0;
     %auxiliary matrix C
@@ -75,10 +75,10 @@ for i=1:n
     a_sup=supremum(A(i,i));
     %compute diagonal elements for H
     kappa=max(a_inf*r+0.5*a_inf^2*r^2,a_sup*r+0.5*a_sup^2*r^2);
-    H(i,i)=H(i,i)+interval(g(A(i,i),r),kappa);
+    H(i,i)=H(i,i)+interval(aux_g(A(i,i),r),kappa);
     %compute diagonal elements for Hu
     kappa_u=max(0.5*a_inf*r^2+1/6*a_inf^2*r^3,0.5*a_sup*r^2+1/6*a_sup^2*r^3);
-    Hu(i,i)=Hu(i,i)+interval(gu(A(i,i),r),kappa_u);            
+    Hu(i,i)=Hu(i,i)+interval(aux_gu(A(i,i),r),kappa_u);            
     %--------------------------------------------------------------
 end
 
@@ -92,7 +92,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function res = g(a,r)
+function res = aux_g(a,r)
 
     if contains(interval(-1/r),a)
         res=-0.5;
@@ -104,7 +104,7 @@ function res = g(a,r)
 
 end
     
-function [res]=gu(a,r)
+function [res]=aux_gu(a,r)
 
     if contains(interval(-3/(2*r)),a)
         res=-9/24*r;
@@ -117,7 +117,7 @@ function [res]=gu(a,r)
 end
 
 
-function s=sum(A,i)
+function s=aux_sum(A,i)
 %sum function:
 %s=0.5 \sum_{k:k\neq i,k\neq j} a_{ik}a_{kj}t^2
 
@@ -127,4 +127,5 @@ function s=sum(A,i)
     s=A(i,:)*A;
 
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

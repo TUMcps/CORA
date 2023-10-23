@@ -1,7 +1,7 @@
 function res = eq(R1,R2,varargin)
 % eq - overloads '==' operator to check if two reachSet objects are equal
 %
-% Syntax:  
+% Syntax:
 %    res = R1 == R2
 %    res = eq(R1,R2)
 %    res = eq(R1,R2,tol)
@@ -20,13 +20,13 @@ function res = eq(R1,R2,varargin)
 %
 % See also: isequal
 
-% Author:       Mark Wetzlinger
-% Written:      01-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       01-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = isequal(R1,R2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

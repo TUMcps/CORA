@@ -2,7 +2,7 @@ function res = testLong_parallelHybridAutomaton_mergeInvariants_01
 % testLong_parallelHybridAutomaton_mergeInvariants_01 - test
 %    function for merging invariant sets (level sets) in the location product
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_parallelHybridAutomaton_mergeInvariants_01
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_parallelHybridAutomaton_mergeInvariants_01
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      15-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       15-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % comp1: x1,x2,     u1,u2,  y1
 % comp2: x3,x4,x5,  u3,     y2,y3
@@ -135,4 +135,4 @@ res(end+1,1) = isequal(mergedInv,mergedInv_,1e-14);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

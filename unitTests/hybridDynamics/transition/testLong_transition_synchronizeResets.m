@@ -2,7 +2,7 @@ function res = testLong_transition_synchronizeResets
 % testLong_transition_synchronizeResets - test function for synchronization
 %    of reset functions due to synchronization labels
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_transition_synchronizeResets
 %
 % Inputs:
@@ -17,16 +17,16 @@ function res = testLong_transition_synchronizeResets
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      15-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       15-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % guards, targets
 guard1 = conHyperplane([1 1],1,[2 0],0);
-guard2 = mptPolytope([1 -1; -1 1],[1;-1]);
+guard2 = polytope([1 -1; -1 1],[1;-1]);
 target1 = 1;
 target2 = 3;
 
@@ -119,4 +119,4 @@ res(end+1,1) = all(logical(f_val - f_val_true == 0));
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

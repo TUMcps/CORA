@@ -2,7 +2,7 @@ function res = example_linear_reach_01_5dim()
 % example_linear_reach_01_5dim - example of linear reachability analysis
 %   with uncertain inputs, can be found in [1, Sec. 3.2.3].
 %
-% Syntax:  
+% Syntax:
 %    res = example_linear_reach_01_5dim()
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = example_linear_reach_01_5dim()
 %    [1] M. Althoff, “Reachability analysis and its application to the 
 %        safety assessment of autonomous cars", Dissertation, TUM 2010
 
-% Author:       Matthias Althoff
-% Written:      17-August-2016
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       17-August-2016
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -91,4 +91,4 @@ end
 % example completed
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

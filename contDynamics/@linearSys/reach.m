@@ -1,7 +1,7 @@
 function [R,res] = reach(obj,params,varargin)
 % reach - computes the reachable set for linear systems
 %
-% Syntax:  
+% Syntax:
 %    R = reach(obj,params)
 %    R = reach(obj,params,options)
 %    [R,res] = reach(obj,params,spec)
@@ -25,16 +25,16 @@ function [R,res] = reach(obj,params,varargin)
 %
 % See also: none
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       26-June-2019
-% Last update:   08-Oct-2019
+% Last update:   08-October-2019
 %                23-April-2020 (added params)
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parse input arguments
+
     spec = [];
     if nargin == 2
         options.linAlg = 'adaptive'; 
@@ -72,7 +72,7 @@ function [R,res] = reach(obj,params,varargin)
     if withinTol(options.tStart,options.tFinal) || ...
             ( isfield(options,'specification') ...
             && strcmp(options.specification(1).type,'invariant') ...
-            && isempty(options.specification(1).set) )
+            && representsa_(options.specification(1).set,'emptySet',eps))
         timePoint.set{1} = options.R0; timePoint.time{1} = options.tStart;
         timeInt = [];
         res = false;
@@ -111,4 +111,4 @@ function [R,res] = reach(obj,params,varargin)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

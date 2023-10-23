@@ -3,7 +3,7 @@ function V = vertices_(probZ,varargin)
 %    WARNING: Do not use this function for high order zonotopes -
 %             computational complexity grows exponentially!
 %
-% Syntax:  
+% Syntax:
 %    V = vertices_(probZ)
 %
 % Inputs:
@@ -22,14 +22,14 @@ function V = vertices_(probZ,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval,  polytope
+% See also: contSet/vertices, interval,  polytope
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       14-September-2006 
 % Last update:   22-March-2007
 % Last revision: 27-March-2023 (MW, rename vertices_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get matrix from object
 probZmat=probZ.Z;
@@ -54,4 +54,4 @@ end
 %create vertices object
 V = vertexArray;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

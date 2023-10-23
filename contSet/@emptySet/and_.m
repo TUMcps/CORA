@@ -2,7 +2,7 @@ function O = and_(O,S,varargin)
 % and_ - overloads '&' operator, computes the intersection of an empty set
 %    and another set or numerical vector
 %
-% Syntax:  
+% Syntax:
 %    O = and_(O,S)
 %    O = and_(O,S,method)
 %
@@ -23,16 +23,16 @@ function O = and_(O,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/and
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  05-April-2023 (MW, second argument can be empty)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   05-April-2023 (MW, second argument can be empty)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % intersection is always empty set
 [O,S] = findClassArg(O,S,'emptySet');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

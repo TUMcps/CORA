@@ -2,7 +2,7 @@ function res = test_matPolytope_display
 % test_matPolytope_display - unit test function for display (only check for
 %    runtime errors)
 % 
-% Syntax:  
+% Syntax:
 %    res = test_matPolytope_display
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_matPolytope_display
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -43,4 +43,4 @@ V{2} = [1 1; -1 0; -2 1];
 V{3} = [-2 0; 0 1; 1 -1];
 matP = matPolytope(V)
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

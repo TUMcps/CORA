@@ -1,7 +1,7 @@
 function res = testLong_capsule_supportFunc
 % testLong_capsule_supportFunc - unit test function of supportFunc
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_capsule_supportFunc
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_capsule_supportFunc
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      11-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Random test: random generator in unit sphere, unit radius
 res = true;
@@ -48,4 +48,4 @@ for n=2:4:30
     end    
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

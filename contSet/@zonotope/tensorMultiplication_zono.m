@@ -2,7 +2,7 @@ function Zres = tensorMultiplication_zono(Z,M,options)
 % tensorMultiplication_zono - computes \{M_{ijk...l}*x_j*x_k*...*x_l|x \in Z\}
 %    when the center of Z is the origin and M is a matrix zonotope
 %
-% Syntax:  
+% Syntax:
 %    Zres = tensorMultiplication_zono(Z,M,options)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function Zres = tensorMultiplication_zono(Z,M,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      10-October-2011
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       10-October-2011
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %compute zonotope of center
 Zres = tensorMultiplication(Z,M.center,options);
@@ -34,4 +34,4 @@ for i = 1:M.gens
     Zres = Zres + tensorMultiplication(Z,M.generator{i},options);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

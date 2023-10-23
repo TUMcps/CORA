@@ -1,7 +1,7 @@
 function I = uplus(I)
 % uplus - Overloaded '+' operator for single operand (dummy function)
 %
-% Syntax:  
+% Syntax:
 %    I = uplus(I)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function I = uplus(I)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      25-June-2015
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-June-2015
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % +I = I
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

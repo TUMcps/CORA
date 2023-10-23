@@ -1,7 +1,7 @@
 function res = test_reachSet_order
 % test_reachSet_order - unit test function for order
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_order()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_reachSet_order
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      10-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       10-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate set, propagation matrix
 Z = zonotope([0;0],[1 0 -2; 2 -1 1]);
@@ -49,4 +49,4 @@ R_true = reachSet(timePoint_sort);
 % compare results
 res = isequal(R_true,R_ordered);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

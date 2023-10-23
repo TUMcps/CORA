@@ -1,7 +1,7 @@
 function [perfInd] = errorEval(IHerrorActual,IHerrorAssume)
 % errorEval - computes performance index of the linearization error
 %
-% Syntax:  
+% Syntax:
 %    [perfInd] = errorEval(IHerrorActual,IHerrorAssume)
 %
 % Inputs:
@@ -17,14 +17,14 @@ function [perfInd] = errorEval(IHerrorActual,IHerrorAssume)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      15-January-2008 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       15-January-2008 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %compute performance index 
 perfInd=max(edgeLength(IHerrorActual)./edgeLength(IHerrorAssume));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

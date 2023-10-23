@@ -36,12 +36,12 @@ function spaceex2cora(xmlFile,varargin)
 %
 % See also: ---
 
-% Author:       Niklas Kochdumper, Max Perschl
-% Written:      03-August-2018
-% Last update:  07-November-2022 (MP, parse configuration file)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Maximilian Perschl
+% Written:       03-August-2018
+% Last update:   07-November-2022 (MP, parse configuration file)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % number of input arguments
 if nargin > 6
@@ -131,4 +131,4 @@ else
 end
 save(configurationPath,'configParams','configSpecs','spec_mapping');
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

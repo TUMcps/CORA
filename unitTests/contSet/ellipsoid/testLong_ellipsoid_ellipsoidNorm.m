@@ -2,7 +2,7 @@ function res = testLong_ellipsoid_ellipsoidNorm
 % testLong_ellipsoid_ellipsoidNorm - unit test function of
 %    ellipsoidNorm
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_ellipsoidNorm
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_ellipsoid_ellipsoidNorm
 %
 % See also: -
 
-% Author:       Adrian Kulmburg
-% Written:      06-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Adrian Kulmburg
+% Written:       06-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE ---------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 100*eps; % Tolerance to make sure that all comparisons run smoothly
 
@@ -94,4 +94,4 @@ end
 % all ok
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

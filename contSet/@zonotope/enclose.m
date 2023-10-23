@@ -3,10 +3,10 @@ function Z = enclose(Z,varargin)
 %
 % Description:
 %    Computes the set
-%    { a x1 + (1 - a) * (M x1 + x2) | x1 \in Z, x2 \in Z2, a \in [0,1] }
+%    { a x1 + (1 - a) * x2 | x1 \in Z, x2 \in Z2, a \in [0,1] }
 %    where Z2 = M*Z + Zplus
 %
-% Syntax:  
+% Syntax:
 %    Z = enclose(Z,Z2)
 %    Z = enclose(Z,M,Zplus)
 %
@@ -36,38 +36,43 @@ function Z = enclose(Z,varargin)
 %
 % See also: conZonotope/enclose
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       30-September-2006 
 % Last update:   22-March-2007
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 if nargin == 2
     Z2 = varargin{1};
 elseif nargin == 3
-    Z2 = (varargin{1}*Z) + varargin{2};
+    M = varargin{1};
+    Zplus = varargin{2};
+    Z2 = (M*Z) + Zplus;
 else
     throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
 % retrieve number of generators of the zonotopes
-generators1 = size(Z.Z,2);
-generators2 = size(Z2.Z,2);
+generators1 = size(Z.G,2);
+generators2 = size(Z2.G,2);
 
 % if first zonotope has more or equal generators
 if generators2 <= generators1
-    Zcut = Z.Z(:,1:generators2);
-    Zadd = Z.Z(:,(generators2+1):generators1);
-    Zequal = Z2.Z;
+    cG = (Z.c-Z2.c)/2;
+    Gcut = Z.G(:,1:generators2);
+    Gadd = Z.G(:,(generators2+1):generators1);
+    Gequal = Z2.G;
 else
-    Zcut = Z2.Z(:,1:generators1);
-    Zadd = Z2.Z(:,(generators1+1):generators2);
-    Zequal = Z.Z;
+    cG = (Z2.c-Z.c)/2;
+    Gcut = Z2.G(:,1:generators1);
+    Gadd = Z2.G(:,(generators1+1):generators2);
+    Gequal = Z.G;
 end
 
 % compute enclosing zonotope
-Z.Z = [(Zcut+Zequal)/2,(Zcut-Zequal)/2,Zadd];
+Z.c = (Z.c+Z2.c)/2;
+Z.G = [(Gcut+Gequal)/2,cG,(Gcut-Gequal)/2,Gadd];
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

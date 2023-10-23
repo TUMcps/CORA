@@ -25,23 +25,23 @@ function trans = projectInputDependentTrans(pHA,trans,N,compIndex,locID,targ,id)
 %
 % See also: none
 
-% Author:       Maximilian Perschl
-% Written:      17-February-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Maximilian Perschl
+% Written:       17-February-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-    % convert to mptPolytope unless guard set is fullspace, a levelSet,
-    % an mptPolytope, or a conHyperplane
+    % convert to polytope unless guard set is fullspace, a levelSet,
+    % a polytope, or a conHyperplane
     guard = trans.guard;
     if ~isa(guard,'fullspace') && ~isa(guard,'levelSet') ...
-            && ~isa(guard,'mptPolytope') && ~isa(guard,'conHyperplane')
-        guard = mptPolytope(guard);
+            && ~isa(guard,'polytope') && ~isa(guard,'conHyperplane')
+        guard = polytope(guard);
     end
 
     % project guard set to the higher dimension
-    guard = projectHighDim(guard,N,pHA.bindsStates{compIndex});
+    guard = lift_(guard,N,pHA.bindsStates{compIndex});
 
     % project reset function to the higher dimension
     if isfield(trans.reset,'A')
@@ -58,7 +58,9 @@ function trans = projectInputDependentTrans(pHA,trans,N,compIndex,locID,targ,id)
    
 end
 
-% Auxiliary Functions -----------------------------------------------------
+
+% Auxiliary functions -----------------------------------------------------
+
 function resetStruct = aux_projectLinearReset(pHA,resetStruct,compIndex,locID,id)
 % compute new reset matrices A,B,c according to the state/input dimensions
 % of the new automaton, where the mapping of inputs (which are states of
@@ -132,7 +134,7 @@ function resetStruct = aux_projectLinearReset(pHA,resetStruct,compIndex,locID,id
                     if ~(otherFlow.D(otherOutputIdx,j) == 0 ...
                             || inputBinds{otherCompIdx}(j,1) == 0)
                         throw(CORAerror('CORA:notSupported',...
-                            ['It is not allowed for the throughput matrix D '...
+                            ['It is not allowed for the feedthrough matrix D '...
                             'to point to inputs that are defined by the '...
                             'output of other subsystems, since it would '...
                             'otherwise be able to construct infinite loops!']));                 
@@ -316,4 +318,4 @@ function resetResult = aux_projectNonlinearReset(pHA,resetStruct,compIdx,locID,i
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

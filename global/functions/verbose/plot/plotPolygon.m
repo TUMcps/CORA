@@ -1,7 +1,7 @@
 function han = plotPolygon(V,varargin)
 % plotPolygon - plot a polygon defined by its vertices
 %
-% Syntax:  
+% Syntax:
 %    han = plotPolygon(V,varargin)
 %
 % Inputs:
@@ -23,15 +23,15 @@ function han = plotPolygon(V,varargin)
 %
 % See also:
 
-% Author:       Niklas Kochdumper, Tobias Ladner
-% Written:      05-May-2020
-% Last update:  15-July-2020 (MW, merge with plotFilledPolygon)
-%               05-April-2023 (TL: generalized function)
-%               11-July-2023 (TL: bug fix sets with holes and FaceColor)
-%               12-July-2023 (TL: cut off infinity values at axis limits)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Tobias Ladner
+% Written:       05-May-2020
+% Last update:   15-July-2020 (MW, merge with plotFilledPolygon)
+%                05-April-2023 (TL, generalized function)
+%                11-July-2023 (TL, bug fix sets with holes and FaceColor)
+%                12-July-2023 (TL, cut off infinity values at axis limits)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default
 NVpairs = {'Color',CORAcolor('CORA:next')};
@@ -171,6 +171,7 @@ end
 
 end
 
+
 % Auxiliary functions -----------------------------------------------------
 
 function [NVpairs, V] = aux_positionAtXYZ(V, NVpairs)
@@ -279,4 +280,4 @@ function V = aux_convHull(V)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

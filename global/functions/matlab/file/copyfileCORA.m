@@ -4,7 +4,7 @@ function copyfileCORA(source,target)
 % 'copyfile', the created file is not recognized by all MATLAB versions
 % even when using addpath(genpath(path));
 %
-% Syntax:  
+% Syntax:
 %    copyfileCORA(source,target)
 %
 % Inputs:
@@ -13,6 +13,7 @@ function copyfileCORA(source,target)
 %    belong
 %
 % Outputs:
+%    -
 %
 % Example: 
 %
@@ -22,12 +23,12 @@ function copyfileCORA(source,target)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      12-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       12-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % open source file
 fid_source = fopen(source,'r');
@@ -47,4 +48,4 @@ end
 fclose(fid_source);
 fclose(fid_target);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

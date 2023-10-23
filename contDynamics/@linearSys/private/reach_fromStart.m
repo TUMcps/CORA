@@ -2,7 +2,7 @@ function [timeInt,timePoint,res] = reach_fromStart(obj,options)
 % reach_fromStart - computes the reachable set for linear systems using the
 %    propagation of the homogeneous solution from the start
 %
-% Syntax:  
+% Syntax:
 %    [timeInt,timePoint,res] = reach_fromStart(obj,options)
 %
 % Inputs:
@@ -23,14 +23,14 @@ function [timeInt,timePoint,res] = reach_fromStart(obj,options)
 %
 % See also: none
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       26-June-2019
-% Last update:   14-Aug-2019
+% Last update:   14-August-2019
 %                16-February-2021 (MW, correct implementation of uTransVec)
 %                19-November-2022 (MW, modularize specification check)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % obtain factors for initial state and input solution
 for i=1:(options.taylorTerms+1)
@@ -152,4 +152,4 @@ timePoint.set{end} = outputSet(obj,options,Rstart);
 % specification fulfilled
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

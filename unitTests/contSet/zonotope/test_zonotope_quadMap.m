@@ -1,7 +1,7 @@
 function res = test_zonotope_quadMap
 % test_zonotope_quadMap - unit test function of quadMap
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_quadMap
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_quadMap
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      26-July-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-July-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create zonotopes
 Z1 = zonotope([-4, -3, -2; 1, 2, 3]);
@@ -37,8 +37,8 @@ Q{2} = [0.5 0; 2 -1];
 Zres = quadMap(Z1,Q);
 
 % obtain center and generator matrix
-c = center(Zres);
-G = generators(Zres);
+c = Zres.c;
+G = Zres.G;
 
 % true result
 true_c = [102.5; -16.25];
@@ -54,8 +54,8 @@ res(1) = compareMatrices(c,true_c) && compareMatrices(G,true_G);
 Zres = quadMap(Z1,Z2,Q);
 
 % obtain center and generator matrix
-c = center(Zres);
-G = generators(Zres);
+c = Zres.c;
+G = Zres.G;
 
 % true result
 true_c = [-43; 3];
@@ -69,4 +69,4 @@ res(2) = compareMatrices(c,true_c) && compareMatrices(G,true_G);
 % gather results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

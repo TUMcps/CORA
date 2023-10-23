@@ -1,7 +1,7 @@
 function Z = zonotope(E,varargin)
 % zonotope - over-approximates an ellipsoid by a zonotope
 %
-% Syntax:  
+% Syntax:
 %    E = zonotope(E)
 %    E = zonotope(E,m)
 %    E = zonotope(E,m,mode)
@@ -49,14 +49,13 @@ function Z = zonotope(E,varargin)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      11-October-2019
-% Last update:  08-June-2021 (handle degenerate case here, remove from
-%                             sub-files)
-%               04-July-2022 (VG: class array cases)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       11-October-2019
+% Last update:   08-June-2021 (moved handling of degenerate case here)
+%                04-July-2022 (VG, class array cases)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 if isempty(varargin)
@@ -137,4 +136,4 @@ if ~(rankE == dimE)
     Z = T*Z + c;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

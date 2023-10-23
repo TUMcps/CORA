@@ -1,7 +1,7 @@
 function cPZ = conPolyZono(C)
 % conPolyZono - Converts a capsule to a constrained polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    cPZ = conPolyZono(C)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function cPZ = conPolyZono(C)
 %
 % See also: ellipsoid/conPolyZono
 
-% Author:       Niklas Kochdumper
-% Written:      12-August-2019 
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       12-August-2019 
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % dimension of capsule
 n = dim(C);
@@ -55,7 +55,7 @@ if isempty(c)
 end
 
 % combine sphere, generator, and center
-if ~isempty(S)
+if ~representsa(S,'emptySet')
     if ~isempty(G)
         cPZ = G + S + c; 
     else
@@ -69,4 +69,4 @@ else
     end
 end
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

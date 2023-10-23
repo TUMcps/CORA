@@ -2,7 +2,7 @@ function zB = encloseTight(zB1,zB2,W)
 % encloseTight - Generates a zonotope bundle that encloses two zonotopes
 %    bundles in a tighter way than standard enclose operation
 %
-% Syntax:  
+% Syntax:
 %    zB = encloseTight(zB1,zB2)
 %
 % Inputs:
@@ -19,17 +19,17 @@ function zB = encloseTight(zB1,zB2,W)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      07-December-2010 
-% Last update:  25-July-2016 (intervalhull replaced by interval)
-%               30-July-2016
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-December-2010 
+% Last update:   25-July-2016 (intervalhull replaced by interval)
+%                30-July-2016
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %compute vertices
-V1 = vertices(mptPolytope(zB1));
-V2 = vertices(mptPolytope(zB2));
+V1 = vertices(polytope(zB1));
+V2 = vertices(polytope(zB2));
 
 %unify vertices
 V = vertices([V1, V2]);
@@ -43,4 +43,4 @@ Z{end+1} = zonotope.enclosePoints(V,'stursberg');
 %instantiate zonotope bundle
 zB = zonoBundle(Z);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_interval_vertices
 % test_interval_vertices - unit test function of vertices
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_vertices
 %
 % Inputs:
@@ -16,13 +16,13 @@ function res = test_interval_vertices
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      28-August-2019
-% Last update:  05-April-2023 (MW, unbounded intervals)
-%               28-April-2023 (MW, degenerate intervals)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-August-2019
+% Last update:   05-April-2023 (MW, unbounded intervals)
+%                28-April-2023 (MW, degenerate intervals)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty set
 I_e = interval();
@@ -92,4 +92,4 @@ res(end+1,1) = compareMatrices(V,lb);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

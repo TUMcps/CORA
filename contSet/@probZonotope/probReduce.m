@@ -2,7 +2,7 @@ function probZ = probReduce(probZ)
 % probReduce - Reduces the number of single Gaussian distributions to
 %    the dimension of the system
 %
-% Syntax:  
+% Syntax:
 %    probZ = probReduce(probZ)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function probZ = probReduce(probZ)
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       27-August-2007
 % Last update:   26-February-2008
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if probZ.gauss~=1
     %get new sigma matrix
@@ -47,4 +47,4 @@ newSigma=0.5*(newSigma+newSigma');
 %compute new generators
 probZ.g=V*sqrt(W);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

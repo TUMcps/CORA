@@ -16,12 +16,12 @@ function res = test_transition_isemptyobject
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      15-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       15-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty object
 res = isemptyobject(transition());
@@ -43,4 +43,4 @@ res(end+1,1) = all(isemptyobject([transition(),transition(guard,reset,target)]) 
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

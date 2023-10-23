@@ -1,7 +1,7 @@
 function c = center(matZ)
 % center - Returns the center of an matZonotope
 %
-% Syntax:  
+% Syntax:
 %    c = center(matZ)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function c = center(matZ)
 %
 % See also: none
 
-% Author:       Victor Gassmann
-% Written:      23-July-2020 
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       23-July-2020 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 c = matZ.center;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function matZ = matZonotope(matP)
 % matZonotope - computes an enclosing matrix zonotope of a matrix polytope
 %
-% Syntax:  
+% Syntax:
 %    matZ = matZonotope(matP)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function matZ = matZonotope(matP)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      22-July-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-July-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %convert matrix polytope to matrix vertices
 matV = vertices(matP);
@@ -41,4 +41,4 @@ Z = zonotope.enclosePoints(V);
 %convert to matrix zonotope
 matZ = matZonotope(Z);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

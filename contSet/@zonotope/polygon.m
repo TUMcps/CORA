@@ -2,7 +2,7 @@ function p = polygon(Z)
 % polygon - converts a two-dimensional zonotope into a polygon and returns
 %    its vertices
 %
-% Syntax:  
+% Syntax:
 %    p = polygon(Z)
 %
 % Inputs:
@@ -21,15 +21,15 @@ function p = polygon(Z)
 %
 % See also: none
 
-% Author:       Daniel Heß, Matthias Althoff
-% Written:      28-June-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Daniel Heß, Matthias Althoff
+% Written:       28-June-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty case
-if isempty(Z)
+if representsa_(Z,'emptySet',eps)
     p = []; return
 end
 
@@ -39,11 +39,11 @@ if dim(Z) ~= 2
 end
 
 % delete zero generators
-Z = deleteZeros(Z);
+Z = compact_(Z,'zeros',eps);
 
 % obtain center and generator matrix
-c = center(Z);
-G = generators(Z);
+c = Z.c;
+G = Z.G;
 
 % obtain number of generators
 nrGens = size(G,2);
@@ -81,4 +81,4 @@ p = [p(1,:),p(1,end)+p(1,1)-p(1,2:end);...
 %consider center
 p = c + p;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

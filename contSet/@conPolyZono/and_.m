@@ -2,7 +2,7 @@ function res = and_(cPZ,S,varargin)
 % and_ - Computes the intersection of a constrained polynomial zonotope and
 %    other set representations
 %
-% Syntax:  
+% Syntax:
 %    res = and_(cPZ,S)
 %
 % Inputs:
@@ -51,17 +51,17 @@ function res = and_(cPZ,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conZonotope/and_, interval/and_
+% See also: contSet/and, conZonotope/and_, interval/and_
 
-% Author:       Niklas Kochdumper
-% Written:      07-November-2018
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename and_)
+% Authors:       Niklas Kochdumper
+% Written:       07-November-2018
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename and_)
 
-%------------- BEGIN CODE --------------
-           
+% ------------------------------ BEGIN CODE -------------------------------
+
 % different cases for different set representations
-if isa(S,'conPolyZono') || isa(S,'mptPolytope') || ...
+if isa(S,'conPolyZono') || isa(S,'polytope') || ...
    isa(S,'interval') || isa(S,'zonotope') || ...
    isa(S,'zonoBundle') || isa(S,'conZonotope') || ...
    isa(S,'ellipsoid') || isa(S,'capsule') || ...
@@ -73,48 +73,48 @@ if isa(S,'conPolyZono') || isa(S,'mptPolytope') || ...
     % compute constraint part of the resulting set
     cPZ.b = [cPZ.b; S.b; S.c - cPZ.c];
     A = [cPZ.G  -S.G];
-    expMat_ = blkdiag(cPZ.expMat,S.expMat);
+    EC = blkdiag(cPZ.E,S.E);
     
     if isempty(cPZ.A) && isempty(S.A)         
         cPZ.A = A;
-        cPZ.expMat_ = expMat_;
+        cPZ.EC = EC;
     elseif isempty(cPZ.A)
         cPZ.A = blkdiag(S.A,A);
-        O = zeros(size(cPZ.expMat,1),size(S.expMat_,2));
-        cPZ.expMat_ = [[O;S.expMat_],expMat_];
+        O = zeros(size(cPZ.E,1),size(S.EC,2));
+        cPZ.EC = [[O;S.EC],EC];
     elseif isempty(S.A)
         cPZ.A = blkdiag(cPZ.A,A);
-        O = zeros(size(S.expMat,1),size(cPZ.expMat_,2));
-        cPZ.expMat_ = [[cPZ.expMat_;O],expMat_];
+        O = zeros(size(S.E,1),size(cPZ.EC,2));
+        cPZ.EC = [[cPZ.EC;O],EC];
     else           
         cPZ.A = blkdiag(cPZ.A,S.A,A);
-        O1 = zeros(size(S.expMat,1),size(cPZ.expMat_,2));
-        O2 = zeros(size(cPZ.expMat,1),size(S.expMat_,2)); 
-        cPZ.expMat_ = [[cPZ.expMat_;O1],[O2;S.expMat_],expMat_];
+        O1 = zeros(size(S.E,1),size(cPZ.EC,2));
+        O2 = zeros(size(cPZ.E,1),size(S.EC,2)); 
+        cPZ.EC = [[cPZ.EC;O1],[O2;S.EC],EC];
     end
     
     % compute state part of the resulting set
-    O = zeros(size(S.expMat,1),size(cPZ.expMat,2));
-    cPZ.expMat = [cPZ.expMat;O];
+    O = zeros(size(S.E,1),size(cPZ.E,2));
+    cPZ.E = [cPZ.E;O];
     
     % compute independent part of the resulting set
-    if ~isempty(cPZ.Grest)
-        if ~isempty(S.Grest)
+    if ~isempty(cPZ.GI)
+        if ~isempty(S.GI)
            n = dim(cPZ); cen = zeros(n,1);
-           Z1 = zonotope(cen,cPZ.Grest);
-           Z2 = zonotope(cen,S.Grest);
+           Z1 = zonotope(cen,cPZ.GI);
+           Z2 = zonotope(cen,S.GI);
            Z = enclose(Z1,Z2);
-           cPZ.Grest = generators(Z);
+           cPZ.GI = Z.G;
         end
     else
-        cPZ.Grest = S.Grest;
+        cPZ.GI = S.GI;
     end
     
     % update identifier vector
     cPZ.id = [cPZ.id; (max(cPZ.id)+1:max(cPZ.id)+length(S.id))'];
     
     % remove redundant monomials
-    res = compact(cPZ);
+    res = compact_(cPZ,'all',eps);
 
     
 elseif isa(S,'halfspace')
@@ -125,22 +125,21 @@ elseif isa(S,'halfspace')
     % add additional constraints
     A = [S.c' * cPZ.G, -0.5*(S.d-l)];
     b = 0.5*(S.d+l) - S.c'*cPZ.c;
-    expMat_ = blkdiag(cPZ.expMat,1);
+    EC = blkdiag(cPZ.E,1);
     
-    cPZ.expMat = [cPZ.expMat; zeros(1,size(cPZ.expMat,2))];
+    cPZ.E = [cPZ.E; zeros(1,size(cPZ.E,2))];
     cPZ.id = [cPZ.id;max(cPZ.id) + 1];
     
     if isempty(cPZ.A)
-       cPZ.A = A; cPZ.b = b; cPZ.expMat_ = expMat_;
+       cPZ.A = A; cPZ.b = b; cPZ.EC = EC;
     else
        cPZ.A = blkdiag(cPZ.A, A);
        cPZ.b = [cPZ.b; b];
-       cPZ.expMat_ = [[cPZ.expMat_;zeros(1,size(cPZ.expMat_,2))], ...
-                       expMat_];
+       cPZ.EC = [[cPZ.EC;zeros(1,size(cPZ.EC,2))], EC];
     end
     
     % remove redundant monomials
-    res = compact(cPZ);
+    res = compact_(cPZ,'all',eps);
 
     
 elseif isa(S, 'conHyperplane')
@@ -148,7 +147,7 @@ elseif isa(S, 'conHyperplane')
     % calculate intersection between conPolyZono object and hyperplane
     % defined as c * x = d
     cPZ.b = [cPZ.b; S.h.d - S.h.c' * cPZ.c];
-    cPZ.expMat_ = [cPZ.expMat_ cPZ.expMat];
+    cPZ.EC = [cPZ.EC cPZ.E];
     
     if isempty(cPZ.A)
        cPZ.A = S.h.c' * cPZ.G; 
@@ -195,13 +194,13 @@ elseif isa(S, 'levelSet')
         end
     end
 
-    expMat_ = T.monomials(2:end,2:end)';
-    expMat_ = expMat_(ind,:);
+    EC = T.monomials(2:end,2:end)';
+    EC = EC(ind,:);
     A = T.coefficients(2:end)';
     b = -T.coefficients(1);
 
     % construct conPolyZono object for the level set
-    expMat = eye(dim(I));
+    E = eye(dim(I));
     rem = T.remainder;
 
     if ~strcmp(S.compOp,'==')
@@ -213,12 +212,11 @@ elseif isa(S, 'levelSet')
     if ~all(r == 0)
         A = [A,-diag(r)];
         b = b + c;
-        expMat_ = blkdiag(expMat_,eye(length(r)));
-        expMat = [expMat;zeros(length(r),size(expMat,2))];
+        EC = blkdiag(EC,eye(length(r)));
+        E = [E;zeros(length(r),size(E,2))];
     end
 
-    ls = conPolyZono(center(I),generators(zonotope(I)),expMat, ...
-                     A,b,expMat_);
+    ls = conPolyZono(center(I),zonotope(I).G,E,A,b,EC);
 
     % intersect with the original conPolyZono object
     res = and_(cPZ,ls,'exact');
@@ -227,4 +225,4 @@ else
     throw(CORAerror('CORA:noops',cPZ,S));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

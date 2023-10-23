@@ -1,7 +1,7 @@
 function res = test_taylm_asin
 % test_taylm_asin - unit test of inverse sine function
 %
-% Syntax:  
+% Syntax:
 %    res = test_taylm_asin
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_taylm_asin
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      16-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       16-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -45,4 +45,4 @@ if ~appeq( getCoef(t),[0; 1; 1/6; 0.075; 0.0446], eps ) ||...
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

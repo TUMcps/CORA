@@ -1,7 +1,7 @@
 function r = rank(E)
 % rank - computes the dimension of the affine hull of an ellipsoid
 %
-% Syntax:  
+% Syntax:
 %    r = rank(E)
 %
 % Inputs:
@@ -20,13 +20,14 @@ function r = rank(E)
 %
 % See also: none
 
-% Author:       Victor Gassmann
-% Written:      16-March-2021
-% Last update:  04-July-2022 (VG: allow class array input)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       16-March-2021
+% Last update:   04-July-2022 (VG, allow class array input)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
-if isempty(E)
+% ------------------------------ BEGIN CODE -------------------------------
+
+if representsa_(E,'emptySet',eps)
     r = 0;
 else
     r = zeros(size(E));
@@ -38,4 +39,5 @@ else
         r(i) = sum(d>0 & d>=mev_th);
     end
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

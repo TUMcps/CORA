@@ -3,7 +3,7 @@ function [R,tcomp] = observe_FRadA(obj,options)
 % from [1]; the approach is extended here for nonlinear systems.
 %
 %
-% Syntax:  
+% Syntax:
 %    [R,tcomp] = observe_FRadA(obj,options)
 %
 % Inputs:
@@ -27,15 +27,15 @@ function [R,tcomp] = observe_FRadA(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       25-Mar-2021
+% Authors:       Matthias Althoff
+% Written:       25-March-2021
 % Last update:   ---
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set intersection procedure
+
 options.intersectionType = 1;
 options.intersectionTechnique = 'alamo-FRad';
 
@@ -44,4 +44,4 @@ tic
 R = observe_stripBased(obj,options);
 tcomp = toc;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

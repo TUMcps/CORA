@@ -2,7 +2,7 @@ function obj = exponential(obj,options)
 % exponential - computes the overapproximation of the exponential of a system 
 %    matrix up to a certain accuracy
 %
-% Syntax:  
+% Syntax:
 %    obj = exponential(obj)
 %
 % Inputs:
@@ -26,14 +26,14 @@ function obj = exponential(obj,options)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      07-May-2007 
-% Last update:  10-August-2010
-%               03-September-2013
-%               21-April-2020 (added reference for remainder)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-May-2007 
+% Last update:   10-August-2010
+%                03-September-2013
+%                21-April-2020 (added reference for remainder)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
    
 %load data from object/options structure
 A=obj.A;
@@ -64,4 +64,4 @@ E=interval(-W,W);
 obj.taylor.powers=Apower;
 obj.taylor.error=E;    
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

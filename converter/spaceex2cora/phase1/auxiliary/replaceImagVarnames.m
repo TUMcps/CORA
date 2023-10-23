@@ -9,7 +9,7 @@ function safetext = replaceImagVarnames(text)
 %       transform(str) = c^(n+1)  IF  str = c^n & c ∈ {i,j,I,J}
 %       transform(str) = str      OTHERWISE
 %
-% Syntax:  
+% Syntax:
 %    safetext = replaceImagVarnames(text)
 %
 % Inputs:
@@ -27,12 +27,12 @@ function safetext = replaceImagVarnames(text)
 %
 % See also: none
 
-% Author:        Johann Schoepfer
+% Authors:       Johann Schoepfer
 % Written:       09-April-2018 
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % FOR MULTIPLE STRINGS: self-call this function for each individual string
 if ~ischar(text) && ~isStringScalar(text)
@@ -82,4 +82,4 @@ safechars = [safechars chars(lastIdx:end)];
 % convert the char vector back to string, & return the result
 safetext = string(safechars);
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

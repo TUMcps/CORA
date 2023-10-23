@@ -1,7 +1,7 @@
 function res = test_fullspace_ne
 % test_fullspace_ne - unit test function of ne
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_ne
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_ne
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init fullspace
 n = 2;
@@ -49,4 +49,4 @@ res(end+1,1) = fs ~= p;
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

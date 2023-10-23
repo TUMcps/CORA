@@ -1,7 +1,7 @@
 function res = test_transition_reset
 % test_transition_reset - test function for reset of state vector (jump)
 %
-% Syntax:  
+% Syntax:
 %    res = test_transition_reset
 %
 % Inputs:
@@ -16,17 +16,17 @@ function res = test_transition_reset
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      11-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = [];
 
 % guard set and target do not matter here, but required for transition obj
-guard_1D = mptPolytope(1,0);
+guard_1D = polytope(1,0);
 guard_2D = interval([-2;-1],[2;5]);
 guard_3D = interval([-2;-5;1],[3;2;4]);
 target = 1;
@@ -82,4 +82,4 @@ res(end+1,1) = contains(X_{2},X_true{2});
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

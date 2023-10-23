@@ -2,7 +2,7 @@ function classname = classOfCallingFunction()
 % classOfCallingFunction - returns the name of the class from which the
 %    function (which class this function) has been called
 %
-% Syntax:  
+% Syntax:
 %    classname = classOfCallingFunction()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function classname = classOfCallingFunction()
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      17-August-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-August-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % call stack
 st = dbstack("-completenames");
@@ -41,4 +41,4 @@ idxDelim = idxDelim(idxDelim > idxAt);
 % read out classname
 classname = fullname(idxAt+1:idxDelim(1)-1);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function I = quadMap(varargin)
 % quadMap - computes the quadratic map of an interval
 %
-% Syntax:  
+% Syntax:
 %    res = quadMap(I1,Q)
 %    res = quadMap(I1,I2,Q)
 %
@@ -32,12 +32,12 @@ function I = quadMap(varargin)
 %
 % See also: zonotope/quadMap
 
-% Author:       Niklas Kochdumper
-% Written:      17-December-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       17-December-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute quadratic map for zonotopes
 if nargin == 1
@@ -53,4 +53,4 @@ end
 % enclose the result with an interval
 I = interval(I);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

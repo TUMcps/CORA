@@ -1,7 +1,7 @@
 function res = test_fullspace_supportFunc
 % test_fullspace_supportFunc - unit test function of supportFunc
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_supportFunc
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_supportFunc
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init fullspace
 n = 2;
@@ -41,4 +41,4 @@ res(end+1,1) = val == interval(-Inf,Inf) && all(all(x == [-Inf Inf;-Inf Inf]));
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

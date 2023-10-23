@@ -1,7 +1,7 @@
 function res = test_conZonotope_dim
 % test_conZonotope_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_conZonotope_dim
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      14-March-2021
-% Last update:  03-January-2023 (MW, moved random tests to testLongDuration)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       14-March-2021
+% Last update:   03-January-2023 (MW, moved random tests to testLongDuration)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -40,4 +40,4 @@ if dim(cZ) ~= 2
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

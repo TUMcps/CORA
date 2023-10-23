@@ -1,7 +1,7 @@
 function res = test_interval_rad
 % test_interval_rad - unit_test_function of rad
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_rad
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_interval_rad
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      19-January-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       19-January-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 res = true;
@@ -99,4 +99,5 @@ if isempty(c) ~= true
 	res = false;
 	return;
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

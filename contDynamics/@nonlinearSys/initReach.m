@@ -1,7 +1,7 @@
 function [Rnext,options] = initReach(obj,Rinit,options)
 % initReach - computes the reachable continuous set for the first time step
 %
-% Syntax:  
+% Syntax:
 %    [Rnext,options] = initReach(obj,Rinit,options)
 %
 % Inputs:
@@ -19,16 +19,16 @@ function [Rnext,options] = initReach(obj,Rinit,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      29-October-2007 
-% Last update:  04-January-2008
-%               27-April-2009
-%               16-August-2016
-%               17-May-2019
-%               02-January-2020 (NK, cleaned-up and simplified code)
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       29-October-2007 
+% Last update:   04-January-2008
+%                27-April-2009
+%                16-August-2016
+%                17-May-2019
+%                02-January-2020 (NK, cleaned-up and simplified code)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % initialization for the case that it is the first time step
     if ~iscell(Rinit)                                        
@@ -39,7 +39,7 @@ function [Rnext,options] = initReach(obj,Rinit,options)
     
     % compute reachable set using the options.alg = 'linRem' algorithm
     if strcmp(options.alg,'linRem')
-        [Rnext,options] = initReach_linRem(obj,Rinit,options);
+        [Rnext,options] = aux_initReach_linRem(obj,Rinit,options);
         return;
     end
 
@@ -96,9 +96,9 @@ function [Rnext,options] = initReach(obj,Rinit,options)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function [Rnext,options] = initReach_linRem(obj,Rinit,options)
+function [Rnext,options] = aux_initReach_linRem(obj,Rinit,options)
 
 
     % compute the reachable set using the options.alg = 'lin' algorithm to
@@ -133,4 +133,4 @@ function [Rnext,options] = initReach_linRem(obj,Rinit,options)
     Rnext.ti = Rti;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

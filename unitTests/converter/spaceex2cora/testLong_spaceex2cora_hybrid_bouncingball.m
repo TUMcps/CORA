@@ -1,7 +1,7 @@
 function res = testLong_spaceex2cora_hybrid_bouncingball()
 % testLong_spaceex2cora_hybrid_bouncingball - example for hybrid dynamics
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_spaceex2cora_hybrid_bouncingball
 %
 % Inputs:
@@ -10,12 +10,12 @@ function res = testLong_spaceex2cora_hybrid_bouncingball()
 % Outputs:
 %    res - boolean 
 
-% Author:       Matthias Althoff, Raja Judeh
-% Written:      27-July-2016
-% Last update:  13-September-2018
-% Last revision:---
+% Authors:       Matthias Althoff, Raja Judeh
+% Written:       27-July-2016
+% Last update:   13-September-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% Specify hybrid automation
 
@@ -29,7 +29,7 @@ linSys = linearSys('linearSys',A,B,c);
 alpha = -0.75;                  % rebound factor
 
 % invariant set 
-inv = mptPolytope([-1,0],0);
+inv = polytope([-1,0],0);
 
 % guard sets
 guard = conHyperplane([1,0],0,[0,1],0);
@@ -84,4 +84,4 @@ end
 disp('Successful Conversion: error = ' + string(sum(error)));
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

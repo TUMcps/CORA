@@ -1,7 +1,7 @@
 function I = interval(pZ,varargin)
 % interval - Over-approximates a polynomial zonotope by an interval
 %
-% Syntax:  
+% Syntax:
 %    I = interval(pZ)
 %    I = interval(pZ,method)
 %
@@ -38,12 +38,12 @@ function I = interval(pZ,varargin)
 %
 % See also: zonotope, supportFunc
 
-% Author:       Niklas Kochdumper
-% Written:      23-March-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       23-March-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguemnts
 method = setDefaultValues({'interval'},varargin);
@@ -60,11 +60,11 @@ if strcmp(method,'interval')
     
 elseif strcmp(method,'bernstein')
     
-    p = size(pZ.expMat,1);    
+    p = size(pZ.E,1);    
     dom = interval(-ones(p,1),ones(p,1));  
     
     % dependent generators: convert to bernstein polynomial
-    B = poly2bernstein(pZ.G,pZ.expMat,dom);
+    B = poly2bernstein(pZ.G,pZ.E,dom);
        
     infi = cellfun(@(x) min(min(x)),B);
     sup = cellfun(@(x) max(max(x)),B);
@@ -72,7 +72,7 @@ elseif strcmp(method,'bernstein')
     I1 = interval(infi,sup);
     
     % independent generators: enclose zonotope with interval
-    I2 = interval(zonotope([pZ.c,pZ.Grest]));
+    I2 = interval(zonotope([pZ.c,pZ.GI]));
     
     I = I1 + I2;
     
@@ -92,4 +92,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

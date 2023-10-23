@@ -2,7 +2,7 @@ function res = isFullDim(I)
 % isFullDim - checks if the dimension of the affine hull of an interval is
 %    equal to the dimension of its ambient space
 %
-% Syntax:  
+% Syntax:
 %    res = isFullDim(I)
 %
 % Inputs:
@@ -24,17 +24,17 @@ function res = isFullDim(I)
 %
 % See also: zonotope/isFullDim
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      02-January-2020 
-% Last update:  12-March-2021 (MW, empty interval)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       02-January-2020 
+% Last update:   12-March-2021 (MW, empty interval)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-if isempty(I)
+if representsa_(I,'emptySet',eps)
     res = false;
 else
     res = ~any(withinTol(rad(I),0)); 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

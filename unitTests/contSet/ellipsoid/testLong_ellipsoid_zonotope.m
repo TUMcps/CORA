@@ -2,7 +2,7 @@ function res = testLong_ellipsoid_zonotope
 % testLong_ellipsoid_zonotope - unit test function of zonotope
 %    (which implicitly is a unit test for insc_zonotope and enc_zonotope)
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_zonotope
 %
 % Inputs:
@@ -17,12 +17,13 @@ function res = testLong_ellipsoid_zonotope
 %
 % See also: -
 
-% Author:       Victor Gassmann, Matthias Althoff
-% Written:      14-October-2019
-% Last update:  07-June-2021 (MA, degenerate case added)
-% Last revision:---
+% Authors:       Victor Gassmann, Matthias Althoff
+% Written:       14-October-2019
+% Last update:   07-June-2021 (MA, degenerate case added)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = true;
 dims = 2:5;
 dGen = 5;
@@ -111,4 +112,4 @@ for i=dims
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function int = optLinQuad(tay)
 % optLinQuad - bounding optimization using Linear Dominated Bounder (LDB) 
 %              and Quadratic Fast Bounder (QFB)
 %
-% Syntax:  
+% Syntax:
 %    res = optLinQuad(tay)
 %
 % Inputs:
@@ -41,12 +41,12 @@ function int = optLinQuad(tay)
 %   [2] K. Makino "Rigorous analysis of nonlinear motion in particle
 %       accelerators"
 
-% Author:       Niklas Kochdumper
-% Written:      14-April-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       14-April-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % Implementation of the Verified Globel Optimizer concept from
     % reference paper [1] using the Linear Dominated Bounder (LDB) and the 
@@ -68,7 +68,7 @@ function int = optLinQuad(tay)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function minVal = aux_globalMinimizer(tay,dom)
 
@@ -337,7 +337,6 @@ function G = aux_evalGrad(grad,x)
 end
 
 
-
 % Functions for debugging -------------------------------------------------
 
 function aux_displayRedDom2D(slopes,intHo,xMin,xMax)
@@ -405,4 +404,4 @@ function aux_displayGradientDescend2D(mon,coeff,xMin)
 
 end
 
-%------------ END OF CODE ------------ 
+% ------------------------------ END OF CODE ------------------------------

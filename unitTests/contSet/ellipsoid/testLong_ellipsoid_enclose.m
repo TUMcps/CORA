@@ -1,7 +1,7 @@
 function res = testLong_ellipsoid_enclose
 % testLong_ellipsoid_enclose - unit test function of enclose
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_enclose
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_ellipsoid_enclose
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      13-March-2019
-% Last update:  22-March-2021 (extended to 1 degenerate ellipsoid)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       13-March-2019
+% Last update:   22-March-2021 (extended to 1 degenerate ellipsoid)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %We need at least one non-degenerate ellipsoid to ensure
 %the union of E1,E2 is not the empty set.
@@ -51,4 +51,4 @@ for i=10:5:15
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

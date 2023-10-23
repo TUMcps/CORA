@@ -1,7 +1,7 @@
 function res = test_conHyperplane_isIntersecting
 % test_conHyperplane_isIntersecting - unit test function of isIntersecting
 %
-% Syntax:  
+% Syntax:
 %    res = test_conHyperplane_isIntersecting
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_conHyperplane_isIntersecting
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      02-September-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       02-September-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % TEST 1: Zonotopes -------------------------------------------------------
 % instantiate zonotope
@@ -88,4 +88,4 @@ res_int = ~res_above && res_upperboundary && res_through && ...
 % combine tests
 res = res_zon && res_int; % && res_e;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

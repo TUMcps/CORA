@@ -4,7 +4,7 @@ function res = example_parallel_hybrid_01_neuralNetwork()
 %    three neurons, where each neuron has the three locations "charging",
 %    "firing", and "reset"
 %
-% Syntax:  
+% Syntax:
 %    res = example_parallel_hybrid_01_neuralNetwork()
 %
 % Inputs:
@@ -19,12 +19,12 @@ function res = example_parallel_hybrid_01_neuralNetwork()
 %
 % See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      15-June-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       15-June-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % System Dynamics ---------------------------------------------------------
 
@@ -102,4 +102,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

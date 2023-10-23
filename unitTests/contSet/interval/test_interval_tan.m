@@ -1,7 +1,7 @@
 function res = test_interval_tan
 % test_interval_tan - unit test function of tangent function
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_tan
 %
 % Inputs:
@@ -16,12 +16,13 @@ function res = test_interval_tan
 %
 % See also: mtimes
 
-% Author:       Daniel Althoff
-% Written:      03-November-2015
-% Last update:  04-January-2016
-% Last revision:---
+% Authors:       Daniel Althoff
+% Written:       03-November-2015
+% Last update:   04-January-2016
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 tol = 1e-9;
 res = true;
 
@@ -92,5 +93,4 @@ end
 % res.inf = tan(x.inf);
 % res.sup = tan(x.sup);
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

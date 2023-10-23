@@ -1,7 +1,7 @@
 function Q = sparseOrthMatrix(n)
 % sparseOrthMatrix - generates a sparse orthogonal matrix
 %
-% Syntax:  
+% Syntax:
 %    Q = sparseOrthMatrix(n)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function Q = sparseOrthMatrix(n)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      07-October-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       07-October-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % generate blocks
 min_block = 2;
@@ -90,4 +90,4 @@ if ~withinTol(abs(det(Q)),1,1e-9) || ~all(withinTol(vecnorm(Q,2),1,1e-9))
     throw(CORAerror('CORA:specialError','Resulting matrix is not orthogonal'));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

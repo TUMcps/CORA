@@ -2,7 +2,7 @@ function [Rnext,options] = initReach_adaptive(obj,options)
 % initReach_adaptive - computes the reachable continuous set
 %   for the first time step
 %
-% Syntax:  
+% Syntax:
 %    [Rnext,options] = initReach_adaptive(obj,options)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function [Rnext,options] = initReach_adaptive(obj,options)
 %
 % See also: none
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       14-January-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 [Rti,Rtp,~,options] = linReach_adaptive(obj,options,options.R);
 
@@ -33,4 +33,4 @@ Rnext.tp = Rtp;
 Rnext.ti = Rti;
 Rnext.R0 = options.R;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

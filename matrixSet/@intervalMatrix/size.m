@@ -1,7 +1,7 @@
 function varargout = size(intMat,varargin)
-% dim - returns the dimension of the interval matrix
+% size - returns the dimension of the interval matrix
 %
-% Syntax:  
+% Syntax:
 %    n = size(intMat)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function varargout = size(intMat,varargin)
 %
 % See also: none
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       17-January-2023
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin > 2
     throw(CORAerror('CORA:tooManyInputArgs',2));
@@ -36,4 +36,4 @@ else
     [varargout{1:nargout}] = size(intMat.int.inf);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

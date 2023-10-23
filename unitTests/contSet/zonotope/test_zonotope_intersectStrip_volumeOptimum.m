@@ -4,7 +4,7 @@ function res = test_zonotope_intersectStrip_volumeOptimum
 % According to [1], the volume of the resulting zonotope is a convex
 % function.
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_intersectStrip_volumeOptimum
 %
 % Inputs:
@@ -24,12 +24,12 @@ function res = test_zonotope_intersectStrip_volumeOptimum
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      23-December-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       23-December-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% Simple 2D example which can be easily visualized
 % zonotope
@@ -77,6 +77,4 @@ res = volOpt < 1.01*min(vol);
 % surf(X,Y,Z,'LineStyle','none');
 
 
-
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

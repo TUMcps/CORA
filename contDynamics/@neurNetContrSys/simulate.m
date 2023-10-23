@@ -54,12 +54,12 @@ function [t, x, ind, y] = simulate(obj, params, varargin)
 %
 % See also: neurNetContrSys, contDynamics/simulateRandom
 
-% Author:       Niklas Kochdumper, Tobias Ladner
-% Written:      13-December-2021
-% Last update:  28-November-2022
-% Last revision:---
+% Authors:       Niklas Kochdumper, Tobias Ladner
+% Written:       13-December-2021
+% Last update:   28-November-2022
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 if nargout == 3
@@ -159,4 +159,4 @@ for i = 1:length(time) - 1
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

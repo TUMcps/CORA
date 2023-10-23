@@ -3,7 +3,7 @@ function res = test_nonlinearSys_reach_04_laubLoomis_polyZonotope
 %    nonlinear reachability analysis: Checks the solution of a 7D nonlinear
 %    example using a non-convex set representation;
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSys_reach_04_laubLoomis_polyZonotope
 %
 % Inputs:
@@ -12,13 +12,13 @@ function res = test_nonlinearSys_reach_04_laubLoomis_polyZonotope
 % Outputs:
 %    res - true/false 
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      26-January-2016
-% Last update:  23-April-2020 (restructure params/options)
-%               22-June-2020 (NK, adapted to polyZonotope set rep.)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       26-January-2016
+% Last update:   23-April-2020 (restructure params/options)
+%                22-June-2020 (NK, adapted to polyZonotope set rep.)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Parameters --------------------------------------------------------------
@@ -73,4 +73,4 @@ IH_saved = interval( ...
 % final result
 res = isequal(IH,IH_saved,1e-8);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

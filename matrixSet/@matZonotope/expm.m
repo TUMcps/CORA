@@ -1,7 +1,7 @@
 function eZ = expm(matZ,varargin)
 % expm - operator for the exponential matrix of a matrix zonotope
 %
-% Syntax:  
+% Syntax:
 %    eZ = expm(matZ)
 %    eZ = expm(matZ,maxOrder)
 %
@@ -25,12 +25,12 @@ function eZ = expm(matZ,varargin)
 %
 % See also: intervalMatrix/expm
 
-% Author:       Niklas Kochdumper
-% Written:      26-May-2020 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-May-2020 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 maxOrder = setDefaultValues({10},varargin);
@@ -38,4 +38,4 @@ maxOrder = setDefaultValues({10},varargin);
 % compute matrix exponential
 eZ = expmInd(matZ,maxOrder);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

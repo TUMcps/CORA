@@ -5,7 +5,7 @@ function ratio = approxVolumeRatio(pZ,varargin)
 %    constructed by the independent generator part of the polynomial
 %    zonotope; the ratio is computed as ratio = (V_ind/V_dep)^(1/n)
 %
-% Syntax:  
+% Syntax:
 %    ratio = approxVolumeRatio(pZ)
 %    ratio = approxVolumeRatio(pZ,type)
 %
@@ -26,12 +26,12 @@ function ratio = approxVolumeRatio(pZ,varargin)
 %
 % See also: zonotope/volume, interval/volume
 
-% Author:       Niklas Kochdumper
-% Written:      25-July-2018 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-July-2018 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 type = setDefaultValues({'interval'},varargin);
@@ -41,7 +41,7 @@ inputArgsCheck({{pZ,'att','polyZonotope'};
                 {type,'str',{'interval','pca'}}});
 
 % special cases
-if isempty(pZ.Grest)
+if isempty(pZ.GI)
     ratio = 0;
     
 elseif isempty(pZ.G)
@@ -51,7 +51,7 @@ else
 
     if strcmp(type,'pca')
         % calculate state-space-transformation with pca
-        G = [pZ.G -pZ.G pZ.Grest -pZ.Grest];
+        G = [pZ.G -pZ.G pZ.GI -pZ.GI];
         [T,~,~] = svd(G);
     
         % transform the polynomial zonotope to the new state space
@@ -60,11 +60,11 @@ else
 
     % over-approximate the independent generators part with an interval
     n = length(pZ.c);
-    zono = zonotope([zeros(n,1),pZ.Grest]);
+    zono = zonotope([zeros(n,1),pZ.GI]);
     Iind = interval(zono);
 
     % over-approximate the dependent generators part with an interval
-    pZ.Grest = [];
+    pZ.GI = [];
     Idep = interval(pZ);
     
     % remove dimensions that are all-zero
@@ -82,4 +82,4 @@ else
     ratio = (Vind/Vdep)^(1/n);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

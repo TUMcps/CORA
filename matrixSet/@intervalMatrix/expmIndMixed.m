@@ -1,7 +1,7 @@
 function [eI,eI2,iPow,iPow2,E] = expmIndMixed(intMat,intermediateOrder,maxOrder)
 % expmIndMixed - ?
 %
-% Syntax:  
+% Syntax:
 %    expmIndMixed(intMat,intermediateOrder,maxOrder)
 %
 % Inputs:
@@ -27,12 +27,12 @@ function [eI,eI2,iPow,iPow2,E] = expmIndMixed(intMat,intermediateOrder,maxOrder)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      13-September-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       13-September-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %compute powers
 iPow=powers(intMat,intermediateOrder);
@@ -50,4 +50,4 @@ end
 [eI2,iPow2,E] = expmInd(intMat, maxOrder, ...
     intermediateOrder+1, intMat*iPow{intermediateOrder});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

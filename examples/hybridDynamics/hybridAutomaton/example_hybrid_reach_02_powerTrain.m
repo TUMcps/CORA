@@ -1,7 +1,7 @@
 function res = example_hybrid_reach_02_powerTrain()
 % example_hybrid_reach_02_powerTrain - power train example from [1]
 %
-% Syntax:  
+% Syntax:
 %    res = example_hybrid_reach_02_powerTrain()
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = example_hybrid_reach_02_powerTrain()
 %   [1] M. Althoff et al. "Avoiding Geometic Intersection Operations in 
 %       Reachability Analysis of Hybrid Systems"
 
-% Author:       Matthias Althoff
-% Written:      21-September-2011
-% Last update:  23-December-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-September-2011
+% Last update:   23-December-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Hybrid Automaton --------------------------------------------------------
@@ -152,13 +152,19 @@ dims = {[1,2],[1,3]};
 for i = 1:length(dims)
     
     figure; hold on; box on;
+    useCORAcolors("CORA:contDynamics")
     projDim = dims{i};
     
     % plot reachable set
     plot(R,projDim,'Order',3);
     
+    updateColorIndex
+
     % plot simulation results
     plot(simRes,projDim);
+
+    plot([-0.03 -0.03],[-40,100],'--r','DisplayName','Guard set')
+    plot([0.03 0.03],[-40,100],'--r','HandleVisibility','off')
     
     % formatting
     xlabel(['x_',num2str(projDim(1))]);
@@ -168,4 +174,4 @@ end
 % example completed
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

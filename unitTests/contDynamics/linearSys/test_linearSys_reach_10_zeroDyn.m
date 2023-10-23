@@ -3,7 +3,7 @@ function res = test_linearSys_reach_10_zeroDyn()
 % \dot{x} = 0 is correctly handled. If the inverse of the system matrix A=0
 % would be required, this unit test would not pass.
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_reach_10_zeroDyn
 %
 % Inputs:
@@ -12,12 +12,12 @@ function res = test_linearSys_reach_10_zeroDyn()
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      30-June-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       30-June-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -75,5 +75,4 @@ res_partial(2) = isequal(IH_fromStart,IH_init,accuracy);
 % final result 
 res = all(res_partial);
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

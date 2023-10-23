@@ -2,7 +2,7 @@ function [Rnext,options] = post_Krylov_nonProjected(obj,R,options)
 % post_Krylov_nonProjected - computes the reachable continuous set for one
 %    time step in the Krylov subspace
 %
-% Syntax:  
+% Syntax:
 %    [Rnext,options] = post_Krylov_nonProjected(obj,R,options)
 %
 % Inputs:
@@ -22,14 +22,14 @@ function [Rnext,options] = post_Krylov_nonProjected(obj,R,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      22-December-2016
-% Last update:  03-March-2017
-%               21-August-2017
-%               02-November-2018
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-December-2016
+% Last update:   03-March-2017
+%                21-August-2017
+%                02-November-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % retrieve last reachable set
 Rpar = options.Rpar;
@@ -71,4 +71,4 @@ options.Rhom_tp = Rhom_tp;
 options.Raux = RV;
 options.Rpar = Rpar;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

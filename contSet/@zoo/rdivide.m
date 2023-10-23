@@ -1,7 +1,7 @@
 function res = rdivide(numerator, denominator)
 % rdivide - Overload './' operator
 %
-% Syntax:  
+% Syntax:
 %    res = rdivide(numerator,denominator)
 %
 % Inputs:
@@ -17,24 +17,24 @@ function res = rdivide(numerator, denominator)
 %
 % See also: taylm
 
-% Author:       Dmitry Grebenyuk
-% Written:      06-November-2017
-% Last update:  ---  
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       06-November-2017
+% Last update:   ---  
+% Last revision: ---
 
-%------------- BEGIN CODE -------------  
+% ------------------------------ BEGIN CODE -------------------------------
     
     if isa(numerator,'zoo') && isa(denominator,'zoo')
         
-        res = arrayfun(@(a, b) s_rdivide_zz(a, b), numerator, denominator, 'UniformOutput', false);
+        res = arrayfun(@(a, b) aux_s_rdivide_zz(a, b), numerator, denominator, 'UniformOutput', false);
         
     elseif isa(numerator,'zoo') && isa(denominator,'double')
         
-        res = arrayfun(@(a) s_rdivide_zd(a, denominator), numerator, 'UniformOutput', false);
+        res = arrayfun(@(a) aux_s_rdivide_zd(a, denominator), numerator, 'UniformOutput', false);
         
     elseif isa(denominator,'zoo') && isa(numerator,'double')
 
-        res = arrayfun(@(b) s_rdivide_dz(numerator, b), denominator, 'UniformOutput', false);
+        res = arrayfun(@(b) aux_s_rdivide_dz(numerator, b), denominator, 'UniformOutput', false);
         
     end
     
@@ -44,8 +44,9 @@ function res = rdivide(numerator, denominator)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
-function res = s_rdivide_zz(numerator, denominator)       
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_s_rdivide_zz(numerator, denominator)       
         
     [numerator,denominator] = combineZooObjects(numerator,denominator);
     res = numerator;
@@ -54,7 +55,7 @@ function res = s_rdivide_zz(numerator, denominator)
     end      
 end
 
-function res = s_rdivide_zd(numerator, denominator)
+function res = aux_s_rdivide_zd(numerator, denominator)
         
     res = numerator;
     for i = 1:length(res.method)
@@ -62,7 +63,7 @@ function res = s_rdivide_zd(numerator, denominator)
     end           
 end
 
-function res = s_rdivide_dz(numerator, denominator)
+function res = aux_s_rdivide_dz(numerator, denominator)
 
     res = denominator;
     for i = 1:length(res.method)
@@ -70,4 +71,4 @@ function res = s_rdivide_dz(numerator, denominator)
     end       
 end
 
-%------------ END OF CODE ------------
+% ------------------------------ END OF CODE ------------------------------

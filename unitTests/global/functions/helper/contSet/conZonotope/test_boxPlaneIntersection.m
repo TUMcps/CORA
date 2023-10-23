@@ -2,7 +2,7 @@ function res = test_boxPlaneIntersection
 % test_boxPlaneIntersection - unit test function for the calculation of
 %       vertices of a hyperbox - hyperplane intersection
 %
-% Syntax:  
+% Syntax:
 %    res = test_boxPlaneIntersection
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = test_boxPlaneIntersection
 %   [1] C. Lara, J. Flores, F. Calderon.
 %       "On the Hyperbox - Hyperplane Intersection Problem"
 
-% Author:       Mark Wetzlinger
-% Written:      08-October-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       08-October-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
 % TEST 1: analytical ------------------------------------------------------
 
@@ -48,7 +48,7 @@ function res = test_boxPlaneIntersection
 % V_former = lcon2vert(A,b,beta,alpha);
 % 
 % % compare solutions
-% if compareSolutions(V_former, V, V_naive) == 0
+% if aux_compareSolutions(V_former, V, V_naive) == 0
 %     throw(CORAerror('CORA:testFailed')); 
 % end
 
@@ -94,7 +94,7 @@ for d=mindim:maxdim
 %       proposed method
         V = boxPlaneIntersect(hyperbox, alpha, beta);
 %       compare solutions
-%         same = compareSolutions(V_former, V_naive, V);
+%         same = aux_compareSolutions(V_former, V_naive, V);
 %         checks(index) = same;
     end
 end
@@ -109,10 +109,9 @@ res = true;
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-% auxiliary functions
-
-function eqty = compareSolutions(sol_1, sol_2, sol_3, TOL)
+function eqty = aux_compareSolutions(sol_1, sol_2, sol_3, TOL)
 %% description:
 %   checks if all solutions are the same
 %   for 2 or 3 lists of solution points
@@ -203,4 +202,4 @@ function eqty = compareSolutions(sol_1, sol_2, sol_3, TOL)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

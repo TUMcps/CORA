@@ -26,12 +26,12 @@ function Y = outputSet(obj,options,R,R_y)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-November-2022
-% Last update:  07-December-2022 (MW, allow to skip output set)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-November-2022
+% Last update:   07-December-2022 (MW, allow to skip output set)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % skip computation of output set
 if ~options.compOutputSet
@@ -149,7 +149,7 @@ elseif options.tensorOrderOutput == 3
     
     for i = 1:r
         for j = 1:n+m
-            if ~isempty(T{i,j}) % same as: ~isempty(ind(i,j)) ?
+            if ~representsa_(T{i,j},'emptySet',eps)
                 thirdorder(i) = thirdorder(i) ...
                     + I(j) * transpose(I) * T{i,j} * I;
             end
@@ -166,4 +166,4 @@ Y = zerothorder + firstorder + secondorder + thirdorder;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

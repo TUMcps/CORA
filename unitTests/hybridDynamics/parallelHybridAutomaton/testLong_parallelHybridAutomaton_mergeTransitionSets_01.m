@@ -2,7 +2,7 @@ function res = testLong_parallelHybridAutomaton_mergeTransitionSets_01
 % testLong_parallelHybridAutomaton_mergeTransitionSets_01 - test
 %    function for merging transitions in the location product
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_parallelHybridAutomaton_mergeTransitionSets_01
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_parallelHybridAutomaton_mergeTransitionSets_01
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      21-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       21-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = [];
 
@@ -97,7 +97,6 @@ inputBinds{2} = [1 1];
 
 % instantiate parallel hybrid automaton
 pHA = parallelHybridAutomaton(components,inputBinds);
-
 
 
 % no labels in transitions
@@ -197,4 +196,4 @@ res(end+1,1) = isequal(mergedTrans(2),mergedTrans_(2),1e-14);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

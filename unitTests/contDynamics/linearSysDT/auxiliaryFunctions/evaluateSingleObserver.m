@@ -1,7 +1,7 @@
 function GSEstimation = evaluateSingleObserver(obj,params,options)
 % evaluateSingleObserver - evaluates a specified observer
 %
-% Syntax:  
+% Syntax:
 %    evaluateSingleObserver()
 %
 % Inputs:
@@ -19,12 +19,12 @@ function GSEstimation = evaluateSingleObserver(obj,params,options)
 % References: 
 %   -
 
-% Author:       Matthias Althoff
-% Written:      08-Sep-2020
-% Last update:  25-Feb-2021
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       08-September-2020
+% Last update:   25-February-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % compute width of measurement strips
@@ -51,4 +51,4 @@ GSEstimation.tIteration = tcomp/length(perf.volBox);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

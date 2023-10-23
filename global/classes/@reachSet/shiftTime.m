@@ -17,12 +17,12 @@ function R = shiftTime(R,delta)
 %
 % See also: plus
 
-% Author:       Mark Wetzlinger
-% Written:      24-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       24-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get reachSet object
 [R,delta] = findClassArg(R,delta,'reachSet');
@@ -39,4 +39,4 @@ for i = 1:size(R,1)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

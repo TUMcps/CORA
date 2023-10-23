@@ -5,7 +5,7 @@ function res = simulateStandard_old(obj, params, options)
 % percentage of inputs should be chosen from vertices of the input set, and 
 % how often the input should be changed.
 %
-% Syntax:  
+% Syntax:
 %   res = simulateStandard_old(obj, params, options)
 %   res = simulateStandard_old(obj, params, options, type)
 %
@@ -23,14 +23,14 @@ function res = simulateStandard_old(obj, params, options)
 %    res - object of class simResult storing time and states of the 
 %          simulated trajectories.
 
-% Author:       Matthias Althoff
-% Written:      17-August-2016
-% Last update:  08-May-2020 (MW, update interface)
-%               28-June-2021 (MP, unify random simulation functions)
-%               16-November-2021 (MW, integrate W and V sets)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       17-August-2016
+% Last update:   08-May-2020 (MW, update interface)
+%                28-June-2021 (MP, unify random simulation functions)
+%                16-November-2021 (MW, integrate W and V sets)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % options preprocessing
 options = validateOptions(obj,mfilename,params,options);
@@ -171,4 +171,4 @@ end
 % construct object storing the simulation results
 res = simResult(x,t,{},y);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

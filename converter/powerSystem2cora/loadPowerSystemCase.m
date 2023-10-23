@@ -49,12 +49,12 @@ function loadPowerSystemCase(casefilename, filename, varargin)
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      05-May-2022
-% Last update:  01-Jun-2022 (PSSE models can be loaded)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-May-2022
+% Last update:   01-June-2022 (MA, PSSE models can be loaded)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------%
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % load case
@@ -145,4 +145,4 @@ rmpath(path);
 warning(warOrig);
 addpath(path);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

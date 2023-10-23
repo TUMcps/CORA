@@ -1,7 +1,7 @@
 function res = test_simResult_extractHits
 % test_simResult_extractHits - unit test function for extractHits
 %
-% Syntax:  
+% Syntax:
 %    res = test_simResult_extractHits()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_simResult_extractHits
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      21-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       21-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty simResult
 simRes = simResult();
@@ -74,4 +74,4 @@ res(end+1,1) = isempty(tHit) && isempty(xHit) && isempty(xHit_);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

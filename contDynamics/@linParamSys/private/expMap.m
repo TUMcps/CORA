@@ -2,7 +2,7 @@ function [obj,Zres] = expMap(obj,Z,options)
 % expMap - Computes the map of a zonotope with a matrix exponential whose
 %    matrix contains uncertain matrices
 %
-% Syntax:  
+% Syntax:
 %    [obj,Zres] = expMap(obj,Z,options)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function [obj,Zres] = expMap(obj,Z,options)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      07-January-2009
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-January-2009
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get time step, Taylor terms
 r=options.timeStep;
@@ -69,4 +69,4 @@ end
 linIntSys.taylor.deltaN=deltaN;
 linIntSys.taylor.modA=modA;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

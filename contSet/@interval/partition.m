@@ -1,7 +1,7 @@
 function dzNew = partition(I, splits)
 % partition - partitions a multidimensional interval into subintervals
 %
-% Syntax:  
+% Syntax:
 %    I = partition(I, splits)
 %
 % Inputs:
@@ -28,12 +28,12 @@ function dzNew = partition(I, splits)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      19-September-2012
-% Last update:  04-May-2020 (MW, migrated "splitIntervals" to @interval)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-September-2012
+% Last update:   04-May-2020 (MW, migrated "splitIntervals" to @interval)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{I,'att','interval'};
@@ -60,4 +60,4 @@ for i = 1:nrOfComb
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

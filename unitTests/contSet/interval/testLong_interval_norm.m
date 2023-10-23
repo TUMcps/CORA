@@ -1,7 +1,7 @@
 function res = testLong_interval_norm
 % testLong_interval_norm - unit test function of norm
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_interval_norm
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_interval_norm
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      12-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       12-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
 
@@ -53,4 +53,4 @@ for i=1:nrOfTests
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

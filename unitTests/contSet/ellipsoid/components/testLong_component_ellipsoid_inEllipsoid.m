@@ -2,7 +2,7 @@ function res = testLong_component_ellipsoid_inEllipsoid
 % testLong_component_ellipsoid_inEllipsoid - unit test function of
 %    inEllipsoid
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_component_ellipsoid_inEllipsoid
 %
 % Inputs:
@@ -17,12 +17,13 @@ function res = testLong_component_ellipsoid_inEllipsoid
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      16-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       16-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = true;
 nRuns = 2;
 for i=10:5:15
@@ -55,4 +56,5 @@ for i=10:5:15
         end
     end
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

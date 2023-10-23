@@ -1,7 +1,7 @@
 function res = test_interval_radius
 % test_interval_radius - unit test function of radius
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_radius
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_radius
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-September-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-September-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create interval (all positive)
 Int = interval([-2;-3], [4;1]);
@@ -34,4 +34,4 @@ true_rad = sqrt(13);
 
 res = Int_rad == true_rad;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

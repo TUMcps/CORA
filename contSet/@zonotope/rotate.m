@@ -2,7 +2,7 @@ function Z = rotate(Z,dims,angle)
 % rotates - rotates a zonotope projected on two coordinates with the
 %    specified angle
 %
-% Syntax:  
+% Syntax:
 %    Z = rotate(Z,dims,angle)
 %
 % Inputs:
@@ -21,15 +21,15 @@ function Z = rotate(Z,dims,angle)
 %
 % See also: ---
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       07-October-2008
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
-inputArgsCheck({{Z,'att','zonotope','nonempty'};
+inputArgsCheck({{Z,'att','zonotope'};
                 {dims,'att','numeric',{'nonnan','vector','nonnegative'}};
                 {angle,'att','numeric',{'nonnan','scalar'}}});
 
@@ -37,6 +37,7 @@ inputArgsCheck({{Z,'att','zonotope','nonempty'};
 R = [cos(angle) -sin(angle); sin(angle) cos(angle)];
 
 %rotate points
-Z.Z(dims,:) = R*Z.Z(dims,:);
+Z.c(dims,:) = R*Z.c(dims,:);
+Z.G(dims,:) = R*Z.G(dims,:);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

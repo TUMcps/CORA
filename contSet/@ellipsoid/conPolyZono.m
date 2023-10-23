@@ -1,7 +1,7 @@
 function cPZ = conPolyZono(E)
 % conPolyZono - Converts an ellipsoid to a constrained polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    cPZ = conPolyZono(E)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function cPZ = conPolyZono(E)
 %
 % See also: interval
 
-% Author:       Niklas Kochdumper
-% Written:      12-August-2019 
-% Last update:  04-July-2022 (VG: avoid class array problems)
+% Authors:       Niklas Kochdumper
+% Written:       12-August-2019 
+% Last update:   04-July-2022 (VG, avoid class array problems)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'}});
@@ -43,16 +43,16 @@ n = dim(E);
 c = E.q;
 % dependent generator matrix and exponent matrix
 G = V*sqrt(D);
-expMat = [eye(n);zeros(1,n)];
+E = [eye(n);zeros(1,n)];
 
 % constraints
 A = [-0.5 ones(1,n)];
 b = 0.5;
-expMat_ = [[zeros(n,1);1],[2*eye(n); zeros(1,n)]];
+EC = [[zeros(n,1);1],[2*eye(n); zeros(1,n)]];
 % identifiers
 id = (1:n+1)';
 
 % instantiate the constrained polynomial zonotope
-cPZ = conPolyZono(c,G,expMat,A,b,expMat_,[],id);
+cPZ = conPolyZono(c,G,E,A,b,EC,[],id);
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

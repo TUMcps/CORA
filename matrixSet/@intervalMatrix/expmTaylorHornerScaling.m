@@ -3,7 +3,7 @@ function result = expmTaylorHornerScaling(intMat,maxOrder,styleOfCalculation,var
 %    different algorithms with maxOrder iterations. It is used as a wrapper
 %    to access the algorithms in the private directory
 %
-% Syntax:  
+% Syntax:
 %     val = expmTaylorHornerScaling(intMat,maxOrder,StyleOfCalculation);
 %
 % Inputs:
@@ -28,12 +28,12 @@ function result = expmTaylorHornerScaling(intMat,maxOrder,styleOfCalculation,var
 %
 % See also: 
 
-% Author:       Ivan Brkan
-% Written:      23-April-2019
-% Last update:  29-April-2019
-% Last revision:---
+% Authors:       Ivan Brkan
+% Written:       23-April-2019
+% Last update:   29-April-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 switch styleOfCalculation
     case 0 
@@ -62,4 +62,4 @@ switch styleOfCalculation
         result = [];
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

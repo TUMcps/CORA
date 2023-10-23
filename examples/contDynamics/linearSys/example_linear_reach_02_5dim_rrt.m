@@ -6,7 +6,7 @@ function res = example_linear_reach_02_5dim_rrt()
 %    The difference to example_linear_reach_01_5dim is that an RRT is used
 %    to generate possible behaviors.
 %
-% Syntax:  
+% Syntax:
 %    res = example_linear_reach_02_5dim_rrt()
 %
 % Inputs:
@@ -19,13 +19,12 @@ function res = example_linear_reach_02_5dim_rrt()
 %    [1] M. Althoff, “Reachability analysis and its application to the 
 %        safety assessment of autonomous cars", Dissertation, TUM 2010
 
-% Author:       Matthias Althoff
-% Written:      23-September-2016
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       23-September-2016
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Parameters --------------------------------------------------------------
@@ -100,4 +99,4 @@ end
 % example completed
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

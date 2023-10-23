@@ -53,17 +53,17 @@ classdef nonlinParamSys < contDynamics
 %
 % See also: nonlinearSys
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
-% Written:      23-September-2010
-% Last update:  27-October-2011
-%               16-August-2016
-%               02-June-2017
-%               18-May-2020 (NK, changed constructor syntax)
-%               18-November-2022 (MW, add output equation)
-%               23-November-2022 (MW, introduce checks, restructure)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
+% Written:       23-September-2010
+% Last update:   27-October-2011
+%                16-August-2016
+%                02-June-2017
+%                18-May-2020 (NK, changed constructor syntax)
+%                18-November-2022 (MW, add output equation)
+%                23-November-2022 (MW, introduce checks, restructure)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
   
 
 properties (SetAccess = private, GetAccess = public)
@@ -421,4 +421,4 @@ function [states,inputs,params,out_fun,outputs,out_isLinear] = ...
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

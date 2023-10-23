@@ -3,7 +3,7 @@ function res = testLong_linearSys_simulateRandom_02
 %    where all possible set representations for the initial set are used
 %    note: the numerical correctness of the result is not (yet) checked!
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_linearSys_simulateRandom_02
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = testLong_linearSys_simulateRandom_02
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      18-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       18-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -37,7 +37,7 @@ R0{2,1} = capsule(R0{1});                               % capsule
 R0{3} = conPolyZono(R0{1});                             % conPolyZono
 R0{4} = conZonotope(R0{1});                             % conZonotope
 R0{5} = ellipsoid(R0{1});                               % ellipsoid
-R0{6} = mptPolytope(R0{1});                             % mptPolytope
+R0{6} = polytope(R0{1});                                % polytope
 R0{7} = polyZonotope(R0{1});                            % polyZonotope
 R0{8} = zonotope(R0{1});                                % zonotope
 R0{9} = zonoBundle({R0{8},R0{8}+0.1*ones(5,1)});        % zonoBundle
@@ -47,7 +47,7 @@ U{2,1} = capsule(U{1});                                 % capsule
 U{3} = conPolyZono(U{1});                               % conPolyZono
 U{4} = conZonotope(U{1});                               % conZonotope
 U{5} = ellipsoid(U{1});                                 % ellipsoid
-U{6} = mptPolytope(U{1});                               % mptPolytope
+U{6} = polytope(U{1});                               % polytope
 U{7} = polyZonotope(U{1});                              % polyZonotope
 U{8} = zonotope(U{1});                                  % zonotope
 U{9} = zonoBundle({U{8},U{8}+0.1*ones(3,1)});           % zonoBundle
@@ -91,4 +91,4 @@ res = all(res);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

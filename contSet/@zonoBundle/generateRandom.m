@@ -1,7 +1,7 @@
 function zB = generateRandom(varargin)
 % generateRandom - Generates a random zonotope bundle
 %
-% Syntax:  
+% Syntax:
 %    zB = zonoBundle.generateRandom()
 %    zB = zonoBundle.generateRandom('Dimension',n)
 %    zB = zonoBundle.generateRandom('Dimension',n,'NrZonotopes',nrZonos)
@@ -23,12 +23,12 @@ function zB = generateRandom(varargin)
 %
 % See also: zonotope/generateRandom
 
-% Author:       Mark Wetzlinger
-% Written:      17-Sep-2019
-% Last update:  19-May-2022 (name-value pair syntax)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-September-2019
+% Last update:   19-May-2022 (name-value pair syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -78,4 +78,4 @@ end
 % instantiate zonotope bundle
 zB = zonoBundle(listZ);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

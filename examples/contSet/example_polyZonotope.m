@@ -2,7 +2,7 @@ function completed = example_polyZonotope()
 % example_polyZonotope - example demonstrating set based computation with 
 %                        polynomial zonotopes
 %
-% Syntax:  
+% Syntax:
 %    completed = example_polyZonotope()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function completed = example_polyZonotope()
 %
 % See also: none
 
-% Author:        ---
+% Authors:       ---
 % Written:       ---
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % construct zonotope
 c = [1;0];
@@ -49,4 +49,4 @@ plot(resPolyZono);
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

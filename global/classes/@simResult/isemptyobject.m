@@ -1,7 +1,7 @@
 function res = isemptyobject(simRes)
 % isemptyobject - checks if a simResult object is empty
 %
-% Syntax:  
+% Syntax:
 %    res = isemptyobject(simRes)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function res = isemptyobject(simRes)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      01-May-2023
-% Last update:  22-May-2023 (MW, extend to class arrays)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       01-May-2023
+% Last update:   22-May-2023 (MW, extend to class arrays)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 [r,c] = size(simRes);
 res = false(r,c);
@@ -38,4 +38,4 @@ for i=1:r
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

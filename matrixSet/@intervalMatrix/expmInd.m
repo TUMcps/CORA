@@ -2,7 +2,7 @@ function [eI, iPow, E] = expmInd(intMat,varargin)
 % expmInd - operator for the exponential matrix of an interval matrix,
 %    evaluated independently
 %
-% Syntax:  
+% Syntax:
 %    eI = expmInd(intMat,maxOrder)
 %
 % Inputs:
@@ -25,13 +25,13 @@ function [eI, iPow, E] = expmInd(intMat,varargin)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      18-June-2010 
-% Last update:  06-July-2010
-%               05-August-2010
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-June-2010 
+% Last update:   06-July-2010
+%                05-August-2010
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin==2
     
@@ -66,4 +66,4 @@ E = exponentialRemainder(intMat,maxOrder);
 %final result
 eI = eI+E;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_reachSet_query
 % test_reachSet_query - unit test function for query
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_query()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_reachSet_query
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      10-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       10-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init result
 res = true;
@@ -70,4 +70,4 @@ for i=1:length(tVec)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

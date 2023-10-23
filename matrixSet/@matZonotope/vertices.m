@@ -1,7 +1,7 @@
 function matV = vertices(matZ)
 % vertices - computes the vertices of a matrix zonotope
 %
-% Syntax:  
+% Syntax:
 %    matV = vertices(matZ)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function matV = vertices(matZ)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      24-June-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       24-June-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %conversion to an intervalhull
 Z = zonotope(matZ);
@@ -38,4 +38,4 @@ for i=1:length(V(1,:))
     matV{i}=vec2mat(V(:,i));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

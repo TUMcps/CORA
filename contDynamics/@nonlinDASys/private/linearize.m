@@ -2,7 +2,7 @@ function [obj,linSys,options,linOptions] = linearize(obj,options,R,R_y)
 % linearize - linearizes the nonlinear differential algebraic system;
 % linearization error is not included (see linError)
 %
-% Syntax:  
+% Syntax:
 %    [obj,linSys,options,linOptions] = linearize(obj,options,R)
 %
 % Inputs:
@@ -21,13 +21,13 @@ function [obj,linSys,options,linOptions] = linearize(obj,options,R,R_y)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      21-November-2011
-% Last update:  23-May-2013       
-%               28-July-2020
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-November-2011
+% Last update:   23-May-2013       
+%                28-July-2020
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %linearization point p.u of the input is the center of the input u
 p.u = center(options.U) + options.uTrans;
@@ -40,7 +40,7 @@ f0prev_x = obj.dynFile(x0, y0, p.u);
 
 try %if time step already created
     p.x = x0 + f0prev_x*0.5*options.timeStep;
-    p.y = consistentState(obj, p.x, y0, p.u);
+    p.y = aux_consistentState(obj, p.x, y0, p.u);
 catch
     disp('time step not yet created; this message should only appear once!');
     p.x = x0;
@@ -86,8 +86,12 @@ obj.linError.CF_inv = CF_inv;
 %save linearization point
 obj.linError.p=p;
 
+end
 
-function y0 = consistentState(obj, x0, y0, u0)
+
+% Auxiliary functions -----------------------------------------------------
+
+function y0 = aux_consistentState(obj, x0, y0, u0)
 
 %init
 converged = 0;
@@ -110,5 +114,7 @@ while ~converged
     y0 = y0 + delta_y;
 end
 
+end
 
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

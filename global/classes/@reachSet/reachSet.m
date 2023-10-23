@@ -1,7 +1,7 @@
 classdef reachSet
 % reachSet - class that stores reachable sets
 %
-% Syntax:  
+% Syntax:
 %    R = reachSet(timePoint)
 %    R = reachSet(timePoint,parent)
 %    R = reachSet(timePoint,parent,loc)
@@ -28,12 +28,12 @@ classdef reachSet
 %
 % See also: reach
 
-% Author:       Niklas Kochdumper
-% Written:      29-May-2020             
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       29-May-2020             
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     
@@ -127,7 +127,12 @@ methods
 
     % get initial set
     function R0 = R0(obj)
-        R0 = initialSet(obj(1).timePoint(1).set{1});
+        if isempty(obj(1).timePoint)
+            n = 3; % ensures successful plotting
+            R0 = initialSet(emptySet(n));
+        else
+            R0 = initialSet(obj(1).timePoint(1).set{1});
+        end
     end
 
     % for functionSignatures.json
@@ -142,4 +147,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

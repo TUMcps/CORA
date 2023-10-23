@@ -61,10 +61,9 @@ invA = ...
 [0,0,0,0,1;1,0,0,0,0];
 invb = ...
 [t_u;-100];
-invOpt = struct('A', invA, 'b', invb);
-inv = mptPolytope(invOpt);
+inv = polytope(invA, invb);
 
-trans = {};
+trans = transition();
 %% equation:
 %   
 resetA = ...
@@ -124,7 +123,7 @@ invA = ...
 invb = ...
 [t_u;100;141.1;100;141.1;100;141.1;100;141.1];
 invOpt = struct('A', invA, 'b', invb);
-inv = mptPolytope(invOpt);
+inv = polytope(invA, invb);
 
 trans = transition();
 %% equation:
@@ -185,7 +184,7 @@ invA = ...
 invb = ...
 40;
 invOpt = struct('A', invA, 'b', invb);
-inv = mptPolytope(invOpt);
+inv = polytope(invA, invb);
 
 trans = transition();
 loc(3) = location('S3',inv, trans, dynamics);

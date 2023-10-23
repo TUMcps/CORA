@@ -4,7 +4,7 @@ function completed = example_probOccupancyPrediction_road_01_braking()
 %    vehicle is predicted and the first one brakes.
 %    This example can be found in [1, Sec. 5.5.3].
 %
-% Syntax:  
+% Syntax:
 %    example_probOccupancyPrediction_road_01_braking
 %
 % Inputs:
@@ -17,12 +17,12 @@ function completed = example_probOccupancyPrediction_road_01_braking()
 %    [1] M. Althoff, "Reachability analysis and its application to the
 %        safety assessment of autonomous cars", Dissertation, TUM 2010.
 
-% Author:       Matthias Althoff
-% Written:      14-October-2009
-% Last update:  01-August-2016
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       14-October-2009
+% Last update:   01-August-2016
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %set path
@@ -187,7 +187,7 @@ Rstraight=createPath(R,[pi/2,2,0],[0],[40]);
 figure;
 
 subplot(1,3,1);
-normalizePlot();
+aux_normalizePlot();
 %plot velocity distribution
 plot(Rstraight,avgVelA,1);
 plotCrossing(Rstraight,[36,41]);
@@ -195,7 +195,7 @@ axis([-5, 5, 0, 160]);
 xlabel('car A');
 
 subplot(1,3,2);
-normalizePlot();
+aux_normalizePlot();
 %plot velocity distribution
 plot(Rstraight,avgVelB,1);
 plotCrossing(Rstraight,[36,41]);
@@ -204,14 +204,13 @@ xlabel('car B');
 set(gca,'ytick',[]);
 
 subplot(1,3,3)
-normalizePlot();
+aux_normalizePlot();
 %plot velocity distribution
 plot(Rstraight,avgVelC,1);
 plotCrossing(Rstraight,[36,41]);
 axis([-5, 5, 0, 160]);
 xlabel('car C');
 set(gca,'ytick',[]);
-
 
 
 %compute average position probabilities
@@ -290,13 +289,18 @@ end
 cd(curPath);
 completed = 1;
 
+end
 
 
-function h = normalizePlot()
+% Auxiliary functions -----------------------------------------------------
+
+function h = aux_normalizePlot()
 
 %plot lowest and highest value for average probability
 %plot using own methods
 V=[0.1 0.2; 0.1 0.2];
 h = plotPolygon(V,'FaceColor',[.5 .5 .5]);
 
-%------------- END OF CODE --------------
+end
+
+% ------------------------------ END OF CODE ------------------------------

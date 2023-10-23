@@ -1,7 +1,7 @@
 function res = test_ellipsoid_minkDiff
 % test_ellipsoid_minkDiff - unit test function of minkDiff
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_minkDiff
 %
 % Inputs:
@@ -16,12 +16,13 @@ function res = test_ellipsoid_minkDiff
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = true;
 load cases.mat E_c
 for i=1:length(E_c)
@@ -30,7 +31,7 @@ for i=1:length(E_c)
     E0 = E_c{i}.E0;
     
     % since E0.Q = 0
-    if isempty(minkDiff(E1,E0))
+    if representsa_(minkDiff(E1,E0),'emptySet',eps)
         res = false;
         break;
     end
@@ -43,4 +44,4 @@ for i=1:length(E_c)
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

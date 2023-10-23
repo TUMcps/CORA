@@ -2,7 +2,7 @@ function eP = expmInd(matP,maxOrder)
 % expmInd - operator for the exponential matrix of a matrix polytope,
 %    evaluated independently
 %
-% Syntax:  
+% Syntax:
 %    eP = expmInd(matP,maxOrder)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function eP = expmInd(matP,maxOrder)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      21-June-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-June-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %compute finite Taylor series
 %initialize matrix zonotope
@@ -48,4 +48,4 @@ E = exponentialRemainder(intMat,maxOrder);
 %convert remainder and add it to the Taylor series
 eP = eP + matPolytope(E);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

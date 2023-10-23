@@ -2,7 +2,7 @@ function res = testLong_component_ellipsoid_isIntersectingMixed
 % testLong_component_ellipsoid_isIntersectingMixed - unit test 
 %    function of ellipsoid/isIntersectingMixed
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_component_ellipsoid_isIntersectingMixed
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_component_ellipsoid_isIntersectingMixed
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      18-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       18-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 nRuns = 2;
@@ -44,8 +44,8 @@ for i=5:5:10
 
             % init zonotope and polyZonotope containing that random point
             % so that sets always intersect
-            Z1 = zonotope(s,generators(Z));
-            pZ1 = polyZonotope(s,pZ.G,pZ.Grest,pZ.expMat,pZ.id);
+            Z1 = zonotope(s,Z.G);
+            pZ1 = polyZonotope(s,pZ.G, pZ.GI, pZ.E, pZ.id);
             
             % check for intersection
             if ~isIntersecting(E,Z1,'approx') || ~isIntersecting(E,pZ1,'approx')
@@ -56,4 +56,4 @@ for i=5:5:10
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -18,12 +18,12 @@ function res = test_conHyperplane_plot
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      25-May-2022
-% Last update:  09-May-2023 (TL: added plotted point checks)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-May-2022
+% Last update:   09-May-2023 (TL, added plotted point checks)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -77,4 +77,4 @@ end
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

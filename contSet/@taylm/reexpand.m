@@ -1,7 +1,7 @@
 function res = reexpand(obj,int)
 % reexpand - Reexpand a taylor model at the center of the domain int
 %
-% Syntax:  
+% Syntax:
 %    res = reexpand(obj, int)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = reexpand(obj,int)
 %
 % See also: taylm
 
-% Author:       Niklas Kochdumper
-% Written:      14-April-2018
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       14-April-2018
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % calculate the new expansion point
     x_e = center(int);
@@ -34,7 +34,7 @@ function res = reexpand(obj,int)
     % caclulate the taylor series of the taylor model around the new
     % expansion point
     K = max(max(obj.monomials));
-    monAll = monomials(length(x_e),K);
+    monAll = aux_monomials(length(x_e),K);
     
     counter = 1;
     coeff = zeros(1,size(monAll,1));
@@ -44,7 +44,7 @@ function res = reexpand(obj,int)
         
         % calculate derivative of the talyor model
         e = monAll(i,:);
-        coeff(counter) = evalDiff(obj,x_e,e);
+        coeff(counter) = aux_evalDiff(obj,x_e,e);
         
         if coeff(counter) ~= 0
             % scale the domain of the variables to [-1,1]
@@ -64,8 +64,9 @@ function res = reexpand(obj,int)
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-function c = evalDiff(obj,x,diff)
+function c = aux_evalDiff(obj,x,diff)
 % evaluate the derivative of a taylor model
 
     c = 0;
@@ -86,7 +87,7 @@ function c = evalDiff(obj,x,diff)
     c = c * 1/prod(factorial(diff));
 end
 
-function mon = monomials(M,N)
+function mon = aux_monomials(M,N)
 % construct all monomials up to the degree N
 
     % inititial monomial
@@ -95,7 +96,7 @@ function mon = monomials(M,N)
     % loop over all monomials up to a degree of N
     while sum(mon(end,:)) <= N
         
-        temp = nextMonomial(M,mon(end,:)); 
+        temp = aux_nextMonomial(M,mon(end,:)); 
         mon = [mon;temp];     
     end
     
@@ -103,7 +104,7 @@ function mon = monomials(M,N)
 
 end
 
-function x = nextMonomial(M,x)
+function x = aux_nextMonomial(M,x)
 % calculate the next monomial according to the graded lexicographic order
 
     j = 1;
@@ -132,4 +133,4 @@ function x = nextMonomial(M,x)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

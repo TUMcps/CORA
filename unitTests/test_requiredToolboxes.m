@@ -1,7 +1,7 @@
 function res = test_requiredToolboxes
 % test_requiredToolboxes - checks if required toolboxes are installed
 %
-% Syntax:  
+% Syntax:
 %    res = test_requiredToolboxes
 %
 % Inputs:
@@ -13,19 +13,19 @@ function res = test_requiredToolboxes
 % Example: 
 %
 
-% Author:       Matthias Althoff
-% Written:      15-September-2016
-% Last update:  04-May-2018
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       15-September-2016
+% Last update:   04-May-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 Res = [];
 % note: license returns 1 if license exists and 0 if not (not: true/false!) 
 % check if symbolic math toolbox is available
 Res = logical(license('test','Symbolic_Toolbox'));
 if ~Res(end)
-    disp('Symbolic Toolbox missing!');
+    disp('Symbolic Math Toolbox missing!');
 end
 
 % check if optimization toolbox is available
@@ -42,11 +42,6 @@ end
 p = path;
 
 % note: contains returns true/false
-% check if MPT toolbox is available
-Res = [Res,contains(p,[filesep 'mpt' filesep])];
-if ~Res(end)
-    disp('MPT toolbox missing!');
-end
 
 % check if YALMIP toolbox is available
 Res = [Res,isYalmipInstalled()];
@@ -70,4 +65,4 @@ Res = [Res,contains(p,[filesep 'hybridDynamics' filesep])];
 
 res = all(Res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = isequal(sys1,sys2,varargin)
 % isequal - checks if two linear systems are equal
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(sys1,sys2)
 %    res = isequal(sys1,sys2,tol)
 %
@@ -25,12 +25,12 @@ function res = isequal(sys1,sys2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      10-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       10-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -86,7 +86,7 @@ if ~all(withinTol(sys1.C,sys2.C,tol))
     res = false; return
 end
 
-% check throughput matrix
+% check feedthrough matrix
 if ~all(withinTol(sys1.D,sys2.D,tol))
     res = false; return
 end
@@ -99,4 +99,4 @@ end
 % all checks ok
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

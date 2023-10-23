@@ -1,7 +1,7 @@
 function display(loc)
 % display - Displays a location object on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(loc)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function display(loc)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      06-November-2007
-% Last update:  18-June-2022 (MW, update displayed information)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       06-November-2007
+% Last update:   18-June-2022 (MW, update displayed information)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check if called from display hybridAutomaton
 st = dbstack("-completenames");
@@ -122,4 +122,4 @@ if ~callFromHybridDisplay
     fprintf(newline);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = isIntersecting_(ls,S,type,varargin)
 % isIntersecting_ - determines if a level set intersects a set using
 %    the method described in Sec. 4.1 in [1]
 %
-% Syntax:  
+% Syntax:
 %    res = isIntersecting_(ls,S)
 %    res = isIntersecting_(ls,S,type)
 %
@@ -41,14 +41,14 @@ function res = isIntersecting_(ls,S,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: halfspace/isIntersecting_, conHyperplane/isIntersecting_
+% See also: contSet/isIntersecting, lfspace/isIntersecting_, conHyperplane/isIntersecting_
 
-% Author:       Niklas Kochdumper
-% Written:      19-July-2019
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename isIntersecting_)
+% Authors:       Niklas Kochdumper
+% Written:       19-July-2019
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % currently, no exact method
 if strcmp(type,'exact')
@@ -94,4 +94,4 @@ else
     res = all(resVec);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

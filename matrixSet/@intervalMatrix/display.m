@@ -1,7 +1,7 @@
 function display(intMat)
 % display - displays an intervalMatrix object on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(intMat)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function display(intMat)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      18-June-2010
-% Last update:  03-April-2023 (MW, add empty case)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       18-June-2010
+% Last update:   03-April-2023 (MW, add empty case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isempty(intMat)
     
@@ -45,4 +45,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

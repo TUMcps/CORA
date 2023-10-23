@@ -26,12 +26,12 @@ function res = isequal(fs,S,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isa(S,'fullspace')
     res = fs.dimension == S.dimension;
@@ -49,4 +49,4 @@ else
     throw(CORAerror('CORA:noops',fs,S));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

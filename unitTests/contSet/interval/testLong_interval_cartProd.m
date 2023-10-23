@@ -2,7 +2,7 @@ function res = testLong_interval_cartProd
 % testLong_interval_cartProd - unit test function of Cartesian
 %    product for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_interval_cartProd
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_interval_cartProd
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      03-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % number of tests
 nrTests = 1000;
@@ -87,4 +87,4 @@ for i=1:nrTests
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = test_nonlinearSysDT_reach_03_linearSysDT
 % test_nonlinearSysDT_reach_03_linearSysDT - unit test for reach
 %       (comparison with reach from equivalent linearSysDT)
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSysDT_reach_03_linearSysDT
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_nonlinearSysDT_reach_03_linearSysDT
 %
 % See also: none
 
-% Author:       Laura Luetzow
-% Written:      26-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Laura Luetzow
+% Written:       26-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = false;
 
@@ -47,7 +47,7 @@ C = [1 1 0 0;
      0 -0.5 0.5 0];
 n_y = 2;
 
-% throughput matrix: q x m
+% feedthrough matrix: q x m
 D = [0 0 1;
      0 0 0];
 
@@ -117,4 +117,4 @@ end
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

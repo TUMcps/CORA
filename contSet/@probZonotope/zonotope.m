@@ -1,8 +1,8 @@
 function Z = zonotope(probZ,m)
-% mSigma - converts a probabilistic zonotope to a common zonotope where for
+% zonotope - converts a probabilistic zonotope to a common zonotope where for
 %    each generator, a m-sigma interval is taken
 %
-% Syntax:  
+% Syntax:
 %    Z = zonotope(probZ,m)
 %
 % Inputs:
@@ -27,12 +27,12 @@ function Z = zonotope(probZ,m)
 %
 % See also: ---
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       03-August-2007 
 % Last update:   26-February-2008
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin==1
     m=probZ.gamma;
@@ -49,4 +49,4 @@ c = center(probZ);
 G = [probZ.Z(:,2:end),newG];
 Z = zonotope(c,G);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

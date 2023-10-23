@@ -1,7 +1,7 @@
 function writeTestResultsForCI(varargin)
 % writeTestResultsForCI - prepares test result for gitlab CI
 %
-% Syntax:  
+% Syntax:
 %    writeTestResultsForCI()
 %    writeTestResultsForCI(format)
 %
@@ -14,21 +14,21 @@ function writeTestResultsForCI(varargin)
 %    -
 %
 % Example: 
-%    printTestOverview('long');
+%    writeTestResultsForCI('long');
 %
 % See also: printTestOverview
 
-% Author:       Tobias Ladner
-% Written:      22-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       22-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default format: last run
 format = setDefaultValues({'short'},varargin);
 % check if correct identifier provided
-inputArgsCheck({{format,'str',{'short','long','intlab','mosek','mp','sdpt3','nn'}}});
+inputArgsCheck({{format,'str',{'short','long','intlab','mosek','mp','sdpt3','nn','examples','benchmarks'}}});
 
 % load data
 unitTestsFile = [CORAROOT filesep 'unitTests' filesep 'unitTestsStatus.mat'];
@@ -53,9 +53,9 @@ results = resultsTestSuite.results;
 
 % result text shown in bitbucket
 fileID = fopen('resultText.txt','w');
-fprintf(fileID, '%d/%d tests passed. ', sum([results.ok]), length(results)); 
+fprintf(fileID, '%d/%d tests passed.', nnz([results.ok]), length(results)); 
 if sum(~[results.ok]) > 0
-    fprintf(fileID, 'Failed tests. %s', strjoin({results(~[results.ok]).fname}, ', ')); 
+    fprintf(fileID, ' Failed tests. %s', strjoin({results(~[results.ok]).fname}, ', ')); 
 end
 fclose(fileID);
 
@@ -64,4 +64,4 @@ fileID = fopen('failed.txt','w');
 fprintf(fileID, "%d", any(~[results.ok])); 
 fclose(fileID);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

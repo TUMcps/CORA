@@ -1,7 +1,7 @@
 function res = test_fullspace_and
 % test_fullspace_and - unit test function of and
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_and
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_and
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      25-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -51,4 +51,4 @@ res(end+1,1) = compareMatrices(fs & p,p);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

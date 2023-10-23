@@ -2,7 +2,7 @@ function res = test_linearSys_simulate_time
 % test_linearSys_simulate_time - unit test for simulate specifically
 %    checking whether start time, end time, and steps are correct
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_simulate_time
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_linearSys_simulate_time
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      05-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = [];
 
@@ -82,4 +82,4 @@ res(end+1,1) = withinTol(t(1),params.tStart) ...
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

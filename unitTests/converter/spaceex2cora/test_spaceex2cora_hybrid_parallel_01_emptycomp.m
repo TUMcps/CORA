@@ -13,12 +13,12 @@ function res = test_spaceex2cora_hybrid_parallel_01_emptycomp
 % Outputs:
 %    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      15-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       15-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -42,7 +42,7 @@ sys_spaceex = feval(filename);
 
 % first component, first location
 dynamics = linearSys([0 0; 0 0],[0; 0],[0; 1]);
-inv = mptPolytope(struct('A',[0 1],'b',0));
+inv = polytope([0 1],0);
 guard = conHyperplane([0 1],0);
 reset = struct('A',[1 0; 0 1],'c',[1;5]);
 trans = transition(guard,reset,2,'switch12');
@@ -50,7 +50,7 @@ loc(1) = location('loc1',inv,trans,dynamics);
 
 % first component, second location
 dynamics = linearSys([0 0; 0 0],[0; 0],[0; -1]);
-inv = mptPolytope(struct('A',[0 -1],'b',0));
+inv = polytope([0 -1],0);
 guard = conHyperplane([0 1],0);
 reset = struct('A',[1 0; 0 1],'c',[1;-5]);
 trans = transition(guard,reset,1,'switch21');
@@ -132,4 +132,4 @@ plot(R_end_,[1,2],'g','LineWidth',1.5);
 plot(R_end,[1,2],'r--','LineWidth',1.5);
 close;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

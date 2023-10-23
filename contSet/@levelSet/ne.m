@@ -36,13 +36,13 @@ function res = ne(ls1,ls2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      11-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = ~isequal(ls1,ls2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

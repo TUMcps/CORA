@@ -2,7 +2,7 @@ function cZ = intervalMultiplication(cZ,I)
 % intervalMultiplication - computes the multiplication of an interval with
 %    a constrained zonotope
 %
-% Syntax:  
+% Syntax:
 %    res = intervalMultiplication(obj,I)
 %
 % Inputs:
@@ -30,25 +30,26 @@ function cZ = intervalMultiplication(cZ,I)
 %
 % See also: mtimes, interval/mtimes, zonotope/intervalMultiplication
 
-% Author:       Niklas Kochdumper
-% Written:      03-July-2018 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       03-July-2018 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % center and radius of interval matrix
 m = center(I);
 r = rad(I);
 
 % absolute value of zonotope center and generators
-Zabssum = sum(abs(cZ.Z),2);
+Zabssum = sum(abs([cZ.c,cZ.G]),2);
 
 % construct resulting conZonotope object
-cZ.Z = [m*cZ.Z, diag(r*Zabssum)];
+cZ.c = m*cZ.c;
+cZ.G = [m*cZ.G, diag(r*Zabssum)];
 cZ.A = [cZ.A, zeros(size(cZ.A,1),size(Zabssum,1))];
 
 cZ.ksi = [];
 cZ.R = [];
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

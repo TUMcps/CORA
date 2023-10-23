@@ -2,7 +2,7 @@ function obj = tie(obj)
 % tie - tie: time interval error; computes the error done by building the
 %    convex hull of time point solutions
 %
-% Syntax:  
+% Syntax:
 %    obj = tie(obj)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function obj = tie(obj)
 %
 % See also: expm, inputSol
 
-% Author:       Matthias Althoff
-% Written:      06-August-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-August-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain powers and convert them to interval matrices
 Apower=cell(1,length(obj.power.int));
@@ -60,4 +60,4 @@ end
 %write to object structure
 obj.F=Asum+obj.E;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

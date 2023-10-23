@@ -2,7 +2,7 @@ function Z = reduceIdx(Z,idx)
 % reduceIdx - reduce a zonotope by over-approximating the generators of
 %    certain indices with a box
 %
-% Syntax:  
+% Syntax:
 %    Z = reduceIdx(Z,order)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function Z = reduceIdx(Z,idx)
 %
 % See also: ---
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       06-September-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % no generators selected
 if isempty(idx)
@@ -36,12 +36,12 @@ if any(idx > size(generators(Z),2) + 1)
 end
 
 % pick generators to reduce
-Gred = Z.Z(:,1+idx);
+Gred = Z.G(:,idx);
 % box generators
 d = sum(abs(Gred),2);
 Gbox = diag(d);
 % remove reduced generators and append box to matrix
-Z.Z(:,1+idx) = [];
-Z.Z(:,end+1:end+dim(Z)) = Gbox;
+Z.G(:,idx) = [];
+Z.G(:,end+1:end+dim(Z)) = Gbox;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

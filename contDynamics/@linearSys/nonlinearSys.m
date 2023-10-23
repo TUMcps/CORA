@@ -1,7 +1,7 @@
 function sys = nonlinearSys(obj)
 % nonlinearSys - converts a linearSys object to a nonlinearSys object
 %
-% Syntax:  
+% Syntax:
 %    sys = nonlinearSys(obj)
 %
 % Inputs:
@@ -30,12 +30,12 @@ function sys = nonlinearSys(obj)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % function handle for state equation
 f = aux_funHan(obj.A,obj.B,obj.c);
@@ -103,4 +103,4 @@ function funHan = aux_funHan(stateMatrix,inputMatrix,offset)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

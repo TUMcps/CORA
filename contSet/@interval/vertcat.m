@@ -1,7 +1,7 @@
 function I = vertcat(varargin)
 % vertcat - Overloads the opertor for vertical concatenation
 %
-% Syntax:  
+% Syntax:
 %    I = vertcat(varargin)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function I = vertcat(varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      26-June-2015 
-% Last update:  08-August-2016
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-June-2015 
+% Last update:   08-August-2016
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 I = varargin{1};
 
@@ -50,4 +50,4 @@ for i = 2:nargin
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

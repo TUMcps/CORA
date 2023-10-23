@@ -1,7 +1,7 @@
 function cPZsplit = splitDepFactor(cPZ,factor)
 % splitDepFactor - Splits one factor of a constrained polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    cPZsplit = splitDepFactor(cPZ,factor)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function cPZsplit = splitDepFactor(cPZ,factor)
 %
 % See also: split, splitLongestGen
 
-% Author:       Niklas Kochdumper
-% Written:      07-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       07-November-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{cPZ,'att','conPolyZono'};
@@ -39,4 +39,4 @@ dom2 = interval(0,1);
 cPZsplit{1} = getSubset(cPZ,factor,dom1);
 cPZsplit{2} = getSubset(cPZ,factor,dom2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

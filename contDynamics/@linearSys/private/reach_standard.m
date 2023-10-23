@@ -2,7 +2,7 @@ function [timeInt,timePoint,res] = reach_standard(obj,options)
 % reach_standard - computes the reachable set for linear systems using the
 %    standard (non-wrapping-free) reachability algorithm for linear systems
 %
-% Syntax:  
+% Syntax:
 %    [timeInt,timePoint,res] = reach_standard(obj,options)
 %
 % Inputs:
@@ -28,12 +28,12 @@ function [timeInt,timePoint,res] = reach_standard(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff, Mark Wetzlinger
+% Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       26-June-2019 (from @contDynamics > reach.m)
 % Last update:   19-November-2022 (MW, modularize specification check)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain factors for initial state and input solution
 for i=1:(options.taylorTerms+1)
@@ -112,9 +112,9 @@ for i = 2:steps
     end
     
     %write results to reachable set struct Rnext
-    if isa(Rhom,'mptPolytope')
-        Rnext.ti = Rhom + mptPolytope(Rpar) + mptPolytope(inputCorr);
-        Rnext.tp = Rhom_tp + mptPolytope(Rpar);
+    if isa(Rhom,'polytope')
+        Rnext.ti = Rhom + polytope(Rpar) + polytope(inputCorr);
+        Rnext.tp = Rhom_tp + polytope(Rpar);
     else
         Rnext.ti = Rhom + zonotope(Rpar) + inputCorr;
         Rnext.tp = Rhom_tp + zonotope(Rpar);
@@ -152,4 +152,4 @@ timePoint.set{end} = outputSet(obj,options,Rstart);
 % specification fulfilled
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

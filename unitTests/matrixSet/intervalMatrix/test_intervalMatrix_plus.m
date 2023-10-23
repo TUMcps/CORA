@@ -3,7 +3,7 @@ function res = test_intervalMatrix_plus
 % interval matrix according to [1]
 % 
 % 
-% Syntax:  
+% Syntax:
 %    res = test_intervalMatrix_plus
 %
 % Inputs:
@@ -23,12 +23,12 @@ function res = test_intervalMatrix_plus
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      06-May-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-May-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% create first interval matrix
 % center
@@ -105,4 +105,4 @@ resPartial(end+1) = (max(max(abs(supremum(C.int) - supremum(C_true.int)))) == 0)
 %result of all tests
 res = all(resPartial);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

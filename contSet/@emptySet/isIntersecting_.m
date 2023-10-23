@@ -1,7 +1,7 @@
 function res = isIntersecting_(O,S,varargin)
 % isIntersecting_ - checks if an empty set intersects with another set
 %
-% Syntax:  
+% Syntax:
 %    res = isIntersecting_(O,S)
 %    res = isIntersecting_(O,S,type)
 %
@@ -22,16 +22,16 @@ function res = isIntersecting_(O,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/isIntersecting
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  05-April-2023 (rename isIntersecting_)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   05-April-2023 (rename isIntersecting_)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % intersection with an empty set is always empty -> always false
 res = false;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

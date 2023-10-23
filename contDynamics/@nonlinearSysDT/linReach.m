@@ -1,7 +1,7 @@
 function [Rtp,options] = linReach(obj,Rinit,options)
 % linReach - computes the reachable set after linearization
 %
-% Syntax:  
+% Syntax:
 %    [Rtp,options] = linReach(obj,Rinit,options)
 %
 % Inputs:
@@ -22,14 +22,14 @@ function [Rtp,options] = linReach(obj,Rinit,options)
 %
 % See also: 
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
-% Written:      21-August-2012
-% Last update:  29-January-2018 (NK)
-%               08-April-2021 (NK, use exact plus for polyZonotopes)
-%               18-June-2021 (MW, adaptive algorithm)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
+% Written:       21-August-2012
+% Last update:   29-January-2018 (NK)
+%                08-April-2021 (NK, use exact plus for polyZonotopes)
+%                18-June-2021 (MW, adaptive algorithm)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % linearize nonlinear system
     [obj,A_lin,U] = linearize(obj,Rinit,options); 
@@ -42,7 +42,7 @@ function [Rtp,options] = linReach(obj,Rinit,options)
     
     % first step of adaptive: decide tensorOrder (also compute Verror)
     if strcmp(options.alg,'lin-adaptive') && options.i == 1
-        [options,Verror] = tuneTensorOrder(obj,options,Rdelta,[],[]);
+        [options,Verror] = aux_tuneTensorOrder(obj,options,Rdelta,[],[]);
         
     else
         % obtain abstraction error
@@ -89,10 +89,10 @@ function [Rtp,options] = linReach(obj,Rinit,options)
         radVerror = rad(interval(Verror));
         if options.tensorOrder == 2 && ...
                 all( 1 - radVerror ./ options.Verrorprev > 1-options.zetaK)
-        	options = tuneTensorOrder(obj,options,Rdelta,radVerror,[]);
+        	options = aux_tuneTensorOrder(obj,options,Rdelta,radVerror,[]);
         elseif options.tensorOrder == 3 && ...
                 all( 1 - radVerror ./ options.Verrorprev < options.zetaK-1)
-            options = tuneTensorOrder(obj,options,Rdelta,[],radVerror);
+            options = aux_tuneTensorOrder(obj,options,Rdelta,[],radVerror);
         end
     end
     
@@ -100,7 +100,8 @@ end
 
 
 % Auxiliary functions -----------------------------------------------------
-function [options,Verror] = tuneTensorOrder(obj,options,Rdelta,radVerror_2,radVerror_3)
+
+function [options,Verror] = aux_tuneTensorOrder(obj,options,Rdelta,radVerror_2,radVerror_3)
 
     % 1. compute other order (Verror_2 or Verror_3) if necessary
     % 2. compare to current Verror
@@ -131,4 +132,4 @@ function [options,Verror] = tuneTensorOrder(obj,options,Rdelta,radVerror_2,radVe
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

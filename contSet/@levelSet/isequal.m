@@ -34,12 +34,12 @@ function res = isequal(ls1,ls2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      11-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       11-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
 if nargin > 3
@@ -55,8 +55,8 @@ inputArgsCheck({{ls1,'att','levelSet'};
                 {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
 
 % reduce both to minimal representation
-ls1 = compact(ls1);
-ls2 = compact(ls2);
+ls1 = compact_(ls1,'all',eps);
+ls2 = compact_(ls2,'all',eps);
 
 % check if number of equations are equal
 if length(ls1.eq) ~= length(ls2.eq)
@@ -212,4 +212,4 @@ usedVars = unique(usedVars);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

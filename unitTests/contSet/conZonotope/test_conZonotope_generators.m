@@ -2,7 +2,7 @@ function res = test_conZonotope_generators
 % test_conZonotope_generators - unit test function for reading out the
 %    generator matrix of a conZonotope object
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_generators
 %
 % Inputs:
@@ -21,19 +21,18 @@ function res = test_conZonotope_generators
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Mark Wetzlinger
-% Written:      28-March-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-March-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
 % check empty conZonotope
 cZ_empty = conZonotope();
-cZ_empty_ = generators(cZ_empty);
-if ~isempty(cZ_empty_)
+if ~isempty(generators(cZ_empty))
     res = false; return;
 end
 
@@ -116,4 +115,4 @@ for i=1:nrOfTests
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

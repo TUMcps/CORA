@@ -1,7 +1,7 @@
 function res = optBnb( obj )
 % optBnb - a branch and bound optimization
 %
-% Syntax:  
+% Syntax:
 %    res = optBnb( obj )
 %
 % Inputs:
@@ -38,13 +38,12 @@ function res = optBnb( obj )
 %   [1] M. Althoff et al. "Implementation of Taylor models in CORA 2018
 %       (Tool Presentation)"
 
-% Author:       Dmitry Grebenyuk
-% Written:      23-October-2017
-%               02-December-2017 (DG) New rank evaluation
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       23-October-2017
+% Last update:   02-December-2017 (DG, new rank evaluation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
     % Implementation of Alogrithm 1 from reference paper [1]
     % (standard version, without reexpansion)
@@ -71,13 +70,13 @@ function res = optBnb( obj )
         % halve the interval
         if ind_mx == ind_mn
             [~, ind_var] = max(rad(dom(ind_mx, :)));
-            dom = halve(dom, ind_mx, ind_var);
+            dom = aux_halve(dom, ind_mx, ind_var);
         else
             [~, ind_var] = max(rad(dom(ind_mx, :)));
-            dom = halve(dom, ind_mx, ind_var);
+            dom = aux_halve(dom, ind_mx, ind_var);
             
             [~, ind_var] = max(rad(dom(ind_mn, :)));
-            dom = halve(dom, ind_mn, ind_var);
+            dom = aux_halve(dom, ind_mn, ind_var);
         end
         
         prev_int_u = int_u;
@@ -89,8 +88,8 @@ function res = optBnb( obj )
             int = int + prod(dom.^exp, 2) * obj.coefficients(i);
         end
         
-        int_u = unite_ints(int);
-        if intcmp(prev_int_u, int_u,obj.eps)
+        int_u = aux_unite_ints(int);
+        if aux_intcmp(prev_int_u, int_u,obj.eps)
             break;
         end
     end 
@@ -98,7 +97,10 @@ function res = optBnb( obj )
     
 end
 
-function res = halve(obj, ind_bit, ind_var) % ind_bit - index of a bit ( a part of an integral)
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_halve(obj, ind_bit, ind_var) % ind_bit - index of a bit ( a part of an integral)
                                             % ind_val - index of a varible
     % find a middle point
     m = center(obj(ind_bit, ind_var));
@@ -118,7 +120,7 @@ function res = halve(obj, ind_bit, ind_var) % ind_bit - index of a bit ( a part 
     res = interval(inf, sup);
 end
 
-function res = intcmp(prev_int, int, eps)
+function res = aux_intcmp(prev_int, int, eps)
     
     % cut off if the refinement is less than EPS
     prev_int_s = supremum(prev_int); 
@@ -134,7 +136,7 @@ function res = intcmp(prev_int, int, eps)
     end
 end
 
-function res = unite_ints(input)
+function res = aux_unite_ints(input)
 % unite multi-dimensional interval into single interval
 
     min_int = infimum(input);
@@ -143,4 +145,4 @@ function res = unite_ints(input)
     res = interval(min(min_int), max(max_int));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

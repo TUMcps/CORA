@@ -1,7 +1,7 @@
 function res = test_emptySet_radius
 % test_emptySet_radius - unit test function of radius
 %
-% Syntax:  
+% Syntax:
 %    res = test_emptySet_radius
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_emptySet_radius
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init empty set
 n = 2;
@@ -31,4 +31,4 @@ O = emptySet(n);
 r = radius(O);
 res = r == 0;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

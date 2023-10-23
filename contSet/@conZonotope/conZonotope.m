@@ -38,22 +38,22 @@ classdef conZonotope < contSet
 %
 % See also: interval
 
-% Author:       Dmitry Grebenyuk, Mark Wetzlinger
-% Written:      03-September-2017
-% Last update:  19-March-2021 (MW, error messages)
-%               14-December-2022 (TL, property check in inputArgsCheck)
-%               29-March-2023 (TL: optimized constructor)
-% Last revision:02-May-2020 (MW, methods list, rewrite methods(hidden),
-%                                 add property validation)
-%               16-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Dmitry Grebenyuk, Mark Wetzlinger, Tobias Ladner
+% Written:       03-September-2017
+% Last update:   19-March-2021 (MW, error messages)
+%                14-December-2022 (TL, property check in inputArgsCheck)
+%                29-March-2023 (TL, optimized constructor)
+%                13-September-2023 (TL, replaced Z property with c and G)
+% Last revision: 02-May-2020 (MW, methods list, rewrite methods(hidden), add property validation)
+%                16-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     
-    % center and generators  x = Z(:,1) + Z(:,2:end)*beta; |beta| <= 1
-    % format:       matrix
-    Z = [];
+    % center and generators  x = c + G*beta; |beta| <= 1
+    c, G;
+    Z = []; % legacy Z = [c,g_1,...,g_p]
     
     % constraint A*beta = b; |beta| <= 1
     % format:       matrix
@@ -89,7 +89,8 @@ methods
         aux_checkInputArgs(c,G,A,b,nargin);
 
         % 4. assign properties
-        obj.Z = [c,G];
+        obj.c = c;
+        obj.G = G;
         obj.A = A;
         obj.b = b;
 
@@ -110,10 +111,9 @@ methods
     cZ = intersectStrip(cZ,C,phi,y,varargin)
     I = interval(cZ)
     cZ = intervalMultiplication(cZ,I)
-    res = isempty(cZ)
     res = isFullDim(cZ)
     cZ = minkDiff(cZ1,S,varargin)
-    P = mptPolytope(cZ)
+    P = polytope(cZ)
     cZ = mtimes(factor1,factor2)
     cZ = or(cZ1,varargin)
     han = plot(cZ,varargin)
@@ -125,19 +125,53 @@ methods
     cZ = reduce(cZ,method,order,varargin)
     cZ = reduceConstraints(cZ,varargin)
     cZ = rescale(cZ,varargin)
+    [res,S] = representsa_(cZ,type,tol,varargin)
     cZsplit = split(cZ,varargin)
     zB = zonoBundle(cZ)
-    Z = zonotope(cZ,varargin)
-             
+    Z = zonotope(cZ,varargin)             
 end
 
 methods (Static = true)
     cZ = generateRandom(varargin) % generate random constrained zonotope
 end
 
+
+% getter & setter ---------------------------------------------------------
+
+methods
+    function obj = set.G(obj,G)
+        % fix dimension if empty
+        if isempty(G)
+            G = zeros(dim(obj),0);
+        end
+        obj.G = G;
+    end
+
+    % getter & setter for legacy Z property
+    function Z = get.Z(obj)
+        warning(['CORA: The property conZonotope.Z is deprecated (since CORA 2024) and will be removed in a future release. ' ...
+            'Please use conZonotope.c and conZonotope.G instead. ' ...
+            'This change was made to be consistent with the notation in papers.']);
+
+        Z = [obj.c, obj.G];
+    end
+
+    function obj = set.Z(obj, Z)
+        warning(['CORA: The property conZonotope.Z is deprecated (since CORA 2024) and will be removed in a future release. ' ...
+            'Please use conZonotope.c and conZonotope.G instead. ' ...
+            'This change was made to be consistent with the notation in papers.']);
+
+        if ~isempty(Z)
+            obj.c = Z(:,1);
+            obj.G = Z(:,2:end);
+        end
+    end
 end
 
-% Auxiliary Functions -----------------------------------------------------
+end
+
+
+% Auxiliary functions -----------------------------------------------------
 
 function [c,G,A,b] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
@@ -212,4 +246,4 @@ function aux_checkInputArgs(c,G,A,b,n_in)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

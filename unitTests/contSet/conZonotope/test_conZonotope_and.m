@@ -2,7 +2,7 @@ function res = test_conZonotope_and
 % test_conZonotope_and - unit test function for intersection of a
 %    constrained zonotope with other sets
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_and
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = test_conZonotope_and
 %
 % See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      11-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       11-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -123,7 +123,7 @@ V_ = [2 2.5;0.5 0.75];
 % % plot the result
 % x = -4:0.1:4;
 % y = (d-C(1)*x)./C(2);
-% poly = mptPolytope([Ch;0 1],[dh;4]);
+% poly = polytope([Ch;0 1],[dh;4]);
 % plot(poly,[1,2],'FaceColor','m','FaceAlpha',0.5);
 % hold on
 % plot(x,y,'g');
@@ -136,4 +136,4 @@ resvec(end+1) = compareMatrices(V,V_);
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = testLong_polyZonotope_polyZonotope
 % testLong_polyZonotope_polyZonotope - unit test function of
 %    polyZonotope (constructor)
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polyZonotope_polyZonotope
 %
 % Inputs:
@@ -17,21 +17,18 @@ function res = testLong_polyZonotope_polyZonotope
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      20-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       20-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-12;
 
 % empty zonotope
 pZ = polyZonotope();
-res_empty = true;
-if ~isempty(pZ)
-    res_empty = false;
-end
+res_empty = representsa(pZ,'emptySet');
 
 res_rand = true;
 nrOfTests = 1000;
@@ -48,14 +45,14 @@ for i=1:nrOfTests
     % random center, random generator matrices
     c = randn(n,1);
     G = randn(n,nrDepGens);
-    Grest = randn(n,nrIndepGens);
+    GI = randn(n,nrIndepGens);
     % random exponent matrix (no redudancies) and indentifiers
     counter = 0;
     while true
         counter = counter + 1;
-        expMat = randi(7,nrDepFactors,nrDepGens) - 2;
-        expMat(expMat < 0) = 0;
-        if size(unique(expMat','rows')',2) == size(expMat,2)
+        E = randi(7,nrDepFactors,nrDepGens) - 2;
+        E(E < 0) = 0;
+        if size(unique(E','rows')',2) == size(E,2)
             break;
         end
         if counter > 10
@@ -78,43 +75,43 @@ for i=1:nrOfTests
     end
     
     % center and independent generators
-    pZ = polyZonotope(c,[],Grest);
+    pZ = polyZonotope(c,[],GI);
     if ~all(withinTol(center(pZ),c,tol)) || ~isempty(pZ.G) ...
-            || ~compareMatrices(pZ.Grest,Grest,tol)
+            || ~compareMatrices(pZ.GI,GI,tol)
         res_rand = false; break;
     end
     
     % center, dependent, and independent generators
-    pZ = polyZonotope(c,G,Grest);
-    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.Grest,Grest,tol) ...
+    pZ = polyZonotope(c,G,GI);
+    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.GI,GI,tol) ...
             || ~compareMatrices(G,pZ.G,tol)
         res_rand = false; break;
     end
     
     % center, dependent, independent generators, and exponent matrix
-    pZ = polyZonotope(c,G,Grest,expMat);
-    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.Grest,Grest,tol) ...
-            || ~compareMatrices([G;expMat],[pZ.G;pZ.expMat],tol)
+    pZ = polyZonotope(c,G,GI,E);
+    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.GI,GI,tol) ...
+            || ~compareMatrices([G;E],[pZ.G;pZ.E],tol)
         res_rand = false; break;
     end
     
     % center, dependent generators and exponent matrix
-    pZ = polyZonotope(c,G,[],expMat);
-    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices([G;expMat],[pZ.G;pZ.expMat],tol)
+    pZ = polyZonotope(c,G,[],E);
+    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices([G;E],[pZ.G;pZ.E],tol)
         res_rand = false; break;
     end
     
     % center, dependent generators, exponent matrix, and identifiers
-    pZ = polyZonotope(c,G,[],expMat,id);
-    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices([G;expMat],[pZ.G;pZ.expMat],tol) ...
+    pZ = polyZonotope(c,G,[],E,id);
+    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices([G;E],[pZ.G;pZ.E],tol) ...
             || any(abs(pZ.id - id) > tol)
         res_rand = false; break;
     end
     
     % center, independent generators, dependent generators, exponent matrix, and identifiers
-    pZ = polyZonotope(c,G,Grest,expMat,id);
-    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.Grest,Grest,tol) ...
-            || ~compareMatrices([G;expMat],[pZ.G;pZ.expMat],tol) ...
+    pZ = polyZonotope(c,G,GI,E,id);
+    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.GI,GI,tol) ...
+            || ~compareMatrices([G;E],[pZ.G;pZ.E],tol) ...
             || any(abs(pZ.id - id) > tol)
         res_rand = false; break;
     end
@@ -132,17 +129,17 @@ for i=1:nrOfTests
     G_Inf = G_plus1; G_Inf(randLogicals) = Inf;
     G_NaN = G_plus1; G_NaN(randLogicals) = NaN;
     % independent generators
-    Grest_plus1 = randn(n+1,nrIndepGens);
-    randLogicals = randn(size(Grest_plus1)) > 0;
-    Grest_Inf = Grest_plus1; Grest_Inf(randLogicals) = Inf;
-    Grest_NaN = Grest_plus1; Grest_NaN(randLogicals) = NaN;
+    GI_plus1 = randn(n+1,nrIndepGens);
+    randLogicals = randn(size(GI_plus1)) > 0;
+    GI_Inf = GI_plus1; GI_Inf(randLogicals) = Inf;
+    GI_NaN = GI_plus1; GI_NaN(randLogicals) = NaN;
     % exponent matrix
     counter = 0;
     while true
         counter = counter + 1;
-        expMat_plus1 = randi(7,nrDepFactors,nrDepGens+1) - 2;
-        expMat_plus1(expMat_plus1 < 0) = 0;
-        if size(unique(expMat_plus1','rows')',2) == size(expMat_plus1,2)
+        E_plus1 = randi(7,nrDepFactors,nrDepGens+1) - 2;
+        E_plus1(E_plus1 < 0) = 0;
+        if size(unique(E_plus1','rows')',2) == size(E_plus1,2)
             break;
         end
         if counter > 10
@@ -175,15 +172,15 @@ for i=1:nrOfTests
         res_rand = false; break;
     end
     try
-        pZ = polyZonotope([],G,Grest); % <- should throw error here
+        pZ = polyZonotope([],G,GI); % <- should throw error here
         res_rand = false; break;
     end
     try
-        pZ = polyZonotope([],G,Grest,expMat); % <- should throw error here
+        pZ = polyZonotope([],G,GI,E); % <- should throw error here
         res_rand = false; break;
     end
     try
-        pZ = polyZonotope([],G,Grest,expMat,id); % <- should throw error here
+        pZ = polyZonotope([],G,GI,E,id); % <- should throw error here
         res_rand = false; break;
     end
     
@@ -193,11 +190,11 @@ for i=1:nrOfTests
         res_rand = false; break;
     end
     try
-        pZ = polyZonotope(c_plus1,[],Grest); % <- should throw error here
+        pZ = polyZonotope(c_plus1,[],GI); % <- should throw error here
         res_rand = false; break;
     end
     try
-        pZ = polyZonotope(c_plus1,G,Grest); % <- should throw error here
+        pZ = polyZonotope(c_plus1,G,GI); % <- should throw error here
         res_rand = false; break;
     end
     try
@@ -205,11 +202,11 @@ for i=1:nrOfTests
         res_rand = false; break;
     end
     try
-        pZ = polyZonotope(c,[],Grest_plus1); % <- should throw error here
+        pZ = polyZonotope(c,[],GI_plus1); % <- should throw error here
         res_rand = false; break;
     end
     try
-        pZ = polyZonotope(c,G,Grest_plus1); % <- should throw error here
+        pZ = polyZonotope(c,G,GI_plus1); % <- should throw error here
         res_rand = false; break;
     end
     
@@ -225,41 +222,41 @@ for i=1:nrOfTests
     
     % independent generator matrix has Inf/NaN entries
     try
-        pZ = polyZonotope(c,[],Grest_Inf); % <- should throw error here
+        pZ = polyZonotope(c,[],GI_Inf); % <- should throw error here
         res_rand = false; break;
     end
     try
-        pZ = polyZonotope(c,[],Grest_NaN); % <- should throw error here
+        pZ = polyZonotope(c,[],GI_NaN); % <- should throw error here
         res_rand = false; break;
     end
     
     % exponent matrix and dependent generator matrix do not match
     try
-        pZ = polyZonotope(c,G,[],expMat_plus1); % <- should throw error here
+        pZ = polyZonotope(c,G,[],E_plus1); % <- should throw error here
         res_rand = false; break;
     end
     try
-        pZ = polyZonotope(c,G,[],expMat_plus1,id); % <- should throw error here
+        pZ = polyZonotope(c,G,[],E_plus1,id); % <- should throw error here
         res_rand = false; break;
     end
     try
-        pZ = polyZonotope(c,Gplus1,[],expMat); % <- should throw error here
+        pZ = polyZonotope(c,Gplus1,[],E); % <- should throw error here
         res_rand = false; break;
     end
     try
-        pZ = polyZonotope(c,Gplus1,[],expMat,id); % <- should throw error here
+        pZ = polyZonotope(c,Gplus1,[],E,id); % <- should throw error here
         res_rand = false; break;
     end
     
     % exponent matrix and identifier vector do not match
     try
-        pZ = polyZonotope(c,G,[],expMat,id_plus1); % <- should throw error here
+        pZ = polyZonotope(c,G,[],E,id_plus1); % <- should throw error here
         res_rand = false; break;
     end
     
     % too many input arguments
     try
-        pZ = polyZonotope(c,G,Grest,expMat,id,id); % <- should throw error here
+        pZ = polyZonotope(c,G,GI,E,id,id); % <- should throw error here
         res_rand = false; break;
     end 
 end
@@ -268,4 +265,4 @@ end
 % combine results
 res = res_empty && res_rand;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

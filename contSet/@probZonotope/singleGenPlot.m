@@ -2,7 +2,7 @@ function singleGenPlot(probZ,varargin)
 % singleGenPlot - Plots 2-dimensional projection of a probabilistic
 %    zonotope with a maximum of 5 generators
 %
-% Syntax:  
+% Syntax:
 %    singleGenPlot(probZ,dimensions)
 %
 % Inputs:
@@ -24,14 +24,14 @@ function singleGenPlot(probZ,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      03-August-2007
-% Last update:  29-February-2008
-%               02-September-2009
-%               04-September-2009
+% Authors:       Matthias Althoff
+% Written:       03-August-2007
+% Last update:   29-February-2008
+%                02-September-2009
+%                04-September-2009
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin <= 3
     % parse input arguments
@@ -121,4 +121,4 @@ else
     norm(probZ.g)*(l(2)-l(1))*sum(f)
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

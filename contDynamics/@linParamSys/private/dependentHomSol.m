@@ -2,7 +2,7 @@ function Rhom_tp = dependentHomSol(obj,Rinit,Uconst)
 % dependentHomSol - computes the homogeneous solution when the parameters
 %    of the system matrix and the input are dependent
 %
-% Syntax:  
+% Syntax:
 %    Rhom_tp = dependentHomSol(obj,Rinit,Uconst)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function Rhom_tp = dependentHomSol(obj,Rinit,Uconst)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      02-June-2011
-% Last update:  25-August-2011
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       02-June-2011
+% Last update:   25-August-2011
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain required variables
 Ac = obj.A.center;
@@ -35,14 +35,15 @@ Ag = obj.A.generator;
 c = center(Rinit);
 r = obj.stepSize;
 n = obj.dim;
-Umat = Uconst.Z;
+Uc = Uconst.c;
+UG = Uconst.G;
 params = obj.A.gens;%'obj.A.gens' does not work anymore once lin_error2dAB adds lagrange remainder to system matrix
 
 %SECOND ORDER DEPENDENT SOLUTION
 %zero parametric order
-R_c = c + Umat(:,1)*r;
+R_c = c + Uc*r;
 for i=1:2
-    R_c = R_c + Ac^i*r^i/factorial(i)*(c + Umat(:,1)*r/(i+1));
+    R_c = R_c + Ac^i*r^i/factorial(i)*(c + Uc*r/(i+1));
 end
 
 %first parametric order
@@ -51,16 +52,16 @@ M = eye(n)*r + Ac*r^2/2 + Ac^2*r^3/6;
 %loop
 for i=1:params
     R_g(:,i) = (Ag{i}*r + Ac*Ag{i}*r^2/2 + Ag{i}*Ac*r^2/2) * c + ...
-               (Ag{i}*r^2/2 + Ac*Ag{i}*r^3/6 + Ag{i}*Ac*r^3/6) * Umat(:,1) + ...
-               M * Umat(:,i+1);
+               (Ag{i}*r^2/2 + Ac*Ag{i}*r^3/6 + Ag{i}*Ac*r^3/6) * Uc + ...
+               M * UG(:,i);
 end
 
 %second parametric order
 %same index (i,i)
 for i=1:params
     Rtmp = Ag{i}^2*r^2/2*c + ...
-           Ag{i}*r^3/6*Umat(:,1) + ...
-           (Ac*Ag{i} + Ag{i}*Ac)*r^3/6*Umat(:,i+1);
+           Ag{i}*r^3/6*Uc + ...
+           (Ac*Ag{i} + Ag{i}*Ac)*r^3/6*UG(:,i);
     R_g(:,end+1) = 0.5*Rtmp;
     R_c = R_c + 0.5*Rtmp;
 end
@@ -70,8 +71,8 @@ if (params>=2)
     for i=1:length(ind(:,1))
         Atmp = Ag{ind(i,1)}*Ag{ind(i,2)} + Ag{ind(i,2)}*Ag{ind(i,1)};
         R_g(:,end+1) = Atmp*r^2/2*c + ...
-                       Atmp*r^3/6*Umat(:,1) + ...
-                       (Ac*Ag{ind(i,1)} + Ag{ind(i,1)}*Ac)*r^3/6*Umat(:,ind(i,2)+1);
+                       Atmp*r^3/6*Uc + ...
+                       (Ac*Ag{ind(i,1)} + Ag{ind(i,1)}*Ac)*r^3/6*UG(:,ind(i,2));
     end
 end
 %obatin zonotope
@@ -97,4 +98,4 @@ R_hom_state = obj.mappingMatrixSet.zono*Rinit_noCenter + obj.mappingMatrixSet.in
 %FINAL SOLUTION
 Rhom_tp = R_hom_state + R_lowOrder + R_rem;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function matZpower = mpower(matZ,exponent)
 % mpower - Overloaded '^' operator for the power of matrix zonotope 
 %
-% Syntax:  
+% Syntax:
 %    matZ = mpower(matZ,exponent)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function matZpower = mpower(matZ,exponent)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      18-June-2010 
-% Last update:  05-August-2010
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-June-2010 
+% Last update:   05-August-2010
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{matZ,'att','matZonotope'}, ...
@@ -48,4 +48,4 @@ else
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

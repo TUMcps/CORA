@@ -2,7 +2,7 @@ function res = test_partition_center_functions()
 % test_partition_center_functions - unit test for the functions 
 % intersectingCells and cellCenter
 %
-% Syntax:  
+% Syntax:
 %    res = test_partition_center_functions()
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = test_partition_center_functions()
 % Outputs:
 %    res - true/false 
 
-% Author:       Aaron Pereira, Matthias Althoff
-% Written:      02-August-2017
-% Last update:  02-August-2018 (MA)
-% Last revision:---
+% Authors:       Aaron Pereira, Matthias Althoff
+% Written:       02-August-2017
+% Last update:   02-August-2018 (MA)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 oneDimField=partition([0,10],5);
 threeDimField=partition([0,10; -3,3; 0,1],[5;10;3]);
@@ -45,4 +45,4 @@ res6 = norm(S4{2}-[6.0000 0.0500 0.4500]')<1e-15;
 
 res = res1&&res2&&res3&&res4&&res5&&res6;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

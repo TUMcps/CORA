@@ -1,7 +1,7 @@
 function res = testLong_ellipsoid_supportFunc
 % testLong_ellipsoid_supportFunc - unit test function of supportFunc
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_supportFunc
 %
 % Inputs:
@@ -16,12 +16,13 @@ function res = testLong_ellipsoid_supportFunc
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      18-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       18-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = true;
 nRuns = 2;
 bools = [false,true];
@@ -82,4 +83,4 @@ for i=10:5:15
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

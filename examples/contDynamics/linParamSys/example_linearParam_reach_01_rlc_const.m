@@ -2,7 +2,7 @@ function completed = example_linearParam_reach_01_rlc_const()
 % example_linearParam_reach_01_rlc_const - example of linear parametric
 %     reachability analysis with constant parameters, taken from [1]
 %
-% Syntax:  
+% Syntax:
 %    completed = example_linearParam_reach_01_rlc_const()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function completed = example_linearParam_reach_01_rlc_const()
 %        Reachability of Linear Dynamic Systems with Parametric 
 %        Uncertainties, pages 69-94. Springer, 2011.
 
-% Author:       Matthias Althoff
-% Written:      18-August-2016
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-August-2016
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % System Dynamics ---------------------------------------------------------
@@ -84,7 +84,7 @@ disp(['computation time of reachable set using interval matrices: ',num2str(tCom
 
 % Simulation --------------------------------------------------------------
 
-simOpt.points = 60;
+simOpt.points = 10;
 simRes = simulateRandom(sysIntMat, params, simOpt);
 
 
@@ -135,4 +135,4 @@ legend();
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

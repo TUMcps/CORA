@@ -20,12 +20,12 @@ function res = test_linearSys_reach_07_constInput(~)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      07-January-2019
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       07-January-2019
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -73,7 +73,9 @@ if plotting
 
 end
 
+% Numerical check ---------------------------------------------------------
+
 % check containment of simulation results in reachable set
 res = contains(R,simRes);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

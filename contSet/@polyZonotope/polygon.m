@@ -1,7 +1,7 @@
 function pgon = polygon(pZ,varargin)
 % polygon - creates a polygon enclosure of a 2-dimensional polyZonotope
 %
-% Syntax:  
+% Syntax:
 %    pgon = polygon(pZ)
 %    pgon = polygon(pZ,splits)
 %
@@ -24,12 +24,12 @@ function pgon = polygon(pZ,varargin)
 %
 % See also: plot
 
-% Author:       Niklas Kochdumper
-% Written:      08-April-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       08-April-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parse input arguments
     splits = setDefaultValues({8},varargin);
@@ -39,7 +39,7 @@ function pgon = polygon(pZ,varargin)
                     {splits,'att','numeric','nonnan'}});
     
     % quick return if pZ is empty
-    if isempty(pZ)
+    if representsa_(pZ,'emptySet',eps)
         pgon = polygon(); return
     end
 
@@ -128,6 +128,7 @@ function pgon = polygon(pZ,varargin)
     warning(warOrig);
 end
 
+
 % Auxiliary functions -----------------------------------------------------
 
 function pshape = aux_enlargePoint(x)
@@ -137,4 +138,4 @@ function pshape = aux_enlargePoint(x)
     pshape = polyshape(V);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

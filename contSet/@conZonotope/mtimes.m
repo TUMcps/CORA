@@ -2,7 +2,7 @@ function cZ = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix or
 %    an interval matrix with a constrained zonotope
 %
-% Syntax:  
+% Syntax:
 %    cZ = mtimes(factor1,factor2)
 %
 % Inputs:
@@ -28,12 +28,12 @@ function cZ = mtimes(factor1,factor2)
 %
 % See also: plus
 
-% Author:       Niklas Kochdumper
-% Written:      15-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       15-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % find the conZonotope object
 [cZ,factor2] = findClassArg(factor1,factor2,'conZonotope');
@@ -42,7 +42,8 @@ function cZ = mtimes(factor1,factor2)
 if ~isnumeric(factor2)
     throw(CORAerror('CORA:noops',cZ,factor2));
 else
-    cZ.Z = factor2*cZ.Z;
+    cZ.c = factor2*cZ.c;
+    cZ.G = factor2*cZ.G;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

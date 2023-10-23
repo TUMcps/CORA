@@ -2,7 +2,7 @@ function invSet = mergeInvariants(pHA,invList,transList,mergedLabels)
 % mergeInvariants - creates the full-dimensional invariant of the overall
 %    system from the invariants of the subcomponents
 %
-% Syntax:  
+% Syntax:
 %    invSet = mergeInvariants(pHA,invList,transList,mergedLabels)
 %
 % Inputs:
@@ -21,14 +21,14 @@ function invSet = mergeInvariants(pHA,invList,transList,mergedLabels)
 %
 % See also: none
 
-% Author:       Johann Schoepfer, Niklas Kochdumper, Mark Wetzlinger
-% Written:      08-June-2018  
-% Last update:  09-July-2018 (NK, use "projectHighDim" function)
-%               06-April-2023 (MW, integrate fullspace invariants)
-%               24-May-2023 (MW, intersect invariants with transitions)
-% Last revision:---
+% Authors:       Johann Schoepfer, Niklas Kochdumper, Mark Wetzlinger
+% Written:       08-June-2018  
+% Last update:   09-July-2018 (NK, use "projectHighDim" function)
+%                06-April-2023 (MW, integrate fullspace invariants)
+%                24-May-2023 (MW, intersect invariants with transitions)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % initialize resulting invariant set
 invSet = fullspace(pHA.dim);
@@ -40,7 +40,7 @@ for i=1:length(invList)
     % corresponding transition's synchronization label is active in the
     % composed location
     for j=1:length(transList{i})
-        if isa(transList{i}(j).guard,'mptPolytope') ...
+        if isa(transList{i}(j).guard,'polytope') ...
                 || isa(transList{i}(j).guard,'levelSet')...
                 && ismember(transList{i}(j).syncLabel,mergedLabels)
             % not-operation not implemented for some cases...
@@ -50,8 +50,8 @@ for i=1:length(invList)
         end
     end
 
-    % project set to high dimensional space of the overall automaton
-    temp = projectHighDim(invList{i},pHA.dim,pHA.bindsStates{i});
+    % lift set to high-dimensional space of the overall automaton
+    temp = lift_(invList{i},pHA.dim,pHA.bindsStates{i});
 
     % compute intersection with the invariants of the remaining
     % subcomponents
@@ -59,4 +59,4 @@ for i=1:length(invList)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

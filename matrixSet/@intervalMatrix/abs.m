@@ -1,7 +1,7 @@
 function M = abs(intMat)
 % abs - returns the absolute value bound of an interval matrix
 %
-% Syntax:  
+% Syntax:
 %    M = abs(intMat) 
 %
 % Inputs:
@@ -18,13 +18,13 @@ function M = abs(intMat)
 %
 % See also:
 
-% Author:       Matthias Althoff
-% Written:      21-July-2010
-% Last update:  26-August-2011
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-July-2010
+% Last update:   26-August-2011
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 M = supremum(abs(intMat.int));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

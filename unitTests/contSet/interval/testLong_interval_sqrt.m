@@ -1,7 +1,7 @@
 function res = testLong_interval_sqrt
 % testLong_interval_sqrt - unit test function of sqrt
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_interval_sqrt
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_interval_sqrt
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      29-August-2019
-% Last update:  08-August-2020 (add random tests)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       29-August-2019
+% Last update:   08-August-2020 (add random tests)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % random tests
 numberRandTests = 5000;
@@ -52,4 +52,4 @@ for i=1:numberRandTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

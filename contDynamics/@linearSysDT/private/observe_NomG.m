@@ -2,7 +2,7 @@ function [R,tcomp] = observe_NomG(obj,options)
 % observe_NomG - computes the guaranteed state estimation approach
 % from [1].
 %
-% Syntax:  
+% Syntax:
 %    [R,tcomp] = observe_NomG(obj,options)
 %
 % Inputs:
@@ -27,15 +27,15 @@ function [R,tcomp] = observe_NomG(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       05-Jan-2021
-% Last update:   25-Feb-2021
+% Authors:       Matthias Althoff
+% Written:       05-January-2021
+% Last update:   25-February-2021
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % obtain offline gains
+
 options.L = observe_gain_NomG(obj, options);
 
 % apply set-membership approach
@@ -43,4 +43,4 @@ tic
 R = observe_intersectionFree(obj, options);
 tcomp = toc;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

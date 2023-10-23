@@ -2,7 +2,7 @@ function probZ = abs(probZ)
 % abs - Returns a probabilistic zonotope with absolute values
 %    of the center and the interval generators
 %
-% Syntax:  
+% Syntax:
 %    probZ = abs(probZ)
 %
 % Inputs:
@@ -23,14 +23,14 @@ function probZ = abs(probZ)
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       30-September-2006 
 % Last update:   22-March-2007
 %                10-June-2020 (MW, update header)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 probZ.Z = abs(probZ.Z);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

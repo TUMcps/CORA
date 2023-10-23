@@ -1,7 +1,7 @@
 function S = minus(S,p)
 % minus - translation of a set by a vector
 %
-% Syntax:  
+% Syntax:
 %    S = minus(S,p)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function S = minus(S,p)
 %
 % See also: minkDiff
 
-% Author:       Mark Wetzlinger
-% Written:      02-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       02-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isnumeric(p)
     % subtrahend is numeric, call 'plus' with negated vector
@@ -40,4 +40,4 @@ else
         'If you require to compute the Minkowski difference, use ''minkDiff'' instead.'],classname)));
 end
 
-%------------ END OF CODE ------------
+% ------------------------------ END OF CODE ------------------------------

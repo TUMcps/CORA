@@ -4,7 +4,7 @@ function res = testMP_Krylov_iss_initReach(~)
 %    using the ISS model.
 %    This test requires the multiple precision toolbox.
 %
-% Syntax:  
+% Syntax:
 %    res = testMP_Krylov_iss_initReach(~)
 %
 % Inputs:
@@ -13,12 +13,12 @@ function res = testMP_Krylov_iss_initReach(~)
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      13-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       13-November-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "initReach_Krylov"
 path = CORAROOT;
@@ -133,4 +133,4 @@ delete(target3);
 rmpath(genpath(path));
 addpath(genpath(path));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

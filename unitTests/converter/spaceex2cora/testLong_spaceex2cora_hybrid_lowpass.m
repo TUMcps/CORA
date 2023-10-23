@@ -6,7 +6,7 @@ function res = testLong_spaceex2cora_hybrid_lowpass()
 %    are simulated and subsequently compared to one another
 %    the simulation results have to be within a given numerical precision
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_spaceex2cora_hybrid_lowpass
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = testLong_spaceex2cora_hybrid_lowpass()
 % Outputs:
 %    res - true/false 
 
-% Author:       Mark Wetzlinger
-% Written:      07-December-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       07-December-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% automaton #1: original file
 
@@ -92,4 +92,4 @@ res = true;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

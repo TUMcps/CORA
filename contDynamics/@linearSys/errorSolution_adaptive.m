@@ -2,7 +2,7 @@ function [Rerror,options] = errorSolution_adaptive(obj,options,Vdyn,Vstat)
 % errorSolution_adaptive - computes the solution due to the abstraction error
 %    the number of Taylor terms is chosen according to the set size decrease
 %
-% Syntax:  
+% Syntax:
 %    Rerror = errorSolution_adaptive(obj,options,Vdyn,Vstat)
 %
 % Inputs:
@@ -23,14 +23,14 @@ function [Rerror,options] = errorSolution_adaptive(obj,options,Vdyn,Vstat)
 %
 % See also: ---
 
-% Author:       Mark Wetzlinger
-% Written:      24-April-2020
-% Last update:  27-May-2020
-%               15-June-2020 (include Vstat)
-%               10-July-2020 (delete Vstat from convergence process)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       24-April-2020
+% Last update:   27-May-2020
+%                15-June-2020 (include Vstat)
+%                10-July-2020 (delete Vstat from convergence process)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check if static error given
 if nargin < 4 || isempty(Vstat)
@@ -116,4 +116,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

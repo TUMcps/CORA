@@ -1,7 +1,7 @@
 function res = test_interval_gridPoints
 % test_interval_gridPoints - unit test function of gridPoints
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_gridPoints
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_gridPoints
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      08-November-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       08-November-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % tolerance
 tol = 1e-12;
@@ -125,4 +125,4 @@ res_intmat(end+1) = iscell(vals) && all(size(vals{1}) == size(I));
 % combine results
 res = res_empty && all(res_int) && all(res_intmat);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

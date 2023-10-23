@@ -2,7 +2,7 @@ function [Rti,Rtp,Rti_y,options] = linReach_adaptive(obj,options,Rstart,Rstart_y
 % linReach_adaptive - computes the reachable set after linearization;
 %    automated tuning from [2] applied to algorithm from [1]
 %
-% Syntax:  
+% Syntax:
 %    [Rti,Rtp,options] = linReach_adaptive(obj,options,Rstart)
 %
 % Inputs:
@@ -29,12 +29,12 @@ function [Rti,Rtp,Rti_y,options] = linReach_adaptive(obj,options,Rstart,Rstart_y
 %
 % See also: ---
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       17-June-2021
 % Last update:   31-August-2021
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 error_adm_x = options.error_adm_x_horizon;
 error_adm_y = options.error_adm_y_horizon;
@@ -391,9 +391,7 @@ options.abscount(options.i,1) = abscount;
 end
 
 
-
-
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 % adaptation of tensorOrder: init step
 function options = aux_initStepTensorOrder(obj,options,Rstartset,R_y)
@@ -723,8 +721,8 @@ if isa(Rerr_h,'zonotope') && isa(Rerr_deltat,'zonotope')
     rerr1 = vecnorm(sum(abs(generators(Rerr_h)),2),2);
     rerrk = vecnorm(sum(abs(generators(Rerr_deltat)),2),2);
 else
-    rerr1 = vecnorm(sum(abs(Rerr_h.Grest),2),2);
-    rerrk = vecnorm(sum(abs(Rerr_deltat.Grest),2),2);
+    rerr1 = vecnorm(sum(abs(Rerr_h.GI),2),2);
+    rerrk = vecnorm(sum(abs(Rerr_deltat.GI),2),2);
 end
 
 % sanity check: rerr1 and rerrk are computed in the same time step,
@@ -930,4 +928,4 @@ options.minorder = min(options.orders);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

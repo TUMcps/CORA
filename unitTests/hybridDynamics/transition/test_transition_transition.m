@@ -17,12 +17,12 @@ function res = test_transition_transition
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      26-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       26-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = [];
 
@@ -100,4 +100,4 @@ try
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

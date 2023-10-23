@@ -1,7 +1,7 @@
 function res = testLong_capsule_volume
 % testLong_capsule_volume - unit test function of volume
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_capsule_volume
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_capsule_volume
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      28-August-2019
-% Last update:  12-March-2021 (MW, add random tests)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-August-2019
+% Last update:   12-March-2021 (MW, add random tests)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 nrOfTests = 1000;
@@ -51,4 +51,4 @@ for i=1:nrOfTests
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

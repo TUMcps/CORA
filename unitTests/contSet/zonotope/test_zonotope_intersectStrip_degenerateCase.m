@@ -4,7 +4,7 @@ function res = test_zonotope_intersectStrip_degenerateCase
 % In a previous version, the method 'bravo' in [1] produced a result of 
 % length 1e16.
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_intersectStrip_degenerateCase
 %
 % Inputs:
@@ -25,12 +25,12 @@ function res = test_zonotope_intersectStrip_degenerateCase
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      23-December-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       23-December-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %% Simple 2D example which can be easily visualized
@@ -57,4 +57,4 @@ box_encl = interval([-1;-1],[1;1]);
 % check enclosure
 res = contains(box_encl,box);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

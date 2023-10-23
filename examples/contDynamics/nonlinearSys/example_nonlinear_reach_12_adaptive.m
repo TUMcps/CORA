@@ -2,7 +2,7 @@ function res = example_nonlinear_reach_12_adaptive()
 % example_nonlinear_reach_12_adaptive - example for nonlinear reachability
 %    analysis using adaptive parameter tuning
 %
-% Syntax:  
+% Syntax:
 %    res = example_nonlinear_reach_12_adaptive
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = example_nonlinear_reach_12_adaptive()
 % Outputs:
 %    res - true/false
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       02-February-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % system dimension
 dim_x = 2;
@@ -127,4 +127,4 @@ axis([0,params.tFinal,1,4]);
 % completion successful
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

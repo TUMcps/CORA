@@ -1,7 +1,7 @@
 function res = test_reachSet_contains
 % test_reachSet_contains - unit test function for contains
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_contains()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_reachSet_contains
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % simple continuous-time linear system
 A = [0.1 1; -1 0.1];
@@ -87,4 +87,4 @@ simRes = simulateRandom(sys_dt,params,simOpt);
 tol = 1e-10;
 res = res & contains(R,simRes,'exact',tol);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function S = innerApprox(pZ,varargin)
 % innerApprox - returns an inner-approximation of a polynomial zonotope
 %    represented by a union of zonotopes
 %
-% Syntax:  
+% Syntax:
 %    S = innerApprox(pZ)
 %    S = innerApprox(pZ,tol)
 %
@@ -37,36 +37,36 @@ function S = innerApprox(pZ,varargin)
 %
 % See also: innerApproxImage
 
-% Author:       Niklas Kochdumper
-% Written:      21-December-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       21-December-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % compute inner-approximation of the dependent part using the 
     % algorithms in [1] and [2]
-    p = size(pZ.expMat,1);
-    f = @(x) funcPoly(x,pZ);
+    p = size(pZ.E,1);
+    f = @(x) aux_funcPoly(x,pZ);
     D = interval(-ones(p,1),ones(p,1));
     
     S = innerApproxImage(f,D,varargin{:});
     
     % add independent part
     for i = 1:length(S)
-        if isempty(pZ.Grest)
+        if isempty(pZ.GI)
             S{i} = zonotope(S{i}); 
         else
-            S{i} = zonotope(S{i}) + zonotope(zeros(dim(pZ),1),pZ.Grest); 
+            S{i} = zonotope(S{i}) + zonotope(zeros(dim(pZ),1),pZ.GI); 
         end
     end
 
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function val = funcPoly(x,pZ)
+function val = aux_funcPoly(x,pZ)
 % nonlinear function that defines the dependent part of polynomial zonotope
 
     % initialization
@@ -74,8 +74,8 @@ function val = funcPoly(x,pZ)
     
     % dependent generators
     for i = 1:size(pZ.G,2)
-        val = val + pZ.G(:,i) * prod(x.^pZ.expMat(:,i)); 
+        val = val + pZ.G(:,i) * prod(x.^pZ.E(:,i)); 
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function [x0,y0] = steadyState(obj, x0, y0, u0)
 % steadyState - returns a steady state of a DAE system based on a
 %    Newton-Raphson iteration if one exists
 %
-% Syntax:  
+% Syntax:
 %    [x0,y0] = steadyState(obj, x0, y0, u0)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function [x0,y0] = steadyState(obj, x0, y0, u0)
 % Example: 
 %    -
 
-% Author:       Matthias Althoff
-% Written:      08-June-2022
-% Last update:  23-November-2022 (MW, call derivatives for Jacobian)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       08-June-2022
+% Last update:   23-November-2022 (MW, call derivatives for Jacobian)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check if jacobian has been computed, otherwise call derivatives
 try
@@ -63,5 +63,4 @@ while ~converged
     y0 = y0 + delta_y;
 end
 
-%------------- END OF CODE --------------
-        
+% ------------------------------ END OF CODE ------------------------------

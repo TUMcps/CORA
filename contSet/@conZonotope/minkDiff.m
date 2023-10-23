@@ -1,8 +1,8 @@
 function cZ = minkDiff(cZ1,S,varargin)
-% minus - compute the Minkowski difference of two constrained zonotopes:
+% minkDiff - compute the Minkowski difference of two constrained zonotopes:
 %         cZ1 - cZ2 = cZ <-> cZ + cZ2 \subseteq cZ1
 %
-% Syntax:  
+% Syntax:
 %    cZ = minkDiff(cZ1,S)
 %    cZ = minkDiff(cZ1,S,type)
 %
@@ -39,12 +39,12 @@ function cZ = minkDiff(cZ1,S,varargin)
 %
 % See also: zonotope/minkDiff
 
-% Author:       Niklas Kochdumper
-% Written:      04-February-2021
-% Last update:  09-November-2022 (MW, rename 'minkDiff')
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       04-February-2021
+% Last update:   09-November-2022 (MW, rename 'minkDiff')
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % different algorithms for different set representations
 if isnumeric(S)
@@ -65,7 +65,7 @@ elseif isa(S,'zonotope') || isa(S,'interval')
         cZ = and_(cZ + G(:,i),cZ + (-G(:,i)),'exact');
     end
     
-elseif isa(S,'conZonotope') || isa(S,'mptPolytope') || ...
+elseif isa(S,'conZonotope') || isa(S,'polytope') || ...
        isa(S,'zonoBundle')
    
     % parse input arguments
@@ -103,4 +103,4 @@ else
     cZ = minkDiff(cZ1,zonotope(S));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function display(ls)
 % display - Displays the properties of a levelSet object on the command
 %    window
 %
-% Syntax:  
+% Syntax:
 %    display(ls)
 %
 % Inputs:
@@ -23,14 +23,13 @@ function display(ls)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      09-June-2020
-% Last update:  03-March-2022 (MP, add functionality for levelSets with
-%                                 multiple equations)
-%               15-May-2023 (MW, fix printed string)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       09-June-2020
+% Last update:   03-March-2022 (MP, levelSets with multiple equations)
+%                15-May-2023 (MW, fix printed string)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isemptyobject(ls)
     
@@ -71,4 +70,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

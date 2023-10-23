@@ -2,7 +2,7 @@ function [Rin,Rout] = reachInnerScaling(sys,params,options)
 % reachInnerScaling - compute an inner-approximation of the reachable set
 %                     with the algorithm in [1]
 %
-% Syntax:  
+% Syntax:
 %    [Rin,Rout] = reachInnerScaling(sys,params,options)
 %
 % Inputs:
@@ -29,12 +29,12 @@ function [Rin,Rout] = reachInnerScaling(sys,params,options)
 %
 % See also: reachInner
 
-% Author:       Niklas Kochdumper
-% Written:      14-August-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       14-August-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % options preprocessing
     input = false;
@@ -47,13 +47,13 @@ function [Rin,Rout] = reachInnerScaling(sys,params,options)
     options = validateOptions(sys,mfilename,params,options);
 
     % compute outer-approximation of the reachable set
-    [params,options_outer] = getOuterReachOptions(options);
+    [params,options_outer] = aux_getOuterReachOptions(options);
     
     if ~input
         Rout = reach(sys,params,options_outer);
         Rout_ = Rout;
     else
-        Rout_ = reachWithInputs(sys,params,options_outer,options);
+        Rout_ = aux_reachWithInputs(sys,params,options_outer,options);
         if nargout > 1
             Rout = reach(sys,params,options_outer);
         end
@@ -70,16 +70,16 @@ function [Rin,Rout] = reachInnerScaling(sys,params,options)
         R = Rout_.timePoint.set{i};
         
         % remove additional dependent generators
-        R = removeAddGens(R);
+        R = aux_removeAddGens(R);
         
         % order reduction for the dependent part
-        R = reduceOrderDep(R,options.orderInner);
+        R = aux_reduceOrderDep(R,options.orderInner);
         
         
         % Step 2: Boundary Enclosure --------------------------------------
         
         % loop over the 2n faces of the initial set
-        n = size(R.expMat,1);
+        n = size(R.E,1);
         B = cell(2*n,1);
         
         for j = 1:n
@@ -90,8 +90,8 @@ function [Rin,Rout] = reachInnerScaling(sys,params,options)
             B2 = getSubset(R,j,-1);
             
             % reduce the order of the independent part of the poly zonotope
-            B{2*(j-1)+1} = reduceOrderInd(B1);
-            B{2*(j-1)+2} = reduceOrderInd(B2);
+            B{2*(j-1)+1} = aux_reduceOrderInd(B1);
+            B{2*(j-1)+2} = aux_reduceOrderInd(B2);
         end
         
         
@@ -118,15 +118,15 @@ function [Rin,Rout] = reachInnerScaling(sys,params,options)
             for j = 1:length(B)
 
                 % constraint for intersection of boundary and reach. set
-                conFun = constraintIntersection(R,B{j});
+                conFun = aux_constraintIntersection(R,B{j});
 
                 % compute an initial solution using nonlinear programming
                 k = ceil(j/2);
 
                 if mod(j,2) == 0
-                    Itemp = initialSolution(conFun,I,B{j},factor,k,-1);
+                    Itemp = aux_initialSolution(conFun,I,B{j},factor,k,-1);
                 else
-                    Itemp = initialSolution(conFun,I,B{j},factor,k,1);
+                    Itemp = aux_initialSolution(conFun,I,B{j},factor,k,1);
                 end
 
                 % prove that the solution is valid by contracting the the
@@ -149,9 +149,9 @@ function [Rin,Rout] = reachInnerScaling(sys,params,options)
         
         % construct the inner-approximation of the polynomial zonotope by
         % inserting the contractor factor domain
-        if ~isempty(I)
+        if ~representsa_(I,'emptySet',eps)
             R = getSubset(R,1:n,I);
-            R = polyZonotope(R.c,R.G,[],R.expMat);
+            R = polyZonotope(R.c,R.G,[],R.E);
         else
             R = [];
         end
@@ -172,12 +172,12 @@ function [Rin,Rout] = reachInnerScaling(sys,params,options)
 end
     
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function I0 = initialSolution(conFun,I,B,factor,ind,type)
+function I0 = aux_initialSolution(conFun,I,B,factor,ind,type)
     
     % construct domain
-    p = size(B.expMat,1) + size(B.Grest,2);
+    p = size(B.E,1) + size(B.GI,2);
     I0 = cartProd(I,interval(-ones(p,1),ones(p,1)));
     
     % compute an initial solution by optimization
@@ -211,47 +211,47 @@ function I0 = initialSolution(conFun,I,B,factor,ind,type)
     end
 end
 
-function conFun = constraintIntersection(pZ1,pZ2)
+function conFun = aux_constraintIntersection(pZ1,pZ2)
 % construct generator and exponent matrix for the polynomial constraints
-% G * alpha^expMat + b = 0 resulting from the intersection of pZ1 and pZ2
+% G * alpha^E + b = 0 resulting from the intersection of pZ1 and pZ2
 
     b = pZ1.c - pZ2.c;
-    G = [pZ1.G, -pZ2.G, -pZ2.Grest];
+    G = [pZ1.G, -pZ2.G, -pZ2.GI];
     
-    p_ = size(pZ2.Grest,2);
-    expMat = blkdiag(pZ1.expMat, pZ2.expMat, eye(p_));
+    p_ = size(pZ2.GI,2);
+    E = blkdiag(pZ1.E, pZ2.E, eye(p_));
     
-    conFun = @(x) constrainedFunction(x,b,G,expMat);
+    conFun = @(x) aux_constrainedFunction(x,b,G,E);
 end
 
-function val = constrainedFunction(x,b,G,expMat)
-% constraint function for the constraint G * x^expMat + b = 0
+function val = aux_constrainedFunction(x,b,G,E)
+% constraint function for the constraint G * x^E + b = 0
 
     val = b;
 
     for i = 1:size(G,2)
         temp = 1;
         for j = 1:length(x)
-           temp = temp.* x(j)^expMat(j,i); 
+           temp = temp.* x(j)^E(j,i); 
         end
         val = val + G(:,i).*temp;
     end    
 end
 
-function pZ = reduceOrderDep(pZ,order)
+function pZ = aux_reduceOrderDep(pZ,order)
 % reduce the order of the dependent part of the polynomial zonotope
 
     n = length(pZ.c);
     m = size(pZ.G,2);
     
     if m > n * order
-        temp = polyZonotope(pZ.c,pZ.G,[],pZ.expMat);
+        temp = polyZonotope(pZ.c,pZ.G,[],pZ.E);
         temp = reduce(temp,'girard',order+1);
-        pZ = polyZonotope(temp.c,temp.G,[temp.Grest,pZ.Grest],temp.expMat);
+        pZ = polyZonotope(temp.c,temp.G,[temp.GI,pZ.GI],temp.E);
     end
 end
 
-function pZ = reduceOrderInd(pZ)
+function pZ = aux_reduceOrderInd(pZ)
 % reduce the order of the independent part of the polynomial zonotope to 1
 
     % get orientation by applying Principal Component Analysis to the
@@ -259,37 +259,37 @@ function pZ = reduceOrderInd(pZ)
     [B,~,~] = svd([-pZ.G,pZ.G]);
     
     % compute interval enclosure in the transformed space
-    zono = zonotope([zeros(length(pZ.c),1),pZ.Grest]);
+    zono = zonotope([zeros(length(pZ.c),1),pZ.GI]);
     zono = B * zonotope(interval(B'*zono));
 
     % construct the resulting polynomial zonotope
-    pZ = polyZonotope(pZ.c,pZ.G,generators(zono),pZ.expMat);
+    pZ = polyZonotope(pZ.c,pZ.G,generators(zono),pZ.E);
 end
 
-function pZ = removeAddGens(pZ)
+function pZ = aux_removeAddGens(pZ)
 % remove additional dependent generators for factors that do not belong to
 % the initial set but were introduced by restructuring
 
     % check if there are additional factors that need to be removed
     n = length(pZ.c);
     
-    if size(pZ.expMat,1) > n
+    if size(pZ.E,1) > n
         
        % determine indices of the generators that belong to add. factors
-       ind = find(sum(pZ.expMat(n+1:end,:),1) >= 1);
+       ind = find(sum(pZ.E(n+1:end,:),1) >= 1);
        ind_ = setdiff(1:size(pZ.G,2),ind);
        
        % enclose generators belonging to add. genertors with a zonotope
-       temp = polyZonotope(zeros(n,1),pZ.G(:,ind),[],pZ.expMat(:,ind));
+       temp = polyZonotope(zeros(n,1), pZ.G(:,ind), [], pZ.E(:,ind));
        zono = zonotope(temp);
        
        % construct the resulting polynomial zonotope
-       pZ = polyZonotope(pZ.c+center(zono),pZ.G(:,ind_),[pZ.Grest, ...
-                         generators(zono)],pZ.expMat(1:n,ind_)); 
+       pZ = polyZonotope(pZ.c+zono.c, pZ.G(:,ind_), ...
+           [pZ.GI,zono.G], pZ.E(1:n,ind_)); 
     end
 end
 
-function [params,options] = getOuterReachOptions(options)
+function [params,options] = aux_getOuterReachOptions(options)
 % extract params and options for outer-reachability analysis
 
     % copy relevant fields to the params struct
@@ -319,7 +319,7 @@ function [params,options] = getOuterReachOptions(options)
     options.polyZono = rmfield(options.polyZono,'volApproxMethod');
 end
 
-function Rout = reachWithInputs(sys,params,options_outer,options)
+function Rout = aux_reachWithInputs(sys,params,options_outer,options)
 % compute outer-approximation of the reachable set with piecewise constant
 % inputs to obtain a more accurate inner-approximation
 
@@ -393,4 +393,4 @@ function Rout = reachWithInputs(sys,params,options_outer,options)
     Rout = reachSet(timePoint,timeInterval);
 end
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

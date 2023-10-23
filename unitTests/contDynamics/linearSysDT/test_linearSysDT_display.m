@@ -1,7 +1,7 @@
 function res = test_linearSysDT_display
 % test_linearSysDT_display - unit test for display functions
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSysDT_display
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_linearSysDT_display
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-November-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-November-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % stable system matrix: n x n
 A = [-0.3780    0.2839    0.5403   -0.2962
@@ -42,7 +42,7 @@ c = 0.05 * [-4; 2; 3; 1];
 C = [1 1 0 0;
      0 -0.5 0.5 0];
 
-% throughput matrix: q x m
+% feedthrough matrix: q x m
 D = [0 0 1;
      0 0 0];
 
@@ -66,4 +66,4 @@ sysDT_ABcCDk = linearSysDT(sys_ABcCDk,dt)
 % code executed correctly
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

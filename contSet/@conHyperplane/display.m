@@ -2,7 +2,7 @@ function display(hyp)
 % display - Displays the properties of a conHyperplane object (halfspace,
 %    constraint system) on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(hyp)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function display(hyp)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      10-August-2011
-% Last update:  02-May-2020 (MW, added empty case)
-%               18-June-2022 (MW, empty constraint system)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       10-August-2011
+% Last update:   02-May-2020 (MW, added empty case)
+%                18-June-2022 (MW, empty constraint system)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isemptyobject(hyp)
     
@@ -50,7 +50,7 @@ else
     disp(hyp.h.d);
 
     %display constraint system
-    if isHyperplane(hyp)
+    if representsa_(hyp,'hyperplane',eps)
         disp('constraint system (Cx <= d): (none)');
     else
         disp('constraint system (Cx <= d):');
@@ -63,4 +63,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

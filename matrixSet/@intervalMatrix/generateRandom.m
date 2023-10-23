@@ -1,7 +1,7 @@
 function intMat = generateRandom(varargin)
 % generateRandom - generates a random interval matrix
 %
-% Syntax:  
+% Syntax:
 %    intMat = intervalMatrix.generateRandom()
 %    intMat = intervalMatrix.generateRandom('Dimension',[n,m])
 %    intMat = intervalMatrix.generateRandom('Dimension',[n,m],'Center',c)
@@ -28,12 +28,12 @@ function intMat = generateRandom(varargin)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -79,4 +79,4 @@ end
 % instantiate interval matrix
 intMat = intervalMatrix(c,r);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

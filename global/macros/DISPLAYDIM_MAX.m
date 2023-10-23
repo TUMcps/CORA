@@ -3,7 +3,7 @@ function val = DISPLAYDIM_MAX()
 %    displayed on the command window; the purpose of this function is to
 %    standardize all display functions
 %
-% Syntax:  
+% Syntax:
 %    val = DISPLAYDIM_MAX
 %
 % Inputs:
@@ -18,13 +18,13 @@ function val = DISPLAYDIM_MAX()
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 val = 10;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

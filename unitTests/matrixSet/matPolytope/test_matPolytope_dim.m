@@ -1,7 +1,7 @@
 function res = test_matPolytope_dim
 % test_matPolytope_dim - unit test function for dimension read
 % 
-% Syntax:  
+% Syntax:
 %    res = test_matPolytope_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_matPolytope_dim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty matrix zonotope
 matP = matPolytope();
@@ -50,4 +50,4 @@ res(end+1,1) = dim(matP,2) == 2;
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

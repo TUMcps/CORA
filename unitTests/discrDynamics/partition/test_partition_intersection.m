@@ -3,7 +3,7 @@ function res = test_partition_intersection()
 % finding segments in a partition intersected by a continuous set, i.e. the 
 % function intersectingCells
 %
-% Syntax:  
+% Syntax:
 %    res = test_partition_intersection()
 %
 % Inputs:
@@ -12,16 +12,16 @@ function res = test_partition_intersection()
 % Outputs:
 %    res - true/false
 
-% Author:       Aaron Pereira, Matthias Althoff
-% Written:      02-August-2017
-% Last update:  02-August-2018 (MA)
-% Last revision:---
+% Authors:       Aaron Pereira, Matthias Althoff
+% Written:       02-August-2017
+% Last update:   02-August-2018 (MA)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 threeDimField_div=partition({[0 2 3 4 8 10],[-3 -1.5 -1 -0.9 0 0.1 0.2 0.3 1 2 3],[0,0.3,0.6,1]});
 
-P = mptPolytope([2 0.2 0.3;4 2.2 0.6;1 1.2 0.5; 1 1.2 0.1]);
+P = polytope([2 0.2 0.3;4 2.2 0.6;1 1.2 0.5; 1 1.2 0.1]');
 I = interval([1;0.2;0.1],[4;2.2;0.6]);
 Z = zonotope([2.5 1.2 0.35;1.5 0 0;0 1 0;0 0 0.25]');
 
@@ -37,7 +37,7 @@ end
 
 % when slightly outside!
 
-P = mptPolytope([2 0.2 0.3;4 2.2 0.6;1 1.2 0.5; 1 1.2 -0.1]);
+P = polytope([2 0.2 0.3;4 2.2 0.6;1 1.2 0.5; 1 1.2 -0.1]');
 I = interval([1;0.2;-0.1],[4;2.2;0.6]);
 Z = zonotope([2.5 1.2 0.25;1.5 0 0;0 1 0;0 0 0.35]');
 
@@ -66,4 +66,4 @@ end
 
 res = res1&&res2&&res3;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function sys = mergeFlows(pHA,flowList,locID)
 % mergeFlows - merges the continuous dynamics of several subcomponents to 
 %    obtain the continous dynamics for the overall system
 %
-% Syntax:  
+% Syntax:
 %    sys = mergeFlows(pHA,flowList,locID)
 %
 % Inputs:
@@ -19,13 +19,13 @@ function sys = mergeFlows(pHA,flowList,locID)
 %
 % See also: none
 
-% Author:       Johann Schoepfer, Niklas Kochdumper, Mark Wetzlinger
-% Written:      08-June-2018  
-% Last update:  09-July-2018 (NK, output instead of state for input binds)
-%               22-January-2023 (MW, more general output equations)
+% Authors:       Johann Schoepfer, Niklas Kochdumper, Mark Wetzlinger
+% Written:       08-June-2018  
+% Last update:   09-July-2018 (NK, output instead of state for input binds)
+%                22-January-2023 (MW, more general output equations)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % number of components
     numComps = length(flowList);
@@ -57,7 +57,7 @@ function sys = mergeFlows(pHA,flowList,locID)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function res = aux_mergeFlowsLinearSys(pHA,flowList)
 
@@ -147,7 +147,7 @@ function res = aux_mergeFlowsLinearSys(pHA,flowList)
                         + B(:,j)*feedFlow.k(outputFeedComp);
                 end
                 
-                % part with throughput matrix D: B1*D2*u2
+                % part with feedthrough matrix D: B1*D2*u2
                 if ~isempty(feedFlow.D)
                     % line in D matrix of feeding component corresponding
                     % to the bound output
@@ -161,13 +161,13 @@ function res = aux_mergeFlowsLinearSys(pHA,flowList)
                     % check D matrix regarding potential infinite loops
                     if any(d(ind2))
                         throw(CORAerror('CORA:specialError',...
-                        ['It is not allowed for the throughput matrix D '...
+                        ['It is not allowed for the feedthrough matrix D '...
                         'to point to inputs that are defined by the '...
                         'output of other subsystems, since this would '...
                         'otherwise lead to infinite loops!']));
                     end
                 
-                    % add to the merged B matrix from the throughput
+                    % add to the merged B matrix from the feedthrough
                     % (binds are resolved to the global input which is fed
                     % to the feeding component)
                     if any(ind1)
@@ -295,4 +295,4 @@ function res = aux_mergeFlowsNonlinearSys(pHA,flowList,locID)
     res = nonlinearSys(name,funHan,pHA.dim,pHA.nrOfInputs);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

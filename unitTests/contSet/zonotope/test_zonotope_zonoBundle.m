@@ -1,7 +1,7 @@
 function res = test_zonotope_zonoBundle
 % test_zonotope_zonoBundle - unit test function of conversion to zonoBundle
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_zonoBundle
 %
 % Inputs:
@@ -16,17 +16,17 @@ function res = test_zonotope_zonoBundle
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty set
 Z = zonotope();
 zB = zonoBundle(Z);
-res = isempty(zB);
+res = representsa(zB,'emptySet');
 
 % instantiate zonotope
 c = [1;1;-1];
@@ -43,4 +43,4 @@ res(end+1,1) = isequal(zB.Z{1},Z);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

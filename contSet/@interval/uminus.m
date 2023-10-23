@@ -1,7 +1,7 @@
 function I = uminus(I)
 % uminus - Overloaded '-' operator for single operand
 %
-% Syntax:  
+% Syntax:
 %    I = uminus(I)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function I = uminus(I)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      25-June-2015
-% Last update:  21-May-2022 (MW, simpler computation)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-June-2015
+% Last update:   21-May-2022 (MW, simpler computation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % store value
 temp = I.inf;
@@ -34,4 +34,4 @@ temp = I.inf;
 I.inf = -I.sup;
 I.sup = -temp;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

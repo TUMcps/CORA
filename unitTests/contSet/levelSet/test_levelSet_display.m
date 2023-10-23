@@ -1,7 +1,7 @@
 function res = test_levelSet_display
 % test_levelSet_display - unit test function of display
 %
-% Syntax:  
+% Syntax:
 %    res = test_levelSet_display
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_levelSet_display
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -51,4 +51,4 @@ ls = levelSet([eq1;eq2;eq3;eq4],[a;b;x;y],{'<';'<=';'<';'<='})
 eq = a + y;
 ls = levelSet(eq,[a;b;y],'==')
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function [Z,varargout] = reduce(Z,method,varargin)
 % reduce - reduces the order of a zonotope, the resulting zonotope is an
 %    over-approximation of the original zonotope
 %
-% Syntax:  
+% Syntax:
 %    Z = reduce(Z,method,order)
 %
 % Inputs:
@@ -63,13 +63,13 @@ function [Z,varargout] = reduce(Z,method,varargin)
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       24-January-2007 
 % Last update:   15-September-2007
 %                27-June-2018
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %2 inputs
 if nargin==2
@@ -170,4 +170,4 @@ else
         "'methA', 'methB', 'methC', 'pca', 'scott', 'redistribute', or 'valero'"));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

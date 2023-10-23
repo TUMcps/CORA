@@ -2,7 +2,7 @@ function intMat = intervalMatrix(matP)
 % intervalMatrix - computes an enclosing interval matrix of a matrix
 %    polytope
 %
-% Syntax:  
+% Syntax:
 %    intMat = intervalMatrix(matP)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function intMat = intervalMatrix(matP)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      21-June-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-June-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %initialize minimum and maximum values
 minMat=Inf(matP.dim);
@@ -48,4 +48,4 @@ C=0.5*(minMat+maxMat);
 D=0.5*(maxMat-minMat);
 intMat=intervalMatrix(C,D);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

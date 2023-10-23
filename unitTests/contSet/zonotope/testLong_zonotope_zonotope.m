@@ -1,7 +1,7 @@
 function res = testLong_zonotope_zonotope
 % testLong_zonotope_zonotope - unit test function of zonotope (constructor)
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_zonotope
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_zonotope_zonotope
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      20-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       20-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -106,4 +106,4 @@ for i=1:nrOfTests
     end 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

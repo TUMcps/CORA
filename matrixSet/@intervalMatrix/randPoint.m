@@ -1,7 +1,7 @@
 function M = randPoint(intMat,varargin)
 % randPoint - samples a random matrix from an interval matrix
 %
-% Syntax:  
+% Syntax:
 %    M = randPoint(intMat)
 %    M = randPoint(intMat,N)
 %    M = randPoint(intMat,N,type)
@@ -24,12 +24,12 @@ function M = randPoint(intMat,varargin)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger, Matthias Althoff
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger, Matthias Althoff
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default values
 [N,type] = setDefaultValues({1,'standard'},varargin);
@@ -55,4 +55,4 @@ for i=1:N
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

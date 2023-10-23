@@ -33,17 +33,17 @@ function res = contains_(hs,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/contains_
+% See also: contSet/contains, zonotope/contains_
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      14-June-2016
-% Last update:  27-July-2016
-%               02-September-2019
-%               19-November-2019 (NK, extend to all set representations)
-%               25-November-2022 (MW, rename 'contains')
-% Last revision:27-March-2023 (MW, rename contains_)
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       14-June-2016
+% Last update:   27-July-2016
+%                02-September-2019
+%                19-November-2019 (NK, extend to all set representations)
+%                25-November-2022 (MW, rename 'contains')
+% Last revision: 27-March-2023 (MW, rename contains_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % point in halfspace containment
 if isnumeric(S)
@@ -56,4 +56,4 @@ else
     res = val < hs.d | withinTol(val,hs.d);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

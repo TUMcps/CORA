@@ -20,12 +20,12 @@ function [docNode,component] = headline_cora2spaceex()
 %
 % See also: none
 
-% Author:        Farah Atour
+% Authors:       Farah Atour
 % Written:       24-February-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %Create the document node and root element (spaceex)
 docNode = com.mathworks.xml.XMLUtils.createDocument('sspaceex');
@@ -43,4 +43,4 @@ spaceex.appendChild(component);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

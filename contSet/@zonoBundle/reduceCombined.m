@@ -2,7 +2,7 @@ function zB = reduceCombined(zB,option,varargin)
 % reduceCombined - Reduces the order of a zonotope bundle by not reducing
 %    each zonotope separately, but in a combined fashion
 %
-% Syntax:  
+% Syntax:
 %    zB = reduceCombined(zB,option,varargin)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function zB = reduceCombined(zB,option,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      21-February-2011
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-February-2011
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 [order,filterLength] = setDefaultValues({1,[]},varargin);
@@ -44,4 +44,4 @@ else
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

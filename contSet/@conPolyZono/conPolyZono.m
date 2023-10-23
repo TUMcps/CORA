@@ -1,23 +1,23 @@
 classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) conPolyZono < contSet
 % conPolyZono - class definition for constrained polynomial zonotopes 
 %
-% Syntax:  
+% Syntax:
 %    obj = conPolyZono(c)
-%    obj = conPolyZono(c,G,expMat)
-%    obj = conPolyZono(c,G,expMat,Grest)
-%    obj = conPolyZono(c,G,expMat,Grest,id)
-%    obj = conPolyZono(c,G,expMat,A,b,expMat_)
-%    obj = conPolyZono(c,G,expMat,A,b,expMat_,Grest)
-%    obj = conPolyZono(c,G,expMat,A,b,expMat_,Grest,id)
+%    obj = conPolyZono(c,G,E)
+%    obj = conPolyZono(c,G,E,GI)
+%    obj = conPolyZono(c,G,E,GI,id)
+%    obj = conPolyZono(c,G,E,A,b,EC)
+%    obj = conPolyZono(c,G,E,A,b,EC,GI)
+%    obj = conPolyZono(c,G,E,A,b,EC,GI,id)
 %
 % Inputs:
 %    c - constant offset (dimension: [n,1])
 %    G - generator matrix (dimension: [n,h])
-%    expMat - exponent matrix (dimension: [p,h])
+%    E - exponent matrix (dimension: [p,h])
 %    A - constraint generator matrix (dimension: [m,q])
 %    b - constraint offset (dimension: [m,1])
-%    expMat_ - constraint exponent matrix (dimension: [p,q])
-%    Grest - generator matrix of independent generators (dimension: [n,v])
+%    EC - constraint exponent matrix (dimension: [p,q])
+%    GI - generator matrix of independent generators (dimension: [n,v])
 %    id - vector containing the integer identifiers for all factors
 %         (dimension: [p,1])
 %
@@ -27,11 +27,11 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) conPolyZono < contS
 % Example: 
 %    c = [0;0];
 %    G = [1 0 1 -1; 0 1 1 1];
-%    expMat = [1 0 1 2; 0 1 1 0; 0 0 1 1];
+%    E = [1 0 1 2; 0 1 1 0; 0 0 1 1];
 %    A = [1 -0.5 0.5];
 %    b = 0.5;
-%    expMat_ = [0 1 2; 1 0 0; 0 1 0];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    EC = [0 1 2; 1 0 0; 0 1 0];
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 %    plot(cPZ,[1,2],'FaceColor','r','Splits',8);
 %
 % Other m-files required: none
@@ -40,22 +40,28 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) conPolyZono < contS
 %
 % See also: polyZonotope, zonotope, conZonotope
 
-% Author:       Niklas Kochdumper
-% Written:      06-November-2018 
-% Last update:  14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Niklas Kochdumper, Tobias Ladner
+% Written:       06-November-2018 
+% Last update:   14-December-2022 (TL, property check in inputArgsCheck)
+%                13-September-2023 (TL, replaced Grest/expMat/_ properties with GI/E/EC)
+% Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = protected, GetAccess = public)
     c;        % center
     G;        % generator matrix
-    expMat;   % exponent matrix
+    E;        % exponent matrix
     A;        % constraint generators
     b;        % constraint offset
-    expMat_;  % constraint exponent
-    Grest;    % independent generators
+    EC;       % constraint exponent matrix
+    GI;       % independent generators
     id;       % identifier vector
+
+    % legacy
+    expMat;
+    expMat_;
+    Grest;
 end
    
 methods
@@ -68,14 +74,14 @@ methods
         end
 
         % 2. parse input arguments: varargin -> vars
-        [c,G,expMat,A,b,expMat_,Grest,id] = aux_parseInputArgs(varargin{:});
+        [c,G,E,A,b,EC,GI,id] = aux_parseInputArgs(varargin{:});
 
         % 3. check correctness of input arguments
-        aux_checkInputArgs(c,G,expMat,A,b,expMat_,Grest,id,nargin);
+        aux_checkInputArgs(c,G,E,A,b,EC,GI,id,nargin);
 
         % 4. assign properties
-        obj.c = c; obj.G = G; obj.expMat = expMat; obj.A = A; obj.b = b;
-        obj.expMat_ = expMat_; obj.Grest = Grest; obj.id = id;
+        obj.c = c; obj.G = G; obj.E = E; obj.A = A; obj.b = b;
+        obj.EC = EC; obj.GI = GI; obj.id = id;
     end
 end
 
@@ -83,12 +89,66 @@ methods (Static = true)
     cPZ = generateRandom(varargin) % generate random conPolyZono object
 end
 
+
+% getter & setter ---------------------------------------------------------
+
+methods
+    % getter & setter for legacy Grest property
+    function Grest = get.Grest(obj)
+        warning(['CORA: The property conPolyZono.Grest is deprecated (since CORA 2024) and will be removed in a future release. ' ...
+            'Please use conPolyZono.GI instead. ' ...
+            'This change was made to be consistent with the notation in papers.']);
+
+        Grest = obj.GI;
+    end
+
+    function obj = set.Grest(obj, Grest)
+        warning(['CORA: The property conPolyZono.Grest is deprecated (since CORA 2024) and will be removed in a future release. ' ...
+            'Please use conPolyZono.GI instead. ' ...
+            'This change was made to be consistent with the notation in papers.']);
+
+        obj.GI = Grest;
+    end
+
+    % getter & setter for legacy expMat property
+    function expMat = get.expMat(obj)
+        warning(['CORA: The property conPolyZono.expMat is deprecated (since CORA 2024) and will be removed in a future release. ' ...
+            'Please use conPolyZono.E instead. ' ...
+            'This change was made to be consistent with the notation in papers.']);
+
+        expMat = obj.E;
+    end
+
+    function obj = set.expMat(obj, expMat)
+        warning(['CORA: The property conPolyZono.expMat is deprecated (since CORA 2024) and will be removed in a future release. ' ...
+            'Please use conPolyZono.E instead. ' ...
+            'This change was made to be consistent with the notation in papers.']);
+
+        obj.E = expMat;
+    end
+
+    % getter & setter for legacy expMat_ property
+    function expMat_ = get.expMat_(obj)
+        warning(['CORA: The property conPolyZono.expMat_ is deprecated (since CORA 2024) and will be removed in a future release. ' ...
+            'Please use conPolyZono.EC instead.']);
+
+        expMat_ = obj.EC;
+    end
+
+    function obj = set.expMat_(obj, expMat_)
+        warning(['CORA: The property conPolyZono.expMat_ is deprecated (since CORA 2024) and will be removed in a future release. ' ...
+            'Please use conPolyZono.EC instead.']);
+
+        obj.EC = expMat_;
+    end
+end
+
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function [c,G,expMat,A,b,expMat_,Grest,id] = aux_parseInputArgs(varargin)
+function [c,G,E,A,b,EC,GI,id] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
 
     % check number of input arguments
@@ -98,26 +158,26 @@ function [c,G,expMat,A,b,expMat_,Grest,id] = aux_parseInputArgs(varargin)
     end
 
     % default values
-    [c,G,expMat] = setDefaultValues({[],[],[]},varargin);
-    A = []; b = []; expMat_ = []; Grest = []; id = [];
+    [c,G,E] = setDefaultValues({[],[],[]},varargin);
+    A = []; b = []; EC = []; GI = []; id = [];
     
     % set other (optional) values
     if nargin == 0 || (nargin == 1 && isnumeric(c) && isvector(c))
         return;
     elseif nargin == 4 || nargin == 5
-        [Grest,id] = setDefaultValues({Grest,id},varargin(4:end));
+        [GI,id] = setDefaultValues({GI,id},varargin(4:end));
     elseif nargin >= 6
-        [A,b,expMat_,Grest,id] = setDefaultValues({A,b,expMat_,Grest,id},varargin(4:end));
+        [A,b,EC,GI,id] = setDefaultValues({A,b,EC,GI,id},varargin(4:end));
     end
     
     % set identifiers
     if isempty(id)
-        id = (1:size(expMat,1))'; 
+        id = (1:size(E,1))'; 
     end
 
 end
 
-function aux_checkInputArgs(c,G,expMat,A,b,expMat_,Grest,id,n_in)
+function aux_checkInputArgs(c,G,E,A,b,EC,GI,id,n_in)
 % check correctness of input arguments
 
     % only check if macro set to true
@@ -127,7 +187,7 @@ function aux_checkInputArgs(c,G,expMat,A,b,expMat_,Grest,id,n_in)
         inputChecks = { ...
             {c, 'att', 'numeric', {'finite', 'column'}}; ...
             {G, 'att', 'numeric', {'finite', 'matrix'}}; ...
-            {expMat, 'att', 'numeric', {'integer', 'matrix'}}; ...
+            {E, 'att', 'numeric', {'integer', 'matrix'}}; ...
         };
         if n_in > 5
             % only add constraints checks if they were in the input
@@ -136,34 +196,34 @@ function aux_checkInputArgs(c,G,expMat,A,b,expMat_,Grest,id,n_in)
                 inputChecks;
                 {{A, 'att', 'numeric', {'finite', 'matrix'}}; ...
                 {b, 'att', 'numeric', {'finite', 'matrix'}}; ...
-                {expMat_, 'att', 'numeric', {'finite', 'matrix'}}}; ...
+                {EC, 'att', 'numeric', {'finite', 'matrix'}}}; ...
             ];
         end
         inputChecks = [
             inputChecks
-            {{Grest, 'att', 'numeric', {'finite', 'matrix'}}; ...
+            {{GI, 'att', 'numeric', {'finite', 'matrix'}}; ...
             {id, 'att', 'numeric', {'finite'}}};
         ];
         inputArgsCheck(inputChecks)
 
 
         % check dimensions
-        if size(expMat,2) ~= size(G,2)
+        if size(E,2) ~= size(G,2)
              throw(CORAerror('CORA:wrongInputInConstructor',...
                  'Invalid exponent matrix.'));
         end
-        if ~isempty(expMat_)
-            if size(expMat,1) ~= size(expMat_,1) 
+        if ~isempty(EC)
+            if size(E,1) ~= size(EC,1) 
                 throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Input arguments "expMat" and "expMat_" are not compatible.'));
+                    'Input arguments "E" and "EC" are not compatible.'));
             end
-            if ~all(all(floor(expMat_) == expMat_)) || ~all(all(expMat_ >= 0))
+            if ~all(all(floor(EC) == EC)) || ~all(all(EC >= 0))
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'Invalid constraint exponent matrix.'));
             end
-            if isempty(A) || size(A,2) ~= size(expMat_,2)
+            if isempty(A) || size(A,2) ~= size(EC,2)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Input arguments "A" and "expMat_" are not compatible.'));
+                    'Input arguments "A" and "EC" are not compatible.'));
             end
             if isempty(b) || size(b,2) > 1 || size(b,1) ~= size(A,1)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
@@ -178,4 +238,4 @@ function aux_checkInputArgs(c,G,expMat,A,b,expMat_,Grest,id,n_in)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

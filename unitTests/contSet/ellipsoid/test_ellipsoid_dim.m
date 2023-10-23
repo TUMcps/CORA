@@ -1,7 +1,7 @@
 function res = test_ellipsoid_dim
 % test_ellipsoid_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_dim
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      26-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       26-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = dim(ellipsoid()) == 0;
 load cases.mat E_c
@@ -37,4 +37,4 @@ for i=1:length(E_c)
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

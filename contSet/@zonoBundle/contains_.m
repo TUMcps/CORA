@@ -1,7 +1,7 @@
 function res = contains_(zB,S,type,tol,varargin)
 % contains_ - determines if a zonotope bundle contains a set or a point
 %
-% Syntax:  
+% Syntax:
 %    res = contains_(zB,S)
 %    res = contains_(zB,S,type)
 %    res = contains_(zB,S,type,tol)
@@ -40,23 +40,23 @@ function res = contains_(zB,S,type,tol,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval/contains_, conZonotope/contains_, zonotope/contains_
+% See also: contSet/contains, interval/contains_, conZonotope/contains_, zonotope/contains_
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      19-November-2019
-% Last update:  15-November-2022 (MW, return logical array for points)
-%               25-November-2022 (MW, rename 'contains')
-% Last revision:16-March-2023 (MW, restructure, add more types)
-%               27-March-2023 (MW, rename contains_)
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       19-November-2019
+% Last update:   15-November-2022 (MW, return logical array for points)
+%                25-November-2022 (MW, rename 'contains')
+% Last revision: 16-March-2023 (MW, restructure, add more types)
+%                27-March-2023 (MW, rename contains_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % point or point cloud in zonotope bundle containment
 if isnumeric(S)
     
     if strcmp(type,'exact:polytope')
         % conversion to polytope
-        res = contains_(mptPolytope(zB),S,'exact',tol);
+        res = contains_(polytope(zB),S,'exact',tol);
 
     elseif strcmp(type,'exact:zonotope')
         % check every zonotope individually
@@ -84,7 +84,7 @@ elseif isa(S,'capsule') || isa(S,'ellipsoid')
 
     else
         % default: conversion to polytope
-        P = mptPolytope(zB);
+        P = polytope(zB);
         res = contains_(P,S,'exact',tol);
 
     end
@@ -92,7 +92,7 @@ elseif isa(S,'capsule') || isa(S,'ellipsoid')
 elseif isa(S,'interval')
 
     if strcmp(type,'exact:polytope')
-        res = contains_(mptPolytope(zB),S,'exact',tol);
+        res = contains_(polytope(zB),S,'exact',tol);
 
     elseif strcmp(type,'exact:zonotope')
         % check every zonotope individually
@@ -114,16 +114,16 @@ elseif isa(S,'taylm') || isa(S,'polyZonotope')
     end
 
     % approx method via conversion to polytope
-    res = contains_(mptPolytope(zB),S,'exact',tol);
+    res = contains_(polytope(zB),S,'exact',tol);
 
 else % all other classes
 
     if contains(type,'exact')
-        res = contains_(mptPolytope(zB),S,type,tol);
+        res = contains_(polytope(zB),S,type,tol);
     elseif strcmp(type,'approx')
         res = contains_(conZonotope(zB),S,type,tol);
     end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

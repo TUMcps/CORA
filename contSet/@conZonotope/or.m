@@ -2,7 +2,7 @@ function cZ = or(cZ1,varargin)
 % or - Computes an over-approximation for the union of a constrained
 %    zonotope and other sets
 %
-% Syntax:  
+% Syntax:
 %    cZ = or(cZ1, cZ2)
 %    cZ = or(cZ1, ... , cZm)
 %    cZ = or(cZ1, ... , cZm, alg)
@@ -29,7 +29,7 @@ function cZ = or(cZ1,varargin)
 %    Z = [4 2 0 0;-4 1 1 0];
 %    cZ3 = conZonotope(Z,[],[]);
 % 
-%    % compute conZonotpe that encloses the union
+%    % compute conZonotope that encloses the union
 %    res = or(cZ1,cZ2,cZ3);
 % 
 %    % visualization
@@ -49,12 +49,12 @@ function cZ = or(cZ1,varargin)
 %
 % See also: interval/or, zonotope/or
 
-% Author:       Niklas Kochdumper
-% Written:      14-November-2019
-% Last update:  05-May-2020 (MW, standardized error message)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       14-November-2019
+% Last update:   05-May-2020 (MW, standardized error message)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % default values
     alg = 'linProg';
@@ -82,7 +82,7 @@ function cZ = or(cZ1,varargin)
         
         elseif isa(S,'conZonotope') || isa(S,'zonotope') || ...
            isa(S,'interval') || isa(S,'zonoBundle') || ...
-           isa(S,'mptPolytope') || isnumeric(S)
+           isa(S,'polytope') || isnumeric(S)
             
             if ~isa(S,'conZonotope')
                 S = conZonotope(S); 
@@ -100,9 +100,9 @@ function cZ = or(cZ1,varargin)
             % compute over-approximation of the union with the selected 
             % algorithm
             if strcmp(alg,'linProg')
-               cZ = aux_unionLinProg({cZ1,S},order);
+               cZ = aux_unionLinProg({cZ1,S},order,options);
             elseif strcmp(alg,'tedrake')
-               cZ = aux_unionTedrake({S,S},order);
+               cZ = aux_unionTedrake({S,S},order,options);
             else
                 throw(CORAerror('CORA:wrongValue','second',"'linProg' or 'tedrake'"));
             end
@@ -119,8 +119,8 @@ function cZ = or(cZ1,varargin)
         counter = [];
 
         for i = 2:nargin
-           if isa(varargin{i-1},'zonotope')
-              Zcell{end+1,1} = varargin{i-1}; 
+           if isa(varargin{i-1},'contSet')
+              Zcell{end+1,1} = conZonotope(varargin{i-1});
            else
               counter = i;
               break;
@@ -138,9 +138,9 @@ function cZ = or(cZ1,varargin)
 
         % compute over-approximation of the union with the selected algorithm
         if strcmp(alg,'linProg')
-           cZ = aux_unionLinProg([{cZ1};Zcell],order);
+           cZ = aux_unionLinProg([{cZ1};Zcell],order,options);
         elseif strcmp(alg,'tedrake')
-           cZ = aux_unionTedrake([{cZ1};Zcell],order);
+           cZ = aux_unionTedrake([{cZ1};Zcell],order,options);
         else
             throw(CORAerror('CORA:wrongValue','second',"'linProg' or 'tedrake'"));
         end
@@ -148,8 +148,7 @@ function cZ = or(cZ1,varargin)
 end
 
 
-
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function Z = aux_unionTedrake(Zcell,order,options)
 % compute the union by solving a linear program with respect to the
@@ -163,7 +162,7 @@ function Z = aux_unionTedrake(Zcell,order,options)
        if ~isempty(temp.A)
           temp = rescale(temp);
        end
-       list{i} = zonotope(temp.Z);
+       list{i} = zonotope(temp.c,temp.G);
     end
     
     Z_ = or(list{:},'iterative',order);
@@ -235,7 +234,7 @@ function Z = aux_unionTedrake(Zcell,order,options)
     b = zeros(size(A,1),1);
     Aeq = [zeros(size(Aeq,1),2*ny),Aeq];
     
-    val = linprog(f',A,b,Aeq,beq,[],[],options);
+    val = linprog(f',A,b,Aeq,beq,[],[],[],options);
     
     % construct the resulting zonotope
     ub = val(1:ny);
@@ -263,11 +262,11 @@ function Z = aux_unionLinProg(Zcell,order,options)
        if ~isempty(temp.A)
           temp = rescale(temp);
        end
-       list{i} = zonotope(temp.Z);
+       list{i} = zonotope(temp.c,temp.G);
     end
     
     Z_ = or(list{:},'iterative',order);
-    Z_ = deleteZeros(Z_);
+    Z_ = compact_(Z_,'zeros',eps);
     G = generators(Z_);
     
     G = G*diag(1./sqrt(sum(G.^2,1)));
@@ -313,7 +312,7 @@ function Z = aux_unionLinProg(Zcell,order,options)
     A = [A;[zeros(m,dimG),-eye(m)]];
     b = [b;zeros(m,1)];
     
-    x = linprog(f',A,b,[],[],[],[],options);
+    x = linprog(f',A,b,[],[],[],[],[],options);
     
     % construct final zonotope
     c = x(1:dimG);
@@ -323,4 +322,4 @@ function Z = aux_unionLinProg(Zcell,order,options)
       
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

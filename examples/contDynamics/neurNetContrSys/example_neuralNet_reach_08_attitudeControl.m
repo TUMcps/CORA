@@ -1,4 +1,4 @@
-function completed = example_neuralNet_reach_08_attitudeControl
+function [completed,res,tTotal] = example_neuralNet_reach_08_attitudeControl
 % example_neuralNet_reach_08_attitudeControl - example of reachability
 %    analysis for an neural network controlled system
 %
@@ -10,19 +10,22 @@ function completed = example_neuralNet_reach_08_attitudeControl
 %
 % Outputs:
 %    completed - true/false
+%    res - verification result
+%    tTotal - total time
 %
 % Reference:
-%   [1] Johnson, Taylor T., et al. "ARCH-COMP22 Category Report:
+%   [1] Lopez, Diego Manzanas, et al. "ARCH-COMP22 category report: 
 %       Artificial Intelligence and Neural Network Control Systems (AINNCS)
-%       for Continuous and Hybrid Systems Plants."
-%       EPiC Series in Computing TBD (2022): TBD.
+%       for continuous and hybrid systems plants." Proceedings of 
+%       9th International Workshop on Applied Verification of 
+%       Continuous and Hybrid Systems (ARCH22). 2022.
 
-% Author:       Tobias Ladner
-% Written:      15-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       15-June-2022
+% Last update:   30-March-2022 (TL, ARCH'23 revisions)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 disp("BENCHMARK: Attitude Control")
 
@@ -31,25 +34,21 @@ disp("BENCHMARK: Attitude Control")
 params.tFinal = 3;
 params.R0 = polyZonotope(interval( ...
     [-0.45, -0.55, 0.65, -0.75, 0.85, -0.65], ...
-    [-0.43, -0.53, 0.65, -0.74, 0.86, -0.64] ...
+    [-0.44, -0.54, 0.66, -0.74, 0.86, -0.64] ...
 )');
-
 
 % Reachability Settings ---------------------------------------------------
 
 options.timeStep = 0.1;
-options.taylorTerms = 4;
-options.zonotopeOrder = 50;
 options.alg = 'lin';
 options.tensorOrder = 2;
-
+options.taylorTerms = 4;
+options.zonotopeOrder = 50;
 
 % Parameters for NN evaluation --------------------------------------------
 
 evParams = struct();
-evParams.bound_approx = true;
-evParams.polynomial_approx = "lin";
-
+evParams.poly_method = "singh";
 
 % System Dynamics ---------------------------------------------------------
 
@@ -58,7 +57,7 @@ f = @dynamics_attitudeControl;
 sys = nonlinearSys(f);
 
 % load neural network controller
-% [4, 500, 2]
+% [6, 64, 64, 64, 3]
 nn = neuralNetwork.readONNXNetwork('attitude_control_3_64_torch.onnx');
 
 % construct neural network controlled system
@@ -71,63 +70,18 @@ unsafeSet = interval( ...
     [-0.2;-0.5;0;-0.7;0.7;-0.4], ...
     [0;-0.4;0.2;-0.6;0.8;-0.2] ...
 );
+spec = specification(unsafeSet,'unsafeSet',interval(params.tFinal));
 
+% Verification ------------------------------------------------------------
 
-% Simulation --------------------------------------------------------------
-
-tic
-simRes = simulateRandom(sys, params);
-tSim = toc;
-disp(['Time to compute random simulations: ', num2str(tSim)]);
-
-
-% Check Violation --------------------------------------------------------
-
-tic
-isVio = false;
-for i = 1:length(simRes)
-    isVio = isVio || unsafeSet.contains(simRes(i).x{1}(end, :)');
-end
-tVio = toc;
-disp(['Time to check violation in simulations: ', num2str(tVio)]);
-
-
-if isVio 
-    disp("Result: VIOLATED")
-    R = params.R0;
-    tComp = 0;
-    tVeri = 0;
-else
-    % Reachability Analysis -----------------------------------------------
-
-    tic
-    R = reach(sys, params, options, evParams);
-    tComp = toc;
-    disp(['Time to compute reachable set: ', num2str(tComp)]);
-
-    % Verification --------------------------------------------------------
-
-    tic
-    Rend = R(end).timePoint.set{end};
-    Rend = interval(Rend);
-
-    isVeri = ~isIntersecting(Rend, unsafeSet);
-    tVeri = toc;
-    disp(['Time to check Verification: ', num2str(tVeri)]);
-
-    if isVeri
-        disp('Result: VERIFIED');
-    else
-        disp('Result: UNKNOWN');
-    end
-end
-disp(['Total Time: ', num2str(tSim+tVio+tComp+tVeri)]);
-
+t = tic;
+[res, R, simRes] = verify(sys, spec, params, options, evParams, true);
+tTotal = toc(t);
+disp(['Result: ' res])
 
 % Visualization -----------------------------------------------------------
 
 disp("Plotting..");
-spec = specification(unsafeSet,'unsafeSet',interval(params.tFinal));
 
 for w=1:3
     figure; hold on; box off;
@@ -148,10 +102,22 @@ for w=1:3
     % labels and legend
     xlabel('time');
     ylabel(sprintf("\\omega_%d", w));
-    legend(Location="best")
+    legend(Location="north")
 end
 
-% example completed
+
+% example completed -------------------------------------------------------
+
 completed = true;
 
-%------------- END OF CODE --------------
+% handling for ARCH competition
+if nargout < 2
+    clear res;
+end
+if nargout < 3
+    clear tTotal;
+end
+
+end
+
+% ------------------------------ END OF CODE ------------------------------

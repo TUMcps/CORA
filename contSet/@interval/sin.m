@@ -16,7 +16,7 @@ function res = sin(I)
 % [min(sin(inf), sin(sup)) , 1] if (sup - inf) < 2*pi and inf > 3/2*pi and inf <= 2*pi and sup > pi/2 and sup <= 3/2*pi,
 % [sin(inf), sin(sup)]          if (sup - inf) < 2*pi and inf > 3/2*pi and inf <= 2*pi and sup > 3/2*pi and sup >= inf.
 %
-% Syntax:  
+% Syntax:
 %    res = sin(I)
 %
 % Inputs:
@@ -35,16 +35,16 @@ function res = sin(I)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff, Dmitry Grebenyuk
-% Written:      24-June-2015
-% Last update:  13-January-2016 (DG)
-%               05-February-2016 (MA)
-%               06-February-2016 (DG)
-%               10-February-2016 (MA)
-%               22-February-2016 (DG, the matrix case is rewritten)
-% Last revision:---
+% Authors:       Matthias Althoff, Dmitry Grebenyuk
+% Written:       24-June-2015
+% Last update:   13-January-2016 (DG)
+%                05-February-2016 (MA)
+%                06-February-2016 (DG)
+%                10-February-2016 (MA)
+%                22-February-2016 (DG, the matrix case is rewritten)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % scalar case
 if isnumeric(I)
@@ -181,4 +181,4 @@ else
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

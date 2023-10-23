@@ -20,12 +20,12 @@ function display(matP)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      21-June-2010
-% Last update:  03-April-2023 (MW, add empty case)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-June-2010
+% Last update:   03-April-2023 (MW, add empty case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isempty(matP)
     
@@ -47,4 +47,4 @@ else
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

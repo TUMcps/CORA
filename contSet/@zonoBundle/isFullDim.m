@@ -2,7 +2,7 @@ function res = isFullDim(zB)
 % isFullDim - checks if the dimension of the affine hull of a zonotope
 %    bundle is equal to the dimension of its ambient space
 %
-% Syntax:  
+% Syntax:
 %    res = isFullDim(zB)
 %
 % Inputs:
@@ -28,12 +28,12 @@ function res = isFullDim(zB)
 %
 % See also: zonotope/isFullDim
 
-% Author:       Niklas Kochdumper
-% Written:      02-January-2020 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       02-January-2020 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if zB.parallelSets == 0
     res = false; return
@@ -47,6 +47,6 @@ for i = 1:zB.parallelSets
 end
 
 % convert to polytope and call polytope/isFullDim
-res = isFullDim(mptPolytope(zB));
+res = isFullDim(polytope(zB));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function [Rhom,Rhom_tp,Rtrans,inputCorr] = inputInducedUpdates(obj,options)
 % inputInducedUpdates - recalculates set if options.uTrans has changed
 %
-% Syntax:  
+% Syntax:
 %    [Rhom,Rhom_tp,Rtrans,inputCorr] = inputInducedUpdates(obj,options)
 %
 % Inputs:
@@ -22,16 +22,16 @@ function [Rhom,Rhom_tp,Rtrans,inputCorr] = inputInducedUpdates(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff, Mark Wetzlinger
+% Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       15-July-2019 (from @linearSys > post_Euclidean.m)
 % Last update:   16-February-2021 (MW, update 'fromStart')
 %                16-November-2021 (MW, include disturbance set W)
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % load data
+
 eAt = obj.taylor.eAt;
 eAtInt = obj.taylor.eAtInt;
 F = obj.taylor.F;
@@ -75,4 +75,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

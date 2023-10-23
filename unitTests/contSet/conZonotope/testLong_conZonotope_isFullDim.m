@@ -1,7 +1,7 @@
 function res = testLong_conZonotope_isFullDim
 % testLong_conZonotope_isFullDim - unit test function of isFullDim
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conZonotope_isFullDim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_conZonotope_isFullDim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      14-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       14-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -59,4 +59,4 @@ for i=1:nrOfTests
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

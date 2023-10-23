@@ -5,7 +5,7 @@ function res = testMATPOWER_converter_loadPowerSystemCase_IEEE14()
 % It is checked whether the conversion of a MATPOWER model to our power 
 % system description matches a saved power system description.
 %
-% Syntax:  
+% Syntax:
 %    res = testMATPOWER_converter_loadPowerSystemCase_IEEE14()
 %
 % Inputs:
@@ -17,13 +17,13 @@ function res = testMATPOWER_converter_loadPowerSystemCase_IEEE14()
 % References:
 %    [1] M. Althoff, submitted ARCH paper on power system benchmarks
 
-% Author:       Matthias Althoff
-% Written:      05-May-2022
-% Last update:  ---
-%               ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-May-2022
+% Last update:   ---
+%                ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set path
 path = [CORAROOT filesep 'converter' filesep 'powerSystem2cora' filesep 'cases'];
@@ -37,7 +37,7 @@ loadPowerSystemCase('case14','MATPOWER_IEEE14');
 load([path filesep 'MATPOWER_IEEE14']);
 
 % evaluate conversion from MATPOWER
-resPartial = evaluate(resPartial, path, bus, genParam, Pd, Qd, VM, Y);
+resPartial = aux_evaluate(resPartial, path, bus, genParam, Pd, Qd, VM, Y);
 
 %% Load PSSE model
 loadPowerSystemCase('ieee14.raw','PSSE_IEEE14','PSSE');
@@ -46,7 +46,7 @@ load([path filesep 'PSSE_IEEE14']);
 
 % % evaluate conversion from MATPOWER; the converted model seems to be
 % % different
-% resPartial = evaluate(resPartial, path, bus, genParam, Pd, Qd, VM, Y);
+% resPartial = aux_evaluate(resPartial, path, bus, genParam, Pd, Qd, VM, Y);
 
 % final result
 res = all(resPartial);
@@ -54,7 +54,9 @@ res = all(resPartial);
 end
 
 
-function resPartial = evaluate(resPartial, path, bus, genParam, Pd, Qd, VM, Y)
+% Auxiliary functions -----------------------------------------------------
+
+function resPartial = aux_evaluate(resPartial, path, bus, genParam, Pd, Qd, VM, Y)
 
 % save to specific filenames
 bus_created = bus;
@@ -108,4 +110,4 @@ resPartial(end+1) = (norm(bus.fault - bus_created.fault) <= accuracy);
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

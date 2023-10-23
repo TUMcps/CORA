@@ -1,7 +1,7 @@
 function res = isempty(cZ)
 % isempty - checks if a constrained zonotope is the empty set
 %
-% Syntax:  
+% Syntax:
 %    res = isempty(cZ)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function res = isempty(cZ)
 %
 % See also: ---
 
-% Author:       Niklas Kochdumper
-% Written:      15-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       15-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check if the zonotope is empty
 res = isempty(zonotope(cZ.Z));
@@ -78,7 +78,7 @@ if ~res && ~isempty(cZ.A)
 
         % use linear programming to check if the constrained zonotope is
         % empty (this seems to be more robust than the previous solution
-        % using the mptPolytope/isempty function)
+        % using the polytope/isempty function)
         if size(cZ.A,1) >= 1
         
             persistent options
@@ -104,4 +104,4 @@ if ~res && ~isempty(cZ.A)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

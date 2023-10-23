@@ -1,7 +1,7 @@
 function res = testLong_polyZonotope_subs
 % testLong_polyZonotope_subs - unit test function for composition
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polyZonotope_subs
 %
 % Inputs:
@@ -16,30 +16,30 @@ function res = testLong_polyZonotope_subs
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      23-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       23-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 nTests = 50;
 for i=1:nTests
     n = randi(30);
     pZ = polyZonotope.generateRandom('Dimension',n);
-    ne_max = size(pZ.expMat,1);
+    ne_max = size(pZ.E,1);
     % produce random ids for pZ
     id = randperm(ne_max,ne_max)'-ceil(ne_max/2);
     id_subs = id(unique(randi([1,ne_max],ne_max,1),'stable'));
     ns = length(id_subs);
     % generate random pZ to insert
     pZ_in = polyZonotope.generateRandom('Dimension',ns);
-    nin = size(pZ_in.expMat,1);
+    nin = size(pZ_in.E,1);
     id_in = randperm(4*nin,nin)'-2*nin;
     % remove rest matrices
-    pZ = polyZonotope(pZ.c,pZ.G,zeros(n,0),pZ.expMat,id);
-    pZ_in = polyZonotope(pZ_in.c,pZ_in.G,zeros(ns,0),pZ_in.expMat,id_in);
+    pZ = polyZonotope(pZ.c,pZ.G,zeros(n,0),pZ.E,id);
+    pZ_in = polyZonotope(pZ_in.c,pZ_in.G,zeros(ns,0),pZ_in.E,id_in);
     
     % compute result
     id_rem = setdiff(pZ.id,id_subs,'stable');
@@ -59,7 +59,7 @@ for i=1:nTests
     % ... by testing random points
     N = 50;
     % could be any real vector really
-    B = 2*rand(size(pZ_res.expMat,1),N)-1;
+    B = 2*rand(size(pZ_res.E,1),N)-1;
     for k=1:N
         val_res = resolve(pZ_res,B(:,k));
         fval_res = f_res(B(ii_rem,k),B(ii_in,k));
@@ -72,4 +72,4 @@ for i=1:nTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

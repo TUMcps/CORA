@@ -1,7 +1,7 @@
 function updateCORApath()
 % updateCORApath - restores all folders of CORA on the matlab path
 %
-% Syntax:  
+% Syntax:
 %    updateCORApath()
 %
 % Inputs:
@@ -11,12 +11,12 @@ function updateCORApath()
 %    -
 %
 
-% Author:       Tobias Ladner
-% Written:      25-November-2022
-% Last update:  22-May-2023
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       25-November-2022
+% Last update:   22-May-2023
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % turn off warning while re-setting path
 w = warning;
@@ -37,4 +37,4 @@ clear classes
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function val = hausdorffDist(pZ,points,varargin)
 % hausdorffDist - Calculates an approximation of the Hausdorff distance
 %    between a polynomial zonotope and a point cloud
 %
-% Syntax:  
+% Syntax:
 %    val = hausdorffDist(pZ,points)
 %    val = hausdorffDist(pZ,points,splits)
 %
@@ -30,12 +30,12 @@ function val = hausdorffDist(pZ,points,varargin)
 %
 % See also: quadZonotope/hausdorffDist
 
-% Author:       Niklas Kochdumper
-% Written:      05-September-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       05-September-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parse input arguments
     splits = setDefaultValues({4},varargin);
@@ -81,4 +81,4 @@ function val = hausdorffDist(pZ,points,varargin)
        val = max(val,sqrt(valTemp));
     end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

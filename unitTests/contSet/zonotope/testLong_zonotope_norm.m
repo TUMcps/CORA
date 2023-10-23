@@ -1,7 +1,7 @@
 function res = testLong_zonotope_norm
 % testLong_zonotope_norm - unit test function of norm
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_norm
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_zonotope_norm
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      31-July-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       31-July-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -65,4 +65,4 @@ for i=2:4
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

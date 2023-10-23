@@ -3,7 +3,7 @@ function Zsplit = split(zB,varargin)
 %    for one or every generator resulting in n possible splits where n is
 %    the system dimension; it is also possible to use a splitting hyperplane
 %
-% Syntax:  
+% Syntax:
 %    Zsplit = split(zB,varargin)
 %
 % Inputs:
@@ -30,14 +30,14 @@ function Zsplit = split(zB,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      03-February-2011
-% Last update:  23-August-2013
-%               25-January-2016
-%               25-July-2016 (intervalhull replaced by interval)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-February-2011
+% Last update:   23-August-2013
+%                25-January-2016
+%                25-July-2016 (intervalhull replaced by interval)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %split all dimensions
 if nargin==1
@@ -50,7 +50,7 @@ if nargin==1
     
     for N = 1:length(leftLimit)
         %split one dimension of the interval hull
-        Zsplit{N} = splitOneDim(zB,leftLimit,rightLimit,N); 
+        Zsplit{N} = aux_splitOneDim(zB,leftLimit,rightLimit,N); 
     end
     
 elseif nargin==2
@@ -64,14 +64,14 @@ elseif nargin==2
         leftLimit = infimum(IH);
         rightLimit = supremum(IH);
         %split one dimension
-        Zsplit = splitOneDim(zB,leftLimit,rightLimit,N); 
+        Zsplit = aux_splitOneDim(zB,leftLimit,rightLimit,N); 
         
     %split using a halfspace
     elseif isa(varargin{1},'halfspace')
         %obtain halfspace
         h = varargin{1};
         %obtain rotation matrix
-        rotMat = rotationMatrix(h);
+        rotMat = aux_rotationMatrix(h);
         invRotMat = rotMat.';
         %obtain enclosing interval hull of rotated zonotope
         IH = interval(invRotMat*zB);
@@ -99,7 +99,7 @@ elseif nargin==3
     if strcmp(varargin{2},'bundle')
         %split halfway in a direction using a zonotope bundle
         dir = varargin{1};
-        Zsplit = directionSplitBundle(zB,dir);
+        Zsplit = aux_directionSplitBundle(zB,dir);
     end
     
 end
@@ -107,9 +107,9 @@ end
 end
 
 
-% Auxiliary Functions
+% Auxiliary functions -----------------------------------------------------
 
-function Zsplit = splitOneDim(Zbundle,lb,ub,dim)
+function Zsplit = aux_splitOneDim(Zbundle,lb,ub,dim)
 
 %split limits for a given dimension
 leftLimitMod = lb;
@@ -139,14 +139,14 @@ Zsplit{2} = and_(Zbundle,Zright,'exact');
 
 end
 
-function Zsplit = directionSplitBundle(Z,dir)
+function Zsplit = aux_directionSplitBundle(Z,dir)
 
 %obtain dimension
 N = length(dir);
 
 %obtain rotation matrix
 newDir = [1; zeros(N-1,1)];
-rotMat = rotationMatrixDir(dir, newDir);
+rotMat = aux_rotationMatrixDir(dir, newDir);
 
 %obtain enclosing interval
 IH = interval(rotMat*Z);
@@ -171,7 +171,7 @@ Zsplit{2} = zonoBundle(Z2);
 
 end
 
-function rotMat = rotationMatrix(h)
+function rotMat = aux_rotationMatrix(h)
 
 %get dimension
 N = length(h.c);
@@ -212,7 +212,7 @@ end
 
 end
 
-function rotMat = rotationMatrixDir(dir, newDir)
+function rotMat = aux_rotationMatrixDir(dir, newDir)
 
 %get dimension
 N = length(dir);
@@ -253,4 +253,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

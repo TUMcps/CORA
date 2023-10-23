@@ -5,7 +5,7 @@ classdef halfspace < contSet
 %    This class represents halfspace objects defined as
 %    {x | c'*x <= d}.
 %
-% Syntax:  
+% Syntax:
 %    obj = halfspace()
 %    obj = halfspace(hs)
 %    obj = halfspace(c,d)
@@ -23,15 +23,16 @@ classdef halfspace < contSet
 %
 % See also: example_halfspace.m
 
-% Author:       Matthias Althoff
-% Written:      06-June-2011
-% Last update:  14-Aug-2019
-%               02-May-2020 (add property validation)
-%               19-March-2021 (MW, error messages)
-%               14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Matthias Althoff
+% Written:       06-June-2011
+% Last update:   14-August-2019
+%                02-May-2020 (add property validation)
+%                19-March-2021 (MW, error messages)
+%                14-December-2022 (TL, property check in inputArgsCheck)
+%                24-July-2023 (MW, disable 0*x <= d)
+% Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 properties (SetAccess = private, GetAccess = public)
@@ -67,7 +68,7 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [c,d] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
@@ -98,9 +99,16 @@ function aux_checkInputArgs(c,d,n_in)
             {c, 'att', 'numeric', {'finite', 'vector'}}; ...
             {d, 'att', 'numeric', {'finite', 'scalar'}}; ...
         })
+
+        % ensure that halfspace actually constrains some value
+        % ...if this functionality is desired, use fullspace class instead
+%         if ~any(c)
+%             throw(CORAerror('CORA:wrongInputInConstructor',...
+%                 'At least one entry in the normal vector has to be non-zero.'));
+%         end
         
     end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

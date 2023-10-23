@@ -1,7 +1,7 @@
 function int = interval(tay,varargin)
 % interval - Calculate an interval that bounds the taylor model
 %
-% Syntax:  
+% Syntax:
 %    int = interval(obj)
 %    int = interval(obj,option)
 %
@@ -39,12 +39,12 @@ function int = interval(tay,varargin)
 %   [3] K. Makino et al. "Verified Global Optimization with Taylor Model 
 %       based Range Bounders"
 
-% Author:       Niklas Kochdumper
-% Written:      04-April-2018
-% Last update:  ---
-% Last revision:17-August-2023 (TL, aux_ and comments)
+% Authors:       Niklas Kochdumper
+% Written:       04-April-2018
+% Last update:   ---
+% Last revision: 17-August-2023 (TL, aux_ and comments)
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parse input arguments
     option = setDefaultValues({tay.opt_method},varargin);
@@ -74,7 +74,7 @@ function int = interval(tay,varargin)
 end
 
 
-%% Auxiliary functions
+% Auxiliary functions -----------------------------------------------------
 
 function int = aux_tayl2int(tay)
     % evaluate taylor factors
@@ -130,4 +130,4 @@ function int = aux_evalInt(tay)
     end
 end
 
-%------------ END OF CODE ------------ 
+% ------------------------------ END OF CODE ------------------------------

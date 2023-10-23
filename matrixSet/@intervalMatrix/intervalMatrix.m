@@ -23,15 +23,15 @@ classdef (InferiorClasses = {?mp}) intervalMatrix
 %
 % See also: interval
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      18-June-2010
-% Last update:  26-August-2011
-%               15-June-2016
-%               06-May-2021
-%               03-April-2023 (MW, remove properties dim and setting)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       18-June-2010
+% Last update:   26-August-2011
+%                15-June-2016
+%                06-May-2021
+%                03-April-2023 (MW, remove properties dim and setting)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     % interval
@@ -104,4 +104,4 @@ end
 
 end
 
-%------------- END OF CODE -------
+% ------------------------------ END OF CODE ------------------------------

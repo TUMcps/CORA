@@ -2,7 +2,7 @@ function E = plusEllipsoid(E,L,mode)
 % plusEllipsoid - Computes an inner-approximation or outer-approximation of
 %    the Minkowski sum of a list of ellipsoids
 %
-% Syntax:  
+% Syntax:
 %    E = plusEllipsoid(E,L,mode)
 %
 % Inputs:
@@ -25,22 +25,22 @@ function E = plusEllipsoid(E,L,mode)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      15-March-2021
-% Last update:  25-May-2022 (VG: included more options, as well as 1D
-%                               special case)
-%               05-July-2022 (VG: removed unecessary input argument)
-%               17-March-2023 (VG: bugfix for equally small ellipsoids)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       15-March-2021
+% Last update:   25-May-2022 (VG, more options, 1D special case)
+%                05-July-2022 (VG, removed unecessary input argument)
+%                17-March-2023 (VG, bugfix for equally small ellipsoids)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 n = dim(E(1));
 
 % remove all ellipsoids that only contain a point and add them
 q = zeros(n,1);
 ind_c = false(size(E));
 for i=1:length(E)
-    if isZero(-E(i).q+E(i))
+    if representsa_(-E(i).q+E(i),'origin',eps)
         q = q +E(i).q;
         ind_c(i) = true;
     end
@@ -123,7 +123,7 @@ else
     
         E_L = lplus(E,L,mode);
         if strcmp(mode,'outer')
-            Et = and(E_L(1),E_L(2:end),mode);
+            Et = and_(E_L(1),E_L(2:end),mode);
         elseif strcmp(mode,'inner')
             Et = or(E_L(1),E_L(2:end),mode);
         else
@@ -136,7 +136,7 @@ else
             idx = true(length(E),1);
             q = zeros(dim(E(1)),1);
             for j=1:length(E)
-                idx(j) = ~isZero(E(j)-E(j).q,1e-8);
+                idx(j) = ~representsa_(E(j)-E(j).q,'origin',1e-8);
                 q = q + ~idx(j)*E(j).q;
             end
             E = E(idx);
@@ -154,4 +154,4 @@ end
 % backtransform
 E = T'*ellipsoid(s*blkdiag(Et.Q,zeros(n_d)),[Et.q;xt_rem]);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function res = test_capsule_plot
 %    to go through many variations of input arguments
 %    note: only run-time errors checked, go through manually to check for bugs
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_plot
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = test_capsule_plot
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      04-August-2020
-% Last update:  08-May-2023 (TL: added plotted point checks)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       04-August-2020
+% Last update:   08-May-2023 (TL, added plotted point checks)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -82,4 +82,4 @@ end
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

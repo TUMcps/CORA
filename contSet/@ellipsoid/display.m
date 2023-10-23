@@ -2,7 +2,7 @@ function display(E)
 % display - Displays the properties of an ellipsoid object (center, shape
 %    matrix, dimension, degeneracy) on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(E)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function display(E)
 %
 % See also: none
 
-% Author:       Victor Gassmann
-% Written:      13-March-2019
-% Last update:  02-May-2020 (MW, add empty case)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       13-March-2019
+% Last update:   02-May-2020 (MW, add empty case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'}});
@@ -59,4 +59,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function tree = listFolderContent(rootDir)
 % listFolderContent - recursive function to list all functions in rootDir
 %
-% Syntax:  
+% Syntax:
 %    tree = listFolderContent(rootDir)
 %
 % Inputs:
@@ -13,12 +13,12 @@ function tree = listFolderContent(rootDir)
 % Example: 
 %    -
 
-% Author:       Mark Wetzlinger
-% Written:      20-January-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       20-January-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % files in rootDir
 files = dir(rootDir);
@@ -45,4 +45,4 @@ end
 
 tree = fnames;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

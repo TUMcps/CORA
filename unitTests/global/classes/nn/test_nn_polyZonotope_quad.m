@@ -2,7 +2,7 @@ function res = test_nn_polyZonotope_quad()
 % test_nn_polyZonotope_quad - tests nn using polyZonotopes with 'quad' 
 %    approx
 %
-% Syntax:  
+% Syntax:
 %    res = test_nn_polyZonotope_quad()
 %
 % Inputs:
@@ -17,15 +17,15 @@ function res = test_nn_polyZonotope_quad()
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      24-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       24-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 evParams = struct;
-evParams.polynomial_approx = "quad";
+evParams.order = 2;
 
 res = true;
 for attention = ["ReLU", "sigmoid", "tanh"]
@@ -35,4 +35,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

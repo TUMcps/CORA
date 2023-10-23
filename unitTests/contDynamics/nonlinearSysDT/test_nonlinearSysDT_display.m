@@ -1,7 +1,7 @@
 function res = test_nonlinearSysDT_display
 % test_nonlinearSysDT_display - unit test for display function
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSysDT_display
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_nonlinearSysDT_display
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 dt = 1;
 
@@ -70,4 +70,4 @@ sys = nonlinearSysDT(f,dt,g)
 % code executed successfully
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

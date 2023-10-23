@@ -1,7 +1,7 @@
 classdef (InferiorClasses = {?interval, ?zonotope}) probZonotope < contSet
 % probZonotope - class for probabilistic zonotopes
 %
-% Syntax:  
+% Syntax:
 %    obj = probZonotope(Z,G)
 %    obj = probZonotope(Z,G,gamma)
 %
@@ -27,15 +27,15 @@ classdef (InferiorClasses = {?interval, ?zonotope}) probZonotope < contSet
 %
 % See also: interval,  polytope
 
-% Author:       Matthias Althoff
-% Written:      03-August-2007 
-% Last update:  26-February-2008
-%               20-March-2015
-%               04-May-2020 (MW, transition to classdef)
-%               14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Matthias Althoff
+% Written:       03-August-2007 
+% Last update:   26-February-2008
+%                20-March-2015
+%                04-May-2020 (MW, transition to classdef)
+%                14-December-2022 (TL, property check in inputArgsCheck)
+% Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = protected, GetAccess = public)
     Z;      % zonotope matrix
@@ -81,7 +81,8 @@ end
 
 end
 
-% Auxiliary Functions -----------------------------------------------------
+
+% Auxiliary functions -----------------------------------------------------
 
 function [Z,g,gamma] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
@@ -118,4 +119,4 @@ function aux_checkInputArgs(Z,g,gamma,n_in)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

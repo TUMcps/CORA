@@ -3,7 +3,7 @@ function res = test_intervalMatrix_abs
 % interval matrix according to [1]
 % 
 % 
-% Syntax:  
+% Syntax:
 %    res = test_intervalMatrix_abs
 %
 % Inputs:
@@ -23,12 +23,12 @@ function res = test_intervalMatrix_abs
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      06-May-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-May-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% create interval matrix
 % center
@@ -51,4 +51,4 @@ C = abs(A);
 % same result?
 res = (max(max(abs(C - C_true))) == 0);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

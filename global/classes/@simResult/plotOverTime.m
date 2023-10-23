@@ -1,7 +1,7 @@
 function han = plotOverTime(simRes,varargin)
 % plotOverTime - plots the simulated trajectories over time
 %
-% Syntax:  
+% Syntax:
 %    han = plotOverTime(simRes)
 %    han = plotOverTime(simRes,dims)
 %    han = plotOverTime(simRes,dims,type)
@@ -24,12 +24,12 @@ function han = plotOverTime(simRes,varargin)
 %
 % See also: simResult, simulateRandom, plot
 
-% Author:       Niklas Kochdumper, Tobias Ladner
-% Written:      06-June-2020
-% Last update:  22-March-2023 (TL: fixed bug for class arrays)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Tobias Ladner
+% Written:       06-June-2020
+% Last update:   22-March-2023 (TL, fixed bug for class arrays)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default values for the optional input arguments
 dims = setDefaultValues({1},varargin);
@@ -51,7 +51,7 @@ NVpairs = readPlotOptions(varargin(2:end),'simResult');
 [NVpairs,whichtraj] = readNameValuePair(NVpairs,'Traj','ischar','x');
 
 % check which trajectory has to be plotted
-whichtraj = checkTraj(simRes,whichtraj);
+whichtraj = aux_checkTraj(simRes,whichtraj);
 
 % save color index
 ax = gca();
@@ -87,9 +87,9 @@ end
 end
 
 
-% Auxiliary function ------------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function whichtraj = checkTraj(simRes,whichtraj)
+function whichtraj = aux_checkTraj(simRes,whichtraj)
 
 % must be character vector for switch-expression to work properly
 if isempty(whichtraj)
@@ -118,4 +118,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

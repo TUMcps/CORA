@@ -36,12 +36,12 @@ function powerSystem2cora(filename, varargin)
 %
 % See also: spaceex2cora
 
-% Author:       Matthias Althoff
-% Written:      14-April-2022
-% Last update:  25-April-2023 (MW, change destination folder)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       14-April-2022
+% Last update:   25-April-2023 (MW, change destination folder)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % load scenario
 scenario = load(filename);
@@ -74,7 +74,7 @@ eval(str);
 % set path
 path = [CORAROOT filesep 'models' filesep 'powerSystemsConverted'];
 if ~isfolder(path)
-    mkdir([CORAROOT filesep 'models'],'powerSystemsConverted');
+    mkdir(path);
 end
 save([path filesep name], name);
 % remove and add path so that file can be found
@@ -84,4 +84,4 @@ rmpath(path);
 warning(warOrig);
 addpath(path);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

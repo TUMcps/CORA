@@ -2,7 +2,7 @@ function printDynamicsFile(path,name,dynamics,usecase)
 % printDynamicsFile - create a file defining a nonlinear function for the
 %    spaceex2cora converter 
 %
-% Syntax:  
+% Syntax:
 %    printDynamicsFile(path,name,dynamics,usecase)
 %
 % Inputs:
@@ -23,13 +23,12 @@ function printDynamicsFile(path,name,dynamics,usecase)
 %
 % See also: ---
 
-% Author:       ???, Maximilian Perschl
-% Written:      ???
-% Last update:  30-January-2022 (MP, include nonlinear reset functions in
-%                                sx2cora)
-% Last revision:---
+% Authors:       ???, Maximilian Perschl
+% Written:       ---
+% Last update:   30-January-2022 (MP, nonlinear reset functions in sx2cora)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if ~contains(['flow','reset'],usecase)
     throw(CORAerror('CORA:converterIssue','Unknown usecase for dynamics file.'));
@@ -76,4 +75,4 @@ fclose(file);
 % ensure matlab detects new function
 rehash path;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

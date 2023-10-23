@@ -6,7 +6,7 @@ function res = testLong_linearSysDT_observe_08_pedestrian()
 % It is checked whether the enclosing interval of the final observed set 
 % is close to an interval provided by a previous solution that has been saved
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_linearSysDT_observe_08_pedestrian
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = testLong_linearSysDT_observe_08_pedestrian()
 % Outputs:
 %    res - true/false 
 
-% Author:       Matthias Althoff
-% Written:      03-Mar-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %% Load pedestrian model
@@ -135,4 +135,4 @@ end
 res = all(resPartial);
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

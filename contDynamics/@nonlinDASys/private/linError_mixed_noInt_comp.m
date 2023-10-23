@@ -3,7 +3,7 @@ function [errorTotal, errorInt, errorInt_x, errorInt_y, Rtotal_y] = ...
 % linError_mixed_noInt_comp - computes the linearization error 
 % compositionally according to [1].
 %
-% Syntax:  
+% Syntax:
 %    [errorTotal, errorInt, errorInt_x, errorInt_y, Rtotal_y] = ...
 %               linError_mixed_noInt_comp(obj, options, R, Verror_y)
 %
@@ -33,16 +33,16 @@ function [errorTotal, errorInt, errorInt_x, errorInt_y, Rtotal_y] = ...
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      21-November-2011
-% Last update:  23-May-2013
-%               06-June-2013
-%               04-October-2015
-%               25-July-2016 (intervalhull replaced by interval)
-%               08-June-2022
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-November-2011
+% Last update:   23-May-2013
+%                06-June-2013
+%                04-October-2015
+%                25-July-2016 (intervalhull replaced by interval)
+%                08-June-2022
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute set of algebraic variables
 f0_con = obj.linError.f0_con;
@@ -96,14 +96,13 @@ parfor iSys = 1:length(index)
     [Hf, Hg] = options.subsystemHessian{iSys}(totalInt_x, totalInt_y, totalInt_u);
 
     %compute zonotope of state, constarint variables, and input
-    Z_x = Rsub.Z;
-    Z_y_cor = Rsub_y_cor.Z;
-    Z_y_add = Rsub_y_add.Z;
+    Z_x = [Rsub.c,Rsub.G];
+    Z_y_cor = [Rsub_y_cor.c,Rsub_y_cor.G];
+    Z_y_add = [Rsub_y_add.c,Rsub_y_add.G];
     Z_0 = zeros(length(Z_x(:,1)), length(Z_y_add(1,:)));
     R_xy = zonotope([Z_x, Z_0; Z_y_cor, Z_y_add]);
     R_xyu = cartProd(R_xy, Usub);
     R_xyu = reduce(R_xyu,'girard',options.errorOrder);
-
 
 
     %obtain absolute values
@@ -154,8 +153,8 @@ parfor iSys = 1:length(index)
         CFsub_inv = Csub*Fsub_inv;
         
         %compute final error
-        Z_err_x_mid = error_x_mid.Z;
-        Z_err_x_add_mid = CFsub_inv*error_y_mid.Z;
+        Z_err_x_mid = [error_x_mid.c,error_x_mid.G];
+        Z_err_x_add_mid = [CFsub_inv*error_y_mid.c,CFsub_inv*error_y_mid.G];
         error_mid = zonotope(Z_err_x_mid + Z_err_x_add_mid);
         error_rad = error_x_rad_zono + CFsub_inv*error_y_rad_zono;
         error{iSys} = error_mid + error_rad;
@@ -193,4 +192,4 @@ errorInt_y = supremum(errorIHabs_y);
 errorIHabs_x = abs(interval(errorTotal_x));
 errorInt_x = supremum(errorIHabs_x);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

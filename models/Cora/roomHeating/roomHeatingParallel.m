@@ -51,7 +51,7 @@ C = 1;
 
 linSys = linearSys(A,B,c,C);
 
-inv = mptPolytope(1,T_off);
+inv = polytope(1,T_off);
 
 guard = conHyperplane(1,T_off);
 
@@ -69,7 +69,7 @@ C = 1;
 
 linSys = linearSys(A,B,[],C);
 
-inv = mptPolytope(-1,-T_on);
+inv = polytope(-1,-T_on);
 
 guard = conHyperplane(1,T_on);
 
@@ -95,7 +95,7 @@ C = 1;
 
 linSys = linearSys(A,B,c,C);
 
-inv = mptPolytope(1,T_off);
+inv = polytope(1,T_off);
 
 guard = conHyperplane(1,T_off);
 
@@ -113,7 +113,7 @@ C = 1;
 
 linSys = linearSys(A,B,[],C);
 
-inv = mptPolytope(-1,-T_on);
+inv = polytope(-1,-T_on);
 
 guard = conHyperplane(1,T_on);
 

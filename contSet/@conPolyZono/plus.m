@@ -2,7 +2,7 @@ function cPZ = plus(summand1,summand2)
 % plus - Overloaded '+' operator for the Minkowski addition of a
 %    constrained polynomial zonotope with other sets or points
 %
-% Syntax:  
+% Syntax:
 %    cPZ = plus(summand1,summand2)
 %
 % Inputs:
@@ -15,11 +15,11 @@ function cPZ = plus(summand1,summand2)
 % Example: 
 %    c = [0;0];
 %    G = [2 2;2 -1];
-%    expMat = [1 0; 0 1];
+%    E = [1 0; 0 1];
 %    A = [1 1];
 %    b = 0;
-%    expMat_ = [2 0; 0 1];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    EC = [2 0; 0 1];
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 % 
 %    E = ellipsoid(0.1*[2 1;1 2]);
 % 
@@ -36,12 +36,12 @@ function cPZ = plus(summand1,summand2)
 %
 % See also: mtimes, exactPlus
 
-% Author:       Niklas Kochdumper
-% Written:      14-August-2019 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       14-August-2019 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % determine which summand is the conPolyZono object
 [cPZ,S] = findClassArg(summand1,summand2,'conPolyZono');
@@ -53,10 +53,10 @@ try
        isa(S,'zonotope')
     
        Z = zonotope(S);
-       cPZ.c = cPZ.c + center(Z);
-       cPZ.Grest = [cPZ.Grest,generators(Z)];
+       cPZ.c = cPZ.c + Z.c;
+       cPZ.GI = [cPZ.GI, Z.G];
        
-    elseif isa(S,'conPolyZono') || isa(S,'mptPolytope') || ...
+    elseif isa(S,'conPolyZono') || isa(S,'polytope') || ...
            isa(S,'zonoBundle') || isa(S,'conZonotope') || ...
            isa(S,'ellipsoid') || isa(S,'capsule') || ...
            isa(S,'polyZonotope') || isa(S,'taylm')
@@ -67,9 +67,9 @@ try
          % update states
          cPZ.c = cPZ.c + S.c;
          cPZ.G = [cPZ.G, S.G];
-         cPZ.expMat = blkdiag(cPZ.expMat,S.expMat);
+         cPZ.E = blkdiag(cPZ.E,S.E);
          
-         cPZ.Grest = [cPZ.Grest, S.Grest];
+         cPZ.GI = [cPZ.GI, S.GI];
          
          % update constraints
          cPZ = updateConstraints(cPZ,cPZ,S);
@@ -89,18 +89,18 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(Z)
+    if representsa_(cPZ,'emptySet',eps)
         return
     elseif isemptyobject(summand)
-        Z = zonotope(); return
+        cPZ = conPolyZono(); return
     end
 
     % check whether different dimension of ambient space
-    equalDimCheck(Z,summand);
+    equalDimCheck(cPZ,summand);
 
     % other error...
     rethrow(ME);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
-function han = plot(S,varargin)
+function han = plot(varargin)
 % plot - plots a projection of a contSet
 %
-% Syntax:  
+% Syntax:
 %    han = plot(S)
 %    han = plot(S,dims)
 %    han = plot(S,dims,type)
@@ -20,14 +20,14 @@ function han = plot(S,varargin)
 %
 % See also: plot
 
-% Author:       Tobias Ladner
-% Written:      21-July-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       21-July-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-% throw error if plot is not implemented by subclass
-throw(CORAerror('CORA:noops',S));
+% is overridden in subclass if implemented; throw error
+throw(CORAerror("CORA:noops",varargin{:}))
 
-%------------ END OF CODE ------------
+% ------------------------------ END OF CODE ------------------------------

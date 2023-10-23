@@ -8,7 +8,7 @@ function [V,H,krylovOrder] = subspace_Krylov_individual(A,nu_A,v,initKrylovOrder
 %
 % is used for tight error computation
 %
-% Syntax:  
+% Syntax:
 %    [V,H] = subspace_Krylov_individual(obj,v,options)
 %
 % Inputs:
@@ -32,14 +32,14 @@ function [V,H,krylovOrder] = subspace_Krylov_individual(A,nu_A,v,initKrylovOrder
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      09-November-2018
-% Last update:  13-November-2018   
-%               02-June-2020 (initial Krylov order adjusted)
-%               24-July-2020 (isinf-check added)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       09-November-2018
+% Last update:   13-November-2018   
+%                02-June-2020 (initial Krylov order adjusted)
+%                24-July-2020 (isinf-check added)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set precision for variable precison toolbox
 precision = 34;
@@ -153,4 +153,4 @@ while (errorBound_normalized > maxRelError) && (krylovOrder <= dim)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

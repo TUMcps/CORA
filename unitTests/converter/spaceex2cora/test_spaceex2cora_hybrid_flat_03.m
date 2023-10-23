@@ -11,12 +11,12 @@ function res = test_spaceex2cora_hybrid_flat_03
 % Outputs:
 %    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      10-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       10-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -37,7 +37,7 @@ sys_spaceex = feval(filename);
 
 
 % instantiate equivalent CORA model
-inv = mptPolytope(struct('A',[-1 0; 0 1],'b',[0; 0]));
+inv = polytope([-1 0; 0 1],[0; 0]);
 
 % transitions
 c = [1;0]; d = 0; C = [0 1]; D = 0;
@@ -63,4 +63,4 @@ if sys_cora ~= sys_spaceex
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

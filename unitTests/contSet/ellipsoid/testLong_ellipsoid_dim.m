@@ -1,7 +1,7 @@
 function res = testLong_ellipsoid_dim
 % testLong_ellipsoid_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_ellipsoid_dim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      13-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       13-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % random tests
 res = true;
@@ -48,4 +48,4 @@ for i=1:nrOfTests
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

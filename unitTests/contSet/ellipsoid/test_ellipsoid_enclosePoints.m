@@ -1,7 +1,7 @@
 function res = test_ellipsoid_enclosePoints
 % test_ellipsoid_enclosePoints - unit test function of enclosePoints
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_enclosePoints
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_enclosePoints
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      26-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       26-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -54,4 +54,4 @@ if ~all(contains(E,V)) || ~all(contains(Ed,Vd))
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

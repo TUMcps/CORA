@@ -1,7 +1,7 @@
 function display(obj)
 % display - displays the properties of a neurNetContrSys object
 %
-% Syntax:  
+% Syntax:
 %    display(obj)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function display(obj)
 %
 % See also: none
 
-% Author:        Tobias Ladner
+% Authors:       Tobias Ladner
 % Written:       23-November-2022
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % disp input if necessary
 dispInput(inputname(1))
@@ -39,4 +39,4 @@ disp(" ")
 disp("dt: (neural network sampling time)")
 disp(obj.dt)
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function inputArgsCheck(inputArgs)
 %    with semantic requirements; if any violation is detected, an error is
 %    thrown, otherwise nothing happens
 %
-% Syntax:  
+% Syntax:
 %    inputArgsCheck(inputArgs)
 %
 % Inputs:
@@ -42,12 +42,12 @@ function inputArgsCheck(inputArgs)
 %
 % See also: validateattributes
 
-% Author:       Mingrui Wang, Mark Wetzlinger
-% Written:      30-May-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mingrui Wang, Mark Wetzlinger
+% Written:       30-May-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check if disabled by macro
 if ~CHECKS_ENABLED
@@ -93,7 +93,7 @@ for i = 1:nrInputArgs
                 if ~found
                     % throw error
                     throw(CORAerror('CORA:wrongValue',...
-                        countingNumber(i),errMsgClassAttributes(class)));
+                        aux_countingNumber(i),aux_errMsgClassAttributes(class)));
                 end
 
             else
@@ -108,8 +108,8 @@ for i = 1:nrInputArgs
                         validateattributes(arg_name,class,attributes);
                     catch
                         % throw error
-                        throw(CORAerror('CORA:wrongValue',countingNumber(i),...
-                            errMsgClassAttributes(class,attributes)));
+                        throw(CORAerror('CORA:wrongValue',aux_countingNumber(i),...
+                            aux_errMsgClassAttributes(class,attributes)));
                     end
                 else
                     % check
@@ -123,10 +123,10 @@ for i = 1:nrInputArgs
                         % check attributes using built-in MATLAB function
                         try
                             validateattributes(arg_name,class,attributes);
-                        catch
+                        catch ME
                             % throw error
-                            throw(CORAerror('CORA:wrongValue',countingNumber(i),...
-                                errMsgClassAttributes(class,attributes)));
+                            throw(CORAerror('CORA:wrongValue',aux_countingNumber(i),...
+                                aux_errMsgClassAttributes(class,attributes)));
                         end
                     elseif all(entryCells)
                         % case 3: cell-array of cell-arrays: individual set
@@ -145,8 +145,8 @@ for i = 1:nrInputArgs
                         end
                         % throw error if no combination is ok
                         if ~any(checkok)
-                            throw(CORAerror('CORA:wrongValue',countingNumber(i),...
-                                        errMsgClassAttributes(class,attributes)));
+                            throw(CORAerror('CORA:wrongValue',aux_countingNumber(i),...
+                                        aux_errMsgClassAttributes(class,attributes)));
                         end
                     else
                         % some are cells, but some are not -> should not happen
@@ -172,9 +172,12 @@ for i = 1:nrInputArgs
                 validrange = ['''', strjoin(validateStr,"', '"), ''''];
 
                 % throw error
-                throw(CORAerror('CORA:wrongValue',countingNumber(i),...
+                throw(CORAerror('CORA:wrongValue',aux_countingNumber(i),...
                     validrange));
             end
+
+        otherwise
+            throw(CORAerror("CORA:wrongValue",'second','''att'' or ''str''.'))
 
     end
 
@@ -188,7 +191,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function text = errMsgClassAttributes(class,varargin)
+function text = aux_errMsgClassAttributes(class,varargin)
 
 % optional argument: attributes
 if ~isempty(varargin)
@@ -261,7 +264,7 @@ end
 
 end
 
-function text = countingNumber(i)
+function text = aux_countingNumber(i)
 % returns counting number in text form
 switch i
     case 1
@@ -288,4 +291,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

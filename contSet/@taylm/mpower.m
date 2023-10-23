@@ -1,7 +1,7 @@
 function res = mpower(base,exponent)
 % mpower - Overloaded '^' operator for taylm (power)
 %
-% Syntax:  
+% Syntax:
 %    res = mpower(base,exponent)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function res = mpower(base,exponent)
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      06-May-2016             
-% Last update:  03-October-2017 (DG) A^0 = I is added               
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       06-May-2016             
+% Last update:   03-October-2017 (DG, A^0 = I is added)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isscalar(base)
     res = power(base,exponent);
@@ -42,4 +42,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

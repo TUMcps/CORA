@@ -25,13 +25,13 @@ function res = ne(hyp1,hyp2,varargin)
 %
 % See also: conHyperplane/isequal
 
-% Author:       Mark Wetzlinger
-% Written:      23-December-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-December-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = ~isequal(hyp1,hyp2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

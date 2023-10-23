@@ -2,7 +2,7 @@ function [Rdelta,options] = deltaReach(obj,Rinit,options)
 % deltaReach - computes the reachable continuous set of the difference to 
 % the initial state for all initial states
 %
-% Syntax:  
+% Syntax:
 %    [Rdelta,options] = deltaReach(obj,Rinit,options)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function [Rdelta,options] = deltaReach(obj,Rinit,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      18-September-2012
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-September-2012
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %compute delta reachable set
@@ -63,9 +63,9 @@ end
 
 
 %total solution
-if isa(Rinit,'mptPolytope')
+if isa(Rinit,'polytope')
     %convert zonotopes to polytopes
-    Radd=mptPolytope(RV);
+    Radd=polytope(RV);
     Rdelta=Rhom+Radd;
 else
     %original computation
@@ -73,4 +73,4 @@ else
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

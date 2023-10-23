@@ -3,7 +3,7 @@ function res = example_parallel_hybrid_02_lowPassFilter()
 %    parallel hybrid automaton. The system consists of two piecewise linear
 %    low-pass filters that are connected in series
 %
-% Syntax:  
+% Syntax:
 %    res = example_parallel_hybrid_02_lowPassFilter
 %
 % Inputs:
@@ -18,13 +18,12 @@ function res = example_parallel_hybrid_02_lowPassFilter()
 %
 % See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      06-July-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       06-July-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
-
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % System Dynamics ---------------------------------------------------------
@@ -68,7 +67,9 @@ R = reach(pHA,params,options);
 projDim = {[1,2],[3,4]};
 for k=1:2
     figure; box on; hold on;
-    plot(R,projDim{k});
+    useCORAcolors("CORA:contDynamics")
+    plot(R,projDim{k},'Unify',true,'UnifyTotalSets',5);
+    updateColorIndex;
     plot(simRes,projDim{k});
     xlabel(['$x_{' num2str(projDim{k}(1)) '}$'],'interpreter','latex','FontSize',20);
     ylabel(['$x_{' num2str(projDim{k}(2)) '}$'],'interpreter','latex','FontSize',20);
@@ -77,4 +78,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

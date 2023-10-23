@@ -2,7 +2,7 @@ function [Rfirst,options] = initReach(obj,Rinit,options)
 % initReach - computes the reachable continuous set for the 
 % first time step in the 
 %
-% Syntax:  
+% Syntax:
 %    [obj,Rfirst,options] = initReach(obj,Rinit,options)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function [Rfirst,options] = initReach(obj,Rinit,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      07-November-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-November-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check whether error specification for Krylov space exists
 if isfield(options,'krylovError')
@@ -39,4 +39,4 @@ else
     [Rfirst,options] = initReach_Euclidean(obj,Rinit,options);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

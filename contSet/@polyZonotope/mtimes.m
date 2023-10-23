@@ -2,7 +2,7 @@ function pZ = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix or an
 %    interval matrix with a polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    pZ = mtimes(factor1,factor2)
 %
 % Inputs:
@@ -31,12 +31,12 @@ function pZ = mtimes(factor1,factor2)
 %
 % See also: plus, zonotope/mtimes
 
-% Author:       Niklas Kochdumper
-% Written:      25-June-2018 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-June-2018 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % find the polyZonotope object
 [pZ,matrix] = findClassArg(factor1,factor2,'polyZonotope');
@@ -53,8 +53,8 @@ try
             pZ.G = matrix*pZ.G;
         end
         
-        if ~isempty(pZ.Grest)
-            pZ.Grest = matrix*pZ.Grest;
+        if ~isempty(pZ.GI)
+            pZ.GI = matrix*pZ.GI;
         end
     
      
@@ -73,10 +73,10 @@ try
         if ~isempty(pZ.G)
             pZ.G = m*pZ.G;
         end
-        if ~isempty(pZ.Grest)
-            pZ.Grest = [m*pZ.Grest, diag(r*s)];
+        if ~isempty(pZ.GI)
+            pZ.GI = [m*pZ.GI, diag(r*s)];
         else
-            pZ.Grest = diag(r*s);
+            pZ.GI = diag(r*s);
         end
         
         
@@ -100,10 +100,10 @@ try
         if ~isempty(pZ.G)
             pZ.G = m*pZ.G;
         end
-        if ~isempty(pZ.Grest)
-            pZ.Grest = [m*pZ.Grest, diag(r*s)];
+        if ~isempty(pZ.GI)
+            pZ.GI = [m*pZ.GI, diag(r*s)];
         else
-            pZ.Grest = diag(r*s);
+            pZ.GI = diag(r*s);
         end
     
         
@@ -124,7 +124,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(pZ)
+    if representsa_(pZ,'emptySet',eps)
         return
     end
 
@@ -136,4 +136,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

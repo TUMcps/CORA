@@ -2,7 +2,7 @@ function pgon = polygon(cPZ,varargin)
 % polygon - compute polygon enclosure of a two-dimensional constrained
 %    polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    pgon = polygon(cPZ)
 %    pgon = polygon(cPZ,splits)
 %
@@ -16,11 +16,11 @@ function pgon = polygon(cPZ,varargin)
 % Example: 
 %    c = [0;0];
 %    G = [2 1; 0 1];
-%    expMat = [1 0; 0 1; 0 0];
+%    E = [1 0; 0 1; 0 0];
 %    A = [1 1 -0.25];
 %    b = 0.75;
-%    expMat_ = [2 0 0; 0 2 0; 0 0 1];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    EC = [2 0 0; 0 2 0; 0 0 1];
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 %
 %    pgon = polygon(cPZ,15);
 %    
@@ -32,12 +32,12 @@ function pgon = polygon(cPZ,varargin)
 %
 % See also: polygon, conPolyZono, zonotope
 
-% Author:       Niklas Kochdumper
-% Written:      19-January-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       19-January-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parse input arguments
     splits = setDefaultValues({10},varargin);
@@ -71,9 +71,9 @@ function pgon = polygon(cPZ,varargin)
     % transform to equivalent higher-dimensional polynomial zonotope
     c = [cPZ.c; -cPZ.b];
     G = blkdiag(cPZ.G,cPZ.A);
-    expMat = [cPZ.expMat,cPZ.expMat_];
+    E = [cPZ.E,cPZ.EC];
     
-    pZ = polyZonotope(c,G,[],expMat);
+    pZ = polyZonotope(c,G,[],E);
     
     % split the constrained polynomial zonotope multiple times to obtain a 
     % better over-approximation of the real shape
@@ -83,7 +83,7 @@ function pgon = polygon(cPZ,varargin)
     p = length(pZ.id); temp = ones(p,1);
     dom = interval(-temp,temp);
     
-    [polyPrev,V] = aux_getPolygon(pZ,cPZ.Grest);
+    [polyPrev,V] = aux_getPolygon(pZ,cPZ.GI);
     list{1}.set = pZ;
     list{1}.dom = dom;
     list{1}.V = V;
@@ -103,14 +103,14 @@ function pgon = polygon(cPZ,varargin)
 
                 % compute the corresponding polygons
                 if aux_intersectsNullSpace(res{1})
-                    [poly,V] = aux_getPolygon(res{1}.set,cPZ.Grest);
+                    [poly,V] = aux_getPolygon(res{1}.set,cPZ.GI);
                     list_{end+1} = res{1};
                     list_{end}.V = V;
                     polyAll = aux_unite(polyAll,poly);
                 end
 
                 if aux_intersectsNullSpace(res{2})
-                    [poly,V] = aux_getPolygon(res{2}.set,cPZ.Grest);
+                    [poly,V] = aux_getPolygon(res{2}.set,cPZ.GI);
                     list_{end+1} = res{2};
                     list_{end}.V = V;
                     polyAll = aux_unite(polyAll,poly);
@@ -139,15 +139,15 @@ function pgon = polygon(cPZ,varargin)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function [poly,V] = aux_getPolygon(set,Grest)
+function [poly,V] = aux_getPolygon(set,GI)
 % construct the polygon that corresponds to the splitted set
 
     % convert to zonotope
     Z = zonotope(set);
     Z = project(Z,[1,2]);
-    Z = zonotope([Z.Z,Grest]);
+    Z = zonotope(Z.c, [Z.G,GI]);
     
     % convert zonotope to polygon
     V = vertices(Z);
@@ -165,9 +165,9 @@ function res = aux_unite(S1,S2)
 % compute union of two polygons (also works for empty sets contrary to the
 % original polygon/union function)
 
-    if isempty(S1)
+    if isemptyobject(S1) || representsa_(S1,'emptySet',eps)
         res = S2;
-    elseif isempty(S2)
+    elseif isemptyobject(S2) || representsa_(S2,'emptySet',eps)
         res = S1;
     else
         res = S1 | S2;
@@ -210,4 +210,4 @@ function res = aux_intersectsNullSpace(obj)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

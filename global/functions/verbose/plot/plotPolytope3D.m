@@ -1,7 +1,7 @@
 function han = plotPolytope3D(V,varargin)
 % plotPolytope3D - plot a polytope defined by its vertices in 3D
 %
-% Syntax:  
+% Syntax:
 %    han = plotPolytope3D(V,varargin)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function han = plotPolytope3D(V,varargin)
 %
 % See also: plotPolygon
 
-% Author:       Niklas Kochdumper
-% Written:      02-December-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       02-December-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default
 NVpairs = {'Color',colorblind('b')};
@@ -41,7 +41,12 @@ end
 [~,facecolor] = readNameValuePair(NVpairs,'FaceColor');
 
 % check if vertex array is not empty
-if ~isempty(V)
+if isempty(V)
+    
+    % plot dummy set...
+    han = plot3(nan,nan,nan,'HandleVisibility','off');
+
+else
 
     % compute triangulation using the convex hull
     V = V';
@@ -70,7 +75,7 @@ if ~isempty(V)
             i = i + 1;
         end
         D{end+1} = C_(lower,:);
-        K{end+1} = getConnectedFacets(k_(lower:i-1,:));
+        K{end+1} = aux_getConnectedFacets(k_(lower:i-1,:));
         lower = i;
     end
     
@@ -112,9 +117,9 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function vert = getConnectedFacets(k)
+function vert = aux_getConnectedFacets(k)
 
     % initialize groups
     vert = mat2cell(k,ones(1,size(k,1)),3);
@@ -139,4 +144,4 @@ function vert = getConnectedFacets(k)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -5,7 +5,7 @@ function I = asinh(I)
 %
 % [asinh(x_), asinh(x--)].
 %
-% Syntax:  
+% Syntax:
 %    I = asinh(I)
 %
 % Inputs:
@@ -24,15 +24,15 @@ function I = asinh(I)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      12-February-2016
-% Last update:  21-February-2016 (DG, the matrix case is rewritten)
-%               21-May-2022 (MW, remove new instantiation)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       12-February-2016
+% Last update:   21-February-2016 (DG, the matrix case is rewritten)
+%                21-May-2022 (MW, remove new instantiation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 I.inf = asinh(I.inf);
 I.sup = asinh(I.sup);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

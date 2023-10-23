@@ -1,7 +1,7 @@
 function res = test_conZonotope_isemptyobject
 % test_conZonotope_isemptyobject - unit test function of isemptyobject
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_isemptyobject
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_conZonotope_isemptyobject
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate constrained zonotopes
 cZ1 = conZonotope();
@@ -34,4 +34,4 @@ cZ2 = conZonotope(Z,A,b);
 % check results
 res = isemptyobject(cZ1) && ~isemptyobject(cZ2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

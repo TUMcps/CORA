@@ -1,7 +1,7 @@
 function res = test_zonotope_supportFunc
 % test_zonotope_supportFunc - unit test function of support function
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_supportFunc
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_supportFunc
 %
 % See also: -
 
-% Author:       Mark Wetzlinger, Victor Gassmann
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger, Victor Gassmann
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -59,4 +59,4 @@ if ~compareMatrices([x1 x2 x3],[6 12; -2 10; -2 -10]')
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

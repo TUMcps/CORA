@@ -1,7 +1,7 @@
 function res = isempty(O)
 % isempty - checks if an emptySet object is the empty set (always true)
 %
-% Syntax:  
+% Syntax:
 %    res = isempty(O)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function res = isempty(O)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

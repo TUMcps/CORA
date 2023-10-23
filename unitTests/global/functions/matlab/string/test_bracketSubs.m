@@ -2,7 +2,7 @@ function res = test_bracketSubs
 % test_bracketSubs - unit test function for substitution of brackets with
 %    letters 'L' and 'R'
 %
-% Syntax:  
+% Syntax:
 %    res = test_bracketSubs()
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_bracketSubs
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init state string
 str = 'xL1R';
@@ -46,4 +46,4 @@ res(end+1,1) = strcmp(str_,str_true);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

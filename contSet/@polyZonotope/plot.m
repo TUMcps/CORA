@@ -1,7 +1,7 @@
 function han = plot(pZ,varargin)
 % plot - plots an over-approximative projection of a polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    han = plot(pZ)
 %    han = plot(pZ,dims)
 %    han = plot(pZ,dims,type)
@@ -33,18 +33,18 @@ function han = plot(pZ,varargin)
 %
 % See also: plotRandPoint
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger, Tobias Ladner
-% Written:      29-March-2018
-% Last update:  23-June-2020 (MW, harmonize with other plot functions)
-%               14-July-2020 (MW, merge with plotFilled)
-%               25-May-2022 (TL: 1D Plotting)
-%               23-February-2023 (TL: enlarge polygon if 2 regions)
-%               23-March-2023 (TL: bugfix Splits=0, clean up)
-%               05-April-2023 (TL: clean up using plotPolygon)
-%               11-July-2023 (TL: bug fix holes)
-% Last revision:12-July-2023 (TL, restructure)
+% Authors:       Niklas Kochdumper, Mark Wetzlinger, Tobias Ladner
+% Written:       29-March-2018
+% Last update:   23-June-2020 (MW, harmonize with other plot functions)
+%                14-July-2020 (MW, merge with plotFilled)
+%                25-May-2022 (TL, 1D Plotting)
+%                23-February-2023 (TL, enlarge polygon if 2 regions)
+%                23-March-2023 (TL, bugfix Splits=0, clean up)
+%                05-April-2023 (TL, clean up using plotPolygon)
+%                11-July-2023 (TL, bug fix holes)
+% Last revision: 12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input
 [pZ,dims,NVpairs,splits] = aux_parseInput(pZ,varargin{:});
@@ -63,7 +63,7 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [pZ,dims,NVpairs,splits] = aux_parseInput(pZ,varargin)
     % parse input
@@ -92,21 +92,21 @@ end
 
 function [pZ,dims] = aux_preprocess(pZ,dims)
     % delete all zero-generators
-    pZ = deleteZeros(pZ);
+    pZ = compact_(pZ,'states',eps);
     
     % project to desired dimensions
     pZ = project(pZ,dims);
     dims = 1:dim(pZ);
 
     % compact in lower-dimensional space
-    pZ = compact(pZ);
+    pZ = compact_(pZ,'all',eps);
 end
 
 function han = aux_plotNd(pZ,dims,NVpairs,splits)
     % plot n-dimensional set
 
-    % check if is zonotope (change to representsa)
-    if all(sum(pZ.expMat > 0, 2) == 1)
+    % check if is zonotope
+    if representsa_(pZ,'zonotope',eps)
         % plot zonottope
         han = plot(zonotope(pZ), dims, NVpairs{:});
     
@@ -283,4 +283,4 @@ function han = aux_plot3d(pZ,dims,NVpairs,splits)
     han = plotMultipleSetsAsOne(Zs,dims,NVpairs);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

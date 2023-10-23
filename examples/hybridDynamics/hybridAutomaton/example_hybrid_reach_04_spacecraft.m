@@ -3,7 +3,7 @@ function res = example_hybrid_reach_04_spacecraft()
 %                                      described in [1] solved with the 
 %                                      method from [2]
 %
-% Syntax:  
+% Syntax:
 %    res = example_hybrid_reach_04_spacecraft()
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = example_hybrid_reach_04_spacecraft()
 %   [2] N. Kochdumper et al. "Reachability Analysis for Hybrid Systems with 
 %       Nonlinear Guard Sets", HSCC 2020
 
-% Author:       Niklas Kochdumper
-% Written:      23-December-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       23-December-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Parameters --------------------------------------------------------------
@@ -34,7 +34,6 @@ R0 = zonotope([[-900; -400; 0; 0],diag([25;25;0;0])]);
 params.R0 = R0;                                    % initial set
 params.tFinal = 200;                               % final time
 params.startLoc = 1;                               % initial location
-
 
 
 % Reachability Options ----------------------------------------------------
@@ -56,11 +55,9 @@ options.alg = 'lin';
 options.guardIntersect = 'levelSet';
 
 
-
 % System Dynamics ---------------------------------------------------------
 
 HA = spacecraft_levelSet();
-
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -72,11 +69,9 @@ tComp = toc;
 disp(['computation time: ',num2str(tComp)]);
 
 
-
 % Simulation --------------------------------------------------------------
 
 simRes = simulateRandom(HA,params); 
-
 
 
 % Visualization -----------------------------------------------------------
@@ -114,7 +109,6 @@ xlim([-1000,200]);
 ylim([-450,150]);
 
 
-
 % Plot 2: velocity space
 
 figure ; hold on; grid on; box on
@@ -149,4 +143,4 @@ ylim([-4,4]);
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

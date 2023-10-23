@@ -1,7 +1,7 @@
 function res = test_conZonotope_generateRandom
 % test_conZonotope_generateRandom - unit test function of generateRandom
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_generateRandom
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_conZonotope_generateRandom
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      19-May-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-May-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty call
 cZ = conZonotope.generateRandom();
@@ -81,4 +81,4 @@ res(end+1,1) = size(generators(cZ),2) == nrGens && size(cZ.A,1) == nrCons;
 % unify results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

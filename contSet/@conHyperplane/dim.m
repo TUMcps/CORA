@@ -2,7 +2,7 @@ function n = dim(hyp)
 % dim - returns the dimension of the ambient space of a constrained
 %    hyperplane
 %
-% Syntax:  
+% Syntax:
 %    n = dim(hyp)
 %
 % Inputs:
@@ -21,13 +21,13 @@ function n = dim(hyp)
 %
 % See also: none
 
-% Author:       Victor Gassmann
-% Written:      16-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       16-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 n = max(length(hyp.h.c),size(hyp.C,2));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

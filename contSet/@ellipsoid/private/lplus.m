@@ -28,12 +28,12 @@ function E_L = lplus(E,L,mode)
 %
 % See also: plus
 
-% Author:       Victor Gassmann
-% Written:      15-March-2019
-% Last update:  05-July-2022 (VG: class array support)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       15-March-2019
+% Last update:   05-July-2022 (VG, class array support)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if length(E)==1
     E_L = E;
@@ -42,7 +42,7 @@ end
 
 % reverse order to avoid changing array size each iteration
 for i=size(L,2):-1:1
-    E_L(i) = lplus_single(E,L(:,i),mode);
+    E_L(i) = aux_lplus_single(E,L(:,i),mode);
 end
 
 end
@@ -50,7 +50,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function E_l = lplus_single(E,l,mode)
+function E_l = aux_lplus_single(E,l,mode)
 % see [1]
 n = dim(E(1));
 if strcmp(mode,'outer')
@@ -83,4 +83,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

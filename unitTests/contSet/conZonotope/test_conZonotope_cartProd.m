@@ -1,7 +1,7 @@
 function res = test_conZonotope_cartProd
 % test_conZonotope_cartProd - unit test function for Cartesian product
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_cartProd
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_conZonotope_cartProd
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      03-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -91,7 +91,6 @@ if ~isequal(cZ_,cZ_true)
 end
 
 
-
 % constrained zonotope - numeric case (two orderings):
 
 % numeric 2
@@ -111,4 +110,4 @@ if ~isequal(cZ_,cZ_true) || ~isequal(cZ__,cZ__true)
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

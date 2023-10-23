@@ -7,7 +7,7 @@ function res = testLong_nonlinParamSys_reach_01_tank
 % It is checked whether the enclosing interval of the final reachable set 
 % is close to an interval provided by a previous solution that has been saved
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_nonlinParamSys_reach_01_tank
 %
 % Inputs:
@@ -16,14 +16,14 @@ function res = testLong_nonlinParamSys_reach_01_tank
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      30-June-2009
-% Last update:  16-June-2011
-%               16-August-2016
-%               23-April-2020 (restructure params/options) 
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       30-June-2009
+% Last update:   16-June-2011
+%                16-August-2016
+%                23-April-2020 (restructure params/options) 
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Parameters --------------------------------------------------------------
@@ -67,4 +67,4 @@ IH_saved = interval( ...
 %final result
 res = isequal(IH,IH_saved,1e-8);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

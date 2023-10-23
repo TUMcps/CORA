@@ -6,7 +6,7 @@ function res = testLong_linearSysDT_observe_04_FRad_A()
 % vehicle model against an alternative implementation of the FRad-A method
 % published in [1].
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_linearSysDT_observe_04_FRad_A
 %
 % Inputs:
@@ -20,12 +20,12 @@ function res = testLong_linearSysDT_observe_04_FRad_A()
 %        state estimation by zonotopes. Automatica, 41(6):1035-1043,
 %        2005.
 
-% Author:       Matthias Althoff
-% Written:      25-Feb-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-February-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %% Load side slip model
@@ -61,7 +61,6 @@ end
 res = all(resPartial);
 
 
-
 % %% Plot results of estimated states
 % % create time vector
 % t = 0:options.timeStep:params.tFinal;
@@ -81,4 +80,4 @@ res = all(resPartial);
 % end
 
         
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

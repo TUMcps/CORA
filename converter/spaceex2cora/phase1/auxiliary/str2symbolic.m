@@ -1,7 +1,7 @@
 function s = str2symbolic(str)
 % str2symbolic - Convert strings of equations into symbolic equations
 %
-% Syntax:  
+% Syntax:
 %    s = str2symbolic(str)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function s = str2symbolic(str)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %replace newlines to suppress warnings
 str = regexprep(str, "\n", " ");
@@ -38,4 +38,4 @@ catch
     s = sym(str);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

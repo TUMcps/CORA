@@ -36,13 +36,13 @@ function res = ne(trans1,trans2,varargin)
 %
 % See also: transition/isequal
 
-% Author:       Mark Wetzlinger
-% Written:      10-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       10-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = ~isequal(trans1,trans2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

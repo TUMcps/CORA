@@ -5,7 +5,7 @@ function I = sinh(I)
 %
 % [sinh(x_), sinh(x--)].
 %
-% Syntax:  
+% Syntax:
 %    I = sinh(I)
 %
 % Inputs:
@@ -24,15 +24,15 @@ function I = sinh(I)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      05-February-2016
-% Last update:  21-February-2016 (DG, the matrix case is rewritten)
-%               21-May-2022 (MW, remove new instantiation)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-February-2016
+% Last update:   21-February-2016 (DG, the matrix case is rewritten)
+%                21-May-2022 (MW, remove new instantiation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 I.inf = sinh(I.inf);
 I.sup = sinh(I.sup);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

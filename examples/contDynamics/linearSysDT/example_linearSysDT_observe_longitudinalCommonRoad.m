@@ -4,7 +4,7 @@ function completed = example_linearSysDT_observe_longitudinalCommonRoad
 %     The longitundinal dynamics of traffic participants from a CommonRoad
 %     file is estimated.
 %
-% Syntax:  
+% Syntax:
 %    completed = example_linearSysDT_observe_longitudinalCommonRoad
 %
 % Inputs:
@@ -13,12 +13,12 @@ function completed = example_linearSysDT_observe_longitudinalCommonRoad
 % Outputs:
 %    completed - true/false 
 
-% Author:       Matthias Althoff, Niklas Kochdumper, Carlos Valero
-% Written:      15-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper, Carlos Valero
+% Written:       15-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %% System Dynamics
@@ -33,7 +33,6 @@ sys = linearSys(A,B,[],C);
 % convert to discrete-time system
 Ts = 0.1;                           % sampling time
 sys = linearSysDT(sys,Ts);
-
 
 
 %% Load CommonRoad Scenario 
@@ -67,7 +66,6 @@ for i = 1:length(traj)
    traj{i}.t = tVec;
    traj{i}.x = temp1;
 end
-
 
 
 %% Parameters
@@ -113,4 +111,4 @@ ylabel('v_x');
 completed = true;
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

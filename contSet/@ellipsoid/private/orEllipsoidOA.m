@@ -2,7 +2,7 @@ function E = orEllipsoidOA(E)
 % orEllipsoidOA - Computes an outer-approximation of the union between
 %    ellipsoids
 %
-% Syntax:  
+% Syntax:
 %    E = orEllipsoidOA(E)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function E = orEllipsoidOA(E)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      15-March-2021
-% Last update:  05-July-2022 (VG: remove unecessary input)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       15-March-2021
+% Last update:   05-July-2022 (VG, remove unecessary input)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % collapse cell array
 N = length(E);
@@ -389,7 +389,6 @@ elseif isSDPT3
     blk(1+N+1,2) = {n};
     
 
-
     C = cell(1+N+1,1);
     At = cell(1+N+1,1);
     
@@ -533,4 +532,4 @@ end
 % backtransform
 E = ellipsoid(Q,q);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

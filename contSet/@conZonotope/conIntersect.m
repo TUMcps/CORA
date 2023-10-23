@@ -3,7 +3,7 @@ function res = conIntersect(cZ1,cZ2,M)
 %    of a constrained zonotope cZ1 has to intersect the constrained 
 %    zonotope cZ2 (see Eq. (13) in [1] with cZ1=Z, cZ2=Y, M=R)
 %
-% Syntax:  
+% Syntax:
 %    res = conIntersect(cZ1,cZ2,M)
 %
 % Inputs:
@@ -35,15 +35,15 @@ function res = conIntersect(cZ1,cZ2,M)
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       04-March-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
        
 % get object properties
-cz = cZ1.Z(:,1); cy = cZ2.Z(:,1); Gz = cZ1.Z(:,2:end); Gy = cZ2.Z(:,2:end);
+cz = cZ1.c; cy = cZ2.c; Gz = cZ1.G; Gy = cZ2.G;
 
 % construct resulting set according to Eq. (13) in [1]
 c = cz;
@@ -70,4 +70,4 @@ end
 % instantiate intersection
 res = conZonotope(c,G,A,b);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function c = center(E)
 % center - returns the center of an ellipsoid object
 %
-% Syntax:  
+% Syntax:
 %    c = center(E);
 %
 % Inputs:
@@ -20,16 +20,16 @@ function c = center(E)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      13-March-2019
-% Last update:  04-July-2022 (VG: avoid class array problems)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       13-March-2019
+% Last update:   04-July-2022 (VG, avoid class array problems)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % make sure it is not a class array
 inputArgsCheck({{E,'att','ellipsoid','scalar'}});
 
 c = E.q;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

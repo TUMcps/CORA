@@ -2,7 +2,7 @@ function res = example_nonlinearDA_reach_03_LPVSMIB
 % example_nonlinearDA_reach_03_LPVSMIB - example for nonlinear
 %    differential algebraic reachability analysis taken from [1]
 %
-% Syntax:  
+% Syntax:
 %    example_nonlinearDA_reach_03_LPVSMIB
 %
 % Inputs:
@@ -15,18 +15,18 @@ function res = example_nonlinearDA_reach_03_LPVSMIB
 %   [1] A. El-Guindy "LPV control with formal gurantees for transient stability
 %       of power systems", 2017 IEEE Power & Energy Society General Meeting.
 
-% Author:       Ahmed El-Guindy, Mark Wetzlinger
-% Written:      22-May-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Ahmed El-Guindy, Mark Wetzlinger
+% Written:       22-May-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % SMIB system with 3 diff. variables and 8 alg. variables
 dim_x = 3;
 dim_y = 8;
 
-[P,x0,y0] = modelParameters();
+[P,x0,y0] = aux_modelParameters();
 
 
 % Parameter ---------------------------------------------------------------
@@ -185,9 +185,9 @@ res = true;
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function [P,x0,y0] = modelParameters()
+function [P,x0,y0] = aux_modelParameters()
 % define parameter of the model
 
     % Assign fixed parameters ------------------------------------------------
@@ -225,13 +225,13 @@ function [P,x0,y0] = modelParameters()
     % Set options for nonlinear solver to obtain initial variables of remaining
     % variables of the system
     options_fsolve = optimoptions('fsolve','Display','off');
-    X0netz = fsolve(@(X)init_sim_netzwerk(X,P),ones(4,1),options_fsolve);
+    X0netz = fsolve(@(X)aux_init_sim_netzwerk(X,P),ones(4,1),options_fsolve);
 
     P.theta1  = X0netz(1);     % phase at bus-1
     P.q1      = X0netz(2);     % reactive power at bus-1
 
     % Generator Initinal values ----------------------------------------------
-    X0gen=fsolve(@(X)init_generator(X,P),ones(10,1),options_fsolve);
+    X0gen=fsolve(@(X)aux_init_generator(X,P),ones(10,1),options_fsolve);
 
     % diff. variables
     delta0  = X0gen(1);        % state variable
@@ -252,7 +252,7 @@ function [P,x0,y0] = modelParameters()
     y0 = [ed0 eq0 id0 iq0 P.p1 P.q1 P.theta1 P.v1];
 end
 
-function X0 = init_sim_netzwerk(X, P)
+function X0 = aux_init_sim_netzwerk(X, P)
 % Initialisation of the grid, POWER FLOW
     theta1 = X(1);
     q1     = X(2);
@@ -266,7 +266,7 @@ function X0 = init_sim_netzwerk(X, P)
     ];
 end
 
-function X0=init_generator(X,P)
+function X0=aux_init_generator(X,P)
 % Assignment of the variables
 
     delta=X(1);
@@ -293,4 +293,4 @@ function X0=init_generator(X,P)
     ];
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

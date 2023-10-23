@@ -2,7 +2,7 @@ function E = plus(E,S,varargin)
 % plus - Overloaded '+' operator for approximating the Minkowski sum of an
 %    ellipsoid and another set 
 %
-% Syntax:  
+% Syntax:
 %    E = plus(E,S)
 %    E = plus(E,S,mode)
 %    E = plus(E,S,mode,L)
@@ -38,13 +38,13 @@ function E = plus(E,S,varargin)
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      09-March-2021
-% Last update:  04-July-2022 (VG: class array instead of cell array)
-%               17-March-2023 (MW, simplify argument pre-processing)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       09-March-2021
+% Last update:   04-July-2022 (VG, class array instead of cell array)
+%                17-March-2023 (MW, simplify argument pre-processing)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
 if nargin > 4
@@ -67,14 +67,14 @@ inputArgsCheck({{E,'att','ellipsoid','scalar'};
                 {L,'att','numeric'}});
 
 % ind mask for which ellipsoids are empty
-ind_empty = isempty(E);
+ind_empty = representsa_(E,'emptySet',eps);
 E(ind_empty) = [];
 % Minkowski addition with empty set
-if isempty(E)
+if representsa_(E,'emptySet',eps)
     return;
 elseif (isnumeric(S) && isempty(S)) || (isa(S,'contSet') && any(isemptyobject(S)))
     E = ellipsoid(); return
-elseif (isnumeric(S) && ~any(S)) || (isa(S,'contSet') && isZero(S))
+elseif (isnumeric(S) && ~any(S)) || (isa(S,'contSet') && representsa_(S,'origin',eps))
     % adding the origin does not change the set...
     return;
 end
@@ -130,4 +130,4 @@ end
 % throw error for all other combinations
 throw(CORAerror('CORA:noops',E,S));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_location_reach
 % test_location_reach - test function for reach
 %
-% Syntax:  
+% Syntax:
 %    res = test_location_reach
 %
 % Inputs:
@@ -16,15 +16,15 @@ function res = test_location_reach
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init location
-inv = mptPolytope([1 0],2);
+inv = polytope([1 0],2);
 guard = conHyperplane([1 0],2);
 reset = struct('A',eye(2),'c',[3;-2]);
 trans = transition(guard,reset,2);
@@ -63,4 +63,4 @@ res(end+1,1) = arrayfun(@(x) isIntersecting(x.set-reset.c,guard),Rjump,...
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

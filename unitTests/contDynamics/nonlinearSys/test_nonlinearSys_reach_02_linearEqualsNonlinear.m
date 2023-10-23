@@ -4,7 +4,7 @@ function res = test_nonlinearSys_reach_02_linearEqualsNonlinear
 %     of a linear system equals the solution obtained by the nonlinear
 %     system class when the system is linear
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSys_reach_02_linearEqualsNonlinear
 %
 % Inputs:
@@ -13,12 +13,12 @@ function res = test_nonlinearSys_reach_02_linearEqualsNonlinear
 % Outputs:
 %    res - true/false 
 
-% Author:       Matthias Althoff
-% Written:      09-August-2016
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       09-August-2016
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -83,4 +83,4 @@ IH_nonlinear_T2 = interval(Rnonlin2.timePoint.set{end});
 % final result
 res = isequal(IH,IH_nonlinear_T1,1e-8) && isequal(IH,IH_nonlinear_T2,1e-8);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_conHyperplane_generateRandom
 % test_conHyperplane_generateRandom - unit test function of generateRandom
 %
-% Syntax:  
+% Syntax:
 %    res = test_conHyperplane_generateRandom
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_conHyperplane_generateRandom
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      02-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       02-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -44,4 +44,4 @@ resvec(end+1) = all(hyp.h.d == 3);
 % unify results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

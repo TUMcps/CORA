@@ -7,7 +7,7 @@ function res = test_hybridAutomaton_reach_01_bouncingBall
 % saved. It is also checked whether the simulation matches the analytical
 % solution.
 %
-% Syntax:  
+% Syntax:
 %    res = test_hybridAutomaton_reach_01_bouncingBall
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_hybridAutomaton_reach_01_bouncingBall
 % Outputs:
 %    res - true/false 
 
-% Author:       Matthias Althoff
-% Written:      27-July-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       27-July-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Reachability Options ----------------------------------------------------
@@ -54,7 +54,7 @@ linSys = linearSys('linearSys',A,B,c);
 alpha = -0.75;                                      % rebound factor
 
 % invariant set 
-inv = mptPolytope([-1,0],0);
+inv = polytope([-1,0],0);
 
 % guard sets
 guard = conHyperplane([1,0],0,[0,1],0);
@@ -71,8 +71,6 @@ loc = location('loc1',inv,trans,linSys);
 
 % hybrid automaton
 HA = hybridAutomaton(loc);
-
-
 
 
 % Simulation and Reachability Analysis ------------------------------------
@@ -117,7 +115,6 @@ res_xHit = all(all(withinTol(xHit,xHit_sim,1e-10)));
 res_sim = res_tHit && res_xHit;
 
 
-
 % Check Reachable Set -----------------------------------------------------
 
 I = interval(R(end).timeInterval.set{end});
@@ -133,4 +130,4 @@ res_reach = isequal(I,I_saved,1e-4);
 % overall result
 res = res_sim && res_reach;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

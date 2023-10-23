@@ -2,7 +2,7 @@ function res = testLong_conPolyZono_zonotope
 % testLong_conPolyZono_zonotope - unit test function for 
 %    zonotope enclosure of constrained polynomial zonotopes
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conPolyZono_zonotope
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_conPolyZono_zonotope
 %
 % See also: conPolyZono/zonotope
 
-% Author:       Niklas Kochdumper
-% Written:      26-January-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-January-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 tol = 1e-5;
@@ -53,4 +53,4 @@ for i = 1:5
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = test_nonlinearSysDT_reach_04_uTransVec
 % test_nonlinearSysDT_reach_04_uTransVec - unit test for nonlinear 
 %    discrete time reachability analysis from [1, Sec.6] using uTransVec
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSysDT_reach_04_uTransVec
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = test_nonlinearSysDT_reach_04_uTransVec
 %    [1] J.M. Bravo, Robust MPC of constrained discrete-time
 %        nonlinear systems based on approximated reachable sets, 2006.
 
-% Author:       Laura Luetzow
-% Written:      25-July-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Laura Luetzow
+% Written:       25-July-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -68,4 +68,5 @@ end
 
 res = true;
 return 
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

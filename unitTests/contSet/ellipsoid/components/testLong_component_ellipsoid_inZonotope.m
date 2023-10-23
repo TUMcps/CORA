@@ -2,7 +2,7 @@ function res = testLong_component_ellipsoid_inZonotope
 % testLong_component_ellipsoid_inZonotope - unit test function of
 %    testLong_ellipsoid_inZonotope
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_component_ellipsoid_inZonotope
 %
 % Inputs:
@@ -17,12 +17,13 @@ function res = testLong_component_ellipsoid_inZonotope
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      17-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       17-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 res = true;
 nRuns = 2;
 for i=2:3
@@ -42,4 +43,5 @@ for i=2:3
         end
     end
 end
-%------------- END OF CODE --------------
+
+% ------------------------------ END OF CODE ------------------------------

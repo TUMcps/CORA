@@ -1,7 +1,7 @@
 function O = mtimes(factor1,factor2)
 % mtimes - overloaded '*' operator for the linear map of an empty set
 %
-% Syntax:  
+% Syntax:
 %    O = mtimes(factor1,factor2)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function O = mtimes(factor1,factor2)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  05-April-2023 (MW, bug fix)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   05-April-2023 (MW, bug fix)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % find the fullspace object
 [O,M] = findClassArg(factor1,factor2,'emptySet');
@@ -45,4 +45,4 @@ elseif isa(M,'intervalMatrix') || isa(M,'matZonotope') || isa(M,'matPolytope')
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

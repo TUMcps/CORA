@@ -3,7 +3,7 @@ function dH = dH2box(Z,varargin)
 %    to the interval over-approximation of the provided zonotope Z
 %    note: this function is not optimized w.r.t computational efficiency
 %
-% Syntax:  
+% Syntax:
 %    dH = dH2box(Z,method)
 %
 % Inputs:
@@ -37,12 +37,12 @@ function dH = dH2box(Z,varargin)
 %
 % See also: 
 
-% Author:       Mark Wetzlinger
-% Written:      08-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       08-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % input arguments
 if dim(Z) <= 3
@@ -55,13 +55,13 @@ end
 method = setDefaultValues({dV},varargin);
 
 % check input arguments
-inputArgsCheck({{Z,'att','zonotope','nonempty'};
+inputArgsCheck({{Z,'att','zonotope'};
                 {method,'str',{'exact','naive','ell','wgreedy','wopt'}}});
 
 % methods
 if strcmp(method,'exact')
     % ... computes near-exact dH according to [1]
-    dH = dH2box_exact(Z);
+    dH = aux_dH2box_exact(Z);
 elseif strcmp(method,'naive')
     % ... computes the radius of the box over-approximation of Z
     dH = vecnorm(rad(interval(Z)));
@@ -69,23 +69,24 @@ elseif strcmp(method,'ell')
     % ... computes the distance from a sequence of box under-approximations
     %       to the respective box over-approximations, based on ellipsoid
     %       inscriptions in zonotopes from [3]
-    dH = dH2box_ell(Z);
+    dH = aux_dH2box_ell(Z);
 elseif strcmp(method,'wgreedy')
     % ... computes the length of the sum of the generators,
     %       where the largest entry (by absolute value) is set to 0 [2]
-    dH = dH2box_wgreedy(Z);
+    dH = aux_dH2box_wgreedy(Z);
 elseif strcmp(method,'wopt')
     % ... computes the length of the sum of the generators,
     %       where the length are scaled by choosing optimal factors
-    dH = dH2box_wopt(Z);
+    dH = aux_dH2box_wopt(Z);
 end
 
 
 end
 
-% Auxiliary Functions -----------------------------------------------------
 
-function dH = dH2box_exact(Z)
+% Auxiliary functions -----------------------------------------------------
+
+function dH = aux_dH2box_exact(Z)
 
     % generator matrices
     G = generators(Z);
@@ -111,7 +112,7 @@ function dH = dH2box_exact(Z)
 
 end
 
-function dH = dH2box_ell(Z)
+function dH = aux_dH2box_ell(Z)
 
 % generator matrix
 G = generators(Z);
@@ -203,7 +204,7 @@ dH = sum(dH);
 
 end
 
-function dH = dH2box_wgreedy(Z)
+function dH = aux_dH2box_wgreedy(Z)
 
     % generator matrices
     G = generators(Z);
@@ -222,7 +223,7 @@ function dH = dH2box_wgreedy(Z)
 
 end
 
-function dH = dH2box_wopt(Z)
+function dH = aux_dH2box_wopt(Z)
     
     % generator matrices
     G = generators(Z);
@@ -248,4 +249,4 @@ function dH = dH2box_wopt(Z)
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

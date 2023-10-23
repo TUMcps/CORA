@@ -7,7 +7,7 @@ function res = testSDPT3_linearSysDT_observe_gain_01_PRadA()
 % [1]; the unit test checks whether the same result as in a previous
 % implementation is obtained
 %
-% Syntax:  
+% Syntax:
 %    res = testSDPT3_linearSysDT_observe_gain_01_PRadA()
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = testSDPT3_linearSysDT_observe_gain_01_PRadA()
 %        D. Dumur. Zonotopic guaranteed state estimation for
 %        uncertain systems. Automatica, 49(11):3418–3424, 2013.
 
-% Author:       Matthias Althoff
-% Written:      18-September-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-September-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "observe_gain_PRadA"
 path = CORAROOT;
@@ -65,4 +65,4 @@ delete(target);
 rmpath(genpath(path));
 addpath(genpath(path));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

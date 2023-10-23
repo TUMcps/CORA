@@ -2,7 +2,7 @@ function [R,tcomp] = observe_ESO_C(obj,options)
 % observe_ESO_C - computes the guaranteed state estimation approach of [1].
 %
 %
-% Syntax:  
+% Syntax:
 %    [R,tcomp] = observe_ESO_C(obj,options)
 %
 % Inputs:
@@ -26,15 +26,15 @@ function [R,tcomp] = observe_ESO_C(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       04-Mar-2021
+% Authors:       Matthias Althoff
+% Written:       04-March-2021
 % Last update:   ---
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % obtain offline gains
+
 [L,P,gamma,lambda] = observe_gain_ESO_C(obj,options);
 
 %%initialize computation
@@ -84,4 +84,4 @@ end
 
 tcomp = toc;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

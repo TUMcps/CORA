@@ -2,7 +2,7 @@ function res = test_conZonotope_deleteZeros
 % test_conZonotope_deleteZeros - unit test function for the deletion of
 %    redundant generators or constraints
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_deleteZeros
 %
 % Inputs:
@@ -21,19 +21,19 @@ function res = test_conZonotope_deleteZeros
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Mark Wetzlinger
-% Written:      28-March-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-March-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
 % check empty conZonotope
 cZ_empty = conZonotope();
 cZ_empty_ = deleteZeros(cZ_empty);
-if ~isempty(cZ_empty_)
+if ~representsa_(cZ_empty_,'emptySet',eps)
     res = false; return;
 end
 
@@ -91,26 +91,26 @@ for i=1:nrOfTests
 
     % checks
     % no generator matrix (no A,b) -> no change
-    if size(cZ_noG_.Z(:,2:end),2) ~= 0
+    if size(cZ_noG_.G,2) ~= 0
         res = false; break;
     end
     % full G, no A,b -> no change
-    if size(cZ_noAb_.Z(:,2:end),2) ~= nrGens
+    if size(cZ_noAb_.G,2) ~= nrGens
         res = false; break;
     end
     % full G,A,b -> no change
-    if size(cZ_.Z(:,2:end),2) ~= nrGens
+    if size(cZ_.G,2) ~= nrGens
         res = false; break;
     end
     if size(cZ_.A,1) ~= nrConstr
         res = false; break;
     end
     % G with zeros, no A,b -> less gens
-    if size(cZ_Gzeros_noAb_.Z(:,2:end),2) ~= nrGens - nrGensRemoved
+    if size(cZ_Gzeros_noAb_.G,2) ~= nrGens - nrGensRemoved
         res = false; break;
     end
     % full G, A,b with zeros -> less constr
-    if size(cZ_Abzeros_.Z(:,2:end),2) ~= nrGens
+    if size(cZ_Abzeros_.G,2) ~= nrGens
         res = false; break;
     end
     if size(cZ_Abzeros_.A,1) ~= nrConstr - nrConstrRemoved
@@ -124,4 +124,4 @@ for i=1:nrOfTests
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

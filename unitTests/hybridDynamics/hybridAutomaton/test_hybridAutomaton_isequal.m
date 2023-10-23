@@ -1,7 +1,7 @@
 function res = test_hybridAutomaton_isequal
 % test_hybridAutomaton_isequal - test function for isequal
 %
-% Syntax:  
+% Syntax:
 %    res = test_hybridAutomaton_isequal
 %
 % Inputs:
@@ -16,18 +16,18 @@ function res = test_hybridAutomaton_isequal
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      16-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compare empty automata
 res = isequal(hybridAutomaton(),hybridAutomaton());
 
 % invariant
-inv_2D_poly = mptPolytope([-1,0],0);
+inv_2D_poly = polytope([-1,0],0);
 inv_2D_int = interval([-4;-2],[4;8]);
 inv_3D_int = interval([-1;0;0],[1;2;3]);
 
@@ -93,4 +93,4 @@ res(end+1,1) = ~isequal([HA1;HA2],HA3);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

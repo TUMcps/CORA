@@ -1,7 +1,7 @@
 function val = volume_(O)
 % volume_ - returns the volume of a full-dimensional space
 %
-% Syntax:  
+% Syntax:
 %    val = volume_(O)
 %
 % Inputs:
@@ -18,16 +18,16 @@ function val = volume_(O)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/volume
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  05-April-2023 (rename volume_)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   05-April-2023 (rename volume_)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % volume always zero
 val = 0;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

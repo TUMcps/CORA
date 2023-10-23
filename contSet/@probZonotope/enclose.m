@@ -4,10 +4,10 @@ function probZ = enclose(probZ,Ar,varargin)
 %
 % Description:
 %    Computes the set
-%    { a x1 + (1 - a) * (Ar x1 + x2) | x1 \in probZ, x2 \in Z2, a \in [0,1] }
+%    { a x1 + (1 - a) * x2 | x1 \in probZ, x2 \in Z2, a \in [0,1] }
 %    where Z2 = Ar*probZ + v
 %
-% Syntax:  
+% Syntax:
 %    probZ = enclose(probZ,Ar)
 %
 % Inputs:
@@ -35,14 +35,14 @@ function probZ = enclose(probZ,Ar,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      06-September-2007
-% Last update:  03-September-2009
-%               04-September-2009
-%               17-July-2020
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-September-2007
+% Last update:   03-September-2009
+%                04-September-2009
+%                17-July-2020
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 Rtrans = setDefaultValues({zeros(length(Ar),1)},varargin);
@@ -71,4 +71,4 @@ if trace(Ar)<0
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

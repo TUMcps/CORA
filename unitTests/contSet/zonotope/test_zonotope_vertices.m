@@ -1,7 +1,7 @@
 function res = test_zonotope_vertices
 % test_zonotope_vertices - unit test function of vertices
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_vertices
 %
 % Inputs:
@@ -16,13 +16,13 @@ function res = test_zonotope_vertices
 %
 % See also: -
 
-% Author:       Matthias Althoff, Tobias Ladner
-% Written:      26-July-2016
-% Last update:  09-February-2017
-%               01-June-2023 (TL: more cases)
-% Last revision:---
+% Authors:       Matthias Althoff, Tobias Ladner
+% Written:       26-July-2016
+% Last update:   09-February-2017
+%                01-June-2023 (TL, more cases)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -82,4 +82,4 @@ resvec(end+1) = compareMatrices(V,V0);
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

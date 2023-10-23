@@ -2,7 +2,7 @@ function hs = plus(summand1,summand2)
 % plus - Overloaded '+' operator for the addition of a vector with a
 %    halfspace
 %
-% Syntax:  
+% Syntax:
 %    hs = plus(summand1,summand2)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function hs = plus(summand1,summand2)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      28-August-2013
-% Last update:  16-March-2021 (MW, error handling)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       28-August-2013
+% Last update:   16-March-2021 (MW, error handling)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % pre-processing: assign halfspace and summand
 [hs,summand] = findClassArg(summand1,summand2,'halfspace');
@@ -53,7 +53,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(hs)
+    if representsa_(hs,'emptySet',eps)
         return
     elseif (isnumeric(summand) && isempty(summand)) ...
             || (isa(summand,'contSet') && isemptyobject(summand))
@@ -68,4 +68,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

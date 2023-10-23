@@ -2,8 +2,8 @@ function res = test_intervalMatrix_norm
 % test_intervalMatrix_norm - unit test function of norm; the result is
 %    compared to the norm of some vertices
 % 
-% Syntax:  
-%    res = test_matZonotope_norm
+% Syntax:
+%    res = test_intervalMatrix_norm
 %
 % Inputs:
 %    -
@@ -17,12 +17,12 @@ function res = test_intervalMatrix_norm
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      02-November-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       02-November-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create interval matrix
 % center
@@ -88,4 +88,4 @@ if ~res
      save(file_path, 'V');
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

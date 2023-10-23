@@ -5,15 +5,15 @@ function [powVariables, NrOf] = symPowerVariables(scenario)
 % (nrOfGenBuses+2)...(nrOfGenBuses+nrOfLoadBuses+2) are the load buses
 %
 % dynamic states:
-% x(i - 1) = delta(i), i = 2...nrOfGenerators; generator phase angles
-% x(nrOfGenerators - 1 + i) = omega(i), i = 1...nrOfGenerators; angular velocity
-% x(2*nrOfGenerators - 1 + i) = P_m(i), i = 1...nrOfGenerators; mechanical
+% x(i) = delta(i), i = 1...nrOfGenerators; generator phase angles
+% x(nrOfGenerators + i) = omega(i), i = 1...nrOfGenerators; angular velocity
+% x(2*nrOfGenerators + i) = P_m(i), i = 1...nrOfGenerators; mechanical
 % power
 %
 % algebraic states:
 % y(i) = E(i), i = 1...nrOfGenerators; generator voltage
 % y(nrOfGenerators + i) = V(nrOfGenerators + i), i = 1...nrOfLoadBuses; bus voltage
-% y(nrOfGenerators + nrOfLoadBuses + i) = Theta(i) - delta, j = 1...nrOfBuses
+% y(nrOfGenerators + nrOfLoadBuses + i - 1) = Theta(i) - delta, j = 2...nrOfBuses (first bus is the slack bus)
 %
 % inputs:
 % u(i) = P_c(i), i = 1...nrOfGenerators; commanded power production
@@ -24,7 +24,7 @@ function [powVariables, NrOf] = symPowerVariables(scenario)
 %
 % More information can be found in [1, Sec. VII].
 %
-% Syntax:  
+% Syntax:
 %    [powVariables, NrOf] = symPowerVariables(scenario)
 %
 % Inputs:
@@ -40,12 +40,12 @@ function [powVariables, NrOf] = symPowerVariables(scenario)
 %        Verification of Continuous and Hybrid Systems, 
 %        2022, x-x
 
-% Author:       Matthias Althoff
-% Written:      14-April-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       14-April-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % obtain bus struct
 bus = scenario.bus;
@@ -152,4 +152,4 @@ if NoB.generator>0
 end
     
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

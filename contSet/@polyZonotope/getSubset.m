@@ -1,7 +1,7 @@
 function S = getSubset(pZ,id,val)
 % getSubset - extracts a subset by specifying new ranges for the factors
 %
-% Syntax:  
+% Syntax:
 %    S = getSubset(pZ,id,val)
 %
 % Inputs:
@@ -27,24 +27,27 @@ function S = getSubset(pZ,id,val)
 %
 % See also: polyZonotope
 
-% Author:       Niklas Kochdumper
-% Written:      23-March-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       23-March-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % check input arguments
     inputArgsCheck({{pZ,'att','polyZonotope'};
                     {id,'att','numeric','vector'};
-                    {val,'att',{'numeric','interval'},'nonempty'}});
+                    {val,'att',{'numeric','interval'}}});
+    if representsa_(val,'emptySet',eps)
+        throw(CORAerror("CORA:wrongValue","third",'Should not be empty.'))
+    end
 
     % check if value is a vector an interval
     if isnumeric(val)
        
         % loop over all variables that are substituted
         for i = 1:length(id)
-           pZ = getSubsetPoint(pZ,id(i),val(i)); 
+           pZ = aux_getSubsetPoint(pZ,id(i),val(i)); 
         end
         
     else
@@ -52,45 +55,45 @@ function S = getSubset(pZ,id,val)
         % loop over all variables that are substituted
         for i = 1:length(id)
             if rad(val(i)) ~= 1 || center(val(i)) ~= 0
-                pZ = getSubsetInterval(pZ,id(i),val(i)); 
+                pZ = aux_getSubsetInterval(pZ,id(i),val(i)); 
             end
         end
     end
     
     % remove redudancies in the exponent matrix
-    [expMat,G] = removeRedundantExponents(pZ.expMat,pZ.G);
+    [E,G] = removeRedundantExponents(pZ.E,pZ.G);
     
     % add all constant parts to the center
-    ind = find(sum(expMat,1) == 0);
+    ind = find(sum(E,1) == 0);
     
     if ~isempty(ind)
         c = pZ.c + sum(G(:,ind),2);
         G(:,ind) = [];
-        expMat(:,ind) = [];
+        E(:,ind) = [];
     else
         c = pZ.c;
     end
     
     % remove empty rows from the exponent matrix
     id = pZ.id;
-    ind = find(sum(expMat,2) == 0);
+    ind = find(sum(E,2) == 0);
     if ~isempty(ind)
-        expMat(ind,:) = [];
+        E(ind,:) = [];
         id(ind) = [];
     end
     
     % construct the resulting subset
-    if isempty(G) && isempty(pZ.Grest)
+    if isempty(G) && isempty(pZ.GI)
         S = c;
     else
-        S = polyZonotope(c,G,pZ.Grest,expMat,id);
+        S = polyZonotope(c,G,pZ.GI,E,id);
     end    
 end
 
 
-% Auxiliary Function ------------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function pZ = getSubsetPoint(pZ,id,val)
+function pZ = aux_getSubsetPoint(pZ,id,val)
 
     % find variable that should be substitudet
     ind = find(pZ.id == id);
@@ -101,16 +104,16 @@ function pZ = getSubsetPoint(pZ,id,val)
     end
     
     % modify all generators that are affected by the variable
-    for i = 1:size(pZ.expMat,2)
-        if pZ.expMat(ind,i) ~= 0
-           pZ.G(:,i) = pZ.G(:,i) * val^pZ.expMat(ind,i);
-           pZ.expMat(ind,i) = 0;
+    for i = 1:size(pZ.E,2)
+        if pZ.E(ind,i) ~= 0
+           pZ.G(:,i) = pZ.G(:,i) * val^pZ.E(ind,i);
+           pZ.E(ind,i) = 0;
         end
     end
 
 end
 
-function pZ = getSubsetInterval(pZ,id,val)
+function pZ = aux_getSubsetInterval(pZ,id,val)
 
     % find variable that should be substitudet
     ind = find(pZ.id == id);
@@ -124,10 +127,10 @@ function pZ = getSubsetInterval(pZ,id,val)
     a = center(val);
     b = rad(val);
     
-    expMat = pZ.expMat;
+    E = pZ.E;
     G = pZ.G;
     
-    coeffs = cell(max(expMat(ind,:)),1);
+    coeffs = cell(max(E(ind,:)),1);
     exps = cell(length(coeffs),1);
     
     coeffs{1} = [b a];
@@ -139,33 +142,33 @@ function pZ = getSubsetInterval(pZ,id,val)
     end
     
     % modify all generators that are affected by the variable
-    for i = 1:size(pZ.expMat,2)
-        if pZ.expMat(ind,i) ~= 0
+    for i = 1:size(pZ.E,2)
+        if pZ.E(ind,i) ~= 0
            
            % get coefficients and exponenst of the polnomial
-           e = pZ.expMat(ind,i);
+           e = pZ.E(ind,i);
            C = coeffs{e};
-           E = exps{e};
+           Ei = exps{e};
             
            % consider constant part of the polynomial
            G(:,i) = pZ.G(:,i) * C(end);
-           expMat(ind,i) = 0;
+           E(ind,i) = 0;
            
            % consider remaining part of the polynomial
-           expMat_ = pZ.expMat(:,i) * ones(1,length(E)-1);
-           expMat_(ind,:) = E(1:end-1);
+           E_ = pZ.E(:,i) * ones(1,length(Ei)-1);
+           E_(ind,:) = Ei(1:end-1);
            
-           G_ = pZ.G(:,i) * ones(1,length(E)-1);
+           G_ = pZ.G(:,i) * ones(1,length(Ei)-1);
            G_ = G_ * diag(C(1:end-1));
            
-           expMat = [expMat,expMat_];
+           E = [E,E_];
            G = [G,G_];
         end
     end
     
-    pZ.expMat = expMat;
+    pZ.E = E;
     pZ.G = G;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

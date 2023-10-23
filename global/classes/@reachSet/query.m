@@ -1,7 +1,7 @@
 function val = query(R,prop)
 % query - get properties of the reachable set
 %
-% Syntax:  
+% Syntax:
 %    val = query(R,prop)
 %
 % Inputs:
@@ -11,6 +11,7 @@ function val = query(R,prop)
 %           'reachSetTimePoint': cell-array of time-point solutions
 %           'finalSet': final time-point solution
 %           'tVec': vector of time steps
+%           'tFinal': final time stamp
 %           'allLoc': all location IDs of visited locations
 %
 % Outputs:
@@ -22,17 +23,17 @@ function val = query(R,prop)
 %
 % See also: reachSet
 
-% Author:       Niklas Kochdumper
-% Written:      02-June-2020
-% Last update:  19-May-2023 (MW, add 'allLoc' property)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       02-June-2020
+% Last update:   19-May-2023 (MW, add 'allLoc' property)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % check input arguments
     inputArgsCheck({{R,'att','reachSet'}; ...
                     {prop,'str',{'reachSet','reachSetTimePoint',...
-                        'finalSet','tVec','allLoc'}}});
+                    'finalSet','tVec','tFinal','allLoc'}}});
 
     switch prop
         case 'reachSet'
@@ -54,7 +55,7 @@ function val = query(R,prop)
             if size(R,1) == 1
                val = R(1,1).timePoint.set{end}; 
             else
-               parents = getParents(R);
+               parents = aux_getParents(R);
                ind = setdiff(1:size(R,1),parents);
                val = cell(length(ind),1);
                
@@ -70,6 +71,17 @@ function val = query(R,prop)
             else
                 throw(CORAerror('CORA:notSupported',...
                     'Multiple branches not supported.'));
+            end
+
+        case 'tFinal'
+
+            val = R(1,1).timePoint.time{end};
+            for i = 2:size(R,1)
+                val = max(val,R(i).timePoint.time{end});
+            end
+    
+            if isa(val, 'interval')
+                val = supremum(val);
             end
 
         case 'allLoc'
@@ -89,9 +101,9 @@ function val = query(R,prop)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function parents = getParents(obj)
+function parents = aux_getParents(obj)
 % get the indices of all parent reachable sets
 
     parents = [];
@@ -103,4 +115,4 @@ function parents = getParents(obj)
     parents = unique(parents);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

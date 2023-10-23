@@ -7,7 +7,7 @@ classdef linearSysDT < contDynamics
 %       x(k+1) = A x(k) + B u(k) + c + w(k)
 %       y(k)   = C x(k) + D u(k) + k + v(k)
 %
-% Syntax:  
+% Syntax:
 %    obj = linearSysDT(A,B,dt)
 %    obj = linearSysDT(A,B,c,dt)
 %    obj = linearSysDT(A,B,c,C,dt)
@@ -25,7 +25,7 @@ classdef linearSysDT < contDynamics
 %    B - input matrix
 %    c - constant input
 %    C - output matrix
-%    D - throughput matrix
+%    D - feedthrough matrix
 %    k - output offset
 %    dt - sampling time
 %
@@ -35,9 +35,10 @@ classdef linearSysDT < contDynamics
 % Example:
 %    A = [-0.4 0.6; 0.6 -0.4];
 %    B = [0; 1];
+%    c = [0;0]
 %    C = [1 0];
 %    dt = 0.4;
-%    sys = linearSysDT(A,B,0,C,dt)
+%    sys = linearSysDT(A,B,c,C,dt)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -45,21 +46,21 @@ classdef linearSysDT < contDynamics
 %
 % See also: linearSys
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      20-March-2020 
-% Last update:  14-June-2021 (MA, invoke observe from superclass)
-%               19-November-2021 (MW, default values for C, D, k)
-%               14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision:18-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       20-March-2020 
+% Last update:   14-June-2021 (MA, invoke observe from superclass)
+%                19-November-2021 (MW, default values for C, D, k)
+%                14-December-2022 (TL, property check in inputArgsCheck)
+% Last revision: 18-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     A   % system matrix: n x n
     B   % input matrix: n x m
     c   % constant input: n x 1
     C   % output matrix: q x n
-    D   % throughput matrix: q x m
+    D   % feedthrough matrix: q x m
     k   % output offset: q x 1
     dt  % sampling time
 end
@@ -101,7 +102,7 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [name,A,B,c,C,D,k,dt] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
@@ -205,7 +206,7 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,dt,n_in)
             if ~isempty(D) && ~isscalar(D) && inputs ~= size(D,2)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     ['Column dimension of input matrix B must match '...
-                    'column dimension of throughput matrix D.']));
+                    'column dimension of feedthrough matrix D.']));
             end
         end
 
@@ -222,7 +223,7 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,dt,n_in)
             end
             if ~isempty(D) && ~isscalar(D) && outputs ~= size(D,1)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
-                    ['Row dimension of throughput matrix D must match '...
+                    ['Row dimension of feedthrough matrix D must match '...
                     'row dimension of output matrix C.']));
             end
             if ~isempty(k) && outputs ~= length(k)
@@ -271,7 +272,7 @@ function [name,A,B,c,C,D,k,dt,states,inputs,outputs] = ...
         outputs = size(C,1);
     end
 
-    % throughput matrix
+    % feedthrough matrix
     if isempty(D)
         D = zeros(outputs,inputs);
     end
@@ -283,4 +284,4 @@ function [name,A,B,c,C,D,k,dt,states,inputs,outputs] = ...
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

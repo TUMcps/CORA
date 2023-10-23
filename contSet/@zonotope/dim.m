@@ -1,7 +1,7 @@
 function n = dim(Z)
 % dim - returns the dimension of the ambient space of a zonotope
 %
-% Syntax:  
+% Syntax:
 %    n = dim(Z)
 %
 % Inputs:
@@ -20,17 +20,21 @@ function n = dim(Z)
 %
 % See also: zonotope/rank
 
-% Author:        Mark Wetzlinger
-% Written:       15-Sep-2019
+% Authors:       Mark Wetzlinger
+% Written:       15-September-2019
 % Last update:   11-March-2021 (MW, add empty case)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-if ~isempty(Z)
-    n = length(center(Z));
-else
-    n = 0;
+try
+    n = length(Z.c);
+catch ME
+    if isemptyobject(Z)
+        n = 0;
+    else
+        rethrow(ME);
+    end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

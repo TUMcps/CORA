@@ -2,7 +2,7 @@ function D = distancePoint(E,Y)
 % distancePoint - computes the distance from an ellipsoid to an (array of)
 %    points
 %
-% Syntax:  
+% Syntax:
 %    D = distancePoint(E,Y)
 %
 % Inputs:
@@ -18,13 +18,13 @@ function D = distancePoint(E,Y)
 %
 % See also: none
 
-% Author:       Victor Gassmann
-% Written:      08-March-2021
-% Last update:  19-May-2022
-%               02-June-2022 (VG: complete rework)
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       08-March-2021
+% Last update:   19-May-2022
+%                02-June-2022 (VG, complete rework)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % say Q is given by blkdiag(Q,zeros). We look at is as blkdiag(Q,TOL).
 % => (x-q)'*Q\(x-q) + (y_rem-x_rem)'*1/TOL*(y_rem-x_rem) <= 1
@@ -53,4 +53,4 @@ D_nd = sum((sqrtm(E.Q)\(Y-E.q)).^2,1);
 % concatenate and subtract 1 (so that 0 means touching (instead of 1))
 D = D_nd + D_d - 1;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

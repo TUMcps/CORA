@@ -3,7 +3,7 @@ function instances = resolveBinds(instances)
 %    new field called listOfConstants; this procedure is important to
 %    avoid identifying constants as states later on
 %
-% Syntax:  
+% Syntax:
 %    instances = resolveBinds(instances)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function instances = resolveBinds(instances)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      13-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       13-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % number of instances
 nrInstances = length(instances);
@@ -122,4 +122,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

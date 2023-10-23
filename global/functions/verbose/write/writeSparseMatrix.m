@@ -1,7 +1,7 @@
 function empty = writeSparseMatrix(M,var,fid)
 % writeSparseMatrix - write a sparse matrix to file
 %
-% Syntax:  
+% Syntax:
 %    empty = writeSparseMatrix(M,var,fid)
 %
 % Inputs:
@@ -18,13 +18,13 @@ function empty = writeSparseMatrix(M,var,fid)
 %
 % See also: ---
 
-% Author:       Niklas Kochdumper
-% Written:      15-July-2017
-% Last update:  20-July-2017
-%               24-January-2018
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       15-July-2017
+% Last update:   20-July-2017
+%                24-January-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % write each row
 [row,col] = find(M~=0);
@@ -46,4 +46,4 @@ else
     empty = true;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

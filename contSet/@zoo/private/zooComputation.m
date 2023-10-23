@@ -1,13 +1,13 @@
 function res = zooComputation(fhandle, obj1, obj2)
 % zooComputation - executive function
 %
-% Syntax:  
+% Syntax:
 %    res = zooComputation(fhandle, obj1, obj2)
 %
 % Inputs:
-%
 %    fhandle - function handle
-%    obj - a zoo object
+%    obj1 - a zoo object
+%    obj2 - a zoo object
 %
 % Outputs:
 %    res - a zoo object
@@ -20,20 +20,20 @@ function res = zooComputation(fhandle, obj1, obj2)
 %
 % See also: taylm, interval
 
-% Author:       Dmitry Grebenyuk
-% Written:      11-November-2017
-% Last update:  ---
-% Last revision:---
-%
-%------------- BEGIN CODE --------------
+% Authors:       Dmitry Grebenyuk
+% Written:       11-November-2017
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
     if nargin == 2
 
-        res = arrayfun(@(a) s_zooCmp1(fhandle, a), obj1, 'UniformOutput', 0);
+        res = arrayfun(@(a) aux_s_zooCmp1(fhandle, a), obj1, 'UniformOutput', 0);
 
     elseif nargin == 3
 
-        res = arrayfun(@(a) s_zooCmp2(fhandle, a, obj2), obj1, 'UniformOutput', 0);
+        res = arrayfun(@(a) aux_s_zooCmp2(fhandle, a, obj2), obj1, 'UniformOutput', 0);
 
     end
     A = cat(1, res{:});
@@ -42,8 +42,9 @@ function res = zooComputation(fhandle, obj1, obj2)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
-function res = s_zooCmp1(fhandle, obj)
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_s_zooCmp1(fhandle, obj)
    
     res = obj;
     
@@ -52,7 +53,7 @@ function res = s_zooCmp1(fhandle, obj)
     end
 end
 
-function res = s_zooCmp2(fhandle, obj1, obj2)
+function res = aux_s_zooCmp2(fhandle, obj1, obj2)
    
     res = obj1;
     
@@ -62,4 +63,4 @@ function res = s_zooCmp2(fhandle, obj1, obj2)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

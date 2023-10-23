@@ -1,7 +1,7 @@
 function res = test_capsule_ellipsoid
 % test_capsule_ellipsoid - unit test function of conversion to ellipsoids
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_ellipsoid
 %
 % Inputs:
@@ -16,19 +16,19 @@ function res = test_capsule_ellipsoid
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      25-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty set case
 C = capsule();
 
 % convert to ellipsoid
 E = ellipsoid(C);
-res = isempty(E);
+res = representsa_(E,'emptySet',eps);
 
 % ball case
 C = capsule([1;-1],[0;0],3);
@@ -54,4 +54,4 @@ res(end+1,1) = all(contains(C,pEi));
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

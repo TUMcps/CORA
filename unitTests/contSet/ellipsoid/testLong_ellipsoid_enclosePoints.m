@@ -2,7 +2,7 @@ function res = testLong_ellipsoid_enclosePoints
 % testLong_ellipsoid_enclosePoints - unit test function of
 %    enclosePoints
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_enclosePoints
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_ellipsoid_enclosePoints
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      18-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       18-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 runs = 5;
 res = true;
@@ -63,4 +63,4 @@ for i=3:5:10
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

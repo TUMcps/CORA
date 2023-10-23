@@ -2,7 +2,7 @@ function res = isFullDim(O)
 % isFullDim - checks if the dimension of the affine hull of an empty set is
 %    equal to the dimension of its ambient space
 %
-% Syntax:  
+% Syntax:
 %    res = isFullDim(O)
 %
 % Inputs:
@@ -21,14 +21,14 @@ function res = isFullDim(O)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % always false
 res = false;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

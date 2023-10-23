@@ -4,7 +4,7 @@ function res = testLong_converter_powerSystem2cora_IEEE30()
 %    It is checked whether the dynamic and constraint functions match for 
 %    random variables
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_converter_powerSystem2cora_IEEE30()
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = testLong_converter_powerSystem2cora_IEEE30()
 %        using Reachable Sets", IEEE Transactions on Power Systems 29 (5), 
 %        2014, 2270-2280
 
-% Author:       Matthias Althoff
-% Written:      17-Apr-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       17-April-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% create CORA models
 % full system
@@ -150,4 +150,4 @@ end
 % final result
 res = all(resPartial);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

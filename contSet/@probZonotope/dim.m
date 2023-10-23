@@ -2,7 +2,7 @@ function n = dim(probZ)
 % dim - returns the dimension of the ambient space of a probabilistic
 %    zonotope
 %
-% Syntax:  
+% Syntax:
 %    n = dim(probZ)
 %
 % Inputs:
@@ -23,13 +23,13 @@ function n = dim(probZ)
 %
 % See also: rank.m
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       10-June-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 n = length(center(probZ));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

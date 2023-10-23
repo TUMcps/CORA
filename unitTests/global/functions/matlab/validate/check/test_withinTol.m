@@ -2,7 +2,7 @@ function res = test_withinTol
 % test_withinTol - unit test function for checking equality of values
 %    within tolerance
 %
-% Syntax:  
+% Syntax:
 %    res = test_withinTol
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_withinTol
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      30-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       30-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % scalar values
 a = 3;
@@ -92,4 +92,4 @@ end
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

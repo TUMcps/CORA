@@ -2,7 +2,7 @@ function int = optBnbAdv(obj)
 % optBnbAdv - branch and bound optimization with re-expansion of the taylor
 %             models at the centers of the subdomains
 %
-% Syntax:  
+% Syntax:
 %    res = optBnbAdv( obj )
 %
 % Inputs:
@@ -39,12 +39,12 @@ function int = optBnbAdv(obj)
 %   [1] M. Althoff et al. "Implementation of Taylor models in CORA 2018
 %       (Tool Presentation)"
 
-% Author:       Niklas Kochdumper
-% Written:      14-April-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       14-April-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % Implementation of Alogrithm 1 from reference paper [1]
     % (advanced version, with reexpansion)
@@ -82,7 +82,7 @@ function int = optBnbAdv(obj)
        if indMax == indMin
            
            % split the selected subdomain in half
-           [dom1,dom2,int1,int2] = halveDomain(obj,dom,indMax);
+           [dom1,dom2,int1,int2] = aux_halveDomain(obj,dom,indMax);
            
            % remove the old subdomain from the lists
            bounds{indMax} = [];
@@ -99,8 +99,8 @@ function int = optBnbAdv(obj)
        else
            
            % split the selected subdomains in half
-           [dom1,dom2,int1,int2] = halveDomain(obj,dom,indMax);
-           [dom3,dom4,int3,int4] = halveDomain(obj,dom,indMin);
+           [dom1,dom2,int1,int2] = aux_halveDomain(obj,dom,indMax);
+           [dom3,dom4,int3,int4] = aux_halveDomain(obj,dom,indMin);
            
            % remove the old subdomain from the lists
            bounds{indMax} = [];
@@ -123,7 +123,9 @@ function int = optBnbAdv(obj)
 end
 
 
-function [dom1,dom2,int1,int2] = halveDomain(obj,dom,ind)
+% Auxiliary functions -----------------------------------------------------
+
+function [dom1,dom2,int1,int2] = aux_halveDomain(obj,dom,ind)
 
    % determine coordinate with the larges radius
    radius = rad(dom{ind});
@@ -153,4 +155,4 @@ function [dom1,dom2,int1,int2] = halveDomain(obj,dom,ind)
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

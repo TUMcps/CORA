@@ -1,7 +1,7 @@
 function Gred = kmeansFilter(G,rem)
 % kmeansFilter - filters out generators by the k-means clustering algorithm
 %
-% Syntax:  
+% Syntax:
 %    Gred = kmeansFilter(G,rem)
 %
 % Inputs:
@@ -17,15 +17,15 @@ function Gred = kmeansFilter(G,rem)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      12-September-2008
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       12-September-2008
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %filter generators with k-means
 [IDX,C] = kmeans(G',rem);
 Gred=C';
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = inverse(obj)
 % inverse - Compute formula '1/obj' for Taylor models
 %
-% Syntax:  
+% Syntax:
 %    res = inverse(obj)
 %
 % Inputs:
@@ -24,13 +24,12 @@ function res = inverse(obj)
 %   [3] K. Makino et al. "Verified Global Optimization with Taylor Model 
 %       based Range Bounders"
 
-% Author:       Dmitry Grebenyuk
-% Written:      10-August-2017
-%               02-December-2017 (DG) New rank evaluation
-% Last update:  ---  
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       10-August-2017
+% Last update:   02-December-2017 (DG, new rank evaluation)
+% Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
 
         
     if isempty(obj.monomials)    % Taylor model without polynomial part
@@ -88,7 +87,7 @@ function res = inverse(obj)
         temp = 1/remReal;
         
         if infimum(LagRem) < infimum(temp) && supremum(LagRem) > supremum(temp)
-            LagRem = globalBounds(1/c_f,obj.max_order,remReal,obj.eps);
+            LagRem = aux_globalBounds(1/c_f,obj.max_order,remReal,obj.eps);
         end
         
         % assemble the resulting taylor model
@@ -97,7 +96,10 @@ function res = inverse(obj)
     end
 end
 
-function rem = calculateRemainder(x0,n,x)
+
+% Auxiliary functions -----------------------------------------------------
+
+function rem = aux_calculateRemainder(x0,n,x)
 % Equation for the exact Lagrange remainder (obtained by analytical
 % integration of the Lagrange remainder term, no over-approximation
 % included)
@@ -113,24 +115,24 @@ function rem = calculateRemainder(x0,n,x)
     rem = rem * (-1)^(n+1) * (n+1);
 end
 
-function int = globalBounds(x0,n,dom,tol)
+function int = aux_globalBounds(x0,n,dom,tol)
 % determine the global bounds of the Lagrange remainder up to the precision 
 % "tol" with interval arithmetics and splits of the original domain into
 % subdomains
 
     % calculate minimum
-    func = @(x) calculateRemainder(x0,n,x);
-    minVal = globalMinimizer(func,dom,tol);
+    func = @(x) aux_calculateRemainder(x0,n,x);
+    minVal = aux_globalMinimizer(func,dom,tol);
     
     % caclulate maximum
-    func = @(x) -calculateRemainder(x0,n,x);
-    maxVal = globalMinimizer(func,dom,tol);
+    func = @(x) -aux_calculateRemainder(x0,n,x);
+    maxVal = aux_globalMinimizer(func,dom,tol);
     
     % construct overall interval
     int = interval(minVal,-maxVal);
 end
 
-function minVal = globalMinimizer(func,dom,tol)
+function minVal = aux_globalMinimizer(func,dom,tol)
 % Implementation of the Verified Global Optimizer Concept from reference
 % paper [3] using interval arithmetic only
 
@@ -187,4 +189,4 @@ function minVal = globalMinimizer(func,dom,tol)
 end
 
 
-%------------ END OF CODE ------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function [error, errorInt, errorInt_x, errorInt_y, R_y] = linError_thirdOrder(ob
 % linError_thirdOrder - computes the linearization error using a third
 % order Taylor expansion
 %
-% Syntax:  
+% Syntax:
 %    [error, errorInt, errorInt_x, errorInt_y, R_y] = ...
 %           linError_thirdOrder(obj, options, R, Verror_y)
 %
@@ -27,13 +27,13 @@ function [error, errorInt, errorInt_x, errorInt_y, R_y] = linError_thirdOrder(ob
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      21-June-2013
-% Last update:  16-June-2016
-%               25-July-2016 (intervalhull replaced by interval)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-June-2013
+% Last update:   16-June-2016
+%                25-July-2016 (intervalhull replaced by interval)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set handle to correct file
 obj = setHessian(obj,'standard');
@@ -77,9 +77,9 @@ end
 
 
 %compute zonotope of state, constarint variables, and input
-Z_x = R.Z;
-Z_y_cor = R_y_cor.Z;
-Z_y_add = R_y_add.Z;
+Z_x = [R.c,R.G];
+Z_y_cor = [R_y_cor.c,R_y_cor.G];
+Z_y_add = [R_y_add.c,R_y_add.G];
 Z_0 = zeros(length(Z_x(:,1)), length(Z_y_add(1,:)));
 R_xy = zonotope([Z_x, Z_0; Z_y_cor, Z_y_add]);
 R_xyu = cartProd(R_xy, options.U);
@@ -122,7 +122,7 @@ error_x = error_x_secondOrder + error_thirdOrder_x_zono;
 error_y = error_y_secondOrder + error_thirdOrder_y_zono;
 
 %compute final error
-Z_err_x = error_x_secondOrder.Z;
+Z_err_x = [error_x_secondOrder.c,error_x_secondOrder.G];
 Z_err_x_add = get(obj.linError.CF_inv*error_y_secondOrder,'Z');
 error_secondOrder = zonotope(Z_err_x + Z_err_x_add);
 error_thirdOrder = error_thirdOrder_x_zono + obj.linError.CF_inv*error_thirdOrder_y_zono;
@@ -145,4 +145,4 @@ errorInt_y = supremum(errorIHabs_y);
 errorIHabs_x = abs(interval(error_x));
 errorInt_x = supremum(errorIHabs_x);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

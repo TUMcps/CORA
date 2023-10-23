@@ -1,7 +1,7 @@
 function res = testLong_zonotope_isFullDim
 % testLong_zonotope_isFullDim - unit test function of isFullDim
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_isFullDim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_zonotope_isFullDim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      12-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       12-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -55,4 +55,4 @@ for i=1:nrTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = testINTLAB_tan_random()
 % testINTLAB_tan_random - unit_test_function for comparing to IntLabV6
 %
-% Syntax:  
+% Syntax:
 %    res = testINTLAB_tan_random
 %
 % Inputs:
@@ -15,12 +15,12 @@ function res = testINTLAB_tan_random()
 % MAT-files required: none
 %
 
-% Author:       Dmitry Grebenyuk, Matthias Althoff
-% Written:      05-February-2016
-% Last update:  09-July-2021 (MA: improved the unit test and added documentation)
-% Last revision:---
+% Authors:       Dmitry Grebenyuk, Matthias Althoff
+% Written:       05-February-2016
+% Last update:   09-July-2021 (MA, improved the unit test and added documentation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set numerical tolerance
 tol = 1e-8;
@@ -82,4 +82,4 @@ if ( isempty(bad_ones_max) ~= true)
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

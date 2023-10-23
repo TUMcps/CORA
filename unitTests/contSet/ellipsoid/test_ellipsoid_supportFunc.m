@@ -1,7 +1,7 @@
 function res = test_ellipsoid_supportFunc
 % test_ellipsoid_supportFunc - unit test function of supportFunc
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_supportFunc
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_supportFunc
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 load cases.mat E_c  
 
@@ -35,7 +35,7 @@ for i=1:length(E_c)
     Ed1 = E_c{i}.Ed1; % deg
     E0 = E_c{i}.E0; % all zero
     
-    res = checkSuppFunc(E1) && checkSuppFunc(Ed1) && checkSuppFunc(E0);
+    res = aux_checkSuppFunc(E1) && aux_checkSuppFunc(Ed1) && aux_checkSuppFunc(E0);
 end
 
 % check type = 'range'
@@ -52,9 +52,10 @@ end
 
 end
 
+
 % Auxiliary functions -----------------------------------------------------
 
-function res = checkSuppFunc(E)
+function res = aux_checkSuppFunc(E)
     n = dim(E);
     [T,S,~] = svd(E.Q);
     s = sqrt(diag(S));
@@ -76,4 +77,4 @@ function res = checkSuppFunc(E)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

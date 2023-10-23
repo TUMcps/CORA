@@ -2,7 +2,7 @@ function [OGain,tComp]= observe_gain_NomG(obj,options)
 % observe_gain_NomG - computes the gain for the guaranteed state estimation
 %    approach from [1].
 %
-% Syntax:  
+% Syntax:
 %    [R,Rout] = observe_gain_NomG(obj,options)
 %
 % Inputs:
@@ -28,12 +28,12 @@ function [OGain,tComp]= observe_gain_NomG(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       05-Jan-2021
+% Authors:       Matthias Althoff
+% Written:       05-January-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tic;
 
@@ -79,4 +79,4 @@ end
 % computation time
 tComp = toc;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

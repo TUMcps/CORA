@@ -1,7 +1,7 @@
 function obj = uplus(obj)
 % uplus - Overloaded '+' operator for single operand
 %
-% Syntax:  
+% Syntax:
 %    res = uplus(obj)
 %
 % Inputs:
@@ -18,13 +18,13 @@ function obj = uplus(obj)
 %
 % See also: taylm
 
-% Author:       Dmitry Grebenyuk
-% Written:      06-November-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       06-November-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % dummy function
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

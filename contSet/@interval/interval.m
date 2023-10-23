@@ -31,18 +31,18 @@ classdef (InferiorClasses = {?mp}) interval < contSet
 %
 % See also: interval, polytope
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      19-June-2015
-% Last update:  18-November-2015
-%               26-January-2016
-%               15-July-2017 (NK)
-%               01-May-2020 (MW, delete redundant if-else)
-%               20-March-2021 (MW, error messages)
-%               14-December-2022 (TL, property check in inputArgsCheck)
-%               29-March-2023 (TL: optimized constructor)
-% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       19-June-2015
+% Last update:   18-November-2015
+%                26-January-2016
+%                15-July-2017 (NK)
+%                01-May-2020 (MW, delete redundant if-else)
+%                20-March-2021 (MW, error messages)
+%                14-December-2022 (TL, property check in inputArgsCheck)
+%                29-March-2023 (TL, optimized constructor)
+% Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     inf;    % lower bound
@@ -102,19 +102,21 @@ methods
     p = gridPoints(I,segments) % generate grid points
     I = horzcat(varargin) % overloaded horizontal concatenation
     res = infimum(I) % read lower limit
-    res = isempty(I) % empty object check
     res = isequal(I1,I2,varargin) % equal objects check
     res = isFullDim(I) % full dimensionality check
     res = isscalar(I) % one-dimensionality check
     res = issparse(I) % issparse
     res = le(I1,I2) % subseteq check
     l = length(I) % largest dimension of interval
+    I = lift_(I,N,proj) % lift to a high-dimensional space
     I = log(I) % logarithm function
     res = lt(I1,I2) % subset check
+    I = max(I,Y,varargin) % maximum
     I = minkDiff(I,S,varargin) % Minkowski difference
+    I = min(I,Y,varargin) % minimum 
     res = minus(minuend,subtrahend) % overloaded - operator (binary)
     res = mpower(base,exponent) % overloaded ^ operator
-    P = mptPolytope(I) % conversion to mptPolytope object
+    P = polytope(I) % conversion to polytope object
     res = mrdivide(numerator,denominator) % overloaded / operator
     res = mtimes(factor1,factor2) % overloaded * operator
     res = ne(I1,I2) % overloaded ~= operator
@@ -126,9 +128,11 @@ methods
     res = power(base,exponent) % overloaded .^ operator
     res = prod(I,varargin) % overloaded prod-function
     I = project(I,dims) % projection onto subspace
+    I = projectHighDim_(I,N,proj) % project to a high-dimensional space
     I = quadMap(varargin) % quadratic map
     r = rad(I) % radius (half of diameter)
     r = radius(I) % radius of enclosing hyperball
+    [res,S] = representsa_(I,type,tol,varargin) % comparison to other representations
     res = rdivide(numerator,denominator) % overloaded ./ operator
     I = reshape(I,varargin) % overloaded reshape-function
     res = sin(I) % sine function
@@ -161,7 +165,8 @@ end
 
 end
 
-% Auxiliary Functions -----------------------------------------------------
+
+% Auxiliary functions -----------------------------------------------------
 
 function [lb,ub] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
@@ -181,7 +186,7 @@ function [lb,ub] = aux_parseInputArgs(varargin)
     [lb,ub] = setDefaultValues({[],[]},varargin);
 
     % set upper bound to value of lower bound if only one value given
-    if ~isempty(lb) && isempty(ub)
+    if isnumeric(lb) && ~isempty(lb) && isempty(ub)
         ub = lb;
     end
 
@@ -216,4 +221,4 @@ function aux_checkInputArgs(lb,ub,n_in)
 
 end
 
-%------------- END OF CODE -------
+% ------------------------------ END OF CODE ------------------------------

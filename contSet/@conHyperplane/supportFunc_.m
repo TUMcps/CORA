@@ -2,7 +2,7 @@ function [val,x] = supportFunc_(hyp,dir,varargin)
 % supportFunc_ - computes support function of constrained hyperplane in a 
 %    given direction
 %
-% Syntax:  
+% Syntax:
 %    [val,x] = supportFunc_(hyp,dir)
 %    [val,x] = supportFunc_(hyp,dir,type)
 %
@@ -25,20 +25,20 @@ function [val,x] = supportFunc_(hyp,dir,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/supportFunc
 
-% Author:       Victor Gassmann
-% Written:      22-March-2021
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename supportFunc_)
+% Authors:       Victor Gassmann
+% Written:       22-March-2021
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename supportFunc_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % convert to polytope and call support function for polytopes
 if nargout <= 1
-    val = supportFunc_(mptPolytope(hyp),dir,varargin{:});
+    val = supportFunc_(polytope(hyp),dir,varargin{:});
 elseif nargout == 2
-    [val,x] = supportFunc_(mptPolytope(hyp),dir,varargin{:});
+    [val,x] = supportFunc_(polytope(hyp),dir,varargin{:});
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

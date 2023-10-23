@@ -1,5 +1,5 @@
 function I = log(I)
-% sqrt - Overloaded log (natural logorithm) function for intervals 
+% log - Overloaded log (natural logorithm) function for intervals 
 %
 % x_ is x infimum, x-- is x supremum
 %
@@ -7,7 +7,7 @@ function I = log(I)
 % [NaN, log(x--)] if (x_ < 0) and (x-- >= 0)
 % [log(x_), log(x--)] if (x_ >= 0).
 %
-% Syntax:  
+% Syntax:
 %    I = log(I)
 %
 % Inputs:
@@ -26,14 +26,14 @@ function I = log(I)
 %
 % See also: mtimes
 
-% Author:       Dmitry Grebenyuk
-% Written:      07-February-2016
-% Last update:  21-February-2016 (DG, the matrix case is rewritten)
-%               05-May-2020 (MW, addition of error message)
-%               21-May-2022 (MW, remove new instantiation)
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       07-February-2016
+% Last update:   21-February-2016 (DG, the matrix case is rewritten)
+%                05-May-2020 (MW, addition of error message)
+%                21-May-2022 (MW, remove new instantiation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % scalar case
 if isnumeric(I)
@@ -74,4 +74,4 @@ if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))
     throw(CORAerror('CORA:outOfDomain','validDomain','>= 0'));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

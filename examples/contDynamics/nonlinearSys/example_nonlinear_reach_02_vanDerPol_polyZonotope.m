@@ -6,7 +6,7 @@ function completed = example_nonlinear_reach_02_vanDerPol_polyZonotope()
 %    systems using zonotopes and polynomial zonotopes for the Van-der-Pol
 %    oscillator system.
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinear_reach_02_vanDerPol_polyZonotope()
 %
 % Inputs:
@@ -19,13 +19,12 @@ function completed = example_nonlinear_reach_02_vanDerPol_polyZonotope()
 %   [1] N. Kochdumper et al. "Sparse Polynomial Zonotopes: A Novel Set 
 %       Representation for Reachability Analysis"
 
-% Author:       Niklas Kochdumper
-% Written:      02-January-2020
-% Last update:  23-April-2020 (restucture params/options)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       02-January-2020
+% Last update:   23-April-2020 (restucture params/options)
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -52,11 +51,9 @@ polyZono.maxPolyZonoRatio = 0.01;
 polyZono.restructureTechnique = 'reducePca';
 
 
-
 % System Dynamics ---------------------------------------------------------
 
 vanderPol = nonlinearSys(@vanderPolEq);
-
 
 
 % Reachability Analysis (zonotope) ----------------------------------------
@@ -69,7 +66,6 @@ tic
 R = reach(vanderPol, params, options);
 tComp = toc;
 disp(['computation time (zonotope): ',num2str(tComp)]);
-
 
 
 % Reachability Analysis (polynomial zonotope) -----------------------------
@@ -120,4 +116,4 @@ legend();
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

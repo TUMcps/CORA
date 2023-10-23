@@ -1,7 +1,7 @@
 function res = appeq(int1, int2, eps)
 % appeq( int1, int2, eps ) - % approximaly equal with epsilon tolerance
 %
-% Syntax:  
+% Syntax:
 %    res = appeq( int1, int2, eps )
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = appeq(int1, int2, eps)
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      07-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       07-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isa(int1, 'interval') && isa(int2, 'interval')
     res = all( abs(infimum(int1) - infimum(int2)) <= eps )  &&...
@@ -29,5 +29,4 @@ elseif isa(int1, 'double') && isa(int2, 'double')
 end  
 end
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

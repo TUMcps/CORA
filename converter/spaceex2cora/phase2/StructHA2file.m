@@ -24,12 +24,12 @@ function StructHA2file(data,varargin)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check for too many input arguments
 if nargin > 3
@@ -98,4 +98,4 @@ rehash path;
 
 disp("----------------------StructHA2file COMPLETE---------------------");
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

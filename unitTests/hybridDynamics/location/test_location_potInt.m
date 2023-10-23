@@ -2,7 +2,7 @@ function res = test_location_potInt
 % test_location_potInt - test function for finding potential intersections
 %    of the reachable set and the guard set
 %
-% Syntax:  
+% Syntax:
 %    res = test_location_potInt
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_location_potInt
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init location
 inv = interval([-2;-1],[3;5]);
@@ -73,4 +73,4 @@ res(end+1,1) = all(setIndices == [3,4,5,6,6,7,8]');
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

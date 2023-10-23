@@ -9,6 +9,10 @@ if id == -1
     return
 end
 
+disp('CORA APP:')
+disp('- Generating script file..')
+fprintf('  %s\n',file)
+
 % defining some parameters that will be used later depending on the system
 switch currentOption
     case 'Linear System'
@@ -286,6 +290,8 @@ else
     fprintf(id, 'function [] = %s()\n\n',erase(func_name,'.m'));
 end
 
+fprintf(id, 'disp(''- Running generated file..'')\n\n');
+
 % ... write the first section of the generated file, the system dynamics
 fprintf(id, '\n%s\n', '% System Dynamics --------------------------------------------------------- ');
 
@@ -339,6 +345,8 @@ if err == 1, return, end
 
 % ... write the third section which is the option settings to the generated file
 fprintf(id, '\n\n%s\n\n', '% Reachability Analysis ---------------------------------------------------');
+
+fprintf(id, 'disp(''- Running reachability analysis..'')\n\n');
 
 % nonlinear system dynamics or not
 nonlin = false;
@@ -457,6 +465,8 @@ if Simulation
     % ... write the option settings to the generated file
     fprintf(id, '\n%s\n\n', '% Simulation --------------------------------------------------------------');
     
+    fprintf(id, 'disp(''- Running simulations..'')\n\n');
+
     % simulation parameters
     if strtrim(tstart) ~= '0'
         fprintf(id, '%s = %s;\n', 'paramsSim.tStart', 'params.tStart');
@@ -494,6 +504,8 @@ elseif Random_Simulation
 
     % ... write the option settings to the generated file
     fprintf(id, '\n%s\n\n', '% Simulation --------------------------------------------------------------');
+    
+    fprintf(id, 'disp(''- Running simulations..'')\n\n');
  
     fprintf(id, '%s = %s;\n', 'simOpt.points', simOpt_points_random);
     fprintf(id, '%s = %s;\n', 'simOpt.fracVert', simOpt_fracVert_random);
@@ -507,6 +519,8 @@ elseif Simulate_RRT
     
     % ... write the option settings to the generated file
     fprintf(id, '\n%s\n\n', '% Simulation --------------------------------------------------------------');
+    
+    fprintf(id, 'disp(''- Running simulations..'')\n\n');
     
     fprintf(id, '%s = %s;\n', 'simOpt.points', simOpt_points_RRT);
     
@@ -523,6 +537,8 @@ end
 
 % ... write the fifth section which is the plotting settings
 fprintf(id, '\n%s\n\n', '% Visualization -----------------------------------------------------------');
+    
+    fprintf(id, 'disp(''- Plotting..'')\n\n');
 
 gray_color = '[0.5,0.5,0.5]';
 
@@ -550,6 +566,7 @@ fprintf(id, '%s = {', 'dims');
 fprintf(id, '%s,', dims{1:size(dims,1)-1});
 fprintf(id, '%s', dims{size(dims,1):size(dims,1)});
 fprintf(id, '};\n\n%s\n\n', 'for i = 1:length(dims)');
+fprintf(id, 'fprintf(''  - Plot #%%i..\\n'',i)\n\n');
 fprintf(id, '%s\n', '    figure; hold on; box on');
 fprintf(id, '%s = %s\n', '    projDims', 'dims{i};');
 
@@ -560,21 +577,21 @@ if reach_plot
         if strcmp(edge_color_reach, 'gray')
              fprintf(id, '        plotOverTime(reachSet, projDims, ''Facecolor'', %s, ''EdgeColor'', %s);\n', gray_color, gray_color);
              fprintf(id, '%s\n', '    else');
-             fprintf(id, '        plot(reachSet, projDims,  ''Facecolor'', %s, ''EdgeColor'', %s, ''Filled'', true);\n', gray_color, gray_color);
+             fprintf(id, '        plot(reachSet, projDims,  ''Facecolor'', %s, ''EdgeColor'', %s);\n', gray_color, gray_color);
         else
              fprintf(id, '        plotOverTime(reachSet, projDims,  ''Facecolor'', %s, ''EdgeColor'', ''%s'');\n', gray_color, edge_color_reach);
              fprintf(id, '%s\n', '    else');
-             fprintf(id, '        plot(reachSet, projDims,  ''Facecolor'', %s, ''EdgeColor'', ''%s'', ''Filled'', true);\n', gray_color, edge_color_reach);
+             fprintf(id, '        plot(reachSet, projDims,  ''Facecolor'', %s, ''EdgeColor'', ''%s'');\n', gray_color, edge_color_reach);
         end
     else
         if strcmp(edge_color_reach, 'gray')
             fprintf(id, '        plotOverTime(reachSet, projDims,  ''Facecolor'', ''%s'', ''EdgeColor'', %s);\n', color_reach, gray_color);
             fprintf(id, '%s\n', '    else');
-            fprintf(id, '        plot(reachSet, projDims,  ''Facecolor'', ''%s'', ''EdgeColor'', %s, ''Filled'', true);\n', color_reach, gray_color);
+            fprintf(id, '        plot(reachSet, projDims,  ''Facecolor'', ''%s'', ''EdgeColor'', %s);\n', color_reach, gray_color);
         else
             fprintf(id, '        plotOverTime(reachSet, projDims,  ''Facecolor'', ''%s'', ''EdgeColor'', ''%s'');\n', color_reach, edge_color_reach);
             fprintf(id, '%s\n', '    else');
-            fprintf(id, '        plot(reachSet, projDims,  ''Facecolor'', ''%s'', ''EdgeColor'', ''%s'', ''Filled'', true);\n', color_reach, edge_color_reach);
+            fprintf(id, '        plot(reachSet, projDims,  ''Facecolor'', ''%s'', ''EdgeColor'', ''%s'');\n', color_reach, edge_color_reach);
         end
     end
     fprintf(id, '%s\n', '    end');
@@ -585,15 +602,15 @@ if initial_plot
     fprintf(id, '%s\n', '    if length(projDims) ~= 1');
     if strcmp(color_initial, 'gray')
         if strcmp(edge_color_initial, 'gray')
-            fprintf(id, '        plot(params.R0, projDims,  ''Facecolor'', %s, ''EdgeColor'', %s, ''Filled'', true);\n', gray_color, gray_color);
+            fprintf(id, '        plot(params.R0, projDims,  ''Facecolor'', %s, ''EdgeColor'', %s);\n', gray_color, gray_color);
         else
-            fprintf(id, '        plot(params.R0, projDims,  ''Facecolor'', %s, ''EdgeColor'', ''%s'', ''Filled'', true);\n', gray_color, edge_color_initial);
+            fprintf(id, '        plot(params.R0, projDims,  ''Facecolor'', %s, ''EdgeColor'', ''%s'');\n', gray_color, edge_color_initial);
         end
     else
         if strcmp(edge_color_initial, 'gray')
-            fprintf(id, '        plot(params.R0, projDims,  ''Facecolor'', ''%s'', ''EdgeColor'', %s, ''Filled'', true);\n', color_initial, gray_color);
+            fprintf(id, '        plot(params.R0, projDims,  ''Facecolor'', ''%s'', ''EdgeColor'', %s);\n', color_initial, gray_color);
         else
-            fprintf(id, '        plot(params.R0, projDims,  ''Facecolor'', ''%s'', ''EdgeColor'', ''%s'', ''Filled'', true);\n', color_initial, edge_color_initial);
+            fprintf(id, '        plot(params.R0, projDims,  ''Facecolor'', ''%s'', ''EdgeColor'', ''%s'');\n', color_initial, edge_color_initial);
         end
     end
     fprintf(id, '%s\n', '    end');
@@ -624,7 +641,12 @@ fprintf(id, '%s\n', '        xlabel([''x_{'',num2str(projDims(1)),''}''])');
 fprintf(id, '%s\n', '        ylabel([''x_{'',num2str(projDims(2)),''}''])');
 fprintf(id, '%s\n\n', '    end');
 
+fprintf(id, 'drawnow %% plot now\n\n');
+
 fprintf(id, '%s\n\n', 'end');
+
+fprintf(id, 'disp(''Done!'')\n\n');
+
 fprintf(id, '%s\n\n', 'end');
 
 % ... write the sixth and final section which is the Auxiliary function

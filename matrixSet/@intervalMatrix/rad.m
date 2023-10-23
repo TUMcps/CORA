@@ -1,7 +1,7 @@
 function res = rad(intMat)
 % rad - returns the radius of an intervalMatrix
 %
-% Syntax:  
+% Syntax:
 %    res = rad(intMat)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function res = rad(intMat)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      06-May-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-May-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = rad(intMat.int);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

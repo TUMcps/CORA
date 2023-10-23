@@ -3,7 +3,7 @@ function [inequalities,equalities,exprLeft,exprRight,warnings] = parseCondition(
 %    conditions) which define an invariant or a guard set and returns
 %    symbolic expressions
 %
-% Syntax:  
+% Syntax:
 %    [inequalities,equalities,exprLeft,exprRight,warnings] = parseCondition(str)
 %
 % Inputs:
@@ -29,12 +29,12 @@ function [inequalities,equalities,exprLeft,exprRight,warnings] = parseCondition(
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 warnings = struct([]);
 warn_ct = 0;
@@ -102,4 +102,4 @@ equalities = str2symbolic(EqExprsLeft(1:numEq,1))...
 exprLeft = str2symbolic(EqExprsLeft(1:numEq,1));
 exprRight = str2symbolic(EqExprsRight(1:numEq,1));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

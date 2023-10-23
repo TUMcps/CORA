@@ -9,7 +9,7 @@ function I = asin(I)
 % [asin(x_), NaN] if (x_ in [-1, 1]) and (x-- > 1),
 % [asin(x_), asin(x--)] if (x >= -1) and (x <= 1).
 %
-% Syntax:  
+% Syntax:
 %    I = asin(I)
 %
 % Inputs:
@@ -28,15 +28,15 @@ function I = asin(I)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      05-February-2016
-% Last update:  06-February-2016 (DG, Matrix case and typos)
-%               20-February-2016 (DG, Errors are fixed, the matrix case is rewritten)
-%               05-May-2020 (MW, standardized error message)
-%               21-May-2022 (MW, remove new instantiation)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-February-2016
+% Last update:   06-February-2016 (DG, Matrix case and typos)
+%                20-February-2016 (DG, Errors are fixed, the matrix case is rewritten)
+%                05-May-2020 (MW, standardized error message)
+%                21-May-2022 (MW, remove new instantiation)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % scalar case
 if isnumeric(I)
@@ -86,4 +86,4 @@ if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -26,13 +26,13 @@ function res = ne(O,S,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-March-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-March-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = ~isequal(O,S,varargin);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

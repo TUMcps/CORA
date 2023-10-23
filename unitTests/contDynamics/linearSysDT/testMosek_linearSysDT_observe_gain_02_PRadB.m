@@ -7,7 +7,7 @@ function res = testMosek_linearSysDT_observe_gain_02_PRadB()
 % test checks whether the same result as in a previous implementation is 
 % obtained
 %
-% Syntax:  
+% Syntax:
 %    res = testMosek_linearSysDT_observe_gain_02_PRadB
 %
 % Inputs:
@@ -23,12 +23,12 @@ function res = testMosek_linearSysDT_observe_gain_02_PRadB()
 %        International Symposium on Intelligent Control (ISIC),
 %        pages 212–217, 2013.
 
-% Author:       Matthias Althoff
-% Written:      01-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       01-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % enable access to private function "observe_gain_PRadB"
 path = CORAROOT;
@@ -61,4 +61,4 @@ delete(target);
 rmpath(genpath(path));
 addpath(genpath(path));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

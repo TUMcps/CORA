@@ -2,7 +2,7 @@ function res = max(probZ,m)
 % max - Computes an overapproximation of the maximum on the m-sigma bound
 %       according to Eq. (3) in [1]
 %
-% Syntax:  
+% Syntax:
 %    res = max(probZ,m)
 %
 % Inputs:
@@ -29,12 +29,12 @@ function res = max(probZ,m)
 %
 % See also: probZonotope
 
-% Author:       Matthias Althoff
-% Written:      22-August-2007
-% Last update:  08-September-2009
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-August-2007
+% Last update:   08-September-2009
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain covariance matrix
 Sigma=sigma(probZ);
@@ -45,4 +45,4 @@ d=dim(probZ);
 %compute maximum value
 res=1/((2*pi)^(d/2)*det(Sigma)^(1/2))*exp(-0.5*m^2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

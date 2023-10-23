@@ -1,7 +1,7 @@
 function res = test_taylm_interval
 % test_taylm_interval - unit test of interval function
 %
-% Syntax:  
+% Syntax:
 %    res = test_taylm_interval
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_taylm_interval
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Tobias Ladner
-% Written:      17-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       17-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -45,4 +45,4 @@ resvec(end+1) = isequal(I,interval(-4.2425,3.5428),1e-4);
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

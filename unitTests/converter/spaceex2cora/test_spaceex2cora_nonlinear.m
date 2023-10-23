@@ -11,12 +11,12 @@ function res = test_spaceex2cora_nonlinear
 % Outputs:
 %    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      10-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       10-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -49,4 +49,4 @@ elseif sys_cora2 ~= sys_spaceex2
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

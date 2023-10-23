@@ -18,12 +18,12 @@ function files = excludefiles(files,path,name)
 %
 % See also: none
 
-% Author:        Tobias Ladner
+% Authors:       Tobias Ladner
 % Written:       18-November-2022
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 idx = contains({files.folder}', [CORAROOT filesep path]);
 if nargin == 3
@@ -31,4 +31,4 @@ if nargin == 3
 end
 files = files(~idx);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

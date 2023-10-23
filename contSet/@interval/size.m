@@ -1,7 +1,7 @@
 function varargout = size(I, varargin)
 % size - Overloads the operator that returns the size of the object
 %
-% Syntax:  
+% Syntax:
 %    varargout = size(I)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function varargout = size(I, varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      26-January-2016 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-January-2016 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %return size of infimum
 if nargin > 1
@@ -34,4 +34,4 @@ else
     [varargout{1:nargout}] = size(I.inf);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

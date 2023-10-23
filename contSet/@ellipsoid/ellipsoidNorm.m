@@ -3,7 +3,7 @@ function res = ellipsoidNorm(E,p)
 %    ellipsoid-norm induced by the ellipsoid E; this is defined similarly
 %    to the zonotope-norm defined in [1, Definition 4].
 %
-% Syntax:  
+% Syntax:
 %    res = ellipsoidNorm(E,p)
 %
 % Inputs:
@@ -37,13 +37,13 @@ function res = ellipsoidNorm(E,p)
 %
 % See also: ---
 
-% Author:       Adrian Kulmburg
-% Written:      06-July-2021
-% Last update:  26-July-2021 (VG: check for degenerate ellipsoid)
-%               04-July-2022 (VG: more precise input check)
-% Last revision:---
+% Authors:       Adrian Kulmburg
+% Written:       06-July-2021
+% Last update:   26-July-2021 (VG, check for degenerate ellipsoid)
+%                04-July-2022 (VG, more precise input check)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'};
@@ -62,4 +62,4 @@ res = sqrt(p'*(Q\p));
 % The square root is just there to make sure that the resulting function is
 % a norm (i.e., scaling p by a factor a should yield a|p|, not a^2|p|.
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

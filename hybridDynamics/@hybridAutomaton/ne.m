@@ -1,5 +1,5 @@
 function res = ne(HA1,HA2,varargin)
-% eq - overloads '~=' operator to check if two hybrid systems are not equal
+% ne - overloads '~=' operator to check if two hybrid systems are not equal
 %
 % Syntax:
 %    res = HA1 ~= HA2
@@ -23,13 +23,13 @@ function res = ne(HA1,HA2,varargin)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      09-January-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       09-January-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = ~isequal(HA1,HA2,varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = isequal(R1,R2,varargin)
 % isequal - checks if two reachSet objects are equal
 %
-% Syntax:  
+% Syntax:
 %    res = isequal(R1,R2)
 %    res = isequal(R1,R2,tol)
 %
@@ -19,12 +19,12 @@ function res = isequal(R1,R2,varargin)
 %
 % See also: reachSet
 
-% Author:       Mark Wetzlinger
-% Written:      10-November-2022
-% Last update:  01-May-2023 (MW, check time points/intervals as well)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       10-November-2022
+% Last update:   01-May-2023 (MW, check time points/intervals as well)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set default values
 tol = setDefaultValues({1e-12},varargin);
@@ -126,4 +126,4 @@ for i=1:length(R1)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

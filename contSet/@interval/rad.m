@@ -1,7 +1,7 @@
 function r = rad(I)
 % rad - returns the radius of an interval
 %
-% Syntax:  
+% Syntax:
 %    r = rad(I)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function r = rad(I)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      26-June-2015
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-June-2015
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 r = 0.5*(I.sup - I.inf);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

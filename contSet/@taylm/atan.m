@@ -1,8 +1,8 @@
 function res = atan( obj )
-% asin - Overloaded 'asin()' operator for a taylm expression
+% atan - Overloaded 'asin()' operator for a taylm expression
 %
-% Syntax:  
-%    res = asin(obj)
+% Syntax:
+%    res = atan(obj)
 %
 % Inputs:
 %    obj - a taylm expression
@@ -22,21 +22,24 @@ function res = atan( obj )
 %   [1] K. Makino et al. "Taylor Models and other validated functional 
 %       inclusion methods"
 
-% Author:       Dmitry Grebenyuk
-% Written:      16-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       16-August-2017
+% Last update:   ---
+% Last revision: ---
 
+% ------------------------------ BEGIN CODE -------------------------------
 
-%------------- BEGIN CODE --------------
+	res = arrayfun(@(a) aux_s_atan(a), obj, 'UniformOutput', 0);
 
-	res = arrayfun(@(a) s_atan(a), obj, 'UniformOutput', 0);
     A = cat(1, res{:});
     res = reshape(A, size(res));
 
 end
 
-function res = s_atan( obj )
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_s_atan( obj )
     
     if obj.monomials(1,1) == 0                 
         c_f = obj.coefficients(1);
@@ -81,5 +84,5 @@ function res = s_atan( obj )
         cos(atan(interval(0,1) .* rem)).^powr .*...
         sin(powr .* (atan(interval(0,1) .* rem) + pi/2));
 end
-%------------- END OF CODE --------------
 
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function pZ = polyZonotope(Z)
 % polyZonotope - converts a zonotope object to a polyZonotope object
 %
-% Syntax:  
+% Syntax:
 %    pZ = polyZonotope(Z)
 %
 % Inputs:
@@ -24,17 +24,17 @@ function pZ = polyZonotope(Z)
 %
 % See also: interval/polyZonotope, taylm/polyZonotope
 
-% Author:       Niklas Kochdumper
-% Written:      25-June-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-June-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-c = Z.Z(:,1);
-G = Z.Z(:,2:end);
-expMat = eye(size(G,2));
+c = Z.c;
+G = Z.G;
+E = eye(size(G,2));
 
-pZ = polyZonotope(c,G,[],expMat);
+pZ = polyZonotope(c,G,[],E);
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function [R,tcomp] = observe_HinfG(obj,options)
 % from [1].
 %
 %
-% Syntax:  
+% Syntax:
 %    [R,tcomp] = observe_HinfG(obj,options)
 %
 % Inputs:
@@ -28,15 +28,15 @@ function [R,tcomp] = observe_HinfG(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       05-Jan-2021
-% Last update:   25-Feb-2021
+% Authors:       Matthias Althoff
+% Written:       05-January-2021
+% Last update:   25-February-2021
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % obtain offline gains
+
 options.L = observe_gain_HinfG(obj,options);
 
 % apply set-membership approach
@@ -44,4 +44,4 @@ tic
 R = observe_interval(obj,options);
 tcomp = toc;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

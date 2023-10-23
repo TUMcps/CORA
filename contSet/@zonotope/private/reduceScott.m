@@ -3,7 +3,7 @@ function Zred = reduceScott(Z,order)
 %               limit. This reduction method is especially suited for
 %               constrained zonotopes
 %
-% Syntax:  
+% Syntax:
 %    Zred = reduceScott(Z,order)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function Zred = reduceScott(Z,order)
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Niklas Kochdumper
-% Written:      16-July-2018
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       16-July-2018
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % Implementation of the zonotope reduction technique desribed in the
     % Appendix of [1]
@@ -46,7 +46,7 @@ function Zred = reduceScott(Z,order)
     
         % compute low echelon form of the generator matrix using 
         % Gauss-Jordan elimination
-        [A,indPer,fullRank] = rrefInfty(G);
+        [A,indPer,fullRank] = aux_rrefInfty(G);
 
         % check matrix rank
         if ~fullRank        % matrix has rank defincit
@@ -100,9 +100,9 @@ function Zred = reduceScott(Z,order)
 end  
     
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
     
-function [A,indPer,fullRank] = rrefInfty(A)
+function [A,indPer,fullRank] = aux_rrefInfty(A)
 % Transform the matrix to Reduced Echelon Form using Gauss-Jordan
 % elimination with full pivoting. The row elements with the largest 
 % absolute values relative to the inifinity norm of their row are chosen as 
@@ -162,4 +162,4 @@ function [A,indPer,fullRank] = rrefInfty(A)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

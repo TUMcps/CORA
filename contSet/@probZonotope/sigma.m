@@ -1,7 +1,7 @@
 function sig = sigma(probZ)
 % sigma - returns Sigma matrix of a probabilistic zonotope
 %
-% Syntax:  
+% Syntax:
 %    sig = sigma(probZ)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function sig = sigma(probZ)
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       28-August-2007
 % Last update:   26-February-2008
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %reduce probabilistic zonotope first
 probZ = probReduce(probZ);
@@ -36,4 +36,4 @@ probZ = probReduce(probZ);
 G = probZ.g;
 sig = G*G';
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

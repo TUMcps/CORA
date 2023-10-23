@@ -1,7 +1,7 @@
 function res = test_ellipsoid_eq
 % test_ellipsoid_eq - unit test function of eq
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_eq
 %
 % Inputs:
@@ -16,13 +16,13 @@ function res = test_ellipsoid_eq
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      19-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       19-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 [~,res] = evalc('test_ellipsoid_isequal');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

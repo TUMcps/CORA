@@ -2,7 +2,7 @@ function eP = enclosingProbability(probZ,m,dimensions)
 % enclosingProbability - Computes the enclosing probability of a 
 %    probabilistic zonotope
 %
-% Syntax:  
+% Syntax:
 %    eP = enclosingProbability(probZ,m,dimensions)
 %
 % Inputs:
@@ -28,14 +28,14 @@ function eP = enclosingProbability(probZ,m,dimensions)
 %
 % See also: interval,  vertices
 
-% Author:       Matthias Althoff
-% Written:      08-August-2007
-% Last update:  24-August-2007
-%               27-August-2007
-%               20-March-2015
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       08-August-2007
+% Last update:   24-August-2007
+%                27-August-2007
+%                20-March-2015
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 gridpoints=20;
 
@@ -109,18 +109,14 @@ else
     end
 
     %find inside points
-    insidePoint=[];
     %get polytope of Z
-    P=polytope(Vprojected');
-    for i=1:length(xVector)
-        if isinside(P,[xVector(i);yVector(i)])
-            insidePoint=[insidePoint,[xVector(i);yVector(i)]];
-        end
-    end
+    P=polytope(Vprojected);
+    xyVector = [xVector;yVector];
+    insidePoint = xyVector(:,contains(P,xyVector));
     points=[points,insidePoint];
 
     %for each mean point
-    for j=1:length(points(1,:))
+    for j=1:size(points,2)
         %get gaussian distribution from the current mean
         c=points(:,j);
         tempP=gaussian([xVector-c(1);yVector-c(2)],Sigma);
@@ -134,4 +130,4 @@ eP.P=reshape(prob,length(y),length(x));
 eP.X=reshape(xVector,length(y),length(x));
 eP.Y=reshape(yVector,length(y),length(x));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

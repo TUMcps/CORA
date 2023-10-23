@@ -1,7 +1,7 @@
 function res = isIntersecting_(Z,S,varargin)
 % isIntersecting_ - determines if zonotope intersects a set
 %
-% Syntax:  
+% Syntax:
 %    res = isIntersecting_(Z,S)
 %    res = isIntersecting_(Z,S,type)
 %
@@ -33,25 +33,24 @@ function res = isIntersecting_(Z,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conZonotope/isIntersecting_
+% See also: contSet/isIntersecting, conZonotope/isIntersecting_
 
-% Author:       Niklas Kochdumper
-% Written:      21-November-2019
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename isIntersecting_)
+% Authors:       Niklas Kochdumper
+% Written:       21-November-2019
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % call function for other set representations
 if isa(S,'halfspace') || isa(S,'conHyperplane') || ...
-   isa(S,'mptPolytope') || isa(S,'ellipsoid')
+   isa(S,'polytope') || isa(S,'ellipsoid')
 
     res = isIntersecting_(S,Z,varargin{:});
 
 else
     
     res = isIntersecting_(conZonotope(Z),S,varargin{:});
-    
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

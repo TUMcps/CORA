@@ -1,7 +1,7 @@
 function arr = splitIntoNParts(K,N)
 % splitIntoNParts - split the numbers from 1:K into an array of N parts
 %
-% Syntax:  
+% Syntax:
 %    arr = splitIntoNParts(K,N)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function arr = splitIntoNParts(K,N)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 inputArgsCheck({{K,'att','numeric',{'scalar','integer','positive'}},...
                 {N,'att','numeric',{'scalar','integer','positive'}}})
@@ -75,4 +75,4 @@ else
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

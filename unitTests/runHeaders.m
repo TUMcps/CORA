@@ -1,7 +1,7 @@
 function runHeaders(varargin)
 % runHeaders - runs all examples from the function headers
 %
-% Syntax:  
+% Syntax:
 %    runHeaders(varargin)
 %
 % Inputs:
@@ -11,12 +11,12 @@ function runHeaders(varargin)
 % Outputs:
 %    -
 
-% Author:       Mark Wetzlinger, Tobias Ladner
-% Written:      11-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger, Tobias Ladner
+% Written:       11-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get the original working directory
 currentDirectory = pwd;
@@ -44,6 +44,7 @@ files = aux_exclFiles(files, ['contSet' filesep '@conPolyZono']);
 % files = aux_exclFiles(files, ['converter' filesep 'powerSystem2cora' filesep 'cases'], 'IEEE14Parameters.m');
 % files = aux_exclFiles(files, ['converter' filesep 'powerSystem2cora' filesep 'cases'], 'IEEE30Parameters.m');
 % global
+files = aux_exclFiles(files, ['global' filesep 'thirdparty']);
 files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'combinator']);
 files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'cprnd']);
 files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'eq_sphere_partitions']);
@@ -150,7 +151,7 @@ cd(currentDirectory);
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function files = aux_addFiles(path, includeSubfolders)
     if nargin < 2
@@ -178,4 +179,4 @@ function aux_runSingleExample(exampletext)
     evalc(exampletext);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

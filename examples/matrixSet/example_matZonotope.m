@@ -1,7 +1,7 @@
 function completed = example_matZonotope()
 % example_matZonotope - example for matrix zonotopes
 %
-% Syntax:  
+% Syntax:
 %    completed = example_matZonotope()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function completed = example_matZonotope()
 %
 % See also: matZonotope
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       25-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 Zcenter = [1 2; 3 4]; % center of matrix zonotope Z1
 Zdelta{1} = [1 0; 1 1]; % generators of matrix zonotope Z1
@@ -38,4 +38,4 @@ intZ = intervalMatrix(matZ1) % compute interval matrix and display result
 
 completed = 1;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

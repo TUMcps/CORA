@@ -2,7 +2,7 @@ function zB = shrink(zB,filterLength)
 % shrink - shrinks each zonotope in a zonotope bundle; however: in total,
 %    the size of the zonotope bundle will increase
 %
-% Syntax:  
+% Syntax:
 %    zB = shrink(zB,filterLength)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function zB = shrink(zB,filterLength)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      01-December-2010
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       01-December-2010
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute over-approximative parallelotope for each zonotope
 Zred = cell(zB.parallelSets,1);
@@ -32,20 +32,19 @@ for i=1:zB.parallelSets
 end
 
 % intersect all parallelotopes
-P = mptPolytope(Zred{1});
+P = polytope(Zred{1});
 for i=2:zB.parallelSets
-    P = and_(P,mptPolytope(Zred{i}),'exact');
+    P = and_(P,polytope(Zred{i}),'exact');
 end
 
 % check if polytope is empty
-if ~isempty(P)
+if ~representsa_(P,'emptySet',eps)
     % over-approximate polytope by zonotopes
     for i=1:zB.parallelSets
-        Zmat = Zred{i}.Z;
-        zB.Z{i} = parallelotope(P,Zmat(:,2:end));
+        zB.Z{i} = parallelotope(P,Zred{i}.G);
     end
 else
     zB = [];
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

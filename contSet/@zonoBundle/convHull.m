@@ -1,7 +1,7 @@
 function zB = convHull(zB,S)
 % convHull - computes the convex hull of two zonotope bundles
 %
-% Syntax:  
+% Syntax:
 %    res = convHull(zB,S)
 %
 % Inputs:
@@ -30,12 +30,12 @@ function zB = convHull(zB,S)
 %
 % See also: conZonotope/convHull
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       26-November-2019 
 % Last update:   05-May-2020 (MW, standardized error message)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 if nargin == 1
@@ -49,23 +49,23 @@ end
 if isa(S,'zonoBundle') || isa(S,'interval') || ...
     isa(S,'zonotope') || isa(S,'conZonotope')
 
-    P2 = mptPolytope(S);
+    P2 = polytope(S);
 
-elseif isa(S,'mptPolytope')
+elseif isa(S,'polytope')
 
     P2 = S;
     
 elseif isnumeric(S)
     
-    P2 = mptPolytope(S');
+    P2 = polytope(S');
 
 else
     % throw error for given arguments
     throw(CORAerror('CORA:noops',zB,S));
 end
 
-% convert first zonoBundle to mptPolytope
-P1 = mptPolytope(zB);
+% convert first zonoBundle to polytope
+P1 = polytope(zB);
 
 % compute convex hull
 P = convHull(P1,P2);
@@ -73,4 +73,4 @@ P = convHull(P1,P2);
 % convert to a zonotope bundle
 zB = zonoBundle(P);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function interaction2ascii
 % interaction2ascii - ???
 %
-% Syntax:  
+% Syntax:
 %    interaction2ascii
 %
 % Inputs:
@@ -19,12 +19,12 @@ function interaction2ascii
 %
 % See also: -
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       30-May-2008
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %open .mat file
 [FileName,PathName] = uigetfile();
@@ -42,7 +42,7 @@ for carAmode=1:nrOfAmodes
         %open file for writing
         fid = fopen(fName,'w');
         %write to file
-        saveMatrix(fid,Omega{carAmode,carBmode});
+        aux_saveMatrix(fid,Omega{carAmode,carBmode});
         %close file
         status = fclose(fid)
     end
@@ -50,9 +50,10 @@ end
 
 end
 
-% Auxiliary Functions -----------------------------------------------------
 
-function saveMatrix(fid,Omega)
+% Auxiliary functions -----------------------------------------------------
+
+function aux_saveMatrix(fid,Omega)
 %1. value: nr of rows
 %2. value: nr of columns
 %next values: elements values of the matrix
@@ -72,4 +73,4 @@ function saveMatrix(fid,Omega)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

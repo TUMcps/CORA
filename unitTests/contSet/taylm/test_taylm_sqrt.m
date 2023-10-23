@@ -1,7 +1,7 @@
 function res = test_taylm_sqrt
 % test_taylm_sqrt - unit test of square root function
 %
-% Syntax:  
+% Syntax:
 %    res = test_taylm_sqrt
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = test_taylm_sqrt
 % Subfunctions: none
 % MAT-files required: none
 
-% Author:       Dmitry Grebenyuk
-% Written:      14-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       14-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -45,4 +45,4 @@ if ~appeq( getCoef(t), sqrt(2)*[1; 1/4; -1/32; 3/384; -15/6144], eps ) ||...
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

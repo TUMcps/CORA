@@ -2,7 +2,7 @@ function res = test_reachSet_plotAsGraph
 % test_reachSet_plotAsGraph - unit test function for plotting branches of
 %    reachSet object
 %
-% Syntax:  
+% Syntax:
 %    res = test_reachSet_plotAsGraph
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_reachSet_plotAsGraph
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      07-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       07-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -56,4 +56,4 @@ catch
     close;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

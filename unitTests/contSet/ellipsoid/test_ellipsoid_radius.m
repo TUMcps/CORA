@@ -1,7 +1,7 @@
 function res = test_ellipsoid_radius
 % test_ellipsoid_radius - unit test function of radius
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_radius
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_ellipsoid_radius
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty case: dim = 0
 res = true;
@@ -48,4 +48,4 @@ for i=1:length(E_c)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

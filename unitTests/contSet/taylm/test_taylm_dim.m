@@ -1,7 +1,7 @@
 function res = test_taylm_dim
 % test_taylm_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = test_taylm_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_taylm_dim
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      02-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       02-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -45,4 +45,4 @@ resvec(end+1) = dim(tay) == 3;
 % combine results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

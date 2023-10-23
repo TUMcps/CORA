@@ -3,7 +3,7 @@ function display(probZ)
 %    interval generators, probabilistic generators, covariance matrix) on
 %    the command window
 %
-% Syntax:  
+% Syntax:
 %    display(probZ)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function display(probZ)
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       03-August-2007 
 % Last update:   26-February-2008
 %                09-June-2020 (MW, update formatting of output)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 fprintf(newline);
 disp(inputname(1) + " =");
@@ -52,4 +52,4 @@ displayGenerators(probZ.g,maxGens,'probabilistic generators');
 disp('covariance matrix: ');
 disp(probZ.cov);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

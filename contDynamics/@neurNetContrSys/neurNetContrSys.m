@@ -42,13 +42,13 @@ classdef neurNetContrSys < contDynamics
 %
 % See also: neurNetContrSys
 
-% Author:       Niklas Kochdumper, Tobias Ladner
-% Written:      17-September-2021
-% Last update:  23-November-2022 (TL, polish)
-%               14-December-2022 (TL, property check in inputArgsCheck)
-% Last revision:18-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Niklas Kochdumper, Tobias Ladner
+% Written:       17-September-2021
+% Last update:   23-November-2022 (TL, polish)
+%                14-December-2022 (TL, property check in inputArgsCheck)
+% Last revision: 18-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     sys; % system dynamics
@@ -84,7 +84,7 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [sys,nn,dt] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
@@ -106,11 +106,6 @@ function [sys,nn,dt] = aux_parseInputArgs(varargin)
 
     % parse user-provided input arguments
     [sys,nn,dt] = setDefaultValues({sys,nn,dt},varargin);
-
-    % convert old version of neuralNetwork class
-    if isa(nn, "neuralNetworkOld")
-        nn = neuralNetwork.getFromOldNeuralNetwork(nn);
-    end
     
 end
 
@@ -123,7 +118,7 @@ function aux_checkInputArgs(sys,nn,dt,n_in)
         % check data types
         inputArgsCheck({ ...
             {sys,'att',{'nonlinearSys','nonlinParamSys'}},...
-            {nn,'att',{'neuralNetwork','neuralNetworkOld'}},...
+            {nn,'att',{'neuralNetwork'}},...
             {dt,'att','numeric',{'scalar','positive'}},...
         })
 
@@ -163,4 +158,4 @@ function [sys,nn,dt] = aux_computeProperties(sys,nn,dt)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

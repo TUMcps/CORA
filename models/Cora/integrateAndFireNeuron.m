@@ -42,7 +42,7 @@ function HA = integrateAndFireNeuron()
     sys = linearSys(A,B,c,C);
     
     % invariant set
-    inv = mptPolytope([1 0],u_fire);
+    inv = polytope([1 0],u_fire);
     
     % transition
     guard = conHyperplane([1 0],u_fire);
@@ -65,7 +65,7 @@ function HA = integrateAndFireNeuron()
     sys = linearSys(A,B,c,C);
     
     % invariant set
-    inv = mptPolytope([1 0],u_out);
+    inv = polytope([1 0],u_out);
     
     % transition
     guard = conHyperplane([1 0],u_out);
@@ -88,7 +88,7 @@ function HA = integrateAndFireNeuron()
     sys = linearSys(A,B,c,C);
     
     % invariant set
-    inv = mptPolytope([-1 0],-u_rest);
+    inv = polytope([-1 0],-u_rest);
     
     % transition
     guard = conHyperplane([1 0],u_rest);

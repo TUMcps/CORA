@@ -17,13 +17,13 @@ function res = uminus(S)
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      06-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       06-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = -1 * S;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

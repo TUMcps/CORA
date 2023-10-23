@@ -16,12 +16,12 @@ function res = testLong_hybridAutomaton_reach_03_spacecraft
 %   [1] N. Chan et al. "Verifying safety of an autonomous spacecraft 
 %       rendezvous mission (Benchmark proposal)"  
 
-% Author:       Niklas Kochdumper
-% Written:      23-December-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       23-December-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Reachability Settings ---------------------------------------------------
@@ -120,11 +120,11 @@ for i = 1:length(guardIntersect)
     
     % check if all simulated points are located inside the computed guard
     % intersection
-    P = mptPolytope(project(Rjump(1).set,2:5));
+    P = polytope(project(Rjump(1).set,2:5));
     res(i) = all(contains(P,points,'exact',1e-3));
 end
 
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function cZ = conZonotope(Z)
 % conZonotope - convert a zonotope object into a conZonotope object
 %
-% Syntax:  
+% Syntax:
 %    cZ = conZonotope(Z)
 %
 % Inputs:
@@ -20,14 +20,14 @@ function cZ = conZonotope(Z)
 %
 % See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      23-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       23-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % call constructor with center and generator matrix as inputs
-cZ = conZonotope(Z.Z);
+cZ = conZonotope(Z.c, Z.G);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

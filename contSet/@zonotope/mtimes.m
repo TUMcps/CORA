@@ -2,7 +2,7 @@ function Z = mtimes(factor1,factor2)
 % mtimes - overloaded '*' operator for the multiplication of a matrix or an
 %    interval matrix with a zonotope
 %
-% Syntax:  
+% Syntax:
 %    Z = mtimes(factor1,factor2)
 %
 % Inputs:
@@ -33,17 +33,17 @@ function Z = mtimes(factor1,factor2)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      30-September-2006 
-% Last update:  07-September-2007
-%               05-January-2009
-%               06-August-2010
-%               01-February-2011
-%               08-February-2011
-%               18-November-2015
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       30-September-2006 
+% Last update:   07-September-2007
+%                05-January-2009
+%                06-August-2010
+%                01-February-2011
+%                08-February-2011
+%                18-November-2015
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %Find a zonotope object
 [Z,M] = findClassArg(factor1,factor2,'zonotope');
@@ -52,7 +52,8 @@ try
 
     %numeric matrix
     if isnumeric(M)
-        Z.Z=M*Z.Z;
+        Z.c=M*Z.c;
+        Z.G=M*Z.G;
         
     % interval (see Theorem 3.3 in [1])
     elseif isa(M,'interval')
@@ -63,9 +64,10 @@ try
         T=0.5*(M_max+M_min);
         %get symmetric interval matrix
         S=0.5*(M_max-M_min);
-        Zabssum=sum(abs(Z.Z),2);
+        Zabssum=sum(abs([Z.c,Z.G]),2);
         %compute new zonotope
-        Z.Z=[T*Z.Z,diag(S*Zabssum)]; 
+        Z.c = T*Z.c;
+        Z.G = [T*Z.G,diag(S*Zabssum)]; 
     
     % interval matrix (see Theorem 3.3 in [1])
     elseif isa(M,'intervalMatrix')
@@ -76,21 +78,42 @@ try
         T=0.5*(M_max+M_min);
         %get symmetric interval matrix
         S=0.5*(M_max-M_min);
-        Zabssum=sum(abs(Z.Z),2);
+        Zabssum=sum(abs([Z.c,Z.G]),2);
         %compute new zonotope
-        Z.Z=[T*Z.Z,diag(S*Zabssum)]; 
+        Z.c = T*Z.c;
+        Z.G = [T*Z.G,diag(S*Zabssum)]; 
     
     % matrix zonotope (see Sec. 4.4.1 in [2])
     elseif isa(M,'matZonotope')
-        %obtain first zonotope
-        Znew=M.center*Z.Z;
+        % extract center and generators
+        c = Z.c;
+        G = Z.G;
+        m = size(G,2);
+
+        % get output dimension
+        if all(M.dim == 1)
+            % multiplication with a scalar
+            n = length(c);
+        else
+            % matrix multiplication
+            n = M.dim(1);
+        end
+
+        % init Gnew
+        Gnew = zeros(n, (M.gens+1) * (m+1) -1);
+
+        % obtain first zonotope
+        cnew = M.center * c;
+        Gnew(:,1:m) = M.center * G;
+        
         %compute further zonotopes and add them up
         for i=1:M.gens
-            Zadd=M.generator{i}*Z.Z;
-            Znew(:,(end+1):(end+length(Z.Z(1,:))))=Zadd;
+            Gnew(:,(m+1)*i)= M.generator{i} * c;
+            Gnew(:,(m+1)*i+(1:m))= M.generator{i} * G;
         end
-        %write to Z.Z
-        Z.Z=Znew;
+        %write to Z.c, Z.G
+        Z.c=cnew;
+        Z.G=Gnew;
     
     else
         % throw error
@@ -107,7 +130,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(Z)
+    if representsa_(Z,'emptySet',eps)
         return
     end
 
@@ -119,4 +142,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

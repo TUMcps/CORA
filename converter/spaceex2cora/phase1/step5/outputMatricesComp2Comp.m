@@ -3,7 +3,7 @@ function [isLin_out,C,D,k,eqs_out] = outputMatricesComp2Comp(states,inputs,outpu
 %    vector k for output matrices of a component in a parallel hybrid
 %    automaton
 %
-% Syntax:  
+% Syntax:
 %    [isLin_out,C,D,k,eqs_out] = outputMatricesComp2Comp(states,inputs,outputs,inv)
 %
 % Inputs:
@@ -15,7 +15,7 @@ function [isLin_out,C,D,k,eqs_out] = outputMatricesComp2Comp(states,inputs,outpu
 % Outputs:
 %    isLin_out - flag whether all output equations are linear
 %    C - output matrix
-%    D - throughput matrix
+%    D - feedthrough matrix
 %    k - output offset
 %    eqs_out - string containing text for nonlinear output equations
 %
@@ -25,12 +25,12 @@ function [isLin_out,C,D,k,eqs_out] = outputMatricesComp2Comp(states,inputs,outpu
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      25-June-2022
-% Last update:  ---
-% Last revision:12-January-2023 (MW, major fixes, nonlinear output eqs)
+% Authors:       Mark Wetzlinger
+% Written:       25-June-2022
+% Last update:   ---
+% Last revision: 12-January-2023 (MW, major fixes, nonlinear output eqs)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % if no outputs, then no equation y = Cx + Du + k
 % hence, return empty matrices (different handling in data2parallelHA.m)
@@ -119,7 +119,7 @@ for i=1:length(outputs)
     end
 
     temp = subs(outputEq,sym_state,zeros(length(states),1));
-    % throughput matrix D
+    % feedthrough matrix D
     for j=1:length(inputs)
         % substitute 1 for j-th state and 0 for all other states to
         % determine coefficient in C matrix
@@ -132,4 +132,4 @@ for i=1:length(outputs)
 
 end
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

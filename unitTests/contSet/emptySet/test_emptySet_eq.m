@@ -1,7 +1,7 @@
 function res = test_emptySet_eq
 % test_emptySet_eq - unit test function of eq
 %
-% Syntax:  
+% Syntax:
 %    res = test_emptySet_eq
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_emptySet_eq
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init empty set
 n = 2;
@@ -38,10 +38,10 @@ Z = zonotope(zeros(2,1));
 res(end+1,1) = ~(O == Z);
 
 % init empty polytope
-P = mptPolytope([1 1;-1 -1],[1;-2]);
+P = polytope([1 1;-1 -1],[1;-2]);
 res(end+1,1) = eq(O,P);
 
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -22,12 +22,12 @@ function child = InstantiateNC(parent,child,bind)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % save global name for new instance
 child.name = parent.name + "." + bind.localName;
@@ -71,4 +71,4 @@ for v=1:numel(child.listOfVar)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

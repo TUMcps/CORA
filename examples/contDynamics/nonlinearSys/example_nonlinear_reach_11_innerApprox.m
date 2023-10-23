@@ -5,7 +5,7 @@ function example_nonlinear_reach_11_innerApprox()
 %       of [2].
 %
 %
-% Syntax:  
+% Syntax:
 %    example_nonlinear_reach_11_innerApprox
 %
 % Inputs:
@@ -30,12 +30,12 @@ function example_nonlinear_reach_11_innerApprox()
 %
 % See also: reachInner
 
-% Author:       Niklas Kochdumper
-% Written:      21-October-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       21-October-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameters --------------------------------------------------------------
 
@@ -129,4 +129,4 @@ l = legend([hOut;hIn1;hIn2],'Outer-approx.','Inner-approx. (x_1)', ...
                             'Inner-approx. (x_2)');
 set(l,'Location','northeast');
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

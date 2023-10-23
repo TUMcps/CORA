@@ -1,7 +1,7 @@
 function I = convHull(I,S)
 % convHull - computes an enclosure for the convex hull of two intervals
 %
-% Syntax:  
+% Syntax:
 %    res = convHull(I,S)
 %
 % Inputs:
@@ -27,13 +27,13 @@ function I = convHull(I,S)
 %
 % See also: conZonotope/convHull
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       26-November-2019 
 % Last update:   05-May-2020 (MW, standardized error message)
 %                12-March-2021 (MW, add empty case)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 if nargin == 1
@@ -44,7 +44,7 @@ end
 [I,S] = findClassArg(I,S,'interval');
 
 % different cases depending on the class of the summand
-if isa(S,'interval') && isempty(S)
+if isa(S,'interval') && representsa_(S,'emptySet',eps)
     % actually holds for all sets, but other checks might be costly
     
     I = interval();
@@ -55,7 +55,7 @@ elseif isa(S,'interval') || isnumeric(S)
 
 elseif isa(S,'zonotope') || isa(S,'conZonotope') || ...
        isa(S,'zonoBundle') || isa(S,'polyZonotope') || ...
-       isa(S,'mptPolytope') || isa(S,'conPolyZono')
+       isa(S,'polytope') || isa(S,'conPolyZono')
 
     I = convHull(S,I);
 
@@ -66,4 +66,4 @@ else
         
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -4,7 +4,7 @@ function res = CHECKS_ENABLED()
 %    but are time-consuming and therefore not required if the calling code
 %    does not contain any errors)
 %
-% Syntax:  
+% Syntax:
 %    res = CHECKS_ENABLED()
 %
 % Inputs:
@@ -19,13 +19,13 @@ function res = CHECKS_ENABLED()
 %
 % See also: inputArgsCheck.m, equalDimCheck.m
 
-% Author:       Mark Wetzlinger
-% Written:      02-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       02-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -7,7 +7,7 @@ function [isLinear,A,B,c,formalEqs] = ...
 %    WARNING: could produce incorrect results, if any variables are named 
 %       "xL<number>R" or "uL<number>R
 %
-% Syntax:  
+% Syntax:
 %    [isLinear,A,B,c,formalEqs] = ...
 %       eq2linSysFlat(exprNames,exprs,states,inputs,outputsLocal,map,parseMode)
 %
@@ -41,12 +41,12 @@ function [isLinear,A,B,c,formalEqs] = ...
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin < 7
     parseMode = 'flow';
@@ -184,4 +184,4 @@ end
 
 formalEqs = join(eqs,newline);
 
-%------------- END OF CODE -------------
+% ------------------------------ END OF CODE ------------------------------

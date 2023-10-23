@@ -1,7 +1,7 @@
 function display(obj)
 % display - Displays a contDynamics object on the command window
 %
-% Syntax:  
+% Syntax:
 %    display(obj)
 %
 % Inputs:
@@ -19,14 +19,14 @@ function display(obj)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      02-May-2007
-% Last update:  17-October-2007
-%               19-June-2022
-%               23-November-2022 (TL: dispInput)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       02-May-2007
+% Last update:   17-October-2007
+%                19-June-2022
+%                23-November-2022 (TL, dispInput)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % disp input if necessary
@@ -46,4 +46,4 @@ disp("  number of outputs: " + obj.nrOfOutputs);
 
 fprintf(newline);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

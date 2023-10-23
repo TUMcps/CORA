@@ -1,7 +1,7 @@
 function res = test_zonotope_split
 % test_zonotope_split - unit test function of split
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_split
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_split
 %
 % See also: -
 
-% Author:       Matthias Althoff
-% Written:      26-July-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-July-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % tolerance
 tol = 1e-14;
@@ -49,27 +49,27 @@ Zsplit_4 = split(Z1,h);
 % obtain zonotope matrix -- split 1
 for i=1:length(Zsplit_1)
     for j=1:length(Zsplit_1{1})
-        c_1{i}{j} = center(Zsplit_1{i}{j});
-        G_1{i}{j} = generators(Zsplit_1{i}{j});
+        c_1{i}{j} = Zsplit_1{i}{j}.c;
+        G_1{i}{j} = Zsplit_1{i}{j}.G;
     end
 end
 
 % obtain zonotope matrix -- split 2
 for i=1:length(Zsplit_2)
-    c_2{i} = center(Zsplit_2{i});
-    G_2{i} = generators(Zsplit_2{i});
+    c_2{i} = Zsplit_2{i}.c;
+    G_2{i} = Zsplit_2{i}.G;
 end
 
 % obtain zonotope matrix -- split 3
 for i=1:length(Zsplit_3)
-    c_3{i} = center(Zsplit_3{i});
-    G_3{i} = generators(Zsplit_3{i});
+    c_3{i} = Zsplit_3{i}.c;
+    G_3{i} = Zsplit_3{i}.G;
 end
 
 % obtain zonotope matrix -- split 4
 for i=1:length(Zsplit_4)
-    c_4{i} = center(Zsplit_4{i});
-    G_4{i} = generators(Zsplit_4{i});
+    c_4{i} = Zsplit_4{i}.c;
+    G_4{i} = Zsplit_4{i}.G;
 end
 
 % true result -- split 1
@@ -137,4 +137,4 @@ end
 % combined check
 res = res_1 & res_2 & res_3 & res_4;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

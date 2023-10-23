@@ -1,7 +1,7 @@
 function c = center(Z)
 % center - returns the center of a zonotope
 %
-% Syntax:  
+% Syntax:
 %    c = center(Z)
 %
 % Inputs:
@@ -20,23 +20,14 @@ function c = center(Z)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      30-September-2006 
-% Last update:  22-March-2007
-%               14-March-2021 (MW, empty set)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       30-September-2006 
+% Last update:   22-March-2007
+%                14-March-2021 (MW, empty set)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-try
-    c = Z.Z(:,1);
-catch ME
-    if isempty(Z)
-        c = [];
-    else
-        rethrow(ME);
-    end
-end
-    
+c = Z.c;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

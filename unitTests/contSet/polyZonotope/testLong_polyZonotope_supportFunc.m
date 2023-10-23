@@ -3,7 +3,7 @@ function res = testLong_polyZonotope_supportFunc
 %    calculating bounds of the polynomial zonotope along a specific
 %    direction 
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polyZonotope_supportFunc
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = testLong_polyZonotope_supportFunc
 %
 % See also: -
 
-% Author:       Niklas Kochdumper
-% Written:      30-July-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       30-July-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -38,9 +38,9 @@ for j = 1:length(methods)
         G = rand(2,6)-0.5*ones(2,6);
         ind = datasample(1:6,4,'Replace',false);
         G(:,ind) = G(:,ind)./10;
-        Grest = rand(2,1)-0.5*ones(2,1);
-        expMat = [1, round(rand(1,5)*5)];
-        pZ = polyZonotope(c,G,Grest,expMat);
+        GI = rand(2,1)-0.5*ones(2,1);
+        E = [1, round(rand(1,5)*5)];
+        pZ = polyZonotope(c,G,GI,E);
 
         % choose a random direction
         dir = rand(2,1)-0.5*ones(2,1);
@@ -79,9 +79,9 @@ for j = 1:length(methods)
         G = rand(4,6)-0.5*ones(4,6);
         ind = datasample(1:6,4,'Replace',false);
         G(:,ind) = G(:,ind)./10;
-        Grest = rand(4,2)-0.5*ones(4,2);
-        expMat = [1, round(rand(1,5)*5)];
-        pZ = polyZonotope(c,G,Grest,expMat);
+        GI = rand(4,2)-0.5*ones(4,2);
+        E = [1, round(rand(1,5)*5)];
+        pZ = polyZonotope(c,G,GI,E);
 
         % choose a random direction
         dir = rand(4,1)-0.5*ones(4,1);
@@ -106,4 +106,4 @@ for j = 1:length(methods)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

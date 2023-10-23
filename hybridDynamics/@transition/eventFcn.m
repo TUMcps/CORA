@@ -2,7 +2,7 @@ function [value,isterminal,direction] = eventFcn(trans,x)
 % eventFcn - returns the event function results of a guard set of a 
 %    transition
 %
-% Syntax:  
+% Syntax:
 %    [value,isterminal,direction] = eventFcn(trans,x)
 %
 % Inputs:
@@ -24,15 +24,15 @@ function [value,isterminal,direction] = eventFcn(trans,x)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      07-May-2007 
-% Last update:  07-September-2007
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       07-May-2007 
+% Last update:   07-September-2007
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % [value,isterminal,direction] = eventFcn(trans.guard,x,0);
 % [value,isterminal,direction] = eventFcn(trans.guard,x,1);
 [value,isterminal,direction] = eventFcn(trans.guard,x,-1);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

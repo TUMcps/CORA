@@ -2,7 +2,7 @@ function taylor(obj,varargin)
 % taylor - computes symbolically the Taylor expansion of the nonlinear 
 % system; the result is stored in a m-file and passed by a handle
 %
-% Syntax:  
+% Syntax:
 %    taylor(obj)
 %    taylor(obj,order,expPoint)
 %
@@ -23,12 +23,12 @@ function taylor(obj,varargin)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      06-December-2016 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-December-2016 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create symbolic variables
 [x,u] = symVariables(obj,'LRbrackets');
@@ -65,4 +65,4 @@ end
 disp('create Taylor file');
 createTaylorFile(fdyn_taylor,path,obj.name);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

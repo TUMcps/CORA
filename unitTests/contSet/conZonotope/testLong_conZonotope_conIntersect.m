@@ -2,7 +2,7 @@ function res = testLong_conZonotope_conIntersect
 % testLong_conZonotope_conIntersect - unit test function for the
 %    constrained intersection of two constrained zonotope objects
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conZonotope_conIntersect
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = testLong_conZonotope_conIntersect
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Matthias Althoff
-% Written:      04-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % first constrained zonotope Z
@@ -50,7 +50,7 @@ R =  [...
 
 % intersection
 Zint = conIntersect(Z, Y, R);
-isempty(Zint);
+representsa_(Zint,'emptySet',eps);
 
 % plot sets (for debugging)
 % figure; 
@@ -78,12 +78,12 @@ Y_zono = zonotope([[10.1944; -0.4028; 0.1440; 0.5506], 0.1*eye(4)]);
 
 res2 = isIntersecting(R*Z_zono, Y_zono);
 
-res3 = isIntersecting(mptPolytope(R*Z_zono), mptPolytope(Y_zono));
+res3 = isIntersecting(polytope(R*Z_zono), polytope(Y_zono));
 
-% the result below is an mptPolytope (?)
-res4 = mptPolytope(R*Z_zono) & mptPolytope(Y_zono);
+% the result below is an polytope (?)
+res4 = polytope(R*Z_zono) & polytope(Y_zono);
 
 % combine checks
 res = res2 && res3;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

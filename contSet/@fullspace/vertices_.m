@@ -1,7 +1,7 @@
 function V = vertices_(fs,varargin)
 % vertices_ - returns the vertices of a full-dimensional space
 %
-% Syntax:  
+% Syntax:
 %    V = vertices_(fs)
 %
 % Inputs:
@@ -18,14 +18,14 @@ function V = vertices_(fs,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: contSet/vertices
 
-% Author:       Mark Wetzlinger
-% Written:      25-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if fs.dimension == 0
     throw(CORAerror('CORA:notSupported',...
@@ -33,6 +33,6 @@ if fs.dimension == 0
 end
 
 % convert to interval and compute vertices
-V = interval(fs);
+V = vertices_(interval(fs));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

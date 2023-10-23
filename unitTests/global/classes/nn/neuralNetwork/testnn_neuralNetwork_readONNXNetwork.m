@@ -1,7 +1,7 @@
-function [res] = testnn_neuralNetwork_readONNXNetwork()
-% testnn_neuralNetwork_readONNXNetwork - tests the readONNXNetwork funciton
+function res = testnn_neuralNetwork_readONNXNetwork()
+% testnn_neuralNetwork_readONNXNetwork - tests the readONNXNetwork function
 %
-% Syntax:  
+% Syntax:
 %    res = testnn_neuralNetwork_readONNXNetwork()
 %
 % Inputs:
@@ -16,22 +16,30 @@ function [res] = testnn_neuralNetwork_readONNXNetwork()
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      28-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       28-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
+resvec = [];
 
-% Test 1
+% test reading basic network
 nn = neuralNetwork.readONNXNetwork('attitude_control_3_64_torch.onnx');
+resvec(end+1) = true;
 
-% Test 2
+% test verbose output + input/output formats
 nn = neuralNetwork.readONNXNetwork('controller_airplane.onnx', true, 'BC', 'BC');
+resvec(end+1) = true;
+
+% Reading network with custom layer
+nn = neuralNetwork.readONNXNetwork('vnn_verivital_avgpool.onnx', false, 'BCSS');
+resvec(end+1) = true;
+
+% gather results
+res = all(resvec);
 
 end
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

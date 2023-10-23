@@ -2,7 +2,7 @@ function loc = locationProduct(pHA,locID,allLabels)
 % locationProduct - Constructs an overall location object from the active 
 %    loctions of the subcomponents with a local automaton product
 %
-% Syntax:  
+% Syntax:
 %    loc = locationProduct(pHA,locID,allLabels)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function loc = locationProduct(pHA,locID,allLabels)
 %
 % See also: none
 
-% Author:       Johann Schoepfer, Niklas Kochdumper
-% Written:      08-June-2018  
-% Last update:  09-July-2018
+% Authors:       Johann Schoepfer, Niklas Kochdumper
+% Written:       08-June-2018  
+% Last update:   09-July-2018
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % number of components in parallel hybrid automaton
 numComp = length(pHA.components);
@@ -55,4 +55,4 @@ mergedFlow = mergeFlows(pHA,flowList,locID);
 % construct resulting location object
 loc = location(mergedInvSet,mergedTransSets,mergedFlow);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

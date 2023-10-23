@@ -2,7 +2,7 @@ function simulateTank_30(options)
 % simulateTank_30 - simulates a tank system to disturbances and 
 % sensor noise
 %
-% Syntax:  
+% Syntax:
 %    simulateTank_30(options)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function simulateTank_30(options)
 % References: 
 %   -
 
-% Author:       Matthias Althoff
-% Written:      28-Mar-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       28-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set path
 savepath = [CORAROOT filesep 'unitTests' filesep 'contDynamics' ...
@@ -137,7 +137,6 @@ params.W = W; % disturbance set
 params.u = u; %input transition
 
 
-
 %% Simulation Settings
 
 options.points = 1;
@@ -160,4 +159,4 @@ params.U = zeros(inputs,1); % input set
 
 save([savepath '/' 'tankModel_nonlin_dim30_new'], 'tank', 'params', 'options', 'simRes');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

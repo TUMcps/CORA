@@ -2,7 +2,7 @@ function [Rerror,Error] = linError_higherOrder(obj,R,options)
 % linError_higherOrder - computes the linearization error by using higher
 %    order tensors (extension of the error computation in [1])
 %
-% Syntax:  
+% Syntax:
 %    [Rerror,Error] = linError_higherOrder(obj,R,options)
 %
 % Inputs:
@@ -27,12 +27,12 @@ function [Rerror,Error] = linError_higherOrder(obj,R,options)
 %       "Reachability Analysis of Nonlinear Systems with uncertain
 %           Parameters using Conservative Linearization"
 
-% Author:       Niklas Kochdumper
-% Written:      02-March-2018
-% Last update:  21-April-2020 (skip empty T{i,j})
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       02-March-2018
+% Last update:   21-April-2020 (skip empty T{i,j})
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute interval of reachable set
 dx = interval(R);
@@ -107,4 +107,4 @@ Rerror = reduce(Rerror,options.reductionTechnique,options.intermediateOrder);
 Error = abs(interval(Rerror));
 Error = supremum(Error);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

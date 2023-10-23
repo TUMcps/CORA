@@ -1,7 +1,7 @@
 function pZ = generateRandom(varargin)
 % generateRandom - Generates a random polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    pZ = polyZonotope.generateRandom()
 %    pZ = polyZonotope.generateRandom('Dimension',n)
 %    pZ = polyZonotope.generateRandom('Dimension',n,'NrGenerators',nrGens)
@@ -30,12 +30,12 @@ function pZ = generateRandom(varargin)
 %
 % See also: zonotope/generateRandom
 
-% Author:       Niklas Kochdumper
-% Written:      29-December-2019
-% Last update:  19-May-2022 (MW, name-value syntax)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       29-December-2019
+% Last update:   19-May-2022 (MW, name-value syntax)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % name-value pairs -> number of input arguments is always a multiple of 2
 if mod(nargin,2) ~= 0
@@ -96,7 +96,7 @@ G = gen_low + rand(n,nrGens) * (gen_up - gen_low);
 c = gen_low + rand(n,1) * (gen_up - gen_low);
 
 % exponent matrix
-expMat = zeros(nrFac,nrGens);
+E = zeros(nrFac,nrGens);
 
 for j = 1:nrGens
 
@@ -108,36 +108,37 @@ for j = 1:nrGens
 
     for jj=1:k
         % select random value
-        expMat(idxs(jj),j) = randomExponent(exp_low,exp_up);   
+        E(idxs(jj),j) = aux_randomExponent(exp_low,exp_up);   
     end
     
 end
 
-ind = find(sum(expMat,2) == 0);
+ind = find(sum(E,2) == 0);
 for i = 1:length(ind)
-   temp = floor(1 + rand*(size(expMat,2)-1));
-   expMat(ind(i),temp) = randomExponent(exp_low,exp_up);
+   temp = floor(1 + rand*(size(E,2)-1));
+   E(ind(i),temp) = aux_randomExponent(exp_low,exp_up);
 end
 
 % remove redundant exponents
-[expMat,G] = removeRedundantExponents(expMat,G);
+[E,G] = removeRedundantExponents(E,G);
 
 % generate random independent generators
-Grest = [];
+GI = [];
 
 if nrIndGens > 0
-    Grest = gen_low + rand(n,nrIndGens) * (gen_up - gen_low);
+    GI = gen_low + rand(n,nrIndGens) * (gen_up - gen_low);
 end
 
 % instantiate polyZonotope object
-pZ = polyZonotope(c,G,Grest,expMat);
+pZ = polyZonotope(c,G,GI,E);
     
 
 end
 
-% Auxiliary Functions -----------------------------------------------------
 
-function e = randomExponent(l,u)
+% Auxiliary functions -----------------------------------------------------
+
+function e = aux_randomExponent(l,u)
 % generate a random exponent using a quadratic probability distribution
 % since exponents have a large probability of being close to 1
 
@@ -146,4 +147,4 @@ function e = randomExponent(l,u)
     e = round(e);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

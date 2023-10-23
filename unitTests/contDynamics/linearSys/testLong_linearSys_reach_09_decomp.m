@@ -2,7 +2,8 @@ function res = testLong_linearSys_reach_09_decomp()
 % testLong_linearSys_reach_09_decomp - unitTest for the decomposed reachability
 %    algorithm from [1], compared to standard reach
 %Sys
-% Syntax:  
+%
+% Syntax:
 %    res = testLong_linearSys_reach_09_decomp
 %
 % Inputs:
@@ -16,13 +17,13 @@ function res = testLong_linearSys_reach_09_decomp()
 %       "Decomposing Reach Set Computations with Low-dimensional Sets
 %            and High-Dimensional Matrices"
 
-% Author:       Mark Wetzlinger
-% Written:      25-June-2019
-% Last update:  14-Aug-2019
-%               23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       25-June-2019
+% Last update:   14-August-2019
+%                23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -65,7 +66,6 @@ tic;
 R_decomp = reach(fiveDimSys, params, options);
 tComp = toc;
 disp(['computation time of reachable set: ',num2str(tComp)]);
-
 
 
 % Simulation --------------------------------------------------------------
@@ -119,7 +119,6 @@ if plotting
 end
 
 
-
 % compare solutions numerically -------------------------------------------
 
 IH_reach = interval(R_fromStart.timeInterval.set{end});
@@ -132,7 +131,6 @@ if ~res_zono
     res = false; return
 end
 % -------------------------------------------------------------------------
-
 
 
 % PART II: explicit C matrix ----------------------------------------------
@@ -194,5 +192,4 @@ if ~res_zono
 end
 
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

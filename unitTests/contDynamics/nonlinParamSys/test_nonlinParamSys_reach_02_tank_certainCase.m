@@ -7,7 +7,7 @@ function res = test_nonlinParamSys_reach_02_tank_certainCase
 %
 % This example can be found in [1, Sec. 3.4.5] or in [2].
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinParamSys_reach_02_tank_certainCase
 %
 % Inputs:
@@ -23,12 +23,12 @@ function res = test_nonlinParamSys_reach_02_tank_certainCase
 %        of nonlinear systems with uncertain parameters using
 %        conservative linearization. CDC 2008.
 
-% Author:       Matthias Althoff
-% Written:      19-August-2016
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-August-2016
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Parameters --------------------------------------------------------------
@@ -74,4 +74,4 @@ IHcontNoParam = interval(R_NoParam.timeInterval.set{end});
 %final result
 res = isequal(IHcontParam,IHcontNoParam,1e-8);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

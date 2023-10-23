@@ -2,7 +2,7 @@ function [G,c,A,b] = AHpolytope(cZ)
 % AHpolytope - converts a constrained zonotope to a AH-polytope given as
 %    x = c + G z with A z <= b
 %
-% Syntax:  
+% Syntax:
 %    [G,c,A,b] = AHpolytope(cZ)
 %
 % Inputs:
@@ -24,18 +24,18 @@ function [G,c,A,b] = AHpolytope(cZ)
 %
 % See also: interval/or, zonotope/or
 
-% Author:       Niklas Kochdumper
-% Written:      14-November-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       14-November-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
 % check if set is a zonotope
 if isempty(cZ.A)
     
-    c = cZ.Z(:,1);
-    G = cZ.Z(:,2:end);
+    c = cZ.c;
+    G = cZ.G;
     
     m = size(G,2);
     A = [eye(m);-eye(m)];
@@ -60,11 +60,11 @@ else
     b = b_ - A_*p_;
 
     % compute updated center and generator matrix
-    c = cZ.Z(:,1);
-    G = cZ.Z(:,2:end);
+    c = cZ.c;
+    G = cZ.G;
 
     c = c + G*p_;
     G = G*T;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

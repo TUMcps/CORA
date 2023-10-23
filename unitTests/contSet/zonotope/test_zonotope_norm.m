@@ -1,7 +1,7 @@
 function res = test_zonotope_norm
 % test_zonotope_norm - unit test function of norm
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_norm
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_norm
 %
 % See also: -
 
-% Author:       Mark Wetzlinger, Victor Gassmann
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger, Victor Gassmann
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 TOL = 1e-6;
 
@@ -59,4 +59,4 @@ if temp > 0 && ~withinTol(temp,0,TOL)
     res = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

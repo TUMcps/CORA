@@ -2,7 +2,7 @@ function R = plus(R,S)
 % plus - Overloaded '+' operator for the Minkowski addition of a set or a
 %    vector with a reachSet object
 %
-% Syntax:  
+% Syntax:
 %    R = plus(R,S)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function R = plus(R,S)
 %
 % See also: mtimes
 
-% Author:       Niklas Kochdumper
-% Written:      04-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       04-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get reachSet object
 [R,S] = findClassArg(R,S,'reachSet');
@@ -40,4 +40,4 @@ for i = 1:size(R,1)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

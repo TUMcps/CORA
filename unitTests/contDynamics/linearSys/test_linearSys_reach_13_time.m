@@ -2,7 +2,7 @@ function res = test_linearSys_reach_13_time
 % test_linearSys_reach_13_time - unit test function of linear reachability
 %    analysis with shifted start time
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_reach_13_time
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = test_linearSys_reach_13_time
 % Outputs:
 %    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      05-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -83,5 +83,4 @@ if ~withinTol(R.timePoint.time{1},params.tStart) ...
 end
 
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

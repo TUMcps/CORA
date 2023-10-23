@@ -2,7 +2,7 @@ function I = minkDiff(I,S,varargin)
 % minkDiff - compute the Minkowski difference of two intervals:
 %            I1 - I2 = I <-> I + I2 \subseteq I1
 %
-% Syntax:  
+% Syntax:
 %    I = minkDiff(I,S)
 %    I = minkDiff(I,S,type)
 %
@@ -31,12 +31,12 @@ function I = minkDiff(I,S,varargin)
 %
 % See also: zonotope/minkDiff
 
-% Author:       Niklas Kochdumper
-% Written:      10-February-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       10-February-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 type = setDefaultValues({'exact'},varargin);
@@ -89,4 +89,4 @@ else
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

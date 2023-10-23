@@ -1,7 +1,7 @@
 function res = testLong_zonotope_convHull
 % testLong_zonotope_convHull - unit test function of convHull
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_zonotope_convHull
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_zonotope_convHull
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -60,4 +60,4 @@ for i=1:nrTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

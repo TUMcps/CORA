@@ -1,7 +1,7 @@
 function res = sum(I,varargin)
 % sum - Overloaded 'sum()' operator for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = sum(I)
 %    res = sum(I,n)
 %
@@ -24,12 +24,12 @@ function res = sum(I,varargin)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      05-August-2016
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-August-2016
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 n = 1;
@@ -52,4 +52,4 @@ res.inf = sum(I.inf,n);
 % supremum
 res.sup = sum(I.sup,n);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_capsule_volume
 % test_capsule_volume - unit test function of volume
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_volume
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_capsule_volume
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate capsule as ball
 n = 3;
@@ -41,4 +41,4 @@ tol = 1e-9;
 res = withinTol(vol_true,vol,tol);
 res = res && volume(capsule()) == 0;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

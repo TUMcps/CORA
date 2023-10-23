@@ -1,7 +1,7 @@
 function val = norm_(I,type,varargin)
 % norm_ - computes the exact maximum norm value of specified norm
 %
-% Syntax:  
+% Syntax:
 %    val = norm_(I,type)
 %
 % Inputs:
@@ -19,14 +19,14 @@ function val = norm_(I,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: contSet/norm, mtimes
 
-% Author:       Victor Gassmann
-% Written:      31-July-2020
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename norm_)
+% Authors:       Victor Gassmann
+% Written:       31-July-2020
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename norm_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isnumeric(type) && type == 2
     if isempty(I.inf)
@@ -40,4 +40,4 @@ else
     val = norm(intervalMatrix(center(I),rad(I)),type);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

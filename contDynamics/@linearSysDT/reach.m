@@ -1,7 +1,7 @@
 function [R,res] = reach(obj,params,options,varargin)
 % reach - computes the reachable set for linear discrete-time systems
 %
-% Syntax:  
+% Syntax:
 %    R = reach(obj,params,options)
 %    [R,res] = reach(obj,params,options,spec)
 %
@@ -15,25 +15,31 @@ function [R,res] = reach(obj,params,options,varargin)
 %    R - object of class reachSet storing the reachable set
 %    res - true if specifications are satisfied, false otherwise
 %
+% References:
+%    [1] A.A. Kurzhanskiy, P. Varaiya. "Reach set computation and control synthesis for 
+%        discrete-time dynamical systems with disturbances", Automatica
+%        47 (7), pp. 1414-1426, 2011.
+%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       26-June-2019
-% Last update:   08-Oct-2019
+% Last update:   08-October-2019
 %                23-April-2020 (MW, restructure params/options)
 %                07-December-2020 (MW, fix wrong indexing)
 %                16-November-2021 (MW, add disturbance W)
+%                21-December-2022 (MA, backward reachable set added)
 %                09-February-2023 (LL, fix wrong uTrans indexing)
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % safety property check
+
 res = true;
 
 % options preprocessing
@@ -50,6 +56,14 @@ if isfield(options,'uTransVec')
     options.uTrans = options.uTransVec(:,1);
 end
 
+% compute inverse of system matrix for backward reachable sets
+if strcmp(options.linAlg,'backward_maxmin') || ...
+   strcmp(options.linAlg,'backward_maxmin_coarse') || ...
+   strcmp(options.linAlg,'backward_maxmin_RKweighted') || ...
+   strcmp(options.linAlg,'backward_minmax')
+    Ainv = inv(obj.A);
+end
+    
 % time period and number of steps
 tVec = options.tStart:obj.dt:options.tFinal;
 steps = length(tVec)-1;
@@ -72,16 +86,39 @@ for i = 1:steps
     
     % compute output set at beginning of current step
     Rout{i} = outputSet(obj,options,Rnext.tp);
-    
-    % write results to reachable set struct Rnext
-    Rnext.tp = reduce(obj.A*Rnext.tp + Uadd + obj.c + options.W,...
-        options.reductionTechnique,options.zonotopeOrder);
 
     % if a trajectory should be tracked
     if isfield(options,'uTransVec')
-        options.uTrans = options.uTransVec(:,i+1);
+        options.uTrans = options.uTransVec(:,i);
         % update input set
         Uadd = obj.B*(options.U + options.uTrans);
+    end
+    
+    % write results to reachable set struct Rnext
+    if strcmp(options.linAlg,'standard')
+        % standard forward reachable set
+        Rnext.tp = obj.A*Rnext.tp + Uadd + obj.c + options.W;
+        Rnext.tp = reduce(Rnext.tp,options.reductionTechnique,options.zonotopeOrder);
+    elseif strcmp(options.linAlg,'backward_maxmin')
+        % under-approximative backward reachable set according to 
+        % Theorem 2.4 of [1]
+        Rnext.tp = Ainv*(minkDiff(Rnext.tp + (-1*Uadd) - obj.c,options.W,'outer'));
+        Rnext.tp = reduce(Rnext.tp,options.reductionTechnique,options.zonotopeOrder);
+    elseif strcmp(options.linAlg,'backward_maxmin_coarse')
+        % under-approximative backward reachable set according to 
+        % Theorem 2.4 of [1]
+        Rnext.tp = Ainv*(minkDiff(Rnext.tp + (-1*Uadd) - obj.c,options.W,'outer:coarse'));
+        Rnext.tp = reduce(Rnext.tp,options.reductionTechnique,options.zonotopeOrder);
+    elseif strcmp(options.linAlg,'backward_minmax')
+        % under-approximative backward reachable set according to 
+        % Theorem 2.4 of [1]; formula in paper not 100% correct
+        Rnext.tp = Ainv*(minkDiff(Rnext.tp,options.W,'inner') + (-1*Uadd) - obj.c); % <-- needs to be fixed! Rnext.tp has to be replaced
+        Rnext.tp = reduceUnderApprox(Rnext.tp,options.reductionTechnique,options.zonotopeOrder);
+    elseif strcmp(options.linAlg,'backward_minmax_RKweighted')
+        % under-approximative backward reachable set according to 
+        % Theorem 2.4 of [1]; formula in paper not 100% correct
+        Rnext.tp = Ainv*(minkDiff(Rnext.tp,options.W,'inner:RaghuramanKoeln_weighted') + (-1*Uadd) - obj.c); % <-- needs to be fixed! Rnext.tp has to be replaced
+        Rnext.tp = reduceUnderApprox(Rnext.tp,options.reductionTechnique,options.zonotopeOrder);
     end
 
     % log information
@@ -112,4 +149,4 @@ R = reachSet(timePoint);
 % log information
 verboseLog(length(tVec),tVec(end),options);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

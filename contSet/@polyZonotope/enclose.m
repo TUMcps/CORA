@@ -3,10 +3,10 @@ function pZ = enclose(pZ,varargin)
 %
 % Description:
 %    Computes the set
-%    { a x1 + (1 - a) * (M x1 + x2) | x1 \in pZ, x2 \in pZ2, a \in [0,1] }
+%    { a x1 + (1 - a) * x2 | x1 \in pZ, x2 \in pZ2, a \in [0,1] }
 %    where pZ2 = M*pZ + pZplus
 %
-% Syntax:  
+% Syntax:
 %    pZ = enclose(pZ,pZ2)
 %    pZ = enclose(pZ,M,pZplus)
 %
@@ -36,12 +36,12 @@ function pZ = enclose(pZ,varargin)
 %
 % See also: zonotope/enclose
 
-% Author:       Niklas Kochdumper
-% Written:      25-June-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       25-June-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 if nargin == 2
@@ -54,7 +54,7 @@ end
 
 % check if exponent matrices are identical
 if all(size(pZ.id) == size(pZ2.id)) &&  all(pZ.id == pZ2.id) &&  ...
-   all(size(pZ.expMat) == size(pZ2.expMat)) && all(all(pZ.expMat == pZ2.expMat))
+   all(size(pZ.E) == size(pZ2.E)) && all(all(pZ.E == pZ2.E))
     
     % compute convex hull of the dependent generators according to the
     % equation ch = (0.5 + 0.5 a)*pZ1 + (0.5 - 0.5 a)*pZ2, a \in [-1,1]
@@ -64,9 +64,9 @@ if all(size(pZ.id) == size(pZ2.id)) &&  all(pZ.id == pZ2.id) &&  ...
 
     c = 0.5 * pZ.c + 0.5 * pZ2.c;
 
-    temp = ones(1,size(pZ.expMat,2));
-    expMat = [pZ.expMat, pZ.expMat; 0*temp, temp];
-    expMat = [expMat, [zeros(size(expMat,1)-1,1); 1]];
+    temp = ones(1,size(pZ.E,2));
+    E = [pZ.E, pZ.E; 0*temp, temp];
+    E = [E, [zeros(size(E,1)-1,1); 1]];
 
     if ~isempty(pZ.id)
         id = [pZ.id; max(pZ.id)+1];
@@ -77,36 +77,35 @@ if all(size(pZ.id) == size(pZ2.id)) &&  all(pZ.id == pZ2.id) &&  ...
     % compute convex hull of the independent generators by using the
     % enclose function for linear zonotopes
     temp = zeros(length(pZ.c),1);
-    Z1 = zonotope([temp, pZ.Grest]);
-    Z2 = zonotope([temp, pZ2.Grest]);
+    Z1 = zonotope([temp, pZ.GI]);
+    Z2 = zonotope([temp, pZ2.GI]);
 
     Z = enclose(Z1,Z2);
-    Grest = generators(Z);
+    GI = generators(Z);
 
     % construct resulting polynomial zonotope object
-    pZ = polyZonotope(c,G,Grest,expMat);
+    pZ = polyZonotope(c,G,GI,E);
     pZ.id = id;
     
 else
     
     % bring the exponent matrices to a common representation
-    [id,expMat1,expMat2] = mergeExpMatrix(pZ.id,pZ2.id, ...
-                                          pZ.expMat,pZ2.expMat);
+    [id,E1,E2] = mergeExpMatrix(pZ.id,pZ2.id,pZ.E,pZ2.E);
     
     % extend generator end exponent matrix by center vector
     G1 = [pZ.c, pZ.G];
     G2 = [pZ2.c, pZ2.G];
     
-    expMat1 = [zeros(length(id),1),expMat1];
-    expMat2 = [zeros(length(id),1),expMat2];
+    E1 = [zeros(length(id),1),E1];
+    E2 = [zeros(length(id),1),E2];
                                       
     % compute convex hull of the dependent generators according to the
     % equation ch = (0.5 + 0.5 a)*pZ1 + (0.5 - 0.5 a)*pZ2, a \in [-1,1]
     G = 0.5 * [G1, G1, G2, -G2];
     
-    h1 = size(expMat1,2);
-    h2 = size(expMat2,2);
-    expMat = [[expMat1, expMat1, expMat2 expMat2]; ...
+    h1 = size(E1,2);
+    h2 = size(E2,2);
+    E = [[E1, E1, E2 E2];
               zeros(1,h1), ones(1,h1), zeros(1,h2), ones(1,h2)];
           
     id = [id; max(id)+1];
@@ -114,26 +113,26 @@ else
     % compute convex hull of the independent generators by using the
     % enclose function for linear zonotopes
     temp = zeros(length(pZ.c),1);
-    Z1 = zonotope([temp, pZ.Grest]);
-    Z2 = zonotope([temp, pZ2.Grest]);
+    Z1 = zonotope([temp, pZ.GI]);
+    Z2 = zonotope([temp, pZ2.GI]);
 
     Z = enclose(Z1,Z2);
-    Grest = generators(Z);
+    GI = generators(Z);
     
     % add up all generators that belong to identical exponents
-    [ExpNew,Gnew] = removeRedundantExponents(expMat,G);
+    [Enew,Gnew] = removeRedundantExponents(E,G);
     
     % extract the center vector
-    ind = find(sum(ExpNew,1) == 0);
+    ind = find(sum(Enew,1) == 0);
     
     c = sum(Gnew(:,ind),2);
     Gnew(:,ind) = [];
-    ExpNew(:,ind) = [];
+    Enew(:,ind) = [];
     
     % construct resulting polynomial zonotope object
-    pZ = polyZonotope(c,Gnew,Grest,ExpNew);
+    pZ = polyZonotope(c,Gnew,GI,Enew);
     pZ.id = id;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

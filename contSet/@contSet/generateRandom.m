@@ -25,12 +25,12 @@ function S = generateRandom(varargin)
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
 if nargin < 1 || ~iscell(varargin{1})
@@ -45,7 +45,7 @@ if nargin < 1 || ~iscell(varargin{1})
         @halfspace; ...
         @interval; ...
         @levelSet; ...
-        @mptPolytope; ...
+        @polytope; ...
         @polyZonotope; ...
         @probZonotope; ...
         @zonoBundle; ...
@@ -68,4 +68,4 @@ end
 set = admissibleSets{randi(length(admissibleSets))};
 S = set().generateRandom(varargin{:});
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

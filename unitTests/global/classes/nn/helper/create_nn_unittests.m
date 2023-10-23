@@ -17,25 +17,25 @@ function create_nn_unittests()
 %
 % See also: test_nn_polyZonotope_adaptive_output_ref
 
-% Author:       Tobias Ladner
-% Written:      24-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       24-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % SET PARAMETERS
 
 evParams = struct();
-evParams.polynomial_approx = "adaptive";
 evParams.bound_approx = true;
 evParams.num_generators = 100;
 evParams.activation = "ReLU";
+evParams.poly_method = 'regression';
 evParams.neurons = [2, 5, 5, 2];
 
 name = sprintf( ...
     "./cora/models/Cora/nn/unitTests/model_test_nn_polyZonotope_%s_%s.mat", ...
-    evParams.polynomial_approx, ...
+    evParams.poly_method, ...
     evParams.activation ...
     );
 
@@ -43,9 +43,9 @@ name = sprintf( ...
 
 c = [4; 4];
 G = [2, 1, 2; 0, 2, 2];
-expMat = [1, 0, 3; 0, 1, 1];
-Grest = [];
-input_ref = polyZonotope(c, G, Grest, expMat);
+E = [1, 0, 3; 0, 1, 1];
+GI = [];
+input_ref = polyZonotope(c, G, GI, E);
 
 % CREATE NETWORK
 
@@ -79,4 +79,4 @@ save(name, "W", "b", "input_ref", "evParams", "output_ref")
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

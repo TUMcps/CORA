@@ -1,7 +1,7 @@
 function res = tanh( obj )
 % tanh - Overloaded 'tanh()' operator for a Taylor model
 %
-% Syntax:  
+% Syntax:
 %    res = tanh(obj)
 %
 % Inputs:
@@ -22,21 +22,24 @@ function res = tanh( obj )
 %   [1] K. Makino et al. "Taylor Models and other validated functional 
 %       inclusion methods"
 
-% Author:       Dmitry Grebenyuk
-% Written:      04-September-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       04-September-2017
+% Last update:   ---
+% Last revision: ---
 
+% ------------------------------ BEGIN CODE -------------------------------
 
-%------------- BEGIN CODE --------------
+	res = arrayfun(@(a) aux_s_tanh(a), obj, 'UniformOutput', 0);
 
-	res = arrayfun(@(a) s_tanh(a), obj, 'UniformOutput', 0);
     A = cat(1, res{:});
     res = reshape(A, size(res));
 
 end
 
-function res = s_tanh( obj )
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_s_tanh( obj )
     if isempty(obj.monomials)    % Taylor model without polynomial part
 
         res = obj;
@@ -47,4 +50,4 @@ function res = s_tanh( obj )
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function n = dim(ls)
 % dim - returns the dimension of the ambient space of a level set; this
 %    corresponds to the number of different variables in its equation
 %
-% Syntax:  
+% Syntax:
 %    n = dim(ls)
 %
 % Inputs:
@@ -24,13 +24,13 @@ function n = dim(ls)
 %
 % See also: zonotope/dim, interval/dim, levelSet
 
-% Author:       Niklas Kochdumper
-% Written:      10-December-2021 
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       10-December-2021 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 n = ls.dim;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -4,7 +4,7 @@ function instances = InstantiateComponents(templates,rootIdx)
 %    mappings on their templates. Instantiate through deeper trees with
 %    breadth-first search, by keeping track of all still open branches.
 %
-% Syntax:  
+% Syntax:
 %    instances = InstantiateComponents(templates,rootIdx)
 %
 % Inputs:
@@ -27,12 +27,12 @@ function instances = InstantiateComponents(templates,rootIdx)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % keep track of instance count and tree depth
 num_instances = 1;
@@ -117,4 +117,4 @@ disp("traversal complete!");
 fprintf("  tree depth: %i\n",depth);
 fprintf("  total instances: %i\n",num_instances);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

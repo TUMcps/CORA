@@ -2,7 +2,7 @@ function create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,infsupFlag,options)
 % create3rdOrderTensorFile - generates an mFile that allows to compute the
 %    third-order terms 
 %
-% Syntax:  
+% Syntax:
 %    create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,infsupFlag,options)
 %
 % Inputs:
@@ -26,17 +26,17 @@ function create3rdOrderTensorFile(J3dyn,J3con,path,name,vars,infsupFlag,options)
 %
 % See also: ---
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      22-August-2012
-% Last update:  08-March-2017
-%               12-November-2017
-%               03-December-2017
-%               24-January-2018 (NK)
-%               13-March-2020 (NK, implemented options.simplify = optimize)
-%               01-February-2021 (MW, add infsupFlag for different filenames)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       22-August-2012
+% Last update:   08-March-2017
+%                12-November-2017
+%                03-December-2017
+%                24-January-2018 (NK)
+%                13-March-2020 (NK, implemented options.simplify = optimize)
+%                01-February-2021 (MW, add infsupFlag for different filenames)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % read out options
 taylMod = false;
@@ -334,4 +334,4 @@ end
 fclose(fid);
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

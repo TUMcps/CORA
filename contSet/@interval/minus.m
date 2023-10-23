@@ -1,7 +1,7 @@
 function res = minus(minuend,subtrahend)
 % minus - Overloaded '-' operator for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = minus(minuend,subtrahend)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function res = minus(minuend,subtrahend)
 %
 % See also: mtimes
 
-% Author:       Matthias Althoff
-% Written:      25-June-2015
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-June-2015
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %init 
 res = interval();
@@ -53,4 +53,4 @@ else
     res.sup = minuend - subtrahend.inf;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

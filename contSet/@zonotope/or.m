@@ -1,7 +1,7 @@
 function Z = or(Z, varargin)
 % or - computes an over-approximation for the union of zonotopes
 %
-% Syntax:  
+% Syntax:
 %    Z = or(Z, Z1)
 %    Z = or(Z, ... , Zm)
 %    Z = or(Z, ... , Zm, alg)
@@ -43,12 +43,12 @@ function Z = or(Z, varargin)
 %
 % See also: interval/or
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      20-September-2013
-% Last update:  12-November-2019 (NK: added two new algorithms)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       20-September-2013
+% Last update:   12-November-2019 (NK, added two new algorithms)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % default values
     alg = 'linProg';
@@ -78,27 +78,27 @@ function Z = or(Z, varargin)
             if nargin > 3 && ~isempty(varargin{3})
                 order = varargin{3};
             end
-            if isempty(S)
+            if representsa_(S,'emptySet',eps)
                 return;
             end 
             % compute over-approximation of the union with the selected 
             % algorithm
             if strcmp(alg,'linProg')
-               Z = unionLinProg({Z,S},order);
+               Z = aux_unionLinProg({Z,S},order);
             elseif strcmp(alg,'althoff')
-               Z = unionAlthoff(Z,{S},order);
+               Z = aux_unionAlthoff(Z,{S},order);
             elseif strcmp(alg,'tedrake')
-               Z = unionTedrake({Z,S},order);
+               Z = aux_unionTedrake({Z,S},order);
             elseif strcmp(alg,'iterative')
-               Z = unionIterative({Z,S},order);
+               Z = aux_unionIterative({Z,S},order);
             elseif strcmp(alg,'parallelotope')
-               Z = unionParallelotope({Z,S});
+               Z = aux_unionParallelotope({Z,S});
             else
                 throw(CORAerror('CORA:wrongValue','third',...
                     "'linProg', 'tedrake', 'iterative', 'althoff', or 'parallelotope'"));
             end
 
-        elseif isa(S,'mptPolytope') || isa(S,'conZonotope') || ...
+        elseif isa(S,'Polytope') || isa(S,'conZonotope') || ...
                isa(S,'zonoBundle') || isa(S,'conPolyZono')
 
             Z = S | Z;     
@@ -134,15 +134,15 @@ function Z = or(Z, varargin)
 
         % compute over-approximation of the union with the selected algorithm
         if strcmp(alg,'linProg')
-           Z = unionLinProg([{Z};Zcell],order);
+           Z = aux_unionLinProg([{Z};Zcell],order);
         elseif strcmp(alg,'althoff')
-           Z = unionAlthoff(Z,Zcell,order);
+           Z = aux_unionAlthoff(Z,Zcell,order);
         elseif strcmp(alg,'tedrake')
-           Z = unionTedrake([{Z};Zcell],order);
+           Z = aux_unionTedrake([{Z};Zcell],order);
         elseif strcmp(alg,'iterative')
-           Z = unionIterative([{Z};Zcell],order);
+           Z = aux_unionIterative([{Z};Zcell],order);
         elseif strcmp(alg,'parallelotope')
-           Z = unionParallelotope([{Z};Zcell]);
+           Z = aux_unionParallelotope([{Z};Zcell]);
         else
              throw(CORAerror('CORA:wrongValue','second last',...
                  "'linProg', 'tedrake', 'iterative', 'althoff', or 'parallelotope'"));
@@ -151,15 +151,14 @@ function Z = or(Z, varargin)
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-% Auxiliary Functions -----------------------------------------------------
-
-function Z = unionTedrake(Zcell,order)
+function Z = aux_unionTedrake(Zcell,order)
 % compute the union by solving a linear program with respect to the
 % zonotope containment constraints presented in [1]
 
     % construct generator matrix of the final zonotope
-    Z_ = unionIterative(Zcell,order);
+    Z_ = aux_unionIterative(Zcell,order);
     G = generators(Z_);
     
     Y = G*diag(1./sqrt(sum(G.^2,1)));
@@ -243,14 +242,14 @@ function Z = unionTedrake(Zcell,order)
 
 end
 
-function Z = unionLinProg(Zcell,order)
+function Z = aux_unionLinProg(Zcell,order)
 % compute an enclosing zonotope using linear programming. As the
 % constraints for the linear program we compute the upper and lower bound
 % for all zonotopes that are enclosed in the normal directions of the
 % halfspace representation of the enclosing zonotope
 
     % construct generator matrix of the final zonotope
-    Z_ = unionIterative(Zcell,order);
+    Z_ = aux_unionIterative(Zcell,order);
     G = generators(Z_);
     
     G = G*diag(1./sqrt(sum(G.^2,1)));
@@ -275,7 +274,7 @@ function Z = unionLinProg(Zcell,order)
            
             % compute bound for the current zonotope
             Ztemp = C(i,:)*Zcell{j};
-            valTemp = Ztemp.Z(1) + sum(abs(Ztemp.Z(2:end)));
+            valTemp = Ztemp.c + sum(abs(Ztemp.G));
             
             % update bound
             val = max(val,valTemp);
@@ -312,7 +311,7 @@ function Z = unionLinProg(Zcell,order)
       
 end
 
-function Z = unionIterative(Zcell,order)
+function Z = aux_unionIterative(Zcell,order)
 % iteratively unite all zonotopes with the enclose function
     
     Zcell_ = cell(length(Zcell),1);
@@ -355,34 +354,37 @@ function Z = unionIterative(Zcell,order)
     
 end
 
-function Z = unionAlthoff(Z1,Zcell,order)
+function Z = aux_unionAlthoff(Z1,Zcell,order)
 
     % init
     Zmat = [];
 
     % dimension
-    n = length(center(Z1));
+    n = dim(Z1);
 
     % obtain minimum number of generators every zonotope has
-    minNrOfVecs = length(Z1.Z(1,:));
+    minNrOfGens = size(Z1.G,2);
     for iSet = 1:length(Zcell)
-        minNrOfVecs = min(minNrOfVecs, length(Zcell{iSet}.Z(1,:)));
+        minNrOfGens = min(minNrOfGens, size(Zcell{iSet}.G,2));
     end
 
     % obtain Zcut
-    Zcut{1} = Z1.Z(:, 1 : minNrOfVecs);
+    Zcut{1} = Z1.G(:, 1:minNrOfGens);
     for iSet = 1:length(Zcell)
-        Zcut{iSet+1} = Zcell{iSet}.Z(:, 1 : minNrOfVecs);
+        Zcut{iSet+1} = [Zcell{iSet}.c,Zcell{iSet}.G(:, 1:minNrOfGens)];
     end
 
     % obtain Zadd
-    Zadd{1} = Z1.Z(:, minNrOfVecs+1 : end);
+    Zadd{1} = Z1.G(:, minNrOfGens+1 : end);
     for iSet = 1:length(Zcell)
-        Zadd{iSet+1} = Zcell{iSet}.Z(:, minNrOfVecs+1 : end);
+        Zadd{iSet+1} = Zcell{iSet}.G(:, minNrOfGens+1 : end);
     end
 
+    % as center is prepended
+    minNrOfGens = minNrOfGens + 1;
+
     % compute vertex sets for each set of generators
-    for iGen = 1:minNrOfVecs
+    for iGen = 1:minNrOfGens
         v(:,1) = Zcut{1}(:,iGen);
         for iSet = 2:length(Zcut)
             v_new = Zcut{iSet}(:,iGen);
@@ -402,7 +404,7 @@ function Z = unionAlthoff(Z1,Zcell,order)
         Z_encl = zonotope.enclosePoints(V);
 
         % concatenate enclosing zonotopes
-        Zmat(:,end+1 : end+n+1) = Z_encl.Z;
+        Zmat(:,end+1 : end+n+1) = [Z_encl.c,Z_encl.G];
     end
 
     % add Zadd to the resulting generator matrix
@@ -419,7 +421,7 @@ function Z = unionAlthoff(Z1,Zcell,order)
     end
 end
 
-function Z = unionParallelotope(Zcell)
+function Z = aux_unionParallelotope(Zcell)
 % enclose the union of the zonotopes with a parallelotope
 
     % obtain matrix of points from generator matrices
@@ -455,4 +457,4 @@ function Z = unionParallelotope(Zcell)
     Z = U*zonotope(int);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

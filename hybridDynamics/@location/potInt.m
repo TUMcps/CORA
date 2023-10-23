@@ -2,7 +2,7 @@ function [guards,setIndices,setType] = potInt(loc,R,options)
 % potInt - determines which reachable sets potentially intersect with which
 %    guard sets
 %
-% Syntax:  
+% Syntax:
 %    [guards,setIndices,setType] = potInt(loc,R,options)
 %
 % Inputs:
@@ -22,17 +22,17 @@ function [guards,setIndices,setType] = potInt(loc,R,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      08-May-2007 
-% Last update:  26-October-2007
-%               20-October-2010
-%               27-July-2016
-%               23-November-2017
-%               03-December-2019 (NK, use approximate intersection test)
-%               02-June-2023 (MW, immediate reach exit, special case)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       08-May-2007 
+% Last update:   26-October-2007
+%                20-October-2010
+%                27-July-2016
+%                23-November-2017
+%                03-December-2019 (NK, use approximate intersection test)
+%                02-June-2023 (MW, immediate reach exit, special case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check whether time-interval solution given (if the invariant is empty,
 % then the reachable set computation ends without computing any
@@ -121,4 +121,4 @@ if ~isempty(R.timeInterval) ...
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

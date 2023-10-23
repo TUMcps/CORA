@@ -1,7 +1,7 @@
 function HA = data2ParallelHA(data,functionName,resultpath)
 % data2ParallelHA - write text for hybrid automaton file
 %
-% Syntax:  
+% Syntax:
 %    HA = data2ParallelHA(data,functionName,resultpath)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function HA = data2ParallelHA(data,functionName,resultpath)
 %
 % See also: none
 
-% Author:       ???, Mark Wetzlinger
-% Written:      ???
-% Last update:  ---
-% Last revision:11-January-2023 (MW, restructure code)
+% Authors:       ???, Mark Wetzlinger
+% Written:       ---
+% Last update:   ---
+% Last revision: 11-January-2023 (MW, restructure code)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % get meta information of the given automaton
 components = data.components;
@@ -35,13 +35,13 @@ automaton_id = data.componentID;
 % create main comments
 functionStr = "function HA = " + functionName + "(~)";
 dateComment = "%% Generated on " + datestr(datetime);
-createdStr = padComment("Automaton created from Component '" + automaton_id + "'");
-automatonStr = functionStr + newlines(3) + dateComment + newlines(2) + createdStr + newlines(2);
+createdStr = aux_padComment("Automaton created from Component '" + automaton_id + "'");
+automatonStr = functionStr + aux_newlines(3) + dateComment + aux_newlines(2) + createdStr + aux_newlines(2);
 
 % create interface information comment
 infoCommentStr = "%% Interface Specification:" + newline +...
     "%   This section clarifies the meaning of state, input & output dimensions" + newline +...
-    "%   by showing their mapping to SpaceEx variable names. " + newlines(2);
+    "%   by showing their mapping to SpaceEx variable names. " + aux_newlines(2);
 
 % number of components
 nrComp = length(components);
@@ -65,13 +65,13 @@ for iComp = 1:nrComp
     comp = components{iComp};
     
     % write comment for component "comp"
-    cCommentStr = padComment("Component " + comp.name) + newlines(2);
+    cCommentStr = aux_padComment("Component " + comp.name) + aux_newlines(2);
     % Append it to component String
     componentStr = componentStr + cCommentStr;
 
     % initialize 'loc' variable, (technically, we only need this for
     % iComp > 1, but add it everywhere for consistency)
-    componentStr = componentStr + "clear loc" + newlines(2);
+    componentStr = componentStr + "clear loc" + aux_newlines(2);
     
     % shorter access to locations of i-th component
     locs = comp.States;
@@ -85,7 +85,7 @@ for iComp = 1:nrComp
         allTrans = loc.Trans;
         
         % general information about i-th location
-        locStr = padComment("Location " + loc.name) + newlines(2);
+        locStr = aux_padComment("Location " + loc.name) + aux_newlines(2);
         
         % describe flow dynamics
         dynamicsStr = aux_dynamicsStr(loc,iLoc,comp,iComp,isFlatHA,resultpath,functionName);
@@ -114,11 +114,11 @@ for iComp = 1:nrComp
             if ~isFlatHA && strlength(trans.label) > 0
                 transStr = "trans(" + num2str(iTrans) + ...
                     ") = transition(guard, reset, " + ...
-                    targetStr + ", '" + trans.label + "');" + newlines(2);
+                    targetStr + ", '" + trans.label + "');" + aux_newlines(2);
             else
                 transStr = "trans(" + num2str(iTrans) + ...
                     ") = transition(guard, reset, " + ...
-                    targetStr + ");" + newlines(2);
+                    targetStr + ");" + aux_newlines(2);
             end
             % full transition string
             transitionStr = transitionStr + resetStr + guardStr + transStr;
@@ -132,7 +132,7 @@ for iComp = 1:nrComp
             locName = locs(iLoc).name;
         end
         locNameStr = "loc(" + num2str(iLoc) + ") = location('" + locName + ...
-            "', inv, trans, dynamics);" + newlines(4);
+            "', inv, trans, dynamics);" + aux_newlines(4);
 
         % append location/dynamics/invariant/transition/location name
         locStr = locStr + dynamicsStr + invariantStr + transitionStr + locNameStr;
@@ -164,17 +164,17 @@ else
 %         % this will have no effect as the input matrices should all be 0
 %         componentStr = componentStr + ...
 %             "% no inputs given, global input for CORA, no effect as B = 0" + ...
-%             newline + "iBinds{1} = [0,1];" + newlines(2);
+%             newline + "iBinds{1} = [0,1];" + aux_newlines(2);
 %     end
 end
 
 % concatenate all strings
-HA = automatonStr + componentStr + objectStr + newlines(2) + "end";
+HA = automatonStr + componentStr + objectStr + aux_newlines(2) + "end";
 
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 % main auxiliary functions
 function infoStr = aux_infoStr(components)
@@ -213,14 +213,14 @@ for iComp = 1:nrComp
     if isFlatHA
         % flat: accesses outputsGlobal
         if ~isempty(comp.outputsGlobal)
-            outputStr = "%  output y := [" + strjoin([comp.outputsGlobal.name],"; ") + "]" + newlines(2);
+            outputStr = "%  output y := [" + strjoin([comp.outputsGlobal.name],"; ") + "]" + aux_newlines(2);
         else
             outputStr = newline;
         end
     else
         % parallel: accesses outputsLocal
         if ~isempty(comp.outputsLocal)
-            outputStr = "%  output y := [" + strjoin([comp.outputsLocal.name],"; ") + "]" + newlines(2);
+            outputStr = "%  output y := [" + strjoin([comp.outputsLocal.name],"; ") + "]" + aux_newlines(2);
         else
             outputStr = newline;
         end
@@ -234,8 +234,8 @@ end
 function dynamicsStr = aux_dynamicsStr(loc,iLoc,comp,iComp,isFlatHA,resultpath,functionName)
 
 % write original equation as a comment
-dynamicsCommFlow = text2comment("flow equation:" + newline + loc.Flow.Text) + newline;
-dynamicsCommOutput = text2comment("output equation:" + newline + loc.Invariant.Text_output) + newline;
+dynamicsCommFlow = aux_text2comment("flow equation:" + newline + loc.Flow.Text) + newline;
+dynamicsCommOutput = aux_text2comment("output equation:" + newline + loc.Invariant.Text_output) + newline;
 
 % linear of nonlinear flow/output?
 if isfield(loc.Flow,'A')
@@ -255,7 +255,7 @@ if isfield(loc.Flow,'A')
         (~isFlatHA && isempty(comp.outputsLocal) && isempty(comp.outputsGlobal))
         % no outputs -> only state equation x' = Ax + Bu + c
         dynamicsStr = dynamicsCommFlow + linSys_AStr + linSys_BStr + linSys_cStr + ...
-            "dynamics = linearSys(dynA, dynB, dync);" + newlines(2);
+            "dynamics = linearSys(dynA, dynB, dync);" + aux_newlines(2);
     else
         % read out output equation of linear system
         linSys_C = printMatrixConverter(loc.Flow.C);
@@ -267,7 +267,7 @@ if isfield(loc.Flow,'A')
         % two equations: x' = Ax + Bu + c and y = Cx + Du + k
         dynamicsStr = dynamicsCommFlow + linSys_AStr + linSys_BStr + linSys_cStr + ...
             newline + dynamicsCommOutput + linSys_CStr + linSys_DStr + linSys_kStr + ...
-            "dynamics = linearSys(dynA, dynB, dync, dynC, dynD, dynk);" + newlines(2);
+            "dynamics = linearSys(dynA, dynB, dync, dynC, dynD, dynk);" + aux_newlines(2);
     end
 else
     % choose name for dynamics function
@@ -303,7 +303,7 @@ else
         dynamicsStr = dynamicsCommFlow + dynamicsCommOutput + ...
             "dynamics = nonlinearSys(@" + nonlinName + "," + statedims + ...
             "," + inputdims + ",..." + newline + "    " + ...
-            "@" + nonlinName_out + "," + outputdims + "); " + newlines(2);
+            "@" + nonlinName_out + "," + outputdims + "); " + aux_newlines(2);
     end
 end
 
@@ -316,18 +316,18 @@ InvText = loc.Invariant.Text;
 if isa(loc.Invariant.set,'fullspace')
     n = length(loc.Flow.expressions);
     [str1,str2] = aux_fullspaceString(n,allTrans,isFlatHA);
-elseif isa(loc.Invariant.set,'mptPolytope')
-    [str1,str2] = mptPolytopeString(loc.Invariant.set);
+elseif isa(loc.Invariant.set,'polytope')
+    [str1,str2] = aux_polytopeString(loc.Invariant.set);
 elseif isa(loc.Invariant.set,'levelSet')
-    [str1,str2] = levelSetString(loc.Invariant.set);
+    [str1,str2] = aux_levelSetString(loc.Invariant.set);
 else
     throw(CORAerror('CORA:converterIssue',...
-        'Invariant has to be either empty, an mptPolytope, or a levelSet'));
+        'Invariant has to be either empty, a polytope, or a levelSet'));
 end
 
 % Write String for Invariant
-invariantComm = text2comment("invariant equation:" + newline + InvText) + newline;
-invariantStr = invariantComm + str1 + "inv = " + str2 + newlines(2);
+invariantComm = aux_text2comment("invariant equation:" + newline + InvText) + newline;
+invariantStr = invariantComm + str1 + "inv = " + str2 + aux_newlines(2);
 
 end
 
@@ -350,13 +350,13 @@ if isfield(trans.reset,'A')
     if tranResetText == ""
         tranResetText = "no reset equation given";
     end
-    resetComm = text2comment("reset equation:" + newline + tranResetText) + newline;
+    resetComm = aux_text2comment("reset equation:" + newline + tranResetText) + newline;
     if isfield(trans.reset,'B')
         resetStr = resetComm + reset_AStr + reset_BStr + reset_cStr + ...
-            "reset = struct('A', resetA, 'B', resetB, 'c', resetc);" + newlines(2);
+            "reset = struct('A', resetA, 'B', resetB, 'c', resetc);" + aux_newlines(2);
     else
         resetStr = resetComm + reset_AStr + reset_cStr + ...
-            "reset = struct('A', resetA, 'c', resetc);" + newlines(2);
+            "reset = struct('A', resetA, 'c', resetc);" + aux_newlines(2);
     end
 else
     % nonlinear reset
@@ -380,10 +380,10 @@ else
     end
     
     % Write Reset String
-    resetComm = text2comment("reset equation:" + ...
+    resetComm = aux_text2comment("reset equation:" + ...
         newline + tranResetText) + newline;
     resetStr = resetComm + "reset = struct('f', @" + ...
-            resetFuncName + ");" + newlines(2);
+            resetFuncName + ");" + aux_newlines(2);
 end
 
 end
@@ -403,7 +403,7 @@ if isa(trans.guard.set,'fullspace')
     % init invariant using state dimension of dynamics in given location
     str2 = "fullspace(" + length(loc.Flow.expressions) + ");";
 
-elseif isa(trans.guard.set,'mptPolytope')
+elseif isa(trans.guard.set,'polytope')
     % intersect guard with invariant
     try
         G = loc.Invariant.set & trans.guard.set;                    
@@ -413,18 +413,18 @@ elseif isa(trans.guard.set,'mptPolytope')
 
     % check if guard can be represented as hyperplane
     res = false;
-    if isa(G,'mptPolytope')
-        G = removeRedundancies(G,'all');
-        [res,hyp] = isConHyperplane(G);
+    if isa(G,'polytope')
+        G = compact_(G,'all',1e-9);
+        [res,hyp] = representsa_(G,'conHyperplane',eps);
     end
     
     if isa(G,'levelSet')
-        [str1,str2] = levelSetString(G);
-    elseif isa(G,'mptPolytope')
+        [str1,str2] = aux_levelSetString(G);
+    elseif isa(G,'polytope')
         if res
-            [str1,str2] = conHyperplaneString(hyp);
+            [str1,str2] = aux_conHyperplaneString(hyp);
         else
-            [str1,str2] = mptPolytopeString(G);
+            [str1,str2] = aux_polytopeString(G);
         end
     else
         throw(CORAerror('CORA:converterIssue',...
@@ -438,26 +438,26 @@ elseif isa(trans.guard.set,'levelSet')
     catch
         G = trans.guard.set;
     end
-    [str1,str2] = levelSetString(G);
+    [str1,str2] = aux_levelSetString(G);
 
 else
     % throw error in case unexpected set representation comes up
     throw(CORAerror('CORA:converterIssue',...
         ['Guard set has to be empty, a conHyperplane, '...
-        'an mptPolytope or a levelSet.'])); 
+        'a polytope or a levelSet.'])); 
 end
 
 % write guard string
-guardComm = text2comment("guard equation:" + newline + tranGuardText) + newline;
-guardStr = guardComm + str1 + "guard = " + str2 + newlines(2);
+guardComm = aux_text2comment("guard equation:" + newline + tranGuardText) + newline;
+guardStr = guardComm + str1 + "guard = " + str2 + aux_newlines(2);
 
 end
 
 function inputBindsStr = aux_inputBindsStr(comp,iComp,components)
 
 % general information about input binds
-parallelComm = text2comment("composition: hybrid automaton and input binds") + ...
-    newline + "comp(" + num2str(iComp) + ") = hybridAutomaton(loc);" + newlines(2);
+parallelComm = aux_text2comment("composition: hybrid automaton and input binds") + ...
+    newline + "comp(" + num2str(iComp) + ") = hybridAutomaton(loc);" + aux_newlines(2);
 
 % syntax of inputBinds: mx2 array, where
 %   m - number of input arguments to current component
@@ -469,7 +469,7 @@ if strcmp(comp.inputs(1).name,'uDummy')
     % only dummy input generated by conversion... use first global
     % input as input bind (no effect as all input matrices are 0)
     inputBindsStr = "% only dummy input" + newline + ...
-        "iBinds{" + iComp + "} = [0 1];" + newlines(2);
+        "iBinds{" + iComp + "} = [0 1];" + aux_newlines(2);
 
 else
     % actual (meaningful) inputs given
@@ -507,7 +507,7 @@ else
         inputBindsStr = inputBindsStr + num2str(origin) + "," +...
             num2str(outputOfOrigin) + "]";
     end
-    inputBindsStr = inputBindsStr + "];" + newlines(2);
+    inputBindsStr = inputBindsStr + "];" + aux_newlines(2);
 end
 
 inputBindsStr = parallelComm + inputBindsStr;
@@ -548,7 +548,7 @@ else
             % shift by a small bit if it's a polytope with a strict
             % inequality -> necessary to result in empty invariants for
             % pairs of guard sets ax <= b & ax > b
-            if isa(guard,'mptPolytope') && ...
+            if isa(guard,'polytope') && ...
                   ( contains(allTrans(t).guard.Text,"<") || ...
                     contains(allTrans(t).guard.Text,">") ) && ...
                  ~( contains(allTrans(t).guard.Text,">=") || ...
@@ -557,7 +557,7 @@ else
             end
     
             % try to compute complement of guard set
-            if isa(guard,'mptPolytope') || isa(guard,'levelSet') ...
+            if isa(guard,'polytope') || isa(guard,'levelSet') ...
                     || isa(guard,'fullspace')
                 temp = ~guard;
             else
@@ -576,14 +576,14 @@ else
         end
     end
     % write to string (either polytope or levelSet)
-    if isa(inv,'emptySet') || (isa(inv,'mptPolytope') && isempty(inv))
+    if isa(inv,'emptySet') || (isa(inv,'polytope') && isempty(inv))
         % resulting invariant is the empty set -> the location will be
         % exited even before the first step of the reachability analysis
         str1 = ""; str2 = "emptySet(" + n + ");";
-    elseif isa(inv,'mptPolytope')
-        [str1,str2] = mptPolytopeString(inv);
+    elseif isa(inv,'polytope')
+        [str1,str2] = aux_polytopeString(inv);
     elseif isa(inv,'levelSet')
-        [str1,str2] = levelSetString(inv);
+        [str1,str2] = aux_levelSetString(inv);
     else
         throw(CORAerror('CORA:converterIssue',...
             'Issue in conversion of empty invariant.'));
@@ -592,32 +592,29 @@ end
 
 end
 
-function [str1,str2] = mptPolytopeString(set)
-% generates the string that constructs the mptPolytope
+function [str1,str2] = aux_polytopeString(set)
+% generates the string that constructs the polytope
 
-    A = printMatrixConverter(set.P.A);
-    AStr = "A = ..." + newline + A + ";" + newline;
-    b = printMatrixConverter(set.P.b);
-    bStr = "b = ..." + newline + b + ";" + newline;
-    OptStr = "polyOpt = struct('A', A, 'b', b";
-    if ~isempty(set.P.Ae)
+    A = printMatrixConverter(set.A);
+    AStr = "P_A = ..." + newline + A + ";" + newline;
+    b = printMatrixConverter(set.b);
+    bStr = "P_b = ..." + newline + b + ";" + newline;
+    if ~isempty(set.Ae)
         % if invariant is a polyhedron, add additional parameters
-        Ae = printMatrixConverter(set.P.Ae);
-        AeStr = "Ae = ..." + newline + Ae + ";" + newline;
-        be = printMatrixConverter(set.P.be);
-        beStr = "be = ..." + newline + be + ";" + newline;
-        OptStr = OptStr + ",'Ae', Ae, 'be', be";
+        Ae = printMatrixConverter(set.Ae);
+        AeStr = "P_Ae = ..." + newline + Ae + ";" + newline;
+        be = printMatrixConverter(set.be);
+        beStr = "P_be = ..." + newline + be + ";" + newline;
+        str2 = 'polytope(P_A,P_b,P_Ae,P_be);';
     else
         AeStr = "";
         beStr = "";
+        str2 = 'polytope(P_A,P_b);';
     end
-    str1 = AStr + bStr + AeStr + beStr + ...
-                OptStr + ");" + newline;
-
-    str2 = 'mptPolytope(polyOpt);';
+    str1 = AStr + bStr + AeStr + beStr + newline;
 end
 
-function [str1,str2] = levelSetString(set)
+function [str1,str2] = aux_levelSetString(set)
 % generates the string that constructs the levelSet
     
     % generate string for constructing the variable vector
@@ -665,12 +662,12 @@ function [str1,str2] = levelSetString(set)
     end
     
     % generate overall string
-    str1 = varStr + newline + eqStr + newline + compStr + newlines(2);
+    str1 = varStr + newline + eqStr + newline + compStr + aux_newlines(2);
     str2 = "levelSet(eq,vars,compOp);";
 
 end
 
-function [str1,str2] = conHyperplaneString(set)
+function [str1,str2] = aux_conHyperplaneString(set)
 % generates the string that constructs the conHyperplane object
 
     % hyperplane equation c*x = d
@@ -685,17 +682,17 @@ function [str1,str2] = conHyperplaneString(set)
         D = printMatrixConverter(set.d);
         Dstr = "D = " + D + ";";
         
-        str1 = cStr + dStr + Cstr + Dstr + newlines(2);
+        str1 = cStr + dStr + Cstr + Dstr + aux_newlines(2);
         str2 = "conHyperplane(c,d,C,D);";
     else
-        str1 = cStr + dStr + newlines(2);
+        str1 = cStr + dStr + aux_newlines(2);
         str2 = "conHyperplane(c,d);";
     end
 end
 
 
 % helper functions for formatting
-function str = padComment(comment,maxLineLength)
+function str = aux_padComment(comment,maxLineLength)
 %pads comment left & right with dashes to desired length and prefixes "%"
 
     if nargin < 2
@@ -710,12 +707,12 @@ function str = padComment(comment,maxLineLength)
 
 end
 
-function str = newlines(lines)
+function str = aux_newlines(lines)
 % fast way to write newline() + newline() + ...
     str = string(repmat(newline(),1,lines));
 end
 
-function str = text2comment(text)
+function str = aux_text2comment(text)
 % transform possibly multi-line text to comment
 % format in:
 %   "line1
@@ -728,4 +725,4 @@ function str = text2comment(text)
     str = "%% " + strrep(text,newline,newline + "%   ");
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

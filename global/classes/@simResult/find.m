@@ -1,7 +1,7 @@
 function res = find(simRes,prop,val)
 % find - get simRes object that satisfy a certain condition
 %
-% Syntax:  
+% Syntax:
 %    res = find(simRes,prop,val)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = find(simRes,prop,val)
 %
 % See also: reachSet/find
 
-% Author:       Mark Wetzlinger
-% Written:      16-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       16-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments (only first two)
 inputArgsCheck({{simRes,'att','simResult'};
@@ -87,4 +87,4 @@ switch prop
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

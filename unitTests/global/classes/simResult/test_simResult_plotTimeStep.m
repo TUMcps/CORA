@@ -1,7 +1,7 @@
 function res = test_simResult_plotTimeStep
 % test_simResult_plotTimeStep - unit test function for plotTimeStep
 %
-% Syntax:  
+% Syntax:
 %    res = test_simResult_plotTimeStep()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_simResult_plotTimeStep
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      01-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       01-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -101,4 +101,4 @@ end
 % close figure
 close
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function createParametricDynamicFile(obj,mFile,path,name)
 % createParametricDynamicFile - generates an mFile of the dynamic equations
 %    sorted by parameter influences
 %
-% Syntax:  
+% Syntax:
 %    createParametricDynamicFile(obj,mFile,path,name)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function createParametricDynamicFile(obj,mFile,path,name)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      01-June-2011
-% Last update:  02-June-2017
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       01-June-2011
+% Last update:   02-June-2017
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %create symbolic variables
 vars = symVariables(obj,'LRbrackets');
@@ -61,4 +61,4 @@ end
 %close file
 fclose(fid);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

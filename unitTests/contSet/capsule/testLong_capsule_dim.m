@@ -1,7 +1,7 @@
 function res = testLong_capsule_dim
 % testLong_capsule_dim - unit test function of dim
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_capsule_dim
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_capsule_dim
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-Sep-2019
-% Last update:  12-March-2021 (MW, add empty case)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-September-2019
+% Last update:   12-March-2021 (MW, add empty case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Random
 C = cell(10,1);
@@ -39,4 +39,4 @@ for i=1:length(C)
     res = res && dim(C{i}) == n(i);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

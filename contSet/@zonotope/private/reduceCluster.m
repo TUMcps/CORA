@@ -14,7 +14,7 @@ function Zred = reduceCluster(Z, order, clusterMethod)
 %    10 - hybrid methods between Line Clustering (4) and PCA
 %    11 - cluster in 2d cluster --> remove half of them
 %
-% Syntax:  
+% Syntax:
 %    Zred = reduceCluster(Z, order, clusterMethod)
 %
 % Inputs:
@@ -31,12 +31,12 @@ function Zred = reduceCluster(Z, order, clusterMethod)
 %
 % See also: 
 
-% Author:       Anna Kopetzki
-% Written:      11-June-2016
-% Last update:  27-June-2018
+% Authors:       Anna Kopetzki
+% Written:       11-June-2016
+% Last update:   27-June-2018
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % initialize Z_red
@@ -69,7 +69,6 @@ if ~isempty(Gred)
 
     % shift the zonotope such that its center is the origin 
     % set cen=origin
-
 
 
     % Cluster the generators in dim Clusters - generator matrix Cgen 
@@ -114,7 +113,8 @@ if ~isempty(Gred)
 end
 
 %build reduced zonotope
-Zred.Z = [center,Gunred,Gred];
+Zred.c = center;
+Zred.G = [Gunred,Gred];
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

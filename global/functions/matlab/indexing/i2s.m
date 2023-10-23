@@ -3,7 +3,7 @@ function subscriptMatrix = i2s(siz,indexVector)
 % conveniently for arbitrarily many dimensions. The function ind2sub 
 % converts linear indices to subscripts
 %
-% Syntax:  
+% Syntax:
 %    subscriptMatrix = i2s(siz,indexVector)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function subscriptMatrix = i2s(siz,indexVector)
 %
 % See also: none
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       14-September-2006
 % Last update:   28-July-2020
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     
 %init subscriptMatrix
@@ -53,4 +53,4 @@ eval(command);
     
 end
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

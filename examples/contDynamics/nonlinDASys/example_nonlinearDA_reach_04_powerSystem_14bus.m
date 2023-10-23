@@ -3,7 +3,7 @@ function completed = example_nonlinearDA_reach_04_powerSystem_14bus()
 %    nonlinear-differential-algebraic reachability analysis: 14-bus power 
 %    system from [1].
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinearDA_reach_04_powerSystem_14bus()
 %
 % Inputs:
@@ -17,13 +17,12 @@ function completed = example_nonlinearDA_reach_04_powerSystem_14bus()
 %        using Reachable Sets", IEEE Transactions on Power Systems 29 (5), 
 %        2014, 2270-2280
 
-% Author:       Matthias Althoff
-% Written:      26-May-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-May-2022
+% Last update:   ---
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Bus Parameters ----------------------------------------------------------
 
@@ -48,7 +47,7 @@ options.maxError_y = 0.01*ones(27,1);
 % System Dynamics ---------------------------------------------------------
 
 % set path
-path = [CORAROOT filesep 'models' filesep 'Cora' filesep 'powerSystems'];
+path = [CORAROOT filesep 'models' filesep 'powerSystemsConverted'];
 
 % create models (normal and faulty operation)
 if ~isfile([path filesep 'IEEE14_model.mat'])
@@ -59,8 +58,8 @@ if ~isfile([path filesep 'IEEE14_fault_model.mat'])
 end
 
 % load models (normal and faulty operation)
-load([path filesep 'IEEE14_model'], 'IEEE14_model');
-load([path filesep 'IEEE14_fault_model'], 'IEEE14_fault_model');
+load([path filesep 'IEEE14_model.mat'], 'IEEE14_model');
+load([path filesep 'IEEE14_fault_model.mat'], 'IEEE14_fault_model');
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -164,6 +163,12 @@ end
     
 % Visualization -----------------------------------------------------------
 
+doPlot = false;
+if ~doPlot
+    disp('Visualiation is turned off for this example for time reasons. You can enable it by setting the ''doPlot'' variable to true.')
+    return
+end
+
 projDims = {[1 6],[2 7],[3 8],[4 9],[5 10],[11 12],[13 14],[6 11],...
     [7 12],[8 13],[9 14],[1 11],[2 12],[3 13],[4 14],[1 2],[3 4],[5 6],[7 8]};
 
@@ -226,5 +231,4 @@ end
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
-        
+% ------------------------------ END OF CODE ------------------------------

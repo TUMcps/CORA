@@ -5,7 +5,7 @@ function res = testLong_nonlinearSysDT_tensorCreation()
 % Checks different scenarios of settings, where each scenario results in a
 % different third-order tensor
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_nonlinearSysDT_tensorCreation()
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = testLong_nonlinearSysDT_tensorCreation()
 % Outputs:
 %    res - true/false 
 
-% Author:       Niklas Kochdumper
-% Written:      02-August-2018
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       02-August-2018
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = false;
 
@@ -89,4 +89,4 @@ end
 % test is successfull if no error occured during execution
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

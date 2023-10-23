@@ -1,7 +1,7 @@
 function res = isempty(cPZ,varargin)
 % isempty - checks if a constrained polynomial zonotope is the empty set
 %
-% Syntax:  
+% Syntax:
 %    res = isempty(cPZ)
 %    res = isempty(cPZ,method)
 %    res = isempty(cPZ,method,iter)
@@ -20,12 +20,12 @@ function res = isempty(cPZ,varargin)
 % Example:
 %    c = [0;0];
 %    G = [1 0 1;0 1 1];
-%    expMat = [1 0 2;0 1 1];
+%    E = [1 0 2;0 1 1];
 %    A = [1 -1 0; 0 -1 1];
 %    b1 = [0; 1]; b2 = [0; 0];
-%    expMat_ = [2 0 1; 0 1 0];
-%    cPZ1 = conPolyZono(c,G,expMat,A,b1,expMat_);
-%    cPZ2 = conPolyZono(c,G,expMat,A,b2,expMat_);
+%    EC = [2 0 1; 0 1 0];
+%    cPZ1 = conPolyZono(c,G,E,A,b1,EC);
+%    cPZ2 = conPolyZono(c,G,E,A,b2,EC);
 %
 %    res1 = isempty(cPZ1,'linearize',3,7)
 %    res2 = isempty(cPZ2,'linearize',3,7)
@@ -36,15 +36,15 @@ function res = isempty(cPZ,varargin)
 %
 % See also: conZonotope/isempty, contract
 
-% Author:       Niklas Kochdumper
-% Written:      04-February-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       04-February-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check if independent generators are empty 
-if ~isempty(cPZ.Grest)
+if ~isempty(cPZ.GI)
    res = false; return; 
 end
 
@@ -67,8 +67,8 @@ inputArgsCheck({{cPZ,'att','conPolyZono'};
 temp = ones(length(cPZ.id),1);
 dom = interval(-temp,temp);
 
-D = contractPoly(-cPZ.b,cPZ.A,[],cPZ.expMat_,dom,method,iter,splits);
+D = contractPoly(-cPZ.b,cPZ.A,[],cPZ.EC,dom,method,iter,splits);
 
 res = isempty(D);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

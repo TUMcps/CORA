@@ -4,7 +4,7 @@ function res = test_nonlinearSys_reach_06_tank_linearRemainder
 %
 % This example can be found in [1, Sec. 3.4.5] or in [2].
 %
-% Syntax:  
+% Syntax:
 %    test_nonlinearSys_reach_06_tank_linearRemainder
 %
 % Inputs:
@@ -21,12 +21,12 @@ function res = test_nonlinearSys_reach_06_tank_linearRemainder
 %        linearization. In Proc. of the 47th IEEE Conference on
 %        Decision and Control, pages 4042–4048, 2008.
 
-% Author:       Victor Gassmann
-% Written:      23-May-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       23-May-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 dim_x=6;
 params.tFinal=20; %final time
@@ -112,4 +112,4 @@ end
 % example completed
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

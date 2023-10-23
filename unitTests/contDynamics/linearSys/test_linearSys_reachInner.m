@@ -2,7 +2,7 @@ function res = test_linearSys_reachInner()
 % test_linearSys_reachInner - test if the computed inner-approximation of 
 %    the reachable set is correct
 %
-% Syntax:  
+% Syntax:
 %    res = test_linearSys_reachInner()
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = test_linearSys_reachInner()
 % Outputs:
 %    res - true/false 
 
-% Author:       Niklas Kochdumper
-% Written:      26-August-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-August-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameter -----------------------------------------------------------
 
@@ -55,7 +55,7 @@ R_i = Rin.timePoint.set{end};
 N = 20;
 points = zeros(sys.dim,N);
 
-R0 = mptPolytope(params.R0);
+R0 = polytope(params.R0);
 
 res1 = true;
 for i = 1:N
@@ -102,4 +102,4 @@ res = res1 && res2;
     
 end
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

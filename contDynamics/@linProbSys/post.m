@@ -2,7 +2,7 @@ function [Rnext,options] = post(obj,R,options)
 % post - computes the reachable continuous probabilistic set for one time 
 % step of a linear system
 %
-% Syntax:  
+% Syntax:
 %    [Rnext,options] = post(obj,R,options)
 %
 % Inputs:
@@ -22,14 +22,14 @@ function [Rnext,options] = post(obj,R,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      27-September-2007 
-% Last update:  08-September-2009
-%               25-July-2016 (intervalhull replaced by interval)
-%               16-July-2020 (update to integrate in CORA 2020)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       27-September-2007 
+% Last update:   08-September-2009
+%                25-July-2016 (intervalhull replaced by interval)
+%                16-July-2020 (update to integrate in CORA 2020)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %load homogeneous solution from options struct
 Rhom=options.Rhom;
@@ -55,4 +55,4 @@ options.Raux_det=Raux_det;
 Rnext.tp=[];
 Rnext.ti=Rhom+Rpar_prob+zonotope(Rpar_det);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

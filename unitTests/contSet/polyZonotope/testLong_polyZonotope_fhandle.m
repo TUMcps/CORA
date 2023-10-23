@@ -2,7 +2,7 @@ function res = testLong_polyZonotope_fhandle
 % testLong_polyZonotope_fhandle - unit test function for computing
 %    the function handle of a polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_polyZonotope_fhandle
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_polyZonotope_fhandle
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      24-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       24-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -58,4 +58,4 @@ for i=1:nTests
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

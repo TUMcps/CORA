@@ -1,7 +1,7 @@
 function res = sinh( obj )
 % sinh - Overloaded 'sinh()' operator for a Taylor model
 %
-% Syntax:  
+% Syntax:
 %    res = sinh(obj)
 %
 % Inputs:
@@ -22,21 +22,24 @@ function res = sinh( obj )
 %   [1] K. Makino et al. "Taylor Models and other validated functional 
 %       inclusion methods"
 
-% Author:       Dmitry Grebenyuk
-% Written:      15-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       15-August-2017
+% Last update:   ---
+% Last revision: ---
 
+% ------------------------------ BEGIN CODE -------------------------------
 
-%------------- BEGIN CODE --------------
+	res = arrayfun(@(a) aux_s_sinh(a), obj, 'UniformOutput', 0);
 
-	res = arrayfun(@(a) s_sinh(a), obj, 'UniformOutput', 0);
     A = cat(1, res{:});
     res = reshape(A, size(res));
 
 end
 
-function res = s_sinh( obj )
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_s_sinh( obj )
     if obj.monomials(1,1) == 0                 
         c_f = obj.coefficients(1);
     else
@@ -88,4 +91,4 @@ function res = s_sinh( obj )
         remPow .* J0;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

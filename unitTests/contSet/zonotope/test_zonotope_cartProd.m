@@ -1,7 +1,7 @@
 function res = test_zonotope_cartProd
 % test_zonotope_cartProd - unit test function of cartesian product
 %
-% Syntax:  
+% Syntax:
 %    res = test_zonotope_cartProd
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_zonotope_cartProd
 %
 % See also: -
 
-% Author:       Matthias Althoff, Mark Wetzlinger
-% Written:      26-July-2016
-% Last update:  03-January-2023 (MW, add zonotope-numeric cases)
-% Last revision:---
+% Authors:       Matthias Althoff, Mark Wetzlinger
+% Written:       26-July-2016
+% Last update:   03-January-2023 (MW, add zonotope-numeric cases)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty set case
 % try 
@@ -48,8 +48,8 @@ Z2 = zonotope([9 10 11]);
 Z_ = cartProd(Z1,Z2);
 
 % obtain center and generator matrix
-c = center(Z_);
-G = generators(Z_);
+c = Z_.c;
+G = Z_.G;
 
 % true result
 true_c = [1; 5; 9];
@@ -69,8 +69,8 @@ num = 1;
 Z_ = cartProd(Z1,num);
 
 % obtain center and generator matrix
-c = center(Z_);
-G = generators(Z_);
+c = Z_.c;
+G = Z_.G;
 
 % true result
 true_c = [0; 2; 1];
@@ -85,8 +85,8 @@ res_Znum = compareMatrices(c,true_c) && compareMatrices(G,true_G);
 Z_ = cartProd(num,Z1);
 
 % obtain center and generator matrix
-c = center(Z_);
-G = generators(Z_);
+c = Z_.c;
+G = Z_.G;
 
 % true result
 true_c = [1; 0; 2];
@@ -100,4 +100,4 @@ res_numZ = compareMatrices(c,true_c) && compareMatrices(G,true_G);
 % combine all results
 res = res_empty && res_ZZ && res_Znum && res_numZ;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

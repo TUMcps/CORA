@@ -1,7 +1,7 @@
 function res = test_interval_volume
 % test_interval_volume - unit test function of volume
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_volume
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_volume
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      28-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % TEST 1: Analytical ------------------------------------------------------
 % create interval
@@ -63,4 +63,4 @@ res_e = volume(interval()) == 0;
 % add results
 res = res_analytical && res_rand && res_e;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

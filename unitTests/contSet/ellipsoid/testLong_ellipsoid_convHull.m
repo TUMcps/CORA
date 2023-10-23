@@ -1,7 +1,7 @@
 function res = testLong_ellipsoid_convHull
 % testLong_ellipsoid_convHull - unit test function of convHull
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_ellipsoid_convHull
 %
 % Inputs:
@@ -16,14 +16,14 @@ function res = testLong_ellipsoid_convHull
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      14-October-2019
-% Last update:  16-March-2021
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       14-October-2019
+% Last update:   16-March-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % simply is "or"
 res = testLong_ellipsoid_or;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -4,7 +4,7 @@ function completed = example_nonlinearDA_reach_06_powerSystem_30bus_compositiona
 %    system from [1], where the abstraction error is computed 
 %    compositionally.
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinearDA_reach_06_powerSystem_30bus_compositional()
 %
 % Inputs:
@@ -18,13 +18,12 @@ function completed = example_nonlinearDA_reach_06_powerSystem_30bus_compositiona
 %        using Reachable Sets", IEEE Transactions on Power Systems 29 (5), 
 %        2014, 2270-2280
 
-% Author:       Matthias Althoff
-% Written:      09-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       09-June-2022
+% Last update:   ---
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Bus Parameters ----------------------------------------------------------
 
@@ -49,7 +48,7 @@ options.maxError_y = 0.04*ones(2*nrOfBuses-1,1);
 % System Dynamics ---------------------------------------------------------
 
 % set path
-path = [CORAROOT filesep 'models' filesep 'Cora' filesep 'powerSystems'];
+path = [CORAROOT filesep 'models' filesep 'powerSystemsConverted'];
 
 % create models (normal and faulty operation)
 if ~isfile([path filesep 'IEEE30_model.mat'])
@@ -306,6 +305,12 @@ end
 save IEEE30sim
 % Visualization -----------------------------------------------------------
 
+doPlot = false;
+if ~doPlot
+    disp('Visualiation is turned off for this example for time reasons. You can enable it by setting the ''doPlot'' variable to true.')
+    return
+end
+
 %plot dynamic variables
 projDimDyn{1} = [1 7];
 projDimDyn{2} = [2 8];
@@ -339,7 +344,7 @@ for plotRun=1:length(projDimDyn)
     plot(R_1, projDimDyn{plotRun}, 'Order', 10, 'FaceColor',[.6 .6 .6]);
     
     % plot initial set
-    plot(params.R0,projDimDyn{plotRun},'EdgeColor','k','FaceColor','w');
+    plot(R0,projDimDyn{plotRun},'EdgeColor','k','FaceColor','w');
 
     % plot simulation results
     for j=1:nrRuns
@@ -408,6 +413,9 @@ for plotRun=1:length(projDimAlg)
         Zproj = reduce(Zproj,'girard',plotOrder);
         plot(Zproj,[1 2],'FaceColor',[.8 .8 .8]);
     end   
+    
+    % plot initial set
+    plot(R_1.timeInterval.algebraic{1},projDimAlg{plotRun},'EdgeColor','k','FaceColor','w');
 
     % plot simulation results
     for j=1:nrRuns
@@ -434,7 +442,7 @@ end
 
 %% save plots
 cd(coraroot);
-cd('../CORAplots/powerSystems/20Jul2022');
+cd('../CORAplots/powerSystems/23Aug2022');
 
 % dynamic variables
 for iProj = 1:length(projDimDyn)
@@ -465,5 +473,4 @@ end
 completed = 1;
 
 
-%------------- END OF CODE --------------
-        
+% ------------------------------ END OF CODE ------------------------------

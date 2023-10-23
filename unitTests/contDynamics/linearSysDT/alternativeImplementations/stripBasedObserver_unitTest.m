@@ -1,7 +1,7 @@
 function estSet = stripBasedObserver_unitTest(obj,params,options)
 % stripBasedObserver_unitTest - computes the strip-based observer according to [1].
 %
-% Syntax:  
+% Syntax:
 %    estSet = stripBasedObserver_unitTest(obj,params,options)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function estSet = stripBasedObserver_unitTest(obj,params,options)
 %        state estimation by zonotopes. Automatica, 41(6):1035-1043,
 %        2005.
 
-% Author:        ???
-% Written:       ???
+% Authors:       ???
+% Written:       ---
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %time period
 tVec = params.tStart:options.timeStep:params.tFinal-options.timeStep;
@@ -85,4 +85,4 @@ end
 estSet = reachSet([], timeInt);
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

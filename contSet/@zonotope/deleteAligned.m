@@ -1,10 +1,7 @@
 function Z = deleteAligned(Z)
-% deleteAligned - combines aligned generators to a single generator;
-%    a tolerance is used to determine alignment, so this function
-%    does not necessarily return an over-approximation of the original
-%    zonotope---for this, use zonotope/reduce instead
+% deleteAligned - (DEPRECATED -> compact)
 %
-% Syntax:  
+% Syntax:
 %    Z = deleteAligned(Z)
 %
 % Inputs:
@@ -13,63 +10,23 @@ function Z = deleteAligned(Z)
 % Outputs:
 %    Z - zonotope object
 %
-% Example:
-%    Z1 = zonotope([1;0],[1 0 1 1 -2 0; 0 1 0 1 -2 -3]);
-%    Z2 = deleteAligned(Z1);
-% 
-%    figure; hold on;
-%    plot(Z1);
-%    plot(Z2,[1,2],'r--');
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: zonotope/reduce
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       15-January-2009
-% Last update:   27-Aug-2019
-% Last revision: ---
+% Last update:   27-August-2019
+% Last revision: 29-July-2023 (MW, merged to compact)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-%extract center and generator matrix
-c=center(Z);
-G=generators(Z);
+funcname = mfilename;
+warning(sprintf(['The function ''' funcname ''' is deprecated (since CORA 2024) and has been replaced by ''compact''.\n' ...
+    '         When updating the code, please rename every function call ''' funcname '(Z)'' -> ''compact(Z,''aligned'')''.\n' ...
+    '         Note that the function ''' funcname ''' will be removed in a future release.']));
+Z = compact_(Z,'aligned');
 
-%Delete zero-generators
-G=nonzeroFilter(G);
-
-%normalize generators
-G_norm = G./vecnorm(G);
-
-% tolerance for alignment
-tol = 1-1e-3;
-
-%find equal generators
-i = 1;
-while i < length(G(1,:))
-    G_act = G_norm(:,i);
-    ind = find(abs(G_act'*G_norm(:,(i+1):end)) > tol);
-    if ~isempty(ind)
-        ind = ind+i;
-        for iAdd = 1:length(ind)
-            %add generators
-            G(:,i) = G(:,i) + sign(G_act'*G_norm(:,ind(iAdd)))*G(:,ind(iAdd));
-        end
-        for iAdd = 1:length(ind)
-            %remove generators
-            G(:,ind(iAdd)) = [];
-            G_norm(:,ind(iAdd)) = [];
-            %change ind to correct for cancellation
-            ind = ind - 1;
-        end
-    end  
-    %increase i
-    i = i + 1;
-end
-
-Z.Z = [c,G];
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function val = distanceHyperplane(E,H)
 % distanceHyperplane - computes the distance from an ellipsoid to a
 %    constrained hyperplane
 %
-% Syntax:  
+% Syntax:
 %    res = distanceHyperplane(E,H)
 %
 % Inputs:
@@ -24,16 +24,17 @@ function val = distanceHyperplane(E,H)
 %
 % See also: none
 
-% Author:       Victor Gassmann
-% Written:      08-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       08-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 % from [2, Sec. 2.1, Eq. (2.10)]
 % can be <0
 y = H.h.d; c = H.h.c;
 q = E.q; Q = E.Q;
 val = (abs(y-c'*q)-sqrt(c'*Q*c)) / sqrt(c'*c);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

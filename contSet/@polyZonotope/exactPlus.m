@@ -2,7 +2,7 @@ function pZ = exactPlus(pZ1,pZ2)
 % exactPlus - computes the addition of two sets while preserving the
 %    dependencies between the two sets
 %
-% Syntax:  
+% Syntax:
 %    pZ = exactPlus(pZ1,pZ2)
 %
 % Inputs:
@@ -33,26 +33,26 @@ function pZ = exactPlus(pZ1,pZ2)
 %
 % See also: mtimes, zonotope/plus
 
-% Author:       Niklas Kochdumper
-% Written:      26-March-2018 
-% Last update:  ---
+% Authors:       Niklas Kochdumper
+% Written:       26-March-2018 
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
 % bring the exponent matrices to a common representation
-[id,expMat1,expMat2] = mergeExpMatrix(pZ1.id,pZ2.id,pZ1.expMat,pZ2.expMat);
+[id,E1,E2] = mergeExpMatrix(pZ1.id,pZ2.id,pZ1.E,pZ2.E);
 
 % add up all generators that belong to identical exponents
-[ExpNew,Gnew] = removeRedundantExponents([expMat1,expMat2],[pZ1.G,pZ2.G]);
+[Enew,Gnew] = removeRedundantExponents([E1,E2],[pZ1.G,pZ2.G]);
 
 % assemble the properties of the resulting polynomial zonotope
 pZ = pZ1;
 pZ.G = Gnew;
-pZ.expMat = ExpNew;
+pZ.E = Enew;
 
 pZ.c = pZ1.c + pZ2.c;
-pZ.Grest = [pZ1.Grest,pZ2.Grest];
+pZ.GI = [pZ1.GI,pZ2.GI];
 pZ.id = id;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -22,12 +22,12 @@ function [y,Q,q] = rootfnc(p,W1,q1,W2,q2)
 %
 % See also: ellipsoid/and_
 
-% Author:       Victor Gassmann
-% Written:      14-October-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       14-October-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 n = size(W1,1);
 X = p*W1+(1-p)*W2;
@@ -42,4 +42,4 @@ detX = det(X);
 y = a*detX^2*trace(X_inv*(W1-W2)) - n*detX^2*(2*q'*(W1*q1-W2*q2) ...
     + q'*(W2-W1)*q - q1'*W1*q1+q2'*W2*q2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

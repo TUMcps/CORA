@@ -1,7 +1,7 @@
 function res = test_readNameValuePair
 % test_readNameValuePair - unit test function for reading of name-value pairs
 %
-% Syntax:  
+% Syntax:
 %    res = test_readNameValuePair()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_readNameValuePair
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      28-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init name-value pairs
 NVpairs = {'Age',12,'Name','John','Children',2};
@@ -65,4 +65,4 @@ end
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

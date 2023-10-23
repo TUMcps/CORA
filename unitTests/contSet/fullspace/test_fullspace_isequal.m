@@ -1,7 +1,7 @@
 function res = test_fullspace_isequal
 % test_fullspace_isequal - unit test function of isequal
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_isequal
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_isequal
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init fullspace
 n = 2;
@@ -49,4 +49,4 @@ res(end+1,1) = ~isequal(fs,p);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

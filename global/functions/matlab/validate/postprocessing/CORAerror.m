@@ -1,7 +1,7 @@
 function ME = CORAerror(identifier,varargin)
 % CORAerror - central hub for all error messages thrown by CORA functions
 %
-% Syntax:  
+% Syntax:
 %    ME = CORAerror(identifier,varargin)
 %
 % Inputs:
@@ -14,6 +14,7 @@ function ME = CORAerror(identifier,varargin)
 %                 'CORA:fileNotFound'
 %                 'CORA:wrongValue'
 %                 'CORA:noExactAlg'
+%                 'CORA:noSpecificAlg'
 %                 'CORA:solverIssue'
 %                 'CORA:noSuitableSolver'
 %                 'CORA:PLInonConvergent'
@@ -29,7 +30,10 @@ function ME = CORAerror(identifier,varargin)
 %                 'CORA:outOfDomain'
 %                 'CORA:specialError'
 %                 'CORA:notSupported'
+%                 'CORA:notDefined'
+%                 'CORA:nnLayerNotSupported'
 %                 'CORA:reachSetExplosion'
+%                 'CORA:outOfMemory'
 %                 'CORA:testFailed'
 %                 'CORA:noops'
 %    varargin - further information depending on specific error
@@ -43,18 +47,36 @@ function ME = CORAerror(identifier,varargin)
 %
 % See also: none
 
-% Author:       Mingrui Wang, Mark Wetzlinger
-% Written:      05-April-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mingrui Wang, Mark Wetzlinger
+% Written:       05-April-2022
+% Last update:   ---
+% Last revision: 31-July-2023 (TL, workspace call)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % full error stack
 st = dbstack("-completenames");
 
 % read info from error stack
-[filename,classname,functionname,sprintfFilesep] = readInfo(st);
+try
+    [filename,classname,functionname,sprintfFilesep] = aux_readInfo(st);
+catch ME
+    if strcmp(ME.identifier, 'MATLAB:needMoreRhsOutputs')
+        % show 'call from workspace' warning
+        warning(['You are very likely attempting to call CORAerror ',...
+                'from the MATLAB console; please do not do that, as ',...
+                'CORAerror will then be unable to trace back from where ',...
+                'the error originates.']);
+
+        % set default values
+        filename = 'filename';
+        classname = 'classname';
+        functionname = 'functionname';
+        sprintfFilesep = '/';
+    else
+        rethrow(ME);
+    end
+end
 
 % standard help message
 if ~strcmp(classname,functionname)
@@ -129,8 +151,12 @@ switch identifier
     % - (char) information about error
     case 'CORA:converterIssue'
         infomsg = varargin{1};
-        convertername = readConverter(st);
-        errmsg = ['Error in converter ' convertername ':\n  ' infomsg];
+        try
+            convertername = aux_readConverter(st);
+            errmsg = ['Error in converter ' convertername ':\n  ' infomsg];
+        catch
+            errmsg = ['Error in converter:\n  ' infomsg];
+        end
 
 
     % error in generation of configuration file (usually developer mistake)
@@ -145,7 +171,7 @@ switch identifier
     % - (char) file name
     case 'CORA:fileNotFound'
         providedfile = varargin{1};
-        errmsg = ['File with name ' providedfile + ' could not be found.'];
+        errmsg = ['File with name ' providedfile ' could not be found.'];
 
 
     % a given input argument receives a wrong value; input args:
@@ -189,6 +215,26 @@ switch identifier
             errmsg = sprintf(...
                 "There is no exact algorithm for function %s with input arguments:\n  %s %s",...
                 filename,classlist,infomsg);
+        end
+        
+    % a specific algorithm is not implemented
+    case 'CORA:noSpecificAlg'
+        algorithm = varargin{1};
+        classlist = "";
+        for i=2:length(varargin)-1
+            classlist = classlist + string(class(varargin{i})) + ", ";
+        end
+        if ~isstring(varargin{end})
+            classlist = classlist + string(class(varargin{end})) + ".";
+            errmsg = sprintf(...
+                "There is no algorithm '%s' for function %s with input arguments:\n  %s",...
+                algorithm,filename,classlist);
+        else
+            classlist = classlist;
+            infomsg = varargin{end};
+            errmsg = sprintf(...
+                "There is no algorithm '%s' for function %s with input arguments:\n  %s %s",...
+                algorithm,filename,classlist,infomsg);
         end
 
     
@@ -336,10 +382,46 @@ switch identifier
     case 'CORA:notSupported'
         errmsg = varargin{1};
 
+
+    % functionality is not defined, mostly due to 
+    % mathematical inconsistencies; input args:
+    % - (char) information about undefined functionality
+    % - (char) See also:
+    case 'CORA:notDefined'
+        errmsg = sprintf('Undefined functionality: %s', varargin{1});
+        if length(varargin) == 2
+            errmsg = sprintf('%s\nSee also: %s', errmsg, varargin{2});
+        end
+
+
+    % propagation computation is not supported by a layer
+    % input args:
+    % - (nnLayer) layer object
+    % - (char) unsupported computation
+    case 'CORA:nnLayerNotSupported'
+        layer = varargin{1};
+        unsupComp = varargin{2};
+        errmsg = sprintf("Computation of %s is not supported by %s (%s).", ...
+            unsupComp, class(layer), layer.name);
+
     
     % reachable set explodes due to excessively large abstraction error
     case 'CORA:reachSetExplosion'
         errmsg = 'Abort analysis due to reachable set explosion!';
+
+
+    % matlab runs out of memory while computing something within CORA,
+    % e.g. if 'MATLAB:array:SizeLimitExceeded' would be thrown otherwise
+    % input args:
+    % - (char) additional information, e.g. how to fix it.
+    % - (optional) MException object
+    case 'CORA:outOfMemory'
+        errmsg = sprintf('Out of memory. ');
+        if length(varargin) == 2
+            ME = varargin{2};
+            errmsg = sprintf('%s%s\n',errmsg,ME.message);
+        end
+        errmsg = sprintf('%s%s',errmsg,varargin{1});
 
 
     % standard message for failed unit tests (sometimes quicker than
@@ -365,7 +447,7 @@ switch identifier
                 end
             elseif strcmp(string(class(varargin{i})),'levelSet')
                 % additionally print comparison operator(s)
-                compOps = strjoin(unique(varargin{i}.compOp),',');
+                compOps = strjoin(cellstr(unique(varargin{i}.compOp)),',');
                 addinfo = " (comparison operator: '" + compOps + "')";
             end
             if i == length(varargin)
@@ -375,7 +457,7 @@ switch identifier
             addinfo = "";
         end
         errmsg = sprintf(...
-            "The function %s is not implemented for the following arguments:\n  %s \n%s",...
+            "The function '%s' is not implemented for the following arguments:\n  %s \n%s",...
             filename,classlist,helpmsg);
 
 
@@ -392,8 +474,9 @@ ME = MException(identifier,errmsg);
 end
 
 
-% Auxiliary function ------------------------------------------------------
-function [filename,classname,functionname,sprintfFilesep] = readInfo(st)
+% Auxiliary functions -----------------------------------------------------
+
+function [filename,classname,functionname,sprintfFilesep] = aux_readInfo(st)
 
 % stack length
 stlength = length(st);
@@ -465,7 +548,7 @@ end
 
 end
 
-function convertername = readConverter(st)
+function convertername = aux_readConverter(st)
 % read the name of the currently implemented converters from the call stack
 
 % calling function (where error occurs) is at index 2
@@ -485,4 +568,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -16,10 +16,10 @@ function syncReset = synchronizeResets(transitionSet,n,m,idStates)
 %    composed of the full state x and the global inputs u as input
 %    dimension.
 %
-% Syntax:  
+% Syntax:
 %    syncReset = synchronizeResets(transitionSet,dims,inputDims)
 %
-% Input:
+% Inputs:
 %    transitionSet - array of transitions to be synchronized
 %    n - full state dimension
 %    m - global input dimension
@@ -34,13 +34,13 @@ function syncReset = synchronizeResets(transitionSet,n,m,idStates)
 %
 % See also: none
 
-% Author:       Maximilian Perschl, Mark Wetzlinger
-% Written:      04-April-2022
-% Last update:  01-July-2022
-%               14-January-2023 (MW, handle states unaffected by sync)
-% Last revision:---
+% Authors:       Maximilian Perschl, Mark Wetzlinger
+% Written:       04-April-2022
+% Last update:   01-July-2022
+%                14-January-2023 (MW, handle states unaffected by sync)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % find out which reset functions are linear and which are nonlinear
 linearResets = false(size(transitionSet));
@@ -198,4 +198,4 @@ else
     syncReset.hasInput = false;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

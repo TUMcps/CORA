@@ -2,7 +2,7 @@ function eZ = expmInd(matZ,maxOrder)
 % expmInd - operator for the exponential matrix of a matrix zonotope,
 %    evaluated independently
 %
-% Syntax:  
+% Syntax:
 %    eZ = expmInd(matZ,maxOrder)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function eZ = expmInd(matZ,maxOrder)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      18-June-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-June-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %compute finite Taylor series
 %initialize matrix zonotope
@@ -48,4 +48,4 @@ E = exponentialRemainder(intMat,maxOrder);
 %convert remainder and add it to the Taylor series
 eZ = eZ + matZonotope(E);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

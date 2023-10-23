@@ -1,7 +1,7 @@
 function pZ = subs(pZ,pZin,varargin)
 % subs - computes substitution of pZin into pZ for elements of id idu
 %
-% Syntax:  
+% Syntax:
 %    pZ = subs(pZ,pZin)
 %    pZ = subs(pZ,pZin,idu)
 %
@@ -24,12 +24,12 @@ function pZ = subs(pZ,pZin,varargin)
 %
 % See also: resolve
 
-% Author:       Victor Gassmann
-% Written:      12-January-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       12-January-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% input argument check
 % default value
@@ -48,18 +48,18 @@ if nargin == 3 && ~isempty(varargin{1})
 end
 
 nu = size(pZin.c,1);
-nbin = size(pZin.expMat,1);
+nbin = size(pZin.E,1);
 if length(idu)~=nu || ~all(ismember(idu,pZ.id))
     throw(CORAerror('CORA:wrongValue','third',...
         'Number of outputs of pZin must match number of dep. factors specified by id.'));
 end
-if ~isempty(pZin.Grest) && ~all(pZin.Grest==0,'all')
+if ~isempty(pZin.GI) && ~all(pZin.GI==0,'all')
     throw(CORAerror('CORA:wrongValue','second',...
         'Rest matrix of pZin is not empty or zero'));
 end
 
 %% trivial case
-if isempty(pZ.G) || isempty(pZ.expMat)
+if isempty(pZ.G) || isempty(pZ.E)
     return;
 end
 
@@ -70,8 +70,8 @@ end
 Gin = pZin.G(iuin,:);
 cin = pZin.c(iuin,:);
 [Idin,indin] = sort(pZin.id);
-eM = pZ.expMat(ind,:);
-eMin = pZin.expMat(indin,:);
+eM = pZ.E(ind,:);
+eMin = pZin.E(indin,:);
 % remaining ids in pZ after substitution
 Idr = setdiff(Id,Idu);
 % common ids in pZ.id and pZin.id that remain after substitution
@@ -110,7 +110,7 @@ if all(cin==0) && all(n_mons<=1)
     eMtmp = sum(reshape(reshape(eM_exp',[1,nu*m]).*repelem(eM_subs,1,m),...
                                 [length(Idin),m,nu]),3);
     % combine result
-    ExpMat = [eMtmp(ind_inx,:) + eM(ix,:);
+    E = [eMtmp(ind_inx,:) + eM(ix,:);
               eM(iz,:);
               eMtmp(ind_inp,:)];
     
@@ -138,7 +138,7 @@ else
     end
     % multiply old monomials with new eq from pZin substituted in
     G = [];
-    ExpMat = [];
+    E = [];
     
     for i=1:size(pZ.G,2)
         % extract the appropriate power
@@ -157,11 +157,11 @@ else
         eMtmp_new = [eMtmp(ind_inx,:);
                      repmat(eM(iz,i),1,size(eMtmp,2));
                      eMtmp(ind_inp,:)];
-        ExpMat = [ExpMat,eMtmp_new];
+        E = [E,eMtmp_new];
     end
 end
-[ExpMat,G] = removeRedundantExponents(ExpMat,G);
-[ExpMat,G,c] = removeZeroExponents(ExpMat,G);
+[E,G] = removeRedundantExponents(E,G);
+[E,G,c] = removeZeroExponents(E,G);
 
 %% reverse order to original
 % make sure that id order is reversed again: otherwise if s.o. has some ids
@@ -169,12 +169,12 @@ end
 % refer to the same dep. factors anymore
 irx = ismember(Idr,Idx);
 irz = ismember(Idr,Idz);
-% expMat_r.id=[Idr];
-expMat_r = zeros(length(Idr),size(ExpMat,2));
-expMat_r(irx,:) = ExpMat(1:length(Idx),:);
-expMat_r(irz,:) = ExpMat(length(Idx)+1:length(Idx)+length(Idz),:);
-% expMat_p.id=[Idp];
-expMat_p = ExpMat(length(Idx)+length(Idz)+1:end,:);
+% E_r.id=[Idr];
+E_r = zeros(length(Idr),size(E,2));
+E_r(irx,:) = E(1:length(Idx),:);
+E_r(irz,:) = E(length(Idx)+1:length(Idx)+length(Idz),:);
+% E_p.id=[Idp];
+E_p = E(length(Idx)+length(Idz)+1:end,:);
 % now revert sort order
 idr = pZ.id(~ismember(pZ.id,idu));
 idp = pZin.id(ismember(pZin.id,Idp));
@@ -183,8 +183,8 @@ idp = pZin.id(ismember(pZin.id,Idp));
 % want to go from sorted to original
 indr_rev(tmp_r) = 1:length(tmp_r);
 indp_rev(tmp_p) = 1:length(tmp_p);
-expMat = [expMat_r(indr_rev,:);expMat_p(indp_rev,:)];
+E = [E_r(indr_rev,:);E_p(indp_rev,:)];
 % instantiate result
-pZ = polyZonotope(c+pZ.c,G,pZ.Grest,expMat,[idr;idp]);
+pZ = polyZonotope(c+pZ.c,G,pZ.GI,E,[idr;idp]);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

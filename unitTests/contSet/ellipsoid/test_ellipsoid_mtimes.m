@@ -1,7 +1,7 @@
 function res = test_ellipsoid_mtimes
 % test_ellipsoid_mtimes - unit test function of mtimes
 %
-% Syntax:  
+% Syntax:
 %    res = test_ellipsoid_mtimes
 %
 % Inputs:
@@ -16,12 +16,13 @@ function res = test_ellipsoid_mtimes
 %
 % See also: -
 
-% Author:       Victor Gassmann
-% Written:      13-March-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       13-March-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 %NOTICE: Before executing this test, make sure test_ellipsoid_supportFunc and
 %test_ellipsoid_contains are sucessful as this test makes use of both
 %functions.
@@ -59,10 +60,10 @@ EA = A*E1;
 true_result=ellipsoid([87.2,193.7;193.7,433.4],[9;15]);
 
 % empty set
-% if ~isempty(mtimes(A,ellipsoid()))
+% if ~representsa_(mtimes(A,ellipsoid()),'emptySet',eps)
 %     res = false; return
 % end
 
 res = isequal(EA,true_result);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_capsule_project
 % test_capsule_project - unit test function of project
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_project
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_capsule_project
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      28-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       28-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate capsule
 dim = 5;
@@ -47,4 +47,4 @@ C_proj2 = project(C, projDim);
 % compare results
 res = isequal(C_proj1,C_true) && isequal(C_proj2,C_true);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

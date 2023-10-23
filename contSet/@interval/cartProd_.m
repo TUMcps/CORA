@@ -1,8 +1,8 @@
 function res = cartProd_(I,S,varargin)
-% cartProd - returns the Cartesian product of two intervals
+% cartProd_ - returns the Cartesian product of two intervals
 %
-% Syntax:  
-%    res = cartProd(I,S)
+% Syntax:
+%    res = cartProd_(I,S)
 %
 % Inputs:
 %    I - interval object
@@ -20,15 +20,15 @@ function res = cartProd_(I,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: zonotope/cartProd_
+% See also: contSet/cartProd, zonotope/cartProd_
 
-% Author:       Mark Wetzlinger
-% Written:      18-September-2019
-% Last update:  24-September-2019
-%               05-May-2020 (standardized error message)
-% Last revision:27-March-2023 (MW, rename cartProd_)
+% Authors:       Mark Wetzlinger
+% Written:       18-September-2019
+% Last update:   24-September-2019
+%                05-May-2020 (standardized error message)
+% Last revision: 27-March-2023 (MW, rename cartProd_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % first or second set is interval
 if isa(I,'interval')
@@ -36,9 +36,9 @@ if isa(I,'interval')
     % different cases for different set representations
     if isa(S,'interval')
 
-        if isempty(I)
+        if representsa_(I,'emptySet',eps)
             res = S;
-        elseif isempty(S)
+        elseif representsa_(S,'emptySet',eps)
             res = I;
         elseif size(I,2) == 1 && size(S,2) == 1 % vertcat
             res = interval([I.inf;S.inf],[I.sup;S.sup]);
@@ -58,9 +58,9 @@ if isa(I,'interval')
     elseif isa(S,'conZonotope')
         res = cartProd_(conZonotope(I),S,'exact');
     elseif isa(S,'zonoBundle')
-        res = cartProd_(zonoBundle(I),S,'exact');
-    elseif isa(S,'mptPolytope')
-        res = cartProd_(mptPolytope(I),S,'exact');
+        res = cartProd(zonoBundle(I),S,'exact');
+    elseif isa(S,'polytope')
+        res = cartProd_(polytope(I),S,'exact');
     elseif isa(S,'polyZonotope')
         res = cartProd_(polyZonotope(I),S,'exact');
     elseif isa(S,'conPolyZono')
@@ -80,4 +80,4 @@ else
     end  
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

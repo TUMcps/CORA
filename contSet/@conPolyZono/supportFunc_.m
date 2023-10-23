@@ -2,7 +2,7 @@ function val = supportFunc_(cPZ,dir,type,method,splits,varargin)
 % supportFunc_ - calculate the upper or lower bound of a constrained 
 %    polynomial zonotope object along a certain direction
 %
-% Syntax:  
+% Syntax:
 %    val = supportFunc_(cPZ,dir)
 %    val = supportFunc_(cPZ,dir,type)
 %    val = supportFunc_(cPZ,dir,type,method)
@@ -28,12 +28,12 @@ function val = supportFunc_(cPZ,dir,type,method,splits,varargin)
 % Examples:
 %    c = [0;0];
 %    G = [2 0; 0 1];
-%    expMat = [1 0; 0 1];
+%    E = [1 0; 0 1];
 %    A = [1 1];
 %    b = 1;
-%    expMat_ = [2 0; 0 2];
-%    Grest = [1;0];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_,Grest);
+%    EC = [2 0; 0 2];
+%    GI = [1;0];
+%    cPZ = conPolyZono(c,G,E,A,b,EC,GI);
 %
 %    dir = [1;1];
 %    
@@ -56,14 +56,14 @@ function val = supportFunc_(cPZ,dir,type,method,splits,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: polyZonotope/supportFunc_, conZonotope/supportFunc_
+% See also: contSet/supportFunc, polyZonotope/supportFunc_, conZonotope/supportFunc_
 
-% Author:       Niklas Kochdumper
-% Written:      29-July-2018
-% Last update:  ---
-% Last revision:27-March-2023 (MW, rename supportFunc_)
+% Authors:       Niklas Kochdumper
+% Written:       29-July-2018
+% Last update:   ---
+% Last revision: 27-March-2023 (MW, rename supportFunc_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
     
     % different methods to calculate the over-approximation
     if strcmp(method,'interval')
@@ -98,7 +98,7 @@ function val = supportFunc_(cPZ,dir,type,method,splits,varargin)
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function val = aux_supportFuncSplit(cPZ,dir,type,splits)
 % comptue the support function by recursively splitting the set
@@ -159,8 +159,8 @@ function val = aux_supportFuncConZonotope(cPZ,dir,type)
     cPZ_ = dir' * cPZ;
 
     % split into dependent part and independent part
-    Grest = cPZ_.Grest;
-    cPZ_.Grest = [];
+    GI = cPZ_.GI;
+    cPZ_.GI = [];
 
     % enlose dependent part with a constrained zonotope
     cZ = conZonotope(cPZ_);
@@ -175,8 +175,8 @@ function val = aux_supportFuncConZonotope(cPZ,dir,type)
     end
 
     % compute support function of the independent part
-    if ~isempty(Grest)
-        Z = zonotope(0,Grest);
+    if ~isempty(GI)
+        Z = zonotope(0,GI);
         if strcmp(type,'range')
             l = supportFunc_(Z,1,'lower');
             u = supportFunc_(Z,1,'upper');
@@ -204,7 +204,7 @@ function val = aux_supportFuncQuadProg(cPZ,dir,type)
     end
 
     if isempty(cPZ.A)
-       pZ = polyZonotope(cPZ.c,cPZ.G,cPZ.Grest,cPZ.expMat);
+       pZ = polyZonotope(cPZ.c,cPZ.G,cPZ.GI,cPZ.E);
        val = supportFunc_(pZ,dir,type,'quadProg',[],[]);
        return;
     end
@@ -218,24 +218,24 @@ function val = aux_supportFuncQuadProg(cPZ,dir,type)
     end
 
     % extract linear part f*x for states
-    indLin = find(sum(cPZ_.expMat,1) <= 1);
+    indLin = find(sum(cPZ_.E,1) <= 1);
     p = length(cPZ_.id); f = zeros(p,1);
 
     for i = 1:length(indLin)
-        ind = find(cPZ_.expMat(:,indLin(i)) == 1);
+        ind = find(cPZ_.E(:,indLin(i)) == 1);
         f(ind(1)) = cPZ_.G(:,indLin(i));
     end
 
     % extract quadratic part x'*H*x for states
-    indQuad = find(sum(cPZ_.expMat,1) == 2);
+    indQuad = find(sum(cPZ_.E,1) == 2);
     H = zeros(p);
 
     for i = 1:length(indQuad)
-       if max(cPZ_.expMat(:,indQuad(i))) == 2
-           ind = find(cPZ_.expMat(:,indQuad(i)) == 2);
+       if max(cPZ_.E(:,indQuad(i))) == 2
+           ind = find(cPZ_.E(:,indQuad(i)) == 2);
            H(ind(1),ind(1)) = cPZ_.G(:,indQuad(i));
        else
-           ind = find(cPZ_.expMat(:,indQuad(i)) == 1);
+           ind = find(cPZ_.E(:,indQuad(i)) == 1);
            H(ind(1),ind(2)) = 0.5 * cPZ_.G(:,indQuad(i));
            H(ind(2),ind(1)) = 0.5 * cPZ_.G(:,indQuad(i));
        end
@@ -261,11 +261,11 @@ function val = aux_supportFuncQuadProg(cPZ,dir,type)
     end
 
     % extract linear part A*x = b for constraints
-    indLinCon = find(sum(cPZ_.expMat_,1) <= 1);
+    indLinCon = find(sum(cPZ_.EC,1) <= 1);
     A = zeros(size(cPZ_.A,1),p);
 
     for i = 1:length(indLinCon)
-        ind = find(cPZ_.expMat_(:,indLinCon(i)) == 1);
+        ind = find(cPZ_.EC(:,indLinCon(i)) == 1);
         A(:,ind(1)) = cPZ_.A(:,indLinCon(i));
     end
 
@@ -273,48 +273,48 @@ function val = aux_supportFuncQuadProg(cPZ,dir,type)
     ind = setdiff(1:size(cPZ_.G,2),[indQuad,indLin]);
     indCon = setdiff(1:size(cPZ_.A,2),indLinCon);
 
-    G = cPZ_.G(:,ind); expMat = cPZ_.expMat(:,ind);
-    A_ = cPZ_.A(:,indCon); expMat_ = cPZ.expMat_(:,indCon);
+    G = cPZ_.G(:,ind); E = cPZ_.E(:,ind);
+    A_ = cPZ_.A(:,indCon); EC = cPZ.EC(:,indCon);
 
     for i = 1:size(N,1)
         for j = i:size(N,2)
             if i == j && N(i,j) ~= 0
                 G = [G, N(i,j)];
                 temp = zeros(p,1); temp(i) = 2;
-                expMat = [expMat,temp];
+                E = [E,temp];
             elseif N(i,j) ~= 0 || N(j,i) ~= 0
                 G = [G, N(i,j) + N(j,i)];
                 temp = zeros(p,1); temp(i) = 1; temp(j) = 1;
-                expMat = [expMat,temp];
+                E = [E,temp];
             end
         end
     end
 
     % extend matrices of quadratic program
-    if isempty(expMat)
-       if ~isempty(expMat_)
-           Z = zonotope(polyZonotope(-cPZ_.b,A_,[],expMat_));
+    if isempty(E)
+       if ~isempty(EC)
+           Z = zonotope(polyZonotope(-cPZ_.b,A_,[],EC));
 
-           H = blkdiag(H,zeros(size(Z.Z,2)-1));
-           f = [f; zeros(size(Z.Z,2)-1,1)];
-           A = [A, generators(Z)]; b = -center(Z);
+           H = blkdiag(H,zeros(size(Z.G,2)));
+           f = [f; zeros(size(Z.G,2),1)];
+           A = [A, Z.G]; b = -Z.c;
        else
            b = cPZ_.b;
        end
     else
-        if ~isempty(expMat_)
-            cZ = conZonotope(conPolyZono(c,G,expMat,A_,cPZ_.b, ...
-                             expMat_),'extend','none');
+        if ~isempty(EC)
+            cZ = conZonotope(conPolyZono(c,G,E,A_,cPZ_.b, ...
+                             EC),'extend','none');
 
-            H = blkdiag(H,zeros(size(cZ.Z,2)-1));
-            f = [f; cZ.Z(:,2:end)']; c = cZ.Z(:,1);
+            H = blkdiag(H,zeros(size(cZ.G,2)));
+            f = [f; cZ.G']; c = cZ.c;
             A = [A, cZ.A]; b = cZ.b;
         else
-            Z = zonotope(polyZonotope(c,G,[],expMat));
+            Z = zonotope(polyZonotope(c,G,[],E));
 
-            H = blkdiag(H,zeros(size(Z.Z,2)-1));
-            f = [f; generators(Z)']; c = cPZ_.c;
-            A = [A, zeros(size(A,1),size(Z.Z,2)-1)]; b = cPZ.b;
+            H = blkdiag(H,zeros(size(Z.G,2)));
+            f = [f; Z.G']; c = cPZ_.c;
+            A = [A, zeros(size(A,1),size(Z.G,2))]; b = cPZ.b;
         end
     end
 
@@ -334,10 +334,10 @@ function val = aux_supportFuncQuadProg(cPZ,dir,type)
     end
 
     % compute bound for independent generators
-    if ~isempty(cPZ.Grest)
-       val = val + supportFunc_(zonotope(zeros(dim(cPZ),1),cPZ.Grest),...
-                               dir,type); 
+    if ~isempty(cPZ.GI)
+       val = val + supportFunc_( ...
+           zonotope(zeros(dim(cPZ),1),cPZ.GI), dir,type); 
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

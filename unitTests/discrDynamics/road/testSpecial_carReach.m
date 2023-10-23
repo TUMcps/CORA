@@ -5,7 +5,7 @@ function res = testSpecial_carReach
 % Checks the generation of a small Markov chain for probabilistic prediction 
 % of traffic participants; The Markov model is generated based on simulation
 %
-% Syntax:  
+% Syntax:
 %    res = testSpecial_carReach
 %
 % Inputs:
@@ -14,12 +14,12 @@ function res = testSpecial_carReach
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      31-July-2016
-% Last update:  31-July-2017
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       31-July-2016
+% Last update:   31-July-2017
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % set fileName and pathName
@@ -74,4 +74,4 @@ res_partial(end + 1) = (max(abs(segmentLength - groundTruthSegmentLength)) < 1e-
 res = prod(res_partial);
 %--------------------------------------------------------------------------
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_fullspace_mtimes
 % test_fullspace_mtimes - unit test function of mtimes
 %
-% Syntax:  
+% Syntax:
 %    res = test_fullspace_mtimes
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_fullspace_mtimes
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      05-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       05-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init fullspace
 n = 3;
@@ -52,4 +52,4 @@ res(end+1,1) = isequal(fs_,fullspace(n+1));
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

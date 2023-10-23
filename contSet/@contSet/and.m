@@ -1,7 +1,11 @@
 function res = and(S1,S2,varargin)
 % and - overloads '&' operator, computes the intersection of two sets
 %
+% Description:
+%    computes the set { s | s \in \mathcal{S}_1, s \in \mathcal{S}_2 }
+%
 % Syntax:
+%    res = S1 & S2
 %    res = and(S1,S2)
 %    res = and(S1,S2,type)
 %
@@ -18,12 +22,12 @@ function res = and(S1,S2,varargin)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      18-August-2022
-% Last update:  23-November-2022 (MW, add classname as input argument)
-% Last revision:27-March-2023 (MW, restructure relation to subclass)
+% Authors:       Mark Wetzlinger
+% Written:       18-August-2022
+% Last update:   23-November-2022 (MW, add classname as input argument)
+% Last revision: 27-March-2023 (MW, restructure relation to subclass)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
 if nargin < 2
@@ -64,11 +68,11 @@ equalDimCheck(S1,S2);
 try
     res = and_(S1,S2,type);
 catch ME
-    if isa(S1,'contSet') && isempty(S1)
+    if isa(S1,'contSet') && representsa_(S1,'emptySet',eps)
         res = S1;
     elseif isnumeric(S1) && isempty(S1)
         res = [];
-    elseif isa(S2,'contSet') && isempty(S2)
+    elseif isa(S2,'contSet') && representsa_(S2,'emptySet',eps)
         res = S2;
     elseif isnumeric(S2) && isempty(S2)
         res = [];
@@ -78,4 +82,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = testLong_conZonotope_randPoint
 % testLong_conZonotope_randPoint - unit test function of randPoint
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conZonotope_randPoint
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = testLong_conZonotope_randPoint
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      14-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger, Adrian Kulmburg
+% Written:       14-March-2021
+% Last update:   22-May-2023 (AK, Added all new methods)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 tol = 1e-9;
@@ -40,7 +40,12 @@ end
 % number of tests
 nrOfTests = 100;
 
-for i=1:nrOfTests
+methods = {'standard', 'extreme', 'uniform', 'uniform:hitAndRun', 'uniform:billiardWalk'};
+
+
+for i = 1:size(methods, 2)
+
+for j=1:nrOfTests
     % random dimension
     n = randi([2,8]); % small because of containment checks
     
@@ -55,12 +60,11 @@ for i=1:nrOfTests
     
     % compute random points
     nrPts = 10;
-    pNormal = randPoint(conZono,nrPts,'standard');
-%     pExtreme = randPoint(conZono,nrPts,'extreme');
+    p = randPoint(conZono,nrPts,methods{i});
     
     % check for containment in zonotope
     Z = zonotope(c,G);
-    res = all(contains(Z,pNormal,'exact',tol));
+    res = all(contains(Z,p,'exact',tol));
     
     % random constraints so that conZonotope represents just a point
     % as A being diagional forces each independent factor to one value
@@ -70,11 +74,11 @@ for i=1:nrOfTests
     conZono = conZonotope(c,G,A,b);
     
     % compute single possible point -> bug in randPoint
-%     p = randPoint(conZono,1,'standard');
+%    p = randPoint(conZono,1,methods{i});
     
     % compute point analytically
     p_analytical = zeros(n,1);
-    conZonoG = conZono.Z(:,2:end);
+    conZonoG = conZono.G;
     beta = zeros(nrGens,1);
     for k=1:nrGens
         % constraints yield only one possible value for beta_k
@@ -98,5 +102,6 @@ for i=1:nrOfTests
     end
     
 end
+end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

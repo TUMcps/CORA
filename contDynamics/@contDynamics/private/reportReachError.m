@@ -3,7 +3,7 @@ function reportReachError(ME,time,ind)
 %    the reachable set explodes; in other cases, the same information
 %    as without this function is displayed
 %
-% Syntax:  
+% Syntax:
 %    reportReachError(ME,time,ind)
 %
 % Inputs:
@@ -14,12 +14,12 @@ function reportReachError(ME,time,ind)
 % Outputs:
 %    -
 
-% Author:       Mark Wetzlinger
-% Written:      19-May-2020
-% Last update:  01-July-2022 (MW, integration into CORAerror)
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-May-2020
+% Last update:   01-July-2022 (MW, integration into CORAerror)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % called due to set explosion
 if strcmp(ME.identifier,'CORAerror:reachSetExplosion')
@@ -35,4 +35,4 @@ else
     rethrow(ME);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

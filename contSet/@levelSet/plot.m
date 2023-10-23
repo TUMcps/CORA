@@ -1,7 +1,7 @@
 function han = plot(ls,varargin)
 % plot - plots a projection of a level set
 %
-% Syntax:  
+% Syntax:
 %    han = plot(ls)
 %    han = plot(ls,dims)
 %    han = plot(ls,dims,type)
@@ -31,13 +31,13 @@ function han = plot(ls,varargin)
 %
 % See also: none
 
-% Author:       Niklas Kochdumper, Tobias Ladner
-% Written:      19-July-2019
-% Last update:  22-May-2023 (TL: speed up plotting of '<=' levelSets)
-%               26-July-2023 (TL: getUnboundedAxisLimits)
-% Last revision:12-July-2023 (TL, restructure)
+% Authors:       Niklas Kochdumper, Tobias Ladner
+% Written:       19-July-2019
+% Last update:   22-May-2023 (TL, speed up plotting of '<=' levelSets)
+%                26-July-2023 (TL, getUnboundedAxisLimits)
+% Last revision: 12-July-2023 (TL, restructure)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % 1. parse input arguments
 [ls,dims,NVpairs,splits,plotMethod] = aux_parseInput(ls,varargin{:});
@@ -56,7 +56,7 @@ end
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [ls,dims,NVpairs,splits,plotMethod] = aux_parseInput(ls,varargin)
     % parse input arguments
@@ -106,7 +106,7 @@ function [ls,dims] = aux_preprocess(ls,dims)
         dim_old = 1:length(ls.vars);
         dim_old = 2 + dim_old; % shift
         dim_old(dims) = 1;
-        ls = projectHighDim(ls, length(dim_old)+2, dim_old);
+        ls = lift_(ls, length(dim_old)+2, dim_old);
         dims = [1;2];
     end
 end
@@ -169,6 +169,7 @@ function han = aux_plot2Dcontour(obj,dims,type)
     % level at which contour is plotted: always at z = 0
     level = [0 0];
     [~,han] = contour(X,Y,Z,level,type{:});
+    updateColorIndex; % does not get updated for contour plots
 end
 
 function han = aux_plot2Dsplit(obj,dims,splits,plotMethod,NVpairs)
@@ -386,4 +387,4 @@ function [res,ind] = aux_isSolvable(obj,dims)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

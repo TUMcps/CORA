@@ -2,7 +2,7 @@ function pZ = plus(summand1,summand2)
 % plus - Overloaded '+' operator for the Minkowski addition of a polynomial
 %    zonotope with another set representation or a point
 %
-% Syntax:  
+% Syntax:
 %    pZ = plus(summand1,summand2)
 %
 % Inputs:
@@ -31,12 +31,12 @@ function pZ = plus(summand1,summand2)
 %
 % See also: mtimes, zonotope/plus
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       26-March-2018 
 % Last update:   05-May-2020 (MW, standardized error message)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % determine which summand is the polyZonotope object
 [pZ,summand] = findClassArg(summand1,summand2,'polyZonotope');
@@ -53,7 +53,7 @@ try
     if isa(summand,'zonotope')
         
         pZ.c = pZ.c + center(summand);
-        pZ.Grest = [pZ.Grest, generators(summand)];
+        pZ.GI = [pZ.GI, generators(summand)];
        
     elseif isa(summand,'interval')
         
@@ -67,7 +67,7 @@ try
         
         % convert other set representations to polynomial zonotopes
         if ~isa(summand,'polyZonotope') 
-            if isa(summand,'mptPolytope') || isa(summand,'zonoBundle') || ...
+            if isa(summand,'polytope') || isa(summand,'zonoBundle') || ...
                isa(summand,'conZonotope')
     
                 summand = polyZonotope(summand);
@@ -80,8 +80,8 @@ try
         % compute Minkowski sum
         pZ.c = pZ.c + summand.c;
         pZ.G = [pZ.G,summand.G];
-        pZ.expMat = blkdiag(pZ.expMat,summand.expMat);
-        pZ.Grest = [pZ.Grest,summand.Grest];
+        pZ.E = blkdiag(pZ.E,summand.E);
+        pZ.GI = [pZ.GI,summand.GI];
         pZ.id = [pZ.id;max(pZ.id) + summand.id];
         
     end
@@ -96,7 +96,7 @@ catch ME
     end
 
     % check for empty sets
-    if isempty(pZ)
+    if representsa_(pZ,'emptySet',eps)
         return
     elseif isemptyobject(summand)
         pZ = polyZonotope(); return
@@ -110,4 +110,4 @@ catch ME
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function pZsplit = splitDepFactor(pZ,ind,varargin)
 % splitDepFactor - Splits one dependent factor of a polynomial zonotope
 %
-% Syntax:  
+% Syntax:
 %    pZsplit = splitDepFactor(pZ,ind)
 %    pZsplit = splitDepRactor(pZ,ind,polyOrd)
 %
@@ -35,12 +35,12 @@ function pZsplit = splitDepFactor(pZ,ind,varargin)
 %
 % See also: split, splitLongestGen
 
-% Author:       Niklas Kochdumper, Tobias Ladner
-% Written:      24-March-2018
-% Last update:  19-July-2022 (TL: optimizations)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Tobias Ladner
+% Written:       24-March-2018
+% Last update:   19-July-2022 (TL, optimizations)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % find selected dependent factor
 ind = pZ.id == ind; % 
@@ -49,18 +49,18 @@ if sum(ind) ~= 1
         "Given value for 'ind' should contained in identifiers of polynomial zonotope"));
 end
 
-expMat = pZ.expMat;
-expMat_ind = expMat(ind, :);
+E = pZ.E;
+E_ind = E(ind, :);
 
 % parse input arguments
 if nargin == 3
     polyOrd = varargin{1}; 
 else
-    polyOrd = max(expMat_ind);
+    polyOrd = max(E_ind);
 end
 
 % determine all generators in which the selected dependent factor occurs
-genInd = 0 < expMat_ind & expMat_ind <= polyOrd;
+genInd = 0 < E_ind & E_ind <= polyOrd;
 
 % [1, Prop 3.1.43/44] using bounds [0,1] and [-1,0]
 % create coeffs for i=1...polyOrd:
@@ -80,7 +80,7 @@ for i=1:polyOrd
     polyCoeff1{i} = 0.5^i * Pi;
     polyCoeff2{i} = 0.5^i * Pi .* (-mod(i:-1:0, 2)*2+1);
 
-    numExpi = sum(expMat_ind == i);
+    numExpi = sum(E_ind == i);
     hout = hout + length(Pi) * numExpi;
 end
 
@@ -90,27 +90,27 @@ c2 = pZ.c;
 
 G1 = nan(length(c1), hout);
 G2 = nan(length(c2), hout);
-Eout = nan(size(expMat, 1), hout); % identical for splitted sets
+Eout = nan(size(E, 1), hout); % identical for splitted sets
 
 h = 1;
 dh = sum(~genInd);
 G1(:, h:h+dh-1) = pZ.G(:, ~genInd);
 G2(:, h:h+dh-1) = pZ.G(:, ~genInd);
-Eout(:, h:h+dh-1) = expMat(:, ~genInd);
+Eout(:, h:h+dh-1) = E(:, ~genInd);
 h = h + dh;
 
 for i = 1:polyOrd
     coef1 = polyCoeff1{i};
     coef2 = polyCoeff2{i};
 
-    expi = expMat_ind == i;
+    expi = E_ind == i;
 
     dh = length(coef1) * sum(expi);
     
     G1(:, h:h+dh-1) = kron(coef1, pZ.G(:, expi));
     G2(:, h:h+dh-1) = kron(coef2, pZ.G(:, expi));
 
-    Eout(:, h:h+dh-1) = repmat(expMat(:, expi),1,i+1);
+    Eout(:, h:h+dh-1) = repmat(E(:, expi),1,i+1);
     Eout(ind, h:h+dh-1) = kron(0:i, ones(1, sum(expi))); % fix a_ind
 
     h = h + dh;
@@ -139,7 +139,7 @@ G2(:,genInd) = [];
 
 % construct the resulting polynomial zonotopes
 pZsplit = cell(1, 2);
-pZsplit{1} = polyZonotope(c1,G1,pZ.Grest,Eout);
-pZsplit{2} = polyZonotope(c2,G2,pZ.Grest,Eout);
+pZsplit{1} = polyZonotope(c1,G1,pZ.GI,Eout);
+pZsplit{2} = polyZonotope(c2,G2,pZ.GI,Eout);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

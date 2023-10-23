@@ -2,7 +2,7 @@ function res = test_Krylov_intervalHomogeneousSolution(~)
 % test_Krylov_intervalHomogeneousSolution - unit_test_function for checking
 %    the Krylov method for the homegeneous solution of an initial interval
 %
-% Syntax:  
+% Syntax:
 %    res = test_Krylov_intervalHomogeneousSolution(~)
 %
 % Inputs:
@@ -11,12 +11,12 @@ function res = test_Krylov_intervalHomogeneousSolution(~)
 % Outputs:
 %    res - true/false
 
-% Author:       Matthias Althoff
-% Written:      23-August-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       23-August-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % system matrix
 A = [...
@@ -91,8 +91,8 @@ expMatrix_delta = expm(H_delta*options.timeStep);
 x_appr_delta = norm(b_delta)*V_delta*expMatrix_delta(:,1);
 
 % compute epsilon values for A and |A|
-epsilon = computeEpsilon(linDyn, redOrder, options);
-epsilon_abs = computeEpsilon(linDyn_abs, redOrder, options);
+epsilon = aux_computeEpsilon(linDyn, redOrder, options);
+epsilon_abs = aux_computeEpsilon(linDyn_abs, redOrder, options);
 
 % compute mu
 mu = x_appr_delta + ones(length(b_c),1)*(norm(b_delta)*epsilon_abs*options.timeStep + norm(b_c)*epsilon*options.timeStep);
@@ -111,19 +111,20 @@ end
 
 
 % Auxiliary functions -----------------------------------------------------
-function epsilon = computeEpsilon(linSys, redOrder, options)
+
+function epsilon = aux_computeEpsilon(linSys, redOrder, options)
     %obtain time step, rho_A
     tau = options.timeStep;
     rho_A = normest(linSys.A);
     
     % auxiliary value for Wang
-    [m,lambda,a] = auxValues_Wang(linSys.A);
-    q = optimize_q_Wang(redOrder,tau,lambda,m);
-    epsilon = errorBound_Wang_normalized(rho_A,tau,q,a,lambda,redOrder);
+    [m,lambda,a] = aux_auxValues_Wang(linSys.A);
+    q = aux_optimize_q_Wang(redOrder,tau,lambda,m);
+    epsilon = aux_errorBound_Wang_normalized(rho_A,tau,q,a,lambda,redOrder);
 end
 
 
-function [m,lambda,a] = auxValues_Wang(A)
+function [m,lambda,a] = aux_auxValues_Wang(A)
 % obtain a, b, and c
 %     a = eigs((A+A')/2, 1, 'sm'); % lambda_min(A+A*/2)
 %     b = eigs((A+A')/2, 1, 'lm'); % lambda_max(A+A*/2)
@@ -163,7 +164,7 @@ function [m,lambda,a] = auxValues_Wang(A)
     end
 end
 
-function q = optimize_q_Wang(k,tau,lambda,m)
+function q = aux_optimize_q_Wang(k,tau,lambda,m)
     % init q
     q = 0.5;
     q_min = 0;
@@ -185,7 +186,7 @@ function q = optimize_q_Wang(k,tau,lambda,m)
     end
 end
 
-function err = errorBound_Wang_normalized(rho_A,tau,q,a,lambda,KrylovOrder)
+function err = aux_errorBound_Wang_normalized(rho_A,tau,q,a,lambda,KrylovOrder)
     
     % obtain remaining values
     Q = 11.08;
@@ -195,4 +196,4 @@ function err = errorBound_Wang_normalized(rho_A,tau,q,a,lambda,KrylovOrder)
     %err = 2*Rinit_norm*Q*tau*rho_A*q^(KrylovOrder-1)/(1-q); % Corr 5.3, Wang 2016
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

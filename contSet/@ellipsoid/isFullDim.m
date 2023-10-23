@@ -2,7 +2,7 @@ function res = isFullDim(E)
 % isFullDim - checks if the dimension of the affine hull of an ellipsoid is
 %    equal to the dimension of its ambient space
 %
-% Syntax:  
+% Syntax:
 %    res = isFullDim(E)
 %
 % Inputs:
@@ -24,20 +24,20 @@ function res = isFullDim(E)
 %
 % See also: zonotope/isFullDim
 
-% Author:       Niklas Kochdumper, Mark Wetzlinger
-% Written:      02-January-2020 
-% Last update:  24-March-2022 (remove dependency on object property)
-%               06-July-2022 (VG: support class array case)
-% Last revision:---
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
+% Written:       02-January-2020 
+% Last update:   24-March-2022 (remove dependency on object property)
+%                06-July-2022 (VG, support class array case)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 inputArgsCheck({{E,'att','ellipsoid'}}); 
 
-if isempty(E)
+if representsa_(E,'emptySet',eps)
     res = false;
 else
     res = rank(E) == dim(E);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

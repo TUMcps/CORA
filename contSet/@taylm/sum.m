@@ -1,7 +1,7 @@
 function res = sum(obj,varargin)
 % sum - sum of array elements
 %
-% Syntax:  
+% Syntax:
 %    res = sum(obj)
 %    res = sum(obj,n)
 %
@@ -22,12 +22,12 @@ function res = sum(obj,varargin)
 %
 % See also: interval/sum
 
-% Author:       Niklas Kochdumper
-% Written:      20-December-2020
-% Last update:  
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       20-December-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 n = 1;
@@ -62,4 +62,4 @@ else
     error ('Wrong input')
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

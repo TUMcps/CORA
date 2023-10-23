@@ -1,7 +1,7 @@
 function res = test_conZonotope_uminus
 % test_conZonotope_uminus - unit test function of uminus
 %
-% Syntax:  
+% Syntax:
 %    res = test_conZonotope_uminus
 %
 % Inputs:
@@ -16,24 +16,26 @@ function res = test_conZonotope_uminus
 %
 % See also: -
 
-% Author:       Tobias Ladner
-% Written:      06-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       06-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = true(0);
 
 % init
-Z = [0 2 0 2; 0 0 2 2];
+c = [0;0];
+G = [2 0 2; 0 2 2];
 A = [2 -4 2];
 b = 0;
-cZ = conZonotope(Z,A,b);
+cZ = conZonotope(c,G,A,b);
 
 % negate
 ncZ = -cZ;
-resvec(end+1) = all(ncZ.Z == -Z, 'all');
+resvec(end+1) = all(ncZ.c == -c, 'all');
+resvec(end+1) = all(ncZ.G == -G, 'all');
 resvec(end+1) = all(ncZ.A == A, 'all');
 resvec(end+1) = all(ncZ.b == b, 'all');
 
@@ -46,4 +48,4 @@ resvec(end+1) = isemptyobject(-conZonotope());
 % add results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

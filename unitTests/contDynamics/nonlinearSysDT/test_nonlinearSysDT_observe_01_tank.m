@@ -7,7 +7,7 @@ function res = test_nonlinearSysDT_observe_01_tank()
 %    final observed set is close to an interval provided by a previous 
 %    solution that has been saved
 %
-% Syntax:  
+% Syntax:
 %    res = test_nonlinearSysDT_observe_01_tank
 %
 % Inputs:
@@ -19,12 +19,12 @@ function res = test_nonlinearSysDT_observe_01_tank()
 % Reference:
 %    [1] M. Althoff "Guaranteed State Estimation in CORA 2021", ARCH 2021
 
-% Author:       Matthias Althoff
-% Written:      25-March-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       25-March-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % define tank model
 dt = 0.5;
@@ -132,4 +132,4 @@ end
 % final result
 res = all(resPartial);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

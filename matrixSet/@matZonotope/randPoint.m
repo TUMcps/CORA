@@ -1,7 +1,7 @@
 function M = randPoint(matZ,varargin)
 % randPoint - samples a random matrix from a matrix zonotope
 %
-% Syntax:  
+% Syntax:
 %    M = randPoint(matZ)
 %    M = randPoint(matZ,N)
 %    M = randPoint(matZ,N,type)
@@ -27,12 +27,12 @@ function M = randPoint(matZ,varargin)
 %
 % See also: -
 
-% Author:       Mark Wetzlinger, Matthias Althoff
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger, Matthias Althoff
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default values
 [N,type] = setDefaultValues({1,'standard'},varargin);
@@ -58,4 +58,4 @@ for i=1:N
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

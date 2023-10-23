@@ -2,7 +2,7 @@ function res = test_intervalMatrix_display
 % test_intervalMatrix_display - unit test function for display (only check
 %    for runtime errors) 
 % 
-% Syntax:  
+% Syntax:
 %    res = test_intervalMatrix_display
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = test_intervalMatrix_display
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -41,4 +41,4 @@ c = [2 3 4; 5 6 0];
 d = [1 0 1; 0 0 1];
 intMat = intervalMatrix(c,d)
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

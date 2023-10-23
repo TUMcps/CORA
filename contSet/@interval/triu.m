@@ -1,7 +1,7 @@
 function res = triu(I,varargin)
 % triu - gets upper triangular part of I
 %
-% Syntax:  
+% Syntax:
 %    res = triu(I)
 %    res = triu(I,K)
 %
@@ -22,12 +22,13 @@ function res = triu(I,varargin)
 %
 % See also: ---
 
-% Author:       Victor Gassmann
-% Written:      12-October-2022 
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       12-October-2022 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
+
 if isempty(varargin)
     K = 0;
 elseif length(varargin) == 1
@@ -40,4 +41,4 @@ res = I;
 res.inf = triu(res.inf,K);
 res.sup = triu(res.sup,K);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

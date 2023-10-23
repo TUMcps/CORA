@@ -2,7 +2,7 @@ function [E,sigma_sq] = intersectStrip(E,C,phi,y,varargin)
 % intersectStrip - computes the intersection between an ellipsoid and a 
 %    list of strips, where a strip is defined as | Cx-y | <= phi
 %
-% Syntax:  
+% Syntax:
 %    Eres = intersectStrip(E,C,phi,y,varargin)
 %
 % Inputs:
@@ -28,7 +28,7 @@ function [E,sigma_sq] = intersectStrip(E,C,phi,y,varargin)
 %    % convert strip to polytope
 %    C_poly = [C; -C];
 %    d = [phi + y; phi - y];
-%    P = mptPolytope(C_poly,d);
+%    P = polytope(C_poly,d);
 % 
 %    E = ellipsoid([1 0.5; 0.5 1]);
 %    Eres = intersectStrip(E,C,phi,y,sigma_sq_prev);
@@ -56,13 +56,13 @@ function [E,sigma_sq] = intersectStrip(E,C,phi,y,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      06-Jan-2021
-% Last update:  04-July-2022 (VG: input checks)
-%               29-March-2023 (TL: clean up)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       06-January-2021
+% Last update:   04-July-2022 (VG, input checks)
+%                29-March-2023 (TL, clean up)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % parse input
@@ -100,10 +100,11 @@ elseif strcmp(method,'Liu2016')
 
     [E,sigma_sq] = aux_methodLiu2016(E, C, phi, y, sigma_sq_prev);
 else
-    throw(CORAerror('CORA:wrongValue', sprintf("Unkown method '%s'.", method)))
+    throw(CORAerror('CORA:wrongValue', sprintf("Unknown method '%s'.", method)))
 end
 
 end
+
 
 % Auxiliary functions -----------------------------------------------------
 
@@ -250,4 +251,4 @@ function [E,sigma_sq] = aux_methodLiu2016(E, C, sys, y, sigma_sq_prev)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

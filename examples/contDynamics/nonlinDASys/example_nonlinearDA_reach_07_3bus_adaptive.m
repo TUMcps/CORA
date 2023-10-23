@@ -2,7 +2,7 @@ function res = example_nonlinearDA_reach_07_3bus_adaptive()
 % example_nonlinearDA_reach_07_3bus_adaptive - example of nonlinear
 %    differential-algebraic reachability analysis
 %
-% Syntax:  
+% Syntax:
 %    example_nonlinearDA_reach_07_3bus_adaptive()
 %
 % Inputs:
@@ -11,13 +11,12 @@ function res = example_nonlinearDA_reach_07_3bus_adaptive()
 % Outputs:
 %    res - true/false
 
-% Author:       Mark Wetzlinger
-% Written:      30-August-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       30-August-2021
+% Last update:   ---
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % Model Parameters --------------------------------------------------------
@@ -82,5 +81,4 @@ legend()
 % examples completed
 res = true;
 
-%------------- END OF CODE --------------
-        
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = testLong_interval_asin
 % testLong_interval_asin - unit test function of sine for intervals,
 %    overloaded 'asin()' function for intervals
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_interval_asin
 %
 % Inputs:
@@ -17,12 +17,12 @@ function res = testLong_interval_asin
 %
 % See also: mtimes
 
-% Author:       Mark Wetzlinger
-% Written:      08-August-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       08-August-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Random tests
 numberRandTests = 10000;
@@ -57,4 +57,4 @@ end
 % final test result
 res = all(res_rand);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

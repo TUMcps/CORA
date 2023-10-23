@@ -2,7 +2,7 @@ function ls = levelSet(hyp)
 % levelSet - converts a constrained hyperplane to a level set; currently
 %    only supported for non-constrained hyperplanes
 %
-% Syntax:  
+% Syntax:
 %    ls = levelSet(hyp)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function ls = levelSet(hyp)
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      19-August-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       19-August-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % only supported for non-constrained hyperplane
 if ~isempty(hyp.C)
@@ -52,4 +52,4 @@ end
 % instantiate level set object
 ls = levelSet(eqs,vars,compOps);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function [J_handle,J_str] = jacobianHandle(pZ,varargin)
 % jacobianHandle - computes the function handle for the jacobian of pZ
 %    with respect to id_diff
 %
-% Syntax:  
+% Syntax:
 %    PZ = jacobianHandle(pZ)
 %    PZ = jacobianHandle(pZ,id_diff,id_param)
 %
@@ -32,26 +32,26 @@ function [J_handle,J_str] = jacobianHandle(pZ,varargin)
 %
 % See also: jacobian
 
-% Author:       Victor Gassmann
-% Written:      12-January-2021
-% Last update:  29-November-2021
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       12-January-2021
+% Last update:   29-November-2021
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check id inputs
 [id_diff,id_param] = checkDiffParamIds(pZ,varargin{:});
 
 % remove any constant generators
 ind = ismember(pZ.id,id_diff);
-ind_cut_g = all(pZ.G==0,1) | all(pZ.expMat(ind,:)==0,1);
+ind_cut_g = all(pZ.G==0,1) | all(pZ.E(ind,:)==0,1);
 G = pZ.G(:,~ind_cut_g);
-expMat = pZ.expMat(:,~ind_cut_g);
+E = pZ.E(:,~ind_cut_g);
 
 % remove any unnecessary ids
-ind_cut_id = all(expMat==0,2);
+ind_cut_id = all(E==0,2);
 id = pZ.id(~ind_cut_id);
-expMat = expMat(~ind_cut_id,:);
+E = E(~ind_cut_id,:);
 
 % remove any dimensions that are constant
 ind_cut_dim = all(pZ.G==0,2);
@@ -69,7 +69,7 @@ ii_d = subsetIndex(id_diff,id_d);
 id_p = intersect(id_param,id,'stable');
 % correspondence id_param <=> id_p: id_param(ii_p) = id_p
 ii_p = subsetIndex(id_param,id_p);
-pZ.c = c; pZ.G = G; pZ.expMat = expMat; pZ.id = id;
+pZ.c = c; pZ.G = G; pZ.E = E; pZ.id = id;
 if isempty(pZ.G)
     J_str = zeros(n,d);
     if isempty(id_param)
@@ -88,7 +88,7 @@ J_cell = cell(d_r,1);
 J_structure = ones(n_r,d_r);
 for i=1:d_r
     J_cell{i} = fhandle(pZ_diff_cell{i},{id_d,id_p});
-    J_str_i = ~isZero(pZ_diff_cell{i},0);
+    J_str_i = ~representsa_(pZ_diff_cell{i},'origin',0);
     assert(any(J_str_i));
     J_structure(:,i) = J_str_i;
 end
@@ -104,7 +104,7 @@ horzcatc = @(x) horzcat(x{:});
 % missing ids
 % convert ii_d to logical mask
 ind_id_d = ismember(1:d,ii_d);
-J_handle = @(x,p) padZeros(horzcatc(arrayfun(...
+J_handle = @(x,p) aux_padZeros(horzcatc(arrayfun(...
                   @(ii) J_cell{ii}(x(ii_d),p(ii_p)),1:d_r,'Uni',false)),...
                   ~ind_cut_dim,ind_id_d);
 if isempty(id_param)
@@ -116,7 +116,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function X_pad = padZeros(X,rows,cols)
+function X_pad = aux_padZeros(X,rows,cols)
     
     n = length(rows);
     m = length(cols);
@@ -128,4 +128,4 @@ function X_pad = padZeros(X,rows,cols)
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 classdef simResult
 % simResult - class that stores simulation results
 %
-% Syntax:  
+% Syntax:
 %    simRes = simResult(x,t)
 %    simRes = simResult(x,t,loc)
 %    simRes = simResult(x,t,{},y)
@@ -30,13 +30,13 @@ classdef simResult
 %
 % See also: reachSet, simulateRandom
 
-% Author:       Niklas Kochdumper
-% Written:      29-May-2020
-% Last update:  16-November-2021 (MW, add property .y)
-%               02-June-2022 (MW, add property .a)
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       29-May-2020
+% Last update:   16-November-2021 (MW, add property .y)
+%                02-June-2022 (MW, add property .a)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     
@@ -137,4 +137,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

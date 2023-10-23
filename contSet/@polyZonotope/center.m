@@ -3,7 +3,7 @@ function c = center(pZ)
 %    not correspond to the geometric center of the polynomial zonotope
 %    in general
 %
-% Syntax:  
+% Syntax:
 %    c = center(pZ)
 %
 % Inputs:
@@ -22,13 +22,13 @@ function c = center(pZ)
 %
 % See also: zonotope/center, polyZonotope/center
 
-% Author:       Niklas Kochdumper
-% Written:      27-June-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       27-June-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 c = pZ.c;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_hybridAutomaton_hybridAutomaton
 % test_hybridAutomaton_hybridAutomaton - unit test function for constructor
 %
-% Syntax:  
+% Syntax:
 %    res = test_hybridAutomaton_hybridAutomaton
 %
 % Inputs:
@@ -10,12 +10,12 @@ function res = test_hybridAutomaton_hybridAutomaton
 % Outputs:
 %    res - true/false 
 
-% Author:       Mark Wetzlinger
-% Written:      26-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       26-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -24,8 +24,8 @@ res = true;
 hybridAutomaton()
 
 % invariant
-inv_2D = mptPolytope([-1,0],0);
-inv_3D = mptPolytope([-1,0,0],0);
+inv_2D = polytope([-1,0],0);
+inv_3D = polytope([-1,0,0],0);
 
 % transition
 c = [-1;0]; d = 0; C = [0,1]; D = 0;
@@ -71,4 +71,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function res = test_capsule_capsule
 % test_capsule_capsule - unit test function of capsule (constructor)
 %
-% Syntax:  
+% Syntax:
 %    res = test_capsule_capsule
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_capsule_capsule
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      27-July-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       27-July-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
@@ -96,4 +96,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

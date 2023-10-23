@@ -2,7 +2,7 @@ function [obj,linSys,linOptions] = linearize(obj,options,R)
 % linearize - linearizes the nonlinear system with uncertain parameters;
 %    linearization error is not included yet
 %
-% Syntax:  
+% Syntax:
 %    [obj,linSys,linOptions] = linearize(obj,options,R)
 %
 % Inputs:
@@ -21,14 +21,14 @@ function [obj,linSys,linOptions] = linearize(obj,options,R)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      18-January-2008 
-% Last update:  30-June-2009
-%               27-May-2011
-%               07-June-2017
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-January-2008 
+% Last update:   30-June-2009
+%                27-May-2011
+%                07-June-2017
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %linearization point p.u of the input is the center of the input u
@@ -100,7 +100,7 @@ if isa(options.paramInt,'interval')
         Z_B = zB.generator;
         Z_B{end+1} = dB;
         zB = matZonotope(zB.center,Z_B);
-        zf = zonotope([zf.Z,zeros(size(zf.Z,1),1)]);%needed for dependentHomoSol
+        zf = zonotope(zf.c, [zf.G,zeros(dim(zf),1)]);%needed for dependentHomoSol
         linOptions.compTimePoint = true;
     end
     %set up otions for linearized system
@@ -153,4 +153,4 @@ end
 obj.linError.p=p;
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

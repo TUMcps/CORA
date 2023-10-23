@@ -3,7 +3,7 @@ function res = test_intervalMatrix_generateRandom
 %    generation of an interval matrix
 % 
 % 
-% Syntax:  
+% Syntax:
 %    res = test_intervalMatrix_generateRandom
 %
 % Inputs:
@@ -18,12 +18,12 @@ function res = test_intervalMatrix_generateRandom
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % no input arguments
 intMat = intervalMatrix.generateRandom();
@@ -56,4 +56,4 @@ res(end+1,1) = all(all(withinTol(center(intMat.int),c))) && ...
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

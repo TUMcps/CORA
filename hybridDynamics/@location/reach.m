@@ -2,7 +2,7 @@ function [R,Rjump_,res] = reach(loc,R0,tStart,options)
 % reach - computes the reachable set of the system within a location and
 %    determines the intersections with the guard sets
 %
-% Syntax:  
+% Syntax:
 %    [R,Rjump_,res] = reach(loc,R0,tStart,options)
 %
 % Inputs:
@@ -18,15 +18,15 @@ function [R,Rjump_,res] = reach(loc,R0,tStart,options)
 %
 % See also: hybridAutomaton/reach
 
-% Author:       Matthias Althoff, Niklas Kochdumper
-% Written:      07-May-2007 
-% Last update:  17-August-2007
-%               31-July-2016
-%               19-August-2016
-%               09-December-2019 (NK, integrated singleSetReach)
-% Last revision:---
+% Authors:       Matthias Althoff, Niklas Kochdumper
+% Written:       07-May-2007 
+% Last update:   17-August-2007
+%                31-July-2016
+%                19-August-2016
+%                09-December-2019 (NK, integrated singleSetReach)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 Rjump = struct('set',cell(1,0),'time',cell(1,0),...
@@ -113,4 +113,4 @@ for i=1:size(R,1)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

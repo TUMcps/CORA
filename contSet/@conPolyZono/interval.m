@@ -1,7 +1,7 @@
 function I = interval(cPZ,varargin)
 % interval - encloses a constrained polynomial zonotope by an interval
 %
-% Syntax:  
+% Syntax:
 %    I = interval(cPZ)
 %    I = interval(cPZ,method)
 %
@@ -19,11 +19,11 @@ function I = interval(cPZ,varargin)
 % Example: 
 %    A = 1/8 * [-10 2 2 3 3];
 %    b = -3/8;
-%    expMat_ = [1 0 1 2 0; 0 1 1 0 2; 0 0 0 0 0];
+%    EC = [1 0 1 2 0; 0 1 1 0 2; 0 0 0 0 0];
 %    c = [0;0];
 %    G = [1 0 1 -1/4;0 1 -1 1/4];
-%    expMat = [1 0 2 0;0 1 1 0; 0 0 0 1];
-%    cPZ = conPolyZono(c,G,expMat,A,b,expMat_);
+%    E = [1 0 2 0;0 1 1 0; 0 0 0 1];
+%    cPZ = conPolyZono(c,G,E,A,b,EC);
 %
 %    int = interval(cPZ);
 %
@@ -37,12 +37,12 @@ function I = interval(cPZ,varargin)
 %
 % See also: supportFunc, conZonotope
 
-% Author:       Niklas Kochdumper
-% Written:      14-August-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       14-August-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
 method = setDefaultValues({'conZonotope'},varargin);  
@@ -86,4 +86,4 @@ elseif strcmp(method,'split') || strcmp(method,'quadProg')
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function [R,tcomp] = observe_PRadA(obj,options)
 % from Sec. 4.1 in [1].
 %
 %
-% Syntax:  
+% Syntax:
 %    [R,tcomp] = observe_PRadA(obj,options)
 %
 % Inputs:
@@ -27,16 +27,16 @@ function [R,tcomp] = observe_PRadA(obj,options)
 %
 % See also: none
 
-% Author:        Matthias Althoff
-% Written:       12-Sep-2020
-% Last update:   02-Jan-2021
-%                25-Feb-2021
+% Authors:       Matthias Althoff
+% Written:       12-September-2020
+% Last update:   02-January-2021
+%                25-February-2021
 % Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % obtain offline gains
+
 OGain = observe_gain_PRadA(obj,options);
 
 % set intersection procedure
@@ -48,4 +48,4 @@ tic
 R = observe_stripBased(obj,options);
 tcomp = toc;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function varargout = setDefaultValues(defaultValues,givenValues)
 %    is given, then this value is kept (check for admissible values is done
 %    using inputArgsCheck)
 %
-% Syntax:  
+% Syntax:
 %    varargout = setDefaultValues(defaultValues,givenValues)
 %
 % Inputs:
@@ -25,12 +25,12 @@ function varargout = setDefaultValues(defaultValues,givenValues)
 %
 % See also: inputArgsCheck
 
-% Author:       Mingrui Wang, Mark Wetzlinger
-% Written:      30-May-2022
-% Last update:  23-December-2022 (TL, speed up)
-% Last revision:---
+% Authors:       Mingrui Wang, Mark Wetzlinger
+% Written:       30-May-2022
+% Last update:   23-December-2022 (TL, speed up)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % number of given input arguments
 n_given = length(givenValues);
@@ -41,4 +41,4 @@ n_default = max(size(defaultValues));
 % assign default values if corresponding values are not provided
 varargout = [givenValues(1:n_given), defaultValues(n_given+1:n_default)];
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

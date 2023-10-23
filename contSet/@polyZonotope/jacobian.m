@@ -2,7 +2,7 @@ function pZdiff_cell = jacobian(pZ,varargin)
 % jacobian - computes the derivatives of each dimension of pZ with respect
 %    to id_diff
 %
-% Syntax:  
+% Syntax:
 %    PZ = jacobian(pZ)
 %    PZ = jacobian(pZ,id_diff)
 %
@@ -25,12 +25,12 @@ function pZdiff_cell = jacobian(pZ,varargin)
 %
 % See also: cartProd
 
-% Author:       Victor Gassmann
-% Written:      12-January-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       12-January-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % default value
 id_diff = pZ.id;
@@ -57,13 +57,13 @@ pZdiff_cell = cell(d,1);
 for i=1:d
     % for each entry in id_diff, differentiate by subtracting 1 from each
     % column in the appropriate row
-    eMtmp = pZ.expMat - I(:,ii_diff(i));
+    eMtmp = pZ.E - I(:,ii_diff(i));
     % remove any negative entries (happens if constant previously)
     indtmp = any(eMtmp<0,1);
     eMtmp(:,indtmp) = [];
     if ~isempty(eMtmp)
         % adapt G matrix accordingly
-        Gtmp = pZ.expMat(ii_diff(i),~indtmp).*pZ.G(:,~indtmp);
+        Gtmp = pZ.E(ii_diff(i),~indtmp).*pZ.G(:,~indtmp);
         [E,G,c] = removeZeroExponents(eMtmp,Gtmp);
     else
         E = zeros(length(pZ.id),0);
@@ -74,4 +74,4 @@ for i=1:d
     pZdiff_cell{i} = polyZonotope(c,G,zeros(n,0),E,pZ.id);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

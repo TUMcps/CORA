@@ -1,7 +1,7 @@
 function res = test_polygon_minus()
 % test_polygon_minus - unit test function for polygon/minus
 %
-% Syntax:  
+% Syntax:
 %    res = test_polygon_minus()
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_polygon_minus()
 %
 % See also: polygon
 
-% Author:       Tobias Ladner
-% Written:      28-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Tobias Ladner
+% Written:       28-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 resvec = [];
 
@@ -52,4 +52,4 @@ resvec(end+1) = isequal(pgon-2, pgon);
 % gather results
 res = all(resvec);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

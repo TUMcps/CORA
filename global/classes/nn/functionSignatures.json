@@ -1,0 +1,88 @@
+{
+  "_schemaVersion": "1.0.0",
+
+  "neuralNetwork.evaluate":
+  {
+     "inputs":
+     [
+        {"name":"obj", "kind":"required", "type":["neuralNetwork"], "purpose":"neural network"},
+        {"name":"input", "kind":"required", "type":["numeric", "interval", "zonotope", "polyZonotope", "taylm", "conZonotope"], "purpose":"input"},
+        {"name":"evParams", "kind":"ordered", "type":["struct"], "purpose":"evaluation parameter"},
+        {"name":"idxLayer", "kind":"ordered", "type":["numeric", "vector"], "purpose":"indices of layers that should be evaluated"}
+     ],
+     "outputs": [
+         {"name":"output", "type":["inferredFrom=input"]}
+     ]
+  },
+
+  "neuralNetwork.refine":
+  {
+     "inputs":
+     [
+        {"name":"obj", "kind":"required", "type":["neuralNetwork"], "purpose":"neuralNetwork"},
+        {"name":"max_order", "kind":"ordered", "type":["numeric"], "purpose":"maximum refinement order"},
+        {"name":"type", "kind":"ordered", "type":["char", "choices={'layer','neuron','all','naive'}"], "purpose":"refinement type"},
+        {"name":"heuristic", "kind":"ordered", "type":["char", "choices={'approx_error','sensitivity','both','random', 'all', 'layer_bias'}"], "purpose":"refinement heuristic"},
+        {"name":"x", "kind":"ordered", "type":["numeric", "column"], "purpose":"input point for sensitivity"},
+        {"name":"verbose", "kind":"ordered", "type":["logical"], "purpose":"verbose output"},
+        {"name":"force_bounds", "kind":"ordered", "type":["numeric"], "purpose":"orders at which to re-compute bounds"},
+        {"name":"gamma", "kind":"ordered", "type":["numeric", "scalar"], "purpose":"threshold neuron-wise refinement"}
+     ]
+  },
+
+  "neuralNetwork.verify":
+  {
+     "inputs":
+     [
+        {"name":"obj", "kind":"required", "type":["neuralNetwork"], "purpose":"neuralNetwork"},
+        {"name":"X0", "kind":"ordered", "type":["contSet"], "purpose":"initial set"},
+        {"name":"spec", "kind":"ordered", "type":["specification"], "purpose":"specification"},
+        {"name":"Splits", "kind":"namevalue", "type":["numeric"],"purpose":"max number of recursive splits"},
+        {"name":"RefinementSteps", "kind":"namevalue", "type":["numeric"],"purpose":"number of refinements per step"},
+        {"name":"Verbose", "kind":"namevalue", "type":["logical"],"purpose":"true/false, verbose log"},
+        {"name":"Plot", "kind":"namevalue", "type":["logical"],"purpose":"true/false, plot verification progress"},
+        {"name":"PlotDimsIn", "kind":"namevalue", "type":["numeric"],"purpose":"dimensions to plot in input space"},
+        {"name":"PlotDimsOut", "kind":"namevalue", "type":["numeric"],"purpose":"dimensions to plot in output space"}
+     ]
+  },
+
+  "neuralNetwork.readONNXNetwork":
+  {
+     "inputs":
+     [
+        {"name":"file_path", "kind":"required", "type":["char", "string"], "purpose":"file path"},
+        {"name":"verbose", "kind":"ordered", "type":"logical", "purpose":"verbose output while reading network"},
+        {"name":"inputDataFormats", "kind":"ordered", "type":["char", "choices={'BC','BCSS','BSSC','CSS','SSC','BCSSS','BSSSC', 'CSSS','SSSC','TBC','BCT','BTC','1BC','T1BC','TBCSS','TBCSSS'}"], "purpose":"dimensons of input"},
+        {"name":"outputDataFormats", "kind":"ordered", "type":["char", "choices={'BC','BCSS','BSSC','CSS','SSC','BCSSS','BSSSC', 'CSSS','SSSC','TBC','BCT','BTC','1BC','T1BC','TBCSS','TBCSSS'}"], "purpose":"dimensions of output"},
+        {"name":"targetNetwork", "kind":"ordered", "type":["char", "choices={'dagnetwork', 'dlnetwork'}"], "purpose":"target network from DLT"}
+     ],
+     "outputs": [
+         {"name":"nn", "type":"neuralNetwork"}
+     ]
+  },
+
+  "neuralNetwork.generateRandom":
+  {
+     "inputs":
+     [
+        {"name":"NrInputs", "kind":"namevalue", "type":["numeric"],"purpose":"number of input neurons"},
+        {"name":"NrOutputs", "kind":"namevalue", "type":["numeric"],"purpose":"number of output neurons"},
+        {"name":"ActivationFun", "kind":"namevalue", "type":["char", "choices={'relu', 'sigmoid', 'tanh'}"],"purpose":"activation function"},
+        {"name":"NrLayers", "kind":"namevalue", "type":["numeric"],"purpose":"number of layers"},
+        {"name":"NrHiddenNeurons", "kind":"namevalue", "type":["numeric"],"purpose":"number of neurons in hidden layers"}
+     ],
+     "outputs": [
+         {"name":"nn", "type":"neuralNetwork"}
+     ]
+  },
+
+  "neuralNetwork.getNormalForm":
+  {
+     "inputs":
+     [],
+     "outputs": [
+         {"name":"nn_normal", "type":"neuralNetwork"}
+     ]
+  }
+
+}

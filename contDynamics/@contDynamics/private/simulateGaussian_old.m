@@ -8,7 +8,7 @@ function res = simulateGaussian_old(obj, params, options)
 % white noise; thus, results differ depending on the step size. Proper
 % white noise simulations are provided in the class linProbSys.
 %
-% Syntax:  
+% Syntax:
 %   res = simulateGaussian_old(obj, params, options)
 %
 % Inputs:
@@ -25,13 +25,13 @@ function res = simulateGaussian_old(obj, params, options)
 %    res - object of class simResult storing time and states of the 
 %          simulated trajectories.
 
-% Author:       Matthias Althoff
-% Written:      19-November-2020
-% Last update:  04-January-2021
-%               16-November-2021 (MW, integrate W and V sets)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-November-2020
+% Last update:   04-January-2021
+%                16-November-2021 (MW, integrate W and V sets)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % options preprocessing
 options = validateOptions(obj,mfilename,params,options);
@@ -115,7 +115,7 @@ for i = 1:options.points
         end
         
         %% obtain random input
-        if isfield(options,'U') && ~isempty(options.U)
+        if isfield(options,'U') && ~representsa_(options.U,'emptySet',eps)
             % set input
             uRand = randPoint(options.U,1,'gaussian',options.p_conf);
 
@@ -147,4 +147,4 @@ end
 % construct object storing the simulation results
 res = simResult(x,t,{},y);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

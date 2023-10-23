@@ -1,7 +1,7 @@
 function [Rfirst,options] = initReach(obj,Rinit,options)
 % initReach - computes the reachable continuous set for the first time step
 %
-% Syntax:  
+% Syntax:
 %    [obj,Rfirst] = initReach(obj,Rinit,options)
 %
 % Inputs:
@@ -22,15 +22,15 @@ function [Rfirst,options] = initReach(obj,Rinit,options)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      13-September-2007 
-% Last update:  06-October-2007
-%               08-September-2009
-%               25-July-2016 (intervalhull replaced by interval)
-%               17-July-2020 (return values changed)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       13-September-2007 
+% Last update:   06-October-2007
+%                08-September-2009
+%                25-July-2016 (intervalhull replaced by interval)
+%                17-July-2020 (return values changed)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % compute exponential matrix
 obj = pexpm(obj,options);
@@ -76,4 +76,4 @@ options.Rpar_prob=zonotope(pRinput);
 Rfirst.tp=Rtotal_tp;
 Rfirst.ti=Rtotal;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

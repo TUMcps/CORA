@@ -3,7 +3,7 @@ function mergedBC = automatonProduct(BC1,BC2)
 %    Instances (input Base Components should be brought to the same
 %    variable space first)
 %
-% Syntax:  
+% Syntax:
 %    mergedBC = automatonProduct(BC1,BC2)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function mergedBC = automatonProduct(BC1,BC2)
 %
 % See also: none
 
-% Author:       ???
-% Written:      ???
-% Last update:  ---
-% Last revision:---
+% Authors:       ???
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Meta-information are combined to remain informative & readable
 mergedBC.id = BC1.id + " X " + BC2.id;
@@ -113,4 +113,4 @@ end
 % add new state set to output component
 mergedBC.States = S1XS2;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -3,7 +3,7 @@ function res = test_hybridAutomaton_reach_02_instantTransition()
 %    of hybrid dynamics, where the hybrid automaton contains instant
 %    transitions (no elapsed time in between two subsequent transitions)
 %
-% Syntax:  
+% Syntax:
 %    test_hybridAutomaton_reach_02_instantTransition
 %
 % Inputs:
@@ -12,12 +12,12 @@ function res = test_hybridAutomaton_reach_02_instantTransition()
 % Outputs:
 %    res - true/false  
 
-% Author:       Mark Wetzlinger
-% Written:      17-June-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -65,7 +65,7 @@ linSys3 = linearSys('linearSys',A,B,c3);
 linSys4 = linearSys('linearSys',A,B,c4);
 
 % invariant set (same for all locations)
-inv = mptPolytope(interval([-1;-1],[1;1]));
+inv = polytope(interval([-1;-1],[1;1]));
 
 % guard sets
 guard1 = conHyperplane([1,0],1);
@@ -153,4 +153,4 @@ for i=1:length(R2)
     i_R1 = i_R1 + 1;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

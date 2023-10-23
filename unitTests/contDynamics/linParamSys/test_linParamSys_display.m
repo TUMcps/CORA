@@ -1,7 +1,7 @@
 function res = test_linParamSys_display
 % test_linParamSys_display - test the display function
 %
-% Syntax:  
+% Syntax:
 %    res = test_linParamSys_display
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_linParamSys_display
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      22-November-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       22-November-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % init system
 Ac = [-2 0; 1.5 -3];
@@ -45,4 +45,4 @@ sys = linParamSys(A_zon,B,'constParam')
 % all checks successful
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

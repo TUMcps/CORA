@@ -1,7 +1,7 @@
 function Rerror = errorSolution(obj,options,Vdyn,Vstat)
 % errorSolution - computes the solution due to the linearization error
 %
-% Syntax:  
+% Syntax:
 %    Rerror = errorSolution(obj,options,Vdyn,Vstat)
 %
 % Inputs:
@@ -21,17 +21,17 @@ function Rerror = errorSolution(obj,options,Vdyn,Vstat)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      30-October-2007 
-% Last update:  22-January-2008
-%               18-May-2011
-%               25-July-2016 (intervalhull replaced by interval)
-%               04-May-2020 (MW, unification with errorSolutionQuad)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       30-October-2007 
+% Last update:   22-January-2008
+%                18-May-2011
+%                25-July-2016 (intervalhull replaced by interval)
+%                04-May-2020 (MW, unification with errorSolutionQuad)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-if nargin < 4 || isempty(Vstat)
+if nargin < 4 || (isemptyobject(Vstat) || representsa_(Vstat,'emptySet',eps))
     errorStat = 0;
 else
     % including static error
@@ -66,4 +66,4 @@ end
 Rerror = Asum+F + errorStat;
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

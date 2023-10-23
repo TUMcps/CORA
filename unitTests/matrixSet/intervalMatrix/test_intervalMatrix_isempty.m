@@ -1,7 +1,7 @@
 function res = test_intervalMatrix_isempty
 % test_intervalMatrix_isempty - unit test function for emptiness checks
 % 
-% Syntax:  
+% Syntax:
 %    res = test_intervalMatrix_isempty
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_intervalMatrix_isempty
 %
 % See also: -
 
-% Author:       Mark Wetzlinger
-% Written:      03-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       03-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = isempty(intervalMatrix());
 
@@ -32,4 +32,4 @@ res(end+1,1) = ~isempty(intMat);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

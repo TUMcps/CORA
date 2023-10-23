@@ -1,7 +1,7 @@
 function Z = and_(Z,S,method,varargin)
 % and_ - overloads & operator, computes the intersection of two zonotopes
 %
-% Syntax:  
+% Syntax:
 %    Z = and_(Z,S)
 %    Z = and_(Z,S,method)
 %
@@ -29,19 +29,19 @@ function Z = and_(Z,S,method,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: conPolyZono/and_
+% See also: contSet/and, conPolyZono/and_
 
-% Author:        Matthias Althoff, Niklas Kochdumper, Amr Alanwar
+% Authors:       Matthias Althoff, Niklas Kochdumper, Amr Alanwar
 % Written:       29-June-2009
-% Last update:   02-Sep-2019 (rename intersection -> and)
-%                11-Nov-2019 (NK: added algorithm for general case)
-%                12-Feb-2020 (Amr: adding averaging option)
+% Last update:   02-September-2019 (rename intersection -> and)
+%                11-November-2019 (NK, added algorithm for general case)
+%                12-February-2020 (AA, adding averaging option)
 % Last revision: 27-March-2023 (MW, rename and_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % quick check: simpler function for intervals
-if isInterval(Z) && isInterval(S)
+if representsa_(Z,'interval',eps) && representsa_(S,'interval',eps)
     % conversion to intervals exact
     Z = zonotope(and_(interval(Z),interval(S),'exact')); return
 end
@@ -78,4 +78,4 @@ else
     throw(CORAerror('CORA:noops',Z,S));
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -2,7 +2,7 @@ function res = test_polyZonotope_mtimes
 % test_polyZonotope_mtimes - unit test function for multiplication between
 %    an interval matrix and a zonotope 
 %
-% Syntax:  
+% Syntax:
 %    res = test_polyZonotope_mtimes
 %
 % Inputs:
@@ -17,19 +17,19 @@ function res = test_polyZonotope_mtimes
 %
 % See also: -
 
-% Author:       Niklas Kochdumper
-% Written:      26-June-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-June-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % create polynomial zonotope
 c = [1;2];
 G = [1 2 1 -3; 1 -1 2 -1];
-expMat = [1 0 0 2; 0 1 2 1];
-Grest = [];
-pZ = polyZonotope(c,G,Grest,expMat);
+E = [1 0 0 2; 0 1 2 1];
+GI = [];
+pZ = polyZonotope(c,G,GI,E);
 
 % create interval matrix
 matrix = interval([1 -0.5; -1 0], [3 0.5; 3 2]);
@@ -40,11 +40,11 @@ pZres = matrix * pZ;
 % define ground truth
 c = [2; 3];
 G =  [2 4 2 -6; 2 1 3 -4];
-Grest = [11.5 0; 0 23];
+GI = [11.5 0; 0 23];
 
 % check for correctness
 if ~all(withinTol(c,pZres.c)) || ~compareMatrices(G,pZres.G) ...
-        || ~compareMatrices(Grest,pZres.Grest)
+        || ~compareMatrices(GI,pZres.GI)
     throw(CORAerror('CORA:testFailed'));
 end
 
@@ -55,4 +55,4 @@ end
 
 res = true;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

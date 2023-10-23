@@ -2,7 +2,7 @@ function completed = example_nonlinearDA_reach_01_powerSystem_3bus()
 % example_nonlinearDA_reach_01_powerSystem_3bus - example of 
 %    nonlinear-differential-algebraic reachability analysis, 3-bus power system
 %
-% Syntax:  
+% Syntax:
 %    completed = example_nonlinearDA_reach_01_powerSystem_3bus()
 %
 % Inputs:
@@ -11,12 +11,12 @@ function completed = example_nonlinearDA_reach_01_powerSystem_3bus()
 % Outputs:
 %    completed - true/false
 
-% Author:       Matthias Althoff
-% Written:      18-August-2016
-% Last update:  23-April-2020 (restructure params/options)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-August-2016
+% Last update:   23-April-2020 (restructure params/options)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Parameter ---------------------------------------------------------------
 
@@ -57,7 +57,7 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 
 % Simulation --------------------------------------------------------------
 
-simOpt.points = 60;
+simOpt.points = 10;
 simRes = simulateRandom(powerDyn, params, simOpt);
 
 
@@ -84,5 +84,4 @@ ylabel(['x_{',num2str(projDim(2)),'}']);
 % example completed
 completed = true;
 
-%------------- END OF CODE --------------
-        
+% ------------------------------ END OF CODE ------------------------------

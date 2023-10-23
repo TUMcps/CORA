@@ -1,7 +1,7 @@
 function res = minverse(obj)
 % minverse - Compute the matrix inverse for Taylor models acc. to [1]
 %
-% Syntax:  
+% Syntax:
 %    res = minverse(obj)
 %
 % Inputs:
@@ -22,13 +22,12 @@ function res = minverse(obj)
 %
 % See also: taylm
 
-% Author:       Dmitry Grebenyuk
-% Written:      18-November-2017
-%               02-December-2017 (DG) New rank evaluation
-% Last update:  ---  
-% Last revision:---
+% Authors:       Dmitry Grebenyuk
+% Written:       18-November-2017
+% Last update:   02-December-2017 (DG, new rank evaluation)
+% Last revision: ---
 
-%------------- BEGIN CODE -------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     [m,n] = size(obj);
     r = {obj.monomials};
@@ -42,7 +41,7 @@ function res = minverse(obj)
     else                % Taylor model with polynomial part
         
         % find constants
-        c_f = cellfun(@(r, c) find_const(r, c), r, c, 'UniformOutput', 0);
+        c_f = cellfun(@(r, c) aux_find_const(r, c), r, c, 'UniformOutput', 0);
         c_f = cat(1, c_f{:});
         
         % return the shape of an input object
@@ -69,11 +68,15 @@ function res = minverse(obj)
     end
 end
 
-function c_f = find_const(r, c)
+
+% Auxiliary functions -----------------------------------------------------
+
+function c_f = aux_find_const(r, c)
     if all(r(1,1) == 0)                
         c_f = c(1);
     else
         c_f = c( r(:,1) == 0 );
     end
 end
-%------------ END OF CODE ------------
+
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function matPpower = mpower(matP,exponent)
 % mpower - Overloaded '^' operator for the power of matrix polytope 
 %
-% Syntax:  
+% Syntax:
 %    matPpower = mpower(matP,exponent)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function matPpower = mpower(matP,exponent)
 %
 % See also: plus
 
-% Author:       Matthias Althoff
-% Written:      21-June-2010 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-June-2010 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{matP,'att','matPolytope'}, ...
@@ -50,4 +50,4 @@ else
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

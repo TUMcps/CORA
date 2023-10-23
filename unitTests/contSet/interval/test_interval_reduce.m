@@ -1,7 +1,7 @@
 function res = test_interval_reduce
 % test_interval_reduce - unit test function of reduce
 %
-% Syntax:  
+% Syntax:
 %    res = test_interval_reduce
 %
 % Inputs:
@@ -16,12 +16,12 @@ function res = test_interval_reduce
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      23-April-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       23-April-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % empty case
 I = interval();
@@ -47,4 +47,4 @@ res(end+1,1) = isequal(I,I_);
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

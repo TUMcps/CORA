@@ -2,7 +2,7 @@ function Dksi = ksi_optimizer(cZ)
 % ksi_optimizer - determine the tighend domains for the zonotope factors
 %    ksi by solving a linear program
 %
-% Syntax:  
+% Syntax:
 %    Dksi = ksi_optimizer(cZ)
 %
 % Inputs:
@@ -21,16 +21,16 @@ function Dksi = ksi_optimizer(cZ)
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Dmitry Grebenyuk, Niklas Kochdumper
-% Written:      11-May-2018
-% Last update:  ---
-% Last revision:---
+% Authors:       Dmitry Grebenyuk, Niklas Kochdumper
+% Written:       11-May-2018
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if isempty(cZ.A)
     % no constraints -> return unit-cube as domain for ksi
-    n = size(cZ.Z,2)-1;
+    n = size(cZ.G,2);
     Dksi = interval(-ones(n,1),ones(n,1));
     return
 end
@@ -82,4 +82,4 @@ ksi_u = max(ksi,[],2);
 
 Dksi = interval(ksi_l,ksi_u);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

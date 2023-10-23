@@ -2,7 +2,7 @@ function res = test_location_calcBasis
 % test_location_calcBasis - test function for computation of orthogonal
 %    basis for guard intersection
 %
-% Syntax:  
+% Syntax:
 %    res = test_location_calcBasis
 %
 % Inputs:
@@ -17,17 +17,17 @@ function res = test_location_calcBasis
 %
 % See also: none
 
-% Author:       Mark Wetzlinger
-% Written:      17-May-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-May-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = [];
 
 % 2D location: flow moving to the right
-inv = mptPolytope([1,0],1);
+inv = polytope([1,0],1);
 guard = conHyperplane([1,0],1);
 reset = struct('A',[1,0;0,1],'c',[5;0]);
 trans = transition(guard,reset,1);
@@ -57,4 +57,4 @@ res(end+1,1) = all(all(withinTol(B{1},eye(2))));
 % combine results
 res = all(res);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -39,12 +39,12 @@ classdef zoo
 %
 % See also: interval, taylm
 
-% Author:       Dmitry Grebenyuk, Niklas Kochdumper
-% Written:      05-November-2017
-% Last update:  10-April-2018 (NK, modified object properties)
-% Last revision:16-June-2023 (MW, restructure using auxiliary functions)
+% Authors:       Dmitry Grebenyuk, Niklas Kochdumper
+% Written:       05-November-2017
+% Last update:   10-April-2018 (NK, modified object properties)
+% Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
     
@@ -96,13 +96,15 @@ methods
     function res = tanh(obj); res = zooComputation(@tanh,obj); end
     function res = mpower(obj1,obj2); res = zooComputation(@mpower,obj1,obj2); end
     function res = power(obj1,obj2); res = zooComputation(@power,obj1,obj2); end
+
+    function res = isemptyobject(obj); res = false; end
              
 end
 
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
 function [int,method,names,max_order,eps,tolerance] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
@@ -216,4 +218,4 @@ function [method,objects] = aux_computeObject(int,methods,names,max_order,eps,to
 
 end
 
-%------------- END OF CODE -------
+% ------------------------------ END OF CODE ------------------------------

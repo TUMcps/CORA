@@ -2,7 +2,7 @@ function res = testLong_conZonotope_enclose
 % testLong_conZonotope_enclose - unit test function for the
 %   calculation of the convex hull of two constrained zonotope objects
 %
-% Syntax:  
+% Syntax:
 %    res = testLong_conZonotope_enclose
 %
 % Inputs:
@@ -21,13 +21,12 @@ function res = testLong_conZonotope_enclose
 %   [1] J. Scott et al. "Constrained zonotope: A new tool for set-based
 %       estimation and fault detection"
 
-% Author:       Niklas Kochdumper
-% Written:      28-June-2018
-%               28-April-2019 (MA), code shortened
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       28-June-2018
+% Last update:   28-April-2019 (MA, code shortened)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 
@@ -42,8 +41,8 @@ for h = 1:5
     ind = unique(ind(:,1),'stable');
     V = points(:,ind);
 
-    poly = mptPolytope(V');
-    cZono = conZonotope(poly);
+    P = polytope(V);
+    cZono = conZonotope(P);
 
     % generate random transformation matrix
     T = rand(2) - 0.5*ones(2);
@@ -72,14 +71,13 @@ for h = 1:5
         end
     end
 
-    % convert the resulting conZonotope to a mptPolytope (to easily check if
+    % convert the resulting conZonotope to a polytope (to easily check if
     % a point is located inside the conZonotope)
-    poly = mptPolytope(cZonoRes);
+    P = polytope(cZonoRes);
 
     % extract inequality constraints
-    temp = get(poly,'P');
-    A = temp.A;
-    b = temp.b;
+    A = P.A;
+    b = P.b;
 
 %     % visualize result
 %     plot(points(1,:),points(2,:),'.k');
@@ -97,9 +95,6 @@ for h = 1:5
 end
 
 
-
-
-
 % TEST 2: Random Test (zonotope addition 2D) ------------------------------
 
 for h = 1:5
@@ -110,8 +105,8 @@ for h = 1:5
     ind = unique(ind(:,1),'stable');
     V = points(:,ind);
 
-    poly = mptPolytope(V');
-    cZono = conZonotope(poly);
+    P = polytope(V);
+    cZono = conZonotope(P);
 
     % generate random transformation matrix
     T = rand(2) - 0.5*ones(2);
@@ -143,14 +138,13 @@ for h = 1:5
         end
     end
 
-    % convert the resulting conZonotope to a mptPolytope (to easily check if
+    % convert the resulting conZonotope to a polytope (to easily check if
     % a point is located inside the conZonotope)
-    poly = mptPolytope(cZonoRes);
+    P = polytope(cZonoRes);
 
     % extract inequality constraints
-    temp = get(poly,'P');
-    A = temp.A;
-    b = temp.b;
+    A = P.A;
+    b = P.b;
 
 %     % visualize result
 %     plot(points(1,:),points(2,:),'.k');
@@ -167,4 +161,4 @@ for h = 1:5
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

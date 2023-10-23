@@ -2,7 +2,7 @@ function val = supportFunc_(pZ,dir,type,method,maxOrderOrSplits,tol,varargin)
 % supportFunc_ - Calculates the upper or lower bound of a polynomial
 %    zonotope along a given direction
 %
-% Syntax:  
+% Syntax:
 %    val = supportFunc_(pZ,dir)
 %    val = supportFunc_(pZ,dir,type)
 %    val = supportFunc_(pZ,dir,type,method)
@@ -56,15 +56,15 @@ function val = supportFunc_(pZ,dir,type,method,maxOrderOrSplits,tol,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval, conZonotope/supportFunc_
+% See also: contSet/supportFunc, interval, conZonotope/supportFunc_
 
-% Author:       Niklas Kochdumper, Tobias Ladner
-% Written:      29-July-2018
-% Last update:  17-October-2022  (NK: improve 'split' method)
-%               06-December-2022 (TL: fix: 'split' considers splitted sets)
-% Last revision:27-March-2023 (MW, rename supportFunc_)
+% Authors:       Niklas Kochdumper, Tobias Ladner
+% Written:       29-July-2018
+% Last update:   17-October-2022 (NK, improve 'split' method)
+%                06-December-2022 (TL, fix: 'split' considers splitted sets)
+% Last revision: 27-March-2023 (MW, rename supportFunc_)
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     if strcmp(method,'split')
         splits = maxOrderOrSplits;
@@ -82,19 +82,19 @@ function val = supportFunc_(pZ,dir,type,method,maxOrderOrSplits,tol,varargin)
         val = interval(zonotope(pZ_));
         
         if strcmp(type,'lower')
-            if isempty(val)
+            if representsa_(val,'emptySet',eps)
                 val = Inf;
             else
                 val = infimum(val);
             end            
         elseif strcmp(type,'upper')
-            if isempty(val)
+            if representsa_(val,'emptySet',eps)
                 val = -Inf;
             else
                 val = supremum(val);
             end
         elseif strcmp(type,'range')
-            if isempty(val)
+            if representsa_(val,'emptySet',eps)
                 val = [-Inf,Inf];
             end
             % otherwise 'val' is already desired result
@@ -137,16 +137,16 @@ function val = aux_supportFuncBernstein(pZ,dir,type)
     pZ_ = dir' * pZ;
 
     % initialization
-    p = size(pZ_.expMat,1);    
+    p = size(pZ_.E,1);    
     dom = interval(-ones(p,1),ones(p,1));  
 
     % dependent generators: convert to bernstein polynomial
-    B = poly2bernstein(pZ_.G,pZ_.expMat,dom);
+    B = poly2bernstein(pZ_.G,pZ_.E,dom);
 
     int1 = interval(min(min(B)),max(max(B)));
 
     % independent generators: enclose zonotope with interval
-    int2 = interval(zonotope([pZ_.c,pZ_.Grest]));
+    int2 = interval(zonotope([pZ_.c,pZ_.GI]));
 
     val = int1 + int2;
 
@@ -164,16 +164,16 @@ function val = aux_supportFuncBnB(pZ,dir,type,method,maxOrder)
     pZ_ = dir' * pZ;
     
     % over-approximate the independent generators
-    valInd = interval(zonotope([pZ_.c,pZ_.Grest]));
+    valInd = interval(zonotope([pZ_.c,pZ_.GI]));
 
     % create taylor models
-    n = size(pZ_.expMat,1);
+    n = size(pZ_.E,1);
     temp = ones(n,1);
     T = taylm(interval(-temp,temp),maxOrder,[],method);
 
     % calculate bounds of the polynomial part (= dependent
     % generators)
-    valDep = interval(aux_polyPart(T,pZ_.G,pZ_.expMat));
+    valDep = interval(aux_polyPart(T,pZ_.G,pZ_.E));
 
     % add the two parts from the dependent and independent
     % generators
@@ -194,23 +194,23 @@ function val = aux_supportFuncGlobOpt(pZ,dir,type,maxOrder,tol)
     pZ_ = dir' * pZ;
 
     % over-approximate the independent generators
-    valInd = interval(zonotope([pZ_.c,pZ_.Grest]));
+    valInd = interval(zonotope([pZ_.c,pZ_.GI]));
 
     % remove zero entries from the generator matrix
     ind = find(pZ_.G == 0);
     G = pZ_.G;
-    expMat = pZ_.expMat;
+    E = pZ_.E;
     G(:,ind) = [];
-    expMat(:,ind) = [];
+    E(:,ind) = [];
 
     % remove zero rows from the exponent matrix
-    expMat(sum(expMat,2) == 0,:) = [];
+    E(sum(E,2) == 0,:) = [];
 
     % function to opimize
-    func = @(x) aux_polyPart(x,G,expMat);
+    func = @(x) aux_polyPart(x,G,E);
 
     % domain for the optimization variables
-    n = size(expMat,1);
+    n = size(E,1);
     temp = ones(n,1);
     dom = interval(-temp,temp);
 
@@ -247,24 +247,24 @@ function val = aux_supportFuncQuadProg(pZ,dir,type)
     end
 
     % extract linear part f*x 
-    indLin = find(sum(pZ_.expMat,1) <= 1);
+    indLin = find(sum(pZ_.E,1) <= 1);
     p = length(pZ_.id); f = zeros(p,1);
 
     for i = 1:length(indLin)
-        ind = find(pZ_.expMat(:,indLin(i)) == 1);
+        ind = find(pZ_.E(:,indLin(i)) == 1);
         f(ind(1)) = pZ_.G(:,indLin(i));
     end
 
     % extract quadratic part x'*H*x for states
-    indQuad = find(sum(pZ_.expMat,1) == 2);
+    indQuad = find(sum(pZ_.E,1) == 2);
     H = zeros(p);
 
     for i = 1:length(indQuad)
-       if max(pZ_.expMat(:,indQuad(i))) == 2
-           ind = find(pZ_.expMat(:,indQuad(i)) == 2);
+       if max(pZ_.E(:,indQuad(i))) == 2
+           ind = find(pZ_.E(:,indQuad(i)) == 2);
            H(ind(1),ind(1)) = pZ_.G(:,indQuad(i));
        else
-           ind = find(pZ_.expMat(:,indQuad(i)) == 1);
+           ind = find(pZ_.E(:,indQuad(i)) == 1);
            H(ind(1),ind(2)) = 0.5 * pZ_.G(:,indQuad(i));
            H(ind(2),ind(1)) = 0.5 * pZ_.G(:,indQuad(i));
        end
@@ -291,28 +291,28 @@ function val = aux_supportFuncQuadProg(pZ,dir,type)
 
     % enclose remaining part with additional factors
     ind = setdiff(1:size(pZ_.G,2),[indQuad,indLin]);
-    G = pZ_.G(:,ind); expMat = pZ_.expMat(:,ind);
+    G = pZ_.G(:,ind); E = pZ_.E(:,ind);
 
     for i = 1:size(N,1)
         for j = i:size(N,2)
             if i == j && N(i,j) ~= 0
                 G = [G, N(i,j)];
                 temp = zeros(p,1); temp(i) = 2;
-                expMat = [expMat,temp];
+                E = [E,temp];
             elseif N(i,j) ~= 0 || N(j,i) ~= 0
                 G = [G, N(i,j) + N(j,i)];
                 temp = zeros(p,1); temp(i) = 1; temp(j) = 1;
-                expMat = [expMat,temp];
+                E = [E,temp];
             end
         end
     end
 
     % extend matrices of quadratic program
-    if ~isempty(expMat)
-        Z = zonotope(polyZonotope(c,G,[],expMat));
+    if ~isempty(E)
+        Z = zonotope(polyZonotope(c,G,[],E));
 
-        H = blkdiag(H,zeros(size(Z.Z,2)-1));
-        f = [f; generators(Z)']; c = center(Z);
+        H = blkdiag(H,zeros(size(Z.G,2)));
+        f = [f; Z.G']; c = Z.c;
     end
 
     % solve quadratic program
@@ -332,18 +332,18 @@ function val = aux_supportFuncQuadProg(pZ,dir,type)
     end
 
     % compute bound for independent generators
-    if ~isempty(pZ.Grest)
-       val = val + supportFunc_(zonotope(zeros(dim(pZ),1), ...
-                               pZ.Grest),dir,type); 
+    if ~isempty(pZ.GI)
+       val = val + supportFunc_( ...
+           zonotope(zeros(dim(pZ),1), pZ.GI), dir, type); 
     end
 end
 
-function val = aux_polyPart(x,G,expMat)
+function val = aux_polyPart(x,G,E)
 
     for i = 1:length(G)
-       temp = x(1)^expMat(1,i);
-       for j = 2:size(expMat,1)
-           temp = temp * x(j)^expMat(j,i);
+       temp = x(1)^E(1,i);
+       for j = 2:size(E,1)
+           temp = temp * x(j)^E(j,i);
        end
        if i == 1
            val = G(i) * temp;
@@ -354,4 +354,4 @@ function val = aux_polyPart(x,G,expMat)
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------
