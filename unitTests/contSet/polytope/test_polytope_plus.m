@@ -16,9 +16,9 @@ function res = test_polytope_plus
 %
 % See also: none
 
-% Authors:       Mark Wetzlinger
+% Authors:       Mark Wetzlinger, Viktor Kotsev
 % Written:       30-November-2022
-% Last update:   ---
+% Last update:   25-October-2023
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -66,6 +66,24 @@ P_sum = P1 + P2;
 P_true = polytope([1 0; -1 0; 0 1; 0 -1], [2;2;2;-2]);
 res(end+1,1) = P_sum == P_true;
 
+% polytope + interval
+P = polytope([2 1; -1 1; -2 -3; 0 -4; 2 -1], ones(5,1));
+I =  interval([-2;1],[3;2]);
+PI = P + I;
+res(end+1,1) = isa(PI,"polytope");
+
+% polytope + zonotope
+P = polytope([2 1; -1 1; -2 -3; 0 -4; 2 -1], ones(5,1));
+isBounded(P);
+Z = zonotope([1 1 0; 0 0 1]);
+PZ = P + Z;
+res(end+1,1) = isa(PZ,"polytope") && (~isempty(PZ.bounded.val) && PZ.bounded.val);
+
+% polytope + polyZonotope
+P = polytope([2 1; -1 1; -2 -3; 0 -4; 2 -1], ones(5,1));
+Z = polyZonotope([1;0], [1 0; 0 1]);
+PZ = P + Z;
+res(end+1,1) = isa(PZ,"polyZonotope");
 
 % combine results
 res = all(res);

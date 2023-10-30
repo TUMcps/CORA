@@ -64,7 +64,7 @@ if size(P.A,2) == 2
     end
     
     % consider the last face
-    if isempty(pZface{end})
+    if representsa_(pZface{end},'emptySet',eps)
         c = 0.5*(V(:,end-1) + V(:,end));
         g = 0.5*(V(:,end-1) - V(:,end));      
         pZface{counter} = polyZonotope(c,g,[],1);
@@ -91,11 +91,11 @@ if size(P.A,2) == 2
             id2(end) = id1(end);
             
             G2 = pZ2_.G;
-            ind = find(pZ2_.expMat(end,:) > 0);
+            ind = find(pZ2_.E(end,:) > 0);
             G2(:,ind) = -G2(:,ind);
 
-            pZ1 = polyZonotope(pZ1_.c,pZ1_.G,pZ1_.Grest,pZ1_.expMat,id1');
-            pZ2 = polyZonotope(pZ2_.c,G2,pZ2_.Grest,pZ2_.expMat,id2'); 
+            pZ1 = polyZonotope(pZ1_.c,pZ1_.G,pZ1_.GI,pZ1_.E,id1');
+            pZ2 = polyZonotope(pZ2_.c,G2,pZ2_.GI,pZ2_.E,id2'); 
             
             % compute convex hull
             pZtemp{counterNew} = enclose(pZ1,pZ2);
@@ -150,12 +150,12 @@ else
             pZ1_ = list{ind1}; 
             pZ2_ = list{ind2};
             
-            if ~isempty(pZ1_.expMat) && ~isempty(pZ2_.expMat) 
+            if ~isempty(pZ1_.E) && ~isempty(pZ2_.E) 
                 id1 = 1:length(pZ1_.id);
                 id2 = length(pZ1_.id)+1 : length(pZ1_.id) + length(pZ2_.id);
 
-                pZ1 = polyZonotope(pZ1_.c,pZ1_.G,pZ1_.Grest,pZ1_.expMat,id1');
-                pZ2 = polyZonotope(pZ2_.c,pZ2_.G,pZ2_.Grest,pZ2_.expMat,id2');            
+                pZ1 = polyZonotope(pZ1_.c,pZ1_.G,pZ1_.GI,pZ1_.E,id1');
+                pZ2 = polyZonotope(pZ2_.c,pZ2_.G,pZ2_.GI,pZ2_.E,id2');            
             else
                 pZ1 = pZ1_;
                 pZ2 = pZ2_;
@@ -168,8 +168,7 @@ else
             % update id-vectors if empty
             if isempty(tempList{counter}.id)
                temp = tempList{counter};
-               tempList{counter} = polyZonotope(temp.c,temp.G, ...
-                                                temp.Grest,temp.expMat,1);
+               tempList{counter} = polyZonotope(temp.c,temp.G,temp.GI,temp.E,1);
             end
             
             % update length of ID vectors

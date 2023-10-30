@@ -36,6 +36,7 @@ function ME = CORAerror(identifier,varargin)
 %                 'CORA:outOfMemory'
 %                 'CORA:testFailed'
 %                 'CORA:noops'
+%                 'CORA:install'
 %    varargin - further information depending on specific error
 %
 % Outputs:
@@ -461,6 +462,11 @@ switch identifier
             filename,classlist,helpmsg);
 
 
+    % standard message for failed installation
+    case 'CORA:install'
+        errmsg = varargin{1};
+
+
     % handle non-defined identifiers
     otherwise
         % note: this function can never be a CORA error!
@@ -524,12 +530,19 @@ if ~isempty(atPos)
 else
     % classname now name of folder (starting from within coraroot)
     fileSepAfterCORA = filesepPos(filesepPos > length(CORAROOT));
-    classname = extractBetween(st(errIdx).file,fileSepAfterCORA(1)+1,fileSepAfterCORA(end)-1);
-    classname = classname{1};
 
-    % read out functionname (includes 'private'!)
-    functionname = extractBetween(st(errIdx).file,fileSepAfterCORA(end)+1,dotPos-1);
-    functionname = functionname{1};
+    if isscalar(fileSepAfterCORA)
+        % in root directory
+        classname = 'CORAROOT';
+        functionname = st(errIdx).file(fileSepAfterCORA(1:end-1));
+    else
+        classname = extractBetween(st(errIdx).file,fileSepAfterCORA(1)+1,fileSepAfterCORA(end)-1);
+        classname = classname{1};
+    
+        % read out functionname (includes 'private'!)
+        functionname = extractBetween(st(errIdx).file,fileSepAfterCORA(end)+1,dotPos-1);
+        functionname = functionname{1};
+    end
 end
 
 % adapt filesep so that sprintf does not have an issue

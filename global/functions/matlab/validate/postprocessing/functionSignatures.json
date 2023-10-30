@@ -244,5 +244,14 @@
         {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:noops'}"], "purpose":"ID of error"},
         {"name":"varargin", "kind":"required", "repeating":true, "purpose":"specify input arguments"}
      ]
+  },
+  
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:install'}"], "purpose":"ID of error"},
+        {"name":"toolbox", "kind":"required", "purpose":"name of toolbox"}
+     ]
   }
 }

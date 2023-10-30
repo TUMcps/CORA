@@ -30,8 +30,8 @@ function res = isempty(cZ)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% check if the zonotope is empty
-res = isempty(zonotope(cZ.Z));
+% check if the conZonotope is empty
+res = isemptyobject(cZ);
 
 % check if the constraints are satisfiable 
 if ~res && ~isempty(cZ.A)
@@ -52,7 +52,7 @@ if ~res && ~isempty(cZ.A)
     elseif isempty(Neq)  % null space empty -> set is a single point
 
         % construct the inequatility constraints (unit cube)
-        n = size(cZ.Z,2)-1;
+        n = size(cZ.G,2);
         A = [eye(n);-eye(n)];
         b = [ones(n,1);ones(n,1)];
         

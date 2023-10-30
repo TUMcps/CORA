@@ -154,6 +154,8 @@ function r = aux_evaluatePolyZonotope(obj, input, evParams, idxLayer)
         id_ = max(id);
         if isempty(G)
             G = zeros(size(c, 1), 0);
+            E = zeros(0,0);
+            id = [];
             id_ = 1;
         end
         if isempty(GI)

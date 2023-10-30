@@ -137,7 +137,17 @@ elseif size(V, 1) == 2
             V = [V,fliplr(regStart)];            
         end
 
+        % sometimes the color index does not get increased automatically
+        ax = gca();
+        cidx = ax.ColorOrderIndex;
+
+        % plot with facecolor
         han = fill(V(1,:), V(2,:), facecolor, NVpairs{:});
+        
+        if cidx == ax.ColorOrderIndex
+            % update color index if it hasn't changed
+            updateColorIndex;
+        end
     end
 
     % reset axis mode

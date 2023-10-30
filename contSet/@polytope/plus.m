@@ -34,7 +34,7 @@ function P_out = plus(P,S)
 
 % Authors:       Viktor Kotsev
 % Written:       20-June-2022
-% Last update:   ---
+% Last update:   25-October-2023
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -91,6 +91,15 @@ elseif isnumeric(S)
     end
 
     P_out = polytope(A,b,Ae,be);
+
+elseif isa(S,'zonotope') || isa(S,'interval') || ...
+    isa(S,'conZonotope') || isa(S,'zonoBundle')
+    S = polytope(S);
+    P_out = P + S;
+
+elseif isa(S,'polyZonotope')
+
+    P_out = S + P;
 else
     throw(CORAerror('CORA:noops',P,S));
 
@@ -99,20 +108,20 @@ end
 % set properties
 
 % If both polytopes are bounded, then sum is also bounded
-if (~isempty(P.bounded.val) && P.bounded.val) ...
-    && ~isnumeric(S) && (~isempty(S.bounded.val) && S.bounded.val)
+if isa(P_out,"polytope") && (~isempty(P.bounded.val) && P.bounded.val) ...
+    && isa(S,"polytope") && (~isempty(S.bounded.val) && S.bounded.val)
     P_out.bounded.val = true;
 end
 
 % If one of the polytopes is unbounded, then sum is also unbounded
-if (~isempty(P.bounded.val) && ~P.bounded.val) ...
-    ||  (~isnumeric(S) && ~isempty(S.bounded.val) && ~S.bounded.val)
+if isa(P_out,"polytope") && (~isempty(P.bounded.val) && ~P.bounded.val) ...
+    ||  (isa(S,"polytope") && ~isempty(S.bounded.val) && ~S.bounded.val)
     P_out.bounded.val = false;
 end
 
 % If one of the polytopes is fully dimensional, then sum is also fully dimensional
-if (~isempty(P.fullDim.val) && P.fullDim.val) ...
-    ||  (~isnumeric(S) && ~isempty(S.fullDim.val) && S.fullDim.val)
+if isa(P_out,"polytope") && (~isempty(P.fullDim.val) && P.fullDim.val) ...
+    ||  (isa(S,"polytope") && ~isempty(S.fullDim.val) && S.fullDim.val)
     P_out.fullDim.val = true;
 end
 

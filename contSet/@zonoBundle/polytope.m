@@ -50,5 +50,8 @@ P = Ptmp{1};
 for i=2:zB.parallelSets
     P = and_(P,Ptmp{i},'exact');
 end
+
+% set properties
+P.bounded.val = true;
     
 % ------------------------------ END OF CODE ------------------------------

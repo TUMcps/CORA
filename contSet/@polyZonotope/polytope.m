@@ -112,4 +112,7 @@ else
 
 end
 
+% set properties
+P.bounded.val = true;
+
 % ------------------------------ END OF CODE ------------------------------

@@ -90,9 +90,9 @@ if ~(isa(S,'zonotope') || isa(S,'interval') || isa(S,'ellipsoid') || isa(S,'poly
         " does not support the type = 'gaussian'."));
 end
 
-% zonotope: set is just a point
-if isa(S,'zonotope') && isempty(generators(deleteZeros(S)))
-    x = center(S); return;
+% zonotope: set does not have any generators
+if isa(S,'zonotope') && isempty(generators(compact_(S,'zeros',eps)))
+    x = S.c; return;
 end
 
 % generates a random vector according to Gaussian distribution within a
