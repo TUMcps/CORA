@@ -62,5 +62,8 @@ function P = polytope(cZ)
     
     % instantiate polytope
     P = polytope(C(:,1:n),d);
+    
+    % set properties
+    P.bounded.val = true;
 
 % ------------------------------ END OF CODE ------------------------------

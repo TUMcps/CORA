@@ -29,4 +29,7 @@ function P = polytope(hs)
 
 P = polytope(hs.c',hs.d);
 
+% set properties
+P.bounded.val = false;
+
 % ------------------------------ END OF CODE ------------------------------

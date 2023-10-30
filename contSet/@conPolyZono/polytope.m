@@ -48,4 +48,7 @@ function P = polytope(cPZ,varargin)
 
 P = polytope(conZonotope(cPZ,varargin{:}));
 
+% set properties
+P.bounded.val = true;
+
 % ------------------------------ END OF CODE ------------------------------

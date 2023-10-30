@@ -173,8 +173,8 @@ function res = aux_intersectPolyConZono(P,cZ,isMosek,options)
     d = P.b;
     
     % center and generator matrix of constrained zonotope
-    c = cZ.Z(:,1);
-    G = cZ.Z(:,2:end);
+    c = cZ.c;
+    G = cZ.G;
     
     % dimension
     n = length(c);

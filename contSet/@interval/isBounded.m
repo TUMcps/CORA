@@ -16,9 +16,9 @@ function res = isBounded(I)
 %
 % See also: none
 
-% Authors:       Mark Wetzlinger
+% Authors:       Mark Wetzlinger, Tobias Ladner
 % Written:       24-July-2023
-% Last update:   ---
+% Last update:   26-October-2023 (TL, reworked non-empty case)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -27,7 +27,7 @@ function res = isBounded(I)
 if isemptyobject(I)
     res = true;
 else
-    res = any(I.inf == -Inf) || any(I.sup == Inf);
+    res = ~any(isinf(I.inf)) && ~any(isinf(I.sup));
 end
 
 % ------------------------------ END OF CODE ------------------------------

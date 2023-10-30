@@ -31,7 +31,7 @@ function obj = preReach(obj,options)
 % compute time interval error (tie)
 obj = tie(obj);
 %compute reachable set due to uncertain input
-U = deleteZeros(options.U);
+U = compact_(options.U,'zeros',eps);
 obj.RV = errorSolution(obj,options,U);
 
 % ------------------------------ END OF CODE ------------------------------

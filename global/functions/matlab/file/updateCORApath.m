@@ -22,12 +22,12 @@ function updateCORApath()
 w = warning;
 warning off;
 
-% add all files from corapah to path
+% add all files from corapath to path
 corapath = CORAROOT;
 rmpath(genpath(corapath))
 addpath(genpath(corapath))
 rehash path
-savepath
+% savepath
 
 % restore warning
 warning(w)

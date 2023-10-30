@@ -250,6 +250,7 @@ function Z = aux_unionLinProg(Zcell,order)
 
     % construct generator matrix of the final zonotope
     Z_ = aux_unionIterative(Zcell,order);
+    Z_ = compact_(Z_,'zeros',eps);
     G = generators(Z_);
     
     G = G*diag(1./sqrt(sum(G.^2,1)));

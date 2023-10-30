@@ -35,7 +35,7 @@ aux_add_corapath()
 disp("--------------------------------------------------------------------------------")
 disp("Installing: ")
 % cora version
-fprintf(['  Version:    ',CORAVERSION,'\n']);
+fprintf(['  Version:    <strong>',CORAVERSION,'</strong>\n']);
 % matlab version
 fprintf(['  Matlab:     ',version,'\n']);
 % host system
@@ -52,7 +52,10 @@ disp("--------------------------------------------------------------------------
 disp(" ")
 
 % install toolboxes
-disp("Checking for required toolboxes..")
+disp('Installing required toolboxes (see also <a href="cora.in.tum.de/manual">CORA manual</a>):')
+disp('- [CORA] Installing required toolboxes..')
+
+try 
 
 % check yalmip
 aux_install_yalmip()
@@ -63,12 +66,27 @@ aux_install_toolbox('Optimization_Toolbox','Optimization Toolbox');
 aux_install_toolbox('Statistics_Toolbox','Statistics and Machine Learning Toolbox');
 
 % neural network verification
-disp(" ")
-answer = input('Should the required toolboxes for the formal verification of neural networks be installed? [y,n] ', 's');
+fprintf('- [CORA NNV] (Optional) Should the required toolboxes for the verification of neural networks be installed?\n')
+fprintf('(y,[n]) ')
+answer = input('>> ', 's');
 installnn = ~isempty(answer) && startsWith(answer,'y');
 if installnn
+    disp('           Installing required toolboxes..')
     aux_install_toolbox('Neural_Network_Toolbox','Deep Learning Toolbox');
     aux_install_supportpkg('Deep Learning Toolbox Converter for ONNX Model Format');
+end
+
+catch ME
+    disp(' ')
+    if strcmp(ME.identifier,'CORA:install')
+        % only show as warning
+        warning on;
+        warning(ME.message);
+        return
+
+    else
+        rethrow(ME)
+    end
 end
 
 % check if polytope is found
@@ -80,7 +98,6 @@ end
 
 % check installation
 disp(' ')
-disp("Check whether all toolboxes are installed..")
 if installnn
     res = testnn_requiredToolboxes;
 else
@@ -117,16 +134,15 @@ function res = aux_test_toolbox_installation(id,text)
 end
 
 function aux_display_install_prompt(text)
-    disp(' ')
-    fprintf(['- ''<strong>%s</strong>'' missing. \n' ...
+    text = sprintf(['''<strong>%s</strong>'' is missing and requires manual installation. \n' ...
         '  Please install it via the MATLAB Add-On Explorer. \n' ...
-        '  In case a restart is required, rerun the CORA installation script afterwards.\n'], text);
-    keyboard % see console, continue after installation
+        '  Rerun the CORA installation script afterwards.\n'], text);
+    throw(CORAerror('CORA:install',text))
 end
 
 function aux_install_yalmip()
     if ~isYalmipInstalled()
-        disp("- Yalmip is installed via the MATLAB tbxmanager. Where should the tbxmanager be saved?")
+        disp("  - Yalmip is installed via the MATLAB tbxmanager. Where should the tbxmanager be saved?")
         % partially taken from: https://www.mpt3.org/Main/Installation
 
         % find tbxmanager directory
@@ -141,8 +157,25 @@ function aux_install_yalmip()
         websave('tbxmanager.m','http://www.tbxmanager.com/tbxmanager.m');
         rehash;
 
-        % install yalmip & sedumi
-        tbxmanager install yalmip sedumi
+        errortext = [];
+
+        try
+            % install yalmip & sedumi
+            tbxmanager install yalmip sedumi
+            
+        catch ME
+            
+            % for mac users, sedumi cannot be installed via the tbxmanager
+            % trying to install only yalmip
+
+            % install yalmip
+            tbxmanager install yalmip
+
+            % and tell user to install e.g. SDPT3
+            errortext = ['Unfortunately, the sdpt solver ''sedumi'' could not be installed automatically together with yalmip.\n' ...
+                'Please install another solver manually, e.g. SDPT3 https://blog.nus.edu.sg/mattohkc/softwares/sdpt3/'];
+
+        end
 
         % modify startup
         startuppath = which('startup.m');
@@ -172,6 +205,11 @@ function aux_install_yalmip()
         % change directory back to current directory
         cd(currentpath);
         addpath(tbxpath);
+
+        % throw error message if sedumi is missing
+        if ~isempty(errortext)
+            throw(CORAerror('CORA:install',errortext));
+        end
     end
 end
 

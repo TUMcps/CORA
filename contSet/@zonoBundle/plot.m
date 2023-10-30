@@ -115,7 +115,7 @@ function han = aux_plot2d(zB,dims,NVpairs)
     for i = 1:zB.parallelSets
 
         % delete zero generators
-        Z = deleteZeros(zB.Z{i});
+        Z = compact_(zB.Z{i},'zeros',eps);
 
         % project zonotope
         Z = project(Z,dims);
