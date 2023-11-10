@@ -38,6 +38,7 @@ function [VerrorDyn,VerrorStat,err,options] = abstractionError_adaptive(obj,opti
 % Authors:       Mark Wetzlinger
 % Written:       14-January-2020
 % Last update:   14-April-2020
+%                20-November-2023 (MW, store generators selected for reduction)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -119,7 +120,25 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
     dz = [IH_x; IH_u];
 
     % reduce zonotope
-    Rred = reduce(R,'adaptive',sqrt(options.redFactor));
+    if isfield(options,'gredIdx')
+        if length(options.gredIdx.Rred) == options.i
+            % select the same generators for reduction as in the previous
+            % iteration of the current time step to limit the influence of
+            % the order reduction on the computation of the gain order
+            if any(options.gredIdx.Rred{options.i} > size(generators(R),2))
+                keyboard
+            end
+            Rred = reduce(R,'idx',options.gredIdx.Rred{options.i});
+        else
+            % reduce adaptively and store indices of generators that have
+            % not been selected for reduction
+            [Rred,~,options.gredIdx.Rred{options.i}] = ...
+                reduce(R,'adaptive',sqrt(options.redFactor));
+        end
+    else
+        % safety branch (call from algorithm without gredIdx)
+        Rred = reduce(R,'adaptive',sqrt(options.redFactor));
+    end
     
     % zonotope (states + input)
     Z = cartProd(Rred,options.U);
@@ -165,7 +184,22 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
     
     % overall linearization error
     VerrorDyn = errorSec + errorLagr;
-    VerrorDyn = reduce(VerrorDyn,'adaptive',10*options.redFactor);
+    if isfield(options,'gredIdx')
+        if length(options.gredIdx.VerrorDyn) == options.i
+            % select the same generators for reduction as in the previous
+            % iteration of the current time step to limit the influence of
+            % the order reduction on the computation of the gain order
+            VerrorDyn = reduce(VerrorDyn,'idx',options.gredIdx.VerrorDyn{options.i});
+        else
+            % reduce adaptively and store indices of generators that have
+            % not been selected for reduction
+            [VerrorDyn,~,options.gredIdx.VerrorDyn{options.i}] = ...
+                reduce(VerrorDyn,'adaptive',10*options.redFactor);
+        end
+    else
+        % safety branch (call from algorithm without gredIdx)
+        VerrorDyn = reduce(VerrorDyn,'adaptive',10*options.redFactor);
+    end
     
     VerrorStat = [];
     
@@ -249,8 +283,9 @@ function options = aux_checkIfHessianConst(obj,options,H,totalInt_x,totalInt_u)
 options.isHessianConst = true;
 
 % evaluate Hessians with larger set, check if result equal
-H_test = obj.hessian(enlarge(totalInt_x,1.1),...
-    enlarge(totalInt_u,1.1));
+scalingFactor = 1.1;
+H_test = obj.hessian(enlarge(totalInt_x,scalingFactor),...
+                     enlarge(totalInt_u,scalingFactor));
 for i=1:length(H)
     if ~all(H{i} == H_test{i})
         options.isHessianConst = false; break

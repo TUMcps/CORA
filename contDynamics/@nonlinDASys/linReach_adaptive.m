@@ -79,7 +79,6 @@ elseif options.timeStep > options.tFinal - options.t
     
 % non-start/end step
 elseif options.i > 1
-    % always: limit finite horizon by remaining time
     % new version: adaptive P-controller
 %     finitehorizon = options.finitehorizon(options.i-1) + ...
 %         options.kp(options.i-1) * (options.varphi(options.i-1) - options.zetaphi);
@@ -87,7 +86,11 @@ elseif options.i > 1
     finitehorizon = options.finitehorizon(options.i-1) * ...
         (options.decrFactor - options.zetaphi) / ...
         (options.decrFactor - options.varphi(options.i-1));
+
+    % finitehorizon is capped by remaining time
     finitehorizon = min([finitehorizon,options.tFinal - options.t]);
+
+    % init time step size for current step as finitehorizon
     options.timeStep = finitehorizon;
     
     assert(options.timeStep > 0,'Tuning error... report to devs');

@@ -18,21 +18,24 @@ function [Rti,Rtp,options] = linReach_adaptive(obj,options,Rstart)
 % References:
 %   [1] M. Althoff et al. "Reachability analysis of nonlinear systems with 
 %       uncertain parameters using conservative linearization"
-%   [2] M. Althoff et al. "Reachability analysis of nonlinear systems using 
+%   [2] M. Althoff et al. "Reachability analysis of nonlinear systems using
 %       conservative polynomialization and non-convex sets"
 %   [3] M. Wetzlinger et al. "Automated parameter tuning for reachability
 %        analysis of nonlinear systems", HSCC 2021.
+%   [4] M. Wetzlinger et al. "Adaptive reachability algorithms for
+%        nonlinear systems using abstraction error analysis", NAHS 2022.
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       11-December-2020
 % Last update:   15-January-2021
 %                30-June-2021
+%                10-November-2023 (MW, improved estimate for finitehorizon)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -50,7 +53,18 @@ if options.i == 1
     % initial guess for time step size / finite horizon
     options.timeStep = (options.tFinal - options.tStart) * 0.01;
     finitehorizon = options.timeStep;
-    
+
+    options.tt_err = [];
+
+    % init reduction indices (only used for options.tensorOrder = 3)
+    if strcmp(options.alg,'lin')
+        options.gredIdx.Rhomti = {};
+        options.gredIdx.Rhomtp = {};
+        options.gredIdx.Rpar = {};
+        options.gredIdx.Rred = {};
+        options.gredIdx.VerrorDyn = {};
+    end
+
 % last step
 elseif options.timeStep > options.tFinal - options.t
     lastStep = true;
@@ -59,19 +73,23 @@ elseif options.timeStep > options.tFinal - options.t
     
 % non-start/end step
 elseif options.i > 1
-    % take last one and estimate so that varphi ~ zetaphi
-    finitehorizon = options.finitehorizon(options.i-1) * ...
-        (options.decrFactor - options.zetaphi(options.minorder+1)) / ...
-        (options.decrFactor - options.varphi(options.i-1));
-    options.timeStep = min([options.tFinal - options.t, finitehorizon]);
 
+    % take last one and estimate so that varphi ~ zetaphi
+    % new estimation (better than line 1 from [4, Alg. 2])
+    finitehorizon = options.finitehorizon(options.i-1) ...
+        * (1 + options.varphi(options.i-1) - options.zetaphi(options.minorder+1));
+
+    % finitehorizon is capped by remaining time
+    min([options.tFinal - options.t, finitehorizon]);
+    
     % addition for ARCH'23: artificially enlarge time step if current
     % finitehorizon almost same as last time step size
     if withinTol(finitehorizon,options.stepsize(options.i-1),1e-3)
-        options.timeStep = options.finitehorizon(options.i-1) * 1.1;
+        finitehorizon = options.finitehorizon(options.i-1) * 1.1;
     end
-    % ---
-    finitehorizon = options.timeStep;
+
+    % init time step size for current step as finitehorizon
+    options.timeStep = finitehorizon;
     
     assert(options.timeStep > 0,'Tuning error.. report to devs');
     
@@ -156,7 +174,7 @@ while true
             errG = diag(error_adm);
             Verror = zonotope([0*error_adm,errG(:,any(errG,1))]);
             % compute abstraction error as input solution
-            RallError = errorSolution_adaptive(linSys,options,Verror);
+            [RallError,options] = errorSolution_adaptive(linSys,options,Verror);
         else
             % only used in options.run == 1, but important for adaptive
             RallError = zonotope(zeros(obj.dim,1));
@@ -235,7 +253,7 @@ while true
     end
     
     % compute set of abstraction errors
-    [Rerror,options] = errorSolution_adaptive(linSys,options,VerrorDyn,VerrorStat);
+    Rerror = errorSolution_adaptive(linSys,options,VerrorDyn,VerrorStat);
     
     % measure abstraction error
     if isa(Rerror,'polyZonotope')
@@ -333,7 +351,8 @@ while true
             options.varphi(options.i,1) = max( temp(~isnan(temp)) );
         elseif ~lastStep
             options.varphi(options.i,1) = aux_varphiest(finitehorizon,...
-                options.timeStep,Rerror_h,Rerror,options.decrFactor,options.minorder);
+                options.timeStep,Rerror_h,Rerror,options.decrFactor,...
+                options.orders,options.minorder);
         end
         % save finite horizon and linearization error for next step
         options.finitehorizon(options.i,1) = finitehorizon;
@@ -390,6 +409,8 @@ else
     Rti = Rti + Rerror; Rtp = Rtp + Rerror;
 end
 
+% time step equal to finite horizon
+options.timeStepequalHorizon(options.i,1) = timeStepequalHorizon;
 % save counter of how often Lagrange remainder was computed
 options.abscount(options.i,1) = abscount;
 % save time step size
@@ -623,12 +644,20 @@ kprimeest = bestIdxnew - 1;
 end
 
 % estimation of order for given finite horizon
-function varphi = aux_varphiest(horizon,deltat,Rerr_h,Rerr_deltat,decrFactor,minorder)
+function varphi = aux_varphiest(horizon,deltat,Rerr_h,Rerr_deltat,...
+    decrFactor,orders,minorder)
 
 % compute estimate for set sizes
 if isa(Rerr_h,'zonotope') && isa(Rerr_deltat,'zonotope')
-    rerr1 = vecnorm(sum(abs(generators(Rerr_h)),2),2);
-    rerrk = vecnorm(sum(abs(generators(Rerr_deltat)),2),2);
+    % read out generator matrices
+    G_Rerr_h = generators(Rerr_h);
+    G_Rerr_deltat = generators(Rerr_deltat);
+    % only least-order directions
+    rerr1 = vecnorm(sum(abs(G_Rerr_h(orders == minorder,:)),2),2);
+    rerrk = vecnorm(sum(abs(G_Rerr_deltat(orders == minorder,:)),2),2);
+    % radius
+%     rerr1 = vecnorm(sum(abs(generators(Rerr_h)),2),2);
+%     rerrk = vecnorm(sum(abs(generators(Rerr_deltat)),2),2);
 else
     rerr1 = vecnorm(sum(abs(Rerr_h.GI),2),2);
     rerrk = vecnorm(sum(abs(Rerr_deltat.GI),2),2);
@@ -651,14 +680,14 @@ varphi_up = decrFactor^(minorder+1);
 % compute accumulated scaling
 varphitotal = aux_varphitotal(varphi_up,varphi_lim,deltat,horizon,decrFactor);
 % compute residual of prod of varphi (assuming varphi) and rhs
-residual_up = varphitotal - rhs;
+% residual_up = varphitotal - rhs;
 
 % lower bound: varphi = 0
 varphi_low = 0;
 % compute accumulated scaling
 varphitotal = aux_varphitotal(varphi_low,varphi_lim,deltat,horizon,decrFactor);
 % compute residual of prod of varphi (assuming varphi) and rhs
-residual_low = varphitotal - rhs;
+% residual_low = varphitotal - rhs;
 
 % counter for number of iterations
 cnt = 0;
@@ -680,10 +709,10 @@ while true
     % compute residual of prod of varphi (assuming varphi) and rhs
     residual(cnt,1) = varphitotal - rhs;
     if residual(cnt) < 0
-        residual_low = residual(cnt);
+%         residual_low = residual(cnt);
         varphi_low = varphi(cnt);
     else
-        residual_up = residual(cnt);
+%         residual_up = residual(cnt);
         varphi_up = varphi(cnt);
     end
     

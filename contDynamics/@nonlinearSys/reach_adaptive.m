@@ -59,7 +59,6 @@ abortAnalysis = false;
 if ~isfield(options,'linReach_new')
     options.linReach_new = true;
 end
-restr = [];
 
 % timePoint.set{1,1} = options.R0;
 % timePoint.time{1,1} = options.t;
@@ -76,7 +75,6 @@ while options.tFinal - options.t > 1e-12 && ~abortAnalysis
         if ratio > options.polyZono.maxPolyZonoRatio
             options.R = restructure(options.R,...
                 options.polyZono.restructureTechnique,options.polyZono.maxDepGenOrder);
-            restr(end+1,1) = options.i;
         end
     end
     

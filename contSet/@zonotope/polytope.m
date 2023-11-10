@@ -229,7 +229,7 @@ end
 % P = compact_(P,'all',1e-9);
 
 % Set polytope properties
-P.bounded.val = true
+P.bounded.val = true;
 end
 
 

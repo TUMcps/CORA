@@ -270,7 +270,14 @@ end
 function [states,inputs,out_fun,outputs,out_isLinear] = ...
     aux_computeProperties(fun,states,inputs,out_fun,outputs)
 
-    % get number of states and number of inputs 
+    if ~isempty(inputs) && inputs == 0
+        % CORA requires at least one input so that the internal
+        % computations execute properly; some system do not have an input,
+        % so it would be correct to explicitly state '0'
+        inputs = 1;
+    end
+
+    % get number of states and number of inputs
     if isempty(states) || isempty(inputs)
         try
             [temp,states] = inputArgsLength(fun,2);
