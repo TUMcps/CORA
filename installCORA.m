@@ -33,7 +33,6 @@ aux_add_corapath()
 
 % display information
 disp("--------------------------------------------------------------------------------")
-disp("Installing: ")
 % cora version
 fprintf(['  Version:    <strong>',CORAVERSION,'</strong>\n']);
 % matlab version
@@ -61,29 +60,25 @@ try
 aux_install_yalmip()
 
 % further toolboxes
-aux_install_toolbox('Symbolic_Toolbox','Symbolic Math Toolbox');
-aux_install_toolbox('Optimization_Toolbox','Optimization Toolbox');
-aux_install_toolbox('Statistics_Toolbox','Statistics and Machine Learning Toolbox');
+aux_install_toolbox('Symbolic_Toolbox','Symbolic Math Toolbox','SM');
+aux_install_toolbox('Optimization_Toolbox','Optimization Toolbox','OP');
+aux_install_toolbox('Statistics_Toolbox','Statistics and Machine Learning Toolbox','ST');
 
 % neural network verification
 fprintf('- [CORA NNV] (Optional) Should the required toolboxes for the verification of neural networks be installed?\n')
-fprintf('(y,[n]) ')
+fprintf('  (y,[n]) ')
 answer = input('>> ', 's');
 installnn = ~isempty(answer) && startsWith(answer,'y');
 if installnn
-    disp('           Installing required toolboxes..')
-    aux_install_toolbox('Neural_Network_Toolbox','Deep Learning Toolbox');
-    aux_install_supportpkg('Deep Learning Toolbox Converter for ONNX Model Format');
+    aux_install_toolbox('Neural_Network_Toolbox','Deep Learning Toolbox','NN');
+    aux_install_supportpkg('Deep Learning Toolbox Converter for ONNX Model Format','ONNXCONVERTER');
 end
 
 catch ME
     disp(' ')
     if strcmp(ME.identifier,'CORA:install')
-        % only show as warning
-        warning on;
-        warning(ME.message);
-        return
-
+        % rethrow exception to remove call stack
+        throw(CORAerror('CORA:install',ME.message));
     else
         rethrow(ME)
     end
@@ -104,7 +99,7 @@ else
     res = test_requiredToolboxes;
 end
 if res
-    disp('<strong>CORA installed successfully!</strong> Please check the <a href="cora.in.tum.de/manual">CORA manual</a> and the <a href="cora.in.tum.de">website</a> to get started.')
+    disp('<strong>CORA installed successfully!</strong> Please check the <a href="cora.in.tum.de/manual">CORA manual</a> and our <a href="cora.in.tum.de">website</a> to get started.')
 else
     disp('<strong>CORA installation failed.</strong> Please rerun the script or check Sec. 1.3 in the <a href="cora.in.tum.de/manual">CORA manual</a> for help.')
 end
@@ -121,11 +116,10 @@ addpath(genpath(coraroot));
 
 end
 
-function res = aux_install_toolbox(id,text)
-    res = aux_test_toolbox_installation(id,text);
+function res = aux_install_toolbox(id_long,text,id_short)
+    res = aux_test_toolbox_installation(id_long,text);
     while ~res
-        aux_display_install_prompt(text);
-        res = aux_test_toolbox_installation(id,text);
+        aux_display_install_prompt(text,id_short);
     end
 end
 
@@ -133,10 +127,10 @@ function res = aux_test_toolbox_installation(id,text)
     res = any(any(contains(struct2cell(ver),text)));
 end
 
-function aux_display_install_prompt(text)
+function aux_display_install_prompt(text, id_short)
     text = sprintf(['''<strong>%s</strong>'' is missing and requires manual installation. \n' ...
-        '  Please install it via the MATLAB Add-On Explorer. \n' ...
-        '  Rerun the CORA installation script afterwards.\n'], text);
+        ' 1. Please install it via the MATLAB <a href="matlab:matlab.internal.addons.launchers.showExplorer(''CORA'',''identifier'',''%s'')">Add-On Explorer</a>. \n' ...
+        ' 2. <a href="matlab:installCORA">Rerun</a> the CORA installation script afterward.\n'], text, id_short);
     throw(CORAerror('CORA:install',text))
 end
 
@@ -213,11 +207,10 @@ function aux_install_yalmip()
     end
 end
 
-function res = aux_install_supportpkg(text)
+function res = aux_install_supportpkg(text,id_short)
     res = aux_test_supportpkg_installation(text);
     while ~res
-        aux_display_install_prompt(text);
-        res = aux_test_toolbox_installation(id,text);
+        aux_display_install_prompt(text,id_short);
     end
 end
 

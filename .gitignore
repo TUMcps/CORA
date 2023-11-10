@@ -6,8 +6,13 @@
 # exclude generated files
 generated_*
 models/auxiliary/*
-+CustomLayers
-startup.m
+**/+CustomLayers
+**/+DLT_CustomLayers
+
+# explude files from installCORA 
+# (in case some installs tbxmanager into the CORA folder)
+**/tbxmanager
+**/startup.m
 
 # exclude from from general cora conversions
 models/CoraConverted/*

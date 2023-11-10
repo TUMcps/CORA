@@ -144,6 +144,7 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
                 reduce(R_xyu,'adaptive',sqrt(options.redFactor));
         end
     else
+        % safety branch (call from algorithm without gredIdx)
         R_xyu = reduce(R_xyu,'adaptive',sqrt(options.redFactor));
     end
     
@@ -206,6 +207,7 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
                 reduce(Z_error_y,'adaptive',10*options.redFactor);
         end
     else
+        % safety branch (call from algorithm without gredIdx)
         Z_error = reduce(Z_error,'adaptive',10*options.redFactor);
         Z_error_y = reduce(Z_error_y,'adaptive',10*options.redFactor);
     end

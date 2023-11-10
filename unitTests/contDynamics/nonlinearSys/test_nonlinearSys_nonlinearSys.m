@@ -18,7 +18,7 @@ function res = test_nonlinearSys_nonlinearSys
 
 % Authors:       Mark Wetzlinger
 % Written:       22-November-2022
-% Last update:   ---
+% Last update:   10-November-2023
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -74,6 +74,13 @@ if sys.dim ~= 3 || sys.nrOfInputs ~= 1 || sys.nrOfOutputs ~= 3
     res = false;
 end
 sys = nonlinearSys(sysname,f_3D,3,1);
+if ~strcmp(sysname,sys.name) ...
+        || sys.dim ~= 3 || sys.nrOfInputs ~= 1 || sys.nrOfOutputs ~= 3
+    res = false;
+end
+% explicitly state that there are no inputs, but CORA needs at least one
+% input internally...
+sys = nonlinearSys(sysname,f_3D,3,0);
 if ~strcmp(sysname,sys.name) ...
         || sys.dim ~= 3 || sys.nrOfInputs ~= 1 || sys.nrOfOutputs ~= 3
     res = false;

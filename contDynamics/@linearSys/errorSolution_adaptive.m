@@ -33,7 +33,7 @@ function [Rerror,options] = errorSolution_adaptive(obj,options,Vdyn,Vstat)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check if static error given
-if nargin < 4 || isempty(Vstat)
+if nargin < 4 || representsa_(Vstat,'emptySet',1e-10)
     isVstat = false;
 else
     isVstat = true;
@@ -55,7 +55,7 @@ if isVstat
     Asum = deltat * eye(obj.dim);
 end
 
-eta = 1;
+eta = 1; breakcond = false;
 % loop over increasing Taylor terms
 while true
 
@@ -80,8 +80,15 @@ while true
     if eta > 1
         gainnoF = 1 - formerEdgenoF / RerrorInt_etanoF(critDimnoF);
 
-        % break if gain too small
-        if gainnoF < options.zetaTabs || formerEdgenoF == 0 % gain < thr
+        % break if gain too small (or same truncation order as in previous
+        % iteration of the same time step reached)
+        if isfield(options,'tt_err') && length(options.tt_err) == options.i
+            breakcond = eta == options.tt_err(options.i);
+        elseif gainnoF < options.zetaTabs || formerEdgenoF == 0 % gain < thr
+            breakcond = true;
+        end
+
+        if breakcond
             % Vdyn: take former set (less generators)
             % determine error due to finite Taylor series
             W = abs(eAabst - M);

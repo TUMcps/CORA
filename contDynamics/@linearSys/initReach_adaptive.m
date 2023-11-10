@@ -61,13 +61,60 @@ Rhom_tp = eAt*Rstart + Rtrans;
 Rhom = enclose(Rstart,Rhom_tp) + F*Rstart + inputCorr;
 
 % preliminary solutions without RV
-Rend.ti = reduce(Rhom,'adaptive',options.redFactor);
-Rend.tp = reduce(Rhom_tp,'adaptive',options.redFactor);
+if isfield(options,'gredIdx')
+    if length(options.gredIdx.Rhomti) == options.i
+        % select the same generators for reduction as in the previous
+        % iteration of the current time step to limit the influence of
+        % the order reduction on the computation of the gain order
+        Rend.ti = reduce(Rhom,'idx',options.gredIdx.Rhomti{options.i});
+    else
+        % reduce adaptively and store indices of generators that have
+        % not been selected for reduction
+        [Rend.ti,~,options.gredIdx.Rhomti{options.i}] = ...
+            reduce(Rhom,'adaptive',options.redFactor);
+    end
+else
+    % safety branch (call from algorithm without gredIdx)
+    Rend.ti = reduce(Rhom,'adaptive',options.redFactor);
+end
+
+if isfield(options,'gredIdx')
+    if length(options.gredIdx.Rhomtp) == options.i
+        % select the same generators for reduction as in the previous
+        % iteration of the current time step to limit the influence of
+        % the order reduction on the computation of the gain order
+        Rend.tp = reduce(Rhom_tp,'idx',options.gredIdx.Rhomtp{options.i});
+    else
+        % reduce adaptively and store indices of generators that have
+        % not been selected for reduction
+        [Rend.tp,~,options.gredIdx.Rhomtp{options.i}] = ...
+            reduce(Rhom_tp,'adaptive',options.redFactor);
+    end
+else
+    % safety branch (call from algorithm without gredIdx)
+    Rend.tp = reduce(Rhom_tp,'adaptive',options.redFactor);
+end
 
 % reduce and add RV only if exists
 if linOptions.isRV
     % read and reduce RV from struct
-    RV = reduce(sys.taylor.RV,'adaptive',options.redFactor);
+    if isfield(options,'gredIdx')
+        if length(options.gredIdx.Rpar) == options.i
+            % select the same generators for reduction as in the previous
+            % iteration of the current time step to limit the influence of
+            % the order reduction on the computation of the gain order
+            RV = reduce(sys.taylor.RV,'idx',options.gredIdx.Rpar{options.i});
+        else
+            % reduce adaptively and store indices of generators that have
+            % not been selected for reduction
+            [RV,~,options.gredIdx.Rpar{options.i}] = ...
+                reduce(sys.taylor.RV,'adaptive',options.redFactor);
+        end
+    else
+        % safety branch (call from algorithm without gredIdx)
+        RV = reduce(sys.taylor.RV,'adaptive',options.redFactor);
+    end
+
     %total solution
     Rend.ti = Rend.ti + RV;
     Rend.tp = Rend.tp + RV;

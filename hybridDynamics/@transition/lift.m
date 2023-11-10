@@ -120,7 +120,7 @@ function resetStruct = aux_liftNonlinearReset(resetStruct,stateBind,dims,id)
     end
 
     % project function
-    resetStruct.f = @(x) aux_projectFunction(x,resetStruct.f,stateBind);
+    resetStruct.f = @(x) aux_projectFunction(x,resetStruct.f,dims,stateBind);
     
     % project jacobian
     resetStruct.J = @(x) aux_projectJacobian(x,resetStruct.J,dims,stateBind);
@@ -152,9 +152,9 @@ function resetStruct = aux_liftNonlinearReset(resetStruct,stateBind,dims,id)
     resetStruct.hasInput = false;
 end
 
-function res = aux_projectFunction(x,f,stateBind)
+function res = aux_projectFunction(x,f,n,stateBind)
 % project reset function to higher dimension
-    res = x; 
+    res = x(1:n); 
     res(stateBind) = f(x(stateBind));
 end
 
