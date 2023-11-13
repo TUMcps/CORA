@@ -28,6 +28,9 @@
     <!-- Timeline -->
     <link href="../../styles/timeline.css" rel="stylesheet">
 
+    <!-- Publication list -->
+    <script src="https://unpkg.com/bibtex-js-parser/umd/bibtex-js-parser.js"></script>
+    <script src="../../scripts/addPublication.js"></script>
 </head>
 <body>
 
@@ -180,7 +183,7 @@
         </div>
     </div>
 
-    <!-- CORA Publications -->
+    <!-- Publications using CORA -->
     <hr id="pubs-using-cora"/>
     <div class="row space-before">
         <div class="col-12">
@@ -188,6 +191,19 @@
             <section class="py-5">
 
                 <ul class="timeline-with-icons">
+
+                    <!--
+                    <li class="timeline-item mb-5">
+                        <span class="timeline-icon">
+                        <i class="bi bi-file-text"></i>
+                        </span>
+                        <h5 class="fw-bold">Constrained Polynomial Zonotopes</h5>
+                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> May 2023</p>
+                        <p class="text-muted">
+                            Niklas Kochdumper and Matthias Althoff.
+                            Acta Informatica 60.
+                        </p>
+                    </li>
 
                     <li class="timeline-item mb-5">
                         <span class="timeline-icon">
@@ -204,18 +220,79 @@
 
                     <li class="timeline-item mb-5">
                         <span class="timeline-icon">
+                        <i class="bi bi-file-text"></i>
+                        </span>
+                        <h5 class="fw-bold">Utilizing Dependencies to Obtain Subsets of Reachable Sets</h5>
+                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> April 2020</p>
+                        <p class="text-muted">
+                            Niklas Kochdumper, Bastian Sch&uuml;rmann, and Matthias Althoff.
+                            23rd International Conference on Hybrid Systems: Computation and Control.
+                        </p>
+                    </li>
+
+                    <li class="timeline-item mb-5">
+                        <span class="timeline-icon">
+                        <i class="bi bi-file-text"></i>
+                        </span>
+                        <h5 class="fw-bold">Reachability Analysis for Hybrid Systems with Nonlinear Guard Sets</h5>
+                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> April 2020</p>
+                        <p class="text-muted">
+                            Niklas Kochdumper and Matthias Althoff.
+                            23rd International Conference on Hybrid Systems: Computation and Control.
+                        </p>
+                    </li>
+
+                    <li class="timeline-item mb-5">
+                        <span class="timeline-icon">
+                        <i class="bi bi-file-text"></i>
+                        </span>
+                        <h5 class="fw-bold">Reachability Analysis of Nonlinear Systems using Conservative Polynomialization and Non-Convex Sets</h5>
+                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> April 2013</p>
+                        <p class="text-muted">
+                            Matthias Althoff.
+                            16th International Conference on Hybrid Systems: Computation and Control.
+                        </p>
+                    </li>
+
+                    <li class="timeline-item mb-5">
+                        <span class="timeline-icon">
                         <i class="bi bi-journals"></i>
                         </span>
                         <h5 class="fw-bold">Reachability Analysis and its Application to the Safety Assessment of Autonomous Cars</h5>
                         <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> July 2010</p>
                         <p class="text-muted">
-                            Mathias Althoff.
+                            Matthias Althoff.
                             PhD thesis.
                             [&nbsp;<a href="https://mediatum.ub.tum.de/export/1287517/bibtex" target="_blank">.bib</a>&nbsp;| <a href=https://mediatum.ub.tum.de/doc/1287517/document.pdf" target="_blank">.pdf</a>&nbsp;]
                         </p>
                     </li>
 
+                    <li class="timeline-item mb-5">
+                        <span class="timeline-icon">
+                        <i class="bi bi-file-text"></i>
+                        </span>
+                        <h5 class="fw-bold">Reachability Analysis of Nonlinear Systems With Uncertain Parameters using Conservative Linearization</h5>
+                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> December 2008</p>
+                        <p class="text-muted">
+                            Matthias Althoff, Olaf Stursberg, and Martin Buss.
+                            47th Conference on Decision and Control.
+                        </p>
+                    </li>
+                    -->
                 </ul>
+
+                <script>
+                    // enlist all publications
+                    const links = [
+                            "Kochdumper2022diss.bib",
+                            "Kochdumper2020HSCC1.bib"
+                        ];
+                    // call the function to add the publication to the list
+                    for (let i = 0; i < links.length; i++){
+                        addPublicationFromLink("pubs", "../../data/bib/" + links[i]);
+                    }
+                </script>
+
             </section>
         </div>
     </div>
