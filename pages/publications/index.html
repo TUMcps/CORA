@@ -99,86 +99,19 @@
             <h4>CORA Publications</h4>
             <section class="py-5">
 
-                <ul class="timeline-with-icons">
+                <ul class="timeline-with-icons" id="CORApubs"> </ul>
 
-                    <li class="timeline-item mb-5">
-                        <span class="timeline-icon">
-                        <i class="bi bi-file-text"></i>
-                        </span>
-                        <h5 class="fw-bold">Checking and Establishing Reachset Conformance in CORA 2023</h5>
-                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> October 2023</p>
-                        <p class="text-muted">
-                            Matthias Althoff.
-                            10th Workshop on Applied Verification for Continuous and Hybrid Systems. <!-- TODO: update bib link! -->
-                            [ <a href="https://mediatum.ub.tum.de/export/1700997/bibtex" target="_blank">.bib</a> | <a href="../../data/publications/PublicationReachsetConformance.pdf" target="_blank">.pdf</a> ]
-                        </p>
-                    </li>
-
-                    <li class="timeline-item mb-5">
-                        <span class="timeline-icon">
-                        <i class="bi bi-file-text"></i>
-                        </span>
-                        <h5 class="fw-bold">Implementation of Ellipsoidal Operations in CORA 2022</h5>
-                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> December 2022</p>
-                        <p class="text-muted">
-                            Victor Gaßmann and Matthias Althoff.
-                            9th Workshop on Applied Verification for Continuous and Hybrid Systems.
-                            [ <a href="https://mediatum.ub.tum.de/export/1700997/bibtex" target="_blank">.bib</a> | <a href="../../data/publications/PublicationEllipsoidalOperations.pdf" target="_blank">.pdf</a> ]
-                        </p>
-                    </li>
-
-                    <li class="timeline-item mb-5">
-                        <span class="timeline-icon">
-                        <i class="bi bi-file-text"></i>
-                        </span>
-                        <h5 class="fw-bold">Guaranteed State Estimation in CORA 2021</h5>
-                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> December 2021</p>
-                        <p class="text-muted">
-                            Matthias Althoff.
-                            8th Workshop on Applied Verification for Continuous and Hybrid Systems.
-                            [&nbsp;<a href="https://mediatum.ub.tum.de/export/1636779/bibtex" target="_blank">.bib</a>&nbsp;| <a href="../../data/publications/PublicationStateEstimation.pdf" target="_blank">.pdf</a>&nbsp;]
-                        </p>
-                    </li>
-
-                    <li class="timeline-item mb-5">
-                        <span class="timeline-icon">
-                        <i class="bi bi-file-text"></i>
-                        </span>
-                        <h5 class="fw-bold">Implementation of Taylor Models in CORA 2018</h5>
-                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> September 2018</p>
-                        <p class="text-muted">
-                            Matthias Althoff, Dmitry Grebenyuk, and Niklas Kochdumper.
-                            5th Workshop on Applied Verification for Continuous and Hybrid Systems.
-                            [&nbsp;<a href="https://mediatum.ub.tum.de/export/1454477/bibtex" target="_blank">.bib</a>&nbsp;| <a href="../../data/publications/PublicationTaylorModels.pdf" target="_blank">.pdf</a>&nbsp;]
-                        </p>
-                    </li>
-
-                    <li class="timeline-item mb-5">
-                        <span class="timeline-icon">
-                        <i class="bi bi-file-text"></i>
-                        </span>
-                        <h5 class="fw-bold">Implementation of Interval Arithmetic in CORA 2016</h5>
-                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> April 2016</p>
-                        <p class="text-muted">
-                            Matthias Althoff and Dmitry Grebenyuk.
-                            3rd Workshop on Applied Verification for Continuous and Hybrid Systems.
-                            [&nbsp;<a href="https://mediatum.ub.tum.de/export/1379696/bibtex" target="_blank">.bib</a>&nbsp;| <a href="../../data/publications/PublicationIntervalArithmetic.pdf" target="_blank">.pdf</a>&nbsp;]
-                        </p>
-                    </li>
-
-                    <li class="timeline-item mb-5">
-                        <span class="timeline-icon">
-                        <i class="bi bi-file-text"></i>
-                        </span>
-                        <h5 class="fw-bold">An Introduction to CORA 2015</h5>
-                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> December 2015</p>
-                        <p class="text-muted">
-                            Matthias Althoff.
-                            Workshop on Applied Verification for Continuous and Hybrid Systems.
-                            [&nbsp;<a href="https://mediatum.ub.tum.de/export/1280439/bibtex" target="_blank">.bib</a>&nbsp;| <a href="../../data/publications/PublicationCORA.pdf" target="_blank">.pdf</a>&nbsp;]
-                        </p>
-                    </li>
-                </ul>
+                <script>
+                    const CORApubs = [
+                        {bibtex: "Althoff2023ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/Zmbv"},
+                        {bibtex: "Gassmann2022ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/8hnJ"},
+                        {bibtex: "Althoff2021ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/hMPK"},
+                        {bibtex: "Althoff2018ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/9Tz3"},
+                        {bibtex: "Althoff2016ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/ZRJ"},
+                        {bibtex: "Althoff2015ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/xMm"},
+                    ];
+                    addPublicationsFromLink('CORApubs', CORApubs);
+                </script>
             </section>
         </div>
     </div>
@@ -190,102 +123,27 @@
             <h4>Publications using CORA</h4>
             <section class="py-5">
 
-                <ul class="timeline-with-icons" id="pubsUsingCORA">
-
-                    <!--
-                    <li class="timeline-item mb-5">
-                        <span class="timeline-icon">
-                        <i class="bi bi-file-text"></i>
-                        </span>
-                        <h5 class="fw-bold">Constrained Polynomial Zonotopes</h5>
-                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> May 2023</p>
-                        <p class="text-muted">
-                            Niklas Kochdumper and Matthias Althoff.
-                            Acta Informatica 60.
-                        </p>
-                    </li>
-
-                    <li class="timeline-item mb-5">
-                        <span class="timeline-icon">
-                        <i class="bi bi-journals"></i>
-                        </span>
-                        <h5 class="fw-bold">Extensions of Polynomial Zonotopes and their Application to Verification of Cyber-Physical Systems</h5>
-                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> February 2022</p>
-                        <p class="text-muted">
-                            Niklas Kochdumper.
-                            PhD thesis.
-                            [&nbsp;<a href="https://mediatum.ub.tum.de/export/1620128/bibtex" target="_blank">.bib</a>&nbsp;| <a href=https://mediatum.ub.tum.de/doc/1620128/document.pdf" target="_blank">.pdf</a>&nbsp;]
-                        </p>
-                    </li>
-
-                    <li class="timeline-item mb-5">
-                        <span class="timeline-icon">
-                        <i class="bi bi-file-text"></i>
-                        </span>
-                        <h5 class="fw-bold">Utilizing Dependencies to Obtain Subsets of Reachable Sets</h5>
-                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> April 2020</p>
-                        <p class="text-muted">
-                            Niklas Kochdumper, Bastian Sch&uuml;rmann, and Matthias Althoff.
-                            23rd International Conference on Hybrid Systems: Computation and Control.
-                        </p>
-                    </li>
-
-                    <li class="timeline-item mb-5">
-                        <span class="timeline-icon">
-                        <i class="bi bi-file-text"></i>
-                        </span>
-                        <h5 class="fw-bold">Reachability Analysis for Hybrid Systems with Nonlinear Guard Sets</h5>
-                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> April 2020</p>
-                        <p class="text-muted">
-                            Niklas Kochdumper and Matthias Althoff.
-                            23rd International Conference on Hybrid Systems: Computation and Control.
-                        </p>
-                    </li>
-
-                    <li class="timeline-item mb-5">
-                        <span class="timeline-icon">
-                        <i class="bi bi-file-text"></i>
-                        </span>
-                        <h5 class="fw-bold">Reachability Analysis of Nonlinear Systems using Conservative Polynomialization and Non-Convex Sets</h5>
-                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> April 2013</p>
-                        <p class="text-muted">
-                            Matthias Althoff.
-                            16th International Conference on Hybrid Systems: Computation and Control.
-                        </p>
-                    </li>
-
-                    <li class="timeline-item mb-5">
-                        <span class="timeline-icon">
-                        <i class="bi bi-journals"></i>
-                        </span>
-                        <h5 class="fw-bold">Reachability Analysis and its Application to the Safety Assessment of Autonomous Cars</h5>
-                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> July 2010</p>
-                        <p class="text-muted">
-                            Matthias Althoff.
-                            PhD thesis.
-                            [&nbsp;<a href="https://mediatum.ub.tum.de/export/1287517/bibtex" target="_blank">.bib</a>&nbsp;| <a href=https://mediatum.ub.tum.de/doc/1287517/document.pdf" target="_blank">.pdf</a>&nbsp;]
-                        </p>
-                    </li>
-
-                    <li class="timeline-item mb-5">
-                        <span class="timeline-icon">
-                        <i class="bi bi-file-text"></i>
-                        </span>
-                        <h5 class="fw-bold">Reachability Analysis of Nonlinear Systems With Uncertain Parameters using Conservative Linearization</h5>
-                        <p class="text-muted mb-2 fw-bold"><i class="bi bi-calendar-event"></i> December 2008</p>
-                        <p class="text-muted">
-                            Matthias Althoff, Olaf Stursberg, and Martin Buss.
-                            47th Conference on Decision and Control.
-                        </p>
-                    </li>
-                    -->
-                </ul>
+                <ul class="timeline-with-icons" id="pubsUsingCORA"> </ul>
 
                 <script>
-                    // enlist all publications using CORA
                     const pubs = [
-                        {bibtex: "Kochdumper2022diss.bib", type: 'diss'},
-                        {bibtex: "Kochdumper2020HSCC1.bib", type: 'paper'}
+                        {bibtex: "Wetzlinger2023TAC.bib", type: 'paper', pdf: ""},
+                        {bibtex: "Wetzlinger2023HSCC.bib", type: 'paper', pdf: ""},
+                        {bibtex: "Kochdumper2023Acta.bib", type: 'paper', pdf: ""},
+                        {bibtex: "Wetzlinger2022NAHS.bib", type: 'paper', pdf: ""},
+                        {bibtex: "Kochdumper2022diss.bib", type: 'diss', pdf: "https://mediatum.ub.tum.de/doc/1620128/document.pdf"},
+                        {bibtex: "Kochdumper2021TAC.bib", type: 'paper', pdf: ""},
+                        {bibtex: "Wetzlinger2021HSCC.bib", type: 'paper', pdf: ""},
+                        {bibtex: "Kochdumper2020HSCC1.bib", type: 'paper', pdf: ""},
+                        {bibtex: "Kochdumper2020HSCC2.bib", type: 'paper', pdf: ""},
+                        {bibtex: "Kochdumper2020CDC.bib", type: 'paper', pdf: ""},
+                        {bibtex: "Althoff2020TAC.bib", type: 'paper', pdf: ""},
+                        {bibtex: "Althoff2014TAC.bib", type: 'paper', pdf: ""},
+                        {bibtex: "Althoff2013HSCC.bib", type: 'paper', pdf: ""},
+                        {bibtex: "Althoff2011HSCC.bib", type: 'paper', pdf: ""},
+                        {bibtex: "Althoff2010diss.bib", type: 'diss', pdf: "https://mediatum.ub.tum.de/doc/1287517/document.pdf"},
+                        {bibtex: "Althoff2008CDC.bib", type: 'paper', pdf: ""},
+                        {bibtex: "Althoff2007CDC.bib", type: 'paper', pdf: ""},
                     ];
                     addPublicationsFromLink('pubsUsingCORA', pubs);
                 </script>

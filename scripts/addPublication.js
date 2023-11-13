@@ -1,27 +1,28 @@
 function addPublicationsFromLink(listId, pubs) {
-  // {bibtex: "bibtex-link", type: "pub-type"}
+  // {bibtex: "bibtex-link", type: "pub-type", pdf: "pdf-link"}
 
   // call the function to add the publication to the list
   for (let i = 0; i < pubs.length; i++){
     const pub = pubs[i];
     const bibtexlink = "../../data/bib/" + pub.bibtex;
+    const pdflink = pub.pdf;
     if (pub.type === 'diss') {
-      addDissFromLink("pubsUsingCORA", bibtexlink);
+      addDissFromLink(listId, bibtexlink, pdflink);
     } else {
-      addPaperFromLink("pubsUsingCORA", bibtexlink);
+      addPaperFromLink(listId, bibtexlink, pdflink);
     }
   }
 }
 
-function addPaperFromLink(listId, link) {
-  addPublicationFromLink(listId,link,"bi-file-text");
+function addPaperFromLink(listId, link, pdflink) {
+  addPublicationFromLink(listId,link,pdflink,"bi-file-text");
 }
 
-function addDissFromLink(listId, link) {
-  addPublicationFromLink(listId,link,"bi-journals");
+function addDissFromLink(listId, link, pdflink) {
+  addPublicationFromLink(listId,link,pdflink,"bi-journals");
 }
 
-function addPublicationFromLink(listId, link, icon) {
+function addPublicationFromLink(listId, link, pdflink, icon) {
   // get the unordered list element by id
   var list = document.getElementById(listId);
   // create a new list item element
@@ -59,6 +60,12 @@ function addPublicationFromLink(listId, link, icon) {
     }
     text += "<p class=\"text-muted mb-2 fw-bold\"><i class=\"bi bi-calendar-event\"></i> " + date + "</p>";
 
+    // start paragraph element to style the text
+    text += "<p class=\"text-muted mb-2\"> ";
+    // style journal: Author(s). Journal Volume (Issue). Pages. (Year)
+    // style journal: Author(s). Conference. Pages. (Year)
+    // style dissertation: Author. Dissertation. School. Pages. (Year)
+
     // check if the entry has authors
     if (entry.author) {
 
@@ -68,70 +75,89 @@ function addPublicationFromLink(listId, link, icon) {
       author = author.replace('\\\\\"o','&ouml;')
       author = author.replace('\\\\\"u','&uuml;')
 
-      text += author;
+      // handle commas and 'and's in authors
+      ands = author.match(/and/g);
+      if (ands === null){
+        // don't change anything
+      } else if (ands.length == 1) {
+        // don't change anything
+      } else if (ands.length > 1) {
+        // replace all but last one by ", " and add ", " before last "and"
+        author = author.replaceAll(' and', ', ');
+        idxLastComma = author.lastIndexOf(',');
+        author = author.slice(0,idxLastComma+1) + " and" + author.slice(idxLastComma+1);
+      }
+ 
+      // add author to text
+      text += author + ". ";
     }
 
-    // check if the entry has a journal
+    // journal?
     if (entry.journal) {
-      // add a period after the authors if they exist
-      if (text.length > 0) {
-        text += ". ";
-      }
       // add the journal name in italics
-      text += "<i>" + entry.journal + "</i>";
-    }
+      text += "<i>" + entry.journal;
 
-    // check if the entry has a volume
-    if (entry.volume) {
-      // add a comma after the journal if it exists
-      if (text.length > 0) {
-        text += ", ";
+      // check if the entry has a volume
+      if (entry.volume) {
+        // add the volume number
+        text += " " + entry.volume;
       }
-      // add the volume number
-      text += entry.volume;
-    }
 
-    // check if the entry has an issue
-    if (entry.issue) {
-      // add a parenthesis after the volume if it exists
-      if (text.length > 0) {
-        text += "(";
+      // check if the entry has an issue
+      if (entry.issue) {
+        // add the issue number
+        text += "(" + entry.issue + ")";
+      } else if (entry.number) {
+        // add the issue number
+        text += "(" + entry.number + ")";
       }
-      // add the issue number
-      text += entry.issue;
-      // close the parenthesis
-      text += ")";
+
+      // end italics
+      text += "</i>";
+    } else if (entry.booktitle) {
+      // add the proceedings name in italics
+      text += "<i>" + entry.booktitle + "</i>";
+    } else if (entry.school) {
+      // add 'Dissertation' and the school
+      text += "Dissertation, " + entry.school + ".";
     }
 
     // check if the entry has pages
     if (entry.pages) {
-      // add a colon after the issue if it exists
-      if (text.length > 0) {
-        text += ": ";
-      }
       // add the page range
-      text += entry.pages;
+      text += ". pp. " + entry.pages + ".";
+    } else if (entry.articleno) {
+      // sometimes, we have article number + number of pages
+      text += ". Article No. " + entry.articleno;
+      if (entry.numpages) {
+        text += ", " + entry.numpages + " pages.";
+      }
     }
 
-    // check if the entry has a year
-    if (entry.year) {
-      // add a period after the pages if they exist
-      if (text.length > 0) {
-        text += ". ";
-      }
-      // add the year in parentheses
-      text += "(" + entry.year + ")";
+    // close paragraph with author, title, etc.
+    text += "</p>";
+
+    // new div for clickable data: .bib, .pdf, URL
+    text += "<div class=\"btn-group\" role=\"group\"> ";
+    buttonclass = "class=\"btn btn-outline-primary\"";
+
+    // each entry has a .bib file
+    text += "<a href='" + link + "' " + buttonclass + ">.bib</a>";
+
+    // check if PDF exists
+    if (pdflink){
+      text += "<a target=\"_blank\" href='" + pdflink + "' " + buttonclass + ">PDF</a>";
     }
 
     // check if the entry has a url
     if (entry.url) {
-      // add a period after the year if it exists
-      if (text.length > 0) {
-        text += ". ";
-      }
+
       // add the url as a hyperlink
-      text += "<a href='" + entry.url + "'>Link</a>";
+      text += "<a target=\"_blank\" href='" + entry.url + "' " + buttonclass + ">URL</a>";
     }
+
+    // close paragraph
+    text += "</div>";
     
     // set the inner HTML of the list item to the text
     item.innerHTML = text;
