@@ -190,7 +190,7 @@
             <h4>Publications using CORA</h4>
             <section class="py-5">
 
-                <ul class="timeline-with-icons">
+                <ul class="timeline-with-icons" id="pubsUsingCORA">
 
                     <!--
                     <li class="timeline-item mb-5">
@@ -282,15 +282,12 @@
                 </ul>
 
                 <script>
-                    // enlist all publications
-                    const links = [
-                            "Kochdumper2022diss.bib",
-                            "Kochdumper2020HSCC1.bib"
-                        ];
-                    // call the function to add the publication to the list
-                    for (let i = 0; i < links.length; i++){
-                        addPublicationFromLink("pubs", "../../data/bib/" + links[i]);
-                    }
+                    // enlist all publications using CORA
+                    const pubs = [
+                        {bibtex: "Kochdumper2022diss.bib", type: 'diss'},
+                        {bibtex: "Kochdumper2020HSCC1.bib", type: 'paper'}
+                    ];
+                    addPublicationsFromLink('pubsUsingCORA', pubs);
                 </script>
 
             </section>
