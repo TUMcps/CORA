@@ -49,10 +49,13 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#cora-pubs">CORA Publications</a>
+                    <a class="nav-link" href="#workshop">Workshop Papers</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#pubs-using-cora">Publications using CORA</a>
+                    <a class="nav-link" href="#CORApubs">CORA Publications</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#usingCORA">Publications using CORA</a>
                 </li>
                 <li class="nav-item navbar-text">
                     <div class="d-block d-lg-none">
@@ -90,70 +93,140 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- CORA Publications -->
-    <hr id="cora-pubs"/>
-    <div class="row space-before">
-        <div class="col-12">
-            <h4>CORA Publications</h4>
-            <section class="py-5">
-
-                <ul class="timeline-with-icons" id="CORApubs"> </ul>
-
-                <script>
-                    const CORApubs = [
-                        {bibtex: "Althoff2023ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/Zmbv"},
-                        {bibtex: "Gassmann2022ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/8hnJ"},
-                        {bibtex: "Althoff2021ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/hMPK"},
-                        {bibtex: "Althoff2018ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/9Tz3"},
-                        {bibtex: "Althoff2016ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/ZRJ"},
-                        {bibtex: "Althoff2015ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/xMm"},
-                    ];
-                    addPublicationsFromLink('CORApubs', CORApubs);
-                </script>
-            </section>
+        <div class="col-12 order-2">
+            <p>To cite CORA, please use the following reference:</p>
+            <!-- the code lines below need the same indentation as one the displayed page! -->
+            <!-- also, if <code> is moved to a newline, there is another blank line in the code segment -->
+            <pre class="border border-secondary rounded" style="background-color: ghostwhite;"><code>
+    @inproceedings{CORA,
+        author = {Matthias Althoff},
+        title = {An Introduction to CORA 2015},
+        year = {2015},
+        month = {December},
+        booktitle = {Proc. of the 1st and 2nd Workshop on Applied Verification for Continuous and Hybrid Systems},
+        publisher = {EasyChair},
+        pages = {120-151},
+        doi = {10.29007/zbkv},
+        url = {https://easychair.org/publications/paper/xMm}
+    }
+            </code></pre>
         </div>
     </div>
 
-    <!-- Publications using CORA -->
-    <hr id="pubs-using-cora"/>
-    <div class="row space-before">
-        <div class="col-12">
-            <h4>Publications using CORA</h4>
-            <section class="py-5">
+    <ul class="list-group list-group-flush">
+        <li id="workshop" class="list-group-item px-0">
+            <a class="btn" data-bs-toggle="collapse" href="#collapse_workshop" role="button"
+               aria-expanded="true"
+               aria-controls="collapse_workshop">
+                <div class="row">
+                    <div class="col-11"><h4>Workshop Papers</h4></div>
+                    <div class="col-1"><span class="mr-3"></span></div>
+                </div>
+            </a>
+            <div class="collapse show" id="collapse_workshop">
+                <div class="row">
+                    <div class="col-12">
+                        <p>
+                            The list below is composed of papers published at the ARCH workshop that explain how certain functionality is implemented in CORA.
+                        </p>
+                        <div class="space-before-sm"></div>
+   
+                        <ul class="timeline-with-icons" id="workshop_papers"> </ul>
 
-                <ul class="timeline-with-icons" id="pubsUsingCORA"> </ul>
+                        <script>
+                            pubs = [
+                                {bibtex: "Althoff2023ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/Zmbv"},
+                                {bibtex: "Gassmann2022ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/8hnJ"},
+                                {bibtex: "Althoff2021ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/hMPK"},
+                                {bibtex: "Althoff2018ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/9Tz3"},
+                                {bibtex: "Althoff2016ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/ZRJ"},
+                                {bibtex: "Althoff2015ARCH.bib", type: 'paper', pdf: "https://easychair.org/publications/open/xMm"},
+                            ];
+                            addPublicationsFromLink('workshop_papers', pubs);
+                        </script>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li id="CORApubs" class="list-group-item px-0">
+            <a class="btn" data-bs-toggle="collapse" href="#collapse_CORApubs" role="button"
+               aria-expanded="true"
+               aria-controls="collapse_CORApubs">
+                <div class="row">
+                    <div class="col-11"><h4>CORA Publications</h4></div>
+                    <div class="col-1"><span class="mr-3"></span></div>
+                </div>
+            </a>
+            <div class="collapse show" id="collapse_CORApubs">
+                <div class="row">
+                    <div class="col-12">
+                        <p>
+                            The novelties in the papers below are implemented in CORA.
+                        </p>
+                        <div class="space-before-sm"></div>
 
-                <script>
-                    const pubs = [
-                        {bibtex: "Wetzlinger2023TAC.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Kochdumper2023NASA.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Ladner2023HSCC.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Wetzlinger2023HSCC.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Kochdumper2023Acta.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Wetzlinger2022NAHS.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Kochdumper2022diss.bib", type: 'diss', pdf: "https://mediatum.ub.tum.de/doc/1620128/document.pdf"},
-                        {bibtex: "Kochdumper2021TAC.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Wetzlinger2021HSCC.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Kochdumper2020HSCC1.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Kochdumper2020HSCC2.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Kochdumper2020CDC.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Althoff2020TAC.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Althoff2014TAC.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Althoff2013HSCC.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Althoff2011HSCC.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Althoff2010diss.bib", type: 'diss', pdf: "https://mediatum.ub.tum.de/doc/1287517/document.pdf"},
-                        {bibtex: "Althoff2008CDC.bib", type: 'paper', pdf: ""},
-                        {bibtex: "Althoff2007CDC.bib", type: 'paper', pdf: ""},
-                    ];
-                    addPublicationsFromLink('pubsUsingCORA', pubs);
-                </script>
+                        <ul class="timeline-with-icons" id="CORApubs_papers"> </ul>
 
-            </section>
-        </div>
-    </div>
+                        <script>
+                            pubs = [
+                                {bibtex: "Wetzlinger2023TAC.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Kochdumper2023NASA.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Ladner2023HSCC.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Wetzlinger2023HSCC.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Kochdumper2023Acta.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Wetzlinger2022NAHS.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Kochdumper2022diss.bib", type: 'diss', pdf: "https://mediatum.ub.tum.de/doc/1620128/document.pdf"},
+                                {bibtex: "Kochdumper2021TAC.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Wetzlinger2021HSCC.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Kochdumper2020HSCC1.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Kochdumper2020HSCC2.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Kochdumper2020CDC.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Althoff2020TAC.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Althoff2014TAC.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Althoff2013HSCC.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Althoff2011HSCC.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Althoff2010diss.bib", type: 'diss', pdf: "https://mediatum.ub.tum.de/doc/1287517/document.pdf"},
+                                {bibtex: "Althoff2008CDC.bib", type: 'paper', pdf: ""},
+                                {bibtex: "Althoff2007CDC.bib", type: 'paper', pdf: ""},
+                            ];
+                            addPublicationsFromLink('CORApubs_papers', pubs);
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="usingCORA" class="list-group-item px-0">
+            <a class="btn" data-bs-toggle="collapse" href="#collapse_usingCORA" role="button"
+               aria-expanded="true"
+               aria-controls="collapse_usingCORA">
+                <div class="row">
+                    <div class="col-11"><h4>Publications using CORA</h4></div>
+                    <div class="col-1"><span class="mr-3"></span></div>
+                </div>
+            </a>
+            <div class="collapse show" id="collapse_usingCORA">
+                <div class="row">
+                    <div class="col-12">
+                        <p>
+                            The publications below integrate CORA functionality in the implementation of their contributions.
+                        </p>
+                        <div class="space-before-sm"></div>
 
+                        <ul class="timeline-with-icons" id="usingCORA_papers"> </ul>
+
+                        <script>
+                            pubs = [
+                                {bibtex: "Schaefer2023TAC.bib", type: 'paper', pdf: "https://mediatum.ub.tum.de/doc/1663416/document.pdf"}
+                            ];
+                            addPublicationsFromLink('usingCORA_papers', pubs);
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="list-group-item px-0"></li> <!-- empty last item to have line underneath previous item -->
+    </ul>
 
 
     <!-- footer -->
