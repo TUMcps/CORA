@@ -3,6 +3,11 @@
     --bs-nav-link-color: #ddd;
 }
 
+::selection {
+    color: white;
+    background-color: var(--bs-primary);
+}
+
 body {
     padding-top: 15vh;
     padding-bottom: 10vh;
