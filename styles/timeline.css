@@ -3,6 +3,8 @@
     border-left: 1px solid hsl(0, 0%, 90%);
     position: relative;
     list-style: none;
+    /* required due to collapsable parent ul */
+    margin-left: 20px;
 }
 
 .timeline-with-icons .timeline-item {
@@ -26,4 +28,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    /* required due to collapsable parent ul */
+    margin: 0;
+    border: 0;
+    padding: 0;
+    cursor: default;
 }
