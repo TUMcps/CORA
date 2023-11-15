@@ -57,6 +57,9 @@ iframe {
     margin-bottom: 50px;
     margin-left: 5%;
     width: 90%;
+}
+
+hr {
     color: var(--bs-primary);
 }
 
@@ -154,23 +157,49 @@ img, embed, object[type="image/svg+xml"] {
 }
 
 .list-group-item a.btn.collapsed span {
-    transform: rotate(40deg);
-    -webkit-transform: rotate(40deg);
-    transition: .3s transform ease-in-out;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    transition: 0.5s transform ease-in-out;
 }
 
-
 .list-group-item a.btn span {
-    transform: rotate(-140deg);
-    -webkit-transform: rotate(-140deg);
-    transition: .3s transform ease-in-out;
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+    transition: 0.5s transform ease-in-out;
 }
 
 .list-group-item h4 {
     margin: 0;
 }
 
+/* Change the duration of the collapse animation */
+.collapsing {
+    transition: height 1s ease;
+}
+
+/* badges are used in publications as tags */
 .badge {
     font-weight: normal;
     border-radius: 1em;
+}
+
+.flyin {
+    /* Move the element below the screen */
+    transform: translateY(5vh);
+    opacity: 0;
+    /* Set the transition duration and easing */
+    transition: transform 1s ease-out, opacity 1s ease-out;
+    scroll-margin-top: 5vh;
+}
+
+.visible {
+    /* Move the element back to its original position */
+    transform: translateY(0);
+    opacity: 1;
+    scroll-margin-top: 0vh;
+}
+
+hr.visible {
+    /* same as default opacity for hr in Bootstrap */
+    opacity: 0.25;
 }
