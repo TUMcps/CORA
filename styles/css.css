@@ -169,3 +169,8 @@ img, embed, object[type="image/svg+xml"] {
 .list-group-item h4 {
     margin: 0;
 }
+
+.badge {
+    font-weight: normal;
+    border-radius: 1em;
+}

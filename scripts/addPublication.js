@@ -152,7 +152,7 @@ async function addPublicationFromLink(listId, link, pdflink, icon) {
   text += "<a href='" + link + "' " + buttonclass + ">.bib</a>";
 
   // check if PDF exists
-  if (pdflink){
+  if (pdflink) {
     text += "<a target=\"_blank\" href='" + pdflink + "' " + buttonclass + ">PDF</a>";
   }
 
@@ -165,6 +165,18 @@ async function addPublicationFromLink(listId, link, pdflink, icon) {
 
   // close paragraph
   text += "</div>";
+
+  // pill badges for keywords
+  if (entry.keywords) {
+    // badge class (ms-x is vertical separation)
+    badgeclass = "\"badge border border-secondary text-secondary ms-2\"";
+
+    // separate keywords into single badges
+    keywords = entry.keywords.split(",");
+    for (let i = 0; i < keywords.length; i++){
+      text += "<div class=" + badgeclass + ">" + keywords[i].trim() + "</div>";
+    }
+  }
 
   // set the inner HTML of the list item to the text
   item.innerHTML = text;
