@@ -42,9 +42,19 @@
                         <hr/>
                     </div>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link" href="#features">Features</a>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Features
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#reach-continuous">Reachability Analysis for Continuous Systems</a></li>
+                        <li><a class="dropdown-item" href="#reach-hybrid">Reachability Analysis for Hybrid Systems</a></li>
+                        <li><a class="dropdown-item" href="#geometric-sets">Geometric Sets</a></li>
+                        <li><a class="dropdown-item" href="#nn">Formal Verification of Neural Networks</a></li>
+                    </ul>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" href="#get-started">Get Started</a>
                 </li>
@@ -105,25 +115,27 @@
             </span>
         </span>
     </div>
+    <script src="./scripts/getJSON.js"></script>
     <script src="./scripts/github-release.js"></script>
 
     <div class="row space-before">
-        <p>The <u>Co</u>ntinuous <u>R</u>eachability <u>A</u>nalyzer (CORA) is a collection of MATLAB classes for the formal verification of
-            cyber-physical systems using reachability analysis. CORA integrates various vector and matrix set
-            representations and operations on them as well as reachability algorithms of various dynamic system classes.
-            The
-            software is designed such that set representations can be exchanged without having to modify the code for
-            reachability analysis. CORA is designed using the object oriented paradigm, such that users can safely use
-            methods without concerning themselves with detailed information hidden inside the object. Since the toolbox
-            is
-            written in MATLAB, the installation and use is platform independent. From Release 2018 on, the direct import
-            of
-            SpaceEx models into CORA is also supported. The following points summarize the main capabilities of the CORA
-            toolbox:</p>
+        <p>
+            The <u>Co</u>ntinuous <u>R</u>eachability <u>A</u>nalyzer (CORA) is a collection of MATLAB classes
+                for the formal verification of cyber-physical systems using reachability analysis.
+            CORA integrates various vector and matrix set representations and operations on them as well as
+                reachability algorithms of various dynamic system classes.
+            The software is designed such that set representations can be exchanged without having to modify
+                the code for reachability analysis.
+            CORA is designed using the object oriented paradigm, such that users can safely use methods
+                without concerning themselves with detailed information hidden inside the object.
+            Since the toolbox is written in MATLAB, the installation and use is platform independent.
+            From Release 2018 on, the direct import of SpaceEx models into CORA is also supported.
+            The following points summarize the main features of the CORA toolbox.
+        </p>
     </div>
 
     <!-- Features -->
-    <hr id="features" class="flyin"/>
+    <hr id="reach-continuous" class="flyin"/>
     <div class="row space-before flyin">
         <div class="col-12 col-md-6 col-xl-8 order-1 order-md-0">
             <h5>Reachability Analysis for Continuous Systems</h5>
@@ -145,9 +157,9 @@
         </div>
     </div>
 
-    <hr class="flyin"/>
+    <hr id="reach-hybrid" class="flyin"/>
 
-    <div class="row flyin">
+    <div class="row space-before flyin">
         <div class="col-12 col-md-6 col-xl-8 order-1 order-md-1">
             <h5>Reachability Analysis for Hybrid Systems</h5>
             <p>The toolbox is also capable to calculate the reachable sets for hybrid systems. All implemented dynamic
@@ -163,9 +175,9 @@
         </div>
     </div>
 
-    <hr class="flyin"/>
+    <hr id="geometric-sets" class="flyin"/>
 
-    <div class="row flyin">
+    <div class="row space-before flyin">
         <div class="col-12 col-md-6 col-xl-8 order-1 order-md-0">
             <h5>Geometric Sets</h5>
             <p>CORA has a modular design, making it possible to use the capabilities of the various set representations
@@ -182,9 +194,9 @@
         </div>
     </div>
 
-    <hr class="flyin"/>
+    <hr id="nn" class="flyin"/>
 
-    <div class="row flyin">
+    <div class="row space-before flyin">
         <div class="col-12 col-md-6 col-xl-8 order-1 order-md-1">
             <h5>Formal Verification of Neural Networks</h5>
             <p>CORA enables the formal verification of neural networks, both in open-loop as well as in closed loop scenarios. Open-loop verification

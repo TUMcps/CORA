@@ -16,7 +16,7 @@
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <link href="../../styles/css.css" rel="stylesheet">
+    <link href="../../../styles/css.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     <!-- MathJax -->
@@ -26,7 +26,7 @@
     </script>
 
     <!-- Timeline -->
-    <link href="../../styles/timeline.css" rel="stylesheet">
+    <link href="../../../styles/timeline.css" rel="stylesheet">
 
 </head>
 <body>
@@ -37,7 +37,7 @@
                 aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="../../index.html"> <img src="../../data/images/CoraLogo-icon.png"/></a>
+        <a class="navbar-brand" href="../../../index.html"> <img src="../../../data/images/CoraLogo-icon.png"/></a>
         <div class="collapse navbar-collapse" id="navbarToggler">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item navbar-text">
@@ -46,10 +46,7 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#versions">Versions</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#release-notes">Release Notes</a>
+                    <a class="nav-link" href="#features">Features</a>
                 </li>
                 <li class="nav-item navbar-text">
                     <div class="d-block d-lg-none">
@@ -62,13 +59,13 @@
                     <a class="nav-link" target="_blank" href="https://github.com/TUMcps/CORA"><i class="bi bi-github"></i> GitHub</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" target="_blank" href="../../manual/index.html"><i class="bi bi-file-earmark-pdf-fill"></i> Manual</a>
+                    <a class="nav-link" target="_blank" href="../../../manual/index.html"><i class="bi bi-file-earmark-pdf-fill"></i> Manual</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../publications/index.html"><i class="bi bi-file-text-fill"></i> Publications</a>
+                    <a class="nav-link" href="../../publications/index.html"><i class="bi bi-file-text-fill"></i> Publications</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="./index.html"><i class="bi bi-archive-fill"></i> Archive</a>
+                    <a class="nav-link" href="../index.html"><i class="bi bi-archive-fill"></i> Archive</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" target="_blank" href="https://de.mathworks.com/matlabcentral/fileexchange/68551-cora"><i
@@ -83,21 +80,18 @@
 
     <div class="row space-before">
         <div class="col-12 col-lg-6 col-xl-8 order-1 order-lg-0">
-            <h2>Archive</h2>
+            <h2>CORA v2020</h2>
             <p>
-                The first lines of CORA were written in September 2006 by Matthias Althoff.
-                This pages archives all previous versions of CORA and shows the history of CORA.
-            </p>
-            <p>
-                Please check the <a target="_blank" href="https://github.com/TUMcps/CORA"><i class="bi bi-github"></i>&nbsp;GitHub</a> page for the current version.
-                CORA is improved continuously throughout the year (see the release notes below), so the best practice is to clone the GitHub repository and regularly check for updates.
+                In August 2020, we released CORA v2020:
+                <a href="../../../data/archive/version/CORA_2020.zip"><i class="bi bi-file-earmark-zip-fill"></i> CORA v2020</a>
+                <a target="_blank" href="../../../data/archive/manual/Cora2020Manual.pdf"><i class="bi bi-file-earmark-pdf-fill"></i> Manual</a>
             </p>
         </div>
         <div class="col-12 col-lg-6 col-xl-4 order-0 order-lg-1 text-center">
             <div class="row">
                 <div class="col-3 col-sm-3 col-lg-2"></div>
                 <div class="col-6 col-sm-6 col-lg-8">
-                    <object type="image/svg+xml" data="../../data/images/CoraLogo.svg">
+                    <object type="image/svg+xml" data="../../../data/images/CoraLogo.svg">
                         Your browser does not support SVG
                     </object>
                 </div>
@@ -105,82 +99,46 @@
         </div>
     </div>
 
-    <hr id="versions"/>
+    <hr id="features"/>
     <div class="row space-before">
         <div class="col-12">
-            <h4>Versions</h4>
+            <h4>New Features</h4>
+            <ul>
+                <li><b>Improved interface and documentation</b>:
+                    We put a lot of effort into simplifying and unifying interfaces for operations on sets and dynamic systems.
+                    In addition, we provide a more detailed documentation of the functionality of CORA.
+                </li>
+                <li>
+                    <b>Polynomial zonotopes, ellipsoids and capsules</b>:
+                    We integrated two new set representations, namely ellipsoids and capsules.
+                    In addition, we substituted quadratic zonotopes by more general sparse polynomial zonotopes.s
+                </li>
+                <li>
+                    <b>New reachability algorithms</b>:
+                    We added several new reachability algorithms for linear continuous systems.
+                    These include the Krylov sub-space algorithm and the block-decomposition algorithm,
+                    which both enable the verification of high-dimensional systems.
+                    In addition, CORA now contains an adaptive algorithm that is fully automatic and does not require user-defined settings anymore.
+                </li>
+                <li>
+                    <b>New guard intersection methods</b>:
+                    For hybrid system reachability analysis, we implemented several new methods
+                    for computing guard intersections including a time-scaling approach, and a method that is based on constrained zonotopes.
+                    Furthermore, CORA now supports nonlinear guard sets for hybrid automata.
+                </li>
+                <li>
+                    <b>Linear discrete-time systems</b>:
+                    We integrated linear discrete-time systems.
+                </li>
+                <li>
+                    <b>Miscellaneous</b>:
+                    There are many other interesting improvements:
+                    Feasibility checks for user-defined settings, exporting CORA models in SpaceEx format,
+                    the new reachSet class for storing reachable sets, additional methods for conversion
+                    between different set representations, more unit tests, etc.
+                </li>
+            </ul>
         </div>
-
-        <div class="d-none d-xl-block col-6 col-md-4 col-lg-3 col-xl-2 text-center"> </div>
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
-            <a href="./v2024/index.html" class="card card-link">
-                <img src="../../data/images/latex/figures/geometric-sets/polytope.svg" alt="Fullspace"/>
-                <b>CORA v2024</b>
-            </a>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
-            <a href="./v2022/index.html" class="card card-link">
-                <img src="../../data/images/latex/figures/geometric-sets/ellipsoid.svg" alt="Halfspace"/>
-                <b>CORA v2022</b>
-            </a>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
-            <a href="./v2021/index.html" class="card card-link">
-                <img src="../../data/images/latex/figures/geometric-sets/conPolyZono.svg" alt="Interval"/>
-                <b>CORA v2021</b>
-            </a>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
-            <a href="./v2020/index.html" class="card card-link">
-                <img src="../../data/images/latex/figures/geometric-sets/polyZonotope.svg" alt="Level Set"/>
-                <b>CORA v2020</b>
-            </a>
-        </div>
-        <div class="d-none d-xl-block col-6 col-md-4 col-lg-3 col-xl-2 text-center"> </div>
-
-        <div class="d-none d-xl-block col-6 col-md-4 col-lg-3 col-xl-2 text-center"> </div>
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
-            <a href="./v2018/index.html" class="card card-link">
-                <img src="../../data/images/latex/figures/geometric-sets/taylm.svg" alt="Polytope"/>
-                <b>CORA v2018</b>
-            </a>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
-            <a href="./v2016/index.html" class="card card-link">
-                <img src="../../data/images/latex/figures/geometric-sets/interval.svg" alt="Polynomial Zonotope"/>
-                <b>CORA v2016</b>
-            </a>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
-            <a href="./v2015/index.html" class="card card-link">
-                <img src="../../data/images/latex/figures/geometric-sets/zonoBundle.svg" alt="Polytope"/>
-                <b>CORA v2015</b>
-            </a>
-        </div>
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2 text-center">
-            <a href="./v2012/index.html" class="card card-link">
-                <img src="../../data/images/latex/figures/geometric-sets/zonotope.svg" alt="Polynomial Zonotope"/>
-                <b>CORA v2012</b>
-            </a>
-        </div>
-        <div class="d-none d-xl-block col-6 col-md-4 col-lg-3 col-xl-2 text-center"> </div>
-        
-    </div>
-
-    <!-- Release Notes -->
-    <hr id="release-notes"/>
-    <div class="row space-before">
-        <div class="row">
-            <div class="col-12">
-                <h4>Release Notes</h4>
-                    <p>These are the release notes for every CORA release on
-                        <a target="_blank" href="https://github.com/TUMcps/CORA"><i class="bi bi-github"></i>&nbsp;GitHub</a>.</p>
-                    <ul id="release-notes-list" class="list-group list-group-flush">
-                    </ul>
-            </div>
-        </div>
-        <script src="../../scripts/getJSON.js"></script>
-        <script src="../../scripts/github-releasenotes.js"></script>
     </div>
 
     <!-- footer -->

@@ -75,9 +75,9 @@ async function addPublicationFromLink(listId, link, pdflink, icon) {
 
     // add the authors separated by commas
     author = entry.author;
-    author = author.replace('\\\\\"a','&auml;')
-    author = author.replace('\\\\\"o','&ouml;')
-    author = author.replace('\\\\\"u','&uuml;')
+    author = author.replaceAll('\\\\\"a','&auml;')
+    author = author.replaceAll('\\\\\"o','&ouml;')
+    author = author.replaceAll('\\\\\"u','&uuml;')
 
     // handle commas and 'and's in authors
     ands = author.match(/and/g);
