@@ -1,10 +1,10 @@
-async function addPublicationsFromLink(listId, pubs) {
+async function addPublicationsFromLink(listId, subfolder, pubs) {
   // {bibtex: "bibtex-link", type: "pub-type", pdf: "pdf-link"}
 
   // call the function to add the publication to the list
   for (let i = 0; i < pubs.length; i++){
     const pub = pubs[i];
-    const bibtexlink = "../../data/bib/" + pub.bibtex;
+    const bibtexlink = "../../data/bib/" + subfolder + "/" + pub.bibtex;
     const pdflink = pub.pdf;
 
     // add publication; await required to maintain order
