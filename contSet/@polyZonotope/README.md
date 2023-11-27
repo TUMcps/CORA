@@ -11,7 +11,7 @@ for editor.codecogs.com:
 \mathcal{PZ} := \bigg\{ c + \sum_{i=1}^h \bigg( \prod_{k=1}^p \alpha_k^{E_{(k,i)}} \bigg) G_{(\cdot,i)} + \sum_{j=1}^q \beta_j G_{I(\cdot,j)} \, \bigg| \, \alpha_k, \beta_j \in [-1,1] \bigg\} .
 -->
 
-Polynomial zonotopes are compact and non-convex sets.
+Polynomial zonotopes are compact and can describe non-convex sets.
 
 In CORA, polynomial zonotopes are instantiated by
 

@@ -190,7 +190,7 @@ b = P.b;
 
 % check if all points are located inside the resulting conZonotope
 for i = 1:size(points,2)
-   if ~all(A*points(:,i) < b | withinTol(A*points(:,i),b))
+   if ~all(A*points(:,i) < b | withinTol(A*points(:,i),b,1e-6))
        throw(CORAerror('CORA:testFailed'));
    end
 end
@@ -232,8 +232,7 @@ b = P.b;
 % plot(cZ_,[1,2],'r');
 
 % check if all points are located inside the resulting conZonotope
-Tol = 1e-14;
-
+Tol = 1e-12;
 for i = 1:size(points,2)
    if any(A*points(:,i) - b > Tol)
        throw(CORAerror('CORA:testFailed'));

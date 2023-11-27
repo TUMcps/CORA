@@ -53,27 +53,48 @@ if isa(S,"polytope")
     %check for empty polytopes
     if representsa(P, 'emptySet')
         P_out = S; return
+    elseif representsa(S, 'emptySet')
+        P_out = P; return
+    end
+    % check if one of the sets is the origin
+    if representsa(P,'origin')
+        P_out = S; return
+    elseif representsa(S,'origin')
+        P_out = P; return
     end
 
-    if representsa(S, 'emptySet')
-        P_out = P; return
+    % both polytopes have vertex representation
+    if ~isempty(P.V.val) && ~isempty(S.V.val)
+        % read out vertices
+        V1 = P.V.val; V2 = S.V.val;
+        numV1 = size(V1,2); numV2 = size(V2,2);
+
+        % init resulting vertices
+        V = zeros(n,numV1*numV2);
+
+        % add each vertex to each vertex
+        for i = 1:numV2
+			V(:,((i-1)*numV1+1):i*numV1,:) = bsxfun(@plus, V1, V2(:,i));
+        end
+        
+        % init resulting polytope (only vertex representation)
+        P_out = polytope(V);
+        return
     end
 
     % all-zero matrices
     PZ = zeros(size(P.A,1),size(S.A,2));
     PZe = zeros(size(P.Ae,1),size(S.Ae,2));
 
-    % inequalities
+    % lift inequalities and equalities to higher-dimensional space
     A = [S.A -S.A; PZ P.A];
     b = [S.b; P.b];
-
-    % equalities
     Ae = [S.Ae -S.Ae; PZe P.Ae];
     be = [S.be; P.be];
 
-    % project resulting polytope
-    temp = polytope(A,b,Ae,be);
-    P_out = project(temp,1:n);
+    % project resulting polytope to original dimensions
+    P_highdim = polytope(A,b,Ae,be);
+    P_out = project(P_highdim,1:n);
 
 elseif isnumeric(S)
 
@@ -91,6 +112,11 @@ elseif isnumeric(S)
     end
 
     P_out = polytope(A,b,Ae,be);
+
+    % shift vertices if V representation is given
+    if ~isempty(P.V.val)
+        P_out.V.val = P.V.val + x;
+    end
 
 elseif isa(S,'zonotope') || isa(S,'interval') || ...
     isa(S,'conZonotope') || isa(S,'zonoBundle')

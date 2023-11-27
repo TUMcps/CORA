@@ -37,7 +37,7 @@ end
 if isa(S,'polytope')
     method = setDefaultValues({'lcon2vert'},varargin);
     inputArgsCheck({{S,'att','polytope'}, ...
-                    {method,'str',{'lcon2vert','comb'}}});
+                    {method,'str',{'cdd','lcon2vert','comb'}}});
 else
     method = setDefaultValues({'convHull'},varargin);
     inputArgsCheck({{S,'att','contSet'};

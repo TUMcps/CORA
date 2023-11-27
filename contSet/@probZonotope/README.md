@@ -1,6 +1,6 @@
 # Probabilistic Zonotope
 
-A probabilistic zonotope is defined as
+A probabilistic zonotope is a random variable (not a set, strictly speaking) defined as
 
 <p style="background-color: white;">
 <img src="https://latex.codecogs.com/svg.image?%5Cmathcal%7BZ%7D_p:=%5Cbigg%5C%7Bc&plus;%5Csum_%7Bi=1%7D%5E%5Cgamma%5Cbeta_i%20G_%7B(%5Ccdot,i)%7D&plus;%5Csum_%7Bj=1%7D%5Eq%5Cmathcal%7BN%7D%5E%7B(j)%7D(0,1)%5C,P_%7B(%5Ccdot,j)%7D%5C,%5Cbigg%7C%5C,%5Cbeta_i%5Cin%5B-1,1%5D%5Cbigg%5C%7D."/>

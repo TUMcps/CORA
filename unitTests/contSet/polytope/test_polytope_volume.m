@@ -27,11 +27,7 @@ res = [];
 
 % empty case
 P = polytope();
-
-% compute volume
 val = volume(P);
-
-% true volume
 val_true = 0;
 res(end+1,1) = withinTol(val,val_true);
 
@@ -44,44 +40,39 @@ val = volume(P);
 res(end+1,1) = withinTol(val,5);
 
 
-% init polytope
+% 2D, bounded
 V = [3 2; 0 3; -3 0; -1 -2; 2 -2]';
 P = polytope(V);
-
-% compute volume
 val = volume(P);
-
 % true volume (computed by hand)
 val_true = 2*2 + 1*2 + 0.5*2*2 + 0.5*3*3 + 2*2 + 0.5*1*3 + 0.5*1*4;
 res(end+1,1) = withinTol(val,val_true);
-
-
-% volume should be unaffected by translation
-z = [2; 1];
-V = V - z;
+% translate vertices (should not affect the volume)
+V = V - [2; 1];
 P = polytope(V);
-
-% compute volume
 val = volume(P);
 res(end+1,1) = withinTol(val,val_true);
 
+% 2D, unbounded
+A = [1 0; 1 -1; -1 -1];
+b = ones(3,1);
+P = polytope(A,b);
+val = volume(P);
+res(end+1,1) = val == Inf;
 
-% degenerate polytope
+
+% 3D, degenerate polytope
 A = [1 1 0; -1 1 0; 0 -1 0; 0 0 1; 0 0 -1];
 b = [1; 1; 1; 0; 0];
 P = polytope(A,b);
-
-% compute volume
 val = volume(P);
 res(end+1,1) = withinTol(val,0);
 
 
-% unbounded polytope
+% 3D, unbounded polytope
 A = [1 1 0; -1 1 0; 0 -1 0];
 b = ones(3,1);
 P = polytope(A,b);
-
-% compute volume
 val = volume(P);
 res(end+1,1) = val == Inf;
 

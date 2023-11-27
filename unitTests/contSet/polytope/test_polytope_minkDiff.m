@@ -33,6 +33,17 @@ P = minkDiff(P1,P2);
 P_true = polytope([1;-1],[0.8; 0.3]);
 res(end+1,1) = isequal(P,P_true,1e-10);
 
+% 2D, origin - origin
+P1 = polytope(zeros(2,1));
+P2 = polytope(zeros(2,1));
+P = minkDiff(P1,P2);
+res(end+1,1) = isequal(P,P1,1e-10);
+
+% 2D, set - origin
+P1 = polytope([1 1; -2 1; 0 -2],[1;1;1]);
+P2 = polytope(zeros(2,1));
+P = minkDiff(P1,P2);
+res(end+1,1) = isequal(P,P1,1e-10);
 
 % 2D, convert zonotope to polytopes
 Z_m = zonotope([1; 1],[1 0 1; 0 1 1]);

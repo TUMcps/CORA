@@ -40,6 +40,7 @@ function P_out = minkDiff(P,S,varargin)
 % Authors:       Niklas Kochdumper
 % Written:       04-February-2021
 % Last update:   01-December-2022 (MW, support function method as default)
+%                23-November-2023 (MW, bug fix for equality constraints)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -72,8 +73,8 @@ end
 if strcmp(type,'exact')
 
     % scale each halfspace of the polytope
-    A = P.A;
-    b = P.b;
+    A = P.A; b = P.b;
+    Ae = P.Ae; be = P.be;
     
     % shift entry in offset vector by support function value of subtrahend
     for i = 1:size(A,1)
@@ -87,7 +88,7 @@ if strcmp(type,'exact')
     end
     
     % init resulting polytope
-    P_out = polytope(A,b);  
+    P_out = polytope(A,b,Ae,be);  
 
 elseif strcmp(type,'exact:vertices')
     if isa(S,'zonotope') || isa(S,'interval')

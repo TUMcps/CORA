@@ -18,7 +18,7 @@ function res = test_polytope_vertices
 
 % Authors:       Mark Wetzlinger
 % Written:       29-November-2022
-% Last update:   ---
+% Last update:   24-November-2023 (MW, check errors for unbounded cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -75,34 +75,64 @@ res(end+1,1) = all(withinTol(V,V_));
 % 2D, bounded
 P = polytope([2 1; 2 -2; -2 -2; -1 2],[2; 2; 2; 2]);
 V = vertices(P);
-V_super = vertices(P,'comb');
+V_comb = vertices(P,'comb');
 V_ = [0.4 1.2; 1 0; 0 -1; -4/3 1/3]';
-res(end+1,1) = compareMatrices(V,V_) ...
-    && compareMatrices(V,V_super,1e-14,'subset');
+res(end+1,1) = compareMatrices(V,V_) && compareMatrices(V,V_comb,1e-14);
 
 % 2D, vertex instantiation
 V_ = [3 0; 2 2; -1 3; -2 0; 0 -1]';
 P = polytope(V_);
 V = vertices(P);
-V_super = vertices(P,'comb');
-res(end+1,1) = compareMatrices(V,V_,1e-14) ...
-    && compareMatrices(V,V_super,1e-14,'subset');
+V_comb = vertices(P,'comb');
+res(end+1,1) = compareMatrices(V,V_,1e-14) && compareMatrices(V,V_comb,1e-14);
 
 % 2D, bounded, degenerate (single point)
 P = polytope([1 1; 1 -1; -1 0],zeros(3,1));
 V = vertices(P);
-V_super = vertices(P,'comb');
+V_comb = vertices(P,'comb');
 V_ = [0;0];
-res(end+1,1) = compareMatrices(V,V_,1e-14) ...
-    && compareMatrices(V,V_super,1e-14,'subset');
+res(end+1,1) = compareMatrices(V,V_,1e-14) && compareMatrices(V,V_comb,1e-14);
 
 % 2D, bounded, degenerate (line)
 P = polytope([1 1; 1 -1; -1 -1; -1 1],[1; 0; 1; 0]);
 V = vertices(P);
-V_super = vertices(P,'comb');
+V_comb = vertices(P,'comb');
 V_ = [0.5 0.5; -0.5 -0.5]';
-res(end+1,1) = compareMatrices(V,V_,1e-14) ...
-    && compareMatrices(V,V_super,1e-14,'subset');
+res(end+1,1) = compareMatrices(V,V_,1e-14) && compareMatrices(V,V_comb,1e-14);
+
+% 2D, unbounded (should throw an error!)
+P = polytope([1 0],1);
+try
+    V = vertices(P);
+    res(end+1,1) = false;
+end
+
+% 2D, unbounded (should throw an error!)
+P = polytope([1 0; -1 0],[1;1]);
+try
+    V = vertices(P);
+    res(end+1,1) = false;
+end
+[M,~,~] = svd(rand(2));
+P_ = M*P;
+try
+    V = vertices(P_);
+    res(end+1,1) = false;
+end
+
+% 2D, unbounded (should throw an error!)
+P = polytope([1 0; -1 0; 0 -1],[1;1;1]);
+try
+    V = vertices(P);
+    res(end+1,1) = false;
+end
+
+% 2D, unbounded but not axis-aligned (should throw an error!)
+P = polytope([1 -0.1; 0.1 -1; -0.1 -1; -1 -0.1],ones(4,1));
+try
+    V = vertices(P);
+    res(end+1,1) = false;
+end
 
 
 % 3D, degenerate (2D simplex)
@@ -124,10 +154,9 @@ res(end+1,1) = compareMatrices(V,V_);
 n = 3;
 P = polytope([eye(n); -eye(n)],[1; 1; 0; 1; 1; 0]);
 V = vertices(P);
-V_super = vertices(P,'comb');
+V_comb = vertices(P,'comb');
 V_ = [1 1 0; -1 1 0; -1 -1 0; 1 -1 0]';
-res(end+1,1) = compareMatrices(V,V_) ...
-    && compareMatrices(V,V_super,1e-14,'subset');
+res(end+1,1) = compareMatrices(V,V_,1e-14) && compareMatrices(V,V_comb,1e-14);
 
 
 % 4D, degenerate (unit square)

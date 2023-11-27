@@ -11,7 +11,7 @@ for editor.codecogs.com:
 \mathcal{HS} := \{ x \in \mathbb{R}^n \, | \, c^\top x \leq d \}, \quad c \in \mathbb{R}^n, d \in \mathbb{R} .
 -->
 
-Halfspaces are compact, convex, and unbounded sets.
+Halfspaces are convex sets.
 
 In CORA, halfspaces are instantiated by
 

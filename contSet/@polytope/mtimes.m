@@ -23,13 +23,14 @@ function P = mtimes(factor1,factor2)
 %
 % See also: plus
 
-% Authors:       Matthias Althoff, Viktor Kotsev
+% Authors:       Matthias Althoff, Viktor Kotsev, Mark Wetzlinger
 % Written:       01-February-2011
 % Last update:   10-September-2015
 %                15-June-2016
 %                25-July-2016 (intervalhull replaced by interval)
 %                28-June-2022
 %                12-September-2022 (add affineMap/invAffineMap functions)
+%                14-November-2023 (MW, handling for V-rep, scaling method)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -51,12 +52,24 @@ n = dim(P);
 
 %numeric matrix
 if isnumeric(matrix)
-    %convert scalar to matrix if necessary
-    if length(matrix)==1
-        matrix = matrix*eye(n);
+
+    % quick computation using V-representation
+    if ~isempty(P.V.val)
+        if length(matrix)==1
+            matrix = matrix*eye(n);
+        end
+        P = polytope(matrix*P.V.val);
+        return
     end
-    
-    if isa(factor1,'polytope')
+
+    % special method for scaling
+    if length(matrix)==1
+        if matrix == 0
+            P = polytope(zeros(n,1));
+        else
+            P = aux_scaling(P,matrix);
+        end
+    elseif isa(factor1,'polytope')
         P = aux_invAffineMap(P,matrix);
     else
         P = aux_affineMap(P,matrix);
@@ -95,6 +108,26 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
+function P = aux_scaling(P,fac)
+% simple method for scaling:
+%    M S = { M s | s in S }
+% -> fac * I * S = { fac * I * x | A x <= b, Ae x == b}    set y = fac*I*x
+%                = { y | A (1/fac*I*y) <= b, Ae (1/fac*I*y) == b }
+%                = { y | A/fac y <= b, Ae/fac y == b }
+%                = { y | A y <= b*fac, Ae y == b*fac }     if fac > 0
+%             OR = { y | -A y <= -b*fac, Ae y == b*fac }   if fac < 0
+% (note: case with fac = 0 handled outside)
+
+if fac > 0
+    P.b = P.b * fac;
+else
+    P.A = -P.A;
+    P.b = -P.b * fac;
+end
+P.be = P.be * fac;
+
+end
+
 function P = aux_affineMap(P,M)
 % affineMap - computes the affine map M*P of the polytope P with the matrix
 %    M of the size n x d.
@@ -115,22 +148,16 @@ function P = aux_affineMap(P,M)
 
 % emptiness checked elsewhere
 
-if norm(M) <= 1E-12
-	% Special case: zero map. Return a singleton (the origin) of
-	% appropriate dimension: M*P = { z | z=0 } where the dimension of "z"
-	% is equal to the number of rows of "M"
-	new_dim = size(T, 1);
-	V = zeros(new_dim, 1);
-	He = [eye(new_dim), zeros(new_dim, 1)];
-	P = polytope([], [], He(:,end-1), He(:,end));
-	return
-end
-
-% quick computation using V-representation
-if ~isempty(P.V.val)
-    P = polytope(M*P.V.val);
-    return
-end
+% if norm(M) <= 1E-12
+% 	% Special case: zero map. Return a singleton (the origin) of
+% 	% appropriate dimension: M*P = { z | z=0 } where the dimension of "z"
+% 	% is equal to the number of rows of "M"
+% 	new_dim = size(M, 1);
+% 	V = zeros(new_dim, 1);
+% 	He = [eye(new_dim), zeros(new_dim, 1)];
+% 	P = polytope([], [], He(:,end-1), He(:,end));
+% 	return
+% end
 
 
 if ~isempty(P.Ae)
@@ -165,7 +192,7 @@ end
 
 % Compute permutation of M s.t. P*y = [M1 M2; M3 M4]*[xr;xn] with rank M1 = rank T and Q*x=[xr;xn]
 [L,U,p,q] = lu(sparse(M),'vector');
-r = rank(M,1E-12);
+r = rank(M,1e-12);
 pr = p(1:r); pn = p(r+1:end);
 qr = q(1:r); qn = q(r+1:end);
 

@@ -30,6 +30,9 @@ function res = testLong_conZonotope_reduce
 
 res = true;
 
+% tolerance (similar to solver tolerance for linear programs)
+tol = 1e-6;
+
 % TEST 1: 2D --------------------------------------------------------------
 
 methods = {'girard','combastel'};
@@ -78,8 +81,8 @@ for j = 1:length(methods)
 %         plot(cRed{i},[1,2],'b');
         
         % check if all vertices are located inside the set
-        temp = P.A*V - P.b*ones(1,size(V,2));
-        if ~all(all( temp < 0 | withinTol(temp,1e-10) ))
+        dist = P.A*V - P.b*ones(1,size(V,2));
+        if ~all(all( dist < 0 | withinTol(dist,0,tol) ))
             throw(CORAerror('CORA:testFailed'));
         end
     end
@@ -129,8 +132,8 @@ for j = 1:length(methods)
         P = polytope(cRed{i});
         
         % check if all vertices are located inside the set
-        temp = P.A*V - P.b*ones(1,size(V,2));
-        if ~all(all( temp < 0 | withinTol(temp,1e-10) ))
+        dist = P.A*V - P.b*ones(1,size(V,2));
+        if ~all(all( dist < 0 | withinTol(dist,0,tol) ))
             throw(CORAerror('CORA:testFailed'));
         end
     end
@@ -149,7 +152,7 @@ V = vertices(cZ);
 V_ = vertices(cZred);
 
 % compare with the real vertices
-if ~compareMatrices(V,V_)
+if ~compareMatrices(V,V_,tol)
     res = false;
 end
 

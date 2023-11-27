@@ -6,7 +6,7 @@ An interval is defined as
 <img src="https://latex.codecogs.com/svg.image?%5Cmathcal%7BI%7D:=%5C%7Bx%5Cin%5Cmathbb%7BR%7D%5En%5C,%7C%5C,%5Cunderline%7Bx%7D_i%5Cleq%20x_i%5Cleq%5Coverline%7Bx%7D_i,i=1,...,n%5C%7D."/>
 </p>
 
-Intervals are compact and convex sets.
+Intervals are convex sets.
 
 In CORA, intervals are instantiated by
 

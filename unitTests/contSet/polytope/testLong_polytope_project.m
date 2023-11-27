@@ -22,6 +22,7 @@ function res = testLong_polytope_project
 % Authors:       Niklas Kochdumper, Mark Wetzlinger
 % Written:       21-December-2020
 % Last update:   05-December-2022 (MW, integrate comparison to zonotope)
+%                21-November-2023 (MW, replace vertex computation by support function)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -32,10 +33,13 @@ res = true;
 % number of tests
 nrTests = 25;
 
+% number of support function evaluations
+nrsF = 10;
+
 % idea: compare vertices of projection with projected vertices
 for i=1:nrTests
     
-    % random dimension (low... to facilitate vertex enumeration)
+    % low random dimension to facilitate vertex enumeration
     n = randi([3,4]);
 
     % create random polytope
@@ -46,28 +50,25 @@ for i=1:nrTests
     % either one or two dimensions removed
     projDims = projDims(1:randi(2));
     
-    % computation of vertices or projection
     % project using polytope/project function
     P_ = project(P,projDims);
-    % compute vertices of projection
-    V_ = vertices(P_);
-    
-    % computation of projected vertices
-    V = vertices(P);
-    V = V(projDims,:);
-    % convex hull to remove redundancies
-    if length(projDims) == 1
-        V = [min(V),max(V)];
-    else
-        k = convhulln(V');
-        V = V(:,unique(k));
-    end
-    
-    % compare vertices
-    if ~compareMatrices(V_,V,1e-12)
-        res = false; break
-    end
 
+    % evaluate support function of original set and projected set in
+    % directions that lie in the projected subspace
+    for j=1:nrsF
+        % random normalized direction in subspace
+        l = randn(n,1);
+        l(~any((1:n)'==projDims,2)) = 0;
+        l = l./vecnorm(l);
+        l_ = l(projDims);
+
+        % compare values support function
+        val = supportFunc(P,l);
+        val_ = supportFunc(P_,l_);
+        if ~withinTol(val,val_,1e-5)
+            throw(CORAerror('CORA:testFailed'));
+        end
+    end
 
     % compare to interval projection
     I = interval.generateRandom('Dimension',n);
@@ -84,7 +85,7 @@ for i=1:nrTests
 
     % compare vertices
     if ~compareMatrices(V_I,V_P,1e-12)
-        res = false; break
+        throw(CORAerror('CORA:testFailed'));
     end
 
 
@@ -103,7 +104,7 @@ for i=1:nrTests
 
     % compare vertices
     if ~compareMatrices(V_Z,V_P,1e-12)
-        res = false; break
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 

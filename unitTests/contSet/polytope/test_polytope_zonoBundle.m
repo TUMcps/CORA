@@ -23,7 +23,10 @@ function res = test_polytope_zonoBundle
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = [];
+res = true(0);
+
+% tolerance
+tol = 1e-14;
 
 % init polytope that is also a zonotope
 A = [1 1; -1 1; -1 -1; 1 -1];
@@ -36,7 +39,7 @@ zB = zonoBundle(P);
 V_ = vertices(zB);
 
 % compare vertices
-res(end+1,1) = compareMatrices(V,V_);
+res(end+1,1) = compareMatrices(V,V_,tol);
 
 
 % init polytope
@@ -50,7 +53,7 @@ zB = zonoBundle(P);
 V_ = vertices(zB);
 
 % compare vertices
-res(end+1,1) = compareMatrices(V,V_,1e-14);
+res(end+1,1) = compareMatrices(V,V_,tol);
 
 
 % combine results

@@ -27,6 +27,6 @@ funcname = mfilename;
 warning(sprintf(['The function ''' funcname ''' is deprecated (since CORA 2024) and has been replaced by ''compact''.\n' ...
     '         When updating the code, please rename every function call ''' funcname '(Z)'' -> ''compact(Z,''aligned'')''.\n' ...
     '         Note that the function ''' funcname ''' will be removed in a future release.']));
-Z = compact_(Z,'aligned');
+Z = compact_(Z,'aligned',eps);
 
 % ------------------------------ END OF CODE ------------------------------

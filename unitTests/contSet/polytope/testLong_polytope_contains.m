@@ -44,8 +44,7 @@ for i=1:nrTests
     % check if randomly generated points are inside
     Y = randPoint(P,n);
     if ~contains(P,Y,'exact',1e-12)
-        res = false;
-        break;
+        throw(CORAerror('CORA:testFailed'));
     end
 
 
@@ -56,8 +55,7 @@ for i=1:nrTests
     
     % check containment
     if ~contains(P1,P2)
-        res = false;
-        break
+        throw(CORAerror('CORA:testFailed'));
     end
     
     % generate zonotope
@@ -66,8 +64,7 @@ for i=1:nrTests
     P = polytope(Z);
     % check if Ei is in P
     if ~contains(P,E,'exact',E.TOL)
-        res = false;
-        break;
+        throw(CORAerror('CORA:testFailed'));
     end
 end
 

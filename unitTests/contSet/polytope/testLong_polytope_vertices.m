@@ -26,8 +26,8 @@ function res = testLong_polytope_vertices
 % assume true
 res = true;
 
-% tolerance
-tol = 1e-10;
+% tolerance (similar to solver tolerance since we use linear programs)
+tol = 1e-6;
 
 % number of tests
 nrTests = 50;
@@ -36,6 +36,16 @@ for i=1:nrTests
 
     % random dimension
     n = randi(5);
+
+    % only n halfspaces -> unbounded (should throw an error)
+    if n > 1
+        % we can compute -+Inf vertices in 1D
+        P = polytope(randn(n,n),ones(n,1));
+        try
+            V = vertices(P);
+            throw(CORAerror('CORA:testFailed'));
+        end
+    end
 
     % sample semi-random vertices (no redundancies)
     V = -1+2*rand(n,2*n);
@@ -55,6 +65,15 @@ for i=1:nrTests
 
     % init random zonotope
     Z = zonotope.generateRandom('Dimension',n,'NrGenerators',n+2);
+    % delete aligned generators (to avoid numerical issues)
+    Z = compact(Z,'aligned',1e-6);
+    % lower bound for length of shortest generator with respect to longest
+    % generator (to avoid numerical issues)
+    ratio = vecnorm(Z.G) ./ max(vecnorm(Z.G));
+    minratio = 0.01;
+    if any(ratio < minratio)
+        Z = zonotope(Z.c,max([minratio./ratio;ones(size(ratio))]).*Z.G);
+    end
 
     % convert to polytope
     P = polytope(Z);
@@ -73,8 +92,9 @@ for i=1:nrTests
     P = polytope.generateRandom('Dimension',n,'IsDegenerate',false);
     V = vertices(P);
     
+    A = [P.A, zeros(length(P.b),1)]; b = P.b;
     Ae = [zeros(1,n) 1]; be = 0;
-    P_ = polytope([P.A, zeros(length(P.b),1)],P.b,Ae,be);
+    P_ = polytope(A,b,Ae,be);
     V_ = vertices(P_);
 
     % compare vertices

@@ -64,6 +64,16 @@ if isempty(options)
     options = optimoptions('linprog','display','off');
 end
 
+% dimension
+n = dim(P);
+
+% 1D case: convert to interval and check there
+if n == 1
+    res = isIntersecting_(interval(P),interval(S),type,tol);
+    return
+end
+
+
 % polytope and polytope
 if isa(S,'polytope')
     

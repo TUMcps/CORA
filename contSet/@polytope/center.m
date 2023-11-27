@@ -1,5 +1,6 @@
 function c = center(P)
-% center - Computes the Chebyshev center of a given polytope
+% center - Computes the Chebyshev center of a given polytope; for unbounded
+%    polytopes, we return a NaN-vector as the center
 %
 % Syntax:
 %    c = center(P)
