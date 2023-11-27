@@ -44,6 +44,8 @@ for i=1:nrTests
     % generate random zonotope, where the vertex enumeration of the
     % converted polytope is successful
     Z = zonotope.generateRandom('Dimension',n,'NrGenerators',nrGens);
+    % scale to unit box to avoid numerical imprecisions
+    Z = enlarge(Z,1./rad(interval(Z)));
     P = polytope(Z);
     try
         vertices(P);
@@ -57,7 +59,7 @@ for i=1:nrTests
 
     % compare values
     if ~withinTol(val_Z,val_P,1e-5)
-        res = false; return
+        throw(CORAerror('CORA:testFailed'));
     end
 
 end

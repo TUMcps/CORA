@@ -61,8 +61,10 @@ if isemptyobject(P)
 end
 
 % reduce vertex representation
-if strcmp(type,'V')
+if strcmp(type,'V') || (isempty(P.A) && isempty(P.Ae) && ~isempty(P.V.val))
     P_out = aux_minVRep(P_out,tol);
+    % the set with the reduced representation size has the same properties
+    % (boundedness, etc.) as the original one
     P = aux_copyProperties(P,P_out);
     return
 end
@@ -344,8 +346,17 @@ function P = aux_minVRep(P,tol)
         P.V.val = V;
     else
         % compute convex hull and take only the unique points
-        K = convhulln(V');
-        P.V.val = V(:,unique(K));
+        try
+            K = convhulln(V');
+            P.V.val = V(:,unique(K));
+        catch ME
+            if strcmp(ME.identifier,'MATLAB:cgprechecks:NotEnoughPts')
+                % not enough unique points specified -> we assume that this
+                % means minimal representation
+            else
+                rethrow(ME);
+            end
+        end
     end
     
     % set minVRep to true
@@ -403,7 +414,7 @@ function P = aux_deleteZeros(P,tol)
         P.A = zeros(1,n); P.b = 0; P.Ae = zeros(0,n); P.be = [];
         P.emptySet.val = false;
         P.bounded.val = false;
-        P.isFullDim.val = true;
+        P.fullDim.val = true;
 
     else
         % instantiate resulting polytope

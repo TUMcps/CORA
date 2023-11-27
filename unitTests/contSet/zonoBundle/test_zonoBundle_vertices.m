@@ -34,7 +34,7 @@ Z2 = zonotope([0;0], [2 2; 2 -2]);
 zB = zonoBundle({Z1,Z2});
 V = vertices(zB);
 V_true = [4 0; 1 3; -1 3; -2 2; -2 -1; 3 -1]';
-res(end+1,1) = compareMatrices(V,V_true);
+res(end+1,1) = compareMatrices(V,V_true,1e-14);
 
 % empty intersection
 Z2 = zonotope([-4;1],[0.5 1; 1 -1]);

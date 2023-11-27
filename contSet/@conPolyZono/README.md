@@ -16,7 +16,7 @@ for editor.codecogs.com:
 \sum_{i=1}^q \bigg( \prod_{k=1}^p \alpha_k^{R_{(k,i)}} \bigg) A_{(\cdot,i)} = b, \alpha_k, \beta_j \in [-1,1] \bigg\} .
 -->
 
-Constrained polynomial zonotopes are non-convex sets.
+Constrained polynomial zonotopes can describe non-convex sets.
 
 In CORA, constrained polynomial zonotopes are instantiated by
 

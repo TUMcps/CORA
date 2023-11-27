@@ -23,7 +23,7 @@ function [res, x] = verify(nn, X0, spec, varargin)
 %       - 'PlotDimsOut': dimensions to plot in output space
 %
 % Outputs:
-%    res - result: true if specification is satisfied, false if not
+%    res - result: true if specification is satisfied, false if not, empty if unknown
 %    x - counterexample in terms of an initial point violating the specs
 %
 % References:
@@ -42,6 +42,7 @@ function [res, x] = verify(nn, X0, spec, varargin)
 % Written:       23-November-2021
 % Last update:   30-November-2022 (TL, removed neuralNetworkOld, adaptive)
 %                25-July-2023 (TL, input parsing, improvements)
+%                23-November-2023 (TL, verbose, bug fix)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -67,9 +68,12 @@ end
 unknownSets = {X0};
 
 % main evaluation loop
+if verbose
+    disp("Verifying neural network ...")
+end
 while ~isempty(unknownSets) && splits >= 0
     if verbose
-        fprintf("Nr. of unknown sets: %g\n", length(unknownSets))
+        fprintf("Nr. of remaining splits: %2d - Nr. of unknown sets: %3d\n", splits, length(unknownSets))
     end
     
     splits = splits-1;
@@ -94,6 +98,9 @@ while ~isempty(unknownSets) && splits >= 0
                 drawnow
             end
 
+            if verbose
+                disp("Result: FALSIFIED")
+            end
             return;
         end
 
@@ -164,10 +171,15 @@ end
 
 if isempty(unknownSets)
     % input set X0 verified
+    if verbose
+        disp("Result: VERIFIED")
+    end
     res = true;
 else
     % unknown result
-    warning("Verification ended with unknown result. Try to increase the number of recursive splits.")
+    if verbose
+        disp("Result: UNKNOWN")
+    end
     res = [];
 end
 
@@ -227,8 +239,7 @@ end
 function [nn,X0,spec] = aux_preprocess(nn,X0,spec)
 
     % transform input to an interval
-    if ~isa(X0, 'interval')
-        X0 = interval(X0);
+    if ~representsa_(X0,'interval',eps)
         warning("CORA Neural Network Verification: "+ ...
             "Input Set is not an interval. "+ ...
             "Thus, a potentially found falsifying example "+ ...
@@ -236,6 +247,7 @@ function [nn,X0,spec] = aux_preprocess(nn,X0,spec)
             "However, if the verification is successful, "+ ...
             "also the actual input set is verified.")
     end    
+    X0 = interval(X0);
 
     % classification task can be significantly accelerated
     % by applying the argmax trick [1, Prop. B.2]
@@ -243,7 +255,7 @@ function [nn,X0,spec] = aux_preprocess(nn,X0,spec)
     if length(spec) == 1 && isa(spec.set, 'polytope')
 
         % read polytope set
-        P = spec.set.P;
+        P = spec.set;
         
         % use P.A as final linear layer of the neural network
         nn = neuralNetwork([ ...

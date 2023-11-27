@@ -23,6 +23,7 @@ function obj = convertDLToolboxNetwork(dltoolbox_layers, verbose)
 % Written:       30-March-2022
 % Last update:   05-June-2022 (LK, Conv, Pool)
 %                17-January-2023 (TL, Reshape)
+%                23-November-2023 (TL, bug fix with scalar element-wise operation)
 % Last revision: 17-August-2022
 %                25-July-2023 (TL, nnElementwiseAffineLayer)
 
@@ -75,8 +76,11 @@ for i = 1:n
         % fix dimensions for [h,w,c] inputs
         if length(currentSize) == 3
             if ~isscalar(s)
+                % fix if all values are equal
+                if ~isempty(s) && all(s(1) == s,'all')
+                    s = s(1);
                 % try to fix scaling factor
-                if length(currentSize) ~= length(size(s))
+                elseif length(currentSize) ~= length(size(s))
                     % assuming scaling in channel dimension
                     s = reshape(s, 1, 1, []);
                     s = repmat(s, [currentSize(1:2), 1]);
@@ -86,8 +90,11 @@ for i = 1:n
                 end
             end
             if ~isscalar(o)
+                % fix if all values are equal
+                if ~isempty(o) && all(o(1) == o,'all')
+                    o = o(1);
                 % try to fix offset vector
-                if length(currentSize) ~= length(size(o))
+                elseif length(currentSize) ~= length(size(o))
                     % assuming scaling in channel dimension
                     o = reshape(o, 1, 1, []);
                     o = repmat(o, [currentSize(1:2), 1]);

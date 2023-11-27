@@ -280,10 +280,7 @@ res(end+1,1) = isempty(P.minVRep.val);
 B = box(P);
 res(end+1,1) = ~isempty(B.minHRep.val) && B.minHRep.val;
 
-% After computing vertices, V-rep should be unknown if they were not present before
 vertices(P);
-res(end+1,1) = isempty(P.minVRep.val);
-
 P = compact(P, 'V');
 res(end+1,1) = ~isempty(P.minVRep.val) && P.minVRep.val;
 

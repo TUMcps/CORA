@@ -74,17 +74,14 @@ if strcmp(type,'b')
         % equality constraints where Ae(:,i)*x = 0 are left unchanged
     
         % find indices of constraints with be > 0 and be < 0
-        idx_plus = P.be > 0;
-        idx_neg = P.be < 0;
+        idx_nonzero = P.be > 0 | P.be < 0;
     
-        % divide constraints with be > 0 by be
-        P.Ae(idx_plus,:) = P.Ae(idx_plus,:) ./ P.be(idx_plus);
-        P.be(idx_plus) = 1;
-    
-        % divide constraints with be < 0 by be
-        P.Ae(idx_neg,:) = P.Ae(idx_neg,:) ./ P.be(idx_neg);
-        P.be(idx_neg) = 1;
-    
+        % divide constraints with be =!= 0 by be
+        if any(idx_nonzero)
+            P.Ae(idx_nonzero,:) = P.Ae(idx_nonzero,:) ./ P.be(idx_nonzero);
+            P.be(idx_nonzero) = 1;
+        end
+        
     end
 
 elseif strcmp(type,'A')

@@ -50,6 +50,13 @@ for i=1:size(P.A,1)
 end
 res(end+1,1) = compareMatrices(val1,val2,1e-14);
 
+% two vertex representations
+P1 = polytope([1 1; -1 1; -1 -1; 1 -1]');
+P2 = polytope([0 1; 1 0; -1 0]');
+P_sum = compact(P1 + P2,'V');
+P_true = polytope([-1 2; 1 2; 2 1; 2 -1; -2 -1; -2 1]');
+res(end+1,1) = compareMatrices(P_sum.V.val,P_true.V.val);
+
 % unbounded case
 P1 = polytope([1 0; -1 0; 0 1], [1;1;1]);
 P2 = polytope([1 0; -1 0; 0 1;0 -1], [1;1;1;1]);
@@ -65,6 +72,16 @@ P2 = polytope([1 0; -1 0; 0 1; 0 -1], [1;1;1;-1]);
 P_sum = P1 + P2;
 P_true = polytope([1 0; -1 0; 0 1; 0 -1], [2;2;2;-2]);
 res(end+1,1) = P_sum == P_true;
+
+% degenerate case
+P1 = polytope([1 0; -1 0; 0 1; 0 -1],0.1*ones(4,1));
+P2 = polytope([-1 0; 1 0],[0.05;0.05],[1 -1],0);
+
+P_sum = P1 + P2;
+P_true = polytope([-0.15 -0.15; -0.15 0.05; 0.05 -0.15; 0.05 0.05; ...
+        -0.05 -0.05; -0.05 0.15; 0.15 -0.05; 0.15 0.15]');
+res(end+1,1) = P_sum == P_true;
+
 
 % polytope + interval
 P = polytope([2 1; -1 1; -2 -3; 0 -4; 2 -1], ones(5,1));

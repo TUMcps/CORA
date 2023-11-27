@@ -26,6 +26,7 @@ function printTestOverview(varargin)
 % Written:       22-January-2021
 % Last update:   09-April-2023 (MW, remove 'classes', integrate other test suites)
 %                28-April-2023 (MW, add name-value pairs)
+%                23-November-2023 (TL, failed tests show call syntax)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -106,9 +107,9 @@ fprintf(['  .. failed:  ',num2str(nrFailedTests),'\n']);
 
 % print names of all failed tests
 if nrFailedTests > 0
-    fprintf("  .. .. %s (seed=%i)\n", nameFailedTests{1}, seedFailedTests(1));
+    fprintf("  .. .. rng(%i); %s\n", seedFailedTests(1),nameFailedTests{1});
     for i=2:nrFailedTests
-    fprintf("        %s (seed=%i)\n", nameFailedTests{i}, seedFailedTests(i));
+    fprintf("        rng(%i); %s\n", seedFailedTests(i),nameFailedTests{i});
     end
 end
 

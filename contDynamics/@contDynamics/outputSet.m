@@ -104,7 +104,7 @@ I_u = interval(U);
 I = cartProd(I_x,I_u);
 
 % evaluate reset function and Jacobian at expansion point
-D_lin = 0;
+D_lin = zeros(obj.nrOfOutputs,obj.nrOfInputs);
 if isa(obj,'nonlinearSys') || isa(obj,'nonlinearSysDT')
     zerothorder = obj.out_mFile(p_x,p_u);
     [J,D_lin] = obj.out_jacobian(p_x,p_u);

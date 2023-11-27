@@ -73,62 +73,68 @@ if r < n
     V = V(1:r,:);
 end
 
-% compute convex hull (possibly in subspace)
-try
-    K = convhulln(V');
-catch ME
-    if strcmp(ME.identifier,'MATLAB:qhullmx:UndefinedError')
-        % error with precision... take another method
-        K = convhulln(V',{'QJ'});
-    else
-        rethrow(ME);
+% set is actually 1D
+if size(V,1) == 1
+    A = [1; -1]; 
+    b = [max(V); -min(V)];
+
+else
+    % compute convex hull (possibly in subspace)
+    try
+        K = convhulln(V');
+    catch ME
+        if strcmp(ME.identifier,'MATLAB:qhullmx:UndefinedError')
+            % error with precision... take another method
+            K = convhulln(V',{'QJ'});
+        else
+            rethrow(ME);
+        end
     end
-end
-
-%interior point
-s.A = zeros(size(K, 1), r);
-s.B = ones(size(K, 1), 1);
-s.lin = [];
-
-for i = 1:size(K, 1)
-    % each row of K contains indices of vertices that lie on the i-th
-    % facet
-    P = V(:, K(i, :))';
-    % compute the normal vector and the offset of the facet
-    W = [P, -ones(r, 1)];
-    [AB, ~] = qr(W'); % qr() is much faster than null()
-    a = AB(1:r, end);
-    b = AB(end, end);
     
-    % determine the sign
-    if 0 > b
-        a = -a;
-        b = -b;
+    %interior point
+    s.A = zeros(size(K, 1), r);
+    s.B = ones(size(K, 1), 1);
+    s.lin = [];
+    
+    for i = 1:size(K, 1)
+        % each row of K contains indices of vertices that lie on the i-th
+        % facet
+        P = V(:, K(i, :))';
+        % compute the normal vector and the offset of the facet
+        W = [P, -ones(r, 1)];
+        [AB, ~] = qr(W'); % qr() is much faster than null()
+        a = AB(1:r, end);
+        b = AB(end, end);
+        
+        % determine the sign
+        if 0 > b
+            a = -a;
+            b = -b;
+        end
+        s.A(i, :) = a';
+        s.B(i) = b;
     end
-    s.A(i, :) = a';
-    s.B(i) = b;
+    
+    Hall = [s.A s.B];
+    
+    % inequality representation
+    H = Hall; H(s.lin, :) = [];
+    A = H(:,1:end-1);
+    if r == n
+        b = H(:,end) + A*c;
+    else
+        b = H(:,end);
+    end
+    
+    % equality representation
+    He = Hall(s.lin, :);
+    Ae = He(:,1:end-1);
+    if r == n
+        be = He(:,end) + Ae*c;
+    else
+        be = He(:,end);
+    end
 end
-
-Hall = [s.A s.B];
-
-% inequality representation
-H = Hall; H(s.lin, :) = [];
-A = H(:,1:end-1);
-if r == n
-    b = H(:,end) + A*c;
-else
-    b = H(:,end);
-end
-
-% equality representation
-He = Hall(s.lin, :);
-Ae = He(:,1:end-1);
-if r == n
-    be = He(:,end) + Ae*c;
-else
-    be = He(:,end);
-end
-
 
 % back-projection to higher-dimensional space (if computed in subspace)
 if r < n

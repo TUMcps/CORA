@@ -61,6 +61,19 @@ P_ = normalizeConstraints(P,'A');
 res(end+1,1) = all(withinTol(vecnorm(P_.Ae',2),1));
 
 
+% 2D, degenerate using equality constraint
+A = [0 1; 0 -1]; b = [3;-1];
+Ae = [1 0]; be = 0;
+P = polytope(A,b,Ae,be);
+
+% normalize offset vector in constraints
+P_ = normalizeConstraints(P,'b');
+
+% check if offset vectors are -1|0|1
+res(end+1,1) = all(withinTol(P_.b,1) | withinTol(P_.b,0) | withinTol(P_.b,-1)) ...
+    && all(withinTol(P_.be,1) | withinTol(P_.be,0));
+
+
 % combine results
 res = all(res);
 

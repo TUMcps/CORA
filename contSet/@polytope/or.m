@@ -25,12 +25,12 @@ function P_out = or(P1,P2)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty cases
-if isempty(P1) 
+if representsa_(P1,'emptySet',eps)
     P_out = P2;
     return;
 end
 
-if isempty(P2)
+if representsa_(P2,'emptySet',eps)
     P_out = P1;
     return;
 end

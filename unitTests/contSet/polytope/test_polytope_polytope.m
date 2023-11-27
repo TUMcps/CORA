@@ -70,6 +70,13 @@ res(end+1,1) = P == P_true ...
     && ~isempty(P.bounded.val) && P.bounded.val;
 
 % 1D: only one point
+V = -5;
+P = polytope(V);
+% true solution
+P_true = polytope([],[],1,-5);
+res(end+1,1) = P == P_true;
+
+% 1D: only one point
 V = 3;
 % compute halfspace representation
 P = polytope(V);

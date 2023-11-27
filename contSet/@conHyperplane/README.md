@@ -11,7 +11,7 @@ for editor.codecogs.com:
 \mathcal{CH} := \{ x \in \mathbb{R}^n \, | \, c^\top x = d, Ax \leq b \}, \quad c \in \mathbb{R}^n, d \in \mathbb{R}, A \in \mathbb{R}^{m \times n}, b \in \mathbb{R}^m .
 -->
 
-Constrained hyperplane are compact, convex, and degenerate sets.
+Constrained hyperplane are closed, convex, and degenerate sets.
 
 In CORA, constrained hyperplanes are instantiated by
 

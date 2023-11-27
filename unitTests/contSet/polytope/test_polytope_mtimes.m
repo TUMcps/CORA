@@ -23,13 +23,19 @@ function res = test_polytope_mtimes
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = [];
+res = true(0);
 
-% init polytope
+% 1D polytope
+P = polytope([1,3]);
+A = -2;
+P_ = A*P;
+V = vertices(P_);
+res(end+1,1) = compareMatrices(V,[-2,-6]);
+
+
+% 2D, init polytope via vertices
 V = [3 2; 0 3; -3 0; -1 -2; 2 -2]';
 P = polytope(V);
-
-% compute linear map
 A = [2 1; -1 0];
 P_mapped = A*P;
 
@@ -42,7 +48,6 @@ P_ = polytope(V_);
 
 % 1. check
 res(end+1,1) = compareMatrices(V_,V_mapped,1e-14);
-
 % 2. check: normalize and compare
 temp1 = [P_mapped.A, P_mapped.b]';
 temp1 = temp1 ./ vecnorm(temp1);
@@ -50,17 +55,20 @@ temp2 = [P_.A, P_.b]';
 temp2 = temp2 ./ vecnorm(temp2);
 res(end+1,1) = compareMatrices(temp1,temp2,1e-14);
 
-% unbounded polytope
+
+% 2D, unbounded polytope
 P = polytope([1 0; -1 0; 0 1], [1;1;1]);
 P_ = A * P;
 res(end+1,1) = ~isBounded(P_);
 
-% degenerate polytope
+
+% 2D, degenerate polytope
 P = polytope([1 0; -1 0; 0 1; 0 -1], [1;1;1;-1]);
 P_ = A * P;
 res(end+1,1) = ~isFullDim(P_);
 
-% standard scaling matrix
+
+% 2D, standard scaling matrix
 P = polytope([1 0;-1 0; 0 1; 0 -1],[2;2;2;2]);
 A = [2 0; 0 4];
 P_ = mtimes(A, P);

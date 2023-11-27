@@ -34,6 +34,12 @@ function P_out = minus(P,varargin)
 if isnumeric(varargin{1})
     % subtrahend is numeric
     P_out = minkDiff(P,varargin{:});
+    % copy properties
+    P_out.bounded.val = P.bounded.val;
+    P_out.emptySet.val = P.emptySet.val;
+    P_out.fullDim.val = P.fullDim.val;
+    P_out.minVRep.val = P.minVRep.val;
+    P_out.minHRep.val = P.minHRep.val;
 
 else
     % throw error

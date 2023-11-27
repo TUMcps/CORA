@@ -764,29 +764,8 @@ methods
         % read out ordered vertices
         V = pgon.set.Vertices;
 
-        % empty case
-        if isempty(V)
-            % nothing to do
-            return
-        end
-
-        % compute vectors (note: wrap around at the end)
-        vectors = [V(end, :); V] - [V; V(1, :)];
-
-        % indices for which vertices are kept
-        idxKept = true(size(V, 1), 1);
-
-        % check rank
-        for i = 1:length(idxKept)
-            if rank(vectors(i:i+1, :), tol) < 2
-                idxKept(i) = false;
-            end
-        end
-
-        % remove vertices if any are collinear
-        if ~all(idxKept)
-            pgon = polygon(V(idxKept, :)');
-        end
+        % remove collinear vertices
+        pgon = polygon(removeCollinearVertices2D(V',tol));
 
     end
 

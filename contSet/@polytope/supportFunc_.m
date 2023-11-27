@@ -22,14 +22,36 @@ function [val,x] = supportFunc_(P,dir,type,varargin)
 %
 % See also: contSet/supportFunc, conZonotope/supportFunc_
 
-% Authors:       Niklas Kochdumper, Victor Gassmann
+% Authors:       Niklas Kochdumper, Victor Gassmann, Mark Wetzlinger
 % Written:       19-November-2019
 % Last update:   16-March-2021 (added unbounded support)
 %                10-December-2022 (MW, add 'range')
 %                13-December-2022 (MW, add call to MOSEK)
+%                15-November-2023 (MW, computation for vertex representation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+
+% check if vertex representation given (skips linear program)
+if ~isempty(P.V.val)
+    if strcmp(type,'upper')
+        vals = dir' * P.V.val;
+        [val,idx] = max(vals);
+        x = P.V.val(:,idx);
+    elseif strcmp(type,'lower')
+        vals = -dir' * P.V.val;
+        [val,idx] = min(-vals);
+        x = P.V.val(:,idx);
+    elseif strcmp(type,'range')
+        vals_upper = dir' * P.V.val;
+        vals_lower = -dir' * P.V.val;
+        [val_upper,idx_upper] = max(vals_upper);
+        [val_lower,idx_lower] = min(-vals_lower);
+        val = interval(val_lower, val_upper);
+        x = [P.V.val(:,idx_lower), P.V.val(:,idx_upper)];
+    end
+    return
+end
 
 % check if MOSEK is installed
 persistent isMosek

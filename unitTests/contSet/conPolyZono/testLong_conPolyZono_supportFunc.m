@@ -63,7 +63,7 @@ for i = 1:5
         val = supportFunc(cPZ,d,'lower',methods{j});
         
         % check for correctness
-        if val > val_ && ~withinTol(val,val_,tol)            
+        if val > val_ && ~withinTol(val,val_,tol)
             throw(CORAerror('CORA:testFailed'));
         end
     end

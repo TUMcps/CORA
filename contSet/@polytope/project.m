@@ -29,6 +29,7 @@ function P_out = project(P,dims)
 % Written:       14-November-2016
 % Last update:   21-December-2020 (NK, use Fourier-Motzkin elimination)
 %                28-June-2022 (VK, Changed using the fourier toolbox)
+%                15-November-2023 (MW, bug fix for equality constraints)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -46,6 +47,9 @@ function P_out = project(P,dims)
 	    throw(CORAerror('CORA:wrongValue','second',...
             sprintf('Cannot compute projection on higher dimension than %i.',n)));
     end
+
+    % remove zeros
+    P = compact_(P,'zeros',eps);
 
     % check emptiness
     if representsa_(P,'emptySet',eps)
@@ -65,17 +69,13 @@ function P_out = project(P,dims)
 
     % remove redundant halfspaces (override input object)
     P = compact_(P,'all',1e-9);
-    % copy input object
-    P_out = polytope(P.A,P.b,P.Ae,P.be);
+    % copy input object (rewrite equality constraints as pairwise
+    % inequality constraints)
+    P_out = polytope([P.A; P.Ae; -P.Ae],[P.b; P.be; -P.be]);
     
     % determine dimensions that have to be projected away
     n = dim(P_out);
     removeDims = setdiff(1:n,dims);
-    
-    % Fourier-Motzkin elimination
-    % H = [P.A P.b];
-    % H = H(:, [dims(:); remDims(:); dim(P)+1]');
-    % Hn = fourierMotzkinElimination(H(:,1:end-1),H(:,end), 1:length(dims));
 
     % P = polytope(Hn(:, 1:end-1), Hn(:, end));
     for i = 1:length(removeDims)
