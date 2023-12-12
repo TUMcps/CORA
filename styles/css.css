@@ -3,15 +3,16 @@
     --bs-nav-link-color: #ddd;
 }
 
-::selection {
-    color: white;
-    background-color: var(--bs-primary);
-}
-
 body {
     padding-top: 15vh;
     padding-bottom: 10vh;
     overflow-x: hidden;
+    --cora-reachSet-color: rgb(69, 150, 255);
+}
+
+::selection {
+    color: white;
+    background-color: var(--cora-reachSet-color);
 }
 
 h1,h2,h3,h4,h5,h6,.card {
