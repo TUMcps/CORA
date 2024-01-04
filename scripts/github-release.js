@@ -3,28 +3,32 @@ function timeSince(date) {
 
     var seconds = Math.floor((new Date() - date) / 1000);
 
-    var interval = seconds / 31536000;
+    var interval = seconds;
+    var timeUnit = Math.floor(interval);
+    const dividers = [31536000, 2592000, 86400, 3600, 60];
+    const names = ["year", "month", "day", "hour", "minute"];
 
-    if (interval > 1) {
-        return Math.floor(interval) + " years";
+    // loop over time units
+    var counter = 0;
+    while (counter < 5) {
+        interval = seconds / dividers[counter];
+        timeUnit = Math.floor(interval);
+        if (interval > 1) {
+            if (timeUnit == 1) {
+                return timeUnit + " " + names[counter];
+            } else {
+                return timeUnit + " " + names[counter] + "s";
+            }
+        }
+        counter++;
     }
-    interval = seconds / 2592000;
-    if (interval > 1) {
-        return Math.floor(interval) + " months";
+    // seconds as last resort
+    timeUnit = Math.floor(seconds);
+    if (timeUnit == 1) {
+        return "1 second";
+    } else {
+        return timeUnit + " seconds";
     }
-    interval = seconds / 86400;
-    if (interval > 1) {
-        return Math.floor(interval) + " days";
-    }
-    interval = seconds / 3600;
-    if (interval > 1) {
-        return Math.floor(interval) + " hours";
-    }
-    interval = seconds / 60;
-    if (interval > 1) {
-        return Math.floor(interval) + " minutes";
-    }
-    return Math.floor(seconds) + " seconds";
 }
 
 
