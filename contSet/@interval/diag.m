@@ -7,7 +7,7 @@ function res = diag(I, varargin)
 %
 % Inputs:
 %    I - interval object
-%    k - diagonal number (optional)
+%    k - (optional) diagonal number
 %
 % Outputs:
 %    res - diagonal matrix or diagonal elements of matrix

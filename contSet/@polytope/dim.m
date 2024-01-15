@@ -1,14 +1,14 @@
-function val = dim(P)
+function n = dim(P)
 % dim - returns the dimension of the ambient space of a polytope
 %
 % Syntax:
-%    val = dim(P)
+%    n = dim(P)
 %
 % Inputs:
 %    P - polytope object
 %
 % Outputs:
-%    val - dimension of the polytope
+%    n - dimension of the polytope
 %
 % Example:
 %    A = [1 2; -1 2; -2 -2; 1 -2];
@@ -30,14 +30,14 @@ function val = dim(P)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% either constraints A*x <= b  or  A*x <= be  given
+% either constraints A*x <= b  or  Ae*x == be  given
 if ~isempty(P.A)
-    val = size(P.A,2);
+    n = size(P.A,2);
 elseif ~isempty(P.Ae)
-    val = size(P.Ae,2);
+    n = size(P.Ae,2);
 else
     % constraints, such as zeros(0,n) given
-    val = max([size(P.A,2),size(P.Ae,2)]);
+    n = max([size(P.A,2),size(P.Ae,2)]);
 end
 
 % ------------------------------ END OF CODE ------------------------------

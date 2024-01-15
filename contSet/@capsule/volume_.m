@@ -33,12 +33,16 @@ function vol = volume_(C,varargin)
 % dimension
 n = dim(C);
 
+if representsa_(C,'emptySet',eps)
+    vol = 0; return
+end
+
 % special case
 if n == 0
     vol = 0; return
 end
 
-% volume of n-dimenional ball; requires Leonhard Euler's gamma function
+% volume of n-dimenional ball; requires Euler's gamma function
 volBall = pi^(n/2)/gamma(n/2+1)*C.r^n;
 
 % volume of n-dimensional cylinder is volume of (n-1)-dimensional ball

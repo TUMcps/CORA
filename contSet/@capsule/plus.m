@@ -99,8 +99,8 @@ catch ME
     % check for empty sets
     if representsa_(C,'emptySet',eps)
         return
-    elseif isemptyobject(summand)
-        C = conZonotope(); return
+    elseif representsa_(summand,'emptySet',eps)
+        C = capsule.empty(dim(C)); return
     end
 
     % check whether different dimension of ambient space

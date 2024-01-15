@@ -25,10 +25,6 @@ function res = test_taylm_dim
 
 resvec = [];
 
-% empty case
-tay = taylm();
-resvec(end+1) = dim(tay) == 1;
-
 % scalar case
 tay = taylm(interval(1));
 resvec(end+1) = dim(tay) == 1;

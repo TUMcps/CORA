@@ -1,12 +1,12 @@
 function res = isIntersecting_(P,S,type,varargin)
-% isIntersecting_ - determines if a the sets P1 and P2 intersect
+% isIntersecting_ - determines if a polytope intersects another set
 %
 % Syntax:
 %    res = isIntersecting_(P,S,type)
 %
 % Inputs:
 %    P - polytope object
-%    S - contSet object, numerical vector
+%    S - contSet object, numerical vector, point cloud
 %    type - type of check ('exact' or 'approx')
 %    tol - tolerance
 %
@@ -39,6 +39,7 @@ function res = isIntersecting_(P,S,type,varargin)
 % Written:       20-November-2019
 % Last update:   14-December-2022 (MW, add call to MOSEK for linprogs)
 %                27-April-2023 (MW, add support for points)
+%                10-December-2023 (MW, fix for point clouds)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -49,9 +50,12 @@ tol = setDefaultValues({1e-12},varargin);
 % get polytope object
 [P,S] = findClassArg(P,S,'polytope');
 
-% check fully empty set
-if isemptyobject(P) || isemptyobject(S)
-    res = false; return
+% fullspace
+if representsa_(P,'fullspace',0)
+    % unless S is the empty set, there is an intersection
+    res = ~representsa_(S,'emptySet',eps); return
+elseif representsa_(S,'fullspace',0)
+    res = ~representsa_(P,'emptySet',eps); return
 end
 
 persistent isMosek
@@ -86,8 +90,8 @@ else
     if strcmp(type,'exact')
         
         if isnumeric(S)
-            % a point intersects a polytope if it is contained
-            res = contains_(P,S,'exact',tol);
+            % a point cloud intersects a polytope if any point is contained
+            res = any(contains_(P,S,'exact',tol));
         elseif isa(S,'interval') || isa(S,'zonotope')
             res = aux_intersectPolyConZono(P,conZonotope(S),isMosek,options);
         elseif isa(S,'conZonotope')

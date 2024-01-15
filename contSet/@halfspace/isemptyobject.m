@@ -14,8 +14,6 @@ function res = isemptyobject(hs)
 % Example: 
 %    hs = halfspace([1;-1],1);
 %    isemptyobject(hs); % false
-%    hs = halfspace();
-%    isemptyobject(hs); % true
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -26,7 +26,6 @@ function res = test_ellipsoid_and
 res = true;
 % empty set
 load cases.mat E_c
-E_e = ellipsoid();
 
 % intersection with empty set
 % res = (E_c{1}.E1 & E_e) == E_e;

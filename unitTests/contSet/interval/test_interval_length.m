@@ -14,38 +14,35 @@ function res = test_interval_length
 % Subfunctions: none
 % MAT-files required: none
 
-% Authors:       Dmitry Grebenyuk
+% Authors:       Dmitry Grebenyuk, Mark Wetzlinger
 % Written:       19-January-2016
-% Last update:   ---
+% Last update:   04-December-2023 (MW, add unbounded and matrix cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-tol = 1e-9;
-res = true;
+res = true(0);
 
-a = interval([-5.0, -4.0, -3, 0, 0, 5], [-2, 0.0, 2.0, 0, 5, 8]);
-c = length(a);
+% empty
+I = interval.empty(2);
+res(end+1,1) = length(I) == 0;
 
-if c ~= 6
-	res = false;
-	return;
-end
+% bounded
+I = interval([-5, -4, -3, 0, 0, 5], [-2, 0, 2, 0, 5, 8]);
+res(end+1,1) = length(I) == 6;
+I = interval([-5; -4; -3; 0; 0; 5], [-2; 0; 2; 0; 5; 8]);
+res(end+1,1) = length(I) == 6;
 
-a = interval([-5.0; -4.0; -3; 0; 0; 5], [-2; 0.0; 2.0; 0; 5; 8]);
-c = length(a);
+% bounded, matrix
+I = interval([1 2 3; -2 1 -1],[3 4 6; -1 2 0]);
+res(end+1,1) = length(I) == 3;
 
-if c ~= 6
-	res = false;
-	return;
-end
+% unbounded
+I = interval([-Inf;2],[1;Inf]);
+res(end+1,1) = length(I) == 2;
 
-a = interval();
-c = length(a);
 
-if c ~= 0
-	res = false;
-	return;
-end
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

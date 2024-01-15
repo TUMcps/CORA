@@ -23,29 +23,30 @@ function res = test_zonotope_plus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% create zonotopes
+res = true(0);
+
+% 2D zonotopes
 Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
 Z2 = zonotope([1 10; -1 -10]);
 
-% obtain results
-Z_ = Z1+Z2;
+% Minkowski sum
+Z_ = Z1 + Z2;
 
 % obtain center and generator matrix
-c_ = Z_.c;
-G_ = Z_.G;
+c_ = Z_.c; G_ = Z_.G;
 
-% true result
+% compare to true result
 true_c = [-3; 0];
 true_G = [-3, -2, -1, 10; ...
             2, 3, 4, -10];
+res(end+1,1) = compareMatrices(c_,true_c) && compareMatrices(G_,true_G);
 
-% check result
-res_val = compareMatrices(c_,true_c) && compareMatrices(G_,true_G);
+% Minkowski sum with empty set
+Z_empty = zonotope.empty(2);
+res(end+1,1) = representsa(Z1 + Z_empty,'emptySet');
 
-% empty set
-res_e = representsa(Z1+zonotope(),'emptySet');
 
 % add results
-res = res_val && res_e;
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

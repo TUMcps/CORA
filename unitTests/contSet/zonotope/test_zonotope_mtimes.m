@@ -14,7 +14,7 @@ function res = test_zonotope_mtimes
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       26-July-2016
@@ -24,7 +24,7 @@ function res = test_zonotope_mtimes
 % ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate zonotopes
-Z_empty = zonotope();
+Z_empty = zonotope.empty(2);
 Z = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
 
 % create parallelotopes

@@ -44,16 +44,14 @@ function res = contains_(P,S,type,tol,varargin)
 
 res = false;
 
-% check if P1 is empty
-if isemptyobject(P)
-    res = false;
-    return
-end
-
-% check if P2 is empty
-if isemptyobject(S)
-    res = true;
-    return
+% check fullspace
+if representsa_(P,'fullspace',0)
+    % contains every set including itself
+    res = true; return
+elseif representsa_(S,'fullspace',0)
+    % can only be contained in P if P is fullspace (would have entered the
+    % if-branch above)
+    res = false; return
 end
 
 % 1D -> cheap computation of vertices (skip linear program below)
@@ -67,7 +65,7 @@ end
 A = P.A;
 b = P.b;
 
-% point in polytope containment
+% point cloud in polytope containment
 if isnumeric(S)
     
     tmp = A*S - b;

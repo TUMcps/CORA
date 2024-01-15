@@ -14,7 +14,7 @@ function res = test_polytope_enclosePoints
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       04-December-2022

@@ -47,7 +47,7 @@ end
 if isa(S,'interval') && representsa_(S,'emptySet',eps)
     % actually holds for all sets, but other checks might be costly
     
-    I = interval();
+    I = interval.empty(dim(I));
     
 elseif isa(S,'interval') || isnumeric(S)
 

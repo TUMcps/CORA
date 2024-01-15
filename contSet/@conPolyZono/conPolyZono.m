@@ -68,6 +68,11 @@ methods
     % object constructor
     function obj = conPolyZono(varargin)
 
+        % 0. avoid empty instantiation
+        if nargin == 0
+            throw(CORAerror('CORA:noInputInSetConstructor'));
+        end
+
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'conPolyZono')
             obj = varargin{1}; return
@@ -79,7 +84,10 @@ methods
         % 3. check correctness of input arguments
         aux_checkInputArgs(c,G,E,A,b,EC,GI,id,nargin);
 
-        % 4. assign properties
+        % 4. compute properties
+        [c,G,E,A,b,EC,GI,id] = aux_computeProperties(c,G,E,A,b,EC,GI,id);
+
+        % 5. assign properties
         obj.c = c; obj.G = G; obj.E = E; obj.A = A; obj.b = b;
         obj.EC = EC; obj.GI = GI; obj.id = id;
     end
@@ -87,6 +95,7 @@ end
 
 methods (Static = true)
     cPZ = generateRandom(varargin) % generate random conPolyZono object
+    C = empty(n) % instantiates an empty constrained polynomial zonotope
 end
 
 
@@ -162,7 +171,7 @@ function [c,G,E,A,b,EC,GI,id] = aux_parseInputArgs(varargin)
     A = []; b = []; EC = []; GI = []; id = [];
     
     % set other (optional) values
-    if nargin == 0 || (nargin == 1 && isnumeric(c) && isvector(c))
+    if nargin == 1 && isnumeric(c) && isvector(c)
         return;
     elseif nargin == 4 || nargin == 5
         [GI,id] = setDefaultValues({GI,id},varargin(4:end));
@@ -185,7 +194,7 @@ function aux_checkInputArgs(c,G,E,A,b,EC,GI,id,n_in)
 
         % check correctness of user input 
         inputChecks = { ...
-            {c, 'att', 'numeric', {'finite', 'column'}}; ...
+            {c, 'att', 'numeric', {'finite'}}; ...
             {G, 'att', 'numeric', {'finite', 'matrix'}}; ...
             {E, 'att', 'numeric', {'integer', 'matrix'}}; ...
         };
@@ -206,6 +215,17 @@ function aux_checkInputArgs(c,G,E,A,b,EC,GI,id,n_in)
         ];
         inputArgsCheck(inputChecks)
 
+        % center must be a vector
+        if isempty(c)
+            if ~isempty(G) || ~isempty(E) || ~isempty(A) || ~isempty(b) ...
+                    || ~isempty(EC) || ~isempty(GI) || ~isempty(id)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Either all or none input arguments are empty.'));
+            end
+        elseif ~isvector(c)
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                 'Center must be a vector.'));
+        end
 
         % check dimensions
         if size(E,2) ~= size(G,2)
@@ -234,6 +254,24 @@ function aux_checkInputArgs(c,G,E,A,b,EC,GI,id,n_in)
                 'Invalid constraint exponent matrix.'));
         end
         
+    end
+
+end
+
+function [c,G,E,A,b,EC,GI,id] = aux_computeProperties(c,G,E,A,b,EC,GI,id)
+
+    if ~isempty(c)
+        % make center a column vector
+        c = reshape(c,[],1);
+    else
+        % set generator matrices to correct dimensions
+        n = size(c,1);
+        if isempty(G)
+            G = zeros(n,0);
+        end
+        if isempty(GI)
+            GI = zeros(n,0);
+        end
     end
 
 end

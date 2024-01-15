@@ -36,6 +36,8 @@ function res = contains_(pZ,S,type,varargin)
 % References: 
 %   [1] O. Mullier and et al. "General Inner Approximation of Vector-valued 
 %       Functions", Reliable Computing, 2013
+%   [2] N. Kochdumper "Extensions of Polynomial Zonotopesand their 
+%       Application to Verification of Cyber-Physical Systems", 2021
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -97,12 +99,14 @@ function res = contains_(pZ,S,type,varargin)
             S = polyZonotope(S);
         end
         
-        % try to prove that set containment does not hold
+        % try to prove that set containment does not hold using 
+        % Proposition 3.1.34 in [2]
         if aux_disproveContainment(pZ,S)
             return; 
         end
         
-        % try to prove that set containment holds
+        % try to prove that set containment holds using 
+        % Proposition 3.1.36 in [2]
         res = aux_proveContainment(S,fHan,jacHan,X);
 
     else
@@ -114,7 +118,8 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function res = aux_disproveContainment(pZ1,pZ2)
-% use contraction to prove that pZ2 is not a subset of pZ1
+% use contraction to prove that pZ2 is not a subset of pZ1 
+% (see Proposition 3.1.34 in [2])
 
     % construct polynomial constraint for the intersection
     c = pZ1.c - pZ2.c;
@@ -130,7 +135,9 @@ function res = aux_disproveContainment(pZ1,pZ2)
     I = contractPoly(c,G,GI,E,dom,'all',3);
 
     % pZ2 is proven to be not contained in pZ1 -> res = true
-    temp = I(size(E,1)+1:end);
+    ind = size(pZ1.E,1) + [(1:size(pZ2.E,1))'; ...
+                     size(pZ2.E,1) + size(pZ1.GI,2) + (1:size(pZ2.GI,2))']; 
+    temp = I(ind);
     res = false;
     
     if representsa_(temp,'emptySet',eps) || any(supremum(temp) < 1) || any(infimum(temp) > -1)
@@ -142,7 +149,7 @@ function res = aux_proveContainment(obj,fHan,jacHan,X)
 % try to prove that the set is contained in the polynomial zonotope by
 % recursiveley splitting the set and using the method in [1] to prove that
 % an interval enclosure of the splitted sets is contained in the polynomial
-% zonotope
+% zonotope (see Proposition 3.1.36 in [2])
 
     % maximum number of recursive splits
     splits = 8;

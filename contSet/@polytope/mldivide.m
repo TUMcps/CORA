@@ -47,11 +47,11 @@ n = dim(P1);
 
 % empty set cases
 if representsa_(P1,'emptySet')
-    % P1 empty -> P1/P2 empty
-    P_out = polytope(zeros(0,n),[]);
+    % P1 empty -> P1 \ P2 empty
+    P_out = polytope.empty(n);
     return
 elseif representsa_(P2,'emptySet')
-    % P2 empty -> P1/P2 = P1
+    % P2 empty -> P1 \ P2 = P1
     P_out = P1;
     return
 end
@@ -72,8 +72,6 @@ if isFullDim(P1) && isFullDim(P2)
 		A = [-P2_A(i, :); P2_A(1:i-1, :); P1_A];
 		b = [-P2_b(i); P2_b(1:i-1); P1_b];
         Pi = polytope(A, b);
-        Pi.A;
-        Pi.b;
 		if isFullDim(Pi)
 			P_out = Pi;
 		end
@@ -113,13 +111,14 @@ elseif isFullDim(P2) || (~isempty(P2.Ae) && ~isempty(P1.Ae) && ...
     end
 elseif rank([P2.Ae P2.be; P1.Ae P1.be]) > max(size(P2.Ae, 1), size(P1.Ae, 1))
 	% both are lower dimensional, but their affine hulls do not intersect,
-	% hence P1\P2=P1
+	% hence P1 \ P2 = P1
 	P_out = P1;
 
 elseif isempty(P2.Ae) && isempty(P1.Ae) && P1<=P2
 	% both are lower-dimensional, but with no affine subspace, most
 	% probably a vertex
 	P_out = polytope();
+    
 else
 	% P1 and P2 are both lower-dimensional and affdim(P1)<=affdim(P2)
 	

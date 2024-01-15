@@ -15,86 +15,98 @@ function res = test_interval_mpower
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: none
 
 % Authors:       Dmitry Grebenyuk, Mark Wetzlinger
 % Written:       05-January-2016
-% Last update:   08-August-2020 (MW, extend by random tests)
+% Last update:   04-December-2023 (MW, add unbounded cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
-res = true;
+res = true(0);
 
-a = interval(0, 2);
-c = a ^ 1;
-if abs( infimum(c) - 0.0 ) > tol || abs( supremum(c) - 2.0 ) > tol
-	res = false;
-	return;
-end
+% bounded
+I = interval(0, 2);
+I_mpower = I ^ 1;
+res(end+1,1) = isequal(I_mpower,I,tol);
 
-a = interval(0, 2);
-c = a ^ 2;
-if abs( infimum(c) - 0.0 ) > tol || abs( supremum(c) - 4.0 ) > tol
-	res = false;
-	return;
-end
+I = interval(0, 2);
+I_mpower = I ^ 2;
+I_true = interval(0,4);
+res(end+1,1) = isequal(I_mpower,I_true,tol);
 
-a = interval(-2, 0);
-c = a ^ 2;
-if abs( infimum(c) - 0.0 ) > tol || abs( supremum(c) - 4.0 ) > tol
-	res = false;
-	return;
-end
+I = interval(-2, 0);
+I_mpower = I ^ 2;
+I_true = interval(0,4);
+res(end+1,1) = isequal(I_mpower,I_true,tol);
 
-a = interval(-2, 0);
-c = a ^ 3;
-if abs( infimum(c) + 8.0 ) > tol || abs( supremum(c) - 0.0 ) > tol
-	res = false;
-	return;
-end
+I = interval(-2, 0);
+I_mpower = I ^ 3;
+I_true = interval(-8,0);
+res(end+1,1) = isequal(I_mpower,I_true,tol);
 
-a = interval(-3, 2);
-c = a ^ 2;
-if abs( infimum(c) - 0.0 ) > tol || abs( supremum(c) - 9.0 ) > tol
-	res = false;
-	return;
-end
+I = interval(-3, 2);
+I_mpower = I ^ 2;
+I_true = interval(0,9);
+res(end+1,1) = isequal(I_mpower,I_true,tol);
 
-a = interval(-3, 2);
-c = a ^ 3;
-if abs( infimum(c) + 27.0 ) > tol || abs( supremum(c) - 8.0 ) > tol
-	res = false;
-	return;
-end
+I = interval(-3, 2);
+I_mpower = I ^ 3;
+I_true = interval(-27,8);
+res(end+1,1) = isequal(I_mpower,I_true,tol);
 
-a = interval(-3, -2);
-c = a ^ 2;
-if abs( infimum(c) - 4.0 ) > tol || abs( supremum(c) - 9.0 ) > tol
-	res = false;
-	return;
-end
+I = interval(-3, -2);
+I_mpower = I ^ 2;
+I_true = interval(4,9);
+res(end+1,1) = isequal(I_mpower,I_true,tol);
 
-a = interval(-3, -2);
-c = a ^ 3;
-if abs( infimum(c) + 27.0 ) > tol || abs( supremum(c) + 8.0 ) > tol
-	res = false;
-	return;
-end
+I = interval(-3, -2);
+I_mpower = I ^ 3;
+I_true = interval(-27,-8);
+res(end+1,1) = isequal(I_mpower,I_true,tol);
 
-a = interval(2, 3);
-c = a ^ 2;
-if abs( infimum(c) - 4.0 ) > tol || abs( supremum(c) - 9.0 ) > tol
-	res = false;
-	return;
-end
+I = interval(2, 3);
+I_mpower = I ^ 2;
+I_true = interval(4,9);
+res(end+1,1) = isequal(I_mpower,I_true,tol);
 
-a = interval(2, 3);
-c = a ^ 3;
-if abs( infimum(c) - 8.0 ) > tol || abs( supremum(c) - 27.0 ) > tol
-	res = false;
-	return;
-end
+I = interval(2, 3);
+I_mpower = I ^ 3;
+I_true = interval(8,27);
+res(end+1,1) = isequal(I_mpower,I_true,tol);
+
+% unbounded
+I = interval(-Inf,2);
+I_mpower = I ^ 1;
+res(end+1,1) = isequal(I_mpower,I,tol);
+
+I = interval(-Inf,2);
+I_mpower = I ^ 2;
+I_true = interval(0,Inf);
+res(end+1,1) = isequal(I_mpower,I_true,tol);
+
+I = interval(-Inf,2);
+I_mpower = I ^ 3;
+I_true = interval(-Inf,8);
+res(end+1,1) = isequal(I_mpower,I_true,tol);
+
+I = interval(2,Inf);
+I_mpower = I ^ 1;
+res(end+1,1) = isequal(I_mpower,I,tol);
+
+I = interval(2,Inf);
+I_mpower = I ^ 2;
+I_true = interval(4,Inf);
+res(end+1,1) = isequal(I_mpower,I_true,tol);
+
+I = interval(2,Inf);
+I_mpower = I ^ 3;
+I_true = interval(8,Inf);
+res(end+1,1) = isequal(I_mpower,I_true,tol);
+
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

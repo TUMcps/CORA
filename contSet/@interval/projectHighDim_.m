@@ -26,6 +26,11 @@ function I = projectHighDim_(I,N,proj)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+if representsa_(I,'emptySet',eps)
+    throw(CORAerror('CORA:notSupported',...
+        'Operation projectHighDim is not supported for empty intervals.'));
+end
+
 % init bounds
 lb = zeros(N,1);
 ub = zeros(N,1);

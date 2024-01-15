@@ -26,11 +26,11 @@ function res = isequal(cZ,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       19-December-2022
-% Last update:   ---
+% Last update:   16-December-2023 (MW, support comparison to polytope)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -49,8 +49,15 @@ inputArgsCheck({ {cZ,'att','conZonotope'}, ...
                  {tol,'att','numeric',{'nonempty','scalar','finite','nonnegative'}}});
 
 % only implemented for conZonotope - conZonotope/zonotope/interval
-if ~( isa(S,'conZonotope') || isa(S,'zonotope') || isa(S,'interval') )
+if ~( isa(S,'conZonotope') || isa(S,'zonotope') || isa(S,'interval') ...
+        || isa(S,'polytope'))
     throw(CORAerror('CORA:noops',cZ,S));
+end
+
+% second set: polytope
+if isa(S,'polytope')
+    res = contains(S,cZ,'exact',tol) && contains_(cZ,S,'exact',tol);
+    return
 end
 
 % second set: zonotope or interval

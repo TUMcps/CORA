@@ -29,6 +29,18 @@ function [val,x,fac] = supportFunc_(Z,dir,type,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+if representsa_(Z,'emptySet',0)
+    x = [];
+    if strcmp(type,'upper')
+        val = -Inf;
+    elseif strcmp(type,'lower')
+        val = Inf;
+    elseif strcmp(type,'range')
+        val = interval(-Inf,Inf);
+    end
+    return
+end
+
 % get object properties
 c = Z.c;
 G = Z.G;

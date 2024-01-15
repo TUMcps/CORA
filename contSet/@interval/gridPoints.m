@@ -36,7 +36,7 @@ inputArgsCheck({{I,'att','interval'};
 
 % empty case
 if representsa_(I,'emptySet',eps)
-    p = [];
+    p = zeros(dim(I),0);
     return;
 end
 

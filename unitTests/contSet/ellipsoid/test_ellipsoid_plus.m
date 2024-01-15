@@ -27,7 +27,8 @@ res = true;
 load cases.mat E_c
 
 % empty set
-if ~representsa(plus(E_c{1}.E1,ellipsoid()),'emptySet')
+E = ellipsoid.empty(2);
+if ~representsa(plus(E_c{1}.E1,E),'emptySet')
     res = false;
 end
 

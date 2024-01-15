@@ -14,8 +14,6 @@ function res = isemptyobject(O)
 % Example: 
 %    O = emptySet(2);
 %    isemptyobject(O); % false
-%    O = emptySet();
-%    isemptyobject(O); % true, since n=0
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -14,7 +14,7 @@ function res = test_capsule_enlarge
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       15-September-2019

@@ -24,9 +24,10 @@ function res = test_zonoBundle_conZonotope
 % ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
-zB = zonoBundle();
+n = 2;
+zB = zonoBundle.empty(n);
 cZ = conZonotope(zB);
-res = representsa(cZ,'emptySet');
+res = representsa(cZ,'emptySet') && dim(cZ) == n;
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);

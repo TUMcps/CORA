@@ -49,7 +49,7 @@ if ~all(withinTol(c,pZres.c)) || ~compareMatrices(G,pZres.G) ...
 end
 
 % empty set
-% if ~isempty(matrix*polyZonotope())
+% if ~isempty(matrix*polyZonotope.empty(2))
 %     throw(CORAerror('CORA:testFailed'));
 % end
 

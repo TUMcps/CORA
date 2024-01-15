@@ -25,7 +25,7 @@ function res = test_conZonotope_representsa
 
 % 1. comparison to empty set
 % check empty conZonotope object
-cZ = conZonotope();
+cZ = conZonotope.empty(2);
 res = representsa(cZ,'emptySet');
 
 % constrained zonotope
@@ -37,7 +37,8 @@ res(end+1,1) = ~representsa(cZ,'emptySet');
 
 % 2. comparsion to origin
 % empty case
-res(end+1,1) = ~representsa(conZonotope(),'origin');
+cZ = conZonotope.empty(2);
+res(end+1,1) = ~representsa(cZ,'origin');
 
 % true cases
 cZ = conZonotope(zeros(3,1));

@@ -27,9 +27,6 @@ function res = test_levelSet_lift
 syms a b c d
 syms s1 s2 s4 s5 s6 s8
 
-% empty level set
-% ls = levelSet();
-
 % init 2D level set
 eq = a^2 + b^2 - 4;
 ls = levelSet(eq,[a;b],'<=');

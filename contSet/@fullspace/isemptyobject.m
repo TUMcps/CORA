@@ -15,8 +15,6 @@ function res = isemptyobject(fs)
 % Example: 
 %    fs = fullspace(2);
 %    isemptyobject(fs); % false
-%    fs = fullspace();
-%    isemptyobject(fs); % false, since n=0
 %
 % Other m-files required: none
 % Subfunctions: none

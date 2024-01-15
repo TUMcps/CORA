@@ -50,7 +50,7 @@ end
 % check if difference should be empty (only non-empty if
 % ellipsoid(E2.Q)\subseteq ellipsoid(E1.Q)
 if ~isBigger(E1,E2)
-    E = ellipsoid;
+    E = ellipsoid.empty(dim(E1));
     return;
 end
 n = dim(E1);

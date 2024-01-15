@@ -38,8 +38,8 @@ end
 vars = sym('x',[dim(hyp),1]);
 
 % read out halfspace
-A = hyp.h.c;
-b = hyp.h.d;
+A = hyp.a';
+b = hyp.b;
 
 % define equality equation
 eqs = A'*vars - b;

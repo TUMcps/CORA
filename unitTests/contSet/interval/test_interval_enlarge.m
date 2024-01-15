@@ -14,59 +14,61 @@ function res = test_interval_enlarge
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       29-August-2019
-% Last update:   ---
+% Last update:   03-December-2023 (MW, add unbounded case)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% TEST 1: Analytical ------------------------------------------------------
-% create interval
-lower = [-2; -4; -3];
-upper = [ 2;  3;  1];
+res = true(0);
+
+% bounded
+I = interval([-2; -4; -3],[2; 3; 1]);
+% ...bounded scaling factor
 factor = 2;
-Int = interval(lower, upper);
+I_enlarge = enlarge(I, factor);
+I_true = interval([-4; -7.5; -5],[4; 6.5; 3]);
+res(end+1,1) = isequal(I_enlarge,I_true);
 
-% compute enlarge
-IntEnlarge = enlarge(Int, factor);
+% ...Inf as scaling factor
+factor = Inf;
+I_enlarge = enlarge(I, factor);
+I_true = interval(-Inf(3,1),Inf(3,1));
+res(end+1,1) = isequal(I_enlarge,I_true);
 
-% true size
-lower_true = [-4; -7.5; -5];
-upper_true = [ 4;  6.5;  3];
-IntEnlarge_true = interval(lower_true, upper_true);
+% ...0 as scaling factor
+factor = 0;
+I_enlarge = enlarge(I, factor);
+I_true = interval(center(I));
+res(end+1,1) = isequal(I_enlarge,I_true);
 
-% compare results
-res_analytical = all(infimum(IntEnlarge) == infimum(IntEnlarge_true)) && ...
-        all(supremum(IntEnlarge) == supremum(IntEnlarge_true));
-% -------------------------------------------------------------------------
 
-% TEST 2: Random ----------------------------------------------------------
-% create random interval
-dim = floor(1 + 9*rand(1));
-lower = -10*rand(dim,1);
-upper = 10*rand(dim,1);
+% unbounded
+I = interval([-Inf;-2],[2;Inf]);
+% ...bounded scaling factor
 factor = 2;
-Int = interval(lower, upper);
+I_enlarge = enlarge(I, factor);
+I_true = interval(-Inf(2,1),Inf(2,1));
+res(end+1,1) = isequal(I_enlarge,I_true);
 
-% compute enlarge
-IntEnlarge = enlarge(Int, factor);
+% ...Inf as scaling factor
+factor = Inf;
+I_enlarge = enlarge(I, factor);
+I_true = interval(-Inf(2,1),Inf(2,1));
+res(end+1,1) = isequal(I_enlarge,I_true);
 
-% true size
-halfWay = (upper + lower)/2;
-edgeLength = (upper - lower)/2;
-lower_true = halfWay - edgeLength*factor;
-upper_true = halfWay + edgeLength*factor;
-IntEnlarge_true = interval(lower_true, upper_true);
+% ...0 as scaling factor (throws an error)
+factor = 0;
+try
+    I_enlarge = enlarge(I, factor);
+    res(end+1,1) = false;
+end
 
-% compare results
-res_rand = all(infimum(IntEnlarge) == infimum(IntEnlarge_true)) && ...
-        all(supremum(IntEnlarge) == supremum(IntEnlarge_true));
-% -------------------------------------------------------------------------
 
 % add results
-res = res_analytical && res_rand;
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

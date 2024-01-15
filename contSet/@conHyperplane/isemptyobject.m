@@ -13,10 +13,8 @@ function res = isemptyobject(hyp)
 %    res - true/false
 %
 % Example: 
-%    hyp = conHyperplane([1;-1],1);
+%    hyp = conHyperplane([1 -1],1);
 %    isemptyobject(hyp); % false
-%    hyp = conHyperplane();
-%    isemptyobject(hyp); % true
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,7 +24,7 @@ function res = isemptyobject(hyp)
 
 % Authors:       Mark Wetzlinger
 % Written:       24-July-2023
-% Last update:   ---
+% Last update:   09-January-2024 (MW, update to new constructor)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -46,11 +44,10 @@ end
 
 function res = aux_checkIfEmpty(hyp)
 
-    res = isa(hyp.h,'halfspace') ...
-        && isnumeric(hyp.h.c) && isempty(hyp.h.c) ...
-        && isnumeric(hyp.h.d) && isscalar(hyp.h.d) && hyp.h.d == 0 ...
+    res = isnumeric(hyp.a) && isempty(hyp.a) ...
+        && isnumeric(hyp.b) && isempty(hyp.b) ...
         && isnumeric(hyp.C) && isempty(hyp.C) ...
-        && isnumeric(hyp.d) && isscalar(hyp.d) && hyp.d == 0;
+        && isnumeric(hyp.d) && isempty(hyp.d);
 
 end
 

@@ -35,7 +35,7 @@ function P = polytope(zB,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 if zB.parallelSets == 0
-    P = polytope();
+    P = polytope.empty(dim(zB));
     return
 end
 

@@ -26,30 +26,46 @@ function res = test_polytope_isIntersecting
 res = true(0);
 
 % 1D, unbounded & unbounded
-P1 = polytope(1,1);
-P2 = polytope(-1,5);
+A = 1; b = 1;
+P1 = polytope(A,b);
+A = -1; b = 5;
+P2 = polytope(A,b);
 res(end+1,1) = isIntersecting(P1,P2);
 
 % 1D, unbounded & degenerate
-P1 = polytope(1,1);
-P2 = polytope([],[],1,-5);
+A = 1; b = 1;
+P1 = polytope(A,b);
+Ae = 1; be = -5;
+P2 = polytope([],[],Ae,be);
 res(end+1,1) = isIntersecting(P1,P2);
 
 % 1D, bounded & unbounded, intersection in a single point
-P1 = polytope([1;-1],[1;1]);
-P2 = polytope([],[],-1,1);
+A = [1;-1]; b = [1;1];
+P1 = polytope(A,b);
+Ae = -1; be = 1;
+P2 = polytope([],[],Ae,be);
 res(end+1,1) = isIntersecting(P1,P2);
 
 % 1D, unbounded & point
-P1 = polytope(1,1);
-P2 = 5;
-res(end+1,1) = ~isIntersecting(P1,P2);
+A = 1; b = 1;
+P1 = polytope(A,b);
+p = 5;
+res(end+1,1) = ~isIntersecting(P1,p);
+
+% 1D, fully empty & point
+A = zeros(0,1); b = zeros(0,0);
+P1 = polytope(A,b);
+p = 1;
+res(end+1,1) = isIntersecting(P1,p);
 
 
-% 2D, intersection with fully empty set
-P1 = polytope(zeros(0,2),[]);
-P2 = polytope([1 0],1);
-res(end+1,1) = ~isIntersecting(P1,P2);
+% 2D, fully empty & unbounded
+A = zeros(0,2); b = zeros(0,0);
+P1 = polytope(A,b);
+A = [1 0]; b = 1;
+P2 = polytope(A,b);
+res(end+1,1) = isIntersecting(P1,P2);
+res(end+1,1) = isIntersecting(P2,P1);
 
 % 2D, bounded polytopes in all quadrants
 V1 = [1 1; 4 0; 3 3; 2 4]';
@@ -67,6 +83,12 @@ res(end+1,1) = ~isIntersecting(P1,P4);
 res(end+1,1) = ~isIntersecting(P2,P3);
 res(end+1,1) = ~isIntersecting(P2,P4);
 res(end+1,1) = ~isIntersecting(P3,P4);
+
+% 2D, bounded & point cloud (some contained, some not)
+A = [1 0; -1 1; -1 -1]; b = [1;1;1];
+P = polytope(A,b);
+V = [0.5 0; 0 1.5; -0.5 -1; 0 -1.5; 1 -1]';
+res(end+1,1) = isIntersecting(P,V);
 
 % 2D, bounded & bounded (both contain the origin)
 V = [2 2; 3 -1; -1 0; 0 3; 1 3]';
@@ -110,25 +132,32 @@ Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
 A = [1 1 1]; b = 1;
 cZ = conZonotope(Z,A,b);
 % unbounded polytope, no intersection
-P = polytope([1 0],-3);
+A = [1 0]; b = -3;
+P = polytope(A,b);
 res(end+1,1) = ~isIntersecting(P,cZ);
 % unbounded polytope, intersection
-P = polytope([1 0],0);
+A = [1 0]; b = 0;
+P = polytope(A,b);
 res(end+1,1) = isIntersecting(P,cZ);
 % unbounded polytope, intersection in a single point
-P = polytope([0 1],-1.5);
+A = [0 1]; b = -1.5;
+P = polytope(A,b);
 res(end+1,1) = isIntersecting(P,cZ);
 % bounded polytope, no intersection
-P = polytope([-1 -1; 1 0; 0 1],[-4; 5; 5]);
+A = [-1 -1; 1 0; 0 1]; b = [-4; 5; 5];
+P = polytope(A,b);
 res(end+1,1) = ~isIntersecting(P,cZ);
 % bounded polytope, intersection
-P = polytope([-1 -1; 1 0; 0 1],[-2; 5; 5]);
+A = [-1 -1; 1 0; 0 1]; b = [-2; 5; 5];
+P = polytope(A,b);
 res(end+1,1) = isIntersecting(P,cZ);
 % bounded polytope, intersection in a single point
-P = polytope([-1 -1; 1 0; 0 1],[-3; 5; 5]);
+A = [-1 -1; 1 0; 0 1]; b = [-3; 5; 5];
+P = polytope(A,b);
 res(end+1,1) = isIntersecting(P,cZ);
 % intersection with empty polytope
-P = polytope([1 0; -1 0],[-1; -1]);
+A = [1 0; -1 0]; b = [-1; -1];
+P = polytope(A,b);
 res(end+1,1) = ~isIntersecting(P,cZ);
 
 

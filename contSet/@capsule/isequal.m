@@ -45,8 +45,18 @@ inputArgsCheck({{C1,'att','capsule'};
                 {C2,'att','capsule'};
                 {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
 
+% check ambient dimension
 if dim(C1) ~= dim(C2)
     res = false; return
+end
+
+% check emptiness
+C1_empty = representsa_(C1,'emptySet',tol);
+C2_empty = representsa_(C2,'emptySet',tol);
+if xor(C1_empty,C2_empty)
+    res = false; return
+elseif C1_empty && C2_empty
+    res = true; return
 end
 
 % check for equality

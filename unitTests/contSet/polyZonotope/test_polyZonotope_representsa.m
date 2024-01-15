@@ -38,13 +38,13 @@ res(end+1,1) = ~representsa(pZ1,'emptySet');
 pZ2 = polyZonotope(c,G,[],E);
 res(end+1,1) = ~representsa(pZ2,'emptySet');
 
-pZ3 = polyZonotope();
+pZ3 = polyZonotope.empty(2);
 res(end+1,1) = representsa(pZ3,'emptySet');
 
 
 % 2. comparison to origin
 % empty polyZonotope
-pZ = polyZonotope();
+pZ = polyZonotope.empty(2);
 res(end+1,1) = ~representsa(pZ,'origin');
 
 % only origin

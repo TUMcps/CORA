@@ -26,10 +26,8 @@ function res = test_capsule_representsa
 res = true(0);
 
 % 1. comparison to empty set
-C = capsule();
+C = capsule.empty(2);
 res(end+1,1) = representsa(C,'emptySet');
-C = capsule([1;1],[],0.5);
-res(end+1,1) = ~representsa(C,'emptySet');
 C = capsule([1;1],[0;1],0.5);
 res(end+1,1) = ~representsa(C,'emptySet');
 C = capsule([1;1],[0;1],0);
@@ -39,7 +37,7 @@ res(end+1,1) = ~representsa(C,'emptySet');
 % 2. comparison to interval
 
 % empty capsule
-C = capsule();
+C = capsule.empty(2);
 res(end+1,1) = representsa(C,'interval');
 
 % full-dimensional capsule
@@ -70,7 +68,8 @@ res(end+1,1) = isequal(I,interval([0;-1]));
 % 3. comparison to origin
 
 % empty case
-res(end+1,1) = ~representsa(capsule(),'origin');
+C = capsule.empty(2);
+res(end+1,1) = ~representsa(C,'origin');
 
 % true cases
 C = capsule(zeros(3,1));

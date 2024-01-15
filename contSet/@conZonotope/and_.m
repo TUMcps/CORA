@@ -117,8 +117,8 @@ elseif isa(S, 'halfspace')
 elseif isa(S, 'conHyperplane')
 
     % calculate intersection between constrained zonotope and hyperplane
-    C = (S.h.c)';
-    d = S.h.d;
+    C = S.a;
+    d = S.b;
 
     G = cZ.G;
     c = cZ.c;

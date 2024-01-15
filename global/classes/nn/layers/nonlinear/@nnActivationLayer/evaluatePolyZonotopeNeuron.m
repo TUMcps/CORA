@@ -89,9 +89,9 @@ function [l, u] = aux_computeBounds(obj, c, G, GI, E, ind, ind_, evParams)
     if l > u 
         if withinTol(l, u)
             % fix numerical instability
-            temp = l;
+            l_ = l;
             l = min(l, u);
-            u = max(temp, u);
+            u = max(l_, u);
 
             obj.l(evParams.j) = l;
             obj.u(evParams.j) = u;

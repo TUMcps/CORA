@@ -19,16 +19,15 @@ function res = test_interval_atan
 
 % Authors:       Mark Wetzlinger
 % Written:       08-August-2020
-% Last update:   ---
+% Last update:   03-December-2023 (MW, add unbounded cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% tolerance
+res = true(0);
 tol = 1e-9;
 
-% Check special values
-
+% Check special values:
 % x                         atan(x)     ..in deg
 % 0                         0           0
 % sqrt(3)/3                 pi/6        30
@@ -39,29 +38,24 @@ tol = 1e-9;
 % sqrt(5-2*sqrt(5))         pi/5        36
 % sqrt(5+2*sqrt(5))         2pi/5       72
 
-a = interval([0,sqrt(3)/3],[1,sqrt(3)]);
-b = atan(a);
+I = interval([0,sqrt(3)/3],[1,sqrt(3)]);
+I_atan = atan(I);
+I_true = interval([0,pi/6],[pi/4,pi/3]);
+res(end+1,1) = isequal(I_atan,I_true,tol);
 
-binf_true = [0,pi/6];
-bsup_true = [pi/4,pi/3];
+I = interval([2-sqrt(3);sqrt(5-2*sqrt(5))],[2+sqrt(3);sqrt(5+2*sqrt(5))]);
+I_atan = atan(I);
+I_true = interval([pi/12;pi/5],[5*pi/12;2*pi/5]);
+res(end+1,1) = isequal(I_atan,I_true,tol);
 
-res_val(1) = true;
-if any(abs( b.inf - binf_true ) > tol) || any(abs( b.sup - bsup_true ) > tol)
-    res_val(1) = false;
-end
+% unbounded cases
+I = interval([-Inf,1],[0,Inf]);
+I_atan = atan(I);
+I_true = interval([-pi/2,pi/4],[0,pi/2]);
+res(end+1,1) = isequal(I_atan,I_true,tol);
 
-a = interval([2-sqrt(3);sqrt(5-2*sqrt(5))],[2+sqrt(3);sqrt(5+2*sqrt(5))]);
-b = atan(a);
 
-binf_true = [pi/12;pi/5];
-bsup_true = [5*pi/12;2*pi/5];
-
-res_val(2) = true;
-if any(abs( b.inf - binf_true ) > tol) || any(abs( b.sup - bsup_true ) > tol)
-    res_val(2) = false;
-end
-
-% final test result
-res = all(res_val);
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

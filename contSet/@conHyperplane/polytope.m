@@ -29,11 +29,11 @@ function P = polytope(hyp)
 
 % conversion
 if isempty(hyp.C)
-    A = [hyp.h.c';-hyp.h.c'];
-    b = [hyp.h.d;-hyp.h.d];       
+    A = [hyp.a;-hyp.a];
+    b = [hyp.b;-hyp.b];       
 else
-    A = [hyp.h.c';-hyp.h.c';hyp.C];
-    b = [hyp.h.d;-hyp.h.d;hyp.d];
+    A = [hyp.a;-hyp.a;hyp.C];
+    b = [hyp.b;-hyp.b;hyp.d];
 end
 
 % instantiate polytope

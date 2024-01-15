@@ -32,54 +32,46 @@ function display(P)
 
 V = P.V.val;
 
-if isemptyobject(P)
-    
-    dispEmptyObj(P,inputname(1));
-    
-else
-    
-    fprintf(newline);
-    disp(inputname(1) + " =");
-    fprintf(newline);
-    
-    %display dimension
-    display@contSet(P);
-    fprintf(newline);
- 
-    % display vertex representation
-    if ~isempty(V)
-        disp('Vertex representation:');
-        displayMatrixVector(V, 'V');
-    end
-    
-    % display inequality constraints
-    if isempty(P.A)
-        disp('Inequality constraints (A*x <= b): (none)');
-    else
-        disp('Inequality constraints (A*x <= b):');
-        displayMatrixVector(P.A,'A');
-        displayMatrixVector(P.b,'b');
-    end
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
 
-    % display equality constraints
-    if isempty(P.Ae)
-        disp('Equality constraints (Ae*x = be): (none)');
-    else
-        disp('Equality constraints (Ae*x = be):');
-        displayMatrixVector(P.Ae,'Ae');
-        displayMatrixVector(P.be,'be');
-    end
+%display dimension
+display@contSet(P);
+fprintf(newline);
 
-    disp(" ");
-    % display hidden properties
-    disp(['Bounded?                          ' aux_prop2string(P.bounded)]);
-    disp(['Empty set?                        ' aux_prop2string(P.emptySet)]);
-    disp(['Full-dimensional set?             ' aux_prop2string(P.fullDim)]);
-    
-    disp(['Minimal halfspace representation? ' aux_prop2string(P.minHRep)]);
-    disp(['Minimal vertex representation?    ' aux_prop2string(P.minVRep)]);
-    
+% display vertex representation
+if ~isempty(V)
+    disp('Vertex representation:');
+    displayMatrixVector(V, 'V');
 end
+
+% display inequality constraints
+if isempty(P.A)
+    disp('Inequality constraints (A*x <= b): (none)');
+else
+    disp('Inequality constraints (A*x <= b):');
+    displayMatrixVector(P.A,'A');
+    displayMatrixVector(P.b,'b');
+end
+
+% display equality constraints
+if isempty(P.Ae)
+    disp('Equality constraints (Ae*x = be): (none)');
+else
+    disp('Equality constraints (Ae*x = be):');
+    displayMatrixVector(P.Ae,'Ae');
+    displayMatrixVector(P.be,'be');
+end
+
+disp(" ");
+% display hidden properties
+disp(['Bounded?                          ' aux_prop2string(P.bounded)]);
+disp(['Empty set?                        ' aux_prop2string(P.emptySet)]);
+disp(['Full-dimensional set?             ' aux_prop2string(P.fullDim)]);
+
+disp(['Minimal halfspace representation? ' aux_prop2string(P.minHRep)]);
+disp(['Minimal vertex representation?    ' aux_prop2string(P.minVRep)]);
 
 end
 

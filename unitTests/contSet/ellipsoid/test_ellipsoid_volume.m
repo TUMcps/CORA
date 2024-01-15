@@ -24,7 +24,7 @@ function res = test_ellipsoid_volume
 % ------------------------------ BEGIN CODE -------------------------------
 
 % res = true;
-res = (volume(ellipsoid()) == 0);
+res = (volume(ellipsoid.empty(2)) == 0);
 load cases.mat E_c
 for i=1:length(E_c)
     E1 = E_c{i}.E1; % non-deg

@@ -1,4 +1,4 @@
-function res = installCORA()
+function res = installCORA(varargin)
 % installCORA - this script guides you through the installation process of
 %    CORA
 %
@@ -6,7 +6,9 @@ function res = installCORA()
 %    installCORA
 %
 % Inputs:
-%    -
+%    interactive - logical, whether installation should be done interactively
+%    installNNV - logical, whether toolboxed for NNV should be installed
+%    tbxpath
 %
 % Outputs:
 %    -
@@ -19,17 +21,17 @@ function res = installCORA()
 
 % Authors:       Tobias Ladner
 % Written:       23-October-2023
-% Last update:   ---
+% Last update:   10-January-2024 (added non-interactive mode)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% init
-res = false;
-
 % add CORA repository to path
 disp("Adding CORA to the MATLAB path..")
 aux_add_corapath()
+
+% init
+[interactive,installNNV,tbxpath] = setDefaultValues({true,false,[]},varargin);
 
 % display information
 disp("--------------------------------------------------------------------------------")
@@ -57,7 +59,7 @@ disp('- [CORA] Installing required toolboxes..')
 try 
 
 % check yalmip
-aux_install_yalmip()
+aux_install_yalmip(interactive,tbxpath)
 
 % further toolboxes
 aux_install_toolbox('Symbolic_Toolbox','Symbolic Math Toolbox','SM');
@@ -65,11 +67,19 @@ aux_install_toolbox('Optimization_Toolbox','Optimization Toolbox','OP');
 aux_install_toolbox('Statistics_Toolbox','Statistics and Machine Learning Toolbox','ST');
 
 % neural network verification
-fprintf('- [CORA NNV] (Optional) Should the required toolboxes for the verification of neural networks be installed?\n')
-fprintf('  (y,[n]) ')
-answer = input('>> ', 's');
-installnn = ~isempty(answer) && startsWith(answer,'y');
-if installnn
+if interactive
+    fprintf('- [CORA NNV] (Optional) Should the required toolboxes for the verification of neural networks be installed?\n')
+    fprintf('  (y,[n]) ')
+    answer = input('>> ', 's');
+    installNNV = ~isempty(answer) && startsWith(lower(answer),'y');
+end
+if installNNV
+    disp('- [CORA NNV] Installing required toolboxes..')
+
+    matlab.addons.installedAddons
+
+    matlabshared.supportpkg.getInstalled
+
     aux_install_toolbox('Neural_Network_Toolbox','Deep Learning Toolbox','NN');
     aux_install_supportpkg('Deep Learning Toolbox Converter for ONNX Model Format','ONNXCONVERTER');
 end
@@ -93,7 +103,7 @@ end
 
 % check installation
 disp(' ')
-if installnn
+if installNNV
     res = testnn_requiredToolboxes;
 else
     res = test_requiredToolboxes;
@@ -134,21 +144,32 @@ function aux_display_install_prompt(text, id_short)
     throw(CORAerror('CORA:install',text))
 end
 
-function aux_install_yalmip()
+function aux_install_yalmip(interactive,tbxpath)
     if ~isYalmipInstalled()
-        disp("  - Yalmip is installed via the MATLAB tbxmanager. Where should the tbxmanager be saved?")
+        disp("  - Yalmip is installed via the MATLAB tbxmanager.")
         % partially taken from: https://www.mpt3.org/Main/Installation
 
         % find tbxmanager directory
         currentpath = pwd;
-        tbxpath = uigetdir(currentpath);
+        if interactive && isempty(tbxpath)
+            disp("    Where should the tbxmanager be saved?")
+            tbxpath = uigetdir(currentpath);
+        elseif isempty(tbxpath)
+            tbxpath = pwd;
+        end
         tbxpath = [tbxpath,filesep,'tbxmanager'];
         mkdir(tbxpath)
         cd(tbxpath);
         userpath(tbxpath);
 
         % from https://tbxmanager.com/
-        websave('tbxmanager.m','http://www.tbxmanager.com/tbxmanager.m');
+        if interactive
+            % take original tbxmanger
+            websave('tbxmanager.m','http://www.tbxmanager.com/tbxmanager.m');
+        else
+            % take tbxmanger from verivital to avoid manual license agreement
+            websave('tbxmanager.m','https://raw.githubusercontent.com/verivital/tbxmanager/master/tbxmanager.m');
+        end
         rehash;
 
         errortext = [];
@@ -216,7 +237,8 @@ end
 
 function res = aux_test_supportpkg_installation(text)
     addons = matlabshared.supportpkg.getInstalled;
-    res = ~isempty(addons) && any(strcmp(text, [addons.Name]));
+    addons = reshape(addons,[],1); % column vector
+    res = ~isempty(addons) && any(strcmp(text, {addons.Name}));
 end
 
 % ------------------------------ END OF CODE ------------------------------

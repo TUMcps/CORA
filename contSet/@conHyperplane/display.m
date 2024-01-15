@@ -28,39 +28,40 @@ function display(hyp)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isemptyobject(hyp)
-    
-    dispEmptyObj(hyp,inputname(1));
-    
+% special cases
+if representsa_(hyp,'emptySet',0)
+    dispEmptySet(hyp,inputname(1));
+    return
+elseif representsa_(hyp,'fullspace',0)
+    dispRn(hyp,inputname(1));
+    return
+end
+
+try
+    inputname;
+    fprintf(newline);
+    disp(inputname(1) + " =");
+    fprintf(newline);
+catch
+    % nothing here
+end
+
+%display hyperplane
+disp('normal vector:');
+disp(hyp.a);
+disp('distance to origin:');
+disp(hyp.b);
+
+%display constraint system
+if representsa_(hyp,'hyperplane',eps)
+    disp('constraint system (Cx <= d): (none)');
 else
+    disp('constraint system (Cx <= d):');
 
-    try
-        inputname;
-        fprintf(newline);
-        disp(inputname(1) + " =");
-        fprintf(newline);
-    catch
-        % nothing here
-    end
-    
-    %display hyperplane
-    disp('normal vector:');
-    disp(hyp.h.c);
-    disp('distance to origin:');
-    disp(hyp.h.d);
-
-    %display constraint system
-    if representsa_(hyp,'hyperplane',eps)
-        disp('constraint system (Cx <= d): (none)');
-    else
-        disp('constraint system (Cx <= d):');
-    
-        disp('C:');
-        disp(hyp.C);
-        disp('d:');
-        disp(hyp.d);
-    end
-
+    disp('C:');
+    disp(hyp.C);
+    disp('d:');
+    disp(hyp.d);
 end
 
 % ------------------------------ END OF CODE ------------------------------

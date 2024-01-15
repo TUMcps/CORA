@@ -30,7 +30,7 @@ function n = dim(I)
 
 infi = infimum(I); % equivalently: supremum(I)
 if isempty(infi)
-    n = 0; return;
+    n = size(infi,1); return;
 end
 
 [rows, cols] = size(infi);

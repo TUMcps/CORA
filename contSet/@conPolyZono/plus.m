@@ -88,15 +88,15 @@ catch ME
         rethrow(ME);
     end
 
+    % check whether different dimension of ambient space
+    equalDimCheck(cPZ,summand);
+
     % check for empty sets
     if representsa_(cPZ,'emptySet',eps)
         return
-    elseif isemptyobject(summand)
-        cPZ = conPolyZono(); return
+    elseif representsa_(summand,'emptySet',eps)
+        cPZ = conPolyZono.empty(dim(cPZ)); return
     end
-
-    % check whether different dimension of ambient space
-    equalDimCheck(cPZ,summand);
 
     % other error...
     rethrow(ME);

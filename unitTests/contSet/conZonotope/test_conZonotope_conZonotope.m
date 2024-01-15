@@ -23,9 +23,16 @@ function res = test_conZonotope_conZonotope
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+res = true(0);
+
 % empty conZonotope
-cZ = conZonotope();
-res = representsa_(cZ,'emptySet',eps);
+n = 2;
+cZ = conZonotope.empty(n);
+res(end+1,1) = representsa_(cZ,'emptySet',eps) && dim(cZ) == n;
+cZ = conZonotope(zeros(3,0));
+res(end+1,1) = representsa_(cZ,'emptySet',eps) ...
+    && size(cZ.c,1) == 3 && size(cZ.G,1) == 3;
+
 
 % init simple constrained zonotope
 Z = [0 3 0 1;0 0 2 1];

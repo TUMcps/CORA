@@ -36,14 +36,19 @@ function I = interval(P)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%obtain bounding box in halfspace representation
+% obtain bounding box in halfspace representation
 B = box(P);
-%get matrix and b vector
-A = B.A;
-b = B.b;
 
-% dimension of resulting interval
-n = size(A,2);
+% dimension
+n = dim(P);
+
+if B.emptySet.val
+    I = interval(zeros(n,0));
+    return
+end
+
+% get constraint matrix
+A = B.A; b = B.b;
 
 % init lower and upper bounds of resulting interval with Inf values
 lb = -Inf(n,1);

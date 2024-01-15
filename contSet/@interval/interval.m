@@ -6,7 +6,6 @@ classdef (InferiorClasses = {?mp}) interval < contSet
 %    {x | a_i <= x <= b_i, \forall i = 1,...,n}.
 %
 % Syntax:
-%    obj = interval()
 %    obj = interval(I)
 %    obj = interval(a)
 %    obj = interval(a,b)
@@ -31,7 +30,7 @@ classdef (InferiorClasses = {?mp}) interval < contSet
 %
 % See also: interval, polytope
 
-% Authors:       Matthias Althoff, Niklas Kochdumper
+% Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
 % Written:       19-June-2015
 % Last update:   18-November-2015
 %                26-January-2016
@@ -40,6 +39,7 @@ classdef (InferiorClasses = {?mp}) interval < contSet
 %                20-March-2021 (MW, error messages)
 %                14-December-2022 (TL, property check in inputArgsCheck)
 %                29-March-2023 (TL, optimized constructor)
+%                08-December-2023 (MW, handle [-Inf,-Inf] / [Inf,Inf] case)
 % Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -54,6 +54,11 @@ methods
     % class constructor
     function obj = interval(varargin)
 
+        % 0. avoid empty instantiation
+        if nargin == 0
+            throw(CORAerror('CORA:noInputInSetConstructor'));
+        end
+
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'interval')
             obj = varargin{1}; return
@@ -65,7 +70,10 @@ methods
         % 3. check correctness of input arguments
         aux_checkInputArgs(lb,ub,nargin);
 
-        % 4. assign properties
+        % 4. compute properties (deal with corner cases)
+        [lb,ub] = aux_computeProperties(lb,ub);
+
+        % 5. assign properties
         obj.inf = lb;
         obj.sup = ub;
 
@@ -161,6 +169,8 @@ end
 methods (Static = true)
     I = generateRandom(varargin) % generates random interval
     I = enclosePoints(points) % enclosure of point cloud
+    I = empty(n) % instantiates an empty interval
+    I = Inf(n) % instantiates a fullspace interval
 end
 
 end
@@ -175,13 +185,7 @@ function [lb,ub] = aux_parseInputArgs(varargin)
     if nargin > 2
         throw(CORAerror('CORA:tooManyInputArgs',2));
     end
-
-    % no input arguments
-    if nargin == 0
-        lb = []; ub = [];
-        return
-    end
-
+    
     % assign lower and upper bound
     [lb,ub] = setDefaultValues({[],[]},varargin);
 
@@ -203,20 +207,44 @@ function aux_checkInputArgs(lb,ub,n_in)
             {ub, 'att', 'numeric', 'nonnan'}; ...
         })
 
-        if ~all(size(lb) == size(ub))
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                'Limits are of different dimension.'));
-        elseif length(size(lb)) > 2
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                'Only 1d and 2d intervals are supported.'));
-        elseif ~all(all(lb <= ub))
-            % check again using tolerance (little bit slower)
-            if ~all(all(lb < ub | withinTol(double(lb),double(ub))))
+        if ~isempty(lb) && ~isempty(ub)
+            if ~all(size(lb) == size(ub))
                 throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Lower limit larger than upper limit.'));
+                    'Limits are of different dimension.'));
+            elseif length(size(lb)) > 2
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Only 1d and 2d intervals are supported.'));
+            elseif ~all(all(lb <= ub))
+                % check again using tolerance (little bit slower)
+                if ~all(all(lb < ub | withinTol(double(lb),double(ub))))
+                    throw(CORAerror('CORA:wrongInputInConstructor',...
+                        'Lower limit larger than upper limit.'));
+                end
             end
         end
         
+    end
+
+end
+
+function [lb,ub] = aux_computeProperties(lb,ub)
+% if one dimension is [-Inf,-Inf] or [Inf,Inf], the interval is empty
+% (cannot be displayed for interval matrices -> throws error)
+
+    % assign correct size if empty interval
+    if isempty(lb) && isempty(ub)
+        ub = zeros(size(lb));
+    end
+
+    if any(any( isinf(lb) & isinf(ub) & (sign(lb) == sign(ub)) ))
+        n = size(lb);
+        if all(n > 1)
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Empty interval matrix cannot be instantiated'));
+        end
+        n(n==1) = 0;
+        lb = zeros(n);
+        ub = zeros(n);
     end
 
 end

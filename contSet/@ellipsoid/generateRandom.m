@@ -76,7 +76,7 @@ tmp = randn(n);
 Q = tmp'*tmp;
 % make sure Q is positive-semidefinite -> valid ellipsoid shape matrix
 Q = 1/2*(Q+Q');
-E = ellipsoid;
+E = ellipsoid.empty(1);
 TOL = E.TOL;
 % if user explicitly specified degeneracy, keep going; otherwise good
 % enough

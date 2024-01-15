@@ -14,7 +14,7 @@ function res = test_interval_supportFunc
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       06-April-2023
@@ -24,7 +24,7 @@ function res = test_interval_supportFunc
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty set
-I = interval();
+I = interval.empty(1);
 dir = 1;
 [val,x] = supportFunc(I,dir,'upper');
 res = val == -Inf && isempty(x);

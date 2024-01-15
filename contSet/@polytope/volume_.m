@@ -29,6 +29,13 @@ function vol = volume_(P,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% fully empty
+if representsa_(P,'fullspace',0)
+    vol = Inf; return
+elseif representsa(P,'emptySet',1e-10)
+    vol = 0; return
+end
+
 % 1D case very fast
 if dim(P) == 1
     if ~isempty(P.V.val)

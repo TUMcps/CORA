@@ -43,7 +43,7 @@ function cPZ = convHull(cPZ,S)
 
     % parse input arguments
     if nargin > 1
-        if isemptyobject(cPZ)
+        if representsa_(cPZ,'emptySet',1e-8,'linearize',0,1)
             cPZ = S; return;
         end
         cPZ = aux_convHullMult(cPZ,S);
@@ -73,7 +73,7 @@ function res = aux_convHullMult(cPZ,S)
             S = conPolyZono(S);
             
         elseif isnumeric(S)
-            S = conPolyZono(S,[],[]);
+            S = conPolyZono(S);
         else        
             % throw error for given arguments
             throw(CORAerror('CORA:noops',cPZ,S));
@@ -82,7 +82,7 @@ function res = aux_convHullMult(cPZ,S)
 
     % remove independent generators
     GI1 = cPZ.GI; GI2 = S.GI;
-    cPZ.GI = []; S.GI = [];
+    cPZ.GI = zeros(dim(cPZ),0); S.GI = zeros(dim(S),0);
     
     % compute convex hull of depenent part using the linear combination
     res = aux_convHullSingle(linComb(cPZ,S));
@@ -90,8 +90,8 @@ function res = aux_convHullMult(cPZ,S)
     % compute convex hull of the independent part using the convex hull for
     % zonotopes
     temp = zeros(length(cPZ.c),1);
-    Z1 = zonotope([temp, GI1]);
-    Z2 = zonotope([temp, GI2]);
+    Z1 = zonotope(temp, GI1);
+    Z2 = zonotope(temp, GI2);
 
     Z = enclose(Z1,Z2);
 

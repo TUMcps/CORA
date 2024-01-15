@@ -27,7 +27,7 @@ function res = testLong_polyZonotope_randPoint
 tol = 1e-9;
 
 % check empty zonotope object -> error
-res = isempty(randPoint(polyZonotope()));
+res = isempty(randPoint(polyZonotope.empty(1)));
 
 
 % number of tests

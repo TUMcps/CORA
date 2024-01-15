@@ -14,7 +14,7 @@ function res = test_intervalMatrix_isempty
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       03-April-2023
@@ -23,7 +23,7 @@ function res = test_intervalMatrix_isempty
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = isempty(intervalMatrix());
+res = true(0);
 
 % instantiate interval matrix
 intMat = intervalMatrix([2 3; 1 2],[1 0; 1 1]);

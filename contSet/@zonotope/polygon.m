@@ -30,7 +30,7 @@ function p = polygon(Z)
 
 % empty case
 if representsa_(Z,'emptySet',eps)
-    p = []; return
+    p = zeros(dim(Z),0); return
 end
 
 % only supported for 2D cases

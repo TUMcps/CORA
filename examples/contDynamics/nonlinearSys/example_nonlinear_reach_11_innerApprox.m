@@ -1,9 +1,7 @@
-function example_nonlinear_reach_11_innerApprox()
-% example_nonlinear_reach_11_innerApprox - example demonstrating the 
-%       computation of inner-approximation of reachable sets with the
-%       algorithms from [1] and [2]. The example can be found in Sec. 4.1 
-%       of [2].
-%
+function res = example_nonlinear_reach_11_innerApprox()
+% example_nonlinear_reach_11_innerApprox - example for the computation of
+%    inner-approximation of reachable sets with the algorithms from [1-3].
+%    The example can be found in Sec. 4.1 of [2].
 %
 % Syntax:
 %    example_nonlinear_reach_11_innerApprox
@@ -12,7 +10,7 @@ function example_nonlinear_reach_11_innerApprox()
 %    -
 %
 % Outputs:
-%    -
+%    res - true/false
 %
 % References:
 %    [1] N. Kochdumper and M. Althoff. "Computing Non-Convex Inner-
@@ -36,6 +34,8 @@ function example_nonlinear_reach_11_innerApprox()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+
+res = true;
 
 % Parameters --------------------------------------------------------------
 
@@ -108,7 +108,7 @@ figure; hold on; box on;
 useCORAcolors("CORA:default")
 plot(Rout1.timePoint.set{end},[1,2],'DisplayName','Outer-approx.');
 plot(Rin1.timePoint.set{end},[1,2],'DisplayName','Inner-approx. (scal)');
-plot(Rin2.timePoint.set{end},[1, 2],'DisplayName','Inner-approx. (proj)');
+plot(Rin2.timePoint.set{end},[1,2],'DisplayName','Inner-approx. (proj)');
 plot(Rin3.timePoint.set{end},[1,2],'DisplayName','Inner-approx. (parallelo)');
 legend('Location','northwest')
 

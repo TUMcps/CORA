@@ -41,8 +41,7 @@ for i=1:nrTests
     a = abs(randn);
     hyp2 = conHyperplane(I(1,:),0,[I(1,:);-I(1,:)],[a;a]);
     if ~representsa(hyp1,'hyperplane') || ~representsa(hyp2,'hyperplane')
-        res = false;
-        break;
+        throw(CORAerror('CORA:testFailed'));
     end
 
     % constraint set which actually constrains hyperplane
@@ -52,8 +51,7 @@ for i=1:nrTests
         d = randn(1,n); d = d/norm(d);
         hyp3 = conHyperplane(d,1,[I;-I],ones(2*n,1));
         if representsa(hyp3,'hyperplane')
-            res = false;
-            break;
+            throw(CORAerror('CORA:testFailed'));
         end
     end
     

@@ -23,7 +23,8 @@ function res = test_interval_representsa
 
 % 1. comparison to empty set
 % empty interval
-res = representsa(interval(),'emptySet');
+I = interval.empty(2);
+res = representsa(I,'emptySet');
 
 % non-empty intervals
 I = interval(-5.0, 2);
@@ -33,7 +34,8 @@ res(end+1,1) = ~representsa(I,'emptySet');
 
 
 % 2. comparison to origin
-res(end+1,1) = ~representsa(interval(),'origin');
+I = interval.empty(2);
+res(end+1,1) = ~representsa(I,'origin');
 
 % only origin
 I = interval(zeros(3,1),zeros(3,1));
@@ -50,7 +52,8 @@ res(end+1,1) = representsa(I,'origin',tol);
 
 
 % 3. comparison to point
-res(end+1,1) = ~representsa(interval(),'point');
+I = interval.empty(2);
+res(end+1,1) = ~representsa(I,'point');
 
 I = interval([-3;-2],[-3;-2]);
 res(end+1,1) = representsa(I,'point');
@@ -60,7 +63,8 @@ res(end+1,1) = representsa(I,'point',1);
 
 
 % 4. comparison to zonotope
-res(end+1,1) = representsa(interval(),'zonotope');
+I = interval.empty(2);
+res(end+1,1) = representsa(I,'zonotope');
 
 I = interval([-4;2;5],[5;2;8]);
 [res(end+1,1),Z] = representsa(I,'zonotope');

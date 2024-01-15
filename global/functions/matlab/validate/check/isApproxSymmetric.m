@@ -31,7 +31,7 @@ function res = isApproxSymmetric(Q,TOL)
 
 % take default value for tolerance if none given
 if ~exist('TOL','var')
-    TOL = ellipsoid().TOL;
+    TOL = ellipsoid.empty(1).TOL;
 end
 
 res = all(all(withinTol(triu(Q),tril(Q)',TOL)));

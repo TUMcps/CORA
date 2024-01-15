@@ -5,11 +5,11 @@ function P_out = or(P1,P2)
 %    P_out = or(P1,P2)
 %
 % Inputs:
-%    P1 - first polytope object
-%    P2 - second polytope object
+%    P1 - polytope object
+%    P2 - polytope object
 %
 % Outputs:
-%    P_out - resulting polytope object enclosing the union
+%    P_out - polytope object enclosing the union
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,13 +26,9 @@ function P_out = or(P1,P2)
 
 % empty cases
 if representsa_(P1,'emptySet',eps)
-    P_out = P2;
-    return;
-end
-
-if representsa_(P2,'emptySet',eps)
-    P_out = P1;
-    return;
+    P_out = P2; return
+elseif representsa_(P2,'emptySet',eps)
+    P_out = P1; return
 end
 
 % call convex hull

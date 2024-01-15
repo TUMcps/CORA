@@ -24,21 +24,14 @@ function n = dim(E)
 % Written:       15-September-2019 
 % Last update:   16-March-2021 (comp independent of property)
 %                04-July-2022 (VG, support class arrays)
+%                10-January-2024 (MW, simplify)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 n = zeros(size(E));
 for i=1:numel(E)
-    try
-        n(i) = length(E(i).q);
-    catch ME
-        if isemptyobject(E(i))
-            n(i) = 0;
-        else
-            rethrow(ME);
-        end
-    end
+    n(i) = size(E(i).q,1);
 end
 
 % ------------------------------ END OF CODE ------------------------------

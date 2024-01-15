@@ -15,93 +15,33 @@ function res = test_interval_cos
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: none
 
-% Authors:       Dmitry Grebenyuk
+% Authors:       Dmitry Grebenyuk, Mark Wetzlinger
 % Written:       05-January-2016
-% Last update:   ---
+% Last update:   03-December-2023 (MW, add unbounded cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
-res = true;
+res = true(0);
+
+% bounded
+I = interval([-0; 0.0; 0.0; 0; 0; -pi/4; -2*pi], ...
+             [pi/4; pi/2; pi; 2*pi; 4*pi; pi/4; 4*pi]);
+I_cos = cos(I);
+I_true = interval([sqrt(2)/2;0;-1;-1;-1;sqrt(2)/2;-1],ones(7,1));
+res(end+1,1) = isequal(I_cos,I_true,tol);
+
+% unbounded
+I = interval([-Inf;0;-Inf],[Inf;Inf;0]);
+I_cos = cos(I);
+I_true = interval(-ones(3,1),ones(3,1));
+res(end+1,1) = isequal(I_cos,I_true,tol);
 
 
-a = interval([-0; 0.0; 0.0; 0; 0; -pi/4; -2*pi], [pi/4; pi/2; pi; 2*pi; 4*pi; pi/4; 4*pi]);
-c = cos(a);
-
-if abs( infimum(c(1)) - 0.707106781 ) > tol || abs( supremum(c(1)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(2)) - 0.0 ) > tol || abs( supremum(c(2)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(3)) + 1.0 ) > tol || abs( supremum(c(3)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(4)) + 1.0 ) > tol || abs( supremum(c(4)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(5)) + 1.0 ) > tol || abs( supremum(c(5)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(6)) - 0.707106781 ) > tol || abs( supremum(c(6)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(7)) + 1.0 ) > tol || abs( supremum(c(7)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-a = interval([-0, 0.0, 0.0, 0, 0, -pi/4, -2*pi], [pi/4, pi/2, pi, 2*pi, 4*pi, pi/4, 4*pi]);
-c = cos(a);
-
-if abs( infimum(c(1)) - 0.707106781 ) > tol || abs( supremum(c(1)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(2)) - 0.0 ) > tol || abs( supremum(c(2)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(3)) + 1.0 ) > tol || abs( supremum(c(3)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(4)) + 1.0 ) > tol || abs( supremum(c(4)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(5)) + 1.0 ) > tol || abs( supremum(c(5)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(6)) - 0.707106781 ) > tol || abs( supremum(c(6)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(7)) + 1.0 ) > tol || abs( supremum(c(7)) - 1.0 ) > tol
-	res = false;
-	return;
-end
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

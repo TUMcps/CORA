@@ -37,14 +37,20 @@ function pt = randPoint_(P,N,type,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    % check if empty
-    if representsa(P, 'emptySet')
-        pt = []; return
+    % fullspace
+    if representsa_(P,'fullspace',0)
+        % sample according to normal distribution
+        pt = randn(dim(P),N); return
+    end
+
+    % empty
+    if representsa(P,'emptySet')
+        pt = zeros(dim(P),0); return
     end
     
     % return all extreme points 
     if ischar(N) && strcmp(N,'all')
-        pt = vertices(P); return;
+        pt = vertices(P); return
     end
     
     % init random points

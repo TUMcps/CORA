@@ -23,6 +23,8 @@ function res = test_capsule_generateRandom
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+res = true(0);
+
 % empty call
 C = capsule.generateRandom();
 
@@ -33,7 +35,7 @@ r = 3.5;
 
 % only dimension
 C = capsule.generateRandom('Dimension',n);
-res = dim(C) == n;
+res(end+1,1) = dim(C) == n;
 
 % only center
 C = capsule.generateRandom('Center',c);

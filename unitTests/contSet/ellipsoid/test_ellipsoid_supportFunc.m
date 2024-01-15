@@ -26,8 +26,9 @@ function res = test_ellipsoid_supportFunc
 load cases.mat E_c  
 
 % empty set
-res = supportFunc(ellipsoid(),[1;1],'upper') == -Inf ...
-    && supportFunc(ellipsoid(),[1;1],'lower') == Inf;
+E = ellipsoid.empty(2);
+res = supportFunc(E,[1;1],'upper') == -Inf ...
+    && supportFunc(E,[1;1],'lower') == Inf;
 
 % loop over cases
 for i=1:length(E_c)

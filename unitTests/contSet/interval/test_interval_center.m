@@ -14,53 +14,38 @@ function res = test_interval_center
 % Subfunctions: none
 % MAT-files required: none
 
-% Authors:       Dmitry Grebenyuk
+% Authors:       Dmitry Grebenyuk, Mark Wetzlinger
 % Written:       15-January-2016
-% Last update:   ---
+% Last update:   03-December-2023 (MW, add unbounded case)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
-res = true;
+res = true(0);
 
-% empty set
-if ~isnumeric(center(interval())) || ~isempty(center(interval()))
-    res = false;
-    return
-end
+% 1. empty set
+n = 2;
+I = interval.empty(n);
+c = center(I);
+res(end+1,1) = isempty(c) && isnumeric(c) && all(size(c) == [2,0]);
 
-a = interval([-5.0, -4.0, -3, 0, 0, 5], [-2, 0.0, 2.0, 0, 5, 8]);
-c = center(a);
+% 2. bounded
+I = interval([-5.0, -4.0, -3, 0, 0, 5], [-2, 0.0, 2.0, 0, 5, 8]);
+c = center(I);
+c_true = [-3.5,-2,-0.5,0,2.5,6.5];
+res(end+1,1) = all(withinTol(c,c_true,tol));
 
-if abs( c(1) + 3.5 ) > tol
-	res = false;
-	return;
-end
+% 3. unbounded
+I = interval(-Inf,2);
+c = center(I);
+res(end+1,1) = isnan(c);
+I = interval(2,Inf);
+c = center(I);
+res(end+1,1) = isnan(c);
 
-if abs( c(2) + 2 ) > tol
-	res = false;
-	return;
-end
 
-if abs( c(3) + 0.5 ) > tol
-	res = false;
-	return;
-end
-
-if abs( c(4) + 0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( c(5) - 2.5 ) > tol
-	res = false;
-	return;
-end
-
-if abs( c(6) - 6.5 ) > tol
-	res = false;
-	return;
-end
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

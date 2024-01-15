@@ -56,9 +56,9 @@ c = Z.c;
 %there are more generators than dimensions: cannot "fit" the ellipse directly to
 %generators
 if n<m 
-    %compute initial guess for ellipsoid containing Z ([1], Sec, 4.1) 
+    %compute initial guess for ellipsoid containing Z ([1], Sec. 4.1) 
     Q0 = m*(G*G');
-    TOL = ellipsoid().TOL;
+    TOL = ellipsoid.empty(1).TOL;
     Z0 = zonotope([zeros(n,1),G]);
     %compute transformation matrix T s.t. T*ellipsoid(Q0) == unit hyper
     %sphere

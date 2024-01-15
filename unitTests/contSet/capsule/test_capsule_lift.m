@@ -14,7 +14,7 @@ function res = test_capsule_lift
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Tobias Ladner
 % Written:       19-September-2023

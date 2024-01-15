@@ -23,12 +23,12 @@ function res = test_capsule_ne
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% empty capsule
-C = capsule();
-res = ~(C ~= C);
-
-% tolerance
+res = true(0);
 tol = 1e-9;
+
+% empty capsule
+C = capsule.empty(2);
+res(end+1,1) = ~(C ~= C);
 
 % define properties
 c = [2; 0; -1];

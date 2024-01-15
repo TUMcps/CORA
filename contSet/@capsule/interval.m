@@ -31,8 +31,15 @@ function I = interval(C)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% dimension
+n = dim(C);
+
+if representsa_(C,'emptySet',eps)
+    I = interval.empty(n);
+    return
+end
+
 % initialization
-n = length(C.c);
 ub = zeros(n,1);
 lb = zeros(n,1);
 E = eye(n);

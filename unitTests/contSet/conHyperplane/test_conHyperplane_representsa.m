@@ -26,12 +26,10 @@ function res = test_conHyperplane_representsa
 res = true(0);
 
 % 1. comparison to empty set
-hyp = conHyperplane(halfspace([0 1],3),eye(2),ones(2,1));
-res(end+1,1) = ~representsa(hyp,'emptySet');
-hyp = conHyperplane(halfspace([0 1],3),eye(2),zeros(2,1));
-res(end+1,1) = ~representsa(hyp,'emptySet');
-hyp = conHyperplane();
+hyp = conHyperplane([0 1],3,eye(2),[1;1]);
 res(end+1,1) = representsa(hyp,'emptySet');
+hyp = conHyperplane([0 1],3,eye(2),[1;4]);
+res(end+1,1) = ~representsa(hyp,'emptySet');
 
 
 % 2. comparison to interval

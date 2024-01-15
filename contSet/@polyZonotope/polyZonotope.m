@@ -4,8 +4,8 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) polyZonotope < cont
 % Definition: see CORA manual, Sec. 2.2.1.5.
 %
 % Syntax:
-%    obj = polyZonotope()
 %    obj = polyZonotope(pZ)
+%    obj = polyZonotope(c)
 %    obj = polyZonotope(c,G)
 %    obj = polyZonotope(c,G,GI)
 %    obj = polyZonotope(c,[],GI)
@@ -72,6 +72,11 @@ methods
 
     function obj = polyZonotope(varargin)
 
+        % 0. avoid empty instantiation
+        if nargin == 0
+            throw(CORAerror('CORA:noInputInSetConstructor'));
+        end
+
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'polyZonotope')
             obj = varargin{1}; return
@@ -99,7 +104,8 @@ methods
 end
 
 methods (Static = true)
-    Z = generateRandom(varargin) % generate random polyZonotope
+    pZ = generateRandom(varargin) % generate random polyZonotope
+    pZ = empty(n) % instantiates an empty polyZonotope
 end
 
 

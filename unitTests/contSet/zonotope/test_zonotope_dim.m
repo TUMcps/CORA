@@ -14,7 +14,7 @@ function res = test_zonotope_dim
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       27-July-2021
@@ -23,23 +23,24 @@ function res = test_zonotope_dim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
+res = true(0);
 
 % check empty zonotope
-Z = zonotope();
-res(1) = dim(Z) == 0;
+Z = zonotope.empty(2);
+res(end+1,1) = dim(Z) == 2;
+Z = zonotope(zeros(3,0));
+res(end+1,1) = dim(Z) == 3;
 
 
 % instantiate zonotope
-c = [-2; 1];
-G = [2 4 5 3 3; 0 3 5 2 3];
+c = [-2; 1]; G = [2 4 5 3 3; 0 3 5 2 3];
 Z = zonotope(c,G);
-
-res(2) = dim(Z) == 2;
+res(end+1,1) = dim(Z) == 2;
 
 % no generator matrix
 Z = zonotope(c);
-res(3) = dim(Z) == 2;
+res(end+1,1) = dim(Z) == 2;
+
 
 % combine results
 res = all(res);

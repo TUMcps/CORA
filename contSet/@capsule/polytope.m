@@ -41,7 +41,7 @@ n = dim(C);
 
 % empty case
 if representsa_(C,'emptySet',0)
-    P = polytope(zeros(0,n),[]);
+    P = polytope.empty(n);
     return
 end
 

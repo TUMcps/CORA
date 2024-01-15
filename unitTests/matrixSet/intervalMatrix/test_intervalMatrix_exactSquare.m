@@ -21,7 +21,7 @@ function res = test_intervalMatrix_exactSquare
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       01-November-2017

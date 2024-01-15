@@ -27,7 +27,7 @@ res = true;
 tol = 1e-9;
 
 % check empty conZonotope object -> error
-conZono = conZonotope();
+conZono = conZonotope.empty(1);
 try 
     p = randPoint(conZono);
 catch ME

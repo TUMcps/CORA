@@ -27,7 +27,7 @@ function res = testLong_polyZonotope_polygon
 resvec = true;
 
 % empty case
-pgon = polygon(polyZonotope());
+pgon = polygon(polyZonotope.empty(1));
 resvec(end+1) = representsa_(pgon,'emptySet',eps);
 
 % point case

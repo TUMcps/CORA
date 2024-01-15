@@ -254,11 +254,11 @@ end
 
 % state_names and input_names are ordered lists of names, which we use to
 % define the initial and input sets in the correct order
-initialSet = interval();
+initialSet = interval.empty(1);
 for i = 1:length(state_names)
     initialSet = vertcat(initialSet,variableMap(state_names(i).name));
 end
-inputSet = interval();
+inputSet = interval.empty(1);
 for i = 1:length(input_names)
     inputSet = vertcat(inputSet,variableMap(input_names(i).name));
 end

@@ -77,6 +77,11 @@ methods
     % class constructor
     function obj = conZonotope(varargin)
 
+        % 0. avoid empty instantiation
+        if nargin == 0
+            throw(CORAerror('CORA:noInputInSetConstructor'));
+        end
+
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'conZonotope')
             obj = varargin{1}; return
@@ -88,7 +93,10 @@ methods
         % 3. check correctness of input arguments
         aux_checkInputArgs(c,G,A,b,nargin);
 
-        % 4. assign properties
+        % 4. compute properties
+        [c,G,A,b] = aux_computeProperties(c,G,A,b);
+
+        % 5. assign properties
         obj.c = c;
         obj.G = G;
         obj.A = A;
@@ -133,6 +141,7 @@ end
 
 methods (Static = true)
     cZ = generateRandom(varargin) % generate random constrained zonotope
+    cz = empty(n) % instantiates an empty constrained zonotope
 end
 
 
@@ -181,18 +190,16 @@ function [c,G,A,b] = aux_parseInputArgs(varargin)
         throw(CORAerror('CORA:tooManyInputArgs',4));
     end
 
-    % no input arguments
-    if nargin == 0
-        c = []; G = []; A = []; b = [];
-        return
-    end
-
     % set default values depending on nargin
     if nargin == 1 || nargin == 3
         % only center given, or [c,G] with A and b
         [c,A,b] = setDefaultValues({[],[],[]},varargin);
-        G = c(:,2:end);
-        c = c(:,1);
+        if size(varargin{1},2) > 0
+            G = c(:,2:end);
+            c = c(:,1);
+        else
+            G = [];
+        end
     elseif nargin == 2 || nargin == 4
         % c,G or c,G,A,b given
         [c,G,A,b] = setDefaultValues({[],[],[],[]},varargin);
@@ -208,16 +215,16 @@ function aux_checkInputArgs(c,G,A,b,n_in)
 
         if n_in == 1 || n_in == 3
             inputChecks = { ...
-                {c, 'att', 'numeric', {'finite', 'column'}};
+                {c, 'att', 'numeric', {'finite'}};
                 {G, 'att', 'numeric', {'finite', 'matrix'}};
             };
 
         elseif n_in == 2 || n_in == 4
             % check whether c and G fit together to avoid bad message
-            if ~isvector(c)
+            if ~isempty(c) && ~isvector(c)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'The center has to be a column vector.')); 
-            elseif length(c) ~= size(G,1)
+            elseif ~isempty(G) && length(c) ~= size(G,1)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'The dimensions of the center and the generator matrix do not match.')); 
             end
@@ -230,18 +237,33 @@ function aux_checkInputArgs(c,G,A,b,n_in)
 
         % check correctness of A and b, also w.r.t G
         if ~isempty(A) && ~isempty(b)
-            if ~isvector(b) % b is a vector ?
+            if ~isvector(b) % b is a vector?
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'The constraint offset has to be a vector.'));
             elseif size(A,2) ~= (size(G,2)) % A fits G?
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'The dimensions of the generator matrix and the constraint matrix do not match.'));
-            elseif size(A,1) ~= length(b) % A fits b ?
+            elseif size(A,1) ~= length(b) % A fits b?
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'The dimensions of the constraint matrix and the constraint offset do not match.'));
             end
         end
         
+    end
+
+end
+
+function [c,G,A,b] = aux_computeProperties(c,G,A,b)
+
+    % if G is empty, set correct dimension
+    if isempty(G)
+        G = zeros(size(c,1),0);
+    end
+
+    % if no constraints, set correct dimension
+    if isempty(A)
+        A = zeros(0,size(G,2));
+        b = zeros(0,1);
     end
 
 end

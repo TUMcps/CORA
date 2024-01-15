@@ -24,7 +24,7 @@ function res = test_interval_reduce
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty case
-I = interval();
+I = interval.empty(2);
 % reduce
 I_ = reduce(I);
 % should remain the same...

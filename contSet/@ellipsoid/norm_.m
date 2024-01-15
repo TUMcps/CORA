@@ -47,7 +47,7 @@ lmax = max(eig(E.Q));
 val = sqrt(lmax);
 
 % check for empty set
-if isnan(val) && isemptyobject(E)
+if isnan(val) && representsa(E,'emptySet',0)
     val = -Inf;
 end
 

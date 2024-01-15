@@ -1,14 +1,15 @@
-function res = ne(P1,P2,varargin)
-% ne - Overloaded '~=' operator for the comparison of polytopes
+function res = ne(P,S,varargin)
+% ne - Overloaded '~=' operator for the comparison of a polytope and
+%    another contSet object
 %
 % Syntax:
-%    res = P1 ~= P2
-%    res = ne(P1,P2)
-%    res = ne(P1,P2,tol)
+%    res = P ~= S
+%    res = ne(P,S)
+%    res = ne(P,S,tol)
 %
 % Inputs:
-%    P1 - polytope object 
-%    P2 - polytope object 
+%    P - polytope object 
+%    S - polytope object 
 %    tol - (optional) tolerance
 %
 % Outputs:
@@ -33,6 +34,6 @@ function res = ne(P1,P2,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % call isequal (avoids duplicate code)
-res = ~isequal(P1,P2,varargin{:});
+res = ~isequal(P,S,varargin{:});
 
 % ------------------------------ END OF CODE ------------------------------

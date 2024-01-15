@@ -64,7 +64,7 @@ points = points(:,ind);
 points(end+1:end+n-r,:) = zeros(n-r,length(ind));
 points = Q*points;
 
-% construct polytope object
+% construct polytope object (H-representation computed in constructor)
 P_out = polytope(points);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -23,9 +23,10 @@ function res = test_ellipsoid_rank
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% empty case: dim = 0
 res = true;
-E = ellipsoid();
+
+% empty case: rank = 0
+E = ellipsoid.empty(2);
 if rank(E) ~= 0
     res = false;
 end

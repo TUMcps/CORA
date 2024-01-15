@@ -85,10 +85,10 @@ equalDimCheck(S1,S2);
 %     % empty set cases
 % 
 %     % inner-body is point = [] or empty set of any contSet class
-%     if (isnumeric(S2) && isempty(S2)) || (isa(S2,'contSet') && isemptyobject(S2))
+%     if representsa_(S2,'emptySet',1e-8)
 %         res = true;
 % 
-%     elseif isemptyobject(S1)
+%     elseif representsa_(S1,'emptySet',1e-8)
 %         % outer body is empty: containment would only be fulfilled if inner
 %         % body is empty too, which is handled above
 %         res = false;

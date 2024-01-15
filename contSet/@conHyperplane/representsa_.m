@@ -80,7 +80,7 @@ switch type
 
     case 'interval'
         % only if normal vector of halfspace axis-aligned
-        res = n == 1 || nnz(withinTol(hyp.h.c,0,tol)) >= n-1;
+        res = n == 1 || nnz(withinTol(hyp.a',0,tol)) >= n-1;
         if nargout == 2 && res
             throw(CORAerror('CORA:notSupported',...
                 ['Conversion from conHyperplane to ' type ' not supported.']));
@@ -123,15 +123,17 @@ switch type
             ['Comparison of conHyperplane to ' type ' not supported.']));
 
     case 'emptySet'
-        res = representsa_(hyp.h,'emptySet',tol) ...
-            && isempty(hyp.C) && (isempty(hyp.d) || hyp.d == 0);
+        res = representsa_(polytope(hyp.C,hyp.d,hyp.a,hyp.b),'emptySet',tol);
         if nargout == 2 && res
             S = emptySet(n);
         end
 
     case 'fullspace'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conHyperplane to ' type ' not supported.']));
+        res = representsa_(polytope(hyp.C,hyp.d,hyp.a,hyp.b),'fullspace',tol);
+        if nargout == 2 && res
+            S = fullspace(n);
+        end
+
 
 end
 
@@ -154,7 +156,7 @@ function res = aux_isHyperplane(hyp,tol)
     
     % check if C is unbounded for all x on the hyperplane by checking if
     % support function is unbounded for all 2*(n-1) directions ('upper' and 'lower')
-    c = hyp.h.c/norm(hyp.h.c);
+    c = hyp.a'/norm(hyp.a');
     n = dim(hyp);
     % null space has exactly n-1 vectors
     B = null(c');

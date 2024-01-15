@@ -5,12 +5,14 @@ function cZ = conZonotope(P,varargin)
 % Syntax:
 %    cZ = conZonotope(P)
 %    cZ = conZonotope(P,method)
+%    cZ = conZonotope(P,method,box)
 %
 % Inputs:
 %    P - polytope object
 %    method - (optional) conversion method
 %             - 'exact:supportFunc': using support functions (default)
 %             - 'exact:vertices': using vertex enumeration
+%    box - (optional) box outer approximation of P
 %
 % Outputs:
 %    cZ - conZonotope object
@@ -41,35 +43,52 @@ function cZ = conZonotope(P,varargin)
 %                13-December-2022 (MW, add support-function based method)
 %                14-July-2023 (MW, add support for empty polytopes)
 %                27-July-2023 (MW, incorporate equality constraints)
+%                03-January-2024 (MW, speed up supportFunc method, handle unbounded)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+if nargin > 3
+    throw(CORAerror('CORA:tooManyInputArgs',3));
+end
+
+% dimension
+n = dim(P);
+
 % set default method
-method = setDefaultValues({'exact:supportFunc'},varargin);
+[method,B] = setDefaultValues({'exact:supportFunc',...
+    interval(zeros(n,0),zeros(n,0))},varargin);
 
 % check input arguments
 inputArgsCheck({{P,'att','polytope'}, ...
-                {method,'str',{'exact:vertices','exact:supportFunc'}}});
+                {method,'str',{'exact:vertices','exact:supportFunc'}}, ...
+                {B,'att','interval'}});
 
 % number of constraints
 nrIneq = size(P.A,1);
 nrEq = size(P.Ae,1);
 
-if isemptyobject(P)
-
-    % empty object
-    cZ = conZonotope();
-    return
+if representsa_(P,'fullspace',0)
+    % conversion of fullspace object not possible
+    throw(CORAerror('CORA:specialError',['Polytope is unbounded and '...
+        'can therefore not be converted into a constrained zonotope.']));
 
 elseif strcmp(method,'exact:vertices')
 
-    % calculate the vertices of the polytope
-    V = vertices(P);
+    % calculate the vertices of the polytope (check for unboundedness)
+    try
+        V = vertices(P);
+    catch ME
+        if ~isempty(P.bounded.val) && ~P.bounded.val
+             throw(CORAerror('CORA:specialError',['Polytope is unbounded and '...
+                'can therefore not be converted into a constrained zonotope.']));
+        end
+        rethrow(ME);
+    end
 
     % no vertices -> empty set
     if isempty(V)
-        cZ = conZonotope();
+        cZ = conZonotope.empty(n);
         return
     end
 
@@ -97,6 +116,16 @@ elseif strcmp(method,'exact:supportFunc')
     
     % compute bounding box
     B = interval(P);
+
+    % check if P is unbounded
+    if ~P.bounded.val
+        % conversion of unbounded object not possible
+        throw(CORAerror('CORA:specialError',['Polytope is unbounded and '...
+            'can therefore not be converted into a constrained zonotope.']));
+    elseif P.emptySet.val
+        cZ = conZonotope.empty(n);
+        return
+    end
     
     % compute center and generators
     c = center(B);
@@ -109,10 +138,10 @@ elseif strcmp(method,'exact:supportFunc')
     % compute lower bound in the direction of halfspaces
     sigma = zeros(nrIneq,1);
     for a=1:nrIneq
-        sigma(a) = supportFunc_(P,A_all(a,:)','lower');
+        sigma(a) = supportFunc_(B,A_all(a,:)','lower');
         % any lower bound is Inf -> polytope is empty
         if sigma(a) == Inf
-            cZ = conZonotope(); return
+            cZ = conZonotope.empty(n); return
         end
     end
     % same for equality constraints

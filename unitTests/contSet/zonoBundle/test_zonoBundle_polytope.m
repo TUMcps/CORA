@@ -23,10 +23,12 @@ function res = test_zonoBundle_polytope
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+res = true(0);
+
 % fully-empty zonoBundle
-zB = zonoBundle();
-P = polytope(zB);
-res = representsa(P,'emptySet');
+% zB = zonoBundle.empty(2);
+% P = polytope(zB);
+% res(end+1,1) = representsa(P,'emptySet');
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);

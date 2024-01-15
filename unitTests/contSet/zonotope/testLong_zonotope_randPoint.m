@@ -28,7 +28,7 @@ function res = testLong_zonotope_randPoint
 tol = 1e-9;
 
 % check empty zonotope object
-res = isempty(randPoint(zonotope()));
+res = isempty(randPoint(zonotope.empty(1)));
 
 
 % number of tests
@@ -49,7 +49,7 @@ for i=1:nrOfTests
     % try with one that has no generators. For the third, we try with a
     % zonotope that is degenerate
     if i == 1
-        Z = zonotope();
+        Z = zonotope.empty(1);
     elseif i == 2
         Z = zonotope(c, []);
     elseif i == 3

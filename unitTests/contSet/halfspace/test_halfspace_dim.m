@@ -23,28 +23,23 @@ function res = test_halfspace_dim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% 1. empty case
-h = halfspace();
-res_empty = true;
-if dim(h) ~= 0
-    res_empty = false;
-end
+res = true(0);
 
-% 2. analytical case
-% instantiate halfspace
-h = halfspace([1;1],0.5);
+% empty case
+n = 2;
+hs = halfspace.empty(n);
+res(end+1,1) = dim(hs) == n;
 
-% compute dimension of halfspace
-h_dim = dim(h);
+% fullspace case
+n = 3;
+hs = halfspace.Inf(n);
+res(end+1,1) = dim(hs) == n;
 
-% true solution
-true_dim = 2;
+% 2D halfspace
+hs = halfspace([1;1],0.5);
+res(end+1,1) = dim(hs) == 2;
 
-% compare results
-res_analytical = h_dim == true_dim;
-
-
-% combine tests
-res = res_empty && res_analytical;
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

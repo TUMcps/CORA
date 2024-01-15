@@ -73,7 +73,7 @@ end
 % handle special cases n_nd=0 and n_nd=1
 if n_nd==0
     % all zero matrix
-    E = ellipsoid;
+    E = ellipsoid.empty(n);
 
 elseif n_nd==1
     % interval arithmetic (is exact in this case)

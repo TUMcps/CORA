@@ -14,7 +14,7 @@ function res = test_ellipsoid_isemptyobject
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       03-June-2022
@@ -23,14 +23,18 @@ function res = test_ellipsoid_isemptyobject
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% instantiate ellipsoids
-E1 = ellipsoid();
+res = true(0);
 
-Q = eye(2);
-q = [-1;1];
-E2 = ellipsoid(Q,q);
+% empty ellipsoid
+E = ellipsoid.empty(2);
+res(end+1,1) = isemptyobject(E);
 
-% check results
-res = isemptyobject(E1) && ~isemptyobject(E2);
+% 2D ellipsoid
+Q = eye(2); q = [-1;1];
+E = ellipsoid(Q,q);
+res(end+1,1) = ~isemptyobject(E);
+
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -5,7 +5,6 @@ classdef emptySet < contSet
 %    This class represents empty sets.
 %
 % Syntax:
-%    obj = emptySet()
 %    obj = emptySet(n)
 %
 % Inputs:
@@ -28,7 +27,7 @@ classdef emptySet < contSet
 % Authors:       Mark Wetzlinger
 % Written:       22-March-2023
 % Last update:   ---
-% Last revision: ---
+% Last revision: 10-January-2024 (MW, reformat)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
@@ -41,32 +40,35 @@ methods
 
     function obj = emptySet(varargin)
         
+        % 0. avoid empty instantiation
         if nargin == 0
-            % nothing to see here...
-
-        elseif nargin == 1 
-            if isa(varargin{1},'emptySet')
-                % copy constructor
-                obj = varargin{1};
-                return;
-            else
-                % instantiate n-dimensional space
-                n = varargin{1};
-                inputArgsCheck({{n,'att','numeric',{'scalar','nonnegative','integer'}}});
-                
-                % set property
-                obj.dimension = n;
-            end
-
-        else
-            throw(CORAerror('CORA:tooManyInputArgs',1));
+            throw(CORAerror('CORA:noInputInSetConstructor'));
         end
 
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'emptySet')
+            % copy constructor
+            obj = varargin{1};
+            return;
+        end
+
+        % 2. parse input arguments
+        if nargin > 1
+            throw(CORAerror('CORA:tooManyInputArgs',1));
+        end
+        n = varargin{1};
+
+        % 3. check correctness of input arguments
+        inputArgsCheck({{n,'att','numeric',{'scalar','nonnegative','integer'}}});
+        
+        % 4. assign properties
+        obj.dimension = n;
     end
 end
 
 methods (Static = true)
     O = generateRandom(varargin) % generate random empty set
+    O = empty(n) % instantiates an empty empty set
 end
 
 end

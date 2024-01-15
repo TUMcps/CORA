@@ -36,20 +36,13 @@ function cPZ = or(cPZ,S)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    if isemptyobject(cPZ) 
-        cPZ = S; return
-    end
-    
-    if isemptyobject(S)
-        cPZ = cPZ; return
+    if representsa_(S,'emptySet',1e-10,'linearize',0,1)
+        % union is cPZ
+        return
     end
     
     % determine which set is the conPolyZono object
-    if ~isa(cPZ,'conPolyZono')
-        temp = cPZ;
-        cPZ = S;
-        S = temp;
-    end
+    [cPZ,S] = findClassArg(cPZ,S,'conPolyZono');
     
     % consider the different cases of set representations
     if isa(S,'conPolyZono') || isa(S,'polytope') || ...

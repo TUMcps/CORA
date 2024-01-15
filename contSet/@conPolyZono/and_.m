@@ -146,13 +146,13 @@ elseif isa(S, 'conHyperplane')
 
     % calculate intersection between conPolyZono object and hyperplane
     % defined as c * x = d
-    cPZ.b = [cPZ.b; S.h.d - S.h.c' * cPZ.c];
+    cPZ.b = [cPZ.b; S.b - S.a * cPZ.c];
     cPZ.EC = [cPZ.EC cPZ.E];
     
     if isempty(cPZ.A)
-       cPZ.A = S.h.c' * cPZ.G; 
+       cPZ.A = S.a * cPZ.G; 
     else
-       cPZ.A = blkdiag(cPZ.A, S.h.c' * cPZ.G); 
+       cPZ.A = blkdiag(cPZ.A, S.a * cPZ.G); 
     end
     
     res = cPZ;

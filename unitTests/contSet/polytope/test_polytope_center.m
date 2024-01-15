@@ -14,7 +14,7 @@ function res = test_polytope_center
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Viktor Kotsev, Mark Wetzlinger
 % Written:       25-April-2022
@@ -26,98 +26,134 @@ function res = test_polytope_center
 res = true(0);
 
 % 1D, only inequalities, bounded
-P = polytope([2;-1],[6;1]);
+A = [2;-1]; b = [6;1];
+P = polytope(A,b);
 c = center(P);
 c_true = 1;
 res(end+1,1) = all(withinTol(c,c_true));
 
 % 1D, only equalities, single point
-P = polytope([],[],3,5);
+Ae = 3; be = 5;
+P = polytope([],[],Ae,be);
 c = center(P);
 c_true = 5/3;
 res(end+1,1) = all(withinTol(c,c_true));
 
 % 1D, only inequalities, unbounded
-P = polytope([3;2;4],[5;2;-3]);
+A = [3;2;4]; b = [5;2;-3];
+P = polytope(A,b);
 c = center(P);
 res(end+1,1) = all(isnan(c));
 
 % 1D, only inequalities, empty
-P = polytope([],[],[1;4],[2;-5]);
+Ae = [1;4]; be = [2;-5];
+P = polytope([],[],Ae,be);
 c = center(P);
 res(end+1,1) = isempty(c);
 
 % 1D, inequalities and equalities, empty
-P = polytope([1;-4],[4;-2],5,100);
+A = [1;-4]; b = [4;-2]; Ae = 5; be = 100;
+P = polytope(A,b,Ae,be);
 c = center(P);
 res(end+1,1) = isempty(c);
 
+% 1D, fully empty
+A = zeros(0,1); b = zeros(0,0);
+P = polytope(A,b);
+c = center(P);
+res(end+1,1) = isscalar(c) && isnan(c);
+
 
 % 2D, only inequalities, bounded
-P = polytope([1 1; -1 1; 1 -1; -1 -1],ones(4,1));
+A = [1 1; -1 1; 1 -1; -1 -1]; b = ones(4,1);
+P = polytope(A,b);
 c = center(P);
 c_true = [0; 0];
 res(end+1,1) = all(withinTol(c,c_true));
 
 % 2D, only inequalities, empty
-P = polytope([1 0; -1 0],[-1; -1]);
+A = [1 0; -1 0]; b = [-1; -1];
+P = polytope(A,b);
 c = center(P);
 res(end+1,1) = isempty(c);
 
 % 2D, only equalities, empty
-P = polytope([],[],[1 0; 0 1; 0 1],[1 -1 0]);
+Ae = [1 0; 0 1; 0 1]; be = [1 -1 0];
+P = polytope([],[],Ae,be);
 c = center(P);
 res(end+1,1) = isempty(c);
 
 % 2D, only equalities, single point
-P = polytope([],[],[1 0; 0 1],[0;0]);
+Ae = [1 0; 0 1]; be = [0;0];
+P = polytope([],[],Ae,be);
 c = center(P);
 c_true = [0; 0];
 res(end+1,1) = all(withinTol(c,c_true));
 
 % 2D, inequalities and equalities, unbounded
-P = polytope([1 0],1,[0 1],1);
+A = [1 0]; b = 1; Ae = [0 1]; be = 1;
+P = polytope(A,b,Ae,be);
 c = center(P);
 res(end+1,1) = all(isnan(c));
 
 % 2D, inequalities and equalities, bounded
-P = polytope([1 0; -1 0],[1; 1],[0 1],1);
+A = [1 0; -1 0]; b = [1; 1]; Ae = [0 1]; be = 1;
+P = polytope(A,b,Ae,be);
 c = center(P);
 c_true = [0; 1];
 res(end+1,1) = all(withinTol(c,c_true));
 
 % 2D, inequalities and equalities, empty
-P = polytope([2 1; -1 2; 0 -1],ones(3,1),[1 1],10);
+A = [2 1; -1 2; 0 -1]; b = ones(3,1); Ae = [1 1]; be = 10;
+P = polytope(A,b,Ae,be);
 c = center(P);
 res(end+1,1) = isempty(c);
 
+% 2D, fully empty
+Ae = zeros(0,2); be = zeros(0,0);
+P = polytope([],[],Ae,be);
+c = center(P);
+res(end+1,1) = all(size(c) == [2,1]) && all(isnan(c));
+
 
 % 3D, only inequalities, bounded
-P = polytope([0 1 0; 0 0 1; 0 -1 0; 0 0 -1; 1 0 0; -1 0 0],ones(6,1));
+A = [0 1 0; 0 0 1; 0 -1 0; 0 0 -1; 1 0 0; -1 0 0]; b = ones(6,1);
+P = polytope(A,b);
 c = center(P);
 c_true = [0; 0; 0];
 res(end+1,1) = all(withinTol(c,c_true));
 
 % 3D, inequalities and equalities, bounded, degenerate
-P = polytope([0 1 0; 0 0 1; 0 -1 0; 0 0 -1],ones(4,1),[1 0 0],2);
+A = [0 1 0; 0 0 1; 0 -1 0; 0 0 -1]; b = ones(4,1); Ae = [1 0 0]; be = 2;
+P = polytope(A,b,Ae,be);
 c = center(P);
 c_true = [2; 0; 0];
 res(end+1,1) = all(withinTol(c,c_true));
 
 % 3D, only inequalities, unbounded
-P = polytope([1 0 0; 0 1 0],[0; 0]);
+A = [1 0 0; 0 1 0]; b = [0; 0];
+P = polytope(A,b);
 c = center(P);
 res(end+1,1) = all(isnan(c));
 
 % 3D, only equalities, unbounded
-P = polytope([],[],[1 0 0; 0 1 0],[0;0]);
+Ae = [1 0 0; 0 1 0]; be = [0;0];
+P = polytope([],[],Ae,be);
 c = center(P);
 res(end+1,1) = all(isnan(c));
 
 % 3D, inequalities and equalities, unbounded
-P = polytope([1 1 0; -1 0 0],[1; 1],[0 1 1],1);
+A = [1 1 0; -1 0 0]; b = [1; 1]; Ae = [0 1 1]; be = 1;
+P = polytope(A,b,Ae,be);
 c = center(P);
 res(end+1,1) = all(isnan(c));
+
+% 3D, single point
+Ae = [1 2 -1; 0 1 1; -1 2 1]; be = [1;1;1];
+P = polytope([],[],Ae,be);
+c = center(P);
+c_true = [0.5;0.5;0.5];
+res(end+1,1) = all(withinTol(c,c_true));
 
 
 % combine results

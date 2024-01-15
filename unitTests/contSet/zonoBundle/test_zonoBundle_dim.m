@@ -24,9 +24,9 @@ function res = test_zonoBundle_dim
 % ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
-zB = zonoBundle();
-n = dim(zB);
-res = n == 0;
+n = 2;
+zB = zonoBundle.empty(n);
+res = dim(zB) == 2;
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);

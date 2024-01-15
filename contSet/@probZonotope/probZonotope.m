@@ -51,6 +51,11 @@ methods
 
     function obj = probZonotope(varargin)
 
+        % 0. avoid empty instantiation
+        if nargin == 0
+            throw(CORAerror('CORA:noInputInSetConstructor'));
+        end
+
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'probZonotope')
             obj = varargin{1}; return

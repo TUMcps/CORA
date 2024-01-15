@@ -80,15 +80,15 @@ catch ME
         rethrow(ME);
     end
 
+    % check whether different dimension of ambient space
+    equalDimCheck(probZ,summand);
+
     % check for empty sets
     if representsa_(probZ,'emptySet',eps)
         return
-    elseif isemptyobject(summand)
+    elseif representsa_(summand,'emptySet',eps)
         probZ = probZonotope(); return
     end
-
-    % check whether different dimension of ambient space
-    equalDimCheck(probZ,summand);
 
     % other error...
     rethrow(ME);

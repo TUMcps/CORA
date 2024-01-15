@@ -43,7 +43,7 @@ resvec(end+1) = all(pcZ.b == b, 'all');
 resvec(end+1) = isequal(pcZ, cZ);
 
 % test empty case
-resvec(end+1) = isemptyobject(+conZonotope());
+resvec(end+1) = isemptyobject(+conZonotope.empty(2));
 
 % add results
 res = all(resvec);

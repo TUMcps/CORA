@@ -24,7 +24,7 @@ function cZ = conZonotope(zB)
 % ------------------------------ BEGIN CODE -------------------------------
 
 if zB.parallelSets == 0
-    cZ = conZonotope(); return
+    cZ = conZonotope.empty(dim(zB)); return
 end
 
 % initialization

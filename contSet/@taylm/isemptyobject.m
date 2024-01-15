@@ -14,8 +14,6 @@ function res = isemptyobject(tay)
 % Example: 
 %    tay = taylm(interval(1,2),4,'x');
 %    isemptyobject(tay); % false
-%    tay = taylm();
-%    isemptyobject(tay); % true
 %
 % Other m-files required: none
 % Subfunctions: none

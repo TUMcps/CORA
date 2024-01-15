@@ -19,21 +19,20 @@ function res = test_polytope_polytope
 % Authors:       Viktor Kotsev, Mark Wetzlinger
 % Written:       25-April-2022
 % Last update:   25-July-2023 (MW, integrate computeHRep, more tests)
+%                08-December-2023 (MW, unbounded cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 res = true(0);
-
-% tolerance
 tol = 1e-12;
 
 % empty object
-P = polytope();
-res(end+1,1) = representsa(P,'emptySet');
-res(end+1,1) = ~isempty(P.emptySet.val) && P.emptySet.val;
-res(end+1,1) = ~isempty(P.bounded.val) && P.bounded.val;
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
+P = polytope.empty(2);
+res(end+1,1) = representsa(P,'emptySet') ...
+                && ~isempty(P.emptySet.val) && P.emptySet.val ...
+                && ~isempty(P.bounded.val) && P.bounded.val ...
+                && ~isempty(P.fullDim.val) && ~P.fullDim.val;
 
 
 % instantiate H-representation --------------------------------------------
@@ -55,6 +54,30 @@ Ae = [0 1 1]; be = 0;
 P = polytope(A,b,Ae,be);
 res(end+1,1) = compareMatrices([A,b]',[P.A,P.b]',tol);
 res(end+1,1) = compareMatrices([Ae,be]',[P.Ae,P.be]',tol);
+
+% inequalities with Inf
+A = [1 0; 0 1];
+b = [Inf; 3];
+P = polytope(A,b);
+res(end+1,1) = compareMatrices([0,1,3]',[P.A,P.b]',tol);
+
+% inequalities with -Inf
+A = [1 0 0; -1 1 0; -1 -1 0; 0 0 1; 0 0 -1];
+b = [3;2;3;-Inf;1];
+P = polytope(A,b);
+res(end+1,1) = representsa(P,'emptySet') ...
+                && ~isempty(P.emptySet.val) && P.emptySet.val ...
+                && ~isempty(P.bounded.val) && P.bounded.val ...
+                && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+
+% equalities with Inf
+A = [1 0; -1 1; -1 -1]; b = [1;1;1];
+Ae = [1 1]; be = Inf;
+P = polytope(A,b,Ae,be);
+res(end+1,1) = representsa(P,'emptySet') ...
+                && ~isempty(P.emptySet.val) && P.emptySet.val ...
+                && ~isempty(P.bounded.val) && P.bounded.val ...
+                && ~isempty(P.fullDim.val) && ~P.fullDim.val;
 
 
 % instantiate from V-representation ---------------------------------------
@@ -175,7 +198,6 @@ res(end+1,1) = P == P_true ...
 V = vertices(interval(-ones(3,1),ones(3,1)));
 V = [V; zeros(2,2^3)];
 [M,~,~] = svd(randn(5));
-% M = eye(5);
 V = M*V;
 P = polytope(V);
 
@@ -185,6 +207,22 @@ b_true = ones(6,1);
 Ae_true = [0 0 0 1 0; 0 0 0 0 1]; be_true = [0;0];
 P_true = M * polytope(A_true,b_true,Ae_true,be_true);
 res(end+1,1) = isequal(P,P_true,1e-8); % && ~P.emptySet.val && P.bounded.val; % add empty property checks!
+
+
+% copy constructor (empty)
+A = [1 0; -1 0]; b = [2; -4];
+P = polytope(A,b);
+representsa_(P,'emptySet',1e-10);
+P_copy = polytope(P);
+res(end+1,1) = ~isempty(P_copy.emptySet.val) && ~isempty(P_copy.bounded.val) ...
+    && ~isempty(P_copy.fullDim.val);
+
+% copy constructor (bounded)
+A = [1 0; -1 1; -1 -1]; b = [2; 2; 1];
+P = polytope(A,b);
+isBounded(P);
+P_copy = polytope(P);
+res(end+1,1) = ~isempty(P_copy.bounded.val);
 
 
 % combine results
@@ -200,29 +238,29 @@ Vnan = [1 NaN 0; 0 -1 1];
 % dimension mismatch
 try
     P = polytope(A,b_);
-    res = false;
+    throw(CORAerror('CORA:testFailed'));
 end
 
 % empty argument
 try
     P = polytope([],b);
-    res = false;
+    throw(CORAerror('CORA:testFailed'));
 end
 
 % too many arguments
 try
     P = polytope(A,b,A,b,A);
-    res = false;
+    throw(CORAerror('CORA:testFailed'));
 end
 
 % non-finite vertices
 try
     P = polytope(Vinf);
-    res = false;
+    throw(CORAerror('CORA:testFailed'));
 end
 try
     P = polytope(Vnan);
-    res = false;
+    throw(CORAerror('CORA:testFailed'));
 end
 
 % ------------------------------ END OF CODE ------------------------------

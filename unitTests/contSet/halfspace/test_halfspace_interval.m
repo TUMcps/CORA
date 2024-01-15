@@ -14,7 +14,7 @@ function res = test_halfspace_interval
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       24-July-2023
@@ -26,9 +26,10 @@ function res = test_halfspace_interval
 res = true(0);
 
 % empty halfspace
-hs = halfspace();
+n = 2;
+hs = halfspace.empty(n);
 I = interval(hs);
-res(end+1,1) = isequal(I,interval());
+res(end+1,1) = isequal(I,interval.empty(n));
 
 
 % 1D halfspaces

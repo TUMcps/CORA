@@ -35,7 +35,7 @@ function Z = zonotope(zB)
 % ------------------------------ BEGIN CODE -------------------------------
 
 if zB.parallelSets == 0
-    Z = zonotope(); return
+    Z = zonotope.empty(dim(zB)); return
 end
 
 % since the zonotope bundle is an intersection of zonotopes, any single of

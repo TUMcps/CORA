@@ -24,7 +24,7 @@ function res = isBounded(I)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % unbounded if any limit is -Inf or +Inf, otherwise bounded
-if isemptyobject(I)
+if representsa_(I,'emptySet',0)
     res = true;
 else
     res = ~any(isinf(I.inf)) && ~any(isinf(I.sup));

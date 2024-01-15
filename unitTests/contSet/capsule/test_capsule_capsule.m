@@ -14,7 +14,7 @@ function res = test_capsule_capsule
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       27-July-2021
@@ -23,17 +23,9 @@ function res = test_capsule_capsule
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = true;
+res = true(0);
 
-% empty capsule
-C_empty = capsule();
-if ~isempty(center(C_empty))
-    res = false;
-end
-
-
-% random center, generator, and radius
+% 2D center, generator, and radius
 c = [2; 0];
 g = [1; -1];
 r = 0.5;
@@ -41,21 +33,20 @@ r = 0.5;
 % admissible initializations
 % only center
 C = capsule(c);
-if ~compareMatrices(C.c,c)
-    res = false;
-end
+res(end+1,1) = compareMatrices(C.c,c) && compareMatrices(C.g,zeros(2,1)) ...
+    && withinTol(C.r,0);
 
 % center and generator
 C = capsule(c,g);
-if ~compareMatrices(C.c,c) || ~compareMatrices(C.g,g)
-    res = false;
-end
+res(end+1,1) = compareMatrices(C.c,c) && compareMatrices(C.g,g);
 
 % center, generator, and radius
 C = capsule(c,g,r);
-if ~compareMatrices(C.c,c) || ~compareMatrices(C.g,g) || ~withinTol(C.r,r)
-    res = false;
-end
+res(end+1,1) = compareMatrices(C.c,c) && compareMatrices(C.g,g) ...
+    && withinTol(C.r,r);
+
+% combine results
+res = all(res);
 
 
 if CHECKS_ENABLED

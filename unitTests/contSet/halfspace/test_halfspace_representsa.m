@@ -26,14 +26,14 @@ function res = test_halfspace_representsa
 res = true(0);
 
 % 1. comparison to empty set
-hs = halfspace();
+hs = halfspace.empty(2);
 res(end+1,1) = representsa(hs,'emptySet');
 hs = halfspace([2;3;-1],3);
 res(end+1,1) = ~representsa(hs,'emptySet');
 
 
 % 2. comparison to zonotope
-hs = halfspace();
+hs = halfspace.empty(2);
 res(end+1,1) = representsa(hs,'zonotope');
 hs = halfspace([2;3;-1],3);
 res(end+1,1) = ~representsa(hs,'zonotope');

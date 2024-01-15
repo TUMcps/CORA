@@ -24,9 +24,10 @@ function res = test_zonoBundle_center
 % ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
-zB = zonoBundle();
+n = 2;
+zB = zonoBundle.empty(n);
 c = center(zB);
-res = isnumeric(c) && isempty(c);
+res = isnumeric(c) && isempty(c) && size(c,1) == n;
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);

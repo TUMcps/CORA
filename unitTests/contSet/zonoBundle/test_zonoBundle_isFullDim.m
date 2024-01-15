@@ -24,7 +24,7 @@ function res = test_zonoBundle_isFullDim
 % ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
-zB = zonoBundle();
+zB = zonoBundle.empty(2);
 res = ~isFullDim(zB);
 
 % non-empty intersection

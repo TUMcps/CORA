@@ -246,8 +246,8 @@ function [A,b,Aeq,beq,lb,ub,f,ind] = aux_contConstrPolytope(Zx,Zy)
 
     % get halfspace representation of the zonotope
     poly = polytope(zonotope(Zy));
-    C = get(poly,'A');
-    d = get(poly,'b');
+    C = poly.A;
+    d = poly.b;
 
     % construct inequality constraints for all polytope halfspaces
     G = generators(Zx);

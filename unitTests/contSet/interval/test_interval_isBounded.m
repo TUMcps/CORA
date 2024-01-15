@@ -14,7 +14,7 @@ function res = test_interval_isBounded
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Tobias Ladner
 % Written:       26-October-2023
@@ -26,7 +26,7 @@ function res = test_interval_isBounded
 resvec = [];
 
 % instantiate bounded intervals
-I = interval();
+I = interval.empty(2);
 resvec(end+1) = isBounded(I);
 
 I = interval(1);
@@ -36,13 +36,10 @@ I = interval([-2;-1;-3],[1;1;2]);
 resvec(end+1) = isBounded(I);
 
 % instantiate unbounded intervals
-I = interval(inf);
+I = interval([-2;-Inf;-3],[1;1;2]);
 resvec(end+1) = ~isBounded(I);
 
-I = interval([-2;-inf;-3],[1;1;2]);
-resvec(end+1) = ~isBounded(I);
-
-I = interval([-2;-inf;-3],[1;inf;2]);
+I = interval([-2;-Inf;-3],[1;Inf;2]);
 resvec(end+1) = ~isBounded(I);
 
 % check results

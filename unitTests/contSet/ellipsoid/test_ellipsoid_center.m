@@ -23,12 +23,21 @@ function res = test_ellipsoid_center
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% instantiate ellipsoids
+res = true(0);
+
+% empty ellipsoid
+n = 2;
+E = ellipsoid.empty(n);
+c = center(E);
+res(end+1,1) = isempty(c) && isnumeric(c) && size(c,1) == n;
+
+% 2D ellipsoids
 E1 = ellipsoid([1 0;0 2],[0; 1]);
 E2 = ellipsoid([1 0;0 2]); % center at origin
-E3 = ellipsoid();
-res_e = isnumeric(center(E3)) && isempty(center(E3));
-% compare results
-res = isequal(center(E1),[0;1]) && isequal(center(E2),[0;0]) && res_e;
+res(end+1,1) = isequal(center(E1),[0;1]);
+res(end+1,1) = isequal(center(E2),[0;0]);
+
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -31,43 +31,35 @@ function display(ls)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isemptyobject(ls)
-    
-    dispEmptyObj(ls,inputname(1));
+if ~isempty(inputname(1))
+    fprintf(newline);
+    disp(inputname(1) + " =");
+    fprintf(newline);
+end
 
+% string of variables in level set
+varsPrintStr = strjoin(string(ls.vars),",");
+
+% number of concatenated level sets
+numSets = length(ls.eq);
+
+if numSets == 1
+    disp("  f(" + varsPrintStr + "): " ...
+        + string(ls.eq) + " " + ls.compOp + " 0" + newline);
 else
-
-    if ~isempty(inputname(1))
-        fprintf(newline);
-        disp(inputname(1) + " =");
-        fprintf(newline);
-    end
-    
-    % string of variables in level set
-    varsPrintStr = strjoin(string(ls.vars),",");
-
-    % number of concatenated level sets
-    numSets = length(ls.eq);
-    
-    if numSets == 1
-        disp("  f(" + varsPrintStr + "): " ...
-            + string(ls.eq) + " " + ls.compOp + " 0" + newline);
-    else
-        % loop over all level sets
-        for i=1:numSets
-            % only use & sign for all but last equation
-            andStr = "";
-            if i ~= numSets
-                andStr = " & ";
-            end
-            % display i-th equation
-            disp("  f" + i + "(" + varsPrintStr + "): " ...
-                + string(vpa(ls.eq(i),3)) + " " + ls.compOp(i) + " 0" ...
-                + andStr);
+    % loop over all level sets
+    for i=1:numSets
+        % only use & sign for all but last equation
+        andStr = "";
+        if i ~= numSets
+            andStr = " & ";
         end
-        fprintf(newline);
+        % display i-th equation
+        disp("  f" + i + "(" + varsPrintStr + "): " ...
+            + string(vpa(ls.eq(i),3)) + " " + ls.compOp(i) + " 0" ...
+            + andStr);
     end
-
+    fprintf(newline);
 end
 
 % ------------------------------ END OF CODE ------------------------------

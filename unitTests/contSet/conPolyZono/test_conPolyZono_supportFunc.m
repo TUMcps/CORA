@@ -25,13 +25,13 @@ function res = test_conPolyZono_supportFunc
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-	
-res = true;
+res = true(0);
 tol = 1e-6;
 
 % empty set
-res = res && supportFunc(conPolyZono(),[1;1],'upper') == -Inf;
-res = res && supportFunc(conPolyZono(),[1;1],'lower') == Inf;
+cPZ = conPolyZono.empty(2);
+res(end+1,1) = supportFunc(cPZ,[1;1],'upper') == -Inf;
+res(end+1,1) = supportFunc(cPZ,[1;1],'lower') == Inf;
 
 % Analytical Tests --------------------------------------------------------
 
@@ -67,8 +67,9 @@ options = optimoptions('quadprog','Display','off');
 % plot(ch,[1,2],'b');
 
 % compare with exact solution
-if ~withinTol(val,val_,tol)
-    res = false;
-end
+res(end+1,1) = withinTol(val,val_,tol);
+
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

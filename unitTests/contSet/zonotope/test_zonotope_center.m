@@ -23,22 +23,19 @@ function res = test_zonotope_center
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% create zonotope
-Z = zonotope([1,2,3,4; 5 6 7 8]);
+res = true(0);
 
-% obtain center
-c = Z.c;
+% empty zonotope
+Z = zonotope.empty(2);
+c = center(Z);
+res(end+1,1) = isempty(c) && isnumeric(c) && all(size(c) == [2, 0]);
 
-% true result
-true_vec = [1; 5];
+% 2D, create zonotope
+c = [1; 5]; G = [2 3 4; 6 7 8];
+Z = zonotope(c,G);
+res(end+1,1) = all(withinTol(c,center(Z)));
 
-% check result
-res_val = all(c == true_vec);
-
-% empty set
-res_e = isempty(zonotope().c) && isnumeric(zonotope().c);
-
-% add results
-res = res_val && res_e;
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

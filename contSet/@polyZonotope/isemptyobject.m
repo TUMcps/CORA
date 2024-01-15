@@ -15,8 +15,6 @@ function res = isemptyobject(pZ)
 % Example: 
 %    pZ = polyZonotope([1;-1],[0;1]);
 %    isemptyobject(pZ); % false
-%    pZ = polyZonotope();
-%    isemptyobject(pZ); % true
 %
 % Other m-files required: none
 % Subfunctions: none

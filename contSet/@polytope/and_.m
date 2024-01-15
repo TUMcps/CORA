@@ -7,7 +7,7 @@ function P_out = and_(P,S,type,varargin)
 %
 % Inputs:
 %    P - polytope object
-%    S - contSet object
+%    S - contSet object or numerical vector
 %    type - 'exact' or 'approx'
 %
 % Outputs:
@@ -31,9 +31,10 @@ function P_out = and_(P,S,type,varargin)
 %
 % See also: contSet/and, conZonotope/and_
 
-% Authors:       Viktor Kotsev
+% Authors:       Viktor Kotsev, Mark Wetzlinger
 % Written:       09-May-2022
 % Last update:   14-December-2022 (MW, bug fix, add equality constraints)
+%                23-December-2023 (MW, support intersection with numeric)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -41,51 +42,77 @@ function P_out = and_(P,S,type,varargin)
 % re-order such that first argument is polytope
 [P,S] = findClassArg(P,S,'polytope');
 
-% quick check: empty set case
-if isemptyobject(S) || isemptyobject(P)
-    P_out = polytope(zeros(0,dim(P)),[]);
-    % set properties set in constructor
-    return;
+% quick check: fully empty object -> fullspace
+if representsa_(S,'fullspace',0)
+    P_out = polytope(P); return
+elseif representsa_(P,'fullspace',0)
+    P_out = polytope(S); return
 end
 
 % check dimension
 equalDimCheck(P,S);
 
-% check fullspace
-if isa(S,'fullspace')
-    P_out = polytope(P);
-    return;
-end
+% go over cases
+switch class(S)
+    case 'emptySet'
+        % intersection with the empty set yields the empty set
+        P_out = polytope.empty(dim(P));
 
-% call levelSet method
-if isa(S,'levelSet')
-    P_out = and_(S,P,type);
-    return;
-end
+    case 'fullspace'
+        % R^n does not impose additional constraints
+        P_out = polytope(P);
+    
+    case 'levelSet'
+        % call levelSet function
+        P_out = and_(S,P,type);
 
-% convert second object to polytope
-S = polytope(S);
+    case 'double'
+        % intersection with numeric: if the point is contained, the
+        % intersection is that point, otherwise empty
 
-% compute intersection
-P_out = polytope([P.A; S.A], [P.b; S.b], [P.Ae; S.Ae], [P.be; S.be]);
+        % avoid matrices
+        if size(S,2) > 1
+            throw(CORAerror('CORA:notSupported',...
+                'Point clouds not supported for intersection.'));
+        end
 
-% set properties
-% intersection with empty set is empty
-if (~isempty(P.emptySet.val) && P.emptySet.val) ...
-        || (~isempty(S.emptySet.val) && S.emptySet.val)
-    P_out.emptySet.val = true;
-end
+        if contains_(P,S,'exact',eps)
+            P_out = polytope(S);
+        else
+            P_out = polytope.empty(dim(P));
+        end
+        
+    otherwise
+        try
+            % convert second object to polytope
+            S = polytope(S);
+        catch ME
+            % no conversion operation implemented
+            throw(CORAerror('CORA:noops',P,S));
+        end
 
-% intersection with bounded set yields a bounded set
-if (~isempty(P.bounded.val) && P.bounded.val) ...
-        || (~isempty(S.bounded.val) && S.bounded.val)
-    P_out.bounded.val = true;
-end
+        % compute intersection
+        P_out = polytope([P.A; S.A], [P.b; S.b], [P.Ae; S.Ae], [P.be; S.be]);
+        
+        % set properties
+        % intersection with empty set is empty
+        if (~isempty(P.emptySet.val) && P.emptySet.val) ...
+                || (~isempty(S.emptySet.val) && S.emptySet.val)
+            P_out.emptySet.val = true;
+        end
+        
+        % intersection with bounded set yields a bounded set
+        if (~isempty(P.bounded.val) && P.bounded.val) ...
+                || (~isempty(S.bounded.val) && S.bounded.val)
+            P_out.bounded.val = true;
+        end
+        
+        % intersection with a degenerate set yields a degenerate set
+        if (~isempty(P.fullDim.val) && ~P.fullDim.val) ...
+                || (~isempty(S.fullDim.val) && ~S.fullDim.val)
+            P_out.fullDim.val = false;
+        end
 
-% intersection with a degenerate set yields a degenerate set
-if (~isempty(P.fullDim.val) && ~P.fullDim.val) ...
-        || (~isempty(S.fullDim.val) && ~S.fullDim.val)
-    P_out.fullDim.val = false;
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -72,11 +72,11 @@ E(ind_empty) = [];
 % Minkowski addition with empty set
 if representsa_(E,'emptySet',eps)
     return;
-elseif (isnumeric(S) && isempty(S)) || (isa(S,'contSet') && any(isemptyobject(S)))
-    E = ellipsoid(); return
-elseif (isnumeric(S) && ~any(S)) || (isa(S,'contSet') && representsa_(S,'origin',eps))
+elseif representsa_(S,'origin',eps)
     % adding the origin does not change the set...
     return;
+elseif representsa_(S,'emptySet',eps)
+    E = ellipsoid.empty(dim(E)); return
 end
 
 % dimension check

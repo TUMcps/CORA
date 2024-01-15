@@ -40,7 +40,7 @@ function Z = zonotope(cZ,varargin)
 
     % handle trivial cases
     if representsa_(cZ,'emptySet',1e-10)
-        Z = zonotope();
+        Z = zonotope.empty(dim(cZ));
         return;
     end
 

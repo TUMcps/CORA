@@ -23,9 +23,7 @@ function res = test_emptySet_emptySet
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% no input argument (default: dimension 0)
-O = emptySet();
-res = O.dimension == 0;
+res = true(0);
 
 % dimension is zero
 n = 0;
@@ -37,15 +35,14 @@ n = 2;
 O = emptySet(n);
 res(end+1,1) = O.dimension == n;
 
+% combine results
+res = all(res);
+
+
 % too many input arguments
 try
     O = emptySet(n,n);
-    res(end+1,1) = false;
-catch
-    res(end+1,1) = true;
+    res = false;
 end
-
-% combine results
-res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

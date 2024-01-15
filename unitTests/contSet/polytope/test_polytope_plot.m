@@ -23,10 +23,6 @@ function res = test_polytope_plot
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% ERROR: PRODUCES WRONG PLOT
-% P_error = polytope([ 1 1; -1 1 ; 1 -1 ; -1 -1 ],[2; -1; 2; -1])
-% plot(P_error)
-
 resvec = [];
 
 % instantiate polytope (via conversion from zonotope)

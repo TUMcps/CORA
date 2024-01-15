@@ -29,7 +29,7 @@ classdef atomicProposition
 
 properties (SetAccess = private, GetAccess = public)
     % geometric representation
-    set contSet
+    set
 
     % list of dimensions
     dims {mustBePositive}

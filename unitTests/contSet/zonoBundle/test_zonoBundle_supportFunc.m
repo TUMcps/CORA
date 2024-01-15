@@ -25,7 +25,7 @@ function res = test_zonoBundle_supportFunc
 
 res = true;
 % fully-empty set
-zB = zonoBundle();
+zB = zonoBundle.empty(2);
 [val,x] = supportFunc(zB,[1;0],'upper');
 res(end+1,1) = val == -Inf && isnumeric(x) && isempty(x);
 [val,x] = supportFunc(zB,[1;0],'lower');

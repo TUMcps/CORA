@@ -24,7 +24,7 @@ function res = test_ellipsoid_ne
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty ellipsoid
-E = ellipsoid();
+E = ellipsoid.empty(2);
 
 res = ~(E ~= E);
 

@@ -26,7 +26,7 @@ function res = test_zonoBundle_display
 res = true;
 
 % fully-empty zonoBundle
-zB = zonoBundle()
+zB = zonoBundle.empty(2)
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);

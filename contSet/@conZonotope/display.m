@@ -30,37 +30,39 @@ function display(cZ)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isemptyobject(cZ)
-    
-    dispEmptyObj(cZ,inputname(1));
+% special cases
+if representsa(cZ,'emptySet')
+    dispEmptySet(cZ,inputname(1));
+    return
+elseif representsa(cZ,'fullspace')
+    dispRn(cZ,inputname(1));
+    return
+end
 
+
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
+
+% display center and generators
+disp('c: ');
+disp(cZ.c);
+
+G = cZ.G;
+displayGenerators(G,DISPLAYDIM_MAX,'G');
+
+%display constraint system
+if isempty(cZ.A) && isempty(cZ.b)
+    disp('Constraint system (Ax = b): no constraints.')
+    fprintf(newline);
+    
 else
-    
-    fprintf(newline);
-    disp(inputname(1) + " =");
-    fprintf(newline);
+    disp('Constraint system (Ax = b):')
 
-    % display center and generators
-    disp('c: ');
-    disp(cZ.c);
+    displayGenerators(cZ.A,DISPLAYDIM_MAX,'A');
 
-    G = cZ.G;
-    displayGenerators(G,DISPLAYDIM_MAX,'G');
-    
-    %display constraint system
-    if isempty(cZ.A) && isempty(cZ.b)
-        disp('Constraint system (Ax = b): no constraints.')
-        fprintf(newline);
-        
-    else
-        disp('Constraint system (Ax = b):')
-
-        displayGenerators(cZ.A,DISPLAYDIM_MAX,'A');
-
-        disp('b: ');
-        disp(cZ.b);
-    end
-    
+    disp('b: ');
+    disp(cZ.b);
 end
 
 end

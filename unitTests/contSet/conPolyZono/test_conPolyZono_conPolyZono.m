@@ -48,7 +48,7 @@ cPZ = conPolyZono(c,G,E,A,b,EC,GI,id);
 cPZ = conPolyZono(cPZ);
 
 % test empty set
-cPZ = conPolyZono();
+cPZ = conPolyZono.empty(2);
 
 res = true;
 

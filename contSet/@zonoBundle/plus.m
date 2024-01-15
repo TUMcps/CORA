@@ -70,15 +70,15 @@ catch ME
         rethrow(ME);
     end
 
+    % check whether different dimension of ambient space
+    equalDimCheck(zB,summand);
+
     % check for empty sets
     if representsa_(zB,'emptySet',eps)
         return
-    elseif isemptyobject(summand)
-        zB = zonoBundle(); return
+    elseif representsa_(summand,'emptySet',eps)
+        zB = zonoBundle.empty(dim(zB)); return
     end
-
-    % check whether different dimension of ambient space
-    equalDimCheck(zB,summand);
 
     % other error...
     rethrow(ME);

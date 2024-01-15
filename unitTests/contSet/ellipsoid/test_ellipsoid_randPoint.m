@@ -26,7 +26,10 @@ function res = test_ellipsoid_randPoint
 load cases.mat E_c
 
 % empty set
-res = isnumeric(randPoint(ellipsoid())) && isempty(randPoint(ellipsoid()));
+n = 2;
+E = ellipsoid.empty(n);
+p = randPoint(E);
+res = isempty(p) && isnumeric(p) && size(p,1) == n;
 
 % loop over cases
 for i=1:length(E_c)

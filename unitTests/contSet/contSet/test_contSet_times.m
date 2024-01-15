@@ -14,7 +14,7 @@ function res = test_contSet_times
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Tobias Ladner
 % Written:       06-April-2023
@@ -33,7 +33,7 @@ MI = M .* I;
 resvec(end+1) = all(MI.inf == [3;-5] & MI.sup == [6;-3], 'all');
 
 % test empty case
-I = interval();
+I = interval.empty(2);
 I = 2 .* I;
 resvec(end+1) = representsa_(I,'emptySet',eps);
 

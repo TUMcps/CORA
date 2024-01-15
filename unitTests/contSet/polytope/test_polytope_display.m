@@ -14,7 +14,7 @@ function res = test_polytope_display
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       04-December-2022
@@ -24,7 +24,7 @@ function res = test_polytope_display
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty polytope
-P = polytope()
+P = polytope.empty(2)
 
 % only inequalities
 A = [2 1; 1 2; -1 2; -2 1; 0 -2];

@@ -24,7 +24,7 @@ function res = test_zonoBundle_representsa
 % ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
-zB = zonoBundle();
+zB = zonoBundle.empty(2);
 res = representsa(zB,'emptySet');
 
 % non-empty intersection

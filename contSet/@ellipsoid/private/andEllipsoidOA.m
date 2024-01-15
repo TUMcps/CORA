@@ -44,7 +44,7 @@ end
 
 % check if ellipsoids are intersecting
 if ~isIntersecting_(E1,E2,'exact')
-    E = ellipsoid;
+    E = ellipsoid.empty(dim(E1));
     return;
 end
 

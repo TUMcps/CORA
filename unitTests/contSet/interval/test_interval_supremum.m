@@ -14,49 +14,41 @@ function res = test_interval_supremum
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: none
 
-% Authors:       Dmitry Grebenyuk
+% Authors:       Dmitry Grebenyuk, Mark Wetzlinger
 % Written:       14-January-2016
-% Last update:   ---
+% Last update:   04-December-2023 (MW, add empty and unbounded cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % define problem
 tol = 1e-9;
-res = true;
+res = true(0);
 
-c = interval([-5.0, -4.0, -3, 0, 0, 5], [-2, 0.0, 2.0, 0, 5, 8]);
+% empty
+n = 2;
+I = interval.empty(n);
+ub = supremum(I);
+res(end+1,1) = isnumeric(ub) && isempty(ub) && size(ub,1) == n;
 
-if abs( supremum(c(1)) + 2.0 ) > tol
-	res = false;
-	return;
-end
+% bounded
+I = interval([-5, -4, -3, 0, 0, 5], [-2, 0, 2, 0, 5, 8]);
+ub = supremum(I);
+res(end+1,1) = all(withinTol(ub,[-2, 0, 2, 0, 5, 8],tol));
 
-if abs( supremum(c(2)) + 0.0 ) > tol
-	res = false;
-	return;
-end
+% unbounded
+I = interval([-Inf;-2],[2;Inf]);
+ub = supremum(I);
+res(end+1,1) = all(withinTol(ub,[2;Inf],tol));
 
-if abs( supremum(c(3)) - 2.0 ) > tol
-	res = false;
-	return;
-end
+% matrix
+I = interval([1 2; 3 4],[5 6; 7 8]);
+ub = supremum(I);
+res(end+1,1) = all(all(withinTol(ub,[5 6; 7 8],tol)));
 
-if abs( supremum(c(4)) - 0.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( supremum(c(5)) - 5.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( supremum(c(6)) - 8.0 ) > tol
-	res = false;
-	return;
-end
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -39,24 +39,26 @@ function P_out = convHull(P,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
-if nargin == 1
-    P_out = P; return; 
-else
+if nargin > 2
+    throw(CORAerror('CORA:tooManyInputArgs',2));
+elseif nargin == 2
     S = varargin{1};
+elseif nargin == 1
+    P_out = P; return; 
 end
 
 % check input arguments
 inputArgsCheck({{P,'att','polytope'},...
                 {S,'att',{'contSet','numeric'}}});
- 
+
 % dimension
 n = dim(P);
 
-% check for empty sets
-if isemptyobject(P)
-    P_out = polytope(zeros(0,n),[],zeros(0,n),[]); return;
-elseif isemptyobject(S)
-    P_out = polytope(zeros(0,n),[],zeros(0,n),[]); return;
+% check for fullspace
+if representsa_(P,'fullspace',0)
+    P_out = polytope.Inf(n); return;
+elseif representsa_(S,'fullspace',0)
+    P_out = polytope.Inf(n); return;
 end
 
 % find a polytope object
@@ -78,7 +80,7 @@ elseif isa(S,'polytope') || isa(S,'interval') || ...
 
     % check emptiness (scales better than computing vertices)
     if representsa_(S,'emptySet',1e-6)
-        P_out = polytope(zeros(0,n),[]);
+        P_out = polytope.empty(n);
         return
     end
 
@@ -99,7 +101,7 @@ end
 % compute vertices of first polytope
 V1 = vertices(P);
 if isempty(V1)
-    P_out = polytope(zeros(0,n),[]);
+    P_out = polytope.empty(n);
     return
 end
 
@@ -132,7 +134,7 @@ function P_out = aux_1D(P,S)
     end
     % check emptiness
     if isempty(V1) || isempty(V2)
-        P_out = polytope(); return
+        P_out = polytope.empty(dim(P)); return
     end
 
     % compute convex hull of vertices

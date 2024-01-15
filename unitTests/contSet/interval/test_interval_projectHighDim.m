@@ -14,7 +14,7 @@ function res = test_interval_projectHighDim
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Tobias Ladner
 % Written:       13-September-2023
@@ -25,12 +25,6 @@ function res = test_interval_projectHighDim
 
 resvec = [];
 
-% check empty
-I = interval();
-R = projectHighDim(I,2,[]);
-Rtrue = interval([0;0],[0;0]);
-resvec(end+1) = isequal(R,Rtrue);
-
 % check default case
 I = interval([2;3],[4;5]);
 R = projectHighDim(I,5,[1,4]);
@@ -39,5 +33,13 @@ resvec(end+1) = isequal(R,Rtrue);
 
 % gather results
 res = all(resvec);
+
+% empty cannot be projected
+% check empty
+I = interval.empty(1);
+try
+    R = projectHighDim(I,2,[]);
+    res = false;
+end
 
 % ------------------------------ END OF CODE ------------------------------

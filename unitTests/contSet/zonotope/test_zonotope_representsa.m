@@ -26,7 +26,8 @@ function res = test_zonotope_representsa
 res = true(0);
 
 % 1. comparison to empty set
-res(end+1,1) = representsa(zonotope(),'emptySet');
+Z_empty = zonotope.empty(2);
+res(end+1,1) = representsa(Z_empty,'emptySet');
 
 Z = zonotope([1, 2, 4;
                5, 6, 0;
@@ -37,7 +38,7 @@ res(end+1,1) = ~representsa(Z,'emptySet');
 % 2. comparison to origin
 
 % empty zonotope
-Z = zonotope();
+Z = zonotope.empty(2);
 res(end+1,1) = ~representsa(Z,'origin');
 
 % only origin
@@ -74,7 +75,7 @@ res(end+1,1) = ~representsa(Z,'interval');
 
 % 4. comparison to parallelotope
 % check empty zonotope
-Z = zonotope();
+Z = zonotope.empty(2);
 res(end+1,1) = ~representsa(Z,'parallelotope');
 
 % instantiate parallelotope

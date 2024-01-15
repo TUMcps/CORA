@@ -42,7 +42,7 @@ resvec(end+1) = all(ppZ.GI == GI, 'all');
 resvec(end+1) = isequal(ppZ, pZ);
 
 % test empty case
-resvec(end+1) = isemptyobject(+polyZonotope());
+resvec(end+1) = isemptyobject(+polyZonotope.empty(2));
 
 % add results
 res = all(resvec);

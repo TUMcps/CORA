@@ -186,9 +186,9 @@ methods
     function pgon = or(pgon1, pgon2)
         % computes the union of two polygons
 
-        if isemptyobject(pgon1) || representsa_(pgon1,'emptySet',eps)
+        if representsa_(pgon1,'emptySet',eps)
             pgon = pgon2;
-        elseif isemptyobject(pgon2) || representsa_(pgon2,'emptySet',eps)
+        elseif representsa_(pgon2,'emptySet',eps)
             pgon = pgon1;
         else
             temp = union(pgon1.set, pgon2.set);

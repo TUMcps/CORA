@@ -14,38 +14,37 @@ function res = test_interval_isFullDim
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       27-July-2021
-% Last update:   ---
+% Last update:   04-December-2023 (MW, add unbounded case)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% 1. Empty case
-I = interval();
+res = true(0);
 
-% compute dimension
-res(1) = ~isFullDim(I);
+% empty case
+I = interval.empty(2);
+res(end+1,1) = ~isFullDim(I);
 
-% init full-dimensional interval
-lb = [-2; -4; -7; -1; -2];
-ub = [4; 2; 6; 4; 8];
-I = interval(lb,ub);
+% bounded, full-dimensional
+I = interval([-2; -4; -7; -1; -2],[4; 2; 6; 4; 8]);
+res(end+1,1) = isFullDim(I);
 
-% check with correct solution
-res(2) = isFullDim(I);
+% bounded, degenerate
+I = interval([-2; -4; 0; -1; -2],[4; 2; 0; 4; 8]);
+res(end+1,1) = ~isFullDim(I);
 
-% init random lower-dimensional interval
-% ... by setting random dimension to 0
-n0 = 3;
-lb(n0) = 0;
-ub(n0) = 0;
-I = interval(lb,ub);
+% unbounded, full-dimensional
+I = interval([-Inf;-2],[1;1]);
+res(end+1,1) = isFullDim(I);
 
-% check with correct solution
-res(3) = ~isFullDim(I);
+% unbounded, degenerate
+I = interval([-Inf;0],[1;0]);
+res(end+1,1) = ~isFullDim(I);
+
 
 % combine results
 res = all(res);

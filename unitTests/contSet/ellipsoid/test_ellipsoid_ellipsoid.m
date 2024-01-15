@@ -14,7 +14,7 @@ function res = test_ellipsoid_ellipsoid
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Victor Gassmann, Mark Wetzlinger
 % Written:       26-July-2021
@@ -23,9 +23,10 @@ function res = test_ellipsoid_ellipsoid
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% empty ellipsoid
-E = ellipsoid();
 res = true;
+
+% empty ellipsoid
+E = ellipsoid.empty(2);
 if ~representsa_(E,'emptySet',eps)
     res = false;
 end

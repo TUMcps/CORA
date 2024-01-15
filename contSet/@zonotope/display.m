@@ -12,7 +12,7 @@ function display(Z)
 %    ---
 %
 % Example: 
-%    Z=zonotope(rand(2,6));
+%    Z = zonotope([1;0], [1 2 -1; 0 -1 1]);
 %    display(Z);
 %
 % Other m-files required: none
@@ -31,27 +31,29 @@ function display(Z)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isemptyobject(Z)
-    
-    dispEmptyObj(Z,inputname(1));
-    
-else
-    
-    fprintf(newline);
-    disp(inputname(1) + " =");
-    fprintf(newline);
-    
-    %display dimension
-    display@contSet(Z);
-    fprintf(newline);
-    
-    %display center
-    disp('c: ');
-    disp(Z.c);
-
-    %display generators
-    displayGenerators(Z.G,DISPLAYDIM_MAX,'G');
-    
+% special cases
+if representsa(Z,'emptySet')
+    dispEmptySet(Z,inputname(1));
+    return
+elseif representsa(Z,'fullspace')
+    dispRn(Z,inputname(1));
+    return
 end
+
+
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
+
+%display dimension
+display@contSet(Z);
+fprintf(newline);
+
+%display center
+disp('c: ');
+disp(Z.c);
+
+%display generators
+displayGenerators(Z.G,DISPLAYDIM_MAX,'G');
 
 % ------------------------------ END OF CODE ------------------------------

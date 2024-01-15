@@ -24,9 +24,9 @@ function res = test_zonotope_zonoBundle
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty set
-Z = zonotope();
+Z = zonotope.empty(2);
 zB = zonoBundle(Z);
-res = representsa(zB,'emptySet');
+res = representsa(zB,'emptySet') && dim(zB) == 2;
 
 % instantiate zonotope
 c = [1;1;-1];

@@ -43,7 +43,7 @@ function eq = aux_getEquations(S)
 
     if isa(S,'polytope')
 
-        eq = length(get(S,'b'));
+        eq = length(S.b);
     
     elseif isa(S,'levelSet')
     

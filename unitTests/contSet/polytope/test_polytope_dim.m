@@ -14,7 +14,7 @@ function res = test_polytope_dim
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Viktor Kotsev
 % Written:       09-May-2022
@@ -24,24 +24,28 @@ function res = test_polytope_dim
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty polytope
-P_empty = polytope();
-res = dim(P_empty) == 0;
+P_empty = polytope.empty(2);
+res = dim(P_empty) == 2;
 
 
-% 1D, bounded, non-degenerate
-P = polytope([1; -1],[1; -1]);
+% 1D, bounded, degenerate
+A = [1;-1]; b = [1;-1];
+P = polytope(A,b);
 res(end+1,1) = dim(P) == 1;
 
 % 1D, empty
-P = polytope([1;-1],[2;-3]);
+A = [1;-1]; b = [2;-3];
+P = polytope(A,b);
 res(end+1,1) = dim(P) == 1;
 
 % 1D, unbounded
-P = polytope(1,1);
+A = 1; b = 1;
+P = polytope(A,b);
 res(end+1,1) = dim(P) == 1;
 
 % 1D, single point, only equality constraints
-P = polytope([],[],1,3);
+Ae = 1; be = 3;
+P = polytope([],[],Ae,be);
 res(end+1,1) = dim(P) == 1;
 
 
@@ -52,31 +56,38 @@ P = polytope(A,b);
 res(end+1,1) = dim(P) == 2;
 
 % 2D, bounded, degenerate
-P = polytope([1 0; -1 0],[1; 1],[0 1], 1);
+A = [1 0; -1 0]; b = [1; 1]; Ae = [0 1]; be = 1;
+P = polytope(A,b,Ae,be);
 res(end+1,1) = dim(P) == 2;
 
 % 2D, unbounded, non-degenerate 
-P = polytope([1 0; 0 1; -1 0],[2; 2; 2]);
+A = [1 0; 0 1; -1 0]; b = [2; 2; 2];
+P = polytope(A,b);
 res(end+1,1) = dim(P) == 2;
 
 % 2D, unbounded, degenerate
-P = polytope([1 0; -1 0],[1; -1]);
+A = [1 0; -1 0]; b = [1; -1];
+P = polytope(A,b);
 res(end+1,1) = dim(P) == 2;
 
 % 2D, empty, only equality constraints
-P = polytope([],[],[0 1; 1 0; 1 1],[1;1;1]);
+Ae = [0 1; 1 0; 1 1]; be = [1;1;1];
+P = polytope([],[],Ae,be);
 res(end+1,1) = dim(P) == 2;
 
 
 % 3D, fully empty
-P = polytope(zeros(0,3),[]);
+A = zeros(0,3); b = zeros(0,0);
+P = polytope(A,b);
 res(end+1,1) = dim(P) == 3;
-P = polytope([],[],zeros(0,3),[]);
+Ae = zeros(0,3); be = zeros(0,0);
+P = polytope([],[],Ae,be);
 res(end+1,1) = dim(P) == 3;
 
 
 % 4D, box
-P = polytope([eye(4); -eye(4)],ones(8,1));
+A = [eye(4); -eye(4)]; b = ones(8,1);
+P = polytope(A,b);
 res(end+1,1) = dim(P) == 4;
 
 

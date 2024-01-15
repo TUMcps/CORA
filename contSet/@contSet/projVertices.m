@@ -55,7 +55,7 @@ S = project(S,dims);
 
 % init vertices
 V = [];
-if isemptyobject(S) || representsa_(S,'emptySet',1e-10)
+if representsa_(S,'emptySet',1e-10)
     % no vertices if set is empty
     return
 end

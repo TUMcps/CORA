@@ -113,7 +113,7 @@ function res = contract(f,dom,varargin)
             end
             
             % check if set is empty
-            if isemptyobject(dom) || representsa_(dom,'emptySet',eps)
+            if representsa_(dom,'emptySet',eps)
                res = [];
                return;
             end
@@ -163,7 +163,7 @@ function res = contract(f,dom,varargin)
                     domTemp = contract(f,domSplit{k},alg,iter,[],jacHan);
                 
                     % update the queue
-                    if ~isemptyobject(domTemp) || ~representsa_(domTemp,'emptySet',eps)
+                    if ~representsa_(domTemp,'emptySet',eps)
                         list_{counter} = domTemp;
                         counter = counter + 1;  
                     end

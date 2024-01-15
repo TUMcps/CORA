@@ -74,13 +74,4 @@ end
 %result of all enclosure checks
 res = all(res);
 
-% save results if test failed
-if ~res
-     file_name = strcat('test_intervalMatrix_expm_', ...
-                             datestr(now,'mm-dd-yyyy_HH-MM'));
-                  
-     file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', file_name);
-     save(file_path, 'eM');
-end
-
 % ------------------------------ END OF CODE ------------------------------

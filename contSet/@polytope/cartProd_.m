@@ -32,11 +32,6 @@ function P_out = cartProd_(P,S,type,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% check for empty sets
-if isemptyobject(P) || isemptyobject(S)
-    throw(CORAerror('CORA:emptySet'));
-end
-
 % note: no re-ordering!
 
 % first or second set is polytope

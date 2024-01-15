@@ -22,82 +22,22 @@ function res = test_interval_rad
 % ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
-res = true;
+res = true(0);
 
-a = interval([-5.0, -4.0, -3, 0, 0, 5], [-2, 0.0, 2.0, 0, 5, 8]);
-c = rad(a);
+% empty interval
+n = 2;
+I = interval.empty(n);
+r = rad(I);
+res(end+1,1) = isempty(r) && isnumeric(r) && size(r,1) == n;
 
-if abs( c(1) - 1.5 ) > tol
-	res = false;
-	return;
-end
-
-if abs( c(2) - 2.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( c(3) - 2.5 ) > tol
-	res = false;
-	return;
-end
-
-if abs( c(4) - 0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( c(5) - 2.5 ) > tol
-	res = false;
-	return;
-end
-
-if abs( c(6) - 1.5 ) > tol
-	res = false;
-	return;
-end
+% 6D interval
+I = interval([-5.0, -4.0, -3, 0, 0, 5], [-2, 0.0, 2.0, 0, 5, 8]);
+r = rad(I);
+r_true = [1.5, 2, 2.5, 0, 2.5, 1.5];
+res(end+1,1) = all(withinTol(r,r_true,tol));
 
 
-a = interval([-5.0; -4.0; -3; 0; 0; 5], [-2; 0.0; 2.0; 0; 5; 8]);
-c = rad(a);
-
-if abs( c(1) - 1.5 ) > tol
-	res = false;
-	return;
-end
-
-if abs( c(2) - 2.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( c(3) - 2.5 ) > tol
-	res = false;
-	return;
-end
-
-if abs( c(4) - 0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( c(5) - 2.5 ) > tol
-	res = false;
-	return;
-end
-
-if abs( c(6) - 1.5 ) > tol
-	res = false;
-	return;
-end
-
-
-a = interval();
-c = rad(a);
-
-if isempty(c) ~= true
-	res = false;
-	return;
-end
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

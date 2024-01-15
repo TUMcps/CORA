@@ -53,6 +53,8 @@ methods (Static = true)
     S = enclosePoints(varargin) % encloses a point cloud with a set
     S = generateRandom(varargin) % generates a random contSet
     S = initEmptySet(type) % instantiates an empty set of a contSet class
+    S = empty(type) % instantiates an empty set of a contSet class
+    S = Inf(type) % instantiates a fullspace set of a contSet class
 end
 
 methods (Access = protected)

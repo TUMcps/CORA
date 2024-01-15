@@ -23,18 +23,24 @@ function res = test_conPolyZono_isemptyobject
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% instantiate constrained polynomial zonotopes
-cPZ1 = conPolyZono();
+res = true(0);
 
+% empty constrained polynomial zonotope
+cPZ = conPolyZono.empty(2);
+res(end+1,1) = isemptyobject(cPZ);
+
+% 2D constrained polynomial zonotope
 c = [0;0];
 G = [1 0;0 1];
 E = [1 0;0 1];
 A = [1 -1];
 b = 0;
 EC = [2 0;0 1];
-cPZ2 = conPolyZono(c,G,E,A,b,EC);
+cPZ = conPolyZono(c,G,E,A,b,EC);
+res(end+1,1) = ~isemptyobject(cPZ);
 
-% check results
-res = isemptyobject(cPZ1) && ~isemptyobject(cPZ2);
+
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

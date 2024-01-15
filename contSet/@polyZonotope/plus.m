@@ -79,6 +79,10 @@ try
     
         % compute Minkowski sum
         pZ.c = pZ.c + summand.c;
+        if isempty(pZ.c)
+            pZ = polyZonotope.empty(dim(pZ));
+            return
+        end
         pZ.G = [pZ.G,summand.G];
         pZ.E = blkdiag(pZ.E,summand.E);
         pZ.GI = [pZ.GI,summand.GI];
@@ -95,15 +99,15 @@ catch ME
         rethrow(ME);
     end
 
+    % check whether different dimension of ambient space
+    equalDimCheck(pZ,summand);
+
     % check for empty sets
     if representsa_(pZ,'emptySet',eps)
         return
-    elseif isemptyobject(summand)
-        pZ = polyZonotope(); return
+    elseif representsa_(summand,'emptySet',eps)
+        pZ = polyZonotope.empty(dim(pZ)); return
     end
-
-    % check whether different dimension of ambient space
-    equalDimCheck(pZ,summand);
 
     % other error...
     rethrow(ME);

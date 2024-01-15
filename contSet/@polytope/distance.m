@@ -1,6 +1,11 @@
 function val = distance(P,S)
 % distance - computes the shortest distance from a polytope to another set
-%    or point cloud
+%    or point cloud; the cases are:
+%    - one operand is the empty set: Inf
+%    - the operands intersect: 0
+%    - the operands do not intersect: > 0
+%    - unbounded + bounded: some value < Inf
+%    - unbounded + unbounded: some value < Inf  
 %
 % Syntax:
 %    val = distance(P,S)
@@ -28,6 +33,7 @@ function val = distance(P,S)
 % Authors:       Victor Gassmann, Viktor Kotsev
 % Written:       26-July-2021
 % Last update:   07-November-2022 (added polytope-polytope case)
+%                18-December-2023 (MW, add intersection check)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -35,6 +41,9 @@ function val = distance(P,S)
 % check imput
 inputArgsCheck({{P,'att','polytope','scalar'};
                 {S,'att',{'ellipsoid','numeric','polytope'}}});
+
+% set tolerance
+tol = 1e-12;
 
 % check dimensions
 equalDimCheck(P,S);
@@ -45,6 +54,11 @@ equalDimCheck(P,S);
 % empty set case: distance defined as infinity
 if representsa(P,'emptySet') || representsa(S,'emptySet')
     val = Inf; return
+end
+
+% sets intersect: shortest distance is 0
+if isIntersecting_(P,S,'exact',tol)
+    val = 0; return
 end
     
 % select case

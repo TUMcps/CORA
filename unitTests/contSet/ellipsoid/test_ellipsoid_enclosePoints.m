@@ -35,7 +35,7 @@ V = randn(n,N);
 [U,S,W] = svd(V);
 s = diag(S);
 
-TOL = ellipsoid().TOL;
+TOL = 1e-6; % default value from constructor
 s(s<=TOL) = 10*TOL;
 S = [diag(s),zeros(n,N-n)];
 V = U*S*W';

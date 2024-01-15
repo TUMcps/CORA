@@ -18,40 +18,35 @@ function res = test_interval_eq
 
 % Authors:       Mark Wetzlinger
 % Written:       29-August-2019
-% Last update:   ---
+% Last update:   04-December-2023 (MW, add empty and unbounded cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% TEST 1: Analytical ------------------------------------------------------
-% create interval
-lower1 = [-2; -4; -3];
-upper1 = [ 2;  3;  1];
-Int1 = interval(lower1, upper1);
-lower2 = [-3;  0; -4];
-upper2 = [ 2;  3;  1];
-Int2 = interval(lower2, upper2);
+res = true(0);
 
-% compute non-equality
-res(1) = ~(Int1 == Int2); % different intervals
-res(2) = Int1 == Int1;    % same interval
-% -------------------------------------------------------------------------
+% empty case
+I1 = interval.empty(2);
+res(end+1,1) = I1 == I1;
 
-% TEST 2: Random ----------------------------------------------------------
-% create interval
-dim = floor(1 + 9*rand(1));
-lower1 = -10*rand(dim,1);
-upper1 = 10*rand(dim,1);
-Int1 = interval(lower1, upper1);
-lower2 = -10*rand(dim,1);
-upper2 = 10*rand(dim,1);
-Int2 = interval(lower2, upper2);
 
-% compute non-equality
-res_rand = Int1 == Int2;
-res_rand_true = all(lower1 == lower2) && all(upper1 == upper2);
-res(3) = res_rand == res_rand_true;
-% -------------------------------------------------------------------------
+% bounded
+I1 = interval([-2; -4; -3],[2; 3; 1]);
+I2 = interval([-3; 0; -4],[2; 3; 1]);
+res(end+1,1) = I1 == I1;
+res(end+1,1) = ~(I1 == I2);
+
+% unbounded
+I1 = interval(-Inf,0);
+I2 = interval(-Inf,Inf);
+I3 = interval(0,Inf);
+res(end+1,1) = I1 == I1;
+res(end+1,1) = I2 == I2;
+res(end+1,1) = I3 == I3;
+res(end+1,1) = ~(I1 == I2);
+res(end+1,1) = ~(I1 == I3);
+res(end+1,1) = ~(I2 == I3);
+
 
 % compare results
 res = all(res);

@@ -31,32 +31,34 @@ function display(E)
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'}});
 
-if isemptyobject(E)
-    
-    dispEmptyObj(E,inputname(1));
-    
-else
-
-    fprintf(newline);
-    disp(inputname(1) + " =");
-    fprintf(newline);
-    
-    %display center
-    disp('q: ');
-    disp(E.q);
-
-    %display shape matrix
-    disp('Q: ');
-    disp(E.Q); 
-
-    %display actual dimension
-    disp('dimension: ');
-    disp(dim(E)); 
-
-    %display whether degenerate or not
-    disp('degenerate: ');
-    disp(~isFullDim(E));
-
+% special cases
+if representsa(E,'emptySet')
+    dispEmptySet(E,inputname(1));
+    return
+elseif representsa(E,'fullspace')
+    dispRn(E,inputname(1));
+    return
 end
+
+
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
+
+%display center
+disp('q: ');
+disp(E.q);
+
+%display shape matrix
+disp('Q: ');
+disp(E.Q); 
+
+%display actual dimension
+disp('dimension: ');
+disp(dim(E)); 
+
+%display whether degenerate or not
+disp('degenerate: ');
+disp(~isFullDim(E));
 
 % ------------------------------ END OF CODE ------------------------------

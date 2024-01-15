@@ -26,7 +26,7 @@ function res = test_ellipsoid_isFullDim
 load cases.mat E_c
 
 % empty set
-res = ~isFullDim(ellipsoid());
+res = ~isFullDim(ellipsoid.empty(2));
 
 % loop over cases
 for i=1:length(E_c)

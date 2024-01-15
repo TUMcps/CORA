@@ -14,8 +14,6 @@ function res = isemptyobject(I)
 % Example: 
 %    I = interval(-1,0);
 %    isemptyobject(I); % false
-%    I = interval();
-%    isemptyobject(I); % true
 %
 % Other m-files required: none
 % Subfunctions: none

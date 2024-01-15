@@ -1,6 +1,6 @@
 function [val,xOpt,domOpt] = globVerMinimization(func,dom,tol,varargin)
-% globVerMinimization - determine the gloabl minimum of a function on a 
-%                       search domain with a certain precision
+% globVerMinimization - determine the global minimum of a function on a 
+%    search domain with a certain precision
 %
 % Syntax:
 %    [val,xOpt,domOpt] = globVerMinimization(func,dom,tol)
@@ -70,7 +70,7 @@ function [val,xOpt,domOpt] = globVerMinimization(func,dom,tol,varargin)
 % reference paper [1]
 
 
-% Initialization ------------------------------------------------------
+% Initialization ----------------------------------------------------------
 
 % default values
 max_order = 10;
@@ -122,7 +122,7 @@ minVal = inf; % global minimum
 cutOff = inf; % global minimum is guaranteed to be smaller than this value
 
 
-% Main Algorithm ------------------------------------------------------
+% Main Algorithm ----------------------------------------------------------
 
 % loop over all subdomains
 while ~isempty(domTay)

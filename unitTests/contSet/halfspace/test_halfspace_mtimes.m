@@ -23,41 +23,33 @@ function res = test_halfspace_mtimes
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% 1. empty case
-% res_empty = true;
-h = halfspace();
-A = rand(2,2);
-res_empty = representsa(A*h,'emptySet');
+res = true(0);
 
-% 2. analytical test
-% instantiate halfspace
+% empty case
+h = halfspace.empty(2);
+A = [1 0; 0 2];
+res(end+1,1) = representsa(A*h,'emptySet');
+
+% 2D halfspace
 c = [1;1]; d = 0.5;
 h = halfspace(c,d);
-
-% matrix
 A = [2 3; 1 2];
-
-% compute linear map
 h_mapped = A*h;
-
-% true result
+% compare to true result
 A_inv = [2 -3; -1 2];
 c_true = A_inv' * c;
 h_true = halfspace(c_true,d);
+res(end+1,1) = isequal(h_mapped,h_true);
 
-% compare results
-res_analytical = isequal(h_mapped,h_true);
+% combine results
+res = all(res);
 
 % test singular matrix multiplication
 try 
     A = [1 0; 0 0];
-    h = A * h; % should throw an error
+    A * h; % should throw an error
     res = false;
     return
 end
-
-
-% combine tests
-res = res_empty && res_analytical;
 
 % ------------------------------ END OF CODE ------------------------------

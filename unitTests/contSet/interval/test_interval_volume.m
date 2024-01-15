@@ -18,49 +18,46 @@ function res = test_interval_volume
 
 % Authors:       Mark Wetzlinger
 % Written:       28-August-2019
-% Last update:   ---
+% Last update:   04-December-2023 (MW, add degenerate and unbounded cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% TEST 1: Analytical ------------------------------------------------------
-% create interval
-lowerLimits = [-2; -4; -3];
-upperLimits = [3; 1; 2];
-int = interval(lowerLimits, upperLimits);
-
-% compute volume
-vol = volume(int);
-
-% true volume
-vol_true = 125;
-
-% compare results
+res = true(0);
 tol = 1e-9;
-res_analytical = abs(vol - vol_true) < tol;
-% -------------------------------------------------------------------------
 
-% TEST 2: random ----------------------------------------------------------
-% create random interval
-dim = floor(2 + 8*rand(1));
-lowerLimits = -3+3*rand(dim,1);
-upperLimits = 3*rand(dim,1);
-intRand = interval(lowerLimits, upperLimits);
+% empty
+I = interval.empty(2);
+vol = volume(I);
+vol_true = 0;
+res(end+1,1) = withinTol(vol,vol_true,tol);
 
-% compute volume
-vol = volume(intRand);
+% bounded, full-dimensional
+I = interval([-2; -4; -3],[3; 1; 2]);
+vol = volume(I);
+vol_true = 125;
+res(end+1,1) = withinTol(vol,vol_true,tol);
 
-% true volume
-vol_true = prod(upperLimits - lowerLimits);
+% bounded, degenerate
+I = interval([0;2],[1;2]);
+vol = volume(I);
+vol_true = 0;
+res(end+1,1) = withinTol(vol,vol_true,tol);
 
-% compare results
-res_rand = abs(vol - vol_true) < tol;
-% -------------------------------------------------------------------------
+% unbounded, full-dimensional
+I = interval([-Inf;-2],[1;2]);
+vol = volume(I);
+vol_true = Inf;
+res(end+1,1) = withinTol(vol,vol_true,tol);
 
-% empty set
-res_e = volume(interval()) == 0;
+% unbounded, degenerate
+I = interval([-Inf;2],[1;2]);
+vol = volume(I);
+vol_true = 0;
+res(end+1,1) = withinTol(vol,vol_true,tol);
 
-% add results
-res = res_analytical && res_rand && res_e;
+
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

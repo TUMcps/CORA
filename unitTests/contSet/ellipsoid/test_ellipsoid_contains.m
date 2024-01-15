@@ -27,7 +27,7 @@ res = true;
 load cases.mat E_c
 
 % empty set: rewrite using emptySet class
-% E_e = ellipsoid();
+% E_e = ellipsoid.empty(2);
 % res = contains(E_c{1}.E1,E_e) && ~contains(E_e,E_c{1}.E1);
 
 % loop over cases

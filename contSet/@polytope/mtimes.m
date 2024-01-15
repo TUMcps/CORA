@@ -1,4 +1,4 @@
-function P = mtimes(factor1,factor2)
+function P_out = mtimes(factor1,factor2)
 % mtimes - Overloaded '*' operator for the multiplication of a matrix with
 %    a polytope
 %
@@ -13,7 +13,9 @@ function P = mtimes(factor1,factor2)
 %    P - polytope object
 %
 % Example: 
-%    ---
+%    P = polytope([1 0; -1 1; -1 -1],[1;1;1]);
+%    M = [2 1; -1 2];
+%    P_ = M*P;
 % 
 % Reference: MPT-Toolbox https://www.mpt3.org/
 %
@@ -39,68 +41,82 @@ function P = mtimes(factor1,factor2)
 equalDimCheck(factor1,factor2);
 
 % order arguments correctly
-[P,matrix] = findClassArg(factor1,factor2,'polytope');
-
-% empty polytope
-if isemptyobject(P)
-    P = polytope();
-    return;
-end
+[P_out,matrix] = findClassArg(factor1,factor2,'polytope');
 
 %get dimension
-n = dim(P);
+n = dim(P_out);
+
+% fullspace
+if representsa_(P_out,'fullspace',0)
+    P_out = polytope.Inf(n);
+    return;
+end
 
 %numeric matrix
 if isnumeric(matrix)
 
-    % quick computation using V-representation
-    if ~isempty(P.V.val)
-        if length(matrix)==1
-            matrix = matrix*eye(n);
-        end
-        P = polytope(matrix*P.V.val);
+    if isa(factor1,'polytope')
+        % polytope * matrix case... definition?
+        throw(CORAerror('CORA:noops',factor1,factor2));
+%         P_out = aux_invAffineMap(P_out,matrix);
+%         return
+    end
+
+    % special method for scaling only (and 1D)
+    if length(matrix) == 1
+        P_out = aux_scaling(P_out,matrix);
         return
     end
 
-    % special method for scaling
-    if length(matrix)==1
-        if matrix == 0
-            P = polytope(zeros(n,1));
-        else
-            P = aux_scaling(P,matrix);
+    % simpler method if matrix is invertible
+    if diff(size(matrix)) == 0 && rank(matrix) == length(matrix)
+        P_out = aux_inv(P_out,matrix);
+        return
+    end
+
+    % quicker computation using V-representation
+    if ~isempty(P_out.V.val)
+        if length(matrix)==1
+            matrix = matrix*eye(n);
         end
-    elseif isa(factor1,'polytope')
-        P = aux_invAffineMap(P,matrix);
+        P_out = polytope(matrix*P_out.V.val);
     else
-        P = aux_affineMap(P,matrix);
+        % method for general mappings
+        P_out = aux_affineMap(P_out,matrix);
     end
     
-else
-    %interval matrix 
-    if isa(matrix,'interval')
-        %get minimum and maximum
-        M_min=infimum(matrix);
-        M_max=supremum(matrix);
-    elseif isa(matrix,'intervalMatrix')
-        %get minimum and maximum
-        M_min=infimum(matrix.int);
-        M_max=supremum(matrix.int);
+elseif isa(matrix,'interval') || isa(matrix,'intervalMatrix')
+
+    % only supported for square matrices
+    if diff(size(matrix)) ~= 0
+        throw(CORAerror('CORA:notSupported',['Multiplication of interval ' ...
+            'matrix with polytope only supported for square interval matrices.']));
     end
-    %get center of interval matrix
-    T=0.5*(M_max+M_min);
-    %get symmetric interval matrix
+
+    % get minimum and maximum
+    M_min = infimum(matrix);
+    M_max = supremum(matrix);
+    % get center of interval matrix
+    T = 0.5*(M_max+M_min);
+    % get symmetric interval matrix
     Sval = 0.5*(M_max-M_min);
     S = interval(-Sval,Sval);
 
-    %compute interval of polytope
-    I = interval(P);
+    % compute interval of polytope
+    I = interval(P_out);
 
-    %polytope of interval computations
+    % polytope of interval computations
     Iadd = S*I;
     Padd = polytope(Iadd);
 
-    %compute new polytope
-    P=T*P + Padd; 
+    % compute new polytope
+    P_out = T*P_out + Padd;
+
+else
+    % specifically, matZonotope and matPolytope multiplication is not
+    % supported
+    throw(CORAerror('CORA:noops',factor1,factor2));
+
 end
 
 end
@@ -116,15 +132,40 @@ function P = aux_scaling(P,fac)
 %                = { y | A/fac y <= b, Ae/fac y == b }
 %                = { y | A y <= b*fac, Ae y == b*fac }     if fac > 0
 %             OR = { y | -A y <= -b*fac, Ae y == b*fac }   if fac < 0
-% (note: case with fac = 0 handled outside)
+% (note: case with fac = 0 yields a polytope that is just the origin)
 
-if fac > 0
+if fac == 0
+    % resulting polytope is only the origin
+    P = polytope(zeros(dim(P),1)); return
+elseif fac > 0
     P.b = P.b * fac;
 else
     P.A = -P.A;
     P.b = -P.b * fac;
 end
 P.be = P.be * fac;
+
+% map vertices if given
+if ~isempty(P.V.val)
+    P.V.val = P.V.val * fac;
+end
+
+end
+
+function P = aux_inv(P,M)
+% matrix M is invertible
+
+% compute inverse
+Minv = inv(M);
+
+% apply well-known formula
+P.A = P.A * Minv;
+P.Ae = P.Ae * Minv;
+
+% map vertices if given
+if ~isempty(P.V.val)
+    P.V.val = M*P.V.val;
+end
 
 end
 
@@ -168,7 +209,7 @@ if ~isempty(P.Ae)
             P = polytope([],[],P.Ae*inv(M),P.be);
             return
         else
-            % lower-dimensional mapping, solution as suggester by Magnus
+            % lower-dimensional mapping, solution as suggested by Magnus
             % Nilsson
             nM = size(M,1);
             p = P.Ae\P.be; % particular solution to Ae*d=be
@@ -190,7 +231,8 @@ if ~isempty(P.Ae)
     end
 end
 
-% Compute permutation of M s.t. P*y = [M1 M2; M3 M4]*[xr;xn] with rank M1 = rank T and Q*x=[xr;xn]
+% Compute permutation of M s.t. P*y = [M1 M2; M3 M4]*[xr;xn] with
+% rank M1 = rank T and Q*x=[xr;xn]
 [L,U,p,q] = lu(sparse(M),'vector');
 r = rank(M,1e-12);
 pr = p(1:r); pn = p(r+1:end);
@@ -199,7 +241,7 @@ qr = q(1:r); qn = q(r+1:end);
 rk = rank(full(U(:,1:r)));
 if rk~=r
     % if invertibility is not achieved try reduced echelon elimination
-    [~,jb]=rref(M,1E-12);
+    [~,jb] = rref(M,1E-12);
     [L,U,p] = lu(sparse(M(:,jb)),'vector');
     % update column selection
     q = [jb, setdiff(1:dim(P),jb)];
@@ -248,7 +290,8 @@ end
 
 % Only supports square mapping
 if size(T, 1)~=size(T, 2)
-	error('Only square mappings supported.');
+    throw(CORAerror('CORA:notSupported',...
+        'Only square mappings supported for inverse affine map.'));
 end
 
 if isempty(P.Ae)

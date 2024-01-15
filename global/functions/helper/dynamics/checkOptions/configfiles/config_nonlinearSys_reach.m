@@ -68,6 +68,11 @@ optionsList(end+1,1) = add2list('tensorOrderOutput','default');
 optionsList(end+1,1) = add2list('polyZono.maxDepGenOrder','default');
 optionsList(end+1,1) = add2list('polyZono.maxPolyZonoRatio','default');
 optionsList(end+1,1) = add2list('polyZono.restructureTechnique','default');
+% lagrangeRem
+optionsList(end+1,1) = add2list('lagrangeRem.simplify','default');
+optionsList(end+1,1) = add2list('lagrangeRem.method','default');
+optionsList(end+1,1) = add2list('lagrangeRem.tensorParallel','default');
+optionsList(end+1,1) = add2list('lagrangeRem.optMethod','default');
 
 % optional
 optionsList(end+1,1) = add2list('saveOrder','optional');

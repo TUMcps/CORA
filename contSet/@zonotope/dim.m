@@ -23,18 +23,12 @@ function n = dim(Z)
 % Authors:       Mark Wetzlinger
 % Written:       15-September-2019
 % Last update:   11-March-2021 (MW, add empty case)
+%                08-January-2023 (MW, fix 0-dimensional empty case)
+%                10-January-2023 (MW, simplify)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-try
-    n = length(Z.c);
-catch ME
-    if isemptyobject(Z)
-        n = 0;
-    else
-        rethrow(ME);
-    end
-end
+n = size(Z.c,1);
 
 % ------------------------------ END OF CODE ------------------------------

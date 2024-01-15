@@ -23,7 +23,11 @@ function res = test_ellipsoid_dim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = dim(ellipsoid()) == 0;
+% empty set
+n = 2;
+E = ellipsoid.empty(n);
+res = dim(E) == n;
+
 load cases.mat E_c
 for i=1:length(E_c)
     E1 = E_c{i}.E1; % non-deg

@@ -45,6 +45,19 @@ function [val,x,ksi] = supportFunc_(cZ,dir,type,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% empty case
+if representsa_(cZ,'emptySet',0)
+    x = [];
+    if strcmp(type,'upper')
+        val = -Inf;
+    elseif strcmp(type,'lower')
+        val = Inf;
+    elseif strcmp(type,'range')
+        val = interval(-Inf,Inf);
+    end
+    return
+end
+
 % non-constrained case
 if isempty(cZ.A) || all(all(cZ.A == 0)) 
     
@@ -136,7 +149,7 @@ if isempty(fval)
             if strcmp(res.sol.itr.prosta,'PRIMAL_INFEASIBLE')
                 % primal infeasible -> empty set
                 if strcmp(type,'range')
-                    val = interval();
+                    val = interval.empty(1);
                 elseif strcmp(type,'lower')
                     val = Inf;
                 end
@@ -159,7 +172,7 @@ if isempty(fval)
             if strcmp(res.sol.itr.prosta,'PRIMAL_INFEASIBLE')
                 % primal infeasible -> empty set
                 if strcmp(type,'range')
-                    val = interval();
+                    val = interval.empty(1);
                 elseif strcmp(type,'upper')
                     val = -Inf;
                 end
@@ -190,7 +203,7 @@ if isempty(fval)
             if exitflag == -2
                 % primal infeasible -> empty set
                 if strcmp(type,'range')
-                    val = interval();
+                    val = interval.empty(1);
                 elseif strcmp(type,'lower')
                     val = Inf;
                 end
@@ -209,7 +222,7 @@ if isempty(fval)
             if exitflag == -2
                 % primal infeasible -> empty set
                 if strcmp(type,'range')
-                    val = interval();
+                    val = interval.empty(1);
                 elseif strcmp(type,'upper')
                     val = -Inf;
                 end

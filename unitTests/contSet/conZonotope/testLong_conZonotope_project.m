@@ -26,7 +26,7 @@ function res = testLong_conZonotope_project
 res = true;
 
 % check empty conZonotope object: projection should return error
-cZ = conZonotope();
+cZ = conZonotope.empty(1);
 try 
     project(cZ,[1,2])
     res = false;

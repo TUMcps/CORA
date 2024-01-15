@@ -26,7 +26,7 @@ pass = true;
 % basic case without inputs
 test_case(1) = "initially = ""10<=x<=10.2 & v==0""";
 solution{1}.states = interval([10,0],[10.2,0])';
-solution{1}.inputs = interval();
+solution{1}.inputs = interval.empty(1);
 state_names{1} = struct('name',{'x','v'});
 input_names{1} = [];
 error_expected(1) = 0;
@@ -40,21 +40,21 @@ error_expected(2) = 0;
 % non fully specified case
 test_case(3) = "initially = ""10<=x<=10.2""";
 solution{3}.states = interval([10,0],[10.2,0])';
-solution{3}.inputs = interval();
+solution{3}.inputs = interval.empty(1);
 state_names{3} = struct('name',{'x','v'});
 input_names{3} = [];
 error_expected(3) = 1;
 % Multi line initially argument
 test_case(4) = "initially = ""10<=x<=10.2 &" + newline + " v==0""";
 solution{4}.states = interval([10,0],[10.2,0])';
-solution{4}.inputs = interval();
+solution{4}.inputs = interval.empty(1);
 state_names{4} = struct('name',{'x','v'});
 input_names{4} = [];
 error_expected(4) = 0;
 % Variable defined in 2 terms
 test_case(5) = "initially = ""10<=x&x<=10.2""";
 solution{5}.states = interval(10,10.2)';
-solution{5}.inputs = interval();
+solution{5}.inputs = interval.empty(1);
 state_names{5} = struct('name',{'x'});
 input_names{5} = [];
 error_expected(5) = 0;

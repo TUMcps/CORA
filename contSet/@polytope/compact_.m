@@ -52,13 +52,14 @@ function P_out = compact_(P,type,tol,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% quickest exit
+if representsa(P,'fullspace',0)
+    P_out = polytope(zeros(0,dim(P)),zeros(0,0));
+    return
+end
+
 % copy set (also copies properties)
 P_out = polytope(P);
-
-% quickest exit
-if isemptyobject(P)
-    return;
-end
 
 % reduce vertex representation
 if strcmp(type,'V') || (isempty(P.A) && isempty(P.Ae) && ~isempty(P.V.val))
@@ -77,10 +78,13 @@ if strcmp(type,'zeros')
     return
 end
 
-% quick exists:
+% quick exits:
 if length(P_out.b) == 1 && isempty(P_out.be)
     % only one inequality, no equality given -> already minimal
     P_out.minHRep.val = true;
+    P_out.emptySet.val = false;
+    P_out.bounded.val = false;
+    P_out.fullDim.val = true;
     P = aux_copyProperties(P,P_out);
     return
 elseif isempty(P_out.b) && length(P_out.be) == 1
@@ -94,9 +98,8 @@ end
 P_out = normalizeConstraints(P_out,'A');
 
 % removal of aligned constraints
-if strcmp(type,'aligned')
-    P_out = aux_removeAligned(P_out);
-    P_out.minHRep.val = true;
+P_out = aux_removeAlignedIneq(P_out);
+if strcmp(type,'aligned') || (length(P_out.b) <= 1 && isempty(P_out.be))
     P = aux_copyProperties(P,P_out);
     return
 end
@@ -116,9 +119,6 @@ n = dim(P_out);
 % special algorithms for 1D and 2D
 if n == 1
     P_out = aux_1D(P_out,type); 
-    P_out.minHRep.val = true;
-    % 1D algorithm returns fully empty object if set is empty
-    P_out.emptySet.val = isemptyobject(P_out);
     P = aux_copyProperties(P,P_out);
     return
 elseif n == 2
@@ -140,14 +140,7 @@ if ~isempty(Ae) && (strcmp(type,'all') || strcmp(type,'Ae'))
     % quick exit if two equality constraints cannot be fulfilled at the
     % same time
     if empty
-        P_out.A = zeros(0,n); P_out.b = [];
-        P_out.Ae = zeros(0,n); P_out.be = [];
-        P_out.minHRep.val = true;
-        P_out.emptySet.val = true;
-        P_out.bounded.val = true;
-        P_out.fullDim.val = false;
-        P_out.V.val = zeros(n,0);
-        P_out.minVRep.val = true;
+        P_out = polytope.empty(n);
         P = aux_copyProperties(P,P_out);
         return
     end
@@ -174,14 +167,7 @@ if ~isempty(A) && (strcmp(type,'all') || strcmp(type,'A'))
     % as possible; we now perform a single linear program upfront to check
     % for emptiness
     if representsa_(polytope(A,b,Ae,be),'emptySet',eps)
-        P_out.A = zeros(0,n); P_out.b = [];
-        P_out.Ae = zeros(0,n); P_out.be = [];
-        P_out.minHRep.val = true;
-        P_out.emptySet.val = true;
-        P_out.bounded.val = true;
-        P_out.fullDim.val = false;
-        P_out.V.val = zeros(n,0);
-        P_out.minVRep.val = true;
+        P_out = polytope.empty(n);
         P = aux_copyProperties(P,P_out);
         return
     end
@@ -242,14 +228,7 @@ if ~isempty(A) && (strcmp(type,'all') || strcmp(type,'A'))
                     end
                 elseif strcmp(res.sol.itr.prosta,'PRIMAL_INFEASIBLE')
                     % reduced set of constraints is infeasible -> empty set
-                    P_out.A = zeros(0,n); P_out.b = [];
-                    P_out.Ae = zeros(0,n); P_out.be = [];
-                    P_out.minHRep.val = true;
-                    P_out.emptySet.val = true;
-                    P_out.bounded.val = true;
-                    P_out.fullDim.val = false;
-                    P_out.V.val = zeros(n,0);
-                    P_out.minVRep.val = true;
+                    P_out = polytope.empty(n);
                     P = aux_copyProperties(P,P_out);
                     return
                 end
@@ -374,52 +353,42 @@ function P = aux_deleteZeros(P,tol)
     % dimension
     n = dim(P);
 
-    % read out properties
-    A = P.A; b = P.b;
-    Ae = P.Ae; be = P.be;
-    
     % remove trivially redundant rows with 0*x <= b
-    A_zero_rows = find(all(withinTol(A,0),2));
+    A_zero_rows = find(all(withinTol(P.A,0),2));
     if any(A_zero_rows)
         % check whether any of those constraints is infeasible
-        if any(b(A_zero_rows) < 0 & ~withinTol(b(A_zero_rows),0,tol))
+        if any(P.b(A_zero_rows) < 0 & ~withinTol(P.b(A_zero_rows),0,tol))
             % constraint 0*x <= b with b < 0  =>  infeasible, i.e., empty set
-            P = polytope(zeros(0,n),[]);
+            P = polytope.empty(n);
             return
         else
             % all constraints are 0*x <= b where all b_i > 0
-            A(A_zero_rows,:) = [];
-            b(A_zero_rows) = [];
+            P.A(A_zero_rows,:) = [];
+            P.b(A_zero_rows) = [];
         end
     end
 
     % remove trivially redundant rows with 0*x = 0
-    Ae_zero_rows = find(all(withinTol(Ae,0),2));
+    Ae_zero_rows = find(all(withinTol(P.Ae,0),2));
     if any(Ae_zero_rows)
         % check whether any of those constraints is infeasible
-        if any(~withinTol(b(Ae_zero_rows),0,tol))
-            % constraint 0*x = b with b ~= 0  =>  infeasible, i.e., empty set
-            P = polytope(zeros(0,n),[]);
+        if any(~withinTol(P.be(Ae_zero_rows),0,tol))
+            % constraint 0*x = be with be ~= 0  =>  infeasible, i.e., empty set
+            P = polytope.empty(n);
             return
         else
             % all constraints are 0*x = 0
-            Ae(Ae_zero_rows,:) = [];
-            be(Ae_zero_rows) = [];
+            P.Ae(Ae_zero_rows,:) = [];
+            P.be(Ae_zero_rows) = [];
         end
     end
 
     % if no constraints are left, but none have been infeasible, we have an
-    % unbounded set (see fullspace) -> add one constraint
-    if isempty(A) && isempty(Ae)
-        P.A = zeros(1,n); P.b = 0; P.Ae = zeros(0,n); P.be = [];
+    % unbounded set (fullspace)
+    if isempty(P.A) && isempty(P.Ae)
         P.emptySet.val = false;
         P.bounded.val = false;
         P.fullDim.val = true;
-
-    else
-        % instantiate resulting polytope
-        P.A = A; P.b = b;
-        P.Ae = Ae; P.be = be;
     end    
 
 end
@@ -543,9 +512,7 @@ function P = aux_2D(P,type)
 
         if empty
             % aux_removeEqCon already determined emptiness
-            P.A = zeros(0,n); P.b = [];
-            P.Ae = zeros(0,n); P.be = [];
-            P.emptySet.val = true; P.fullDim.val = false;
+            P = polytope.empty(2);
             return
         end
 
@@ -759,13 +726,11 @@ function P = aux_twoHalfspaces(P)
 
     elseif withinTol(dotprod,-1) && -P.b(2) > P.b(1)
         % -> not feasible
-        P.A = zeros(0,n); P.b = [];
-        P.Ae = zeros(0,n); P.be = [];
-        P.emptySet.val = true;
-        P.bounded.val = true;
-        P.fullDim.val = false;
-        P.V.val = zeros(n,0);
-        P.minVRep.val = true;
+        P = polytope.empty(n);
+
+    else
+        % -> feasible
+        P.emptySet.val = false;
 
     end
 
@@ -789,7 +754,7 @@ function P = aux_1D(P,type)
         if size(Ae,1) > 1
             if any(withinTol(be,1)) && any(withinTol(be,0))
                 % any combination Ax = 1 and Ax = 0 -> empty
-                P = polytope(); return
+                P = polytope.empty(1); return
             end
             
             % indices where b = 1 and b = 0
@@ -801,14 +766,12 @@ function P = aux_1D(P,type)
             if nnz(idx_1) > 1 && ~all(withinTol(Ae_1,Ae_1(1)))
                 % more than one constraint with ... = 1
                 % and not the same value in A -> empty
-                P.A = zeros(0,1); P.b = [];
-                P.Ae = zeros(0,1); P.be = [];
+                P = polytope.empty(1);
                 return
             elseif nnz(idx_0) > 1 && ~all(withinTol(Ae_0,Ae_0(1)))
                 % more than one constraint with ... = 0
                 % and not the same value in A -> empty
-                P.A = zeros(0,1); P.b = [];
-                P.Ae = zeros(0,1); P.be = [];
+                P = polytope.empty(1);
                 return
             end
 
@@ -841,16 +804,14 @@ function P = aux_1D(P,type)
             % constraints of the form
             %   ax <= b, ax >= b_, where b_ > b
             % -> infeasible!
-            P.A = zeros(0,1); P.b = [];
-            P.Ae = zeros(0,1); P.be = [];
+            P = polytope.empty(1);
             return
         elseif ~isempty(be)
             % there are equality constraints
             if any(be_ > b(1)) || any(be_ < -b(2))
                 % additionally, an equality constraint that does not comply
                 % with the inequality constraints
-                P.A = zeros(0,1); P.b = [];
-                P.Ae = zeros(0,1); P.be = [];
+                P = polytope.empty(1);
                 return
             else
                 % equality constraint is satisfied by inequality
@@ -873,7 +834,7 @@ function P = aux_1D(P,type)
     P.A = A; P.b = b; P.Ae = Ae; P.be = be;
 end
 
-function P = aux_removeAligned(P)
+function P = aux_removeAlignedIneq(P)
 % only goes through inequality constraints
 
     % get object properties

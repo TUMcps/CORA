@@ -99,15 +99,15 @@ catch ME
         rethrow(ME);
     end
 
+    % check whether different dimension of ambient space
+    equalDimCheck(cZ,summand);
+
     % check for empty sets
     if representsa_(cZ,'emptySet',eps)
         return
-    elseif isemptyobject(summand)
-        cZ = conZonotope(); return
-    end
-
-    % check whether different dimension of ambient space
-    equalDimCheck(cZ,summand);
+    elseif representsa_(summand,'emptySet',eps)
+        cZ = conZonotope.empty(dim(cZ)); return
+    end    
 
     % other error...
     rethrow(ME);

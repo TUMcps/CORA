@@ -24,7 +24,7 @@ function res = test_capsule_isnan
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty capsule
-C = capsule();
+C = capsule.empty(2);
 res = ~isnan(C);
 
 % 3D capsule

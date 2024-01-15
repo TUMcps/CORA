@@ -24,9 +24,10 @@ function res = test_zonoBundle_randPoint
 % ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
-zB = zonoBundle();
+n = 2;
+zB = zonoBundle.empty(n);
 p = randPoint(zB);
-res = isnumeric(p) && isempty(p);
+res = isnumeric(p) && isempty(p) && size(p,1) == n;
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);

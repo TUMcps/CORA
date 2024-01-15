@@ -26,14 +26,16 @@ function res = test_ellipsoid_representsa
 res = true(0);
 
 % 1. comparison to empty set
-res(end+1,1) = representsa_(ellipsoid(),'emptySet',eps);
+E = ellipsoid.empty(2);
+res(end+1,1) = representsa_(E,'emptySet',eps);
 E = ellipsoid([1 0;0 2],[0; 1]);
 res(end+1,1) = ~representsa_(E,'emptySet',eps);
 
 
 % 2. comparison to origin
 % empty case
-res(end+1,1) = ~representsa(ellipsoid(),'origin');
+E = ellipsoid.empty(2);
+res(end+1,1) = ~representsa(E,'origin');
 
 % only origin
 E = ellipsoid(zeros(3),zeros(3,1));

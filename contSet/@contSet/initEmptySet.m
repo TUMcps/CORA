@@ -23,64 +23,8 @@ function S = initEmptySet(type)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% all supported classes
-admissibleTypes = {
-    'capsule','conPolyZono','conHyperplane','conZonotope','ellipsoid',...
-    'halfspace','interval','levelSet','polytope','polyZonotope',...
-    'probZonotope','zonoBundle','zonotope',... % contSet classes
-    'emptySet','fullspace'}; % future contSet classes
-
-% check input argument
-inputArgsCheck({{type,'str',admissibleTypes}});
-
-
-switch type
-
-    case 'capsule'
-        S = capsule();
-
-    case 'conPolyZono'
-        S = conPolyZono();
-
-    case 'conHyperplane'
-        S = conHyperplane();
-
-    case 'conZonotope'
-        S = conZonotope();
-
-    case 'ellipsoid'
-        S = ellipsoid();
-
-    case 'halfspace'
-        S = halfspace();
-
-    case 'interval'
-        S = interval();
-
-    case 'levelSet'
-        S = levelSet();
-
-    case 'polytope'
-        S = polytope();
-
-    case 'polyZonotope'
-        S = polyZonotope();
-
-    case 'probZonotope'
-        S = probZonotope();
-
-    case 'zonoBundle'
-        S = zonoBundle();
-
-    case 'zonotope'
-        S = zonotope();
-
-    case 'emptySet'
-        S = emptySet();
-
-    case 'fullspace'
-        S = fullspace();
-
-end
+throw(CORAerror('CORA:specialError', ...
+    sprintf(['The function ''contSet.initEmptySet'' is deprecated (since CORA 2024.1.0) and has been replaced by ''contSet.empty''.\n' ...
+             'Note that the function ''initEmptySet'' will be removed in a future release.'])));
 
 % ------------------------------ END OF CODE ------------------------------

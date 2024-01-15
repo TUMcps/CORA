@@ -42,14 +42,16 @@ function res = sin(I)
 %                06-February-2016 (DG)
 %                10-February-2016 (MA)
 %                22-February-2016 (DG, the matrix case is rewritten)
+%                10-January-2024 (MW, fix condition for scalar case)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % scalar case
-if isnumeric(I)
+if isscalar(I)
     
-    res = interval();
+    % init (overwritten below)
+    res = interval.Inf(1);
 
     %sup - inf >= 2pi
     if I.sup - I.inf >= 2*pi

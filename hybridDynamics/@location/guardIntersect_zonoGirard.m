@@ -108,8 +108,8 @@ function I = aux_enclosingInterval(guard,B,Z)
     end
 
     % get hyperplane normal vector and offset
-    n = guard.h.c;
-    gamma = guard.h.d;
+    n = guard.a';
+    gamma = guard.b;
 
     % initialization
     lb = ones(length(n),1)*-inf;
@@ -165,7 +165,7 @@ function I = aux_enclosingInterval(guard,B,Z)
     if all(lb <= ub)
         I = interval(lb,ub);
     else
-        I = interval(); 
+        I = interval.empty(length(lb)); 
     end
 end
 

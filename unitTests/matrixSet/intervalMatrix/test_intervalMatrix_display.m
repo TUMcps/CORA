@@ -26,9 +26,6 @@ function res = test_intervalMatrix_display
 
 res = true;
 
-% empty interval matrix
-intMat = intervalMatrix()
-
 % scalar
 intMat = intervalMatrix(1,0)
 

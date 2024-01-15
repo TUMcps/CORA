@@ -49,7 +49,7 @@ resvec(end+1) = all(ncPZ.EC == EC, 'all');
 resvec(end+1) = isequal(ncPZ, -1*cPZ);
 
 % test empty case
-resvec(end+1) = isemptyobject(-conPolyZono());
+resvec(end+1) = isemptyobject(-conPolyZono.empty(2));
 
 % add results
 res = all(resvec);

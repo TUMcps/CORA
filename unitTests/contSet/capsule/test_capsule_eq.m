@@ -23,9 +23,13 @@ function res = test_capsule_eq
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+res = true(0);
+
 % empty capsule
-C = capsule();
-res = C == C;
+C1 = capsule.empty(1);
+C2 = capsule.empty(2);
+res(end+1,1) = C1 == C1;
+res(end+1,1) = ~(C1 == C2);
 
 % tolerance
 tol = 1e-9;

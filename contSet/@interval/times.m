@@ -41,7 +41,7 @@ if isa(factor1, 'interval') && ~isa(factor2, 'interval')
     resInf = factor1.inf .* factor2;
     resSup = factor1.sup .* factor2;
 
-    res = interval();
+    res = factor1;
     res.inf = min(resInf, resSup);
     res.sup = max(resInf, resSup);
     
@@ -56,7 +56,7 @@ elseif ~isa(factor1, 'interval') && isa(factor2, 'interval')
     resInf = factor2.inf .* factor1;
     resSup = factor2.sup .* factor1;
     
-    res = interval();
+    res = factor2;
     res.inf = min(resInf, resSup);
     res.sup = max(resInf, resSup);
     
@@ -70,7 +70,7 @@ else
     res4 = factor1.sup .* factor2.sup;
 
     % to find min and max
-    res = interval();
+    res = factor1;
     res.inf = min(res1,min(res2, min(res3,res4)));
     res.sup = max(res1,max(res2, max(res3,res4)));    
 end

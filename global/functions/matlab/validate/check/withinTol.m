@@ -24,7 +24,7 @@ function res = withinTol(a,b,tol)
 
 % Authors:       Victor Gassmann
 % Written:       19-July-2021
-% Last update:   ---
+% Last update:   03-December-2023 (MW, handling of Inf values)
 % Last revision: 20-July-2023 (TL, speed up input parsing)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -60,7 +60,10 @@ res_abs = abs(a-b) <= tol;
 % relative tolerance
 res_rel = abs(a-b) ./ min(abs(a),abs(b)) <= tol;
 
+% handling of Inf values
+res_inf = isinf(a) & isinf(b) & (sign(a) == sign(b));
+
 % joint result
-res = res_abs | res_rel;
+res = res_abs | res_rel | res_inf;
 
 % ------------------------------ END OF CODE ------------------------------

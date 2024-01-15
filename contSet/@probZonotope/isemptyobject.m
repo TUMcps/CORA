@@ -15,8 +15,6 @@ function res = isemptyobject(probZ)
 % Example: 
 %    probZ = probZonotope([10 1 -2; 0 1 1],[0.6 1.2; 0.6 -1.2]);
 %    isemptyobject(probZ); % false
-%    probZ = probZonotope();
-%    isemptyobject(probZ); % true
 %
 % Other m-files required: none
 % Subfunctions: none

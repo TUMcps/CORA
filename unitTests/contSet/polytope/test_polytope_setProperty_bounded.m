@@ -27,7 +27,9 @@ function res = test_polytope_setProperty_bounded
 
 res = true(0);
 
-% constructor: init set via vertex representation
+% --- polytope ------------------------------------------------------------
+% init set via vertex representation
+
 % 1D, unbounded, non-degenerate
 V = [-Inf, 2];
 P = polytope(V);
@@ -53,8 +55,14 @@ V = [-1 1; 2 0]';
 P = polytope(V);
 res(end+1,1) = ~isempty(P.bounded.val) && P.bounded.val;
 
+% 3D, bounded (with redundancies)
+V = [1 1 -1; -3 2 1; 0 4 2; 2 3 1; 2 -2 1; 4 3 2; -1 1 1]';
+P = polytope(V);
+res(end+1,1) = ~isempty(P.bounded.val) && P.bounded.val;
 
-% and
+
+% --- and -----------------------------------------------------------------
+
 % 2D, bounded, non-degenerate & bounded, non-degenerate
 P1 = polytope([1 1; 1 -1; -1 0],[1;1;0.5]);
 P2 = polytope([-1 1; -1 -1; 1 0],[1;1;0.5]);
@@ -74,7 +82,8 @@ P = P1 & P2;
 res(end+1,1) = ~isempty(P.bounded.val) && P.bounded.val;
 
 
-% box
+% --- box -----------------------------------------------------------------
+
 % 2D, empty set
 P = polytope([1 0; -1 0],[2;-3]);
 P_ = box(P);
@@ -94,7 +103,8 @@ res(end+1,1) = ~isempty(P.bounded.val) && P.bounded.val;
 res(end+1,1) = ~isempty(P_.bounded.val) && P_.bounded.val;
 
 
-% compact
+% --- compact -------------------------------------------------------------
+
 % 1D, empty
 P = polytope([1;-1],[1;-2]);
 P_ = compact(P);
@@ -107,7 +117,8 @@ res(end+1,1) = ~isempty(P.bounded.val) && P.bounded.val ...
     && ~isempty(P_.bounded.val) && P_.bounded.val;
 
 
-% convHull
+% --- convHull ------------------------------------------------------------
+
 % 2D, bounded, empty
 P1 = polytope([1 1; -1 1; 0 -1],[1;1;1]);
 P2 = polytope([0 1; -1 -1; 1 -1],[-1;0.1;0.1]);
@@ -124,7 +135,22 @@ P = convHull(P1,P2);
 res(end+1,1) = ~isempty(P.bounded.val) && P.bounded.val;
 
 
-% isBounded
+% --- empty ---------------------------------------------------------------
+
+n = 3;
+P = polytope.empty(n);
+res(end+1,1) = ~isempty(P.bounded.val) && P.bounded.val;
+
+
+% --- Inf -----------------------------------------------------------------
+
+n = 3;
+P = polytope.Inf(n);
+res(end+1,1) = ~isempty(P.bounded.val) && ~P.bounded.val;
+
+
+% --- isBounded -----------------------------------------------------------
+
 % 2D, empty
 P = polytope([0 1; -1 -1; 1 -1],[-1;0.1;0.1]);
 % determine boundedness
@@ -138,7 +164,8 @@ isBounded(P);
 res(end+1,1) = ~isempty(P.bounded.val) && ~P.bounded.val;
 
 
-% isFullDim
+% --- isFullDim -----------------------------------------------------------
+
 % 1D, unbounded
 P = polytope(1,1);
 % determine boundedness
@@ -146,7 +173,21 @@ isFullDim(P);
 res(end+1,1) = ~isempty(P.bounded.val) && ~P.bounded.val;
 
 
-% polytope (copy constructor)
+% --- plus ----------------------------------------------------------------
+
+% 2D, bounded + vector
+A = [1 0; -1 1; -1 -1]; b = ones(3,1);
+P = polytope(A,b);
+isBounded(P);
+v = [-1;1];
+P_sum = P + v;
+% resulting polytope is also bounded
+res(end+1,1) = ~isempty(P_sum.bounded.val) && P_sum.bounded.val;
+
+
+% --- polytope ------------------------------------------------------------
+% copy constructor
+
 % 2D, only inequalities, bounded
 P = polytope([1 1; -1 1; 0 -1],ones(3,1));
 % determine boundedness
@@ -156,14 +197,16 @@ P_ = polytope(P);
 res(end+1,1) = ~isempty(P_.bounded.val) && P_.bounded.val;
 
 
-% project
+% --- project -------------------------------------------------------------
+
 % 3D, empty
 P = polytope([1 0 0; -1 0 0],[2;-3]);
 P_ = project(P,[1,2]);
 res(end+1,1) = ~isempty(P_.bounded.val) && P_.bounded.val;
 
 
-% lift
+% --- lift ----------------------------------------------------------------
+
 % 2D, non-empty
 P = polytope([1 1; -1 1; 0 -1],[1;1;1]);
 % project to higher-dimensional space
@@ -172,7 +215,8 @@ P_ = lift(P,5,[2,3]);
 res(end+1,1) = ~isempty(P_.bounded.val) && ~P_.bounded.val;
 
 
-% representsa
+% --- representsa ---------------------------------------------------------
+
 % 2D, empty
 P = polytope([1 1; -1 1; 0 -1],[1;1;-2]);
 % determine boundedness via emptiness
@@ -186,7 +230,8 @@ representsa(P,'fullspace');
 res(end+1,1) = ~isempty(P.bounded.val) && ~P.bounded.val;
 
 
-% vertices
+% --- vertices ------------------------------------------------------------
+
 % 2D, empty set
 P = polytope([1 0; -1 0],[2;-3]);
 V = vertices(P);

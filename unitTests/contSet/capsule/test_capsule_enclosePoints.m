@@ -24,9 +24,10 @@ function res = test_capsule_enclosePoints
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty set case
-p = [];
+n = 2;
+p = zeros(n,0);
 C = capsule.enclosePoints(p);
-res = representsa_(C,'emptySet',eps);
+res = representsa_(C,'emptySet',eps) && dim(C) == n;
 
 % points
 p = [-1  1 2 3 2  1 -2 -4 3;...

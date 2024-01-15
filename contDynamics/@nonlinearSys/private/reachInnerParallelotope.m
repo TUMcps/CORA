@@ -41,20 +41,12 @@ function [Rin,Rout] = reachInnerParallelotope(sys,params,options)
 
     % compute outer-approximation of the reachable set for the center of
     % the initial set
-    params.R0 = zonotope(center(options.R0));
-    params.tStart = options.tStart;
-    params.tFinal = options.tFinal;
-    
-    options_ = options;
-    options_ = rmfield(options_,'algInner');
-    options_ = rmfield(options_,'R0');
-    options_ = rmfield(options_,'tStart');
-    options_ = rmfield(options_,'tFinal');
+    [params_outer,options_outer] = aux_getOuterReachOptions(options);
     
     name = ['reachInnerParallelo1',sys.name];
     sysCen = nonlinearSys(name,@(x,u) sys.mFile(x,u));
     
-    R = reach(sysCen,params,options_);
+    R = reach(sysCen,params_outer,options_outer);
     
     % compute outer-approximation of the Jacobian function as defined in
     % Sec. 3.1 in [2]
@@ -64,9 +56,9 @@ function [Rin,Rout] = reachInnerParallelotope(sys,params,options)
      
     n = dim(params.R0); I = eye(n);
     params.R0 = cartProd(zonotope(options.R0),zonotope(I(:)));
-    options_ = rmfield(options_,'maxError');
+    options_outer = rmfield(options_outer,'maxError');
     
-    Rjac = reach(sysJac,params,options_);
+    Rjac = reach(sysJac,params,options_outer);
 
     % compute inner-approximation using Theorem 3 in [1]
     list = cell(length(R.timePoint.set),1);
@@ -76,6 +68,9 @@ function [Rin,Rout] = reachInnerParallelotope(sys,params,options)
     listContOuter = cell(length(R.timeInterval.set),1);
     
     for i = 1:length(R.timeInterval.set)
+
+        % log
+        verboseLog(i,options.timeStep*(i-1),options);
        
         % compute inner-approximation of the time-point reachable set
         f0 = R.timePoint.set{i+1};
@@ -95,6 +90,9 @@ function [Rin,Rout] = reachInnerParallelotope(sys,params,options)
         
         listCont{i} = aux_innerApproxPrecond(f0,J,options.R0);
     end
+
+    % log
+    verboseLog(length(R.timeInterval.set),options.tFinal,options);
 
     % construct reachSet object for inner-approximation
     timePoint.set = list;
@@ -118,6 +116,26 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
+function [params,options] = aux_getOuterReachOptions(options)
+
+    % set center of initial set as initial set
+    params.R0 = zonotope(center(options.R0));
+    % copy relevant fields to the params struct
+    params.tStart = options.tStart;
+    params.tFinal = options.tFinal;
+    
+    % remove params fields from the options struct
+    list = {'R0','U','u','tStart','tFinal','algInner','linAlg',...
+        'polyZono.maxDepGenOrder','polyZono.maxPolyZonoRatio',...
+        'polyZono.restructureTechnique'};
+    for i = 1:length(list)
+        if isfield(options,list{i})
+            options = rmfield(options,list{i}); 
+        end
+    end
+
+end
+
 function res = aux_innerApproxPrecond(f0,J,X)
 % compute inner-approximation with pre-conditioning Sec. II.B in [1]
 
@@ -136,7 +154,7 @@ function res = aux_innerApproxPrecond(f0,J,X)
     res = aux_innerApprox(interval(C*f0),interval(C*J),X);
     
     % backtransformation with inverse pre-conditioning matrix
-    if ~isempty(res)
+    if ~representsa_(res,'emptySet',1e-12)
         res = Cinv*zonotope(res);
     elseif any(any(C-eye(n)))
         res = aux_innerApprox(interval(f0),interval(J),X);
@@ -163,7 +181,7 @@ function res = aux_innerApprox(f0,J,X)
           
            temp = aux_innerApproxScalar(f0(i),J(i,:),X,j);
            
-           if ~isempty(temp) && rad(temp) >= u(i) - l(i)
+           if ~representsa_(temp,'emptySet',1e-12) && rad(temp) >= u(i) - l(i)
                u(i) = supremum(temp);
                l(i) = infimum(temp);
            end

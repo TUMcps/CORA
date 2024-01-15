@@ -14,7 +14,7 @@ function res = test_zonotope_and
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       09-September-2020
@@ -56,9 +56,11 @@ Z1and2 = Z1 & Z2; % full-dimensional intersection
 res(end+1,1) = ~representsa(Z1and2,'emptySet');
 
 % empty set
-% Z_e = zonotope();
-% res(end+1,1) = representsa(Z1 & Z_e,'emptySet');
+Z_e = zonotope.empty(2);
+res(end+1,1) = representsa(Z1 & Z_e,'emptySet');
 
+
+% combine results
 res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

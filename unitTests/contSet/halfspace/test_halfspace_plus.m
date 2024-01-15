@@ -14,7 +14,7 @@ function res = test_halfspace_plus
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       16-March-2021
@@ -23,21 +23,23 @@ function res = test_halfspace_plus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% 1. empty case
-h = halfspace();
-v = rand(2,1);
-res_empty = representsa(h + v,'emptySet');
+res = true(0);
 
-% 2. dimension mismatch
-res_dim = true;
+% empty case
+h = halfspace.empty(2);
+v = [2; 1];
+res(end+1,1) = representsa(h + v,'emptySet');
+
+% combine results
+res = all(res);
+
+
+% dimension mismatch
 h = halfspace(randn(2,1),1);
 v = rand(3,1);
 try
     h + v; % should throw error here
-    res_dim = false;
+    res = false;
 end
-
-% combine tests
-res = res_empty && res_dim;
 
 % ------------------------------ END OF CODE ------------------------------

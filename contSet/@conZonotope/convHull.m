@@ -69,7 +69,7 @@ function cZ = convHull(cZ,S,varargin)
 
         if representsa_(S,'emptySet',eps)
             return
-        elseif isemptyobject(cZ)
+        elseif representsa_(cZ,'emptySet',1e-10)
             cZ = S; return
         end
 
@@ -86,8 +86,7 @@ function cZ = convHull(cZ,S,varargin)
             end
 
         elseif isa(S,'zonotope') || isa(S,'interval') || ...
-               isa(S,'polytope') || isa(S,'zonoBundle') || ...
-               isnumeric(S)
+               isa(S,'polytope') || isa(S,'zonoBundle') || isnumeric(S)
 
             if strcmp(method,'exact:Raghuraman')
                 cZ = aux_convHullcZ_Raghuraman(cZ,conZonotope(S));

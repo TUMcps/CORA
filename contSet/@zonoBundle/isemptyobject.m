@@ -14,8 +14,6 @@ function res = isemptyobject(zB)
 % Example: 
 %    zB = zonoBundle({zonotope([1;0],[1 0; 0 1]),zonotope([-1;2],[1 1; -1 0])});
 %    isemptyobject(zB); % false
-%    zB = capsule();
-%    isemptyobject(zB); % true
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -45,8 +43,9 @@ end
 
 function res = aux_checkIfEmpty(zB)
 
-    res = iscell(zB.Z) && isempty(zB.Z) ...
-        && isnumeric(zB.parallelSets) && isscalar(zB.parallelSets) && zB.parallelSets == 0;
+    res = (iscell(zB.Z) && isempty(zB.Z) ...
+        && isnumeric(zB.parallelSets) && isscalar(zB.parallelSets) && zB.parallelSets == 0) ...
+        || all(cellfun(@isemptyobject,zB.Z,'UniformOutput',true));
 
 end
 

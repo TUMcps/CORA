@@ -33,7 +33,7 @@ if zB.parallelSets == 0
     % fully-empty
     n = 0;
 else
-    n = length(zB.Z{1}.c);
+    n = size(zB.Z{1}.c,1);
 end
 
 % ------------------------------ END OF CODE ------------------------------

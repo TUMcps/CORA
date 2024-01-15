@@ -32,7 +32,7 @@ function val = distancePoint(hyp,p)
 
 % if conHyperplane actually is a hyperplane => analytical solution
 if isempty(hyp.C) || all(all(hyp.C))
-    val = abs(hyp.h.d-hyp.h.c'*p)/(hyp.h.c'*hyp.h.c);
+    val = abs(hyp.b-hyp.a*p)/(hyp.a*hyp.a);
 else
     n = length(p);
     % solve optimization problem: ||x-y||_2^2, s.t. y\in{x|C*x<=d}

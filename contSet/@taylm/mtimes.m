@@ -42,8 +42,10 @@ if n1 == m2
         end
     end
     
-elseif (isa(factor1, 'double') || isa(factor2, 'double')) && (isscalar(factor1) || isscalar(factor2))
+elseif (isa(factor1, 'double') || isa(factor2, 'double')) ...
+        && (isscalar(factor1) || isscalar(factor2))
     res = factor1 .* factor2;
+
 else
     throw(CORAerror('CORA:dimensionMismatch',factor1,factor2));
 end

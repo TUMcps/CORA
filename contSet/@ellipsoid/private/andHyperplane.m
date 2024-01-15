@@ -55,18 +55,18 @@ if ~isFullDim(E)
     % transform E such that degenerate dimensions are axis-aligned
     E = T'*E;
     % transform hyperplane (possible since T unitary)
-    H = conHyperplane((T'*H.h.c)',H.h.d);
+    H = conHyperplane((T'*H.a')',H.b);
     % project
     x_rem = E.q(nt+1:end);
     E = project(E,1:nt);
-    H = conHyperplane(H.h.c(1:nt)',H.h.d-H.h.c(nt+1:end)'*x_rem);
+    H = conHyperplane(H.a(1:nt),H.b-H.a(nt+1:end)*x_rem);
 end
 
 n_nd = length(E.q);
 n_rem = n-n_nd;
 % normalize hyperplane
-c = H.h.c/norm(H.h.c);
-d = H.h.d/norm(H.h.c);
+c = H.a'/norm(H.a');
+d = H.b/norm(H.a');
 H = conHyperplane(c',d);
 I = eye(n_nd);
 
@@ -75,7 +75,7 @@ if n_nd==1
     % E, H are 1d: check if intervals intersect
     % compute enclosing interval
     IntE = E.q + interval(-sqrt(E.Q),sqrt(E.Q));
-    xH = H.h.d/H.h.c;
+    xH = H.b/H.a';
     x_max = max(abs(xH));
     r_xH = x_max*E.TOL;
     IntE_TOL = IntE + interval(-r_xH,r_xH);

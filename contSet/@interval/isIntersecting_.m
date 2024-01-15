@@ -40,12 +40,23 @@ function res = isIntersecting_(I,S,type,varargin)
 % Last update:   14-September-2019
 %                21-November-2019 (NK, added intersection with other sets)
 %                12-March-2021 (MW, add empty case)
+%                04-December-2023 (MW, fix empty case)
 % Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
 % ------------------------------ BEGIN CODE -------------------------------
     
+    if representsa_(I,'emptySet',0)
+        res = false;
+        return
+    end
+
     % interval and interval intersection
     if isa(S,'interval')
+
+        if representsa_(S,'emptySet',0)
+            res = false;
+            return
+        end
         
         res = true;
         

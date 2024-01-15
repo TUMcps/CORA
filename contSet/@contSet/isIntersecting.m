@@ -43,7 +43,7 @@ inputArgsCheck({{S1,'att','contSet'},...
                 {S2,'att',{'contSet','numeric'}},...
                 {type,'str',{'exact','approx'}}});
 
-% check dimension mismatch (has to come after empty set case!)
+% check dimension mismatch
 equalDimCheck(S1,S2);
 
 % call subclass method
@@ -51,7 +51,7 @@ try
     res = isIntersecting_(S1,S2,type);
 catch ME
     % empty set case
-    if isemptyobject(S1) || isemptyobject(S2)
+    if representsa_(S1,'emptySet',1e-8) || representsa_(S2,'emptySet',1e-8)
         res = false;
     else
         rethrow(ME);

@@ -21,9 +21,6 @@ function res = isemptyobject(cPZ)
 %    EC = [0 1 2; 1 0 0; 0 1 0];
 %    cPZ = conPolyZono(c,G,E,A,b,EC);
 %    res = isemptyobject(cPZ); % false
-%    
-%    cPZ = conPolyZono();
-%    res = isemptyobject(cPZ); % true
 %
 % Other m-files required: none
 % Subfunctions: none

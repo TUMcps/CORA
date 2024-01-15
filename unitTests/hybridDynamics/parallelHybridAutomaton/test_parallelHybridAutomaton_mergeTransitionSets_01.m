@@ -91,8 +91,8 @@ for i=1:size(comb,1)
     % instantiate true solution: 2 transitions
 
     % guard set
-    guard = conHyperplane([trans{1,comb(i,1)}.guard.h.c;...
-        zeros(length(trans{2,comb(i,2)}.guard.h.c),1)],0);
+    guard = conHyperplane([trans{1,comb(i,1)}.guard.a,...
+        zeros(1,length(trans{2,comb(i,2)}.guard.a))],0);
 
     % reset function
     reset = struct('A',eye(5),'c',...
@@ -107,8 +107,8 @@ for i=1:size(comb,1)
     mergedTrans_(1) = transition(guard,reset,target);
 
     % guard set
-    guard = conHyperplane([zeros(length(trans{1,comb(i,1)}.guard.h.c),1);...
-        trans{2,comb(i,2)}.guard.h.c],1);
+    guard = conHyperplane([zeros(1,length(trans{1,comb(i,1)}.guard.a)),...
+        trans{2,comb(i,2)}.guard.a],1);
 
     % reset function
     reset = struct('A',eye(5),'c',...

@@ -15,7 +15,7 @@ function res = test_polytope_isemptyobject
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       03-June-2022
@@ -25,10 +25,6 @@ function res = test_polytope_isemptyobject
 % ------------------------------ BEGIN CODE -------------------------------
 
 res = true(0);
-
-% fully empty object
-P = polytope();
-res(end+1,1) = isemptyobject(P);
 
 % 2D, only inequalities
 A = [-1 0; 2 4; 1 -2]; b = [-1; 14; -1];

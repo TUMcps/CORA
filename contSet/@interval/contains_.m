@@ -40,6 +40,12 @@ function res = contains_(I,S,type,tol,varargin)
 % init result
 res = false;
 
+% set in empty set
+if representsa_(I,'emptySet',0)
+    res = representsa_(S,'emptySet',0);
+    return
+end
+
 % point in interval containment
 if isnumeric(S)
     

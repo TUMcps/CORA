@@ -27,7 +27,7 @@ function res = testLong_polyZonotope_polyZonotope
 tol = 1e-12;
 
 % empty zonotope
-pZ = polyZonotope();
+pZ = polyZonotope.empty(1);
 res_empty = representsa(pZ,'emptySet');
 
 res_rand = true;

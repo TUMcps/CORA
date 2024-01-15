@@ -102,7 +102,11 @@ switch type
         res = false;
 
     case 'zonotope'
-        res = false;
+        % only empty case can also be represented by a zonotope
+        res = representsa_(polytope(hs),'emptySet',tol);
+        if nargout == 2 && res
+            S = zonotope.empty(dim(hs));
+        end
 
     case 'hyperplane'
         res = false;
@@ -111,7 +115,10 @@ switch type
         res = false;
 
     case 'emptySet'
-        res = false;
+        res = representsa_(polytope(hs),'emptySet',tol);
+        if nargout == 2 && res
+            S = emptySet(dim(hs));
+        end
 
     case 'fullspace'
         res = false;
