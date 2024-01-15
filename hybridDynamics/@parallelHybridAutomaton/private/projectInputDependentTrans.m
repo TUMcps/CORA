@@ -181,7 +181,8 @@ function resetStruct = aux_projectLinearReset(pHA,resetStruct,compIndex,locID,id
                 end
                 if ~isempty(globalInputIndices)
                     Bproj(stateBinds{compIndex},globalInputIndices) = ...
-                        Bproj(stateBinds{compIndex},globalInputIndices) + BD_i;
+                        Bproj(stateBinds{compIndex},globalInputIndices) ...
+                        + BD_i(:,globalInputIndices);
                 end
                 cProj(stateBinds{compIndex}) = cProj(stateBinds{compIndex}) + Bk_i;
 

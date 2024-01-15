@@ -65,7 +65,7 @@ resvec(end+1) = isempty(McPZ.G);
 resvec(end+1) = isempty(McPZ.GI);
 
 % test empty case
-resvec(end+1) = isemptyobject([] * conPolyZono());
+resvec(end+1) = isemptyobject([] * conPolyZono.empty(1));
 
 % add results
 res = all(resvec);

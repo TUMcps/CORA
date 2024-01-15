@@ -27,16 +27,24 @@ function res = test_polytope_isBounded
 res = true(0);
 
 % 1D, unbounded
-P = polytope(1,1);
+A = 1; b = 1;
+P = polytope(A,b);
 res(end+1,1) = ~isBounded(P) && ~isempty(P.bounded.val) && ~P.bounded.val;
 
 % 1D, bounded
-P = polytope([1;-1],[1;1]);
+A = [1;-1]; b = [1;1];
+P = polytope(A,b);
 res(end+1,1) = isBounded(P) && ~isempty(P.bounded.val) && P.bounded.val;
 
 % 1D, single point
-P = polytope([],[],5,2);
+Ae = 5; be = 2;
+P = polytope([],[],Ae,be);
 res(end+1,1) = isBounded(P) && ~isempty(P.bounded.val) && P.bounded.val;
+
+% 1D, fully empty
+A = zeros(0,1); b = zeros(0,0);
+P = polytope(A,b);
+res(end+1,1) = ~isBounded(P) && ~isempty(P.bounded.val) && ~P.bounded.val;
 
 
 % 2D, unbounded, only equality constraints (axis-aligned)
@@ -70,15 +78,13 @@ P = polytope(A,b);
 res(end+1,1) = ~isBounded(P) && ~isempty(P.bounded.val) && ~P.bounded.val;
 
 % 2D, bounded, degenerate using equality constraint
-A = [0 1; 0 -1]; b = [3;-1];
-Ae = [1 0]; be = -2;
+A = [0 1; 0 -1]; b = [3;-1]; Ae = [1 0]; be = -2;
 P = polytope(A,b,Ae,be);
 res(end+1,1) = isBounded(P) && ~isempty(P.bounded.val) && P.bounded.val;
 
 
 % 3D, rotated unit cube
-[M,~,~] = svd(randn(3));
-n = 3;
+n = 3; [M,~,~] = svd(randn(n));
 P = M * polytope([eye(n); -eye(n)],ones(2*n,1));
 res(end+1,1) = isBounded(P) && ~isempty(P.bounded.val) && P.bounded.val;
 
@@ -116,10 +122,10 @@ res(end+1,1) = ~isempty(P.bounded.val) && ~P.bounded.val;
 P = normalizeConstraints(P);
 res(end+1,1) = ~isempty(P.bounded.val) && ~P.bounded.val;
 
-% Applying linear map results to polytope with unknown properties
+% linear map with invertible matrix keeps properties
 A = [2 1; -1 0];
 P = A*P;
-res(end+1,1)= isempty(P.bounded.val);
+res(end+1,1) = ~isempty(P.bounded.val) && ~P.bounded.val;
 
 % Intersect with bounded set again and lift to higher dim
 % -> not bounded anymore

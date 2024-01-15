@@ -24,9 +24,10 @@ function res = test_zonoBundle_vertices
 % ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
-zB = zonoBundle();
+n = 2;
+zB = zonoBundle.empty(n);
 V = vertices(zB);
-res = isnumeric(V) && isempty(V);
+res = isnumeric(V) && isempty(V) && size(V,1) == n;
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);

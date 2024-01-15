@@ -35,43 +35,45 @@ function display(cPZ)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isemptyobject(cPZ)
-    
-    dispEmptyObj(cPZ,inputname(1));
-
-else
-
-    fprintf(newline);
-    disp(inputname(1) + " =");
-    fprintf(newline);
-    
-    % display center
-    disp('c: ');
-    disp(cPZ.c);
-    
-    % display generators
-    displayGenerators(cPZ.G,DISPLAYDIM_MAX,'G');
-    
-    % display exponential matrix
-    displayGenerators(cPZ.E,DISPLAYDIM_MAX,'E');
-    
-    % display constraint offset
-    disp('b:');
-    disp(cPZ.b);
-    
-    % display constraint generators
-    displayGenerators(cPZ.A,DISPLAYDIM_MAX,'A');
-    
-    % display constraint exponential matrix
-    displayGenerators(cPZ.EC,DISPLAYDIM_MAX,'EC');
-    
-    % display independent generators
-    displayGenerators(cPZ.GI,DISPLAYDIM_MAX,'GI');
-    
-    % display id
-    disp('id:');
-    displayIds(cPZ.id,'id');
-
+% special cases
+if representsa_(cPZ,'emptySet',0)
+    dispEmptySet(cPZ,inputname(1));
+    return
+elseif representsa_(cPZ,'fullspace',0)
+    dispRn(cPZ,inputname(1));
+    return
 end
+
+
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
+
+% display center
+disp('c: ');
+disp(cPZ.c);
+
+% display generators
+displayGenerators(cPZ.G,DISPLAYDIM_MAX,'G');
+
+% display exponential matrix
+displayGenerators(cPZ.E,DISPLAYDIM_MAX,'E');
+
+% display constraint offset
+disp('b:');
+disp(cPZ.b);
+
+% display constraint generators
+displayGenerators(cPZ.A,DISPLAYDIM_MAX,'A');
+
+% display constraint exponential matrix
+displayGenerators(cPZ.EC,DISPLAYDIM_MAX,'EC');
+
+% display independent generators
+displayGenerators(cPZ.GI,DISPLAYDIM_MAX,'GI');
+
+% display id
+disp('id:');
+displayIds(cPZ.id,'id');
 
 % ------------------------------ END OF CODE ------------------------------

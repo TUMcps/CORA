@@ -1,6 +1,6 @@
 function P_out = minkDiff(P,S,varargin)
 % minkDiff - compute the Minkowski difference of two polytopes:
-%         P1 - P2 = P <-> P + P2 \subseteq P1
+%         P - S = P_out <-> P_out + S \subseteq P
 %
 % Syntax:
 %    P_out = minkDiff(P,S)
@@ -62,15 +62,24 @@ end
 % check dimensions
 equalDimCheck(P,S);
 
+% read out dimension
+n = dim(P);
+
+% fullspace minuend
+if representsa_(P,'fullspace',0)
+    P_out = polytope.Inf(n);
+    return
+end
+
 % 1D case for polytopes
-if dim(P) == 1 && isa(S,'polytope')
+if n == 1 && isa(S,'polytope')
     P_out = aux_minkDiff_1D(P,S);
     return
 end
- 
 
 % exact computation
 if strcmp(type,'exact')
+    % only requires support function evaluation of subtrahend
 
     % scale each halfspace of the polytope
     A = P.A; b = P.b;
@@ -82,13 +91,13 @@ if strcmp(type,'exact')
         if isinf(l)
             % subtrahend is unbounded in a direction where the minued is
             % bounded -> result is empty
-            P_out = polytope(); return
+            P_out = polytope.empty(n); return
         end
         b(i) = b(i) - l;
     end
     
     % init resulting polytope
-    P_out = polytope(A,b,Ae,be);  
+    P_out = polytope(A,b,Ae,be);
 
 elseif strcmp(type,'exact:vertices')
     if isa(S,'zonotope') || isa(S,'interval')
@@ -119,6 +128,9 @@ elseif strcmp(type,'exact:vertices')
             P_out = and_(P_out, P + (-V(:,i)),'exact'); 
         end
      
+    else
+
+        throw(CORAerror('CORA:noops',P,S));
     end
 end
 
@@ -160,25 +172,25 @@ function P_out = aux_minkDiff_1D(P,S)
     % - empty set
     % - one equality constraint
     P_ = compact_(P,'all',1e-9);
-    % if the minuend is empty, minkDiff(P1,S) = empty set
-    if isemptyobject(P_)
-        P_out = polytope(); return
+    % if the minuend is fullspace, minkDiff(P1,S) = fullspace
+    if representsa_(P_,'fullspace',0)
+        P_out = polytope.Inf(n); return
     end
 
-    S = compact(S);
+    S_ = compact(S);
     % if the subtrahend is empty, minkDiff(P1,S) = R^n
-    if isemptyobject(S)
+    if representsa_(S_,'emptySet',1e-10)
         P_out = fullspace(n); return
     end
 
-    if ~isempty(P_.Ae) || ~isempty(S.Ae)
+    if ~isempty(P_.Ae) || ~isempty(S_.Ae)
         % currently not supported -> fix
         throw(CORAerror('CORA:notSupported',...
             'minkDiff for equality constraints currently not supported.'));
     end
 
     % both A matrices are normalized in minHRep (only 1D)
-    P_out = polytope([1;-1], P_.b - S.b);
+    P_out = polytope(P_.A, P_.b - S_.b);
 
 end
 

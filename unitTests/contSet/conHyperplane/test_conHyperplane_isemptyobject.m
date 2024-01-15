@@ -23,16 +23,24 @@ function res = test_conHyperplane_isemptyobject
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% instantiate constrained hyperplanes
-hyp1 = conHyperplane();
+res = true(0);
 
-a = [3; 2; -1];
-b = 0.5;
-C = [0 0 0];
-d = 1;
-hyp2 = conHyperplane(a,b,C,d);
+% empty set instantiation
+hyp = conHyperplane.empty(2);
+res(end+1,1) = ~isemptyobject(hyp);
 
-% check results
-res = isemptyobject(hyp1) && ~isemptyobject(hyp2);
+% without constraints
+a = [2 1]; b = 1;
+hyp = conHyperplane(a,b);
+res(end+1,1) = ~isemptyobject(hyp);
+
+% with constraints
+a = [3 2 -1]; b = 0.5;
+C = [0 0 0]; d = 1;
+hyp = conHyperplane(a,b,C,d);
+res(end+1,1) = ~isemptyobject(hyp);
+
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

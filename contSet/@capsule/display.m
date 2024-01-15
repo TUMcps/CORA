@@ -28,32 +28,33 @@ function display(C)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isemptyobject(C)
-    
-    dispEmptyObj(C,inputname(1));
-    
-else
-
-    fprintf(newline);
-    disp(inputname(1) + " =");
-    fprintf(newline);
-    
-    % display dimension
-    display@contSet(C);
-    fprintf(newline);
-
-    % display center
-    disp('center: ');
-    disp(C.c);
-
-    % display generator
-    disp('generator: ');
-    disp(C.g); 
-
-    % display radius
-    disp('radius: ');
-    disp(C.r);
-
+% special cases
+if representsa(C,'emptySet')
+    dispEmptySet(C,inputname(1));
+    return
+elseif representsa(C,'fullspace')
+    dispRn(C,inputname(1));
+    return
 end
+
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
+
+% display dimension
+display@contSet(C);
+fprintf(newline);
+
+% display center
+disp('center: ');
+disp(C.c);
+
+% display generator
+disp('generator: ');
+disp(C.g); 
+
+% display radius
+disp('radius: ');
+disp(C.r);
 
 % ------------------------------ END OF CODE ------------------------------

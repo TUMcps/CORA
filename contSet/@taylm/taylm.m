@@ -2,7 +2,6 @@ classdef (InferiorClasses = {?interval}) taylm
 % taylm (Taylor model) class.
 %
 % Syntax:
-%    obj = taylm()
 %    obj = taylm(int)
 %    obj = taylm(int,max_order,names,opt_method,eps,tolerance)
 %    obj = taylm(func,int)
@@ -109,6 +108,11 @@ end
 methods
     % class constructor
     function obj = taylm(varargin)
+
+        % 0. avoid empty instantiation
+%         if nargin == 0
+%             throw(CORAerror('CORA:noInputInSetConstructor'));
+%         end
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'taylm')

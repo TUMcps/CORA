@@ -1,12 +1,12 @@
-function res = le(P1,P2)
-% le - checks if P1 is <= to P2
+function res = le(P,S)
+% le - overloads '<=' operator, checks if P is contained in S
 %
 % Syntax:
 %    le(P1,P2)
 %
 % Inputs:
-%    P1 - polytope object
-%    P2 - polytope object
+%    P - polytope object
+%    S - contSet object
 %
 % Outputs:
 %    P - polytope object
@@ -30,6 +30,6 @@ function res = le(P1,P2)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = contains_(P2,P1,'exact');
+res = contains_(S,P,'exact');
 
 % ------------------------------ END OF CODE ------------------------------

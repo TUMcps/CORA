@@ -63,32 +63,38 @@ R = reach(vanderPol, params, options);
 % obtain array of enclosing polytopes of last reachable set
 Rfin = query(R,'finalSet');
 Premain = polytope(Rfin{1});
-
 for i = 2:length(Rfin)
     Premain = Premain | polytope(Rfin{i});
 end
 
-% remove previous reachable sets
-iStep = 1;
-t = 0;
-
-while ~isempty(Premain) && t < 0.4
-    for iSet = 1:length(R(iStep).timeInterval.set)
-        Preach = polytope(R(iStep).timeInterval.set{iSet});
-        Premain = Premain \ Preach;
-        t = R(iStep).timePoint.time{iSet};
-        if t > 0.4
-           break; 
-        end
-    end
-    iStep = iStep + 1;
+% check containment in hull of first couple of time-interval solutions
+P_hull = polytope(params.R0);
+for s=1:6
+    P_hull = P_hull | polytope(R(1).timeInterval.set{s});
 end
+res = contains(P_hull,Premain);
 
-% obtain result
-if representsa(Premain,'emptySet')
-    res = true;
-else
-    res = false;
-end
+
+% fix polytope/mldivide for test below...
+% % remove previous reachable sets
+% iStep = 1; t = 0;
+% while ~isempty(Premain) && t < 0.4
+%     for iSet = 1:length(R(iStep).timeInterval.set)
+%         Preach = polytope(R(iStep).timeInterval.set{iSet});
+%         Premain = Premain \ Preach;
+%         t = R(iStep).timePoint.time{iSet};
+%         if t > 0.4
+%            break; 
+%         end
+%     end
+%     iStep = iStep + 1;
+% end
+% 
+% % obtain result
+% if representsa(Premain,'emptySet')
+%     res = true;
+% else
+%     res = false;
+% end
 
 % ------------------------------ END OF CODE ------------------------------

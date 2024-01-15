@@ -1,18 +1,14 @@
-function res = isempty(O)
-% isempty - checks if an emptySet object is the empty set (always true)
+function res = test_conZonotope_empty
+% test_conZonotope_empty - unit test function of empty
 %
 % Syntax:
-%    res = isempty(O)
+%    res = test_conZonotope_empty
 %
 % Inputs:
-%    O - emptySet object
+%    -
 %
 % Outputs:
 %    res - true/false
-%
-% Example: 
-%    O = emptySet(2);
-%    res = isempty(O);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -21,12 +17,20 @@ function res = isempty(O)
 % See also: none
 
 % Authors:       Mark Wetzlinger
-% Written:       22-March-2023
+% Written:       09-January-2023
 % Last update:   ---
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
+res = true(0);
+
+% empty case
+cZ = conZonotope.empty(3);
+res(end+1,1) = dim(cZ) == 3;
+res(end+1,1) = representsa(cZ,'emptySet');
+
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

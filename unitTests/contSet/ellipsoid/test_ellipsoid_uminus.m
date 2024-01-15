@@ -36,7 +36,7 @@ nE = -E;
 resvec(end+1) = isequal(nE, -1*E);
 
 % test empty case
-resvec(end+1) = isemptyobject(-ellipsoid());
+resvec(end+1) = isemptyobject(-ellipsoid.empty(2));
 
 % add results
 res = all(resvec);

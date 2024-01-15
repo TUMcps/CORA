@@ -19,7 +19,7 @@ function I = interval(zB)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       10-November-2010
@@ -29,7 +29,7 @@ function I = interval(zB)
 % ------------------------------ BEGIN CODE -------------------------------
 
 if zB.parallelSets == 0
-    I = interval(); return
+    I = interval.empty(dim(zB)); return
 end
 
 % enclose all zonotopes by an interval

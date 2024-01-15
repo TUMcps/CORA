@@ -33,9 +33,7 @@ I = varargin{1};
 %if object is not an interval
 if ~isa(I,'interval')
     tmp = I;
-    I = interval();
-    I.inf = tmp;
-    I.sup = tmp;
+    I = interval(tmp,tmp);
 end
 
 for i = 2:nargin

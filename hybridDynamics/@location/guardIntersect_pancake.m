@@ -45,10 +45,10 @@ function R = guardIntersect_pancake(loc,R0,guard,guardID,options)
     % convert hyperplane to a halfspace that represents the outside of the
     % invariant set
     c = center(R0);
-    hs = halfspace(guard.h.c,guard.h.d);
+    hs = halfspace(guard.a',guard.b);
 
     if contains_(hs,c)
-        hs = halfspace(-guard.h.c,-guard.h.d);
+        hs = halfspace(-guard.a',-guard.b);
     end
 
     % set default options for nonlinear system reachability analysis

@@ -37,7 +37,7 @@ pzB = +zB;
 resvec(end+1) = isequal(pzB, zB);
 
 % test empty case
-resvec(end+1) = isemptyobject(+zonoBundle());
+resvec(end+1) = isemptyobject(+zonoBundle.empty(2));
 
 % add results
 res = all(resvec);

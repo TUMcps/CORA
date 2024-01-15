@@ -26,9 +26,10 @@ function res = test_ellipsoid_vertices
 res = true(0);
 
 % empty case
-E = ellipsoid();
+n = 2;
+E = ellipsoid.empty(n);
 V = vertices(E);
-res(end+1,1) = isempty(V);
+res(end+1,1) = isempty(V) && isnumeric(V) && size(V,1) == n;
 
 % 1D case, just a point
 E = ellipsoid(0,1);

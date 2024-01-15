@@ -25,41 +25,34 @@ function res = test_interval_isequal
 % ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
-res = true;
+res = true(0);
 
-% instantiate interval
-lb = [-3; -9; -4; -7; -1];
-ub = [4;   2;  6;  3;  8];
-I1 = interval(lb, ub);
-ub = [4;   2;  6;  2;  8];
-I2 = interval(lb, ub);
+% bounded, different size
+I1 = interval([3;2;1],[4;5;6]);
+I2 = interval([3;2],[4;5]);
+res(end+1,1) = ~isequal(I1,I2);
 
-% check equality
-if ~isequal(I1,I1) || isequal(I1,I2)
-    res = false;
-end
+% bounded, same size
+I1 = interval([-3; -9; -4; -7; -1],[4; 2; 6; 3; 8]);
+I2 = interval([-3; -9; -4; -7; -1],[4; 2; 6; 2; 8]);
+res(end+1,1) = isequal(I1,I1);
+res(end+1,1) = ~isequal(I1,I2);
 
-% interval with Inf values
-lb = [-Inf; -9; -4; -7; -1];
-ub = [4;   2;  6;  Inf;  8];
-I1 = interval(lb, ub);
-ub = [4;   2;  Inf;  2;  8];
-I2 = interval(lb, ub);
-
-if ~isequal(I1,I1) || isequal(I1,I2)
-    res = false;
-end
+% unbounded
+I1 = interval([-Inf; -9; -4; -7; -1], [4; 2; 6; Inf; 8]);
+I2 = interval([-Inf; -9; -4; -7; -1], [4; 2; Inf; 2; 8]);
+res(end+1,1) = isequal(I1,I1);
+res(end+1,1) = ~isequal(I1,I2);
 
 % instantiate matrix interval
-lb = [-2 -3   -Inf; -4 -Inf -1];
-ub = [ 2  Inf 5;    Inf 3    0];
-I1 = interval(lb,ub);
-ub = [ 2  Inf Inf;  Inf 3    0];
-I2 = interval(lb,ub);
+I1 = interval([-2 -3 -Inf; -4 -Inf -1],[2 Inf 5; Inf 3 0]);
+I2 = interval([-2 -3 -Inf; -4 -Inf -1],[2 Inf Inf; Inf 3 0]);
 I3 = I1([1,2],[1,2]);
+res(end+1,1) = isequal(I1,I1);
+res(end+1,1) = ~isequal(I1,I2);
+res(end+1,1) = ~isequal(I1,I3);
 
-if ~isequal(I1,I1) || isequal(I1,I2) || isequal(I1,I3)
-    res = false;
-end
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

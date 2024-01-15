@@ -22,7 +22,7 @@ function res = abs(I)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       26-June-2015
@@ -33,7 +33,7 @@ function res = abs(I)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % init resulting interval object
-res = interval();
+res = I;
 
 % separate computation for scalar and matrix case for efficiency
 
@@ -51,8 +51,6 @@ if isscalar(I)
     
 % matrix case
 else
-    % obj.inf > 0 case
-    res = I;
     
     % find negative indices (if infimum is greater than zero, the absolute value has no effect)
     ind = find(I.inf < 0 & I.sup > 0);  % For [-a, +b] case

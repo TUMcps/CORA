@@ -671,9 +671,9 @@ function [str1,str2] = aux_conHyperplaneString(set)
 % generates the string that constructs the conHyperplane object
 
     % hyperplane equation c*x = d
-    c = printMatrixConverter(set.h.c);
+    c = printMatrixConverter(set.a');
     cStr = "c = " + c + ";" + newline;
-    dStr = "d = " + num2str(set.h.d) + ";";
+    dStr = "d = " + num2str(set.b) + ";";
     
     % inequality constraints C*x <= D
     if ~isempty(set.C)

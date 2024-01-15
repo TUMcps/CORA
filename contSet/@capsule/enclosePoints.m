@@ -37,7 +37,7 @@ function C = enclosePoints(points)
 
 % special handling if no or only one point given
 if nrPoints == 0
-    C = capsule();
+    C = capsule.empty(n);
     return
 elseif nrPoints == 1
     C = capsule(points,zeros(n,1),0);

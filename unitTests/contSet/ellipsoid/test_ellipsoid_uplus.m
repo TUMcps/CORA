@@ -36,7 +36,7 @@ pE = +E;
 resvec(end+1) = isequal(pE, E);
 
 % test empty case
-resvec(end+1) = isemptyobject(+ellipsoid());
+resvec(end+1) = isemptyobject(+ellipsoid.empty(2));
 
 % add results
 res = all(resvec);

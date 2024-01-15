@@ -14,8 +14,6 @@ function res = isemptyobject(C)
 % Example: 
 %    C = capsule([1;-1],[0;1],1);
 %    isemptyobject(C); % false
-%    C = capsule();
-%    isemptyobject(C); % true
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -47,7 +45,7 @@ function res = aux_checkIfEmpty(C)
 
     res = isnumeric(C.c) && isempty(C.c) ...
         && isnumeric(C.g) && isempty(C.g) ...
-        && isnumeric(C.r) && isscalar(C.r) && C.r == 0;
+        && isnumeric(C.r) && isempty(C.r);
 
 end
 

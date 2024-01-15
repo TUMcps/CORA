@@ -30,13 +30,27 @@ function pZ = polyZonotope(P)
 
 % Authors:       Niklas Kochdumper
 % Written:       26-October-2018
-% Last update:   ---
+% Last update:   03-January-2024 (MW, handle unbounded case)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+if representsa_(P,'fullspace',0)
+    % conversion of fullspace object not possible
+    throw(CORAerror('CORA:specialError',['Polytope is unbounded and '...
+        'can therefore not be converted into a polynomial zonotope.']));
+end
+
 % compute polytope vertices
-V = vertices(P);
+try
+    V = vertices(P);
+catch ME
+    if ~isempty(P.bounded.val) && ~P.bounded.val
+         throw(CORAerror('CORA:specialError',['Polytope is unbounded and '...
+            'can therefore not be converted into a polynomial zonotope.']));
+    end
+    rethrow(ME);
+end
 
 % distinguish between 2D and multi-dimensional case
 if size(P.A,2) == 2
@@ -45,13 +59,21 @@ if size(P.A,2) == 2
         ind = convhull(V(1,:),V(2,:));
         V = V(:,ind);
     end
+    % number of vertices
+    numV = size(V,2);
+
+    % single point
+    if numV == 1
+        pZ = polyZonotope(V);
+        return
+    end
     
     % loop over all polytope faces
     pZface = cell(ceil(size(V,2)/2),1);
     counter = 1;
     i = 1;
     
-    while i < size(V,2)
+    while i < numV
         
         % construct polynomial zonotope from the facet
         c = 0.5*(V(:,i) + V(:,i+1));

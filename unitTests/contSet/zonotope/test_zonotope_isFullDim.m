@@ -23,20 +23,23 @@ function res = test_zonotope_isFullDim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+res = true(0);
+
 % empty case
-Z = zonotope();
-res(1) = ~isFullDim(Z);
+Z = zonotope.empty(2);
+res(end+1,1) = ~isFullDim(Z);
 
 % full-rank matrix
 c = [0; 0];
 G = [1 2; 2 1];
 Z = zonotope(c,G);
-res(2) = isFullDim(Z);
+res(end+1,1) = isFullDim(Z);
 
 % degenerate zonotope
 G = [1 0; 0 0];
 Z = zonotope(c,G);
-res(3) = ~isFullDim(Z);
+res(end+1,1) = ~isFullDim(Z);
+
 
 % combine results
 res = all(res);

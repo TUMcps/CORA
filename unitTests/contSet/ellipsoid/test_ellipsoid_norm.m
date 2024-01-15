@@ -26,7 +26,7 @@ function res = test_ellipsoid_norm
 load cases.mat E_c
 
 % empty set
-res = norm(ellipsoid()) == -Inf;
+res = norm(ellipsoid.empty(2)) == -Inf;
 
 % loop over cases
 for i=1:length(E_c)

@@ -26,7 +26,8 @@ function res = test_capsule_display
 res = true;
 
 % empty capsule
-C = capsule()
+n = 2;
+C = capsule.empty(n)
 
 % set center, generator, and radius
 c = [2; 0];

@@ -35,11 +35,11 @@ resvec(end+1) = dim(hyp) == 3;
 
 % normal vector given
 hyp = conHyperplane.generateRandom('NormalVector',[1; 2]);
-resvec(end+1) = all(hyp.h.c == [1; 2]);
+resvec(end+1) = all(hyp.a == [1 2]);
 
 % offset given
 hyp = conHyperplane.generateRandom('Offset',3);
-resvec(end+1) = all(hyp.h.d == 3);
+resvec(end+1) = all(hyp.b == 3);
 
 % unify results
 res = all(resvec);

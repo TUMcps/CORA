@@ -52,16 +52,15 @@ catch ME
         rethrow(ME);
     end
 
+    % check whether different dimension of ambient space
+    equalDimCheck(hs,summand);
+
     % check for empty sets
     if representsa_(hs,'emptySet',eps)
         return
-    elseif (isnumeric(summand) && isempty(summand)) ...
-            || (isa(summand,'contSet') && isemptyobject(summand))
-        hs = halfspace(); return
+    elseif representsa_(summand,'emptySet',eps)
+        hs = halfspace.empty(dim(hs)); return
     end
-
-    % check whether different dimension of ambient space
-    equalDimCheck(hs,summand);
 
     % other error...
     rethrow(ME);

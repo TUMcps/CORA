@@ -23,10 +23,13 @@ function res = test_ellipsoid_radius
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% empty case: dim = 0
 res = true;
-E = ellipsoid();
-if rank(E) ~= 0
+
+% empty case
+n = 2;
+E = ellipsoid.empty(n);
+r = radius(E);
+if ~isempty(r) || ~isnumeric(r) || size(r,1) ~= n
     res = false;
 end
 

@@ -14,7 +14,7 @@ function res = test_matZonotope_matZonotope
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       03-April-2023
@@ -23,9 +23,7 @@ function res = test_matZonotope_matZonotope
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% empty matrix zonotope
-matZ = matZonotope();
-res = isempty(matZ);
+res = true(0);
 
 % only center
 C = 0;
@@ -56,7 +54,7 @@ res(end+1,1) = all(all(withinTol(matZ.center,C))) && ...
 matZ_ = matZonotope(matZ);
 
 % conversion from zonotope: empty, only center, one/multiple generator(s)
-Z = zonotope();
+Z = zonotope.empty(2);
 matZ = matZonotope(Z);
 Z = zonotope([1;2;1]);
 matZ = matZonotope(Z);

@@ -27,7 +27,8 @@ res = true;
 load cases.mat E_c
 
 % empty set
-if ~isequal(or(E_c{1}.E1,ellipsoid()),E_c{1}.E1)
+E_empty = ellipsoid.empty(2);
+if ~isequal(or(E_c{1}.E1,E_empty),E_c{1}.E1)
     res = false;
 end
 

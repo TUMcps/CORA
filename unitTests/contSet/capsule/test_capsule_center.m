@@ -14,7 +14,7 @@ function res = test_capsule_center
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       27-July-2021
@@ -23,24 +23,22 @@ function res = test_capsule_center
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
+res = true(0);
 
-% empty capsule
-C_empty = capsule();
-if ~isempty(center(C_empty))
-    res = false;
-end
-    
-% init capsule
-c_true = [2; 0; -1];
-C = capsule(c_true, [1; -1; 2], 0.5);
-
-% read center
+% 2D empty capsule
+n = 2;
+C = capsule.empty(n);
 c = center(C);
+res(end+1,1) = isempty(c) && all(size(c) == [2, 0]);
+    
+% 3D capsule
+c_true = [2; 0; -1]; g = [1; -1; 2]; r = 0.5;
+C = capsule(c_true,g,r);
+c = center(C);
+res(end+1,1) = all(withinTol(c,c_true));
 
-% check result
-if ~withinTol(c,c_true)
-    res = false;
-end
+
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -33,50 +33,75 @@ function res = test_polytope_and
 % 1D (convertible to intervals) -------------------------------------------
 
 % empty intersection
-% P1 ... x <= 2, x >= 1
-P1 = polytope([1; -1],[2;-1]);
-% P2 ... x <= 5, x >= 4
-P2 = polytope([1;-1],[5; -4]);
+A = [1;-1]; b = [2;-1];
+P1 = polytope(A,b);
+A = [1;-1]; b = [5; -4];
+P2 = polytope(A,b);
 % compute intersection and check emptiness
-P_ = P1 & P2;
-res = representsa(P_,'emptySet');
+P_and = P1 & P2;
+res = representsa(P_and,'emptySet');
 
 
 % intersection at only one point
-% P1 ... x <= 2, x >= 1
-P1 = polytope([1; -1],[2;-1]);
-% P2 ... x <= 3, x >= 2
-P2 = polytope([1;-1],[3;-2]);
+A = [1;-1]; b = [2;-1];
+P1 = polytope(A,b);
+A = [1;-1]; b = [3;-2];
+P2 = polytope(A,b);
 % check boundedness for property test (should be true)
 isBounded(P1);
 isBounded(P2);
-% compute intersection, compare to true result (by hand) and check
-% boundedness
-P_ = P1 & P2;
-Ptrue = polytope([1;-1], [2;-2]);
-res(end+1,1) = (P_ == Ptrue) && ~isempty(P_.bounded.val) && P_.bounded.val;
+% compute intersection, compare to true result and check boundedness
+P_and = P1 & P2;
+Ae_true = 1; be_true = 2;
+P_true = polytope([],[],Ae_true,be_true);
+res(end+1,1) = (P_and == P_true) && ~isempty(P_and.bounded.val) && P_and.bounded.val;
+
+% intersection with polytope without constraints
+A = [1; -1]; b = [2; -1];
+P1 = polytope(A,b);
+A = zeros(0,1); b = zeros(0,0);
+P2 = polytope(A,b);
+P_and = P1 & P2;
+res(end+1,1) = P_and == P1;
 
 
 % intersection is a full-dimensional polytope
-% P1 ... x <= 3, x >= 1
-P1 = polytope([1;-1], [3;-1]);
-% P2 ... x <= 4, x >= 2
-P2 = polytope([1;-1], [4;-2]);
+A = [1;-1]; b = [3;-1];
+P1 = polytope(A,b);
+A = [1;-1]; b = [4;-2];
+P2 = polytope(A,b);
 % compute intersection and compare to true result
-P_ = P1 & P2;
-Ptrue = polytope([1;-1],[3;-2]);
-res(end+1,1) = P_ == Ptrue;
+P_and = P1 & P2;
+A_true = [1;-1]; b_true = [3;-2];
+P_true = polytope(A_true,b_true);
+res(end+1,1) = P_and == P_true;
 
 % emptiness property test
-% P1 ... x <= 2, x >= 3 (empty)
-P1 = polytope([1; -1],[2;-3]);
-% P2 ... x <= 3, x >= 2
-P2 = polytope([1;-1],[3;-2]);
+A = [1;-1]; b = [2;-3];
+P1 = polytope(A,b);
+A = [1;-1]; b = [3;-2];
+P2 = polytope(A,b);
 % determine emptiness of P1
 representsa(P1,"emptySet");
 % compute intersection and check emptiness
-P_ = P1 & P2;
-res(end+1,1) = ~isempty(P_.emptySet.val) && P_.emptySet.val;
+P_and = P1 & P2;
+res(end+1,1) = ~isempty(P_and.emptySet.val) && P_and.emptySet.val;
+
+% intersection with numeric (non-empty)
+A = [1; -1]; b = [2; -1];
+P = polytope(A,b);
+p = 1.5;
+P_and = P & p;
+Ae_true = 1; be_true = 1.5;
+P_true = polytope([],[],Ae_true,be_true);
+res(end+1,1) = P_and == P_true;
+
+% intersection with numeric (empty)
+A = [1; -1]; b = [2; -1];
+P = polytope(A,b);
+p = 2.5;
+P_and = P & p;
+res(end+1,1) = representsa(P_and,'emptySet') && dim(P_and) == 1;
 
 
 % 2D ----------------------------------------------------------------------
@@ -88,20 +113,15 @@ P1 = polytope(A,b);
 % determine boundedness
 isBounded(P1);
 % unbounded polytope
-P2 = polytope([-1 -1]/sqrt(2),-sqrt(2));
+A = [-1 -1]/sqrt(2); b = -sqrt(2);
+P2 = polytope(A,b);
 % compute intersection, compare to true result (by hand) and check
 % boundedness
-P_ = P1 & P2;
-Ptrue = polytope([-1/sqrt(2) -1/sqrt(2); 0 1; 1 0],[-sqrt(2); 1; 2]);
-res(end+1,1) = P_ == Ptrue && ~isempty(P_.bounded.val) && P_.bounded.val;
+P_and = P1 & P2;
+A_true = [-1/sqrt(2) -1/sqrt(2); 0 1; 1 0]; b_true = [-sqrt(2); 1; 2];
+P_true = polytope(A_true,b_true);
+res(end+1,1) = P_and == P_true && ~isempty(P_and.bounded.val) && P_and.bounded.val;
 
-% visualization for debugging
-% figure; hold on; axis([-3,3,-3,3]);
-% plot(halfspace([-1 -1]/sqrt(2),-sqrt(2)));
-% plot(P1,[1,2],'k');
-% plot(Ptrue,[1,2],'g');
-% plot(P_,[1,2],'r--');
-% close;
 
 % bounded & unbounded -> bounded
 A = [-1 1; 0 1; 1 0; -1 -2];
@@ -110,19 +130,22 @@ P1 = polytope(A,b);
 % determine boundedness
 isBounded(P1);
 % unbounded polytope
-P2 = polytope([-1 2],0);
+A = [-1 2]; b = 0;
+P2 = polytope(A,b);
 % compute intersection and compare to true result
-P_ = P1 & P2;
-Ptrue = polytope([-1 2; -1 -2; 1 0],[0; 0; 2]);
-res(end+1,1) = P_ == Ptrue;
+P_and = P1 & P2;
+A_true = [-1 2; -1 -2; 1 0]; b_true = [0; 0; 2];
+P_true = polytope(A_true,b_true);
+res(end+1,1) = P_and == P_true;
 
-% visualization for debugging
-% figure; hold on; axis([-3,3,-3,3]);
-% plot(halfspace([-1 2],0));
-% plot(P1,[1,2],'k');
-% plot(Ptrue,[1,2],'g');
-% plot(P_,[1,2],'r--');
-% close;
+
+% bounded & fullspace -> bounded
+A = [1 0; -1 1; -1 -1]; b = [1;1;1];
+P1 = polytope(A,b);
+A = zeros(0,2); b = zeros(0,0);
+P2 = polytope(A,b);
+P_and = P1 & P2;
+res(end+1,1) = P_and == P1;
 
 
 % bounded & bounded -> bounded
@@ -132,63 +155,83 @@ P1 = polytope(A,b);
 % determine boundedness
 isBounded(P1);
 % another bounded polytope
-P2 = polytope([-1/sqrt(2) -1/sqrt(2); -1 2],[-sqrt(2); 0]);
+A = [-1/sqrt(2) -1/sqrt(2); -1 2]; b = [-sqrt(2); 0];
+P2 = polytope(A,b);
 % compute intersection, compare to true result
-P_ = P1 & P2;
-Ptrue = polytope([-1/sqrt(2) -1/sqrt(2); -1 2; 1 0],[-sqrt(2); 0; 2]);
+P_and = P1 & P2;
+A_true = [-1/sqrt(2) -1/sqrt(2); -1 2; 1 0]; b_true = [-sqrt(2); 0; 2];
+P_true = polytope(A_true,b_true);
 % intersection
-res(end+1,1) = P_ == Ptrue;
+res(end+1,1) = P_and == P_true;
 
-% visualization
-% figure; hold on; axis([-3,3,-3,3]);
-% plot(halfspace([-1/sqrt(2) -1/sqrt(2)],-sqrt(2)));
-% plot(halfspace([-1 2],0),[1,2],'m');
-% plot(P1,[1,2],'k');
-% plot(Ptrue,[1,2],'g');
-% plot(P_,[1,2],'r--');
-% close;
 
 % unbounded & unbounded -> bounded
-P1 = polytope([1 1; 1 -1],[2; 2]);
-P2 = polytope([-1 1;-1 -1],[2; 2]);
-P_ = P1 & P2;
-Ptrue = polytope([1 1; 1 -1;-1 1;-1 -1], [2; 2; 2; 2]);
-res(end+1,1) = P_ == Ptrue;
+A = [1 1; 1 -1]; b = [2; 2];
+P1 = polytope(A,b);
+A = [-1 1;-1 -1]; b = [2; 2];
+P2 = polytope(A,b);
+P_and = P1 & P2;
+A_true = [1 1; 1 -1;-1 1;-1 -1]; b_true = [2; 2; 2; 2];
+P_true = polytope(A_true,b_true);
+res(end+1,1) = P_and == P_true;
 
 
 % empty & bounded -> empty
-A1 = [-1 -1; -1 1; 1 0];
-b1 = [-2; -2; -1];
-P1 = polytope(A1,b1);
-A2 = [-1 1; 0 1; 1 0; -1 -2];
-b2 = [0; 1; 2; 0];
-P2 = polytope(A2,b2);
+A = [-1 -1; -1 1; 1 0];
+b = [-2; -2; -1];
+P1 = polytope(A,b);
+A = [-1 1; 0 1; 1 0; -1 -2];
+b = [0; 1; 2; 0];
+P2 = polytope(A,b);
 % determine emptiness of P1
 representsa(P1,"emptySet");
 % compute intersection and check emptiness value
-P_ = P1 & P2;
-res(end+1,1) = ~isempty(P_.emptySet.val) && P_.emptySet.val;
+P_and = P1 & P2;
+res(end+1,1) = ~isempty(P_and.emptySet.val) && P_and.emptySet.val;
+
+
+% polytope & zonotope
+A = [1 0; -1 1; -1 -1]; b = [1;1;1];
+P = polytope(A,b);
+c = [1;2]; G = [1 1; -1 0];
+Z = zonotope(c,G);
+P_and = P & Z;
+A_true = [1 0; -1 1; -1 -1]; b_true = [1;1;-2];
+P_true = polytope(A_true,b_true);
+res(end+1,1) = P_and == P_true;
+
+% polytope & interval
+A = [1 0; -1 1; -1 -1]; b = [1;1;1];
+P = polytope(A,b);
+lb = [-1;-2]; ub = [0;0];
+I = interval(lb,ub);
+P_and = P & I;
+A_true = [0 1; 1 0; -1 -1]; b_true = [0; 0; 1];
+P_true = polytope(A_true,b_true);
+res(end+1,1) = P_and == P_true;
 
 
 % nD ----------------------------------------------------------------------
 
 % 3D: degenerate & non-degenerate
 % square in 3D
-A1 = [0 0 1; 0 0 -1; 1 1 0; -1 1 0; 1 -1 0; -1 -1 0];
-b1 = [1;-1;2;2;2;2];
-P1 = polytope(A1,b1);
+A = [0 0 1; 0 0 -1; 1 1 0; -1 1 0; 1 -1 0; -1 -1 0];
+b = [1;-1;2;2;2;2];
+P1 = polytope(A,b);
 % obtain information about degeneracy
 isFullDim(P1);
 % init non-degenerate polytope
-A2 = [0 0 1; 0 0 -1; 1 1 0; -1 1 0; 1 -1 0; -1 -1 0];
-b2 = [1;-1;3;-1;3;-1];
-P2 = polytope(A2,b2);
+A = [0 0 1; 0 0 -1; 1 1 0; -1 1 0; 1 -1 0; -1 -1 0];
+b = [1;-1;3;-1;3;-1];
+P2 = polytope(A,b);
 % compute intersection
-P_ = P1 & P2;
+P_and = P1 & P2;
 % true solution (by hand)
-Ptrue = polytope([0 0 1; 0 0 -1; 1 1 0; -1 1 0; 1 -1 0; -1 -1 0],[1; -1; 2; -1; 2; -1]);
+A_true = [0 0 1; 0 0 -1; 1 1 0; -1 1 0; 1 -1 0; -1 -1 0];
+b_true = [1; -1; 2; -1; 2; -1];
+P_true = polytope(A_true,b_true);
 % compare, also P_ should be degenerate since P1 is degenerate
-res(end+1,1) = P_ == Ptrue && ~isempty(P_.fullDim.val) && ~P_.fullDim.val;
+res(end+1,1) = P_and == P_true && ~isempty(P_and.fullDim.val) && ~P_and.fullDim.val;
 
 
 % combine result

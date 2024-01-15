@@ -23,17 +23,18 @@ function res = test_zonotope_contains
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% empty zonotope
-% Z = zonotope();
+res = true(0);
 
-res = [];
+% empty zonotope
+% Z = zonotope.empty(2);
+% res(end+1,1) = contains(Z,Z);
 
 % 2D zonotopes
 c = [0; 1]; G = [1 2; -1 0];
 Z1 = zonotope(c,G);
 c = [-1; 1.5]; G = [0.2 0; -0.1 0.1];
 Z2 = zonotope(c,G);
-res = contains(Z1,Z2);
+res(end+1,1) = contains(Z1,Z2);
 res(end+1,1) = ~contains(Z2,Z1);
 
 % inner zonotope is just a point

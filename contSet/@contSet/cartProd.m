@@ -19,7 +19,7 @@ function res = cartProd(S1,S2,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       18-August-2022
@@ -54,31 +54,13 @@ catch
                     {type,'str',{'outer','inner','exact'}}});
 end
 
-% % empty set cases (current handling not entirely mathematically correct)
-% if isemptyobject(S1)
-%     res = true;
-%     vars{1} = S2;
-%     return
-% elseif (isnumeric(S2) && isempty(S2)) || (isa(S2,'contSet') && isemptyobject(S2))
-%     res = true;
-%     vars{1} = S1;
-%     return
-% end
-
-% % Cartesian products with empty sets are not supported
-% % if isemptyobject(S1) || ...
-% %     (isnumeric(S2) && isempty(S2)) || (isa(S2,'contSet') && isemptyobject(S2))
-% %     throw(CORAerror('CORA:notSupported',...
-% %         "Cartesian products with empty sets are not supported."));
-% % end
-
 % call subclass method
 try
     res = cartProd_(S1,S2,type);
 catch ME
-    % Cartesian products with empty sets are currently not supported
-    if isemptyobject(S1) || ...
-        (isnumeric(S2) && isempty(S2)) || (isa(S2,'contSet') && isemptyobject(S2))
+    % Cartesian products with empty sets are currently not supported,
+    % because we cannot concatenate empty vectors with filled vectors
+    if representsa_(S1,'emptySet',1e-8) || representsa_(S2,'emptySet',1e-8)
         throw(CORAerror('CORA:notSupported',...
             "Cartesian products with empty sets are not supported."));
     else

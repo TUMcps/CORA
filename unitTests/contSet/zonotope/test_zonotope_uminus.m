@@ -38,7 +38,7 @@ resvec(end+1) = all([nZ.c,nZ.G] == -[c,G], 'all');
 resvec(end+1) = isequal(nZ, -1*Z);
 
 % test empty case
-resvec(end+1) = isemptyobject(-zonotope());
+resvec(end+1) = isemptyobject(-zonotope.empty(2));
 
 % add results
 res = all(resvec);

@@ -19,7 +19,7 @@ function Rerror = errorSolution(obj,options,Vdyn,Vstat)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       30-October-2007 
@@ -31,7 +31,7 @@ function Rerror = errorSolution(obj,options,Vdyn,Vstat)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargin < 4 || (isemptyobject(Vstat) || representsa_(Vstat,'emptySet',eps))
+if nargin < 4 || representsa_(Vstat,'emptySet',eps)
     errorStat = 0;
 else
     % including static error

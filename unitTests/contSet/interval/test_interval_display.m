@@ -26,7 +26,7 @@ function res = test_interval_display
 res = true;
 
 % empty interval
-I = interval()
+I = interval.empty(2)
 
 % column interval
 I = interval([-3;2;1],[4;5;6])

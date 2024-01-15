@@ -24,9 +24,10 @@ function res = test_zonoBundle_interval
 % ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
-zB = zonoBundle();
+n = 2;
+zB = zonoBundle.empty(n);
 I = interval(zB);
-res = representsa(I,'emptySet');
+res = representsa(I,'emptySet') && dim(I) == n;
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);

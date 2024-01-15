@@ -23,11 +23,12 @@ function res = test_halfspace_halfspace
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = [];
+res = true(0);
 
 % empty halfspace
-hs = halfspace();
-res(end+1,1) = representsa(hs,'emptySet');
+n = 2;
+hs = halfspace.empty(n);
+res(end+1,1) = representsa(hs,'emptySet') && dim(hs) == n;
 
 % random normal vector, offset
 c = [3; 2; -1];
@@ -41,6 +42,10 @@ res(end+1,1) = withinTol(hs.d,d);
 hs = halfspace(c',d);
 res(end+1,1) = compareMatrices(hs.c,c);
 res(end+1,1) = withinTol(hs.d,d);
+
+% combine results
+res = all(res);
+
 
 % wrong initializations
 if CHECKS_ENABLED
@@ -80,8 +85,5 @@ try
 end
 
 end
-
-% combine results
-res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

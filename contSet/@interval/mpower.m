@@ -31,8 +31,6 @@ function res = mpower(base,exponent)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = interval();
-
 %scalar case
 if isscalar(base) 
     if isscalar(exponent)

@@ -33,6 +33,11 @@ function P_out = box(P)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% fully empty object
+if representsa_(P,'fullspace',0)
+    P_out = polytope.Inf(dim(P)); return
+end
+
 % dimension
 n = dim(P);
 % check whether vertex representation is known
@@ -71,8 +76,8 @@ for i = 1:n
         P.fullDim.val = false;
         P.V.val = zeros(n,0);
         P.minVRep.val = true;
-        % init return set (set properties set in constructor)
-        P_out = polytope(zeros(0,n),[]);
+        % init return set
+        P_out = polytope.empty(n);
         return
     end
     % minimize

@@ -54,7 +54,11 @@ try
     
         % see Equation 2.1 in [1]
         Z.c = Z.c+summand.c;
-        Z.G(:,(end+1):(end+size(summand.G,2))) = summand.G;
+        if isempty(Z.c)
+            Z.G = zeros(dim(Z),0);
+        else
+            Z.G(:,(end+1):(end+size(summand.G,2))) = summand.G;
+        end
     
     elseif isnumeric(summand)
     
@@ -84,16 +88,15 @@ catch ME
         rethrow(ME);
     end
 
+    % check whether different dimension of ambient space
+    equalDimCheck(Z,summand);
+
     % check for empty sets
     if representsa_(Z,'emptySet',eps)
         return
-    elseif (isnumeric(summand) && isempty(summand)) || ...
-            (isa(summand,'contSet') && isemptyobject(summand))
-        Z = zonotope(); return
+    elseif representsa_(summand,'emptySet',1e-10)
+        Z = zonotope.empty(dim(Z)); return
     end
-
-    % check whether different dimension of ambient space
-    equalDimCheck(Z,summand);
 
     % other error...
     rethrow(ME);

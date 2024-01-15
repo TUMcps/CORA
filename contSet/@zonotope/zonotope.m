@@ -6,7 +6,6 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonotope < contSet
 %    {c + \sum_{i=1}^p beta_i * g^(i) | beta_i \in [-1,1]}.
 %
 % Syntax:
-%    obj = zonotope()
 %    obj = zonotope(c,G)
 %    obj = zonotope(Z)
 %
@@ -58,6 +57,11 @@ methods
 
     function obj = zonotope(varargin)
 
+        % 0. avoid empty instantiation
+        if nargin == 0
+            throw(CORAerror('CORA:noInputInSetConstructor'));
+        end
+
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'zonotope')
             obj = varargin{1}; return
@@ -69,7 +73,10 @@ methods
         % 3. check correctness of input arguments
         aux_checkInputArgs(c,G,nargin);
 
-        % 4. assign properties
+        % 4. compute properties
+        [c,G] = aux_computeProperties(c,G);
+
+        % 5. assign properties
         obj.c = c;
         obj.G = G;
         obj.halfspace = [];
@@ -79,6 +86,7 @@ end
 methods (Static = true)
     Z = generateRandom(varargin) % generate random zonotope
     Z = enclosePoints(points,varargin) % enclose point cloud with zonotope
+    Z = empty(n) % instantiates an empty zonotope
 end
 
 
@@ -129,14 +137,15 @@ function [c,G] = aux_parseInputArgs(varargin)
 
     % no input arguments
     if nargin == 0
-        c = []; G = [];
+        c = zeros(0,0); G = zeros(0,0);
         return
     end
 
     % set default values depending on nargin
     if nargin == 1
-        if isempty(varargin{1})
-            c = []; G = [];
+        if size(varargin{1},2) == 0
+            c = varargin{1};
+            G = [];
         else
             c = varargin{1}(:,1);
             G = varargin{1}(:,2:end);
@@ -178,6 +187,15 @@ function aux_checkInputArgs(c,G,n_in)
 
         end
         
+    end
+
+end
+
+function [c,G] = aux_computeProperties(c,G)
+
+    % if G is empty, set correct dimension
+    if isempty(G)
+        G = zeros(size(c,1),0);
     end
 
 end

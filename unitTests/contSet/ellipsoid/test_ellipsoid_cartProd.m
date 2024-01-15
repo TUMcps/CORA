@@ -28,7 +28,7 @@ load cases.mat E_c
 
 % empty set
 % try 
-%     cartProd(E_c{1}.E1,ellipsoid());
+%     cartProd(E_c{1}.E1,ellipsoid.empty(2));
 %     res = false;
 % catch ME 
 %     if ~strcmp(ME.identifier,'CORA:notSupported')

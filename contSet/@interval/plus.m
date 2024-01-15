@@ -72,8 +72,8 @@ catch ME
     % check for empty sets
     if representsa_(res,'emptySet',eps)
         return
-    elseif isemptyobject(summand)
-        res = interval(); return
+    elseif representsa_(summand,'emptySet',eps)
+        res = interval.empty(dim(res)); return
     end
 
     % check whether different dimension of ambient space

@@ -74,7 +74,7 @@ trans_3D_ = lift(trans_3D,6,[2,3,5],target_,true);
 trans_4D_ = lift(trans_4D,5,[1,2,4,5],target_,true);
 
 % true solutions
-guard_1D_ = interval([-Inf;-Inf;-1;Inf],[Inf;Inf;1;Inf]);
+guard_1D_ = interval([-Inf;-Inf;-1;-Inf],[Inf;Inf;1;Inf]);
 reset_1D_.f = @(x,u) [x(1);x(2);sin(x(3));x(4)];
 trans_1D_true = transition(guard_1D_,reset_1D_,target_);
 

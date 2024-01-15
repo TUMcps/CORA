@@ -24,9 +24,9 @@ function res = test_zonotope_polygon
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty zonotope
-Z = zonotope();
+Z = zonotope.empty(2);
 p = polygon(Z);
-res = p == [];
+res = isempty(p) && isnumeric(p) && all(size(p) == [2,0]);
 
 for i=1:2
     if i == 1

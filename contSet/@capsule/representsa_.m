@@ -43,7 +43,8 @@ n = dim(C);
 S = [];
 
 % is the capsule just a point?
-isPoint = ~isempty(C.c) && all(withinTol(C.g,0,tol)) && withinTol(C.r,0,tol);
+isPoint = ~isempty(C.c) && all(withinTol(C.g,zeros(n,1),tol)) ...
+    && withinTol(C.r,0,tol);
 
 switch type
     case 'origin'

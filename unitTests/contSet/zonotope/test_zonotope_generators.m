@@ -24,9 +24,9 @@ function res = test_zonotope_generators
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty zonotope
-Z = zonotope();
+Z = zonotope.empty(2);
 G = generators(Z);
-res = G == [];
+res = isempty(G) && isnumeric(G) && all(size(G) == [2,0]);
 
 % 2D zonotope
 c = [-2; 1];

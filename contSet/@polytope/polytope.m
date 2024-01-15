@@ -7,9 +7,10 @@ classdef polytope < contSet
 %    For convenience, equality constraints
 %      { x | A*x <= b, Ae*x == be}
 %    can be added, too.
+%    Note: A polytope without any constraints represents R^n.
+%    Note: A polytope instantiated without input arguments is the empty set.
 %
 % Syntax:
-%    P = polytope()
 %    P = polytope(V)
 %    P = polytope(A,b)
 %    P = polytope(A,b,Ae,be)
@@ -35,9 +36,11 @@ classdef polytope < contSet
 %
 
 % Authors:       Viktor Kotsev, Mark Wetzlinger, Tobias Ladner
-% Written:       25-April-2022 
+% Written:       25-April-2022
 % Last update:   01-December-2022 (MW, add CORAerrors, checks)
 %                12-June-2023 (MW, add hidden properties)
+%                08-December-2023 (MW, handle -Inf/Inf offsets)
+%                01-January-2024 (MW, different meaning of fully empty obj)
 % Last revision: 25-July-2023 (MW, restructure constructor)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -77,6 +80,11 @@ end
 
 methods
     function obj = polytope(varargin)
+
+        % 0. avoid empty instantiation
+        if nargin == 0
+            throw(CORAerror('CORA:noInputInSetConstructor'));
+        end
 
         % 0. init hidden properties
         obj.emptySet = setproperty();
@@ -133,6 +141,8 @@ end
 methods (Static = true)
     P = generateRandom(varargin) % generate random polytope
     P = enclosePoints(points,varargin) % enclose point cloud with polytope
+    P = empty(n) % instantiate empty polytope
+    P = Inf(n) % instantiate polytope representing R^n
 end
 
 end
@@ -238,8 +248,8 @@ function [A,b,Ae,be,V] = aux_computeProperties(A,b,Ae,be,V)
         V = [];
     end
 
-    % empty constraints should have correct dimension (necessary for matrix
-    % concatenation)
+    % empty constraint matrices should have correct dimension (necessary
+    % for matrix concatenation)
     if isempty(A)
         A = zeros(0,n);
     end
@@ -247,13 +257,17 @@ function [A,b,Ae,be,V] = aux_computeProperties(A,b,Ae,be,V)
         Ae = zeros(0,n);
     end
 
+    % remove inequality constraints with Inf in offset (trivially fulfilled)
+    idxRemove = isinf(b) & sign(b) == 1;
+    A(idxRemove,:) = []; b(idxRemove) = [];
+
 end
 
 function [empty,bounded,fullDim,minHRep,minVRep,V] = ...
             aux_computeHiddenProperties(A,b,Ae,be,V)
 
     % init hidden properties as unknown
-    empty = []; bounded = []; fullDim = []; minHRep = []; minVRep = [];
+    empty = []; bounded = []; fullDim = []; minHRep = []; minVRep = [];    
 
     % dimension
     n = max([size(A,2),size(Ae,2),size(V,1)]);
@@ -267,6 +281,9 @@ function [empty,bounded,fullDim,minHRep,minVRep,V] = ...
     if ~isempty(V)
         % cannot be empty
         empty = false;
+
+        % only 1 vertex -> minimal V-representation
+        minVRep = size(V,2) == 1;
 
         % check if 1D
         if n == 1
@@ -293,13 +310,29 @@ function [empty,bounded,fullDim,minHRep,minVRep,V] = ...
         end
 
     elseif isempty(A) && isempty(Ae)
-        % fully empty
-        empty = true;
-        bounded = true;
-        fullDim = false;
+        % no constraints
+        empty = false;
+        bounded = false;
+        fullDim = true;
         minHRep = true;
-        V = zeros(size(A,2),0);
-        minVRep = true;
+        % do not compute -Inf/Inf vertices here...
+        V = [];
+        minVRep = [];
+
+    else
+        % equality constraint with -Inf or Inf in offset OR inequality
+        % constraint with -Inf in offset -> empty polytope
+        if any(isinf(be)) || ( any(isinf(b) & sign(b) == -1) )
+            empty = true;
+            bounded = true;
+            fullDim = false;
+            % only a single infeasible constraint required to represent an
+            % empty set
+            minHRep = length(be) + length(b) == 1;
+            % init no vertices (which is the minimal representation)
+            V = zeros(n,1);
+            minVRep = true;
+        end
 
     end
 

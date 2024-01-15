@@ -24,9 +24,7 @@ function res = test_intervalMatrix_contains
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% empty interval matrix
-intMat = intervalMatrix();
-res = contains(intMat,[]);
+res = true(0);
 
 % instantiate interval matrix
 c = [2 3 4; 5 6 0];

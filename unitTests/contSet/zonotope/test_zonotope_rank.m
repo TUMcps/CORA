@@ -23,16 +23,18 @@ function res = test_zonotope_rank
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% create zonotope
+res = true(0);
+
+% 2D zonotope
 Z = zonotope([1, 2, 0, 4; 5, 6, 0, 0; -1, 4, 0, 8]);
+res(end+1,1) = rank(Z) == 2;
 
-% obtain zonotope without zeros
-d = rank(Z);
+% empty zonotope
+Z_empty = zonotope.empty(2);
+res(end+1,1) = rank(Z_empty) == 0;
 
-% true result
-true_val = 2;
 
-% check result
-res = withinTol(d,true_val) && rank(zonotope()) == 0;
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

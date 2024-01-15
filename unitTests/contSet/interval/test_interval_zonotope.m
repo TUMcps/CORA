@@ -1,5 +1,5 @@
 function res = test_interval_zonotope
-% test_interval_zonotope - unit test function of zonotope
+% test_interval_zonotope - unit test function of zonotope conversion
 %
 % Syntax:
 %    res = test_interval_zonotope
@@ -14,59 +14,38 @@ function res = test_interval_zonotope
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       28-August-2019
-% Last update:   ---
+% Last update:   04-December-2023 (MW, add empty and unbounded cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% TEST 1: Analytical ------------------------------------------------------
-% create interval
-lowerLimits = [-2; -5];
-upperLimits = [3; 1];
-I = interval(lowerLimits, upperLimits);
-
-% convert to zonotope
-Z = zonotope(I);
-
-% true zonotope
-cent = [0.5; -2];
-gens = [2.5 0.0;
-        0.0 3.0];
-Z_true = zonotope([cent, gens]);
-
-% compare results
+res = true(0);
 tol = 1e-9;
-res_analytical = all(abs(center(Z) - center(Z_true)) < tol) && ...
-    all(all(abs(generators(Z) - generators(Z_true)) < tol));
 
-% -------------------------------------------------------------------------
+% empty interval
+I = interval.empty(2);
+Z = zonotope(I);
+res(end+1,1) = representsa(Z,'emptySet') && dim(Z) == 2;
 
-% TEST 2: random ----------------------------------------------------------
-% create random interval
-dim = floor(2 + 8*rand(1));
-lowerLimits = -3+3*rand(dim,1);
-upperLimits = 3*rand(dim,1);
-Irand = interval(lowerLimits, upperLimits);
+% bounded interval
+I = interval([-2;-5],[3;1]);
+Z = zonotope(I);
+c_true = [0.5;-2]; G_true = [2.5 0; 0 3];
+res(end+1,1) = all(withinTol(center(Z),c_true,tol));
+res(end+1,1) = compareMatrices(generators(Z),G_true,tol);
 
-% convert to zonotope
-Zrand = zonotope(Irand);
+% unbounded interval
+I = interval([-Inf;-2],[4;2]);
+try
+    zonotope(I);
+    res = false;
+end
 
-% true zonotope
-centrand_true = center(Irand);
-gensrand_true = diag(rad(Irand));
-Zrand_true = zonotope([centrand_true, gensrand_true]);
-
-% compare results
-res_rand = all(abs(center(Zrand) - center(Zrand_true)) < tol) && ...
-    all(all(abs(generators(Zrand) - generators(Zrand_true)) < tol));
-% -------------------------------------------------------------------------
-
-
-% add results
-res = res_analytical && res_rand;
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

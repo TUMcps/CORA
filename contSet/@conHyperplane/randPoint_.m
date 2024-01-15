@@ -46,9 +46,9 @@ if ~(isempty(hyp.C) && all(hyp.d==0))
         'Only implemented for hyperplanes without constraints.'));
 end
 
-% get properties (a'*x=b)
-a = hyp.h.c;
-b = hyp.h.d;
+% get properties (a*x=b)
+a = hyp.a';
+b = hyp.b;
 n = length(a);
 
 % normalization

@@ -14,7 +14,7 @@ function res = test_zonotope_isemptyobject
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       03-June-2022
@@ -24,7 +24,7 @@ function res = test_zonotope_isemptyobject
 % ------------------------------ BEGIN CODE -------------------------------
 
 % instantiate zonotopes
-Z1 = zonotope();
+Z1 = zonotope.empty(2);
 Z2 = zonotope([1;1]);
 Z3 = zonotope([1;1],[1 3 -2; 2 -4 2]);
 

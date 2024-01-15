@@ -24,7 +24,7 @@ function res = test_polyZonotope_supportFunc
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
+res = true(0);
 
 % TEST 1
 
@@ -42,16 +42,12 @@ I = interval(pZ,'bnb');
 I_ = interval([0;1],[6;7]);
 
 % check for correctness
-if ~isequal(I,I_)
-    res = false; return
-end
+res(end+1,1) = isequal(I,I_);
 
 % test empty set
-pZ_e = polyZonotope();
-if supportFunc(pZ_e,[1;1],'upper') ~= -Inf ...
-        || supportFunc(pZ_e,[1;1],'lower') ~= +Inf
-    res = false; return
-end
+pZ_e = polyZonotope.empty(2);
+res(end+1,1) = supportFunc(pZ_e,[1;1],'upper') == -Inf ...
+        && supportFunc(pZ_e,[1;1],'lower') == +Inf;
 
 % test [lower, upper] = range
 dir = [1 1];
@@ -59,9 +55,7 @@ range = supportFunc(pZ, dir, 'range');
 lower = supportFunc(pZ, dir, 'lower');
 upper = supportFunc(pZ, dir, 'upper');
 
-if ~isequal(range, interval(lower, upper))
-    res = false; return
-end
+res(end+1,1) = isequal(range, interval(lower, upper));
 
 
 % TEST 2 (check point containment)
@@ -83,8 +77,11 @@ for method = methods
     );
 
     if ~I.contains(ground_truth, 'exact', 1e-15)
-        res = false; return
+        throw(CORAerror('CORA:testFailed'));
     end
 end
+
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

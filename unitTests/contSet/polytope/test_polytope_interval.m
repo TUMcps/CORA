@@ -27,35 +27,60 @@ function res = test_polytope_interval
 res = true(0);
 
 % 1D, unbounded
-P = polytope(1,1);
+A = 1; b = 1;
+P = polytope(A,b);
 I = interval(P);
 I_true = interval(-Inf,1);
 res(end+1,1) = isequal(I,I_true);
 
 % 1D, bounded
-P = polytope([3;-2],[1;0]);
+A = [3;-2]; b = [1;0];
+P = polytope(A,b);
 I = interval(P);
 I_true = interval(0,1/3);
 res(end+1,1) = isequal(I,I_true);
 
 % 1D, single point
-P = polytope([],[],5,3);
+Ae = 5; be = 3;
+P = polytope([],[],Ae,be);
 I = interval(P);
 I_true = interval(3/5);
 res(end+1,1) = isequal(I,I_true);
 
+% 1D, fully empty
+A = zeros(0,1); b = zeros(0,0);
+P = polytope(A,b);
+I = interval(P);
+I_true = interval(-Inf,Inf);
+res(end+1,1) = isequal(I,I_true);
+
+% 1D, empty
+A = [1;-1]; b = [1;-3];
+P = polytope(A,b);
+I = interval(P);
+I_true = interval(zeros(1,0));
+res(end+1,1) = isequal(I,I_true);
+
 
 % 2D, diamond in unit square
-P = polytope([1 1; -1 1; -1 -1; 1 -1],ones(4,1));
+A = [1 1; -1 1; -1 -1; 1 -1]; b = ones(4,1);
+P = polytope(A,b);
 % convert to interval and compare to true result
 I = interval(P);
 I_true = interval([-1;-1],[1;1]);
 res(end+1,1) = isequal(I,I_true);
 
+% 2D, trivially fulfilled constraints
+A = [0 0]; b = 1; Ae = [0 0]; be = 0;
+P = polytope(A,b,Ae,be);
+I = interval(P);
+I_true = interval([-Inf;-Inf],[Inf;Inf]);
+res(end+1,1) = isequal(I,I_true);
+
 
 % 3D, unit cube
-n = 3;
-P = polytope([eye(n); -eye(n)],ones(2*n,1));
+n = 3; A = [eye(n); -eye(n)]; b = ones(2*n,1);
+P = polytope(A,b);
 % convert to interval and show exact conversion
 I = interval(P);
 res(end+1,1) = isequal(P,I);
@@ -73,6 +98,5 @@ res(end+1,1) = isequal(I,I_true);
 
 % combine results
 res = all(res);
-
 
 % ------------------------------ END OF CODE ------------------------------

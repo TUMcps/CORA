@@ -32,13 +32,28 @@ function zB = zonoBundle(P)
 
 % Authors:       Niklas Kochdumper
 % Written:       04-November-2019
-% Last update:   ---
+% Last update:   03-January-2023 (MW, handle unbounded case)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
-    
+
+if representsa_(P,'fullspace',0)
+    % conversion of fullspace object not possible
+    throw(CORAerror('CORA:specialError',['Polytope is unbounded and '...
+        'can therefore not be converted into a zonotope bundle.']));
+end
+
 % get halfspaces and vertices
-V = vertices(P);
+try
+    V = vertices(P);
+catch ME
+    if ~isempty(P.bounded.val) && ~P.bounded.val
+        throw(CORAerror('CORA:specialError',['Polytope is unbounded and '...
+            'can therefore not be converted into a zonotope bundle.']));
+    end
+    rethrow(ME);
+end
+
 A = P.A;
 
 % loop over all halfspaces

@@ -1,18 +1,18 @@
-function res = eq(P1,P2,varargin)
+function res = eq(P,S,varargin)
 % eq - Overloaded '==' operator for the comparison of polytopes
 %
 % Syntax:
-%    res = P1 == P2
-%    res = eq(P1,P2)
-%    res = eq(P1,P2,tol)
+%    res = P == S
+%    res = eq(P,S)
+%    res = eq(P,S,tol)
 %
 % Inputs:
 %    P1 - polytope object 
-%    P2 - polytope object 
+%    P2 - contSet object or numerical vector
 %    tol - (optional) tolerance
 %
 % Outputs:
-%    res - result of comparison
+%    res - true/false
 %
 % Example: 
 %    P1 = polytope([-1 -1; 1 0;-1 0; 0 1; 0 -1],[2;3;2;3;2]);
@@ -33,6 +33,6 @@ function res = eq(P1,P2,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check if P1 and P2 contain each other
-res = isequal(P1,P2,varargin{:});
+res = isequal(P,S,varargin{:});
 
 % ------------------------------ END OF CODE ------------------------------

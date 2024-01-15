@@ -82,7 +82,7 @@ function res = aux_flowInDirection(sys,guard,R,options)
 % check if the flow of the system points in the direction of the guard set
     
     % get hyperplane normal direction
-    c = guard.h.c./norm(guard.h.c);
+    c = guard.a' ./ norm(guard.a');
 
     % project reachable set onto the hyperplane
     Rproj = projectOnHyperplane(guard,R);
@@ -101,7 +101,7 @@ function res = aux_flowInDirection(sys,guard,R,options)
     end
 
     % compute interval enclosure of the reachable set
-    B = gramSchmidt(guard.h.c);
+    B = gramSchmidt(guard.a');
     
     if isa(Rproj,'zonoBundle')
         Rproj = Rproj.Z{1}; 
@@ -173,7 +173,7 @@ function guard = aux_adaptGuard(loc,guard,R)
 % adapt the guard set such that the normal vector of the hyperplane points
 % toward the outside of the invariant set
 
-    hs = halfspace(guard.h.c,guard.h.d);
+    hs = halfspace(guard.a',guard.b);
     inv = loc.invariant;
     
     % get center of the first reachable set
@@ -186,11 +186,11 @@ function guard = aux_adaptGuard(loc,guard,R)
     % check if center is on the correct side of the hyperplane
     if contains_(inv,c,'exact',100*eps)
         if ~contains_(hs,c)
-            guard = conHyperplane(-guard.h.c,-guard.h.d);
+            guard = conHyperplane(-guard.a',-guard.b);
         end
     else
         if contains_(hs,c)
-            guard = conHyperplane(-guard.h.c,-guard.h.d);
+            guard = conHyperplane(-guard.a',-guard.b);
         end
     end
 end

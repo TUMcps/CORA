@@ -23,11 +23,12 @@ function res = test_conZonotope_contains
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% empty set
-% cZ = conZonotope();
-res = true;
+res = true(0);
 
-% init constrained zonotope
+% empty set
+% cZ = conZonotope.empty(2);
+
+% 2D constrained zonotope
 Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
 A = [1 1 1]; b = 1;
 cZ = conZonotope(Z,A,b);
@@ -39,14 +40,15 @@ p_in = [0 1 0  0 1 -1 -2;
 p_out = [3  0 1 -2  3;
          1 -2 2  0 -1];
 
+res(end+1,1) = all(contains(cZ,p_in));
+res(end+1,1) = ~any(contains(cZ,p_out));
+
 % visualization
 % figure; hold on;
 % plot(cZ);
 % plot(p_in(1,:),p_in(2,:),'.g');
 % plot(p_out(1,:),p_out(2,:),'.r');
 
-res(end+1,1) = all(contains(cZ,p_in));
-res(end+1,1) = ~any(contains(cZ,p_out));
 
 % combine results
 res = all(res);

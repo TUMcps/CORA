@@ -32,6 +32,21 @@ function [val,x] = supportFunc_(P,dir,type,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% check fullspace
+if representsa_(P,'fullspace',0)
+    x = Inf .* sign(dir);
+    x(isnan(x)) = 0;
+    switch type
+        case 'upper'
+            val = Inf;
+        case 'lower'
+            val = -Inf;
+        case 'range'
+            val = interval(-Inf,Inf);
+    end
+    return
+end
+
 % check if vertex representation given (skips linear program)
 if ~isempty(P.V.val)
     if strcmp(type,'upper')

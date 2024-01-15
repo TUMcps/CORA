@@ -1,7 +1,8 @@
 function P_out = minus(P,varargin)
 % minus - dummy function to alert users of the difference in meaning
 %    between 'minus' for range bounding and 'minkDiff' for the Minkowski
-%    difference
+%    difference; for numerical vectors as subtrahends, these operations are
+%    equivalent, so we compute it here nonetheless
 %
 % Syntax:
 %    P_out = minus(P,varargin)
@@ -13,10 +14,9 @@ function P_out = minus(P,varargin)
 %    P_out - polytope object
 %
 % Example: 
-%    ---
-%
-% References:
-%    ---
+%    P = polytope([1 0; -1 1; -1 -1],[1;1;1]);
+%    v = [1;0];
+%    P_ = P - v;
 %
 % Other m-files required: none
 % Subfunctions: none

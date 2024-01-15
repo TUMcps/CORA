@@ -2,13 +2,10 @@ classdef (InferiorClasses = {?interval}) affine < taylm
 % affine arithmetic class.
 %
 % Syntax:
-%    obj = affine(int)
-%    obj = affine(int, name, opt_method, eps, tolerance)
 %    obj = affine(lb, ub)
 %    obj = affine(lb, ub, name, opt_method, eps, tolerance)
 %
 % Inputs:
-%    int - interval object
 %    name - a cell containing a name of a variable
 %    lb - lower bound of an interval
 %    ub - upper bound of an interval
@@ -27,7 +24,7 @@ classdef (InferiorClasses = {?interval}) affine < taylm
 %
 % Examples:
 %    % create affine object and taylor model object
-%    a = affine(interval(0,pi/2),'a','int',[],1e-8);
+%    a = affine(0,pi/2,'a','int',[],1e-8);
 %    t = taylm(interval(0,pi/2),6,'a','int',[],1e-8);
 %
 %    % compare the results
@@ -55,6 +52,11 @@ end
 methods
     %class constructor
     function obj = affine(varargin)
+
+        % 0. avoid empty instantiation
+        if nargin == 0
+            throw(CORAerror('CORA:noInputInSetConstructor'));
+        end
 
         % 1. copy constructor: not allowed due to obj@taylm below
 %         if nargin == 1 && isa(varargin{1},'affine')
@@ -120,15 +122,15 @@ function [int,name,opt_method,eps,tolerance] = aux_parseInputArgs(varargin)
     end
 
     % set default values
-    if isa(varargin{1},'interval')
-        [int,name,opt_method,eps,tolerance] = ...
-            setDefaultValues({[],[],'int',0.001,1e-8},varargin);
-    else
+%     if isa(varargin{1},'interval')
+%         [int,name,opt_method,eps,tolerance] = ...
+%             setDefaultValues({[],[],'int',0.001,1e-8},varargin);
+%     else
         [lb,ub,name,opt_method,eps,tolerance] = ...
             setDefaultValues({[],[],[],'int',0.001,1e-8},varargin);
         % init interval from lower and upper bounds
         int = interval(lb,ub);
-    end
+%     end
 
 end
 

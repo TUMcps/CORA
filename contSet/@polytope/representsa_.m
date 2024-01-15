@@ -30,11 +30,11 @@ function [res,S] = representsa_(P,type,tol,varargin)
 
 % check empty object case
 if nargout == 1
-    [empty,res] = representsa_emptyObject(P,type);
+    [emptyObj,res] = representsa_emptyObject(P,type);
 else
-    [empty,res,S] = representsa_emptyObject(P,type);
+    [emptyObj,res,S] = representsa_emptyObject(P,type);
 end
-if empty; return; end
+if emptyObj; return; end
 
 % dimension
 n = dim(P);
@@ -73,8 +73,8 @@ switch type
             P.fullDim.val = false;
         end
         if nargout == 2 && res
-            % only one point -> obtain by 'random sampling'
-            S = randPoint(P);
+            % only one point
+            S = center(P);
         end
 
     case 'capsule'
@@ -90,27 +90,33 @@ switch type
         [res,S] = aux_isConHyperplane(P);
 
     case 'conPolyZono'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of polytope to ' type ' not supported.']));
+        res = isBounded(P);
+        if nargout == 2 && res
+            S = conPolyZono(P);
+        end
 
     case 'conZonotope'
-        % always true
-        res = true;
-        if nargout == 2
+        % always true for bounded polytopes
+        res = isBounded(P);
+        if nargout == 2 && res
             S = conZonotope(P);
         end
 
     case 'ellipsoid'
-        % only an ellipsoid if 1D or no generator or generator, but no
-        % radius
-        res = n == 1 || all(withinTol(P.g,0,tol)) || withinTol(P.r,0,tol);
+        % only an ellipsoid if 1D and bounded or a single point
+        res = (n == 1 && isBounded(P) && ~representsa_(P,'emptySet',tol)) ...
+            || representsa_(P,'point',tol);
         if nargout == 2 && res
              S = ellipsoid(P);
         end
 
     case 'halfspace'
-        % if only a single inequality constraint given
+        % if only a single irredundant inequality constraint given
+        P = compact_(P,'all',tol);
         res = size(P.A,1) == 1 && isempty(P.Ae);
+        if nargout == 2 && res
+            S = halfspace(P.A,P.b);
+        end
 
     case 'interval'
         if nargout == 1
@@ -122,8 +128,7 @@ switch type
     case 'levelSet'
         res = true;
         if nargout == 2
-            throw(CORAerror('CORA:notSupported',...
-                ['Conversion from polytope to ' type ' not supported.']));
+            S = levelSet(P);
         end
 
     case 'polytope'
@@ -134,8 +139,9 @@ switch type
         end
 
     case 'polyZonotope'
-        res = true;
-        if nargout == 2
+        % only true if polytope is bounded
+        res = isBounded(P);
+        if nargout == 2 && res
             S = polyZonotope(P);
         end
 
@@ -143,8 +149,11 @@ switch type
         res = false;
 
     case 'zonoBundle'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of polytope to ' type ' not supported.']));
+        % zonotope bundles can represent any bounded convex set
+        res = isBounded(P);
+        if nargout == 2 && res
+            S = zonoBundle(P);
+        end
 
     case 'zonotope'
         throw(CORAerror('CORA:notSupported',...
@@ -268,17 +277,11 @@ function res = aux_isEmptySet(P)
     n = dim(P);
     
     % special case: 1D
-    if n == 1
-        % init result
-        res = false;
-    
-        % remove redundancies (fast for 1D)
+    if n == 1    
+        % remove redundancies (fast for 1D), this also finds out whether
+        % the set is empty or not
         P_min = compact_(P,'all',1e-9);
-    
-        % check if all constraints gone
-        if isempty(P_min.A) && isempty(P_min.Ae)
-            res = true;
-        end
+        res = P_min.emptySet.val;
         return
     end
     
@@ -328,7 +331,7 @@ function res = aux_isEmptySet(P)
                     if ~all(withinTol(be(alignedConstraints),be(i)))
                         % polytope is the empty set
                         res = true;
-                        P.empty = true;
+                        P.emptySet.val = true;
                         return
                     end
                 end
@@ -403,6 +406,8 @@ function [res,I] = aux_isInterval(P,tol)
 
     % assume false
     res = false; I = [];
+
+    % TODO: rewrite this function
     
     % fast initial check
     if ~all(sum(abs(sign(P.A)),2) == 1)

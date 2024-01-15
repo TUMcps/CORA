@@ -24,11 +24,11 @@ function res = test_capsule_ellipsoid
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty set case
-C = capsule();
-
+n = 2;
+C = capsule.empty(n);
 % convert to ellipsoid
 E = ellipsoid(C);
-res = representsa_(E,'emptySet',eps);
+res = representsa_(E,'emptySet',eps) && dim(E) == 2;
 
 % ball case
 C = capsule([1;-1],[0;0],3);

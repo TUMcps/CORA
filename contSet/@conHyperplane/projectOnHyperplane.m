@@ -35,8 +35,7 @@ function S = projectOnHyperplane(hyp,S)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % get object properties
-c = hyp.h.c;
-d = hyp.h.d;
+c = hyp.a'; d = hyp.b;
 
 % normalization
 temp = norm(c);

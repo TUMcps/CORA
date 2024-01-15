@@ -1,5 +1,5 @@
 function res = test_zonotope_or
-% test_zonotope_or - unit test function of dim
+% test_zonotope_or - unit test function of or
 %
 % Syntax:
 %    res = test_zonotope_or
@@ -14,7 +14,7 @@ function res = test_zonotope_or
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Tobias Ladner
 % Written:       26-October-2023
@@ -26,7 +26,7 @@ function res = test_zonotope_or
 resvec = [];
 
 % check empty zonotope
-Z = zonotope();
+Z = zonotope.empty(2);
 Zres = Z | Z;
 resvec(end+1) = true;
 
@@ -44,7 +44,5 @@ resvec(end+1) = true;
 
 % gather results
 res = all(resvec);
-
-end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -39,7 +39,7 @@ resvec(end+1) = all(nhs.d == d, 'all');
 resvec(end+1) = isequal(nhs, -1*hs);
 
 % test empty case
-resvec(end+1) = isemptyobject(-halfspace());
+resvec(end+1) = ~isemptyobject(-halfspace.empty(2));
 
 % add results
 res = all(resvec);

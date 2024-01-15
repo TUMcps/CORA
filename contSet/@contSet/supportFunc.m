@@ -85,28 +85,13 @@ else
     
 end
 
-
-% empty set case
-% if isemptyobject(S)
-%     res = true;
-%     if strcmp(type,'upper')
-%         vars{1} = -Inf;
-%     elseif strcmp(type,'lower')
-%         vars{1} = +Inf;
-%     elseif strcmp(type,'range')
-%         vars{1} = [-Inf,+Inf];
-%     end
-%     return
-%     x = []; fac = [];
-% end
-
 % transpose dir if necessary
 if size(dir,1) == 1 && size(dir,2) > 1
     dir = dir';
 end
 
 % ensure that dimension of direction fits dimension of the set
-if ~isemptyobject(S) && dim(S) ~= length(dir)
+if dim(S) ~= length(dir)
     throw(CORAerror('CORA:wrongValue','second',...
         [num2str(dim(S)) '-dimensional column vector.']));
 end
@@ -117,7 +102,7 @@ try
     [varargout{:}] = supportFunc_(S,dir,type,method,maxOrderOrSplits,tol);
 catch ME
     % empty set case
-    if isemptyobject(S) || representsa_(S,'emptySet',eps)
+    if representsa_(S,'emptySet',eps)
         if strcmp(type,'upper')
             varargout{1} = -Inf;
         elseif strcmp(type,'lower')

@@ -27,8 +27,9 @@ function res = test_levelSet_dim
 syms x y
 
 % empty level set
-ls = levelSet();
-res = dim(ls) == 0;
+n = 2;
+ls = levelSet.empty(n);
+res = dim(ls) == n;
 
 % single equation
 eq = x^2 + y^2 - 4;

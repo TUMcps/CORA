@@ -40,7 +40,7 @@ function [val,x] = supportFunc_(zB,dir,type,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
-if zB.parallelSets == 0
+if representsa_(zB,'emptySet',1e-8)
     x = [];
     if strcmp(type,'upper')
         val = -Inf;

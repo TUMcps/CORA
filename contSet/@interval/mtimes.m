@@ -183,7 +183,7 @@ else
         resInf = zeros(m,n);
         resSup = zeros(m,n);
         
-        A = interval();
+        A = interval(zeros(m,1));
         for i = 1:m
             % get i-th row [1, k], transpose
             A.inf = I1(i, :)';

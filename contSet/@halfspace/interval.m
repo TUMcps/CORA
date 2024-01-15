@@ -24,9 +24,9 @@ function I = interval(hs)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% fully empty case
-if isemptyobject(hs)
-    I = interval(); return
+% empty case
+if representsa_(hs,'emptySet',eps)
+    I = interval.empty(dim(hs)); return
 end
 
 % dimension

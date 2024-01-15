@@ -27,7 +27,8 @@ function res = test_polytope_setProperty_V
 
 res = true(0);
 
-% mtimes
+% --- mtimes --------------------------------------------------------------
+
 % 2D, origin
 V = [0;0];
 P = polytope(V);
@@ -35,26 +36,32 @@ A = [2 0; -1 1];
 P_ = A * P;
 res(end+1,1) = ~isempty(P_.V.val) && compareMatrices(P_.V.val,V);
 
-% minus
+% --- minus ---------------------------------------------------------------
+
+% 1D, bounded
 V = [-0.5, 1];
 P = polytope(V);
 P_ = P - 2;
 V_ = V - 2;
 res(end+1,1) = ~isempty(P_.V.val) && compareMatrices(P_.V.val,V_);
 
+% 2D, bounded
 V = [1 0; -1 1; 0 -1]';
 P = polytope(V);
 P_ = P - [1;-1];
 V_ = V - [1;-1];
 res(end+1,1) = ~isempty(P_.V.val) && compareMatrices(P_.V.val,V_);
 
-% plus
+% --- plus ----------------------------------------------------------------
+
+% 1D, bounded
 V = [-0.5, 1];
 P = polytope(V);
 P_ = P + 2;
 V_ = V + 2;
 res(end+1,1) = ~isempty(P_.V.val) && compareMatrices(P_.V.val,V_);
 
+% 2D, bounded
 V = [1 0; -1 1; 0 -1]';
 P = polytope(V);
 P_ = P + [1;-1];

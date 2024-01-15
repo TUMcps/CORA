@@ -38,11 +38,6 @@ A = [1 0 1];
 b = 1;
 cZono1 = conZonotope(Z,A,b);
 
-% empty set
-% if ~isempty(cZono1 & conZonotope())
-%     res = false;
-% end
-
 % constrained zonotope 2
 Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
 A = [1 1 1];

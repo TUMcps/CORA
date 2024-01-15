@@ -27,7 +27,8 @@ function res = test_polytope_setProperty_minHRep
 
 res = true(0);
 
-% box
+% --- box -----------------------------------------------------------------
+
 % 2D, empty set
 P = polytope([1 0; -1 0],[2;-3]);
 P_ = box(P);
@@ -44,7 +45,8 @@ P_ = box(P);
 res(end+1,1) = ~isempty(P_.minHRep.val) && P_.minHRep.val;
 
 
-% compact
+% --- compact -------------------------------------------------------------
+
 % 1D, empty
 P = polytope([1;-1],[1;-2]);
 P_ = compact(P);
@@ -55,7 +57,34 @@ P_ = compact(P);
 res(end+1,1) = ~isempty(P_.minHRep.val) && P_.minHRep.val;
 
 
-% polytope (copy constructor)
+% --- empty ---------------------------------------------------------------
+
+n = 2;
+P = polytope.empty(n);
+res(end+1,1) = ~isempty(P.minHRep.val) && P.minHRep.val;
+
+
+% --- Inf -----------------------------------------------------------------
+
+n = 2;
+P = polytope.Inf(n);
+res(end+1,1) = ~isempty(P.minHRep.val) && P.minHRep.val;
+
+
+% --- plus ----------------------------------------------------------------
+
+% 2D, bounded + vector
+A = [1 0; -1 1; -1 -1]; b = ones(3,1);
+P = polytope(A,b);
+compact(P);
+v = [-1;1];
+P_sum = P + v;
+% resulting polytope is also non-empty
+res(end+1,1) = ~isempty(P_sum.minHRep.val) && P_sum.minHRep.val;
+
+
+% --- polytope ------------------------------------------------------------
+
 % 2D, only inequalities, non-empty
 P = polytope([1 1; -1 1; 0 -1],ones(3,1));
 % remove redundancies
@@ -90,14 +119,17 @@ P = polytope(V);
 % redundancy unknown
 res(end+1,1) = isempty(P.minHRep.val);
 
-% project
+
+% --- project -------------------------------------------------------------
+
 % 3D, empty
 P = polytope([1 0 0; -1 0 0],[2;-3]);
 P_ = project(P,[1,2]);
 res(end+1,1) = ~isempty(P_.minHRep.val) && P_.minHRep.val;
 
 
-% lift
+% --- lift ----------------------------------------------------------------
+
 % 2D, non-empty
 P = polytope([1 1; -1 1; 0 -1],[1;1;1]);
 % remove redundancies

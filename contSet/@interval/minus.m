@@ -29,12 +29,11 @@ function res = minus(minuend,subtrahend)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%init 
-res = interval();
-
 %Find an interval object
 %Is minuend an interval?
 if isa(minuend,'interval')
+    %init 
+    res = minuend;
     %Is subtrahend an interval?
     if isa(subtrahend,'interval')
         %Calculate infimum and supremum
@@ -47,6 +46,8 @@ if isa(minuend,'interval')
     end
     
 else
+    %init 
+    res = subtrahend;
     %minuend must be a particular value
     %Calculate infimum and supremum
     res.inf = minuend - subtrahend.sup;

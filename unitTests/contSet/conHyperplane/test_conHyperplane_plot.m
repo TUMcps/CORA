@@ -28,11 +28,10 @@ function res = test_conHyperplane_plot
 resvec = [];
 
 % instantiate constrained hyperplane
-c = [1, 1];
-d = 2;
-A = [1, 0];
-b = 2.5;
-hyp = conHyperplane(c, d, A, b);
+a = [1, 1]; b = 2;
+C = [1, 0];
+d = 2.5;
+hyp = conHyperplane(a, b, C, d);
 
 try
     % try all variations in plotting

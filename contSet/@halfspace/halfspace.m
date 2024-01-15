@@ -6,7 +6,6 @@ classdef halfspace < contSet
 %    {x | c'*x <= d}.
 %
 % Syntax:
-%    obj = halfspace()
 %    obj = halfspace(hs)
 %    obj = halfspace(c,d)
 %
@@ -44,6 +43,11 @@ methods
     %class constructor
     function obj = halfspace(varargin)
 
+        % 0. avoid empty instantiation
+        if nargin == 0
+            throw(CORAerror('CORA:noInputInSetConstructor'));
+        end
+
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'halfspace')
             obj = varargin{1}; return
@@ -63,6 +67,8 @@ end
 
 methods (Static = true)
     hs = generateRandom(varargin) % generates random halfspace
+    hs = empty(n) % instantiates an empty halfspace
+    hs = Inf(n) % instantiates a fullspace halfspace
 end
 
 end
@@ -76,12 +82,6 @@ function [c,d] = aux_parseInputArgs(varargin)
     % check number of input arguments
     if nargin > 2
         throw(CORAerror('CORA:tooManyInputArgs',2));
-    end
-
-    % no input arguments
-    if nargin == 0
-        c = []; d = 0;
-        return
     end
 
     % set default values

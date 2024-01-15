@@ -65,6 +65,11 @@ methods
     % class constructor
     function obj = levelSet(varargin)
 
+        % 0. avoid empty instantiation
+        if nargin == 0
+            throw(CORAerror('CORA:noInputInSetConstructor'));
+        end
+
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'levelSet')
             obj = varargin{1}; return
@@ -94,7 +99,9 @@ methods
 end
 
 methods (Static = true)
-    S = generateRandom(varargin) % generates a random levelSet
+    ls = generateRandom(varargin) % generates a random level set
+    ls = empty(n) % instantiates an empty level set
+    ls = Inf(n) % instantiates a fullspace level set
 end
 
 end

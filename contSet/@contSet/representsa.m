@@ -47,12 +47,6 @@ admissibleTypes = {
 
 if isa(S,'conPolyZono')
     % check input arguments
-    inputArgsCheck({{S,'att','contSet'},...
-                    {type,'str',admissibleTypes},...
-                    {tol,'att','numeric',{'scalar','nonnegative'}}});
-
-else
-    % check input arguments
     inputArgsCheck({{S,'att','contSet'};...
                     {type,'str',admissibleTypes};...
                     {tol,'att','numeric',{'scalar','nonnegative'}};
@@ -60,6 +54,12 @@ else
                         'polynomial','interval','all'}};
                     {splits,'att','numeric',{'scalar','integer'}};
                     {iter,'att','numeric',{'scalar','integer'}}});
+
+else
+    % check input arguments
+    inputArgsCheck({{S,'att','contSet'},...
+                    {type,'str',admissibleTypes},...
+                    {tol,'att','numeric',{'scalar','nonnegative'}}});
 
 end
 

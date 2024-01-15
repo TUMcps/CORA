@@ -34,7 +34,7 @@ function [val,x] = supportFunc_(I,dir,type,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % special handling for empty set
-if isemptyobject(I)
+if representsa_(I,'emptySet',0)
     x = [];
     if strcmp(type,'upper')
         val = -Inf;

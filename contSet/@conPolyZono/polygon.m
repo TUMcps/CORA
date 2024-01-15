@@ -165,9 +165,9 @@ function res = aux_unite(S1,S2)
 % compute union of two polygons (also works for empty sets contrary to the
 % original polygon/union function)
 
-    if isemptyobject(S1) || representsa_(S1,'emptySet',eps)
+    if representsa_(S1,'emptySet',eps)
         res = S2;
-    elseif isemptyobject(S2) || representsa_(S2,'emptySet',eps)
+    elseif representsa_(S2,'emptySet',eps)
         res = S1;
     else
         res = S1 | S2;

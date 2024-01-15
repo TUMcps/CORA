@@ -76,12 +76,15 @@ test-job:
 
     # push results to bitbucket
     - BUILD_STATUS=$(<failed.txt) RESULT_TEXT=$(<resultText.txt) ./unitTests/ci/build_status
+    - rm resultText.txt
 
     # reset CORA
     - matlab -batch "addpath(genpath('.')); resetCORA();"
+    - if [ -d "./DLT_CustomLayers" ]; then rm -Rf ./DLT_CustomLayers; fi
     
     # exit with exit code
     - EXIT_CODE=$(<failed.txt)
+    - rm failed.txt
     - echo "Exiting with code $EXIT_CODE."
     - exit $EXIT_CODE
   after_script: # all done in script

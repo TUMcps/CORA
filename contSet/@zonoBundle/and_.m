@@ -90,7 +90,7 @@ elseif isa(S,'conHyperplane')
     % Part 1: intersection with the hyperplane ----------------------------
     
     % construct basis orthogonal to halfspace normal vector
-    B = gramSchmidt(S.h.c);
+    B = gramSchmidt(S.a');
     
     % compute enclosing interval in transformed space
     Z_ = B' * zB.Z{1};
@@ -100,7 +100,7 @@ elseif isa(S,'conHyperplane')
     lb = infimum(I_);
     ub = supremum(I_);
     
-    temp = S.h.d/norm(S.h.c);
+    temp = S.b/norm(S.a');
     ub(1) = temp;
     lb(1) = temp;
     

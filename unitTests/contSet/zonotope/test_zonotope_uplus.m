@@ -14,7 +14,7 @@ function res = test_zonotope_uplus
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Tobias Ladner
 % Written:       06-April-2023
@@ -38,7 +38,7 @@ resvec(end+1) = all([pZ.c,pZ.G] == [c,G], 'all');
 resvec(end+1) = isequal(pZ, Z);
 
 % test empty case
-resvec(end+1) = isemptyobject(+zonotope());
+resvec(end+1) = isemptyobject(+zonotope.empty(2));
 
 % add results
 res = all(resvec);

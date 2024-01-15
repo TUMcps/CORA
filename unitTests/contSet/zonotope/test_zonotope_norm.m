@@ -26,7 +26,7 @@ function res = test_zonotope_norm
 TOL = 1e-6;
 
 % empty case
-Z_empty = zonotope();
+Z_empty = zonotope.empty(2);
 res = norm(Z_empty) == -Inf;
 
 % full-dimensional case

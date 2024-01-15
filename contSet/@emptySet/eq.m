@@ -16,7 +16,7 @@ function res = eq(O,S,varargin)
 %
 % Example: 
 %    O = emptySet(2);
-%    S = zonotope();
+%    S = zonotope.empty(2);
 %    res1 = O == O;
 %    res2 = O == S;
 %

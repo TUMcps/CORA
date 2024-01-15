@@ -16,48 +16,35 @@ function res = test_interval_abs
 %
 % See also: mtimes
 
-% Authors:       Dmitry Grebenyuk
+% Authors:       Dmitry Grebenyuk, Mark Wetzlinger
 % Written:       05-January-2016
 % Last update:   12-January-2016 (DG)
+%                03-December-2023 (MW, add unbounded cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% define problem
+res = true(0);
 tol = 1e-9;
-res = true;
 
-test = interval([-5.0, -4.0, -3, 0, 0, 5], [-2, 0.0, 2.0, 0, 5, 8]);
-c = abs( test );
+% bounded and degenerate interval
+I = interval([-5,-4,-3,0,0,5],[-2,0,2,0,5,8]);
+Iabs = abs(I);
+Iabs_true = interval([2,0,0,0,0,5],[5,4,3,0,5,8]);
+res(end+1,1) = isequal(Iabs,Iabs_true,tol);
 
-if abs( infimum(c(1)) - 2.0 ) > tol || abs( supremum(c(1)) - 5.0 ) > tol
-	res = false;
-	return;
-end
+% unbounded interval
+I = interval(2,Inf);
+Iabs = abs(I);
+res(end+1,1) = isequal(I,Iabs,tol);
 
-if abs( infimum(c(2)) - 0.0 ) > tol || abs( supremum(c(2)) - 4.0 ) > tol
-	res = false;
-	return;
-end
+I = interval([-Inf;-2],[-2;Inf]);
+Iabs = abs(I);
+Iabs_true = interval([2;0],[Inf;Inf]);
+res(end+1,1) = isequal(Iabs,Iabs_true,tol);
 
-if abs( infimum(c(3)) - 0.0 ) > tol || abs( supremum(c(3)) - 3.0 ) > tol
-	res = false;
-	return;
-end
 
-if abs( infimum(c(4)) - 0.0 ) > tol || abs( supremum(c(4)) - 0.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(5)) - 0.0 ) > tol || abs( supremum(c(5)) - 5.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(6)) - 5.0 ) > tol || abs( supremum(c(6)) - 8.0 ) > tol
-	res = false;
-	return;
-end
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

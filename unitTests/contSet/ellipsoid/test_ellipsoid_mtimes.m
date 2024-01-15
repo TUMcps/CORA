@@ -60,7 +60,7 @@ EA = A*E1;
 true_result=ellipsoid([87.2,193.7;193.7,433.4],[9;15]);
 
 % empty set
-% if ~representsa_(mtimes(A,ellipsoid()),'emptySet',eps)
+% if ~representsa_(mtimes(A,ellipsoid.empty(3)),'emptySet',eps)
 %     res = false; return
 % end
 

@@ -25,21 +25,25 @@ function res = test_polytope_uminus
 
 resvec = true(0);
 
-% init
-C = [1 0 -1 0 1; 0 1 0 -1 1]';
-d = [3; 2; 3; 2; 1];
-P = polytope(C,d);
+% test empty case
+resvec(end+1) = representsa(-polytope.empty(2),'emptySet');
 
+% 2D, bounded
+A = [1 0 -1 0 1; 0 1 0 -1 1]'; b = [3; 2; 3; 2; 1];
+P = polytope(A,b);
 % negate
 nP = -P;
-resvec(end+1) = all(nP.A == -C, 'all');
-resvec(end+1) = all(nP.b == d, 'all');
-
+resvec(end+1) = all(nP.A == -A, 'all');
+resvec(end+1) = all(nP.b == b, 'all');
 % compare with -1 * P
 resvec(end+1) = isequal(nP, -1*P);
 
-% test empty case
-resvec(end+1) = representsa(-polytope(),'emptySet');
+% 2D, fully empty
+A = zeros(0,2); b = zeros(0,0);
+P = polytope(A,b);
+nP = -P;
+resvec(end+1) = representsa(nP,'fullspace');
+
 
 % add results
 res = all(resvec);

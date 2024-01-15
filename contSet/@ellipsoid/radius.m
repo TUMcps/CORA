@@ -45,7 +45,7 @@ inputArgsCheck({{E,'att','ellipsoid','scalar'};
 
 % quick check for empty set
 if representsa_(E,'emptySet',eps)
-    r = []; return
+    r = zeros(dim(E),0); return
 end
 
 % compute eigenvalues

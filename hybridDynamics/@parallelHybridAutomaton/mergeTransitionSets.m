@@ -184,7 +184,7 @@ function [transSet,mergedLabels] = mergeTransitionSets(pHA,transList,locID,allLa
                 
                 % synchronize guards by intersection
                 % note: might not work for all nonlinear guards
-                resultingGuard = fullspace();
+                resultingGuard = fullspace(pHA.dim);
 
                 % note: empty guard sets can simply be skipped as they
                 % represent the full subspace of the covered dimensions,

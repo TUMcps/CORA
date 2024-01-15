@@ -24,7 +24,7 @@ function res = test_ellipsoid_reduce
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty case
-E = interval();
+E = ellipsoid.empty(2);
 % reduce
 E_ = reduce(E);
 % should remain the same...

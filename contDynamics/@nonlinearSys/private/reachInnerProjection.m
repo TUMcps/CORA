@@ -75,6 +75,9 @@ function [Rin,Rout] = reachInnerProjection(sys,params,options)
     % implementation of Alg. 1 in [1]
     
     for j = 1:length(T)-1
+
+        % log
+        verboseLog(j,T(j),options);
         
         % Step 1: Rough Enclosure -----------------------------------------
         
@@ -150,6 +153,8 @@ function [Rin,Rout] = reachInnerProjection(sys,params,options)
         time{j+1} = T(j+1);
     end
     
+    % log
+    verboseLog(length(T),T(end),options);
     
     % Reachable Set Object ------------------------------------------------
     

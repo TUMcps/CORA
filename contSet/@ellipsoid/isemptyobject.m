@@ -12,10 +12,8 @@ function res = isemptyobject(E)
 %    res - true/false
 %
 % Example: 
-%    C = capsule([1;-1],[0;1],1);
-%    isemptyobject(C); % false
-%    C = capsule();
-%    isemptyobject(C); % true
+%    E = ellipsoid([1,0;0,2],[0;1]);
+%    isemptyobject(E); % false
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -24,73 +24,54 @@ function res = test_capsule_isIntersecting
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = [];
+res = true(0);
 
-% 1. Same center, generator, different radius
+% empty capsule
+C_empty = capsule.empty(2);
+c = [2;1]; g = [0;-1]; r = 2;
+C = capsule(c,g,r);
+res(end+1,1) = ~isIntersecting(C_empty,C_empty);
+res(end+1,1) = ~isIntersecting(C_empty,C);
 
-% define capsule
-c = [2; -1; 1];
-g = [4; -3; 2];
-r_small = 0.5;
-r_big = 1;
 
+% same center, generator, different radius
+c = [2; -1; 1]; g = [4; -3; 2];
+r_small = 0.5; r_big = 1;
 % instantiate capsules
 C_small = capsule(c,g,r_small);
 C_big = capsule(c,g,r_big);
-
-% compute intersection
-bigInSmall = isIntersecting(C_small,C_big);
-smallInBig = isIntersecting(C_big,C_small);
-
-% check for correctness
-res(end+1,1) = bigInSmall;
-res(end+1,1) = smallInBig;
+% check intersection
+res(end+1,1) = isIntersecting(C_small,C_big);
+res(end+1,1) = isIntersecting(C_big,C_small);
 
 
-% 2. centers too far away from one another
-
-% center far away
+% centers too far away from one another
 c_plus = 10*c;
 c_minus = -c;
 % norm of generator = 1, radius <= 1
-g = g ./ vecnorm(g,2);
+g = [4; -3; 2]; g = g ./ vecnorm(g,2);
 r = 0.5;
-
 % instantiate capsules
 C_plus = capsule(c_plus,g,r);
 C_minus = capsule(c_minus,g,r);
-
-% compute intersection
-minusInPlus = isIntersecting(C_plus,C_minus);
-plusInMinus = isIntersecting(C_minus,C_plus);
-
-% check for correctness
-res(end+1,1) = ~minusInPlus;
-res(end+1,1) = ~plusInMinus;
+% check intersection
+res(end+1,1) = ~isIntersecting(C_plus,C_minus);
+res(end+1,1) = ~isIntersecting(C_minus,C_plus);
 
 
-% 3. capsules overlapping
-
-% different generators
+% overlapping capsules
+c = [2; -1; 1]; r = 0.5;
 g1 = g;
 g2 = g + [-1; 0.2; 0.5];
-
 % instantiate capsules
 C1 = capsule(c,g1,r);
 C2 = capsule(c,g2,r);
-
-% compute intersection
-C2inC1 = isIntersecting(C1,C2);
-C1inC2 = isIntersecting(C2,C1);
-
-% check for correctness
-res(end+1,1) = C2inC1;
-res(end+1,1) = C1inC2;
+% check intersection
+res(end+1,1) = isIntersecting(C1,C2);
+res(end+1,1) = isIntersecting(C2,C1);
 
 
-% 4. capsules touching in exactly one point
-
-% same radius
+% capsules touching in exactly one point, same radius
 r = 3;
 % random generator (unit length for simplicity)
 g1 = [3; 4] / 5;
@@ -98,31 +79,24 @@ g2 = -g1;
 % set centers so that intersection is the origin
 c1 = (1+r)*g1;
 c2 = (1+r)*g2;
-
 % instantiate capsules
 C1 = capsule(c1,g1,r);
 C2 = capsule(c2,g2,r);
+% check intersection
+res(end+1,1) = isIntersecting(C1,C2);
+res(end+1,1) = isIntersecting(C2,C1);
 
-% compute intersection
-C2inC1 = isIntersecting(C1,C2);
-C1inC2 = isIntersecting(C2,C1);
 
-% check for correctness
-res(end+1,1) = C2inC1;
-res(end+1,1) = C1inC2;
-    
+% combine tests
+res = all(res);
 
-% 5. dimension mismatch
+
+% dimension mismatch
 C1 = capsule(1,1,1);
 C2 = capsule(rand(2,1),rand(2,1),1);
 try
     isIntersecting(C1,C2);
     res = false;
 end
-
-% 6. empty set: rewrite using emptySet class
-
-% combine tests
-res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

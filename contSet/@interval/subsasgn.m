@@ -36,7 +36,7 @@ if ~isa(val,'interval')
 end
 
 if ~isa(I,'interval')
-    I = interval();
+    I = interval.empty(dim(val));
 end
 
 %check if parantheses are used to select elements

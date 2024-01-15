@@ -24,68 +24,41 @@ function res = test_interval_vertices
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% empty set
-I_e = interval();
-V_empty = vertices(I_e);
-res = isnumeric(V_empty) && isempty(V_empty);
+res = true(0);
+tol = 1e-9;
 
-% create interval
-lb = [-2; -4];
-ub = [3; 1];
-I = interval(lb, ub);
-
-% compute vertices
+% empty
+I = interval.empty(2);
 V = vertices(I);
+res(end+1,1) = isnumeric(V) && isempty(V) && size(V,1) == 2;
 
-% true vertices
+% bounded
+I = interval([-2; -4],[3; 1]);
+V = vertices(I);
 V_true = [-2 3  3 -2;
            1 1 -4 -4];
-
-% check result
-tol = 1e-9;
 res(end+1,1) = compareMatrices(V,V_true,tol);
 
-% unbounded interval
-lb = [-2; -4];
-ub = [3; Inf];
-I = interval(lb, ub);
-
-% compute vertices
+% unbounded
+I = interval([-2; -4],[3; Inf]);
 V = vertices(I);
-
-% true vertices
 V_true = [-2 -2   3 3;
           -4 Inf -4 Inf];
-
 % check result (depends on ordering... cannot use compareMatrices here)
 res(end+1,1) = all(all(V == V_true));
 
-
-% degenerate interval
-lb = [-2; 0; 1];
-ub = [5; 2; 1];
-I = interval(lb,ub);
-
-% compute vertices
+% degenerate
+I = interval([-2; 0; 1],[5; 2; 1]);
 V = vertices(I);
-
-% true vertices
 V_true = [-2 -2 5 5;
            0  2 0 2;
            1  1 1 1];
-
-% check result
 res(end+1,1) = compareMatrices(V,V_true);
 
-
-% interval is just a point
+% degenerate, point
 lb = [1;4;-2;6];
 I = interval(lb);
-
-% compute vertices
 V = vertices(I);
-
-% check result
 res(end+1,1) = compareMatrices(V,lb);
 
 

@@ -26,9 +26,9 @@ function res = test_interval_diag
 resvec = [];
 
 % 1. Empty case
-I = interval();
-resvec(end+1) = isequal(diag(I),I);
-resvec(end+1) = isequal(diag(I,0),I);
+I = interval.empty(2);
+resvec(end+1) = representsa(diag(I),'emptySet');
+resvec(end+1) = representsa(diag(I,0),'emptySet');
 
     
 % init random interval

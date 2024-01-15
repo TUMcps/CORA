@@ -23,31 +23,36 @@ function res = test_polytope_projectHighDim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = [];
+res = true(0);
 
-% init polytope
-A = [1 0;-1 0;0 1;0 -1;1 1];
-b = [1;1;1;1;1];
+% 1D, fully empty
+A = zeros(0,1); b = zeros(0,0);
 P = polytope(A,b);
+P_high = projectHighDim(P,3,2);
+A_true = [1 0 0; 0 0 1]; b_true = [0;0];
+P_true = polytope(A_true,b_true);
+res(end+1,1) = isequal(P_high,P_true);
 
-% lift
-P_ = projectHighDim(P,10,[4,5]);
 
+% 2D, bounded
+A = [1 0;-1 0;0 1;0 -1;1 1]; b = [1;1;1;1;1];
+P = polytope(A,b);
+P_high = projectHighDim(P,10,[4,5]);
 % check support function for new dimensions
 for i=[1 2 3 6 7 8 9 10]
     ei = zeros(10,1);
     ei(i) = 1;
-    res(end+1) = supportFunc(P_,ei) == 0;
+    res(end+1) = supportFunc(P_high,ei) == 0;
     ei(i) = -1;
-    res(end+1) = supportFunc(P_,ei) == 0;
+    res(end+1) = supportFunc(P_high,ei) == 0;
 end
 % check for projected dimensions
 for i=[4 5]
     ei = zeros(10,1);
     ei(i) = 1;
-    res(end+1) = supportFunc(P_,ei) == 1;
+    res(end+1) = supportFunc(P_high,ei) == 1;
     ei(i) = -1;
-    res(end+1) = supportFunc(P_,ei) == 1;
+    res(end+1) = supportFunc(P_high,ei) == 1;
 end
 
 % combine results

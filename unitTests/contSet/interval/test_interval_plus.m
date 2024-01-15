@@ -17,126 +17,69 @@ function res = test_interval_plus
 %
 % See also: mtimes
 
-% Authors:       Dmitry Grebenyuk
+% Authors:       Dmitry Grebenyuk, Mark Wetzlinger
 % Written:       04-January-2016
 % Last update:   13-January-2016 (DG)
+%                05-December-2023 (MW, add unbounded, matrix cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
-res = true;
+res = true(0);
 
-a = interval(0, 0);
-b = interval(1, 1);
-c = a + b;
+% empty
+I = interval.empty(1);
+v = 1;
+I_plus = I + v;
+res(end+1,1) = representsa(I_plus,'emptySet');
 
-% empty set
-if ~representsa(b+interval(),'emptySet')
-    res = false;
-end
+% bounded interval, numeric
+v = [2;1];
+I = interval([-2;-1],[3; 4]);
+I_plus = v + I;
+I_true = interval([0;0],[5;5]);
+res(end+1,1) = isequal(I_plus,I_true,tol);
+I_plus = I + v;
+res(end+1,1) = isequal(I_plus,I_true,tol);
 
-if abs( infimum(c) - 1.0 ) > tol || abs( supremum(c) - 1.0 ) > tol
-	res = false;
-	return;
-end
+% unbounded interval, numeric
+I = interval(-Inf,2);
+v = 1;
+I_plus = I + v;
+I_true = interval(-Inf,3);
+res(end+1,1) = isequal(I_plus,I_true,tol);
+I_plus = v + I;
+res(end+1,1) = isequal(I_plus,I_true,tol);
 
-a = interval(-1, 0);
-b = interval(-1, 0);
-c = a + b;
-if abs( infimum(c) + 2.0 ) > tol || abs( supremum(c) - 0.0 ) > tol
-	res = false;
-	return;
-end
+% bounded interval, bounded interval
+I1 = interval([-2;-1],[3;4]);
+I2 = interval([-1;-3],[1;-1]);
+I_plus = I1 + I2;
+I_true = interval([-3;-4],[4;3]);
+res(end+1,1) = isequal(I_plus,I_true,tol);
+I_plus = I2 + I1;
+res(end+1,1) = isequal(I_plus,I_true,tol);
 
-a = interval(-1, 0);
-b = interval(-2, 0);
-c = a + b;
-if abs( infimum(c) + 3.0 ) > tol || abs( supremum(c) - 0.0 ) > tol
-	res = false;
-	return;
-end
+% unbounded interval, unbounded interval
+I1 = interval([-Inf;-2],[2;4]);
+I2 = interval([-1;0],[1;Inf]);
+I_plus = I1 + I2;
+I_true = interval([-Inf;-2],[3;Inf]);
+res(end+1,1) = isequal(I_plus,I_true,tol);
+I_plus = I2 + I1;
+res(end+1,1) = isequal(I_plus,I_true,tol);
 
-a = interval(-1.0, 0);
-b = interval(-2.0, 0);
-c = a + b;
-if abs( infimum(c) + 3.0 ) > tol || abs( supremum(c) - 0.0 ) > tol
-	res = false;
-	return;
-end
+% interval matrix, numeric
+I = interval([-2 -1; 0 2],[3 5; 2 3]);
+v = 2;
+I_plus = I + v;
+I_true = interval([0 1; 2 4],[5 7; 4 5]);
+res(end+1,1) = isequal(I_plus,I_true,tol);
+I_plus = v + I;
+res(end+1,1) = isequal(I_plus,I_true,tol);
 
-a = interval(0, 1);
-b = interval(0, 1);
-c = a + b;
-if abs( infimum(c) - 0.0 ) > tol || abs( supremum(c) - 2.0 ) > tol
-	res = false;
-	return;
-end
-
-a = interval(0, 1);
-b = interval(0, 2);
-c = a + b;
-if abs( infimum(c) - 0.0 ) > tol || abs( supremum(c) - 3.0 ) > tol
-	res = false;
-	return;
-end
-
-a = interval(0, 1.0);
-b = interval(0, 2.0);
-c = a + b;
-if abs( infimum(c) - 0.0 ) > tol || abs( supremum(c) - 3.0 ) > tol
-	res = false;
-	return;
-end
-
-a = interval(-2.0, 1.0);
-b = interval(-3.0, 2.0);
-c = a + b;
-if abs( infimum(c) + 5.0 ) > tol || abs( supremum(c) - 3.0 ) > tol
-	res = false;
-	return;
-end
-
-a = interval(-2.0, 1.0);
-c = 1 + a;
-if abs( infimum(c) + 1.0 ) > tol || abs( supremum(c) - 2.0 ) > tol
-	res = false;
-	return;
-end
-
-
-a = interval([-5.0, -4.0, -3, 0, 0, 5], [-2, 0.0, 2.0, 0, 5, 8]);
-b = interval([-6.1, -4.5, -3.3, 0, 0, 5], [-2.2, 0.0, 2.8, 0, 5.7, 8.2]);
-c = a + b;
-
-if abs( infimum(c(1)) + 11.1 ) > tol || abs( supremum(c(1)) + 4.2 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(2)) + 8.5 ) > tol || abs( supremum(c(2)) - 0.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(3)) + 6.3 ) > tol || abs( supremum(c(3)) - 4.8 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(4)) - 0.0 ) > tol || abs( supremum(c(4)) - 0.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(5)) - 0.0 ) > tol || abs( supremum(c(5)) - 10.7 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(6)) - 10.0 ) > tol || abs( supremum(c(6)) - 16.2 ) > tol
-	res = false;
-	return;
-end
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

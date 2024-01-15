@@ -14,7 +14,7 @@ function n = dim(C)
 %    C = capsule([1; 1; 0], [0.5; -1; 1], 0.5);
 %    n = dim(C)
 %
-% Other m-files required: center.m
+% Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
@@ -23,18 +23,11 @@ function n = dim(C)
 % Authors:       Mark Wetzlinger
 % Written:       15-September-2019 
 % Last update:   12-March-2021 (MW, add empty case)
+%                09-January-2024 (MW, simplify)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-try
-    n = length(center(C));
-catch ME
-    if isemptyobject(C)
-        n = 0;
-    else
-        rethrow(ME);
-    end
-end
+n = size(C.c,1);
 
 % ------------------------------ END OF CODE ------------------------------

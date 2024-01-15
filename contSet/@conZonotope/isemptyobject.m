@@ -15,8 +15,6 @@ function res = isemptyobject(cZ)
 % Example: 
 %    cZ = conZonotope([2;1],[1;2],1,0);
 %    isemptyobject(cZ); % false
-%    cZ = conZonotope();
-%    isemptyobject(cZ); % true
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -21,19 +21,31 @@ function I = enlarge(I,factor)
 %
 % See also:
 
-% Authors:       Matthias Althoff
+% Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       22-July-2016 
 % Last update:   28-August-2019
+%                03-December-2023 (MW, support unbounded sets)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%get center and radius
+% get center and radius
 c = center(I);
 r = rad(I);
 
-%enlarged intervals
-I.inf = c-r.*factor; 
-I.sup = c+r.*factor;
+% enlarged intervals
+I.inf = c - r.*factor; 
+I.sup = c + r.*factor;
+
+% unbounded dimensions: r is Inf
+if any(r == Inf & factor < 1)
+    % if factor < 1, there is no center -> return error (NaN)
+    throw(CORAerror('CORA:notSupported'));
+else
+    % factor > 1, dimension expands to [-Inf,Inf]
+    Infdims = r == Inf & factor > 1;
+    I.inf(Infdims) = -Inf;
+    I.sup(Infdims) = Inf;
+end
 
 % ------------------------------ END OF CODE ------------------------------

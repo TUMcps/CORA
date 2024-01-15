@@ -24,10 +24,7 @@ function res = test_intervalMatrix_interval
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% empty interval matrix
-intMat = intervalMatrix();
-I = interval(intMat);
-res = representsa(I,'emptySet');
+res = true(0);
 
 % only one row
 c = [1 2 3 4];

@@ -28,7 +28,7 @@ function res = test_interval_mtimes
 resVec = [];
 
 % empty set
-a = interval();
+a = interval.empty(1);
 b = 3;
 resVec(end+1) = representsa(b*a,'emptySet');
 

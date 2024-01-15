@@ -23,24 +23,20 @@ function res = test_fullspace_fullspace
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% no input argument (default: dimension 1)
-fs = fullspace();
-res = fs.dimension == 0;
+res = true(0);
 
 % dimension greater or equal to one
 n = 2;
 fs = fullspace(n);
 res(end+1,1) = fs.dimension == n;
 
+% combine results
+res = all(res);
+
 % too many input arguments
 try
     fs = fullspace(n,n);
-    res(end+1,1) = false;
-catch
-    res(end+1,1) = true;
+    res = false;
 end
-
-% combine results
-res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

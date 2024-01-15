@@ -33,7 +33,7 @@ function val = distanceHyperplane(E,H)
 
 % from [2, Sec. 2.1, Eq. (2.10)]
 % can be <0
-y = H.h.d; c = H.h.c;
+y = H.b; c = H.a';
 q = E.q; Q = E.Q;
 val = (abs(y-c'*q)-sqrt(c'*Q*c)) / sqrt(c'*c);
 

@@ -24,9 +24,7 @@ function res = test_intervalMatrix_dim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% empty interval matrix
-intMat = intervalMatrix();
-res = all(dim(intMat) == [0,0]);
+res = true(0);
 
 % only one row
 c = [1 2 3 4];

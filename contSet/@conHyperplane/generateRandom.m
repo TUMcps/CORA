@@ -85,6 +85,6 @@ if isempty(d)
 end
 
 % instantiate interval
-hyp = conHyperplane(hs,C,d);
+hyp = conHyperplane(hs.c',hs.d,C,d);
 
 % ------------------------------ END OF CODE ------------------------------

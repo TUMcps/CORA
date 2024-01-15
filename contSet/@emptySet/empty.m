@@ -1,19 +1,17 @@
-function res = isempty(fs)
-% isempty - checks if a full-dimensional space is the empty set
-%    case R^0: false
+function O = empty(n)
+% empty - instantiates an empty emptySet
 %
 % Syntax:
-%    res = isempty(fs)
+%    O = emptySet.empty(n)
 %
 % Inputs:
-%    fs - fullspace object
+%    n - dimension
 %
 % Outputs:
-%    res - true/false
+%    O - empty emptySet object
 %
 % Example: 
-%    fs = fullspace(2);
-%    res = isempty(fs);
+%    O = emptySet.empty(2);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -22,12 +20,13 @@ function res = isempty(fs)
 % See also: none
 
 % Authors:       Mark Wetzlinger
-% Written:       22-March-2023
+% Written:       09-January-2024
 % Last update:   ---
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = false;
+% call constructor
+O = emptySet(n);
 
 % ------------------------------ END OF CODE ------------------------------

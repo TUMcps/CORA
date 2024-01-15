@@ -43,8 +43,8 @@ else
     n = varargin{1};
 end
 
-% init
-res = interval();
+% init (overwritten below)
+res = interval.empty(1);
 
 % infimum
 res.inf = sum(I.inf,n);

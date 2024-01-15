@@ -26,7 +26,7 @@ function res = test_specification_isempty
 % init helpers
 set1 = zonotope([0;0],[1,-0.7;0.2,1]);
 set2 = interval([-1;-2],[2;3]);
-set3 = zonotope();
+set3 = zonotope.empty(2);
 time1 = interval(2,4);
 time2 = interval(1,3);
 

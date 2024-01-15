@@ -34,8 +34,8 @@ function eqs = conHyperplane_cora2spaceex(obj)
 % ------------------------------ BEGIN CODE -------------------------------
 
     % hyperplane equation c*x = d
-    c      = obj.h.c;
-    d      = obj.h.d;
+    c      = obj.a';
+    d      = obj.b;
 
     dim = size(c,1);
     x = sym('x',[dim,1]);

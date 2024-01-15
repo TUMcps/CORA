@@ -29,7 +29,7 @@ res = true;
 load cases.mat E_c
 
 % empty set
-E = ellipsoid()
+E = ellipsoid.empty(2)
 
 % 2D ellipsoid
 E = E_c{1}.E1

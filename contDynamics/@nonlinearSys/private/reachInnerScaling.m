@@ -156,7 +156,7 @@ function [Rin,Rout] = reachInnerScaling(sys,params,options)
             R = [];
         end
         
-        if input && ~isempty(R)
+        if input && ~representsa_(R,'emptySet',1e-12)
             set{end+1} = project(R,1:sys.dim);
         else
             set{end+1} = R;

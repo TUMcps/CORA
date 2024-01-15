@@ -24,7 +24,7 @@ function res = test_zonoBundle_zonotope
 % ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
-zB = zonoBundle();
+zB = zonoBundle.empty(2);
 Z = zonotope(zB);
 res = representsa(Z,'emptySet');
 

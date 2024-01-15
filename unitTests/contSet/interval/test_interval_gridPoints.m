@@ -32,8 +32,10 @@ tol = 1e-12;
 % scatter(vals(1,:),vals(2,:),16,'r','filled');
 
 % 1. empty case
-I = interval();
-res_empty = isempty(gridPoints(I,5));
+n = 2;
+I = interval.empty(n);
+vals = gridPoints(I,5);
+res_empty = isempty(vals) && isnumeric(vals) && size(vals,1) == n;
 
 
 % 2. interval

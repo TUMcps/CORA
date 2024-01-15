@@ -25,9 +25,6 @@ function res = testLong_capsule_isequal
 
 res = true;
 
-% empty capsule
-C_empty = capsule();
-
 tol = 1e-9;
 nrOfTests = 1000;
 
@@ -65,6 +62,7 @@ for i=1:nrOfTests
     end
 
     % ... empty capsule
+    C_empty = capsule.empty(n);
     if isequal(C,C_empty)
         res = false; break;
     end

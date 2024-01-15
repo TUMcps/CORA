@@ -24,6 +24,8 @@ function res = test_polyZonotope_plus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+res = true(0);
+
 % create polynomial zonotopes
 c = [-1;3];
 G = [-1 -1 3 2; 2 -1 -1 0];
@@ -46,9 +48,7 @@ G =  [-3 -1 3 2 -2 -1; 1 -1 -1 0 -2 -3];
 E = [1 0 1 5 0 2; 0 1 3 0 0 0; 0 0 0 0 1 3];
 
 % check for correctness
-if ~all(withinTol(c,pZres.c))
-    throw(CORAerror('CORA:testFailed'));
-end
+res(end+1,1) = all(withinTol(c,pZres.c));
 
 for i = 1:size(E,2)    
     
@@ -63,10 +63,9 @@ for i = 1:size(E,2)
 end
 
 % empty set
-if ~representsa(pZ1 + polyZonotope(),'emptySet')
-    throw(CORAerror('CORA:testFailed'));
-end
+res(end+1,1) = representsa(pZ1 + polyZonotope.empty(2),'emptySet');
 
-res = true;
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

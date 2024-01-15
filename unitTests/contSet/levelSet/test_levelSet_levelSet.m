@@ -29,7 +29,7 @@ res = true;
 syms a b x y
 
 % empty level set
-ls = levelSet();
+ls = levelSet.empty(2);
 
 % single equation with different comparison operators
 eq = x^2 + y^2 - 4;

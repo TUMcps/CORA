@@ -26,37 +26,49 @@ function res = test_polytope_box
 res = true(0);
 
 % 1D ----------------------------------------------------------------------
-% all box conversions are exact since 1D polytope are intervals
+% all box conversions are exact since 1D polytopes are intervals
 
 % bounded
-P = polytope([1;-1],[1;1]);
-B = box(P);
-res(end+1,1) = B == P;
+A = [1;-1]; b = [1;1];
+P = polytope(A,b);
+P_box = box(P);
+res(end+1,1) = P_box == P;
 
 % unbounded
-P = polytope(3,6);
-B = box(P);
-res(end+1,1) = B == P;
+A = 3; b = 6;
+P = polytope(A,b);
+P_box = box(P);
+res(end+1,1) = P_box == P;
+
+% fully empty (fullspace)
+A = zeros(0,1); b = zeros(0,0);
+P = polytope(A,b);
+P_box = box(P);
+res(end+1,1) = P_box == P;
 
 % single point (inequalities)
-P = polytope([2;-1],[1;-0.5]);
-B = box(P);
-res(end+1,1) = B == P;
+A = [2;-1]; b = [1;-0.5];
+P = polytope(A,b);
+P_box = box(P);
+res(end+1,1) = P_box == P;
 
 % single point (equality)
-P = polytope([],[],1,3);
-B = box(P);
-res(end+1,1) = B == P;
+A = zeros(0,1); b = zeros(0,0); Ae = 1; be = 3;
+P = polytope(A,b,Ae,be);
+P_box = box(P);
+res(end+1,1) = P_box == P;
 
 % empty (inequalities)
-P = polytope([2;-1],[1;-4]);
-B = box(P);
-res(end+1,1) = isemptyobject(B);
+A = [2;-1]; b = [1;-4];
+P = polytope(A,b);
+P_box = box(P);
+res(end+1,1) = representsa_(P_box,'emptySet');
 
 % empty (equalities)
-P = polytope([],[],[2;1],[5;2]);
-B = box(P);
-res(end+1,1) = isemptyobject(B);
+A = zeros(0,1); b = zeros(0,0); Ae = [2;1]; be = [5;2];
+P = polytope(A,b,Ae,be);
+P_box = box(P);
+res(end+1,1) = representsa_(P_box,'emptySet');
 
 
 % 2D ----------------------------------------------------------------------
@@ -66,45 +78,53 @@ A = [1 1; 1 -1;-1 1;-1 -1];
 b = [2; 2; 2; 2];
 P = polytope(A,b);
 % compute box and compare to true result
-B = box(P);
-Ptrue = polytope([1 0; 0 1;-1 0; 0 -1],[2; 2; 2; 2]);
-res(end+1,1) = B == Ptrue;
+P_box = box(P);
+A_true = [1 0; 0 1;-1 0; 0 -1]; b_true = [2; 2; 2; 2];
+P_true = polytope(A_true,b_true);
+res(end+1,1) = P_box == P_true;
 
 % bounded and degenerate
 A = [1 0; -2 0]; b = [2; 5];
 Ae = [-1 1]; be = 2;
 P = polytope(A,b,Ae,be);
 % compute box and compare to true result
-B = box(P);
-Ptrue = polytope([1 0; 0 1;-1 0; 0 -1],[2; 4; 2.5; 0.5]);
-res(end+1,1) = B == Ptrue;
+P_box = box(P);
+A_true = [1 0; 0 1;-1 0; 0 -1]; b_true = [2; 4; 2.5; 0.5];
+P_true = polytope(A_true,b_true);
+res(end+1,1) = P_box == P_true;
 
 % unbounded
-P = polytope([1 1; 1 -1],[2; 2]);
-B = box(P);
+A = [1 1; 1 -1]; b = [2; 2];
+P = polytope(A,b);
+P_box = box(P);
 % compute box and compare to true result
-Ptrue = polytope([1 0],2);
-res(end+1,1) = Ptrue == B;
+A_true = [1 0]; b_true = 2;
+P_true = polytope(A_true,b_true);
+res(end+1,1) = P_true == P_box;
 
 % unbounded and degenerate
-P = polytope([],[],[1 1],2);
-B = box(P);
-res(end+1,1) = isemptyobject(B);
+Ae = [1 1]; be = 2;
+P = polytope([],[],Ae,be);
+P_box = box(P);
+res(end+1,1) = isemptyobject(P_box);
 
 % unbounded and degenerate (axis-aligned)
-P = polytope([],[],[0 3],2);
-B = box(P);
+Ae = [0 3]; be = 2;
+P = polytope([],[],Ae,be);
+P_box = box(P);
 % compute box and compare to true result
-Ptrue = polytope([],[],[0 1],2/3);
-res(end+1,1) = Ptrue == B;
+Ae_true = [0 1]; be_true = 2/3;
+P_true = polytope([],[],Ae_true,be_true);
+res(end+1,1) = P_true == P_box;
 
 % bounded by vertex instantiation
 V = [1 0; -1 0; 0 1; 0 -1]';
 P = polytope(V);
 % compute box and compare to true result
-B = box(P);
-Ptrue = polytope([1 0;-1 0;0 1;0 -1],[1;1;1;1]);
-res(end+1,1) = Ptrue == B;
+P_box = box(P);
+A_true = [1 0;-1 0;0 1;0 -1]; b_true = [1;1;1;1];
+P_true = polytope(A_true,b_true);
+res(end+1,1) = P_true == P_box;
 
 
 % nD ----------------------------------------------------------------------
@@ -114,17 +134,17 @@ A = [0 0 1; 0 0 -1; 1 1 0; -1 1 0; 1 -1 0; -1 -1 0];
 b = [1;-1;2;2;2;2];
 P = polytope(A,b);
 % compute box and compute to true result
-B = box(P);
-Ptrue = polytope([0 0 1; 0 0 -1; 1 0 0; -1 0 0; 0 1 0; 0 -1 0], [1;-1;2;2;2;2]);
-res(end+1,1) = Ptrue == B;
+P_box = box(P);
+A_true = [0 0 1; 0 0 -1; 1 0 0; -1 0 0; 0 1 0; 0 -1 0]; b_true = [1;-1;2;2;2;2];
+P_true = polytope(A_true,b_true);
+res(end+1,1) = P_true == P_box;
 
 % 5D, single point
-[Ae,~,~] = svd(randn(5));
-be = ones(5,1);
+[Ae,~,~] = svd(randn(5)); be = ones(5,1);
 P = polytope([],[],Ae',be);
 % compute box and check if its a point
-B = box(P);
-res(end+1,1) = representsa(B,'point');
+P_box = box(P);
+res(end+1,1) = representsa(P_box,'point');
 
 
 % combine results

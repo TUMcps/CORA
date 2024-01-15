@@ -25,7 +25,7 @@ function res = testLong_ellipsoid_isFullDim
 
 % empty case: not full-dimensional
 res = true;
-% E = ellipsoid();
+% E = ellipsoid.empty(2);
 % if isFullDim(E)
 %     res = false;
 % end

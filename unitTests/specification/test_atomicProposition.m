@@ -23,7 +23,7 @@ function res = test_atomicProposition
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
+res = true(0);
 
 % atomic propositions
 ap1 = atomicProposition(halfspace([0 1 0], 3));
@@ -37,28 +37,25 @@ set2 = zonotope([-7; 1; 4], [1 1 1; 1 -1 0; 0 1 1]);
 set3 = zonotope([1; 1; 2], [0.5 1 0.2; 0.2 -1 0; 0 1 0.2]);
 
 % test
-res = res && ap1.canBeTrue(set1,1);
-res = res && ~ap1.canBeFalse(set1,1);
+res(end+1,1) = ap1.canBeTrue(set1,1);
+res(end+1,1) = ~ap1.canBeFalse(set1,1);
 
-res = res && ap2.canBeTrue(set1,1);
-res = res && ap2.canBeFalse(set1,1);
+res(end+1,1) = ap2.canBeTrue(set1,1);
+res(end+1,1) = ap2.canBeFalse(set1,1);
 
-res = res && ~ap3.canBeTrue(set1,1);
-res = res && ap3.canBeFalse(set1,1);
+res(end+1,1) = ~ap3.canBeTrue(set1,1);
+res(end+1,1) = ap3.canBeFalse(set1,1);
 
-res = res && ap4.canBeTrue(set1,1);
-res = res && ap4.canBeFalse(set1,1);
+res(end+1,1) = ap4.canBeTrue(set1,1);
+res(end+1,1) = ap4.canBeFalse(set1,1);
 
-res = res && ~ap4.canBeTrue(set2,1);
-res = res && ap4.canBeFalse(set2,1);
+res(end+1,1) = ~ap4.canBeTrue(set2,1);
+res(end+1,1) = ap4.canBeFalse(set2,1);
 
-res = res && ap4.canBeTrue(set3,1);
-res = res && ~ap4.canBeFalse(set3,1);
+res(end+1,1) = ap4.canBeTrue(set3,1);
+res(end+1,1) = ~ap4.canBeFalse(set3,1);
 
-if res
-    disp('test_atomicProposition successful');
-else
-    disp('test_atomicProposition failed');
-end
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

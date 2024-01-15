@@ -14,7 +14,7 @@ function res = test_ellipsoid_convHull
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Victor Gassmann
 % Written:       26-July-2021

@@ -25,12 +25,6 @@ function res = test_interval_lift
 
 resvec = [];
 
-% check empty
-I = interval();
-R = lift(I,2,[]);
-Rtrue = interval([-inf;-inf],[inf;inf]);
-resvec(end+1) = isequal(R,Rtrue);
-
 % check default case
 I = interval([2;3],[4;5]);
 R = lift(I,5,[1,4]);
@@ -39,5 +33,14 @@ resvec(end+1) = isequal(R,Rtrue);
 
 % gather results
 res = all(resvec);
+
+% empty not supported
+% check empty
+I = interval.empty(1);
+try
+    R = lift(I,2,[]);
+    res = false;
+end
+
 
 % ------------------------------ END OF CODE ------------------------------

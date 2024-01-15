@@ -14,7 +14,7 @@ function res = test_interval_or
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       29-August-2019
@@ -41,7 +41,8 @@ upper_true = [ 2;  5;  2];
 IntUnion_true = interval(lower_true, upper_true);
 
 % empty set
-res_e = or(Int1,interval()) == Int1;
+I_empty = interval.empty(3);
+res_e = or(Int1,I_empty) == Int1;
 % compare results
 res_analytical = all(infimum(IntUnion) == infimum(IntUnion_true)) && ...
         all(supremum(IntUnion) == supremum(IntUnion_true)) && res_e;

@@ -27,7 +27,7 @@ load cases.mat E_c
 res = true;
 
 % empty set: rewrite using emptySet class
-% res = ~ isIntersecting(E_c{1}.E1,ellipsoid());
+% res = ~ isIntersecting(E_c{1}.E1,ellipsoid.empty(2));
 
 % loop over cases
 for i=1:length(E_c)

@@ -14,7 +14,7 @@ function res = test_zonotope_vertices
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Matthias Althoff, Tobias Ladner
 % Written:       26-July-2016
@@ -27,8 +27,9 @@ function res = test_zonotope_vertices
 resvec = [];
 
 % empty set
-Z = zonotope();
-resvec(end+1) = isempty(vertices(Z)) && isnumeric(vertices(Z));
+Z = zonotope.empty(2);
+V = vertices(Z);
+resvec(end+1) = isempty(V) && isnumeric(V) && all(size(V) == [2,0]);
 
 % simple zonotope
 Z = zonotope([0 1 0 1; 0 1 1 0]);

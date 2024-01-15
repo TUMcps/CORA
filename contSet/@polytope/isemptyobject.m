@@ -1,5 +1,6 @@
 function res = isemptyobject(P)
-% isemptyobject - checks if a polytope object is fully empty
+% isemptyobject - checks if a polytope object is fully empty; this
+%    represents R^n since there are no constraints excluding any point
 %
 % Syntax:
 %    res = isemptyobject(P)
@@ -13,8 +14,6 @@ function res = isemptyobject(P)
 % Example: 
 %    P = polytope([1 0;-1 0;0 1;0 -1],[3;0;3;-4]);
 %    isemptyobject(P); % false
-%    P = polytope()
-%    isemptyobject(P); % true
 %
 % Other m-files required: none
 % Subfunctions: none

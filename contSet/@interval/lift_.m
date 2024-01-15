@@ -19,12 +19,17 @@ function I = lift_(I,N,proj)
 %
 % See also: contSet/lift, interval/project, interval/projectHighDim
 
-% Authors:       Tobias Ladner
+% Authors:       Tobias Ladner, Mark Wetzlinger
 % Written:       13-September-2023
-% Last update:   ---
+% Last update:   09-January-2024 (MW, fix empty case)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+
+if representsa_(I,'emptySet',eps)
+    throw(CORAerror('CORA:notSupported',...
+        'Operation lift is not supported for empty intervals.'));
+end
 
 % init bounds
 lb = -inf(N,1);

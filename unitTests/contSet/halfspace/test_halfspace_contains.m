@@ -23,11 +23,11 @@ function res = test_halfspace_contains
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% TEST 1: Zonotopes -------------------------------------------------------
-% instantiate zonotope
+res = true(0);
+
+% 2D zonotope
 Z = zonotope([zeros(2,1),[1 1; -1 1]]);
-% plot(Z);
-% res_e = contains(Z,zonotope()) && ~contains(zonotope(),Z);
+
 % instantiate halfspaces
 h_above = halfspace([0 1],3);
 h_upperboundary = halfspace([0 1],2);
@@ -37,25 +37,19 @@ h_below = halfspace([0 1],-3);
 
 % check if correct results for containment
 % Z fully contained
-res_above = contains(h_above,Z);
+res(end+1,1) = contains(h_above,Z);
 % Z touching halfspace, all in
-res_upperboundary = contains(h_upperboundary,Z);
+res(end+1,1) = contains(h_upperboundary,Z);
 % Z partly contained
-res_through = contains(h_through,Z);
+res(end+1,1) = ~contains(h_through,Z);
 % Z touching halfspace, all out
-res_lowerboundary = contains(h_lowerboundary,Z);
+res(end+1,1) = ~contains(h_lowerboundary,Z);
 % Z fully outside
-res_below = contains(h_below,Z);
+res(end+1,1) = ~contains(h_below,Z);
 
-% compare results
-res_zon = res_above && res_upperboundary && ~res_through && ...
-    ~res_lowerboundary && ~res_below; % && res_e;
-% -------------------------------------------------------------------------
 
-% TEST 2: Intervals -------------------------------------------------------
-% instantiate zonotope
+% 2D interval
 I = interval([-2; -1],[1; 3]);
-% plot(I);
 
 % instantiate halfspaces
 h_above = halfspace([1 0],2);
@@ -66,23 +60,18 @@ h_below = halfspace([1 0],-4);
 
 % check if correct results for containment
 % I fully contained
-res_above = contains(h_above,I);
+res(end+1,1) = contains(h_above,I);
 % I touching halfspace, all in
-res_upperboundary = contains(h_upperboundary,I);
+res(end+1,1) = contains(h_upperboundary,I);
 % I partly contained
-res_through = contains(h_through,I);
+res(end+1,1) = ~contains(h_through,I);
 % I touching halfspace, all out
-res_lowerboundary = contains(h_lowerboundary,I);
+res(end+1,1) = ~contains(h_lowerboundary,I);
 % I fully outside
-res_below = contains(h_below,I);
-
-% compare results
-res_int = res_above && res_upperboundary && ~res_through && ...
-    ~res_lowerboundary && ~res_below;
-% -------------------------------------------------------------------------
+res(end+1,1) = ~contains(h_below,I);
 
 
-% combine tests
-res = res_zon && res_int;
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

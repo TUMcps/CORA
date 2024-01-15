@@ -16,81 +16,60 @@ function res = test_interval_tan
 %
 % See also: mtimes
 
-% Authors:       Daniel Althoff
+% Authors:       Daniel Althoff, Mark Wetzlinger
 % Written:       03-November-2015
 % Last update:   04-January-2016
+%                04-December-2023 (MW, update syntax, add unbounded cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
-res = true;
+res = true(0);
 
-int0 = tan(interval(0, 0));
-if abs( infimum(int0) - 0.0 ) > tol || abs( supremum(int0) - 0.0 ) > tol
-	res = false;
-	return;
-end
+% bounded, degenerate
+I = interval(0);
+I_tan = tan(I);
+res(end+1,1) = isequal(I_tan,I,tol);
 
-int0 = tan(interval(-1, 0));
-if abs(infimum(int0) + 1.55740772465491) > tol || abs(supremum(int0) - 0) > tol
-	res = false;
-	return;
-end
+I = interval(1);
+I_tan = tan(I);
+I_true = interval(1.55740772465491);
+res(end+1,1) = isequal(I_tan,I_true,tol);
 
-int0 = tan(interval(-2, 0));
-if ~isinf(infimum(int0)) || ~isinf(supremum(int0))
-	res = false;
-	return;
-end
+% bounded, non-degenerate
+I = interval(-1,0);
+I_tan = tan(I);
+I_true = interval(-1.55740772465491,0);
+res(end+1,1) = isequal(I_tan,I_true,tol);
 
-tol_big=35;
-int0 = tan(interval(-pi/2, 0));
-if abs(infimum(int0) + 1.0e+016*1.63312393531954) > tol_big || abs(supremum(int0) - 0) > tol
-	res = false;
-	return;
-end
- 
-int0 = tan(interval(-pi/2-1e-9, 0));
-if  ~isinf(infimum(int0)) || ~isinf(supremum(int0))
-	res = false;
-	return;
-end
+I = interval(-2,0);
+I_tan = tan(I);
+I_true = interval(-Inf,Inf);
+res(end+1,1) = isequal(I_tan,I_true,tol);
 
-int0 = tan(interval(1.0, 1.0));
-if  abs(infimum(int0) - 1.55740772465491) > tol || abs(supremum(int0) - 1.55740772465491) > tol
-	res = false;
-	return;
-end
+I = interval(-pi/2,0);
+I_tan = tan(I);
+I_true = interval(-1.63312393531954e+16,0);
+res(end+1,1) = isequal(I_tan,I_true,tol);
 
-int0 = tan(interval(-pi/2, +pi/2));
-if  ~isinf(infimum(int0)) || ~isinf(supremum(int0))
-	res = false;
-	return;
-end
+I = interval(-pi/2,pi/2);
+I_tan = tan(I);
+I_true = interval(-Inf,Inf);
+res(end+1,1) = isequal(I_tan,I_true,tol);
 
-% check tan (pi/2-1e-9)
-%{
-int0 = tan(interval(-pi/2, pi/2-1e-9));
-if  abs(infimum(int0) + 1.0e+016*1.63312393531954) > tol_big || abs(supremum(int0) - 1.000000078071901e+09) > tol*1000
-	res = false;
-    disp('test_tan failed');
-	return;
-end
-%}
+% unbounded, non-degenerate
+I = interval(-Inf,0);
+I_tan = tan(I);
+I_true = interval(-Inf,Inf);
+res(end+1,1) = isequal(I_tan,I_true,tol);
 
-% tan(infsup(0,0)) = 0;
-% tan(infsup(-1,0)) = [  -1.55740772465491,   0.00000000000000] 
-% tan(infsup(-2,0)) = +/- inf
-% tan(infsup(-pi/2,0)) =  1.0e+016 * [  -1.63312393531954,   0.00000000000000]
-% tan(infsup(-pi/2-1e-9,0)) = +/-Inf 
-% tan(infsup(1,1)) = 1.55740772465491
-% tan(infsup(-pi/2,pi/2)) = +/-Inf
-% tan(infsup(-pi/2,pi/2-1e-9)) =  1.0e+016 * [  -1.63312393531954,   0.00000010000001] 
+I = interval(-Inf,Inf);
+I_tan = tan(I);
+I_true = interval(-Inf,Inf);
+res(end+1,1) = isequal(I_tan,I_true,tol);
 
-% res = interval();
-% 
-% res.inf = tan(x.inf);
-% res.sup = tan(x.sup);
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

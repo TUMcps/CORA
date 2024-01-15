@@ -27,10 +27,15 @@ function c = center(I)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% empty set check
 if representsa_(I,'emptySet',eps)
-    c = []; return ;
+    c = zeros(dim(I),0); return ;
 end
 
+% compute center
 c = 0.5*(I.inf + I.sup);
+
+% for unbounded dimensions, return NaN
+c(isinf(c)) = NaN;
 
 % ------------------------------ END OF CODE ------------------------------

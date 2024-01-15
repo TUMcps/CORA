@@ -15,19 +15,17 @@ function E = ellipsoid(P,varargin)
 %    E - ellipsoid object
 %
 % Example: 
-%    A = [1 2; -1 2; -2 -2; 1 -2];
-%    b = ones(4,1);
+%    A = [1 2; -1 2; -2 -2; 1 -2]; b = ones(4,1);
 %    P = polytope(A,b);
 %    E = ellipsoid(P);
-%    hold on
-%    plot(P)
-%    plot(E)
+%    figure; hold on;
+%    plot(P); plot(E);
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Victor Gassmann
 % Written:       15-March-2021
@@ -43,6 +41,11 @@ mode = setDefaultValues({'outer'},varargin);
 inputArgsCheck({{P,'att','polytope','scalar'};
                 {mode,'str',{'outer','outer:min-vol','inner'}}});
 
+% empty set
+if representsa_(P,'emptySet',eps)
+    E = ellipsoid.empty(dim(P));
+    return;
+end
 
 if contains(mode,'outer')
     V = vertices(P);
@@ -51,12 +54,8 @@ if contains(mode,'outer')
         mm = 'min-vol';
     end
     E = ellipsoid.enclosePoints(V,mm);
+    
 else
-    % first, check whether obj is degenerate
-    if isempty(P)
-        E = ellipsoid;
-        return;
-    end
     
     A = P.A;
     d = P.b;

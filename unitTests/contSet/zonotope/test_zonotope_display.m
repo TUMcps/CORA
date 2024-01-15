@@ -26,7 +26,8 @@ function res = test_zonotope_display
 res = true;
 
 % empty zonotope
-Z = zonotope()
+n = 2;
+Z = zonotope.empty(n)
 
 % 2D zonotope
 c = [-2; 1];

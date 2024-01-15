@@ -31,8 +31,10 @@ function res = test_conZonotope_vertices
 res = true(0);
 
 % empty set
-vertEmptycZ = vertices(conZonotope());
-res(end+1,1) = isnumeric(vertEmptycZ) && isempty(vertEmptycZ);
+n = 2;
+cZ = conZonotope.empty(n);
+V = vertices(cZ);
+res(end+1,1) = isnumeric(V) && isempty(V) && size(V,1) == n;
 
 % TEST 1: Figure 1 in [1] -------------------------------------------------
 
@@ -40,10 +42,10 @@ res(end+1,1) = isnumeric(vertEmptycZ) && isempty(vertEmptycZ);
 Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
 A = [1 1 1];
 b = 1;
-cZono = conZonotope(Z,A,b);
+cZ = conZonotope(Z,A,b);
 
 % calculate vertices
-V = vertices(cZono);
+V = vertices(cZ);
 
 % plot the result
 % plotZono(cZono);
@@ -59,10 +61,10 @@ res(end+1,1) = compareMatrices(V,V_);
 Z = [0 1 0 1;0 1 2 -1];
 A = [-2 1 -1];
 b = 2;
-cZono = conZonotope(Z,A,b);
+cZ = conZonotope(Z,A,b);
 
 % calculate vertices
-V = vertices(cZono);
+V = vertices(cZ);
 
 % plot the result
 % plotZono(cZono);
@@ -78,10 +80,10 @@ res(end+1,1) = compareMatrices(V,V_);
 Z = [0 3 0 1 -2;0 0 2 1 1];
 A = [0 0 0 1];
 b = 0.5;
-cZono = conZonotope(Z,A,b);
+cZ = conZonotope(Z,A,b);
 
 % calculate vertices
-V = vertices(cZono);
+V = vertices(cZ);
 
 % plot the result
 % plotZono(cZono);
@@ -97,10 +99,10 @@ res(end+1,1) = compareMatrices(V,V_);
 Z = [0 3 0 1;0 0 2 1];
 A = [1 0 1];
 b = 1;
-cZono = conZonotope(Z,A,b);
+cZ = conZonotope(Z,A,b);
 
 % calculate vertices
-V = vertices(cZono);
+V = vertices(cZ);
 
 % plot the result
 % plotZono(cZono);

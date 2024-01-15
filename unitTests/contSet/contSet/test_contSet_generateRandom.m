@@ -20,7 +20,7 @@ function res = test_contSet_generateRandom
 % Authors:       Tobias Ladner
 % Written:       05-April-2023
 % Last update:   ---
-% Last revision: ---
+% Last revision: 09-January-2024
 
 % ------------------------------ BEGIN CODE -------------------------------
 
@@ -39,13 +39,13 @@ S = contSet.generateRandom('Dimension', 3);
 res(end+1) = dim(S) == 3;
 
 % test given classes
-S = contSet.generateRandom({@interval});
+S = contSet.generateRandom({'interval'});
 res(end+1) = isa(S, 'interval');
 
-S = contSet.generateRandom({@polyZonotope});
+S = contSet.generateRandom({'polyZonotope'});
 res(end+1) = isa(S, 'polyZonotope');
 
-S = contSet.generateRandom({@interval,@zonotope});
+S = contSet.generateRandom({'interval','zonotope'});
 res(end+1) = isa(S, 'interval') || isa(S, 'zonotope');
 
 % test if all were successfull

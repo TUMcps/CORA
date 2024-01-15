@@ -27,7 +27,7 @@ function res = test_polyZonotope_polyZonotope
 res = true;
 
 % empty polyZonotope
-pZ = polyZonotope();
+pZ = polyZonotope.empty(2);
 
 % create polynomial zonotope
 c = [0;0];

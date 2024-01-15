@@ -41,7 +41,7 @@ pcPZ = +cPZ;
 resvec(end+1) = isequal(pcPZ, cPZ);
 
 % test empty case
-resvec(end+1) = isemptyobject(+conZonotope());
+resvec(end+1) = isemptyobject(+conPolyZono.empty(2));
 
 % add results
 res = all(resvec);

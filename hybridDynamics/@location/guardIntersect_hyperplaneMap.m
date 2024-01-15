@@ -76,10 +76,10 @@ function [Rmin,tmin,tmax,int] = aux_refinedIntersectionTime(loc,guard,R0,options
 % refine the time at which the reachable set intersects the guard set
 
     % init halfspace representing the region inside the invariant
-    hs = halfspace(guard.h.c,guard.h.d);
+    hs = halfspace(guard.a',guard.b);
     
     if ~contains_(hs,center(R0))
-        hs = halfspace(-guard.h.c,-guard.h.d);
+        hs = halfspace(-guard.a',-guard.b);
     end
     
     spec = specification(hs,'invariant');
@@ -244,7 +244,7 @@ function R = aux_mappedSetError(guard,R0,A,b,err)
 % compute the second part R_he of the mapped set (see (15) in [1])
 
     % obtain object properties
-    n = guard.h.c;                    % hyperplane normal vector
+    n = guard.a';                    % hyperplane normal vector
     
     % interval enclosure of the fraction 
     temp = A*R0 + b;
@@ -293,8 +293,8 @@ function [k,L,Q,phi] = aux_taylorSeriesParam(guard,A,b,R0)
 % according to Prop. 3 in [1]
 
     % obtain object properties
-    n = guard.h.c;                    % hyperplane normal vector
-    d = guard.h.d;                    % hyperplane offset
+    n = guard.a';                    % hyperplane normal vector
+    d = guard.b;                     % hyperplane offset
 
     % auxiliary variables (see Prop. 2 in [1])
     x0 = center(R0);

@@ -24,7 +24,7 @@ function res = testLong_interval_dim
 % ------------------------------ BEGIN CODE -------------------------------
 
 % 1. Empty case
-I = interval();
+I = interval.empty(0);
 
 % compute dimension
 dimI = dim(I);

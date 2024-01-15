@@ -73,7 +73,7 @@ if ~isempty(P.V.val)
 end
 
 % check if the polytope is completely empty
-if isemptyobject(P)
+if representsa_(P,'emptySet',1e-10)
     res = false;
     subspace = [];
     return
@@ -105,11 +105,11 @@ if nargout < 2
     [nrCon,n] = size(P.A);
 
     % normalize constraints
-    P = normalizeConstraints(P,'A');
+    P_norm = normalizeConstraints(P,'A');
 
     % quick check: any pair of inequalities of type
     %   ax <= b, ax >= b_ (-ax <= -b_), with b_ >= b?
-    dotprod = tril(P.A * P.A');
+    dotprod = tril(P_norm.A * P_norm.A');
     idxAntiParallel = find(withinTol(dotprod,-1));
     for i=1:length(idxAntiParallel)
         % read out matrix indexing from linear indexing
@@ -118,7 +118,7 @@ if nargout < 2
         %  ax <= b1, -ax <= b2 <=> ax >= -b2  ->  -b2 >= b1?
         % -ax <= b1 <=> ax >= -b1, ax <= b2   ->  -b1 >= b2 <=> -b2 >= b1?
         % ...the one with the reversed sign has to be larger (or equal)!
-        if -P.b(c) > P.b(r) || withinTol(-P.b(c),P.b(r))
+        if -P_norm.b(c) > P_norm.b(r) || withinTol(-P_norm.b(c),P_norm.b(r))
             res = false;
             P.fullDim.val = false;
             return

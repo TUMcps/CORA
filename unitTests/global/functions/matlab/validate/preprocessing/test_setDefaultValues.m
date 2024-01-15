@@ -24,8 +24,8 @@ function res = test_setDefaultValues
 % ------------------------------ BEGIN CODE -------------------------------
 
 % some user-provided values and default values
-givenValues = {10,'bbb',polyZonotope()};
-defaultValues = {5,'aaa',zonotope()};
+givenValues = {10,'bbb',polyZonotope.empty(2)};
+defaultValues = {5,'aaa',zonotope.empty(2)};
 
 % no input arguments given
 [val1,val2,val3] = setDefaultValues(defaultValues,{});

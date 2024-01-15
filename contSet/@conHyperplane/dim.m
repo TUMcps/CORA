@@ -12,7 +12,7 @@ function n = dim(hyp)
 %    n - dimension of the ambient space
 %
 % Example: 
-%    hyp = conHyperplane(halfspace([1;1],0),[1 0;-1 0],[2;2]);
+%    hyp = conHyperplane([1 1],0,[1 0;-1 0],[2;2]);
 %    n = dim(hyp)
 %
 % Other m-files required: none
@@ -28,6 +28,6 @@ function n = dim(hyp)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-n = max(length(hyp.h.c),size(hyp.C,2));
+n = length(hyp.a);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -43,8 +43,7 @@ methods
     function obj = intervalMatrix(matrixCenter,matrixDelta)
 
         if nargin == 0
-            % empty interval matrix
-            obj.int = interval();
+            throw(CORAerror('CORA:noInputInSetConstructor'));
 
         elseif nargin == 1
             

@@ -28,20 +28,12 @@ function display(fs)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isemptyobject(fs)
-    
-    dispEmptyObj(fs,inputname(1));
-    
-else
-    
-    fprintf(newline);
-    disp(inputname(1) + " =");
-    fprintf(newline);
-    
-    % display R^n
-    disp("  R^" + fs.dimension);
-    fprintf(newline);
-    
-end
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
+
+% display R^n
+disp("  R^" + fs.dimension);
+fprintf(newline);
 
 % ------------------------------ END OF CODE ------------------------------

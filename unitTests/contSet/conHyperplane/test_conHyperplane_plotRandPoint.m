@@ -28,9 +28,8 @@ function res = test_conHyperplane_plotRandPoint
 res = true;
 
 % instantiate constrained hyperplane
-c = [1, 1, 1];
-d = 2;
-hyp = conHyperplane(c, d);
+a = [1, 1, 1]; b = 2;
+hyp = conHyperplane(a, b);
 
 try
     % try all variations in plotting

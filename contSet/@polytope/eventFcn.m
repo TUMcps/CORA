@@ -1,10 +1,10 @@
-function [value,isterminal,direction] = eventFcn(P,x,direction)
+function [val,isterminal,direction] = eventFcn(P,x,direction)
 % eventFcn - Returns the results of an event function that detects if a 
 %    trajectory enters or leaves a polytope;
 %    this event function is needed, e.g. for matlab ODE-solvers
 %
 % Syntax:
-%    [value,isterminal,direction] = eventFcn(P,x,direction)
+%    [val,isterminal,direction] = eventFcn(P,x,direction)
 %
 % Inputs:
 %    P - polytope object
@@ -12,10 +12,10 @@ function [value,isterminal,direction] = eventFcn(P,x,direction)
 %    direction - event if the state enters or leaves the set
 %
 % Outputs:
-%    value - value of the event function
+%    val - value of the event function
 %    isterminal - specifies if the simulation stops if an event turns zero
 %    direction - specifies if the value of the event function has to 
-%    turn from negative to positive or the other way round
+%                turn from negative to positive or the other way round
 %
 % Example: 
 %    ---
@@ -24,7 +24,7 @@ function [value,isterminal,direction] = eventFcn(P,x,direction)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       12-February-2012 
@@ -37,7 +37,7 @@ function [value,isterminal,direction] = eventFcn(P,x,direction)
 H = P.A;
 K = P.b;
 
-value=H*x-K;
+val=H*x-K;
 % Always stop the integration when event detected
 isterminal = ones(length(K),1);   
 % Vectorize direction

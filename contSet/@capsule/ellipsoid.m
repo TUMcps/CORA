@@ -58,7 +58,7 @@ n = dim(C);
 if strcmp(method,'exact')
     % C.g is an all-zero vector -> capsule is a ball (or empty)
     if representsa_(C,'emptySet',eps)
-        E = ellipsoid(); return
+        E = ellipsoid.empty(n); return
     end
     % square radius to get correct shape matrix
     E = ellipsoid(C.r^2*eye(n),C.c);

@@ -17,110 +17,34 @@ function res = test_interval_horzcat
 %
 % See also: mtimes
 
-% Authors:       Dmitry Grebenyuk
+% Authors:       Dmitry Grebenyuk, Mark Wetzlinger
 % Written:       16-January-2016
-% Last update:   ---
+% Last update:   04-December-2023 (MW, add unbounded case)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% define problem
 tol = 1e-9;
-res = true;
+res = true(0);
 
-a = interval([-5.0; -4.0; -3; 0; 0; 5], [-2; 0.0; 2.0; 0; 5; 8]);
-b = a + 1;
-c = b + 2;
-c = [a, b, c];
+% bounded
+I1 = interval([-5; -4; -3; 0; 0; 5], [-2; 0; 2; 0; 5; 8]);
+I2 = I1 + 1;
+I3 = I2 + 2;
+I = [I1, I2, I3];
+I_true = interval([-5 -4 -2; -4 -3 -1; -3 -2 0; 0 1 3; 0 1 3; 5 6 8],...
+    [-2 -1 1; 0 1 3; 2 3 5; 0 1 3; 5 6 8; 8 9 11]);
+res(end+1,1) = isequal(I,I_true,tol);
 
-if abs( infimum(c(1, 1)) + 5.0 ) > tol || abs( supremum(c(1, 1)) + 2.0 ) > tol
-	res = false;
-	return;
-end
+% unbounded
+I1 = interval([-Inf;-2],[2;3]);
+I2 = interval([-2 3; 2 5],[1 Inf; 4 8]);
+I = [I1, I2];
+I_true = interval([-Inf -2 3; -2 2 5],[2 1 Inf; 3 4 8]);
+res(end+1,1) = isequal(I,I_true,tol);
 
-if abs( infimum(c(2, 1)) + 4.0 ) > tol || abs( supremum(c(2, 1)) - 0.0 ) > tol
-	res = false;
-	return;
-end
 
-if abs( infimum(c(3, 1)) + 3.0 ) > tol || abs( supremum(c(3, 1)) - 2.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(4, 1)) - 0.0 ) > tol || abs( supremum(c(4, 1)) + 0.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(5, 1)) + 0.0 ) > tol || abs( supremum(c(5, 1)) - 5.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(6, 1)) - 5.0 ) > tol || abs( supremum(c(6, 1)) - 8.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(1, 2)) + 4.0 ) > tol || abs( supremum(c(1, 2)) + 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(2, 2)) + 3.0 ) > tol || abs( supremum(c(2, 2)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(3, 2)) + 2.0 ) > tol || abs( supremum(c(3, 2)) - 3.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(4, 2)) - 1.0 ) > tol || abs( supremum(c(4, 2)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(5, 2)) - 1.0 ) > tol || abs( supremum(c(5, 2)) - 6.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(6, 2)) - 6.0 ) > tol || abs( supremum(c(6, 2)) - 9.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(1, 3)) + 2.0 ) > tol || abs( supremum(c(1, 3)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(2, 3)) + 1.0 ) > tol || abs( supremum(c(2, 3)) - 3.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(3, 3)) + 0.0 ) > tol || abs( supremum(c(3, 3)) - 5.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(4, 3)) - 3.0 ) > tol || abs( supremum(c(4, 3)) - 3.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(5, 3)) - 3.0 ) > tol || abs( supremum(c(5, 3)) - 8.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(6, 3)) - 8.0 ) > tol || abs( supremum(c(6, 3)) - 11.0 ) > tol
-	res = false;
-	return;
-end
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

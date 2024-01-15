@@ -14,7 +14,7 @@ function res = test_zonotope_zonotope
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       27-July-2021
@@ -23,11 +23,20 @@ function res = test_zonotope_zonotope
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-tol = 1e-12;
+res = true(0);
 
-% empty zonotope
-Z = zonotope();
-res = representsa(Z,'emptySet');
+% empty zonotopes
+Z = zonotope.empty(2);
+res(end+1,1) = representsa(Z,'emptySet') && dim(Z) == 2;
+Z = zonotope(zeros(3,0));
+res(end+1,1) = representsa(Z,'emptySet') ...
+    && size(Z.c,1) == 3 && size(Z.G,1) == 3;
+Z = zonotope(zeros(3,0),[]);
+res(end+1,1) = representsa(Z,'emptySet') ...
+    && size(Z.c,1) == 3 && size(Z.G,1) == 3;
+Z = zonotope(zeros(3,0),zeros(3,0));
+res(end+1,1) = representsa(Z,'emptySet') ...
+    && size(Z.c,1) == 3 && size(Z.G,1) == 3;
 
 
 % random center, random generator matrix
@@ -37,20 +46,18 @@ Zmat = [c,G];
 
 % admissible initializations
 Z = zonotope(c,G);
-if ~compareMatrices(Z.c,c) || ~compareMatrices(Z.G,G)
-    res = false;
-end
+res(end+1,1) = compareMatrices(Z.c,c) && compareMatrices(Z.G,G);
 
 Z = zonotope(c);
-if ~compareMatrices(Z.c,c) || ~isempty(Z.G)
-    res = false;
-end
+res(end+1,1) = compareMatrices(Z.c,c) && isempty(Z.G) && size(G,1) == 3;
 
 Z = zonotope(Zmat);
-if ~compareMatrices(Z.c,Zmat(:,1)) ...
-        || ~compareMatrices(Z.G,Zmat(:,2:end))
-    res = false;
-end
+res(end+1,1) = compareMatrices(Z.c,Zmat(:,1)) ...
+    && compareMatrices(Z.G,Zmat(:,2:end));
+
+
+% combine results
+res = all(res);
 
 % wrong initializations
 if CHECKS_ENABLED

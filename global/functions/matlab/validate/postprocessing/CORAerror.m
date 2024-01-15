@@ -7,6 +7,7 @@ function ME = CORAerror(identifier,varargin)
 % Inputs:
 %    identifier - name of CORA error
 %                 'CORA:wrongInputInConstructor'
+%                 'CORA:noInputInSetConstructor'
 %                 'CORA:dimensionMismatch'
 %                 'CORA:emptySet'
 %                 'CORA:converterIssue'
@@ -100,6 +101,14 @@ switch identifier
     case 'CORA:wrongInputInConstructor'
         errmsg_form = 'Wrong input arguments for constructor of class: %s\n  %s \n%s';
         infomsg = varargin{1};
+        errmsg = sprintf(errmsg_form,classname,infomsg,helpmsg);
+
+
+    % constuctor of a contSet class called without input arguments:
+    % - information message about contSet.empty and contSet.Inf functions
+    case 'CORA:noInputInSetConstructor'
+        errmsg_form = 'No input arguments for constructor of class: %s\n  %s \n%s';
+        infomsg = ['Please consider calling ' classname '.empty or ' classname '.Inf instead.'];
         errmsg = sprintf(errmsg_form,classname,infomsg,helpmsg);
 
 

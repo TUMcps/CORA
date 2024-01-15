@@ -14,7 +14,7 @@ function res = isIntersecting_(hyp,S,type,varargin)
 %    res - true/false
 %
 % Example: 
-%    hyp = conHyperplane(halfspace([1;1],0),[1 0;-1 0],[2;2]);
+%    hyp = conHyperplane([1 1],0,[1 0;-1 0],[2;2]);
 %    Z = zonotope([0 1 1 0; 0 1 0 1]);
 %    P = polytope([-1 -1; 1 0;-1 0; 0 1; 0 -1],[2;3;2;3;2]) + [2;2];
 %
@@ -82,17 +82,16 @@ function res = isIntersecting_(hyp,S,type,varargin)
                 Z = S.Z{j};
             
                 % check instesection with hyperplane
-                lb = supportFunc_(Z,hyp.h.c,'lower');
-                ub = supportFunc_(Z,hyp.h.c,'upper');
+                lb = supportFunc_(Z,hyp.a','lower');
+                ub = supportFunc_(Z,hyp.a','upper');
 
-                if ~contains_(interval(lb,ub),hyp.h.d,'exact',0)
+                if ~contains_(interval(lb,ub),hyp.b,'exact',0)
                    res = false;
                    return;
                 end
 
                 % check intersection with inequality constraints
-                C = hyp.C;
-                d = hyp.d;
+                C = hyp.C; d = hyp.d;
 
                 for i = 1:size(C,1)
                    bound = supportFunc_(Z,C(i,:)','lower');
@@ -111,17 +110,16 @@ function res = isIntersecting_(hyp,S,type,varargin)
             end
             
             % check instesection with hyperplane
-            lb = supportFunc_(S,hyp.h.c,'lower',otherOptions{:});
-            ub = supportFunc_(S,hyp.h.c,'upper',otherOptions{:});
+            lb = supportFunc_(S,hyp.a','lower',otherOptions{:});
+            ub = supportFunc_(S,hyp.a','upper',otherOptions{:});
 
-            if ~contains_(interval(lb,ub),hyp.h.d,'exact',0)
+            if ~contains_(interval(lb,ub),hyp.b,'exact',0)
                res = false;
                return;
             end
 
             % check intersection with inequality constraints
-            C = hyp.C;
-            d = hyp.d;
+            C = hyp.C; d = hyp.d;
 
             for i = 1:size(C,1)
                bound = supportFunc_(S,C(i,:)','lower',otherOptions{:});
@@ -153,8 +151,8 @@ function res = aux_intersectPolyPoly(obj1,obj2,options)
     b = [obj2.b;obj1.d];
     
     % construct matrices for equality constraint
-    Aeq = obj1.h.c';
-    beq = obj1.h.d;
+    Aeq = obj1.a;
+    beq = obj1.b;
     
     % introduce slack variables y
     m = length(b);
@@ -193,8 +191,8 @@ function res = aux_intersectPolyConZono(obj1,obj2,options)
 %           a \in [-1,1]
 
     % get object properties
-    h = obj1.h.c;
-    d = obj1.h.d;
+    h = obj1.a';
+    d = obj1.b;
     
     H = obj1.C;
     k = obj1.d;
@@ -263,8 +261,8 @@ function res = aux_intersectPolyZonoBundle(obj1,obj2,options)
 %   a1,...,aq \in [-1,1]
 
     % get object properties
-    h = obj1.h.c;
-    d = obj1.h.d;
+    h = obj1.a';
+    d = obj1.b;
     
     H = obj1.C;
     k = obj1.d;

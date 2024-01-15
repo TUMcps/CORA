@@ -14,7 +14,7 @@ function res = test_zonotope_volume
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       26-July-2016
@@ -24,42 +24,41 @@ function res = test_zonotope_volume
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+res = true(0);
+
 % empty set
-res_e = (volume(zonotope()) == 0);
+Z_empty = zonotope.empty(2);
+res(end+1,1) = volume(Z_empty) == 0;
 
-% create zonotope
+% 2D zonotope
 Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
-
-%% obtain result
 vol = volume(Z1);
-
-% true result 1
 true_vol = 80;
+res(end+1,1) = withinTol(vol,true_vol);
 
-res_int(1) = withinTol(vol,true_vol);
-
-%% compare to interval
+% compare to interval
 I1 = interval(Z1);
 volInt = volume(I1);
 % convert back to zonotope
 IZ1 = zonotope(I1);
 volIntZon = volume(IZ1); % has to be equal to interval volume
 
-res_int(2) = vol < volInt;
-res_int(3) = withinTol(volIntZon,volInt);
+res(end+1,1) = vol < volInt;
+res(end+1,1) = withinTol(volIntZon,volInt);
 
-%% approximate computation
+% approximate computation
 % order reduction
 volApprox_red = volume(Z1, 'reduce', 1);
 true_vol_approx_red = 122.8162136821466106;
-res_int(4) = withinTol(volApprox_red,true_vol_approx_red);
+res(end+1,1) = withinTol(volApprox_red,true_vol_approx_red);
 
 % Alamo technique
 volApprox_red = volume(Z1, 'alamo');
 true_vol_approx_red = 48.9897948556635612;
-res_int(5) = withinTol(volApprox_red,true_vol_approx_red);
+res(end+1,1) = withinTol(volApprox_red,true_vol_approx_red);
 
-%% final result
-res = all(res_int) && res_e;
+
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

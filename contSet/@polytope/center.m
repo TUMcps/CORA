@@ -1,6 +1,5 @@
 function c = center(P)
-% center - Computes the Chebyshev center of a given polytope; for unbounded
-%    polytopes, we return a NaN-vector as the center
+% center - Computes the Chebyshev center of a given polytope
 %
 % Syntax:
 %    c = center(P)
@@ -27,6 +26,7 @@ function c = center(P)
 % Written:       28-March-2022
 % Last update:   14-December-2022 (MW, add call to MOSEK)
 %                27-July-2023 (MW, add fast method for 1D)
+%                02-January-2024 (MW, fix fully empty polytopes)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -35,8 +35,8 @@ function c = center(P)
 n = dim(P);
 
 % Check if polytope is empty
-if isemptyobject(P)
-    c = zeros(n,0); return;
+if representsa_(P,'fullspace',0)
+    c = NaN(n,1); return;
 end
 
 % fast and simple computation for 1D
@@ -66,7 +66,7 @@ if isempty(P.A) && ~isempty(P.Ae)
     % minimal halfspace representation: if two constraints are aligned and
     % cannot be fulfilled at the same time, an empty polytope is returned
     P_ = compact_(P,'Ae',1e-10);
-    if isemptyobject(P_)
+    if ~isempty(P.emptySet.val) && P.emptySet.val
         c = double.empty(n,0); return;
     end
 

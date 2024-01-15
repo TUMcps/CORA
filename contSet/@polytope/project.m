@@ -53,7 +53,7 @@ function P_out = project(P,dims)
 
     % check emptiness
     if representsa_(P,'emptySet',eps)
-	    P_out = polytope(zeros(0,n),[],zeros(0,n),[]);
+	    P_out = polytope.empty(n);
 	    return;
     end
 

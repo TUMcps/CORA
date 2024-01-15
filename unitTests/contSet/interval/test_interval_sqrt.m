@@ -14,50 +14,44 @@ function res = test_interval_sqrt
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       29-August-2019
-% Last update:   08-August-2020 (add random tests)
+% Last update:   04-December-2023 (MW, add empty and unbounded cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
+res = true(0);
+tol = 1e-9;
 
-% 1. analytical tests -----------------------------------------------------
+% empty
+I = interval.empty(2);
+I_sqrt = sqrt(I);
+res(end+1,1) = representsa(I_sqrt,'emptySet');
 
-% create interval (all positive)
-lower = [4; 9; 4; 16; 1];
-upper = [9; 25; 36; 100; 4];
-Int = interval(lower, upper);
+% bounded (only perfect squares)
+I = interval([4; 9; 4; 16; 1], [9; 25; 36; 100; 4]);
+I_sqrt = sqrt(I);
+I_true = interval([2; 3; 2; 4; 1], [3; 5; 6; 10; 2]);
+res(end+1,1) = isequal(I_sqrt,I_true,tol);
 
-% compute sqrt
-Int_sqrt = sqrt(Int);
+% unbounded
+I = interval([2;4],[Inf;9]);
+I_sqrt = sqrt(I);
+I_true = interval([sqrt(2);2],[Inf;3]);
+res(end+1,1) = isequal(I_sqrt,I_true,tol);
 
-% true solution
-lower_true = [2; 3; 2; 4; 1];
-upper_true = [3; 5; 6; 10; 2];
-Int_true = interval(lower_true, upper_true);
-
-% compare results
-res_val(1) = Int_sqrt == Int_true;
-
-
-% values of inf / sup below zero should throw error
-dim = 5;
-lower_rand = -rand(dim,1);
-upper_rand = rand(dim,1);
-Int = interval(lower_rand, upper_rand);
+% out of bounds
+I = interval(-2,1);
 try
-    Int_sqrt = sqrt(Int);
-    res_val(2) = false;
-catch
-    res_val(2) = true;
+    sqrt(I);
+    res = false;
 end
 
 
 % add results
-res = all(res_val);
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

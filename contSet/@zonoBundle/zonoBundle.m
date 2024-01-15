@@ -56,6 +56,11 @@ methods
     % class constructor
     function obj = zonoBundle(varargin)
 
+        % 0. avoid empty instantiation
+        if nargin == 0
+            throw(CORAerror('CORA:noInputInSetConstructor'));
+        end
+
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'zonoBundle')
             obj = varargin{1}; return
@@ -111,6 +116,7 @@ end
 
 methods (Static = true)
     zB = generateRandom(varargin) % generate random zonotope bundle
+    zB = empty(n) % instantiates an empty zonotope bundle
 end
 
 end

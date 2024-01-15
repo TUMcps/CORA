@@ -24,10 +24,7 @@ function res = test_intervalMatrix_matZonotope
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% empty interval matrix
-intMat = intervalMatrix();
-matZ = matZonotope(intMat);
-res = all(dim(matZ) == [0,0]);
+res = true(0);
 
 % only one column
 c = [1 2 3 4]';

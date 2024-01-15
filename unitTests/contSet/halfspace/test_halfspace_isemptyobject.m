@@ -23,14 +23,19 @@ function res = test_halfspace_isemptyobject
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% instantiate halfspaces
-hs1 = halfspace();
+res = true(0);
 
+% empty halfspace
+hs = halfspace.empty(2);
+res(end+1,1) = ~isemptyobject(hs);
+
+% 3D halfspace
 a = [3; 2; -1];
 b = 0.5;
-hs2 = halfspace(a,b);
+hs = halfspace(a,b);
+res(end+1,1) = ~isemptyobject(hs);
 
-% check results
-res = isemptyobject(hs1) && ~isemptyobject(hs2);
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

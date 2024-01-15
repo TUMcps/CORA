@@ -14,7 +14,7 @@ function res = test_capsule_volume
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       27-July-2021
@@ -22,6 +22,12 @@ function res = test_capsule_volume
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+
+res = true(0);
+
+% empty case
+C = capsule.empty(2);
+res(end+1,1) = volume(C) == 0;
 
 % instantiate capsule as ball
 n = 3;
@@ -32,13 +38,15 @@ C = capsule(c,g,r);
 
 % calculate volume
 vol = volume(C);
-
 % true volume (n-dim sphere)
 vol_true = (pi^(n/2) / gamma(1+n/2)) * r^n;
 
 % compare results
 tol = 1e-9;
-res = withinTol(vol_true,vol,tol);
-res = res && volume(capsule()) == 0;
+res(end+1,1) = withinTol(vol_true,vol,tol);
+
+
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

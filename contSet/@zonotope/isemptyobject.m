@@ -14,8 +14,6 @@ function res = isemptyobject(Z)
 % Example: 
 %    Z = zonotope([2;1]);
 %    isemptyobject(Z); % false
-%    Z = zonotope();
-%    isemptyobject(Z); % true
 %
 % Other m-files required: none
 % Subfunctions: none

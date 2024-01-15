@@ -24,7 +24,7 @@ function res = test_zonoBundle_volume
 % ------------------------------ BEGIN CODE -------------------------------
 
 % fully-empty zonoBundle
-zB = zonoBundle();
+zB = zonoBundle.empty(2);
 val = volume(zB);
 res = val == 0;
 

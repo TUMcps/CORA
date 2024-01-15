@@ -23,23 +23,19 @@ function res = test_polytope_minus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = [];
+res = true(0);
 
-% init polytope
+% 2D, vertex instantiation
 V = [3 2; 0 3; -3 0; -1 -2; 2 -2]';
 P = polytope(V);
-
-% translate
+% translate by vector
 z = [2; 1];
-V_ = [3 2; 0 3; -3 0; -1 -2; 2 -2]' - z;
+V_ = V - z;
 P_ = polytope(V_);
 
-% plot polytopes
-% figure; hold on;
-% plot(P); plot(P_,[1,2],'r');
-
 % 1. check: constraint matrices should be equal
-res(end+1,1) = compareMatrices(P.A' ./ vecnorm(P.A'),P_.A' ./ vecnorm(P_.A'),1e-14);
+res(end+1,1) = compareMatrices(P.A' ./ vecnorm(P.A'),...
+    P_.A' ./ vecnorm(P_.A'),1e-14);
 
 % 2. check: comparison to manual translation
 val1 = zeros(size(P.A))';
@@ -53,6 +49,5 @@ res(end+1,1) = compareMatrices(val1,val2,1e-14);
 
 % combine results
 res = all(res);
-
 
 % ------------------------------ END OF CODE ------------------------------

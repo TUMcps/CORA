@@ -3,7 +3,7 @@ function P_out = plus(P,S)
 %    polytopes or a polytope with a vector
 %
 % Syntax:
-%    P_out = plus(P, S)
+%    P_out = plus(P,S)
 %
 % Inputs:
 %    P - polytope object or numerical vector
@@ -13,14 +13,12 @@ function P_out = plus(P,S)
 %    P_out - polytope after Minkowski addition
 %
 % Example:
-%    A = [2 1; -1 1; -2 -3; 0 -4; 2 -1];
-%    b = ones(5,1);
+%    A = [2 1; -1 1; -2 -3; 0 -4; 2 -1]; b = ones(5,1);
 %    P = polytope(A,b);
 %    v = [2;1];
-%
 %    res = P + v;
 %
-%    figure; hold on
+%    figure; hold on;
 %    plot(P);
 %    plot(res,[1,2],'r');
 %
@@ -48,7 +46,7 @@ equalDimCheck(P,S);
 % dimension
 n = dim(P);
 
-%polytope case
+% polytope + polytope
 if isa(S,"polytope")
     %check for empty polytopes
     if representsa(P, 'emptySet')
@@ -77,7 +75,7 @@ if isa(S,"polytope")
 			V(:,((i-1)*numV1+1):i*numV1,:) = bsxfun(@plus, V1, V2(:,i));
         end
         
-        % init resulting polytope (only vertex representation)
+        % init resulting polytope
         P_out = polytope(V);
         return
     end
@@ -92,31 +90,30 @@ if isa(S,"polytope")
     Ae = [S.Ae -S.Ae; PZe P.Ae];
     be = [S.be; P.be];
 
-    % project resulting polytope to original dimensions
+    % project resulting polytope onto original dimensions
     P_highdim = polytope(A,b,Ae,be);
     P_out = project(P_highdim,1:n);
 
 elseif isnumeric(S)
-
-    x = S(:);
-    A = P.A;
-    b = P.b;
-    Ae = P.Ae;
-    be = P.be;
-
-    if size(A,1) > 0
-        b = b + A*x;
-    end
-    if size(Ae,1) > 0
-        be = be + Ae*x;
+    % avoid addition with matrices
+    if size(S,2) > 1
+        throw(CORAerror('CORA:noops',P,S));
     end
 
-    P_out = polytope(A,b,Ae,be);
+    % shift offsets
+    b = P.b + P.A*S;
+    be = P.be + P.Ae*S;
+
+    % init output polytope
+    P_out = polytope(P.A,b,P.Ae,be);
 
     % shift vertices if V representation is given
     if ~isempty(P.V.val)
-        P_out.V.val = P.V.val + x;
+        P_out.V.val = P.V.val + S;
     end
+
+    % assign properties (same as P)
+    P_out = copyProperties(P,P_out,'noV');
 
 elseif isa(S,'zonotope') || isa(S,'interval') || ...
     isa(S,'conZonotope') || isa(S,'zonoBundle')
@@ -124,11 +121,11 @@ elseif isa(S,'zonotope') || isa(S,'interval') || ...
     P_out = P + S;
 
 elseif isa(S,'polyZonotope')
-
     P_out = S + P;
+
 else
     throw(CORAerror('CORA:noops',P,S));
-
+    
 end
 
 % set properties

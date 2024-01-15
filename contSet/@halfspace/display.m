@@ -28,24 +28,26 @@ function display(hs)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isemptyobject(hs)
-    
-    dispEmptyObj(hs,inputname(1));
-    
-else
-
-    fprintf(newline);
-    disp(inputname(1) + " =");
-    fprintf(newline);
-
-    %display normal vector
-    disp('normal vector: ');
-    disp(hs.c);
-
-    %display distance to origin
-    disp('distance to origin: ');
-    disp(hs.d);
-
+% special cases
+if representsa(hs,'emptySet')
+    dispEmptySet(hs,inputname(1));
+    return
+elseif representsa(hs,'fullspace')
+    dispRn(hs,inputname(1));
+    return
 end
+
+
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
+
+%display normal vector
+disp('normal vector: ');
+disp(hs.c);
+
+%display distance to origin
+disp('distance to origin: ');
+disp(hs.d);
 
 % ------------------------------ END OF CODE ------------------------------

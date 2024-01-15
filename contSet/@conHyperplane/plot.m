@@ -103,7 +103,7 @@ function [V,dims] = aux_preprocess(hyp,dims)
         d = [d;xLim(2);yLim(2);zLim(2);-xLim(1);-yLim(1);-zLim(1)];
     end
     
-    V = lcon2vert(C,d,hyp.h.c(dims)',hyp.h.d)';
+    V = lcon2vert(C,d,hyp.a(dims),hyp.b)';
     dims = 1:length(dims);
 end
 
@@ -115,7 +115,7 @@ function han = aux_plotNd(hyp,V,dims,NVpairs)
         
     else % 3d
         % state space transformation
-        B = gramSchmidt(hyp.h.c);
+        B = gramSchmidt(hyp.a');
         vert_ = B'*V;
         ind = convhull(vert_(2:end,:)');
         

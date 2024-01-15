@@ -15,8 +15,6 @@ function res = isemptyobject(ls)
 %    syms x y; eq = x^2 - y;
 %    ls = levelSet(eq,[x;y],'<=');
 %    isemptyobject(ls); % false
-%    ls = levelSet();
-%    isemptyobject(ls); % true
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -19,14 +19,14 @@ function res = test_conHyperplane_isIntersecting
 % Authors:       Mark Wetzlinger
 % Written:       02-September-2019
 % Last update:   ---
-% Last revision: ---
+% Last revision: 09-January-2024 (MW, reformat)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% TEST 1: Zonotopes -------------------------------------------------------
-% instantiate zonotope
-Z = zonotope([zeros(2,1),[1 1; -1 1]]);
-% plot(Z);
+res = true(0);
+
+% 2D zonotope
+Z = zonotope([0;0],[1 1; -1 1]);
 
 % instantiate halfspaces
 hyp_above = conHyperplane([0 1],3);
@@ -35,27 +35,20 @@ hyp_through = conHyperplane([0 1],1);
 hyp_lowerboundary = conHyperplane([0 1],-2);
 hyp_below = conHyperplane([0 1],-3);
 
-% check if correct results for intersection
 % Z fully contained
-res_above = isIntersecting(hyp_above,Z);
+res(end+1,1) = ~isIntersecting(hyp_above,Z);
 % Z touching halfspace on upper boundary (all contained)
-res_upperboundary = isIntersecting(hyp_upperboundary,Z);
+res(end+1,1) = isIntersecting(hyp_upperboundary,Z);
 % Z partly contained, intersected
-res_through = isIntersecting(hyp_through,Z);
+res(end+1,1) = isIntersecting(hyp_through,Z);
 % Z touching halfspace on lower boundary (all out)
-res_lowerboundary = isIntersecting(hyp_lowerboundary,Z);
+res(end+1,1) = isIntersecting(hyp_lowerboundary,Z);
 % Z fully outside
-res_below = isIntersecting(hyp_below,Z);
+res(end+1,1) = ~isIntersecting(hyp_below,Z);
 
-% compare results
-res_zon = ~res_above && res_upperboundary && res_through && ...
-    res_lowerboundary && ~res_below;
-% -------------------------------------------------------------------------
 
-% TEST 2: Intervals -------------------------------------------------------
-% instantiate zonotope
+% 2D interval
 I = interval([-2; -1],[1; 3]);
-% plot(I);
 
 % instantiate halfspaces
 hyp_above = conHyperplane([1 0],2);
@@ -64,28 +57,19 @@ hyp_through = conHyperplane([1 0],-1);
 hyp_lowerboundary = conHyperplane([1 0],-2);
 hyp_below = conHyperplane([1 0],-4);
 
-% check if correct results for intersection
 % I fully contained
-res_above = isIntersecting(hyp_above,I);
+res(end+1,1) = ~isIntersecting(hyp_above,I);
 % I touching halfspace on upper boundary (all contained)
-res_upperboundary = isIntersecting(hyp_upperboundary,I);
+res(end+1,1) = isIntersecting(hyp_upperboundary,I);
 % I partly contained, intersected
-res_through = isIntersecting(hyp_through,I);
+res(end+1,1) = isIntersecting(hyp_through,I);
 % I touching halfspace on lower boundary (all out)
-res_lowerboundary = isIntersecting(hyp_lowerboundary,I);
+res(end+1,1) = isIntersecting(hyp_lowerboundary,I);
 % I fully outside
-res_below = isIntersecting(hyp_below,I);
+res(end+1,1) = ~isIntersecting(hyp_below,I);
 
-% compare results
-res_int = ~res_above && res_upperboundary && res_through && ...
-    res_lowerboundary && ~res_below;
-% -------------------------------------------------------------------------
 
-% empty set: rewrite using emptySet class
-% hyp_e = conHyperplane();
-% res_e = ~isIntersecting(hyp_above,hyp_e);
-
-% combine tests
-res = res_zon && res_int; % && res_e;
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

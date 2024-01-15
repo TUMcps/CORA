@@ -14,7 +14,7 @@ function res = test_capsule_plus
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       28-August-2019
@@ -23,33 +23,37 @@ function res = test_capsule_plus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% instantiate random capsule
-C = capsule([1; 0], [-4; 3], 1);
+res = true(0);
 
-% Minkowski addition: vector
+% 2D capsule
+c = [1; 0]; g = [-4; 3]; r = 1;
+C = capsule(c,g,r);
+% empty capsule
+C_empty = capsule.empty(2);
+
+% Minkowski sum: vector
 vect = [1; 1];
 C_vect = C + vect;
+C_vect_true = capsule([2; 1], [-4; 3], 1);
 
-% Minkowski addition: capsule
+res(end+1,1) = compareMatrices(C_vect.c,C_vect_true.c);
+res(end+1,1) = compareMatrices(C_vect.g,C_vect_true.g);
+res(end+1,1) = withinTol(C_vect.r,C_vect_true.r);
+
+% Minkowski sum: capsule
 C_add = capsule([0; 1], [sqrt(2); sqrt(2)], 1);
 C_caps = C + C_add;
-
-% true solution
-C_vect_true = capsule([2; 1], [-4; 3], 1);
 C_caps_true = capsule([1; 1], [-4; 3], 4);
 
-% compare solutions
-res_vect(1) = compareMatrices(C_vect.c,C_vect_true.c);
-res_vect(2) = compareMatrices(C_vect.g,C_vect_true.g);
-res_vect(3) = withinTol(C_vect.r,C_vect_true.r);
-res_caps(1) = compareMatrices(C_caps.c,C_caps_true.c);
-res_caps(2) = compareMatrices(C_caps.g,C_caps_true.g);
-res_caps(3) = withinTol(C_caps.r,C_caps_true.r);
+res(end+1,1) = compareMatrices(C_caps.c,C_caps_true.c);
+res(end+1,1) = compareMatrices(C_caps.g,C_caps_true.g);
+res(end+1,1) = withinTol(C_caps.r,C_caps_true.r);
 
-% empty set
-res_e = representsa_(C_add + capsule(),'emptySet',eps);
+% Minkowski sum: empty set
+res(end+1,1) = representsa_(C + C_empty,'emptySet',eps);
 
-% add results
-res = all([res_vect, res_caps, res_e]);
+
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------
