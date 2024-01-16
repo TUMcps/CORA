@@ -51,9 +51,9 @@ if strcmp(type,'LRbrackets')
     %generate symbolic states
     if isprop(obj,'dim') && obj.dim>0
         for i=1:obj.dim
-            command=['x(',num2str(i),',1)=sym(''xL',num2str(i),'R'');'];
+            command=['x(',num2str(i),',1)=sym(''xL',num2str(i),'R'',"real");'];
             eval(command);
-            command=['dx(',num2str(i),',1)=sym(''dxL',num2str(i),'R'');'];
+            command=['dx(',num2str(i),',1)=sym(''dxL',num2str(i),'R'',"real");'];
             eval(command);
         end
     else
@@ -64,9 +64,9 @@ if strcmp(type,'LRbrackets')
     %generate symbolic inputs
     if isprop(obj,'nrOfInputs') && obj.nrOfInputs>0
         for i=1:obj.nrOfInputs 
-            command=['u(',num2str(i),',1)=sym(''uL',num2str(i),'R'');'];
+            command=['u(',num2str(i),',1)=sym(''uL',num2str(i),'R'',"real");'];
             eval(command);
-            command=['du(',num2str(i),',1)=sym(''duL',num2str(i),'R'');'];
+            command=['du(',num2str(i),',1)=sym(''duL',num2str(i),'R'',"real");'];
             eval(command);  
         end  
     else
@@ -77,9 +77,9 @@ if strcmp(type,'LRbrackets')
     %generate symbolic constraint states
     if isprop(obj,'nrOfConstraints') && obj.nrOfConstraints>0
         for i=1:obj.nrOfConstraints
-            command=['y(',num2str(i),',1)=sym(''yL',num2str(i),'R'');'];
+            command=['y(',num2str(i),',1)=sym(''yL',num2str(i),'R'',"real");'];
             eval(command);
-            command=['dy(',num2str(i),',1)=sym(''dyL',num2str(i),'R'');'];
+            command=['dy(',num2str(i),',1)=sym(''dyL',num2str(i),'R'',"real");'];
             eval(command);
         end 
     else
@@ -90,9 +90,9 @@ if strcmp(type,'LRbrackets')
     % generate symbolic outputs
     if isprop(obj,'nrOfOutputs') && obj.nrOfOutputs>0
         for i=1:obj.nrOfOutputs 
-            command=['o(',num2str(i),',1)=sym(''oL',num2str(i),'R'');'];
+            command=['o(',num2str(i),',1)=sym(''oL',num2str(i),'R'',"real");'];
             eval(command);
-            command=['do(',num2str(i),',1)=sym(''doL',num2str(i),'R'');'];
+            command=['do(',num2str(i),',1)=sym(''doL',num2str(i),'R'',"real");'];
             eval(command);  
         end  
     else
@@ -103,7 +103,7 @@ if strcmp(type,'LRbrackets')
     %generate symbolic parameters
     if isprop(obj,'nrOfParam') && obj.nrOfParam>0
         for i=1:obj.nrOfParam
-            command=['p(',num2str(i),',1)=sym(''pL',num2str(i),'R'');'];
+            command=['p(',num2str(i),',1)=sym(''pL',num2str(i),'R'',"real");'];
             eval(command);
         end 
     else
@@ -114,9 +114,9 @@ else
     %generate symbolic states
     if isprop(obj,'dim') && obj.dim>0
         for i=1:obj.dim
-            command=['x(',num2str(i),',1)=sym(''x',num2str(i),''');'];
+            command=['x(',num2str(i),',1)=sym(''x',num2str(i),''',"real");'];
             eval(command);
-            command=['dx(',num2str(i),',1)=sym(''dx',num2str(i),''');'];
+            command=['dx(',num2str(i),',1)=sym(''dx',num2str(i),''',"real");'];
             eval(command);
         end
     else
@@ -127,9 +127,9 @@ else
     %generate symbolic inputs
     if isprop(obj,'nrOfInputs') && obj.nrOfInputs>0
         for i=1:obj.nrOfInputs
-            command=['u(',num2str(i),',1)=sym(''u',num2str(i),''');'];
+            command=['u(',num2str(i),',1)=sym(''u',num2str(i),''',"real");'];
             eval(command);
-            command=['du(',num2str(i),',1)=sym(''du',num2str(i),''');'];
+            command=['du(',num2str(i),',1)=sym(''du',num2str(i),''',"real");'];
             eval(command);
         end
     else
@@ -140,9 +140,9 @@ else
     %generate symbolic outputs
     if isprop(obj,'nrOfOutputs') && obj.nrOfOutputs>0
         for i=1:obj.nrOfOutputs
-            command=['o(',num2str(i),',1)=sym(''o',num2str(i),''');'];
+            command=['o(',num2str(i),',1)=sym(''o',num2str(i),''',"real");'];
             eval(command);
-            command=['do(',num2str(i),',1)=sym(''do',num2str(i),''');'];
+            command=['do(',num2str(i),',1)=sym(''do',num2str(i),''',"real");'];
             eval(command);
         end
     else
@@ -153,9 +153,9 @@ else
     %generate symbolic constraint states
     if isprop(obj,'nrOfConstraints') && obj.nrOfConstraints>0
         for i=1:obj.nrOfConstraints
-            command=['y(',num2str(i),',1)=sym(''y',num2str(i),''');'];
+            command=['y(',num2str(i),',1)=sym(''y',num2str(i),''',"real");'];
             eval(command);
-            command=['dy(',num2str(i),',1)=sym(''dy',num2str(i),''');'];
+            command=['dy(',num2str(i),',1)=sym(''dy',num2str(i),''',"real");'];
             eval(command);
         end  
     else
@@ -166,7 +166,7 @@ else
     %generate symbolic parameters
     if isprop(obj,'nrOfParam') && obj.nrOfParam
         for i=1:obj.nrOfParam
-            command=['p(',num2str(i),',1)=sym(''p',num2str(i),''');'];
+            command=['p(',num2str(i),',1)=sym(''p',num2str(i),''',"real");'];
             eval(command);
         end   
     else
