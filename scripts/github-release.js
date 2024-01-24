@@ -42,6 +42,6 @@ getJSON('https://api.github.com/repos/TUMcps/CORA/commits?per_page=1',
             date = commit.author.date;
 
             container = document.getElementById("release-version");
-            container.innerHTML = `<b>${message.split('\n')[0]}</b> <span class="text-secondary">(updated ${timeSince(Date.parse(date))} ago)</span>`;
+            container.innerHTML = `<object class="align-middle" data="https://img.shields.io/static/v1?label=Last update&message=${timeSince(Date.parse(date))} ago&color=4596FF" alt="TUMcps - CORA"></object>`;
         }
     });

@@ -6,6 +6,8 @@ box on;
 drawnow;
 
 % make tikz image
+% please ask for access of this repo: https://gitlab.lrz.de/cora/matlab2tikz
+% then download it and add it to the Matlab path
 tikzpath = strrep(figpath, '.fig', '.tikz');
 matlab2tikz(tikzpath, 'relativePrecision', 5e-3, ...
     'floatFormatX', '%.4f', 'floatFormatY', '%.4f', ...
