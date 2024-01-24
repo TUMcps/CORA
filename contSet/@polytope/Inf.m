@@ -21,18 +21,19 @@ function P_out = Inf(n)
 
 % Authors:       Mark Wetzlinger
 % Written:       16-December-2023
-% Last update:   ---
+% Last update:   15-January-2024 (TL, parse input)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if n <= 0
-    throw(CORAerror('CORA:wrongValue','first','positive'));
+% parse input
+if nargin == 0
+    n = 0;
 end
+inputArgsCheck({{n,'att','numeric',{'scalar','nonnegative'}}});
 
 % the polytope 0*x <= 1 is R^n
-nrRows = min([n,1]);
-P_out = polytope(zeros(nrRows,n),ones(nrRows,1));
+P_out = polytope(zeros(0,n),ones(0,1));
 % assign properties
 P_out.emptySet.val = false;
 P_out.bounded.val = false;

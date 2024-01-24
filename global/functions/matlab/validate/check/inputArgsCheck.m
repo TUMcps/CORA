@@ -44,7 +44,7 @@ function inputArgsCheck(inputArgs)
 
 % Authors:       Mingrui Wang, Mark Wetzlinger
 % Written:       30-May-2022
-% Last update:   ---
+% Last update:   23-January-2024 (MW, exact match for strings)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -164,10 +164,8 @@ for i = 1:nrInputArgs
                 validateStr = inputArg(3);
             end
 
-            % check attributes using built-in MATLAB function
-            try
-                validatestring(arg_name,validateStr);
-            catch
+            % check exact match with admissible values
+            if ~ismember(arg_name,validateStr)
                 % generate string of admissible values (user info)
                 validrange = ['''', strjoin(validateStr,"', '"), ''''];
 

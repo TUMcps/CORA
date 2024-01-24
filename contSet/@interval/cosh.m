@@ -30,44 +30,27 @@ function I = cosh(I)
 % Written:       05-February-2016
 % Last update:   21-February-2016 (DG, the matrix case is rewritten)
 %                21-May-2022 (MW, remove new instantiation)
+%                18-January-2024 (MW, simplify)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% scalar case
-if isnumeric(I)
+lb = I.inf;
+ub = I.sup;
 
-    if I.sup <= 0
-        I.inf = cosh(I.sup);
-        I.sup = cosh(I.inf);
-    elseif I.inf >= 0
-        I.inf = cosh(I.inf);
-        I.sup = cosh(I.sup);
-    else
-        I.inf = 1;
-        I.sup = cosh( max( abs(I.inf), abs(I.sup) ) );
-    end
-        
-else
+% case 1: upper bound smaller than 0
+ind1 = ub <= 0;
+I.inf(ind1) = cosh(ub(ind1));
+I.sup(ind1) = cosh(lb(ind1));
 
-    lb = I.inf;
-    ub = I.sup;
-    
-    % find indices
-    
-    ind1 = find(ub <= 0);   
-    I.inf(ind1) = cosh(ub(ind1));
-    I.sup(ind1) = cosh(lb(ind1));
-    
-    ind2 = find(lb >= 0);    
-    I.inf(ind2) = cosh(lb(ind2));
-    I.sup(ind2) = cosh(ub(ind2));
-    
-    ind3 = find(lb <0 & ub > 0);    
-    I.inf(ind3) = 1;
-    I.sup(ind3) = cosh( max( abs(lb(ind3)), abs(ub(ind3)) ) );
-       
-end
+% case 1: lower bound larger than 0
+ind2 = lb >= 0;
+I.inf(ind2) = cosh(lb(ind2));
+I.sup(ind2) = cosh(ub(ind2));
 
+% remaining entries
+ind3 = ~ind1 & ~ind2;
+I.inf(ind3) = 1;
+I.sup(ind3) = cosh( max( abs(lb(ind3)), abs(ub(ind3)) ) );
 
 % ------------------------------ END OF CODE ------------------------------

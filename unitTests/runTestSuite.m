@@ -87,6 +87,8 @@ switch testSuite
         prefix = 'test';
     case 'long'
         prefix = 'testLong';
+    case 'flaky'
+        prefix = 'testFlaky';
     case 'intlab'
         prefix = 'testINTLAB';
     case 'mosek'

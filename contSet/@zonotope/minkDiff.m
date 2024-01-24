@@ -101,7 +101,8 @@ end
 % check if subtrahend is zonotope
 if ~isa(subtrahend,'zonotope')
     if ~(strcmp(method, 'outer:scaling') && isa(subtrahend,'interval'))
-        warning('CORA warning: zonotope/minkDiff: Subtrahend is not a zonotope. Enclosing it with a zonotope.')
+        warning(['CORA warning: zonotope/minkDiff: '...
+            'Subtrahend is not a zonotope. Enclosing it with a zonotope.'])
     end
     % enclose second set with zonotope
     subtrahend = zonotope(subtrahend);
@@ -132,7 +133,8 @@ if isFullDim(minuend)
             Z = aux_minkDiffZono(minuend, subtrahend, method);
 
         else
-            throw(CORAerror('CORA:wrongValue', 'third', 'No exact algorithm found: Sets have to be 2-dimensional or algined.'))
+            throw(CORAerror('CORA:wrongValue', 'third',...
+                'No exact algorithm found: Sets have to be 2-dimensional or aligned.'))
         end
 
     elseif strcmp(method, 'outer') || strcmp(method, 'outer:coarse') || ...
@@ -187,11 +189,15 @@ else
 
             else
                 % no solution exists
-                throw(CORAerror('CORA:wrongValue', 'first/second', 'for non full-dimensional zonotopes: projection matrix found by svd has to be equal'));
+                throw(CORAerror('CORA:wrongValue', 'first/second',...
+                    ['for non full-dimensional zonotopes: ', ...
+                    'projection matrix found by svd has to be equal']));
             end
         else
             % no solution exists
-            throw(CORAerror('CORA:wrongValue', 'first/second', 'for non full-dimensional zonotopes: rank of generator matrix must be equal'));
+            throw(CORAerror('CORA:wrongValue', 'first/second',...
+                ['for non full-dimensional zonotopes: ', ...
+                'rank of generator matrix must be equal']));
         end
     end
 end
@@ -280,7 +286,8 @@ elseif strcmp(method, 'approx')
 
 else
     % should already be caught before
-    throw(CORAerror('CORA:specialError',sprintf("Unknown method: '%s'",method)))
+    throw(CORAerror('CORA:specialError',...
+        sprintf("Unknown method: '%s'",method)))
 end
 
 % instantiate Z
@@ -295,7 +302,8 @@ function Z = aux_minkDiffOuterInterval(minuend,subtrahend)
 % subtrahend must be an interval
 
 if ~representsa_(subtrahend,'interval',eps)
-    throw(CORAerror('CORA:wrongValue','second',sprintf("interval (using method='outer:scaling')")))
+    throw(CORAerror('CORA:wrongValue','second',...
+        sprintf("interval (using method='outer:scaling')")))
 end
 
 % scale using interval enclosure

@@ -81,6 +81,8 @@ A = [1 0; -1 0; 0 1]; b = [1;1;1];
 P = polytope(A,b);
 p = randPoint(P);
 res(end+1,1) = contains(P,p);
+p = randPoint(P,1,'extreme');
+res(end+1,1) = contains(P,p);
 
 
 % combine results

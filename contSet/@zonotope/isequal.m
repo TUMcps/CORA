@@ -65,15 +65,16 @@ if ~all(withinTol(Z1.c,Z2.c,tol))
 end
 
 % delete zeros from generator matrices
-G1 = compact_(Z1,'zeros',0).G;
-G2 = compact_(Z2,'zeros',0).G;
+G1 = compact_(Z1,'zeros',tol).G;
+G2 = compact_(Z2,'zeros',tol).G;
 
 % compare number of generators
 if size(G1,2) ~= size(G2,2)
     return
 end
 
-% compare generator matrices
-res = compareMatrices(G1,G2,tol);
+% compare generator matrices: must match with no remainder, order is
+% irrelevant, sign may be inverted
+res = compareMatrices(G1,G2,tol,'equal',false,false);
 
 % ------------------------------ END OF CODE ------------------------------

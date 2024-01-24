@@ -2,7 +2,7 @@ function color = CORAcolor(identifier, varargin)
 % CORAcolor - returns the CORA default colors by identifier
 %
 % Syntax:
-%    color = getCORAcolor(identifier)
+%    color = CORAcolor(identifier)
 %
 % Inputs:
 %    identifier - name of CORA colormap, one of:

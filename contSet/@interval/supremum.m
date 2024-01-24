@@ -18,7 +18,7 @@ function res = supremum(I)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       25-June-2015

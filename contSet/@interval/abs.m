@@ -53,8 +53,8 @@ if isscalar(I)
 else
     
     % find negative indices (if infimum is greater than zero, the absolute value has no effect)
-    ind = find(I.inf < 0 & I.sup > 0);  % For [-a, +b] case
-    ind1 = find(I.inf < 0 & I.sup <= 0); % For [-a, -b] case
+    ind = I.inf < 0 & I.sup > 0;  % For [-a, +b] case
+    ind1 = I.inf < 0 & I.sup <= 0; % For [-a, -b] case
     
     res.sup(ind) = max(abs(I.inf(ind)), abs(I.sup(ind))); % order of computation matters
     res.inf(ind) = abs(0*I.inf(ind));

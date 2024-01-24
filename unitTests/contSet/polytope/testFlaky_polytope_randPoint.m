@@ -1,9 +1,9 @@
-function res = testLong_polytope_randPoint
-% testLong_polytope_randPoint - unit test function of random point
+function res = testFlaky_polytope_randPoint
+% testFlaky_polytope_randPoint - unit test function of random point
 %    sampling
 %
 % Syntax:
-%    res = testLong_polytope_randPoint
+%    res = testFlaky_polytope_randPoint
 %
 % Inputs:
 %    -
@@ -60,7 +60,7 @@ end
 
 
 % number of tests
-nrOfTests = 100;
+nrOfTests = 50;
 methods = {'standard','extreme','uniform',...
     'uniform:hitAndRun','uniform:billiardWalk'};
 

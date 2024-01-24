@@ -292,6 +292,10 @@ P = project(P4,[2,3]);
 res(end+1,1) = ~isempty(P.minHRep.val) && P.minHRep.val;
 res(end+1,1) = isempty(P.minVRep.val);
 
+% test empty polytope
+P = polytope([],[],0,1);
+P = compact(P);
+res(end+1,1) = representsa_(P,'emptySet');
 
 % combine results
 res = all(res);

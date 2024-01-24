@@ -121,7 +121,10 @@ switch type
         end
 
     case 'fullspace'
-        res = false;
+        res = representsa_(polytope(hs),'fullspace',tol);
+        if nargout == 2 && res
+            S = fullspace(dim(hs));
+        end
 
 end
 

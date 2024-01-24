@@ -20,6 +20,7 @@ function res = test_docstring()
 % Written:       18-November-2022
 % Last update:   21-April-2023 (unix bugfix: author follows empty line)
 %                19-July-2023 (ignore script files)
+%                19-January-2024 (stricter syntax check)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -131,7 +132,7 @@ for i=1:length(files)
         % should have at least one exemplary call
         cnt = 0;
         while lcnt <= length(lines) && startsWith(lines{lcnt},'%') && ~isEmptyCommentLine(lines{lcnt})
-            if contains(lines{lcnt}, filename)
+            if ~isempty(regexp(lines{lcnt}, sprintf('[\\.= ]%s(\\(.*|)$',filename), 'once','emptymatch'))
                 cnt = cnt + 1;
             end
             lcnt = lcnt + 1;
@@ -420,7 +421,7 @@ end
 
 if issue_count > 0
     fprintf("Found errors in docstring in %i files.\n", issue_count);
-    fprintf("Try to execute: fix_docstring(file_path)")
+    fprintf("Try to execute: fix_docstring(<file_path>)\n")
 end
 
 end

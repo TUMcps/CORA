@@ -3,6 +3,7 @@ function res = in(S1,S2,varargin)
 %
 % Syntax:
 %    res = contains(S1,S2,tol)
+%    res = in(S1,S2,tol) % deprecated
 %
 % Inputs:
 %    S1 - contSet object

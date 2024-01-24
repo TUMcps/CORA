@@ -75,7 +75,7 @@ end
 if ~compareMatrices([pZ1.G;E1],[pZ2.G;E2], tol)
     return
 end
-if ~compareMatrices(pZ1.GI,pZ2.GI, tol)
+if ~compareMatrices(pZ1.GI,pZ2.GI, tol, 'equal', false, false)
     return
 end
 if ~all(withinTol(pZ1.c, pZ2.c, tol))

@@ -21,14 +21,16 @@ function I = Inf(n)
 
 % Authors:       Mark Wetzlinger
 % Written:       09-January-2024
-% Last update:   ---
+% Last update:   15-January-2024 (TL, parse input)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if n < 0
-    throw(CORAerror('CORA:wrongValue','first','nonnegative'));
+% parse input
+if nargin == 0
+    n = 0;
 end
+inputArgsCheck({{n,'att','numeric',{'scalar','nonnegative'}}});
 
 I = interval(-Inf(n,1),Inf(n,1));
 

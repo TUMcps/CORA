@@ -33,50 +33,31 @@ function I = atanh(I)
 % Last update:   21-February-2016 (DG, Errors are fixed, the matrix case is rewritten)
 %                05-May-2020 (MW, standardized error message)
 %                21-May-2022 (MW, remove new instantiation)
+%                18-January-2024 (MW, simplify)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% scalar case
-if isnumeric(I)
+% read out bounds
+lb = I.inf;
+ub = I.sup;
 
-    if ((I.inf < -1) && (I.sup > 1)) || (I.inf > 1) || (I.sup < -1)
-        I.inf = NaN;
-        I.sup = NaN;
-    elseif (I.inf < -1) && (I.sup <= 1)
-        I.inf = NaN;
-        I.sup = atanh(I.sup);
-    elseif (I.inf >= -1) && (I.sup > 1)
-        I.inf = atanh(I.inf);
-        I.sup = NaN;
-    else
-        I.inf = atanh(I.inf);
-        I.sup = atanh(I.sup);
-    end
-        
-else
+% find indices
+ind1 = (lb < -1 & ub > 1) | (lb > 1) | (ub < -1);
+I.inf(ind1) = NaN;
+I.sup(ind1) = NaN;
 
-    lb = I.inf;
-    ub = I.sup;
-    
-    % find indices
-    ind1 = find((lb < -1 & ub > 1) | (lb > 1) | (ub < -1));   
-    I.inf(ind1) = NaN;
-    I.sup(ind1) = NaN;
-    
-    ind2 = find(lb < -1 & ub >= -1 & ub <= 1);    
-    I.inf(ind2) = NaN;
-    I.sup(ind2) = atanh(I.sup(ind2));
-    
-    ind3 = find(lb >= -1 & lb <= 1 & ub > 1);    
-    I.inf(ind3) = atanh(I.inf(ind3));
-    I.sup(ind3) = NaN;
-    
-    ind4 = find(lb >= -1 & ub <= 1);    
-    I.inf(ind4) = atanh(I.inf(ind4));
-    I.sup(ind4) = atanh(I.sup(ind4));
-       
-end
+ind2 = lb < -1 & ub >= -1 & ub <= 1;
+I.inf(ind2) = NaN;
+I.sup(ind2) = atanh(I.sup(ind2));
+
+ind3 = lb >= -1 & lb <= 1 & ub > 1;
+I.inf(ind3) = atanh(I.inf(ind3));
+I.sup(ind3) = NaN;
+
+ind4 = lb >= -1 & ub <= 1;
+I.inf(ind4) = atanh(I.inf(ind4));
+I.sup(ind4) = atanh(I.sup(ind4));
 
 % return error if NaN occures
 if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))

@@ -1,12 +1,12 @@
 function [res,S] = representsa(S,type,varargin)
-% representsa_ - this function overloads the contSet/representsa function
+% representsa - this function overloads the contSet/representsa function
 %     for 'numeric' variables
 %
 % Syntax:
-%    res = representsa_(S,type)
-%    res = representsa_(S,type,tol)
-%    [res,S] = representsa_(S,type)
-%    [res,S] = representsa_(S,type,tol)
+%    res = representsa(S,type)
+%    res = representsa(S,type,tol)
+%    [res,S] = representsa(S,type)
+%    [res,S] = representsa(S,type,tol)
 %
 % Inputs:
 %    S - numeric vector/matrix

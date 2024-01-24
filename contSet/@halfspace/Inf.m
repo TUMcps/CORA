@@ -21,14 +21,16 @@ function hs = Inf(n)
 
 % Authors:       Mark Wetzlinger
 % Written:       09-January-2024
-% Last update:   ---
+% Last update:   15-January-2024 (TL, parse input)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if n <= 0
-    throw(CORAerror('CORA:wrongValue','first','positive'));
+% parse input
+if nargin == 0
+    n = 0;
 end
+inputArgsCheck({{n,'att','numeric',{'scalar','nonnegative'}}});
 
 % halfspace 0*x <= 1 is fulfilled for all values for x
 hs = halfspace(zeros(1,n),1);

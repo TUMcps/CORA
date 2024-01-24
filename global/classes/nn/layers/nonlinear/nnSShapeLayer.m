@@ -2,7 +2,7 @@ classdef (Abstract) nnSShapeLayer < nnActivationLayer
 % nnSShapeLayer - abstract class for S-shape like layers (sigmoid, tanh)
 %
 % Syntax:
-%    nnSShapeLayer - abstract class
+%    nnSShapeLayer
 %
 % Inputs:
 %    name - name of the layer, defaults to type

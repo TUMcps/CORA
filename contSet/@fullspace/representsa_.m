@@ -118,6 +118,7 @@ switch type
 
     case 'fullspace'
         % obviously true
+        res = true;
         if nargout == 2
             S = fs;
         end

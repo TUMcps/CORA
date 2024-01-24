@@ -41,6 +41,7 @@ function p = randPoint_(Z,N,type,varargin)
 % Last update:   25-June-2021 (MP, add type gaussian)
 %                19-August-2022 (MW, integrate standardized pre-processing)
 %                22-May-2023 (AK, implemented uniform sampling)
+%                20-January-2023 (TL, added radius method)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -131,6 +132,9 @@ elseif strcmp(type,'uniform') || strcmp(type,'uniform:billiardWalk')
     p = aux_randPointBilliard(Z, N);
 elseif strcmp(type,'uniform:hitAndRun')
     p = aux_randPointHitAndRun(Z, N);
+
+elseif strcmp(type,'radius')
+    p = aux_randPointRadius(Z,N);
 
 else
     throw(CORAerror('CORA:noSpecificAlg',type,Z));
@@ -426,6 +430,16 @@ function p = aux_randPointBilliard(Z,N)
         end
     end
     p = U * p + c;
+end
+
+function p = aux_randPointRadius(Z,N)
+
+% sample random points on boundary to obtain radii
+radii = aux_getRandomBoundaryPoints(Z,N) - Z.c;
+
+% sample semi-uniformly within 'sphere'
+p = Z.c + nthroot(rand(1,N),dim(Z)).*radii;
+
 end
 
 

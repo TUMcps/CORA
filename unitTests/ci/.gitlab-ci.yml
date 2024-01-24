@@ -131,6 +131,12 @@ runTestSuiteNN:
     - if: $DO_CI == "true" && $CI_COMMIT_BRANCH =~ "/^nn-.*/"
       when: always
 
+# run flaky tests
+runTestSuiteFlaky:
+  extends: .base-run-ext
+  variables:
+    testSuite: 'flaky'
+
 # Examples test stage ---------------------------------------------------------
 
 # extends base run settings

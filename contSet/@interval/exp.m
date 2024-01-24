@@ -26,12 +26,13 @@ function I = exp(I)
 
 % Authors:       Matthias Althoff
 % Written:       25-June-2015
-% Last update:   ---
+% Last update:   18-January-2024 (MW, avoid constructor call)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%exponential function is monotonic -> apply exp to infima/suprema
-I = interval(exp(I.inf), exp(I.sup));
+% exponential function is monotonic -> apply exp to infima/suprema
+I.inf = exp(I.inf);
+I.sup = exp(I.sup);
 
 % ------------------------------ END OF CODE ------------------------------

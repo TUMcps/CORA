@@ -22,7 +22,7 @@ function res = sum(I,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       05-August-2016

@@ -33,6 +33,7 @@ function pt = randPoint_(P,N,type,varargin)
 % Written:       30-October-2020
 % Last update:   25-June-2021 (MP, add type gaussian)
 %                25-May-2023 (AK, added uniform sampling)
+%                18-January-2024 (MW, fix unbounded case in extreme)
 % Last revision: 04-April-2023 (MW, restructure)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -58,7 +59,7 @@ function pt = randPoint_(P,N,type,varargin)
     
     if strcmp(type,'standard')
         for i = 1:N
-            pt(:,i) = aux_randPointNormal(P);
+            pt(:,i) = aux_randPointStandard(P);
         end
     elseif strcmp(type,'extreme')
         for i = 1:N
@@ -80,7 +81,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function pt = aux_randPointNormal(P)
+function pt = aux_randPointStandard(P)
 % generate random point within the polytope
 
     % draw n+1 random extreme points
@@ -89,13 +90,6 @@ function pt = aux_randPointNormal(P)
     
     for i = 1:size(points,2)
         points(:,i) = aux_randPointExtreme(P); 
-    end
-
-    % remove points which are infinity due to unboundedness
-    points = points(:,~any(isinf(points),1));
-    if isempty(points)
-        throw(CORAerror('CORA:specialError',...
-            'Could not determine any point within the polytope.'));
     end
 
     % interpolate between the points
@@ -108,21 +102,22 @@ end
 
 function pt = aux_randPointExtreme(P)
 % generate random point on the polytope boundary
-        
-    % center polytope at origin
-    c = center(P);
-    P = P - c;
-       
-    % select random direction, normalize
-    n = length(c);
-    d = rand(n,1) - 0.5*ones(n,1);
-    d = d./norm(d);
-        
-    % compute farthest point in this direction that is still in polytope
-    [~,x] = supportFunc_(P,d,'upper');
 
-    % back-translation
-    pt = x + c;
+    if ~isBounded(P)
+        % go along halfspace vectors to find finite-valued extreme points
+        A = [P.A; P.Ae; -P.Ae]; b = [P.b; P.be; -P.be];
+        picked_halfspace = randi([1,length(b)]);
+        [~,pt] = supportFunc_(P,A(picked_halfspace,:),'upper');
+        
+    else
+        % select random direction, normalize
+        n = dim(P);
+        d = rand(n,1) - 0.5*ones(n,1);
+        d = d./norm(d);
+
+        % compute farthest point in this direction still inside the polytope
+        [~,pt] = supportFunc_(P,d,'upper');
+    end
     
 end
 

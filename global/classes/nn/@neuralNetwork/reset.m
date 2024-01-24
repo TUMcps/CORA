@@ -1,9 +1,9 @@
 function reset(obj)
-% resetBounds - resets the neural network by deleting all values in all
+% reset - resets the neural network by deleting all values in all
 %    layers used for internal computations
 %
 % Syntax:
-%    resetBounds(obj)
+%    reset(obj)
 %
 % Inputs:
 %    obj - object of class neuralNetwork

@@ -2,7 +2,7 @@ classdef (Abstract) nnLayer < matlab.mixin.Copyable
 % nnLayer - abstract class for nn layers
 %
 % Syntax:
-%    nnLayer - abstract class
+%    nnLayer
 %
 % Inputs:
 %    name - name of the layer, defaults to type

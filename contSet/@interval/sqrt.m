@@ -25,50 +25,33 @@ function I = sqrt(I)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       20-January-2016
 % Last update:   21-February-2016 (DG, the matrix case is rewritten)
 %                05-May-2020 (MW, standardized error message)
+%                18-January-2024 (MW, simplify)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% scalar case
-if isnumeric(I)
+% to preserve the shape
+lb = I.inf;
+ub = I.sup;
 
-    if I.inf >= 0 
-        I.inf = sqrt(I.inf);
-        I.sup = sqrt(I.sup);
-    elseif I.inf < 0 && I.sup >= 0
-        I.inf = NaN;
-        I.sup = sqrt(I.sup);
-    else
-        I.inf = NaN;
-        I.sup = NaN;
-    end
+% find indices
+ind1 = lb >= 0;
+I.inf(ind1) = sqrt(lb(ind1));
+I.sup(ind1) = sqrt(ub(ind1));
 
-else
+ind2 = lb < 0 & ub >= 0;
+I.inf(ind2) = NaN;
+I.sup(ind2) = sqrt(ub(ind2));
 
-    % to preserve the shape    
-    lb = I.inf;
-    ub = I.sup;
-    
-    % find indices
-    ind1 = find(lb >= 0);
-    I.inf(ind1) = sqrt(lb(ind1));
-    I.sup(ind1) = sqrt(ub(ind1));
-    
-    ind2 = find(lb < 0 & ub >= 0);
-    I.inf(ind2) = NaN;
-    I.sup(ind2) = sqrt(ub(ind2));
-    
-    ind3 = find(ub < 0);
-    I.inf(ind3) = NaN;
-    I.sup(ind3) = NaN;      
-
-end
+ind3 = ub < 0;
+I.inf(ind3) = NaN;
+I.sup(ind3) = NaN;
 
 % return error if NaN occures
 if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))

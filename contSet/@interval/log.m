@@ -31,43 +31,18 @@ function I = log(I)
 % Last update:   21-February-2016 (DG, the matrix case is rewritten)
 %                05-May-2020 (MW, addition of error message)
 %                21-May-2022 (MW, remove new instantiation)
+%                18-January-2024 (MW, simplify)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% scalar case
-if isnumeric(I)
-    
-    if I.inf >= 0 
-        I.inf = log(I.inf);
-        I.sup = log(I.sup);
-    elseif I.inf < 0 &&  I.sup >= 0
-        I.inf = NaN;
-        I.sup = log(I.sup);
-    else
-        I.inf = NaN;
-        I.sup = NaN;
-    end
+% compute logarithm
+I.inf = log(I.inf);
+I.sup = log(I.sup);
 
-else
-
-    lb = I.inf;
-    ub = I.sup;
-    
-    % find indices
-    ind1 = find(lb >= 0);   
-    I.inf(ind1) = log(lb(ind1));
-    I.sup(ind1) = log(ub(ind1));
-    
-    ind2 = find(lb < 0 & ub >= 0);    
-    I.inf(ind2) = NaN;
-    I.sup(ind2) = log(ub(ind2));
-    
-    ind3 = find(ub < 0);    
-    I.inf(ind3) = NaN;
-    I.sup(ind3) = NaN;
-       
-end
+% set entries with non-zero imaginary parts to NaN
+I.inf(imag(I.inf) ~= 0) = NaN;
+I.sup(imag(I.sup) ~= 0) = NaN;
 
 % return error if NaN occures
 if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))

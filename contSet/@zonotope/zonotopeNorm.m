@@ -36,21 +36,37 @@ function res = zonotopeNorm(Z,p)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Adrian Kulmburg
 % Written:       14-May-2021
-% Last update:   ---
+% Last update:   16-January-2024 (MW, handle edge cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
 inputArgsCheck({{Z,'att','zonotope'};
-                {p,'att','numeric','column'}});
+                {p,'att','numeric'}});
+
+% empty set
+if representsa_(Z,'emptySet',eps)
+    if isempty(p)
+        res = 0; return
+    else
+        res = Inf; return
+    end
+end
 
 % Retrieve generator-representation of Z
 G = Z.generators;
+if isempty(G)
+    if ~any(p)
+        res = 0; return
+    else
+        res = Inf; return
+    end
+end
 
 % Retrieve dimensions of the generator matrix of Z
 n = size(G, 1);

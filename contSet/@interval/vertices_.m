@@ -64,23 +64,4 @@ if any(idxZeroDim)
     V(~idxZeroDim,:) = V_;
 end
 
-% old version:
-% % compute matrix with all possible generator combinations
-% one_pm = [1 -1];
-% for i=1:length(I.inf)-1
-%     one_pm = [ones(1,2^i) -ones(1,2^i); one_pm one_pm];
-% end
-% 
-% Iextended = [ones(1,size(one_pm,2));one_pm];
-% 
-% % convert to zonotope 
-% zono = zonotope(I);
-% Z = zono.Z;
-% 
-% % obtain vertices
-% V = zeros(size(Z,1),size(one_pm,2));
-% for i = 1:size(one_pm,2)
-%     V(:,i) = Z*Iextended(:,i);
-% end
-
 % ------------------------------ END OF CODE ------------------------------

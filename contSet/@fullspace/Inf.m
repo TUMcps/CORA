@@ -21,12 +21,18 @@ function fs = Inf(n)
 
 % Authors:       Mark Wetzlinger
 % Written:       09-January-2024
-% Last update:   ---
+% Last update:   15-January-2024 (TL, parse input)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% call constructor
+% parse input
+if nargin == 0
+    n = 0;
+end
+inputArgsCheck({{n,'att','numeric',{'scalar','nonnegative'}}});
+
+% call constructor (and check n there)
 fs = fullspace(n);
 
 % ------------------------------ END OF CODE ------------------------------

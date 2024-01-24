@@ -5,7 +5,7 @@ function [Z_error, errorInt, errorInt_x, errorInt_y, R_y, options] = ...
 %
 % Syntax:
 %    [Verror, errorInt, errorInt_x, errorInt_y, R_y] = ...
-%            	abstractionError_adaptive(obj, options, R, Verror_y)
+%              abstractionError_adaptive(obj, options, R, Verror_y)
 %
 % Inputs:
 %    obj - nonlinDASys object

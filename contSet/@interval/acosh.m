@@ -31,44 +31,27 @@ function I = acosh(I)
 % Last update:   21-February-2016 (DG, the matrix case is rewritten)
 %                05-May-2020 (MW, standardized error message)
 %                21-May-2022 (MW, remove new instantiation)
+%                18-January-2024 (MW, simplify)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% scalar case
-if isnumeric(I)
+% to preserve the shape
+lb = I.inf;
+ub = I.sup;
 
-    if I.inf >= 1
-        I.inf = acosh(I.inf);
-        I.sup = acosh(I.sup);
-    elseif I.sup >= 1
-        I.inf = NaN;
-        I.sup = acosh(I.sup);
-    else
-        I.inf = NaN;
-        I.sup = NaN;
-    end
-    
-else
+% find indices
+ind1 = lb >= 1;
+I.inf(ind1) = acosh(lb(ind1));
+I.sup(ind1) = acosh(ub(ind1));
 
-    % to preserve the shape
-    lb = I.inf;
-    ub = I.sup;
-    
-    % find indices
-    ind1 = find(lb >= 1);
-    I.inf(ind1) = acosh(lb(ind1));
-    I.sup(ind1) = acosh(ub(ind1));
-    
-    ind2 = find(lb < 1 & ub >= 1);
-    I.inf(ind2) = NaN;
-    I.sup(ind2) = acosh(I.sup(ind2));
-    
-    ind3 = find(ub < 1);
-    I.inf(ind3) = NaN;
-    I.sup(ind3) = NaN;
-       
-end
+ind2 = lb < 1 & ub >= 1;
+I.inf(ind2) = NaN;
+I.sup(ind2) = acosh(I.sup(ind2));
+
+ind3 = ub < 1;
+I.inf(ind3) = NaN;
+I.sup(ind3) = NaN;
 
 % return error if NaN occures
 if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))

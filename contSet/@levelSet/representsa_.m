@@ -21,9 +21,9 @@ function [res,S] = representsa_(ls,type,tol,varargin)
 %
 % See also: contSet/representsa
 
-% Authors:       Mark Wetzlinger
+% Authors:       Mark Wetzlinger, Tobias Ladner
 % Written:       19-July-2023
-% Last update:   ---
+% Last update:   17-January-2023 (TL, emptySet & fullspace)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -114,20 +114,107 @@ switch type
             ['Comparison of levelSet to ' type ' not supported.']));
 
     case 'emptySet'
-        if ~iscell(ls.compOp) || length(ls.compOp) == 1
-            res = false;
-        else
-            throw(CORAerror('CORA:notSupported',...
-                'Emptiness check for multiple level sets not supported.'));
-        end
+        res = aux_representsa_emptySet(ls);
 
     case 'fullspace'
-        % level sets cannot be unbounded everywhere
-        res = all(arrayfun(@(x) isempty(symvar(x)),ls.eq,'UniformOutput',true));
-        if nargout == 2 && res
-            S = fullspace(n);
-        end
+        res = aux_representsa_fullspace(ls);
 
 end
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+
+function res = aux_representsa_emptySet(ls) 
+    % assume true
+    res = true;
+
+    % evaluate equations
+    n = dim(ls);
+    I = interval.Inf(n);
+    O = ls.funHan(I);
+    O = interval(O); % in case its just numeric
+
+    % convert compare operator to cell
+    compOp = ls.compOp;
+    if ~iscell(compOp)
+        compOp = {compOp};
+    end
+
+    % check comparator
+    for i=1:numel(compOp)
+        switch compOp{i}
+            case '=='
+                if contains(O(i),0)
+                    % possibly not empty
+                    res = false;
+                end
+
+            case '<='
+                if O.inf(i) <= 0
+                    % possibly not empty
+                    res = false;
+                end
+
+            case '<'
+                if O.inf(i) < 0
+                    % possibly not empty
+                    res = false;
+                end
+
+
+            otherwise
+                throw(CORAerror('CORA:specialError',sprintf("Unknown compare operator: '%s'.",compOp{i})));
+        end
+    end
+end
+
+function res = aux_representsa_fullspace(ls) 
+    
+    % assume true
+    res = true;
+
+    % evaluate equations
+    n = dim(ls);
+    I = interval.Inf(n);
+    O = ls.funHan(I);
+    O = interval(O); % in case its just numeric
+
+    % convert compare operator to cell
+    compOp = ls.compOp;
+    if ~iscell(compOp)
+        compOp = {compOp};
+    end
+
+    % check comparator
+    for i=1:numel(compOp)
+        switch compOp{i}
+            case '=='
+                if ~isequal(O(i),interval(0))
+                    % possibly not fullspace
+                    res = false;
+                end
+
+            case '<='
+                if O.sup(i) > 0
+                    % possibly not fullspace
+                    res = false;
+                end
+
+            case '<'
+                if O.sup(i) >= 0
+                    % possibly not fullspace
+                    res = false;
+                end
+
+
+            otherwise
+                throw(CORAerror('CORA:specialError',sprintf("Unknown compare operator: '%s'.",compOp{i})));
+        end
+    end
+end
+
 
 % ------------------------------ END OF CODE ------------------------------

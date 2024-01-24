@@ -34,56 +34,34 @@ function I = asin(I)
 %                20-February-2016 (DG, Errors are fixed, the matrix case is rewritten)
 %                05-May-2020 (MW, standardized error message)
 %                21-May-2022 (MW, remove new instantiation)
+%                18-January-2024 (MW, simplify)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% scalar case
-if isnumeric(I)
+lb = I.inf;
+ub = I.sup;
 
-    if ((I.inf < -1) && (I.sup > 1)) || (I.inf > 1) || (I.sup < -1)
-        I.inf = NaN;
-        I.sup = NaN;
-    elseif (I.inf < -1) && (I.sup < 1)
-        I.inf = NaN;
-        I.sup = asin(I.sup);
-    elseif (I.inf > -1) && (I.sup > 1)
-        I.inf = asin(I.inf);
-        I.sup = NaN;
-    else
-        I.inf = asin(I.inf);
-        I.sup = asin(I.sup);
-    end
-        
-else
-    
-    lb = I.inf;
-    ub = I.sup;
+% find indices
+ind1 = lb < -1 & ub > 1 | (lb > 1) | (ub < -1);
+I.inf(ind1) = NaN;
+I.sup(ind1) = NaN;
 
-    % find indices
-    ind1 = find(lb < -1 & ub > 1 | (lb > 1) | (ub < -1));   
-    I.inf(ind1) = NaN;
-    I.sup(ind1) = NaN;
-    
-    ind2 = find(lb < -1 & ub >= -1 & ub <= 1);    
-    I.inf(ind2) = NaN;
-    I.sup(ind2) = asin(ub(ind2));
-    
-    ind3 = find(lb >= -1 & lb <= 1 & ub > 1);    
-    I.inf(ind3) = asin(lb(ind3));
-    I.sup(ind3) = NaN;
-    
-    ind4 = find(lb >= -1 & ub <= 1);    
-    
-    I.inf(ind4) = asin(lb(ind4));
-    I.sup(ind4) = asin(ub(ind4));
+ind2 = lb < -1 & ub >= -1 & ub <= 1;
+I.inf(ind2) = NaN;
+I.sup(ind2) = asin(ub(ind2));
 
-end
+ind3 = lb >= -1 & lb <= 1 & ub > 1;
+I.inf(ind3) = asin(lb(ind3));
+I.sup(ind3) = NaN;
+
+ind4 = lb >= -1 & ub <= 1;
+I.inf(ind4) = asin(lb(ind4));
+I.sup(ind4) = asin(ub(ind4));
 
 % return error if NaN occures
 if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))
     throw(CORAerror('CORA:outOfDomain','validDomain','>= -1 && <= 1'));
 end
-
 
 % ------------------------------ END OF CODE ------------------------------

@@ -47,14 +47,15 @@ function P_out = compact_(P,type,tol,varargin)
 %                12-December-2022 (MW, fix faulty alignment criterion)
 %                14-December-2022 (MW, add support for MOSEK)
 %                04-April-2023 (MW, use persistent variables)
+%                15-January-2024 (TL, bug fix single infeasible equality constraint)
 % Last revision: 28-May-2023 (MW, increase readability via aux_ functions, integrate code from removeRedundancies)
 %                31-July-2023 (MW, rename 'compact_', integrate deleteZeros, integrate minVRep)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % quickest exit
-if representsa(P,'fullspace',0)
-    P_out = polytope(zeros(0,dim(P)),zeros(0,0));
+if representsa_(P,'fullspace',0)
+    P_out = polytope.Inf(dim(P));
     return
 end
 
@@ -81,10 +82,7 @@ end
 % quick exits:
 if length(P_out.b) == 1 && isempty(P_out.be)
     % only one inequality, no equality given -> already minimal
-    P_out.minHRep.val = true;
-    P_out.emptySet.val = false;
-    P_out.bounded.val = false;
-    P_out.fullDim.val = true;
+    P_out = aux_oneHalfspace(P_out,tol);
     P = aux_copyProperties(P,P_out);
     return
 elseif isempty(P_out.b) && length(P_out.be) == 1
@@ -705,6 +703,25 @@ function [startIdx,middleIdx,endIdx] = ...
     if endIdx > nrCon
         endIdx = 1;
     end
+
+end
+
+function P = aux_oneHalfspace(P,tol)
+% polytope with one halfspace (inequality constraints)
+
+% set properties
+P.minHRep.val = true;
+P.fullDim.val = true;
+
+if all(P.A == 0) && P.b ~= 0
+    % constraint infeasible -> empty set
+    P.emptySet.val = true;
+    P.bounded.val = true;
+else
+    % not empty
+    P.emptySet.val = false;
+    P.bounded.val = false;
+end
 
 end
 

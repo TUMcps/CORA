@@ -9,7 +9,7 @@ function printTestOverview(varargin)
 %
 % Inputs:
 %    format - (optional) results of which test suite should be displayed:
-%               'short' (default), 'long', 'mp', 'mosek', 'sdpt3',
+%               'short' (default), 'long', 'flaky', 'mp', 'mosek', 'sdpt3',
 %               'intlab', 'nn'
 %    type - name-value pairs
 %               'LongestTests', <longestTests> number of longest tests
@@ -43,7 +43,7 @@ format = setDefaultValues({'short'},varargin);
 % more leniency in writing of identifiers
 format = lower(format);
 % check if correct identifier provided
-inputArgsCheck({{format,'str',{'short','long','intlab','mosek','mp','sdpt3','nn','examples','benchmarks'}}});
+inputArgsCheck({{format,'str',{'short','long','flaky','intlab','mosek','mp','sdpt3','nn','examples','benchmarks'}}});
 
 % check list of name-value pairs
 checkNameValuePairs(NVpairs,{'LongestTests'});

@@ -73,6 +73,7 @@ end
 methods (Static = true)
     fs = generateRandom(varargin) % generate random full space
     fs = enclosePoints(points,varargin) % enclose point cloud with full space
+    fs = Inf(n) % instantiates a fullspace fullspace
 end
 
 end

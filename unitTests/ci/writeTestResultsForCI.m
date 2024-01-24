@@ -3,10 +3,10 @@ function writeTestResultsForCI(varargin)
 %
 % Syntax:
 %    writeTestResultsForCI()
-%    writeTestResultsForCI(format)
+%    writeTestResultsForCI(testSuite)
 %
 % Inputs:
-%    format - (optional) results of which test suite should be displayed:
+%    testSuite - (optional) results of which test suite should be displayed:
 %               'short' (default), 'long', 'mp', 'mosek', 'sdpt3',
 %               'intlab', 'nn'
 %
@@ -26,9 +26,9 @@ function writeTestResultsForCI(varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % default format: last run
-format = setDefaultValues({'short'},varargin);
+testSuite = setDefaultValues({'short'},varargin);
 % check if correct identifier provided
-inputArgsCheck({{format,'str',{'short','long','intlab','mosek','mp','sdpt3','nn','examples','benchmarks'}}});
+inputArgsCheck({{testSuite,'str',{'short','long','flaky','intlab','mosek','mp','sdpt3','nn','examples','benchmarks'}}});
 
 % load data
 unitTestsFile = [CORAROOT filesep 'unitTests' filesep 'unitTestsStatus.mat'];
@@ -40,11 +40,11 @@ else
     % unitTestsStatus.mat
     load(unitTestsFile,'testResults');
     % read out data from map
-    if ~ismember(testResults.keys,format)
-        disp("No results for test suite with identifier '" + format + "'");
+    if ~ismember(testResults.keys,testSuite)
+        disp("No results for test suite with identifier '" + testSuite + "'");
         return
     else
-        resultsTestSuite = testResults(format);
+        resultsTestSuite = testResults(testSuite);
     end
 end
 
@@ -61,7 +61,11 @@ fclose(fileID);
 
 % result of test suite used as exit code
 fileID = fopen('failed.txt','w');
-fprintf(fileID, "%d", any(~[results.ok])); 
+if strcmp(testSuite,'flaky')
+    fprintf(fileID, "%d", sum(~[results.ok]) > 2); 
+else
+    fprintf(fileID, "%d", any(~[results.ok])); 
+end
 fclose(fileID);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -263,26 +263,31 @@ title(sprintf('$\\dot{h}_0(0) = %.1f$', hdot0), 'interpreter', 'latex')
 
 % plot specification
 M = [0, 0, -1; 1, 0, 0];
-us = plot(M*spec.set, [1 2], 'FaceColor', CORAcolor("CORA:unsafe"));
+plot(M*spec.set, [1 2], 'FaceColor', CORAcolor("CORA:unsafe"),'DisplayName','NMAC');
 
 % plot reachable set
-rs = plot([], []);
+NVpairs = {'FaceColor',CORAcolor("CORA:reachSet"),'DisplayName','Reachable set'};
 for i = 1:length(R)
-    rs = plot(M*R{i}+interval([0; 0], [1; 0]),...
-        [1,2],'FaceColor',CORAcolor("CORA:reachSet"));
+    plot(M*R{i}+interval([0; 0], [1; 0]),[1,2],NVpairs{:});
+    if i==1
+        NVpairs = [NVpairs,{'HandleVisibility','off'}];
+    end
 end
 
 % plot simulation
+NVpairs = {'.k','DisplayName','Simulations'};
 for i=1:length(simRes)
-    sims = scatter(-25:-15, simRes(i).x{1}(:, 1)', '.k');
+    scatter(-25:-15, simRes(i).x{1}(:, 1)',NVpairs{:});
+    if i==1
+        NVpairs = [NVpairs,{'HandleVisibility','off'}];
+    end
 end
 
 % labels, limits, and legend
 xlabel('Time -\tau');
 ylabel('h (Relative Position of Intruder to Ownship)');
 xlim([-25, -25 + tFinal]);
-legend([us, rs, sims], "NMAC", "Reachable Set", "Simulations");
-
+legend()
 
 % example completed -------------------------------------------------------
 

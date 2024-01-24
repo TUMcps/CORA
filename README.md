@@ -4,6 +4,10 @@ A Tool for COntinuous Reachability Analysis.
 
 <a href='https://cora.in.tum.de' target='_blank'>cora.in.tum.de</a> - <a href='https://cora.in.tum.de/manual' target='_blank'>Manual</a>
 
+![TUMcps - CORA](https://img.shields.io/static/v1?label=TUMcps&message=CORA&color=4596FF&logo=github&link=https://github.com/TUMcps/CORA)
+![CORA version](https://img.shields.io/github/tag/TUMcps/CORA?include_prereleases=&sort=semver&color=4596FF&link=https://github.com/TUMcps/CORA/tags/)
+![CORA CI:passing](https://img.shields.io/static/v1?label=CI&message=passing&color=78C57F)
+
 <hr style="height: 1px;">
 
 The COntinuous Reachability Analyzer (CORA) is a collection of MATLAB classes for the formal verification of cyber-physical systems using reachability analysis. CORA integrates various vector and matrix set representations and operations on them as well as reachability algorithms of various dynamic system classes. The software is designed such that set representations can be exchanged without having to modify the code for reachability analysis. CORA is designed using the object-oriented paradigm, such that users can safely use methods without concerning themselves with detailed information hidden inside the objects. Since the toolbox is written in MATLAB, the installation and use is platform independent. From Release 2018 on, the direct import of SpaceEx models into CORA is also supported. The following points summarize the main capabilities of the CORA toolbox:

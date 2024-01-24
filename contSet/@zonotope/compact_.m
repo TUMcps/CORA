@@ -61,7 +61,7 @@ end
 function Z = aux_deleteZeros(Z,tol)
     
     % filter zero generators
-    Z.G = nonzeroFilter(Z.G);
+    Z.G = nonzeroFilter(Z.G,tol);
 
 end
 

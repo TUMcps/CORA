@@ -198,6 +198,16 @@ function aux_checkInputArgs(A,b,Ae,be,V,n_in)
             end
         end
 
+        % check b, be (get later reshaped to column vector)
+        if ~isempty(b) && ~isvector(b)
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Arguments "b" has to be column vector.'));
+        end
+        if ~isempty(be) && ~isvector(be)
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                    'Arguments "be" has to be column vector.'));
+        end
+
         % check number of inequality constraints
         if ~isempty(A) && size(A,1) ~= length(b)
             throw(CORAerror('CORA:wrongInputInConstructor',...
@@ -205,7 +215,7 @@ function aux_checkInputArgs(A,b,Ae,be,V,n_in)
         end
         
         % check for empty argument
-        if isempty(A) && ~isempty(b)
+        if isempty(A) && ~isempty(b) && size(A,1) ~= length(b)
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 'Number of rows does not hold between arguments "A", "b".'));
         end
