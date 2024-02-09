@@ -38,6 +38,8 @@ Important: Replace `%cd%` in the following commands to get the current directory
 
 	- Windows:    %cd%
 	- Linux:      $(pwd)
+
+The following commands should be run within `./cora/unitTests/ci`
 	
 ### Run docker non-interactively
 
@@ -61,7 +63,7 @@ Note: If you are using an ssh connection, you need to forward the port.
 
 	ssh -L local_port:destination_server_ip:remote_port ssh_server_hostname
 
-## Run CORA test suite in docker
+# Run CORA test suite in docker
 
 For example, to run the CORA test suite within docker, open `./cora/unitTests/ci/` in the command line and execute the following commands:
 
@@ -69,10 +71,10 @@ For example, to run the CORA test suite within docker, open `./cora/unitTests/ci
 	docker image build . -t cora-ci
 	
 	# run test suite
-	docker run -v "%cd%/../..":/code -e MLM_LICENSE_FILE=28000@mlm1.rbg.tum.de --rm cora-ci -batch "cd /code; addpath(genpath('.')); runTestSuite"
+	docker run -v "%cd%/../..":/code/cora -e MLM_LICENSE_FILE=28000@mlm1.rbg.tum.de --rm cora-ci -batch "cd /code; addpath(genpath('.')); runTestSuite"
 
 or interactively
 
-	docker run -v "%cd%/../..":/code -e MLM_LICENSE_FILE=28000@mlm1.rbg.tum.de --rm -it -p 6080:6080 cora-ci -vnc
+	docker run -v "%cd%/../..":/code/cora -e MLM_LICENSE_FILE=28000@mlm1.rbg.tum.de --rm -it -p 6080:6080 cora-ci -vnc
 	
 	and open http://localhost:6080/ in the browser.

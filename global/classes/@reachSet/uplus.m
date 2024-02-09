@@ -1,21 +1,21 @@
-function S = uminus(S)
-% uminus - overloads the unary '-' operator
+function R = uplus(R)
+% uplus - overloads the unary '+' operator
 %
 % Syntax:
-%    res = -S
-%    res = uminus(S)
+%    R = +R
+%    R = uplus(R)
 %
 % Inputs:
-%    S - contSet object
+%    R - reachSet object
 %
 % Outputs:
-%    S - negated set 
+%    R - transformed reachSet object
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: contSet/uplus
 
 % Authors:       Tobias Ladner
 % Written:       06-April-2023
@@ -24,6 +24,6 @@ function S = uminus(S)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-S = -1 * S;
+% R = +R
 
 % ------------------------------ END OF CODE ------------------------------

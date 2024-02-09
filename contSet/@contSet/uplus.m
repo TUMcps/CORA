@@ -9,7 +9,7 @@ function S = uplus(S)
 %    S - contSet object
 %
 % Outputs:
-%    S
+%    S - contSet object
 %
 % Other m-files required: none
 % Subfunctions: none

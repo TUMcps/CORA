@@ -60,7 +60,7 @@ for i=1:nrTests
         throw(CORAerror('CORA:testFailed'));
     end
     % same but using two inequalities instead of equality
-    P_ = polytope(blkdiag(P.A, [1;-1]),[P.b;0;0]);
+    P_ = polytope(blkdiag(P.A,[1;-1]),[P.b;0;0]);
     [res_,subspace] = isFullDim(P_);
     if res_ || size(subspace,2) ~= n
         throw(CORAerror('CORA:testFailed'));

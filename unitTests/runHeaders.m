@@ -46,7 +46,6 @@ files = aux_exclFiles(files, ['contSet' filesep '@conPolyZono']);
 % global
 files = aux_exclFiles(files, ['global' filesep 'thirdparty']);
 files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'combinator']);
-files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'cprnd']);
 files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'eq_sphere_partitions']);
 files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'm2tex']);
 files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'tprod']);

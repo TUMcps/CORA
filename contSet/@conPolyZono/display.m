@@ -36,10 +36,10 @@ function display(cPZ)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % special cases
-if representsa_(cPZ,'emptySet',0)
+if representsa(cPZ,'emptySet')
     dispEmptySet(cPZ,inputname(1));
     return
-elseif representsa_(cPZ,'fullspace',0)
+elseif representsa(cPZ,'fullspace')
     dispRn(cPZ,inputname(1));
     return
 end
@@ -73,7 +73,6 @@ displayGenerators(cPZ.EC,DISPLAYDIM_MAX,'EC');
 displayGenerators(cPZ.GI,DISPLAYDIM_MAX,'GI');
 
 % display id
-disp('id:');
 displayIds(cPZ.id,'id');
 
 % ------------------------------ END OF CODE ------------------------------

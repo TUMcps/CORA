@@ -15,7 +15,7 @@ function S = times(factor1,factor2)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: contSet/mtimes
 
 % Authors:       Tobias Ladner
 % Written:       06-April-2023 
@@ -28,7 +28,7 @@ function S = times(factor1,factor2)
 
 % parse input
 if ~isnumeric(A)
-    throw(CORAerror('CORA:noops', class(S), class(A)))
+    throw(CORAerror('CORA:noops', S, A))
 elseif ~isvector(A) && ~isempty(A)
     throw(CORAerror('CORA:notSupported', 'Multiplied vector has to be a column vector.'))
 end

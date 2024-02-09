@@ -27,13 +27,17 @@ function res = testnn_requiredToolboxes
 res_partial(1) = test_requiredToolboxes;
 
 % test nn verification specific toolboxes
+
+% Deep Learning Toolbox
 res_partial(2) = logical(license('test', 'Neural_Network_Toolbox'));
 if ~res_partial(2)
     disp('"Deep Learning Toolbox" missing!');
 end
 
+% ONNX support package
+text = "Deep Learning Toolbox Converter for ONNX Model Format";
 addons = matlabshared.supportpkg.getInstalled;
-res_partial(3) = any(strcmp("Deep Learning Toolbox Converter for ONNX Model Format", {addons.Name}));
+res_partial(3) = ~isempty(addons) && ismember(text, {addons.Name});
 if ~res_partial(3)
     disp('"Deep Learning Toolbox Converter for ONNX Model Format" missing!');
 end

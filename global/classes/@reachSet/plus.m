@@ -31,11 +31,11 @@ function R = plus(R,S)
 % compute Minkowski sum
 for i = 1:size(R,1)
     if ~isempty(R(i).timeInterval)
-        R(i).timeInterval.set = cellfun(@(x) S + x,...
+        R(i).timeInterval.set = cellfun(@(RS) RS + S,...
                         R(i).timeInterval.set,'UniformOutput',false);
     end
     if ~isempty(R(i).timePoint)
-        R(i).timePoint.set = cellfun(@(x) S + x,...
+        R(i).timePoint.set = cellfun(@(RS) RS + S,...
                         R(i).timePoint.set,'UniformOutput',false); 
     end
 end

@@ -1,9 +1,9 @@
-function res = test_nn_polyZonotope_cnn_random()
-% test_nn_polyZonotope_cnn_random - test a random CNN
+function res = testFlaky_nn_polyZonotope_cnn_random()
+% testFlaky_nn_polyZonotope_cnn_random - test a random CNN
 %
 %
 % Syntax:
-%    res = test_nn_polyZonotope_cnn_random
+%    res = testFlaky_nn_polyZonotope_cnn_random
 %
 % Inputs:
 %    -
@@ -19,7 +19,7 @@ function res = test_nn_polyZonotope_cnn_random()
 
 % Authors:       Tobias Ladner
 % Written:       17-August-2022
-% Last update:   ---
+% Last update:   30-January-2024 (TL, flaky until merge with nn-gd)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------

@@ -1,29 +1,29 @@
-function S = uminus(S)
-% uminus - overloads the unary '-' operator
+function R = uminus(R)
+% uminus - Overloaded the unary '-' operator
 %
 % Syntax:
-%    res = -S
-%    res = uminus(S)
+%    R = -R
+%    R = uminus(R)
 %
 % Inputs:
-%    S - contSet object
+%    R - reachSet object 
 %
 % Outputs:
-%    S - negated set 
+%    R - transformed reachSet object
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: contSet/uminus
 
 % Authors:       Tobias Ladner
-% Written:       06-April-2023
+% Written:       02-February-2024
 % Last update:   ---
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-S = -1 * S;
+R = -1 * R;
 
 % ------------------------------ END OF CODE ------------------------------

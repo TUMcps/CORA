@@ -285,7 +285,8 @@ for i=1:length(files)
         end
 
         if ~strcmp(lines{lcnt}, ['% ------------------------------ END OF ' 'CODE ------------------------------']) ...
-                || ~isEmptyLine(lines{lcnt-1}) || ~isEmptyLine(lines{lcnt+1})
+                || ~isEmptyLine(lines{lcnt-1}) ...
+                || numel(lines) == lcnt || ~isEmptyLine(lines{lcnt+1})
             issues{end+1} = 'END CODE is written inconsistently.';
         end
         lcnt = lcnt + 1;

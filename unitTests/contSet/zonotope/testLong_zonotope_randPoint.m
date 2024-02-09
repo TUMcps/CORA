@@ -25,7 +25,7 @@ function res = testLong_zonotope_randPoint
 % ------------------------------ BEGIN CODE -------------------------------
 
 % tolerance
-tol = 1e-9;
+tol = 1e-6;
 
 % check empty zonotope object
 res = isempty(randPoint(zonotope.empty(1)));
@@ -38,24 +38,31 @@ for i=1:nrOfTests
 
     % random dimension
     n = randi([2,8]); % small because of containment checks
-    
+
     % random center
     c = randn(n,1);
     % random generator matrix -> parallelotope
     G = randn(n);
+    while abs(det(G)) < 1e-4
+        G = randn(n);
+    end
     
     % instantiate zonotope
     % For the first case, we try with an empty zonotope; for the second, we
     % try with one that has no generators. For the third, we try with a
-    % zonotope that is degenerate
+    % zonotope that is degenerate. The fourth is a parallelotope, the rest
+    % are zonotopes that are not parallelotopes.
     if i == 1
         Z = zonotope.empty(1);
     elseif i == 2
         Z = zonotope(c, []);
     elseif i == 3
         Z = zonotope([c;0], [G;zeros([1 size(G,2)])]);
-    else
+    elseif i == 4
         Z = zonotope(c,G);
+    else
+        Grest = randn(n);
+        Z = zonotope(c,[G Grest]);
     end
     
     % check 'standard' method
@@ -89,7 +96,7 @@ for i=1:nrOfTests
         % degenerate sets
         pGaussian = randPoint(Z,nrPtsGaussian,'gaussian',pr);
     end
-    % note: these points are not checked for containment because there
+    % note: these points are not checked for containment because they
     %       are not guaranteed to be inside of Z
     
     

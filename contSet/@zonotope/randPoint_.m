@@ -125,10 +125,17 @@ elseif strcmp(type,'extreme')
         p = [V,V_];
     end
 
-% Default algorithm for the uniform distribution is the billiard walk,
-% since it gives more accurate results, despite a slightly longer
-% computation time
-elseif strcmp(type,'uniform') || strcmp(type,'uniform:billiardWalk')
+elseif strcmp(type,'uniform')
+    if representsa_(Z,'parallelotope',eps)
+        % If Z is a parallelotope, we have a significantly easier solution
+        p = aux_randPointParallelotopeUniform(Z, N);
+    else
+        % Default algorithm for the uniform distribution is the billiard walk,
+        % since it gives more accurate results, despite a slightly longer
+        % computation time
+        p = aux_randPointBilliard(Z, N);
+    end
+elseif strcmp(type,'uniform:billiardWalk')
     p = aux_randPointBilliard(Z, N);
 elseif strcmp(type,'uniform:hitAndRun')
     p = aux_randPointHitAndRun(Z, N);
@@ -440,6 +447,18 @@ radii = aux_getRandomBoundaryPoints(Z,N) - Z.c;
 % sample semi-uniformly within 'sphere'
 p = Z.c + nthroot(rand(1,N),dim(Z)).*radii;
 
+end
+
+function p = aux_randPointParallelotopeUniform(Z, N)
+    Z = compact(Z);
+
+    G = generators(Z);
+    c = center(Z);
+
+    % Uniformly sample unit hypercube
+    p = 2.*rand([size(G,2) N]) - 1;
+
+    p = G*p + c;
 end
 
 

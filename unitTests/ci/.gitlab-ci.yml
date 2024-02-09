@@ -13,7 +13,7 @@ variables:
 # define base settings
 .base-image:
   image:
-    name: tobiasladnertum/cora:r2022a-dl
+    name: tobiasladnertum/cora:r2023b
     entrypoint: [""]
   tags:
     - matlab
@@ -43,9 +43,6 @@ stages:
     - BUILD_STATUS="INPROGRESS" RESULT_TEXT="" ./unitTests/ci/build_status
     # any non-zero exit code should fail the job
     - set +e
-    # for reading ONNX files
-    - sudo chmod +w /home/matlab/Documents/MATLAB/SupportPackages/R2022a/toolbox/nnet/supportpackages/onnx/+nnet/+internal/+cnn/+onnx/+fcn/ModelTranslation.m
-    - sudo chmod +w /home/matlab/Documents/MATLAB/SupportPackages/R2022a/toolbox/nnet/supportpackages/onnx/+nnet/+internal/+cnn/+onnx/CustomLayerManager.m
   after_script:
     - BUILD_STATUS="0" RESULT_TEXT="Job finished." ./unitTests/ci/build_status
 

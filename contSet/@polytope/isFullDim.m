@@ -237,10 +237,11 @@ elseif nargout == 2
         % Search for vectors in P_iter that are perpendicular to the ones
         % we have found so far
         x_iter = aux_maxNormPerpendicularPolytope(P_iter,subspace);
-        % If the solution is x_iter=0, then this means that there are no
-        % non-trivial vectors that are perpendicular to those we have
-        % found, and so we can stop the iteration
-        if norm(x_iter,Inf) <= 1e-5
+        % If the solution is x_iter=0 (within same tolerance as used for
+        % solving LPs), then this means that there are no non-trivial
+        % vectors that are perpendicular to those we have found, and so we
+        % can stop the iteration
+        if norm(x_iter,Inf) <= 1e-8
             break;
         end
         
