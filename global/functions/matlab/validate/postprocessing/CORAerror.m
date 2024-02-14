@@ -451,7 +451,11 @@ switch identifier
                 if isscalar(varargin{i})
                     addinfo = "-scalar";
                 elseif isvector(varargin{i})
-                    addinfo = "-vector";
+                    if size(varargin{i},1) == 1
+                        addinfo = "-vector (row)";
+                    else
+                        addinfo = "-vector (column)";
+                    end
                 else
                     addinfo = "-matrix";
                 end

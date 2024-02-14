@@ -40,6 +40,7 @@ function Z = plus(summand1,summand2)
 %                14-August-2016
 %                04-March-2019
 %                13-August-2019
+%                14-February-2024 (MW, prevent sum with row vectors/matrices)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -60,9 +61,10 @@ try
             Z.G(:,(end+1):(end+size(summand.G,2))) = summand.G;
         end
     
-    elseif isnumeric(summand)
-    
-        Z.c = Z.c+summand;
+    elseif isnumeric(summand) && (isscalar(summand) || all(size(summand) == [dim(Z),1]))
+        % summand has to be a scalar or a column vector of correct size
+        
+        Z.c = Z.c + summand;
     
     elseif isa(summand,'interval')
     

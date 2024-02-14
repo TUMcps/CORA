@@ -720,8 +720,8 @@ end
 end
 
 function [ebar,savedata] = aux_ebarred(obj,isU,G_U,e,ebar,options,savedata)
-% heuristics to determine a curve
-%   x-axis (time):  params.tStart -> params.tFinal
+% heuristics to determine a curve (params.tStart always shifted to 0!)
+%   x-axis (time):  0 -> params.tFinal
 %   y-axis (error): 0 -> (maximum) e.emax
 % for the reduction error to yield the smallest zonotope order at the end
 % of the time horizon; note that we only require to reduce the particular
@@ -732,19 +732,19 @@ function [ebar,savedata] = aux_ebarred(obj,isU,G_U,e,ebar,options,savedata)
 
 if ~isU
     % no reduction, entire error margin is available for nonacc errors
-    ebar.red_t = [options.tStart;options.tFinal];
+    ebar.red_t = [0;options.tFinal];
     ebar.red_e = [0;0];
     savedata.reductionerrorpercentage = ebar.red_e(end)/e.emax;
     return
 elseif isfield(options,'reductionerrorpercentage')
     % define error curve manually
-    ebar.red_t = [options.tStart;options.tFinal];
+    ebar.red_t = [0;options.tFinal];
     ebar.red_e = [0;e.emax * options.reductionerrorpercentage];
     savedata.reductionerrorpercentage = ebar.red_e(end)/e.emax;
     return
 elseif isfield(savedata,'reductionerrorpercentage')
     % reduction error defined by previous run (only verify)
-    ebar.red_t = [options.tStart;options.tFinal];
+    ebar.red_t = [0;options.tFinal];
     ebar.red_e = [0;e.emax * options.savedata.reductionerrorpercentage];
     return
 end
@@ -1019,6 +1019,8 @@ tFinal = options.tFinal;
 specUnsat = [];
 
 if isfield(savedata,'Funsat') || isfield(savedata,'Gunsat')
+
+    % TODO: shift by start time...
     
     % init whole time horizon with true
     specUnsat = [];
@@ -1032,8 +1034,6 @@ if isfield(savedata,'Funsat') || isfield(savedata,'Gunsat')
     if isfield(savedata,'Gunsat')
         specUnsat = aux_unifySpecUnsat(specUnsat,savedata.Gunsat,options.tStart,options.tFinal);
     end
-    
-    % TODO: shift by start time...
     
     % adjust time horizon if specifications are already satisfied from some
     % time until the end

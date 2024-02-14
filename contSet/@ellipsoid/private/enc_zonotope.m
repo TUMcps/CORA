@@ -59,6 +59,9 @@ Tinv = sqrtm(E.Q);
 %[1],[2]
 if n==1
     G = [-1,1];
+elseif n == m
+    Z = enc_parallelotope(E);
+    return
 else
     G = eq_point_set(n-1,m);
 end
