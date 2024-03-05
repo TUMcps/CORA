@@ -13,11 +13,11 @@ scale only axis,
 xmin=-2.5,
 xmax=2.5,
 xlabel style={font=\color{white!15!black}},
-xlabel={$x_1$},
+xlabel={$x_{(1)}$},
 ymin=-3,
 ymax=3,
 ylabel style={font=\color{white!15!black}},
-ylabel={$x_2$},
+ylabel={$x_{(2)}$},
 axis background/.style={fill=white},
 legend style={at={(0.03,0.97)}, anchor=north west, legend cell align=left, align=left, draw=white!15!black}
 ]
