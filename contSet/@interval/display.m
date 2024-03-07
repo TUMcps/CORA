@@ -31,7 +31,7 @@ function display(I)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % special cases (only vector)
-if isvector(I)
+if size(I,2) <= 1
     if representsa(I,'emptySet')
         dispEmptySet(I,inputname(1));
         return

@@ -24,12 +24,17 @@ function res = testLong_zonotope_randPoint
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+resvec = [];
+
 % tolerance
 tol = 1e-6;
 
 % check empty zonotope object
-res = isempty(randPoint(zonotope.empty(1)));
+resvec(end+1) = isempty(randPoint(zonotope.empty(1)));
 
+% check singl point
+resvec(end+1) = size(randPoint(zonotope([2;3]),1),2) == 1; 
+resvec(end+1) = size(randPoint(zonotope([2;3]),1,'extreme'),2) == 1; 
 
 % number of tests
 nrOfTests = 100;
@@ -102,22 +107,25 @@ for i=1:nrOfTests
     
     % check for containment in zonotope
     if ~all(contains(Z,pStandard))
-        res = false; break;
+        resvec(end+1) = false; break;
     end
     if ~all(contains(Z,pUniform))
-        res = false;break;
+        resvec(end+1) = false;break;
     end
     if ~all(contains(Z,pUniformHitAndRun))
-        res = false; break;
+        resvec(end+1) = false; break;
     end
     if ~all(contains(Z,pUniformBilliard))
-        res = false; break;
+        resvec(end+1) = false; break;
     end
     if ~all(contains(Z,pExtreme,'exact',tol))
         % enlarging Z is required, otherwise wrong result!
-        res = false; break;
+        resvec(end+1) = false; break;
     end
 
 end
+
+% gather results
+res = all(resvec);
 
 % ------------------------------ END OF CODE ------------------------------

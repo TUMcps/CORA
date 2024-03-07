@@ -76,6 +76,15 @@ A_true = [1 0;-1 0; 0 1; 0 -1]; b_true = [4;4;8;8];
 P_true = polytope(A_true,b_true);
 res(end+1,1) = P_ == P_true;
 
+% check multiplication with scalar (left and right)
+P = polytope([1 0; -1 1; -1 -1], [1; 1; 1]);
+P_out = 2*eye(2) * P;
+P_out_scalar = 2 * P;
+res(end+1,1) = P_out == P_out_scalar;
+
+P_out_scalar = P * 2;
+res(end+1,1) = P_out == P_out_scalar;
+
 
 % combine results
 res = all(res);

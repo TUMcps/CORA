@@ -63,6 +63,19 @@ A = [2 1; 1 0; 0 1]; b = [1; 1; 2];
 P = polytope(A,b);
 res(end+1,1) = ~representsa(P,'interval');
 
+% 2D, from interval conversion
+I_true = interval([1.99;0.99],[2.01;1.01]);
+P = polytope(I_true);
+res(end+1,1) = representsa(P,'interval');
+
+% 2D, redundant constraints
+A = [1 0; -1 0; -2 0; 0 2; 0 4];
+b = [1; 1; 1; 1; 1];
+P = polytope(A,b);
+[res(end+1,1),I] = representsa(P,'interval');
+I_true = interval([-0.5;-Inf],[1;1/4]);
+res(end+1,1) = isequal(I,I_true);
+
 % 3D, unit box
 n = 3; A = [eye(n); -eye(n)]; b = ones(2*n,1);
 P = polytope(A,b);
@@ -71,10 +84,11 @@ I_true = interval(-ones(n,1),ones(n,1));
 res(end+1,1) = isequal(I,I_true);
 
 % 3D, degenerate interval
-% A = [1 0 0; -1 0 0]; b = [1;1]; Ae = [0 1 0; 0 0 1]; be = [5; 7];
-% P = polytope(A,b,Ae,be);
-% [res(end+1,1),I] = representsa(P,'interval');
-% res(end+1,1) = isequal(I,interval([-1;5;7],[1;5;7]));
+A = [1 0 0; -1 0 0]; b = [1;1]; Ae = [0 1 0; 0 0 1]; be = [5; 7];
+P = polytope(A,b,Ae,be);
+[res(end+1,1),I] = representsa(P,'interval');
+I_true = interval([-1;5;7],[1;5;7]);
+res(end+1,1) = isequal(I,I_true);
 
 % 3D, bounded
 n = 3;

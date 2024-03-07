@@ -41,7 +41,8 @@ function p = randPoint_(Z,N,type,varargin)
 % Last update:   25-June-2021 (MP, add type gaussian)
 %                19-August-2022 (MW, integrate standardized pre-processing)
 %                22-May-2023 (AK, implemented uniform sampling)
-%                20-January-2023 (TL, added radius method)
+%                20-January-2024 (TL, added radius method)
+%                03-March-2024 (TL, made boundary method accessible)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -78,6 +79,10 @@ elseif strcmp(type,'extreme')
         return
     end
     
+    % remove redundant generators
+    Z = compact_(Z,'zeros',eps);
+    Z = compact_(Z,'all',1e-10);
+    
     % consider degenerate case
     if rank(G) < n
         Z = Z + (-c);
@@ -94,10 +99,6 @@ elseif strcmp(type,'extreme')
         p = c + S*p;
         return;
     end
-    
-    % remove redundant generators
-    Z = compact_(Z,'zeros',eps);
-    Z = compact_(Z,'all',1e-3);
     
     % compute number of zonotope vertices
     q = aux_numberZonoVertices(Z);
@@ -142,6 +143,9 @@ elseif strcmp(type,'uniform:hitAndRun')
 
 elseif strcmp(type,'radius')
     p = aux_randPointRadius(Z,N);
+
+elseif strcmp(type,'boundary')
+    p = aux_getRandomBoundaryPoints(Z,N);
 
 else
     throw(CORAerror('CORA:noSpecificAlg',type,Z));
@@ -218,6 +222,13 @@ function q = aux_numberZonoVertices(Z)
 % compute the number of zonotope vertices
 
     n = dim(Z); m = size(Z.G,2);
+
+    if m == 0
+        % only center
+        q = 1;
+        return;
+    end
+
     D = zeros(n,m);
     D(1,:) = 2*ones(1,size(D,2));
     D(:,1) = 2*ones(size(D,1),1);

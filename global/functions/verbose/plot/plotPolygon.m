@@ -29,6 +29,7 @@ function han = plotPolygon(V,varargin)
 %                05-April-2023 (TL, generalized function)
 %                11-July-2023 (TL, bug fix sets with holes and FaceColor)
 %                12-July-2023 (TL, cut off infinity values at axis limits)
+%                29-February-2024 (TL, fix ColorOrderIndex in filled 3d)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -169,7 +170,16 @@ elseif size(V, 1) == 3
     if ~hasFaceColor
         han = plot3(V(1,:),V(2,:),V(3,:),NVpairs{:}); 
     else
+        % sometimes the color index does not get increased automatically
+        ax = gca();
+        cidx = ax.ColorOrderIndex;
+
         han = fill3(V(1,:),V(2,:),V(3,:),facecolor,NVpairs{:}); 
+        
+        if cidx == ax.ColorOrderIndex
+            % update color index if it hasn't changed
+            updateColorIndex;
+        end
     end
     aux_show3dAxis()
 

@@ -1,29 +1,16 @@
-function res = testLongDuration_zonotope_minkDiff
-% testLongDuration_zonotope_minkDiff - unit test function of minus for
+function res = testLong_zonotope_minkDiff_2
+% testLong_zonotope_minkDiff_2 - unit test function of minkDiff for
 %    approximating the Minkowski difference of two zonotopes or a zonotope
 %    with a vector according to [1].
 %
 % Syntax:
-%    res = testLongDuration_zonotope_minkDiff
+%    res = testLong_zonotope_minkDiff_2
 %
 % Inputs:
 %    -
 %
 % Outputs:
-%    res - boolean
-%
-% Example: 
-%    Z1 = zonotope([1 2 2; 0 0 2]);
-%    Z2 = zonotope([0 0.5 0.5 0.3; 1 0 0.5 0.2]);
-%
-%    Z3 = Z1 - Z2;
-%    Z4 = Z2 + Z3;
-%
-%    figure; hold on;
-%    plot(Z1,[1 2], 'b');
-%    plot(Z2,[1 2], 'r');
-%    plot(Z3,[1 2], 'g');
-%    plot(Z4,[1 2], 'k');
+%    res - true/false
 %
 % References:
 %    [1] M. Althoff, "On Computing the Minkowski Difference of Zonotopes"
@@ -62,7 +49,7 @@ P_m = polytope(Z_m);
 P_m_degenerate = polytope(Z_m_degenerate);
 
 % initialize partial results
-resPartial = [];
+resvec = true(0);
 
 % define small box
 smallBox = zonotope([[0;0],1e-8*eye(2)]);
@@ -91,16 +78,17 @@ for iSet = 1:length(Z_s)
         % check whether Minkowski difference returns the empty set
         if representsa(Z_res,'emptySet')
             % check if polytope solution is empty as well
-            resPartial(end+1) = representsa(P_res,'emptySet');
+            resvec(end+1,1) = representsa(P_res,'emptySet');
         else
             % enclosure check (Definition of Minkoswki difference)
-            resPartial(end+1) = contains(Z_m + smallBox, Z_res + Z_s{iSet});
+            resvec(end+1,1) = contains(Z_m + smallBox, Z_res + Z_s{iSet});
 
             % enclosure check (comparison with polytope solution)
-            resPartial(end+1) = contains(P_res + smallBox, polytope(Z_res));
+            resvec(end+1,1) = contains(P_res + smallBox, polytope(Z_res));
 
             % enclosure check (comparison with polytope solution; other direction)
-            resPartial(end+1) = contains(polytope(Z_res) + smallBox, P_res + verySmallBox);
+            resvec(end+1,1) = contains(polytope(Z_res) + smallBox, ...
+                P_res + verySmallBox);
 
     %         % for debugging:
     %         figure
@@ -119,7 +107,9 @@ end
 P_res = minkDiff(P_m_degenerate,polytope(Z_s{1}));
 
 % set considered types
-typeSet = {'inner', 'outer', 'outer:coarse', 'inner:conZonotope', 'inner:RaghuramanKoeln', 'inner:RaghuramanKoeln_weighted', 'inner:incremental'};
+typeSet = {'inner', 'outer', 'outer:coarse', 'inner:conZonotope', ...
+    'inner:RaghuramanKoeln'};
+% 'inner:RaghuramanKoeln_weighted', 'inner:incremental'
 
 % loop over all types
 for iType = 1:length(typeSet)
@@ -138,7 +128,7 @@ for iType = 1:length(typeSet)
     % the result should be empty
     if representsa(Z_res,'emptySet')
         % check if polytope solution is empty as well
-        resPartial(end+1) = representsa(P_res,'emptySet');
+        resvec(end+1,1) = representsa(P_res,'emptySet');
     end
 end
 
@@ -158,16 +148,17 @@ for iType = 1:length(typeSet)
     Z_res = minkDiff(Z_m_degenerate, Z_s_degenerate, type);
 
     % enclosure check (Definition of Minkoswki difference)
-    resPartial(end+1) = contains(Z_m_degenerate + smallBox, Z_res + Z_s_degenerate);
+    resvec(end+1,1) = contains(Z_m_degenerate + smallBox, Z_res + Z_s_degenerate);
 
     % enclosure check (comparison with polytope solution); not applicable, see
     % above
-    resPartial(end+1) = contains(P_res + smallBox, polytope(Z_res));
+    resvec(end+1,1) = contains(P_res + smallBox, polytope(Z_res));
 
     % enclosure check (comparison with polytope solution; other direction); not applicable, see
     % above
-    resPartial(end+1) = contains(polytope(Z_res) + smallBox, P_res);
+    resvec(end+1,1) = contains(polytope(Z_res) + smallBox, P_res);
 end
+
 
 %% create zonotopes -- fixed case in 3D (no halfspace is redundant; check under-approximation)
 % define small box
@@ -176,12 +167,12 @@ smallBox = zonotope([[0;0;0],1e-6*eye(3)]);
 Z_m = zonotope([zeros(3,1),ones(3,1),eye(3)]);
 % create subtrahend
 %Z_s = 1/5*zonotope([zeros(3,1),[1; -1; 0],eye(3)]);
-%Z_s = 0.228*zonotope([zeros(3,1),[1; -1; 0],eye(3)]); % 0.229 is not working
 %Z_s = 0.229*zonotope([zeros(3,1),[1; -1; 0],eye(3)]); % 0.229 is not working
 Z_s = 1/4*zonotope([zeros(3,1),[-1; 1; 1],eye(3)]);
 
 % set considered types
-typeSet = {'inner', 'inner:conZonotope', 'inner:RaghuramanKoeln', 'inner:RaghuramanKoeln_weighted', 'inner:incremental'};
+typeSet = {'inner', 'inner:conZonotope', 'inner:RaghuramanKoeln'};
+% 'inner:RaghuramanKoeln_weighted', 'inner:incremental'
 
 % loop over all types
 for iType = 1:length(typeSet)
@@ -193,13 +184,9 @@ for iType = 1:length(typeSet)
     Z_res = minkDiff(Z_m, Z_s, type);
     
     % enclosure check (Definition of Minkoswki difference)
-    resPartial(end+1) = contains(Z_m + smallBox, Z_res + Z_s);
+    resvec(end+1,1) = contains(Z_m + smallBox, Z_res + Z_s);
 end
 
-% figure
-% plot(Z_res,[1 2 3])
-% figure
-% plot(P_res,[1 2 3])
 
 %% create zonotopes -- random cases in 3D (check under-approximation)
 for iSet = 1:10
@@ -210,7 +197,8 @@ for iSet = 1:10
     Z_s = enlarge(zonotope.generateRandom('Dimension',3,'NrGenerators',5), 0.2);
     
     % set considered types
-    typeSet = {'inner', 'inner:conZonotope', 'inner:RaghuramanKoeln', 'inner:RaghuramanKoeln_weighted', 'inner:incremental'};
+    typeSet = {'inner', 'inner:conZonotope', 'inner:RaghuramanKoeln'};
+    % 'inner:RaghuramanKoeln_weighted', 'inner:incremental'
 
     % loop over all types
     for iType = 1:length(typeSet)
@@ -223,7 +211,7 @@ for iSet = 1:10
 
         % enclosure check (Definition of Minkoswki difference)
         if ~representsa(Z_res,'emptySet')
-            resPartial(end+1) = contains(Z_m + smallBox, Z_res + Z_s);
+            resvec(end+1,1) = contains(Z_m + smallBox, Z_res + Z_s);
         else
             % if the result is empty, it has to hold that Z_s is not contained
             % in Z_m when the centers are equal
@@ -231,14 +219,13 @@ for iSet = 1:10
             % resPartial(end+1) = ~contains(Z_m, Z_s + smallBox + center(Z_m) - center(Z_s));
         end
 
-        if resPartial(end) ~= 1
+        if resvec(end) ~= 1
             % MPT toolbox often wrongfully returns that a polytope is empty
-            path = pathFailedTests(mfilename());
-            save(path,'Z_m','Z_s');
-            disp(['error in under-approximation of method ',type]);
+            throw(CORAerror('CORA:testFailed'))
         end
     end
 end
+
 
 %% create zonotopes -- random cases in 3D (over-approximation)
 for iSet = 1:10
@@ -266,21 +253,19 @@ for iSet = 1:10
 
             % enclosure check (over-approximation)
             if ~representsa(Z_res,'emptySet')
-                resPartial(end+1) = contains(Z_res + smallBox, P_res);
+                resvec(end+1,1) = contains(Z_res + smallBox, P_res);
             else
-                % if the result is empty, it has to hold that Z_s is not contained
-                % in Z_m when the centers are equal
+                % if the result is empty, it has to hold that Z_s is not
+                % contained in Z_m when the centers are equal
                 % This is not always true since the empty set computation
                 % of the MPT Toolbox is buggy
                 % This portion is commented out due to errors in the MPT toolbox
                 % resPartial(end+1) = ~contains(Z_m, Z_s + smallBox + center(Z_m) - center(Z_s));
             end
 
-            if resPartial(end) ~= 1
+            if resvec(end) ~= 1
                 % MPT toolbox often wrongfully returns that a polytope is empty
-                path = pathFailedTests(mfilename());
-                save(path,'Z_m','Z_s');
-                disp(['error in over-approximation of method ',type]);
+                throw(CORAerror('CORA:testFailed'))
             end
         end
     catch
@@ -290,6 +275,6 @@ end
 
 
 %result of all tests
-res = all(resPartial);
+res = all(resvec);
 
 % ------------------------------ END OF CODE ------------------------------

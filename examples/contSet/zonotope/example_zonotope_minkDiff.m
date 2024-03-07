@@ -288,27 +288,27 @@ end
 % % end
 
 
-%% Minkowski addition
-Zres_add = cell(runs,1);
-tStart = tic;
-for i = 1:runs
-    %compute Minkowski addition
-    Zres_add{i} = Zres{i} + Zs{i};
-end
-t_zono_add = toc(tStart);
-t_zonoAverage_add = t_zono_add/runs;
-disp("Average time of Mink.add. for zonotopes: " + t_zonoAverage_add);
-
-%% Minkowski addition for polytopes
-Pres_add = cell(runs,1);
-tStart = tic;
-for i = 1:runs
-    disp(i)
-    Pres_add{i} = Pres{i} + Ps{i};
-end
-t_poly_add = toc(tStart);
-t_polyAverage_add = t_poly_add/runs;
-disp("Average time of Mink.add. for polytopes: " + t_polyAverage_add);
+% %% Minkowski addition
+% Zres_add = cell(runs,1);
+% tStart = tic;
+% for i = 1:runs
+%     %compute Minkowski addition
+%     Zres_add{i} = Zres{i} + Zs{i};
+% end
+% t_zono_add = toc(tStart);
+% t_zonoAverage_add = t_zono_add/runs;
+% disp("Average time of Mink.add. for zonotopes: " + t_zonoAverage_add);
+% 
+% %% Minkowski addition for polytopes
+% Pres_add = cell(runs,1);
+% tStart = tic;
+% for i = 1:runs
+%     disp(i)
+%     Pres_add{i} = Pres{i} + Ps{i};
+% end
+% t_poly_add = toc(tStart);
+% t_polyAverage_add = t_poly_add/runs;
+% disp("Average time of Mink.add. for polytopes: " + t_polyAverage_add);
 
 
 completed = true;

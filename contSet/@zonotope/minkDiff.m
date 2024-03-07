@@ -156,49 +156,50 @@ if isFullDim(minuend)
 
 else
     if isFullDim(subtrahend)
-        % display that minuend has to be full-dimensional if subtrahend is
-        % full-dimensional
-        throw(CORAerror('CORA:wrongValue', 'first', 'full-dimensional zonotope'));
-    else
-        if rank(minuend) == rank(subtrahend)
-            % transform the minuend and subtrahend into a space where the
-            % minuend is full-dimensional using the singular value decomposition
+        % Minkowski difference of degenerate minuend and full-dimensional
+        % subtrahend is the empty set
+        Z = zonotope.empty(n);
+        return;
+    end
 
-            % range of minuend
-            [U, S] = svd(generators(minuend));
-            newDim = nnz(~all(withinTol(S,0))); % nr. of new dimensions
-            P_minuend = U(1:newDim, :); % projection matrix
-            
-            % range of subtrahend
-            [U, S] = svd(generators(subtrahend));
-            newDim = nnz(~all(withinTol(S,0))); % nr. of new dimensions
-            P_subtrahend = U(1:newDim, :); % projection matrix
-            
-            % Is the range of the minuend and subtrahend equal?
-            if all(size(P_minuend) == size(P_subtrahend)) ...
-                    && norm(P_minuend-P_subtrahend) <= 1e-10
-                % project
-                minuend_proj = P_minuend * minuend; % transformed minuend
-                subtrahend_proj = P_minuend * subtrahend; % transformed subtrahend
-                
-                % solve problem in the transformed domain
-                Z_proj = minkDiff(minuend_proj, subtrahend_proj, method);
-                
-                % transform solution back into the original domain
-                Z = pinv(P_minuend) * Z_proj;
+    if rank(minuend) == rank(subtrahend)
+        % transform the minuend and subtrahend into a space where the
+        % minuend is full-dimensional using the singular value decomposition
 
-            else
-                % no solution exists
-                throw(CORAerror('CORA:wrongValue', 'first/second',...
-                    ['for non full-dimensional zonotopes: ', ...
-                    'projection matrix found by svd has to be equal']));
-            end
+        % range of minuend
+        [U, S] = svd(generators(minuend));
+        newDim = nnz(~all(withinTol(S,0))); % nr. of new dimensions
+        P_minuend = U(1:newDim, :); % projection matrix
+        
+        % range of subtrahend
+        [U, S] = svd(generators(subtrahend));
+        newDim = nnz(~all(withinTol(S,0))); % nr. of new dimensions
+        P_subtrahend = U(1:newDim, :); % projection matrix
+        
+        % Is the range of the minuend and subtrahend equal?
+        if all(size(P_minuend) == size(P_subtrahend)) ...
+                && norm(P_minuend-P_subtrahend) <= 1e-10
+            % project
+            minuend_proj = P_minuend * minuend; % transformed minuend
+            subtrahend_proj = P_minuend * subtrahend; % transformed subtrahend
+            
+            % solve problem in the transformed domain
+            Z_proj = minkDiff(minuend_proj, subtrahend_proj, method);
+            
+            % transform solution back into the original domain
+            Z = pinv(P_minuend) * Z_proj;
+
         else
             % no solution exists
             throw(CORAerror('CORA:wrongValue', 'first/second',...
                 ['for non full-dimensional zonotopes: ', ...
-                'rank of generator matrix must be equal']));
+                'projection matrix found by svd has to be equal']));
         end
+    else
+        % no solution exists
+        throw(CORAerror('CORA:wrongValue', 'first/second',...
+            ['for non full-dimensional zonotopes: ', ...
+            'rank of generator matrix must be equal']));
     end
 end
 
@@ -263,7 +264,7 @@ elseif strcmp(method, 'outer') || strcmp(method, 'outer:coarse')
     % is set empty?
     if isempty(d_shortened)
         % return empty set with correct dimensions
-        Z = zonotope(zeros(n, 0));
+        Z = zonotope.empty(n);
         return
     else
         % vector of cost function
@@ -295,6 +296,7 @@ Gnew = generators(minuend) * diag(alpha);
 % remove all zero columns
 Gnew = Gnew(:,~all(Gnew == 0,1));
 Z = zonotope(c, Gnew);
+
 end
 
 function Z = aux_minkDiffOuterInterval(minuend,subtrahend)
@@ -332,6 +334,7 @@ end
 
 % compute zonotope inner-approximation of the constrained zonotope
 Z = aux_innerApprox(cZ);
+
 end
 
 function Z = aux_innerApprox(cZ)
@@ -372,7 +375,7 @@ end
 % check if constrained zonotope is empty
 if isempty(x) || exitflag ~= 1
     % return empty set with correct dimensions
-    Z = zonotope(zeros(dim(cZ), 0));
+    Z = zonotope.empty(dim(cZ));
     return
 end
 
@@ -390,6 +393,7 @@ c = cZ.c + cZ.G * off;
 G = cZ.G * S;
 
 Z = zonotope(c, G);
+
 end
 
 function d_new = aux_tightenHalfspaces(C, delta_d)
@@ -409,6 +413,7 @@ else
     % values have the opposite sign
     d_new = -d_new;
 end
+
 end
 
 function Z = aux_RaghuramanKoeln(Z_m, Z_s)
@@ -477,16 +482,19 @@ f = [-ones(n_m+n_s, 1); zeros(2*n_m*(n_m + 2 * n_s + 1)+n, 1)];
 % solve linear programming problem
 [x, ~, exitflag] = linprog(f, A, b, A_eq, b_eq);
 
-if exitflag ~= 1
-    % no solution exists
-    throw(CORAerror("CORA:specialError", 'No solution exists.'))
-else
+if exitflag == 1
     % extract phi
     phi = x(1:n_m+n_s);
     % extract c_d
     c_d = x(end-n+1:end);
     % result
     Z = zonotope([c_d, [G_m, G_s] * diag(phi)]);
+elseif exitflag == -2
+    % no feasible point found -> empty
+    Z = zonotope.empty(n);
+else
+    % unknown error
+    throw(CORAerror("CORA:specialError", 'No solution exists.'))
 end
 
 end

@@ -404,39 +404,80 @@ end
 
 function [res,I] = aux_isInterval(P,tol)
 
-    % assume false
-    res = false; I = [];
+    % loop over all halfspaces
+    % -> find those that are axis-aligned and construct an interval
+    % -> gather all non-axis-aligned constraints (skip all-zero)
 
-    % TODO: rewrite this function
+    % dimension and init interval
+    n = dim(P);
+    lb = -Inf(n,1); ub = Inf(n,1);
+
+    all_constraints = [P.A; P.Ae; -P.Ae];
+    offsets = [P.b; P.be; -P.be];
+    nrCon = size(all_constraints,1);
+    checkRedundancy = false(nrCon,1);
     
-    % fast initial check
-    if ~all(sum(abs(sign(P.A)),2) == 1)
-        return;
-    end
-    
-    % construct equivalent interval
-    n = dim(P); lb = -Inf(n,1); ub = Inf(n,1);
-    
-    % loop over each dimension
-    for i = 1:n
-        % find halfspaces along this dimension
-        ind = find(P.A(:,i) ~= 0);
-        % loop over each halfspace
-        for j = 1:length(ind)
-            if P.A(ind(j),i) > 0
-                % upper bound in this dimension
-                ub(i) = min(ub(i),P.b(ind(j))/P.A(ind(j),i)); 
+    for c=1:nrCon
+        % read out constraint
+        constraint = all_constraints(c,:)';
+
+        % check if all-zero, axis-aligned, or non-axis-aligned
+        if ~any(constraint)
+            continue
+        else
+            % find non-zero index
+            idx = ~withinTol(constraint,0,tol);
+            if nnz(idx) == 1
+                constraint_norm = vecnorm(constraint);
+                % axis-aligned, save bound
+                if constraint(idx) > 0
+                    ub(idx) = min([offsets(c) / constraint_norm, ub(idx)]);
+                else
+                    lb(idx) = max([-offsets(c) / constraint_norm, lb(idx)]);
+                end
             else
-                % lower bound in this dimension
-                lb(i) = max(lb(i),P.b(ind(j))/P.A(ind(j),i));
+                % non-axis-aligned... save and check later
+                checkRedundancy(c) = true;
+            end
+        end
+    end
+
+    % proposed interval... yet to be checked
+    I = interval(lb,ub);
+
+    % go over all non-axis-aligned constraints and check redundancy
+    if any(checkRedundancy)
+        for c=1:nrCon
+            if checkRedundancy(c)
+                % compute support function of proposed interval and compare
+                % to the offset of the constraint
+                val = supportFunc_(I,all_constraints(c,:)','upper');
+                if val <= offsets(c)
+                    % constraint is redundant
+                else
+                    % compute lower bound of support function to check for
+                    % emptiness
+                    val = supportFunc_(I,all_constraints(c,:)','lower');
+                    if val > offsets(c)
+                        % empty
+                        res = true; I = interval.empty(n);
+                        return
+                    else
+                        % constraint cuts through the interval... only hope
+                        % now is that the polytope is empty
+                        res = representsa_(P,'emptySet',tol);
+                        if res
+                            I = interval.empty(n);
+                        end
+                        return
+                    end
+                end
             end
         end
     end
     
-    % check if the interval is bounded
-    if nargout == 2
-        I = interval(lb,ub); res = true; 
-    end
+    % all checks are ok
+    res = true;
 
 end
 

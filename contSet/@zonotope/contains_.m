@@ -85,6 +85,7 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
 %                22-July-2022 (MA, method 'st' no longer requires YALMIP)
 %                25-November-2022 (LS, method 'st' using sparse matrices)
 %                25-November-2022 (MW, rename 'contains')
+%                06-March-2024 (TL, check emptiness of zonotopes)
 % Last revision: 27-March-2023 (MW, rename contains_)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -209,6 +210,18 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
 
         else
             % We may now assume that S is a zonotope
+
+            % check if inner set is empty
+            if representsa_(S,'emptySet',tol)
+                % always contained
+                res = true;
+                return;
+            elseif representsa_(Z,'emptySet',tol)
+                % if inner is not empty but outer zonotope is, return false
+                res = false;
+                return
+            end
+
             
             % Set adaptive maxEval, if needed
             if strcmp(type, 'opt') && maxEval == -1

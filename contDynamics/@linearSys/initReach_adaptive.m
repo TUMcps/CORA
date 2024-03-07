@@ -33,13 +33,19 @@ function [Rend,options,linOptions] = initReach_adaptive(sys,Rstart,options,linOp
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% re-use same truncation order as in last iteration of same step to
+% facilitate reduction by indices (particular solutions must have same
+% number of generators across iterations in the same step)
+if isfield(options,'tt_lin') && length(options.tt_lin) == options.i
+    linOptions.taylorTerms = options.tt_lin(options.i);
+end
 % exponential matrix and time interval error (incl. adaptive taylorTerms)
 [sys,linOptions] = expmtie_adaptive(sys,linOptions);
 % compute reachable set due to input
 [sys,linOptions] = inputSolution(sys,linOptions);
 %change the time step
 sys.taylor.timeStep = linOptions.timeStep;
-% save taylorTerms for analysis
+% save taylorTerms for next iteration of same step
 options.tt_lin(options.i,1) = linOptions.taylorTerms;
 options.etalinFro(options.i,1) = linOptions.etalinFro;
 

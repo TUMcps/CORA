@@ -569,16 +569,16 @@ set.nrG_PUtotal_zero = 0;
 % set.Ghat_PUtotal_zero = zeros(obj.dim,set.nrG_PUtotal_zero_full); % only omega_max
 % only fast inner-approximation check
 if isfield(options,'savedata')
-    if isfield(options.savedata,'Gunsat')
-    for i=1:length(options.savedata.Gunsat)
-        if options.G{i}.fastInner
+    if isfield(options.savedata,'safeSet_unsat')
+    for i=1:length(options.savedata.safeSet_unsat)
+        if options.safeSet{i}.fastInner
             set.G_GfastInner{i} = 0;
         end
     end
     end
-    if isfield(options.savedata,'Funsat')
-    for i=1:length(options.savedata.Funsat)
-        if options.F{i}.fastInner
+    if isfield(options.savedata,'unsafeSet_unsat')
+    for i=1:length(options.savedata.unsafeSet_unsat)
+        if options.unsafeSet{i}.fastInner
             set.F_GfastInner{i} = 0;
         end
     end
@@ -984,7 +984,7 @@ end
 end
 
 % specification-related functions
-function doCheck = aux_checkSet(FGunsat,t)
+function doCheck = aux_checkSet(unsafeSet_safeSet_unsat,t)
 % returns whether the current safe/unsafe set has to be checked for the 
 % given time interval, which is not required if the verification has been
 % successful in a prior iteration
@@ -992,18 +992,18 @@ function doCheck = aux_checkSet(FGunsat,t)
 doCheck = true;
 
 % quick check if set is already fully verified
-if isempty(FGunsat)
+if isempty(unsafeSet_safeSet_unsat)
     doCheck = false;
     return;
 end
 
 % check for intersection
-if t(2) <= FGunsat(1,1) || t(1) > FGunsat(end,2)
+if t(2) <= unsafeSet_safeSet_unsat(1,1) || t(1) > unsafeSet_safeSet_unsat(end,2)
     % upper bound smaller than lower bound of first time interval
     % lower bound larger than upper bound of last time interval
     doCheck = false;
     return;
-elseif any(t(1) >= FGunsat(1:end-1,2) & t(2) <= FGunsat(2:end,1))
+elseif any(t(1) >= unsafeSet_safeSet_unsat(1:end-1,2) & t(2) <= unsafeSet_safeSet_unsat(2:end,1))
     % bounds between unverified time intervals
     doCheck = false;
     return;
@@ -1018,7 +1018,7 @@ function [specUnsat,tFinal] = aux_initSpecUnsat(options,savedata)
 tFinal = options.tFinal;
 specUnsat = [];
 
-if isfield(savedata,'Funsat') || isfield(savedata,'Gunsat')
+if isfield(savedata,'unsafeSet_unsat') || isfield(savedata,'safeSet_unsat')
 
     % TODO: shift by start time...
     
@@ -1026,13 +1026,13 @@ if isfield(savedata,'Funsat') || isfield(savedata,'Gunsat')
     specUnsat = [];
     
     % add unverified time intervals (unsafe sets)
-    if isfield(savedata,'Funsat')
-        specUnsat = aux_unifySpecUnsat(specUnsat,savedata.Funsat,options.tStart,options.tFinal);
+    if isfield(savedata,'unsafeSet_unsat')
+        specUnsat = aux_unifySpecUnsat(specUnsat,savedata.unsafeSet_unsat,options.tStart,options.tFinal);
     end
     
     % add unverified time intervals (safe sets)
-    if isfield(savedata,'Gunsat')
-        specUnsat = aux_unifySpecUnsat(specUnsat,savedata.Gunsat,options.tStart,options.tFinal);
+    if isfield(savedata,'safeSet_unsat')
+        specUnsat = aux_unifySpecUnsat(specUnsat,savedata.safeSet_unsat,options.tStart,options.tFinal);
     end
     
     % adjust time horizon if specifications are already satisfied from some
@@ -1042,27 +1042,27 @@ end
 
 end
 
-function specUnsat = aux_unifySpecUnsat(specUnsat,FGunsat,tStart,tFinal)
-% specUnsat: double-array nx2
-% FGsat:     cell-array mx1 with double-arrays px2
+function specUnsat = aux_unifySpecUnsat(specUnsat,unsafeSet_safeSet_unsat,tStart,tFinal)
+% specUnsat:               double-array nx2
+% unsafeSet_safeSet_unsat: cell-array mx1 with double-arrays px2
 
-for i=1:length(FGunsat)
+for i=1:length(unsafeSet_safeSet_unsat)
 
     % quick checks
     if isempty(specUnsat)
-        % copy FGsat if specUnsat not filled until now
-        specUnsat = FGunsat{i};
+        % copy if specUnsat not filled until now
+        specUnsat = unsafeSet_safeSet_unsat{i};
         continue;
     elseif specUnsat(1,1) == tStart && specUnsat(1,2) == tFinal
         % specUnsat already covers entire time horizon
         break
     end
     
-    % loop over all unsat time intervals of current FGsat
-    for j=1:size(FGunsat{i},1)
+    % loop over all unsat time intervals
+    for j=1:size(unsafeSet_safeSet_unsat{i},1)
         
-        % unsat time interval: add to specUnsat
-        t = FGunsat{i}(j,:);
+        % unsat time interval: expand specUnsat
+        t = unsafeSet_safeSet_unsat{i}(j,:);
         
         % fully inside
         idx = find(t(1) >= specUnsat(:,1) & t(2) <= specUnsat(:,2),1);
@@ -1084,6 +1084,10 @@ for i=1:length(FGunsat)
         if ~isempty(idx)
             specUnsat(idx,:) = [];
             % will be implicitly re-added later as t contains it
+            if isempty(specUnsat)
+                specUnsat = t;
+                continue
+            end
         end
 
 
@@ -1104,7 +1108,9 @@ for i=1:length(FGunsat)
                 while ~isempty(idxMerge)
                     idxMerge = find(specUnsat(2:end,1) == specUnsat(1:end-1,2));
                     if ~isempty(idxMerge)
-                        specUnsat = [specUnsat(1:idx-1,:); [specUnsat(idx,1), specUnsat(idx+1,2)]; specUnsat(idx+2:end,:)];
+                        specUnsat = [specUnsat(1:idx-1,:);
+                                     [specUnsat(idx,1), specUnsat(idx+1,2)];
+                                     specUnsat(idx+2:end,:)];
                     end
                 end
             end
@@ -1123,7 +1129,7 @@ function [res,set,savedata] = aux_quickCheck(obj,set,timeInterval,...
 res = true;
 
 % check for simple exit (safe set violated)
-for i=1:length(savedata.Gunsat)
+for i=1:length(savedata.safeSet_unsat)
     
     % propagate generator matrix of GfastInner (for later steps)
     if options.G{i}.fastInner
@@ -1133,7 +1139,7 @@ for i=1:length(savedata.Gunsat)
         set.G_GfastInner{i} = set.G_GfastInner{i} + sum(abs(C * set.GfastInner_add),2);
         
         % perform actual check
-        if aux_checkSet(savedata.Gunsat{i},timeInterval)
+        if aux_checkSet(savedata.safeSet_unsat{i},timeInterval)
             d = options.G{i}.set.P.b;
             Grem = sum(abs([C * obj.C * generators(set.enc), ...
                 C * obj.C * diag(set.boxFstartset_Gbox + set.FtildeuTrans_Gbox + set.G_PUtotal_infty)]),2);
@@ -1146,7 +1152,7 @@ for i=1:length(savedata.Gunsat)
                 res = false; return
             elseif checkval < 0
                 % outer-approximation inside safe set -> time interval ok
-                savedata.Gunsat{i} = aux_removeFromUnsat(savedata.Gunsat{i},timeInterval);
+                savedata.safeSet_unsat{i} = aux_removeFromUnsat(savedata.safeSet_unsat{i},timeInterval);
             end
             
         end
@@ -1156,7 +1162,7 @@ for i=1:length(savedata.Gunsat)
 end
 
 % check for simple exit (unsafe set violated)
-for i=1:length(savedata.Funsat)
+for i=1:length(savedata.unsafeSet_unsat)
     
     % propagate generator matrix of GfastInner (for later steps)
     if options.F{i}.fastInner
@@ -1166,7 +1172,7 @@ for i=1:length(savedata.Funsat)
         set.F_GfastInner{i} = set.F_GfastInner{i} + sum(abs(C * set.GfastInner_add),2);
         
         % perform actual check
-        if aux_checkSet(savedata.Funsat{i},timeInterval)
+        if aux_checkSet(savedata.unsafeSet_unsat{i},timeInterval)
             d = options.F{i}.set.P.b;
             Grem = sum(abs([C * obj.C * generators(set.enc), ...
                 C * obj.C * diag(set.boxFstartset_Gbox + set.FtildeuTrans_Gbox + set.G_PUtotal_infty)]),2);
@@ -1180,7 +1186,7 @@ for i=1:length(savedata.Funsat)
             elseif checkval < 0
                 % outer-approximation does not intersect unsafe set ->
                 % time interval is verified
-                savedata.Funsat{i} = aux_removeFromUnsat(savedata.Funsat{i},timeInterval);
+                savedata.unsafeSet_unsat{i} = aux_removeFromUnsat(savedata.unsafeSet_unsat{i},timeInterval);
             end
             
         end
@@ -1191,28 +1197,28 @@ end
 
 end
 
-function FGunsat = aux_removeFromUnsat(FGunsat,t)
-% adapt FGunsat so that timeInterval is not part of time intervals covered
+function unsafeSet_safeSet_unsat = aux_removeFromUnsat(unsafeSet_safeSet_unsat,t)
+% adapt unsafeSet_safeSet_unsat so that timeInterval is not part of time intervals covered
 
-FGunsat_col = reshape(FGunsat',numel(FGunsat),1);
-if mod(sum(t(1) >= FGunsat_col),2) ~= 0
+unsafeSet_safeSet_unsat_col = reshape(unsafeSet_safeSet_unsat',numel(unsafeSet_safeSet_unsat),1);
+if mod(sum(t(1) >= unsafeSet_safeSet_unsat_col),2) ~= 0
     % lower bound starts inside unverified time interval
     % t(1) \in [ timeInterval )
-    idx = find(t(1) >= FGunsat(:,1) & t(1) <= FGunsat(:,2));
+    idx = find(t(1) >= unsafeSet_safeSet_unsat(:,1) & t(1) <= unsafeSet_safeSet_unsat(:,2));
     
-    if t(2) <= FGunsat(idx,2)
-        if t(1) > FGunsat(idx,1)
-            FGunsat = [FGunsat(1:idx-1,:); [FGunsat(idx,1), t(1)]; FGunsat(idx:end,:)];
+    if t(2) <= unsafeSet_safeSet_unsat(idx,2)
+        if t(1) > unsafeSet_safeSet_unsat(idx,1)
+            unsafeSet_safeSet_unsat = [unsafeSet_safeSet_unsat(1:idx-1,:); [unsafeSet_safeSet_unsat(idx,1), t(1)]; unsafeSet_safeSet_unsat(idx:end,:)];
             idx = idx + 1;
         end
         % split, potential merge later
-        FGunsat(idx,1) = t(2);
+        unsafeSet_safeSet_unsat(idx,1) = t(2);
         t = [];
     else
         % remove interval, potential merge later
-        FGunsat(idx,2) = t(1);
-        if idx < size(FGunsat,1)
-            t(1) = FGunsat(idx+1,1);
+        unsafeSet_safeSet_unsat(idx,2) = t(1);
+        if idx < size(unsafeSet_safeSet_unsat,1)
+            t(1) = unsafeSet_safeSet_unsat(idx+1,1);
         end
         if t(2) <= t(1)
             t = [];
@@ -1224,29 +1230,29 @@ end
 % maximum at the start point of an unverified set
 % t(1) \in [ notTimeInterval )
 while ~isempty(t)
-    idx = find(t(1) <= FGunsat(:,1),1,'first');
+    idx = find(t(1) <= unsafeSet_safeSet_unsat(:,1),1,'first');
     % upper bound is at least at the beginning of the next time interval
-    if t(2) <= FGunsat(idx,2)
+    if t(2) <= unsafeSet_safeSet_unsat(idx,2)
         % split, potential merge later
-        FGunsat(idx,1) = t(2);
+        unsafeSet_safeSet_unsat(idx,1) = t(2);
         t = [];
     else
         % remove entire thing (full time interval verified)
-        if idx < size(FGunsat,1)
-            t(1) = FGunsat(idx,2);
-            if t(2) < FGunsat(idx+1,1)
+        if idx < size(unsafeSet_safeSet_unsat,1)
+            t(1) = unsafeSet_safeSet_unsat(idx,2);
+            if t(2) < unsafeSet_safeSet_unsat(idx+1,1)
                 t = [];
             end
         else
             t = [];
         end
-        FGunsat(idx,:) = [];
+        unsafeSet_safeSet_unsat(idx,:) = [];
     end
 end
 
 % remove
-idxRemove = abs(FGunsat(:,2) - FGunsat(:,1)) < 1e-14;
-FGunsat(idxRemove,:) = [];
+idxRemove = abs(unsafeSet_safeSet_unsat(:,2) - unsafeSet_safeSet_unsat(:,1)) < 1e-14;
+unsafeSet_safeSet_unsat(idxRemove,:) = [];
 
 end
 
@@ -2572,7 +2578,7 @@ end
 
 % check if current time within bounds (but not at the end)
 temp = reshape(specUnsat',numel(specUnsat),1);
-idx = find(t < temp,1,'first');
+idx = find(t < temp & ~withinTol(t,temp),1,'first');
 % time until next switch
 maxTimeStepSpec = temp(idx) - t;
 % compute full reachable set?

@@ -442,7 +442,7 @@ for plotRun=1:18
 end
 
 % example completed
-completed = 1;
+completed = true;
 
 
 % ------------------------------ END OF CODE ------------------------------

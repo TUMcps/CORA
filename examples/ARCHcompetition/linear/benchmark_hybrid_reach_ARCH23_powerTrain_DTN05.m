@@ -39,9 +39,9 @@ params.tFinal = 0.2;
 % system input
 u = [-5; 0];            % acceleration and load torque
 
-params.U{1} = B1*zonotope(0) + B1*u + c1;
-params.U{2} = B2*zonotope(0) + B2*u + c2; 
-params.U{3} = B3*zonotope(0) + B3*u + c3;
+params.U{1} = B1*zonotope(zeros(2,1)) + B1*u + c1;
+params.U{2} = B2*zonotope(zeros(2,1)) + B2*u + c2; 
+params.U{3} = B3*zonotope(zeros(2,1)) + B3*u + c3;
 
 
 % Reachability Settings ---------------------------------------------------
@@ -114,9 +114,9 @@ params.tFinal = 2;
 % update system input
 u = [5; 0];             % acceleration and load torque
 
-params.U{1} = B1*zonotope(0) + B1*u + c1;
-params.U{2} = B2*zonotope(0) + B2*u + c2; 
-params.U{3} = B3*zonotope(0) + B3*u + c3;
+params.U{1} = B1*zonotope(zeros(2,1)) + B1*u + c1;
+params.U{2} = B2*zonotope(zeros(2,1)) + B2*u + c2; 
+params.U{3} = B3*zonotope(zeros(2,1)) + B3*u + c3;
 
 
 % Simulation 2 ------------------------------------------------------------

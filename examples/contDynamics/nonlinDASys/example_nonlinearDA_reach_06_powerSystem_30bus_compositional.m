@@ -308,6 +308,7 @@ save IEEE30sim
 doPlot = false;
 if ~doPlot
     disp('Visualiation is turned off for this example for time reasons. You can enable it by setting the ''doPlot'' variable to true.')
+    completed = true;
     return
 end
 
@@ -470,7 +471,7 @@ for iProj = 1:length(projDimAlg)
 end
 
 % example completed
-completed = 1;
+completed = true;
 
 
 % ------------------------------ END OF CODE ------------------------------

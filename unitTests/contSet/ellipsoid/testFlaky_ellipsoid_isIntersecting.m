@@ -1,9 +1,9 @@
-function res = testLong_ellipsoid_isIntersecting
-% testLong_ellipsoid_isIntersecting - unit test function of
+function res = testFlaky_ellipsoid_isIntersecting
+% testFlaky_ellipsoid_isIntersecting - unit test function of
 %    isIntersecting
 %
 % Syntax:
-%    res = testLong_ellipsoid_isIntersecting
+%    res = testFlaky_ellipsoid_isIntersecting
 %
 % Inputs:
 %    -

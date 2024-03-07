@@ -89,7 +89,8 @@ elseif isa(spec,'specification')
     % is faster. Default is 'reachavoid:supportFunc' for now ...
     verifyAlg = 'reachavoid:supportFunc';
 else
-    throw(CORAerror('CORA:wrongValue','options.verifyAlg','Verification algorithm not specified and unable to determine one automatically.'))
+    throw(CORAerror('CORA:wrongValue','options.verifyAlg',...
+        'Verification algorithm not specified and unable to determine one automatically.'))
 end
 
 
@@ -105,7 +106,8 @@ if CHECKS_ENABLED
     end
 
     if isa(spec,'stl') && ~startsWith(verifyAlg,'stl:')
-        throw(CORAerror("CORA:wrongValue",'options.verifyAlg','Given stl specifications need an algorithm designed for stl.'))
+        throw(CORAerror("CORA:wrongValue",'options.verifyAlg',...
+            'Given stl specifications need an algorithm designed for stl.'))
     end
 
     if isa(spec,'specification')

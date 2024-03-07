@@ -104,7 +104,7 @@ if isa(sys,'contDynamics')
     end
 
     % verification: specifications and corresponding time intervals
-    if strcmp(func,'verify')
+    if strcmp(func,'verifyRA_zonotope')
         % initialize time intervals where (un)safe sets are not yet verified
         [params,options] = aux_set_unsatIntervals(sys,params,options);
 

@@ -26,36 +26,41 @@ function I = interval(cZ)
 %
 % See also: none
 
-% Authors:       Niklas Kochdumper
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
 % Written:       13-May-2018
-% Last update:   ---
+% Last update:   23-February-2024 (MW, conversion of empty set)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isempty(cZ.A)       % no constraints -> call zonotope method
-    
+if isempty(cZ.A)
+    % no constraints -> call zonotope method    
     I = interval(zonotope(cZ.c,cZ.G));
-    
-else                    % constraints 
-    
-    n = dim(cZ);
-    I = interval(zeros(n,1));
+    return
+end
 
-    % remove the trivial constraint 0*beta = 0
-    cZ = compact_(cZ,'zeros',eps);
+% case with constraints 
+n = dim(cZ);
+I = interval(zeros(n,1));
 
-    % loop over all dimensions
-    for i = 1:n
-        temp = zeros(n,1);
-        temp(i) = 1;
+% remove the trivial constraint 0*beta = 0
+cZ = compact_(cZ,'zeros',eps);
 
-        % calculate exact bounds by solving a linear program
-        lb = supportFunc_(cZ,temp,'lower');
-        ub = supportFunc_(cZ,temp,'upper');
-        I(i) = interval(lb,ub);
-        
+% loop over all dimensions
+for i = 1:n
+    temp = zeros(n,1);
+    temp(i) = 1;
+
+    % calculate exact bounds by solving a linear program
+    lb = supportFunc_(cZ,temp,'lower');
+    if lb == Inf
+        % empty
+        I = interval.empty(n);
+        return
     end
+    ub = supportFunc_(cZ,temp,'upper');
+    I(i) = interval(lb,ub);
+    
 end
 
 % ------------------------------ END OF CODE ------------------------------

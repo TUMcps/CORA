@@ -31,6 +31,7 @@ function pZ = linComb(pZ1,S)
 % Authors:       Niklas Kochdumper
 % Written:       25-June-2018
 % Last update:   05-May-2020 (MW, standardized error message)
+%                06-March-2023 (TL, optimizations using logical indexing)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -99,7 +100,7 @@ GI = Z.G;
 [Enew,Gnew] = removeRedundantExponents(E,G);
 
 % extract the center vector
-ind = find(sum(Enew,1) == 0);
+ind = sum(Enew,1) == 0;
 
 c = sum(Gnew(:,ind),2);
 Gnew(:,ind) = [];

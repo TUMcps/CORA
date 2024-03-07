@@ -36,6 +36,15 @@ A = [2 0; -1 1];
 P_ = A * P;
 res(end+1,1) = ~isempty(P_.V.val) && compareMatrices(P_.V.val,V);
 
+% 2D, bounded
+P = polytope([1 0; -1 1; -1 -1], [1; 1; 1]);
+M = [1 -1; 2 1];
+V = vertices(P);
+P_ = M*P;
+vertices(P_);
+res(end+1,1) = ~isempty(P.V.val) && compareMatrices(P.V.val,V);
+res(end+1,1) = ~isempty(P_.V.val) && compareMatrices(P_.V.val,M*V);
+
 % --- minus ---------------------------------------------------------------
 
 % 1D, bounded

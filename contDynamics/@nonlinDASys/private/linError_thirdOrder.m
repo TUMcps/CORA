@@ -123,8 +123,9 @@ error_y = error_y_secondOrder + error_thirdOrder_y_zono;
 
 %compute final error
 Z_err_x = [error_x_secondOrder.c,error_x_secondOrder.G];
-Z_err_x_add = get(obj.linError.CF_inv*error_y_secondOrder,'Z');
-error_secondOrder = zonotope(Z_err_x + Z_err_x_add);
+Z_err_x_add = obj.linError.CF_inv*error_y_secondOrder;
+Z_err_x_add_mat = [Z_err_x_add.c, Z_err_x_add.G];
+error_secondOrder = zonotope(Z_err_x + Z_err_x_add_mat);
 error_thirdOrder = error_thirdOrder_x_zono + obj.linError.CF_inv*error_thirdOrder_y_zono;
 error = error_secondOrder + error_thirdOrder;
 

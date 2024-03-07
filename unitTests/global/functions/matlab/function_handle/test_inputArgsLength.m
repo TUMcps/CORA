@@ -72,11 +72,21 @@ n = inputArgs(1);
 res(end+1,1) = length(inputArgs) == 1 && n == 5 && r == 2;
 
 % n = 4, r = 2 (matrix multiplication without indexing)
-% note: this function is ambiguous... could be one or four states
-% f = @(x) randn(2,4) * x;
-% [inputArgs,r] = inputArgsLength(f);
-% n = inputArgs(1);
-% res(end+1,1) = length(inputArgs) == 1 && n == 4 && r == 2;
+f = @(x) randn(2,4) * x;
+[inputArgs,r] = inputArgsLength(f);
+n = inputArgs(1);
+res(end+1,1) = length(inputArgs) == 1 && n == 4 && r == 2;
+
+% n = 4, r = 2 (matrix addition without indexing)
+f = @(x) randn(2,1) + x;
+[inputArgs,r] = inputArgsLength(f);
+n = inputArgs(1);
+% This will most likely fail, because the function definition is ambiguous;
+% should x be a vector? A scalar added component-wise?
+% For now, we negate this test; if you see that it gives you 'false' here,
+% then either you did something wrong, or you found a better way to deal
+% with this problem
+res(end+1,1) = length(inputArgs) == 1 && ~(n == 2 && r == 2);
 
 % 2. Two input variables: x, u
 
@@ -94,6 +104,12 @@ res(end+1,1) = length(inputArgs) == 2 && n == 6 && m == 4 && r == 2;
 
 % n = 4, m = 2, r = 2 (matrix multiplication with indexing)
 f = @(x,u) randn(2,4) * x(1:4) + randn(2,2) * u(1:2);
+[inputArgs,r] = inputArgsLength(f);
+n = inputArgs(1); m = inputArgs(2);
+res(end+1,1) = length(inputArgs) == 2 && n == 4 && m == 2 && r == 2;
+
+% n = 4, r = 2 (matrix multiplication without indexing)
+f = @(x,u) randn(2,4) * x + randn(2,2) * u;
 [inputArgs,r] = inputArgsLength(f);
 n = inputArgs(1); m = inputArgs(2);
 res(end+1,1) = length(inputArgs) == 2 && n == 4 && m == 2 && r == 2;

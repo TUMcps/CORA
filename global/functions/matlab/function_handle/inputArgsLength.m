@@ -30,6 +30,7 @@ function [count,out] = inputArgsLength(f,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+
 % parse input arguments: number of input arguments to function handle
 narginf = setDefaultValues({nargin(f)},varargin);
 
@@ -91,6 +92,8 @@ if narginf == 1
             out = size(output);
             if any(out == 1)
                 out = max(out);
+            else
+                continue
             end
             return
         end
@@ -142,6 +145,8 @@ while true
             out = size(output);
             if any(out == 1)
                 out = max(out);
+            else
+                continue
             end
             return
         catch

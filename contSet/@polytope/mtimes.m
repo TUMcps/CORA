@@ -33,6 +33,7 @@ function P_out = mtimes(factor1,factor2)
 %                28-June-2022
 %                12-September-2022 (add affineMap/invAffineMap functions)
 %                14-November-2023 (MW, handling for V-rep, scaling method)
+%                04-March-2024 (TL, allow right multiplication with scalar)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -41,7 +42,9 @@ function P_out = mtimes(factor1,factor2)
 equalDimCheck(factor1,factor2);
 
 % order arguments correctly
-[P_out,matrix] = findClassArg(factor1,factor2,'polytope');
+[P_temp,matrix] = findClassArg(factor1,factor2,'polytope');
+P_out = polytope(P_temp.A,P_temp.b,P_temp.Ae,P_temp.be);
+P_out = copyProperties(P_temp,P_out,'all');
 
 %get dimension
 n = dim(P_out);
@@ -56,10 +59,13 @@ end
 if isnumeric(matrix)
 
     if isa(factor1,'polytope')
-        % polytope * matrix case... definition?
-        throw(CORAerror('CORA:noops',factor1,factor2));
-%         P_out = aux_invAffineMap(P_out,matrix);
-%         return
+        if isscalar(matrix)
+            P_out = matrix * P_out;
+            return
+        else
+            % polytope * matrix case... definition?
+            throw(CORAerror('CORA:noops',factor1,factor2));
+        end
     end
 
     % special method for scaling only (and 1D)

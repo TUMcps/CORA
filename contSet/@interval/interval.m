@@ -236,6 +236,7 @@ function [lb,ub] = aux_computeProperties(lb,ub)
         ub = zeros(size(lb));
     end
 
+    % check if given interval is empty
     if any(any( isinf(lb) & isinf(ub) & (sign(lb) == sign(ub)) ))
         n = size(lb);
         if all(n > 1)

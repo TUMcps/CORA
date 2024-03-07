@@ -446,7 +446,7 @@ if ~isempty(ind_now)
 else
     % inner-approximation needs to be computed
     q = dim(R_o{ind_Ro});
-    B = polytope(sqrt(q)*Rout_error(ind_Ro)* [eye(q),-eye(q)]');
+    B = polytope((sqrt(q)*Rout_error(ind_Ro)*[eye(q),-eye(q)]')');
     R_i{end+1,1} = minkDiff(conZonotope(R_o{ind_Ro}),B);
     ind_Ri = [ind_Ri; ind_Ro];
     ind_now = length(ind_Ri);
@@ -455,7 +455,7 @@ end
 % previously: full computation of inner-approximation of the reachable set
 % R_i = cell(size(R_o));
 % for i = 1:length(R_o)
-%    B = polytope(sqrt(n)*actError.timeInt(i)* [eye(n),-eye(n)]');
+%    B = polytope((sqrt(n)*actError.timeInt(i)*[eye(n),-eye(n)]')');
 %    R_i{i} = conZonotope(R_o{i}) - B;
 % end
 

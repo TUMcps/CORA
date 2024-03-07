@@ -30,7 +30,6 @@ This might take a while the first time you run it.
 
 ## Run docker
 
-
 Additionally, the MATLAB licence server is passed, 
 which only works within the TUM network (or via [VPN](https://www.it.tum.de/en/it/faq/internet-access-eduroam-vpn-wifi/internet-access-eduroam-vpn-wifi/how-can-i-configure-vpn-access/)).
 
@@ -57,11 +56,37 @@ _or_
 	docker run -v "%cd%/code/":/code -v "%cd%/data/":/data -v "%cd%/results/":/results -e MLM_LICENSE_FILE=28000@mlm1.rbg.tum.de --rm -it -p 6080:6080 <name> -vnc
 
 Then, open http://localhost:6080 in your browser and you should see the desktop of the running docker container.
-From there, you can open MATLAB as you would on your locally.
+From there, you can open MATLAB as you would locally.
 
-Note: If you are using an ssh connection, you need to forward the port.
 
-	ssh -L local_port:destination_server_ip:remote_port ssh_server_hostname
+### Interactive docker on a server
+
+If you run docker on a server, you need to forward the ports to your local pc to run it interactively.
+Here are the required steps:
+
+Obtain IPv4 address of the server:
+
+	ping -4 <hostname>
+
+Connect to server with port forwarding:
+
+    ssh -L 6080:<host-ipv4>:6080 <YOUR-NAME>@<hostname>
+
+Navigate to CORA/your scripts (and upload them):
+
+    cd ./matlab-scripts
+
+_(with subfolder `./code`)_
+
+Run docker interactively and forward port from docker to server (and thus also to your local machine):
+
+    docker run -v "$(pwd)/code":/code -e MLM_LICENSE_FILE=28000@mlm1.rbg.tum.de --security-opt seccomp=unconfined --rm -it -p 6080:6080 <DOCKER-IMAGE-NAME> -vnc
+
+_(The flag --security-opt seccomp=unconfined is needed as otherwise you just obtain a black screen in the next step...)_
+
+Open in your local browser:
+
+    http://localhost:6080/
 
 # Run CORA test suite in docker
 
@@ -73,8 +98,10 @@ For example, to run the CORA test suite within docker, open `./cora/unitTests/ci
 	# run test suite
 	docker run -v "%cd%/../..":/code/cora -e MLM_LICENSE_FILE=28000@mlm1.rbg.tum.de --rm cora-ci -batch "cd /code; addpath(genpath('.')); runTestSuite"
 
-or interactively
+or interactively:
 
-	docker run -v "%cd%/../..":/code/cora -e MLM_LICENSE_FILE=28000@mlm1.rbg.tum.de --rm -it -p 6080:6080 cora-ci -vnc
+	docker run -v "$(pwd)/../..":/code/cora -e MLM_LICENSE_FILE=28000@mlm1.rbg.tum.de --rm -it -p 6080:6080 cora-ci -vnc
 	
-	and open http://localhost:6080/ in the browser.
+and open in your local browser:
+
+    http://localhost:6080/
