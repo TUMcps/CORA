@@ -41,6 +41,7 @@ classdef polytope < contSet
 %                12-June-2023 (MW, add hidden properties)
 %                08-December-2023 (MW, handle -Inf/Inf offsets)
 %                01-January-2024 (MW, different meaning of fully empty obj)
+%                13-March-2024 (TL, check if input is numeric)
 % Last revision: 25-July-2023 (MW, restructure constructor)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -188,7 +189,7 @@ function aux_checkInputArgs(A,b,Ae,be,V,n_in)
     if CHECKS_ENABLED && n_in > 0
 
         % check numeric type of V
-        if ~isnumeric(V)
+        if isnumeric(V)
             if any(any(isnan(V)))
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'Vertices have to be non-nan.'));
@@ -196,6 +197,22 @@ function aux_checkInputArgs(A,b,Ae,be,V,n_in)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'nD vertices for n > 1 have to be finite.'));
             end
+        else
+            throw(CORAerror('CORA:wrongInputInConstructor','V has to be numeric.'))
+        end
+
+        % check type
+        if ~isnumeric(A)
+            throw(CORAerror('CORA:wrongInputInConstructor','A has to be numeric.'))
+        end
+        if ~isnumeric(b)
+            throw(CORAerror('CORA:wrongInputInConstructor','b has to be numeric.'))
+        end
+        if ~isnumeric(Ae)
+            throw(CORAerror('CORA:wrongInputInConstructor','Ae has to be numeric.'))
+        end
+        if ~isnumeric(be)
+            throw(CORAerror('CORA:wrongInputInConstructor','be has to be numeric.'))
         end
 
         % check b, be (get later reshaped to column vector)

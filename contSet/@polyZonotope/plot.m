@@ -252,8 +252,8 @@ function [poly,V] = aux_getPolygon(pZ)
     % calculate vertices of zonotope
     V = vertices(Z);
 
-    % transform to 2D polytope
-    poly = polyshape(V(1,:),V(2,:));
+    % transform to 2D polytope (zonotope/vertices are already 'simple')
+    poly = polyshape(V(1,:),V(2,:),'Simplify',false);
 end
 
 function han = aux_plot3d(pZ,dims,NVpairs,splits)

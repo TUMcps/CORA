@@ -28,10 +28,11 @@ function p = randPoint_(E,N,type,varargin)
 %
 % See also: contSet/randPoint, interval/randPoint_
 
-% Authors:       Victor Gassmann
+% Authors:       Victor Gassmann, Mark Wetzlinger, Max Perschl, Adrian Kulmburg
 % Written:       18-March-2021
 % Last update:   25-June-2021 (MP, add type gaussian)
 %                19-August-2022 (MW, integrate standardized pre-processing)
+%                12-March-2024 (AK, made the distribution truly uniform and random)
 % Last revision: 28-March-2023 (MW, rename randPoint_)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -74,14 +75,17 @@ if strcmp(type,'standard') || startsWith(type,'uniform')
     X = randn(dim(E),N);
     pt = X./sqrt(sum(X.^2,1));
     
-    S = 2*rand(1,N)-1;
-    pt = S.*pt;
+    % Uniform radius
+    r = rand(1,N).^(1/dim(E));
+    pt = r.*pt;
     
     % stack again, backtransform and shift
     p = T*[inv(G)*pt;zeros(n_rem,N)] + c;
 
 elseif strcmp(type,'extreme')
-    pt = boundary(E,N);
+    % Do the same as above, but without the radius
+    X = randn(dim(E),N);
+    pt = X./sqrt(sum(X.^2,1));
     
     % stack again, backtransform and shift
     p = T*[inv(G)*pt;zeros(n_rem,N)] + c;

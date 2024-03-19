@@ -37,6 +37,13 @@ P = polytope(A,b);
 Z = zonotope(P);
 res(end+1,1) = contains(Z,P);
 
+% 2D, bounded, V rep given
+A = [1 0; -1 1; -1 -1]; b = [1;1;1];
+P = polytope(A,b);
+vertices(P); % stores V in set property
+Z = zonotope(P);
+res(end+1,1) = contains(Z,P);
+
 
 % combine results
 res = all(res);

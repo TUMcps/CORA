@@ -17,6 +17,8 @@ variables:
     entrypoint: [""]
   tags:
     - matlab
+  # default timeout
+  timeout: 1h
   rules:
     - if: $DO_CI == "true"
       when: always
@@ -114,6 +116,7 @@ runTestSuiteShort:
 # run long duration tests
 runTestSuiteLong:
   extends: .base-run-ext
+  timeout: 2h
   variables:
     testSuite: 'long'
 

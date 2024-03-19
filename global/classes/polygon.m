@@ -2,15 +2,16 @@ classdef polygon
 % polygon class
 %
 % Syntax:
-%    obj = polygon(x,y)
-%    obj = polygon(V)
-%    obj = polygon(set)
+%    obj = polygon(x,y,varargin)
+%    obj = polygon(V,varargin)
+%    obj = polygon(set,varargin)
 %
 % Inputs:
 %    x - vector with x coordinates of the polygon vertices
 %    y - vector with y coordinates of the polygon vertices
 %    V - vertices (2-dimensional)
 %    set - polyshape object
+%    varargin - name-value pairs for polyshape constructor
 %
 % Outputs:
 %    obj - polygon object
@@ -35,6 +36,7 @@ classdef polygon
 % Last update:   09-May-2023 (TL, constructor, plotPolygon)
 %                28-June-2023 (TL, minkDiff, minus, uplus, uminus)
 %                27-May-2023 (MW, isequal, removeCollinearPoints)
+%                13-March-2024 (TL, enable polyshape NVpairs in constructor)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -49,8 +51,33 @@ methods
     function obj = polygon(varargin)
         if nargin == 0
             obj.set = polyshape();
-        elseif nargin == 1
+            return
+        end
+
+        if nargin == 1
             set = varargin{1};
+            NVpairs = {};
+        else
+            % check if set or (x,y) pair is given
+            set = varargin{1};
+            y = varargin{2};
+            
+            % check if second parameter is numeric or first name-value pair
+            if isnumeric(y)
+                % (x,y) given
+                x = set;
+                set = [];
+                NVpairs = varargin(3:end);
+            else
+                % 'y' is first name of first name-value pair
+                x = [];
+                y = [];
+                NVpairs = varargin(2:end);
+            end
+        end
+
+        if ~isempty(set) || nargin == 1
+            % one parameter + additional name-value pairs for polyshape
             inputArgsCheck({{set, 'att', {'polygon', 'polyshape', 'numeric'}}})
             if isa(set, 'polygon')
                 obj = set;
@@ -62,19 +89,16 @@ methods
                     throw(CORAerror("CORA:wrongValue", ...
                         'Given vertices should be two dimensional.'))
                 end
-                obj.set = polyshape(V(1, :), V(2, :));
+                obj.set = polyshape(V(1, :), V(2, :), NVpairs{:});
             end
-        elseif nargin == 2
-            x = varargin{1};
-            y = varargin{2};
+        else
+            % two parameters + additional name-value pairs for polyshape
             inputArgsCheck({{x, 'att', 'numeric'}, {y, 'att', 'numeric'}})
             if ~isvector(x) || ~all(size(x) == size(y))
                 throw(CORAerror("CORA:wrongInputInConstructor", ...
                     'Given vertices x,y need to be vectors of the same length.'))
             end
-            obj.set = polyshape(x, y);
-        else
-            throw(CORAerror('CORA:tooManyInputArgs'));
+            obj.set = polyshape(x, y, NVpairs{:});
         end
     end
 

@@ -198,7 +198,8 @@ function han = aux_plotUnified(R,dims,NVpairs,order,splits,totalsets,whichset)
             if isa(temp,'polyZonotope') || isa(temp,'conPolyZono')
                 if isempty(splits)
                     V = vertices(zonotope(temp));
-                    temp = polygon(V(1,:),V(2,:));
+                    % polygon (zonotope/vertices are already 'simple')
+                    temp = polygon(V(1,:),V(2,:),'Simplify',false);
                 else
                     temp = polygon(temp,splits);   
                 end

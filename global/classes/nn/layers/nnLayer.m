@@ -49,7 +49,15 @@ methods
     end
 
     function name = getDefaultName(obj)
-        name = sprintf("%s_%i", class(obj), nnLayer.getCount());
+        % get name from class name 
+        name = class(obj);
+        if startsWith(name, 'nn')
+            name = name(3:end);
+        end
+        name = strrep(name,'Layer','');
+
+        % add unique number to name
+        name = sprintf("%s_%i", name, nnLayer.getCount());
     end
 
     function str = getLayerInfo(obj)

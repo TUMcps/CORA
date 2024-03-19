@@ -34,7 +34,7 @@ function pgon = polygon(cPZ,varargin)
 
 % Authors:       Niklas Kochdumper
 % Written:       19-January-2020
-% Last update:   ---
+% Last update:   13-March-2024 (TL, avoid timeout by reducing splitted set)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -148,16 +148,20 @@ function [poly,V] = aux_getPolygon(set,GI)
     Z = zonotope(set);
     Z = project(Z,[1,2]);
     Z = zonotope(Z.c, [Z.G,GI]);
+
+    % reduce order for later union computations
+    % 2*10000 generators should be enough for a 2d zonotope...
+    Z = reduce(Z,'girard',10000); 
     
-    % convert zonotope to polygon
+    % convert zonotope to polygon (zonotope/vertices are already 'simple')
     V = vertices(Z);
-    poly = polygon(V(1,:),V(2,:));
+    poly = polygon(V(1,:),V(2,:),'Simplify',false);
     
     % catch the case when the zonotope is degenerate
     if isempty(poly.set.Vertices)
         Z = Z + zonotope([0;0],eye(2)*1e-5);
         V = vertices(Z);
-        poly = polygon(V(1,:),V(2,:));
+        poly = polygon(V(1,:),V(2,:),'Simplify',false);
     end
 end
 

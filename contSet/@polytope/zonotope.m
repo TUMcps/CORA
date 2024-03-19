@@ -32,6 +32,7 @@ function Z = zonotope(P,varargin)
 % Authors:       Victor Gassmann
 % Written:       17-March-2023
 % Last update:   08-January-2024 (MW, empty case)
+%                13-March-2024 (TL, bug fix v rep given)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -74,7 +75,11 @@ switch mode
         Mt.b = P.b -P.A*c;
         if ~isempty(P.Ae)
             Mt.Ae = P.Ae*Q_r;
-            Mt.be = P.be - M.Ae*c;
+            Mt.be = P.be -P.Ae*c;
+        end
+        % also transform V rep if present
+        if ~isempty(P.V.val)
+            Mt.V = setproperty(pinv(Q_r) * (P.V.val - c));
         end
     
         % compute enclosing hyperbox

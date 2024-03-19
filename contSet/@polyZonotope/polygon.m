@@ -85,7 +85,7 @@ function pgon = polygon(pZ,varargin)
         % calculate vertices of zonotope
         V = vertices(Z);
 
-        % transform to 2D polytope
+        % transform to 2D polytope (zonotope/vertices are already 'simple')
         pgonTemp = polygon(V(1,:),V(2,:));
 
         if pgonTemp.set.NumRegions == 0
@@ -119,7 +119,7 @@ function pgon = polygon(pZ,varargin)
         end
 
         if pgon.set.NumRegions == 0
-            % this should not happen as we enlarge the polyhon properly
+            % this should not happen as we enlarge the polygon properly
             throw(CORAerror("CORA:specialError", ...
                 'Over-approximation not guaranteed. Polygon is empty, most likely due to numerical instabilities.'))
         end
