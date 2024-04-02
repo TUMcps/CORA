@@ -99,13 +99,7 @@ async function addPublicationFromLink(listId, link, pdflink, icon) {
   // journal?
   if (entry.journal) {
     // add the journal name in italics
-    text += "<i>" + entry.journal;
-
-    // check if the entry has a volume
-    if (entry.volume) {
-      // add the volume number
-      text += " " + entry.volume;
-    }
+    text += "In <i>" + entry.journal;
 
     // check if the entry has an issue
     if (entry.issue) {
@@ -117,22 +111,28 @@ async function addPublicationFromLink(listId, link, pdflink, icon) {
     }
 
     // end italics
-    text += "</i>";
+    text += "</i>.";
   } else if (entry.booktitle) {
     // add the proceedings name in italics
-    text += "<i>" + entry.booktitle + "</i>";
+    text += "In <i>" + entry.booktitle + "</i>.";
   } else if (entry.school) {
     // add 'Dissertation' and the school
     text += "Dissertation, " + entry.school + ".";
   }
 
+  // check volume
+  if (entry.volume) {
+    // add the page range
+    text += " Volume " + entry.volume + ".";
+  }
+
   // check if the entry has pages
   if (entry.pages) {
     // add the page range
-    text += ". pp. " + entry.pages + ".";
+    text += " pp. " + entry.pages + ".";
   } else if (entry.articleno) {
     // sometimes, we have article number + number of pages
-    text += ". Article No. " + entry.articleno;
+    text += " Article No. " + entry.articleno;
     if (entry.numpages) {
       text += ", " + entry.numpages + " pages.";
     }
