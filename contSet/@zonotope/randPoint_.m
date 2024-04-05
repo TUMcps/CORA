@@ -100,7 +100,7 @@ elseif strcmp(type,'extreme')
         return;
     end
     
-    % compute number of zonotope vertices
+    % compute approximate number of zonotope vertices
     q = aux_numberZonoVertices(Z);
     
     if ischar(N) && strcmp(N,'all')
@@ -114,7 +114,7 @@ elseif strcmp(type,'extreme')
     elseif N < q
         % select random vertices
         V = vertices(Z);
-        ind = randperm(q);
+        ind = randperm(size(V,2));
         V = V(:,ind);
         p = V(:,1:N);
         

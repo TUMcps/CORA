@@ -113,9 +113,13 @@ elseif size(V, 1) == 2
 
     % axis are reset even if they were set manually; correct afterwards
     xmode = xlim("mode");
-    x = xlim;
+    if xmode == "manual"
+        x = xlim;
+    end
     ymode = ylim("mode");
-    y = ylim;
+    if ymode == "manual"
+        y = ylim;
+    end
 
     if ~hasFaceColor
         % make line plot
@@ -251,9 +255,9 @@ function V = aux_cutInfinityAtLimits(V)
     % or smallest/largest value of V of respective dimension,
     % whichever is further 'outside'
 
-    [xLim,yLim,zLim] = getUnboundedAxisLimits(V);
-
     if any(isinf(V),'all')
+        [xLim,yLim,zLim] = getUnboundedAxisLimits(V);
+
         % x-axis
         V(1,V(1,:) == -inf) = min([V(1,V(1,:) ~= -inf), xLim(1)]);
         V(1,V(1,:) == inf) = max([V(1,V(1,:) ~= inf), xLim(2)]);

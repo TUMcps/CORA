@@ -18,11 +18,11 @@ function version = CORAVERSION()
 
 % Authors:       Tobias Ladner
 % Written:       07-August-2023
-% Last update:   19-March-2024
+% Last update:   05-April-2024
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-version = 'CORA v2024.1.5';
+version = 'CORA v2024.1.6';
 
 % ------------------------------ END OF CODE ------------------------------
