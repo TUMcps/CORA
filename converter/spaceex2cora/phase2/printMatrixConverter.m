@@ -48,7 +48,7 @@ if ~all(dims)
 elseif length(dims)>2
     % not supported yet
     str = "[]";
-    warning("cannot print matrix of dimensions [%s], return []",num2str(dims));
+    CORAwarning('CORA:converter',"cannot print matrix of dimensions [%s], return []",num2str(dims));
 else
     % begin array
     str = "[";

@@ -23,10 +23,9 @@ function Z = deleteAligned(Z)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-funcname = mfilename;
-warning(sprintf(['The function ''' funcname ''' is deprecated (since CORA 2024) and has been replaced by ''compact''.\n' ...
-    '         When updating the code, please rename every function call ''' funcname '(Z)'' -> ''compact(Z,''aligned'')''.\n' ...
-    '         Note that the function ''' funcname ''' will be removed in a future release.']));
+CORAwarning("CORA:deprecated",'function','zonotope/deleteAligned','CORA v2024', ...
+    'When updating the code, please replace every function call ''deleteAligned(Z)'' with ''compact(Z,''aligned'')''.', ...
+    'This change was made in an effort to unify the syntax across all set representations.')
 Z = compact_(Z,'aligned',eps);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -86,13 +86,6 @@ for i = 1:steps
     
     % compute output set at beginning of current step
     Rout{i} = outputSet(obj,options,Rnext.tp);
-
-    % if a trajectory should be tracked
-    if isfield(options,'uTransVec')
-        options.uTrans = options.uTransVec(:,i);
-        % update input set
-        Uadd = obj.B*(options.U + options.uTrans);
-    end
     
     % write results to reachable set struct Rnext
     if strcmp(options.linAlg,'standard')
@@ -134,6 +127,13 @@ for i = 1:steps
             res = false;
             return
         end
+    end
+
+    % update input if a trajectory should be tracked
+    if isfield(options,'uTransVec')
+        options.uTrans = options.uTransVec(:,i+1);
+        % update input set
+        Uadd = obj.B*(options.U + options.uTrans);
     end
 end
 

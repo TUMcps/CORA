@@ -180,7 +180,7 @@ switch field
         checks = aux_getChecksOptions_armaxAlg(checks,sys,func,params,options);
     
     otherwise
-        warning('CORA: Unknown options.%s', field); return;
+        CORAwarning('CORA:contDynamics','Unknown options.%s', field); return;
 end
 
 

@@ -151,7 +151,7 @@ k = length(tVec);
 lastNsteps = sum(tVec(end-min(N,k)+1:end));
 if remTime / lastNsteps > 1e9
     abortAnalysis = true;
-    warning(sprintf(['The analysis is aborted because the time step size converges to 0.\n'...
+    CORAwarning('CORA:contDynamics',sprintf(['The analysis is aborted because the time step size converges to 0.\n'...
         '         The reachable sets until t = ' num2str(currt) ' are returned.']));
 end
 

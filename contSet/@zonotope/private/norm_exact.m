@@ -131,7 +131,7 @@ elseif isYalmipInstalled()
     %solve optimization problem
     optimize([], obj, options);
     x = G*value(2*(b-0.5))+c;
-    warning("YALMIP was used to model the problem - consider installing a supported solver to speed up computation...");
+    CORAwarning('CORA:solver',"YALMIP was used to model the problem - consider installing a supported solver to speed up computation...");
 else
     throw(CORAerror('CORA:noSuitableSolver','integer programming'));
 end

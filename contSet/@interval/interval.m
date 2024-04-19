@@ -103,7 +103,7 @@ methods
     I = ctranspose(I) % overloaded ' operator
     res = diag(I,varargin) % overloaded diag-function
     n = dim(I) % dimension of interval
-    E = ellipsoid(I) % conversion to ellipsoid object
+    E = ellipsoid(I,varargin) % conversion to ellipsoid object
     I = enlarge(I,factor) % enlargement by factor
     res = eq(I1,I2) % equality check
     I = exp(I) % overloaded exp-function

@@ -57,7 +57,7 @@ end
 comp_y = false;
 if nargout == 4
     ind = [];
-    %warning("Output trajectories not supported for class nonlinearSysDT!");
+    % CORAwarning('CORA:contDynamics',"Output trajectories not supported for class nonlinearSysDT!");
     if ~isempty(obj.out_mFile)
         comp_y = true;
     else

@@ -42,7 +42,7 @@ function [t,z,ind] = simulate(obj,params,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 if nargout == 4
-    warning("Output trajectories not supported for class nonlinDASys!");
+    CORAwarning('CORA:contDynamics',"Output trajectories not supported for class nonlinDASys!");
     y = [];
 end
 

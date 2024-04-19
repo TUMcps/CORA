@@ -32,7 +32,7 @@ function [count,out] = numberOfInputs(f,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-warning("Function has been renamed to 'inputArgsLength' to avoid confusion.");
+CORAwarning('CORA:global',"Function has been renamed to 'inputArgsLength' to avoid confusion.");
 [count,out] = inputArgsLength(f,varargin{:});
 
 % ------------------------------ END OF CODE ------------------------------

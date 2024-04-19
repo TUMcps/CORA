@@ -151,7 +151,7 @@ end
 
 % print warning if filled given
 if ~isempty(filled)
-    warning("Name-value pair 'Filled'-true|false is deprecated.");
+    CORAwarning('CORA:plot',"Name-value pair 'Filled'-true|false is deprecated.");
 end
 % note: filled is overruled if 'FaceColor' is provided
 if strcmp(facecolor, 'default')
@@ -248,7 +248,7 @@ switch purpose
         % Marker not supported by polygon
         [NVpairs,marker] = readNameValuePair(NVpairs,'Marker');
         if ~isempty(marker)
-            warning("Name-value pair 'Marker'-<options> is ignored.");
+            CORAwarning('CORA:plot',"Name-value pair 'Marker'-<options> is ignored.");
         end
 
     case {'spec:safeSet','spec:invariant'}
@@ -389,7 +389,7 @@ end
 
 if ~filled && ~isempty(facecolor)
     if (ischar(facecolor) && ~strcmp(facecolor,'none')) || isnumeric(facecolor)
-        warning("Name-value pair 'Filled'-false is overwritten by 'FaceColor'.");
+        CORAwarning('CORA:plot',"Name-value pair 'Filled'-false is overwritten by 'FaceColor'.");
     end
 end
 

@@ -101,7 +101,7 @@ end
 % check if subtrahend is zonotope
 if ~isa(subtrahend,'zonotope')
     if ~(strcmp(method, 'outer:scaling') && isa(subtrahend,'interval'))
-        warning(['CORA warning: zonotope/minkDiff: '...
+        CORAwarning('CORA:contSet',['zonotope/minkDiff: '...
             'Subtrahend is not a zonotope. Enclosing it with a zonotope.'])
     end
     % enclose second set with zonotope

@@ -179,7 +179,7 @@ elseif isYalmipInstalled()
     %compute optimization problem
     optimize([GG<=diag(d),d>=0],d'*ones(m,1),options);
     ub = sqrt(value(d'*ones(m,1)));
-    warning("YALMIP was used to model the problem - consider installing a supported solver to speed up computation...");
+    CORAwarning('CORA:solver',"YALMIP was used to model the problem - consider installing a supported solver to speed up computation...");
     
 else
     throw(CORAerror('CORA:noSuitableSolver','SDP'));

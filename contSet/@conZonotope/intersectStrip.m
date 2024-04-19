@@ -189,7 +189,7 @@ function cZ = aux_methodAlamoFRad(cZ, C, phi, y)
     
     % warning
     if length(phi) > 1
-        warning('Alamo method should only be used for single strips to ensure convergence');
+        CORAwarning('CORA:contSet','Alamo method should only be used for single strips to ensure convergence');
     end
 end
 
@@ -270,7 +270,7 @@ function cZ = aux_methodBravo(cZ, C, phi, y)
     
     % warning
     if length(phi) > 1
-        warning('Bravo method is only applied to the first strip');
+        CORAwarning('CORA:contSet','Bravo method is only applied to the first strip');
     end
 end
 

@@ -33,6 +33,7 @@ function han = plot(R,varargin)
 % Last update:   15-July-2020 (MW, merge with plotFilled, plotOptions)
 %                29-October-2021 (MW, remove linespec, 'Filled')
 %                11-July-2023 (VG, bug fix unify last set not plotted)
+%                10-April-2024 (TL, bug fix UnifyTotalSets too large)
 % Last revision: 12-July-2023 (TL, restructure)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -105,7 +106,7 @@ end
 switch whichset
     case 'ti'
         if ~aux_hasTimeInterval(R) && ~isempty(R(1).timePoint)
-            warning("No time-interval reachable set. Time-point reachable set plotted instead.");
+            CORAwarning('CORA:plot',"No time-interval reachable set. Time-point reachable set plotted instead.");
             whichset = 'tp';
         end
         
@@ -158,7 +159,7 @@ function han = aux_plotUnified(R,dims,NVpairs,order,splits,totalsets,whichset)
 
     % number of all sets that are to be unified
     nrAllSets = aux_nrAllSets(R,whichset);
-    idxSplit = splitIntoNParts(nrAllSets,totalsets);
+    idxSplit = splitIntoNParts(nrAllSets,min(nrAllSets,totalsets));
     idxCurr = 0;
 
     % init
@@ -229,7 +230,7 @@ function han = aux_plotUnified(R,dims,NVpairs,order,splits,totalsets,whichset)
                 V = Pint.Vertices';
                 temp = polygon(V(1,:),V(2,:));
             else
-                warning('CORA: Setting "Unify" is not supported for this set representation (%s)! Plotting them individually instead.', class(temp));
+                CORAwarning('CORA:plot','Setting "Unify" is not supported for this set representation (%s)! Plotting them individually instead.', class(temp));
                 han = aux_plotSingle(R,dims,NVpairs,order,splits,whichset);
                 return
             end

@@ -59,15 +59,15 @@ inputArgsCheck({ ...
 })
 
 if dStart > tol
-    warning('CORA: nnActivationLayer/findRegionPolys: dStart > tol.')
+    CORAwarning('CORA:nn','nnActivationLayer/findRegionPolys: dStart > tol.')
 end
 if dEnd > tol
-    warning('CORA: nnActivationLayer/findRegionPolys: dEnd > tol.')
+    CORAwarning('CORA:nn','nnActivationLayer/findRegionPolys: dEnd > tol.')
 end
 
 % remove reg_polys if present
 if isprop(obj, 'reg_polys')
-    warning("CORA: Temporarily removing current region polynomials.")
+    CORAwarning('CORA:nn',"Temporarily removing current region polynomials.")
     reg_polys = obj.reg_polys;
     obj.reg_polys = [];
 end

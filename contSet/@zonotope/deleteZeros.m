@@ -23,10 +23,9 @@ function Z = deleteZeros(Z)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-funcname = mfilename;
-warning(sprintf(['The function ''' funcname ''' is deprecated (since CORA 2024) and has been replaced by ''compact''.\n' ...
-    '         When updating the code, please rename every function call ''' funcname '(Z)'' -> ''compact(Z,''zeros'')''.\n' ...
-    '         Note that the function ''' funcname ''' will be removed in a future release.']));
+CORAwarning("CORA:deprecated",'function','zonotope/deleteZeros','CORA v2024', ...
+    'When updating the code, please replace every function call ''deleteZeros(Z)'' with ''compact(Z,''zeros'')''.', ...
+    'This change was made in an effort to unify the syntax across all set representations.')
 Z = compact_(Z,'zeros',eps);
 
 % ------------------------------ END OF CODE ------------------------------

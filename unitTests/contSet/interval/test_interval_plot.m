@@ -58,6 +58,10 @@ try
     plot(I,[1,2],'r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
     resvec(end+1) = true;
 
+    % plot 3d
+    plot(I,[1,2,3]);
+    resvec(end+1) = true;
+
     close;
 
     % check if plotted correctly
@@ -80,6 +84,18 @@ try
     resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true);
     % test color
     resvec(end+1) = isequal(colorOrder(2,:), ax.Children(1).Color);
+
+    % plot 3d set
+    plot(I,[1,2,3]);
+    V = [ ...
+     1.000, 3.000, 3.000, 1.000, 1.000 ; ...
+     1.000, 1.000, 4.000, 4.000, 1.000 ; ...
+     2.000, 2.000, 2.000, 2.000, 2.000 ; ...
+    ];
+    % check points (only first facet)
+    resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData;ax.Children(1).ZData],1e-4,'equal',true);
+    % test color
+    resvec(end+1) = isequal(colorOrder(3,:), ax.Children(1).Color);
     
     % close figure
     close;
@@ -107,7 +123,6 @@ try
     % check points
     V = [1.5 2 2 1.5 1.5; -2 -2 2 2 -2];
     resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true);
-
 
     % plot interval outside of xlim
     I = interval([-Inf;4],[2;Inf]);

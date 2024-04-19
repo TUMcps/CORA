@@ -279,7 +279,7 @@ elseif isYalmipInstalled()
             'problem with solution of feasibility problem (t)'));
     end
     res = ~diagnostics.problem;
-    warning("YALMIP was used to model the problem - " + ...
+    CORAwarning('CORA:solver',"YALMIP was used to model the problem - " + ...
         "consider installing a supported solver to speed up computation...");
 
 else

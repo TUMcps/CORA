@@ -24,13 +24,15 @@ function res = min(I, Y, varargin)
 
 % Authors:       Tobias Ladner
 % Written:       16-December-2022
-% Last update:   ---
+% Last update:   11-April-2024 (TL, single input)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargin < 2
-    throw(CORAerror('CORA:notEnoughInputArgs', 2));
+if nargin == 1
+    % return infimum
+    res = I.inf;
+    return
 end
 
 % inputArgsCheck in interval/max

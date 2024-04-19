@@ -25,37 +25,10 @@ aux_deleteFolder([CORAROOT filesep 'models' filesep 'CoraConverted']);
 aux_deleteFolder([CORAROOT filesep 'models' filesep 'powerSystemsConverted']);
 aux_deleteFolder([CORAROOT filesep 'models' filesep 'SpaceExConverted']);
 
-% reset CHECKS_ENABLED to true --------------------------------------------
+% reset macros ------------------------------------------------------------
 
-% read file
-file_path = [CORAROOT filesep 'global' filesep 'macros' filesep 'CHECKS_ENABLED.m'];
-filetext = fileread(file_path);
-lines = splitlines(filetext);
-
-% find line
-lcnt = length(lines);
-while ~startsWith(lines{lcnt},'res = ')
-    lcnt = lcnt - 1;
-end
-lines{lcnt} = 'res = true;';
-
-% remove empty lines at the end (gets implicitly added in writecell)
-lcnt = length(lines);
-while isEmptyLine(lines{lcnt})
-    lines = lines(1:end-1);
-    lcnt = lcnt - 1;
-end
-
-% write lines back to file
-writecell(lines, file_path, 'FileType', 'text', 'QuoteStrings', 'none');
-
-% update path
-updateCORApath();
-
-% check if successful
-if ~CHECKS_ENABLED
-    warning('CORA: Unable to reset CHECKS_ENABLED.')
-end
+aux_resetMacro('CHECKS_ENABLED')
+aux_resetMacro('CORA_WARNINGS_ENABLED')
 
 % CORA reset --------------------------------------------------------------
 
@@ -76,9 +49,43 @@ function aux_deleteFolder(path)
         warning(w); % restore warning
     
         if ~res
-            warning('CORA: Unable to remove path: %s', path);
+            CORAwarning('CORA:global','Unable to remove path: %s', path);
         end
     end
+
+end
+
+function aux_resetMacro(MACRONAME)
+
+% read file
+file_path = [CORAROOT filesep 'global' filesep 'macros' filesep MACRONAME '.m'];
+filetext = fileread(file_path);
+lines = splitlines(filetext);
+
+% find line
+for lcnt = 1:length(lines)
+    if contains(lines{lcnt},'res = ')
+        lines{lcnt} = strrep(lines{lcnt}, 'false', 'true');
+    end
+end
+
+% remove empty lines at the end (gets implicitly added in writecell)
+lcnt = length(lines);
+while isEmptyLine(lines{lcnt})
+    lines = lines(1:end-1);
+    lcnt = lcnt - 1;
+end
+
+% write lines back to file
+writecell(lines, file_path, 'FileType', 'text', 'QuoteStrings', 'none');
+
+% update path
+updateCORApath();
+
+% check if successful
+if ~eval(MACRONAME)
+    CORAwarning('CORA:global','Unable to reset CHECKS_ENABLED.')
+end
 
 end
 

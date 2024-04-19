@@ -152,7 +152,7 @@ for i = 1:length(BC.States)
             if strlength(eqs) ~= 0
                 BC.States(i).Trans(j).reset.FormalEqs = eqs;
             else
-                warning("Transition from ""%s"" to ""%s"" does not have a reset function. " + ...
+                CORAwarning('CORA:converter',"Transition from ""%s"" to ""%s"" does not have a reset function. " + ...
                     "Using identity...",State.name,BC.States(Tran.destination).name);
                 BC.States(i).Trans(j).reset.A = diag(ones(size(BC.states)));
                 BC.States(i).Trans(j).reset.c = zeros(size(BC.states));

@@ -1,0 +1,28 @@
+{
+  "_schemaVersion": "1.0.0",
+
+  "recordCORAvideo":
+  {
+     "inputs":
+     [
+        {"name":"filename", "kind":"required", "type":["char"], "purpose":"filename of video"},
+        {"name":"ReachSet", "kind":"namevalue", "type":["reachSet"],"purpose":"Reachable set"},
+        {"name":"SimResult", "kind":"namevalue", "type":["simResult"],"purpose":"Simulations"},
+        {"name":"Dimensions", "kind":"namevalue", "type":["numeric"],"purpose":"Dimensions to plot"},
+        {"name":"Specification", "kind":"namevalue", "type":["specification"],"purpose":"Specification"},
+        {"name":"XLabel", "kind":"namevalue", "type":["char"],"purpose":"xlabel"},
+        {"name":"XLim", "kind":"namevalue", "type":["numeric"],"purpose":"xlim"},
+        {"name":"YLabel", "kind":"namevalue", "type":["char"],"purpose":"ylabel"},
+        {"name":"YLim", "kind":"namevalue", "type":["numeric"],"purpose":"ylim"},
+        {"name":"Title", "kind":"namevalue", "type":["char"],"purpose":"title of video"},
+        {"name":"Description", "kind":"namevalue", "type":["char"],"purpose":"Description of the video"},
+        {"name":"LegendLocation", "kind":"namevalue", "type":["numeric"],"purpose":"location of legend"},
+        {"name":"UnifyTotalSets", "kind":"namevalue", "type":["char"],"purpose":"Total number of sets for unify"},
+        {"name":"FrameRate", "kind":"namevalue", "type":["numeric"],"purpose":"Frame rate of video"},
+        {"name":"TotalDuration", "kind":"namevalue", "type":["numeric"],"purpose":"Total duration of video"},
+        {"name":"FreezeDuration", "kind":"namevalue", "type":["numeric"],"purpose":"duration of freezed animation"},
+        {"name":"ReachSets", "kind":"namevalue", "type":["cell"],"purpose":"Multiple reachable set including name and color"},
+        {"name":"PlotMethodSimResult", "kind":"namevalue", "type":["char", "choices={'time', 'percent', 'all'}"],"purpose":"Method to plot simulations"}
+     ]
+  }
+}

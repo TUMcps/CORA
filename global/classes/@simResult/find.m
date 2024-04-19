@@ -6,7 +6,7 @@ function res = find(simRes,prop,val)
 %
 % Inputs:
 %    simRes - simResult object
-%    prop - property for condition ('location')
+%    prop - property for condition ('location', 'time')
 %    val - value for property
 %
 % Outputs:
@@ -18,16 +18,16 @@ function res = find(simRes,prop,val)
 %
 % See also: reachSet/find
 
-% Authors:       Mark Wetzlinger
+% Authors:       Mark Wetzlinger, Tobias Ladner
 % Written:       16-May-2023
-% Last update:   ---
+% Last update:   10-April-2024 (TL, added 'time')
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments (only first two)
 inputArgsCheck({{simRes,'att','simResult'};
-                {prop,'str',{'location'}}});
+                {prop,'str',{'location', 'time'}}});
 
 % check which property desired
 switch prop
@@ -81,9 +81,55 @@ switch prop
                 res = [res; simResult(x,t,loc,y,a)];
             end
         end
+
+    case 'time'
+
+        % read val
+        if ~isa(val,'interval')
+            val = interval(val-1e-10,val+1e-10);
+        end
+
+        res = [];
+
+        % loop over all trajectories
+        for r=1:length(simRes)
+
+            % init properties of simResult object
+            x = {}; y = {}; a = {}; t = {}; loc = {};
+
+            % loop over all individual parts
+            for part=1:length(simRes(r).t)
+
+                idx = contains(val, simRes(r).t{part}');
+
+                % save location
+                loc{end+1,1} = simRes(r).loc(part,:);
+
+                % save corresponding time
+                t{end+1,1} = simRes(r).t{part}(idx);
+
+                % save state vector (if given)
+                if ~isempty(simRes(r).x)
+                    x{end+1,1} = simRes(r).x{part}(idx,:);
+                end
+                % save output vector (if given)
+                if ~isempty(simRes(r).y)
+                    y{end+1,1} = simRes(r).y{part}(idx,:);
+                end
+                % save algebraic vector (if given)
+                if ~isempty(simRes(r).a)
+                    a{end+1,1} = simRes(r).a{part}(idx,:);
+                end
+            end
+
+            % append resulting partial simRes object (only if non-empty)
+            
+            res = [res; simResult(x,t,loc, y, a)];
+        end
+
         
     otherwise
-        throw(CORAerror('CORA:wrongValue','second',"'location'"));
+        throw(CORAerror('CORA:wrongValue','second',"'location', 'time'"));
 
 end
 

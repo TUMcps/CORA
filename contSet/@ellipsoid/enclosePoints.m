@@ -390,7 +390,7 @@ elseif strcmp(method,'min-vol')
         options.verbose = 0;
         % solve optimization problem
         diagnostics = optimize(F, -geomean(B), options);
-        warning("YALMIP was used to model the problem - " + ...
+        CORAwarning('CORA:solver',"YALMIP was used to model the problem - " + ...
             "consider installing a supported solver to speed up computation...");
         if diagnostics.problem ~= 0
             throw(CORAerror('CORA:solverIssue'));

@@ -210,7 +210,7 @@ for i = 1:n
     else
         % show warning
         if verbose
-            warning("Skipping '%s'. Not implemented in cora yet!.", class(dlt_layer))
+            CORAwarning('CORA:nn',"Skipping '%s'. Not implemented in cora yet!.", class(dlt_layer))
         end
         continue
     end

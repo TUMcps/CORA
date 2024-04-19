@@ -42,7 +42,7 @@ if nargout == 3
     ind = [];
 end
 if nargout == 4
-    warning("Output trajectories not supported for class linProbSys!");
+    CORAwarning('CORA:contDynamics',"Output trajectories not supported for class linProbSys!");
     y = [];
 end
 

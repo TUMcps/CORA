@@ -1,0 +1,41 @@
+{
+  "_schemaVersion": "1.0.0",
+  
+
+  "_comment": "general folder warnings ----------------------------------",
+  "CORAwarning":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:global','CORA:app','CORA:contDynamics','CORA:contSet','CORA:converter','CORA:discDynamics','CORA:examples','CORA:global','CORA:hybridDynamics','CORA:manual','CORA:matrixSets','CORA:models','CORA:specification'}"], "purpose":"ID of warning"},
+        {"name":"desc", "kind":"required", "type":["char"], "purpose":"description of the warning"},
+        {"name":"varargin", "kind":"optional", "type":["char"], "purpose":"sprintf argument"}
+     ]
+  },
+
+  "_comment": "special warnings -----------------------------------------",
+  
+  "CORAwarning":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:nn','CORA:plot','CORA:solver'}"], "purpose":"ID of warning"},
+        {"name":"desc", "kind":"required", "type":["char"], "purpose":"description of the warning"},
+        {"name":"varargin", "kind":"optional", "type":["char"], "purpose":"sprintf argument"}
+     ]
+  },
+
+  "CORAwarning":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:deprecated'}"], "purpose":"ID of warning"},
+        {"name":"type", "kind":"required", "type":["char", "choices={'property','function', '...'}"], "purpose":"type of deprecated functionality"},
+        {"name":"name", "kind":"required", "type":["char"], "purpose":"name of deprecated functionality"},
+        {"name":"version", "kind":"required", "type":["char", "choices={'CORA v2024','CORA v2024.0.0','...'}"], "purpose":"type of deprecated functionality"},
+        {"name":"replacement", "kind":"required", "type":["char", "choices={'Please use <replacement> instead.', 'With appropriate changes, use <replacement> instead.', 'When updating the code, please replace every function call ''<old-syntax>'' with ''<new-syntax>''.', '...'}"], "purpose":"replacemenet of deprecated functionality"},
+        {"name":"reason", "kind":"required", "type":["char", "choices={'This change was made to be consistent with the notation in papers.', 'This change was made in an effort to unify the syntax across all set representations.', '...'}"], "purpose":"reason of deprecated functionality"}
+     ]
+  }
+  
+}

@@ -121,7 +121,7 @@ for i = 1:numStates
             f(i,1) = x(i);
         else % (default) mode 'flow'
             f(i,1) = sym(0);
-            warning("No flow specified for state %s!\n" + ...
+            CORAwarning('CORA:converter',"No flow specified for state %s!\n" + ...
                 "assuming %s' = 0...",states(i).name,states(i).name);
         end
     end

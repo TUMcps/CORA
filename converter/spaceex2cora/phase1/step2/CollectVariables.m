@@ -65,7 +65,7 @@ for i = 1:length(paramStruct)
         otherwise
             % 'int','any' currently not recieving special treatment
             if ~strcmp(param_type,'real')
-                warning('Parameter %s: type "%s" not supported, treating as "real".',...
+                CORAwarning('CORA:converter','Parameter %s: type "%s" not supported, treating as "real".',...
                     listOfVars(nrVars).name,param_type);
             end
             % parsing variable

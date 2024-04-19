@@ -868,7 +868,7 @@ while true
     
     % safety break condition
     if p == 100
-        warning("Check computation for order of abstraction error");
+        CORAwarning('CORA:contDynamics',"Check computation for order of abstraction error");
         % fix for prodDesParam, where dot(x4) = 0... thus Inf (probably
         % works also for similar systems)
         if all(qi(~isinf(qi)) < p+1)

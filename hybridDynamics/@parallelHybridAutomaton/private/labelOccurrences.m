@@ -85,12 +85,12 @@ for i=1:length(onlyOnce)
 end
 if any(onlyOnce)
     if nnz(onlyOnce) == 1
-        warning("Synchronization label '" + allLabels(onlyOnce).name + ...
+        CORAwarning('CORA:hybridDynamics',"Synchronization label '" + allLabels(onlyOnce).name + ...
             "' only occurs once in the entire parallel hybrid automaton.");
     else
         % more than one synchronization label only once
         text = "'" + strjoin({allLabels(onlyOnce).name},"', '") + "'";
-        warning("Synchronization labels " + text + ...
+        CORAwarning('CORA:hybridDynamics',"Synchronization labels " + text + ...
             " each only occur once in the entire parallel hybrid automaton.");
     end
 end

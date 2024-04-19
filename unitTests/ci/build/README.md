@@ -1,7 +1,7 @@
 
 # CORA Docker Image
 
-This files describes the process to update the docker image for the CI.
+This files describes the process to update the docker image for repeatability packages and the CI.
 
 The `Dockerfile` in this folder pulls the desired docker matlab version
 and installs all dependencies for CORA automatically (see Sec. 1.3 in the [CORA manual](https://cora.in.tum.de/manual)).

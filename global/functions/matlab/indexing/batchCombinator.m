@@ -44,7 +44,7 @@ function [CN, state] = batchCombinator(N, K, batch_size, state)
         if K>N
             state.done = true;
             CN = [];
-            warning("batchCombinator - K>N results in an empty batch")
+            CORAwarning('CORA:global',"batchCombinator - K>N results in an empty batch")
             return;
         end
 

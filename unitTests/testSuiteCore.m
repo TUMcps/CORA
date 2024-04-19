@@ -68,7 +68,7 @@ for i=1:nrTests
     try
         % print current test on command window
         if verbose
-            fprintf(".. rng(%i); %s: ", testseeds(i),fname);
+            fprintf(".. rng(%10i); %-50s : ", testseeds(i),fname);
         end
 
         % set semi-random seed

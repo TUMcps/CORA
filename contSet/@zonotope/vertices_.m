@@ -143,7 +143,7 @@ function V = aux_verticesConvHull(Z)
             end
             
         catch ME
-            warning('CORA: Convex hull failed. Continuing...')
+            CORAwarning('CORA:contSet','Convex hull failed. Continuing...')
         end
     end
 end

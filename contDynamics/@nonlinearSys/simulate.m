@@ -46,7 +46,7 @@ function [t,x,ind,y] = simulate(obj,params,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 if nargout == 4
-    warning("Output trajectories not supported for class nonlinearSys!");
+    CORAwarning('CORA:contDynamics',"Output trajectories not supported for class nonlinearSys!");
 	y = [];
 end
 

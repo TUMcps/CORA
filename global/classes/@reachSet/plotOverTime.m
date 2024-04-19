@@ -80,7 +80,7 @@ end
 switch whichset
     case 'ti'
         if isempty(R(1).timeInterval)
-            warning("No time-interval reachable set. Time-point reachable set plotted instead.");
+            CORAwarning('CORA:plot',"No time-interval reachable set. Time-point reachable set plotted instead.");
             whichset = 'tp';
         end
         

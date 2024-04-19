@@ -44,7 +44,7 @@ catch
     % Some versions of the ONNX toolbox have issues with importing
     % neural networks with custom layers. Don't throw an error due to
     % this bug.
-    warning('Unable to import ONNX network. Might be an issue with custom layers.')
+    CORAwarning('CORA:nn','Unable to import ONNX network. Might be an issue with custom layers.')
     res = true;
     return;
 end

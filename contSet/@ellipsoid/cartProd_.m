@@ -28,6 +28,7 @@ function E = cartProd_(E,S,type)
 % Authors:       Victor Gassmann
 % Written:       19-March-2021
 % Last update:   02-June-2022 (VG, handle empty case)
+%                17-April-2024 (TL, simplified ellipsoid-ellipsoid case)
 % Last revision: 27-March-2023 (MW, rename cartProd_)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -48,16 +49,9 @@ if strcmp(type,'outer')
 
             % Cartesian product of interval over-approximations
             IntE = cartProd_(interval(E),interval(S),'exact');
-            r = rad(IntE);
-            q = center(IntE);
-            TOL = min(E.TOL,S.TOL);
-            
-            % extract degenerate dimensions
-            ind_d = withinTol(r,zeros(size(r)),TOL);
-            n_nd = sum(~ind_d);
             
             % construct final ellipsoid
-            E = ellipsoid(n_nd*diag(r.^2),q);
+            E = ellipsoid(IntE);
             return
 
         elseif isnumeric(S)

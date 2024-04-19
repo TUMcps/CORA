@@ -68,7 +68,7 @@ if CHECKS_ENABLED
         {'logical', 'string'}, structName);
     if isa(evParams.bound_approx, 'string')
         aux_checkFieldStr(evParams, 'bound_approx', {'sample'}, structName)
-        warning("Choosing Bound estimation '%s' does not lead to safe verification!", ...
+        CORAwarning('CORA:nn',"Choosing Bound estimation '%s' does not lead to safe verification!", ...
             evParams.bound_approx);
     end
     

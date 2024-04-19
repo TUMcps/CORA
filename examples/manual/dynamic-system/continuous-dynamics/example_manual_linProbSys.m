@@ -17,7 +17,7 @@ function example_manual_linProbSys()
 %
 % See also:
 
-% Authors:        Tobias Ladner
+% Authors:       Tobias Ladner
 % Written:       27-September-2023
 % Last update:   ---
 % Last revision: ---

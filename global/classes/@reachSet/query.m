@@ -26,6 +26,7 @@ function val = query(R,prop)
 % Authors:       Niklas Kochdumper
 % Written:       02-June-2020
 % Last update:   19-May-2023 (MW, add 'allLoc' property)
+%                10-April-2024 (TL, bug fix tFinal)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -75,9 +76,20 @@ function val = query(R,prop)
 
         case 'tFinal'
 
-            val = R(1,1).timePoint.time{end};
-            for i = 2:size(R,1)
-                val = max(val,R(i).timePoint.time{end});
+            val = -Inf;
+            for i = 1:size(R,1)
+                if ~isempty(R(i).timePoint)
+                    val_i = R(i).timePoint.time{end};
+                    if isa(val_i,'interval')
+                        % can occur within a hybrid automaton/stl ?
+                        val_i = val_i.sup;
+                    end
+                    val = max(val,val_i);
+                end
+                if ~isempty(R(i).timeInterval)
+                    % for ill-constructed reachSet objects...
+                    val = max(val,R(i).timeInterval.time{end}.sup);
+                end
             end
     
             if isa(val, 'interval')

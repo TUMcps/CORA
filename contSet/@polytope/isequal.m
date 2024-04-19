@@ -34,7 +34,7 @@ function res = isequal(P,S,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % set default values
-tol = setDefaultValues(1e-9,varargin);
+tol = setDefaultValues(1e-6,varargin);
 
 % check dimensions
 try

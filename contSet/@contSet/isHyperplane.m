@@ -23,10 +23,9 @@ function res = isHyperplane(S)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-funcname = mfilename;
-warning(sprintf(['The function ''' funcname ''' is deprecated (since CORA 2024) and has been replaced by ''representsa''.\n' ...
-    '         When updating the code, please rename every function call ''' funcname '(S)'' -> ''representsa(S,''hyperplane'')''.\n' ...
-    '         Note that the function ''' funcname ''' will be removed in a future release.']));
+CORAwarning('CORA:deprecated','function','isHyperplane','CORA v2024', ...
+    'When updating the code, please replace every function call ''isHyperplane(S)'' with ''representsa(S,''hyperplane'')''.', ...
+    'This change was made in an effort to unify the syntax across all set representations.')
 res = representsa(S,'hyperplane');
 
 % ------------------------------ END OF CODE ------------------------------

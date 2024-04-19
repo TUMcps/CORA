@@ -147,7 +147,7 @@ else
     end
     p = k;
     if sum(abs((A+M*C)^k), 'all') > 1e-5
-        warning("Low Accuracy of Transformation matrix M.")
+        CORAwarning('CORA:contDynamics',"Low Accuracy of Transformation matrix M.")
     end
 
     % compute ARMAX parameters

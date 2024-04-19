@@ -78,7 +78,7 @@ switch field
         checks = aux_getChecksParams_y0(checks,sys,func,params,options);
 
     otherwise
-        warning('CORA: Unknown params.%s', field); return;
+        CORAwarning('CORA:contDynamics','Unknown params.%s', field); return;
 end
 
 end

@@ -22,7 +22,7 @@ function han = plotMultipleSetsAsOne(sets,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: contSet/plot, readPlotOptions
+% See also: contSet/plot, readPlotOptions, recordCORAvideo
 
 % Authors:       Tobias Ladner
 % Written:       12-July-2023
@@ -140,7 +140,6 @@ function han = aux_plotSets(sets,dims,NVpairs)
                 sets_i = polygon(sets_i);
             end
             han_i = plot(sets_i,dims,NVpairs_i{:}, handleVis{:});
-            
                 
             if i == 1    
                 % force not showing subsequent plots in legend            

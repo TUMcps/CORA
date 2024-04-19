@@ -399,7 +399,7 @@ for k=1:length(R)
         for i_sample = 1:min(num_samples,500)
             y_i = y{1};
             if ~all(withinTol(R{k}.c,y_i(k,:)',tol_equal))
-                warning("Sample not equal to the computed result.");
+                CORAwarning('CORA:examples',"Sample not equal to the computed result.");
             end
         end
         
@@ -420,7 +420,7 @@ for k=1:length(R)
         for i_sample = 1:min(num_samples,500)
             y_i = y{i_sample};
             if ~contains(R{k}, y_i(k,:)', 'exact', tol_contains)
-                warning("Sample not contained in reachable set!");
+                CORAwarning('CORA:examples',"Sample not contained in reachable set!");
             end
         end
     end

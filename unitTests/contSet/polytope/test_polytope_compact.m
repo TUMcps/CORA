@@ -25,19 +25,18 @@ function res = test_polytope_compact
 
 res = true(0);
 
-
 % 1D cases ----------------------------------------------------------------
 
 % 1D, no constraints
 A = zeros(0,1); b = zeros(0,0);
 P = polytope(A,b);
 P_min = compact(P);
-res(end+1,1) = isemptyobject(P_min);
+res(end+1,1) = representsa(P_min,'fullspace');
 
 % 1D, one trivially fulfilled constraint
 P = polytope.Inf(1);
 P_min = compact(P);
-res(end+1,1) = isemptyobject(P_min);
+res(end+1,1) = representsa(P_min,'fullspace');
 
 % 1D, unbounded toward -Inf
 A = [1; 1; 1]; b = [1;2;3];
@@ -111,7 +110,7 @@ res(end+1,1) = representsa(P_min,'emptySet');
 A = [0 0; 0 0]; b = [1;2]; Ae = [0 0]; be = 0;
 P = polytope(A,b,Ae,be);
 P_min = compact(P);
-res(end+1,1) = isemptyobject(P_min);
+res(end+1,1) = representsa(P_min,'fullspace');
 
 % 2D, unbounded, single halfspace
 A = [1 0]; b = 1;

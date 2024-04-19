@@ -141,7 +141,7 @@ function [Rin,Rout] = reachInnerScaling(sys,params,options)
                    loop = 1; break;
                 else                                    % set is empty
                    I = [];
-                   warning('Inner-approximation is empty!'); 
+                   CORAwarning('CORA:contDynamics','Inner-approximation is empty!'); 
                    break;
                 end
             end

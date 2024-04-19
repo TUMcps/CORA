@@ -149,7 +149,7 @@ if length(configLine_split) == 3
         end
         
         if skip_term
-            warning("Multi-variable term was skipped! Initial conditions like 'x < y' " ...
+            CORAwarning('CORA:converter',"Multi-variable term was skipped! Initial conditions like 'x < y' " ...
                 +"are ignored within the spaceex2cora conversion!");
             continue;
         end
@@ -199,12 +199,12 @@ if length(configLine_split) == 3
                     case 4
                         % <
                         ub = currBounds(op_count);
-                        warning("CORA only takes closed set representations into account! " ...
+                        CORAwarning('CORA:converter',"CORA only takes closed set representations into account! " ...
                             +"Changed initial set to closed set!");
                     case 5
                         % >
                         lb = currBounds(op_count);
-                        warning("CORA only takes closed set representations into account! " ...
+                        CORAwarning('CORA:converter',"CORA only takes closed set representations into account! " ...
                             +"Changed initial set to closed set!");
                 end
                 op_count = op_count + 1;
@@ -224,12 +224,12 @@ if length(configLine_split) == 3
                     case 4
                         % <
                         lb = currBounds(op_count);
-                        warning("CORA only takes closed set representations into account! " ...
+                        CORAwarning('CORA:converter',"CORA only takes closed set representations into account! " ...
                             +"Changed initial set to closed set!");
                     case 5
                         % >
                         ub = currBounds(op_count);
-                        warning("CORA only takes closed set representations into account! " ...
+                        CORAwarning('CORA:converter',"CORA only takes closed set representations into account! " ...
                             +"Changed initial set to closed set!");
                 end
                 op_count = op_count + 1;

@@ -247,6 +247,11 @@ function aux_install_yalmip(interactive,defaultpath)
         lines{end+1,1} = sprintf('addpath(genpath(''%s''));', CORAROOT);
         lines{end+1,1} = 'if ~isempty(which(''CORAVERSION''))';
         lines{end+1,1} = '    fprintf(''Toolbox "%s" added to the Matlab path.\n'',CORAVERSION);';
+        if interactive
+            % only show tip of the day for actual users, not e.g.,
+            % in docker for repeatability or ci
+            lines{end+1,1} = '    showCORAtipoftheday';
+        end
         lines{end+1,1} = 'end';
         lines{end+1,1} = '';
         lines{end+1,1} = 'disp(''Done.'')';

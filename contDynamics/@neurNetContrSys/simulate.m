@@ -66,7 +66,7 @@ if nargout == 3
     ind = [];
 end
 if nargout == 4
-    warning("Output trajectories not supported for class nonlinearSysDT!");
+    CORAwarning('CORA:contDynamics',"Output trajectories not supported for class nonlinearSysDT!");
     y = [];
 end
 

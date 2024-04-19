@@ -193,13 +193,14 @@ if ~isempty(A) && (strcmp(type,'all') || strcmp(type,'A'))
     % index for temporarily-kept constraints
     idxCurrKept = true(nrConIneq,1);
     
-    
+    % flag for detecting emptiness
+    set_empty = false;
     % loop over all remaining inequality constraints
     for i=1:nrConIneq
         % solve primal LP for polytope without i-th constraint
     
         % skip computation if constraint has already been determined to be
-        % irredundant by heuristics above
+        % irredundant by heuristics above or in the computation below
         if ~irredundantIneq(i)
         
             % remove i-th constraint
@@ -216,49 +217,52 @@ if ~isempty(A) && (strcmp(type,'all') || strcmp(type,'A'))
     
                 % call MOSEK
                 res = msklpopt(A(i,:)',a,blc,buc,[],[],[],'maximize echo(0)');
+                extreme_point = res.sol.itr.xx;
     
                 if strcmp(res.sol.itr.prosta,'PRIMAL_AND_DUAL_FEASIBLE')
                     % value of support function in that direction
-                    minvalue = A(i,:) * res.sol.itr.xx;
-                    if minvalue < b(i) || withinTol(minvalue,b(i),tol)
-                        % redundant
-                        idxKeep(i) = false;
-                    end
+                    minvalue = A(i,:) * extreme_point;
                 elseif strcmp(res.sol.itr.prosta,'PRIMAL_INFEASIBLE')
-                    % reduced set of constraints is infeasible -> empty set
-                    P_out = polytope.empty(n);
-                    P = aux_copyProperties(P,P_out);
-                    return
+                    set_empty = true;
+                elseif strcmp(res.sol.itr.prosta,'DUAL_INFEASIBLE')
+                    % reduced polytope is unbounded -> constraint is irredundant
+                    minvalue = Inf;
                 end
     
             else
                 % MATLAB linprog
     
                 % solve LP
-                [x,~,exitflag] = linprog(-A(i,:),H,d,Ae,be,[],[],options);
+                [extreme_point,~,exitflag] = linprog(-A(i,:),H,d,Ae,be,[],[],options);
             
                 % solution has been found
                 if exitflag > 0
-                    minvalue = A(i,:)*x;
-                    if minvalue < b(i) || withinTol(minvalue,b(i),tol)
-                        % redundant
-                        idxKeep(i) = false;
-                    end
+                    minvalue = A(i,:)*extreme_point;
                 elseif exitflag == -2
-                    % reduced set of constraints is infeasible -> empty set
-                    P_out.A = zeros(0,n); P_out.b = [];
-                    P_out.Ae = zeros(0,n); P_out.be = [];
-                    P_out.minHRep.val = true;
-                    P_out.emptySet.val = true;
-                    P_out.bounded.val = true;
-                    P_out.fullDim.val = false;
-                    P_out.V.val = zeros(n,0);
-                    P_out.minVRep.val = true;
-                    P = aux_copyProperties(P,P_out);
-                    return
+                    set_empty = true;
+                elseif exitflag == -3
+                    % reduced polytope is unbounded -> constraint is irredundant
+                    minvalue = Inf;
                 elseif exitflag == -4
                     throw(CORAerror('CORA:solverIssue'));
                 end
+            end
+
+            % exit in case of detected emptiness
+            if set_empty
+                % reduced set of constraints is infeasible -> empty set
+                P_out = polytope.empty(n);
+                P = aux_copyProperties(P,P_out);
+                return
+            end
+
+            if minvalue < b(i) || withinTol(minvalue,b(i),tol)
+                % redundant
+                idxKeep(i) = false;
+                % check which constraint are active for that extreme point
+                % -> they cannot be redundant
+                cons_active = withinTol(A * extreme_point, b);
+                irredundantIneq = irredundantIneq | cons_active;
             end
         
             % go to next constraint (does not matter if this constraint has

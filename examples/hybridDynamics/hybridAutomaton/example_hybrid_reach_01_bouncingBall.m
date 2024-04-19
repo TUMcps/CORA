@@ -38,6 +38,7 @@ options.zonotopeOrder = 20;
 % settings for hybrid systems
 options.guardIntersect = 'polytope';
 options.enclose = {'box'}; 
+options.intersectInvariant = true;
 
 
 % Hybrid Automaton --------------------------------------------------------

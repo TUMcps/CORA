@@ -21,7 +21,7 @@ function han = plotPolygon(V,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also:
+% See also: plotPolytope3D
 
 % Authors:       Niklas Kochdumper, Tobias Ladner
 % Written:       05-May-2020
@@ -30,6 +30,7 @@ function han = plotPolygon(V,varargin)
 %                11-July-2023 (TL, bug fix sets with holes and FaceColor)
 %                12-July-2023 (TL, cut off infinity values at axis limits)
 %                29-February-2024 (TL, fix ColorOrderIndex in filled 3d)
+%                05-April-2024 (TL, added option to plot in background)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -42,8 +43,9 @@ if ~isempty(varargin)
     NVpairs = readPlotOptions(varargin);
 end
 
-% read doConvHull
+% read additional name-value pairs
 [NVpairs, doConvHull] = readNameValuePair(NVpairs, 'ConvHull', 'islogical', false);
+[NVpairs, plotBackground] = readNameValuePair(NVpairs, 'PlotBackground', 'islogical', false);
 
 % read positions
 [NVpairs, V] = aux_positionAtXYZ(V, NVpairs);
@@ -189,6 +191,10 @@ elseif size(V, 1) == 3
 
 end
 
+if plotBackground
+    uistack(han, 'bottom');
+end
+
 if nargout == 0
     clear han;
 end
@@ -207,7 +213,7 @@ function [NVpairs, V] = aux_positionAtXYZ(V, NVpairs)
     % legacy 'Height'
     [NVpairs,height] = readNameValuePair(NVpairs,'Height','isscalar');
     if ~isempty(height)
-        warning("CORA Warning: Plotting with 'Height' is deprecated. Use 'ZPos' instead.")
+        CORAwarning('CORA:plot',"Plotting with 'Height' is deprecated. Use 'ZPos' instead.")
         if ~isempty(zpos)
             throw(CORAerror('CORA:notSupported', ...
                 "Plotting with 'ZPos' and 'Height' specified is not allowed. Use 'ZPos' instead."))

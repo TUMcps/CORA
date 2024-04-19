@@ -747,7 +747,7 @@ redTxt = [redTxt, strjoin({blueprint(redIdx).name},''', '''), ''''];
 % print redundancies
 if ~strcmp(redTxt,"''")
     if VALIDATEOPTIONS_ERRORS
-        warning(['Redundant ' listname ': ' redTxt]);
+        CORAwarning('CORA:contDynamics',['Redundant ' listname ': ' redTxt]);
     else
         headerPrinted = aux_printHeader(listname,headerPrinted);
         disp("  - redundant fields: " + redTxt);

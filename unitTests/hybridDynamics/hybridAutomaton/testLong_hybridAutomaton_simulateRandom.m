@@ -90,8 +90,16 @@ res(end+1,1) = all(arrayfun(...
 res(end+1,1) = all(arrayfun(@(x) x.loc(1) == params.startLoc,...
     simRes,'UniformOutput',true));
 
+% time is strictly increasing
+res(end+1,1) = all(arrayfun(@(x) all(diff(vertcat(x.t{:})) > -eps), ...
+    simRes,'UniformOutput',true));
+
 % check if simulations are contained in reachable set
 res(end+1,1) = contains(R,simRes);
+
+% simulate edge case with a single input segment (caused a bug previously)
+simOpt.nrConstInp = 1;
+simulateRandom(HA,params,simOpt);
 
 % combine results
 res = all(res);

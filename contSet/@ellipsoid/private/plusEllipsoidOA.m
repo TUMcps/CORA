@@ -465,7 +465,7 @@ elseif isYalmipInstalled()
                    zeros(n,n*N+1+n)];
     end
     sol = optimize([l>=0,C<=0],-logdet(B),sdpsettings('verbose',0));
-    warning("YALMIP was used to model the problem - " + ...
+    CORAwarning('CORA:solver',"YALMIP was used to model the problem - " + ...
         "consider installing a supported solver to speed up computation...");
 
     % instantiate resulting ellipsoid object

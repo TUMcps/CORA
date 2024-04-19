@@ -58,11 +58,10 @@ if nrNor > 0
     points = [points, randPoint(options.R0,nrNor,'standard')];
 end
 
-time = linspace(options.tStart,options.tFinal,options.nrConstInp);
+time = linspace(options.tStart,options.tFinal,options.nrConstInp+1);
 startLoc = options.startLoc;
 
 % initialization
-t = []; x = []; loc = [];
 simRes = [];
 
 % simulate the hybrid automaton
@@ -70,6 +69,7 @@ for i = 1:options.points
 
     counter = 1;
     locCur = startLoc;
+    t = []; x = []; loc = [];
     
     % loop over all input changes
     for g = 1:length(time)-1

@@ -622,7 +622,7 @@ methods
                 res = true;
             end
         catch
-            warning("Built-in method 'convHull' failed. Result returned as 'false'.");
+            CORAwarning('CORA:global',"Built-in method 'convHull' failed. Result returned as 'false'.");
         end
     end
 

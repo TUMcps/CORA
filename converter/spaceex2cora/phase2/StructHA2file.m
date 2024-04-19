@@ -43,7 +43,7 @@ end
 
 % MATLAB does not allow '-' in file names, so we replace it with '_'
 if contains(filename,'-')
-    warning("Matlab does not allow '-' in file names, " + ...
+    CORAwarning('CORA:converter',"Matlab does not allow '-' in file names, " + ...
         "all occurrences of '-' are replaced with '_'!");
     filename = strrep(filename,'-','_');
 end

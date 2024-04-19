@@ -25,13 +25,13 @@ function han = plotPolytope3D(V,varargin)
 
 % Authors:       Niklas Kochdumper
 % Written:       02-December-2020
-% Last update:   ---
+% Last update:   18-April-2024 (TL, fix color order and legend entries)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % default
-NVpairs = {'Color',colorblind('b')};
+NVpairs = {'Color',CORAcolor('CORA:next')};
 
 % read plot options if provided
 if ~isempty(varargin)
@@ -86,6 +86,10 @@ else
         plot(nan,nan,'HandleVisibility','off');
     end
 
+    % save color order index
+    ax = gca();
+    oldColorOrderIndex = ax.ColorOrderIndex;
+
     hold on;
     
     % loop over all facets
@@ -104,6 +108,10 @@ else
             else
                 han = fill3(vert(ind,1),vert(ind,2),vert(ind,3), facecolor, NVpairs{:});
             end
+
+            if i == 1 && j == 1
+                NVpairs = [NVpairs, {'HandleVisibility', 'off'}];
+            end
         end
     end
 
@@ -111,6 +119,9 @@ else
     if ~holdStatus
         hold('off');
     end
+    
+    % update color order index
+    updateColorIndex(oldColorOrderIndex);
     
     view([1,1,1]);
 end

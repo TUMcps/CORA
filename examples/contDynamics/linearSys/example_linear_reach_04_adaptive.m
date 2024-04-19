@@ -1,6 +1,6 @@
 function res = example_linear_reach_04_adaptive
 % example_linear_reach_04_adaptive - example for adaptive parameter tuning
-%                                    for linear time-invariant systems
+%    for linear time-invariant systems
 %
 % Syntax:
 %    res = example_linear_reach_04_adaptive
@@ -49,9 +49,7 @@ options.linAlg = 'adaptive'; % use adaptive parameter tuning
 
 % Simulation --------------------------------------------------------------
 
-simOpt.points = 100;
-simOpt.fracVert = 0.05;
-simRes = simulateRandom(sys, params, simOpt);
+simRes = simulateRandom(sys, params);
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -73,11 +71,13 @@ end
 % Visualization -----------------------------------------------------------
 
 figure; hold on; box on; legend();
+xlim([-6,12]); ylim([-4,10])
+
 projDims = [1,2];
 
 % plot unsafe set
-unsafeSet = specification(interval([2;-2],[4;2]));
-plot(unsafeSet,projDims,'DisplayName', 'Unsafe Set');
+spec = specification(halfspace([-1 2],-4.5),'unsafeSet');
+plot(spec,projDims,'DisplayName', 'Unsafe Set');
 
 % plot reachable set
 useCORAcolors("CORA:contDynamics", 2)

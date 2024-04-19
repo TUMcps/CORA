@@ -27,6 +27,7 @@ function han = plot(I,varargin)
 % Authors:       Matthias Althoff, Tobias Ladner
 % Written:       31-July-2016
 % Last update:   12-July-2023 (TL, use vertices)
+%                18-April-2024 (TL, bug fix, 3d case)
 % Last revision: 12-July-2023 (TL, restructure)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -38,7 +39,14 @@ function han = plot(I,varargin)
 V = aux_preprocess(I,dims);
 
 % 3. plot
-han = plotPolygon(V,'ConvHull',true,NVpairs{:});
+if numel(dims) <= 2
+    % 2d plot
+    han = plotPolygon(V,'ConvHull',true,NVpairs{:});
+else
+    % 3d plot
+    han = plotPolytope3D(V,NVpairs{:});
+end
+
 
 % 4. clear han
 if nargout == 0

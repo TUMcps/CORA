@@ -384,6 +384,18 @@ for i=1:length(files)
             end
         end
 
+        % check warning(...) -> CORAwarning(...)
+        if contains(filetext, 'warning(') && ~contains(filetext, 'CORAwarning(') ...
+                ... % some normal warning calls are ok 
+                && ~contains(filetext,'warning(''on''') ...
+                && ~contains(filetext,'warning(''off''') ...
+                && ~contains(filetext,'warning()') ...
+                && ~contains(filetext,'warning(w)') ...
+                && ~contains(filetext,'warning(warOrig)')
+            issues{end+1} = "Please replace warning(...) calls with CORAwarning(...)";        
+        end
+
+
         % everything tested -----------------------------------------------
 
         everythingTested = true;
