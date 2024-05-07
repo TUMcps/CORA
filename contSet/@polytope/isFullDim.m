@@ -1,5 +1,7 @@
 function [res,subspace] = isFullDim(P)
-% isFullDim - checks if a polytope is full-dimensional
+% isFullDim - checks if the dimension of the affine hull of a polytope is
+%    equal to the dimension of its ambient space; additionally, one can
+%    obtain a basis of the subspace in which the polytope is contained
 %
 % Syntax:
 %    res = isFullDim(P)
@@ -36,6 +38,7 @@ function [res,subspace] = isFullDim(P)
 %                25-May-2023 (AK, added method to compute subspace)
 %                28-May-2023 (MW, add quick check for pairwise annihilation)
 %                27-July-2023 (MW, add 1D method)
+%                03-May-2024 (MW, fix subspace computation for V-rep)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -60,13 +63,13 @@ end
 
 % if polytope has V-repesentation, then check rank of vertex matrix
 if ~isempty(P.V.val)
-    rankV = rank(P.V.val,1e-10);
+    rankV = rank(P.V.val - mean(P.V.val,2),1e-10);
     res = rankV == n;
     if res
         subspace = eye(n);
     else
-        [Q,R] = qr(P.V.val);
-        subspace = Q(:,rankV);
+        [Q,R] = qr(P.V.val - mean(P.V.val,2));
+        subspace = Q(:,1:rankV);
     end
     P.fullDim.val = res;
     return
@@ -233,7 +236,7 @@ elseif nargout == 2
     % Setup the list of vectors we seek
     subspace = [];
     
-    for i = 1:dim(P)
+    for i = 1:n
         % Search for vectors in P_iter that are perpendicular to the ones
         % we have found so far
         x_iter = aux_maxNormPerpendicularPolytope(P_iter,subspace);

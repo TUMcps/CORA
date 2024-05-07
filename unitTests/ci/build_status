@@ -36,7 +36,7 @@ fi
 # set BITBUCKET variables for request
 BITBUCKET_API_ROOT="https://api.bitbucket.org/2.0"
 BITBUCKET_STATUS_API="$BITBUCKET_API_ROOT/repositories/$BITBUCKET_NAMESPACE/$BITBUCKET_REPOSITORY/commit/$CI_COMMIT_SHA/statuses/build"
-BITBUCKET_KEY="ci/gitlab-ci/$CI_JOB_NAME"
+BITBUCKET_KEY="ci/gitlab/$CI_JOB_NAME"
 BITBUCKET_DESCRIPTION=$RESULT_TEXT
 
 # push results

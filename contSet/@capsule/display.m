@@ -37,11 +37,12 @@ elseif representsa(C,'fullspace')
     return
 end
 
+% display input variable
 fprintf(newline);
 disp(inputname(1) + " =");
 fprintf(newline);
 
-% display dimension
+%display dimension
 display@contSet(C);
 fprintf(newline);
 

@@ -274,21 +274,26 @@ P = normalizeConstraints(P);
 res(end+1,1) = ~isempty(P.minHRep.val) && P.minHRep.val;
 res(end+1,1) = ~isempty(P.minVRep.val) && P.minVRep.val;
 
-% Minkowski sum implicitly computes minimal H-representation (but not min V-rep)
-P3 = polytope.generateRandom('Dimension',2);
+% Minkowski sum (using project) does not implicitly compute minimal
+% H-representation anymore
+A = [ -0.793 -0.609 ; -0.609 0.793 ; 0.992 -0.130 ; -0.942 -0.335 ; 0.729 -0.684 ; 0.547 0.837 ];
+b = [ 1.027 ; -0.314 ; 1.910 ; 0.620 ; 2.292 ; 0.541 ];
+P3 = polytope(A,b);
 P = P + P3;
-res(end+1,1) = ~isempty(P.minHRep.val) && P.minHRep.val;
+res(end+1,1) = isempty(P.minHRep.val);
 res(end+1,1) = isempty(P.minVRep.val);
 
-% Minkowski difference does not (results in unknown properties)
+% Minkowski difference does neither (results in unknown properties)
 P = minkDiff(P,P2);
 res(end+1,1) = isempty(P.minHRep.val);
 res(end+1,1) = isempty(P.minVRep.val);
 
-% Project implicitly computes min H-rep
-P4 = polytope.generateRandom('Dimension', 3);
+% Project does not implicitly compute min H-representation anymore
+A = [ 0.194 0.615 -0.764 ; -0.757 0.589 0.282 ; 0.624 0.524 0.580 ; -0.035 -0.998 -0.056 ; -0.569 -0.716 -0.404 ; 0.923 -0.179 -0.342 ; -0.807 0.097 0.583 ];
+b = [ 2.206 ; 1.319 ; 1.202 ; 0.003 ; 0.480 ; 1.169 ; 0.588 ];
+P4 = polytope(A,b);
 P = project(P4,[2,3]);
-res(end+1,1) = ~isempty(P.minHRep.val) && P.minHRep.val;
+res(end+1,1) = isempty(P.minHRep.val);
 res(end+1,1) = isempty(P.minVRep.val);
 
 % test empty polytope

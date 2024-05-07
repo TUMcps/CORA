@@ -163,6 +163,9 @@ switch type
             S = zonotope(I);
         end
 
+    case 'convexSet'
+        res = true;
+        
     case 'emptySet'
         % already handled in isemptyobject
         res = false;

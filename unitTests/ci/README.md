@@ -4,9 +4,10 @@
 The CORA CI runs the test suites in a docker container (see `HowTo-CORA-docker.md`).
 This file describes the structure of the CI pipeline.
 
-The CORA CI has 5 stages:
+The CORA CI has 6 stages:
 - A short stage
 - An extended stage
+- A compatibility stage
 - An examples stage
 - A benchmarks stage
 - A status update stage
@@ -68,6 +69,8 @@ It runs the following test suites:
 
 where the `flaky` tests can sometimes fail for various reason, but never more than two should fail.
 
+Additionally, this test stage runs some compatibility tests with various matlab versions on the short test suite.
+
 #### Neural Network Tests
 
 For branches starting with the prefix `nn-*`, 
@@ -76,6 +79,19 @@ the neural network test suite is run automatically.
     runTestSuite('nn')
 
 Note that some of these tests require the necessary toolboxes to be installed (see manual).
+
+
+### Compatibility Test Stage
+
+CORA tries to be compatible with all recent Matlab versions.
+However, only the latest Matlab version when the last major version of CORA was released, is thoroughly tested.
+Usually, thats Matlab R202xb as we aim to release major versions of CORA in fall.
+
+It runs the following test suites for various matlab version:
+
+    runTestSuite('short')
+
+This stage can be triggered by ending the commit message with `--ci-run-compatibility`.
 
 
 ### Examples Test Stage

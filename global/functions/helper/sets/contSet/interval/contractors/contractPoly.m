@@ -428,7 +428,7 @@ function res_ = aux_contractBox(c,G,GI,E,dom,index)
                 % use forward-backward contractor to find zero crossings
                 int = contractForwardBackward(infHan,dom(index));
                 
-                if ~isempty(int)
+                if ~representsa_(int,'emptySet',eps)
                      l = infimum(int);
                 end
             end

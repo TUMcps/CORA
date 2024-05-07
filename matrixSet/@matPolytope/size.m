@@ -21,28 +21,25 @@ function varargout = size(matP,varargin)
 %
 % See also: none
 
-% Authors:       Mark Wetzlinger
+% Authors:       Mark Wetzlinger, Tobias Ladner
 % Written:       17-January-2023
-% Last update:   ---
+% Last update:   02-May-2024 (TL, simplified)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% take first vertex (all vertices have to have same dimension)
-if nargin > 2
-    throw(CORAerror('CORA:tooManyInputArgs',2));
-elseif nargin > 1
-    if isempty(matP)
-        [varargout{1:nargout}] = 0;
-    else
-        [varargout{1:nargout}] = size(matP.vertex{1},varargin{1});
-    end
+% parse input
+if nargin == 1
+    dim = 1:2;
+elseif nargin == 2
+    dim = varargin{1};
 else
-    if isempty(matP)
-        [varargout{1:nargout}] = [0,0];
-    else
-        [varargout{1:nargout}] = size(matP.vertex{1});
-    end
+    throw(CORAerror('CORA:tooManyInputArgs',2));
+end
+
+% read size of vertices
+[varargout{1:nargout}] = size(matP.V,dim);
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

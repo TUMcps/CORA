@@ -57,10 +57,10 @@ c = Z.c;
 Grank = rank(G);
 
 
-% zonotope is the origin
-if representsa_(Z,'origin',eps)
+% zonotope is just a point
+if representsa_(Z,'point',eps)
 
-    E = ellipsoid(zeros(n),zeros(n,1));
+    E = ellipsoid(zeros(n),c);
     return
 
 % reduce dimension of zonotope if not full dimensional

@@ -166,7 +166,7 @@ function [res,R] = verifyRA_zonotope(sys,params,options,spec)
                 
                 % check if specification is active (empty .time means that
                 % the specification covers the entire time horizon)
-                if ( representsa_(options.unsafeSet{i}.time,'emptySet') || ...
+                if ( representsa_(options.unsafeSet{i}.time,'emptySet',eps) || ...
                         aux_intersectionCheckInterval(options.unsafeSet{i}.time,time(j,:)) ) ...
                         && aux_checkSet(options.savedata.unsafeSet_unsat{i},time(j,:))
                 
@@ -358,25 +358,34 @@ function err = aux_initError(sys,options,G,F)
         % compute distance of output trajectory points to unsafe sets
         for k = 1:length(F)
             for j = 1:size(y,1)
-               if contains(F{k}.time,t(j))
-                   scale = 10 - 9/t(end)*t;
-                   if contains(F{k}.set,y(j,:)')
-                       temp = min(abs(F{k}.set.A*y(j,:)'-F{k}.set.b));
-                       err = min(err,temp*scale);
-                   elseif F{k}.isBounded 
-                       if aux_distanceIntervalPoint(F{k}.int,y(j,:)') < err
-                           temp = aux_distancePolyPoint(F{k}.set,y(j,:)');
-                           err = min(err,temp*scale);
-                       end
-                   else
-                       if size(F{k}.set.A,1) == 1
-                           temp = F{k}.set.A*y(j,:)'-F{k}.set.b;
-                       else
-                           temp = aux_distancePolyPoint(F{k}.set,y(j,:)');
-                       end
-                       err = min(err,temp*scale);
-                   end
-               end
+                % check whether unsafe set is active
+                if contains(F{k}.time,t(j))
+                    scale = 10 - 9/t(end)*t;
+
+                    % update error
+                    if contains(F{k}.set,y(j,:)')
+                        % trajectory is contained in unsafe set
+                        temp = min(abs(F{k}.set.A*y(j,:)'-F{k}.set.b));
+                        err = min(err,temp*min(scale));
+
+                    elseif F{k}.isBounded
+                        % trajectory outside of bounded unsafe set
+                        % -> compute distance to interval enclosure
+                        if aux_distanceIntervalPoint(F{k}.int,y(j,:)') < err
+                            temp = aux_distancePolyPoint(F{k}.set,y(j,:)');
+                            err = min(err,temp*min(scale));
+                        end
+                    else
+                        % trajectory outside of unbounded unsafe set
+                        % -> compute distance to unsafe set
+                        if size(F{k}.set.A,1) == 1
+                            temp = F{k}.set.A*y(j,:)'-F{k}.set.b;
+                        else
+                            temp = aux_distancePolyPoint(F{k}.set,y(j,:)');
+                        end
+                        err = min(err,temp*min(scale));
+                    end
+                end
             end
         end
            

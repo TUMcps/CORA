@@ -25,8 +25,8 @@ function example_manual_matPolytope()
 % ------------------------------ BEGIN CODE -------------------------------
 
 % vertices
-V{1} = [1 2; 0 1];
-V{2} = [1 3; -1 2];
+V(:,:,1) = [1 2; 0 1];
+V(:,:,2) = [1 3; -1 2];
 
 % matrix polytope
 mp = matPolytope(V);

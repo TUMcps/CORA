@@ -42,8 +42,8 @@ admissibleTypes = {
     'capsule','conPolyZono','conHyperplane','conZonotope','ellipsoid',...
     'halfspace','interval','levelSet','polytope','polyZonotope',...
     'probZonotope','zonoBundle','zonotope',... % contSet classes
-    'origin','point','hyperplane','parallelotope',... % special types
-    'emptySet','fullspace'}; % future contSet classes
+    'origin','point','hyperplane','parallelotope','convexSet',... % special types
+    'emptySet','fullspace'};
 
 if isa(S,'conPolyZono')
     % check input arguments

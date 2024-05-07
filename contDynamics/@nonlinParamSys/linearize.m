@@ -84,8 +84,8 @@ if isa(options.paramInt,'interval')
     [A,B]=obj.jacobian(p.x,p.u);
 
     %create matrix zonotopes
-    zA = matZonotope(A{1},A(2:end));
-    zB = matZonotope(B{1},B(2:end));
+    zA = matZonotope(A(:,:,1),A(:,:,2:end));
+    zB = matZonotope(B(:,:,1),B(:,:,2:end));
     
     %check if remainder should be included in system matrices
     %(options.alg = 'linRem')
@@ -94,12 +94,8 @@ if isa(options.paramInt,'interval')
         %in order to compute dA,dB, we use the reachability set computed
         %for one step in initReach
         [dA,dB] = lin_error2dAB(options.Ronestep,options.U,obj.hessian,p,options.paramInt);
-        Z_A = zA.generator;
-        Z_A{end+1} = dA;
-        zA = matZonotope(zA.center,Z_A);
-        Z_B = zB.generator;
-        Z_B{end+1} = dB;
-        zB = matZonotope(zB.center,Z_B);
+        zA = matZonotope(zA.C,cat(3,zA.G,dA));
+        zB = matZonotope(zB.C,cat(3,zB.G,dB));
         zf = zonotope(zf.c, [zf.G,zeros(dim(zf),1)]);%needed for dependentHomoSol
         linOptions.compTimePoint = true;
     end

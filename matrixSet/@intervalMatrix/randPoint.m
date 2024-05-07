@@ -12,7 +12,7 @@ function M = randPoint(intMat,varargin)
 %    type - type of sampling ('standard' or 'extreme')
 %
 % Outputs:
-%    M - cell-array of sampled matrices
+%    M - numeric, dimension (n x m x N)
 %
 % Example: 
 %    intMat = intervalMatrix([2 3; 1 2],[1 0; 1 1]);
@@ -24,9 +24,9 @@ function M = randPoint(intMat,varargin)
 %
 % See also: -
 
-% Authors:       Mark Wetzlinger, Matthias Althoff
+% Authors:       Mark Wetzlinger, Matthias Althoff, Tobias Ladner
 % Written:       03-April-2023
-% Last update:   ---
+% Last update:   26-April-2024 (TL, changed output to be a 3d matrix)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -46,13 +46,10 @@ lb = infimum(intMat.int);
 r = rad(intMat);
 
 % generate sample matrices
-M = cell(N,1);
-for i=1:N
-    if strcmp(type,'extreme')
-        M{i} = c + 0.5*sign(2*rand(n)-1) .* r;
-    elseif strcmp(type,'standard')
-        M{i} = lb + rand(n) .* r;
-    end
+if strcmp(type,'extreme')
+    M = c + 0.5*sign(2*rand([n,N])-1) .* r;
+elseif strcmp(type,'standard')
+    M = lb + rand([n,N]) .* r;
 end
 
 % ------------------------------ END OF CODE ------------------------------

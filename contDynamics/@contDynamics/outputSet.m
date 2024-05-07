@@ -128,7 +128,7 @@ elseif isa(obj,'nonlinParamSys')
         % Jacobian
         J = obj.out_jacobian(p_x,p_u);
         % create matrix zonotopes, convert to interval matrix for Jacobian
-        J = intervalMatrix(matZonotope(J{1},J(2:end)));
+        J = intervalMatrix(matZonotope(J(:,:,1),J(:,:,2:end)));
 
     else % options.paramInt is numeric
         zerothorder = obj.out_mFile(p_x,p_u,p_p);

@@ -99,18 +99,20 @@ try
             n = M.dim(1);
         end
 
-        % init Gnew
-        Gnew = zeros(n, (M.gens+1) * (m+1) -1);
-
         % obtain first zonotope
-        cnew = M.center * c;
-        Gnew(:,1:m) = M.center * G;
-        
-        %compute further zonotopes and add them up
-        for i=1:M.gens
-            Gnew(:,(m+1)*i)= M.generator{i} * c;
-            Gnew(:,(m+1)*i+(1:m))= M.generator{i} * G;
+        cnew = M.C * c;
+        try
+        Gnew = [
+            M.C * G, ...
+            reshape(pagemtimes(M.G,c),n,[]), ...
+            reshape( ...
+                pagemtimes(M.G,reshape(G,size(G,1),1,1,size(G,2))), ...
+                n,[])
+        ];
+        catch ME
+            keyboard
         end
+        
         %write to Z.c, Z.G
         Z.c=cnew;
         Z.G=Gnew;

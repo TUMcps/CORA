@@ -139,6 +139,9 @@ switch type
     case 'parallelotope'
         res = false;
 
+    case 'convexSet'
+        res = true;
+
     case 'emptySet'
         % obviously true
         res = true;

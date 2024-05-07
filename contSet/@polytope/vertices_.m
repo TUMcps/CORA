@@ -171,7 +171,7 @@ if strcmp(method,'lcon2vert')
     % polytope is not degenerate (otherwise lcon2vert would have thrown
     % an error and we would have exited above)
     % -> check unboundedness via duality (quick)
-    P.fullDim.val = true;
+%     P.fullDim.val = true;
     if ~isBounded(P)
         P.bounded.val = false;
         throw(CORAerror('CORA:notSupported',...
@@ -205,8 +205,8 @@ if size(V,2) <= size(V,1)
     % full-dimensionality requires at least n+1 vertices
     P.fullDim.val = false;
 else
-    [~,S,~] = svd(V);
-    P.fullDim.val = size(V,1) == nnz(~withinTol(S,0,1e-12));
+    [~,S,~] = svd(V - mean(V,2));
+    P.fullDim.val = n == nnz(~withinTol(S,0,1e-12));
 end
 
 end

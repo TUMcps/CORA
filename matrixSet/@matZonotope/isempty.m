@@ -12,7 +12,7 @@ function res = isempty(matZ)
 %
 % Example:
 %    C = [0 0; 0 0];
-%    G{1} = [1 3; -1 2]; G{2} = [2 0; 1 -1];
+%    G(:,:,1) = [1 3; -1 2]; G(:,:,2) = [2 0; 1 -1];
 %    matZ = matZonotope(C,G);
 %    res = isempty(matZ);
 %

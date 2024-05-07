@@ -116,6 +116,10 @@ switch type
         throw(CORAerror('CORA:notSupported',...
             ['Comparison of probZonotope to ' type ' not supported.']));
 
+    case 'convexSet'
+        throw(CORAerror('CORA:notSupported',...
+            ['Comparison of probZonotope to ' type ' not supported.']));
+
     case 'emptySet'
         res = isempty(probZ.Z) && isempty(probZ.g);
 

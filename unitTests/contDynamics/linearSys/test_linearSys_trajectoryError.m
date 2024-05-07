@@ -61,7 +61,7 @@ tInt = interval(tmin,tmax);
 for i = 1:(order+1)
     res = tInt^i;
     c = center(res);
-    gen{1} = rad(res);
+    gen = rad(res);
     tZono{i} = matZonotope(c,gen); 
 end
 

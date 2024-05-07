@@ -131,6 +131,10 @@ switch type
         throw(CORAerror('CORA:notSupported',...
             ['Comparison of conPolyZono to ' type ' not supported.']));
 
+    case 'convexSet'
+        throw(CORAerror('CORA:notSupported',...
+            ['Comparison of conPolyZono to ' type ' not supported.']));
+
     case 'emptySet'
         res = aux_isEmptySet(cPZ,tol,method,splits,iter);
         if nargout == 2 && res

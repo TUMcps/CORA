@@ -1,5 +1,6 @@
 function CORAwarning(identifier, varargin)
-% CORAwarning - prints a cora warning into the command line
+% CORAwarning - prints a CORA warning into the command line.
+%    Can be controlled via the CORA_WARNINGS_ENABLED macro
 %
 % Syntax:
 %    CORAwarning(identifier, varargin)
@@ -15,7 +16,7 @@ function CORAwarning(identifier, varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: CORAerror
+% See also: CORA_WARNINGS_ENABLED, CORAerror
 
 % Authors:       Tobias Ladner
 % Written:       17-April-2024
@@ -59,7 +60,7 @@ switch identifier
             type, name, version, replacement, reason);
 
     otherwise
-        % identifier, msg
+        % identifier, msg, args for sprintf
         desc = varargin{1};
         desc = aux_formatString(desc);
         desc = sprintf(desc,varargin{2:end});
@@ -93,7 +94,8 @@ function aux_checkIdentifier(identifier)
         'CORA:nn', ...
         'CORA:plot', ...
         'CORA:solver', ...
-        'CORA:deprecated' ...
+        'CORA:deprecated', ...
+        'CORA:redundant', ...
     }}})
 end
 

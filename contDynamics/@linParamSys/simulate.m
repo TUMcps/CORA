@@ -72,7 +72,7 @@ end
 
 % sample one system matrix
 tmp = randPoint(obj.A);
-obj.sampleMatrix.A = tmp{1};
+obj.sampleMatrix.A = tmp;
 
 % simulate the system
 params_ = params;

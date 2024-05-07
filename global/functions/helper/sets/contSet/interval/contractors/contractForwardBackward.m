@@ -37,7 +37,7 @@ function res = contractForwardBackward(f,dom)
 
 % Authors:       Zhuoling Li, Niklas Kochdumper
 % Written:       04-November-2019 
-% Last update:   ---
+% Last update:   03-May-2024 (TL, bug fix given f is constant)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -50,7 +50,18 @@ function res = contractForwardBackward(f,dom)
     end
 
     % forward iteration: compute syntax tree
-    synTree = f(vars);
+    try
+        synTree = f(vars);
+    catch ME
+        if nargin(f) == 0
+            % no parameters allowed; function is constant
+            % this can happen if e.g. for a polynomial all coefficients
+            % are 0 except for the y-intercept.
+            synTree = syntaxTree(interval(f()), length(dom));
+        else
+            rethrow(ME);
+        end
+    end
     
     % backward iteration
     res = dom;

@@ -114,6 +114,9 @@ switch type
     case 'parallelotope'
         res = false;
 
+    case 'convexSet'
+        res = true;
+
     case 'emptySet'
         res = representsa_(polytope(hs),'emptySet',tol);
         if nargout == 2 && res

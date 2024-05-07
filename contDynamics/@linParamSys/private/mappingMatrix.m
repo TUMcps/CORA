@@ -30,7 +30,7 @@ function obj = mappingMatrix(obj,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isa(obj.A,'matZonotope') && (obj.A.gens==1) && obj.constParam
+if isa(obj.A,'matZonotope') && (obj.A.numgens() == 1) && obj.constParam
     [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(obj.A,obj.stepSize,obj.taylorTerms,options);
     
     %constant input solution

@@ -24,9 +24,10 @@ function newObj = subsref(matZ, S)
 %
 % See also: none
 
-% Authors:       Matthias Althoff, Niklas Kochdumper
+% Authors:       Matthias Althoff, Niklas Kochdumper, Tobias Ladner
 % Written:       09-November-2018 
 % Last update:   12-November-2018 (NK, default to build in for other cases)
+%                25-April-2024 (TL, faster implementation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -36,37 +37,32 @@ if length(S) == 1 && strcmp(S.type,'()')
     
     %obtain sub-intervals from the interval object
     newObj = matZ;
+
+    [n,m,h] = size(matZ.G);
     
     % only one index specified
     if length(S.subs)==1
-        newObj.center = matZ.center(S.subs{1});
-        for iGen = 1:newObj.gens
-            newObj.generator{iGen} = matZ.generator{iGen}(S.subs{1});
-        end
+        newObj.C = matZ.C(S.subs{1});
+        G = reshape(matZ.G, n*m,h);
+        newObj.G = G(S.subs{1},:);
     %two indices specified
     elseif length(S.subs)==2
         %Select column of obj
         if strcmp(S.subs{1},':')
             column = S.subs{2};
-            newObj.center = matZ.center(:,column);
-            for iGen = 1:newObj.gens
-                newObj.generator{iGen} = matZ.generator{iGen}(:,column);
-            end
+            newObj.C = matZ.C(:,column);
+            newObj.G = matZ.G(:,column,:);
         %Select row of V    
         elseif strcmp(S.subs{2},':')
             row = S.subs{1};
-            newObj.center = matZ.center(row,:);
-            for iGen = 1:newObj.gens
-                newObj.generator{iGen} = matZ.generator{iGen}(row,:);
-            end
+            newObj.C = matZ.C(row,:);
+            newObj.G = matZ.G(row,:,:);
         %Select single element of V    
-        elseif isnumeric(S.subs{1}) && isnumeric(S.subs{1})
+        elseif isnumeric(S.subs{1}) && isnumeric(S.subs{2})
             row = S.subs{1};
             column = S.subs{2};
-            newObj.center = matZ.center(row,column);
-            for iGen = 1:newObj.gens
-                newObj.generator{iGen} = matZ.generator{iGen}(row,column);
-            end
+            newObj.C = matZ.C(row,column);
+            newObj.G = matZ.G(row,column);
         end
     end
 else

@@ -128,6 +128,9 @@ switch type
         throw(CORAerror('CORA:notSupported',...
             ['Comparison of zonoBundle to ' type ' not supported.']));
 
+    case 'convexSet'
+        res = true;
+
     case 'emptySet'
         res = aux_emptySet(zB,tol);
         if nargout == 2 && res

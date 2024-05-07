@@ -42,8 +42,7 @@ if nrOfGens <= maxGens
     disp(G);
 else
     disp(G(:,1:maxGens));
-    fprintf("    Remainder of " + varName + " (entries " + num2str(maxGens+1) + ...
-        "-" + nrOfGens + ") not shown. Check workspace.\n\n");
+    fprintf("    Remainder of dimensions (>%i) of %s not shown. Check workspace.\n\n", DISPLAYDIM_MAX,varName);
 end
 
 % ------------------------------ END OF CODE ------------------------------

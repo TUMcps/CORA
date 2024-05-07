@@ -28,12 +28,13 @@ function display(fs)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% display input variable
 fprintf(newline);
 disp(inputname(1) + " =");
 fprintf(newline);
 
-% display R^n
-disp("  R^" + fs.dimension);
+%display dimension
+display@contSet(fs);
 fprintf(newline);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -16,9 +16,9 @@ function res = test_matZonotope_randPoint
 %
 % See also: -
 
-% Authors:       Mark Wetzlinger
+% Authors:       Mark Wetzlinger, Tobias Ladner
 % Written:       03-April-2023
-% Last update:   ---
+% Last update:   25-April-2024 (TL, better checks)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -26,18 +26,22 @@ function res = test_matZonotope_randPoint
 % empty matrix zonotope
 matZ = matZonotope();
 M = randPoint(matZ);
-res = iscell(M) && length(M) == 1 && isempty(M{1});
+res = isnumeric(M) && isempty(M);
 
 % instantiate matrix zonotope
 C = [0 2; 1 -1; 1 -2];
-G{1} = [1 1; -1 0; -2 1]; G{2} = [-2 0; 0 1; 1 -1];
+G = []; G(:,:,1) = [1 1; -1 0; -2 1]; G(:,:,2) = [-2 0; 0 1; 1 -1];
 matZ = matZonotope(C,G);
 
 % try different syntaxes for runtime issues
-randPoint(matZ);
-randPoint(matZ,5);
-randPoint(matZ,5,'extreme');
-randPoint(matZ,5,'standard');
+M = randPoint(matZ);
+res(end+1) = size(M,3) == 1;
+M = randPoint(matZ,5);
+res(end+1) = size(M,3) == 5;
+M = randPoint(matZ,5,'extreme');
+res(end+1) = size(M,3) == 5;
+M = randPoint(matZ,5,'standard');
+res(end+1) = size(M,3) == 5;
 
 % combine results
 res = all(res);

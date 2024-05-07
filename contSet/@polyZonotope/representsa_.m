@@ -146,6 +146,10 @@ switch type
             S = zonotope(pZ);
         end
 
+    case 'convexSet'
+        throw(CORAerror('CORA:notSupported',...
+            ['Comparison of polyZonotope to ' type ' not supported.']));
+
     case 'emptySet'
         % already handled in isemptyobject
         res = false;

@@ -33,7 +33,7 @@ function V = projVertices(S,varargin)
 
 % Authors:       Mark Wetzlinger
 % Written:       21-December-2022
-% Last update:   ---
+% Last update:   29-April-2024 (TL, increased tol for init duplicate check)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -92,7 +92,7 @@ V(:,4) = V(:,1);
 idx2 = 2; idx3 = 3;
 
 % ensure that there are no duplicates (other than 1 = end)
-if compareMatrices(V(:,3),V(:,1:2),1e-14,'subset')
+if compareMatrices(V(:,3),V(:,1:2),1e-12,'subset')
     % vertex (240 degrees) is duplicate
     V(:,3) = []; idx3 = [];
 end

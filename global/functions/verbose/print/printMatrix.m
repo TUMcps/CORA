@@ -9,6 +9,7 @@ function printMatrix(M,varargin)
 %    M - matrix
 %    accuracy - (optional) floating-point precision
 %    clearLine - (optional) whether to finish with '\n'
+%    doCompact - (optional) whether the matrix is printed compactly
 %
 % Outputs:
 %    -
@@ -22,17 +23,18 @@ function printMatrix(M,varargin)
 % Last update:   27-June-2018
 %                04-January-2021
 %                17-June-2022 (MW, parsing of accuracy)
+%                06-June-2024 (TL, added doCompact)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',2));
+if nargin > 4
+    throw(CORAerror('CORA:tooManyInputArgs',4));
 end
 
 % determine accuracy
-if nargin < 2
+if nargin < 2 || isempty(varargin{1})
     % default accuracy
     accuracy = '%4.3f%s';
 else
@@ -56,6 +58,12 @@ else
     clearLine = varargin{2};
 end
 
+if nargin < 4
+    doCompact = false;
+else
+    doCompact = varargin{3};
+end
+
 % scalar case
 if isscalar(M)
     fprintf(accuracy, M);
@@ -70,7 +78,7 @@ numCols = size(M,2);
 
 % write first element
 fprintf('[ ');
-if numRows > 1
+if numRows > 1 && ~doCompact
     fprintf('...\n ')
 end
 
@@ -80,15 +88,21 @@ for iRow=1:numRows
         %write in workspace
         fprintf(accuracy, M(iRow,iCol));
 
-        if iCol < numCols
+        if iCol < numCols && ~doCompact
             fprintf(',')
         end
         fprintf(' ')
     end
 
     if numRows > 1 || iRow<numRows
-        %write new line
-        fprintf('; ...\n ')
+        if doCompact
+            if iRow < numRows
+                fprintf('; ')
+            end
+        else
+            %write new line
+            fprintf('; ...\n ')
+        end
     end
 end
 fprintf(']')

@@ -1,5 +1,5 @@
 function res = CORA_WARNINGS_ENABLED(identifier)
-% CORA_WARNINGS_ENABLED - whether all CORA warnings  should be shown
+% CORA_WARNINGS_ENABLED - specifies if a CORA warning should be shown
 %
 % Syntax:
 %    res = CORA_WARNINGS_ENABLED()
@@ -101,6 +101,10 @@ switch identifier
     
     case 'CORA:deprecated'
         % controls deprecation warnings
+        res = true;
+    
+    case 'CORA:redundant'
+        % controls redundancy warnings
         res = true;
 
     otherwise

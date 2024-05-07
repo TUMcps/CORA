@@ -85,7 +85,7 @@ params_interval.V = enlarge(Vorig,1.001); % slightly enlarge V for numerical rob
 resPartial(end+1) = conform(pedestrian,'check',params_interval,options);
 
 %% Reduce measurement uncertainty to 99.9% (result should be false)
-params_interval.V = enlarge(Vorig,0.999);
+params_interval.V = compact(enlarge(Vorig,0.999),'zeros',1e-8);
 if isequal(params_interval.V, Vorig)
     params_interval.W = enlarge(params_interval.W,0.999);
 end

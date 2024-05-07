@@ -44,9 +44,13 @@ elseif representsa(cPZ,'fullspace')
     return
 end
 
-
+% display input variable
 fprintf(newline);
 disp(inputname(1) + " =");
+fprintf(newline);
+
+%display dimension
+display@contSet(cPZ);
 fprintf(newline);
 
 % display center

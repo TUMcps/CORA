@@ -20,28 +20,31 @@ function display(intMat)
 %
 % See also: none
 
-% Authors:       Matthias Althoff, Mark Wetzlinger
+% Authors:       Matthias Althoff, Mark Wetzlinger, Tobias Ladner
 % Written:       18-June-2010
 % Last update:   03-April-2023 (MW, add empty case)
+%                25-April-2024 (TL, harmonized display with contSet classes)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 if isempty(intMat)
-    
     dispEmptyObj(intMat,inputname(1));
+    return
+end
 
-else
+% display input variable
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
 
-    % display dimension
-    disp('dimension: ');
-    disp(dim(intMat));
-    
-    % display lower and upper bounds
-    disp('lower bound: ');
-    disp(infimum(intMat.int));
-    disp('upper bound: ');
-    disp(supremum(intMat.int));
+% display dimension
+fprintf('%s:\n', class(intMat))
+disp(['- dimension: ', num2str(dim(intMat))]);
+fprintf(newline);
+
+% call helper function (also used for interval)
+displayInterval(intMat.int,false);
 
 end
 

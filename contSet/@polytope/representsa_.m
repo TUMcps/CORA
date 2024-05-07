@@ -174,6 +174,9 @@ switch type
         throw(CORAerror('CORA:notSupported',...
             ['Comparison of polytope to ' type ' not supported.']));
 
+    case 'convexSet'
+        res = true;
+
     case 'emptySet'
         res = aux_isEmptySet(P);
         P.emptySet.val = res;

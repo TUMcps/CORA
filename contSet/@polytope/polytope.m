@@ -331,8 +331,8 @@ function [empty,bounded,fullDim,minHRep,minVRep,V] = ...
                 % full-dimensionality requires at least n+1 vertices
                 fullDim = false;
             else
-                [~,S,~] = svd(V);
-                fullDim = size(V,1) == nnz(~withinTol(S,0,1e-12));
+                [~,S,~] = svd(V - mean(V,2));
+                fullDim = n == nnz(~withinTol(S,0,1e-12));
             end
         end
 

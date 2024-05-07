@@ -25,12 +25,10 @@ function P = polytope(matP)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%convert vertices
-for i=1:matP.verts
-    V(i,:)=mat2vec(matP.vertex{i});
-end
+% convert vertices
+vecV = reshape(matP.V,[],matP.numverts);
 
-%instantiate polytope 
-P=polytope(V);
+% instantiate polytope 
+P=polytope(vecV);
 
 % ------------------------------ END OF CODE ------------------------------

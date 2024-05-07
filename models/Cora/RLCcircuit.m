@@ -92,14 +92,15 @@ function [matZ_A,matZ_B] = RLCcircuit()
     %normalize cell matrices
     %system matrix
     Acenter = 0*zonA{1};
+    Arad = zeros([size(Acenter),numel(zonA)]);
     for i=1:length(zonA)
         %add center matrices
         Acenter = Acenter + pCenter(i)*zonA{i};
-        Arad{i} = pRad(i)*zonA{i};
+        Arad(:,:,i) = pRad(i)*zonA{i};
     end
 
     Bcenter = pCenter(1)*zonB{1};
-    Brad{1} = pRad(1)*zonB{1};
+    Brad = pRad(1)*zonB{1};
 
     %instantiate matrix zonotopes
     matZ_A=matZonotope(Acenter,Arad);

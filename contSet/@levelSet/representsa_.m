@@ -113,6 +113,10 @@ switch type
         throw(CORAerror('CORA:notSupported',...
             ['Comparison of levelSet to ' type ' not supported.']));
 
+    case 'convexSet'
+        throw(CORAerror('CORA:notSupported',...
+            ['Comparison of levelSet to ' type ' not supported.']));
+
     case 'emptySet'
         res = aux_representsa_emptySet(ls);
 

@@ -135,6 +135,31 @@ P = polytope(A,b);
 [res_, X] = isFullDim(P);
 res(end+1,1) = res_ && rank(X) == 3 && all(size(X) == [3,3]);
 
+% 3D, degenerate, bounded (with subspace computation)
+V = [1 0 0; 0 1 0; -1 0 0; 0 -1 0]' + [4;3;2];
+P = polytope(V);
+[res_, X] = isFullDim(P);
+res(end+1,1) = ~res_ && rank(X) == 2 && all(size(X) == [3,2]);
+
+% 3D, degenerate, asymmetric, bounded (with subspace computation)
+V = [1 0 0; 0 1 0; 1 1 0; 0.5 1.2 0; -1 0 0; 0 -1 0]' + [4;3;2];
+P = polytope(V);
+[res_, X] = isFullDim(P);
+res(end+1,1) = ~res_ && rank(X) == 2 && all(size(X) == [3,2]);
+
+% 3D, degenerate, asymmetric, non-trivial subspace, bounded (with subspace computation)
+V = [1 1 0; -1 1 1; 0 1 1] * ...
+    ([1 0 0; 0 1 0; 1 1 0; 0.5 1.2 0; -1 0 0; 0 -1 0]' + [4;3;2]);
+P = polytope(V);
+[res_, X] = isFullDim(P);
+res(end+1,1) = ~res_ && rank(X) == 2 && all(size(X) == [3,2]);
+
+% 3D, non-degenerate, asymmetric bounded (with subspace computation)
+V = [1 0 0; 0 1 0; 1 1 0; 0.5 1.2 0; -1 0 0; 0 -1 0; 0 0 1; 0 0 -1]' + [4;3;2];
+P = polytope(V);
+[res_, X] = isFullDim(P);
+res(end+1,1) = res_ && rank(X) == 3 && all(size(X) == [3,3]);
+
 
 % 4D, degenerate, unbounded (with subspace computation)
 % ...unit square in x1-x2, unbounded in x3, x4 = 0

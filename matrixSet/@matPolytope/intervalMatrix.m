@@ -19,31 +19,21 @@ function intMat = intervalMatrix(matP)
 %
 % See also: plus
 
-% Authors:       Matthias Althoff
+% Authors:       Matthias Althoff, Tobias Ladner
 % Written:       21-June-2010 
-% Last update:   ---
+% Last update:   02-May-2024 (TL, simplified due to new structure of V)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%initialize minimum and maximum values
-minMat=Inf(matP.dim);
-maxMat=-Inf(matP.dim);
+% obtain vertices
+V = matP.V;
 
-%find minimum and maximum values
-for i=1:matP.verts
-    %find smaller values
-    ind=find(matP.vertex{i}<minMat);
-    %update minimum values
-    minMat(ind)=matP.vertex{i}(ind);
-    
-    %find greater values
-    ind=find(matP.vertex{i}>maxMat);
-    %update minimum values
-    maxMat(ind)=matP.vertex{i}(ind);   
-end
+% compute min/max across all vertices
+minMat= min(V,[],3);
+maxMat= max(V,[],3);
 
-%instantiate interval matrix
+% instantiate interval matrix
 C=0.5*(minMat+maxMat);
 D=0.5*(maxMat-minMat);
 intMat=intervalMatrix(C,D);

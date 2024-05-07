@@ -25,44 +25,31 @@ function res = testLong_GJKalgorithm()
 
 dims = [2 3 4 10];
 
-for n = dims
+for n = dims    
     for i = 1:10
+        disp("n: " + n + ", i = " + i);
 
-        % generate two zonotopes that intersect
+        % generate two zonotopes: we compute the support vectors in
+        % opposite directions and shift a zonotope by the vector between
+        % them; this would make the zonotopes meet at exactly one point, so
+        % we shift one support vector by a tiny bit to make them either
+        % intersect or not intersect
+
         Z1 = zonotope.generateRandom('Dimension',n);
         Z2 = zonotope.generateRandom('Dimension',n);
 
-        dir = rand(n,1);
-
+        dir = randn(n,1);
         [~,x1] = supportFunc(Z1,dir);
         [~,x2] = supportFunc(Z2,-dir);
+        offset = center(Z1) - x1;
+        Z2_intersects = Z2 + (x1 + offset/100 - x2);
+        Z2_notintersects = Z2 + (x1 - offset/100 - x2);
 
-        tmp = center(Z1) - x1;
-        x1_ = x1 + tmp/100;
-
-        Z2 = Z2 + (x1_-x2);
-
-        % check if GJK algorithm gives the correct result
-        if ~GJKalgorithm(Z1,Z2)
+        if ~GJKalgorithm(Z1,Z2_intersects)
             throw(CORAerror('CORA:testFailed'));
         end
 
-        % generate two zonotopes that do not intersect
-        Z1 = zonotope.generateRandom('Dimension',n);
-        Z2 = zonotope.generateRandom('Dimension',n);
-
-        dir = rand(n,1);
-
-        [~,x1] = supportFunc(Z1,dir);
-        [~,x2] = supportFunc(Z2,-dir);
-
-        tmp = x1 - center(Z1);
-        x1_ = x1 + tmp/100;
-
-        Z2 = Z2 + (x1_-x2);
-
-        % check if GJK algorithm gives the correct result
-        if GJKalgorithm(Z1,Z2)
+        if GJKalgorithm(Z1,Z2_notintersects)
             throw(CORAerror('CORA:testFailed'));
         end
     end

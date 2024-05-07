@@ -86,7 +86,7 @@ while (errorBound_normalized > maxRelError) && (krylovOrder <= dim)
     
     % matrix zonotope of first time step
     Z_center = 0.5*H*delta;
-    Z_delta{1} = Z_center;
+    Z_delta = Z_center;
     Htau = matZonotope(Z_center, Z_delta);
     
     % first exponential matrix

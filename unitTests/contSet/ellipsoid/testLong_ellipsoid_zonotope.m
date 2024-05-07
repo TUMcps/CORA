@@ -20,6 +20,7 @@ function res = testLong_ellipsoid_zonotope
 % Authors:       Victor Gassmann, Matthias Althoff
 % Written:       14-October-2019
 % Last update:   07-June-2021 (MA, degenerate case added)
+%                22-April-2024 (TL, added tolerance)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -29,6 +30,8 @@ dims = 2:5;
 dGen = 5;
 steps = 3;
 rndDirs = 100;
+TOL = 1e-6;
+
 for i=dims
     
     %%% generate all variables necessary to replicate results
@@ -79,32 +82,32 @@ for i=dims
             
             %% overapproximations
             % normal case
-            if supportFunc(E,d)>supportFunc(Zo_n,d) || ...
-               supportFunc(E,d)>supportFunc(Zo_box,d)
-               %supportFunc(E,d)>supportFunc(Zo_nb,d) || ...
+            if supportFunc(E,d)>supportFunc(Zo_n,d)+TOL || ...
+               supportFunc(E,d)>supportFunc(Zo_box,d)+TOL
+               %supportFunc(E,d)>supportFunc(Zo_nb,d)+TOL || ...
                 res = false;
                 return;
             end
             % degenerate case
-            if supportFunc(E_deg,d_deg)>supportFunc(Zo_n_deg,d_deg) || ...
-               supportFunc(E_deg,d_deg)>supportFunc(Zo_box_deg,d_deg)
-               %supportFunc(E_deg,d_deg)>supportFunc(Zo_nb_deg,d_deg) || ...
+            if supportFunc(E_deg,d_deg)>supportFunc(Zo_n_deg,d_deg)+TOL || ...
+               supportFunc(E_deg,d_deg)>supportFunc(Zo_box_deg,d_deg)+TOL
+               %supportFunc(E_deg,d_deg)>supportFunc(Zo_nb_deg,d_deg)+TOL || ...
                 res = false;
                 return;
             end
             
             %% underapproximations
             % normal case
-            if supportFunc(E,d)<supportFunc(Zu_n,d) || ...
-               supportFunc(E,d)<supportFunc(Zu_nb,d) || ...
-               supportFunc(E,d)<supportFunc(Zu_box,d)
+            if supportFunc(E,d)+TOL<supportFunc(Zu_n,d) || ...
+               supportFunc(E,d)+TOL<supportFunc(Zu_nb,d) || ...
+               supportFunc(E,d)+TOL<supportFunc(Zu_box,d)
                 res = false;
                 return;
             end
             % degenerate case
-            if supportFunc(E_deg,d_deg)<supportFunc(Zu_n_deg,d_deg) || ...
-               supportFunc(E_deg,d_deg)<supportFunc(Zu_nb_deg,d_deg) || ...
-               supportFunc(E_deg,d_deg)<supportFunc(Zu_box_deg,d_deg)
+            if supportFunc(E_deg,d_deg)+TOL<supportFunc(Zu_n_deg,d_deg) || ...
+               supportFunc(E_deg,d_deg)+TOL<supportFunc(Zu_nb_deg,d_deg) || ...
+               supportFunc(E_deg,d_deg)+TOL<supportFunc(Zu_box_deg,d_deg)
                 res = false;
                 return;
             end

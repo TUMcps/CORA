@@ -20,23 +20,31 @@ function matP = simplePlus(summand1,summand2)
 %
 % See also: mtimes
 
-% Authors:       Matthias Althoff
+% Authors:       Matthias Althoff, Tobias Ladner
 % Written:       06-July-2010 
-% Last update:   ---
+% Last update:   02-May-2024 (TL, new structure of V)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%initialize potential vertices
-Vpot=[];
-%Calculate posiible new vertices by adding all combinations
-for j=1:summand1.verts
-    for i=1:summand2.verts
-        Vpot{end+1}=summand1.vertex{j}+summand2.vertex{i};
-    end
-end
+  % initialize matrix vertices
+matV1 = summand1.V;
+[n1,m1,h1] = size(Z1);
+matV2 = summand2.V;
+[n2,m2,h2] = size(matV2);
 
-%instantiate matrix polytope
-matP=matPolytope(Vpot);
+% reshape V2
+matV2 = reshape(matV2,n2,m2,1,h2);
+
+% obtain all potential vertices by adding all combinations
+matV = matV1 + matV2;
+
+% rewrite result as a matrix polytope
+matV = reshape(matV,max(n1,n2),max(m1,m2),h1*h2);
+
+% init matPolyzonotope
+matP=matPolytope(matV);
+
+end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -100,7 +100,7 @@ For example, to run the CORA test suite within docker, open `./cora/unitTests/ci
 
 or interactively:
 
-	docker run -v "$(pwd)/../..":/code/cora -e MLM_LICENSE_FILE=28000@mlm1.rbg.tum.de --rm -it -p 6080:6080 cora-ci -vnc
+	docker run -v "%cd%/../..":/code/cora -e MLM_LICENSE_FILE=28000@mlm1.rbg.tum.de --rm -it -p 6080:6080 cora-ci -vnc
 	
 and open in your local browser:
 

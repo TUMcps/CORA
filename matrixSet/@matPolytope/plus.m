@@ -21,62 +21,56 @@ function matP = plus(summand1,summand2)
 %
 % See also: mtimes
 
-% Authors:       Matthias Althoff
+% Authors:       Matthias Althoff, Tobias Ladner
 % Written:       21-June-2010 
-% Last update:   ---
+% Last update:   02-May-2024 (TL, new structure of V)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%Find a matrix polytope object
+%f ind a matrix polytope object
 [matP,summand] = findClassArg(summand1,summand2,'matPolytope');
 
-%Is summand a matrix polytope?
+% is summand a matrix polytope?
 if isa(summand,'matPolytope')
-    %initialize matrix vertices
-    for i=1:summand1.verts
-        V1(i,:)=mat2vec(summand1.vertex{i});
-    end
-    for i=1:summand2.verts
-        V2(i,:)=mat2vec(summand2.vertex{i});
-    end
-    %initialize potential vertices
-    Vpot=[];
-    %Calculate posiible new vertices by adding all combinations
-    for j=1:length(V1(:,1))
-        for i=1:length(V2(:,1))
-            Vpot(end+1,:)=V1(j,:)+V2(i,:);
-        end
-    end
-    %compute convex hull
-    try
-        opt{1}='QJ';
-        K=convhulln(Vpot, opt);
 
-        %rewrite result as a matrix polytope
-        matV=[];
-        for i=1:length(Vpot(:,1))
-            if find(K==i)
-                matV{end+1}=vec2mat(Vpot(i,:));
-            end
-        end
+    % initialize matrix vertices
+    matV1 = matP.V;
+    [n1,m1,h1] = size(matV1);
+    matV2 = summand.V;
+    [n2,m2,h2] = size(matV2);
+
+    % reshape V2
+    matV2 = reshape(matV2,n2,m2,1,h2);
+
+    % obtain all potential vertices by adding all combinations
+    matVpot = matV1 + matV2;
+
+    % reshape to vector for convex hull
+    vecVpot = reshape(matVpot,max(n1,n2)*max(m1,m2),h1*h2);
+   
+    try
+        % compute convex hull
+        opt{1}='QJ';
+        K=convhulln(vecVpot, opt);
+
+        % only choose points on boundary
+        vecV = vecVpot(K,:);
     catch
-        %rewrite result as a matrix polytope
-        matV=[];
-        for i=1:length(Vpot(:,1))
-            matV{end+1}=vec2mat(Vpot(i,:));
-        end
-        disp('convex hull could not be computed')
+        CORAwarning('CORA:matrixSets','Convex hull could not be computed. Continuing with all vertices.')
+        vecV = vecVpot;
     end
-    
+
+    % rewrite result as a matrix polytope
+    matV = reshape(vecV,max(n1,n2),max(m1,m2),h1*h2);
+
+    % init matPolyzonotope
     matP=matPolytope(matV);
     
-%is summand a matrix?
+% is summand a matrix?
 elseif isnumeric(summand)
-    %Calculate minkowski sum
-    for i=1:matP.vertices
-        matP.vertex{i} = matP.vertex{i} + summand;
-    end
+    % calculate minkowski sum
+    matP.V = matP.V + summand;
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -164,6 +164,9 @@ switch type
         throw(CORAerror('CORA:notSupported',...
             ['Comparison of ellipsoid to ' type ' not supported.']));
 
+    case 'convexSet'
+        res = true;
+
     case 'emptySet'
         res = isempty(E.Q) && isempty(E.q);
         if nargout == 2 && res

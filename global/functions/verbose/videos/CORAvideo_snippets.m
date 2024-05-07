@@ -23,7 +23,7 @@
 % (e.g. set breakpoint after everything is computed / at the end)
 
 % settings
-basepath = './CORAvideos/01';
+basepath = './CORAvideos/0x';
 exampleName = 'Van-der-Pol Oscillator';
 mkdir(basepath)
 filenameVideo = [basepath '/video.mp4'];
@@ -122,6 +122,12 @@ system( ...
     sprintf('ffmpeg -stream_loop %i -i "%s" -i "%s" -c:v copy -c:a aac -shortest %s', ...
     loops, filenameVideo, filenameMusic, filenameVideoLooped));
 
+%%
+
+% stitch videos side by side
+
+system(sprintf('ffmpeg -i ./CORAvideos/07/video.mp4 -i ./CORAvideos/07/example_angle.mp4 -filter_complex "hstack,format=yuv420p" -c:v libx264 -crf 18 video.mp4'))
+
 %% %. (Optional) SAVE TITLE, DESCRIPTION, and THUMBNAIL
 
 % readme ---
@@ -130,7 +136,7 @@ fileID = fopen([basepath '/readme.txt'],'w');
 
 readmetext = "\n" + ...
     "Title:\n" + ...
-    "%s: %s\n" + ...
+    "[CORA] %s: %s\n" + ...
     "\n\n" + ...
     "Description:\n" + ...
     "%s\n" + ...

@@ -9,7 +9,9 @@ function res = recordCORAvideo(filename,varargin)
 %    varargin - name-value-pairs
 %       'ReachSet' - reachSet object
 %       'SimResult' - simResult object
-%       'dims' - dimensions to plot (1 for plotOverTime, 2 for plot)
+%       'RefTrajectory' - simResult object
+%       'Dimensions' - dimensions to plot (1 for plotOverTime, 2 for plot)
+%       'RefDimensions' - dimensions to plot reference trajectory
 %       'Specification' - specification object
 %       'XLabel' - xlabel
 %       'XLim' - xlim
@@ -35,7 +37,7 @@ function res = recordCORAvideo(filename,varargin)
 
 % Authors:       Tobias Ladner
 % Written:       05-April-2024
-% Last update:   ---
+% Last update:   19-April-2024 (TL, added reference trajectory)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -44,11 +46,12 @@ disp('Recording CORA video:')
 
 % parse input ---
 
-[Rs,simRes,dims,spec, ...
+[Rs,simRes,refTrajectory,dims,refDims,spec, ...
     XLabel,XLim,YLabel,YLim,Title,Description,LegendLocation, ...
     Unify,UnifyTotalSets, ...
     FrameRate,MaxTimeRs,TotalDuration,FreezeDuration,PlotMethodSimResult] = aux_parseInput(varargin);
 simName = 'Simulations';
+refName = 'Ref. trajectory';
 
 % setup ---
 
@@ -163,6 +166,24 @@ for frame=1:nrFramesAnimation
             'DisplayName',simName,'Color',CORAcolor('CORA:simulations'));
     end
 
+    % plot reference trajectory
+    if ~isempty(refTrajectory)
+        if strcmp(PlotMethodSimResult, 'time')
+            % plot reference trajectory at the same time as reachable set
+            aux_deletegraphics(refName);
+            tau_0i1 = interval(0,min(t_i1,tFinalUpToFrame));
+            aux_plot(find(refTrajectory,'time',tau_0i1),refDims, ...
+                'DisplayName',refName,'Color',[1 0 0],'LineWidth',2);
+    
+        elseif strcmp(PlotMethodSimResult, 'percent')
+            % always plot single given reference trajactory
+            % (similar to website)
+            aux_deletegraphics(refName);
+            aux_plot(refTrajectory,refDims, ...
+                'DisplayName',refName,'Color',[1 0 0],'LineWidth',2);
+        end
+    end
+
     % move specification back
     aux_moveToBackground(specName)
 
@@ -187,13 +208,15 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [Rs,simRes,dims,spec,XLabel,XLim,YLabel,YLim,Title,Description,LegendLocation,Unify,UnifyTotalSets,FrameRate,MaxTimeRs,TotalDuration,FreezeDuration,PlotMethodSimResult] = aux_parseInput(NVpairs)
+function [Rs,simRes,refTrajectory,dims,refDims,spec,XLabel,XLim,YLabel,YLim,Title,Description,LegendLocation,Unify,UnifyTotalSets,FrameRate,MaxTimeRs,TotalDuration,FreezeDuration,PlotMethodSimResult] = aux_parseInput(NVpairs)
     
     % read input args
     [NVpairs,R] = readNameValuePair(NVpairs,'ReachSet');
     [NVpairs,Rs] = readNameValuePair(NVpairs,'ReachSets');
     [NVpairs,simRes] = readNameValuePair(NVpairs,'SimResult');
+    [NVpairs,refTrajectory] = readNameValuePair(NVpairs,'RefTrajectory');
     [NVpairs,dims] = readNameValuePair(NVpairs,'Dimensions');
+    [NVpairs,refDims] = readNameValuePair(NVpairs,'RefDimensions');
     [NVpairs,spec] = readNameValuePair(NVpairs,'Specification');
     [NVpairs,XLabel] = readNameValuePair(NVpairs,'XLabel');
     [NVpairs,XLim] = readNameValuePair(NVpairs,'XLim');
@@ -228,7 +251,16 @@ function [Rs,simRes,dims,spec,XLabel,XLim,YLabel,YLim,Title,Description,LegendLo
     % flip Rs for intuitive understanding due to background plotting
     Rs = flipud(Rs);
 
+    % check reference trajectory
+    if ~isempty(refTrajectory) && ~isa(refTrajectory,'simResult')
+        throw(CORAerror('CORA:wrongValue','name-value pair ''RefTrajectory''','simResult'))
+    end
+
     % set missing values ---
+
+    if isempty(refDims)
+        refDims = dims;
+    end
 
     % labels
     if isempty(XLabel)

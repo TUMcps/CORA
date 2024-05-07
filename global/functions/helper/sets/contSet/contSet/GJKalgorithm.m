@@ -1,19 +1,20 @@
-function res = GJKalgorithm(S1,S2)
+function res = GJKalgorithm(S1,S2,varargin)
 % GJKalgorithm - check for intersection between two convex sets using the
-%                Gilbert-Johnson-Keerthi algorithm
+%    Gilbert-Johnson-Keerthi algorithm [1]
 %
 % Syntax:
 %    res = GJKalgorithm(S1,S2)
+%    res = GJKalgorithm(S1,S2,tol)
 %
 % Inputs:
 %    S1 - contSet object representing a convex set
 %    S2 - contSet object representing a convex set
+%    tol - tolerance
 %
 % Outputs:
 %    res - true is sets intersect, false if not
 %
 % Example:
-%    
 %    S1 = polytope([0.5 2 4; 1 3 1]);
 %    S2 = polytope([2.5 3 6 6; 2 3.5 3.5 1]);
 % 
@@ -35,15 +36,28 @@ function res = GJKalgorithm(S1,S2)
 % See also: isIntersecting
 
 % Authors:       Niklas Kochdumper
-% Written:       21-April-2022 
-% Last update:   ---
+% Written:       21-April-2022
+% Last update:   24-April-2024 (MW, include tolerance, enforce convexity)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+    % ensure that dimensions match
+    equalDimCheck(S1,S2);
+
+    % set tolerance
+    tol = setDefaultValues({1e-14},varargin);
+
+    % ensure that both sets are convex
+    if ~representsa_(S1,'convexSet',tol) || ~representsa_(S2,'convexSet',tol)
+        throw(CORAerror('CORA:notSupported',['The GJK algorithm can only ' ...
+            'be called for convex sets.']));
+    end
+
+    % read out dimension
     n = dim(S1);
 
-    % get initial direction
+    % initial direction: vector between centers or first basis vector
     try
         d = center(S2) - center(S1);
     catch
@@ -54,7 +68,13 @@ function res = GJKalgorithm(S1,S2)
     [~,s1] = supportFunc(S1,d);
     [~,s2] = supportFunc(S2,-d);
     v = s1 - s2;
+
+    % check for immediate exit (vertex is origin)
+    if all(withinTol(v,zeros(n,1),tol))
+        res = true; return
+    end
     
+    % initialize simplex (in vertex representation) and next direction
     simplex = v;
     d = -v;
     
@@ -68,7 +88,7 @@ function res = GJKalgorithm(S1,S2)
         
         % check if origin crossed -> no intersection if not
         if d'*v < 0
-           res = false; return 
+            res = false; return 
         end
         
         % add current support vector to simplex
@@ -88,7 +108,9 @@ end
 
 function [simplex,d,containsOrigin] = aux_nearestSimplex(simplex)
 % determine new search direction that is orthogonal to the face to the 
-% simplex that is closest to the origin
+% simplex (given as a polytope in vertex representation, in this case, a
+% matrix) that is closest to the origin
+% returns: simplex in vertex representation, next direction, exit flag
 
     containsOrigin = false;
     n = size(simplex,1);
@@ -97,24 +119,26 @@ function [simplex,d,containsOrigin] = aux_nearestSimplex(simplex)
     if size(simplex,2) > size(simplex,1)
         
         % convert the simplex to halfspace representation
-        poly = polytope(simplex);
+        P = polytope(simplex);
         
-        if contains(poly,zeros(n,1))
+        % if the simplex contains the origin, the GJK algorithm has
+        % determined that the sets intersect -> exit immediately
+        if contains(P,zeros(n,1))
            containsOrigin = true; d = []; return; 
         end       
         
         % use different algorithms for computing the minimum distance 
-        % between a simplex and the origin depending on the dimension
+        % between the simplex and the origin depending on the dimension
         if n > 3
-            index = aux_minDistOriginQuadProg(poly);
+            index = aux_minDistOriginQuadProg(P);
         else
-            index = aux_minDistOriginRecursive(poly);
+            index = aux_minDistOriginRecursive(P);
         end
         
         % construct next simplex and next search direction
-        d = poly.A(index,:)';
+        d = P.A(index,:)';
         
-        [~,ind] = sort(abs(poly.A(index,:)*simplex - poly.b(index)));
+        [~,ind] = sort(abs(P.A(index,:)*simplex - P.b(index)));
         simplex = simplex(:,ind(1:n));
         
     else
@@ -122,17 +146,17 @@ function [simplex,d,containsOrigin] = aux_nearestSimplex(simplex)
         % not full-dimensional -> determine new direction that points
         % towards the origin and is orthogonal to the current simplex
         s = [simplex, zeros(n,1)];
-        tmp = gramSchmidt(s(:,2:end) - s(:,1:end-1));
-        d = tmp(:,end);
+        orthBasis = gramSchmidt(s(:,2:end) - s(:,1:end-1));
+        d = orthBasis(:,end);
     end
 end
 
-function index = aux_minDistOriginQuadProg(poly)
-% compute the minimum distance between a simplex and the origin using
-% quadratic programming
+function index = aux_minDistOriginQuadProg(P)
+% compute the minimum distance between a simplex (represented as a
+% polytope) and the origin using quadratic programming
 
     % object properties
-    A = poly.A; b = poly.b; ind = 1:size(A,1); n = size(A,2);
+    A = P.A; b = P.b; ind = 1:size(A,1); n = dim(P);
 
     % check which halfspaces point toward the origin
     queue = find(b <= 0);
@@ -154,13 +178,13 @@ function index = aux_minDistOriginQuadProg(poly)
     end
 end
 
-function [index,point] = aux_minDistOriginRecursive(poly)
+function [index,point] = aux_minDistOriginRecursive(P)
 % compute the minimum distance between a simplex and the origin by
 % recusively decomposing the simplex into lower dimensional simplices
 
     % initialization
     dist = inf;
-    A = poly.A; b = poly.b; V = vertices(poly); n = size(A,2);
+    A = P.A; b = P.b; V = vertices(P); n = dim(P);
     
     % one-dimensional simplex
     if size(V,1) == 1
@@ -168,7 +192,8 @@ function [index,point] = aux_minDistOriginRecursive(poly)
     end
 
     % loop over all polytope halfspaces
-    for i = 1:size(A,1)
+    nrCon = size(A,1);
+    for i = 1:nrCon
         
         if b(i) <= 0
         

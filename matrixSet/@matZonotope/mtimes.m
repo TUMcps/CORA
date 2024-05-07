@@ -20,9 +20,10 @@ function matZ = mtimes(factor1,factor2)
 %
 % See also: plus
 
-% Authors:       Matthias Althoff
+% Authors:       Matthias Althoff, Tobias Ladner
 % Written:       18-June-2010 
 % Last update:   05-August-2010
+%                25-April-2024 (TL, pagemtimes, much faster implementation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -34,10 +35,8 @@ if isnumeric(factor1)
     %initialize matrix zonotope
     matZ=factor2;
     %compute center
-    matZ.center=matrix*matZ.center;
-    for i=1:matZ.gens
-        matZ.generator{i}=matrix*matZ.generator{i};
-    end
+    matZ.C=matrix*matZ.C;
+    matZ.G = pagemtimes(matrix,matZ.G);
     
 %factor2 is a numeric matrix
 elseif isnumeric(factor2)
@@ -46,38 +45,46 @@ elseif isnumeric(factor2)
     %initialize matrix zonotope
     matZ=factor1;
     %compute center
-    matZ.center=matZ.center*matrix;
-    for i=1:matZ.gens
-        matZ.generator{i}=matZ.generator{i}*matrix;
-    end
+    matZ.C=matZ.C*matrix;
+    matZ.G = pagemtimes(matZ.G,matrix);
     
 %both factors are zonotope matrices
 else
-    %initialize matrix zonotope
+    % initialize matrix zonotope 1
     matZ1=factor1;
-    %initialize matrix zonotope
+    % initialize matrix zonotope 2
     matZ2=factor2;
-    %initialize matrix zonotope
-    matZ=matZonotope();
-    %compute center
-    matZ.center=matZ1.center*matZ2.center;
-    %compute generators
-    %center1 with generators2
-    for i=1:matZ2.gens
-        matZ.generator{end+1}=matZ1.center*matZ2.generator{i};
+
+    % concat center with generators
+    Z1 = cat(3,matZ1.C,matZ1.G);
+    [n1,m1,h1] = size(Z1);
+    Z2 = cat(3,matZ2.C,matZ2.G);
+    [n2,m2,h2] = size(Z2);
+
+    % reshape Z2
+    Z2 = reshape(Z2,n2,m2,1,h2);
+
+    % multiply each matrix from either set
+    Z = pagemtimes(Z1,Z2);
+
+    % reshape back ---
+
+    % fix dimensions for scalar multiplication
+    if n1 == 1 && m1 == 1
+        n1 = n2;
     end
-    %generator1 with center2
-    for i=1:matZ1.gens
-        matZ.generator{end+1}=matZ1.generator{i}*matZ2.center;
+    if n2 == 1 && m2 == 1
+        m2 = m1;
     end
-    %generators1 with generators2
-    for j=1:matZ1.gens
-        for i=1:matZ2.gens
-            matZ.generator{end+1}=matZ1.generator{j}*matZ2.generator{i};
-        end
-    end
-    %update number of generators
-    matZ.gens=(matZ1.gens+1)*(matZ2.gens+1)-1;
+    
+    %  reshape
+    Z = reshape(Z,n1,m2,h1*h2);
+
+    % construct final matrix zonotope
+    matZ = matZonotope();
+    matZ.C = Z(:,:,1);
+    matZ.G = Z(:,:,2:end);
 end
 
 % ------------------------------ END OF CODE ------------------------------
+ 

@@ -58,9 +58,11 @@ else
     % output dimension given?
     [NVpairs,nrOutputs] = readNameValuePair(NVpairs,'OutputDimension');
     % interval for real part of eigenvalues given?
-    [NVpairs,realInt] = readNameValuePair(NVpairs,'RealInterval');
+    [NVpairs,realInt] = readNameValuePair(NVpairs,'RealInterval',...
+        @(x) representsa_(x,'interval',eps),interval.empty(1));
     % interval for imaginary part of eigenvalues given?
-    [NVpairs,imagInt] = readNameValuePair(NVpairs,'ImaginaryInterval');
+    [NVpairs,imagInt] = readNameValuePair(NVpairs,'ImaginaryInterval',...
+        @(x) representsa_(x,'interval',eps),interval.empty(1));
 end
 
 % check input arguments or assign default values randomly if not provided
@@ -97,21 +99,10 @@ inputArgsCheck({{n,'att','numeric','nonnan'};
 % complex conjugate)
 imagMax = min(abs(infimum(imagInt)),supremum(imagInt));
 
-
-% check if n is even; if not, at least one eigenvalues HAS TO BE real
-nRem = n;
-nReal = 0;
-if mod(n,2) ~= 0
-    nReal = 1;
-    nRem = nRem - 1;
-    % ...nRem is now even
-end
-
-% determine number of complex and real eigenvalues
-nConj_max = nRem/2;
+% determine number of complex (maximum floor(n/2)) and real eigenvalues
+nConj_max = floor(n/2);
 nConj = randi([0,nConj_max]);
-% resulting remaining eigenvalues are real
-nReal = nReal + nRem - 2*nConj;
+nReal = n - 2*nConj;
 
 % we need nReal values
 vals_real = unifrnd(infimum(realInt),supremum(realInt),nReal,1);

@@ -22,19 +22,22 @@ function matZ = matZonotope(intMat)
 %
 % See also: none
 
-% Authors:       Matthias Althoff, Mark Wetzlinger
+% Authors:       Matthias Althoff, Mark Wetzlinger, Tobias Ladner
 % Written:       21-June-2010 
 % Last update:   25-July-2016 (intervalhull replaced by interval)
 %                18-June-2023 (MW, fix conversion of interval matrices(!))
+%                25-April-2024 (TL, much faster implementation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % convert to interval
 I = interval(intMat);
+
 % read out dimensions
-n = dim(intMat,1);
-m = dim(intMat,2);
+dims = dim(intMat);
+n = dims(1); m = dims(2);
+h = n*m;
 
 % read out center
 C = center(I);
@@ -42,22 +45,10 @@ C = center(I);
 % compute radius
 r = rad(I);
 
-% init generators
-G = cell(n*m,1);
-
-% loop over rows and columns
-for i=1:n
-    for j=1:m
-        % linear index
-        idx = (i-1)*m+j;
-        % init generator with all-zero matrix
-        G{idx} = zeros(n,m);
-        % overwrite entry using radius
-        G{idx}(i,j) = r(i,j);
-    end
-end
-% delete all-zero generators
-G(reshape(r'==0,n*m,1)) = [];
+% get generators
+idx = 1:(n*m+1):n*m*h;
+G = zeros(n,m,h);
+G(idx) = r;
 
 % instantiate matrix zonotope
 matZ = matZonotope(C,G);

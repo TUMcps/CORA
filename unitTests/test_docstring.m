@@ -138,7 +138,7 @@ for i=1:length(files)
             lcnt = lcnt + 1;
         end
         if cnt == 0
-            issues{end+1} = 'At least one exemplary call should be stated.';
+            issues{end+1} = 'At least one exemplary syntax call should be stated.';
         end
 
         if ~isEmptyCommentLine(lines{lcnt})
@@ -392,7 +392,7 @@ for i=1:length(files)
                 && ~contains(filetext,'warning()') ...
                 && ~contains(filetext,'warning(w)') ...
                 && ~contains(filetext,'warning(warOrig)')
-            issues{end+1} = "Please replace warning(...) calls with CORAwarning(...)";        
+            issues{end+1} = "Please replace warning(...) calls with CORAwarning(id, ...)";        
         end
 
 
@@ -416,7 +416,7 @@ for i=1:length(files)
     % display information
     all_good = isempty(issues);
     if ~all_good
-        disp(['- ' file_path])
+        fprintf('- <a href="matlab:open %s">%s</a>\n', file_path,file_path)
         disp("  Issues:")
         fprintf("  - %s\n", string(issues'))
         disp(" ")

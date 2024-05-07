@@ -23,12 +23,12 @@ function completed = example_matPolytope()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-P1{1} = [1 2; 3 4]; % 1st vertex of matrix polytope P1
-P1{2} = [2 2; 3 3]; % 2nd vertex of matrix polytope P1
+P1(:,:,1) = [1 2; 3 4]; % 1st vertex of matrix polytope P1
+P1(:,:,2) = [2 2; 3 3]; % 2nd vertex of matrix polytope P1
 matP1 = matPolytope(P1); % instantiate matrix polytope P1
 
-P2{1} = [-1 2; 2 -1]; % 1st vertex of matrix polytope P2
-P2{2} = [-1 1; 1 -1]; % 2nd vertex of matrix polytope P2
+P2(:,:,1) = [-1 2; 2 -1]; % 1st vertex of matrix polytope P2
+P2(:,:,2) = [-1 1; 1 -1]; % 2nd vertex of matrix polytope P2
 matP2 = matPolytope(P2); % instantiate matrix polytope P2
 
 matP3 = matP1 + matP2 % perform Minkowski addition and display result

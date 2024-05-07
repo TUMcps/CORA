@@ -29,6 +29,7 @@ stages:
   - init
   - test-short
   - test-extended
+  - test-compatibility
   - test-examples
   - test-benchmarks
   - ci-status
@@ -89,7 +90,7 @@ test-job:
   after_script: # all done in script
 
 # run short tests
-runTestSuiteShort:
+test-short:
   stage: test-short
   extends: .base-run
   variables:
@@ -114,14 +115,14 @@ runTestSuiteShort:
       when: always
 
 # run long duration tests
-runTestSuiteLong:
+test-long:
   extends: .base-run-ext
   timeout: 2h
   variables:
     testSuite: 'long'
 
 # run nn tests
-runTestSuiteNN:
+test-nn:
   extends: .base-run-ext
   variables:
     testSuite: 'nn'
@@ -132,10 +133,38 @@ runTestSuiteNN:
       when: always
 
 # run flaky tests
-runTestSuiteFlaky:
+test-flaky:
   extends: .base-run-ext
   variables:
     testSuite: 'flaky'
+
+# Compatibility with other versions ---------------------------------------
+
+.base-run-compatibility:
+  extends: .base-run-ext
+  stage: test-compatibility
+  image:
+    name: tobiasladnertum/cora:$matlabVerison
+  variables:
+    testSuite: 'short'
+
+# run 2022b
+test-compatibility-2022b:
+  extends: .base-run-compatibility
+  variables:
+    matlabVerison: 'r2022b'
+
+# run 2023b
+test-compatibility-2023b:
+  extends: .base-run-compatibility
+  variables:
+    matlabVerison: 'r2023b'
+
+# run 2024a
+test-compatibility-2024a:
+  extends: .base-run-compatibility
+  variables:
+    matlabVerison: 'r2024a'
 
 # Examples test stage ---------------------------------------------------------
 
@@ -154,12 +183,12 @@ runTestSuiteFlaky:
       when: always
 
 # run examples tests
-runTestSuiteExamples:
+test-examples:
   extends: .base-run-examples
   variables:
     testSuite: 'examples'
 
-# Benchmark test stage ---------------------------------------------------------
+# Benchmark test stage ----------------------------------------------------
 
 # extends base run settings
 .base-run-benchmarks:
@@ -175,32 +204,32 @@ runTestSuiteExamples:
       when: always
 
 # run benchmarks tests
-runTestSuiteBenchmarks:
+test-benchmarks:
   extends: .base-run-benchmarks
   variables:
     testSuite: 'benchmarks'
 
 # CI status block ---------------------------------------------------------
 
-failure:
+ci-failure:
   stage: ci-status
   extends: .base-image
   script:
     # tell bitbucket something went wrong
     - sudo chmod +x ./unitTests/ci/build_status 
-    - BUILD_STATUS="FAILED" RESULT_TEXT="Something went wrong. Check gitlab for details." ./unitTests/ci/build_status
+    - BUILD_STATUS="FAILED" RESULT_TEXT="One or more jobs failed. Check gitlab for details." ./unitTests/ci/build_status
     - exit 1 # always fail
   rules:
     - if: $DO_CI == "true"
       when: on_failure # of any earlier job
 
-success:
+ci-success:
   stage: ci-status
   extends: .base-image
   script:
     # tell bitbucket all tests passed
     - sudo chmod +x ./unitTests/ci/build_status 
-    - BUILD_STATUS="0" RESULT_TEXT="All tests passed." ./unitTests/ci/build_status
+    - BUILD_STATUS="0" RESULT_TEXT="CI finished successfully. All tests passed." ./unitTests/ci/build_status
     - exit 0
   rules:
     - if: $DO_CI == "true"

@@ -349,21 +349,19 @@ function [k,L,Q,phi] = aux_taylorSeriesParam(guard,A,b,R0)
         c_Q_rad = c(i)*(- psi_g*2*Upsilon');
 
         % compute generator matrices   
-        g_Q = cell(gens,1);
-        g_Q_rad = cell(gens,1);
+        g_Q = zeros([size(c_Q),gens]);
+        g_Q_rad = zeros([size(c_Q),gens]);
         
         for iGen = 1:gens
-            g_Q{iGen} = A(i,:)'*Theta_mat(:,1+iGen)' + Theta_mat(:,1+iGen)*A(i,:) ...
+            g_Q(:,:,i) = A(i,:)'*Theta_mat(:,1+iGen)' + Theta_mat(:,1+iGen)*A(i,:) ...
               + G(i,iGen)*(Omega - psi_c*2*Upsilon');
         end
 
         for iGen = 1:gens
-            g_Q_rad{iGen} = G(i,iGen)*(- psi_g*2*Upsilon');
+            g_Q_rad(:,:,i) = G(i,iGen)*(- psi_g*2*Upsilon');
         end
 
-        Q_prep{1} = c_Q_rad;
-        Q_prep(2:(gens+1)) = g_Q;
-        Q_prep((gens+2):(2*gens+1)) = g_Q_rad;
+        Q_prep = cat(3,c_Q_rad,g_Q,g_Q_rad);
 
         % generate matrix zonotope
         Q{i} = matZonotope(c_Q, Q_prep);

@@ -67,7 +67,7 @@ elseif isa(x,'intervalMatrix')
     allzero = all(all(rad(x) == 0));
 elseif isa(x,'matZonotope')
     % matrix zonotope: all generator matrices have to be all-zero
-    allzero = cellfun(@(G) ~any(any(G)),x.generator,'UniformOutput',true);
+    allzero = all(withinTol(x.G,0),"all");
 end
 
 if isempty(x)

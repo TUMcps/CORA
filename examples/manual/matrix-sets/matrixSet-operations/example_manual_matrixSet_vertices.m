@@ -26,7 +26,7 @@ function example_manual_matrixSet_vertices()
 
 % matrix set
 C = [0 1;3 2];
-G{1} = [1 2;0 1];
+G = [1 2;0 1];
 A = matZonotope(C,G);
 
 % compute vertices

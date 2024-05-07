@@ -71,6 +71,11 @@ try
     plot(pZ,[1,2],'FaceColor','r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
     resvec(end+1) = true;
 
+    % 3d plot
+    plot(pZ,[1,2,3],'Splits',4);
+    plot(pZ,[1,2,3],'Splits',4,'FaceColor',CORAcolor("CORA:next"),'FaceAlpha',0.2);
+    resvec(end+1) = true;
+
     % the polyZonotope
     c = [4;4];
     G = [2 1 2; 0 2 2];

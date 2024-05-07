@@ -91,6 +91,7 @@ methods
     res = isempty(intMat)
     M = randPoint(intMat,varargin)
     res = contains(intMat,M,type,tol)
+    res = representsa(intMat,varargin)
     
     %display functions
     plot(varargin)

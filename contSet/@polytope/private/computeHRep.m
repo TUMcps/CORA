@@ -60,7 +60,7 @@ end
 c = mean(V,2); %0.5*(max(V,[],2) + min(V,[],2));
 V = V - c;
 
-% check for degeneracy
+% check for degeneracy (mean already subtracted)
 [Umat,Smat,Vmat] = svd(V);
 % dimension of subspace
 r = nnz(~withinTol(Smat,0,1e-10));

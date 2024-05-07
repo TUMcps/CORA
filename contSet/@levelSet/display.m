@@ -31,11 +31,14 @@ function display(ls)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if ~isempty(inputname(1))
-    fprintf(newline);
-    disp(inputname(1) + " =");
-    fprintf(newline);
-end
+% display input variable
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
+
+%display dimension
+display@contSet(ls);
+fprintf(newline);
 
 % string of variables in level set
 varsPrintStr = strjoin(string(ls.vars),",");

@@ -126,7 +126,7 @@ for i = 1:4
     %plot reachable set
     for iSet = plotRange
         Rproj = reduce(project(R{iSet},dims(i,:)),'girard',20);
-        plot(Rproj,[1 2],'FaceColor',colorblind('b'));
+        plot(Rproj,[1 2],'FaceColor',CORAcolor('CORA:reachSet'));
     end
     
     %plot simulation results
@@ -136,7 +136,7 @@ for i = 1:4
             try
                 xProj = Psim*simRes{n}(iSet,:)';
                 plot(xProj(dims(i,1)),xProj(dims(i,2)),...
-                    'Color',colorblind('y'),'Marker','.');
+                    'Color',colorblind('k'),'Marker','.');
                 %plot(simRes{n}(iSet,dims(i,1)),simRes{n}(iSet,dims(i,2)),'ro');
             catch
             end
@@ -329,12 +329,12 @@ E = aux_remainder(A,deltaT,taylorTerms);
 
 %define time interval as matrix zonotope
 for i=1:taylorTerms
-    gen_tmp{1} = 0.5*deltaT^i;
+    gen_tmp = 0.5*deltaT^i;
     t_int{i} = matZonotope(0.5*deltaT^i,gen_tmp); 
 end
 
 dim = length(Apower{1});
-gen{1} = zeros(dim);
+gen = zeros(dim);
 Asum = matZonotope(eye(dim),gen);
 %compute higher order terms
 for i=1:taylorTerms
@@ -395,14 +395,15 @@ tmpMat = 1/factorial(4)*(t^4)*Apower{4};
 
 %compute E_1 center, generators
 E_center = 0.5*tmpMat;
-E_gen{1} = 0.5*tmpMat;
+E_gen = repmat(E_center,1,1,taylorTerms+1-5);
+E_gen(:,:,1) = 0.5*tmpMat;
 
 for i=5:taylorTerms
     tmpMat = 0.5*(t^i)*Apower{i};
     
     %compute E center, generators
     E_center = E_center + 1/factorial(i)*tmpMat;
-    E_gen{end+1} = 1/factorial(i)*tmpMat;
+    E_gen(:,:,i-3) = 1/factorial(i)*tmpMat;
 end
 
 %instantiate matrix zonotopes
@@ -429,7 +430,7 @@ T(3) = interval(1/8*Tmax^3,1/6*Tmax^3); %other time delay: 50e-3
 
 %convert to matrix zonotopes
 for i=1:length(T)
-    gen{1} = rad(T(i));
+    gen = rad(T(i));
     t_zonMat{i} = matZonotope(center(T(i)),gen);
 end
 

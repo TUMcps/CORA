@@ -40,9 +40,13 @@ elseif representsa(E,'fullspace')
     return
 end
 
-
+% display input variable
 fprintf(newline);
 disp(inputname(1) + " =");
+fprintf(newline);
+
+%display dimension
+display@contSet(E);
 fprintf(newline);
 
 %display center
@@ -52,10 +56,6 @@ disp(E.q);
 %display shape matrix
 disp('Q: ');
 disp(E.Q); 
-
-%display actual dimension
-disp('dimension: ');
-disp(dim(E)); 
 
 %display whether degenerate or not
 disp('degenerate: ');

@@ -40,7 +40,7 @@ nrsF = 10;
 for i=1:nrTests
     
     % low random dimension to facilitate vertex enumeration
-    n = randi([3,4]);
+    n = randi([3,5]);
 
     % create random polytope
     P = polytope.generateRandom('Dimension',n);

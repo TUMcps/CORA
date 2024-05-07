@@ -62,7 +62,7 @@ eM_int = expm(M_int,1,6);
 eM = cell(10,1);
 for i=1:10
     randMatrix = randPoint(M_int);
-    eM{i} = expm(randMatrix{1});
+    eM{i} = expm(randMatrix);
 end
 
 % check enclosure

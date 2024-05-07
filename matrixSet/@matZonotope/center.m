@@ -1,18 +1,21 @@
-function c = center(matZ)
-% center - Returns the center of an matZonotope
+function C = center(matZ)
+% center - Returns the center of a matZonotope
 %
 % Syntax:
-%    c = center(matZ)
+%    C = center(matZ)
 %
 % Inputs:
 %    matZ - matZonotope object
 %
 % Outputs:
-%    c - center of the matrix zonotope
+%    C - center of the matrix zonotope
 %
 % Example:
-%    M = matZonotope(eye(2),{eye(2),2*eye(2)});
-%    c = center(M)
+%    C = eye(2);
+%    G(:,:,1) = eye(1);
+%    G(:,:,2) = eye(2);
+%    matZ = matZonotope(C,G);
+%    C = center(M)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,10 +26,10 @@ function c = center(matZ)
 % Authors:       Victor Gassmann
 % Written:       23-July-2020 
 % Last update:   ---
-% Last revision: ---
+% Last revision: 25-April-2024 (TL, matZ.C property)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-c = matZ.center;
+C = matZ.C;
 
 % ------------------------------ END OF CODE ------------------------------

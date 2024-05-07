@@ -40,7 +40,7 @@ elseif representsa(Z,'fullspace')
     return
 end
 
-
+% display input variable
 fprintf(newline);
 disp(inputname(1) + " =");
 fprintf(newline);

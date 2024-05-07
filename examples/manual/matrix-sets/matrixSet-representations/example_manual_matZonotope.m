@@ -28,10 +28,11 @@ function example_manual_matZonotope()
 C = [0 0; 0 0];
 
 % matrix generators
-G{1} = [1 3; -1 2];
-G{2} = [2 0; 1 -1];
+G = [];
+G(:,:,1) = [1 3; -1 2];
+G(:,:,2) = [1 3; -1 2];
 
 % matrix zonotope
-mz = matZonotope(C,G);
+matZ = matZonotope(C,G);
 
 % ------------------------------ END OF CODE ------------------------------

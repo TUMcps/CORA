@@ -45,6 +45,7 @@ resvec = [
     CORA_WARNINGS_ENABLED('CORA:nn');
     CORA_WARNINGS_ENABLED('CORA:plot');
     CORA_WARNINGS_ENABLED('CORA:solver');
+    CORA_WARNINGS_ENABLED('CORA:redundant');
     CORA_WARNINGS_ENABLED('CORA:deprecated');
 ]';
 

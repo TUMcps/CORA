@@ -32,6 +32,7 @@ function display(P)
 
 V = P.V.val;
 
+% display input variable
 fprintf(newline);
 disp(inputname(1) + " =");
 fprintf(newline);

@@ -23,28 +23,30 @@ function display(matP)
 % Authors:       Matthias Althoff
 % Written:       21-June-2010
 % Last update:   03-April-2023 (MW, add empty case)
+%                25-April-2024 (TL, harmonized display with contSet classes)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 if isempty(matP)
-    
     dispEmptyObj(matP,inputname(1));
-
-else
-
-    %display dimension, number of vertices
-    disp('dimension: ');
-    disp(dim(matP));
-    disp('nr of vertices: ');
-    disp(matP.verts);
-    
-    %display vertices
-    disp('vertices: ');
-    for i=1:length(matP.vertex)
-        disp(matP.vertex{i}); 
-        disp('---------------'); 
-    end
+    return
 end
+
+
+% display input variable
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
+
+%display dimension, number of vertices
+disp('dimension: ');
+disp(dim(matP));
+disp('nr of vertices: ');
+disp(matP.numverts);
+
+%display vertices
+disp('vertices: ');
+disp(matP.V)
 
 % ------------------------------ END OF CODE ------------------------------

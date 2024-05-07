@@ -122,6 +122,9 @@ switch type
         throw(CORAerror('CORA:notSupported',...
             ['Comparison of conHyperplane to ' type ' not supported.']));
 
+    case 'convexSet'
+        res = true;
+
     case 'emptySet'
         res = representsa_(polytope(hyp.C,hyp.d,hyp.a,hyp.b),'emptySet',tol);
         if nargout == 2 && res

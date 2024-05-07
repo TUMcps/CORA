@@ -21,19 +21,16 @@ function matZ = matZonotope(matP)
 
 % Authors:       Matthias Althoff
 % Written:       22-July-2010 
-% Last update:   ---
+% Last update:   02-May-2024 (TL, new structure of vertices)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%convert matrix polytope to matrix vertices
-matV = vertices(matP);
+% get (matrix) vertices
+matV = matP.V;
 
 %convert matrix vertices to vertices
-V=[];
-for i=1:length(matV)
-    V(:,end+1)=mat2vec(matV{i});
-end
+V = reshape(matV,[],size(matV,3));
 
 %convert to zonotope
 Z = zonotope.enclosePoints(V);

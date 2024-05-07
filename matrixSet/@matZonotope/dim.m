@@ -33,11 +33,11 @@ function n = dim(matZ,rc)
 
 if nargin == 1
     % read dimension from center
-    n = size(matZ.center);
+    n = size(matZ.C);
 
 else
     % read dimension from center
-    n = size(matZ.center,rc);
+    n = size(matZ.C,rc);
 
 end
 

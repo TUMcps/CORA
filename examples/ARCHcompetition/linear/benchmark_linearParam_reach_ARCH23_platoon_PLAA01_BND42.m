@@ -71,7 +71,7 @@ B = [0 ; 1; 0; 0; 0; 0; 0; 0; 0 ];
         
 % build zonotpe matrix
 A_mid = 0.5*(A_c + A_n);
-A_gen{1} = 0.5*(A_c - A_n);
+A_gen = 0.5*(A_c - A_n);
 matZ_A = matZonotope(A_mid, A_gen);
 
 % instantiate linear dynamics with constant parameters

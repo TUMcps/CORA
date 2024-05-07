@@ -30,18 +30,18 @@ intMat = intervalMatrix([2 3; 1 2],[1 0; 1 1]);
 M = randPoint(intMat);
 
 % check containment
-res = contains(intMat,M{1});
+res = contains(intMat,M(:,:,1));
 
 % multiple samples
 M = randPoint(intMat,5);
 for i=1:length(M)
-    if ~contains(intMat,M{i})
+    if ~contains(intMat,M(:,:,i))
         res = false; break
     end
 end
 
 % extreme sampling
 M = randPoint(intMat,1,'extreme');
-res = res & contains(intMat,M{1},'exact',1e-8);
+res = res & contains(intMat,M(:,:,1),'exact',1e-8);
 
 % ------------------------------ END OF CODE ------------------------------

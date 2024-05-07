@@ -42,6 +42,7 @@ function han = plot(pZ,varargin)
 %                23-March-2023 (TL, bugfix Splits=0, clean up)
 %                05-April-2023 (TL, clean up using plotPolygon)
 %                11-July-2023 (TL, bug fix holes)
+%                13-April-2024 (TL, bug fix 3d)
 % Last revision: 12-July-2023 (TL, restructure)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -264,7 +265,7 @@ function han = aux_plot3d(pZ,dims,NVpairs,splits)
     pZsplit{1} = pZ;
 
     for i=1:splits
-        pZnew = cell(2*length(pZsplit));
+        pZnew = cell(2*length(pZsplit),1);
         for j=1:length(pZsplit)
             res = splitLongestGen(pZsplit{j});
             pZnew{2*j-1} = res{1};
@@ -274,8 +275,8 @@ function han = aux_plot3d(pZ,dims,NVpairs,splits)
     end
     
     % convert all sets to a zonotope
-    Zs = cell(1,length(pZsplit));
-    for i = 1:length(pZsplit{i})
+    Zs = cell(1,numel(pZsplit));
+    for i = 1:numel(pZsplit)
         Zs{i} = zonotope(pZsplit{i});
     end
 

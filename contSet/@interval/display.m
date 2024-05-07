@@ -41,56 +41,16 @@ if size(I,2) <= 1
     end
 end
 
+% display input variable
 fprintf(newline);
-disp([inputname(1), ' =']);
+disp(inputname(1) + " =");
 fprintf(newline);
 
-if issparse(I)
-
-    % non-zero indices of infimum
-    [inf_row,inf_col] = find(I.inf);
-    % non-zero indices of supremum
-    [sup_row,sup_col] = find(I.sup);
-
-    % for sparse matrices, we plot all indices where either the infimum
-    % or the supremum is non-zero
-    indices = [[inf_row inf_col];[sup_row sup_col]];
-    indices = unique(indices,'rows');
-    
-    % loop over all indices
-    for i=1:size(indices,1)
-        idxRow = indices(i,1);
-        idxCol = indices(i,2);
-        % set index
-        idxStr = sprintf("(%i,%i)",idxRow,idxCol);
-        % values
-        lb = full(I.inf(idxRow,idxCol));
-        ub = full(I.sup(idxRow,idxCol));
-        % print value
-        lb = strtrim(formattedDisplayText(lb));
-        ub = strtrim(formattedDisplayText(ub));
-        fprintf('  %-8s [%s, %s]\n',idxStr,lb,ub);
-    end
-
-else
-
-    %determine size of interval
-    [rows, cols] = size(I.inf);
-
-    for i = 1:rows
-        str = ' ';
-        % display one row
-        for j = 1:cols
-            lb = strtrim(formattedDisplayText(I.inf(i,j)));
-            ub = strtrim(formattedDisplayText(I.sup(i,j)));
-            newStr = sprintf('[%s, %s]',lb,ub);
-            str = [str,' ',newStr];
-        end
-        disp(str);
-    end
-
-end
-
+%display dimension
+display@contSet(I);
 fprintf(newline);
+
+% call helper function (also used for intervalMatrix)
+displayInterval(I,false);
 
 % ------------------------------ END OF CODE ------------------------------

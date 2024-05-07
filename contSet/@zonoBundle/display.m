@@ -40,12 +40,12 @@ elseif representsa(zB,'fullspace')
     return
 end
 
-
+% display input variable
 fprintf(newline);
 disp(inputname(1) + " =");
 fprintf(newline);
 
-% display id, dimension
+%display dimension
 display@contSet(zB);
 fprintf(newline);
 

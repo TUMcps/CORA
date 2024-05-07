@@ -33,22 +33,13 @@ function matZ = plus(summand1,summand2)
 %Is summand a zonotope?
 if isa(summand,'matZonotope')
     %Calculate minkowski sum
-    matZ.center = matZ.center + summand.center;
-    
-    if isempty(matZ.generator)
-        %concatenate matrix generators
-        matZ.generator = summand.generator;
-    else
-        %concatenate matrix generators
-        matZ.generator((end+1):(end+summand.gens)) = summand.generator;
-    end
-    %update number of generators
-    matZ.gens=matZ.gens + summand.gens;
+    matZ.C = matZ.C + summand.center;
+    matZ.G = cat(3,matZ.G,summand.G);
     
 %is summand a vector?
 elseif isnumeric(summand)
     %Calculate minkowski sum
-    matZ.center = matZ.center + summand;
+    matZ.C = matZ.C + summand;
 end
 
 % ------------------------------ END OF CODE ------------------------------

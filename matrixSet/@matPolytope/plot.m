@@ -45,7 +45,7 @@ end
 
 %convert vertices
 for i=1:matP.verts
-    vec=mat2vec(matP.vertex{i});
+    vec=mat2vec(matP.vertex(:,:,i));
     V(i,:)=vec(dims);
 end
 %keep only unique vertices

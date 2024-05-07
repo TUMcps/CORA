@@ -69,8 +69,8 @@ if strcmp(options.alg,'linRem')
     %in order to compute dA,dB, we use the reachability set computed
     %for one step in initReach
     [dA,dB] = lin_error2dAB(options.Ronestep,options.U,obj.hessian,p);
-    A = matZonotope(A,{dA});
-    B = matZonotope(B,{dB});
+    A = matZonotope(A,dA);
+    B = matZonotope(B,dB);
     linSys = linParamSys(A,1,'constParam');
     linOptions.compTimePoint = 1;
 else

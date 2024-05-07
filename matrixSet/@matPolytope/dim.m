@@ -23,29 +23,18 @@ function n = dim(matP,rc)
 %
 % See also: -
 
-% Authors:       Mark Wetzlinger
+% Authors:       Mark Wetzlinger, Tobias Ladner
 % Written:       03-April-2023
-% Last update:   ---
+% Last update:   02-May-2024 (TL, simplified due to new structure of V)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% parse input
 if nargin == 1
-    if matP.verts == 0
-        n = [0,0];
-    else
-        % read dimension from first vertex
-        n = size(matP.vertices{1});
-    end
-
-else
-    if matP.verts == 0
-        n = 0;
-    else
-        % read row or column dimension
-        n = size(matP.vertices{1},rc);
-    end
-
+    rc = 1:2;
 end
+
+n = size(matP.V,rc);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -25,6 +25,7 @@ function res = withinTol(a,b,tol)
 % Authors:       Victor Gassmann
 % Written:       19-July-2021
 % Last update:   03-December-2023 (MW, handling of Inf values)
+%                22-April-2024 (LK, isnumeric check)
 % Last revision: 20-July-2023 (TL, speed up input parsing)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -37,7 +38,7 @@ elseif nargin > 3
 end
 
 % allow scalar values to be expanded
-if ~all(size(a)==size(b)) && ~isscalar(a) && ~isscalar(b) && ...
+if  ~isscalar(a) && ~isscalar(b) && ~all(size(a)==size(b)) && ...
         ~(size(a,1) == size(b,1) && size(a,2) == 1) && ...
         ~(size(a,2) == size(b,2) && size(a,1) == 1) && ...
         ~(size(a,1) == size(b,1) && size(b,2) == 1) && ...
@@ -46,9 +47,9 @@ if ~all(size(a)==size(b)) && ~isscalar(a) && ~isscalar(b) && ...
 end
 
 % direct check for speed reasons
-if ~isa(a,'double')
+if ~isnumeric(a)
     throw(CORAerror('CORA:wrongValue','first','double'));
-elseif ~isa(b,'double')
+elseif ~isnumeric(b)
     throw(CORAerror('CORA:wrongValue','second','double'));
 elseif ~isscalar(tol) || tol < 0
     throw(CORAerror('CORA:wrongValue','third','nonnegative scalar'));

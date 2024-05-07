@@ -34,16 +34,15 @@ inputArgsCheck({{matZ,'att','matZonotope'}, ...
 if exponent==0
     %return identity matrix
     matZpower=matZ;
-    matZpower.center=eye(dim(matZ));
-    matZpower.generator=[];
-    matZpower.gens=0;
+    matZpower.C=eye(dim(matZ));
+    matZpower.G=zeros([size(matZ.C),0]);
 elseif exponent==1
     %do nothing
     matZpower=matZ;
 else
     matZpower=matZ*matZ;
     for i=3:exponent
-    %multiply matrix zonotope with itself
+        % multiply matrix zonotope with itself
         matZpower=matZpower*matZ;
     end
 end

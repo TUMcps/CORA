@@ -18,22 +18,21 @@ function Z = zonotope(matZ)
 %
 % See also: plus
 
-% Authors:       Matthias Althoff
+% Authors:       Matthias Althoff, Tobias Ladner
 % Written:       18-June-2010 
-% Last update:   ---
+% Last update:   25-April-2024 (TL, much faster implementation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%concert center
-center=mat2vec(matZ.center);
+% get center
+c = reshape(matZ.C,[],1);
 
-%convert generators
-for i=1:matZ.gens
-    generatorMatrix(:,i) = mat2vec(matZ.generator{i});
-end
+% get generators
+[m,n,h] = size(matZ.G);
+G = reshape(matZ.G,n*m,h);
     
 %instantiate zonotope
-Z=zonotope([center,generatorMatrix]);
+Z=zonotope([c,G]);
 
 % ------------------------------ END OF CODE ------------------------------

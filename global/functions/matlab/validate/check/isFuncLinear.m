@@ -61,8 +61,12 @@ inputArgsAll = sym('a',[sum(sizeInputArgs),1]);
 idxStart = 1;
 for i=1:length(inputArgs)
     inputArgs{i} = x(1:sizeInputArgs(i),i);
-    inputArgsAll(idxStart:idxStart+sizeInputArgs(i)-1,1) = inputArgs{i};
-    idxStart = idxStart + sizeInputArgs(i);
+    if ~isempty(inputArgs{i})
+        % TL: empty check necessary in r2024a, due to subsequent assignment
+        % indexing is fine, though...
+        inputArgsAll(idxStart:idxStart+sizeInputArgs(i)-1,1) = inputArgs{i};
+        idxStart = idxStart + sizeInputArgs(i);
+    end
 end
 
 % evaluate function to determine number of output arguments and initialize

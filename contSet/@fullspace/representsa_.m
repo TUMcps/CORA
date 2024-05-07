@@ -112,6 +112,9 @@ switch type
     case 'parallelotope'
         % parallelotopes are bounded
         res = false;
+        
+    case 'convexSet'
+        res = true;
 
     case 'emptySet'
         res = false;

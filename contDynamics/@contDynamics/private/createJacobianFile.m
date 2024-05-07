@@ -30,6 +30,7 @@ function createJacobianFile(Jdyn,Jcon,Jp,path,name,vars)
 % Last update:   05-August-2016
 %                05-November-2017
 %                03-December-2017
+%                26-April-2024 (TL, matZonotope, update uncertain parameters)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -113,7 +114,7 @@ else
     % SYSTEM MATRICES
     for iMatrix = 1:length(Jp.x)
         % write "A{i}=["
-        fprintf(fid, '%s', 'A{', num2str(iMatrix),'}=[');
+        fprintf(fid, '%s', 'A(:,:,', num2str(iMatrix),')=[');
         % write rest of matrix
         writeMatrix(Jp.x{iMatrix},fid);
     end
@@ -122,7 +123,7 @@ else
     % INPUT MATRICES
     for iMatrix = 1:length(Jp.u)
         % write "B{i}=["
-        fprintf(fid, '%s', 'B{', num2str(iMatrix),'}=[');
+        fprintf(fid, '%s', 'B(:,:,', num2str(iMatrix),')=[');
         % write rest of matrix
         writeMatrix(Jp.u{iMatrix},fid);
     end

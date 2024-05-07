@@ -24,7 +24,7 @@ function results = testSuiteCore(prefix,varargin)
 
 % Authors:       Dmitry Grebenyuk, Matthias Althoff
 % Written:       31-August-2016
-% Last update:   ---
+% Last update:   22-April-2024 (TL, better formatting)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -44,6 +44,7 @@ prevFigures = get(groot, 'Children');
 
 % number of files
 nrTests = size(files,1);
+maxFileName = max(arrayfun(@(file) length(file.name)-2, files));
 
 % generate random testSuite seed from current time
 % (required for CI to run different seeds every time)
@@ -68,7 +69,8 @@ for i=1:nrTests
     try
         % print current test on command window
         if verbose
-            fprintf(".. rng(%10i); %-50s : ", testseeds(i),fname);
+            fprintf(['.. rng(%10i); %-' num2str(maxFileName) 's : '], ...
+                testseeds(i),fname);
         end
 
         % set semi-random seed
@@ -101,9 +103,9 @@ for i=1:nrTests
         % print result on command window
         if verbose
             if res
-                fprintf('%s\n','passed');
+                fprintf('%s  (%.2fs)\n','passed',results(i,1).time);
             else
-                fprintf('%s\n','failed');
+                fprintf('%s  (%.2fs)\n','failed',results(i,1).time);
             end
         end
 
@@ -111,7 +113,7 @@ for i=1:nrTests
         results(i,1).time = toc;
         res = false;
         if verbose
-            fprintf('%s\n','exception');
+            fprintf('%s  (%.2fs)\n','failed',results(i,1).time);
         end
     end
 

@@ -61,10 +61,10 @@ V = randPoint(M_int,10);
 n_1_sample = zeros(length(V),1);
 n_2_sample = n_1_sample;
 n_inf_sample = n_1_sample;
-for i=1:length(V)
-    n_1_sample(i) = norm(V{i}, 1);
-    n_2_sample(i) = norm(V{i}, 2);
-    n_inf_sample(i) = norm(V{i}, inf);
+for i=1:size(V,3)
+    n_1_sample(i) = norm(V(:,:,i), 1);
+    n_2_sample(i) = norm(V(:,:,i), 2);
+    n_inf_sample(i) = norm(V(:,:,i), inf);
 end
 %-------------------------------------------------------
 

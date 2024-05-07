@@ -5,8 +5,8 @@ function Rin = reachInner(sys,params,options)
 %    Rin = reachInner(sys,params,options)
 %
 % Inputs:
-%    sys - nonlinearSys object
-%    params - parameter defining the reachability problem
+%    sys - linearSys object
+%    params - model parameters
 %    options - struct containing the algorithm settings
 %
 % Outputs:
@@ -94,7 +94,9 @@ function set = aux_compOutputSet(sys,set,V_,options)
             f = @(x,u) sys.C * x + sys.k;
         end
         
-        % compute output set for all time steps
+        % output set for first time step
+        set{1} = f(set{1},0);
+        % compute output set for all other time steps
         for i = 2:length(set)
             if isfield(options,'u') 
                 if size(options.u,2) > 1

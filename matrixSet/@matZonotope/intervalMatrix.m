@@ -19,26 +19,25 @@ function intMat = intervalMatrix(matZ)
 %
 % See also: plus
 
-% Authors:       Matthias Althoff
+% Authors:       Matthias Althoff, Tobias Ladner
 % Written:       21-June-2010 
 % Last update:   06-October-2010
 %                26-August-2011
 %                03-April-2023 (MW, remove setting property)
+%                25-April-2024 (TL, much faster implementation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % center matrix
-C = center(matZ);
+C = matZ.C;
 
-% delta matrix
-D = abs(matZ.generator{1});
-for i=2:matZ.gens
-    D = D + abs(matZ.generator{i});
-end
+% compute delta
+D = sum(abs(matZ.G),3);
 
-%instantiate interval matrix
+% instantiate interval matrix
 intMat = intervalMatrix(C, D);
 
+end
 
 % ------------------------------ END OF CODE ------------------------------

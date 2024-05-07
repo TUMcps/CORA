@@ -13,7 +13,7 @@ function display(matZ)
 % Example: 
 %    matZ = matZonotope()
 %    C = [0 0; 0 0];
-%    G{1} = [1 3; -1 2]; G{2} = [2 0; 1 -1];
+%    G = []; G(:,:,1) = [1 3; -1 2]; G(:,:,2) = [2 0; 1 -1];
 %    matZ = matZonotope(C,G)
 %
 % Other m-files required: none
@@ -24,32 +24,45 @@ function display(matZ)
 
 % Authors:       Matthias Althoff
 % Written:       18-June-2010
-% Last update:   ---
+% Last update:   25-April-2024 (TL, harmonized display with contSet classes)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 if isempty(matZ)
-    
     dispEmptyObj(matZ,inputname(1));
+    return
+end
 
-else
+% display input variable
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
 
-    %display dimension, generators
-    disp('dimension: ');
-    disp(dim(matZ));
-    disp('nr of generators: ');
-    disp(matZ.gens);
-    %display center
-    disp('center: ');
-    disp(matZ.center);
-    
-    %display generators
-    disp('generators: ');
-    for i=1:length(matZ.generator)
-        disp(matZ.generator{i}); 
-        disp('---------------'); 
-    end
+% display dimension
+fprintf('%s:\n', class(matZ))
+disp('dimension: ');
+dims = dim(matZ);
+disp(dims);
+
+% compute number of dims to display
+dispdims = min(dims,DISPLAYDIM_MAX);
+
+% display center
+disp('center: ');
+disp(matZ.C(1:dispdims(1),1:dispdims(2)));
+
+% display generators
+fprintf('generators: (%i generators)\n', numgens(matZ));
+disp(matZ.G(1:dispdims(1),1:dispdims(2),:))
+
+if any(dispdims < dims)
+    fprintf("    Remainder of dimensions (>%i) not shown. Check workspace.\n\n", DISPLAYDIM_MAX);
+end
+
+if isempty(matZ.G)
+    fprintf('\n')
+end
 
 end
 

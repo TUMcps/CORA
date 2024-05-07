@@ -24,6 +24,7 @@ function res = test_polytope_zonotope
 % ------------------------------ BEGIN CODE -------------------------------
 
 res = true(0);
+tol = 1e-12;
 
 % empty case
 P = polytope.empty(2);
@@ -35,14 +36,14 @@ res(end+1,1) = representsa(Z,'emptySet') && dim(Z) == 2;
 A = [1 0; -1 1; -1 -1]; b = [1;1;1];
 P = polytope(A,b);
 Z = zonotope(P);
-res(end+1,1) = contains(Z,P);
+res(end+1,1) = contains(Z,P,'exact',tol);
 
 % 2D, bounded, V rep given
 A = [1 0; -1 1; -1 -1]; b = [1;1;1];
 P = polytope(A,b);
 vertices(P); % stores V in set property
 Z = zonotope(P);
-res(end+1,1) = contains(Z,P);
+res(end+1,1) = contains(Z,P,'exact',tol);
 
 
 % combine results

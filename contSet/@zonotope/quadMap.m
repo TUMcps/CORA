@@ -166,7 +166,7 @@ function Zquad = aux_quadMapSingleMatZono(Z,Q)
     Q_ = cell(length(Q),1);
     
     for i = 1:length(Q)
-       Q_{i} = Q{i}.center; 
+       Q_{i} = Q{i}.C; 
     end
     
     Z_D = quadMap(Z,Q_);
@@ -176,7 +176,7 @@ function Zquad = aux_quadMapSingleMatZono(Z,Q)
     
     for j = 1:Q{1}.gens
         for i = 1:length(Q)
-            Q_{i} = Q{i}.generator{j}; 
+            Q_{i} = Q{i}.G(:,:,j); 
         end
         
         temp = quadMap(Z,Q_);

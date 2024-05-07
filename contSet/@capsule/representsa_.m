@@ -149,6 +149,9 @@ switch type
         throw(CORAerror('CORA:notSupported',...
             ['Comparison of capsule to ' type ' not supported.']));
 
+    case 'convexSet'
+        res = true;
+
     case 'emptySet'
         res = isempty(center(C)) || isempty(C.g) || isempty(C.r);
         if nargout == 2 && res

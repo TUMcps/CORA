@@ -82,7 +82,7 @@ V = vertices(P);
 % convert to constrained zonotope with default method
 cZ = conZonotope(P);
 V_ = vertices(cZ);
-res(end+1,1) = compareMatrices(V,V_,1e-8);
+res(end+1,1) = compareMatrices(V,V_,1e-7);
 % convert to constrained zonotope with special method
 cZ_vert = conZonotope(P,'exact:vertices');
 V_vert = vertices(cZ_vert);

@@ -118,8 +118,7 @@ tmaxPow(1) = tmax;
 tradPow(1) = 0.5*(tmaxPow(1) - tminPow(1));
 tmidPow(1) = 0.5*(tmaxPow(1) + tminPow(1));
 
-tRad{1} = tradPow(1);
-tZono{1} = matZonotope(tmidPow(1),tRad);
+tZono{1} = matZonotope(tmidPow(1),tradPow(1));
 
 %higher orders
 for i=1:order
@@ -129,8 +128,7 @@ for i=1:order
     tradPow(i+1) = 0.5*(tmaxPow(i+1) - tminPow(i+1));
     tmidPow(i+1) = 0.5*(tmaxPow(i+1) + tminPow(i+1));
     
-    tRad{1} = tradPow(i+1);
-    tZono{i+1} = matZonotope(tmidPow(i+1),tRad);
+    tZono{i+1} = matZonotope(tmidPow(i+1),tradPow(i+1));
 end
 
 end

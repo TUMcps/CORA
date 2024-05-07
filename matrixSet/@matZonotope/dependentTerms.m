@@ -25,43 +25,44 @@ function [zSq,zH] = dependentTerms(matZ,r)
 %
 % See also: 
 
-% Authors:       Matthias Althoff
+% Authors:       Matthias Althoff, Tobias Ladner
 % Written:       24-September-2010
-% Last update:   ---
+% Last update:   26-April-2024 (TL, major speed using new matZonotope class)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 %load data from object structure
-C=matZ.center;
-G=matZ.generator;
+C=matZ.C;
+G=matZ.G;
 n=dim(matZ);
-gens=matZ.gens;
+gens=matZ.numgens;
 
 
 %square computation--------------------------------------------------------
 %new center
-sqC = C^2*r^2;
-for i=1:gens
-    sqC = sqC+(0.5*G{i}^2)*r^2;
-end
+sqC = C^2*r^2 + 0.5*sum(pagemtimes(G,G),3)*r^2;
 
 %get generators
-sqG = [];
-%1st set of generators
-for i=1:gens
-    sqG{end+1}=(C*G{i} + G{i}*C)*r^2;
-end
-%2nd set of generators
-for i=1:gens
-    sqG{end+1}=0.5*G{i}^2*r^2;
-end
+sqG = cat(3, ...
+    (pagemtimes(C,G) + pagemtimes(G,C))*r^2, ...
+    0.5*pagemtimes(G,G)*r^2 ...
+);
 %get indices for 3rd set of generators
 if (gens>=2)
     ind = combinator(gens,2,'c');
-    for i=1:length(ind(:,1))
-        sqG{end+1}=(G{ind(i,1)}*G{ind(i,2)} + G{ind(i,2)}*G{ind(i,1)})*r^2;
-    end
+    sqG = cat(3, ...
+            sqG, ...
+            ( ...
+                pagemtimes( ...
+                    G(:,:,ind(:,1)), ...
+                    G(:,:,ind(:,2))) ...
+                + ...            
+                pagemtimes( ...
+                    G(:,:,ind(:,2)), ...
+                    G(:,:,ind(:,1))) ...
+            ) * r^2 ...
+    );
 end
 %--------------------------------------------------------------------------
 
@@ -71,15 +72,9 @@ end
 HC = eye(n) + C*r + 0.5*sqC;
 
 %get generators
-HG = [];
-%1st set of generators
-for i=1:gens
-    HG{end+1}= G{i}*r + 0.5*sqG{i};
-end
-%remaining set of generators
-for i=(gens+1):length(sqG)
-    HG{i}=0.5*sqG{i};
-end
+HG = 0.5 * sqG;
+HG(:,:,1:gens) = HG(:,:,1:gens) + G*r;
+
 %--------------------------------------------------------------------------
 
 %write as matrix zonotopes

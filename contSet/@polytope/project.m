@@ -48,6 +48,8 @@ function P_out = project(P,dims)
             sprintf('Cannot compute projection on higher dimension than %i.',n)));
     end
 
+    method = 'fourier_jones';
+
     % remove zeros
     P = compact_(P,'zeros',eps);
 
@@ -65,7 +67,7 @@ function P_out = project(P,dims)
         return
     end
 
-    % compute projection of the polytope
+    % project the polytope
 
     % remove redundant halfspaces (override input object)
     P = compact_(P,'all',1e-9);
@@ -77,25 +79,36 @@ function P_out = project(P,dims)
     n = dim(P_out);
     removeDims = setdiff(1:n,dims);
 
-    % P = polytope(Hn(:, 1:end-1), Hn(:, end));
-    for i = 1:length(removeDims)
-       
-        % project away current dimension 
-        [A,b] = aux_fourierMotzkinElimination(P_out.A,P_out.b,removeDims(i));
-        
-        % update indices to match projected polytope
-        removeDims = removeDims - 1;
-        
-        % remove redundant halfspaces
-        P_out = compact_(polytope(A,b),'all',1e-9);
+    % different methods
+    switch method
+        case 'fourier_jones'
+            Ab = [P_out.A(:, [dims, removeDims]), P_out.b];
+            Ab_ = fourier(Ab, 1:length(dims), 1e-6, 0);
+            P_out = polytope(Ab_(:,1:end-1), Ab_(:,end));
+            return
+
+        case 'fourier'
+    
+            for i = 1:length(removeDims)
+               
+                % project away current dimension 
+                [A,b] = aux_fourierMotzkinElimination(P_out.A,P_out.b,removeDims(i));
+                
+                % update indices to match projected polytope
+                removeDims = removeDims - 1;
+                
+                % remove redundant halfspaces
+                P_out = compact_(polytope(A,b),'all',1e-12);
+            end
+            
+            % sort dimensions of the remaining projected polytope according to dims
+            [~,ind] = sort(dims);
+            A = P_out.A;
+            A(:,ind) = A;
+            P_out.A = A;
+            return
     end
-    
-    % sort dimensions of the remaining projected polytope according to dims
-    [~,ind] = sort(dims);
-    A = P_out.A;
-    A(:,ind) = A;
-    P_out.A = A;
-    
+
 end
 
 

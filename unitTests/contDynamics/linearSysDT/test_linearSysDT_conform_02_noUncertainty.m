@@ -85,15 +85,15 @@ params.R0conf = zonotope([rand(4,10)]); % initial state uncertainty
 params_interval = conform(pedestrian,params,options); 
 
 %% check whether all parameter sets have no uncertainty up to some floating point errors
-accuracy = 1e-8;
-resPartial(end+1) = (max(rad(interval(params_interval.R0conf))) < accuracy); % R0
-resPartial(end+1) = (max(rad(interval(params_interval.W))) < accuracy); % W
-resPartial(end+1) = (max(rad(interval(params_interval.V))) < accuracy); % V
+tol = 2e-8; % TL, seems to be numerically unstable in different matlab versions
+resPartial(end+1) = (max(rad(interval(params_interval.R0conf))) < tol); % R0
+resPartial(end+1) = (max(rad(interval(params_interval.W))) < tol); % W
+resPartial(end+1) = (max(rad(interval(params_interval.V))) < tol); % V
 
 % check whether centers match up to accuracy
-resPartial(end+1) = (max(abs(center(params_interval.R0conf))) < accuracy); % R0conf is relative to x_0
-resPartial(end+1) = (max(abs(center(params_interval.W) - center(W))) < accuracy); % W
-resPartial(end+1) = (max(abs(center(params_interval.V) - center(V))) < accuracy); % V
+resPartial(end+1) = (max(abs(center(params_interval.R0conf))) < tol); % R0conf is relative to x_0
+resPartial(end+1) = (max(abs(center(params_interval.W) - center(W))) < tol); % W
+resPartial(end+1) = (max(abs(center(params_interval.V) - center(V))) < tol); % V
 
 % overall result
 res = all(resPartial);

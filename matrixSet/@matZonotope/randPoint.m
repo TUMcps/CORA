@@ -27,9 +27,9 @@ function M = randPoint(matZ,varargin)
 %
 % See also: -
 
-% Authors:       Mark Wetzlinger, Matthias Althoff
+% Authors:       Mark Wetzlinger, Matthias Althoff, Tobias Ladner
 % Written:       03-April-2023
-% Last update:   ---
+% Last update:   15-April-2024 (TL, faster implementation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -42,20 +42,25 @@ inputArgsCheck({{matZ,'att','matZonotope'}, ...
             {N,'att','numeric',{'scalar','positive','integer'}},...
             {type,'str',{'standard','extreme'}}});
 
-% generate sample matrices
-M = cell(N,1);
-for i=1:N
-    % initialize random matrix
-    M{i} = matZ.center;
-    
-    % add generator matrices
-    for iGen=1:matZ.gens
-        if strcmp(type,'extreme')
-            M{i} = M{i} + sign(2*rand(1)-1) .* matZ.generator{iGen};
-        elseif strcmp(type,'standard')
-            M{i} = M{i} + (2*rand(1)-1) .* matZ.generator{iGen};
-        end
-    end
+% init center of points
+M = repmat(matZ.C,1,1,N);
+
+% get betas
+[n,m,h] = size(matZ.G);
+if strcmp(type,'extreme')
+    betas = sign(2*rand(n,m,h,N)-1);
+elseif strcmp(type, 'standard')
+    betas = 2*rand(n,m,h,N)-1;
+end
+
+% compute betas*G
+if isempty(matZ.G)
+    M = M + reshape(sum(pagemtimes(matZ.G,betas),3),n,m,N);
+end
+
+% add center
+
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

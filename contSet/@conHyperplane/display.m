@@ -37,14 +37,14 @@ elseif representsa_(hyp,'fullspace',0)
     return
 end
 
-try
-    inputname;
-    fprintf(newline);
-    disp(inputname(1) + " =");
-    fprintf(newline);
-catch
-    % nothing here
-end
+% display input variable
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
+
+%display dimension
+display@contSet(hyp);
+fprintf(newline);
 
 %display hyperplane
 disp('normal vector:');

@@ -1,18 +1,14 @@
-function display(obj)
+function display(tay)
 % display - Displays the properties of a taylm object on the command window
 %
 % Syntax:
 %    display(obj)
 %
 % Inputs:
-%    obj - interval object
+%    tay - taylm object
 %
 % Outputs:
 %    ---
-%
-% Example: 
-%    a = taylm(interval(-1, 1), 3);
-%    display(a);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,22 +24,29 @@ function display(obj)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-name = [inputname(1), ' = '];
-disp(name)
+% display input variable
+fprintf(newline);
+disp(inputname(1) + " =");
+fprintf(newline);
+
+% display dimension (not inherting from contSet ...)
+fprintf('%s:\n', class(tay))
+disp(['- dimension: ', num2str(dim(tay))]);
+fprintf(newline)
 
 % determine the shape of a matrix
-[mi,mj] = size(obj);
+[mi,mj] = size(tay);
 
 for i = 1:mi
     rowStr = [];
     for j = 1:mj
         % get a polynomial part; show ratinal numbers as decimals with 5
         % digits
-        poly = aux_displayPoly(obj(i,j));
+        poly = aux_displayPoly(tay(i,j));
         
         % get an interval part
         remainder = sprintf('[%0.4f,%0.4f]',...
-            infimum(obj(i,j).remainder),supremum(obj(i,j).remainder));
+            infimum(tay(i,j).remainder),supremum(tay(i,j).remainder));
         
         % add both parts
         str = [poly, ' + ', remainder];

@@ -46,7 +46,7 @@ end
 
 % tu
 function res = aux_getCondfunParams_tu(sys,func,params,options)
-    res = ismember(func,{'simulateRandom','verifyRA_supportFunc'}) || ...
+    res = ismember(func,{'simulateRandom','verifyRA_supportFunc','verifyRA_zonotope'}) || ...
         isfield(options,'linAlg') && strcmp(options.linAlg,'adaptive');
 end
 
