@@ -40,8 +40,23 @@ getJSON('https://api.github.com/repos/TUMcps/CORA/commits?per_page=1',
             commit = data[0].commit;
             message = commit.message;
             date = commit.author.date;
+            timeText = timeSince(Date.parse(date));
 
             container = document.getElementById("release-version");
-            container.innerHTML = `<object class="align-middle" data="https://img.shields.io/static/v1?label=Last update&message=${timeSince(Date.parse(date))} ago&color=4596FF" alt="TUMcps - CORA"></object>`;
+            container.innerHTML = `<object class="align-middle" data="https://img.shields.io/static/v1?label=Last update&message=${timeText} ago&color=4596FF" alt="TUMcps - CORA"></object>`;
+
+            // confetti
+            if (timeText.includes('hour') || timeText.includes('minute')) {
+                const delay = ms => new Promise(res => setTimeout(res, ms));
+                const yourFunction = async () => {
+                    await delay(1000);
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.3 },
+                    });
+                };
+                yourFunction();
+            }
         }
     });
