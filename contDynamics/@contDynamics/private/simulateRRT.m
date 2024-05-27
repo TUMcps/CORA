@@ -161,8 +161,13 @@ for iStep = 1:nrSteps
     end
 end
 
-% construct object storing the simulation results
-simRes = simResult(x,t);
+% store computed simulations in the same format as for other simulation types
+simRes(options.points,1) = simResult();
+for iSample = 1:options.points
+    simRes(iSample, 1) = simResult(x(iSample),t(iSample));
+end
+
+end
 
 
 % Auxiliary functions -----------------------------------------------------
@@ -175,5 +180,7 @@ norm_val = vecnorm(X_rel); % compute 2-norm
 
 % find index with smallest norm
 [~, ind] = min(norm_val);
+
+end
 
 % ------------------------------ END OF CODE ------------------------------

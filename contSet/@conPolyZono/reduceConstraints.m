@@ -37,7 +37,7 @@ function cPZ = reduceConstraints(cPZ,varargin)
 
 % Authors:       Niklas Kochdumper
 % Written:       25-January-2021
-% Last update:   ---
+% Last update:   16-May-2024 (TL, added reduction within higher-order evaluation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -96,8 +96,23 @@ function cPZ = reduceConstraints(cPZ,varargin)
                 [Gcon_,Econ_] = aux_getPolynomial(Gcon,Econ,expo(i));
                 G = [G, G(:,index(i)) * Gcon_]; 
                 G(:,index(i)) = zeros(size(G,1),1);
-                e = E(:,index(i)); e(temp) = zeros(length(temp),1);
+                e = E(:,index(i)); e(temp) = zeros(length(temp),1);    
                 E = [E, e*ones(1,size(Econ_,2)) + Econ_];
+
+                % reduce smallest gens to remain computationally feasible
+                nrMaxGen = 1000;
+                [c, G, ~, E_, id_, d] = nnHelper.reducePolyZono(c, G, [], E, (1:size(E,1))', nrMaxGen-size(G,1));
+                % fix lost ids
+                E = zeros(size(E,1),size(E_,2)); 
+                E(id_,:) = E_;
+                % add approx error
+                GI = diag(d); 
+                idxd = d > 0;
+                GI = GI(:,idxd);
+                G = [G,GI];
+                % update exponent matrices
+                E = blkdiag(E,eye(sum(idxd)));
+                Econ = [Econ;zeros(sum(idxd),size(Econ,2))];
             end
         end
 

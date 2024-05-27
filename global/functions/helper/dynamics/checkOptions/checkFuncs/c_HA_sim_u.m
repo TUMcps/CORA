@@ -24,7 +24,7 @@ function [res,msg] = c_HA_sim_u(val,sys,params)
 
 % Authors:       Mark Wetzlinger, Niklas Kochdumper
 % Written:       04-February-2021
-% Last update:   ---
+% Last update:   10-May-2024 (allow time-varying inputs)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -36,8 +36,8 @@ msg = '';
 if ~iscell(params.u)
     
     % check if input has the correct format
-    if size(params.u,2) ~= 1
-        msg = 'has to be a vector';
+    if ~isnumeric(params.u) && length(size(params.u)) ~= 2
+        msg = 'has to be a vector or a matrix';
         res = false;
     end
 	
@@ -55,8 +55,14 @@ else
     
     % check input for each location
     for i = 1:length(params.u)
-        if size(params.u{i},2) ~= 1
-            msg = 'has to be a vector';
+    
+        if ~isnumeric(params.u{i}) && length(size(params.u{i})) ~= 2
+            msg = 'has to be a vector or a matrix';
+            res = false;
+        end
+
+        if i > 1 && size(params.u{i},2) ~= size(params.u{i-1},2)
+            msg = 'number of input changes has to be consistent for all locations';
             res = false; return;
         end
     end

@@ -107,11 +107,11 @@ else                                                    % array of points
             % switch case for the different types of level sets
             if strcmp(ls.compOp,'==')
                 tmp = abs(val);
-                res(j) = tmp < tol | withinTol(tmp,tol);
+                res(j) = all(tmp < tol | withinTol(tmp,tol));
             elseif strcmp(ls.compOp,'<=')
-                res(j) = val < tol | withinTol(val,tol);
+                res(j) = all(val < tol | withinTol(val,tol));
             else
-                res(j) = val < tol;
+                res(j) = all(val < tol);
             end
     
         else

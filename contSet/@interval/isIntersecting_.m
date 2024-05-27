@@ -41,6 +41,7 @@ function res = isIntersecting_(I,S,type,varargin)
 %                21-November-2019 (NK, added intersection with other sets)
 %                12-March-2021 (MW, add empty case)
 %                04-December-2023 (MW, fix empty case)
+%                24-May-2024 (TL, added interval-numeric case)
 % Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -74,10 +75,16 @@ function res = isIntersecting_(I,S,type,varargin)
            end
         end
         
+    % interval with other set intersection
     elseif isa(S,'halfspace') || isa(S,'conHyperplane') || ...
            isa(S,'polytope') || isa(S,'ellipsoid')
-        
+        % check in their function
         res = isIntersecting_(S,I,type);
+
+    % interval with numeric
+    elseif isnumeric(S)
+        % call contains
+        res = contains_(I,S,type,1e-8);
         
     else
         

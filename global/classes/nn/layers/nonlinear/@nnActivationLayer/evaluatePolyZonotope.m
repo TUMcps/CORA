@@ -151,6 +151,9 @@ if h+q > nrMaxGen
 
     % update max id
     id_ = max(max(id), id_);
+    if isempty(id_)
+        id_ = 0;
+    end
 end
 
 % restructure pZ s.t. there remain no independent generators
@@ -159,7 +162,6 @@ if size(GI, 2) > 0 && evParams.remove_GI
     G = [G,GI];
     E = blkdiag(E, eye(q));
     id = [id; id_ + (1:q)'];
-
     GI = zeros(n, 0);
 end
 

@@ -42,7 +42,7 @@ if nrOfGens <= maxGens
     disp(G);
 else
     disp(G(:,1:maxGens));
-    fprintf("    Remainder of dimensions (>%i) of %s not shown. Check workspace.\n\n", DISPLAYDIM_MAX,varName);
+    fprintf("    Remainder of generators (>%i) of %s not shown. Check workspace.\n\n", DISPLAYDIM_MAX,varName);
 end
 
 % ------------------------------ END OF CODE ------------------------------

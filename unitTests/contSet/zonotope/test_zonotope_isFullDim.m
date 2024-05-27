@@ -40,6 +40,12 @@ G = [1 0; 0 0];
 Z = zonotope(c,G);
 res(end+1,1) = ~isFullDim(Z);
 
+% almost degenerate zonotope
+eps = 1e-8;
+c = [0;0];
+G = [1 1-eps; 1 1];
+Z = zonotope(c,G);
+res(end+1,1) = ~isFullDim(Z);
 
 % combine results
 res = all(res);

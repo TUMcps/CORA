@@ -77,7 +77,7 @@ function res = and_(ls,S,varargin)
         % use vars from ls (should be irrelevant which ones are used)
         vars = ls.vars;
         newEqs = [ls.eq;subs(S.eq,S.vars,vars)];
-        newCompOp = aux_uniteCompOp(ls.compOp,S.compOp);
+        newCompOp = aux_uniteCompOp(ls,S);
         res = levelSet(newEqs,vars,newCompOp);
         res = compact_(res,'all',eps);
         return;
@@ -418,7 +418,10 @@ function res = aux_quadEval(Q,I)
     end
 end
 
-function compOp = aux_uniteCompOp(compOp1,compOp2)
+function compOp = aux_uniteCompOp(obj1,obj2)
+
+compOp1 = obj1.compOp;
+compOp2 = obj2.compOp;
 
 % make all cells and vertical
 if iscell(compOp1)
@@ -426,14 +429,14 @@ if iscell(compOp1)
         compOp1 = compOp1';
     end
 else
-    compOp1 = {compOp1};
+    compOp1 = repmat({compOp1},[length(obj1.eq),1]);
 end
 if iscell(compOp2)
     if size(compOp2,2) > 1
         compOp2 = compOp2';
     end
 else
-    compOp2 = {compOp2};
+    compOp2 = repmat({compOp2},[length(obj2.eq),1]);
 end
 
 % concatenate

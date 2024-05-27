@@ -19,7 +19,7 @@ function res = testLong_conZonotope_cubMap
 
 % Authors:       Niklas Kochdumper
 % Written:       30-October-2020
-% Last update:   ---
+% Last update:   13-May-2024 (TL, increased tol for second test)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -123,7 +123,7 @@ for i = 1:3
 %     plot(pointsRes(1,:),pointsRes(2,:),'.k');
     
     % check if all points are located inside the calculated zonotope
-    if ~all(contains_(cZres,pointsRes,'exact',1e-6))
+    if ~all(contains_(cZres,pointsRes,'exact',1e-5))
         throw(CORAerror('CORA:testFailed'));
     end
 end

@@ -47,11 +47,7 @@ function eq = aux_getEquations(S)
     
     elseif isa(S,'levelSet')
     
-        if iscell(S.compOp)
-            eq = length(S.compOp);
-        else
-            eq = 1; 
-        end
+        eq = length(S.eq);
     
     else
         throw(CORAerror('CORA:specialError',...

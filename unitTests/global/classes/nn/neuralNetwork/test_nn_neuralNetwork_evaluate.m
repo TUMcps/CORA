@@ -24,7 +24,9 @@ function res = test_nn_neuralNetwork_evaluate()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% test if the computed image encloses all results for random initial points
+resvec = [];
+
+% Test 1: Computed image encloses all results for random initial points
 for i = 1:4
     
     % generate random neural network
@@ -34,22 +36,37 @@ for i = 1:4
     X0 = 0.01*zonotope.generateRandom('Dimension',nn.neurons_in);
     
     % compute image for the network
-    X = evaluate(nn,X0);
+    Y = evaluate(nn,X0);
     
     % evaluate neural network for random initial points
-    points = zeros(nn.neurons_out,100);
-    
-    for j = 1:size(points,2)
-       p = randPoint(X0);
-       points(:,j) = evaluate(nn,p);
-    end
+    xs = randPoint(X0,100);
+    ys = nn.evaluate(xs);
     
     % check if all points are inside the computed image
-    if ~contains(X,points)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    resvec(end+1) = all(contains(Y,ys));
 end
 
-res = true;
+% Test 2: Propagate different sets
+
+nn = neuralNetwork.generateRandom('ActivationFun','sigmoid','NrInputs',2);
+
+I = interval.generateRandom("Dimension",2);
+nn.evaluate(I);
+resvec(end+1) = true;
+
+Z = zonotope(I);
+nn.evaluate(Z);
+resvec(end+1) = true;
+
+pZ = polyZonotope(I);
+nn.evaluate(pZ);
+resvec(end+1) = true;
+
+pZ = polyZonotope(Z.c,[],Z.G);
+nn.evaluate(pZ);
+resvec(end+1) = true;
+
+% gather results
+res = all(resvec);
 
 % ------------------------------ END OF CODE ------------------------------

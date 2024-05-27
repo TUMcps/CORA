@@ -113,6 +113,88 @@ for i=1:length(t)-1
 end
 
 
+% automaton with nonlinear invariant and guard sets (previously there was
+% an error for invariants with multiple inequality constraints, which is
+% the case we are testing here)
+A = [0.01 0;0 0.01];
+B = [0;0];
+c = [-1; 0];
+linSys = linearSys(A,B,c);
+
+x = sym('x',[2,1]);
+inv = levelSet([x(1) - 1; x(1).^2 + x(2).^2 - 4],x,'<=');
+
+guard = levelSet(x(1) - 1,x,'==');
+reset.A = zeros(2); reset.c = zeros(2,1);
+trans = transition(guard,reset,1);
+
+guard = levelSet(x(1).^2 + x(2).^2 - 4,x,'==');
+reset.A = zeros(2); reset.c = zeros(2,1);
+trans = [trans;transition(guard,reset,1)];
+
+HA = hybridAutomaton(location(inv,trans,linSys));
+
+% simulation
+params.x0 = [0;0];
+params.startLoc = 1;
+params.finalLoc = 0;
+params.tFinal = 4;
+
+[~,x,~] = simulate(HA,params); 
+
+% check if trajectory stayed within the invariant
+for i = 1:length(x)
+    for j = 1:size(x{i},1)
+        if ~contains(inv,x{i}(j,:)')
+            res(end+1,1) = false;
+        end
+    end
+end
+
+
+% test the case with time-varying inputs by comparing the simulation of a
+% continuous system with the output of an equivalent automaton
+linSys = linearSys([-0.7 -2; 2 -0.7],1);
+
+R0 = zonotope(10*ones(2,1),0.5*diag(ones(2,1)));
+U = zonotope([zeros(2,1),0.1*eye(2)]);
+
+simOpts.x0 = randPoint(R0);
+simOpts.u = randPoint(U,10);
+simOpts.tFinal = 1;
+
+[tCont,xCont] = simulate(linSys,simOpts);
+
+% equivalent hybrid automaton
+inv = polytope([1,0],1);
+guard = conHyperplane([1,0],1);
+reset.A = eye(2); reset.c = zeros(2,1);
+trans = transition(guard,reset,2);
+loc1 = location(inv,trans,linSys);
+
+inv = polytope([-1,0],1);
+guard = conHyperplane([1,0],-1);
+reset.A = eye(2); reset.c = zeros(2,1);
+trans = transition(guard,reset,1);
+loc2 = location(inv,trans,linSys);
+
+HA = hybridAutomaton([loc1;loc2]);
+
+simOpts.startLoc = 2;
+
+[tHyb,xHyb] = simulate(HA,simOpts);
+
+tHyb = vertcat(tHyb{:});
+xHyb = vertcat(xHyb{:});
+
+% check if the two simulated trajectories are equivalent
+xCont = interp1(tCont,xCont,tHyb);
+
+if max(max(abs(xHyb-xCont))) > 0.1
+    res(end+1,1) = false;
+end
+
+
 % combine results
 res = all(res);
 

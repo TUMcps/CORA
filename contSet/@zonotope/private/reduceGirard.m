@@ -21,8 +21,8 @@ function Zred = reduceGirard(Z,order)
 % Authors:       Matthias Althoff
 % Written:       24-January-2007 
 % Last update:   22-March-2007
-%              1 09-January-2009 (vnorm acceleration)
-%              1 01-October-2017 (use of auxiliary function pickedGenerators)
+%                09-January-2009 (vnorm acceleration)
+%                01-October-2017 (use of auxiliary function pickedGenerators)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------

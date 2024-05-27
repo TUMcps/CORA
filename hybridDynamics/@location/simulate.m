@@ -39,13 +39,24 @@ function [t,x,nextloc,xJump] = simulate(loc,params)
 currentLoc = params.loc;
 params = rmfield(params,'loc');
 
+% check if initial state is inside the invariant of the current location
+if size(params.x0,2) > size(params.x0,1)
+    params.x0 = params.x0';
+end
+
+if ~contains_(loc.invariant,params.x0,'exact',1e-6)
+    throw(CORAerror('CORA:specialError',...
+            'Trajectory is located outside the invariant set after transition!')); 
+end
+
 % convert all guard sets to halfspace-representation (polytope)
 for i=1:length(loc.transition)
     loc.transition(i) = guard2polytope(loc.transition(i)); 
 end
 
 % define event function from halfspace inequalities
-eventOptions = odeset('Events',eventFcn(loc));
+fun = eventFcn(loc);
+eventOptions = odeset('Events',fun);
 options = odeset(eventOptions);
 
 % simulate continuous dynamics
@@ -54,6 +65,12 @@ options = odeset(eventOptions);
 % determine the guard set which is crossed by the trajectory
 if ~isempty(index)
     % final time not reached
+
+    % recompute index because simulate often just returns the first of 
+    % potentially multiple events that occured at the same time
+    temp = fun(t(end),x(end,:)');
+    indexNew = find(abs(temp) < 1e-6);
+    index = unique([index;indexNew]);
 
     % determine active guard
     list = indexList(loc);

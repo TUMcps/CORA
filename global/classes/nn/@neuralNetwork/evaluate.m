@@ -161,6 +161,9 @@ function r = aux_evaluatePolyZonotope(obj, input, evParams, idxLayer)
         if isempty(GI)
             GI = zeros(size(c, 1), 0);
         end
+        if isempty(id_)
+            id_ = 0;
+        end
 
         ind = find(prod(ones(size(E))-mod(E, 2), 1) == 1);
         ind_ = setdiff(1:size(E, 2), ind);

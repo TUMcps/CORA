@@ -24,12 +24,19 @@ function [t,x,loc] = simulate(HA,params)
 % Written:       03-May-2007 
 % Last update:   08-May-2020 (MW, update interface)
 %                21-May-2023 (MW, output single trajectory)
+%                10-May-2024 (NK, allow time-varying inputs)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % new options preprocessing
 params = validateOptions(HA,mfilename,params,struct([]));
+
+% catch the case with time-varying inputs
+if size(params.uLoc{1},2) > 1
+    [x,t,loc] = aux_simulateTimeVaryingInput(HA,params);
+    return;
+end
 
 % initialization
 tInter = params.tStart;         % intermediate time at transitions
@@ -65,6 +72,43 @@ while tInter < params.tFinal && ...
     t{cnt,1} = tNew;
     x{cnt,1} = xNew;
     loc(cnt,1) = params.loc;
+end
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function [x,t,loc] = aux_simulateTimeVaryingInput(HA,params)
+% loop over all input changes to simulte a hybrid automaton with a
+% time-varying input signal
+    
+    % initialization
+    steps = size(params.uLoc{1},2);
+    dt = params.tFinal/steps;
+    uLoc = params.uLoc;
+    t = {}; x = {}; loc = [];
+
+    % loop over all input changes
+    for i = 1:steps
+
+        % update simulate setting for current step
+        params.tFinal = params.tStart + dt;
+
+        for j = 1:length(params.uLoc)
+            params.uLoc{j} = uLoc{j}(:,i);
+        end
+
+        % simulate the system
+        [t_,x_,loc_] = simulate(HA,params);
+
+        % store the simulation results
+        t = [t;t_]; x = [x;x_]; loc = [loc;loc_];
+
+        % update simulation settings
+        params.tStart = params.tFinal;
+        params.x0 = x{end}(end,:)';
+        params.startLoc = loc(end);
+    end
 end
 
 % ------------------------------ END OF CODE ------------------------------

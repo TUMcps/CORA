@@ -47,6 +47,7 @@ disp(dims);
 
 % compute number of dims to display
 dispdims = min(dims,DISPLAYDIM_MAX);
+dispgens = min(matZ.numgens,DISPLAYDIM_MAX);
 
 % display center
 disp('center: ');
@@ -54,10 +55,19 @@ disp(matZ.C(1:dispdims(1),1:dispdims(2)));
 
 % display generators
 fprintf('generators: (%i generators)\n', numgens(matZ));
-disp(matZ.G(1:dispdims(1),1:dispdims(2),:))
+disp(matZ.G(1:dispdims(1),1:dispdims(2),1:dispgens))
 
+addEmptyLine = false;
 if any(dispdims < dims)
-    fprintf("    Remainder of dimensions (>%i) not shown. Check workspace.\n\n", DISPLAYDIM_MAX);
+    fprintf("    Remainder of dimensions (>%i) not shown. Check workspace.\n", DISPLAYDIM_MAX);
+    addEmptyLine = true;
+end
+if any(dispgens < matZ.numgens)
+    fprintf("    Remainder of generators (>%i) not shown. Check workspace.\n", DISPLAYDIM_MAX);
+    addEmptyLine = true;
+end
+if addEmptyLine
+    fprintf('\n')
 end
 
 if isempty(matZ.G)

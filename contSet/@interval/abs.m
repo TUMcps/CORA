@@ -24,43 +24,20 @@ function res = abs(I)
 %
 % See also: none
 
-% Authors:       Matthias Althoff
+% Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       26-June-2015
 % Last update:   14-February-2015
 %                12-October-2015
+%                27-May-2024 (MW, simplify and speed up code)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% init resulting interval object
+% init resulting interval object without going through constructor (fast)
 res = I;
 
-% separate computation for scalar and matrix case for efficiency
-
-% scalar case
-if isscalar(I)
-    if I.sup < 0
-        res.inf = abs(I.sup);
-        res.sup = abs(I.inf);
-    elseif I.inf > 0
-        res = I;
-    else
-        res.inf = 0;
-        res.sup = max(abs(I.inf), abs(I.sup));
-    end
-    
-% matrix case
-else
-    
-    % find negative indices (if infimum is greater than zero, the absolute value has no effect)
-    ind = I.inf < 0 & I.sup > 0;  % For [-a, +b] case
-    ind1 = I.inf < 0 & I.sup <= 0; % For [-a, -b] case
-    
-    res.sup(ind) = max(abs(I.inf(ind)), abs(I.sup(ind))); % order of computation matters
-    res.inf(ind) = abs(0*I.inf(ind));
-    
-    res.sup(ind1) = abs(I.inf(ind1));
-    res.inf(ind1) = abs(I.sup(ind1));
-end
+% use size(I.inf) since size(I) is a bit slow... include sparse handling
+res.inf = max(cat(3, zeros(size(I.inf)), full(I.inf), full(-I.sup)), [], 3);
+res.sup = max(cat(3, full(-I.inf), full(I.sup)), [], 3);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -37,6 +37,11 @@ for i=1:nrTests
     Z = zonotope.generateRandom('Dimension',n,'NrGenerators',n);
     P = polytope(Z);
 
+    % check if zonotope was full-dimensional
+    if ~isFullDim(Z)
+        continue
+    end
+
     % assert non-degeneracy
     if ~isFullDim(P)
         throw(CORAerror('CORA:testFailed'));

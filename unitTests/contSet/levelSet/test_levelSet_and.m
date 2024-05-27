@@ -24,8 +24,8 @@ function res = test_levelSet_and
 % ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
-% Define problem
-% intersection with linear levelSet
+
+% intersection of an interval with a linear levelSet
 syms x y
 eq = x + y - 1;
 ls = levelSet(eq,[x;y],'==');
@@ -35,7 +35,8 @@ expectedSolution = interval([0.5;0],[1.0;0.5]);
 if ~isequal(intSet,expectedSolution,1e-10)
     res = false;
 end
-% intersection with non-linear levelSet
+
+% intersection of an interval with a non-linear levelSet
 eq = x^2 + y - 1;
 ls = levelSet(eq,[x;y],'==');
 intSet = ls & myInt;
@@ -44,5 +45,13 @@ if ~isequal(intSet,expectedSolution,1e-10)
     res = false;
 end
 
+% intersection of two non-linear level sets
+ls1 = levelSet([x^2 + y; y^2 - x],[x;y],'<=');
+ls2 = levelSet(x^3 + y,[x;y],'<=');
+lsRes = ls1 & ls2;
+display(lsRes)                          % previously resulted in an error
+if ~contains(lsRes,[0.5;-0.5]) || length(lsRes.eq) ~= length(lsRes.compOp)
+    res = false;
+end
 
 % ------------------------------ END OF CODE ------------------------------

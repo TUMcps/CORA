@@ -38,7 +38,7 @@ if nargin < 1
 end
 inputArgsCheck({{identifier, 'str', {'CORA:reachSet', ...
     'CORA:initialSet', 'CORA:finalSet', 'CORA:simulations', ...
-    'CORA:unsafe','CORA:safe', 'CORA:invariant', ...
+    'CORA:unsafe','CORA:unsafeLight','CORA:safe', 'CORA:invariant', ...
     'CORA:highlight1','CORA:highlight2', 'CORA:next'}}})
 
 color = [0 0 0]; % default
@@ -81,6 +81,8 @@ switch identifier
         color = [0 0 0];
     case 'CORA:unsafe'
         color = [0.9451 0.5529 0.5686]; % red
+    case 'CORA:unsafeLight'
+        color = [0.9059 0.7373 0.7373]; % light red
     case {'CORA:safe','CORA:invariant'}
         color = [0.4706 0.7725 0.4980]; % green
     case 'CORA:highlight1'

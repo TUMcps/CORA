@@ -79,4 +79,6 @@ displayGenerators(cPZ.GI,DISPLAYDIM_MAX,'GI');
 % display id
 displayIds(cPZ.id,'id');
 
+fprintf(newline)
+
 % ------------------------------ END OF CODE ------------------------------

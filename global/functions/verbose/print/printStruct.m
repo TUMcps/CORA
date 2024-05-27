@@ -10,6 +10,7 @@ function printStruct(S,varargin)
 %    S - struct array
 %    accuracy - (optional) floating-point precision
 %    clearLine - (optional) whether to finish with '\n'
+%    doCompact - (optional) whether to compact matrices
 %
 % Outputs:
 %    -
@@ -21,18 +22,18 @@ function printStruct(S,varargin)
 
 % Authors:       Tobias Ladner
 % Written:       31-May-2023
-% Last update:   ---
+% Last update:   14-May-2024 (TL, added coCompact)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',2));
+if nargin > 4
+    throw(CORAerror('CORA:tooManyInputArgs',4));
 end
 
 % determine accuracy
-if nargin < 2
+if nargin < 2 || isempty(varargin{1})
     % default accuracy
     accuracy = '%4.3f%s';
 else
@@ -54,6 +55,12 @@ if nargin < 3
     clearLine = true;
 else
     clearLine = varargin{2};
+end
+
+if nargin < 4
+    doCompact = false;
+else
+    doCompact = varargin{3};
 end
 
 numRows = size(S,1);
@@ -90,7 +97,7 @@ for i = 1:numRows
             % print value s.t. it can be re-created
             value = S_ij.(name);
             if isnumeric(value)
-                printMatrix(value,accuracy,false)
+                printMatrix(value,accuracy,false,doCompact)
             elseif isa(value,'interval')
                 printInterval(value)
             elseif isa(value,"struct")

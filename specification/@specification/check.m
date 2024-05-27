@@ -8,7 +8,8 @@ function [res,indSpec,indObj] = check(spec,S,varargin)
 % Inputs:
 %    spec - specification object
 %    S - numeric, contSet, reachSet, or simResult object
-%    time - time interval for the reachable set (class: interval)
+%    time - (optional) interval (class: interval) for the set inputs,
+%           numeric for points (scalar or match number of points)
 %
 % Outputs:
 %    res - true/false whether set satisfies the specification
@@ -24,6 +25,7 @@ function [res,indSpec,indObj] = check(spec,S,varargin)
 % Authors:       Niklas Kochdumper, Tobias Ladner
 % Written:       29-May-2020             
 % Last update:   22-March-2022 (TL, simResult, indObj)
+%                24-May-2024 (TL, vectorized check for numeric input)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -63,57 +65,65 @@ end
 % check S object
 if isnumeric(S) % ---------------------------------------------------------
     
-    % check if single or multiple points are provided
-    if size(S,2) > 1
-        % multiple points
-        for i = 1:size(S,2)
-            [res,indSpec] = check(spec,S(:,i),time);
-            if ~res
-                indObj = i;
-                return; 
+    % check numeric input
+
+    % loop over all specifications
+    for i = 1:size(spec,1)
+        % init
+        spec_i = spec(i);
+        spec_i_time = spec_i.time;
+        numPoints = size(S,2);
+
+        if ~isempty(time) && ~isscalar(time) && numel(time) ~= numPoints
+            throw(CORAerror('CORA:specialError','Given time has to be empty, scalar, or match number of points to check.'))
+        end
+
+        % find indices where given time overlaps with (timed) specification
+        tol = 1e-9;
+        if representsa_(spec_i_time,'emptySet',tol)
+            % check all points
+            idxTimed = true;
+        else
+            if representsa_(time,'emptySet',tol) 
+                % time has to be given for timed specifications
+                throw(CORAerror('CORA:specialError',...
+                    'Timed specifications require a time interval.')); 
+            else
+                % check which points need testing
+                idxTimed = contains(spec_i_time,time);
             end
         end
 
-    else
-        % single point
-        
-        % loop over all specifications
-        for i = 1:size(spec,1)
-            spec_i = spec(i);
+        if isscalar(idxTimed)
+            % extend to match number of points
+            idxTimed = true(1,numPoints) & idxTimed;
+        end
 
-            % check if time frames overlap
-            tol = 1e-9;
-            if representsa_(time,'emptySet',tol) && ~representsa_(spec_i.time,'emptySet',tol)
-                throw(CORAerror('CORA:specialError',...
-                    'Timed specifications require a time interval.')); 
-            end
+        % different types of specifications
+        resvec = true(size(idxTimed));
+        switch spec_i.type
 
-            if representsa_(spec_i.time,'emptySet',eps) ...
-                    || contains_(spec_i.time,time,'exact',100*eps)
+            case 'invariant'
+                resvec(idxTimed) = contains(spec_i.set,S(:,idxTimed));
 
-                % different types of specifications
-                switch spec_i.type
+            case 'unsafeSet'
+                resvec(idxTimed) = ~contains(spec_i.set,S(:,idxTimed));
 
-                    case 'invariant'
-                        res = contains(spec_i.set,S);
+            case 'safeSet'
+                resvec(idxTimed) = contains(spec_i.set,S(:,idxTimed));
 
-                    case 'unsafeSet'
-                        res = ~contains(spec_i.set,S);
+            case 'custom'
+                resvec(idxTimed) = aux_checkCustom(spec_i.set,S(:,idxTimed));
+        end
 
-                    case 'safeSet'
-                        res = contains(spec_i.set,S);
+        % gather results
+        res = all(resvec);
 
-                    case 'custom'
-                        res = aux_checkCustom(spec_i.set,S);
-                end
-
-                % return as soon as one specification is violated
-                if ~res
-                    indSpec = i; 
-                    indObj = 1;
-                    return;
-                end
-            end
+        % return if one point violates the specification
+        if ~res
+            indSpec = i; 
+            indObj = find(res,1,'first');
+            return;
         end
     end
     
@@ -122,16 +132,16 @@ elseif isa(S,'simResult') % -----------------------------------------------
     % loop over all simulations
     for i = 1:length(S)
         S_i = S(i);
+        % loop over all trajectories
         for j = 1:length(S_i.x)
             Si_x_j = S_i.x{j};
             Si_t_j = S_i.t{j};
-            for k = 1:length(Si_x_j)
-                % check simulation point with respective time
-                [res,indSpec] = check(spec, Si_x_j(k,:)', Si_t_j(k));
-                if ~res
-                    indObj = {i,j,k};
-                    return; 
-                end
+
+            % check simulation points with respective time
+            [res,indSpec,k] = check(spec, Si_x_j', Si_t_j');
+            if ~res
+                indObj = {i,j,k};
+                return; 
             end
         end
     end

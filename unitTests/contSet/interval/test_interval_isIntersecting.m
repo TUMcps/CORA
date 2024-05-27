@@ -54,6 +54,11 @@ I2 = interval(-1,Inf);
 res(end+1,1) = isIntersecting(I1,I2);
 res(end+1,1) = isIntersecting(I2,I1);
 
+% check numeric
+I = interval([2;4],[3;5]);
+res(end+1,1) = all(isIntersecting(I,I.randPoint(10)));
+res(end+1,1) = all(~isIntersecting(I,[1 1; 1 2]));
+
 
 % combine results
 res = all(res);
