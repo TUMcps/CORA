@@ -231,9 +231,18 @@ if ~isempty(A) && (strcmp(type,'all') || strcmp(type,'A'))
     
             else
                 % MATLAB linprog
+
+                % init linprog struct
+                problem.f = -A(i,:);
+                problem.Aineq = H;
+                problem.bineq = d;
+                problem.Aeq = Ae;
+                problem.beq = be;
+                problem.solver = 'linprog';
+                problem.options = options;
     
                 % solve LP
-                [extreme_point,~,exitflag] = linprog(-A(i,:),H,d,Ae,be,[],[],options);
+                [extreme_point,~,exitflag] = linprog(problem);
             
                 % solution has been found
                 if exitflag > 0

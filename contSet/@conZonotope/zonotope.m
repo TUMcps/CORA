@@ -93,6 +93,11 @@ function res = aux_zonotopeNullSpace(obj)
     if isempty(options)
         options = optimoptions('linprog','display','off');
     end
+
+    problem.Aineq = A_;
+    problem.bineq = b_;
+    problem.solver = 'linprog';
+    problem.options = options;
     
     for i = 1:m_
         
@@ -100,11 +105,13 @@ function res = aux_zonotopeNullSpace(obj)
         f(i) = 1;
         
         % compute minimum
-        [~, fval] = linprog(f',A_,b_,[],[],[],[],options);
+        problem.f = f';
+        [~, fval] = linprog(problem);
         lb(i) = fval;
         
         % compute maximum   
-        [~, fval] = linprog(-f',A_,b_,[],[],[],[],options);
+        problem.f = -f';
+        [~, fval] = linprog(problem);
         ub(i) = -fval;
     end
     

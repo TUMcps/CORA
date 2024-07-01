@@ -74,25 +74,27 @@ m = size(G, 2);
 
 % Set up objective and constraints of the linear program as defined in
 % [2, Equation (8)]
-f = [1;zeros([m 1])];
+problem.f = [1;zeros([m 1])];
 
-Aeq = [zeros([n 1]) G];
-beq = p;
+problem.Aeq = [zeros([n 1]) G];
+problem.beq = p;
 
 Aineq1 = [-ones([m 1]) eye(m)];
 Aineq2 = [-ones([m 1]) -eye(m)];
 
-Aineq = [Aineq1; Aineq2];
-bineq = zeros([2*m 1]);
+problem.Aineq = [Aineq1; Aineq2];
+problem.bineq = zeros([2*m 1]);
 
 % Suppress solver output
 persistent options
 if isempty(options)
     options = optimoptions('linprog', 'Display', 'none');
 end
+problem.solver = 'linprog';
+problem.options = options;
 
 % Solve the linear program
-[minimizer_p, res, exitflag] = linprog(f, Aineq, bineq, Aeq, beq, [], [], options);
+[minimizer_p, res, exitflag] = linprog(problem);
 
 % If the problem is not feasible, this means that the zonotope must be
 % degenerate, and that the point can not be realized as a linear

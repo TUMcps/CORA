@@ -22,18 +22,10 @@ function res = simulateConstrainedRandom(obj, options)
 
 % Authors:       Matthias Althoff
 % Written:       05-January-2023
-% Last update:   ---
+% Last update:   29-June-2024 (TL, bug fix for empty R0)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
-
-% initialize time and state
-t = cell(options.points,1);
-x = cell(options.points,1);
-
-% output equation only for linearSys and linearSysDT currently
-comp_y = (isa(obj,'linearSys') || isa(obj,'linearSysDT')) && ~isempty(obj.C);
-if comp_y; y = cell(options.points,1); end
 
 % generate random initial points
 nrExtreme = ceil(options.points*options.fracVert);
@@ -46,8 +38,18 @@ if nrStandard > 0
 	X0 = [X0, randPoint(options.R0,nrStandard,'standard')];
 end
 
+% check number of generated points (might be different for e.g. empty sets)
+nrPoints = size(X0,2);
+
+% initialize time and state
+t = cell(nrPoints,1);
+x = cell(nrPoints,1);
+% output equation only for linearSys and linearSysDT currently
+comp_y = (isa(obj,'linearSys') || isa(obj,'linearSysDT')) && ~isempty(obj.C);
+if comp_y; y = cell(nrPoints,1); end
+
 % loop over all starting points in X0
-for r = 1:options.points
+for r = 1:nrPoints
     
     % Is output desired?
     if comp_y

@@ -32,7 +32,7 @@
   {
      "inputs":
      [
-        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:initialSet','CORA:finalSet', 'CORA:simulations','CORA:unsafe','CORA:unsafeLight','CORA:safe','CORA:invariant','CORA:highlight1','CORA:highlight2', 'CORA:next'}"], "purpose":"ID of CORA color"}
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:initialSet','CORA:finalSet', 'CORA:simulations','CORA:unsafe','CORA:unsafeLight','CORA:safe','CORA:invariant','CORA:highlight1','CORA:highlight2', 'CORA:next','CORA:color1','CORA:color2','CORA:color3','CORA:color4','CORA:color5','CORA:color6','CORA:color7'}"], "purpose":"ID of CORA color"}
      ]
   }
 }

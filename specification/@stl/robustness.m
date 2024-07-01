@@ -392,18 +392,22 @@ function val = aux_robustnessSet(S,set)
                 C3 = [eye(m);-eye(m)]; d3 = ones(2*m,1);
         
                 % constraint x = c + G * \alpha,
-                Ceq = [eye(n),zeros(n,1),-G]; deq = c;
+                problem.Aeq = [eye(n),zeros(n,1),-G];
+                problem.beq = c;
         
                 % combined inequality constraints
-                C = blkdiag([C1;C2],C3); d = [d1;d2;d3];
+                problem.Aineq = blkdiag([C1;C2],C3);
+                problem.bineq = [d1;d2;d3];
         
                 % objective function
-                f = zeros(size(Ceq,2),1); f(n+1) = -1;
+                problem.f = zeros(size(problem.Aeq,2),1);
+                problem.f(n+1) = -1;
         
                 % solve linear program
-                options = optimoptions('linprog','display','off');
+                problem.solver = 'linprog';
+                problem.options = optimoptions('linprog','display','off');
         
-                [~,val] = linprog(f,C,d,Ceq,deq,[],[],options);
+                [~,val] = linprog(problem);
             end
 
         elseif isa(set,'halfspace')

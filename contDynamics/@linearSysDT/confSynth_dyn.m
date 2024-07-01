@@ -132,8 +132,12 @@ switch options.norm
         lin_f = [zeros(1,2*n+q), iNorm]';
         
         % Linear Programming
-        opt = optimoptions('linprog','Display','none');
-        [p_opt,cost,exitflag,output] = linprog(lin_f,lin_A,lin_b,[],[],[],[],opt);
+        problem.f = lin_f;
+        problem.Aineq = lin_A;
+        problem.bineq = lin_b;
+        problem.solver = 'linprog';
+        problem.options = optimoptions('linprog','Display','none');
+        [p_opt,cost,exitflag,output] = linprog(problem);
 
     %% Frobenius norm
     case 'frob'

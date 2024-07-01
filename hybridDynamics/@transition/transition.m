@@ -41,6 +41,7 @@ classdef transition
 %                10-December-2021 (NK, enable nonlinear reset functions)
 %                04-April-2022 (MP, add fields .hasInput/.inputDim to reset)
 %                16-June-2022 (MW, add checks for object properties, update handling of reset struct fields)
+%                25-June-2024 (TL, added 'real' to symbolic variables)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -199,8 +200,8 @@ methods
         m = trans.reset.inputDim;
 
         % create symbolic variables for reset function
-        z = sym('x',[n,1]);
-        u = sym('u',[m,1]);
+        z = sym('x',[n,1],'real');
+        u = sym('u',[m,1],'real');
 
         % if reset function depends on inputs, we create the substitute
         % state z = [x;u] which is used for the rest of this function

@@ -38,13 +38,13 @@ colors = [];
 switch identifier
     case 'CORA:default'
         colors = [ % matlab default colors
-            0         0.4470    0.7410 % blue
-            0.8500    0.3250    0.0980 % red
-            0.9290    0.6940    0.1250 % yellow
-            0.4940    0.1840    0.5560 % purple
-            0.4660    0.6740    0.1880 % green
-            0.3010    0.7450    0.9330 % light blue
-            0.6350    0.0780    0.1840 % dark red
+            CORAcolor('CORA:color1')
+            CORAcolor('CORA:color2')
+            CORAcolor('CORA:color3')
+            CORAcolor('CORA:color4')
+            CORAcolor('CORA:color5')
+            CORAcolor('CORA:color6')
+            CORAcolor('CORA:color7')
         ];
     case 'CORA:contDynamics'
         % varargin - {numColors}
@@ -70,13 +70,13 @@ switch identifier
         ];
     case 'CORA:manual'
         colors = [ % matlab default colors
-            0         0.4470    0.7410 % blue
-            0.8500    0.3250    0.0980 % red
-            0.9290    0.6940    0.1250 % yellow
-            0.4940    0.1840    0.5560 % purple
-            0.4660    0.6740    0.1880 % green
-            0.3010    0.7450    0.9330 % light blue
-            0.6350    0.0780    0.1840 % dark red
+            CORAcolor('CORA:color1')
+            CORAcolor('CORA:color2')
+            CORAcolor('CORA:color3')
+            CORAcolor('CORA:color4')
+            CORAcolor('CORA:color5')
+            CORAcolor('CORA:color6')
+            CORAcolor('CORA:color7')
         ];
     case 'CORA:manual-result'
         colors = [ 

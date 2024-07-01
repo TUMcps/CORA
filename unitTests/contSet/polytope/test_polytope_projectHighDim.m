@@ -29,8 +29,8 @@ res = true(0);
 A = zeros(0,1); b = zeros(0,0);
 P = polytope(A,b);
 P_high = projectHighDim(P,3,2);
-A_true = [1 0 0; 0 0 1]; b_true = [0;0];
-P_true = polytope(A_true,b_true);
+Ae_true = [1 0 0; 0 0 1]; be_true = [0;0];
+P_true = polytope([],[],Ae_true,be_true);
 res(end+1,1) = isequal(P_high,P_true);
 
 

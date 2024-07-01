@@ -125,9 +125,6 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
             % select the same generators for reduction as in the previous
             % iteration of the current time step to limit the influence of
             % the order reduction on the computation of the gain order
-            if any(options.gredIdx.Rred{options.i} > size(generators(R),2))
-                keyboard
-            end
             Rred = reduce(R,'idx',options.gredIdx.Rred{options.i});
         else
             % reduce adaptively and store indices of generators that have

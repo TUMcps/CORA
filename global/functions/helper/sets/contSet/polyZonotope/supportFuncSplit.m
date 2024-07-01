@@ -28,6 +28,7 @@ function val = supportFuncSplit(pZ,dir,type, varargin)
 % Last update:   17-October-2022 (NK, improve 'split' method)
 %                06-December-2022 (TL, fix: 'split' considers splitted sets)
 %                09-December-2022 (TL, speed up computation)
+%                29-June-2024 (TL, fix: zonotopic generator extraction)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -108,10 +109,10 @@ for i = 0:splits
                 % aka largest point in zonotope subset
 
                 % exract zonotopic generators from E
+                h = size(res_k.G,2);
                 ind1 = sum(res_k.E,1) == 1;
-                ind2 = sum(res_k.E(:,ind1),2) == 1;
-                alpha_ = zeros(size(res_k.E,1),1);
-                alpha_(ind2) = alpha(ind1);
+                ind2 = sum(res_k.E,2) == 1;
+                alpha_ = (alpha(1:h)' .* (ind1 & ind2));
                 
                 % use result from zonotope supportFunc
                 minMax_k = res_k.c + ...
@@ -119,7 +120,7 @@ for i = 0:splits
                 
                 if ~isempty(res_k.GI)
                     % same for GI
-                    beta = alpha(size(res_k.E,2)+1:end);
+                    beta = alpha(h+1:end);
                     minMax_k = minMax_k + res_k.GI*beta;
                 end
 

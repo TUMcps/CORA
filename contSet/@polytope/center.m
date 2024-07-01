@@ -126,14 +126,24 @@ if isSolverInstalled('mosek')
 else
     % MATLAB linprog
 
+    % init linprog struct
+    problem.f = f;
+    problem.Aineq = A;
+    problem.bineq = P.b;
+    problem.Aeq = Ae;
+    problem.beq = P.be;
+    problem.lb = [-Inf(n,1);0];
+
     % linear program options
     persistent options
     if isempty(options)
         options = optimoptions('linprog','display','off');
     end
+    problem.solver = 'linprog';
+    problem.options = options;
     
     % Solve Linear Program
-    [c,val,exitflag] = linprog(f,A,P.b,Ae,P.be,[-Inf(n,1);0],[],options);
+    [c,val,exitflag] = linprog(problem);
 
     if exitflag == 1
         % truncate solution

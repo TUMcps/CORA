@@ -26,7 +26,7 @@ function pgon = polygon(pZ,varargin)
 
 % Authors:       Niklas Kochdumper
 % Written:       08-April-2020
-% Last update:   ---
+% Last update:   29-June-2024 (TL, bug fix during numeric isuse check)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -112,7 +112,7 @@ function pgon = polygon(pZ,varargin)
         if pgon.set.NumRegions >= 2
             % might be due to numeric instability
             % enlargen polygon slightly
-            setBuffed = polybuffer(polyUnion, 1e-8);
+            setBuffed = polybuffer(pgon.set, 1e-8);
             if setBuffed.NumRegions < pgon.set.NumRegions
                 pgon = polygon(setBuffed);
             end

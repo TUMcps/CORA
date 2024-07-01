@@ -28,20 +28,12 @@ resvec = [];
 
 writeTestResultsForCI('short');
 
-% tes result text
-text = fileread('resultText.txt');
-% not empty
-resvec(end+1) = ~isempty(text);
-% no new line
-resvec(end+1) = length(split(text, "\n")) == 1;
-
 % test exit code
 text = fileread('failed.txt');
 % just single number
 resvec(end+1) = ~isnan(str2double(text));
 
 % delete files
-delete resultText.txt;
 delete failed.txt;
 
 % return result

@@ -63,12 +63,16 @@ if strcmp(type,'b') || strcmp(type,'be')
         idx_neg = P.b < 0;
     
         % divide constraints with b > 0 by b
-        P_out.A(idx_plus,:) = P.A(idx_plus,:) ./ P.b(idx_plus);
-        P_out.b(idx_plus) = 1;
+        if any(idx_plus)
+            P_out.A(idx_plus,:) = P.A(idx_plus,:) ./ P.b(idx_plus);
+            P_out.b(idx_plus) = 1;
+        end
     
         % divide constraints with b < 0 by |b|
-        P_out.A(idx_neg,:) = P.A(idx_neg,:) ./ abs(P.b(idx_neg));
-        P_out.b(idx_neg) = -1;
+        if any(idx_neg)
+            P_out.A(idx_neg,:) = P.A(idx_neg,:) ./ abs(P.b(idx_neg));
+            P_out.b(idx_neg) = -1;
+        end
     
     end
     

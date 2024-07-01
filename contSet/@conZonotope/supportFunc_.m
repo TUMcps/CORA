@@ -196,9 +196,17 @@ if isempty(fval)
             options = optimoptions('linprog','Algorithm','dual-simplex','display','off');
         end
 
+        problem.Aeq = A;
+        problem.beq = b;
+        problem.lb = lb;
+        problem.ub = ub;
+        problem.solver = 'linprog';
+        problem.options = options;
+
         % lower bound
         if any(strcmp(type,{'lower','range'}))
-            [ksi,fval,exitflag] = linprog(f',[],[],A,b,lb,ub,options);
+            problem.f = f';
+            [ksi,fval,exitflag] = linprog(problem);
 
             if exitflag == -2
                 % primal infeasible -> empty set
@@ -217,7 +225,8 @@ if isempty(fval)
         % upper bound: since linprog always computes a minimization, we
         % need to multiply with -1 in some parts...
         if any(strcmp(type,{'upper','range'}))
-            [ksi_,fval_,exitflag] = linprog(-f',[],[],A,b,lb,ub,options);
+            problem.f = -f';
+            [ksi_,fval_,exitflag] = linprog(problem);
 
             if exitflag == -2
                 % primal infeasible -> empty set

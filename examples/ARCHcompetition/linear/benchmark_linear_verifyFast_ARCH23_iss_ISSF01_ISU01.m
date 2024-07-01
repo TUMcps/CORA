@@ -57,6 +57,8 @@ sys = linearSys('iss',A,B,[],C);
 % min steps needed: 150
 [res,fals,savedata] = verify(sys,params,options,spec);
 
+disp("specifications verified: " + res);
+disp("computation time: " + savedata.tComp);
 
 % Return value ------------------------------------------------------------
 

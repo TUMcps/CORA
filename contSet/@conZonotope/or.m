@@ -233,8 +233,16 @@ function Z = aux_unionTedrake(Zcell,order,options)
     A = [[A_,A];[Atemp,zeros(ny,size(A,2))]];
     b = zeros(size(A,1),1);
     Aeq = [zeros(size(Aeq,1),2*ny),Aeq];
+
+    problem.f = f';
+    problem.Aineq = A;
+    problem.bineq = b;
+    problem.Aeq = Aeq;
+    problem.beq = beq;
+    problem.solver = 'linprog';
+    problem.options = options;
     
-    val = linprog(f',A,b,Aeq,beq,[],[],[],options);
+    val = linprog(problem);
     
     % construct the resulting zonotope
     ub = val(1:ny);
@@ -311,8 +319,14 @@ function Z = aux_unionLinProg(Zcell,order,options)
     
     A = [A;[zeros(m,dimG),-eye(m)]];
     b = [b;zeros(m,1)];
+
+    problem.f = f';
+    problem.Aineq = A;
+    problem.bineq = b;
+    problem.solver = 'linprog';
+    problem.options = options;
     
-    x = linprog(f',A,b,[],[],[],[],[],options);
+    x = linprog(problem);
     
     % construct final zonotope
     c = x(1:dimG);

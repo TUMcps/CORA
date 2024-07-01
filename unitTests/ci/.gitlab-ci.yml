@@ -41,13 +41,8 @@ stages:
   stage: init
   extends: .base-image
   before_script: 
-    # tell bitbucket tests are running
-    - sudo chmod +x ./unitTests/ci/build_status 
-    - BUILD_STATUS="INPROGRESS" RESULT_TEXT="" ./unitTests/ci/build_status
     # any non-zero exit code should fail the job
     - set +e
-  after_script:
-    - BUILD_STATUS="0" RESULT_TEXT="Job finished." ./unitTests/ci/build_status
 
 # test job
 test-job:
@@ -73,10 +68,6 @@ test-job:
 
     # check test results
     - matlab -batch "addpath(genpath('.')); writeTestResultsForCI('$testSuite');"
-
-    # push results to bitbucket
-    - BUILD_STATUS=$(<failed.txt) RESULT_TEXT=$(<resultText.txt) ./unitTests/ci/build_status
-    - rm resultText.txt
 
     # reset CORA
     - matlab -batch "addpath(genpath('.')); resetCORA();"
@@ -211,13 +202,12 @@ test-benchmarks:
 
 # CI status block ---------------------------------------------------------
 
+# legacy stages for bitbucket 
+
 ci-failure:
   stage: ci-status
   extends: .base-image
   script:
-    # tell bitbucket something went wrong
-    - sudo chmod +x ./unitTests/ci/build_status 
-    - BUILD_STATUS="FAILED" RESULT_TEXT="One or more jobs failed. Check gitlab for details." ./unitTests/ci/build_status
     - exit 1 # always fail
   rules:
     - if: $DO_CI == "true"
@@ -227,9 +217,6 @@ ci-success:
   stage: ci-status
   extends: .base-image
   script:
-    # tell bitbucket all tests passed
-    - sudo chmod +x ./unitTests/ci/build_status 
-    - BUILD_STATUS="0" RESULT_TEXT="CI finished successfully. All tests passed." ./unitTests/ci/build_status
     - exit 0
   rules:
     - if: $DO_CI == "true"

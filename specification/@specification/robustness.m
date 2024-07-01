@@ -151,14 +151,16 @@ function d = aux_distancePolyPoint(C,d,p)
     else
         % set-up linear program to minimize the norm 1 distance: 
         % min ||p - x||_1 s.t. C*x <= d
-        f = [zeros(n,1); ones(2*n,1)];
-        Aeq = [eye(n) eye(n) -eye(n)]; beq = p;
-        A = [C zeros(m,2*n); zeros(2*n,n) -eye(2*n)];
-        b = [d; zeros(2*n,1)];
+        problem.f = [zeros(n,1); ones(2*n,1)];
+        problem.Aeq = [eye(n) eye(n) -eye(n)]; problem.beq = p;
+        problem.Aineq = [C zeros(m,2*n); zeros(2*n,n) -eye(2*n)];
+        problem.bineq = [d; zeros(2*n,1)];
 
         % solve linear program
-        options = optimoptions('linprog','Display','off');
-        [~,d] = linprog(f,A,b,Aeq,beq,[],[],options);
+        problem.solver = 'linprog';
+        problem.options = optimoptions('linprog','Display','off');
+
+        [~,d] = linprog(problem);
     end
 end
 

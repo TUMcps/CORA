@@ -262,9 +262,18 @@ function res = aux_intersectPolyConZono(P,cZ,isMosek,options)
         end
 
     else
+
+        % init linprog struct
+        problem.f = f;
+        problem.Aineq = Aineq;
+        problem.bineq = bineq;
+        problem.Aeq = Aeq;
+        problem.beq = beq;
+        problem.solver = 'linprog';
+        problem.options = options;
     
         % solve linear program
-        [~,val,exitflag] = linprog(f,Aineq,bineq,Aeq,beq,[],[],options);
+        [~,val,exitflag] = linprog(problem);
 
         % multiple cases:
         % 1. constrained zonotope (and possibly polytope) is empty 
@@ -364,8 +373,17 @@ function res = aux_intersectPolyZonoBundle(P,zB,isMosek,options)
     else
         % MATLAB linprog
 
+        % init linprog struct
+        problem.f = f;
+        problem.Aineq = Aineq;
+        problem.bineq = bineq;
+        problem.Aeq = Aeq;
+        problem.beq = beq;
+        problem.solver = 'linprog';
+        problem.options = options;
+
         % solve linear program
-        [~,val,exitflag] = linprog(f,A,b,Aeq,beq,[],[],options);
+        [~,val,exitflag] = linprog(problem);
         res = aux_checkIntersectionEmptyMATLAB(val,exitflag);
     end
     

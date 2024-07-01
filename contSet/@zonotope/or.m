@@ -227,8 +227,16 @@ function Z = aux_unionTedrake(Zcell,order)
     A = [[A_,A];[Atemp,zeros(ny,size(A,2))]];
     b = zeros(size(A,1),1);
     Aeq = [zeros(size(Aeq,1),2*ny),Aeq];
+
+    problem.f = f';
+    problem.Aineq = A;
+    problem.bineq = b;
+    problem.Aeq = Aeq;
+    problem.beq = beq;
+    problem.solver = 'linprog';
+    problem.options = optimoptions('linprog','Display','none');
     
-    val = linprog(f',A,b,Aeq,beq,[],[]);
+    val = linprog(problem);
     
     % construct the resulting zonotope
     ub = val(1:ny);
@@ -291,24 +299,27 @@ function Z = aux_unionLinProg(Zcell,order)
     b = -d;
     
     for i = 1:size(C,1)
-       A = [A;-[C(i,:),abs(C(i,:)*G)]];
+        A = [A;-[C(i,:),abs(C(i,:)*G)]];
     end
     
-    A = [A;[zeros(m,n),-eye(m)]];
-    b = [b;zeros(m,1)];
+    problem.f = f';
+    problem.Aineq = [A;[zeros(m,n),-eye(m)]];
+    problem.bineq = [b;zeros(m,1)];
     
     persistent options
     if isempty(options)
         options = optimoptions('linprog','display','off');
     end
+    problem.solver = 'linprog';
+    problem.options = options;
     
-    x = linprog(f',A,b,[],[],[],[],options);
+    x = linprog(problem);
     
     % construct final zonotope
     c = x(1:n);
     scal = x(n+1:end);
     
-    Z = zonotope([c,G*diag(scal)]);
+    Z = zonotope(c,G*diag(scal));
       
 end
 

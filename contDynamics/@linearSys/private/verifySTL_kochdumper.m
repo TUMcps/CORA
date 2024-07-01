@@ -625,10 +625,16 @@ function res = aux_emptyConstraint(C,d)
 
     else
         
-        ub = ones(n,1); lb = -ones(n,1); f = ones(n,1);
-        options = optimoptions('linprog','display','off');
+        problem.f = ones(n,1);
+        problem.Aineq = C;
+        problem.bineq = d;
+        problem.lb = -ones(n,1);
+        problem.ub = ones(n,1);
+
+        problem.solver = 'linprog';
+        problem.options = optimoptions('linprog','display','off');
     
-        [~,~,exitflag] = linprog(f,C,d,[],[],lb,ub,options);
+        [~,~,exitflag] = linprog(problem);
     
         res = exitflag ~= 1;
     end

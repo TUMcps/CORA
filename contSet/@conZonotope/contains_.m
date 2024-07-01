@@ -148,8 +148,16 @@ function res = aux_containsPoint(cZ,p)
         options = optimoptions('linprog','display','off',...
                             'ConstraintTolerance',1e-9);
     end
+
+    problem.f = f';
+    problem.Aineq = A;
+    problem.bineq = b;
+    problem.Aeq = Aeq;
+    problem.beq = beq;
+    problem.solver = 'linprog';
+    problem.options = options;
     
-    [val,~,exitflag] = linprog(f',A,b,Aeq,beq,[],[],options); 
+    [val,~,exitflag] = linprog(problem); 
     
     % check for containment
     res = true;
@@ -225,8 +233,16 @@ function res = aux_containsSet(cZ1,cZ2)
     if isempty(options)
         options = optimoptions('linprog','display','off');
     end
+
+    problem.f = f';
+    problem.Aineq = A;
+    problem.bineq = b;
+    problem.Aeq = Aeq;
+    problem.beq = beq;
+    problem.solver = 'linprog';
+    problem.options = options;
     
-    [val,~,exitflag] = linprog(f',A,b,Aeq,beq,[],[],options); 
+    [val,~,exitflag] = linprog(problem); 
     
     % check for containment
     res = true;

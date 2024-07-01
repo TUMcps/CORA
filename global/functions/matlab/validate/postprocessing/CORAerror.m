@@ -196,6 +196,9 @@ switch identifier
         arg = varargin{1};
         % description of expected value
         explains = varargin{2};
+        if iscell(explains)
+            explains = strjoin(explains,', ');
+        end
 
         % error message
         if contains(arg,'name-value pair')

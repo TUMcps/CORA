@@ -422,20 +422,24 @@ function points = aux_getInitPoints(R0,points)
     % get zonotope properties
     c = center(R0); G = generators(R0); [n,m] = size(G);
 
+    % init linprog struct
+    problem.solver = 'linprog';
+    problem.options = optimoptions('linprog','Display','off');
+
     % loop over all points
     for i = 1:size(points,2)
         
         % set-up linear program to minimize the norm 1 distance: 
         % min |points(:,i) - c + G*\alpha| s.t. -1 <= \alpha <= 1
-        f = [zeros(m,1); ones(2*n,1)];
-        Aeq = [-G eye(n) -eye(n)]; beq = points(:,i) - c;
-        A = [eye(m) zeros(m,2*n); -eye(m) zeros(m,2*n); ...
+        problem.f = [zeros(m,1); ones(2*n,1)];
+        problem.Aeq = [-G eye(n) -eye(n)];
+        problem.beq = points(:,i) - c;
+        problem.Aineq = [eye(m) zeros(m,2*n); -eye(m) zeros(m,2*n); ...
              zeros(2*n,m), -eye(2*n)];
-        b = [ones(2*m,1); zeros(2*n,1)];
+        problem.bineq = [ones(2*m,1); zeros(2*n,1)];
         
         % solve linear program
-        options = optimoptions('linprog','Display','off');
-        x = linprog(f,A,b,Aeq,beq,[],[],options);
+        x = linprog(problem);
         points(:,i) = c + G*x(1:m);
     end
 end
@@ -492,12 +496,19 @@ function dist = aux_containmentCheckConZono(cZ,P)
     C = P.A; d = P.b;
     
     % distance
-    options = optimoptions('linprog','display','off');
     dist = -inf;
+
+    % init linprog struct
+    problem.solver = 'linprog';
+    problem.options = optimoptions('linprog','display','off');
+    problem.lb = -ones(l,1);
+    problem.ub = ones(l,1);
+    problem.Aeq = A;
+    problem.beq = b;
     
     for i = 1:length(d)
-        [~,dist_] = linprog(-C(i,:)*G,[],[],A,b,-ones(l,1),ones(l,1), ...
-                                                           [],options);                   
+        problem.f = -C(i,:)*G;
+        [~,dist_] = linprog(problem);
         dist = max(dist,C(i,:)*c - d(i) - dist_);
     end
 end
@@ -521,18 +532,20 @@ function dist = aux_intersectionCheck(cZ,P)
     %   s.t. C*x <= d, A*\alpha = b, -1 <= \alpha <= 1, 
     %        c + G*\alpha - x <= a, c + G*\alpha - x >= -a
     
-    f = [ones(n,1);zeros(n+l,1)];
+    problem.f = [ones(n,1);zeros(n+l,1)];
     
-    Ain = [zeros(size(C,1),n+l),C; -eye(n) G -eye(n); -eye(n) -G eye(n); ...
-           zeros(l,n) eye(l) zeros(l,n); zeros(l,n) -eye(l) zeros(l,n)];
-    bin = [d; -c; c; ones(l,1); ones(l,1)];
+    problem.Aineq = [zeros(size(C,1),n+l),C; -eye(n) G -eye(n); -eye(n) -G eye(n); ...
+                     zeros(l,n) eye(l) zeros(l,n); zeros(l,n) -eye(l) zeros(l,n)];
+    problem.bineq = [d; -c; c; ones(l,1); ones(l,1)];
     
-    Aeq = [zeros(size(A,1),n) A zeros(size(A,1),n)];
-    beq = b;
+    problem.Aeq = [zeros(size(A,1),n) A zeros(size(A,1),n)];
+    problem.beq = b;
     
-    linprogoptions = optimoptions('linprog','display','off');
+    problem.solver = 'linprog';
+    problem.options = optimoptions('linprog','display','off');
+
+    [~,dist] = linprog(problem);
     
-    [~,dist] = linprog(f,Ain,bin,Aeq,beq,[],[],[],linprogoptions);
 end
 
 function res = aux_intersectionCheckFast(Z,F)
@@ -631,14 +644,15 @@ function d = aux_distancePolyPoint(P,p)
     else
         % set-up linear program to minimize the norm 1 distance: 
         % min ||p - x||_1 s.t. C*x <= d
-        f = [zeros(n,1); ones(2*n,1)];
-        Aeq = [eye(n) eye(n) -eye(n)]; beq = p;
-        A = [C zeros(m,2*n); zeros(2*n,n) -eye(2*n)];
-        b = [d; zeros(2*n,1)];
+        problem.f = [zeros(n,1); ones(2*n,1)];
+        problem.Aeq = [eye(n) eye(n) -eye(n)]; problem.beq = p;
+        problem.Aineq = [C zeros(m,2*n); zeros(2*n,n) -eye(2*n)];
+        problem.bineq = [d; zeros(2*n,1)];
 
         % solve linear program
-        options = optimoptions('linprog','Display','off');
-        [~,d] = linprog(f,A,b,Aeq,beq,[],[],options);
+        problem.solver = 'linprog';
+        problem.options = optimoptions('linprog','Display','off');
+        [~,d] = linprog(problem);
     end
 end
 

@@ -148,9 +148,17 @@ if isMosek
     end
 
 else
+
+    problem.f = s*dir';
+    problem.Aineq = P.A;
+    problem.bineq = P.b;
+    problem.Aeq = P.Ae;
+    problem.beq = P.be;
+    problem.solver = 'linprog';
+    problem.options = options;
     
     % solve linear program
-    [x,val,exitflag] = linprog(s*dir',P.A,P.b,P.Ae,P.be,[],[],options);
+    [x,val,exitflag] = linprog(problem);
     val = s*val;
 
     if exitflag == -3

@@ -181,9 +181,17 @@ exitflag = 0;
 tol = []; % initially no tolerance
 while exitflag ~= 1
     % solve linear program
-    [res,~,exitflag] = linprog(f,A,b,A_eq,b_eq);
+    problem.f = f;
+    problem.Aineq = A;
+    problem.bineq = b;
+    problem.Aeq = A_eq;
+    problem.beq = b_eq;
+    problem.solver = 'linprog';
+    problem.options = optimoptions('linprog','Display','none');
+    [res,~,exitflag] = linprog(problem);
+
     if exitflag ~= 1
-        disp('Warning! No soultion found for constrained simulation --> soften constraints')
+        disp('Warning! No solution found for constrained simulation --> soften constraints')
         % enlarge tolerance
         if isempty(tol)
             tol = 1e-10;

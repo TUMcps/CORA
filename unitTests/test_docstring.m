@@ -21,9 +21,12 @@ function res = test_docstring()
 % Last update:   21-April-2023 (unix bugfix: author follows empty line)
 %                19-July-2023 (ignore script files)
 %                19-January-2024 (stricter syntax check)
+%                10-May-2024 (improved usability in command window)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+
+disp('Checking all docstrings..')
 
 files = [
     findfiles([CORAROOT filesep 'contDynamics']);
@@ -287,7 +290,7 @@ for i=1:length(files)
         if ~strcmp(lines{lcnt}, ['% ------------------------------ END OF ' 'CODE ------------------------------']) ...
                 || ~isEmptyLine(lines{lcnt-1}) ...
                 || numel(lines) == lcnt || ~isEmptyLine(lines{lcnt+1})
-            issues{end+1} = 'END CODE is written inconsistently.';
+            issues{end+1} = ['END OF ' 'CODE is written inconsistently.'];
         end
         lcnt = lcnt + 1;
 
@@ -419,6 +422,7 @@ for i=1:length(files)
         fprintf('- <a href="matlab:open %s">%s</a>\n', file_path,file_path)
         disp("  Issues:")
         fprintf("  - %s\n", string(issues'))
+        fprintf('  Try <a href="matlab:fix_docstring(''%s'')">fixing the docstring automatically</a>?\n', file_path)
         disp(" ")
 
         % update result

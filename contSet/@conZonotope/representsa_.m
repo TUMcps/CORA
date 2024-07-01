@@ -215,11 +215,16 @@ if ~res && ~isempty(cZ.A)
             end
             
             p = size(cZ.A,2);
-            ub = ones(p,1);
-            lb = -ub;
-            f = ones(p,1);
+
+            problem.f = ones(p,1);
+            problem.Aeq = cZ.A;
+            problem.beq = cZ.b;
+            problem.ub = ones(p,1);
+            problem.lb = -problem.ub;
+            problem.solver = 'linprog';
+            problem.options = options;
             
-            [~,~,exitflag] = linprog(f,[],[],cZ.A,cZ.b,lb,ub,options);
+            [~,~,exitflag] = linprog(problem);
             
             res = false;
             

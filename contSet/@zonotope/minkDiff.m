@@ -246,7 +246,12 @@ if strcmp(method, 'inner') || (strcmp(method, 'exact') && n == 2)
     % vector of cost function
     f = vecnorm(minuend.G, 2, 1);
     % A_abs x <= delta_d && x >= 0
-    [alpha, ~, exitflag] = linprog(-f, [A_abs; -eye(dims)], [delta_d; zeros(dims, 1)]);
+    problem.f = -f;
+    problem.Aineq = [A_abs; -eye(dims)];
+    problem.bineq = [delta_d; zeros(dims, 1)];
+    problem.solver = 'linprog';
+    problem.options = optimoptions('linprog','Display','none');
+    [alpha, ~, exitflag] = linprog(problem);
     if isempty(alpha) || exitflag ~= 1
         % return empty set with correct dimensions?
         Z = zonotope(zeros(n, 0));
@@ -276,7 +281,12 @@ elseif strcmp(method, 'outer') || strcmp(method, 'outer:coarse')
         A_abs = abs(C*G);
         dims = length(A_abs(1, :));
         % A_abs x >= delta_d && x >= 0
-        [alpha, ~, exitflag] = linprog(f, [-A_abs; -eye(dims)], [-delta_d; zeros(dims, 1)]);
+        problem.f = f;
+        problem.Aineq = [-A_abs; -eye(dims)];
+        problem.bineq = [-delta_d; zeros(dims, 1)];
+        problem.solver = 'linprog';
+        problem.options = optimoptions('linprog','Display','none');
+        [alpha, ~, exitflag] = linprog(problem);
     end
 
 elseif strcmp(method, 'approx')
@@ -358,19 +368,21 @@ b_ = b - A * p_;
 
 % construct constraint matrices for linear program
 A = [A_, abs(A_*eye(m_))];
-A = [A; zeros(m_), -eye(m_)];
-b = [b_; zeros(m_, 1)];
+problem.Aineq = [A; zeros(m_), -eye(m_)];
+problem.bineq = [b_; zeros(m_, 1)];
 
 % construct objective function of the linear program
-f = -[zeros(1, m_), sum((cZ.G * T).^2, 1)];
+problem.f = -[zeros(1, m_), sum((cZ.G * T).^2, 1)];
 
 % solve linear program to get interval inner-approximation of polytope
 persistent options
 if isempty(options)
     options = optimoptions('linprog', 'display', 'off');
 end
+problem.solver = 'linprog';
+problem.options = options;
 
-[x, ~, exitflag] = linprog(f, A, b, [], [], [], [], options);
+[x, ~, exitflag] = linprog(problem);
 
 % check if constrained zonotope is empty
 if isempty(x) || exitflag ~= 1
@@ -400,11 +412,17 @@ function d_new = aux_tightenHalfspaces(C, delta_d)
 % tighten halfspaces so that the polytope is identical with the same number
 % of halfspaces
 
+% init linprog struct
+problem.Aineq = C;
+problem.bineq = delta_d;
+problem.solver = 'linprog';
+problem.options = optimoptions('linprog','Display','none');
+
 % loop over halfspaces
 for i = 1:length(delta_d)
     % normal vector
-    n = -C(i, :)';
-    [~, d_new(i, 1), exitflag] = linprog(n, C, delta_d);
+    problem.f = -C(i, :)';
+    [~, d_new(i, 1), exitflag] = linprog(problem);
 end
 if exitflag ~= 1
     % linear program is infeasible since polytope is empty
@@ -458,29 +476,32 @@ end
 % A
 a = kron(ones(1, n_m+2*n_s+1), eye(n_m));
 I = eye(n_m*(n_m + 2 * n_s + 1));
-A = [zeros(n_m, n_m+n_s), zeros(n_m, n_m*(n_m + 2 * n_s + 1)), a, zeros(n_m, n); ...
-    zeros(n_m*(n_m + 2 * n_s + 1), n_m+n_s), I, -I, zeros(n_m*(n_m + 2 * n_s + 1), n); ...
-    zeros(n_m*(n_m + 2 * n_s + 1), n_m+n_s), -I, -I, zeros(n_m*(n_m + 2 * n_s + 1), n)];
+problem.Aineq = [zeros(n_m, n_m+n_s), zeros(n_m, n_m*(n_m + 2 * n_s + 1)), a, zeros(n_m, n); ...
+                 zeros(n_m*(n_m + 2 * n_s + 1), n_m+n_s), I, -I, zeros(n_m*(n_m + 2 * n_s + 1), n); ...
+                 zeros(n_m*(n_m + 2 * n_s + 1), n_m+n_s), -I, -I, zeros(n_m*(n_m + 2 * n_s + 1), n)];
 
 % b
-b = [ones(n_m, 1); ...
-    zeros(2*n_m*(n_m + 2 * n_s + 1), 1)];
+problem.bineq = [ones(n_m, 1); ...
+                 zeros(2*n_m*(n_m + 2 * n_s + 1), 1)];
 
 % A_eq
-A_eq = [M_tilde, -kron(eye(n_m+n_s), G_m), zeros(n*(n_m + n_s), n_m*n_s), zeros(n*(n_m + n_s), n_m), zeros(n*(n_m + n_s), n_m*(n_m + 2 * n_s + 1)), zeros(n*(n_m + n_s), n); ...
-    zeros(n*n_s, n_m+n_s), zeros(n*n_s, n_m*(n_m + n_s)), -kron(eye(n_s), G_m), zeros(n*n_s, n_m), zeros(n*n_s, n_m*(n_m + 2 * n_s + 1)), zeros(n*n_s, n); ...
-    zeros(n, n_m+n_s), zeros(n, n_m*(n_m + n_s)), zeros(n, n_m*n_s), -G_m, zeros(n, n_m*(n_m + 2 * n_s + 1)), -eye(n)];
+problem.Aeq = [M_tilde, -kron(eye(n_m+n_s), G_m), zeros(n*(n_m + n_s), n_m*n_s), zeros(n*(n_m + n_s), n_m), zeros(n*(n_m + n_s), n_m*(n_m + 2 * n_s + 1)), zeros(n*(n_m + n_s), n); ...
+               zeros(n*n_s, n_m+n_s), zeros(n*n_s, n_m*(n_m + n_s)), -kron(eye(n_s), G_m), zeros(n*n_s, n_m), zeros(n*n_s, n_m*(n_m + 2 * n_s + 1)), zeros(n*n_s, n); ...
+               zeros(n, n_m+n_s), zeros(n, n_m*(n_m + n_s)), zeros(n, n_m*n_s), -G_m, zeros(n, n_m*(n_m + 2 * n_s + 1)), -eye(n)];
 
 % b_eq
-b_eq = [zeros(n*(n_m + n_s), 1); ...
-    reshape(-G_s, [], 1); ...
-    c_s - c_m];
+problem.beq = [zeros(n*(n_m + n_s), 1); ...
+               reshape(-G_s, [], 1); ...
+               c_s - c_m];
 
 % f minimizes phi
-f = [-ones(n_m+n_s, 1); zeros(2*n_m*(n_m + 2 * n_s + 1)+n, 1)];
+problem.f = [-ones(n_m+n_s, 1); zeros(2*n_m*(n_m + 2 * n_s + 1)+n, 1)];
+
+problem.solver = 'linprog';
+problem.options = optimoptions('linprog','Display','none');
 
 % solve linear programming problem
-[x, ~, exitflag] = linprog(f, A, b, A_eq, b_eq);
+[x, ~, exitflag] = linprog(problem);
 
 if exitflag == 1
     % extract phi

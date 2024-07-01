@@ -14,11 +14,16 @@ function text = benchmark_linear_reach_ARCH23_heat3D_HEAT03()
 
 % Authors:       Matthias Althoff, Niklas Kochdumper
 % Written:       02-June-2020
-% Last update:   ---
+% Last update:   29-June-2024 (TL, test if mp is installed)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% check if multiple precision toolbox is installed for Krylov
+if isempty(which('mp'))
+    text = 'Multiple precision toolbox is not installed.';
+    return
+end
 
 % System Dynamics ---------------------------------------------------------    
 

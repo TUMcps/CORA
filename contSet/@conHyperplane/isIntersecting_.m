@@ -158,15 +158,19 @@ function res = aux_intersectPolyPoly(obj1,obj2,options)
     m = length(b);
     n = size(A,2);
     
-    A = [A,-eye(m);zeros(m,n),-eye(m)];
-    b = [b;zeros(m,1)];
+    problem.Aineq = [A,-eye(m);zeros(m,n),-eye(m)];
+    problem.bineq = [b;zeros(m,1)];
 
-    Aeq = [Aeq,zeros(1,m)];
+    problem.Aeq = [Aeq,zeros(1,m)];
+    problem.beq = beq;
     
-    f = [zeros(n,1);ones(m,1)];
+    problem.f = [zeros(n,1);ones(m,1)];
+
+    problem.solver = 'linprog';
+    problem.options = options;
     
     % solve the dual problem using linear programming
-    [~,val,exitflag] = linprog(f,A,b,Aeq,beq,[],[],options);
+    [~,val,exitflag] = linprog(problem);
 
     % check if intersection between the two polytopes is empty
     res = true;
@@ -230,10 +234,17 @@ function res = aux_intersectPolyConZono(obj1,obj2,options)
     end
     
     % construct objective function
-    f = [zeros(n,1);ones(p,1);zeros(m,1)];
+    problem.f = [zeros(n,1);ones(p,1);zeros(m,1)];
+
+    problem.Aineq = A;
+    problem.bineq = b;
+    problem.Aeq = Aeq;
+    problem.beq = beq;
+    problem.solver = 'linprog';
+    problem.options = options;
     
     % solve linear program
-    [~,val,exitflag] = linprog(f,A,b,Aeq,beq,[],[],options);
+    [~,val,exitflag] = linprog(problem);
 
     % check if intersection between the two polytopes is empty
     res = true;
@@ -307,9 +318,17 @@ function res = aux_intersectPolyZonoBundle(obj1,obj2,options)
     % construct objective function
     f = zeros(size(Aeq,2),1);
     f(n+1:n+p) = ones(p,1);
+
+    problem.f = f;
+    problem.Aineq = A;
+    problem.bineq = b;
+    problem.Aeq = Aeq;
+    problem.beq = beq;
+    problem.solver = 'solver';
+    problem.options = options;
     
     % solve linear program
-    [~,val,exitflag] = linprog(f,A,b,Aeq,beq,[],[],options);
+    [~,val,exitflag] = linprog(problem);
 
     % check if intersection between the two polytopes is empty
     res = true;

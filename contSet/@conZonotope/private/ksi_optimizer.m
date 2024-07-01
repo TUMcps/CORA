@@ -54,6 +54,14 @@ if isempty(options)
     options = optimoptions('linprog','Algorithm','dual-simplex', 'display','off');
 end
 
+% init linprog struct
+problem.Aeq = A;
+problem.beq = b;
+problem.lb = lb;
+problem.ub = ub;
+problem.solver = 'linprog';
+problem.options = options;
+
 for i = 1:n
 
     % min/max ksi_i
@@ -61,11 +69,13 @@ for i = 1:n
     f(i, 1) = 1;
 
     % minimize (Equation (25) in [1])
-    [x, ~, flag_min] = linprog(f,[],[],A,b,lb,ub,options);
+    problem.f = f;
+    [x, ~, flag_min] = linprog(problem);
     ksi_min(:,i) = x;
 
     % maximize  (Equation (26) in [1])
-    [x, ~, flag_max] = linprog(-f,[],[],A,b,lb,ub,options);
+    problem.f = -f;
+    [x, ~, flag_max] = linprog(problem);
     ksi_max(:,i) = x;
     if flag_min ~= 1 || flag_max ~= 1
         throw(CORAerror('CORA:solverIssue'));

@@ -60,7 +60,7 @@ end
 disp("Computation time: " + tComp);
 disp("");
 
-text = ['TRAF22,',num2str(res),',',num2str(tComp),', , '];
+text = ['TRAF22, ,',num2str(res),',',num2str(tComp),', , '];
 
 end
 
@@ -310,7 +310,7 @@ function rem = aux_lagrangeRemainder(X,p,T)
     
     for i = 1:size(T,1)
         for j = 1:size(T,2)
-            if ~isempty(T{i,j})
+            if ~isnumeric(T{i,j}) && ~representsa_(T{i,j},'emptySet',0)
                 rem(i) = rem(i) + int(j) * transpose(int) * T{i,j} * int;
             end
         end
@@ -356,7 +356,8 @@ function res = aux_checkInputConstraints(R,u,K)
     for i = 1:length(K)
         for j = 1:length(R(i).timeInterval.set)
            set = R(i).timeInterval.set{j};
-           Utemp = u(:,i) + K{i}*zonotope(set.Z(1:5,:)-set.Z(6:10,:));
+           c = center(set); G = generators(set);
+           Utemp = u(:,i) + K{i}*zonotope(c(1:5)-c(6:10), G(1:5,:)-G(6:10,:));
            U_ = U_ | interval(Utemp);
         end
     end

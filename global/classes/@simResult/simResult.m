@@ -34,6 +34,7 @@ classdef simResult
 % Written:       29-May-2020
 % Last update:   16-November-2021 (MW, add property .y)
 %                02-June-2022 (MW, add property .a)
+%                29-June-2024 (TL, allow empty. t if .x is empty)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -85,12 +86,11 @@ methods
         	throw(CORAerror('CORA:tooManyInputArgs',5));
         end
 
-
         % check correct format of simulated trajectories
         if CHECKS_ENABLED
             % - time has to be non-empty, the entries have to be nonnegative
             %   and monotonically increasing
-            if isempty(simRes.t) || ~iscell(simRes.t) || ...
+            if (isempty(simRes.t) && ~isempty(simRes.x)) || ~iscell(simRes.t) || ...
                     any(cellfun(@(x) size(x,2),simRes.t,'UniformOutput',true) ~= 1) || ...
                     any(cellfun(@(x) any(x < 0),simRes.t,'UniformOutput',true)) || ...
                     any(cellfun(@(x) any(diff(x < 0)),simRes.t,'UniformOutput',true))

@@ -82,7 +82,10 @@ function res = contractParallelLinearization(f,dom,jacHan,varargin)
     infi = infimum(dom);
     sup = supremum(dom);
     
-    options = optimoptions('linprog','Display','off', ...
+    problem.Aineq = A_;
+    problem.bineq = b_;
+    problem.solver = 'linprog';
+    problem.options = optimoptions('linprog','Display','off', ...
                            'ConstraintTolerance',1e-9);
     
     n = length(mi);
@@ -94,7 +97,10 @@ function res = contractParallelLinearization(f,dom,jacHan,varargin)
         f_(i) = 1;
         
         % compute new infimum
-        [~,temp] = linprog(f_,A_,b_,[],[],infi,sup,options);
+        problem.f = f_;
+        problem.lb = infi;
+        problem.ub = sup;
+        [~,temp] = linprog(problem);
         
         if ~isempty(temp)
             infi(i) = max(infi(i),temp);
@@ -108,7 +114,10 @@ function res = contractParallelLinearization(f,dom,jacHan,varargin)
         end
         
         % compute new supremum
-        [~,temp] = linprog(-f_,A_,b_,[],[],infi,sup,options);
+        problem.f = -f_;
+        problem.lb = infi;
+        problem.ub = sup;
+        [~,temp] = linprog(problem);
         
         if ~isempty(temp)
             sup(i) = min(sup(i),-temp);

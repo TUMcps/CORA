@@ -97,6 +97,15 @@ function Zred = aux_reduceUnderApproxLinProg(Z,order)
     % compute largest interval that fits inside the zonotope by using
     % linear programming
     [A,b,Aeq,beq,lb,ub,f,ind] = aux_containmentConstraints(Z2,Z1);
+
+    % init linprog struct
+    problem.f = f';
+    problem.Aineq = A;
+    problem.bineq = b;
+    problem.Aeq = Aeq;
+    problem.beq = beq;
+    problem.lb = lb;
+    problem.ub = ub;
     
     % solve linear program
     persistent options
@@ -104,8 +113,10 @@ function Zred = aux_reduceUnderApproxLinProg(Z,order)
         options = optimoptions('linprog','Algorithm','interior-point', ...
                                'MaxIterations',10000,'display','off');
     end
-
-    [s,~,exitflag] = linprog(f',A,b,Aeq,beq,lb,ub,options);
+    problem.solver = 'linprog';
+    problem.options = options;
+    
+    [s,~,exitflag] = linprog(problem);
     
     if exitflag < 0
         throw(CORAerror('CORA:solverIssue'));
@@ -129,15 +140,26 @@ function Zred = aux_reduceUnderApproxScale(Z,order)
     % get conditions for linear program to scale the over-approximative 
     % zonotope until it is contained inside the original zonotope
     [A,b,Aeq,beq,lb,ub,f,ind] = aux_containmentConstraints(Z_,Z);
+
+    % init linprog struct
+    problem.f = f';
+    problem.Aineq = A;
+    problem.bineq = b;
+    problem.Aeq = Aeq;
+    problem.beq = beq;
+    problem.lb = lb;
+    problem.ub = ub;
     
     % solve linear program
     persistent options
     if isempty(options)
         options = optimoptions('linprog','Algorithm','interior-point', ...
                                'MaxIterations',10000,'display','off');
-    end             
-                       
-    [s,~,exitflag] = linprog(f',A,b,Aeq,beq,lb,ub,options);
+    end
+    problem.solver = 'linprog';
+    problem.options = options;
+    
+    [s,~,exitflag] = linprog(problem);
     
     if exitflag < 0
         throw(CORAerror('CORA:solverIssue'));

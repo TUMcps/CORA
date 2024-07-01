@@ -18,13 +18,12 @@ function fix_docstring(file_path)
 
 % Authors:       Tobias Ladner
 % Written:       17-August-2023
-% Last update:   ---
+% Last update:   10-May-2024 (improved usability in command window)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-fprintf("Trying to fix file: %s\n", file_path)
-disp("Please rerun test_docstring afterwards.")
+fprintf("Trying to fix file: %s..\n", file_path)
 
 % read content of file
 filetext = fileread(file_path);
@@ -359,6 +358,8 @@ end
 
 % write lines back to file
 writecell(lines, file_path, 'FileType', 'text', 'QuoteStrings', 'none');
+
+disp('Please rerun <a href="matlab:test_docstring">test_docstring</a> afterwards.')
 
 end
 

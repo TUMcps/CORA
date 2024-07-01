@@ -75,13 +75,6 @@ if ~isempty(P.V.val)
     return
 end
 
-% check if the polytope is completely empty
-if representsa_(P,'emptySet',1e-10)
-    res = false;
-    subspace = [];
-    return
-end
-
 % simpler version for 1D polytopes
 if n == 1
     [res,subspace] = aux_1D(P);
@@ -177,14 +170,23 @@ if nargout < 2
     else
         % MATLAB linprog
 
+        % init linprog struct
+        problem.f = f;
+        problem.Aineq = A;
+        problem.bineq = P.b;
+        problem.lb = [-Inf(n,1);0];
+
         % linear program options
         persistent options
         if isempty(options)
             options = optimoptions('linprog','display','off');
         end
 
+        problem.solver = 'linprog';
+        problem.options = options;
+
         % Solve Linear Program
-        [~,r,exitflag] = linprog(f,A,P.b,[],[],[-Inf(n,1);0],[],options);
+        [~,r,exitflag] = linprog(problem);
 
         if exitflag == 1
             % check if point is strictly interior
@@ -217,10 +219,18 @@ if nargout < 2
 elseif nargout == 2
     % If on the other hand, the user is interested in the subspace, we have
     % to do the computations from above in a more specific way.
+
+    % since we have to evaluate many linear programs anyway, we can quickly
+    % check if the polytope is completely empty -> also degenerate
+    if representsa_(P,'emptySet',1e-10)
+        res = false;
+        subspace = [];
+        return
+    end
     
     % Let's first check whether the polytope is empty, by searching for one
     % point that is contained in P:
-    x0 = aux_maxNormPerpendicularPolytope(P,[]);
+    x0 = aux_maxNormPerpendicularPolytope(P,zeros([dim(P) 0]));
     if isempty(x0)
         res = false;
         P.fullDim.val = false;
@@ -234,7 +244,7 @@ elseif nargout == 2
     P_iter = P - x0;
     
     % Setup the list of vectors we seek
-    subspace = [];
+    subspace = zeros([dim(P) 0]); % Need to have this form to avoid bugs
     
     for i = 1:n
         % Search for vectors in P_iter that are perpendicular to the ones
@@ -248,33 +258,10 @@ elseif nargout == 2
             break;
         end
         
-        % If we did find a new vector, we need to choose another vector,
-        % along x_iter, that does not lie on a vertex. To do so, we will
-        % also need to re-center P_iter
-        x_iter_unit = x_iter ./ vecnorm(x_iter);
-        % First, we compute how far we can scale x_iter with respect to the
-        % origin, in the direction x_iter and -x_iter. We need to limit
-        % those factors, in case they become unbounded.
-        lambda_max = min(supportFunc_(P_iter,x_iter_unit,'upper'), 10);
-        lambda_min = -min(supportFunc_(P_iter,-x_iter_unit,'upper'), 10);
-        % We now take the midpoint between the two points on the boundary
-        % that lie on the line induced by x_iter. That way, we can make
-        % sure that the point does not lie on a vertex.
-        c_iter = x_iter_unit * (lambda_max+lambda_min)/2;
-        
-        if any(c_iter)
-            % We now re-center P_iter, so that we limit the chances of the
-            % origin being on one of the vertices of P_iter;
-            P_iter = P_iter - c_iter;
-            % We also need to translate all the vectors we have found so
-            % far, if we are to find an orthogonal set of vectors:
-            if ~isempty(subspace)
-                subspace = subspace - c_iter;
-            end
-        end
+        x_iter_unit = x_iter / norm(x_iter);
         
         % Now, it suffices to add x_iter to the list
-        subspace = [subspace,x_iter_unit];
+        subspace = [subspace x_iter_unit];
         
     end
     
@@ -291,9 +278,6 @@ elseif nargout == 2
     else
         res = false;
         P.fullDim.val = false;
-        % It remains to transform this into a ONB
-        [Q,R] = qr(subspace);
-        subspace = Q(:,1:k);
     end
     
 end
@@ -346,12 +330,12 @@ end
 function x = aux_maxNormPerpendicularPolytope(P,X)
     % For a list of vectors X = [x_1,...,x_k], solve the linear program
     %   max ||x||_oo
-    %   s.t. x \in P,
+    %   s.t. x + Xw \in P,
     %        forall i: x_i'*x = 0
     %
     % This is equivalent to
     %   max_y max_x y'*x,
-    %   s.t. x \in P,
+    %   s.t. x + Xw \in P,
     %        forall i: x_i'*x = 0,
     %        and where y is iterated over all standard vectors +-e_i.
     
@@ -361,18 +345,12 @@ function x = aux_maxNormPerpendicularPolytope(P,X)
     maximum = 0;
     maximizer = [];
 
-    % add constraints forall i: x_i'*x=0
-    Aeq = [P.Ae; X'];
-    beq = [P.be; zeros(size(X,2),1)];
-
-    P_ = polytope(P.A,P.b,Aeq,beq);
-
     % loop over all dimensions (for y)
     for i=1:n
         % compute maximum for y = +e_i
         y = zeros(n,1);
         y(i) = 1;
-        [res, x] = aux_firstMaximum(P_,y);
+        [res, x] = aux_firstMaximum(P,y,X);
 
         % save maximizer if objective value is larger
         if -res > maximum
@@ -383,7 +361,7 @@ function x = aux_maxNormPerpendicularPolytope(P,X)
         % compute maximum for y = -e_i
         y = zeros(n,1);
         y(i) = -1;
-        [res, x] = aux_firstMaximum(P_,y);
+        [res, x] = aux_firstMaximum(P,y,X);
 
         % save maximizer if objective value is larger
         if -res > maximum
@@ -396,26 +374,47 @@ function x = aux_maxNormPerpendicularPolytope(P,X)
     x = maximizer;
 end
 
-function [res, x] = aux_firstMaximum(P,y)
+function [res, x] = aux_firstMaximum(P,y,X)
 
     % linear program options
     persistent options
     if isempty(options)
         options = optimoptions('linprog','display','off');
     end
-    [x,res,exitflag] = linprog(-y, P.A, P.b, P.Ae, P.be, [], [], options);
+    
+    % Extend to have x + Xw \in P
+    P_A_extended = [P.A P.A*X];
+    P_Aeq_extended = [P.Ae P.Ae*X];
+    y_extended = [y; zeros([size(X,2) 1])];
+    
+    % add constraints forall i: x_i'*x=0
+    P_Aeq_extended = [P_Aeq_extended; X' zeros([size(X,2) size(X,2)])];
+    P_beq_extended = [P.be; zeros(size(X,2),1)];
+
+    % init linprog struct
+    problem.f = -y_extended;
+    problem.Aineq = P_A_extended;
+    problem.bineq = P.b;
+    problem.Aeq = P_Aeq_extended;
+    problem.beq = P_beq_extended;
+    problem.solver = 'linprog';
+    problem.options = options;
+    
+    [x,res,exitflag] = linprog(problem);
     
     % If the problem is unbounded, we need to add a constraint, e.g.,
     %   y'*x = 1
     % in order to find a good direction for x.
     if exitflag == -3
-        Aeq = [P.Ae; y'];
-        beq = [P.be; 1];
-        [x,~] = linprog(-y, P.A, P.b, Aeq, beq, [], [], options);
+        problem.Aeq = [P_Aeq_extended; y_extended'];
+        problem.beq = [P_beq_extended; 1];
+        [x,~] = linprog(problem);
         % set the objective value manually to -Inf to force updating the
         % maximizer
         res = -Inf;
     end
+
+    x = x(1:dim(P));
 end
 
 % ------------------------------ END OF CODE ------------------------------

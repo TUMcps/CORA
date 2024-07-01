@@ -20,7 +20,7 @@ function completed = example_linearSysDT_reach_05_6dim_backOverUnder()
 
 % Authors:       Matthias Althoff
 % Written:       05-April-2023
-% Last update:   ---
+% Last update:   26-June-2024 (TL, slightly enlarge W for numeric stability)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -61,6 +61,8 @@ params.R0 = zonotope(zeros(6,1),diag([1, 1, 1, pi/5, pi/5, 2]));
 params.U = zonotope(zeros(2,1),pi*eye(2));
 params.W = zonotope(zeros(6,1),diag([0.037, 0.00166, 0.0078, 0.00124, 0.00107, 0.07229]));
 
+% slightly enlarge W for numeric stability
+params.W = enlarge(params.W,1.01);
 
 % Reachability Settings ---------------------------------------------------
 

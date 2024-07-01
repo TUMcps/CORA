@@ -28,6 +28,7 @@ function res = isBounded(P)
 %                08-December-2022 (MW, quick exit in nD case)
 %                27-July-2023 (MW, fix 1D case)
 %                25-November-2023 (MW, faster method for degenerate polytopes)
+%                04-June-2024 (MW, use simplex for support function evals)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -89,7 +90,7 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function res = aux_nondegenerate(P,n)
-% chedk via duality (only for degenerate polytopes!)
+% check via duality (only for degenerate polytopes!)
 
 % the origin has to be contained in the (primal) polytope
 if ~contains(P,zeros(n,1))
@@ -144,18 +145,21 @@ if isempty(options)
 end
 
 % variable vector: t in R, x in R^n
-f = [-1; zeros(h,1)];
+problem.f = [-1; zeros(h,1)];
 
 % inequality constraints: t <= x_i -> t - x_i <= 0
-Aineq = [ones(h,1) -eye(h)];
-bineq = zeros(h,1);
+problem.Aineq = [ones(h,1) -eye(h)];
+problem.bineq = zeros(h,1);
 
 % equality constraints: A^T x = 0, sum_i x_i = 1
-Aeq = [zeros(n,1), P_.A'; 0 ones(1,h)];
-beq = [zeros(n,1); 1];
+problem.Aeq = [zeros(n,1), P_.A'; 0 ones(1,h)];
+problem.beq = [zeros(n,1); 1];
+
+problem.solver = 'linprog';
+problem.options = options;
 
 % solve linear program
-[x,fval,exitflag] = linprog(f,Aineq,bineq,Aeq,beq,[],[],options);
+[x,fval,exitflag] = linprog(problem);
 
 if exitflag >= 0
     % solution could be computed
@@ -177,29 +181,69 @@ P.bounded.val = res;
 end
 
 function res = aux_supportFunction(P,n)
+% check if all support functions in the directions of an n-dimensional
+% simplex are bounded; directions are [I_n, -1_n]
 
-    % loop over all dimensions
+    % loop over columns of identity matrix
     for i=1:n
-        for e=[-1,1]
-            % check every axis-aligned direction
-            dir = [zeros(i-1,1);e;zeros(n-i,1)];
-            % evaluate support function
-            val = supportFunc_(P,dir,'upper');
-            if val == Inf
-                % set is unbounded
-                res = false;
-                P.bounded.val = false;
-                P.emptySet.val = false;
-                return
-            elseif val == -Inf
-                % set is empty
-                res = true;
-                P.bounded.val = true;
-                P.emptySet.val = true;
-                return
-            end
+        % check every axis-aligned direction
+        direction = [zeros(i-1,1);1;zeros(n-i,1)];
+        % evaluate support function
+        val = supportFunc_(P,direction,'upper');
+        if val == Inf
+            % set is unbounded
+            res = false;
+            P.bounded.val = false;
+            P.emptySet.val = false;
+            return
+        elseif val == -Inf
+            % set is empty
+            res = true;
+            P.bounded.val = true;
+            P.emptySet.val = true;
+            return
         end
     end
+    % check -1_n
+    direction = -ones(n,1);
+    % evaluate support function
+    val = supportFunc_(P,direction,'upper');
+    if val == Inf
+        % set is unbounded
+        res = false;
+        P.bounded.val = false;
+        P.emptySet.val = false;
+        return
+    elseif val == -Inf
+        % set is empty
+        res = true;
+        P.bounded.val = true;
+        P.emptySet.val = true;
+        return
+    end
+
+    % old version: loop over all -e_i, +e_i
+%     for i=1:n
+%         for e=[-1,1]
+%             % check every axis-aligned direction
+%             dir = [zeros(i-1,1);e;zeros(n-i,1)];
+%             % evaluate support function
+%             val = supportFunc_(P,dir,'upper');
+%             if val == Inf
+%                 % set is unbounded
+%                 res = false;
+%                 P.bounded.val = false;
+%                 P.emptySet.val = false;
+%                 return
+%             elseif val == -Inf
+%                 % set is empty
+%                 res = true;
+%                 P.bounded.val = true;
+%                 P.emptySet.val = true;
+%                 return
+%             end
+%         end
+%     end
 
     % code reaches this part: set is neither unbounded nor empty
     res = true;

@@ -293,14 +293,19 @@ function p = aux_randPointHitAndRun(Z,N)
             
         % define parameters for linear programs
         f = vertcat(1, zeros(m,1));
-        A = horzcat(zeros(2*m,1), vertcat(eye(m), -eye(m)));
-        b = ones(2*m,1);
-        Aeq = horzcat(d, -G);
-        beq =  - p0;
+        problem.Aineq = horzcat(zeros(2*m,1), vertcat(eye(m), -eye(m)));
+        problem.bineq = ones(2*m,1);
+        problem.Aeq = horzcat(d, -G);
+        problem.beq = -p0;
+
+        problem.solver = 'linprog';
+        problem.options = suppressPrint;
 
         % execute linear programs
-        minZ = linprog(f,A,b,Aeq,beq,[],[],suppressPrint);
-        maxZ = linprog(-f,A,b,Aeq,beq,[],[],suppressPrint);
+        problem.f = f;
+        minZ = linprog(problem);
+        problem.f = -f;
+        maxZ = linprog(problem);
 
         % sample line segment uniformly
         minC = minZ(1);
@@ -378,14 +383,17 @@ function p = aux_randPointBilliard(Z,N)
 
         while true
             % define parameters for linear program
-            f = vertcat(1, zeros(m,1));
-            A = horzcat(zeros(2*m,1), vertcat(eye(m), -eye(m)));
-            b = ones(2*m,1);
-            Aeq = horzcat(d, -G);
-            beq = -q0;
+            problem_boundary.f = vertcat(1, zeros(m,1));
+            problem_boundary.Aineq = horzcat(zeros(2*m,1), vertcat(eye(m), -eye(m)));
+            problem_boundary.bineq = ones(2*m,1);
+            problem_boundary.Aeq = horzcat(d, -G);
+            problem_boundary.beq = -q0;
+
+            problem_boundary.solver = 'linprog';
+            problem_boundary.options = suppressPrint;
             
             % get intersection point of direction vector with zonotope boundary
-            maxZ = linprog(-f,A,b,Aeq,beq,[],[],suppressPrint);
+            maxZ = linprog(problem_boundary);
             maxC = maxZ(1);
             q = q0 + maxC * d;
 
@@ -428,13 +436,15 @@ function p = aux_randPointBilliard(Z,N)
             end
             
             % define parameters for linear program
-            f = horzcat(zeros(1,m), -transpose(q));
-            A = horzcat(vertcat(ones(1,m), -eye(m), -eye(m)), ...
-                vertcat(zeros(1,n), transpose(G), -transpose(G)));
-            b = vertcat(1, zeros(2*m,1));
+            problem_facet.f = horzcat(zeros(1,m), -transpose(q));
+            problem_facet.Aineq = horzcat(vertcat(ones(1,m), -eye(m), -eye(m)), ...
+                                  vertcat(zeros(1,n), transpose(G), -transpose(G)));
+            problem_facet.bineq = vertcat(1, zeros(2*m,1));
+            problem_facet.solver = 'linprog';
+            problem_facet.options = suppressPrint;
         
             % get unit normal vector of hit facet
-            linOut = linprog(f,A,b,[],[],[],[],suppressPrint);
+            linOut = linprog(problem_facet);
             s = linOut(m+1:m+n);
             s = s / norm(s);
     

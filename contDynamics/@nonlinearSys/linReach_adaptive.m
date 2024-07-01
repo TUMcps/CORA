@@ -82,11 +82,17 @@ elseif options.i > 1
     % finitehorizon is capped by remaining time
     min([options.tFinal - options.t, finitehorizon]);
     
-    % addition for ARCH'23: artificially enlarge time step if current
-    % finitehorizon almost same as last time step size
+    % addition for ARCH'23: artificially enlarge finite horizon if
+    % computed value is almost the same as the last time step size
     if withinTol(finitehorizon,options.stepsize(options.i-1),1e-3)
         finitehorizon = options.finitehorizon(options.i-1) * 1.1;
     end
+    % (don't use withinTol because it also accepts absolute tolerance)
+    % alternative (currently convergence issues...)
+%     if abs(finitehorizon-options.stepsize(options.i-1)) / ...
+%             min(abs(finitehorizon),abs(options.stepsize(options.i-1))) <= 1e-3
+%         finitehorizon = finitehorizon * 1.1;
+%     end
 
     % init time step size for current step as finitehorizon
     options.timeStep = finitehorizon;
@@ -239,7 +245,7 @@ while true
         % half time step, reset linearization error
         options.timeStep = options.timeStep * 0.5;
         finitehorizon = options.timeStep;
-        error_adm = zeros(obj.dim,1); % options.error_adm_horizon
+        error_adm = options.error_adm_horizon;
         continue
     end
     % ... now containment of L ensured
@@ -248,8 +254,6 @@ while true
     if veryfirststep || ~all(zeroWidthDim == options.zeroWidthDim)
         options.zeroWidthDim = zeroWidthDim;
         options = aux_getPowers(obj,options,linSys,zeroWidthDim,VerrorDyn);
-        % old version
-%         options = aux_getPowers_old(linSys,options,VerrorDyn);
     end
     
     % compute set of abstraction errors
@@ -868,7 +872,8 @@ while true
     
     % safety break condition
     if p == 100
-        CORAwarning('CORA:contDynamics',"Check computation for order of abstraction error");
+        CORAwarning('CORA:contDynamics',...
+            "Check computation for order of abstraction error");
         % fix for prodDesParam, where dot(x4) = 0... thus Inf (probably
         % works also for similar systems)
         if all(qi(~isinf(qi)) < p+1)

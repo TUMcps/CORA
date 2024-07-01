@@ -563,14 +563,19 @@ if isMosek
     end
 
 else
+    problem.f = cost;
+
     % constraint matrices
-    beq = sparse(beq.row,ones(1,length(beq.row)),beq.val,Aeq.nCon,1);
-    Aeq = sparse(Aeq.row,Aeq.col,Aeq.val,Aeq.nCon,nVars);
-    b = sparse(b.row,ones(1,length(b.row)),b.val,A.nCon,1);
-    A = sparse(A.row,A.col,A.val,A.nCon,nVars);
+    problem.beq = sparse(beq.row,ones(1,length(beq.row)),beq.val,Aeq.nCon,1);
+    problem.Aeq = sparse(Aeq.row,Aeq.col,Aeq.val,Aeq.nCon,nVars);
+    problem.bineq = sparse(b.row,ones(1,length(b.row)),b.val,A.nCon,1);
+    problem.Aineq = sparse(A.row,A.col,A.val,A.nCon,nVars);
+
+    problem.solver = 'linprog';
+    problem.options = optimoptions('linprog','Display','none');
     
     % solve linear programming problem
-    [~,~,exitflag] = linprog(cost,A,b,Aeq,beq);
+    [~,~,exitflag] = linprog(problem);
     
     isIn = (exitflag == 1);
 end

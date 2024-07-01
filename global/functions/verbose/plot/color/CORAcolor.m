@@ -28,7 +28,8 @@ function color = CORAcolor(identifier, varargin)
 
 % Authors:       Tobias Ladner
 % Written:       02-March-2023
-% Last update:   24-March-2023 (TL, 'CORA:next')
+% Last update:   24-March-2023 (TL, added 'CORA:next')
+%                25-June-2024 (TL, added 'CORA:color')
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -39,7 +40,9 @@ end
 inputArgsCheck({{identifier, 'str', {'CORA:reachSet', ...
     'CORA:initialSet', 'CORA:finalSet', 'CORA:simulations', ...
     'CORA:unsafe','CORA:unsafeLight','CORA:safe', 'CORA:invariant', ...
-    'CORA:highlight1','CORA:highlight2', 'CORA:next'}}})
+    'CORA:highlight1','CORA:highlight2', 'CORA:next', ...
+    'CORA:color1','CORA:color2','CORA:color3','CORA:color4', ...
+    'CORA:color5','CORA:color6','CORA:color7'}}})
 
 color = [0 0 0]; % default
 
@@ -91,6 +94,22 @@ switch identifier
         color = [0.6235 0.7294 0.2118]; % light green
     case 'CORA:next'
         color = defaultPlotColor();
+
+    % matlab default colors
+    case 'CORA:color1'
+        color = [0 0.4470 0.7410];       % blue
+    case 'CORA:color2'
+        color = [ 0.8500 0.3250 0.0980]; % red
+    case 'CORA:color3'
+        color = [0.9290 0.6940 0.1250];  % yellow
+    case 'CORA:color4'
+        color = [0.4940 0.1840 0.5560];  % purple
+    case 'CORA:color5'
+        color = [0.4660 0.6740 0.1880];  % green
+    case 'CORA:color6'
+        color = [0.3010 0.7450 0.9330];  % light blue
+    case 'CORA:color7'
+        color = [0.6350 0.0780 0.1840];  % dark red
         
 end
     

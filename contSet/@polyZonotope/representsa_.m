@@ -227,23 +227,27 @@ function res = aux_inCone(N,v,v_,tol)
 
     % construct constraints and objective function
     [n,m] = size(N);
+    problem.f = [zeros(1,m),ones(1,n)];
 
     A1 = [N,-eye(n)];
     b1 = v_-v;
     A2 = [-N,-eye(n)];
     b2 = v-v_;
+    problem.Aineq = [A1;A2];
+    problem.bineq = [b1;b2];
     
-    lb = zeros(n+m,1);
-    
-    f = [zeros(1,m),ones(1,n)];
+    problem.lb = zeros(n+m,1);
     
     % solve linear program
     persistent options
     if isempty(options)
         options = optimoptions('linprog','Display','off');
     end
+
+    problem.solver = 'linprog';
+    problem.options = options;
     
-    x = linprog(f,[A1;A2],[b1;b2],[],[],lb,[],options);
+    x = linprog(problem);
     
     % check if problem is solvable
     res = all(x(m+1:end) < tol);

@@ -93,6 +93,10 @@ function p = randPoint_(cZ,N,type,varargin)
         if isempty(suppressPrint)
             suppressPrint = optimoptions('linprog', 'Display', 'off');
         end
+
+        % init linprog struct
+        problem.solver = 'linprog';
+        problem.options = suppressPrint;
         
         % sample N points
         for i = 1:N
@@ -104,14 +108,16 @@ function p = randPoint_(cZ,N,type,varargin)
             
             % define parameters for linear programs
             f = vertcat(1, zeros(m,1));
-            A = horzcat(zeros(2*m,1), vertcat(eye(m), -eye(m)));
-            b = ones(2*m,1);
-            Aeq = vertcat(horzcat(d, -G), horzcat(zeros(nc,1), cZ.A));
-            beq = vertcat(c - p0, cZ.b);
+            problem.Aineq = horzcat(zeros(2*m,1), vertcat(eye(m), -eye(m)));
+            problem.bineq = ones(2*m,1);
+            problem.Aeq = vertcat(horzcat(d, -G), horzcat(zeros(nc,1), cZ.A));
+            problem.beq = vertcat(c - p0, cZ.b);
             
             % execute linear programs
-            minZ = linprog(f,A,b,Aeq,beq,[],[],suppressPrint);
-            maxZ = linprog(-f,A,b,Aeq,beq,[],[],suppressPrint);
+            problem.f = f;
+            minZ = linprog(problem);
+            problem.f = -f;
+            maxZ = linprog(problem);
     
             % sample line segment uniformly
             minC = minZ(1);

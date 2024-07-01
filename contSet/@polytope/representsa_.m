@@ -383,11 +383,15 @@ function res = aux_isEmptySet(P)
             options = optimoptions('linprog','display','off', ...
                                'OptimalityTolerance',1e-10);
         end
+
+        problem.f = b';
+        problem.Aineq = [-eye(nrConIneq);A';-A'];
+        problem.bineq = zeros(nrConIneq+2*n,1);
+        problem.solver = 'linprog';
+        problem.options = options;
         
         % solve linear program (all inequalities)
-        [x,~,exitflag] = linprog(b',...
-            [-eye(nrConIneq);A';-A'],zeros(nrConIneq+2*n,1),...
-            [],[],[],[],options);
+        [x,~,exitflag] = linprog(problem);
         
         % read out solution
         if exitflag == -2 || (exitflag > 0 && b'*x >= -1e-10)

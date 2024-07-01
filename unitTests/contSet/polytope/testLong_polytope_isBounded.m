@@ -10,8 +10,6 @@ function res = testLong_polytope_isBounded
 % Outputs:
 %    res - true/false 
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
@@ -20,7 +18,7 @@ function res = testLong_polytope_isBounded
 
 % Authors:       Mark Wetzlinger
 % Written:       29-November-2022
-% Last update:   ---
+% Last update:   04-June-2024 (MW, test for unboundedness)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -29,12 +27,12 @@ function res = testLong_polytope_isBounded
 res = true;
 
 % number of tests
-nrTests = 25;
+nrTests = 50;
 
 for i=1:nrTests
     
     % random dimension
-    n = randi(5);
+    n = randi(10);
 
     % compute random vertices
     I = interval(-ones(n,1),ones(n,1));
@@ -52,8 +50,32 @@ for i=1:nrTests
     % init polytope
     P = polytope(V);
 
-    % emptiness check
+    % boundedness check
     if ~isBounded(P)
+        res = false; return
+    end
+
+    % sample normal vectors only from one halfspace -> polytope unbounded
+    nrCon = randi([n+1,2*n]);
+    randDir = randn(n,1);
+    randDir = randDir / vecnorm(randDir);
+    A = zeros(0,n);
+    while size(A,1) < nrCon
+        randDir_j = randn(n,1);
+        % ensure that randDir_j looks into same halfspace as randDir
+        if randDir' * randDir_j < 0
+            continue
+        end
+        A = [A; randDir_j'];
+    end
+    % select random offsets (don't affect boundedness)
+    b = rand(nrCon,1);
+
+    % init polytope
+    P = polytope(A,b);
+
+    % boundedness check
+    if isBounded(P)
         res = false; return
     end
 

@@ -100,6 +100,9 @@ spec = specification(halfspace(1,74),'safeSet');
 % min steps needed: 2130
 [res,fals,savedata] = verify(sys,params,options,spec);
 
+disp("specifications verified: " + res);
+disp("computation time: " + savedata.tComp);
+
 
 % Return value ------------------------------------------------------------
 

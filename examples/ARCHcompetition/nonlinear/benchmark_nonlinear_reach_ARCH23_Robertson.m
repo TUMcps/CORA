@@ -30,7 +30,7 @@ dim_x = dim(params.R0);
 dim_u = dim(params.U);
 
 options.alg = 'lin-adaptive';
-options.verbose = true;
+% options.verbose = true;
 
 % System Dynamics ---------------------------------------------------------
 
@@ -64,6 +64,8 @@ for i=1:nrSys
         widthSum{i}{iSet,1} = sum(interval(R{i}.timeInterval.set{iSet}));
     end
     widthEnd(i,1) = 2*rad(widthSum{i}{end});
+
+    disp("computation time of reachable set (case 1): " + compTime(i));
     
 end
 

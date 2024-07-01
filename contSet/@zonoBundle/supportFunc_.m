@@ -77,11 +77,11 @@ end
 
 % add optimal point as an additional variable
 A = [eye(size(Aeq,2));-eye(size(Aeq,2))];
-A = [zeros(size(A,1),n),A];
+problem.Aineq = [zeros(size(A,1),n),A];
+problem.bineq = [ub;-lb];
 
-b = [ub;-lb];
-
-Aeq = [repmat(eye(n),[zB.parallelSets,1]),Aeq];
+problem.Aeq = [repmat(eye(n),[zB.parallelSets,1]),Aeq];
+problem.beq = beq;
 
 f = [dir;zeros(length(lb),1)];
 
@@ -91,11 +91,15 @@ if isempty(options)
     options = optimoptions('linprog','display','off');
 end
 
+problem.solver = 'linprog';
+problem.options = options;
+
 % upper or lower bound
 if strcmp(type,'lower')
     
     % solve linear program
-    [x,val,exitflag] = linprog(f',A,b,Aeq,beq,[],[],options);
+    problem.f = f';
+    [x,val,exitflag] = linprog(problem);
     if exitflag == -2
         % primal infeasible -> empty set
         val = Inf; x = []; return
@@ -107,7 +111,8 @@ if strcmp(type,'lower')
 elseif strcmp(type,'upper')
     
     % solve linear program
-    [x,val,exitflag] = linprog(-f',A,b,Aeq,beq,[],[],options);
+    problem.f = -f';
+    [x,val,exitflag] = linprog(problem);
     if exitflag == -2
         % primal infeasible -> empty set
         val = -Inf; x = []; return
@@ -120,7 +125,8 @@ elseif strcmp(type,'upper')
 elseif strcmp(type,'range')
 
     % solve linear program for upper bound
-    [x_upper,val_upper,exitflag] = linprog(-f',A,b,Aeq,beq,[],[],options);
+    problem.f = -f';
+    [x_upper,val_upper,exitflag] = linprog(problem);
     if exitflag == -2
         % primal infeasible -> empty set
         val = interval(-Inf,Inf); x = []; return
@@ -129,8 +135,10 @@ elseif strcmp(type,'range')
         throw(CORAerror('CORA:solverIssue'));
     end
     val_upper = -val_upper;
+
     % solve linear program for lower bound
-    [x_lower,val_lower] = linprog(f',A,b,Aeq,beq,[],[],options);
+    problem.f = f';
+    [x_lower,val_lower] = linprog(problem);
 
     % combine results for output args
     val = interval(val_lower,val_upper);

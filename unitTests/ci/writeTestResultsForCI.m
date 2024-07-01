@@ -20,7 +20,7 @@ function writeTestResultsForCI(varargin)
 
 % Authors:       Tobias Ladner
 % Written:       22-April-2023
-% Last update:   ---
+% Last update:   10-May-2024 (TL, removed resultText.txt for bitbucket)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -50,14 +50,6 @@ end
 
 % read results table
 results = resultsTestSuite.results; 
-
-% result text shown in bitbucket
-fileID = fopen('resultText.txt','w');
-fprintf(fileID, '%d/%d tests passed.', nnz([results.ok]), length(results)); 
-if sum(~[results.ok]) > 0
-    fprintf(fileID, ' Failed tests. %s', strjoin({results(~[results.ok]).fname}, ', ')); 
-end
-fclose(fileID);
 
 % result of test suite used as exit code
 fileID = fopen('failed.txt','w');

@@ -58,7 +58,12 @@ methods (Access = {?nnLayer, ?neuralNetwork})
             G_ = 0.5 * G(j, :) * diag(u_-l_);
             l = c_ - sum(abs(G_));
         else
-            [~, temp] = linprog(G(j, :), C, d, [], [], [], [], options);
+            problem.f = G(j, :);
+            problem.Aineq = C;
+            problem.bineq = d;
+            problem.solver = 'linprog';
+            problem.options = options;
+            [~, temp] = linprog(problem);
             l = c(j) + temp;
         end
 
@@ -69,7 +74,12 @@ methods (Access = {?nnLayer, ?neuralNetwork})
             if evParams.bound_approx
                 u = c_ + sum(abs(G_));
             else
-                [~, temp] = linprog(-G(j, :), C, d, [], [], [], [], options);
+                problem.f = -G(j, :);
+                problem.Aineq = C;
+                problem.bineq = d;
+                problem.solver = 'linprog';
+                problem.options = options;
+                [~, temp] = linprog(problem);
                 u = c(j) - temp;
             end
 
