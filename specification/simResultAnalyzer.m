@@ -21,7 +21,7 @@ classdef simResultAnalyzer < handle
 
 % Authors:       Benedikt Seidl
 % Written:       04-January-2022
-% Last update:   ---
+% Last update:   04-July-2024 (TL, updated analyze() due to new simResult)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -41,42 +41,42 @@ methods
         obj.simRes = simRes;
     end
 
-    function sigs = analyze(obj, n)
+    function sigs = analyze(obj, i, j)
         % analyze all time intervals of simulation result with index n
         k = keys(obj.aps);
         sigs = containers.Map;
-        dur = obj.simRes.t{n}(end);
+        dur = obj.simRes(i).t{j}(end);
 
         % prepare signals for all atomic propositions
-        for i = 1:length(k)
-            sigs(k{i}) = signal(dur, false);
+        for m = 1:length(k)
+            sigs(k{m}) = signal(dur, false);
         end
 
-        for i = 1:length(obj.simRes.t{n})-1
+        for l = 1:length(obj.simRes(i).t{j})-1
             % obtain value of simulation
             %
             % Taking the first point only is an approximation.
             % However, since simulation results have no claim of
             % correctness this inaccuracy is acceptable here.
-            point = obj.simRes.x{n}(i,:);
+            point = obj.simRes(i).x{j}(l,:);
 
             % set location property
-            if ~isempty(obj.simRes.loc)
-                loc = obj.simRes.loc(n);
+            if ~isempty(obj.simRes(i).loc)
+                loc = obj.simRes(i).loc(j);
             else
                 loc = 1;
             end
 
             % calculate time interval
-            from = obj.simRes.t{n}(i);
-            to = obj.simRes.t{n}(i+1);
+            from = obj.simRes(i).t{j}(l);
+            to = obj.simRes(i).t{j}(l+1);
 
             % check all atomic propositions
-            for j = 1:length(k)
-                if obj.aps(k{j}).evaluatePoint(point.', loc)
+            for m = 1:length(k)
+                if obj.aps(k{m}).evaluatePoint(point.', loc)
                     sig = signal.indicator(dur, interval(from, to), true);
 
-                    sigs(k{j}) = sigs(k{j}) | sig;
+                    sigs(k{m}) = sigs(k{m}) | sig;
                 end
             end
         end

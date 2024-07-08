@@ -11,7 +11,7 @@ function ls = levelSet(S,varargin)
 %    ls - levelSet object
 %
 % Example:
-%    E = ellipsoid([1 0; 0 2];[1;-1]);
+%    E = ellipsoid([1 0; 0 2],[1;-1]);
 %    ls = levelSet(E);
 %
 % Other m-files required: none

@@ -1,4 +1,4 @@
-function runHeaders(varargin)
+function res = runHeaders(varargin)
 % runHeaders - runs all examples from the function headers
 %
 % Syntax:
@@ -6,10 +6,9 @@ function runHeaders(varargin)
 %
 % Inputs:
 %    verbose - (optional) show workspace output or not
-%    directory - (optional) change directory
 %
 % Outputs:
-%    -
+%    res - if all headers ran successfully
 
 % Authors:       Mark Wetzlinger, Tobias Ladner
 % Written:       11-April-2023
@@ -22,9 +21,7 @@ function runHeaders(varargin)
 currentDirectory = pwd;
 
 % default settings
-[verbose,directory] = setDefaultValues(...
-    {true,[CORAROOT filesep 'examples']},varargin);
-% ... directory currently not used
+[verbose] = setDefaultValues({true},varargin);
 
 % files from which we want to run the examples from their headers
 files = [
@@ -58,6 +55,7 @@ numberOfExamples = 0;
 failed = {};
 emptyExamples = {};
 
+fprintf("Testing up to %i headers:\n", length(files))
 for i=1:length(files)
     file = files(i);
     file_path = [file.folder, filesep, file.name];
@@ -83,7 +81,7 @@ for i=1:length(files)
     % split text into lines
     linestext = splitlines(filetext);
     % find line with 'Example' / 'Examples'
-    startline = find(contains(linestext,'Example'),1,'first');
+    startline = find(contains(linestext,'% Example'),1,'first');
     if isempty(startline)
         % no example
         continue
@@ -111,21 +109,30 @@ for i=1:length(files)
     % write all lines in between to text and run
     exampletext = strjoin(exampletext,'\n');
 
+    seed = randi(2^32);
+
     % Supress output of example by usage of evalc
     try
         if verbose
-            fprintf(['run ' fname ': ']);
+            fprintf('.. rng(%10i); header of %-60s : ', seed, fname);
         end
         % call evalc in different scope to avoid storing variables here
-        aux_runSingleExample(exampletext);
+        aux_runSingleExample(exampletext, seed);
         if verbose
             fprintf('%s\n','passed');
         end
     catch ME
-        % save file names of failed tests
-        failed = [failed; {fname}];
-        if verbose
-            fprintf('%s\n','failed');
+        if contains(fname,[filesep 'private' filesep])
+            % ok as private functions cannot be called from outside
+            if verbose
+                fprintf('%s\n','maybe');
+            end
+        else
+            % save file names of failed tests
+            failed = [failed; {fname}];
+            if verbose
+                fprintf('%s\n','failed');
+            end
         end
     end
     % close figures (if any)
@@ -136,16 +143,24 @@ for i=1:length(files)
 
 end
 
+numFailed = size(failed,1);
+
 % display number of failed examples and file names
 disp('----------------------------------------------------------------------------');
-disp(['run ' int2str(numberOfExamples) ' examples, ' int2str(size(failed,1)) ' failed.']);
-disp(strjoin(failed, ',\n'));
+fprintf('run %i examples in headers, %i failed.\n', numberOfExamples, numFailed);
+if numFailed > 0
+    fprintf('- header of ')
+    disp(strjoin(failed, '\n- header of '));
+end
 
 cd([CORAROOT filesep 'unitTests']);
 save('failed.mat','failed');
 
 % return to original working directory
 cd(currentDirectory);
+
+% check if all succeeded
+res = isempty(failed);
 
 end
 
@@ -173,8 +188,9 @@ function files = aux_exclFiles(files, path, name)
     files = files(~idx);
 end
 
-function aux_runSingleExample(exampletext)
+function aux_runSingleExample(exampletext,seed)
     % run example here to have a different variable scope
+    rng(seed)
     evalc(exampletext);
 end
 

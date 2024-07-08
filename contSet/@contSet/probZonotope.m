@@ -10,10 +10,6 @@ function probZ = probZonotope(S,varargin)
 % Outputs:
 %    probZ - probZonotope object
 %
-% Example:
-%    E = ellipsoid([1 0; 0 2];[1;-1]);
-%    probZ = probZonotope(E);
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

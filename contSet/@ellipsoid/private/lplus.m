@@ -17,7 +17,7 @@ function E_L = lplus(E,L,mode)
 %    E1 = ellipsoid([3 -1; -1 1],[1;0]);
 %    E2 = ellipsoid([5 1; 1 2],[1;-1]);
 %    l = [1;0];
-%    E = lplus([E1,E2],l);
+%    % E = lplus([E1,E2],l);
 %
 % References:
 %    [1] https://www2.eecs.berkeley.edu/Pubs/TechRpts/2006/EECS-2006-46.pdf

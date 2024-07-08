@@ -34,10 +34,8 @@ inputArgsCheck({{matP,'att','matPolytope'}, ...
 %factor1 is a numeric matrix
 if exponent==0
     %return identity matrix
-    matPpower=matPolytope();
-    matPpower.verts=1;
-    matPpower.vertex{1}=eye(dim(matP));
-
+    matPpower=matPolytope(eye(dim(matP)));
+    
 elseif exponent==1
     %do nothing
     matPpower=matP;

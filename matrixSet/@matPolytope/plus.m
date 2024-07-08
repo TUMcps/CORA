@@ -62,7 +62,7 @@ if isa(summand,'matPolytope')
     end
 
     % rewrite result as a matrix polytope
-    matV = reshape(vecV,max(n1,n2),max(m1,m2),h1*h2);
+    matV = reshape(vecV,max(n1,n2),max(m1,m2),[]);
 
     % init matPolyzonotope
     matP=matPolytope(matV);

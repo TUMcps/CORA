@@ -11,8 +11,8 @@ function aff = affine(S,varargin)
 %    aff - affine object
 %
 % Example:
-%    E = ellipsoid([1 0; 0 2];[1;-1]);
-%    aff = affine(E);
+%    I = interval([2;1],[3;4]);
+%    aff = affine(I);
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -8,7 +8,7 @@ function writeTestResultsForCI(varargin)
 % Inputs:
 %    testSuite - (optional) results of which test suite should be displayed:
 %               'short' (default), 'long', 'mp', 'mosek', 'sdpt3',
-%               'intlab', 'nn'
+%               'intlab', 'nn', 'examples','benchmarks','header'
 %
 % Outputs:
 %    -
@@ -28,7 +28,7 @@ function writeTestResultsForCI(varargin)
 % default format: last run
 testSuite = setDefaultValues({'short'},varargin);
 % check if correct identifier provided
-inputArgsCheck({{testSuite,'str',{'short','long','flaky','intlab','mosek','mp','sdpt3','nn','examples','benchmarks'}}});
+inputArgsCheck({{testSuite,'str',{'short','long','flaky','intlab','mosek','mp','sdpt3','nn','examples','benchmarks','header'}}});
 
 % load data
 unitTestsFile = [CORAROOT filesep 'unitTests' filesep 'unitTestsStatus.mat'];

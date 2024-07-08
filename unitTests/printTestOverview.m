@@ -43,7 +43,7 @@ format = setDefaultValues({'short'},varargin);
 % more leniency in writing of identifiers
 format = lower(format);
 % check if correct identifier provided
-inputArgsCheck({{format,'str',{'short','long','flaky','intlab','mosek','mp','sdpt3','nn','examples','benchmarks'}}});
+inputArgsCheck({{format,'str',{'short','long','flaky','intlab','mosek','mp','sdpt3','nn','examples','benchmarks','header'}}});
 
 % check list of name-value pairs
 checkNameValuePairs(NVpairs,{'LongestTests'});

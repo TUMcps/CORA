@@ -107,6 +107,8 @@ switch testSuite
         prefix = 'example';
     case 'benchmarks'
         prefix = 'benchmark';
+    case 'header'
+        prefix = 'testHeader';
     otherwise
         throw(CORAerror('CORA:specialError','Unknown test suite.'))
 end

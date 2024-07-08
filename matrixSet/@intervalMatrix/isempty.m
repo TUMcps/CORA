@@ -14,9 +14,6 @@ function res = isempty(intMat)
 %    intMat = intervalMatrix([2 3; 1 2],[1 0; 1 1]);
 %    res = isempty(intMat);
 %
-%    intMat = intervalMatrix();
-%    res = isempty(intMat);
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

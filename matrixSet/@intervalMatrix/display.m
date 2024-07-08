@@ -12,7 +12,6 @@ function display(intMat)
 %
 % Example:
 %    intMat = intervalMatrix([1 2 3; 2 3 1],[1 0 2; 0 1 1])
-%    intMat = intervalMatrix()
 %
 % Other m-files required: none
 % Subfunctions: none

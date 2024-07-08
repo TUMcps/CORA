@@ -11,7 +11,7 @@ function Z = zonotope(S,varargin)
 %    Z - zonotope object
 %
 % Example:
-%    E = ellipsoid([1 0; 0 2];[1;-1]);
+%    E = ellipsoid([1 0; 0 2],[1;-1]);
 %    Z = zonotope(E);
 %
 % Other m-files required: none

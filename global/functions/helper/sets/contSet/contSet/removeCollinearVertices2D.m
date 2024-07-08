@@ -14,9 +14,6 @@ function V = removeCollinearVertices2D(V,varargin)
 % Outputs:
 %    V - vertices
 %
-% Example:
-%    V = 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

@@ -21,6 +21,7 @@ function run_arch24_aff_category()
 % regular directory
 outputdir = [CORAROOT filesep 'examples' filesep 'ARCHcompetition' ...
     filesep 'linear' filesep 'results' filesep];
+mkdir(outputdir)
 
 % initialize .csv file
 fid = fopen([outputdir 'results.csv'],'w');
@@ -80,7 +81,7 @@ benchmarks = struct(...
 cnt = 0;
 
 % loop over all benchmark groups
-for g=1:1 %length(benchmarks)
+for g=1:length(benchmarks)
     disp([benchmarks(g).name ' ' longdashes]);
 
     % loop over instance
@@ -103,6 +104,7 @@ for g=1:1 %length(benchmarks)
             disp(['Benchmark failed: ' ...
                 benchmarks(g).name ', ' benchmarks(g).id{i}]);
             cnt = cnt + 1;
+            continue
         end
 
         % print result to .csv file
@@ -111,6 +113,7 @@ for g=1:1 %length(benchmarks)
         catch ME
             disp(['Writing to .csv file failed: ' ...
                 benchmarks(g).name ', ' benchmarks(g).id{i}]);
+            continue
         end
 
         % save figure (if given)

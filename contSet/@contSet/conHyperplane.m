@@ -10,10 +10,6 @@ function hyp = conHyperplane(S,varargin)
 % Outputs:
 %    hyp - conHyperplane object
 %
-% Example:
-%    E = ellipsoid([1 0; 0 2];[1;-1]);
-%    hyp = conHyperplane(E);
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

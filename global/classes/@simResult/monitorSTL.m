@@ -48,13 +48,15 @@ res = true;
 
 analyzer = simResultAnalyzer(aps,simRes);
 
-for i = 1:length(simRes.t)
-    sigs = analyzer.analyze(i);
-    dur = simRes.t{i}(end);
-
-    sig = evaluateSignal(phi,dur-maximumTime(phi),sigs,'logical');
-
-    res = res && sig.at(0);
+for i = 1:length(simRes)
+    for j = 1:length(simRes(i).t)
+        sigs = analyzer.analyze(i,j);
+        dur = simRes(i).t{j}(end);
+    
+        sig = evaluateSignal(phi,dur-maximumTime(phi),sigs,'logical');
+    
+        res = res && sig.at(0);
+    end
 end
 
 end

@@ -30,7 +30,7 @@ function res = modelCheckTrace(obj,x,t)
 
 % Authors:       Niklas Kochdumper, Benedikt Seidl
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   05-July-2024 (TL, bug fix globally)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -152,13 +152,14 @@ function res = aux_recursive(obj,x,t,vars)
 
         res = ~aux_until(lhs,~rhs,t,obj.from,obj.to);
 
-        ind = find(t >= obj.to,1);
-
-        if isempty(ind)
-            res = false*res;
-        else
-            res(length(res)-ind+1:end) = false;
-        end
+        % TL: obj.to already checked in aux_until. Remove?
+        % ind = find(t >= obj.to,1);
+        % 
+        % if isempty(ind)
+        %     res = false*res;
+        % else
+        %     res(length(res)-ind+1:end) = false;
+        % end
 
     elseif strcmp(obj.type,'release')
 

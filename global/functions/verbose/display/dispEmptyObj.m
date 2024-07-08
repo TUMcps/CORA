@@ -13,8 +13,8 @@ function dispEmptyObj(obj,argname)
 %    -
 %
 % Example:
-%    I = interval();
-%    disp(I); % calls dispEmptyObj
+%    I = interval.empty(2);
+%    I % calls dispEmptyObj
 %
 % Other m-files required: none
 % Subfunctions: none

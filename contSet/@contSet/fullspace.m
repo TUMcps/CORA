@@ -10,10 +10,6 @@ function fs = fullspace(S,varargin)
 % Outputs:
 %    fs - fullspace object
 %
-% Example:
-%    E = ellipsoid([1 0; 0 2];[1;-1]);
-%    fs = fullspace(E);
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

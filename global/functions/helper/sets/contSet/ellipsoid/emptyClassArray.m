@@ -41,12 +41,6 @@ inputArgsCheck({{classname,'att',{'char','string'},{'istextscalar'}};
                     {sz,'att',{'numeric'},{'integer','nonnegative'}}});
 
 % if one value is empty, use className.empty function to construct
-if any(sz==0)
-    A = eval(classname).empty(sz);
-else
-    % convert size to cell array
-    sz_c = num2cell(sz);
-    A(sz_c{:}) = eval(classname);
-end
+A = repmat(eval(classname),sz);
 
 % ------------------------------ END OF CODE ------------------------------

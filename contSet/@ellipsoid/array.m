@@ -29,6 +29,6 @@ function E = array(varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-E = emptyClassArray('ellipsoid',varargin{:});
+E = emptyClassArray('ellipsoid.empty(1)',varargin{:});
 
 % ------------------------------ END OF CODE ------------------------------

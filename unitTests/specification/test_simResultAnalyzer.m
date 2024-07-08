@@ -39,7 +39,7 @@ simRes = simResult({x}, {t});
 % analyze
 a1 = simResultAnalyzer(aps, simRes);
 
-s1 = a1.analyze(1);
+s1 = a1.analyze(1,1);
 
 % test
 res(end+1,1) = isequal([7 8], s1('p1').time);

@@ -10,10 +10,6 @@ function O = emptySet(S,varargin)
 % Outputs:
 %    O - emptySet object
 %
-% Example:
-%    E = ellipsoid([1 0; 0 2];[1;-1]);
-%    O = emptySet(E);
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

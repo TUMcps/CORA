@@ -26,7 +26,9 @@ function matV = vertices(intMat)
 % ------------------------------ BEGIN CODE -------------------------------
 
 %conversion to an interval
-V = vertices(interval(intMat));
+dimIntMat = dim(intMat);
+I = reshape(interval(intMat), prod(dimIntMat),1);
+V = vertices(I);
 
 %compute vertices
 V = unique(V', 'rows')'; %eliminate vectors that occur multiple times

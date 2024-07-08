@@ -11,7 +11,7 @@ function cPZ = conPolyZono(S,varargin)
 %    cPZ - conPolyZono object
 %
 % Example:
-%    E = ellipsoid([1 0; 0 2];[1;-1]);
+%    E = ellipsoid([1 0; 0 2],[1;-1]);
 %    cPZ = conPolyZono(E);
 %
 % Other m-files required: none

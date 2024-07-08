@@ -11,8 +11,8 @@ function P = polytope(S,varargin)
 %    P - polytope object
 %
 % Example:
-%    E = ellipsoid([1 0; 0 2];[1;-1]);
-%    P = polytope(E);
+%    Z = zonotope([1;1],[1 1 1; 1 -1 0]);
+%    P = polytope(Z);
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -14,7 +14,7 @@ function P = polytope(C,varargin)
 %
 % Example: 
 %    C = capsule([1; 1], [0; 1], 0.5);
-%    P = polytope(P);
+%    P = polytope(C,'outer');
 %
 % Other m-files required: none
 % Subfunctions: none

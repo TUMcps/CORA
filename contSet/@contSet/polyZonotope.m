@@ -11,7 +11,7 @@ function pZ = polyZonotope(S,varargin)
 %    pZ - polyZonotope object
 %
 % Example:
-%    E = ellipsoid([1 0; 0 2];[1;-1]);
+%    E = ellipsoid([1 0; 0 2],[1;-1]);
 %    pZ = polyZonotope(E);
 %
 % Other m-files required: none

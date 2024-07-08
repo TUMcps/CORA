@@ -12,10 +12,10 @@ function C = center(matZ)
 %
 % Example:
 %    C = eye(2);
-%    G(:,:,1) = eye(1);
+%    G(:,:,1) = eye(2)*2;
 %    G(:,:,2) = eye(2);
 %    matZ = matZonotope(C,G);
-%    C = center(M)
+%    C = center(matZ)
 %
 % Other m-files required: none
 % Subfunctions: none

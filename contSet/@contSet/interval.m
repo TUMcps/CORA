@@ -11,7 +11,7 @@ function I = interval(S,varargin)
 %    I - interval object
 %
 % Example:
-%    E = ellipsoid([1 0; 0 2];[1;-1]);
+%    E = ellipsoid([1 0; 0 2],[1;-1]);
 %    I = interval(E);
 %
 % Other m-files required: none

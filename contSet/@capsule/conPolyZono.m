@@ -56,16 +56,16 @@ end
 
 % combine sphere, generator, and center
 if ~representsa(S,'emptySet')
-    if ~isempty(G)
-        cPZ = G + S + c; 
-    else
+    if isnumeric(G) && isempty(G)
         cPZ = S + c; 
+    else
+        cPZ = G + S + c; 
     end 
 else
-    if ~isempty(G)
-        cPZ = G + s; 
-    else
+    if isnumeric(G) && isempty(G)
         cPZ = conPolyZono(c,[],[]);
+    else
+        cPZ = G + s;
     end
 end
     

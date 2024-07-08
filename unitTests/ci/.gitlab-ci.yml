@@ -4,14 +4,13 @@
 # define variables
 variables:
   DO_CI: "true"
-  # append commit message with '--ci-run-ext'
   # append commit message with '--ci-run-merge'
-  # append commit message with '--ci-run-release'
+  # Special flags:
   # append commit message with '--ci-run-examples'
-  # append commit message with '--ci-run-benchmarks'
+  # append commit message with '--ci-run-compatibility'
 
 # define base settings
-.base-image:
+.base-job:
   image:
     name: tobiasladnertum/cora:r2023b
     entrypoint: [""]
@@ -20,43 +19,40 @@ variables:
   # default timeout
   timeout: 1h
   rules:
-    - if: $DO_CI == "true"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: always
-    - when: manual
-
-# define stages
-stages:
-  - init
-  - test-short
-  - test-extended
-  - test-compatibility
-  - test-examples
-  - test-benchmarks
-  - ci-status
-
-# Init stage ----------------------------------------------
-
-# define init settings
-.init:
-  stage: init
-  extends: .base-image
   before_script: 
     # any non-zero exit code should fail the job
     - set +e
 
+# define stages
+stages:
+  - test
+  - short
+  - extended
+  - compatibility
+  - examples
+
+# Test stage --------------------------------------------------------------
+
 # test job
 test-job:
-  extends: .init
+  extends: .base-job
+  stage: test
   rules:
     - when: never
   script: 
-    - matlab -batch "addpath(genpath('.')); testLong_zonotope_reduce"
+    - matlab -batch "addpath(genpath('.')); test_requiredToolboxes"
 
 # Short test stage --------------------------------------------------------
 
-# define base run
-.base-run:
-  extends: .init
+# define base run using runTestSuite
+.base-runTestSuite:
+  extends: .base-job
+  rules: 
+    - !reference [.base-job, rules]
+    - if: $DO_CI == "true"
+      when: always
   variables:
     testSuite: 'short'
   script: 
@@ -82,23 +78,20 @@ test-job:
 
 # run short tests
 test-short:
-  stage: test-short
-  extends: .base-run
+  stage: short
+  extends: .base-runTestSuite
   variables:
     testSuite: 'short'
 
 # Extended test stage -----------------------------------------------------
 
-# extends base run settings
-.base-run-ext:
-  stage: test-extended
-  extends: .base-run
+.base-runTestSuite-ext:
+  stage: extended
+  extends: .base-runTestSuite
   rules: 
-    # run extended tests if commit message contains '--ci-run-ext' or always on specific branches
+    - !reference [.base-job, rules]
     - if: $DO_CI == "true" && 
-            ($CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-ext(.|\r|\n)*/
-                || $CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-merge(.|\r|\n)*/
-                || $CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-release(.|\r|\n)*/
+            ($CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-merge(.|\r|\n)*/
                 || $CI_COMMIT_BRANCH == "PUBLIC" 
                 || $CI_COMMIT_BRANCH == "public-bugfix" 
                 || $CI_COMMIT_BRANCH == "devgeneral" 
@@ -107,117 +100,91 @@ test-short:
 
 # run long duration tests
 test-long:
-  extends: .base-run-ext
-  timeout: 2h
+  extends: .base-runTestSuite-ext
+  timeout: 3h
   variables:
     testSuite: 'long'
 
 # run nn tests
 test-nn:
-  extends: .base-run-ext
+  extends: .base-runTestSuite-ext
   variables:
     testSuite: 'nn'
   rules: 
-    - !reference [.base-run-ext, rules]
+    - !reference [.base-runTestSuite-ext, rules]
     # always run on 'nn-*' branches
     - if: $DO_CI == "true" && $CI_COMMIT_BRANCH =~ "/^nn-.*/"
       when: always
 
 # run flaky tests
 test-flaky:
-  extends: .base-run-ext
+  extends: .base-runTestSuite-ext
   variables:
     testSuite: 'flaky'
 
 # Compatibility with other versions ---------------------------------------
 
-.base-run-compatibility:
-  extends: .base-run-ext
-  stage: test-compatibility
+.base-runTestSuite-compatibility:
+  extends: .base-runTestSuite-ext
+  stage: compatibility
   image:
     name: tobiasladnertum/cora:$matlabVerison
   variables:
     testSuite: 'short'
+  rules:
+    - !reference [.base-runTestSuite-ext, rules]
+    # additionally run if compatibility should be tested
+    - if: $DO_CI == "true" && $CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-compatibility(.|\r|\n)*/
+      when: always
 
 # run 2022b
 test-compatibility-2022b:
-  extends: .base-run-compatibility
+  extends: .base-runTestSuite-compatibility
   variables:
     matlabVerison: 'r2022b'
 
 # run 2023b
 test-compatibility-2023b:
-  extends: .base-run-compatibility
+  extends: .base-runTestSuite-compatibility
   variables:
     matlabVerison: 'r2023b'
 
 # run 2024a
 test-compatibility-2024a:
-  extends: .base-run-compatibility
+  extends: .base-runTestSuite-compatibility
   variables:
     matlabVerison: 'r2024a'
 
 # Examples test stage ---------------------------------------------------------
 
-# extends base run settings
-.base-run-examples:
-  stage: test-examples
-  extends: .base-run
+.base-runTestSuite-examples:
+  stage: examples
+  extends: .base-runTestSuite
   timeout: 24h
   rules: 
+    - !reference [.base-job, rules]
     # run all tests if commit message contains '--ci-run-examples'
     - if: $DO_CI == "true" && 
             ($CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-examples(.|\r|\n)*/
                 || $CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-merge(.|\r|\n)*/
-                || $CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-release(.|\r|\n)*/
             )
       when: always
 
-# run examples tests
+# run examples
 test-examples:
-  extends: .base-run-examples
+  extends: .base-runTestSuite-examples
   variables:
     testSuite: 'examples'
 
-# Benchmark test stage ----------------------------------------------------
-
-# extends base run settings
-.base-run-benchmarks:
-  stage: test-benchmarks
-  extends: .base-run
-  timeout: 24h
-  rules: 
-    # run all tests if commit message contains '--ci-run-benchmarks'
-    - if: $DO_CI == "true" && 
-            ($CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-benchmarks(.|\r|\n)*/
-                || $CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-release(.|\r|\n)*/
-            )
-      when: always
-
-# run benchmarks tests
+# run benchmarks (long examples)
 test-benchmarks:
-  extends: .base-run-benchmarks
+  extends: .base-runTestSuite-examples
   variables:
     testSuite: 'benchmarks'
 
-# CI status block ---------------------------------------------------------
+# run examples in header
+test-header:
+  extends: .base-runTestSuite-examples
+  variables:
+    testSuite: 'header'
 
-# legacy stages for bitbucket 
-
-ci-failure:
-  stage: ci-status
-  extends: .base-image
-  script:
-    - exit 1 # always fail
-  rules:
-    - if: $DO_CI == "true"
-      when: on_failure # of any earlier job
-
-ci-success:
-  stage: ci-status
-  extends: .base-image
-  script:
-    - exit 0
-  rules:
-    - if: $DO_CI == "true"
-      when: on_success # of all jobs

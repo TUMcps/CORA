@@ -89,7 +89,7 @@ end
 E_cell = lminkDiff(E1,E2,L,mode);
 if length(E_cell)==1
     E = E_cell{1};
-elseif strcmp(mode','outer')
+elseif strcmp(mode,'outer')
     % compute intersection (outer approx)
     E = E_cell{1};
     E = and_(E,[E_cell{2:end}],'outer');

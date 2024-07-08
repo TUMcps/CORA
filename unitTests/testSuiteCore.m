@@ -78,8 +78,11 @@ for i=1:nrTests
         results(i,1).seed = testseeds(i);
 
         tic;
-        % supress output of tests by usage of evalc
-        if startsWith(fname,'test')
+        % supress output of tests by usage of evalc 
+        % except for the header test, as it has its own output
+        if startsWith(fname, 'testHeader')
+            res = eval(fname);
+        elseif startsWith(fname,'test')
             % evaluate unit test
             [~,res] = evalc(fname);
 

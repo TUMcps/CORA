@@ -11,8 +11,8 @@ function C = capsule(S,varargin)
 %    C - capsule object
 %
 % Example:
-%    E = ellipsoid([1 0; 0 2];[1;-1]);
-%    C = capsule(E);
+%    I = interval([1;2],[4;3]);
+%    C = capsule(I);
 %
 % Other m-files required: none
 % Subfunctions: none

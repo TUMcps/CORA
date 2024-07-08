@@ -11,8 +11,8 @@ function cZ = conZonotope(S,varargin)
 %    cZ - conZonotope object
 %
 % Example:
-%    E = ellipsoid([1 0; 0 2];[1;-1]);
-%    cZ = conZonotope(E);
+%    I = interval([1;2],[4;3]);
+%    C = conZonotope(I);
 %
 % Other m-files required: none
 % Subfunctions: none

@@ -11,8 +11,8 @@ function zB = zonoBundle(S,varargin)
 %    zB - zonoBundle object
 %
 % Example:
-%    E = ellipsoid([1 0; 0 2];[1;-1]);
-%    zB = zonoBundle(E);
+%    Z = zonotope([1;1],[1 1 1; 1 -1 0]);
+%    zB = zonoBundle(Z);
 %
 % Other m-files required: none
 % Subfunctions: none

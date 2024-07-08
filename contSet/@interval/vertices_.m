@@ -24,6 +24,7 @@ function V = vertices_(I,varargin)
 % Written:       24-July-2006 
 % Last update:   27-March-2023 (MW, rename vertices_)
 %                28-April-2023 (MW, remove duplicates in degenerate case)
+%                04-July-2024 (TL, bug fix)
 % Last revision: 05-April-2023 (MW, rewrite to support unbounded intervals)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -60,8 +61,13 @@ end
 if any(idxZeroDim)
     V_ = V;
     V = zeros(dim(I),size(V_,2));
-    V(idxZeroDim,:) = valZeroDim;
+    V(idxZeroDim,:) = ones(1,size(V_,2)) .* valZeroDim;
     V(~idxZeroDim,:) = V_;
+end
+
+% fix for all zero dims
+if isempty(V)
+    V = valZeroDim;
 end
 
 % ------------------------------ END OF CODE ------------------------------

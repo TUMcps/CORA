@@ -12,7 +12,7 @@ function h = numgens(matZ)
 %
 % Example:
 %    C = eye(2);
-%    G(:,:,1) = eye(1);
+%    G(:,:,1) = eye(2)*2;
 %    G(:,:,2) = eye(2);
 %    matZ = matZonotope(C,G);
 %    h = numgens(matZ)

@@ -13,9 +13,6 @@ function V = removeDuplicates(V,varargin)
 % Outputs:
 %    V - vertices
 %
-% Example:
-%    V = 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

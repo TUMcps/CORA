@@ -337,8 +337,24 @@ function P = aux_minVRep(P,tol)
     else
         % compute convex hull and take only the unique points
         try
-            K = convhulln(V');
-            P.V.val = V(:,unique(K));
+            % If the polytope is degenerate, we first need to restrict it
+            % to its affine hull
+            [ifd, B] = isFullDim(P);
+            if ifd
+                K = convhulln(V');
+                P.V.val = V(:,unique(K));
+            else
+                c = sum(V,2)./size(V,2); % Center of the polytope
+
+                [U, ~, ~] = svd(B);
+                r = size(B,2); % The rank of B;
+
+                V_affSubspace = [eye(r) zeros([r (dim(P)-r)])] * U' * (V - c);
+                K_affSubspace = convhulln(V_affSubspace');
+                V_affSubspace = V_affSubspace(:, unique(K_affSubspace));
+
+                P.V.val = U * [eye(r); zeros([(dim(P)-r) r])] * V_affSubspace + c;
+            end
         catch ME
             if strcmp(ME.identifier,'MATLAB:cgprechecks:NotEnoughPts')
                 % not enough unique points specified -> we assume that this
