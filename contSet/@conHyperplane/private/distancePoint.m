@@ -36,7 +36,17 @@ if isempty(hyp.C) || all(all(hyp.C))
 else
     n = length(p);
     % solve optimization problem: ||x-y||_2^2, s.t. y\in{x|C*x<=d}
-    val = quadprog(2*eye(n),-2*p,hyp.C,hyp.d);
+    problem.H = 2*eye(n);
+    problem.f = -2*p;
+    problem.Aineq = hyp.C;
+    problem.bineq = hyp.d;
+    problem.Aeq = [];
+    problem.beq = [];
+    problem.lb = [];
+    problem.ub = [];
+
+    % solve quadprog
+    val = CORAquadprog(problem);
 end
 
 % ------------------------------ END OF CODE ------------------------------

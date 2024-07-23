@@ -88,16 +88,13 @@ function res = aux_zonotopeNullSpace(obj)
     % loop over all dimensions of the transformed state space
     lb = zeros(m_,1);
     ub = zeros(m_,1);
-    
-    persistent options
-    if isempty(options)
-        options = optimoptions('linprog','display','off');
-    end
 
     problem.Aineq = A_;
     problem.bineq = b_;
-    problem.solver = 'linprog';
-    problem.options = options;
+    problem.Aeq = [];
+    problem.beq = [];
+    problem.lb = [];
+    problem.ub = [];
     
     for i = 1:m_
         
@@ -106,12 +103,12 @@ function res = aux_zonotopeNullSpace(obj)
         
         % compute minimum
         problem.f = f';
-        [~, fval] = linprog(problem);
+        [~, fval] = CORAlinprog(problem);
         lb(i) = fval;
         
         % compute maximum   
         problem.f = -f';
-        [~, fval] = linprog(problem);
+        [~, fval] = CORAlinprog(problem);
         ub(i) = -fval;
     end
     

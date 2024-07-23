@@ -34,6 +34,7 @@ function E = andPolytope(E,P,mode)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % halfspace rep of P (is computed if not there; expensive!)
+constraints(P);
 A = P.A;
 b = P.b;
 

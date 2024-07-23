@@ -22,6 +22,7 @@ function res = vertices(S,varargin)
 % Written:       18-August-2022
 % Last update:   23-November-2022 (MW, add classname as input argument)
 %                12-July-2023 (TL, corrected dimension of empty vertices)
+%                12-July-2024 (MW, disable 'comb' for polytopes)
 % Last revision: 27-March-2023 (MW, restructure relation to subclass)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -37,7 +38,7 @@ end
 if isa(S,'polytope')
     method = setDefaultValues({'lcon2vert'},varargin);
     inputArgsCheck({{S,'att','polytope'}, ...
-                    {method,'str',{'cdd','lcon2vert','comb'}}});
+                    {method,'str',{'cdd','lcon2vert'}}});
 else
     method = setDefaultValues({'convHull'},varargin);
     inputArgsCheck({{S,'att','contSet'};

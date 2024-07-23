@@ -2,11 +2,14 @@ classdef polytope < contSet
 % polytope - object constructor for polytope objects
 %
 % Description:
-%    This class represents polytope objects defined as
+%    This class represents polytope objects defined as (halfspace
+%    representation)
 %      { x | A*x <= b }. 
 %    For convenience, equality constraints
-%      { x | A*x <= b, Ae*x == be}
+%      { x | A*x <= b, Ae*x == be }
 %    can be added, too.
+%    Alternatively, polytopes can be defined as (vertex representation)
+%      { sum_i a_i v_i | sum_i a_i = 1, a_i >= 0 }
 %    Note: A polytope without any constraints represents R^n.
 %    Note: A polytope instantiated without input arguments is the empty set.
 %
@@ -42,25 +45,46 @@ classdef polytope < contSet
 %                08-December-2023 (MW, handle -Inf/Inf offsets)
 %                01-January-2024 (MW, different meaning of fully empty obj)
 %                13-March-2024 (TL, check if input is numeric)
+%                16-July-2024 (MW, allow separate usage of VRep/HRep)
 % Last revision: 25-July-2023 (MW, restructure constructor)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-properties (SetAccess = protected, GetAccess = public)
+% halfspace representation and vertex representation
+properties (SetAccess = protected, GetAccess = protected)
 
     % Inequality description { x | A*x <= b }
-    A = [];
-    b = [];
+    A_ = [];
+    b_ = [];
 
-    % Affine set description { x | Aeq*x == be }
-    Ae = [];
-    be = [];
+    % Affine set description { x | Ae*x == be }
+    Ae_ = [];
+    be_ = [];
+
+    % Vertex description { sum_i a_i v_i | sum_i a_i = 1, a_i >= 0 }
+    V_;
     
 end
 
-properties (SetAccess = protected, GetAccess = public)
-    % Vertex description
+properties (Dependent)
+    
+    % public access for constraints and vertices, see above
+    A;
+    b;
+    Ae;
+    be;
     V;
+
+end
+
+% set properties
+properties (SetAccess = protected, GetAccess = public)
+
+    % halfspace representation given?
+    isHRep;
+
+    % vertex representation given?
+    isVRep;
 
     % emptiness
     emptySet;
@@ -87,28 +111,39 @@ methods
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
 
-        % 0. init hidden properties
+        % 0. init setproperty properties
+        obj.A_ = setproperty();
+        obj.b_ = setproperty();
+        obj.Ae_ = setproperty();
+        obj.be_ = setproperty();
+        obj.V_ = setproperty();
+
+        obj.isHRep = setproperty();
+        obj.isVRep = setproperty();
         obj.emptySet = setproperty();
         obj.fullDim = setproperty();
         obj.bounded = setproperty();
         obj.minHRep = setproperty();
         obj.minVRep = setproperty();
-        obj.V = setproperty();
     
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'polytope')
             % read out polytope
             P = varargin{1};
+
             % copy properties
-            obj.A = P.A; obj.b = P.b;
-            obj.Ae = P.Ae; obj.be = P.be;
-            % copy hidden properties
+            obj.A_.val = P.A_.val; obj.b_.val = P.b_.val;
+            obj.Ae_.val = P.Ae_.val; obj.be_.val = P.be_.val;
+            obj.V_.val = P.V_.val;
+
+            % copy set properties
+            obj.isHRep.val = P.isHRep.val;
+            obj.isVRep.val = P.isVRep.val;
             obj.emptySet.val = P.emptySet.val;
             obj.fullDim.val = P.fullDim.val;
             obj.bounded.val = P.bounded.val;
             obj.minHRep.val = P.minHRep.val;
             obj.minVRep.val = P.minVRep.val;
-            obj.V.val = P.V.val;
             return
         end
 
@@ -119,22 +154,68 @@ methods
         aux_checkInputArgs(A,b,Ae,be,V,nargin);
 
         % 4. compute properties and hidden properties
-        [A,b,Ae,be,V] = aux_computeProperties(A,b,Ae,be,V);
-        [empty,bounded,fullDim,minHRep,minVRep,V] = ...
-            aux_computeHiddenProperties(A,b,Ae,be,V);
+        [A,b,Ae,be,V,isHRep,isVRep] = aux_computeProperties(A,b,Ae,be,V,nargin);
+        [empty,bounded,fullDim,minHRep,minVRep,V,isHRep,isVRep] = ...
+            aux_computeHiddenProperties(A,b,Ae,be,V,isHRep,isVRep);
 
         % 4a. assign properties
-        obj.A = A;
-        obj.b = b;
-        obj.Ae = Ae;
-        obj.be = be;
-        obj.V.val = V;
+        obj.A_.val = A;
+        obj.b_.val = b;
+        obj.Ae_.val = Ae;
+        obj.be_.val = be;
+        obj.V_.val = V;
+
+        obj.isHRep.val = isHRep;
+        obj.isVRep.val = isVRep;
         obj.emptySet.val = empty;
         obj.bounded.val = bounded;
         obj.fullDim.val = fullDim;
         obj.minHRep.val = minHRep;
         obj.minVRep.val = minVRep;
         
+    end
+
+    % prohibit access to the constraints and halfspaces, as they are
+    % setproperty objects and thus not directly accessible as per usual
+    function val = get.V(obj)
+        if ~obj.isVRep.val
+            throw(CORAerror('CORA:specialError',...
+                "The vertex representation is not available. " + ...
+                "Call the function 'polytope/vertices'."));
+        end
+        val = obj.V_.val;
+    end
+    function val = get.A(obj)
+        if ~obj.isHRep.val
+            throw(CORAerror('CORA:specialError',...
+                "The halfspace representation is not available. " + ...
+                "Call the function 'polytope/constraints'."));
+        end
+        val = obj.A_.val;
+    end
+    function val = get.b(obj)
+        if ~obj.isHRep.val
+            throw(CORAerror('CORA:specialError',...
+                "The halfspace representation is not available. " + ...
+                "Call the function 'polytope/constraints'."));
+        end
+        val = obj.b_.val;
+    end
+    function val = get.Ae(obj)
+        if ~obj.isHRep.val
+            throw(CORAerror('CORA:specialError',...
+                "The halfspace representation is not available. " + ...
+                "Call the function 'polytope/constraints'."));
+        end
+        val = obj.Ae_.val;
+    end
+    function val = get.be(obj)
+        if ~obj.isHRep.val
+            throw(CORAerror('CORA:specialError',...
+                "The halfspace representation is not available. " + ...
+                "Call the function 'polytope/constraints'."));
+        end
+        val = obj.be_.val;
     end
 
 end
@@ -252,7 +333,7 @@ function aux_checkInputArgs(A,b,Ae,be,V,n_in)
 
 end
 
-function [A,b,Ae,be,V] = aux_computeProperties(A,b,Ae,be,V)
+function [A,b,Ae,be,V,isHRep,isVRep] = aux_computeProperties(A,b,Ae,be,V,n_in)
 
     % dimension
     n = max([size(A,2),size(Ae,2),size(V,1)]);
@@ -261,21 +342,19 @@ function [A,b,Ae,be,V] = aux_computeProperties(A,b,Ae,be,V)
     b = reshape(b,[],1);
     be = reshape(be,[],1);
 
-    % compute halfspace representation
-    if ~isempty(V)
-        % for n=1, remove redundancies
-        if n == 1
-            V = [min(V), max(V)];
-            if withinTol(V(1),V(2),eps)
-                V = V(1);
-            end
+    % store which representation is given (constructor only allows one)
+    isVRep = n_in == 1;
+    isHRep = ~isVRep;
+
+    % in 1D, remove redundancies (otherwise keep V as is)
+    if isVRep && n == 1 && size(V,2) > 0
+        V = [min(V), max(V)];
+        if withinTol(V(1),V(2),eps)
+            V = V(1);
         end
-        [A,b,Ae,be] = computeHRep(V);
-    else
-        V = [];
     end
 
-    % empty constraint matrices should have correct dimension (necessary
+    % empty constraint matrices must have correct dimension (necessary
     % for matrix concatenation)
     if isempty(A)
         A = zeros(0,n);
@@ -290,8 +369,8 @@ function [A,b,Ae,be,V] = aux_computeProperties(A,b,Ae,be,V)
 
 end
 
-function [empty,bounded,fullDim,minHRep,minVRep,V] = ...
-            aux_computeHiddenProperties(A,b,Ae,be,V)
+function [empty,bounded,fullDim,minHRep,minVRep,V,isHRep,isVRep] = ...
+            aux_computeHiddenProperties(A,b,Ae,be,V,isHRep,isVRep)
 
     % init hidden properties as unknown
     empty = []; bounded = []; fullDim = []; minHRep = []; minVRep = [];    
@@ -299,18 +378,15 @@ function [empty,bounded,fullDim,minHRep,minVRep,V] = ...
     % dimension
     n = max([size(A,2),size(Ae,2),size(V,1)]);
 
-    % representations for 1D polytopes always minimal
-    if n == 1 && ~isempty(V)
-        minHRep = true;
-    end
+    % note: representations for 1D polytopes always minimal
 
     % check if instantiated via vertices
-    if ~isempty(V)
-        % cannot be empty
-        empty = false;
+    if isVRep
+        % check emptiness
+        empty = size(V,2) == 0;
 
-        % only 1 vertex -> minimal V-representation
-        minVRep = size(V,2) == 1;
+        % max. 1 vertex -> minimal V-representation
+        minVRep = size(V,2) <= 1 || n == 1;
 
         % check if 1D
         if n == 1
@@ -336,29 +412,32 @@ function [empty,bounded,fullDim,minHRep,minVRep,V] = ...
             end
         end
 
-    elseif isempty(A) && isempty(Ae)
-        % no constraints
-        empty = false;
-        bounded = false;
-        fullDim = true;
-        minHRep = true;
-        % do not compute -Inf/Inf vertices here...
-        V = [];
-        minVRep = [];
+    elseif isHRep
+        if isempty(A) && isempty(Ae)
+            % no constraints
+            empty = false;
+            bounded = false;
+            fullDim = true;
+            minHRep = true;
+            % do not compute -Inf/Inf vertices here...
+            V = [];
+            minVRep = [];
 
-    else
-        % equality constraint with -Inf or Inf in offset OR inequality
-        % constraint with -Inf in offset -> empty polytope
-        if any(isinf(be)) || ( any(isinf(b) & sign(b) == -1) )
-            empty = true;
-            bounded = true;
-            fullDim = false;
-            % only a single infeasible constraint required to represent an
-            % empty set
-            minHRep = length(be) + length(b) == 1;
-            % init no vertices (which is the minimal representation)
-            V = zeros(n,1);
-            minVRep = true;
+        else
+            % equality constraint with -Inf or Inf in offset OR inequality
+            % constraint with -Inf in offset -> empty polytope
+            if any(isinf(be)) || ( any(isinf(b) & sign(b) == -1) )
+                empty = true;
+                bounded = true;
+                fullDim = false;
+                % only a single infeasible constraint required to represent
+                % an empty set
+                minHRep = length(be) + length(b) == 1;
+                % init no vertices (which is the minimal representation)
+                V = zeros(n,0);
+                isVRep = true;
+                minVRep = true;
+            end
         end
 
     end

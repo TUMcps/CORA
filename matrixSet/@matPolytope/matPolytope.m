@@ -86,7 +86,7 @@ methods
     end
 
     function matZ = set.verts(matZ,N)
-        CORAerror("CORA:noops",'matZ.verts');
+        throw(CORAerror("CORA:noops",'matZ.verts'));
     end
     
     function h = get.vertex(matZ)
@@ -95,7 +95,7 @@ methods
     end
 
     function matZ = set.vertex(matZ,V)
-        CORAerror("CORA:noops",'matZ.verts');
+        throw(CORAerror("CORA:noops",'matZ.verts'));
     end
     
 end
@@ -143,7 +143,11 @@ function V = aux_computeProperties(V)
         % legacy, convert to (n x m x N) shape
 
         % show warning
-        CORAwarning('CORA:deprecated','constructor for matPolytope using a','cell of vertices','CORA v2024.2.0','Please use a single numeric matrix with dimensions (n x m x N) instead.','This change was made to improve speed.')
+        CORAwarning('CORA:deprecated',...
+            'constructor for matPolytope using a','cell of vertices',...
+            'CORA v2024.2.0',...
+            'Please use a single numeric matrix with dimensions (n x m x N) instead.',...
+            'This change was made to improve speed.')
 
         % correctly initialize empty vertices
         if isempty(V)

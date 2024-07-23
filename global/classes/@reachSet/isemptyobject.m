@@ -27,6 +27,6 @@ function res = isemptyobject(R)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = all(arrayfun(@(x) isempty(x.timePoint),R,'UniformOutput',true));
+res = all(arrayfun(@(x) isempty(x.timePoint) && isempty(x.timeInterval),R,'UniformOutput',true));
 
 % ------------------------------ END OF CODE ------------------------------

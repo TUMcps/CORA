@@ -1,6 +1,6 @@
 function [empty,res,S_conv] = representsa_emptyObject(S,type)
-% representsa_emptyObject - checks if a contSet class is a fully empty
-%    object and returns an empty instance of class 'type'
+% representsa_emptyObject - checks if a contSet class object is fully empty
+%    and converts the set to an instance of class 'type'
 %
 % Syntax:
 %    [empty,res] = representsa_emptyObject(S,type)
@@ -13,7 +13,7 @@ function [empty,res,S_conv] = representsa_emptyObject(S,type)
 % Outputs:
 %    empty - true/false whether S is fully empty
 %    res - true/false whether S can be represented by 'type'
-%    S_conv - empty object of class type
+%    S_conv - object of class 'type', converted from S
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -24,6 +24,7 @@ function [empty,res,S_conv] = representsa_emptyObject(S,type)
 % Authors:       Mark Wetzlinger
 % Written:       24-July-2023
 % Last update:   01-January-2024 (MW, update fully empty polytopes)
+%                14-July-2024 (MW, support polytopes in V representation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -55,8 +56,11 @@ if empty
             res = false;
             
         case 'fullspace'
-            % fully empty polytopes represent R^n (=fullspace)
-            res = isa(S,'polytope');
+            % fully empty polytopes in halfspace representation represent
+            % R^n (=fullspace); ensure that V representation is not given
+            res = isa(S,'polytope') && ...
+                ( (S.isHRep.val && isempty(S.b) && isempty(S.be)) ...
+                || (S.isVRep.val && ~isempty(S.V) && all(all(isinf(S.V)))) );
             if nargout == 3 && res
                 S_conv = fullspace(dim(S));
             end
@@ -70,9 +74,13 @@ if empty
         case 'interval'
             res = true;
             if nargout == 3
-                if isa(S,'polytope')
+                if isa(S,'polytope') && ...
+                ( (S.isHRep.val && isempty(S.b) && isempty(S.be)) ...
+                || (S.isVRep.val && ~isempty(S.V) && all(all(isinf(S.V)))) )
+                    % fullspace
                     S_conv = interval(-Inf(dim(S),1),Inf(dim(S),1));
                 else
+                    % empty set
                     S_conv = interval(zeros(dim(S),0));
                 end
             end
@@ -86,8 +94,10 @@ if empty
     
         otherwise
             % all fully empty objects represent the empty set (except for
-            % polytopes); all sets can represent the empty set
-            res = ~isa(S,'polytope') || dim(S) == 0;
+            % polytopes with empty H representation); all sets can
+            % represent the empty set
+            res = dim(S) == 0 || ~isa(S,'polytope') || ...
+                (isa(S,'polytope') && S.isVRep.val && isempty(S.V));
             if nargout == 3 && res
                 S_conv = eval([type, '.empty(', num2str(n), ')']);
             end

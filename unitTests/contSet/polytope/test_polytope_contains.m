@@ -19,6 +19,7 @@ function res = test_polytope_contains()
 % Authors:       Viktor Kotsev, Mark Wetzlinger
 % Written:       25-April-2022
 % Last update:   19-July-2023 (MW, many more cases)
+%                10-July-2024 (MW, test containment of point clouds)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -87,6 +88,36 @@ Ae = 1; be = 0;
 P2 = polytope([],[],Ae,be);
 res(end+1,1) = ~contains(P1,P2);
 
+% 1D, unbounded >= point cloud
+A = [1; 2]; b = [1; 1];
+P1 = polytope(A,b);
+S = [-4, -2, 0];
+res(end+1,1) = all(contains(P1,S));
+
+% 1D, bounded >= point cloud
+A = [1; -1]; b = [1; 1];
+P1 = polytope(A,b);
+S = [-3, 0.5, 0];
+res(end+1,1) = ~all(contains(P1,S));
+
+% 1D, degenerate >= point cloud
+Ae = 1; be = -3;
+P1 = polytope([],[],Ae,be);
+S = -3;
+res(end+1,1) = contains(P1,S);
+
+% 1D, degenerate >= point cloud
+Ae = 1; be = -3;
+P1 = polytope([],[],Ae,be);
+S = [-3, -2];
+res(end+1,1) = ~all(contains(P1,S));
+
+% 1D, polytope >= non-polytope
+A = [1;-1]; b = [2;3];
+P1 = polytope(A,b);
+P2 = conHyperplane(1,1);
+res(end+1,1) = contains(P1,P2);
+
 
 % 2D, bounded, non-degenerate >= bounded, non-degenerate
 A = [1 1; 1 -1; -1 1; 1 1]; b = [1; 1; 1; 1];
@@ -125,6 +156,25 @@ V = [2 0; -2 0; 0 2; 0 -1]';
 P2 = polytope(V);
 res(end+1,1) = contains(P2,P1);
 res(end+1,1) = ~contains(P1,P2);
+
+% 2D, V-polytope >= H-polyhedron?
+V = [1 0; -1 1; -1 -1]';
+P1 = polytope(V);
+A = [1 0]; b = 0;
+P2 = polytope(A,b);
+res(end+1,1) = ~contains(P1,P2);
+
+% 2D, V-polytope >= point cloud?
+V = [1 0; -1 1; -1 -1]';
+P1 = polytope(V);
+S = [0 0; 0.5 0.1; -0.8 -0.6; -0.5 0.5]';
+res(end+1,1) = all(contains(P1,S));
+
+% 2D, H-polyhedron >= point cloud?
+A = [1 0; 0 1]; b = [1; 0];
+P1 = polytope(A,b);
+S = [-2 -1; 0 0; 0 -4]';
+res(end+1,1) = all(contains(P1,S));
 
 
 % 3D, bounded >= degenerate?

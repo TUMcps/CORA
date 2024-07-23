@@ -31,12 +31,15 @@ function P_out = not(P)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% ensure halfspace representation is computed
+constraints(P);
+
 % different cases
-if isempty(P.Ae) && length(P.b) == 1
+if isempty(P.Ae_.val) && length(P.b_.val) == 1
     % exactly one inequality constraint -> switch inequality sign:
     %    Ax <= b  ->  Ax > b <=> -Ax < -b
     % shift by eps to account for < instead of <= (which we have to use)
-    P_out = polytope(-P.A,-P.b-eps);
+    P_out = polytope(-P.A_.val,-P.b_.val-eps);
 
 elseif representsa_(P,'emptySet',eps)
     % empty set -> complement is R^n

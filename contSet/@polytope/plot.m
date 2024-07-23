@@ -75,12 +75,7 @@ if ~isBounded(P)
 end
     
 % compute vertices
-% commented code below integrated to solve some issues
-% % if ~P.irredundantVRep
-% %     % solves issues with collinear points and convHull in plotPolygon
-% %     P.computeHRep();
-% % end
-V = vertices(P);
+V = vertices_(P,'lcon2vert');
 
 % plot projected vertices
 if length(dims) == 2

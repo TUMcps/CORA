@@ -307,9 +307,19 @@ function val = aux_robustnessPoint(p,set)
                 val = max((set.A * p - set.b)./len);
             else
                 n = length(p);
-                options = optimoptions('quadprog','display','off');
-                p_ = quadprog(eye(n),-p,set.A,set.b, ...
-                                                [],[],[],[],[],options);
+                
+                % define quadratic program
+                problem.H = eye(n);
+                problem.f = -p;
+                problem.Aineq = set.A;
+                problem.bineq = set.b;
+                problem.Aeq = [];
+                problem.beq = [];
+                problem.lb = [];
+                problem.ub = [];
+
+                % solve quadratic program
+                p_ = CORAquadprog(problem);
                 val = norm(p-p_);
             end
         elseif isa(set,'halfspace')
@@ -349,7 +359,8 @@ function val = aux_robustnessSet(S,set)
                 c = center(S); G = generators(S); m = size(G,2);
         
                 % constraint d = c + G*\alpha - x
-                Ceq = [eye(n),eye(n),-G]; deq = c;
+                problem.Aeq = [eye(n),eye(n),-G];
+                problem.beq = c;
         
                 % constraint A*x <= b
                 C1 = [zeros(size(A,1),n),A]; d1 = b;
@@ -358,16 +369,19 @@ function val = aux_robustnessSet(S,set)
                 C2 = [eye(m);-eye(m)]; d2 = ones(2*m,1);
         
                 % combined inequality constraints
-                C = blkdiag(C1,C2); d = [d1;d2];
+                problem.Aineq = blkdiag(C1,C2);
+                problem.bineq = [d1;d2];
         
                 % objective function
-                H = blkdiag(2*eye(n),zeros(n+m));
-                f = zeros(2*n+m,1);
+                problem.H = blkdiag(2*eye(n),zeros(n+m));
+                problem.f = zeros(2*n+m,1);
+
+                % no bounds
+                problem.lb = [];
+                problem.ub = [];
         
                 % solve quadratic program
-                options = optimoptions('quadprog','display','off');
-        
-                [~,val] = quadprog(H,f,C,d,Ceq,deq,[],[],[],options);
+                [~,val] = CORAquadprog(problem);
         
                 val = sqrt(val);
                 
@@ -402,12 +416,13 @@ function val = aux_robustnessSet(S,set)
                 % objective function
                 problem.f = zeros(size(problem.Aeq,2),1);
                 problem.f(n+1) = -1;
+
+                % bounds
+                problem.lb = [];
+                problem.ub = [];
         
                 % solve linear program
-                problem.solver = 'linprog';
-                problem.options = optimoptions('linprog','display','off');
-        
-                [~,val] = linprog(problem);
+                [~,val] = CORAlinprog(problem);
             end
 
         elseif isa(set,'halfspace')

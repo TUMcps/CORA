@@ -46,6 +46,8 @@ if ~isFullDim(E)
     E = project(E,1:nt);
 end
 
+% ensure that constraints are given
+constraints(P);
 % normalize to prevent issues
 A = P.A;
 b = P.b;
@@ -60,13 +62,16 @@ b = fac.*b;
 %%%     s.t.  A*x <= b.
 
 % solve using quadprog
-H = 2*blkdiag(inv(E.Q),1/E.TOL*eye(n-nt));
-f = -2*[E.Q\E.q;1/E.TOL*x_rem];
+problem.H = 2*blkdiag(inv(E.Q),1/E.TOL*eye(n-nt));
+problem.f = -2*[E.Q\E.q;1/E.TOL*x_rem];
+problem.Aineq = A;
+problem.bineq = b;
+problem.Aeq = [];
+problem.beq = [];
+problem.lb = [];
+problem.ub = [];
 
-% supress output
-options = optimoptions(@quadprog,'display','none');
-
-[~,objval_] = quadprog(H,f,A,b,[],[],[],[],[],options);
+[~,objval_] = CORAquadprog(problem);
 
 objval = objval_ + norm(sqrtm(E.Q)\E.q)^2 + norm(1/sqrt(E.TOL)*x_rem)^2;
 val = objval - 1;

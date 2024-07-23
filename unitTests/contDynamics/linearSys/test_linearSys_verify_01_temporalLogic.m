@@ -11,8 +11,6 @@ function res = test_linearSys_verify_01_temporalLogic
 % Outputs:
 %    res - boolean
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
@@ -26,7 +24,7 @@ function res = test_linearSys_verify_01_temporalLogic
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = false;
+res = true(0);
 
 % Analytical Test (Until) -------------------------------------------------
 
@@ -61,9 +59,8 @@ resSafe = verify(sys,params,options,specSafe);
 resUnsafe = verify(sys,params,options,specUnsafe);
 
 % check results
-if ~resSafe || resUnsafe
-    error('Analytical test for the "until" operator failed!');
-end
+res(end+1,1) = resSafe;
+res(end+1,1) = ~resUnsafe;
 
 
 % Analytical Test (Finally) -----------------------------------------------
@@ -101,13 +98,11 @@ resSafe = verify(sys,params,options,specSafe);
 resUnsafe = verify(sys,params,options,specUnsafe);
 
 % check results
-if ~resSafe || resUnsafe
-    error('Analytical test for the "finally" operator failed!');
-end
+res(end+1,1) = resSafe;
+res(end+1,1) = ~resUnsafe;
+
 
 % all checks ok
-res = true;
-
-end
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -63,7 +63,7 @@ end
 P_out = polytope(P);
 
 % reduce vertex representation
-if strcmp(type,'V') || (isempty(P.A) && isempty(P.Ae) && ~isempty(P.V.val))
+if strcmp(type,'V') || (isempty(P.A_.val) && isempty(P.Ae_.val) && P.isVRep.val)
     P_out = aux_minVRep(P_out,tol);
     % the set with the reduced representation size has the same properties
     % (boundedness, etc.) as the original one
@@ -80,12 +80,12 @@ if strcmp(type,'zeros')
 end
 
 % quick exits:
-if length(P_out.b) == 1 && isempty(P_out.be)
+if length(P_out.b_.val) == 1 && isempty(P_out.be_.val)
     % only one inequality, no equality given -> already minimal
     P_out = aux_oneHalfspace(P_out,tol);
     P = aux_copyProperties(P,P_out);
     return
-elseif isempty(P_out.b) && length(P_out.be) == 1
+elseif isempty(P_out.b_.val) && length(P_out.be_.val) == 1
     % only one equality, no inequality given -> already minimal
     P_out.minHRep.val = true;
     P = aux_copyProperties(P,P_out);
@@ -97,13 +97,13 @@ P_out = normalizeConstraints(P_out,'A');
 
 % removal of aligned constraints
 P_out = aux_removeAlignedIneq(P_out);
-if strcmp(type,'aligned') || (length(P_out.b) <= 1 && isempty(P_out.be))
+if strcmp(type,'aligned') || (length(P_out.b_.val) <= 1 && isempty(P_out.be_.val))
     P = aux_copyProperties(P,P_out);
     return
 end
 
 % quick check for two inequality constraints
-if length(P_out.b) == 2 && isempty(P_out.Ae)
+if length(P_out.b_.val) == 2 && isempty(P_out.Ae_.val)
     P_out = aux_twoHalfspaces(P_out);
     P_out.minHRep.val = true;
     % check whether object has become fully empty
@@ -127,8 +127,8 @@ elseif n == 2
 end
 
 % read out properties
-A = P_out.A; b = P_out.b;
-Ae = P_out.Ae; be = P_out.be;
+A = P_out.A_.val; b = P_out.b_.val;
+Ae = P_out.Ae_.val; be = P_out.be_.val;
 
 % remove redundant equality constraints
 if ~isempty(Ae) && (strcmp(type,'all') || strcmp(type,'Ae'))
@@ -150,7 +150,7 @@ if ~isempty(A) && (strcmp(type,'all') || strcmp(type,'A'))
 
     [A,b,irredundantIneq,done] = aux_irredundantIneq(A,b);
     if done
-        P_out.A = A; P_out.b = b;
+        P_out.A_.val = A; P_out.b_.val = b;
         P_out.minHRep.val = true;
         P = aux_copyProperties(P,P_out);
         return
@@ -168,16 +168,6 @@ if ~isempty(A) && (strcmp(type,'all') || strcmp(type,'A'))
         P_out = polytope.empty(n);
         P = aux_copyProperties(P,P_out);
         return
-    end
-    
-    % linear programming
-    persistent isMosek
-    if isempty(isMosek)
-        isMosek = isSolverInstalled('mosek');
-    end
-    persistent options
-    if isempty(options)
-        options = optimoptions('linprog','display','off');
     end
     
     % for remaining rows in inequality constraint matrix: test if i-th
@@ -207,54 +197,29 @@ if ~isempty(A) && (strcmp(type,'all') || strcmp(type,'A'))
             idxCurrKept(i) = false;
             H = A(idxKeep & idxCurrKept,:);
             d = b(idxKeep & idxCurrKept);
-            
-            if isMosek
-                
-                % rewrite to MOSEK syntax
-                a = [H; Ae];
-                blc = [-Inf(size(H,1),1); be];
-                buc = [d; be];
-    
-                % call MOSEK
-                res = msklpopt(A(i,:)',a,blc,buc,[],[],[],'maximize echo(0)');
-                extreme_point = res.sol.itr.xx;
-    
-                if strcmp(res.sol.itr.prosta,'PRIMAL_AND_DUAL_FEASIBLE')
-                    % value of support function in that direction
-                    minvalue = A(i,:) * extreme_point;
-                elseif strcmp(res.sol.itr.prosta,'PRIMAL_INFEASIBLE')
-                    set_empty = true;
-                elseif strcmp(res.sol.itr.prosta,'DUAL_INFEASIBLE')
-                    % reduced polytope is unbounded -> constraint is irredundant
-                    minvalue = Inf;
-                end
-    
-            else
-                % MATLAB linprog
 
-                % init linprog struct
-                problem.f = -A(i,:);
-                problem.Aineq = H;
-                problem.bineq = d;
-                problem.Aeq = Ae;
-                problem.beq = be;
-                problem.solver = 'linprog';
-                problem.options = options;
-    
-                % solve LP
-                [extreme_point,~,exitflag] = linprog(problem);
-            
-                % solution has been found
-                if exitflag > 0
-                    minvalue = A(i,:)*extreme_point;
-                elseif exitflag == -2
-                    set_empty = true;
-                elseif exitflag == -3
-                    % reduced polytope is unbounded -> constraint is irredundant
-                    minvalue = Inf;
-                elseif exitflag == -4
-                    throw(CORAerror('CORA:solverIssue'));
-                end
+            % init linprog struct
+            problem.f = -A(i,:);
+            problem.Aineq = H;
+            problem.bineq = d;
+            problem.Aeq = Ae;
+            problem.beq = be;
+            problem.lb = [];
+            problem.ub = [];
+
+            % solve LP
+            [extreme_point,~,exitflag] = CORAlinprog(problem);
+        
+            % solution has been found
+            if exitflag > 0
+                minvalue = A(i,:)*extreme_point;
+            elseif exitflag == -2
+                set_empty = true;
+            elseif exitflag == -3
+                % reduced polytope is unbounded -> constraint is irredundant
+                minvalue = Inf;
+            elseif exitflag == -4
+                throw(CORAerror('CORA:solverIssue'));
             end
 
             % exit in case of detected emptiness
@@ -307,11 +272,11 @@ function P = aux_copyProperties(P,P_out)
     
     % P is only in minimal representation, if it has the same number of
     % inequality and equality constraints as P_out
-    P.minHRep.val = length(P_out.b) == length(P.b) ...
-        && length(P_out.be) == length(P.be);
+    P.minHRep.val = length(P_out.b_.val) == length(P.b_.val) ...
+        && length(P_out.be_.val) == length(P.be_.val);
     
     % copy vertices as well
-    P.V.val = P_out.V.val;
+    P.V_.val = P_out.V_.val;
     P.minVRep.val = P_out.minVRep.val;
 
 end
@@ -319,21 +284,21 @@ end
 function P = aux_minVRep(P,tol)
 % removes redundancies in the vertex representation
 
-    % check for V-representation
-    if isempty(P.V.val)
-        % nothing to do here...
+    % if no V-representation or at most one vertex, nothing to do...
+    if ~P.isVRep.val || size(P.V_.val,2) <= 1
         return;
     end
     
     % extract arguments
-    V = P.V.val;
+    V = P.V_.val;
+    n = dim(P);
     
     % handle 1-dimensional case separately
-    if dim(P) == 1
+    if n == 1
         min_V = min(min(V));
         max_V = max(max(V));
         V = [min_V; max_V]';    
-        P.V.val = V;
+        P.V_.val = V;
     else
         % compute convex hull and take only the unique points
         try
@@ -342,18 +307,32 @@ function P = aux_minVRep(P,tol)
             [ifd, B] = isFullDim(P);
             if ifd
                 K = convhulln(V');
-                P.V.val = V(:,unique(K));
+                P.V_.val = V(:,unique(K));
             else
-                c = sum(V,2)./size(V,2); % Center of the polytope
+                % center of the polytope
+                c = sum(V,2)./size(V,2);
 
+                % decompose and compute the rank of B
                 [U, ~, ~] = svd(B);
-                r = size(B,2); % The rank of B;
+                r = size(B,2);
 
-                V_affSubspace = [eye(r) zeros([r (dim(P)-r)])] * U' * (V - c);
-                K_affSubspace = convhulln(V_affSubspace');
-                V_affSubspace = V_affSubspace(:, unique(K_affSubspace));
+                V_affSubspace = [eye(r) zeros([r (n-r)])] * U' * (V - c);
+                if size(V_affSubspace,1) == 1
+                    % convhulln does not work for 1D sets of vertices...
+                    minV = min(V_affSubspace);
+                    maxV = max(V_affSubspace);
+                    if ~withinTol(minV,maxV,tol)
+                        V_affSubspace = [minV, maxV];
+                    else
+                        V_affSubspace = minV;
+                    end
+                else
+                    K_affSubspace = convhulln(V_affSubspace');
+                    V_affSubspace = V_affSubspace(:, unique(K_affSubspace));
+                end
 
-                P.V.val = U * [eye(r); zeros([(dim(P)-r) r])] * V_affSubspace + c;
+                % back-projection
+                P.V_.val = U * [eye(r); zeros([(n-r) r])] * V_affSubspace + c;
             end
         catch ME
             if strcmp(ME.identifier,'MATLAB:cgprechecks:NotEnoughPts')
@@ -381,38 +360,38 @@ function P = aux_deleteZeros(P,tol)
     n = dim(P);
 
     % remove trivially redundant rows with 0*x <= b
-    A_zero_rows = find(all(withinTol(P.A,0),2));
+    A_zero_rows = find(all(withinTol(P.A_.val,0),2));
     if any(A_zero_rows)
         % check whether any of those constraints is infeasible
-        if any(P.b(A_zero_rows) < 0 & ~withinTol(P.b(A_zero_rows),0,tol))
+        if any(P.b_.val(A_zero_rows) < 0 & ~withinTol(P.b_.val(A_zero_rows),0,tol))
             % constraint 0*x <= b with b < 0  =>  infeasible, i.e., empty set
             P = polytope.empty(n);
             return
         else
             % all constraints are 0*x <= b where all b_i > 0
-            P.A(A_zero_rows,:) = [];
-            P.b(A_zero_rows) = [];
+            P.A_.val(A_zero_rows,:) = [];
+            P.b_.val(A_zero_rows) = [];
         end
     end
 
     % remove trivially redundant rows with 0*x = 0
-    Ae_zero_rows = find(all(withinTol(P.Ae,0),2));
+    Ae_zero_rows = find(all(withinTol(P.Ae_.val,0),2));
     if any(Ae_zero_rows)
         % check whether any of those constraints is infeasible
-        if any(~withinTol(P.be(Ae_zero_rows),0,tol))
+        if any(~withinTol(P.be_.val(Ae_zero_rows),0,tol))
             % constraint 0*x = be with be ~= 0  =>  infeasible, i.e., empty set
             P = polytope.empty(n);
             return
         else
             % all constraints are 0*x = 0
-            P.Ae(Ae_zero_rows,:) = [];
-            P.be(Ae_zero_rows) = [];
+            P.Ae_.val(Ae_zero_rows,:) = [];
+            P.be_.val(Ae_zero_rows) = [];
         end
     end
 
     % if no constraints are left, but none have been infeasible, we have an
     % unbounded set (fullspace)
-    if isempty(P.A) && isempty(P.Ae)
+    if isempty(P.A_.val) && isempty(P.Ae_.val)
         P.emptySet.val = false;
         P.bounded.val = false;
         P.fullDim.val = true;
@@ -530,12 +509,12 @@ function P = aux_2D(P,type)
 % of the middle constraint
 
     n = dim(P);
-    Ae = P.Ae;
-    be = P.be;
+    Ae = P.Ae_.val;
+    be = P.be_.val;
 
-    if ~isempty(P.Ae) && (strcmp(type,'all') || strcmp(type,'Ae'))
+    if ~isempty(P.Ae_.val) && (strcmp(type,'all') || strcmp(type,'Ae'))
         % remove duplicates
-        [Ae,be,empty] = aux_removeEqCon(P.Ae,P.be);
+        [Ae,be,empty] = aux_removeEqCon(P.Ae_.val,P.be_.val);
 
         if empty
             % aux_removeEqCon already determined emptiness
@@ -545,17 +524,17 @@ function P = aux_2D(P,type)
 
     end
 
-    if ~isempty(P.A) && (strcmp(type,'all') || strcmp(type,'A'))
+    if ~isempty(P.A_.val) && (strcmp(type,'all') || strcmp(type,'A'))
 
         % transpose constraints, read out number
-        A = P.A';
-        nrCon = length(P.b);
+        A = P.A_.val';
+        nrCon = length(P.b_.val);
     
         % constraints are normalized, order by angle
         angles = atan2d(A(2,:),A(1,:));
         [angles,idx] = sort(angles);
         A = A(:,idx);
-        b = P.b(idx);
+        b = P.b_.val(idx);
     
         % remove parallel constraints (need to be in order!)
         idxKept = true(1,nrCon);
@@ -596,7 +575,7 @@ function P = aux_2D(P,type)
         % if only two halfspaces are left
         if length(b) == 2
             P = aux_twoHalfspaces(polytope(A',b));
-            P.Ae = Ae; P.be = be;
+            P.Ae_.val = Ae; P.be_.val = be;
             return
         end
     
@@ -693,10 +672,10 @@ function P = aux_2D(P,type)
         end
     
         % remove halfspaces
-        P.A = A(:,idxKept)';
-        P.b = b(idxKept);
-        P.Ae = Ae;
-        P.be = be;
+        P.A_.val = A(:,idxKept)';
+        P.b_.val = b(idxKept);
+        P.Ae_.val = Ae;
+        P.be_.val = be;
 
         % TODO: check if empty without linprog (?)
     end
@@ -742,7 +721,7 @@ function P = aux_oneHalfspace(P,tol)
 P.minHRep.val = true;
 P.fullDim.val = true;
 
-if all(P.A == 0) && P.b ~= 0
+if all(P.A_.val == 0) && P.b_.val ~= 0
     % constraint infeasible -> empty set
     P.emptySet.val = true;
     P.bounded.val = true;
@@ -762,15 +741,15 @@ function P = aux_twoHalfspaces(P)
     n = dim(P);
     
     % compute dot product
-    dotprod = P.A(1,:) * P.A(2,:)';
+    dotprod = P.A_.val(1,:) * P.A_.val(2,:)';
 
     % parallel or anti-parallel?
     if withinTol(dotprod,1)
         % remove the one with the shorter offset
-        [P.b,minIdx] = min(P.b);
-        P.A = P.A(minIdx,:);
+        [P.b_.val,minIdx] = min(P.b_.val);
+        P.A_.val = P.A_.val(minIdx,:);
 
-    elseif withinTol(dotprod,-1) && -P.b(2) > P.b(1)
+    elseif withinTol(dotprod,-1) && -P.b_.val(2) > P.b_.val(1)
         % -> not feasible
         P = polytope.empty(n);
 
@@ -789,8 +768,8 @@ function P = aux_1D(P,type)
     P = normalizeConstraints(P,'b');
 
     % read out properties
-    A = P.A; b = P.b;
-    Ae = P.Ae; be = P.be;
+    A = P.A_.val; b = P.b_.val;
+    Ae = P.Ae_.val; be = P.be_.val;
 
     if ~isempty(Ae) && (strcmp(type,'all') || strcmp(type,'Ae'))
         % normalization yields equality constraints of the form
@@ -830,8 +809,8 @@ function P = aux_1D(P,type)
     if ~isempty(P.A) && (strcmp(type,'all') || strcmp(type,'A'))
         % normalize rows of A matrix
         P = normalizeConstraints(P,'A');
-        A = P.A; b = P.b;
-        be_ = P.be;
+        A = P.A_.val; b = P.b_.val;
+        be_ = P.be_.val;
     
         % take outermost halfspaces
         idxPos = A > 0;
@@ -877,15 +856,15 @@ function P = aux_1D(P,type)
 %     end
 
     % construct resulting polytope
-    P.A = A; P.b = b; P.Ae = Ae; P.be = be;
+    P.A_.val = A; P.b_.val = b; P.Ae_.val = Ae; P.be_.val = be;
 end
 
 function P = aux_removeAlignedIneq(P)
 % only goes through inequality constraints
 
     % get object properties
-    A = P.A;
-    b = P.b;
+    A = P.A_.val;
+    b = P.b_.val;
     
     % sort the marix rows to detect aligned normal vectors
     [A,ind] = sortrows(A);
@@ -939,8 +918,8 @@ function P = aux_removeAlignedIneq(P)
     end
     
     % override constraint set
-    P.A = A_(1:cTemp-1,:);
-    P.b = b_(1:cTemp-1);
+    P.A_.val = A_(1:cTemp-1,:);
+    P.b_.val = b_(1:cTemp-1);
 end
 
 % ------------------------------ END OF CODE ------------------------------

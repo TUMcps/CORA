@@ -387,7 +387,7 @@ verboseLog(k,t,options);
 % aux_plot_e2ebar(isdebug,fullcomp,debugdata,timeStepIdxs);
 
 % debug: plot error curve
-% aux_plot_Rerror(isdebug,fullcomp,tVec,Rcont_error,Rcont_tp_error,e,options.tu);
+% aux_plot_R_error(isdebug,fullcomp,tVec,Rcont_error,Rcont_tp_error,e,options.tu);
 
 % check if all errors below respective bounds
 % aux_check_errors(fullcomp,e,ebar,Rcont_error,Rcont_tp_error,tVec,debugdata,timeStepIdxs);
@@ -439,8 +439,8 @@ ebaracctotal = e.acctotal + ebar.acc - eacc;
 % ebarredtotal = e.redtotal + ebarred - ered;
 
 % compute total committed error
-totalerror = enonacc + e.acctotal - eacc + e.redtotal;
-totalerror_tp = e.acctotal + e.redtotal;
+total_error = enonacc + e.acctotal - eacc + e.redtotal;
+total_error_tp = e.acctotal + e.redtotal;
 
 % --- checks ---
 % all errors and bounds need to be larger or equal to zero
@@ -457,8 +457,8 @@ if any(Rout_error(fullstep) > e.emax) || any(Rout_tp_error(fullstep_tp) > e.emax
 end
 % (2) re-computation of full errors has to match ongoing computation
 %     note: use a tolerance here...
-if any(abs(totalerror(fullstep) - Rout_error(fullstep)) > 1e-9) || ...
-        (any(Rout_tp_error) && any(abs(totalerror_tp(fullstep_tp) - Rout_tp_error(fullstep_tp)) > 1e-9))
+if any(abs(total_error(fullstep) - Rout_error(fullstep)) > 1e-9) || ...
+        (any(Rout_tp_error) && any(abs(total_error_tp(fullstep_tp) - Rout_tp_error(fullstep_tp)) > 1e-9))
     internalcheck = false;
 end
 
@@ -2753,7 +2753,7 @@ debugdata.expmat.Deltatk{k,1} = expmat.Deltatk;
 
 end
 
-function aux_plot_Rerror(isdebug,fullcomp,tVec,Rout_error,Rout_tp_error,e,tu)
+function aux_plot_R_error(isdebug,fullcomp,tVec,Rout_error,Rout_tp_error,e,tu)
 % plot curves of over-approximation error contained in time-point and
 % time-interval reachable sets, along with maximum admissible error and
 % switches of input vector (to possibly explain some jumps)
@@ -2819,8 +2819,8 @@ ebaracctotal = e.acctotal + ebar.acc - eacc;
 ebarredtotal = e.redtotal + ebar.red - ered;
 
 % compute total committed error (time-interval solution)
-totalerror = enonacc + [0;e.acctotal(1:end-1)] + e.redtotal;
-totalerror = totalerror(fullcomp);
+total_error = enonacc + [0;e.acctotal(1:end-1)] + e.redtotal;
+total_error = total_error(fullcomp);
 
 % generate time vector
 cumsumtVec_tp = cumsum(tVec);
@@ -2838,7 +2838,7 @@ subplot(rows,cols,1); hold on; box on;
 title("total error (ti)");
 axis([tStart,tFinal,0,1.1*e.emax]);
 % committed error
-plot(cumsumtVec,repelem(totalerror,2),'Color',colorblind('b'),'LineWidth',lw);
+plot(cumsumtVec,repelem(total_error,2),'Color',colorblind('b'),'LineWidth',lw);
 % maximum error (=bound)
 plot([0;tFinal],[e.emax;e.emax],'Color',colorblind('r'),'LineWidth',lw);
 

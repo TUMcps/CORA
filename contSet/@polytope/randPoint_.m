@@ -105,7 +105,8 @@ function pt = aux_randPointExtreme(P)
 
     if ~isBounded(P)
         % go along halfspace vectors to find finite-valued extreme points
-        A = [P.A; P.Ae; -P.Ae]; b = [P.b; P.be; -P.be];
+        A = [P.A_.val; P.Ae_.val; -P.Ae_.val];
+        b = [P.b_.val; P.be_.val; -P.be_.val];
         picked_halfspace = randi([1,length(b)]);
         [~,pt] = supportFunc_(P,A(picked_halfspace,:),'upper');
         
@@ -131,8 +132,8 @@ function p = aux_randPointBilliard(P, N)
     %polytope initialization
 
     p = zeros(dim(P),N);
-    A = P.A;
-    b = P.b;
+    A = P.A_.val;
+    b = P.b_.val;
     
     % Need to check whether the polytope is degenerate
     n = dim(P);
@@ -281,8 +282,8 @@ function p = aux_randPointHitAndRun(P, N)
     % Allocate Memory
     p = zeros(dim(P),N);
     
-    A = P.A;
-    b = P.b;
+    A = P.A_.val;
+    b = P.b_.val;
     % This is just a convenient renaming. The polytope is now the set of
     % points x, s.t. Ax <= b.
     

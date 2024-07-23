@@ -217,14 +217,15 @@ if ~res && ~isempty(cZ.A)
             p = size(cZ.A,2);
 
             problem.f = ones(p,1);
+            problem.Aineq = [];
+            problem.bineq = [];
             problem.Aeq = cZ.A;
             problem.beq = cZ.b;
             problem.ub = ones(p,1);
             problem.lb = -problem.ub;
-            problem.solver = 'linprog';
             problem.options = options;
             
-            [~,~,exitflag] = linprog(problem);
+            [~,~,exitflag] = CORAlinprog(problem);
             
             res = false;
             

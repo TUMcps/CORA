@@ -43,6 +43,7 @@ function han = plot(pZ,varargin)
 %                05-April-2023 (TL, clean up using plotPolygon)
 %                11-July-2023 (TL, bug fix holes)
 %                13-April-2024 (TL, bug fix 3d)
+%                17-July-2024 (TL, minor speed up)
 % Last revision: 12-July-2023 (TL, restructure)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -138,13 +139,15 @@ function han = aux_plot2d(pZ,dims,NVpairs,splits)
     [polyUnion,V] = aux_getPolygon(pZ);
     polyPrev = polyUnion;
     Vlist{1} = V;
+    polylist{1} = polyUnion;
 
     for i=1:splits
         
         % construct new polygon
         scounter = 0;
-        pZnew = cell(length(pZsplit), 1);
-        Vnew = cell(length(pZsplit), 1);
+        pZnew = cell(1,2*length(pZsplit));
+        Vnew = cell(1,2*length(pZsplit));
+        polysnew = cell(1,2*length(pZsplit));
         polyUnion = [];
         
         for j = 1:length(pZsplit)
@@ -161,11 +164,13 @@ function han = aux_plot2d(pZ,dims,NVpairs,splits)
                 scounter = scounter + 1;
                 pZnew{scounter} = res{1};
                 Vnew{scounter} = V1;
+                polysnew{scounter} = poly1;
                 
                 [poly2,V2] = aux_getPolygon(res{2});
                 scounter = scounter + 1;
                 pZnew{scounter} = res{2};
                 Vnew{scounter} = V2;
+                polysnew{scounter} = poly2;
                 
                 % unite the polygons
                 poly = union(poly1,poly2);
@@ -173,34 +178,23 @@ function han = aux_plot2d(pZ,dims,NVpairs,splits)
             else
                 % no splitting if not on boundary
 
-                % compute polygon
-                [poly,V] = aux_getPolygon(pZsplit{j});
+                % reuse previous result
                 scounter = scounter + 1;
                 pZnew{scounter} = pZsplit{j};
-                Vnew{scounter} = V;
+                Vnew{scounter} = Vlist{j};
+                poly = polylist{j};
+                polysnew{scounter} = poly;
 
             end
             
             % unite with previous polygons
-            if isempty(polyUnion)
-                polyUnion = poly;
-            else
-                polyUnion = union(polyUnion,poly);
-            end
-
-            if polyUnion.NumRegions >= 2
-                % might be due to numeric instability
-                % enlargen polygon slightly
-                polyUnion_ = polybuffer(polyUnion, 1e-8);
-                if polyUnion_.NumRegions < polyUnion.NumRegions
-                    polyUnion = polyUnion_;
-                end
-            end
+            polyUnion = aux_unitePolygons(polyUnion,poly);
         end
         
         % update lists
         pZsplit = pZnew(1:scounter);
         Vlist = Vnew(1:scounter);
+        polylist = polysnew(1:scounter);
         polyPrev = polyUnion;
     end
 
@@ -244,6 +238,28 @@ function han = aux_plot2d(pZ,dims,NVpairs,splits)
     han = plotPolygon([xVals,yVals]', NVpairs{:});
 end
 
+function polyUnion = aux_unitePolygons(poly1,poly2)
+% unites two polygons
+
+if isempty(poly1)
+    polyUnion = poly2;
+elseif isempty(poly2)
+    polyUnion = poly1;
+else
+    polyUnion = union(poly1,poly2);
+end
+
+if polyUnion.NumRegions >= 2
+    % might be due to numeric instability
+    % enlargen polygon slightly
+    polyUnion_ = polybuffer(polyUnion, 1e-8);
+    if polyUnion_.NumRegions < polyUnion.NumRegions
+        polyUnion = polyUnion_;
+    end
+end
+
+end
+
 function [poly,V] = aux_getPolygon(pZ)
     % enclose polynomial zonotope with a polygon
 
@@ -253,7 +269,7 @@ function [poly,V] = aux_getPolygon(pZ)
     % calculate vertices of zonotope
     V = vertices(Z);
 
-    % transform to 2D polytope (zonotope/vertices are already 'simple')
+    % transform to 2D polyshape (zonotope/vertices are already 'simple')
     poly = polyshape(V(1,:),V(2,:),'Simplify',false);
 end
 

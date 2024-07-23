@@ -16,6 +16,10 @@ function res = isBounded(P)
 %    P = polytope(A,b);
 %    res = isBounded(P)
 %
+% Reference:
+%    [1] M. Wetzlinger, V. Kotsev, A. Kulmburg, M. Althoff. "Implementation
+%        of Polyhedral Operations in CORA 2024", ARCH'24.
+%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
@@ -29,7 +33,7 @@ function res = isBounded(P)
 %                27-July-2023 (MW, fix 1D case)
 %                25-November-2023 (MW, faster method for degenerate polytopes)
 %                04-June-2024 (MW, use simplex for support function evals)
-% Last revision: ---
+% Last revision: 10-July-2024 (MW, refactor)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
@@ -39,57 +43,74 @@ if ~isempty(P.bounded.val)
     return
 end
 
-% if polytope has V-rep then it is bounded (1D might still have Inf)
-if ~isempty(P.V.val) && ~any(any(isinf(P.V.val)))
-    res = true;
-    P.bounded.val = true;
-    return
-end
+% check whether V- or H-representation given
+if P.isVRep.val
+    % --- V representation
+    res = aux_isBounded_Vpoly(P);
 
-% dimension of ambient space
-n = dim(P);
-
-% 1D case
-if n == 1
-    % compute vertices (and save)
-    V = vertices_(P,'lcon2vert');
-    P.V.val = V;
-    % empty vertices or non-Inf vertices -> bounded
-    if isempty(V)
-        res = true;
-        P.emptySet.val = true;
-    elseif any(isinf(V))
-        res = false;
-        P.emptySet.val = false;
-    else
-        res = true;
-        P.emptySet.val = false;
-    end
-    P.bounded.val = res;
-    return
-end
-
-% quick check: if any column in the inequality and equality constraints is
-% zero everywhere, this dimension is unbounded
-if ~all(any([P.A; P.Ae],1))
-    res = false;
-    P.bounded.val = res;
-    return
-end
-
-if ~isempty(P.fullDim.val) && P.fullDim.val
-    % faster method if polytope is known to be non-degenerate
-    res = aux_nondegenerate(P,n);
 else
-    res = aux_supportFunction(P,n);
+    % --- H representation
+
+    % dimension of ambient space
+    n = dim(P);
+    
+    % 1D case
+    if n == 1
+        res = aux_isBounded_1D_Hpoly(P);
+    else
+    
+        % quick check: if any column in the inequality and equality
+        % constraints is zero everywhere, this dimension is unbounded
+        if ~all(any([P.A_.val; P.Ae_.val],1))
+            res = false;
+        elseif ~isempty(P.fullDim.val) && P.fullDim.val
+            % faster method if polytope is known to be non-degenerate
+            res = aux_isBounded_nD_Hpoly_nondegenerate(P,n);
+        else
+            % standard method
+            res = aux_isBounded_nD_Hpoly(P,n);
+        end
+
+    end
+
 end
+
+% save the set property (only done once, namely, here!)
+P.bounded.val = res;
 
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function res = aux_nondegenerate(P,n)
+function res = aux_isBounded_Vpoly(P)
+
+% if polytope has V-rep then it is bounded, unless it is in 1D, then
+% we still have to check for Inf
+res = dim(P) > 1 || ~any(any(isinf(P.V_.val)));
+
+end
+
+function res = aux_isBounded_1D_Hpoly(P)
+
+% compute vertices
+V = vertices_(P,'lcon2vert');
+
+% empty vertices or non-Inf vertices -> bounded
+if isempty(V)
+    res = true;
+    P.emptySet.val = true;
+elseif any(isinf(V))
+    res = false;
+    P.emptySet.val = false;
+else
+    res = true;
+    P.emptySet.val = false;
+end
+
+end
+
+function res = aux_isBounded_nD_Hpoly_nondegenerate(P,n)
 % check via duality (only for degenerate polytopes!)
 
 % the origin has to be contained in the (primal) polytope
@@ -100,15 +121,14 @@ if ~contains(P,zeros(n,1))
         % set is unbounded (however, not every unbounded set yields a NaN
         % Chebyshev center!)
         res = false;
-        P.bounded.val = false;
         P.emptySet.val = false;
         return
     elseif isempty(c)
         % set is empty
         res = true;
-        P.bounded.val = true;
         P.emptySet.val = true;
-        P.V.val = zeros(n,0);
+        P.V = zeros(n,0);
+        P.isVRep = true;
         P.minVRep.val = true;
         return
     end
@@ -123,13 +143,14 @@ else
 end
 
 % rewrite equality constraints as pairwise inequality constraints
-P_ = polytope([P_.A; P_.Ae; -P_.Ae],[P_.b; P_.be; -P_.be]);
+P_ = polytope([P_.A_.val; P_.Ae_.val; -P_.Ae_.val],...
+              [P_.b_.val; P_.be_.val; -P_.be_.val]);
 
 % normalize constraints to obtain dual polytope
 %   A x <= 1  -->  P^* = conv(A^T)
 P_ = normalizeConstraints(P_,'b');
 % number of vertices
-h = size(P_.A,1);
+h = size(P_.A_.val,1);
 
 % check if the origin is contained in the dual polytope by linear
 % programming:
@@ -137,12 +158,6 @@ h = size(P_.A,1);
 %   s.t. A^T x = 0
 %        for all i in {1,...,h}: t <= x_i
 %        sum_i x_i = 1
-
-% linear program options (only if MATLAB linprog is used)
-persistent options
-if isempty(options)
-    options = optimoptions('linprog','display','off');
-end
 
 % variable vector: t in R, x in R^n
 problem.f = [-1; zeros(h,1)];
@@ -152,14 +167,14 @@ problem.Aineq = [ones(h,1) -eye(h)];
 problem.bineq = zeros(h,1);
 
 % equality constraints: A^T x = 0, sum_i x_i = 1
-problem.Aeq = [zeros(n,1), P_.A'; 0 ones(1,h)];
+problem.Aeq = [zeros(n,1), P_.A_.val'; 0 ones(1,h)];
 problem.beq = [zeros(n,1); 1];
 
-problem.solver = 'linprog';
-problem.options = options;
+problem.lb = [];
+problem.ub = [];
 
 % solve linear program
-[x,fval,exitflag] = linprog(problem);
+[x,fval,exitflag] = CORAlinprog(problem);
 
 if exitflag >= 0
     % solution could be computed
@@ -175,12 +190,9 @@ else
     throw(CORAerror('CORA:solverIssue'));
 end
 
-% save to properties
-P.bounded.val = res;
-
 end
 
-function res = aux_supportFunction(P,n)
+function res = aux_isBounded_nD_Hpoly(P,n)
 % check if all support functions in the directions of an n-dimensional
 % simplex are bounded; directions are [I_n, -1_n]
 
@@ -193,13 +205,11 @@ function res = aux_supportFunction(P,n)
         if val == Inf
             % set is unbounded
             res = false;
-            P.bounded.val = false;
             P.emptySet.val = false;
             return
         elseif val == -Inf
             % set is empty
             res = true;
-            P.bounded.val = true;
             P.emptySet.val = true;
             return
         end
@@ -211,43 +221,17 @@ function res = aux_supportFunction(P,n)
     if val == Inf
         % set is unbounded
         res = false;
-        P.bounded.val = false;
         P.emptySet.val = false;
         return
     elseif val == -Inf
         % set is empty
         res = true;
-        P.bounded.val = true;
         P.emptySet.val = true;
         return
     end
 
-    % old version: loop over all -e_i, +e_i
-%     for i=1:n
-%         for e=[-1,1]
-%             % check every axis-aligned direction
-%             dir = [zeros(i-1,1);e;zeros(n-i,1)];
-%             % evaluate support function
-%             val = supportFunc_(P,dir,'upper');
-%             if val == Inf
-%                 % set is unbounded
-%                 res = false;
-%                 P.bounded.val = false;
-%                 P.emptySet.val = false;
-%                 return
-%             elseif val == -Inf
-%                 % set is empty
-%                 res = true;
-%                 P.bounded.val = true;
-%                 P.emptySet.val = true;
-%                 return
-%             end
-%         end
-%     end
-
     % code reaches this part: set is neither unbounded nor empty
     res = true;
-    P.bounded.val = true;
     P.emptySet.val = false;
 
 end

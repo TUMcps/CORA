@@ -88,16 +88,6 @@ function p = randPoint_(cZ,N,type,varargin)
         
         p = zeros(n,N);
         
-        % create option to suppress command line output of linprog
-        persistent suppressPrint
-        if isempty(suppressPrint)
-            suppressPrint = optimoptions('linprog', 'Display', 'off');
-        end
-
-        % init linprog struct
-        problem.solver = 'linprog';
-        problem.options = suppressPrint;
-        
         % sample N points
         for i = 1:N
             % sample movement vector
@@ -112,12 +102,14 @@ function p = randPoint_(cZ,N,type,varargin)
             problem.bineq = ones(2*m,1);
             problem.Aeq = vertcat(horzcat(d, -G), horzcat(zeros(nc,1), cZ.A));
             problem.beq = vertcat(c - p0, cZ.b);
+            problem.lb = [];
+            problem.ub = [];
             
             % execute linear programs
             problem.f = f;
-            minZ = linprog(problem);
+            minZ = CORAlinprog(problem);
             problem.f = -f;
-            maxZ = linprog(problem);
+            maxZ = CORAlinprog(problem);
     
             % sample line segment uniformly
             minC = minZ(1);

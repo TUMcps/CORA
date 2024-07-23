@@ -1,5 +1,7 @@
 function c = center(P)
-% center - Computes the Chebyshev center of a given polytope
+% center - computes the Chebyshev center of a polytope
+%    note: polytope in vertex representation are converted to halfspace
+%    representation, see [1], which is potentially time-consuming
 %
 % Syntax:
 %    c = center(P)
@@ -14,7 +16,9 @@ function c = center(P)
 %    P = polytope([-1 -1; 1 0;-1 0; 0 1; 0 -1],[2;3;2;3;2]);
 %    c = center(P);
 %    
-% Reference: MPT-Toolbox https://www.mpt3.org/    
+% Reference:
+%    [1] M. Wetzlinger, V. Kotsev, A. Kulmburg, M. Althoff. "Implementation
+%        of Polyhedral Operations in CORA 2024", ARCH'24.
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,136 +31,133 @@ function c = center(P)
 % Last update:   14-December-2022 (MW, add call to MOSEK)
 %                27-July-2023 (MW, add fast method for 1D)
 %                02-January-2024 (MW, fix fully empty polytopes)
-% Last revision: ---
+% Last revision: 12-July-2024 (MW, refactor)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% dimension
+% read out dimension
 n = dim(P);
 
-% Check if polytope is empty
+% fullspace case: return NaN; empty case: return empty vector
 if representsa_(P,'fullspace',0)
     c = NaN(n,1); return;
+elseif ~isempty(P.emptySet.val) && P.emptySet.val
+    c = double.empty(n,0); return;
 end
 
 % fast and simple computation for 1D
 if n == 1
-    % compute vertices
-    V = vertices_(P,'lcon2vert');
-    if isempty(V)
-        % empty set
-        c = [];
-    elseif size(V,2) == 1
-        % only one vertex -> center
-        c = V;
-    elseif any(isinf(V))
-        % unbounded
-        c = NaN;
-    else
-        % bounded, two vertices
-        c = mean(V);
-    end
+    c = aux_center_1D(P);
     return
 end
 
-% check whether there are only equalities
-if isempty(P.A) && ~isempty(P.Ae)
-    % three outcomes: unbounded, single point, infeasible
-
-    % minimal halfspace representation: if two constraints are aligned and
-    % cannot be fulfilled at the same time, an empty polytope is returned
-    P_ = compact_(P,'Ae',1e-10);
-    if ~isempty(P.emptySet.val) && P.emptySet.val
-        c = double.empty(n,0); return;
-    end
-
-    % all constraints now are linearly independent, hence the relation of 
-    % system dimension and number of constraints determines the solution
-    if size(P_.Ae,1) < n
-        % underdetermined -> unbounded
-        c = NaN(n,1);
-    elseif size(P_.Ae,1) > n
-        % overdetermined -> no solution
-        c = double.empty(n,0);
-    else
-        % same number of constraints as system dimension -> single point
-        c = P_.Ae \ P_.be;
-    end
+% check whether there are only equalities: allows to avoid the linear
+% program from below (faster)
+if isempty(P.A_.val) && ~isempty(P.Ae_.val)
+    c = aux_center_only_equalityConstraints(P,n);
     return
 end
+
+% general method: compute Chebyshev center via linear program; to this end,
+% we require the halfspace representation
+constraints(P);
+c = aux_center_LP(P,n);
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function c = aux_center_1D(P)
+% special method for 1D polytopes
+
+% compute vertices
+V = vertices_(P,'lcon2vert');
+if isempty(V)
+    % empty set
+    c = zeros(1,0);
+elseif size(V,2) == 1
+    % only one vertex, which is also the center
+    c = V;
+elseif any(isinf(V))
+    % unbounded
+    c = NaN;
+else
+    % bounded -> two vertices, take mean
+    c = mean(V);
+end
+
+end
+
+function c = aux_center_only_equalityConstraints(P,n)
+% three outcomes: unbounded, single point, infeasible
+
+% minimal halfspace representation: if two constraints are aligned and
+% cannot be fulfilled at the same time, an empty polytope is returned
+P_ = compact_(P,'Ae',1e-10);
+
+% check if emptyness has been determined during the computation of the
+% minimal representation
+if ~isempty(P.emptySet.val) && P.emptySet.val
+    c = double.empty(n,0);
+    return
+end
+
+% all constraints now are linearly independent, hence the relation of 
+% system dimension and number of constraints determines the solution
+if size(P_.Ae_.val,1) < n
+    % underdetermined -> unbounded
+    c = NaN(n,1);
+elseif size(P_.Ae_.val,1) > n
+    % overdetermined -> no solution
+    c = double.empty(n,0);
+else
+    % same number of constraints as system dimension -> single point
+    c = P_.Ae_.val \ P_.be_.val;
+end
+
+end
+
+function c = aux_center_LP(P,n)
+% linear program for the computation of the Chebyshev center
 
 % dimension and number of (in)equalities
-nrEq = size(P.Ae,1);
+nrEq = size(P.Ae_.val,1);
 
 % 2-Norm of each row
-A_norm = sqrt(sum(P.A.^2,2));
+A_norm = sqrt(sum(P.A_.val.^2,2));
 
 % extend inequality and equality constraints by one column
-A = [P.A A_norm];
-Ae = [P.Ae zeros(nrEq,1)];
+A_ext = [P.A_.val, A_norm];
+Ae_ext = [P.Ae_.val, zeros(nrEq,1)];
 
 % cost function for linear program: minimize 2-norm of constraints
 f = [zeros(n,1); -1];
 
-% different solvers
-if isSolverInstalled('mosek')
-    
-    % rewrite for MOSEK syntax
-    a = [A; Ae];
-    blc = [-Inf(size(A,1),1); P.be];
-    buc = [P.b; P.be];
-    blx = [-Inf(n,1); 0];
-    bux = [];
+% init linprog struct
+problem.f = f;
+problem.Aineq = A_ext;
+problem.bineq = P.b_.val;
+problem.Aeq = Ae_ext;
+problem.beq = P.be_.val;
+problem.lb = [-Inf(n,1);0];
+problem.ub = [];
 
-    % call MOSEK
-    
-    res = msklpopt(f,a,blc,buc,blx,bux,[],'minimize echo(0)');
+% solve LP
+[c,val,exitflag] = CORAlinprog(problem);
 
-    % read out solution
-    if strcmp(res.sol.itr.prosta,'PRIMAL_AND_DUAL_FEASIBLE')
-        c = res.sol.itr.xx(1:n);
-    elseif strcmp(res.sol.itr.prosta,'PRIMAL_INFEASIBLE')
-        % set is empty
-        c = [];
-    elseif strcmp(res.sol.itr.prosta,'DUAL_INFEASIBLE')
-        % unbounded
-        c = NaN(n,1);
-    end
-
-else
-    % MATLAB linprog
-
-    % init linprog struct
-    problem.f = f;
-    problem.Aineq = A;
-    problem.bineq = P.b;
-    problem.Aeq = Ae;
-    problem.beq = P.be;
-    problem.lb = [-Inf(n,1);0];
-
-    % linear program options
-    persistent options
-    if isempty(options)
-        options = optimoptions('linprog','display','off');
-    end
-    problem.solver = 'linprog';
-    problem.options = options;
-    
-    % Solve Linear Program
-    [c,val,exitflag] = linprog(problem);
-
-    if exitflag == 1
-        % truncate solution
-        c = c(1:n);
-    elseif exitflag == -2
-        % set is empty
-        c = double.empty(n,0);
-    elseif exitflag == -3
-        % unbounded
-        c = NaN(n,1);
-    elseif exitflag < 0
-        throw(CORAerror('CORA:solverIssue'));
-    end
+if exitflag == 1
+    % truncate solution
+    c = c(1:n);
+elseif exitflag == -2
+    % set is empty
+    c = double.empty(n,0);
+elseif exitflag == -3
+    % unbounded
+    c = NaN(n,1);
+elseif exitflag < 0
+    throw(CORAerror('CORA:solverIssue'));
+end
 
 end
 

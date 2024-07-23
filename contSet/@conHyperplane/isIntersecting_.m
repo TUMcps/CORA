@@ -33,12 +33,13 @@ function res = isIntersecting_(hyp,S,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: contSet/isIntersecting, conHyperplane/contains_
+% See also: contSet/isIntersecting, polytope/isIntersecting_, conHyperplane/contains_
 
 % Authors:       Niklas Kochdumper
 % Written:       16-May-2018
 % Last update:   14-September-2019
 %                20-November-2019
+%                18-July-2024 (MW, call polytope functions)
 % Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -50,20 +51,14 @@ function res = isIntersecting_(hyp,S,type,varargin)
             res = isIntersecting(hyp,S,'approx');
         else
 
-            % init options for linprog (used in all aux_ functions)
-            persistent options
-            if isempty(options)
-                options = optimoptions('linprog','display','off');
-            end
-
             if isa(S,'polytope')
-                res = aux_intersectPolyPoly(hyp,S,options);
+                res = aux_intersectPolyPoly(hyp,S);
             elseif isa(S,'interval') || isa(S,'zonotope')
-                res = aux_intersectPolyConZono(hyp,conZonotope(S),options);
+                res = isIntersecting_(polytope(hyp),conZonotope(S),type);
             elseif isa(S,'conZonotope')
-                res = aux_intersectPolyConZono(hyp,S,options);
+                res = isIntersecting_(polytope(hyp),S,type);
             elseif isa(S,'zonoBundle')
-                res = aux_intersectPolyZonoBundle(hyp,S,options);
+                res = aux_intersectPolyZonoBundle(hyp,S);
             else
                 throw(CORAerror('CORA:noExactAlg',S,type));
             end
@@ -135,7 +130,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function res = aux_intersectPolyPoly(obj1,obj2,options)
+function res = aux_intersectPolyPoly(hyp,P)
 % check if a constrained hyperplane {x | c x = d, A x < b} and a polytope
 % {x | H x <= k} intersect by solving the following linear program
 %
@@ -146,115 +141,42 @@ function res = aux_intersectPolyPoly(obj1,obj2,options)
 %            y > 0
 %          c x = d 
     
-    % construct matrices for inequality constraints
-    A = [obj2.A;obj1.C];
-    b = [obj2.b;obj1.d];
-    
-    % construct matrices for equality constraint
-    Aeq = obj1.a;
-    beq = obj1.b;
-    
-    % introduce slack variables y
-    m = length(b);
-    n = size(A,2);
-    
-    problem.Aineq = [A,-eye(m);zeros(m,n),-eye(m)];
-    problem.bineq = [b;zeros(m,1)];
+% construct matrices for inequality constraints
+A = [P.A;hyp.C];
+b = [P.b;hyp.d];
 
-    problem.Aeq = [Aeq,zeros(1,m)];
-    problem.beq = beq;
-    
-    problem.f = [zeros(n,1);ones(m,1)];
+% construct matrices for equality constraint
+Aeq = hyp.a;
+beq = hyp.b;
 
-    problem.solver = 'linprog';
-    problem.options = options;
-    
-    % solve the dual problem using linear programming
-    [~,val,exitflag] = linprog(problem);
+% introduce slack variables y
+m = length(b);
+n = size(A,2);
 
-    % check if intersection between the two polytopes is empty
-    res = true;
-    
-    if exitflag < 0 || val > eps
-        res = false; 
-    end
+problem.Aineq = [A,-eye(m);zeros(m,n),-eye(m)];
+problem.bineq = [b;zeros(m,1)];
+
+problem.Aeq = [Aeq,zeros(1,m)];
+problem.beq = beq;
+
+problem.f = [zeros(n,1);ones(m,1)];
+
+problem.lb = [];
+problem.ub = [];
+
+% solve the dual problem using linear programming
+[~,val,exitflag] = CORAlinprog(problem);
+
+% check if intersection between the two polytopes is empty
+res = true;
+
+if exitflag < 0 || val > eps
+    res = false; 
 end
 
-function res = aux_intersectPolyConZono(obj1,obj2,options)
-% check if a constrained hyperplane {x | h x = d, H x < k}   
-% and a constrained zonotope {x = c + G*a | A*a = b, a \in [-1,1]} intersect 
-% by solving the following linear program:
-%
-% min sum(y)
-%
-% s.t.     cx = d
-%      Hx - y < k
-%           y > 0
-%      c + Ga = x
-%          Aa = b
-%           a \in [-1,1]
-
-    % get object properties
-    h = obj1.a';
-    d = obj1.b;
-    
-    H = obj1.C;
-    k = obj1.d;
-    
-    c = obj2.c;
-    G = obj2.G;
-    
-    n = length(c);
-    m = size(G,2);
-
-    % construct inequality constraints
-    if isempty(H)
-       H = [h';-h'];
-       k = [d;-d];
-    else
-       H = [H;h';-h'];
-       k = [k;d;-d]; 
-    end 
-    
-    p = size(H,1);
-    
-    A = [H,-eye(p);zeros(p,n),-eye(p)];
-    b = [k;zeros(p,1)];
-    
-    A = blkdiag(A,[eye(m);-eye(m)]);
-    b = [b;ones(m,1);ones(m,1)];
-
-    % construct equality constraints
-    Aeq = [eye(n),zeros(n,p),-G];
-    beq = c;
-    
-    if ~isempty(obj2.A)
-        Aeq = [Aeq;[zeros(size(obj2.A,1),n+p),obj2.A]];
-        beq = [beq;obj2.b];
-    end
-    
-    % construct objective function
-    problem.f = [zeros(n,1);ones(p,1);zeros(m,1)];
-
-    problem.Aineq = A;
-    problem.bineq = b;
-    problem.Aeq = Aeq;
-    problem.beq = beq;
-    problem.solver = 'linprog';
-    problem.options = options;
-    
-    % solve linear program
-    [~,val,exitflag] = linprog(problem);
-
-    % check if intersection between the two polytopes is empty
-    res = true;
-    
-    if exitflag < 0 || val > eps
-        res = false; 
-    end
 end
     
-function res = aux_intersectPolyZonoBundle(obj1,obj2,options)
+function res = aux_intersectPolyZonoBundle(obj1,obj2)
 % check if a constrained hyperplane {x | h x = d, H x < k} and a bundle
 % {x = c1 + G1*a|a \in [-1,1]} \cup ... \cup {x = cq + Gq*a | a \in [-1,1]}
 % intersect by solving the following linear program:
@@ -271,71 +193,73 @@ function res = aux_intersectPolyZonoBundle(obj1,obj2,options)
 %  cq + Gq a2 = x
 %   a1,...,aq \in [-1,1]
 
-    % get object properties
-    h = obj1.a';
-    d = obj1.b;
-    
-    H = obj1.C;
-    k = obj1.d;
+% get object properties
+h = obj1.a';
+d = obj1.b;
 
+H = obj1.C;
+k = obj1.d;
+
+% construct inequality constraints
+if isempty(H)
+   H = [h';-h'];
+   k = [d;-d];
+else
+   H = [H;h';-h'];
+   k = [k;d;-d]; 
+end 
+
+[p,n] = size(H);
+
+A = [H,-eye(p);zeros(p,n),-eye(p)];
+b = [k;zeros(p,1)];
+
+% loop over all parallel zonotopes in the bundle
+Aeq = [];
+beq = [];
+
+for i = 1:obj2.parallelSets
+   
+    Z = obj2.Z{i};
+    c = center(Z);
+    G = generators(Z);
+    m = size(G,2);
+    
+    % construct equality constraints 
+    Aeq = blkdiag(Aeq,-G);
+    beq = [beq;c];
+    
     % construct inequality constraints
-    if isempty(H)
-       H = [h';-h'];
-       k = [d;-d];
-    else
-       H = [H;h';-h'];
-       k = [k;d;-d]; 
-    end 
-    
-    [p,n] = size(H);
-    
-    A = [H,-eye(p);zeros(p,n),-eye(p)];
-    b = [k;zeros(p,1)];
-    
-    % loop over all parallel zonotopes in the bundle
-    Aeq = [];
-    beq = [];
-    
-    for i = 1:obj2.parallelSets
-       
-        Z = obj2.Z{i};
-        c = center(Z);
-        G = generators(Z);
-        m = size(G,2);
-        
-        % construct equality constraints 
-        Aeq = blkdiag(Aeq,-G);
-        beq = [beq;c];
-        
-        % construct inequality constraints
-        A = blkdiag(A,[eye(m);-eye(m)]);
-        b = [b;ones(2*m,1)];
-    end
-    
-    temp = repmat(eye(n),[obj2.parallelSets,1]);
-    Aeq = [temp,zeros(size(temp,1),p),Aeq];
-    
-    % construct objective function
-    f = zeros(size(Aeq,2),1);
-    f(n+1:n+p) = ones(p,1);
+    A = blkdiag(A,[eye(m);-eye(m)]);
+    b = [b;ones(2*m,1)];
+end
 
-    problem.f = f;
-    problem.Aineq = A;
-    problem.bineq = b;
-    problem.Aeq = Aeq;
-    problem.beq = beq;
-    problem.solver = 'solver';
-    problem.options = options;
-    
-    % solve linear program
-    [~,val,exitflag] = linprog(problem);
+temp = repmat(eye(n),[obj2.parallelSets,1]);
+Aeq = [temp,zeros(size(temp,1),p),Aeq];
 
-    % check if intersection between the two polytopes is empty
-    res = true;
-    
-    if exitflag < 0 || val > eps
-        res = false; 
-    end
+% construct objective function
+f = zeros(size(Aeq,2),1);
+f(n+1:n+p) = ones(p,1);
+
+problem.f = f;
+problem.Aineq = A;
+problem.bineq = b;
+problem.Aeq = Aeq;
+problem.beq = beq;
+problem.lb = [];
+problem.ub = [];
+
+% solve linear program
+[~,val,exitflag] = CORAlinprog(problem);
+
+% check if intersection between the two polytopes is empty
+res = true;
+
+tol = 1e-8;
+if exitflag < 0 || (val > 0 && ~withinTol(val,0,tol))
+    res = false; 
+end
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

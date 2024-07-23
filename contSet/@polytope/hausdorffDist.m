@@ -55,15 +55,6 @@ tol = 1e-10;
 % read out polytope object
 [P,S] = findClassArg(P,S,'polytope');
 
-persistent options
-if isempty(options)
-    if ~isSolverInstalled('mosek')
-        options = optimoptions('quadprog','display','off');
-    else
-        options = [];
-    end
-end
-
 % check dimensions
 equalDimCheck(P,S);
 
@@ -81,9 +72,12 @@ if isnumeric(S)
             val = Inf; return
         end
     end
+
+    % we require the halfspace representation
+    constraints(P);
     
     for i = 1:size(S,2)
-        val_ = aux_distPolyPoint(P,S(:,i),options);
+        val_ = aux_distPolyPoint(P,S(:,i));
         val = max(val,val_);
     end
     
@@ -120,21 +114,25 @@ elseif isa(S,'polytope') || isa(S,'interval') || ...
 
     % convert set to polytope
     S = polytope(S);
+    % we require the halfspace representation
+    constraints(S);
     
     % compute distance d(P1,P2) = sup_{x \in P1} inf_{y \in P2) d(x,y)
-    V = vertices(P);
+    V_P = vertices(P);
     
-    for i = 1:size(V,2)
-       val_ = aux_distPolyPoint(S,V(:,i),options);
-       val = max(val,val_);
+    for i = 1:size(V_P,2)
+        val_ = aux_distPolyPoint(S,V_P(:,i));
+        val = max(val,val_);
     end
     
     % compute distance d(P2,P1) = sup_{x \in P2} inf_{y \in P1) d(x,y)
-    V = vertices(S);
+    V_S = vertices(S);
+    % we require the halfspace representation
+    constraints(P);
     
-    for i = 1:size(V,2)
-       val_ = aux_distPolyPoint(P,V(:,i),options);
-       val = max(val,val_);
+    for i = 1:size(V_S,2)
+        val_ = aux_distPolyPoint(P,V_S(:,i));
+        val = max(val,val_);
     end
    
 else
@@ -147,14 +145,21 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function val = aux_distPolyPoint(P,x,options)
+function val = aux_distPolyPoint(P,x)
 % compute Hausdorff distance between a polytope and a single point
 % according to Equation (7) in [1]
 
-H = 2*eye(length(x));
-f = -2*x;
+% define and solve quadratic program
+problem.H = 2*eye(length(x));
+problem.f = -2*x;
+problem.Aineq = P.A_.val;
+problem.bineq = P.b_.val;
+problem.Aeq = P.Ae_.val;
+problem.beq = P.be_.val;
+problem.lb = [];
+problem.ub = [];
 
-[~,val] = quadprog(H,f,P.A,P.b,P.Ae,P.be,[],[],[],options);
+[~,val] = CORAquadprog(problem);
 
 val = sqrt(val + x'*x);
 

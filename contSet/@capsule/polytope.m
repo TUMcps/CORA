@@ -91,9 +91,9 @@ function P = aux_1D(C)
     P.minHRep.val = true;
     P.fullDim.val = ~withinTol(Vmin,Vmax,eps);
     if P.fullDim.val
-        P.V.val = [Vmin, Vmax];
+        P.setVertices([Vmin, Vmax]);
     else
-        P.V.val = Vmin;
+        P.setVertices(Vmin);
     end
     P.minVRep.val = true;
 

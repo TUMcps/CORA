@@ -275,9 +275,6 @@ function p = aux_randPointHitAndRun(Z,N)
     p0 = randPoint(Z);
     p = zeros(n,N);
 
-    % create option to suppress command line output of linprog
-    suppressPrint = optimoptions('linprog', 'Display', 'off');
-
     % sample N points
     for i = 1:N
         % sample movement vector
@@ -297,15 +294,14 @@ function p = aux_randPointHitAndRun(Z,N)
         problem.bineq = ones(2*m,1);
         problem.Aeq = horzcat(d, -G);
         problem.beq = -p0;
-
-        problem.solver = 'linprog';
-        problem.options = suppressPrint;
+        problem.lb = [];
+        problem.ub = [];
 
         % execute linear programs
         problem.f = f;
-        minZ = linprog(problem);
+        minZ = CORAlinprog(problem);
         problem.f = -f;
-        maxZ = linprog(problem);
+        maxZ = CORAlinprog(problem);
 
         % sample line segment uniformly
         minC = minZ(1);
@@ -388,12 +384,11 @@ function p = aux_randPointBilliard(Z,N)
             problem_boundary.bineq = ones(2*m,1);
             problem_boundary.Aeq = horzcat(d, -G);
             problem_boundary.beq = -q0;
-
-            problem_boundary.solver = 'linprog';
-            problem_boundary.options = suppressPrint;
+            problem_boundary.lb = [];
+            problem_boundary.ub = [];
             
             % get intersection point of direction vector with zonotope boundary
-            maxZ = linprog(problem_boundary);
+            maxZ = CORAlinprog(problem_boundary);
             maxC = maxZ(1);
             q = q0 + maxC * d;
 
@@ -440,11 +435,13 @@ function p = aux_randPointBilliard(Z,N)
             problem_facet.Aineq = horzcat(vertcat(ones(1,m), -eye(m), -eye(m)), ...
                                   vertcat(zeros(1,n), transpose(G), -transpose(G)));
             problem_facet.bineq = vertcat(1, zeros(2*m,1));
-            problem_facet.solver = 'linprog';
-            problem_facet.options = suppressPrint;
+            problem_facet.Aeq = [];
+            problem_facet.beq = [];
+            problem_facet.lb = [];
+            problem_facet.ub = [];
         
             % get unit normal vector of hit facet
-            linOut = linprog(problem_facet);
+            linOut = CORAlinprog(problem_facet);
             s = linOut(m+1:m+n);
             s = s / norm(s);
     

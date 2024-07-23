@@ -26,9 +26,9 @@ function P_out = projectHighDim(P,N,dims)
 %
 % See also: polytope/lift
 
-% Authors:       Tobias Ladner
+% Authors:       Tobias Ladner, Mark Wetzlinger
 % Written:       18-September-2023
-% Last update:   ---
+% Last update:   14-July-2024 (MW, support vertex representation, special case)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -44,35 +44,67 @@ elseif length(dims) ~= dim(P)
         'the dimension of the given polytope.']));
 end
 
-% lift polytope to higher dimension
-P_lift = lift(P,N,dims);
+% copy polytope
+P_out = polytope(P);
 
-% bound new dimensions at 0
-AeNewDims = eye(N);
-AeNewDims = AeNewDims(~ismember(1:N,dims),:);
-beNewDims = zeros(size(AeNewDims,1),1);
-
-% append to equality constraints
-P_out = P_lift;
-P_out.Ae = [P_out.Ae;AeNewDims];
-P_out.be = [P_lift.be;beNewDims];
-
-% inherit unchanged properties
-P_out.emptySet.val = P.emptySet.val;
-if isempty(P.fullDim.val)
-    P_out.fullDim.val = [];
-else
-    P_out.fullDim.val = P.fullDim.val && N == length(dims);
+if N == dim(P)
+    % only shuffle dimensions
+    P_out = aux_shuffleDimensions(P_out,dims);
+    return
 end
-P_out.minHRep.val = P.minHRep.val;
-P_out.minVRep.val = P.minVRep.val;
-P_out.bounded.val = P.bounded.val;
 
-% add zeros to vertices
-if ~isempty(P.V.val)
-    V = zeros(N, size(P.V.val,2));
-    V(dims,:) = P.V.val;
-    P_out.V.val = V;
+% halfspace representation (note: we need to check the H representation
+% first, since there is a lift-operation which kills the vertices)
+if P.isHRep.val
+
+    % lift polytope to higher dimension
+    P_out = lift_(P_out,N,dims);
+    % override properties
+    P_out.bounded.val = P.bounded.val;
+    
+    % bound new dimensions at 0 using equality constraints
+    AeNewDims = eye(N);
+    AeNewDims = AeNewDims(~ismember(1:N,dims),:);
+    beNewDims = zeros(size(AeNewDims,1),1);
+    
+    % append to equality constraints
+    P_out.Ae_.val = [P_out.Ae_.val; AeNewDims];
+    P_out.be_.val = [P_out.be_.val; beNewDims];
+end
+
+% vertex representation
+if P.isVRep.val
+    % add zeros for other dimensions
+    V = zeros(N, size(P.V_.val,2));
+    V(dims,:) = P.V_.val;
+    P_out.V_.val = V;
+    P_out.isVRep.val = true;
+end
+
+% since we add at least one 'flat' dimension (otherwise we would have
+% entered a different path above), the new set is degenerate
+P_out.fullDim.val = false;
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function P_out = aux_shuffleDimensions(P_out,dims)
+% the 'higher'-dimensional space has the same number of dimensions as P
+% only check for the order of the dimensions
+
+if P_out.isHRep.val
+    % re-order columns of constraint matrices
+    P_out.A_.val = P_out.A_.val(:,dims);
+    P_out.Ae_.val = P_out.Ae_.val(:,dims);
+end
+
+if P_out.isVRep.val
+    % re-order rows of vertices
+    P_out.V_.val = P_out.V_.val(dims,:);
+end
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

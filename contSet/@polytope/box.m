@@ -1,5 +1,6 @@
 function P_out = box(P)
-% box - computes an enclosing axis-aligned box
+% box - computes an enclosing axis-aligned box represented as a polytope in
+%    halfspace representation
 %
 % Syntax:
 %    P_out = box(P)
@@ -29,35 +30,63 @@ function P_out = box(P)
 % Authors:       Viktor Kotsev, Mark Wetzlinger
 % Written:       16-May-2022
 % Last update:   14-December-2022 (MW, unbounded case, MOSEK support, remove equality constraints)
-% Last revision: ---
+% Last revision: 12-July-2024 (MW, refactor)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% fully empty object
+% fullspace case
 if representsa_(P,'fullspace',0)
     P_out = polytope.Inf(dim(P)); return
 end
 
-% dimension
-n = dim(P);
-% check whether vertex representation is known
-V = P.V.val;
-
-% quick calculation using V-representation
-if ~isempty(V)
-    ub = max(V,[],2);
-    lb = min(V,[],2);
-
-    A = [eye(n); -eye(n)];
-    b = [ub; -lb];
-    P_out = polytope(A, b);
-
-    % set properties
-    P_out.emptySet.val = false; % cannot be empty, otherwise V would be empty
-    P_out.bounded.val = any(isinf(ub)) && any(isinf(lb));
-    P_out.fullDim.val = rank(V,1e-10) == n;
-    return;
+% the computation of the box outer approximation is much faster for the
+% vertex representation, so we first check for that
+if P.isVRep.val
+    % --- V representation: take the min and max along each dimension
+    P_out = aux_box_V(P);
+else
+    % --- H representation: compute the support function in the direction
+    % of all 2n plus/minus axis-aligned basis vectors
+    P_out = aux_box_H(P);
 end
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function P_out = aux_box_V(P)
+% computation of box enclosure for a polytope in vertex representation
+
+% read out dimension
+n = dim(P);
+
+% compute lower and upper bound
+ub = max(P.V,[],2);
+lb = min(P.V,[],2);
+
+% construct constraint matrix and offset
+A = [eye(n); -eye(n)];
+b = [ub; -lb];
+P_out = polytope(A, b);
+
+% set properties
+P_out.emptySet.val = false; % cannot be empty, otherwise V would be empty
+P_out.bounded.val = any(isinf(ub)) || any(isinf(lb));
+% 1D polytopes support -Inf/Inf vertices...
+if n == 1
+    P_out.fullDim.val = max(P.V_.val) - min(P.V_.val) > 0;
+else
+    P_out.fullDim.val = rank(P.V_.val,1e-10) == n;
+end
+
+end
+
+function P_out = aux_box_H(P)
+% computation of box enclosure for a polytope in halfspace representation
+
+% read out dimension
+n = dim(P);
 
 % init bounds
 ub = Inf(n,1);
@@ -70,11 +99,12 @@ for i = 1:n
     % maximize
     ub(i) = supportFunc_(P,e_i,'upper');
     if ub(i) == -Inf
-        % empty set
+        % only enters here if the polytope is the empty set
         P.emptySet.val = true;
         P.bounded.val = true;
         P.fullDim.val = false;
-        P.V.val = zeros(n,0);
+        P.V_.val = zeros(n,0);
+        P.isVRep.val = true;
         P.minVRep.val = true;
         % init return set
         P_out = polytope.empty(n);
@@ -110,5 +140,7 @@ P_out.minHRep.val = true;
 P_out.emptySet.val = false;
 P_out.bounded.val = all(bounded);
 P_out.fullDim.val = ~any(withinTol(lb,ub,1e-10));
+
+end
 
 % ------------------------------ END OF CODE ------------------------------

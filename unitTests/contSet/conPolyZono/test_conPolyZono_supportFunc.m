@@ -53,12 +53,16 @@ val = supportFunc(cPZ,d,'lower','quadProg');
 
 % compute exact solution
 temp = d'*G;
-H = 2*blkdiag([temp(2) 0.5*temp(3);0.5*temp(3) temp(4)],0);
-f = [temp(1);0;0];
-Aeq = [A(2);A(1);A(3)];
+problem.H = 2*blkdiag([temp(2) 0.5*temp(3);0.5*temp(3) temp(4)],0);
+problem.f = [temp(1);0;0];
+problem.Aineq = [];
+problem.bineq = [];
+problem.Aeq = [A(2);A(1);A(3)]';
+problem.beq = b;
+problem.lb = -ones(3,1);
+problem.ub = ones(3,1);
 
-options = optimoptions('quadprog','Display','off');
-[~,val_] = quadprog(H,f,[],[],Aeq',b,-ones(3,1),ones(3,1),[],options);
+[~,val_] = CORAquadprog(problem);
 
 % % visualization
 % figure; hold on

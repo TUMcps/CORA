@@ -207,7 +207,7 @@ methods
         pgon = polygon(V(:, 1), V(:, 2));
     end
 
-    function pgon = or(pgon1, pgon2)
+    function pgon = or(pgon1, pgon2, varargin)
         % computes the union of two polygons
 
         if representsa_(pgon1,'emptySet',eps)
@@ -215,9 +215,7 @@ methods
         elseif representsa_(pgon2,'emptySet',eps)
             pgon = pgon1;
         else
-            temp = union(pgon1.set, pgon2.set);
-            V = temp.Vertices;
-            pgon = polygon(V(:, 1), V(:, 2));
+            pgon = polygon(union(pgon1.set, pgon2.set, varargin{:}));
         end
 
     end

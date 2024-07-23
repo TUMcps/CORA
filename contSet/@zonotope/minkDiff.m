@@ -249,9 +249,11 @@ if strcmp(method, 'inner') || (strcmp(method, 'exact') && n == 2)
     problem.f = -f;
     problem.Aineq = [A_abs; -eye(dims)];
     problem.bineq = [delta_d; zeros(dims, 1)];
-    problem.solver = 'linprog';
-    problem.options = optimoptions('linprog','Display','none');
-    [alpha, ~, exitflag] = linprog(problem);
+    problem.Aeq = [];
+    problem.beq = [];
+    problem.lb = [];
+    problem.ub = [];
+    [alpha, ~, exitflag] = CORAlinprog(problem);
     if isempty(alpha) || exitflag ~= 1
         % return empty set with correct dimensions?
         Z = zonotope(zeros(n, 0));
@@ -284,9 +286,11 @@ elseif strcmp(method, 'outer') || strcmp(method, 'outer:coarse')
         problem.f = f;
         problem.Aineq = [-A_abs; -eye(dims)];
         problem.bineq = [-delta_d; zeros(dims, 1)];
-        problem.solver = 'linprog';
-        problem.options = optimoptions('linprog','Display','none');
-        [alpha, ~, exitflag] = linprog(problem);
+        problem.Aeq = [];
+        problem.beq = [];
+        problem.lb = [];
+        problem.ub = [];
+        [alpha, ~, exitflag] = CORAlinprog(problem);
     end
 
 elseif strcmp(method, 'approx')
@@ -375,14 +379,12 @@ problem.bineq = [b_; zeros(m_, 1)];
 problem.f = -[zeros(1, m_), sum((cZ.G * T).^2, 1)];
 
 % solve linear program to get interval inner-approximation of polytope
-persistent options
-if isempty(options)
-    options = optimoptions('linprog', 'display', 'off');
-end
-problem.solver = 'linprog';
-problem.options = options;
+problem.Aeq = [];
+problem.beq = [];
+problem.lb = [];
+problem.ub = [];
 
-[x, ~, exitflag] = linprog(problem);
+[x, ~, exitflag] = CORAlinprog(problem);
 
 % check if constrained zonotope is empty
 if isempty(x) || exitflag ~= 1
@@ -415,14 +417,16 @@ function d_new = aux_tightenHalfspaces(C, delta_d)
 % init linprog struct
 problem.Aineq = C;
 problem.bineq = delta_d;
-problem.solver = 'linprog';
-problem.options = optimoptions('linprog','Display','none');
+problem.Aeq = [];
+problem.beq = [];
+problem.lb = [];
+problem.ub = [];
 
 % loop over halfspaces
 for i = 1:length(delta_d)
     % normal vector
     problem.f = -C(i, :)';
-    [~, d_new(i, 1), exitflag] = linprog(problem);
+    [~, d_new(i, 1), exitflag] = CORAlinprog(problem);
 end
 if exitflag ~= 1
     % linear program is infeasible since polytope is empty
@@ -497,11 +501,11 @@ problem.beq = [zeros(n*(n_m + n_s), 1); ...
 % f minimizes phi
 problem.f = [-ones(n_m+n_s, 1); zeros(2*n_m*(n_m + 2 * n_s + 1)+n, 1)];
 
-problem.solver = 'linprog';
-problem.options = optimoptions('linprog','Display','none');
+problem.lb = [];
+problem.ub = [];
 
 % solve linear programming problem
-[x, ~, exitflag] = linprog(problem);
+[x, ~, exitflag] = CORAlinprog(problem);
 
 if exitflag == 1
     % extract phi

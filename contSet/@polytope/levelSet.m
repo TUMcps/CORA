@@ -27,18 +27,21 @@ function ls = levelSet(P)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if ~isempty(P.Ae)
+% compute halfspace representation if only vertices given
+constraints(P);
+
+if ~isempty(P.Ae_.val)
     throw(CORAerror('CORA:notSupported','Equality constraints not supported.'));
 end
 
 % read out variables
 vars = sym('x',[dim(P), 1]);
-A = P.A; b = P.b;
+A = P.A_.val; b = P.b_.val;
 
 % init symbolic equations
 eq = A*vars - b;
 % stack <= comparison operator times the number of inequalities
-compOps = repmat({'<='},length(P.b),1);
+compOps = repmat({'<='},length(P.b_.val),1);
 
 % init resulting level set
 ls = levelSet(eq,vars,compOps);

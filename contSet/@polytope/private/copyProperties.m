@@ -26,6 +26,16 @@ function P_out = copyProperties(P,P_out,mode)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% H representation given
+if ~isempty(P.isHRep.val)
+    P_out.isHRep.val = P.isHRep.val;
+end
+
+% V representation given
+if ~isempty(P.isVRep.val)
+    P_out.isVRep.val = P.isVRep.val;
+end
+
 % boundedness
 if ~isempty(P.bounded.val)
     P_out.bounded.val = P.bounded.val;
@@ -50,8 +60,8 @@ if ~isempty(P.minVRep.val)
 end
 
 % vertex representation (only if desired)
-if ~strcmp(mode,'noV') && ~isempty(P.V.val)
-    P_out.V.val = P.V.val;
+if ~strcmp(mode,'noV') && P.isVRep
+    P_out.V = P.V;
 end
 
 % ------------------------------ END OF CODE ------------------------------

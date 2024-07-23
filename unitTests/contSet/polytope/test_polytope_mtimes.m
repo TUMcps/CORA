@@ -30,8 +30,8 @@ tol = 1e-14;
 V = [1,3];
 P = polytope(V);
 M = -2;
-P_ = M*P;
-V = vertices(P_);
+P_mtimes = M*P;
+V = vertices(P_mtimes);
 V_true = [-2,-6];
 res(end+1,1) = compareMatrices(V,V_true,tol);
 
@@ -40,50 +40,52 @@ res(end+1,1) = compareMatrices(V,V_true,tol);
 V = [3 2; 0 3; -3 0; -1 -2; 2 -2]';
 P = polytope(V);
 M = [2 1; -1 0];
-P_mapped = M*P;
-V_mapped = vertices(P_mapped);
-V_ = M*V;
-P_ = polytope(V_);
+P_mtimes = M*P;
+V_mapped = vertices(P_mtimes);
+V_true = M*V;
 % compare vertices
-res(end+1,1) = compareMatrices(V_,V_mapped,tol);
-% normalize constraints and compare
-Ab_mapped = [P_mapped.A, P_mapped.b]';
-Ab_mapped = Ab_mapped ./ vecnorm(Ab_mapped);
-Ab_ = [P_.A, P_.b]';
-Ab_ = Ab_ ./ vecnorm(Ab_);
-res(end+1,1) = compareMatrices(Ab_mapped,Ab_,tol);
+res(end+1,1) = compareMatrices(V_true,V_mapped,tol);
 
 % 2D, unbounded
 A = [1 0; -1 0; 0 1]; b = [1;1;1];
 P = polytope(A,b);
 M = [2 1; -1 0];
-P_ = M * P;
-res(end+1,1) = ~isBounded(P_);
+P_mtimes = M * P;
+res(end+1,1) = ~isBounded(P_mtimes);
 
 % 2D, degenerate
 A = [1 0; -1 0; 0 1; 0 -1]; b = [1;1;1;-1];
 P = polytope(A,b);
 M = [2 1; -1 0];
-P_ = M * P;
-res(end+1,1) = ~isFullDim(P_);
+P_mtimes = M * P;
+res(end+1,1) = ~isFullDim(P_mtimes);
 
 % 2D, box, scaling matrix
 A = [1 0;-1 0; 0 1; 0 -1]; b = [2;2;2;2];
 P = polytope(A,b);
 M = [2 0; 0 4];
-P_ = mtimes(M,P);
+P_mtimes = mtimes(M,P);
 A_true = [1 0;-1 0; 0 1; 0 -1]; b_true = [4;4;8;8];
 P_true = polytope(A_true,b_true);
-res(end+1,1) = P_ == P_true;
+res(end+1,1) = P_mtimes == P_true;
 
 % check multiplication with scalar (left and right)
 P = polytope([1 0; -1 1; -1 -1], [1; 1; 1]);
-P_out = 2*eye(2) * P;
-P_out_scalar = 2 * P;
-res(end+1,1) = P_out == P_out_scalar;
+P_mtimes = 2*eye(2) * P;
+P_mtimes_scalar = 2 * P;
+res(end+1,1) = P_mtimes == P_mtimes_scalar;
 
-P_out_scalar = P * 2;
-res(end+1,1) = P_out == P_out_scalar;
+P_mtimes_scalar = P * 2;
+res(end+1,1) = P_mtimes == P_mtimes_scalar;
+
+
+% 3D, projection onto 2D
+Z = zonotope(zeros(3,1),[1 1 0; 1 2 1; 0 1 1]);
+P = polytope(Z);
+M = [1 -1 0; 0 1 1];
+P_mtimes = M * P;
+P_true = polytope(M*Z);
+res(end+1,1) = P_true == P_mtimes;
 
 
 % combine results

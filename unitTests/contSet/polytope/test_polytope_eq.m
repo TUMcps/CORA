@@ -75,6 +75,33 @@ Z = zonotope(zeros(2,1),0.5*[1 1; -1 1]);
 P_ = polytope(Z);
 res(end+1,1) = P == P_;
 
+% 2D, V-polytope + V-polytope
+V1 = [1 0; 0 1; -1 1; -1 -1]';
+P1 = polytope(V1);
+V2 = [1 0; 0 1; -1 1; -1 -1; 0 -1]';
+P2 = polytope(V2);
+res(end+1,1) = P1 == P1;
+res(end+1,1) = ~(P1 == P2);
+
+% 2D, V-polytope + point
+V1 = [1 0; -1 1]';
+P1 = polytope(V1);
+p = [1;0];
+res(end+1,1) = ~(P1 == p);
+
+% 2D, H-polytope (single point) + point
+Ae = [1 0; 0 1]; be = [1; 2];
+P1 = polytope([],[],Ae,be);
+p1 = [1;2]; p2 = [1;3];
+res(end+1,1) = P1 == p1;
+res(end+1,1) = ~(P1 == p2);
+
+% 2D, H-polytope (full-dimensional) + point
+A = [1 0; -1 1; -1 -1]; b = [1; 1; 1];
+P1 = polytope(A,b);
+p = [1; -1];
+res(end+1,1) = ~(P1 == p);
+
 
 % 3D, unit cube
 n = 3; A = [eye(n); -eye(n)]; b = [ones(2*n,1)];

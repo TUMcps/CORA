@@ -409,10 +409,10 @@ function conTemp = aux_getConstraints(eq,R,ind,time,sets)
     end
 
     % compute constraints on factors
-    conTemp = aux_getFactaux_orConstraints(set,unsafeSet,index);
+    conTemp = aux_getFactorConstraints(set,unsafeSet,index);
 end
 
-function cons = aux_getFactaux_orConstraints(set,unsafeSet,index)
+function cons = aux_getFactorConstraints(set,unsafeSet,index)
 % get constraints on the factors from intersection with unsafe sets
 
     cons = {};
@@ -447,7 +447,8 @@ function cons = aux_getFactaux_orConstraints(set,unsafeSet,index)
                     facet = conHyperplane(A(i,:),b(i),A(ind,:),b(ind));
 
                     if isIntersecting(facet,set)
-                        [C_,d_] = aux_getConstraintHalfspace(set,facet.h,index);
+                        [C_,d_] = aux_getConstraintHalfspace(set,...
+                            halfspace(facet.a,facet.b),index);
                         C = [C; C_]; d = [d; d_];
                     end
                 end
@@ -498,7 +499,7 @@ function con = aux_precomputeConstraints(phi,R,index,sets)
             con.timeInt{i} = cell(max(ind),1);
     
             for j = 1:length(ind)
-                con.timeInt{i}{ind(j)} = aux_getFactaux_orConstraints( ...
+                con.timeInt{i}{ind(j)} = aux_getFactorConstraints( ...
                      R.timeInterval.set{ind(j)},sets{i},index.int{ind(j)});
     
                 for k = 1:length(con.timeInt{i}{ind(j)})
@@ -515,7 +516,7 @@ function con = aux_precomputeConstraints(phi,R,index,sets)
             con.timePoint{i} = cell(max(ind),1);
     
             for j = 1:length(ind)
-                con.timePoint{i}{ind(j)} = aux_getFactaux_orConstraints( ...
+                con.timePoint{i}{ind(j)} = aux_getFactorConstraints( ...
                       R.timePoint.set{ind(j)},sets{i},index.point{ind(j)});
     
                 for k = 1:length(con.timePoint{i}{ind(j)})
@@ -628,13 +629,12 @@ function res = aux_emptyConstraint(C,d)
         problem.f = ones(n,1);
         problem.Aineq = C;
         problem.bineq = d;
+        problem.Aeq = [];
+        problem.beq = [];
         problem.lb = -ones(n,1);
         problem.ub = ones(n,1);
-
-        problem.solver = 'linprog';
-        problem.options = optimoptions('linprog','display','off');
     
-        [~,~,exitflag] = linprog(problem);
+        [~,~,exitflag] = CORAlinprog(problem);
     
         res = exitflag ~= 1;
     end
@@ -722,8 +722,14 @@ function [res,alpha] = aux_falsifyingFactors(cons)
 
     % solve mixed-integer linear program
     options = optimoptions('intlinprog','Display','off');
-    
-    alpha = intlinprog(f,intcon,A,b,Aeq,beq,[],[],options);
+    try
+        alpha = intlinprog(f,intcon,A,b,Aeq,beq,[],[],options);
+    catch ME
+        % MOSEK cannot deal with last 'options' input argument; also, we
+        % suppress the output using evalc because MOSEK is too stupid to
+        % put a semicolon at the end of line 133 in intlinprog :-)
+        [~,alpha] = evalc('intlinprog(f,intcon,A,b,Aeq,beq);');
+    end
     
     % check if a feasible solution could be found
     if isempty(alpha)

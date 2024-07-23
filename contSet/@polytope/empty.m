@@ -36,11 +36,13 @@ inputArgsCheck({{n,'att','numeric',{'scalar','nonnegative'}}});
 nrRows = min([n,1]);
 P_out = polytope(zeros(nrRows,n),-ones(nrRows,1));
 % assign properties
+P_out.isHRep.val = true;
 P_out.emptySet.val = true;
 P_out.bounded.val = true;
 P_out.fullDim.val = false;
 P_out.minHRep.val = true;
 P_out.minVRep.val = true;
-P_out.V.val = zeros(n,0);
+P_out.V_.val = zeros(n,0);
+P_out.isVRep.val = true;
 
 % ------------------------------ END OF CODE ------------------------------

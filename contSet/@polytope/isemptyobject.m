@@ -1,6 +1,9 @@
 function res = isemptyobject(P)
-% isemptyobject - checks if a polytope object is fully empty; this
-%    represents R^n since there are no constraints excluding any point
+% isemptyobject - checks if a polytope object is fully empty;
+%    if the H representation is given, this represents R^n since there are
+%    no constraints excluding any point
+%    if, instead, the V representation is given, this represents the empty
+%    set since there are no vertices
 %
 % Syntax:
 %    res = isemptyobject(P)
@@ -23,12 +26,17 @@ function res = isemptyobject(P)
 
 % Authors:       Mark Wetzlinger
 % Written:       25-July-2023
-% Last update:   ---
+% Last update:   14-July-2024 (MW, support V representation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % no inequality or equality constraints
-res = isempty(P.b) && isempty(P.be);
+res_H = P.isHRep.val && isempty(P.b_.val) && isempty(P.be_.val);
+% no vertices
+res_V = P.isVRep.val && isempty(P.V_.val);
+
+% combine information
+res = res_H || res_V;
 
 % ------------------------------ END OF CODE ------------------------------

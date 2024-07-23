@@ -89,7 +89,7 @@ V = [1,2,3,4,5];
 P = polytope(V);
 P_min = compact(P,'V');
 P_true = polytope([1,5]);
-res(end+1,1) = compareMatrices(P_min.V.val, P_true.V.val);
+res(end+1,1) = compareMatrices(P_min.V, P_true.V);
 
 
 % 2D cases ----------------------------------------------------------------

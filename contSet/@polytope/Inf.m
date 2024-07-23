@@ -52,7 +52,8 @@ if n <= 8
     end
 
     P_out.minVRep.val = true;
-    P_out.V.val = V;
+    P_out.V_.val = V;
+    P_out.isVRep.val = true;
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -26,60 +26,55 @@ function vol = volume_(P,varargin)
 % Written:       20-June-2022
 % Last update:   ---
 % Last revision: 25-May-2023 (MW, speed up by throwing errors later)
+%                12-July-2024 (MW, refactor)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% fully empty
-if representsa_(P,'fullspace',0)
+% cheap shots at the start: unbounded, empty, degenerate
+if (~isempty(P.bounded.val) && ~P.bounded.val) || representsa_(P,'fullspace',0)
     vol = Inf; return
-elseif representsa(P,'emptySet',1e-10)
+elseif ~isempty(P.emptySet.val) && P.emptySet.val
+    vol = 0; return
+elseif ~isempty(P.fullDim.val) && ~P.fullDim.val
     vol = 0; return
 end
 
-% 1D case very fast
-if dim(P) == 1
-    if ~isempty(P.V.val)
-        V = P.V.val; 
-    else
-        V = vertices(P);
-    end
-    
-    vol = max(V) - min(V);
+% read out dimension
+n = dim(P);
+
+% compute vertices (note: they are read out if already computed)
+try
+    V = vertices_(P,'lcon2vert');
+catch ME
+    vol = aux_volume_specialCases(P,ME);
     return
 end
 
-%compute vertices
-try
-    if ~isempty(P.V.val)
-        V = P.V.val; 
-    else
-        V = vertices(P);
-        P.V.val = V;
-    end
-catch ME
-    vol = aux_specialCases(P,ME);
-    return  
-end
+% different cases
+if n == 1
+    % 1D: volume is the length of the line between min and max vertices
+    vol = max(V) - min(V);
 
-if size(V,2) <= dim(P)
-    % a polytope needs at least n+1 vertices to be full-dimensional
+elseif size(V,2) <= n || (~isempty(P.fullDim.val) && ~P.fullDim.val)
+    % a polytope needs at least n+1 vertices to be full-dimensional;
+    % degeneracy may also have been detected in vertex enumeration above
     vol = 0;
 
-elseif size(V, 1) == dim(P)+1
+elseif size(V, 1) == n+1
     % cheap calculation for full-dimensional simplex
     S = V';
-    D = zeros(size(S, 1), size(S, 2)-1);
-    for j = 2:size(S, 2)
-		D(:, j-1) = S(:, j)-S(:, 1);
+    D = zeros(size(S,1), size(S,2)-1);
+    for j = 2:size(S,2)
+		D(:,j-1) = S(:,j)-S(:,1);
     end
-    vol = 1/factorial(size(S, 2)-1)*abs(det(D));
+    vol = 1/factorial(size(S,2)-1)*abs(det(D));
 
 else
-    % general computation
+    % general computation via additional output argument of Quickhull
     try
         [~, vol] = convhulln(V');
     catch ME
-        vol = aux_specialCases(P,ME);
+        vol = aux_volume_specialCases(P,ME);
         return
     end
 
@@ -90,15 +85,15 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function vol = aux_specialCases(P,ME)
+function vol = aux_volume_specialCases(P,ME)
 
     % check if empty or not full dimensional
-    if representsa(P, 'emptySet') || ~isFullDim(P)
+    if representsa(P,'emptySet') || ~isFullDim(P)
         vol = 0;
         return
     end
     
-    %check if unbounded
+    % check if unbounded
     if ~isBounded(P)
         vol = Inf;
         return

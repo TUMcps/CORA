@@ -258,7 +258,7 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
                     end
                     
                     if ~GOT_installed
-                        [~, warn_id] = warning(...
+                        CORAwarning('CORA:contSet',...
                             ['You have not installed the Global ' ...
                             'Optimization Toolbox from MATLAB, and can '...
                             'therefore not use surrogateopt for solving '...
@@ -268,7 +268,7 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
                             'please install the Global Optimization Toolbox.']);
                         % Right after the first warning, disable it, so as
                         % to not clutter the command window
-                        warning('off', warn_id);
+                        warning('off');
                         res = aux_DIRECTMaximization(Z1, Z2, tol, maxEval);
                     else
                         res = aux_surrogateMaximization(Z1, Z2, tol, maxEval);
@@ -571,11 +571,11 @@ else
     problem.bineq = sparse(b.row,ones(1,length(b.row)),b.val,A.nCon,1);
     problem.Aineq = sparse(A.row,A.col,A.val,A.nCon,nVars);
 
-    problem.solver = 'linprog';
-    problem.options = optimoptions('linprog','Display','none');
+    problem.lb = [];
+    problem.ub = [];
     
     % solve linear programming problem
-    [~,~,exitflag] = linprog(problem);
+    [~,~,exitflag] = CORAlinprog(problem);
     
     isIn = (exitflag == 1);
 end

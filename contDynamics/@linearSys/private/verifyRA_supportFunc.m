@@ -699,7 +699,8 @@ for i = 1:length(spec)
             G{end}.time = spec(i).time;
         end
     else
-       error('This type of specification is not supported!'); 
+       throw(CORAerror('CORA:notSupported',...
+           'This type of specification is not supported!'));
     end
 end
 
@@ -896,9 +897,10 @@ while true
 
     % stopping condition: no time step found until arbitrary value
     if steps > maxSteps
-        error("No duration from " + steps + " to " + maxSteps ...
+        throw(CORAerror("CORA:specialError",...
+            "No duration from " + steps + " to " + maxSteps ...
             + " time steps can divide all individual piecewise-constant " ...
-            + "input vector durations into integers.");
+            + "input vector durations into integers."));
     end
 end
 

@@ -52,10 +52,11 @@ function P = polytope(cZ)
     
     Z = zonotope([c;-cZ.b],[G;cZ.A]);
     
-    % compute halfspace reprsentation of lifted zonotope
+    % compute halfspace representation of lifted zonotope
     P = polytope(Z);
     
     % extract halfspace representation for the constrained zonotope
+    constraints(P);
     C = P.A;
     d = P.b;
     n = dim(cZ);

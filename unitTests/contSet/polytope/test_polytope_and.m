@@ -210,6 +210,35 @@ A_true = [0 1; 1 0; -1 -1]; b_true = [0; 0; 1];
 P_true = polytope(A_true,b_true);
 res(end+1,1) = P_and == P_true;
 
+% polytope & point
+A = [1 0; -1 1; -1 -1]; b = [1;1;1];
+P = polytope(A,b);
+p_inside = [0;0]; p_outside = [5;5];
+P_and = P & p_inside;
+res(end+1,1) = P_and == p_inside;
+P_and = P & p_outside;
+res(end+1,1) = representsa_(P_and,'emptySet',1e-10);
+
+% H-polytope & V-polytope
+A = [1 0; -1 1; -1 -1]; b = [1;1;1];
+P1 = polytope(A,b);
+V = [0 0; 1 1; 1 0]';
+P2 = polytope(V);
+P_and = P1 & P2;
+res(end+1,1) = P_and == P2;
+P_and = P2 & P1;
+res(end+1,1) = P_and == P2;
+
+% V-polytope & V-polytope
+V1 = [-1 0; 1 2; 1 -2]';
+P1 = polytope(V1);
+V2 = [0 0; 2 2; 1.5 0]';
+P2 = polytope(V2);
+P_and = P1 & P2;
+A_true = [1 0; 0 -1; -1 1]; b_true = [1; 0; 0];
+P_true = polytope(A_true,b_true);
+res(end+1,1) = P_and == P_true;
+
 
 % nD ----------------------------------------------------------------------
 

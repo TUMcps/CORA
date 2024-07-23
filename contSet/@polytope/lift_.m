@@ -44,14 +44,18 @@ elseif length(dims) ~= dim(P)
         'the dimension of the given polytope.']));
 end
 
+% vertex representation does not support Inf (other than 1D, which cannot
+% be the result of a lift-operation), so compute H representation
+constraints(P);
+
 % project constraints to higher-dimensional space
-A = zeros(size(P.A,1),N);
-A(:,dims) = P.A;
-Ae = zeros(size(P.Ae,1),N);
-Ae(:,dims) = P.Ae;
+A = zeros(size(P.A_.val,1),N);
+A(:,dims) = P.A_.val;
+Ae = zeros(size(P.Ae_.val,1),N);
+Ae(:,dims) = P.Ae_.val;
 
 % construct the resulting high dimensional polytope object
-P_out = polytope(A,P.b,Ae,P.be);
+P_out = polytope(A,P.b_.val,Ae,P.be_.val);
 
 % inherit unchanged properties
 P_out.emptySet.val = P.emptySet.val;
@@ -63,14 +67,15 @@ if N > length(dims)
     % set cannot be bounded since added dimensions are unbounded
     P_out.bounded.val = false;
     % delete vertices as set is unbounded
-    P_out.V.val = [];
+    P_out.V_.val = [];
+    P_out.isVRep.val = false;
     P_out.minVRep.val = [];
 else % N == length(dims)
     % not actually lifted
     P_out.bounded.val = P.bounded.val;
-    % just shuffle vertices
-    if ~isempty(P.V.val)
-        P_out.V.val = P.V.val(dims,:);
+    % just reorder dimensions of vertices
+    if P.isVRep.val
+        P_out.V_.val = P.V_.val(dims,:);
     end
     P_out.minVRep.val = P.minVRep.val;
 end

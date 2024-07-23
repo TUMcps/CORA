@@ -155,12 +155,11 @@ function d = aux_distancePolyPoint(C,d,p)
         problem.Aeq = [eye(n) eye(n) -eye(n)]; problem.beq = p;
         problem.Aineq = [C zeros(m,2*n); zeros(2*n,n) -eye(2*n)];
         problem.bineq = [d; zeros(2*n,1)];
+        problem.lb = [];
+        problem.ub = [];
 
         % solve linear program
-        problem.solver = 'linprog';
-        problem.options = optimoptions('linprog','Display','off');
-
-        [~,d] = linprog(problem);
+        [~,d] = CORAlinprog(problem);
     end
 end
 

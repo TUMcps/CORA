@@ -236,18 +236,13 @@ function res = aux_inCone(N,v,v_,tol)
     problem.Aineq = [A1;A2];
     problem.bineq = [b1;b2];
     
+    problem.Aeq = [];
+    problem.beq = [];
+    
     problem.lb = zeros(n+m,1);
+    problem.ub = [];
     
-    % solve linear program
-    persistent options
-    if isempty(options)
-        options = optimoptions('linprog','Display','off');
-    end
-
-    problem.solver = 'linprog';
-    problem.options = options;
-    
-    x = linprog(problem);
+    x = CORAlinprog(problem);
     
     % check if problem is solvable
     res = all(x(m+1:end) < tol);

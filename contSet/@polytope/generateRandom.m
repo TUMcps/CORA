@@ -1,5 +1,5 @@
 function P_out = generateRandom(varargin)
-% generateRandom - Generates a random polytope
+% generateRandom - Generates a random non-empty polytope
 %    restrictions:
 %    - number of constraints >= 1    =>  can be unbounded
 %    - number of constraints >= 2    =>  + can be unbounded and degenerate
@@ -40,7 +40,7 @@ function P_out = generateRandom(varargin)
 % Last update:   10-November-2022 (MW, adapt to new name-value pair syntax)
 %                30-November-2022 (MW, new algorithm)
 %                12-December-2022 (MW, less randomness for more stability)
-% Last revision: ---
+% Last revision: 14-July-2024 (MW, refactor)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
@@ -64,7 +64,60 @@ else
     [NVpairs,isBnd] = readNameValuePair(NVpairs,'IsBounded','islogical');
 end
 
-% quick exits
+% quick exits (errors)
+aux_checkConsistency(n,nrCon,isDeg,isBnd);
+
+% set default values: depends on which parameters are given and their values
+[n,nrCon,isDeg,isBnd] = aux_setDefaultValues(n,nrCon,isDeg,isBnd);
+
+if ~isBnd
+    % idea for unbounded case: sample directions
+
+    % degenerate case: one pair of constaints needs to be of the form
+    %    a*x <= b   a*x >= b
+
+    if n == 1 && ~isDeg
+        [A,b,Ae,be] = aux_1D_unbounded_nondeg(n,nrCon);
+    elseif n == 2 && ~isDeg
+        [A,b,Ae,be] = aux_2D_unbounded_nondeg(n,nrCon);
+    elseif n == 2 && isDeg
+        [A,b,Ae,be] = aux_2D_unbounded_deg(n,nrCon);
+    else
+        [A,b,Ae,be] = aux_nD_unbounded(n,nrCon,isDeg);
+    end
+    
+else
+    % bounded case: generate simplex and add constraints
+    % it is ensured that nrCon > n+1 (non-degenerate)
+    %                    nrCon > n+2 (degenerate)
+
+    if n == 1 && isDeg
+        [A,b,Ae,be] = aux_1D_bounded_deg(n,nrCon);
+    else
+        [A,b,Ae,be] = aux_nD_bounded(n,nrCon,isDeg);
+    end
+
+end
+
+% instantiate polytope
+P_out = polytope(A,b,Ae,be);
+
+% set properties
+P_out.bounded.val = isBnd;
+P_out.fullDim.val = ~isDeg;
+P_out.emptySet.val = false;
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function aux_checkConsistency(n,nrCon,isDeg,isBnd)
+% checks for consistency between the given arguments for dimension, number
+% of constraints, degeneracy, and boundedness
+% as an example, one cannot have a bounded polytope with a single
+% inequality constraint
+
 if ~isempty(nrCon)
     if nrCon == 1
         % only one constraint -> cannot be bounded or degenerate
@@ -90,7 +143,12 @@ if ~isempty(n) && n == 1 && ~isempty(isBnd) && ~isBnd && ~isempty(isDeg) && isDe
         'one-dimensional polytopes cannot be unbounded and degenerate at the same time'));
 end
 
-% default computation for dimension
+end
+
+function [n,nrCon,isDeg,isBnd] = aux_setDefaultValues(n,nrCon,isDeg,isBnd)
+% sets the default values for dimension, number of constraints, degeneracy,
+% and boundedness according to the user-provided information
+
 if isempty(n)
     if ~isempty(nrCon) && (isempty(isBnd) || isBnd)
         % number of constraints given and boundedness either true by
@@ -110,7 +168,6 @@ if isempty(n)
         if ~isempty(isBnd) && ~isBnd && ~isempty(isDeg) && isDeg
             % a set can only be unbounded and degenerate for n > 1
             n = 2;
-%             n = randi([2,maxdim]);
         else
             n = randi(maxdim);
         end
@@ -179,194 +236,180 @@ else
     end
 end
 
+end
 
-if ~isBnd
-    % idea for unbounded case: sample directions
+function [A,b,Ae,be] = aux_1D_unbounded_nondeg(n,nrCon)
+% random unbounded, non-degenerate polytope in 1D
 
-    % degenerate case: one pair of constaints needs to be of the form
-    %    a*x <= b   a*x >= b
+% 1D algorithm: can only be bounded at one side (towards +/-Inf)
+s = sign(randn); % randn will practically never be 0...
+A = s*ones(nrCon,n);
+b = s*rand(nrCon,1);
 
-    if n == 1 && ~isDeg
-        % 1D algorithm: can only be bounded at one side (towards +/-Inf)
-        s = sign(randn); % randn will practically never be 0...
-        A = s*ones(nrCon,n);
-        b = s*rand(nrCon,1);
-
-        % note that all but one constraint will be redundant
-        P_out = polytope(A,b);
-        
-        % set properties
-        P_out.bounded.val = isBnd;
-        P_out.fullDim.val = ~isDeg;
-        P_out.emptySet.val = false;
-        return
-
-    elseif n == 2 && ~isDeg
-        % 2D: sample directions from one half of the plane, offset > 0
-        A = zeros(nrCon,n);
-        b = zeros(nrCon,1);
-        for i=1:nrCon
-            A(i,:) = [randn rand];
-            b(i) = rand;
-        end
-
-        % map by random matrix
-        M = randn(n);
-
-        % init polytope
-        P_out = polytope(A*M^(-1),b);
-
-        % set properties
-        P_out.bounded.val = isBnd;
-        P_out.fullDim.val = ~isDeg;
-        P_out.emptySet.val = false;
-        return
-
-    elseif n == 2 && isDeg
-        % 2D: unbounded and degenerate -> line (only allows for constraints
-        % along the same parallel vector, fill up with redundancies until
-        % number of constraints reached)
-
-        % random vector
-        vec = randn(n,1);
-        % normalize
-        vec = vec / vecnorm(vec);
-
-        % random offset
-        offset = randn(1);
-
-        % init constraint matrix and offset
-        A = [vec'; -vec'; zeros(nrCon-2,n)];
-        b = [offset; -offset; zeros(nrCon-2,1)];
-        
-        % add redundant halfspace
-        for i=1:nrCon-2
-            s = sign(randn);
-            A(2+i,:) = s*vec;
-            b(2+i) = s*offset + rand;
-        end
-
-        % map by random matrix
-        M = randn(n);
-
-        % init polytope
-        P_out = polytope(A*M^(-1),b);
-
-        % set properties
-        P_out.bounded.val = isBnd;
-        P_out.fullDim.val = ~isDeg;
-        P_out.emptySet.val = false;
-        return
-
-    else
-        % all higher-dimensional cases: sample directions, but keep one
-        % entry always 0 -> unboundness in one dimension ensured
-        
-        % init constraint matrix and offset in dimension n-1
-        tempdirs = randn(nrCon,n-1);
-        A = (tempdirs' ./ vecnorm(tempdirs'))';
-        b = ones(nrCon,1);
-
-        % randomly selected dimension
-        randDim = randi(n);
-
-        % set all entries in that dimension to 0
-        A = [A(:,1:randDim-1), zeros(nrCon,1), A(:,randDim:end)];
-
-        % degenerate case
-        if isDeg
-            % adapt last one using second-to-last one
-            A(end-1,:) = -A(end,:);
-            b(end-1) = -b(end);
-
-            % permutate matrix, offset
-            order = randperm(nrCon);
-            A = A(order,:);
-            b = b(order);
-        end
-
-        % map by random matrix
-        M = randn(n);
-
-        % init polytope
-        P_out = polytope(A*M^(-1),b);
-
-        % set properties
-        P_out.bounded.val = isBnd;
-        P_out.fullDim.val = ~isDeg;
-        P_out.emptySet.val = false;
-    end
-    
-else
-    % bounded case: generate simplex and add constraints
-    % it is ensured that nrCon > n+1 (non-degenerate)
-    %                    nrCon > n+2 (degenerate)
-
-    if n == 1 && isDeg
-        % has to be a point; add redundant constraints until number of
-        % constraints
-        point = randn;
-        A = [1; -1; ones(nrCon-2,n)];
-        b = [point; -point; rand(nrCon-2,1)];
-
-        % init polytope
-        P_out = polytope(A,b);
-
-        % set properties
-        P_out.bounded.val = isBnd;
-        P_out.fullDim.val = ~isDeg;
-        P_out.emptySet.val = false;
-        return
-    end
-
-    % step 1: simplex
-    nrConSimplex = n+1;
-    A = [eye(n); -ones(1,n)/sqrt(n)];
-    b = ones(nrConSimplex,1);
-    
-    % additional number of constraints
-    addCon = nrCon - nrConSimplex;
-    A = [A; zeros(addCon,n)];
-    b = [b; zeros(addCon,1)];
-    
-    % step 2: sample random directions of length 1, then the resulting
-    %         halfspace is always non-redundant
-    for i=1:(nrCon-nrConSimplex)
-        % random direction
-        tempdir = randn(1,n);
-        A(nrConSimplex+i,:) = tempdir / vecnorm(tempdir);
-        % set offset to 1 to ensure non-redundancy
-        b(nrConSimplex+i) = 1;
-    end
-
-    % degenerate case
-    if isDeg
-        % permutate matrix, offset
-        order = randperm(nrCon);
-        A = A(order,:);
-        b = b(order);
-
-        % adapt last one using second-to-last one
-        A(end-1,:) = -A(end,:);
-        b(end-1) = -b(end);
-    end
-
-    % step 3: rotate
-    [M,~,~] = svd(randn(n)); % invertible
-    
-    % instantiate polytope
-    P_out = polytope(A*M^(-1),b);
-    
-    % step 4: translate polytope by some small offset
-    z = randn(n,1);
-    P_out = P_out + z;
-
-    % set properties
-    P_out.bounded.val = isBnd;
-    P_out.fullDim.val = ~isDeg;
-    P_out.emptySet.val = false;
+% no equality constraints
+Ae = zeros(0,1);
+be = [];
 
 end
 
+function [A,b,Ae,be] = aux_2D_unbounded_nondeg(n,nrCon)
+% random unbounded, non-degenerate polytope in 2D
+
+% 2D: sample directions from one half of the plane, offset > 0
+A = zeros(nrCon,n);
+b = zeros(nrCon,1);
+for i=1:nrCon
+    A(i,:) = [randn rand];
+    b(i) = rand;
+end
+
+% map by random matrix
+[M,~,~] = svd(randn(n)); % invertible
+A = A*M^(-1);
+
+% no equality constraints
+Ae = zeros(0,2);
+be = [];
+
+end
+
+function [A,b,Ae,be] = aux_2D_unbounded_deg(n,nrCon)
+% random unbounded, degenerate polytope in 2D
+
+% 2D: unbounded and degenerate -> line (only allows for constraints
+% along the same parallel vector, fill up with redundancies until
+% number of constraints reached)
+
+% random vector
+vec = randn(n,1);
+% normalize
+vec = vec / vecnorm(vec);
+
+% random offset
+offset = randn(1);
+
+% init constraint matrix and offset
+A = [vec'; -vec'; zeros(nrCon-2,n)];
+b = [offset; -offset; zeros(nrCon-2,1)];
+
+% add redundant halfspace
+for i=1:nrCon-2
+    s = sign(randn);
+    A(2+i,:) = s*vec;
+    b(2+i) = s*offset + rand;
+end
+
+% map by random matrix
+[M,~,~] = svd(randn(n)); % invertible
+A = A*M^(-1);
+
+% no equality constraints
+Ae = zeros(0,2);
+be = [];
+
+end
+
+function [A,b,Ae,be] = aux_nD_unbounded(n,nrCon,isDeg)
+% random unbounded, potentially degenerate, polytope in nD
+
+% all higher-dimensional cases: sample directions, but keep one
+% entry always 0 -> unboundness in one dimension ensured
+
+% init constraint matrix and offset in dimension n-1
+tempdirs = randn(nrCon,n-1);
+A = (tempdirs' ./ vecnorm(tempdirs'))';
+b = ones(nrCon,1);
+
+% randomly selected dimension
+randDim = randi(n);
+
+% set all entries in that dimension to 0
+A = [A(:,1:randDim-1), zeros(nrCon,1), A(:,randDim:end)];
+
+% degenerate case
+if isDeg
+    % adapt last one using second-to-last one
+    A(end-1,:) = -A(end,:);
+    b(end-1) = -b(end);
+
+    % permutate matrix, offset
+    order = randperm(nrCon);
+    A = A(order,:);
+    b = b(order);
+end
+
+% map by random matrix
+[M,~,~] = svd(randn(n)); % invertible
+A = A*M^(-1);
+
+% no equality constraints
+Ae = zeros(0,n);
+be = [];
+
+end
+
+function [A,b,Ae,be] = aux_1D_bounded_deg(n,nrCon)
+% random bounded, degenerate polytope in 1D
+
+% has to be a point; add redundant constraints until number of
+% constraints
+point = randn;
+A = [1; -1; ones(nrCon-2,n)];
+b = [point; -point; rand(nrCon-2,n)];
+
+% no equality constraints
+Ae = zeros(0,n);
+be = [];
+
+end
+
+function [A,b,Ae,be] = aux_nD_bounded(n,nrCon,isDeg)
+% random bounded, potentially degenerate polytope in nD
+
+% step 1: simplex
+nrConSimplex = n+1;
+A = [eye(n); -ones(1,n)/sqrt(n)];
+b = ones(nrConSimplex,1);
+
+% additional number of constraints
+addCon = nrCon - nrConSimplex;
+A = [A; zeros(addCon,n)];
+b = [b; zeros(addCon,1)];
+
+% step 2: sample random directions of length 1, then the resulting
+%         halfspace is always non-redundant
+for i=1:(nrCon-nrConSimplex)
+    % random direction
+    tempdir = randn(1,n);
+    A(nrConSimplex+i,:) = tempdir / vecnorm(tempdir);
+    % set offset to 1 to ensure non-redundancy
+    b(nrConSimplex+i) = 1;
+end
+
+% degenerate case
+if isDeg
+    % permutate matrix, offset
+    order = randperm(nrCon);
+    A = A(order,:);
+    b = b(order);
+
+    % adapt last one using second-to-last one
+    A(end-1,:) = -A(end,:);
+    b(end-1) = -b(end);
+end
+
+% step 3: rotate
+[M,~,~] = svd(randn(n)); % invertible
+A = A*M^(-1);
+
+% step 4: translate polytope by some small offset
+z = randn(n,1);
+b = b + A*z;
+
+% no equality constraints
+Ae = zeros(0,n);
+be = [];
+
+end
 
 % ------------------------------ END OF CODE ------------------------------

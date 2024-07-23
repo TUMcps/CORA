@@ -118,7 +118,8 @@ else
         Ob = [Ob; C*A^i];
     end
     if rank(Ob) ~= dim_x
-        error("System is not observable.\n")
+        throw(CORAerror('CORA:notSupported',...
+            "System is not observable.\n"));
     end
 
     syms M_sym [dim_x dim_y]

@@ -95,19 +95,23 @@ res(end+1,1) = ~isempty(P_.minHRep.val) && P_.minHRep.val;
 % 1D, with redundancies
 P = polytope([2;1],[1;1]);
 res(end+1,1) = isempty(P.minHRep.val);
+
 % init set via vertex representation
 % 1D, unbounded, non-degenerate
 V = [-Inf, 2];
 P = polytope(V);
-res(end+1,1) = ~isempty(P.minHRep.val) && P.minHRep.val;
+% redundancy unknown
+res(end+1,1) = isempty(P.minHRep.val);
 % 1D, bounded, non-degenerate
 V = [-3 -1 4 5];
 P = polytope(V);
-res(end+1,1) = ~isempty(P.minHRep.val) && P.minHRep.val;
+% redundancy unknown
+res(end+1,1) = isempty(P.minHRep.val);
 % 1D, bounded, degenerate
 V = 2;
 P = polytope(V);
-res(end+1,1) = ~isempty(P.minHRep.val) && P.minHRep.val;
+% redundancy unknown
+res(end+1,1) = isempty(P.minHRep.val);
 % 2D, bounded, non-degenerate
 V = [2 1; -1 4; -4 0; -1 -2; 3 -1]';
 P = polytope(V);

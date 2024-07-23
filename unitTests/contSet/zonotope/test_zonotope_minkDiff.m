@@ -24,7 +24,7 @@ function res = test_zonotope_minkDiff
 % ------------------------------ BEGIN CODE -------------------------------
 
 res = true(0);
-tol = 1e-10;
+tol = 1e-8;
 
 % 2D, only centers
 Z1 = zonotope([1;-1]);

@@ -210,8 +210,6 @@ while true
                     abstractionError_adaptive(obj,options,Rmax,Rdiff+RallError,...
                     H,Zdelta,errorStat,T,ind3,Zdelta3);
 
-            else
-                error("Unsupported options.alg");
             end
         catch ME
             if strcmp(ME.identifier,'reach:setoutofdomain')
@@ -722,7 +720,8 @@ while true
     
     % break condition
     if cnt == 10000
-        error("Bug in varphi estimation... report to devs");
+        throw(CORAerror('CORA:specialError',...
+            "Bug in varphi estimation... report to devs"));
     end
     if abs(residual(cnt)) < 1e-9 || ...
             (cnt > 1 && abs(varphi(cnt) - varphi(cnt-1)) < 1e-6)

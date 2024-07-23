@@ -84,7 +84,8 @@ function res = contractParallelLinearization(f,dom,jacHan,varargin)
     
     problem.Aineq = A_;
     problem.bineq = b_;
-    problem.solver = 'linprog';
+    problem.Aeq = [];
+    problem.beq = [];
     problem.options = optimoptions('linprog','Display','off', ...
                            'ConstraintTolerance',1e-9);
     
@@ -100,7 +101,7 @@ function res = contractParallelLinearization(f,dom,jacHan,varargin)
         problem.f = f_;
         problem.lb = infi;
         problem.ub = sup;
-        [~,temp] = linprog(problem);
+        [~,temp] = CORAlinprog(problem);
         
         if ~isempty(temp)
             infi(i) = max(infi(i),temp);
@@ -117,7 +118,7 @@ function res = contractParallelLinearization(f,dom,jacHan,varargin)
         problem.f = -f_;
         problem.lb = infi;
         problem.ub = sup;
-        [~,temp] = linprog(problem);
+        [~,temp] = CORAlinprog(problem);
         
         if ~isempty(temp)
             sup(i) = min(sup(i),-temp);

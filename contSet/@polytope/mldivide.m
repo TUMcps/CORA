@@ -61,8 +61,8 @@ P1 = compact_(P1,'all',1e-9);
 P2 = compact_(P1,'all',1e-9);
 
 % read out constraints
-P1_A = P1.A; P1_b = P1.b;
-P2_A = P2.A; P2_b = P2.b;
+P1_A = P1.A_.val; P1_b = P1.b_.val;
+P2_A = P2.A_.val; P2_b = P2.b_.val;
 P_out = polytope(zeros(0,n),[]);
 
 % both are fully dimensional, just flip half-spaces and check
@@ -94,13 +94,13 @@ elseif isFullDim(P2) || (~isempty(P2.Ae) && ~isempty(P1.Ae) && ...
     %
     % open half-spaces of P2 need to be shifted and emptienies has to be
     % checked 
-    P1_Ae = P1.Ae;
-    P1_be = P1.be;
+    P1_Ae = P1.Ae_.val;
+    P1_be = P1.be_.val;
     shift_tol = 1e-12;
     for i = 1:length(P1_b)
         A = [-P2_A(i, :); P2_A(1:i-1, :); P1_A];
         b = [-P2_b(i)-shift_tol; P2_b(1:i-1); P1_b];
-        if ~isempty([A b]) || ~isempty([P1.Ae P1.be])
+        if ~isempty([A b]) || ~isempty([P1.Ae_.val P1.be_.val])
             % shift the half-space back
             b(1) = b(1)+shift_tol;
             Pi = polytope(A, b);
@@ -109,12 +109,13 @@ elseif isFullDim(P2) || (~isempty(P2.Ae) && ~isempty(P1.Ae) && ...
 
         end
     end
-elseif rank([P2.Ae P2.be; P1.Ae P1.be]) > max(size(P2.Ae, 1), size(P1.Ae, 1))
+elseif rank([P2.Ae_.val, P2.be_.val; P1.Ae_.val, P1.be_.val]) ...
+        > max(size(P2.Ae_.val, 1), size(P1.Ae_.val, 1))
 	% both are lower dimensional, but their affine hulls do not intersect,
 	% hence P1 \ P2 = P1
 	P_out = P1;
 
-elseif isempty(P2.Ae) && isempty(P1.Ae) && P1<=P2
+elseif isempty(P2.Ae_.val) && isempty(P1.Ae_.val) && P1<=P2
 	% both are lower-dimensional, but with no affine subspace, most
 	% probably a vertex
 	P_out = polytope();
@@ -123,8 +124,8 @@ else
 	% P1 and P2 are both lower-dimensional and affdim(P1)<=affdim(P2)
 	
 	% project P1 and P2 on the fully-dimensional null space of P2
-	F = null(P2.Ae);
-    x0 = P2.Ae\P2.be;
+	F = null(P2.Ae_.val);
+    x0 = P2.Ae_.val \ P2.be_.val;
     P1_Z = polytope(P1_A*F, P1_b-P1_A*x0);
 	%P1_Z = polytope('A', P1_A*F, 'b' P1_b-P1_A*x0, 'Ae', P1.Ae*F, 'be' P1.be-P1.Ae*x0);
 	P2_Z = polytope(P2_A*F, P2_b-P2_A*x0);
@@ -136,9 +137,9 @@ else
 	res_new = [];
 	for i = 1:numel(P_out)
 		if ~isempty(P_out(i))
-			A = P_out(i).A;
-			b = P_out(i).b;
-            Pi = polytope(A*pinv(F), b+A*pinv(F)*x0)
+			A = P_out(i).A_.val;
+			b = P_out(i).b_.val;
+            Pi = polytope(A*pinv(F), b+A*pinv(F)*x0);
 			%Pi = polytope('A', A*pinv(F),'b' b+A*pinv(F)*x0, ...
 			%	'Ae', P1.Ae, 'be', P1.be);
 			res_new = [res_new Pi];

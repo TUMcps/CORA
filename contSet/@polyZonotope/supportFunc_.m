@@ -315,14 +315,20 @@ function val = aux_supportFuncQuadProg(pZ,dir,type)
         f = [f; Z.G']; c = Z.c;
     end
 
+    % define quadratic program
+    problem.H = 2*H;
+    problem.f = f;
+    problem.Aineq = [];
+    problem.bineq = [];
+    problem.Aeq = [];
+    problem.beq = [];
+    problem.lb = -ones(length(f),1);
+    problem.ub = ones(length(f),1);
+
     % solve quadratic program
-    options = optimoptions('quadprog','Display','off');
     w = warning();
     warning('off');
-
-    [~,val] = quadprog(2*H,f,[],[],[],[],-ones(length(f),1), ...
-                       ones(length(f),1),[],options);
-
+    [~,val] = CORAquadprog(problem);
     warning(w);
 
     val = val + c;

@@ -37,7 +37,7 @@ Zorig_2D = zonotope(c(1:2,:),G(1:2,1:10));
 
 
 % init result vector
-res = [];
+res = true(0);
 
 %% cluster - order 1
 method = 1;
@@ -54,7 +54,7 @@ true_mat = [ ...
 3.200, 0.882, -4.621, -1.789, 2.607];
    
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 % plot
 % figure; hold on; box on;
@@ -75,7 +75,7 @@ true_mat = [ ...
 3.200, -0.644, 0.260, 0.371, 0.757, 0.589, -0.198, -0.317, 0.652, 0.196, 1.320, -1.912, -1.998];
 
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 %% Combastel - order 1
 Zred = reduce(Zorig,'combastel',1);
@@ -91,7 +91,7 @@ true_mat = [ ...
 3.200, 0.000, 0.000, 0.000, 5.451];
    
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 %% Combastel - order 3
 Zred = reduce(Zorig,'combastel',3);
@@ -107,7 +107,7 @@ true_mat = [ ...
 3.200, -0.198, 0.371, 0.058, 0.260, 0.652, -0.644, 0.757, -0.317, 0.000, 0.000, 0.000, 2.194];
 
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 %% constOpt - order 1
 w = warning();
@@ -123,7 +123,7 @@ true_mat = [ ...
 2.900, -1.873, 1.611];
    
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 %% constOpt - order 3
 Zred = reduce(Zorig_2D,'constOpt',3);
@@ -137,7 +137,7 @@ true_mat = [ ...
 2.900, 0.252, 0.675, 0.340, -0.474, -1.873, 1.611];
 
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 warning(w);
 
 %% Girard - order 1
@@ -154,7 +154,7 @@ true_mat = [ ...
 3.200, 0.000, 0.000, 0.000, 5.451];
    
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 
 %% Girard - order 3
@@ -171,7 +171,7 @@ true_mat = [ ...
 3.200, -0.644, 0.260, 0.371, 0.757, 0.589, -0.198, -0.317, 0.652, 0.000, 0.000, 0.000, 1.663];
 
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 %% MethA - order 1
 Zred = reduce(Zorig,'methA',1);
@@ -187,7 +187,7 @@ true_mat = [ ...
 3.200, -3.608, 2.836, -1.214, -1.733];
    
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 %% MethA - order 3
 Zred = reduce(Zorig,'methA',3);
@@ -203,7 +203,7 @@ true_mat = [ ...
 3.200, -0.644, 0.260, 0.371, 0.757, 0.589, -0.198, -0.317, 0.652, 1.153, 0.189, -1.448, 0.157];
 
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 %% MethB - order 1
 Zred = reduce(Zorig,'methB',1,6);
@@ -219,7 +219,7 @@ true_mat = [ ...
 3.200, 0.390, 1.749, 4.258, -4.439];
 
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 %% MethB - order 3
 Zred = reduce(Zorig,'methB',3,6);
@@ -235,7 +235,7 @@ true_mat = [ ...
 3.200, -0.644, 0.260, 0.371, 0.757, 0.589, -0.198, -0.317, 0.652, -1.422, 0.121, -1.670, 0.136];
 
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 %% MethC - order 1
 Zred = reduce(Zorig,'methC',1,[12,6]);
@@ -251,7 +251,7 @@ true_mat = [ ...
 3.200, 2.828, -1.224, 4.974, -1.839];
 
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 %% MethC - order 3
 Zred = reduce(Zorig,'methC',3,[12,6]);
@@ -267,7 +267,7 @@ true_mat = [ ...
 3.200, -0.644, 0.260, 0.371, 0.757, 0.589, -0.198, -0.317, 0.652, -1.422, 0.121, -1.670, 0.136];
 
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 %% PCA - order 1
 Zred = reduce(Zorig,'pca',1);
@@ -283,7 +283,7 @@ true_mat = [ ...
 3.200, -0.757, -4.929, -0.037, 2.422];
    
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 %% PCA - order 3
 Zred = reduce(Zorig,'pca',3);
@@ -299,7 +299,7 @@ true_mat = [ ...
 3.200, -0.644, 0.260, 0.371, 0.757, 0.589, -0.198, -0.317, 0.652, -0.214, -0.650, 0.525, 1.520];
 
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 %% redistribute - order 1
 Zred = reduce(Zorig,'redistribute',1);
@@ -308,21 +308,20 @@ Zred = reduce(Zorig,'redistribute',1);
 Zmat = round([Zred.c,Zred.G],3);
 
 % true result
-true_mat = [ ...
+true_mat = [ ...error(r
 -1.300, -5.551, -0.239, -6.361, 4.192; ...
 2.900, -5.090, -5.512, 3.077, 0.235; ...
 2.000, -0.032, -1.249, -1.868, -4.052; ...
 3.200, 7.001, -5.122, 9.243, -2.016];
 
 % check result
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 %% redistribute - order 3
 Zred = reduce(Zorig,'redistribute',3);
 
 % obtain zonotope matrix
 Zmat = round([Zred.c,Zred.G],3);
-% Zmat_sorted = sortMat(Zmat);
 
 % true result
 true_mat = [ ...
@@ -330,11 +329,9 @@ true_mat = [ ...
 2.900, -0.971, 0.846, -0.209, -0.311, -0.474, 0.301, 0.076, 0.817, 0.256, -0.781, 1.121, -0.693; ...
 2.000, 0.577, 0.594, -0.760, 0.564, -0.003, -0.183, -1.300, -0.214, -0.093, -0.769, -0.290, -0.157; ...
 3.200, 1.312, -0.248, 0.371, -0.705, 0.652, 0.903, -0.647, 0.260, -0.103, 0.070, 0.082, -0.644];
-% true_mat_sorted = sortMat(true_mat);
 
 % check result
-% res(end+1) = all(all(Zmat_sorted == true_mat_sorted));
-res(end+1) = compareMatrices(Zmat,true_mat);
+res(end+1,1) = compareMatrices(Zmat,true_mat);
 
 % plot
 % figure; hold on; box on;

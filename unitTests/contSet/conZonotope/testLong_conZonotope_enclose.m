@@ -76,6 +76,7 @@ for h = 1:5
     P = polytope(cZonoRes);
 
     % extract inequality constraints
+    constraints(P);
     A = P.A;
     b = P.b;
 
@@ -143,6 +144,7 @@ for h = 1:5
     P = polytope(cZonoRes);
 
     % extract inequality constraints
+    constraints(P);
     A = P.A;
     b = P.b;
 

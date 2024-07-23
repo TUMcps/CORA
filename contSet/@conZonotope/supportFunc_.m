@@ -196,17 +196,18 @@ if isempty(fval)
             options = optimoptions('linprog','Algorithm','dual-simplex','display','off');
         end
 
+        problem.Aineq = [];
+        problem.bineq = [];
         problem.Aeq = A;
         problem.beq = b;
         problem.lb = lb;
         problem.ub = ub;
-        problem.solver = 'linprog';
         problem.options = options;
 
         % lower bound
         if any(strcmp(type,{'lower','range'}))
             problem.f = f';
-            [ksi,fval,exitflag] = linprog(problem);
+            [ksi,fval,exitflag] = CORAlinprog(problem);
 
             if exitflag == -2
                 % primal infeasible -> empty set
@@ -226,7 +227,7 @@ if isempty(fval)
         % need to multiply with -1 in some parts...
         if any(strcmp(type,{'upper','range'}))
             problem.f = -f';
-            [ksi_,fval_,exitflag] = linprog(problem);
+            [ksi_,fval_,exitflag] = CORAlinprog(problem);
 
             if exitflag == -2
                 % primal infeasible -> empty set

@@ -64,14 +64,14 @@ inputArgsCheck({{P,'att','polytope'}, ...
                 {method,'str',{'exact:vertices','exact:supportFunc'}}, ...
                 {B,'att','interval'}});
 
-% number of constraints
-nrIneq = size(P.A,1);
-nrEq = size(P.Ae,1);
-
 if representsa_(P,'fullspace',0)
     % conversion of fullspace object not possible
     throw(CORAerror('CORA:specialError',['Polytope is unbounded and '...
         'can therefore not be converted into a constrained zonotope.']));
+
+elseif P.isVRep.val && isempty(P.V_.val)
+    cZ = conZonotope.empty(n);
+    return
 
 elseif strcmp(method,'exact:vertices')
 
@@ -92,9 +92,16 @@ elseif strcmp(method,'exact:vertices')
         return
     end
 
+    % ensure that constraints are there
+    constraints(P);
+
+    % number of constraints
+    nrIneq = size(P.A_.val,1);
+    nrEq = size(P.Ae_.val,1);
+
     % read out all constraints
-    A_all = [P.A; P.Ae];
-    b_all = [P.b; P.be];
+    A_all = [P.A_.val; P.Ae_.val];
+    b_all = [P.b_.val; P.be_.val];
     
     % calculate a bounding box for the constrained zonotope
     minV = min(V,[],2);
@@ -131,9 +138,16 @@ elseif strcmp(method,'exact:supportFunc')
     c = center(B);
     G = diag(0.5 * (supremum(B) - infimum(B)));
 
+    % ensure that constraints are there
+    constraints(P);
+
+    % number of constraints
+    nrIneq = size(P.A_.val,1);
+    nrEq = size(P.Ae_.val,1);
+
     % read out constraints of polytope
-    A_all = [P.A; P.Ae];
-    b_all = [P.b; P.be];
+    A_all = [P.A_.val; P.Ae_.val];
+    b_all = [P.b_.val; P.be_.val];
     
     % compute lower bound in the direction of halfspaces
     sigma = zeros(nrIneq,1);
@@ -145,9 +159,9 @@ elseif strcmp(method,'exact:supportFunc')
         end
     end
     % same for equality constraints
-    if ~isempty(P.Ae)
+    if ~isempty(P.Ae_.val)
         % no need to compute the value
-        sigma = [sigma; P.be];
+        sigma = [sigma; P.be_.val];
     end
     
     % Construct constrained zonotope object according to eq. (21) in [1]

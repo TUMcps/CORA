@@ -9,7 +9,7 @@ function F = safeSet2unsafeSet(S)
 %    S - cell-array storing the safe sets
 %
 % Outputs:
-%    F - cell-array sotring the equivalent unsafe sets represented as
+%    F - cell-array storing the equivalent unsafe sets represented as
 %        objects of class polytope
 %
 % Example: 
@@ -72,6 +72,8 @@ function F = aux_getUnsafeSets(S)
 
     % convert to polytope
     S = polytope(S);
+    % ensure that halfspace representation is computed
+    constraints(S);
     
     % loop over all polytope halfspaces and invert them
     F = cell(size(S.A,1),1);

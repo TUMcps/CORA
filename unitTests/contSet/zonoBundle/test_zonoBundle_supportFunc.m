@@ -23,7 +23,9 @@ function res = test_zonoBundle_supportFunc
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
+res = true(0);
+tol = 1e-10;
+
 % fully-empty set
 zB = zonoBundle.empty(2);
 [val,x] = supportFunc(zB,[1;0],'upper');
@@ -40,12 +42,12 @@ zB = zonoBundle({Z1,Z2});
 
 dir = [1;0];
 [val,x] = supportFunc(zB,dir,'upper');
-res(end+1,1) = withinTol(val,4) && compareMatrices(x,[4;0]);
+res(end+1,1) = withinTol(val,4) && compareMatrices(x,[4;0],tol);
 val = supportFunc(zB,dir,'lower');
 res(end+1,1) = withinTol(val,-2);
 dir = [-1;-1];
 [~,x] = supportFunc(zB,dir,'upper');
-res(end+1,1) = compareMatrices(x,[-2;-1]);
+res(end+1,1) = compareMatrices(x,[-2;-1],tol);
 dir = [0,1];
 val = supportFunc(zB,dir,'lower');
 res(end+1,1) = withinTol(val,-1);

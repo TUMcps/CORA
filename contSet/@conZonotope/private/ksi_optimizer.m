@@ -55,11 +55,12 @@ if isempty(options)
 end
 
 % init linprog struct
+problem.Aineq = [];
+problem.bineq = [];
 problem.Aeq = A;
 problem.beq = b;
 problem.lb = lb;
 problem.ub = ub;
-problem.solver = 'linprog';
 problem.options = options;
 
 for i = 1:n
@@ -70,12 +71,12 @@ for i = 1:n
 
     % minimize (Equation (25) in [1])
     problem.f = f;
-    [x, ~, flag_min] = linprog(problem);
+    [x, ~, flag_min] = CORAlinprog(problem);
     ksi_min(:,i) = x;
 
     % maximize  (Equation (26) in [1])
     problem.f = -f;
-    [x, ~, flag_max] = linprog(problem);
+    [x, ~, flag_max] = CORAlinprog(problem);
     ksi_max(:,i) = x;
     if flag_min ~= 1 || flag_max ~= 1
         throw(CORAerror('CORA:solverIssue'));

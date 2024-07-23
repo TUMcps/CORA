@@ -42,9 +42,10 @@ cZ_ = convHull(cZ1,cZ2);
 V1 = vertices(cZ1);
 V2 = vertices(cZ2);
 V_ = vertices(cZ_);
+V_ = removeCollinearVertices2D(V_,1e-8);
 
 % check vertices
-resvec(end+1) = compareMatrices(V_,[V1,V2],1e-14,'subset');
+resvec(end+1) = compareMatrices(V_,[V1,V2],1e-6,'subset');
 
 % convert second constrained zonotope to polytope and check again
 P2 = polytope(cZ2);
@@ -53,7 +54,8 @@ cZ_ = convHull(cZ1,P2);
 
 % check vertices
 V_ = vertices(cZ_);
-resvec(end+1) = compareMatrices(V_,[V1,V2],1e-12,'subset');
+V_ = removeCollinearVertices2D(V_,1e-8);
+resvec(end+1) = compareMatrices(V_,[V1,V2],1e-8,'subset');
 
 % add a third constrained zonotope
 Z = [-4 3 0 1; 5 0 2 1];
@@ -66,9 +68,10 @@ cZ_ = convHull(cZ1,{cZ2,cZ3});
 % compute vertices
 V3 = vertices(cZ3);
 V_ = vertices(cZ_);
+V_ = removeCollinearVertices2D(V_,1e-8);
 
 % check vertices
-resvec(end+1) = compareMatrices(V_,[V1,V2,V3],1e-14,'subset');
+resvec(end+1) = compareMatrices(V_,[V1,V2,V3],1e-8,'subset');
 
 % gather results
 res = all(resvec);

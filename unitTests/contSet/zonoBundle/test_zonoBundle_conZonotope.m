@@ -23,11 +23,14 @@ function res = test_zonoBundle_conZonotope
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+res = true(0);
+tol = 1e-8;
+
 % fully-empty zonoBundle
 n = 2;
 zB = zonoBundle.empty(n);
 cZ = conZonotope(zB);
-res = representsa(cZ,'emptySet') && dim(cZ) == n;
+res(end+1,1) = representsa(cZ,'emptySet') && dim(cZ) == n;
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);
@@ -39,7 +42,7 @@ cZ = conZonotope(zB);
 V = vertices(zB);
 V_ = vertices(cZ);
 % compare results
-res(end+1,1) = compareMatrices(V,V_,1e-12);
+res(end+1,1) = compareMatrices(V,V_,tol);
 
 % empty intersection
 Z2 = zonotope([-4;1],[0.5 1; 1 -1]);
@@ -50,7 +53,7 @@ cZ = conZonotope(zB);
 V = vertices(zB);
 V_ = vertices(cZ);
 % compare results
-res(end+1,1) = compareMatrices(V,V_,1e-12);
+res(end+1,1) = compareMatrices(V,V_,tol);
 
 % combine results
 res = all(res);

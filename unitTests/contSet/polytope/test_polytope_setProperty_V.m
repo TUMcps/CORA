@@ -34,16 +34,18 @@ V = [0;0];
 P = polytope(V);
 A = [2 0; -1 1];
 P_ = A * P;
-res(end+1,1) = ~isempty(P_.V.val) && compareMatrices(P_.V.val,V);
+res(end+1,1) = P_.isVRep.val && compareMatrices(P_.V,V);
 
 % 2D, bounded
 P = polytope([1 0; -1 1; -1 -1], [1; 1; 1]);
 M = [1 -1; 2 1];
 V = vertices(P);
+% ... vertices now stored in P
 P_ = M*P;
 vertices(P_);
-res(end+1,1) = ~isempty(P.V.val) && compareMatrices(P.V.val,V);
-res(end+1,1) = ~isempty(P_.V.val) && compareMatrices(P_.V.val,M*V);
+% ... vertices now stored in P_
+res(end+1,1) = P.isVRep.val && compareMatrices(P.V,V);
+res(end+1,1) = P_.isVRep.val && compareMatrices(P_.V,M*V);
 
 % --- minus ---------------------------------------------------------------
 
@@ -52,14 +54,14 @@ V = [-0.5, 1];
 P = polytope(V);
 P_ = P - 2;
 V_ = V - 2;
-res(end+1,1) = ~isempty(P_.V.val) && compareMatrices(P_.V.val,V_);
+res(end+1,1) = P_.isVRep.val && compareMatrices(P_.V,V_);
 
 % 2D, bounded
 V = [1 0; -1 1; 0 -1]';
 P = polytope(V);
 P_ = P - [1;-1];
 V_ = V - [1;-1];
-res(end+1,1) = ~isempty(P_.V.val) && compareMatrices(P_.V.val,V_);
+res(end+1,1) = P_.isVRep.val && compareMatrices(P_.V,V_);
 
 % --- plus ----------------------------------------------------------------
 
@@ -68,14 +70,14 @@ V = [-0.5, 1];
 P = polytope(V);
 P_ = P + 2;
 V_ = V + 2;
-res(end+1,1) = ~isempty(P_.V.val) && compareMatrices(P_.V.val,V_);
+res(end+1,1) = P_.isVRep.val && compareMatrices(P_.V,V_);
 
 % 2D, bounded
 V = [1 0; -1 1; 0 -1]';
 P = polytope(V);
 P_ = P + [1;-1];
 V_ = V + [1;-1];
-res(end+1,1) = ~isempty(P_.V.val) && compareMatrices(P_.V.val,V_);
+res(end+1,1) = P_.isVRep.val && compareMatrices(P_.V,V_);
 
 
 % combine results

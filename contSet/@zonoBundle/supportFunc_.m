@@ -85,21 +85,15 @@ problem.beq = beq;
 
 f = [dir;zeros(length(lb),1)];
 
-% linear program options
-persistent options
-if isempty(options)
-    options = optimoptions('linprog','display','off');
-end
-
-problem.solver = 'linprog';
-problem.options = options;
+problem.lb = [];
+problem.ub = [];
 
 % upper or lower bound
 if strcmp(type,'lower')
     
     % solve linear program
     problem.f = f';
-    [x,val,exitflag] = linprog(problem);
+    [x,val,exitflag] = CORAlinprog(problem);
     if exitflag == -2
         % primal infeasible -> empty set
         val = Inf; x = []; return
@@ -112,7 +106,7 @@ elseif strcmp(type,'upper')
     
     % solve linear program
     problem.f = -f';
-    [x,val,exitflag] = linprog(problem);
+    [x,val,exitflag] = CORAlinprog(problem);
     if exitflag == -2
         % primal infeasible -> empty set
         val = -Inf; x = []; return
@@ -126,7 +120,7 @@ elseif strcmp(type,'range')
 
     % solve linear program for upper bound
     problem.f = -f';
-    [x_upper,val_upper,exitflag] = linprog(problem);
+    [x_upper,val_upper,exitflag] = CORAlinprog(problem);
     if exitflag == -2
         % primal infeasible -> empty set
         val = interval(-Inf,Inf); x = []; return
@@ -138,7 +132,7 @@ elseif strcmp(type,'range')
 
     % solve linear program for lower bound
     problem.f = f';
-    [x_lower,val_lower] = linprog(problem);
+    [x_lower,val_lower] = CORAlinprog(problem);
 
     % combine results for output args
     val = interval(val_lower,val_upper);

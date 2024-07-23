@@ -56,46 +56,24 @@ if representsa(P,'emptySet') || representsa(S,'emptySet')
     val = Inf; return
 end
 
-% sets intersect: shortest distance is 0
+% sets intersect (LP): shortest distance is 0
 if isIntersecting_(P,S,'exact',tol)
     val = 0; return
 end
+
+% we require the halfspace representation
+constraints(P);
     
 % select case
 if isnumeric(S)
-    val = aux_distancePoint(P,S);
+    val = aux_distancePointCloud(P,S);
 
 elseif isa(S,'ellipsoid')
     % call ellipsoid function
     val = distance(S,P);
 
 elseif isa(S,'polytope')
-    % put all constraints into a joint representation
-    A = blkdiag(P.A,S.A);
-    b = [P.b;S.b];
-    Ae = blkdiag(P.Ae,S.Ae);
-    be = [P.be;S.be];
-
-    % build the quadratic cost function (x-y)'(x-y)
-    nLamP = size(P.A,2) - dim(P);
-    nLamS = size(S.A,2) - dim(P);
-    HP  = diag([ones(dim(P),1);zeros(nLamP,1)]);
-    HPS = blkdiag(-eye(dim(P)), zeros(nLamP, nLamS));
-    HS  = diag([ones(dim(P),1);zeros(nLamS,1)]);
-    H   = 2*[HP HPS; HPS' HS];
-
-    f = zeros(size(A,2),1);
-
-    % disable display
-    if ~isSolverInstalled('mosek')
-        options = optimoptions('quadprog','display','off');
-    else
-        options = [];
-    end
-
-    % compute using quadprog
-    [~,val_] = quadprog(H,f,A,b,Ae,be,[],[],[],options);
-    val = sqrt(val_);
+    val = aux_distancePoly(P,S);
 
 else
     % throw error
@@ -108,36 +86,71 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function val = aux_distancePoint(P,Y)
+function val = aux_distancePointCloud(P,Y)
 
-    % read out dimension and number of points
-    [n,N] = size(Y);
+% read out dimension and number of points
+[n,N] = size(Y);
 
-    % read out constraints of polytope
-    A = P.A; b = P.b;
+% read out constraints of polytope
+A = [P.A_.val; P.Ae_.val; -P.Ae_.val];
+b = [P.b_.val; P.be_.val; -P.be_.val];
 
-    % init sdp problem
-    x = sdpvar(n,1);
-    C = A*x<=b;
-    sdpOpts = sdpsettings('verbose',0);
+% init sdp problem
+x = sdpvar(n,1);
+C = A*x<=b;
+sdpOpts = sdpsettings('verbose',0);
 
-    % multiple points or single point?
-    if N>1
-        % construct optimizer object to increase computation speed
-        y = sdpvar(n,1);
-        f_obj = norm(x-y);
-        dist = optimizer(C,f_obj,sdpOpts,y,f_obj);
-        val = zeros(1,N);
-        for i=1:N
-            val(i) = dist(Y(:,i));
-        end
-    else
-        % only one point, no need for optimizer
-        f_obj = norm(x-Y);
-        optimize(C,f_obj,sdpOpts);
-        % extract optimal point
-        val = value(f_obj);
+% multiple points or single point?
+if N>1
+    % construct optimizer object to increase computation speed
+    y = sdpvar(n,1);
+    f_obj = norm(x-y);
+    dist = optimizer(C,f_obj,sdpOpts,y,f_obj);
+    val = zeros(1,N);
+    for i=1:N
+        val(i) = dist(Y(:,i));
     end
+else
+    % only one point, no need for optimizer
+    f_obj = norm(x-Y);
+    optimize(C,f_obj,sdpOpts);
+    % extract optimal point
+    val = value(f_obj);
+end
+
+end
+
+function val = aux_distancePoly(P,S)
+% shortest distance between to polytopes via quadratic program
+
+% we require the halfspace representation
+constraints(S);
+
+% put all constraints into a joint representation
+problem.Aineq = blkdiag(P.A_.val, S.A_.val);
+problem.bineq = [P.b_.val; S.b_.val];
+problem.Aeq = blkdiag(P.Ae_.val, S.Ae_.val);
+problem.beq = [P.be_.val; S.be_.val];
+
+% read out dimension
+n = dim(P);
+
+% build the quadratic cost function (x-y)'(x-y)
+nLamP = size(P.A_.val,2) - n;
+nLamS = size(S.A_.val,2) - n;
+HP  = diag([ones(n,1);zeros(nLamP,1)]);
+HPS = blkdiag(-eye(n), zeros(nLamP, nLamS));
+HS  = diag([ones(n,1);zeros(nLamS,1)]);
+problem.H   = 2*[HP HPS; HPS' HS];
+
+problem.f = zeros(size(problem.Aineq,2),1);
+
+problem.lb = [];
+problem.ub = [];
+
+% compute using quadprog
+[~,val_] = CORAquadprog(problem);
+val = sqrt(val_);
 
 end
 

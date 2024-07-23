@@ -116,7 +116,8 @@ if strcmp(options.armaxAlg, 'exactAddition')
             end
         end
     else
-        error('Other set representations not implemented yet');
+        throw(CORAerror("CORA:notSupported",...
+            'Other set representations not implemented yet'));
     end
 
 elseif strcmp(options.armaxAlg, 'tvpEfficient')

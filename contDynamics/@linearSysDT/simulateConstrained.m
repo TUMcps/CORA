@@ -186,9 +186,9 @@ while exitflag ~= 1
     problem.bineq = b;
     problem.Aeq = A_eq;
     problem.beq = b_eq;
-    problem.solver = 'linprog';
-    problem.options = optimoptions('linprog','Display','none');
-    [res,~,exitflag] = linprog(problem);
+    problem.lb = [];
+    problem.ub = [];
+    [res,~,exitflag] = CORAlinprog(problem);
 
     if exitflag ~= 1
         disp('Warning! No solution found for constrained simulation --> soften constraints')

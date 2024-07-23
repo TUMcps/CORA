@@ -47,19 +47,20 @@ cZono2 = conZonotope(Z,A,b);
 % calculate intersection
 intZono = cZono1 & cZono2;
 V = vertices(intZono);
+V = removeCollinearVertices2D(V,1e-6);
 
 % define ground truth
 V_ = [1 3 1 3;11/8 -1/8 -11/12 -7/12];
 
 % % plot the result
+% figure; hold on; axis([-3,4,-2.5,3.5]);
 % plot(cZono1,[1,2],'r');
-% hold on
 % plot(cZono2,[1,2],'b');
 % plot(intZono,[1,2],'FaceColor','g');
 % plot(V_(1,:),V_(2,:),'.k','MarkerSize',12);
 
 % check correctness
-resvec(end+1) = compareMatrices(V,V_,1e-14);
+resvec(end+1) = compareMatrices(V,V_,1e-8);
 
 % TEST 2: halfspace (analytical) ------------------------------------------
 

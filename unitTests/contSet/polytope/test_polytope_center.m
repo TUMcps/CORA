@@ -115,6 +115,13 @@ P = polytope([],[],Ae,be);
 c = center(P);
 res(end+1,1) = all(size(c) == [2,1]) && all(isnan(c));
 
+% 2D, V-polytope
+V = [1 1; -1 1; -1 -1; 1 -1]';
+P = polytope(V);
+c = center(P);
+c_true = [0;0];
+res(end+1,1) = all(withinTol(c,c_true));
+
 
 % 3D, only inequalities, bounded
 A = [0 1 0; 0 0 1; 0 -1 0; 0 0 -1; 1 0 0; -1 0 0]; b = ones(6,1);

@@ -69,6 +69,12 @@ P = polytope(A,b);
 res(end+1,1) = isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val ...
     && ~isempty(P.emptySet.val) && ~P.emptySet.val;
 
+% 1D, vertex instantiation
+V = [1;2];
+P = polytope(V);
+[res_,X] = isFullDim(P);
+res(end+1,1) = ~res_ && isempty(X);
+
 
 % 2D, empty
 A = [1 0]; b = 3; Ae = [1 0]; be = 4;
@@ -110,12 +116,24 @@ A = [-1 0; 0 -1]; b = [-1; -1]; Ae = [1 0]; be = 0;
 P = polytope(A,b,Ae,be);
 res(end+1,1) = ~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val;
 
+% 2D, degenerate (single point)
+Ae = [1 0; 0 1]; be = [1; 2];
+P = polytope([],[],Ae,be);
+[res_,X] = isFullDim(P);
+res(end+1,1) = ~res_ && isempty(X);
+
 % 2D, non-degenerate, unbounded (with subspace computation)
 % ...unit square in x1-x2
 A = [1 0;-1 0;0 1;0 -1]; b = [1;1;1;1];
 P = polytope(A,b);
 [res_, X] = isFullDim(P);
 res(end+1,1) = res_ && rank(X) == 2 && all(size(X) == [2,2]);
+
+% 2D, only origin (with subspace computation)
+Ae = eye(2); be = zeros(2,1);
+P = polytope([],[],Ae,be);
+[res_,X] = isFullDim(P);
+res(end+1,1) = ~res_ && isempty(X);
 
 
 % 3D, degenerate, unbounded

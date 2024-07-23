@@ -44,7 +44,7 @@ nn_new = neuralNetwork(layers);
 % calculate output
 output_new = nn_new.evaluate(input_ref, evParams);
 
-res = isequal(output_new, output_ref);
+res = isequal(output_new, output_ref, 1e-8);
 if ~res
     disp(["Failed!", model])
 end

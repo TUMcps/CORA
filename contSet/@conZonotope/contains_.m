@@ -44,11 +44,11 @@ function res = contains_(cZ,S,type,tol,varargin)
 %    plot(cZ3,[1,2],'b');
 %
 % References:
-%    [1] Sadraddini et. al: Linear Encodings for Polytope Containment
-%        Problems, CDC 2019
-%    [2] JK Scott, DM Raimondo, GR Marseglia, RD Braatz: Constrained 
+%    [1] Sadraddini et al.: "Linear Encodings for Polytope Containment
+%        Problems", CDC 2019
+%    [2] JK Scott, DM Raimondo, GR Marseglia, RD Braatz: "Constrained 
 %        zonotopes: A new tool for set-based estimation and fault
-%        detection, Automatica 69, 126-136
+%        detection", Automatica 69, 126-136
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -116,7 +116,7 @@ end
 
 function res = aux_containsPoint(cZ,p)
 % use linear programming to check if a point is located inside a
-% constrained zonotope; see (20) in [2]
+% constrained zonotope; see [2, (20)]
 
     % get object properties
     nrGens = size(cZ.G,2);
@@ -143,10 +143,11 @@ function res = aux_containsPoint(cZ,p)
     % solve linear program
     f = [zeros(nrGens,1);ones(m,1)];
     
+    tol = 1e-9;
     persistent options
     if isempty(options)
         options = optimoptions('linprog','display','off',...
-                            'ConstraintTolerance',1e-9);
+                            'ConstraintTolerance',tol);
     end
 
     problem.f = f';
@@ -154,15 +155,16 @@ function res = aux_containsPoint(cZ,p)
     problem.bineq = b;
     problem.Aeq = Aeq;
     problem.beq = beq;
-    problem.solver = 'linprog';
+    problem.lb = [];
+    problem.ub = [];
     problem.options = options;
     
-    [val,~,exitflag] = linprog(problem); 
+    [val,~,exitflag] = CORAlinprog(problem); 
     
     % check for containment
     res = true;
     
-    if exitflag < 0 || any(val(nrGens+1:end) > eps)
+    if exitflag < 0 || any(val(nrGens+1:end) > tol)
         res = false;
     end
 end
@@ -228,21 +230,16 @@ function res = aux_containsSet(cZ1,cZ2)
     
     % solve linear program
     f = [zeros(nx*ny+qy*qx+ny,1);ones(qy,1)];
-    
-    persistent options
-    if isempty(options)
-        options = optimoptions('linprog','display','off');
-    end
 
     problem.f = f';
     problem.Aineq = A;
     problem.bineq = b;
     problem.Aeq = Aeq;
     problem.beq = beq;
-    problem.solver = 'linprog';
-    problem.options = options;
+    problem.lb = [];
+    problem.ub = [];
     
-    [val,~,exitflag] = linprog(problem); 
+    [val,~,exitflag] = CORAlinprog(problem); 
     
     % check for containment
     res = true;

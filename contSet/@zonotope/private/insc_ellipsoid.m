@@ -64,7 +64,6 @@ if n<m
         l = minnorm(Zt);
     else
         throw(CORAerror('CORA:noops',doExact));
-%         error('lower bound not implemented yet!');
     end
     %since transf. ellipsoid Et has radius 1 and Et \in Zt, scaling with l 
     %results in Et touching Zt (for exact norm computation at least at some 

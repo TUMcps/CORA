@@ -26,6 +26,11 @@ function res = test_polytope_isemptyobject
 
 res = true(0);
 
+% 2D, no constraints
+A = zeros(0,2); b = zeros(0,0);
+P = polytope(A,b);
+res(end+1,1) = isemptyobject(P);
+
 % 2D, only inequalities
 A = [-1 0; 2 4; 1 -2]; b = [-1; 14; -1];
 P = polytope(A,b);
@@ -35,6 +40,12 @@ res(end+1,1) = ~isemptyobject(P);
 Ae = [1 0 1; 0 1 -1; 1 0 -1]; be = [1;4;2];
 P = polytope([],[],Ae,be);
 res(end+1,1) = ~isemptyobject(P);
+
+% 3D, no vertices
+V = zeros(3,0);
+P = polytope(V);
+res(end+1,1) = isemptyobject(P);
+
 
 % combine results
 res = all(res);

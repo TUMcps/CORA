@@ -48,6 +48,11 @@ Ae = 1; be = 3;
 P = polytope([],[],Ae,be);
 res(end+1,1) = dim(P) == 1;
 
+% 1D, vertex instantiation
+V = [-1, 2, 4];
+P = polytope(V);
+res(end+1,1) = dim(P) == 1;
+
 
 % 2D, bounded, non-degenerate
 A = [-1 -1; 1 0;-1 0; 0 1; 0 -1];
@@ -73,6 +78,11 @@ res(end+1,1) = dim(P) == 2;
 % 2D, empty, only equality constraints
 Ae = [0 1; 1 0; 1 1]; be = [1;1;1];
 P = polytope([],[],Ae,be);
+res(end+1,1) = dim(P) == 2;
+
+% 2D, vertex instantiation
+V = [1 0; 1 1; -2 1; -2 -2; 0 -2]';
+P = polytope(V);
 res(end+1,1) = dim(P) == 2;
 
 

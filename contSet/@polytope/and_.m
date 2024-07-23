@@ -91,8 +91,13 @@ switch class(S)
             throw(CORAerror('CORA:noops',P,S));
         end
 
+        % ensure that both sets have the halfspace representation
+        constraints(P);
+        constraints(S);
+
         % compute intersection
-        P_out = polytope([P.A; S.A], [P.b; S.b], [P.Ae; S.Ae], [P.be; S.be]);
+        P_out = polytope([P.A_.val; S.A_.val], [P.b_.val; S.b_.val], ...
+            [P.Ae_.val; S.Ae_.val], [P.be_.val; S.be_.val]);
         
         % set properties
         % intersection with empty set is empty

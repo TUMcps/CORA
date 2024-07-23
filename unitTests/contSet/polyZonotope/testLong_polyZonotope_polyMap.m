@@ -42,7 +42,7 @@ function res = testLong_polyZonotope_polyMap
     
         for j = 1:100
                 
-            % determine random point the polynoimal zonotope
+            % determine random point the polynomial zonotope
             alpha = randPoint(interval(-ones(fac,1), ones(fac,1)));
             p = pZ.c + sum(pZ.G.*prod(alpha.^pZ.E,1),2);
     
@@ -51,7 +51,7 @@ function res = testLong_polyZonotope_polyMap
             p1 = pZres.c + sum(pZres.G.*prod(alpha.^pZres.E,1),2);
             p2 = sum(coeff.*prod(p.^E,1),2);
     
-            if norm(p1-p2) > 1e-5 && norm(p1-p2)/norm(p1) > 1e-5
+            if ~all(withinTol(p1,p2,1e-5))
                 throw(CORAerror('CORA:testFailed'));
             end
         end

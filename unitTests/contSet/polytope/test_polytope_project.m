@@ -16,14 +16,21 @@ function res = test_polytope_project
 %
 % See also: none
 
-% Authors:       Niklas Kochdumper
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
 % Written:       21-December-2020
-% Last update:   ---
+% Last update:   14-July-2024 (MW, test vertex representation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 res = true(0);
+
+% 1D, projection to itself
+A = [1; -1]; b = [1; 0];
+P = polytope(A,b);
+P_proj = project(P,1);
+res(end+1,1) = P == P_proj;
+
 
 % 2D, bounded
 A = [-1 0; 2 4; 1 -2];
@@ -71,6 +78,14 @@ P_proj = project(P,1);
 A_true = zeros(0,1); b_true = zeros(0,0);
 P_true = polytope(A_true,b_true);
 res(end+1,1) = isequal(P_proj,P_true);
+
+% 3D, vertex representation
+V = [1 1 1; -1 1 1; 1 -1 1; 1 1 -1]';
+P = polytope(V);
+P_proj = project(P,[1,3]);
+V_proj = vertices(P_proj);
+V_true = [1 1; -1 1; 1 1; 1 -1]';
+res(end+1,1) = compareMatrices(V_proj,V_true);
 
 
 % combine results

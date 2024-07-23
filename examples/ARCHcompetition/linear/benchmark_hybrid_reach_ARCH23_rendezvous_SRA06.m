@@ -130,7 +130,7 @@ plot(specification(spaceStation),[1,2]);
 xlabel('s_x');
 ylabel('s_y');
 
-text = ['Rendezvous,SRA01,',num2str(res),',',num2str(tComp)];
+text = ['Rendezvous,SRA06,',num2str(res),',',num2str(tComp)];
 
 end
 

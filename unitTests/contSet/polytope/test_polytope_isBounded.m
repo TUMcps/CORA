@@ -89,49 +89,50 @@ P = M * polytope([eye(n); -eye(n)],ones(2*n,1));
 res(end+1,1) = isBounded(P) && ~isempty(P.bounded.val) && P.bounded.val;
 
 
-% Sequence of functions
+% check inference of boundedness
 % 2D, bounded
-A = [1 1; -2 1; -4 -2; 2 -3]; b = ones(4,1);
-P = polytope(A,b);
-isBounded(P);
-
-A = [1 0; -1 0; 0 1; 0 -1]; b = [1;-1;1;-1];
-P2 = polytope(A,b);
+A1 = [1 1; -2 1; -4 -2; 2 -3]; b1 = ones(4,1);
+P1 = polytope(A1,b1);
+A2 = [1 0; -1 0; 0 1; 0 -1]; b2 = [1;-1;1;-1];
+P2 = polytope(A2,b2);
+% determine boundedness
+isBounded(P1);
 isBounded(P2);
 
 % intersection should still be bounded (single point)
-P = P & P2;
-res(end+1,1) = ~isempty(P.bounded.val) && P.bounded.val;
+P_ = P1 & P2;
+res(end+1,1) = ~isempty(P_.bounded.val) && P_.bounded.val;
 
-% taking the Minkowski difference of two bounded polytopes should result in bounded polytope
-P3 = polytope.generateRandom('Dimension', 2, 'isBounded', true);
-P = minkDiff(P,P3);
-res(end+1,1) = ~isempty(P.bounded.val) && P.bounded.val;
+% taking the Minkowski difference of two bounded polytopes should result in
+% a bounded polytope
+P_ = minkDiff(P1,P2);
+res(end+1,1) = ~isempty(P_.bounded.val) && P_.bounded.val;
 
-% taking the Minkowski sum of two bounded polytopes should result in bounded polytope
-P = P + P2;
-res(end+1,1) = ~isempty(P.bounded.val) && P.bounded.val;
+% taking the Minkowski sum of two bounded polytopes should result in a
+% bounded polytope
+P_= P1 + P2;
+res(end+1,1) = ~isempty(P_.bounded.val) && P_.bounded.val;
 
-% taking the Minkowski sum of two polytopes, one of which is unbounded
-% results in unbounded polytope
-P4 = polytope.generateRandom('Dimension',2,'isBounded',false);
-P = P + P4;
-res(end+1,1) = ~isempty(P.bounded.val) && ~P.bounded.val;
+% taking the Minkowski sum of two non-empty polytopes, one of which is
+% unbounded results in an unbounded polytope
+P3 = polytope.generateRandom('Dimension',2,'isBounded',false);
+P_ = P1 + P3;
+res(end+1,1) = ~isempty(P_.bounded.val) && ~P_.bounded.val;
 
-% no change
-P = normalizeConstraints(P);
-res(end+1,1) = ~isempty(P.bounded.val) && ~P.bounded.val;
+% normalization of constraints does not affect boundedness
+P1 = normalizeConstraints(P1);
+res(end+1,1) = ~isempty(P1.bounded.val) && P1.bounded.val;
 
 % linear map with invertible matrix keeps properties
-A = [2 1; -1 0];
-P = A*P;
-res(end+1,1) = ~isempty(P.bounded.val) && ~P.bounded.val;
+M = [2 1; -1 0];
+P_ = M*P1;
+res(end+1,1) = ~isempty(P_.bounded.val) && P_.bounded.val;
 
 % Intersect with bounded set again and lift to higher dim
 % -> not bounded anymore
-P = P & P2;
-P = lift(P,10,[4,5]);
-res(end+1,1) = ~isempty(P.bounded.val) && ~P.bounded.val;
+P_ = P1 & P2;
+P_ = lift(P_,10,[4,5]);
+res(end+1,1) = ~isempty(P_.bounded.val) && ~P_.bounded.val;
 
 
 % combine results

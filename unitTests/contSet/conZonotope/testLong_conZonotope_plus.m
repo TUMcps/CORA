@@ -67,6 +67,7 @@ end
 P = polytope(cZ_);
 
 % extract inequality constraints
+constraints(P);
 A = P.A;
 b = P.b;
 
@@ -123,6 +124,7 @@ end
 P = polytope(cZ_);
 
 % extract inequality constraints
+constraints(P);
 A = P.A;
 b = P.b;
 
@@ -180,6 +182,7 @@ end
 P = polytope(cZ_);
 
 % extract inequality constraints
+constraints(P);
 A = P.A;
 b = P.b;
 
@@ -223,6 +226,7 @@ end
 P = polytope(cZ_);
 
 % extract inequality constraints
+constraints(P);
 A = P.A;
 b = P.b;
 

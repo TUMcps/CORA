@@ -80,7 +80,8 @@ function x0 = aux_getInit(A, samples, temp)
     x0 = zeros(size(A,1),1);
 
     if samples ~= 5 && (samples < 10 || mod(samples,10) ~= 0)
-       error('Init region is not evenly divided by discretization!')
+       throw(CORAerror('CORA:specialError', ...
+           'Init region is not evenly divided by discretization!'));
     end
 
     % maximum z point for initial region is 0.2 for 5 samples and 0.1 otherwise

@@ -44,8 +44,8 @@ methods (Access = {?nnLayer, ?neuralNetwork})
     
     % conZonotope
     function [c, G, C, d, l_, u_] = evaluateConZonotopeNeuron(obj, c, G, C, d, l_, u_, j, options, evParams)
-        % enclose the ReLU activation function with a constrained zonotope based on
-        % the results for star sets in [1]
+        % enclose the ReLU activation function with a constrained zonotope
+        % based on the results for star sets in [1]
 
         n = length(c);
         m = size(G, 2);
@@ -61,9 +61,10 @@ methods (Access = {?nnLayer, ?neuralNetwork})
             problem.f = G(j, :);
             problem.Aineq = C;
             problem.bineq = d;
-            problem.solver = 'linprog';
+            problem.Aeq = []; problem.beq = [];
+            problem.lb = []; problem.ub = [];
             problem.options = options;
-            [~, temp] = linprog(problem);
+            [~, temp] = CORAlinprog(problem);
             l = c(j) + temp;
         end
 
@@ -77,9 +78,10 @@ methods (Access = {?nnLayer, ?neuralNetwork})
                 problem.f = -G(j, :);
                 problem.Aineq = C;
                 problem.bineq = d;
-                problem.solver = 'linprog';
+                problem.Aeq = []; problem.beq = [];
+                problem.lb = []; problem.ub = [];
                 problem.options = options;
-                [~, temp] = linprog(problem);
+                [~, temp] = CORAlinprog(problem);
                 u = c(j) - temp;
             end
 

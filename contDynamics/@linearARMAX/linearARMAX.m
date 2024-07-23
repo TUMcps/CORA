@@ -157,11 +157,13 @@ methods
         end
 
         if max(iVec) > k_plus || min(iVec) < 0
-            error("Invalid. Index i must be in 0<=i<=k_plus.")
+            throw(CORAerror("CORA:notSupported",...
+                "Invalid. Index i must be in 0<=i<=k_plus."));
         end
 
         if k<p
-            error("Invalid. Time step k must be in k>=p.")
+            throw(CORAerror("CORA:notSupported",...
+                "Invalid. Time step k must be in k>=p."));
         elseif k == 1
             sys.A_tilde{k+1} = sys.conv_tvp.A_ext;
             for i = iVec

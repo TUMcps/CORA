@@ -103,7 +103,7 @@ methods
     end
 
     function matZ = set.generator(matZ,generator)
-        CORAerror("CORA:noops",'matZ.generator');
+        throw(CORAerror("CORA:noops",'matZ.generator'));
     end
     
     function h = get.gens(matZ)
@@ -112,7 +112,7 @@ methods
     end
 
     function matZ = set.gens(matZ,gens)
-        CORAerror("CORA:noops",'matZ.gens');
+        throw(CORAerror("CORA:noops",'matZ.gens'));
     end
 
 end

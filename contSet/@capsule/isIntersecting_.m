@@ -83,15 +83,17 @@ function res = aux_intersectionCapsule(C1,C2)
     end
     
     % construct objective function and constraints for quadratic program
-    H = 0.5*[g1'*g1 -g1'*g2; -g1'*g2 g2'*g2];
-    f = 2*[(c1-c2)'*g1;-(c1-c2)'*g2];
-    lb = [-1;-1];
-    ub = [1;1];
+    problem.H = 0.5*[g1'*g1 -g1'*g2; -g1'*g2 g2'*g2];
+    problem.f = 2*[(c1-c2)'*g1;-(c1-c2)'*g2];
+    problem.Aineq = [];
+    problem.bineq = [];
+    problem.Aeq = [];
+    problem.beq = [];
+    problem.lb = [-1;-1];
+    problem.ub = [1;1];
     
     % solve quadratic program
-    options = optimoptions('quadprog','display','off');
-    
-    x = quadprog(H,f,[],[],[],[],lb,ub,[0;0],options);
+    x = CORAquadprog(problem);
     
     % compute minimum distance between point on the axis
     p1 = c1 + g1*x(1);

@@ -34,7 +34,7 @@ Z2 = zonotope([0;0], [2 2; 2 -2]);
 zB = zonoBundle({Z1,Z2});
 % convert to zonotope
 Z = zonotope(zB);
-res(end+1,1) = contains(Z,zB);
+res(end+1,1) = contains(Z,zB,'exact',1e-10);
 
 % empty intersection
 Z2 = zonotope([-4;1],[0.5 1; 1 -1]);

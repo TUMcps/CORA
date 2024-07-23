@@ -35,6 +35,7 @@ function pgon = polygon(cPZ,varargin)
 % Authors:       Niklas Kochdumper
 % Written:       19-January-2020
 % Last update:   13-March-2024 (TL, avoid timeout by reducing splitted set)
+%                19-July-2024 (TL, keep collinear points in polygon)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -118,7 +119,7 @@ function pgon = polygon(cPZ,varargin)
             
             else
                 list_{end+1} = list{j};
-                polyAll = aux_unite(polyAll,polygon(list{j}.V(1,:),list{j}.V(2,:)));
+                polyAll = aux_unite(polyAll,polygon(list{j}.V(1,:),list{j}.V(2,:),'KeepCollinearPoints',true));
             end
         end
         
@@ -152,16 +153,19 @@ function [poly,V] = aux_getPolygon(set,GI)
     % reduce order for later union computations
     % 2*10000 generators should be enough for a 2d zonotope...
     Z = reduce(Z,'girard',10000); 
+
+    % compact generators to remove any aligned/zero generators
+    Z = compact_(Z,'all',1e-8);
     
     % convert zonotope to polygon (zonotope/vertices are already 'simple')
     V = vertices(Z);
-    poly = polygon(V(1,:),V(2,:),'Simplify',false);
+    poly = polygon(V(1,:),V(2,:),'KeepCollinearPoints',true);
     
     % catch the case when the zonotope is degenerate
     if isempty(poly.set.Vertices)
         Z = Z + zonotope([0;0],eye(2)*1e-5);
         V = vertices(Z);
-        poly = polygon(V(1,:),V(2,:),'Simplify',false);
+        poly = polygon(V(1,:),V(2,:),'KeepCollinearPoints',true);
     end
 end
 
@@ -174,7 +178,7 @@ function res = aux_unite(S1,S2)
     elseif representsa_(S2,'emptySet',eps)
         res = S1;
     else
-        res = S1 | S2;
+        res = or(S1,S2,'KeepCollinearPoints',true);
     end
 end
 

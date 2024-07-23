@@ -60,15 +60,10 @@ function cZ = or(cZ1,varargin)
     alg = 'linProg';
     order = [];
 
-    % init linprog options
-    persistent options
-    if isempty(options)
-        options = optimoptions('linprog','display','off');
-    end
-
     % distinguish case with two and case with more sets
-    if nargin == 2 || (nargin > 2 && ...
-                      (isempty(varargin{2}) || ischar(varargin{2})))
+    if nargin == 2 || ( nargin > 2 && ...
+            (ischar(varargin{2}) || ...
+            (isa(varargin{2},'contSet') && representsa(varargin{2},'emptySet'))) )
                   
         S = varargin{1};
 
@@ -100,9 +95,9 @@ function cZ = or(cZ1,varargin)
             % compute over-approximation of the union with the selected 
             % algorithm
             if strcmp(alg,'linProg')
-               cZ = aux_unionLinProg({cZ1,S},order,options);
+               cZ = aux_unionLinProg({cZ1,S},order);
             elseif strcmp(alg,'tedrake')
-               cZ = aux_unionTedrake({S,S},order,options);
+               cZ = aux_unionTedrake({S,S},order);
             else
                 throw(CORAerror('CORA:wrongValue','second',"'linProg' or 'tedrake'"));
             end
@@ -138,9 +133,9 @@ function cZ = or(cZ1,varargin)
 
         % compute over-approximation of the union with the selected algorithm
         if strcmp(alg,'linProg')
-           cZ = aux_unionLinProg([{cZ1};Zcell],order,options);
+           cZ = aux_unionLinProg([{cZ1};Zcell],order);
         elseif strcmp(alg,'tedrake')
-           cZ = aux_unionTedrake([{cZ1};Zcell],order,options);
+           cZ = aux_unionTedrake([{cZ1};Zcell],order);
         else
             throw(CORAerror('CORA:wrongValue','second',"'linProg' or 'tedrake'"));
         end
@@ -150,7 +145,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function Z = aux_unionTedrake(Zcell,order,options)
+function Z = aux_unionTedrake(Zcell,order)
 % compute the union by solving a linear program with respect to the
 % zonotope containment constraints presented in [1]
 
@@ -239,10 +234,10 @@ function Z = aux_unionTedrake(Zcell,order,options)
     problem.bineq = b;
     problem.Aeq = Aeq;
     problem.beq = beq;
-    problem.solver = 'linprog';
-    problem.options = options;
+    problem.lb = [];
+    problem.ub = [];
     
-    val = linprog(problem);
+    val = CORAlinprog(problem);
     
     % construct the resulting zonotope
     ub = val(1:ny);
@@ -256,7 +251,7 @@ function Z = aux_unionTedrake(Zcell,order,options)
 
 end
 
-function Z = aux_unionLinProg(Zcell,order,options)
+function Z = aux_unionLinProg(Zcell,order)
 % compute an enclosing conZonotope using linear programming. As the
 % constraints for the linear program we compute the upper and lower bound
 % for all zonotopes that are enclosed in the normal directions of the
@@ -323,10 +318,12 @@ function Z = aux_unionLinProg(Zcell,order,options)
     problem.f = f';
     problem.Aineq = A;
     problem.bineq = b;
-    problem.solver = 'linprog';
-    problem.options = options;
+    problem.Aeq = [];
+    problem.beq = [];
+    problem.lb = [];
+    problem.ub = [];
     
-    x = linprog(problem);
+    x = CORAlinprog(problem);
     
     % construct final zonotope
     c = x(1:dimG);

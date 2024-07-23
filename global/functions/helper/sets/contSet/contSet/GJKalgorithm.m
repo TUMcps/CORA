@@ -120,6 +120,7 @@ function [simplex,d,containsOrigin] = aux_nearestSimplex(simplex)
         
         % convert the simplex to halfspace representation
         P = polytope(simplex);
+        constraints(P);
         
         % if the simplex contains the origin, the GJK algorithm has
         % determined that the sets intersect -> exit immediately
@@ -156,7 +157,9 @@ function index = aux_minDistOriginQuadProg(P)
 % polytope) and the origin using quadratic programming
 
     % object properties
-    A = P.A; b = P.b; ind = 1:size(A,1); n = dim(P);
+    [A,b] = constraints(P);
+    ind = 1:size(A,1);
+    n = dim(P);
 
     % check which halfspaces point toward the origin
     queue = find(b <= 0);
@@ -166,12 +169,25 @@ function index = aux_minDistOriginQuadProg(P)
     end
 
     % loop over all halspaces to find the one that is closest to origin
-    dist = inf; options = optimoptions('quadprog','Display','none');
+    dist = Inf;
+
+    % init quadprog
+    problem.H = eye(n);
+    problem.f = zeros(n,1);
+
 
     for i = 1:length(queue)
         ind_ = setdiff(ind,queue(i));
-        [~,dist_] = quadprog(eye(n),zeros(n,1),A(ind_,:),b(ind_), ...
-                             A(queue(i),:),b(queue(i)),[],[],[],options);
+        % set remaining values for quadprog
+        problem.Aineq = A(ind_,:);
+        problem.bineq = b(ind_);
+        problem.Aeq = A(queue(i),:);
+        problem.beq = b(queue(i));
+        problem.lb = [];
+        problem.ub = [];
+
+        % solve quadprog
+        [~,dist_] = CORAquadprog(problem);
         if dist_ < dist
            dist = dist_; index = queue(i); 
         end
@@ -183,8 +199,11 @@ function [index,point] = aux_minDistOriginRecursive(P)
 % recusively decomposing the simplex into lower dimensional simplices
 
     % initialization
-    dist = inf;
-    A = P.A; b = P.b; V = vertices(P); n = dim(P);
+    dist = Inf;
+    n = dim(P);
+    % compute constraints and vertices
+    [A,b] = constraints(P);
+    V = vertices(P);
     
     % one-dimensional simplex
     if size(V,1) == 1

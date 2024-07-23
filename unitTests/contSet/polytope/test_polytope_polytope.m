@@ -18,8 +18,9 @@ function res = test_polytope_polytope
 
 % Authors:       Viktor Kotsev, Mark Wetzlinger
 % Written:       25-April-2022
-% Last update:   25-July-2023 (MW, integrate computeHRep, more tests)
+% Last update:   25-July-2023 (MW, integrate constraints, more tests)
 %                08-December-2023 (MW, unbounded cases)
+%                12-July-2024 (MW, rewrite following new constructor)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -27,15 +28,8 @@ function res = test_polytope_polytope
 res = true(0);
 tol = 1e-12;
 
-% empty object
-P = polytope.empty(2);
-res(end+1,1) = representsa(P,'emptySet') ...
-                && ~isempty(P.emptySet.val) && P.emptySet.val ...
-                && ~isempty(P.bounded.val) && P.bounded.val ...
-                && ~isempty(P.fullDim.val) && ~P.fullDim.val;
 
-
-% instantiate H-representation --------------------------------------------
+% instantiate from H-representation ---------------------------------------
 
 % only inequalities
 A = [1 0 -1 0 1; 0 1 0 -1 1]';
@@ -82,9 +76,15 @@ res(end+1,1) = representsa(P,'emptySet') ...
 
 % instantiate from V-representation ---------------------------------------
 
+% 1D, empty
+V = zeros(1,0);
+P = polytope(V);
+% check emptiness and boundedness
+res(end+1,1) = ~isempty(P.emptySet.val) && P.emptySet.val ...
+    && ~isempty(P.bounded.val) && P.bounded.val;
+
 % 1D
 V = [-2 1 5 4 2 2];
-% compute halfspace representation
 P = polytope(V);
 % true solution
 P_true = polytope([1;-1],[5;2]);
@@ -101,7 +101,6 @@ res(end+1,1) = P == P_true;
 
 % 1D: only one point
 V = 3;
-% compute halfspace representation
 P = polytope(V);
 % true solution
 P_true = polytope([1;-1],[3;-3]);
@@ -109,7 +108,6 @@ res(end+1,1) = P == P_true;
 
 % 1D, with Inf
 V = [-Inf, 2];
-% compute halfspace representation
 P = polytope(V);
 % true solution
 P_true = polytope(1,2);
@@ -121,9 +119,7 @@ res(end+1,1) = P == P_true ...
 
 % 2D: non-degenerate
 V = [1 -1 -1 1; 1 -1 1 -1];
-% compute halfspace representation
 P = polytope(V);
-
 % true solution
 P_true = polytope([1 0; 0 1;-1 0;0 -1],ones(4,1));
 res(end+1,1) = P == P_true ...
@@ -132,7 +128,6 @@ res(end+1,1) = P == P_true ...
 
 % 2D: only one point
 V = [1;-2];
-% compute halfspace representation
 P = polytope(V);
 
 % true solution
@@ -141,7 +136,6 @@ res(end+1,1) = P == P_true;
 
 % 2D: degenerate #1
 V = [2 2; 2 6]';
-% compute halfspace representation
 P = polytope(V);
 
 % true solution (scale offset accordingly)
@@ -150,7 +144,6 @@ res(end+1,1) = P == P_true;
 
 % 2D: degenerate #2
 V = [2 3; -5 3]';
-% compute halfspace representation
 P = polytope(V);
 
 % true solution (scale offset accordingly)
@@ -161,7 +154,6 @@ res(end+1,1) = P == P_true ...
 
 % 2D: degenerate #2
 V = [-3 4; 0 0; 3 -4]';
-% compute halfspace representation
 P = polytope(V);
 
 % true solution (scale offset accordingly)
@@ -174,7 +166,6 @@ res(end+1,1) = P == P_true ...
 % 3D: degenerate set (rotated square + translation)
 shift = [10;-5;3];
 V = [1 0 0; 0 1 0; -1 0 0; 0 -1 0]' + shift;
-% compute halfspace representation
 P = polytope(V);
 
 % another true solution (non-unique)
@@ -185,7 +176,6 @@ res(end+1,1) = isequal(P,P_true,1e-8) ...
 
 % 3D: single vertex
 V = [1; 1; 1];
-% compute halfspace representation
 P = polytope(V);
 
 % another true solution (non-unique)
@@ -227,6 +217,7 @@ res(end+1,1) = ~isempty(P_copy.bounded.val);
 
 % combine results
 res = all(res);
+
 
 % wrong initializations
 A = [1 0 -1 0 1; 0 1 0 -1 1]';

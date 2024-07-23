@@ -52,7 +52,8 @@ ub     = options.p_max;
 
 % Check if lb and ub exists
 if any(isinf(lb)) || any(isinf(ub))
-    error('Upper and lower bounds MUST be specified for variables.')
+    throw(CORAerror("CORA:specialError",...
+        'Upper and lower bounds MUST be specified for variables.'));
 end
 
 % Set options for fmincon

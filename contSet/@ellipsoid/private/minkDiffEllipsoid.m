@@ -82,8 +82,8 @@ if isempty(L)
 else
     L(:,isbDir(L)) = [];
     if isempty(L)
+        % Provided directions are all not suitable for the Minkowski difference
         throw(CORAerror('CORA:emptySet'));
-%         error('Provided directions are all not suitable for the Minkowski difference');
     end
 end
 E_cell = lminkDiff(E1,E2,L,mode);

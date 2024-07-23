@@ -33,14 +33,14 @@ function [val,isterminal,direction] = eventFcn(P,x,direction)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% read out properties
-H = P.A;
-K = P.b;
+% TODO: equality constraints?
+constraints(P);
 
-val=H*x-K;
+% compute distance to boundary of each inequality constraint
+val = P.A_.val*x - P.b_.val;
 % Always stop the integration when event detected
-isterminal = ones(length(K),1);   
+isterminal = ones(length(P.b_.val),1);   
 % Vectorize direction
-direction = ones(length(K),1)*direction; 
+direction = ones(length(P.b_.val),1)*direction; 
 
 % ------------------------------ END OF CODE ------------------------------

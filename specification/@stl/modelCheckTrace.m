@@ -31,6 +31,7 @@ function res = modelCheckTrace(obj,x,t)
 % Authors:       Niklas Kochdumper, Benedikt Seidl
 % Written:       09-November-2022 
 % Last update:   05-July-2024 (TL, bug fix globally)
+%                12-July-2024 (TL, bug fix next)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -129,7 +130,7 @@ function res = aux_recursive(obj,x,t,vars)
     elseif strcmp(obj.type,'next')
 
         inner = aux_recursive(obj.lhs,x,t,vars);
-        ind = find(t >= obj.from);
+        ind = find(t >= obj.from | withinTol(t,obj.from));
 
         if ~isempty(ind)
             res = inner(ind:end);

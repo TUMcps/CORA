@@ -42,13 +42,14 @@ B = box(P);
 % dimension
 n = dim(P);
 
+% special case: polytope is empty
 if B.emptySet.val
-    I = interval(zeros(n,0));
+    I = interval.empty(n);
     return
 end
 
-% get constraint matrix
-A = B.A; b = B.b;
+% get constraint matrix and offset
+A = B.A_.val; b = B.b_.val;
 
 % init lower and upper bounds of resulting interval with Inf values
 lb = -Inf(n,1);

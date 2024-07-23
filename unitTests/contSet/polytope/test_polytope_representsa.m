@@ -217,6 +217,10 @@ res(end+1,1) = representsa(B,'point');
 
 % --- fullspace -----------------------------------------------------------
 
+% 2D, empty
+P = polytope.empty(2);
+res(end+1,1) = ~representsa(P,'fullspace');
+
 % 2D, fully empty
 A = zeros(0,2); b = zeros(0,0);
 P = polytope(A,b);

@@ -38,6 +38,9 @@ B = gramSchmidt(ones(n+1,1));
 
 P = polytope((B(:,2:end)'*V));
 
+% compute the halfspace representation
+constraints(P);
+
 % scale the simplex so that it tightly encloses the zonotope    
 A = P.A;
 b = supremum(interval(A*Z));

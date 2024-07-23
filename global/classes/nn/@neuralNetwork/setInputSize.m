@@ -28,7 +28,8 @@ function outputSize = setInputSize(obj, inputSize, verbose)
 
 if nargin < 2
     if isempty(obj.neurons_in)
-        error("Please provide an input size. Unable to determine it from network weights.")
+        throw(CORAerror("CORA:specialError", ...
+            "Please provide an input size. Unable to determine it from network weights."));
     end
     inputSize = [obj.neurons_in, 1];
 end

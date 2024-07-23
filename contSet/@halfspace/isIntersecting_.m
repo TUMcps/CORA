@@ -43,9 +43,11 @@ function res = isIntersecting_(hs,S,type,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% halsfspace forms a special case
+tol = 1e-10;
+
+% halfspace forms a special case
 if isa(S,'halfspace')
-    res = sum(abs(S.c/norm(S.c) + hs.c/norm(hs.c))) > 1e-10 | ...
+    res = sum(abs(S.c/norm(S.c) + hs.c/norm(hs.c))) > tol | ...
                                 S.d/norm(S.c) + hs.d/norm(hs.c) > 0;
     return;
 end
@@ -60,6 +62,6 @@ end
 
 % check for intersection
 bound = supportFunc_(S,hs.c,'lower','interval',8,1e-3);
-res = bound <= hs.d;
+res = bound <= hs.d || withinTol(bound,hs.d,tol);
 
 % ------------------------------ END OF CODE ------------------------------

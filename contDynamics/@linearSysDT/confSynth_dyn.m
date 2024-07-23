@@ -135,9 +135,11 @@ switch options.norm
         problem.f = lin_f;
         problem.Aineq = lin_A;
         problem.bineq = lin_b;
-        problem.solver = 'linprog';
-        problem.options = optimoptions('linprog','Display','none');
-        [p_opt,cost,exitflag,output] = linprog(problem);
+        problem.Aeq = [];
+        problem.beq = [];
+        problem.lb = [];
+        problem.ub = [];
+        [p_opt,cost,exitflag] = CORAlinprog(problem);
 
     %% Frobenius norm
     case 'frob'
@@ -150,20 +152,27 @@ switch options.norm
             % update norm
             H_sum = H_sum + w(k+1)*H_tilde;
         end
+
         % final H
-        H = blkdiag(diag(zeros(1,2*n+q)), H_sum);
+        problem.H = blkdiag(diag(zeros(1,2*n+q)), H_sum);
         
         % Quadratic Programming
-        opt = optimoptions('quadprog','Display','none');
-        [p_opt,cost,exitflag,output] = quadprog(H,[],lin_A,lin_b,[],[],[],[],[],opt);
+        problem.f = [];
+        problem.Aineq = lin_A;
+        problem.bineq = lin_b;
+        problem.Aeq = [];
+        problem.beq = [];
+        problem.lb = [];
+        problem.ub = [];
+        [p_opt,cost,exitflag] = CORAquadprog(problem);
         
     otherwise
-        error('not supported')
+        throw(CORAerror("CORA:notSupported",...
+            "Value for options.norm not supported"));
 end
 
-% If no solution
-if exitflag<=0
-    error(output.message);
+if exitflag ~= 1
+    throw(CORAerror('CORA:solverIssue'));
 end
 
 % Result

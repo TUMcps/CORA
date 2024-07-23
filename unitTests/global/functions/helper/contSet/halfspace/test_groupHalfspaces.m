@@ -62,7 +62,7 @@ function res = test_groupHalfspaces()
         
             for i = 1:length(list)
                 if ~contains(list{i},points)
-                    error('test_groupHalfspaces failed!');
+                    throw(CORAerror('CORA:testFailed'));
                 end
             end
         end
@@ -78,10 +78,8 @@ function res = test_groupHalfspaces()
             end
         end
         
-        if ~isempty(points)
-            if ~contains(hs_o,points)
-                error('test_groupHalfspaces failed!');
-            end
+        if ~isempty(points) && ~all(contains(hs_o,points))
+            throw(CORAerror('CORA:testFailed'));
         end
      end
 

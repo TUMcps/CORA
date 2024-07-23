@@ -55,8 +55,9 @@ function Z = or(Z, varargin)
     order = [];
 
     % distinguish case with two and case with more sets
-    if nargin == 2 || (nargin > 2 && ...
-                      (isempty(varargin{2}) || ischar(varargin{2})))
+    if nargin == 2 || ( nargin > 2 && ...
+            (ischar(varargin{2}) || ...
+            (isa(varargin{2},'contSet') && representsa(varargin{2},'emptySet'))) )
                   
         S = varargin{1};
 
@@ -233,10 +234,10 @@ function Z = aux_unionTedrake(Zcell,order)
     problem.bineq = b;
     problem.Aeq = Aeq;
     problem.beq = beq;
-    problem.solver = 'linprog';
-    problem.options = optimoptions('linprog','Display','none');
+    problem.lb = [];
+    problem.ub = [];
     
-    val = linprog(problem);
+    val = CORAlinprog(problem);
     
     % construct the resulting zonotope
     ub = val(1:ny);
@@ -305,15 +306,12 @@ function Z = aux_unionLinProg(Zcell,order)
     problem.f = f';
     problem.Aineq = [A;[zeros(m,n),-eye(m)]];
     problem.bineq = [b;zeros(m,1)];
+    problem.Aeq = [];
+    problem.beq = [];
+    problem.lb = [];
+    problem.ub = [];
     
-    persistent options
-    if isempty(options)
-        options = optimoptions('linprog','display','off');
-    end
-    problem.solver = 'linprog';
-    problem.options = options;
-    
-    x = linprog(problem);
+    x = CORAlinprog(problem);
     
     % construct final zonotope
     c = x(1:n);

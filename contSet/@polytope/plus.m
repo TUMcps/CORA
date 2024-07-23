@@ -22,7 +22,9 @@ function P_out = plus(P,S)
 %    plot(P);
 %    plot(res,[1,2],'r');
 %
-% References: MPT-toolbox https://www.mpt3.org/
+% Reference:
+%    [1] M. Wetzlinger, V. Kotsev, A. Kulmburg, M. Althoff. "Implementation
+%        of Polyhedral Operations in CORA 2024", ARCH'24.
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -33,7 +35,7 @@ function P_out = plus(P,S)
 % Authors:       Viktor Kotsev
 % Written:       20-June-2022
 % Last update:   25-October-2023
-% Last revision: ---
+% Last revision: 14-July-2024 (MW, refactor)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
@@ -46,74 +48,43 @@ equalDimCheck(P,S);
 % dimension
 n = dim(P);
 
+% set tolerance for set checks
+tol = 1e-10;
+
+% check for fullspace
+if representsa_(P,'fullspace',tol) || representsa_(S,'fullspace',tol)
+    P_out = polytope.Inf(n); return
+end
+
 % polytope + polytope
-if isa(S,"polytope")
-    %check for empty polytopes
-    if representsa(P, 'emptySet')
-        P_out = S; return
-    elseif representsa(S, 'emptySet')
-        P_out = P; return
+if isa(S,'polytope')
+
+    % check for empty set
+    if representsa_(P,'emptySet',tol) || representsa_(S,'emptySet',tol)
+        P_out = polytope.empty(n); return
     end
     % check if one of the sets is the origin
-    if representsa(P,'origin')
+    if representsa_(P,'origin',tol)
         P_out = S; return
-    elseif representsa(S,'origin')
+    elseif representsa_(S,'origin',tol)
         P_out = P; return
     end
 
-    % both polytopes have vertex representation
-    if ~isempty(P.V.val) && ~isempty(S.V.val)
-        % read out vertices
-        V1 = P.V.val; V2 = S.V.val;
-        numV1 = size(V1,2); numV2 = size(V2,2);
-
-        % init resulting vertices
-        V = zeros(n,numV1*numV2);
-
-        % add each vertex to each vertex
-        for i = 1:numV2
-			V(:,((i-1)*numV1+1):i*numV1,:) = bsxfun(@plus, V1, V2(:,i));
-        end
-        
-        % init resulting polytope
-        P_out = polytope(V);
-        return
+    % check which representations are given
+    if P.isHRep.val && S.isHRep.val
+        P_out = aux_plus_Hpoly_Hpoly(P,S,n);
+    elseif P.isVRep.val && S.isVRep.val
+        P_out = aux_plus_Vpoly_Vpoly(P,S,n);
+    else
+        % convert to H-rep (since probably more useful for subsequent
+        % operations) and compute sum
+        constraints(P);
+        constraints(S);
+        P_out = aux_plus_Hpoly_Hpoly(P,S,n);
     end
-
-    % all-zero matrices
-    PZ = zeros(size(P.A,1),size(S.A,2));
-    PZe = zeros(size(P.Ae,1),size(S.Ae,2));
-
-    % lift inequalities and equalities to higher-dimensional space
-    A = [S.A -S.A; PZ P.A];
-    b = [S.b; P.b];
-    Ae = [S.Ae -S.Ae; PZe P.Ae];
-    be = [S.be; P.be];
-
-    % project resulting polytope onto original dimensions
-    P_highdim = polytope(A,b,Ae,be);
-    P_out = project(P_highdim,1:n);
 
 elseif isnumeric(S)
-    % avoid addition with matrices
-    if size(S,2) > 1
-        throw(CORAerror('CORA:noops',P,S));
-    end
-
-    % shift offsets
-    b = P.b + P.A*S;
-    be = P.be + P.Ae*S;
-
-    % init output polytope
-    P_out = polytope(P.A,b,P.Ae,be);
-
-    % shift vertices if V representation is given
-    if ~isempty(P.V.val)
-        P_out.V.val = P.V.val + S;
-    end
-
-    % assign properties (same as P)
-    P_out = copyProperties(P,P_out,'noV');
+    P_out = aux_plus_poly_point(P,S);
 
 elseif isa(S,'zonotope') || isa(S,'interval') || ...
     isa(S,'conZonotope') || isa(S,'zonoBundle')
@@ -129,23 +100,98 @@ else
 end
 
 % set properties
+P_out = aux_setproperties(P_out,P,S);
 
-% If both polytopes are bounded, then sum is also bounded
-if isa(P_out,"polytope") && (~isempty(P.bounded.val) && P.bounded.val) ...
-    && isa(S,"polytope") && (~isempty(S.bounded.val) && S.bounded.val)
-    P_out.bounded.val = true;
 end
 
-% If one of the polytopes is unbounded, then sum is also unbounded
-if isa(P_out,"polytope") && (~isempty(P.bounded.val) && ~P.bounded.val) ...
-    ||  (isa(S,"polytope") && ~isempty(S.bounded.val) && ~S.bounded.val)
-    P_out.bounded.val = false;
+
+% Auxiliary functions -----------------------------------------------------
+
+function P_out = aux_plus_Hpoly_Hpoly(P1,P2,n)
+
+% all-zero matrices
+PZ = zeros(size(P1.A_.val,1),size(P2.A_.val,2));
+PZe = zeros(size(P1.Ae_.val,1),size(P2.Ae_.val,2));
+
+% lift inequalities and equalities to higher-dimensional space
+A = [P2.A_.val -P2.A_.val; PZ P1.A_.val];
+b = [P2.b_.val; P1.b_.val];
+Ae = [P2.Ae_.val -P2.Ae_.val; PZe P1.Ae_.val];
+be = [P2.be_.val; P1.be_.val];
+
+% project resulting polytope onto original dimensions
+P_highdim = polytope(A,b,Ae,be);
+P_out = project(P_highdim,1:n);
+
 end
 
-% If one of the polytopes is fully dimensional, then sum is also fully dimensional
-if isa(P_out,"polytope") && (~isempty(P.fullDim.val) && P.fullDim.val) ...
-    ||  (isa(S,"polytope") && ~isempty(S.fullDim.val) && S.fullDim.val)
-    P_out.fullDim.val = true;
+function P_out = aux_plus_Vpoly_Vpoly(P1,P2,n)
+% Minkowski sum of two V-polytopes according to [1, (25)]
+
+% read out vertices
+V1 = P1.V_.val;
+V2 = P2.V_.val;
+numV1 = size(V1,2); numV2 = size(V2,2);
+
+% init resulting vertices
+V = zeros(n,numV1*numV2);
+
+% add each vertex to each vertex
+for i = 1:numV2
+	V(:,((i-1)*numV1+1):i*numV1,:) = bsxfun(@plus, V1, V2(:,i));
+end
+
+% init resulting polytope
+P_out = polytope(V);
+
+end
+
+function P_out = aux_plus_poly_point(P,S)
+% Minkowski sum of a polytope and a vector
+
+% avoid addition with matrices
+if size(S,2) > 1
+    throw(CORAerror('CORA:noops',P,S));
+end
+
+% copy polytope (and properties!)
+P_out = polytope(P);
+
+% shift offsets
+P_out.b_.val = P_out.b_.val + P_out.A_.val*S;
+P_out.be_.val = P_out.be_.val + P_out.Ae_.val*S;
+
+% shift vertices if V representation is given
+if P.isVRep.val
+    P_out.V_.val = P.V_.val + S;
+end
+
+end
+
+function P_out = aux_setproperties(P_out,P,S)
+% infer set properties following [1, Table 1]
+
+% currently only supported if S is a polytope
+if isa(S,'polytope')
+
+    % if both polytopes are bounded, then sum is also bounded
+    if (~isempty(P.bounded.val) && P.bounded.val) ...
+        && (~isempty(S.bounded.val) && S.bounded.val)
+        P_out.bounded.val = true;
+    end
+
+    % If one of the polytopes is unbounded, then sum is also unbounded
+    if (~isempty(P.bounded.val) && ~P.bounded.val) ...
+        || (~isempty(S.bounded.val) && ~S.bounded.val)
+        P_out.bounded.val = false;
+    end
+
+    % If one of the polytopes is non-degenerate, the sum is, too
+    if (~isempty(P.fullDim.val) && P.fullDim.val) ...
+        || (~isempty(S.fullDim.val) && S.fullDim.val)
+        P_out.fullDim.val = true;
+    end
+
 end
 
 end

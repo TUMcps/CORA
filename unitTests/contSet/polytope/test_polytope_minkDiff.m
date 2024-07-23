@@ -150,6 +150,24 @@ P_true = polytope(A_true,b_true,Ae_true,be_true);
 % ...line from (0,-1) to (2,-1)
 res(end+1,1) = P_minkDiff == P_true;
 
+% 2D, degenerate - box (= empty)
+A = [0 1; 0 -1]; b = [2; 1];
+Ae = [1 0]; be = 3;
+P1 = polytope(A,b,Ae,be);
+V = [1 0; 0 1; -1 0; 0 -1]';
+P2 = polytope(V);
+P_minkDiff = minkDiff(P1,P2);
+res(end+1,1) = representsa_(P_minkDiff,'emptySet',1e-10);
+
+% 2D, degenerate - degenerate (= non-empty)
+V1 = [2 2; -1 -1]';
+P1 = polytope(V1);
+V2 = [0 0; 1 1]';
+P2 = polytope(V2);
+P_minkDiff = minkDiff(P1,P2);
+P_true = polytope([-1 -1; 1 1]');
+res(end+1,1) = P_minkDiff == P_true;
+
 
 % combine results
 res = all(res);

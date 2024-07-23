@@ -27,9 +27,10 @@ function res = test_polytope_normalizeConstraints
 
 res = true(0);
 
-% 1D, vertex instantiation
-V = [-1, 0, 1, 2, 3];
-P = polytope(V);
+% 1D, bounded
+A = [1; -1];
+b = [4; -2];
+P = polytope(A,b);
 P_ = normalizeConstraints(P,'b');
 res(end+1,1) = all(withinTol(P_.b,1) | withinTol(P_.b,0) | withinTol(P_.b,-1));
 P_ = normalizeConstraints(P,'A');
@@ -81,8 +82,8 @@ res(end+1,1) = all(withinTol(P_.b,1) | withinTol(P_.b,0) | withinTol(P_.b,-1)) .
     && all(withinTol(P_.be,1) | withinTol(P_.be,0));
 
 % 2D, vertex instantiation
-V = [1 3; 2 4; -1 -2; -1 0; 3 -2; 4 1; -3 -1]';
-P = polytope(V);
+A = [1 0; -1 1; -1 -1]; b = [2;3;1];
+P = polytope(A,b);
 P_ = normalizeConstraints(P,'b');
 res(end+1,1) = all(withinTol(P_.b,1) | withinTol(P_.b,0) | withinTol(P_.b,-1));
 P_ = normalizeConstraints(P,'A');

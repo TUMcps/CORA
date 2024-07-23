@@ -221,8 +221,6 @@ elseif type == "neuron"
             fprintf("No neurons are left to refine! Either max_order=%d reached or not refineable.\n", max_order);
         end
     end
-else
-    error("Unknown refinement type '%s'", type)
 end
 
 end

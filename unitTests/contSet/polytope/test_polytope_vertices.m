@@ -84,7 +84,7 @@ res(end+1,1) = all(withinTol(V,V_));
 A = [2 1; 2 -2; -2 -2; -1 2]; b = [2; 2; 2; 2];
 P = polytope(A,b);
 V = vertices(P);
-V_comb = vertices(P,'comb');
+V_comb = vertices_(P,'comb');
 V_ = [0.4 1.2; 1 0; 0 -1; -4/3 1/3]';
 res(end+1,1) = compareMatrices(V,V_) && compareMatrices(V,V_comb,1e-14);
 
@@ -92,14 +92,14 @@ res(end+1,1) = compareMatrices(V,V_) && compareMatrices(V,V_comb,1e-14);
 V_ = [3 0; 2 2; -1 3; -2 0; 0 -1]';
 P = polytope(V_);
 V = vertices(P);
-V_comb = vertices(P,'comb');
+V_comb = vertices_(P,'comb');
 res(end+1,1) = compareMatrices(V,V_,1e-14) && compareMatrices(V,V_comb,1e-14);
 
 % 2D, bounded, degenerate (single point)
 A = [1 1; 1 -1; -1 0]; b = zeros(3,1);
 P = polytope(A,b);
 V = vertices(P);
-V_comb = vertices(P,'comb');
+V_comb = vertices_(P,'comb');
 V_ = [0;0];
 res(end+1,1) = compareMatrices(V,V_,1e-14) && compareMatrices(V,V_comb,1e-14);
 
@@ -107,7 +107,7 @@ res(end+1,1) = compareMatrices(V,V_,1e-14) && compareMatrices(V,V_comb,1e-14);
 A = [1 1; 1 -1; -1 -1; -1 1]; b = [1; 0; 1; 0];
 P = polytope(A,b);
 V = vertices(P);
-V_comb = vertices(P,'comb');
+V_comb = vertices_(P,'comb');
 V_ = [0.5 0.5; -0.5 -0.5]';
 res(end+1,1) = compareMatrices(V,V_,1e-14) && compareMatrices(V,V_comb,1e-14);
 
@@ -131,7 +131,7 @@ res(end+1,1) = compareMatrices(V,V_);
 n = 3; A = [eye(n); -eye(n)]; b = [1; 1; 0; 1; 1; 0];
 P = polytope(A,b);
 V = vertices(P);
-V_comb = vertices(P,'comb');
+V_comb = vertices_(P,'comb');
 V_ = [1 1 0; -1 1 0; -1 -1 0; 1 -1 0]';
 res(end+1,1) = compareMatrices(V,V_,1e-14) && compareMatrices(V,V_comb,1e-14);
 

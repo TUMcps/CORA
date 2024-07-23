@@ -98,6 +98,24 @@ P2 = polytope(A,b);
 P_conv = convHull(P1,P2);
 res(end+1,1) = representsa(P_conv,'emptySet');
 
+% 2D, vertex instantiation
+V1 = [1 -1; 1 1]';
+P1 = polytope(V1);
+V2 = [-1;0];
+P2 = polytope(V2);
+P_conv = convHull(P1,P2);
+P_true = polytope([V1,V2]);
+res(end+1,1) = P_conv == P_true;
+
+% 2D, resulting convex hull is degenerate
+V1 = [0 0; 1 1]';
+P1 = polytope(V1);
+V2 = [-2 -2]';
+P2 = polytope(V2);
+P_conv = convHull(P1,P2);
+P_true = polytope([-2 -2; 1 1]');
+res(end+1,1) = P_conv == P_true;
+
 
 % combine results
 res = all(res);

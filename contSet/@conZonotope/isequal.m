@@ -31,6 +31,7 @@ function res = isequal(cZ,S,varargin)
 % Authors:       Mark Wetzlinger
 % Written:       19-December-2022
 % Last update:   16-December-2023 (MW, support comparison to polytope)
+%                18-July-2024 (MW, centers may be different)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -74,20 +75,15 @@ end
 
 % two constrained zonotopes
 
-% centers have to be the same
-if ~withinTol(cZ.c,S.c,tol)
-    res = false;
-    return
-end
-
 % check if both are represented completely equally
-if compareMatrices([cZ.G; cZ.A],[S.G; S.A],tol) ...
+if all(withinTol(cZ.c,S.c,tol)) ...
+        && compareMatrices([cZ.G; cZ.A],[S.G; S.A],tol) ...
         && compareMatrices([cZ.A cZ.b],[S.A S.b],tol)
     res = true;
     return
 end
 
-% last resort: check vertices (computationally expensive!)
+% general method: check vertices (computationally expensive!)
 res = compareMatrices(vertices(cZ),vertices(S),tol);
 
 % ------------------------------ END OF CODE ------------------------------

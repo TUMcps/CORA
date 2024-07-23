@@ -22,6 +22,7 @@ function res = test_docstring()
 %                19-July-2023 (ignore script files)
 %                19-January-2024 (stricter syntax check)
 %                10-May-2024 (improved usability in command window)
+%                16-July-2024 (TL, checks for CORAwarning and CORAlinprog)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -387,15 +388,44 @@ for i=1:length(files)
             end
         end
 
+        % check error(...) -> CORAerror(...)
+        probCall = 'error(';
+        allowedCalls = {'CORAerror(','.error(','_error('};
+        if ~ismember(filename,{'CORAerror','test_docstring'}) && ...
+                ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
+            issues{end+1} = "Please replace error(...) calls with CORAerror(id, ...)";
+        end
+
+        % check CORAerror(...) -> throw(CORAerror(...))
+        probCall = 'CORAerror(';
+        allowedCalls = {'throw(CORAerror('};
+        if ~ismember(filename,{'CORAerror','test_docstring'}) && ...
+                ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
+            issues{end+1} = "Please replace CORAerror(...) calls with throw(CORAerror(id, ...))";
+        end
+
         % check warning(...) -> CORAwarning(...)
-        if contains(filetext, 'warning(') && ~contains(filetext, 'CORAwarning(') ...
-                ... % some normal warning calls are ok 
-                && ~contains(filetext,'warning(''on''') ...
-                && ~contains(filetext,'warning(''off''') ...
-                && ~contains(filetext,'warning()') ...
-                && ~contains(filetext,'warning(w)') ...
-                && ~contains(filetext,'warning(warOrig)')
-            issues{end+1} = "Please replace warning(...) calls with CORAwarning(id, ...)";        
+        probCall = 'warning(';
+        allowedCalls = {'CORAwarning(','warning(''on''','warning(''off''','warning()','warning(w)','warning(warOrig)'};
+        if ~ismember(filename,{'CORAwarning','test_docstring'}) && ...
+                ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
+            issues{end+1} = "Please replace warning(...) calls with CORAwarning(id, ...)";
+        end
+
+        % check linprog(...) -> CORAlinprog(...)
+        probCall = 'linprog(';
+        allowedCalls = {'CORAlinprog(','intlinprog('};
+        if ~ismember(filename,{'CORAlinprog','test_docstring'}) && ...
+            ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
+            issues{end+1} = "Please replace linprog(...) calls with CORAlinprog(problem)";
+        end
+
+        % check quadprog(...) -> CORAquadprog(...)
+        probCall = 'quadprog(';
+        allowedCalls = {'CORAquadprog('};
+        if ~ismember(filename,{'CORAquadprog','test_docstring'}) && ...
+            ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
+            issues{end+1} = "Please replace quadprog(...) calls with CORAquadprog(problem)";
         end
 
 
@@ -422,7 +452,7 @@ for i=1:length(files)
         fprintf('- <a href="matlab:open %s">%s</a>\n', file_path,file_path)
         disp("  Issues:")
         fprintf("  - %s\n", string(issues'))
-        fprintf('  Try <a href="matlab:fix_docstring(''%s'')">fixing the docstring automatically</a>?\n', file_path)
+        fprintf('  Maybe try to <a href="matlab:fix_docstring(''%s'')">fix the docstring automatically</a>?\n', file_path)
         disp(" ")
 
         % update result
@@ -438,7 +468,48 @@ end
 
 if issue_count > 0
     fprintf("Found errors in docstring in %i files.\n", issue_count);
-    fprintf("Try to execute: fix_docstring(<file_path>)\n")
+end
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_checkFunctionCall(filetext, probCall,allowedCalls)
+% checks if all problematic calls of a function are replaced by the
+% allowed calls
+
+res = true;
+
+% find indices with potentially problematic calls
+idx = strfind(filetext,probCall);
+
+% check each occurence
+for pos = idx
+    % check if matches with allowed calls
+    resvec = false(1,numel(allowedCalls));
+    for i=1:numel(allowedCalls)
+        allowedCall = allowedCalls{i};
+
+        % find start position of problematic call in allowed call
+        pos_i = strfind(allowedCall,probCall);
+
+        % extract string including enough text before and after to check if
+        % it is a allowed call
+        potProbString = filetext((pos-pos_i):(pos-pos_i+numel(allowedCall)+1));
+
+        % check if it is a allowed call
+        resvec(i) = contains(potProbString,allowedCall);
+        if any(resvec)
+            break;
+        end
+    end
+
+    % if none of the allowed calls matched, we found a counterexample
+    res = any(resvec);
+    if ~res
+        break
+    end
 end
 
 end

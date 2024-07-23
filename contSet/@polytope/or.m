@@ -1,5 +1,6 @@
 function P_out = or(P1,P2)
-% or - Computes an over-approximation for the union of polytopes
+% or - computes an over-approximation for the union of polytopes using the
+%    convex hull operation
 %
 % Syntax:
 %    P_out = or(P1,P2)
@@ -23,13 +24,6 @@ function P_out = or(P1,P2)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
-
-% empty cases
-if representsa_(P1,'emptySet',eps)
-    P_out = P2; return
-elseif representsa_(P2,'emptySet',eps)
-    P_out = P1; return
-end
 
 % call convex hull
 P_out = convHull(P1,P2);

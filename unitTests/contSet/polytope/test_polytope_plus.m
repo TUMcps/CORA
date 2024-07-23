@@ -38,19 +38,10 @@ res(end+1,1) = isemptyobject(P_sum);
 V = [3 2; 0 3; -3 0; -1 -2; 2 -2]';
 P = polytope(V);
 z = [2; 1];
+P_sum = P + z;
 V_sum = V + z;
-P_sum = polytope(V_sum);
-% constraint matrices should be equal
-res(end+1,1) = compareMatrices(P.A' ./ vecnorm(P.A'),...
-    P_sum.A' ./ vecnorm(P_sum.A'),tol);
-% comparison to manual translation
-val1 = zeros(size(P.A))';
-val2 = zeros(size(P.A))';
-for i=1:size(P.A,1)
-    val1(:,i) = (P.A(i,:) * P_sum.b(i))';
-    val2(:,i) = (P_sum.A(i,:) * (P.b(i) + P.A(i,:)*z))';
-end
-res(end+1,1) = compareMatrices(val1,val2,tol);
+P_true = polytope(V_sum);
+res(end+1,1) = P_sum == P_true;
 
 % 2D, bounded + bounded (vertex representation)
 V = [1 1; -1 1; -1 -1; 1 -1]';
@@ -60,7 +51,7 @@ P2 = polytope(V);
 P_sum = compact(P1 + P2,'V');
 V_true = [-1 2; 1 2; 2 1; 2 -1; -2 -1; -2 1]';
 P_true = polytope(V_true);
-res(end+1,1) = compareMatrices(P_sum.V.val,P_true.V.val);
+res(end+1,1) = compareMatrices(P_sum.V,P_true.V);
 
 % 2D, unbounded + bounded
 A = [1 0; -1 0; 0 1]; b = [1;1;1];
@@ -119,6 +110,15 @@ c = [1;0]; G = [1 0; 0 1];
 pZ = polyZonotope(c,G);
 P_sum = P + pZ;
 res(end+1,1) = isa(P_sum,"polyZonotope");
+
+% 2D, polytope + point
+A = [1 0; -1 1; -1 -1]; b = [1;1;1];
+P = polytope(A,b);
+p = [1;2];
+P_sum = P + p;
+V_true = [2 4; 2 0; 0 2]';
+P_true = polytope(V_true);
+res(end+1,1) = P_sum == P_true;
 
 
 % combine results

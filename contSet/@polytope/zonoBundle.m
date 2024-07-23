@@ -37,6 +37,7 @@ function zB = zonoBundle(P)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% fullspace: easy to detect, cannot be converted
 if representsa_(P,'fullspace',0)
     % conversion of fullspace object not possible
     throw(CORAerror('CORA:specialError',['Polytope is unbounded and '...
@@ -54,9 +55,11 @@ catch ME
     rethrow(ME);
 end
 
-A = P.A;
+% ensure that constraints are given
+constraints(P);
 
-% loop over all halfspaces
+% read out all constraints
+A = [P.A_.val; P.Ae_.val; -P.Ae_.val];
 Z = cell(size(A,1),1);
 
 for i = 1:size(A,1)

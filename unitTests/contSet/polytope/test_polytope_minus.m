@@ -30,21 +30,10 @@ V = [3 2; 0 3; -3 0; -1 -2; 2 -2]';
 P = polytope(V);
 % translate by vector
 z = [2; 1];
-V_ = V - z;
-P_ = polytope(V_);
-
-% 1. check: constraint matrices should be equal
-res(end+1,1) = compareMatrices(P.A' ./ vecnorm(P.A'),...
-    P_.A' ./ vecnorm(P_.A'),1e-14);
-
-% 2. check: comparison to manual translation
-val1 = zeros(size(P.A))';
-val2 = zeros(size(P.A))';
-for i=1:size(P.A,1)
-    val1(:,i) = (P.A(i,:) * P_.b(i))';
-    val2(:,i) = (P_.A(i,:) * (P.b(i) - P.A(i,:)*z))';
-end
-res(end+1,1) = compareMatrices(val1,val2,1e-14);
+P_minus = P - z;
+V_true = V - z;
+P_true = polytope(V_true);
+res(end+1,1) = P_true == P_minus;
 
 
 % combine results

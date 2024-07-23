@@ -256,9 +256,11 @@ function Zres = aux_methodAlamoVolume(Z, C, phi, y)
     problem.f = f_obj;
     problem.Aineq = C_cstr;
     problem.bineq = d_cstr;
-    problem.solver = 'linprog';
-    problem.options = optimoptions('linprog','Display','none');
-    x_opt = linprog(problem);
+    problem.Aeq = [];
+    problem.beq = [];
+    problem.lb = [];
+    problem.ub = [];
+    x_opt = CORAlinprog(problem);
     
     % extract lambda
     lambda = x_opt(1:dim);

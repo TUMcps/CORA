@@ -1,5 +1,6 @@
 function V = vertices_(P,method,varargin)
-% vertices_ - computes the vertices of a polytope
+% vertices_ - computes the vertices of a polytope; this function also
+%    serves as a getter function for the property 'V' of a polytope object
 %
 % Syntax:
 %    V = vertices_(P,method)
@@ -7,8 +8,7 @@ function V = vertices_(P,method,varargin)
 % Inputs:
 %    P - polytope object
 %    method - 'lcon2vert' (default, duality method),
-%             'comb' (all combinations of n inequalities, then removal of
-%                     redundancies)
+%             'comb' (all combinations of n inequalities)
 %             'cdd' (double descriptor method, requires cddmex)
 %
 % Outputs:
@@ -45,49 +45,44 @@ function V = vertices_(P,method,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% computation of minimal H-representation is contained in lcon2vert
-% infeasibility check (isempty-like function) also contained in lcon2vert
+% if polytope has V-representation, return it
+if P.isVRep.val
+    V = P.V;
+    return
+end
 
 % dimension
 n = dim(P);
 
 % check if polytope is known to be empty
 if ~isempty(P.emptySet.val) && P.emptySet.val
-    V = zeros(n,0); return
-end
-
-% if polytope has V-representation, return it
-if ~isempty(P.V.val)
-    if n == 1
-        % reduce to minimal representation while we're at it
-        temp = [min(P.V.val),max(P.V.val)];
-        if ~any(isinf(temp)) && withinTol(temp(1),temp(2))
-            temp = temp(1);
-        end
-        P.V.val = temp;
-    end
-    V = P.V.val; return
+    V = zeros(n,0);
+    P.isVRep.val = true;
+    return
 end
 
 % 1D case quick
 if n == 1
-    V = aux_1D(P);
-    P.V.val = V;
+    V = aux_vertices_1D(P);
+    P.V_.val = V;
+    P.isVRep.val = true;
     return
 end
 
-% compute Chebyshev center to detect unbounded/empty cases
+% compute Chebyshev center to detect unbounded/empty cases (only one linear
+% program, we will generally require several below anyway)
 c = center(P);
 if any(isnan(c))
     % polytope is unbounded
     P.emptySet.val = false;
     P.bounded.val = false;
     throw(CORAerror('CORA:notSupported',...
-                    'Vertex computation requires a bounded polytope.'));
+                    'Vertex enumeration requires a bounded polytope.'));
 elseif isempty(c)
     % polytope is empty
     V = zeros(n,0);
-    P.V.val = V;
+    P.V_.val = V;
+    P.isVRep.val = true;
     P.minVRep.val = true;
     P.emptySet.val = true;
     P.bounded.val = true;
@@ -95,110 +90,29 @@ elseif isempty(c)
     return
 end
 
-if strcmp(method,'cdd')
-    % cdd requires shift by Chebyshev center according to mpt toolbox
-    P_centered = P - c;
 
-    % call cddmex... returns struct with vertices as a field
-    try
-        s = cddmex('extreme', ...
-            struct('A',[P_centered.Ae;P_centered.A],...
-                   'B',[P_centered.be;P_centered.b],...
-                   'lin',1:size(P_centered.Ae,1)));
-        % if s.R is non-empty, there are vertex rays -> unbounded
-        if ~isempty(s.R)
-            P_centered.emptySet.val = false;
-            P_centered.bounded.val = false;
-            throw(CORAerror('CORA:notSupported',...
-                    'Vertex computation requires a bounded polytope.'));
-        end
-        V = s.V' + c;
-    catch ME
-        if strcmp(ME.identifier,'CORA:notSupported')
-            rethrow(ME);
-        end
-        % fallback option: switch to lcon2vert method below...
-        method = 'lcon2vert';
-    end
+% currently three different methods supported: we potentially fall back to
+% 'lcon2vert' from 'cdd', hence the structure below
+if strcmp(method,'cdd')
+    [V,method] = aux_vertices_cdd(P,c);
 end
 
 if strcmp(method,'lcon2vert')
-    try
-        % vertex enumeration algorithm
-        v = lcon2vert(P.A,P.b,P.Ae,P.be,[],0);
-        % transpose so that each column is a vertex
-        V = v';
-
-    catch ME
-        % check for subspaces
-        [~,S] = isFullDim(P);
-
-        % is polytope just a point?
-        if isempty(S)
-            V = center(P);
-            P.V.val = V;
-            P.minVRep.val = true;
-            P.emptySet.val = false;
-            P.fullDim.val = false; % no zero-dimensional sets
-            P.bounded.val = true;
-            return
-        end
-
-        % polytope is non-degenerate in subspace
-        if size(S,2) < n
-            % we plug in
-            %    x = S*y + c in Ax <= b, resulting in A*(Sy) <= b - Ac,
-            % where y is of the subspace dimension and c is any point
-            % within the original polytope P (we use the origin since the
-            % center has been subtracted above)
-            c = center(P);
-            P_subspace = polytope(P.A*S,P.b-P.A*c,P.Ae*S,P.be-P.Ae*c);
-            % compute vertices for y in subspace
-            V = vertices_(P_subspace,'lcon2vert');
-            % map back via x = S*y + c
-            V = S*V + c;
-            return
-        elseif size(S,2) == n
-            % check if polytope is unbounded
-            if ~isBounded(P)
-                throw(CORAerror('CORA:notSupported',...
-                    'Vertex computation requires a bounded polytope.'));
-            end
-        end
-        rethrow(ME);
-    end
-
-    % polytope is not degenerate (otherwise lcon2vert would have thrown
-    % an error and we would have exited above)
-    % -> check unboundedness via duality (quick)
-%     P.fullDim.val = true;
-    if ~isBounded(P)
-        P.bounded.val = false;
-        throw(CORAerror('CORA:notSupported',...
-                'Vertex computation requires a bounded polytope.'));
-    end
+    V = aux_vertices_lcon2vert(P,n,c);
+elseif strcmp(method,'comb')
+    % note: this method computes a superset containing the vertices;
+    % caution: the convex hull of these points is an outer approximation of
+    % the original polytope! (implemented for debugging purposes)
+    V = aux_vertices_comb(P);
 end
 
-if strcmp(method,'comb')
-    % check if polytope is unbounded
-    if ~isBounded(P)
-        throw(CORAerror('CORA:notSupported',...
-            'Vertex computation requires a bounded polytope.'));
-    end
-
-    if ~isempty(P.be)
-        % rewrite as inequality constraints
-        A = [P.A; P.Ae; -P.Ae];
-        b = [P.b; P.be; -P.be];
-        P = polytope(A,b);
-    end
-    V = aux_simpleVertexEnum(P);
-end
-
-% set hidden properties
-P.V.val = V;
+% set properties
+P.V_.val = V;
+P.isVRep.val = true;
 P.minVRep.val = true; %...?
+% emptiness has been check above
 P.emptySet.val = false;
+% unbounded cases would have already thrown an error
 P.bounded.val = true;
 % determine degeneracy via SVD
 if size(V,2) <= size(V,1)
@@ -214,10 +128,171 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function V = aux_simpleVertexEnum(P)
+function V = aux_vertices_1D(P)
+% simplified function for 1D polytopes    
+
+    % compute minimal representation
+    P = compact_(P,'all',1e-9);
+    P = normalizeConstraints(P,'A');
+
+    % if there is no point, P is already empty
+    if P.emptySet.val
+        V = []; return
+    end
+
+    if ~isempty(P.A_.val)
+
+        % check boundedness from below
+        Aisminus1 = withinTol(P.A_.val,-1);
+        if any(Aisminus1)
+            % bounded from below
+            V = -P.b_.val(Aisminus1);
+        else
+            % unbounded toward -Inf
+            V = -Inf;
+        end
+    
+        % check boundedness from above
+        Ais1 = withinTol(P.A_.val,1);
+        if any(Ais1)
+            % bounded from above (add only if not a duplicate)
+            if ~withinTol(V,P.b_.val(Ais1))
+                V = [V, P.b_.val(Ais1)];
+            end
+        else
+            % unbounded toward +Inf
+            V = [V, Inf];
+        end
+
+        % set boundedness, emptiness
+        P.emptySet.val = false;
+        P.bounded.val = any(isinf(V));
+        P.fullDim.val = size(V,2) > 1;
+
+    elseif ~isempty(P.Ae)
+        % due to minHRep call above, we should only have one equality here
+        V = P.be_.val / P.Ae_.val;
+        % equality representation -> not full-dimensional
+        P.fullDim.val = false;
+        % emptiness would have been detected above
+        P.emptySet.val = false;
+
+    else
+        throw(CORAerror('CORA:specialError',...
+            'Error in vertex computation of 1D polytope.'));
+
+    end
+
+end
+
+function [V,method] = aux_vertices_cdd(P,c)
+% vertex enumeration using cdd (third-party)
+
+% cdd requires shift by Chebyshev center according to mpt toolbox
+P_centered = P - c;
+
+% call cddmex... returns struct with vertices as a field
+try
+    s = cddmex('extreme', ...
+        struct('A',[P_centered.Ae_.val;P_centered.A_.val],...
+               'B',[P_centered.be_.val;P_centered.b_.val],...
+               'lin',1:size(P_centered.Ae_.val,1)));
+    % if s.R is non-empty, there are vertex rays -> unbounded
+    if ~isempty(s.R)
+        P_centered.emptySet.val = false;
+        P_centered.bounded.val = false;
+        throw(CORAerror('CORA:notSupported',...
+                'Vertex computation requires a bounded polytope.'));
+    end
+    V = s.V' + c;
+catch ME
+    if strcmp(ME.identifier,'CORA:notSupported')
+        rethrow(ME);
+    end
+    % fallback option: switch to lcon2vert method below...
+    method = 'lcon2vert';
+end
+
+end
+
+function V = aux_vertices_lcon2vert(P,n,c)
+% vertex enumeration using 'lcon2vert' method
+
+% lcon2vert only supports non-degenerate polytopes, otherwise throws an
+% error: in that case, we compute the basis of the affine hull and compute
+% the vertices in that subspace
+try
+    % vertex enumeration algorithm
+    v = lcon2vert(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val,[],0);
+    % transpose so that each column is a vertex
+    V = v';
+
+catch ME
+    % check for subspaces
+    [~,S] = isFullDim(P);
+
+    % is polytope just a single point?
+    if isempty(S)
+        V = c;
+        P.minVRep.val = true;
+        P.emptySet.val = false;
+        P.fullDim.val = false; % no zero-dimensional sets
+        P.bounded.val = true;
+        return
+    end
+
+    % polytope is non-degenerate in subspace
+    if size(S,2) < n
+        % we plug in
+        %    x = S*y + c in Ax <= b, resulting in A*(Sy) <= b - Ac,
+        % where y is of the subspace dimension and c is any point
+        % within the original polytope P (we use the origin since the
+        % center has been subtracted above)
+        P_subspace = polytope(P.A_.val*S,P.b_.val-P.A_.val*c,...
+            P.Ae_.val*S,P.be_.val-P.Ae_.val*c);
+        % compute vertices for y in subspace
+        V = vertices_(P_subspace,'lcon2vert');
+        % map back via x = S*y + c
+        V = S*V + c;
+        return
+    elseif size(S,2) == n
+        % check if polytope is unbounded
+        if ~isBounded(P)
+            throw(CORAerror('CORA:notSupported',...
+                'Vertex computation requires a bounded polytope.'));
+        end
+    end
+    rethrow(ME);
+end
+
+% polytope is not degenerate (otherwise lcon2vert would have thrown
+% an error and we would have exited in the catch-branch above)
+% -> check unboundedness via duality (quick since we have V representation)
+if ~isBounded(P)
+    P.bounded.val = false;
+    throw(CORAerror('CORA:notSupported',...
+            'Vertex computation requires a bounded polytope.'));
+end
+
+end
+
+function V = aux_vertices_comb(P)
 % simple vertex enumeration algorithm: this function returns a set of
 % vertices that contains the true vertices; however, the minimal vertices
 % are not the convex hull of the computed vertices
+
+% check if polytope is unbounded
+if ~isBounded(P)
+    throw(CORAerror('CORA:notSupported',...
+        'Vertex computation requires a bounded polytope.'));
+end
+
+if ~isempty(P.be_.val)
+    % rewrite as inequality constraints
+    A = [P.A_.val; P.Ae_.val; -P.Ae_.val];
+    b = [P.b_.val; P.be_.val; -P.be_.val];
+    P = polytope(A,b);
+end
 
 % normalize rows
 P = normalizeConstraints(P,'A');
@@ -226,8 +301,8 @@ P = normalizeConstraints(P,'A');
 P = compact_(P,'all',1e-9);
 
 % read out constraints
-A = P.A;
-b = P.b;
+A = P.A_.val;
+b = P.b_.val;
 
 % number of constraints and dimension
 [nrCon,n] = size(A);
@@ -295,63 +370,6 @@ V = V(:,idxKeep);
 
 % remove vertices with Inf/NaN values
 V = V(:,all(isfinite(V),1));
-
-end
-
-function V = aux_1D(P)
-% simplified function for 1D polytopes    
-
-    % compute minimal representation
-    P = compact_(P,'all',1e-9);
-    P = normalizeConstraints(P,'A');
-
-    % if there is no point, P is already empty
-    if P.emptySet.val
-        V = []; return
-    end
-
-    if ~isempty(P.A)
-
-        % check boundedness from below
-        Aisminus1 = withinTol(P.A,-1);
-        if any(Aisminus1)
-            % bounded from below
-            V = -P.b(Aisminus1);
-        else
-            % unbounded toward -Inf
-            V = -Inf;
-        end
-    
-        % check boundedness from above
-        Ais1 = withinTol(P.A,1);
-        if any(Ais1)
-            % bounded from above (add only if not a duplicate)
-            if ~withinTol(V,P.b(Ais1))
-                V = [V, P.b(Ais1)];
-            end
-        else
-            % unbounded toward +Inf
-            V = [V, Inf];
-        end
-
-        % set boundedness, emptiness
-        P.emptySet.val = false;
-        P.bounded.val = any(isinf(V));
-        P.fullDim.val = size(V,2) > 1;
-
-    elseif ~isempty(P.Ae)
-        % due to minHRep call above, we should only have one equality here
-        V = P.be / P.Ae;
-        % equality representation -> not full-dimensional
-        P.fullDim.val = false;
-        % emptiness would have been detected above
-        P.emptySet.val = false;
-
-    else
-        throw(CORAerror('CORA:specialError',...
-            'Error in vertex computation of 1D polytope.'));
-
-    end
 
 end
 

@@ -30,14 +30,18 @@ function n = dim(P)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% either constraints A*x <= b  or  Ae*x == be  given
-if ~isempty(P.A)
-    n = size(P.A,2);
-elseif ~isempty(P.Ae)
-    n = size(P.Ae,2);
-else
-    % constraints, such as zeros(0,n) given
-    n = max([size(P.A,2),size(P.Ae,2)]);
+if P.isHRep.val
+    % either constraints A*x <= b  or  Ae*x == be  given
+    if ~isempty(P.A_.val)
+        n = size(P.A_.val,2);
+    elseif ~isempty(P.Ae_.val)
+        n = size(P.Ae_.val,2);
+    else
+        % constraints, such as zeros(0,n) given
+        n = max([size(P.A_.val,2),size(P.Ae_.val,2)]);
+    end
+elseif P.isVRep.val
+    n = size(P.V_.val,1);
 end
 
 % ------------------------------ END OF CODE ------------------------------

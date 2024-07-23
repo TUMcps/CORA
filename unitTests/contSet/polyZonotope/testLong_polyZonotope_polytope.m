@@ -175,6 +175,7 @@ for j = 1:5
     P = polytope(pZ);
     
     % Extract polytope parameter
+    constraints(P);
     C = P.A;
     d = P.b;
     

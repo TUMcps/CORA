@@ -73,6 +73,7 @@ for k = 1:3
     P = polytope(cZquad);
 
     % extract inequality constraints
+    constraints(P);
     A = P.A;
     b = P.b;
 
@@ -181,6 +182,7 @@ for k = 1:3
     P = polytope(cZquad);
 
     % extract inequality constraints
+    constraints(P);
     A = P.A;
     b = P.b;
 

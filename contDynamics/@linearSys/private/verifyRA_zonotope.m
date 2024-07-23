@@ -437,9 +437,11 @@ function points = aux_getInitPoints(R0,points)
         problem.Aineq = [eye(m) zeros(m,2*n); -eye(m) zeros(m,2*n); ...
              zeros(2*n,m), -eye(2*n)];
         problem.bineq = [ones(2*m,1); zeros(2*n,1)];
+        problem.lb = [];
+        problem.ub = [];
         
         % solve linear program
-        x = linprog(problem);
+        x = CORAlinprog(problem);
         points(:,i) = c + G*x(1:m);
     end
 end
@@ -499,16 +501,16 @@ function dist = aux_containmentCheckConZono(cZ,P)
     dist = -inf;
 
     % init linprog struct
-    problem.solver = 'linprog';
-    problem.options = optimoptions('linprog','display','off');
     problem.lb = -ones(l,1);
     problem.ub = ones(l,1);
     problem.Aeq = A;
     problem.beq = b;
+    problem.Aineq = [];
+    problem.bineq = [];
     
     for i = 1:length(d)
         problem.f = -C(i,:)*G;
-        [~,dist_] = linprog(problem);
+        [~,dist_] = CORAlinprog(problem);
         dist = max(dist,C(i,:)*c - d(i) - dist_);
     end
 end
@@ -540,11 +542,11 @@ function dist = aux_intersectionCheck(cZ,P)
     
     problem.Aeq = [zeros(size(A,1),n) A zeros(size(A,1),n)];
     problem.beq = b;
-    
-    problem.solver = 'linprog';
-    problem.options = optimoptions('linprog','display','off');
 
-    [~,dist] = linprog(problem);
+    problem.lb = [];
+    problem.ub = [];
+
+    [~,dist] = CORAlinprog(problem);
     
 end
 
@@ -645,14 +647,15 @@ function d = aux_distancePolyPoint(P,p)
         % set-up linear program to minimize the norm 1 distance: 
         % min ||p - x||_1 s.t. C*x <= d
         problem.f = [zeros(n,1); ones(2*n,1)];
-        problem.Aeq = [eye(n) eye(n) -eye(n)]; problem.beq = p;
+        problem.Aeq = [eye(n) eye(n) -eye(n)];
+        problem.beq = p;
         problem.Aineq = [C zeros(m,2*n); zeros(2*n,n) -eye(2*n)];
         problem.bineq = [d; zeros(2*n,1)];
+        problem.lb = [];
+        problem.ub = [];
 
         % solve linear program
-        problem.solver = 'linprog';
-        problem.options = optimoptions('linprog','Display','off');
-        [~,d] = linprog(problem);
+        [~,d] = CORAlinprog(problem);
     end
 end
 

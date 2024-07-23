@@ -113,10 +113,9 @@ function Zred = aux_reduceUnderApproxLinProg(Z,order)
         options = optimoptions('linprog','Algorithm','interior-point', ...
                                'MaxIterations',10000,'display','off');
     end
-    problem.solver = 'linprog';
     problem.options = options;
     
-    [s,~,exitflag] = linprog(problem);
+    [s,~,exitflag] = CORAlinprog(problem);
     
     if exitflag < 0
         throw(CORAerror('CORA:solverIssue'));
@@ -156,10 +155,9 @@ function Zred = aux_reduceUnderApproxScale(Z,order)
         options = optimoptions('linprog','Algorithm','interior-point', ...
                                'MaxIterations',10000,'display','off');
     end
-    problem.solver = 'linprog';
     problem.options = options;
     
-    [s,~,exitflag] = linprog(problem);
+    [s,~,exitflag] = CORAlinprog(problem);
     
     if exitflag < 0
         throw(CORAerror('CORA:solverIssue'));
@@ -189,7 +187,7 @@ function Zred = aux_reduceUnderApproxSum(Z,order)
 end
 
 function Zred = aux_reduceUnderApproxWetzlinger(Z,order)
-% reduction based on the Hausdorff distance betwenn a zonotope and its
+% reduction based on the Hausdorff distance between a zonotope and its
 % interval enclosure (see Theorem 3.2 in [2])
 
     % select generators to reduce
@@ -201,32 +199,34 @@ function Zred = aux_reduceUnderApproxWetzlinger(Z,order)
     % construct zonotope from the generators that are reduced
     Z1 = zonotope([zeros(length(c),1),Gred]);
     
-    % state space transformation
+    % use SVD to find a different basis such that the interval outer
+    % approximation of the zonotope containing the reduced generators is as
+    % tight as possible
     [S,~,~] = svd([-Gred,Gred]);
     Z1 = S' * Z1;
     
     % compute over-approximation of the Hausdorff distance between the
     % zonotope and its box enclsoure according to Theorem 3.2 in [2]
-    G_ = abs(generators(Z1));
+    G_hat = abs(generators(Z1));
     
-    for i = 1:size(G_,2)
-        [~,ind] = max(G_(:,i));
-        G(ind(1),i) = 0;
+    for k = 1:size(G_hat,2)
+        [~,i_star] = max(G_hat(:,k));
+        G_hat(i_star(1),k) = 0;
     end
     
-    dist = 2*norm(sum(G_,2));
+    dH = 2*vecnorm(sum(G_hat,2),2,1);
     
     % compute interval inner-approximation of the generators that are
     % reduced using the Minkowski difference for intervals
-    int1 = interval(Z1);
-    int2 = dist*interval(-ones(n,1),ones(n,1));
-    
-    int = minkDiff(int1,int2);
+    I1 = interval(Z1);
+    I2 = dH*interval(-ones(n,1),ones(n,1));
+
+    I = minkDiff(I1,I2);
     
     % combine the interval inner-approximation with the unreduced
-    % generators
-    if ~isempty(int)
-        Zred = zonotope(c,G) + S * zonotope(int);
+    % generators (incl. back-transformation from the SVD above)
+    if ~representsa_(I,'emptySet',eps)
+        Zred = zonotope(c,G) + S * zonotope(I);
     else
         Zred = zonotope(c,G); 
     end

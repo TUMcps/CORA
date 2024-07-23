@@ -23,8 +23,7 @@ function res = test_conZonotope_cartProd
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = true;
+res = true(0);
 
 % constrained zonotope - constrained zonotope case:
 
@@ -47,9 +46,7 @@ cZ_ = cartProd(cZ1,cZ2);
 cZ_true = conZonotope([c1;c2],blkdiag(G1,G2),blkdiag(A1,A2),[b1;b2]);
 
 % compare results
-if ~isequal(cZ_,cZ_true)
-    res = false;
-end
+res(end+1,1) = isequal(cZ_,cZ_true);
 
 
 % constrained zonotope - zonotope case:
@@ -66,9 +63,7 @@ cZ_ = cartProd(cZ1,Z2);
 cZ_true = conZonotope([c1;c2],blkdiag(G1,G2),[A1,zeros(1,3)],b1);
 
 % compare results
-if ~isequal(cZ_,cZ_true)
-    res = false;
-end
+res(end+1,1) = isequal(cZ_,cZ_true);
 
 
 % constrained zonotope - interval case:
@@ -86,9 +81,7 @@ cZ_true = conZonotope([c1;0.5*(lb2+ub2)],blkdiag(G1,0.5*diag(ub2-lb2)),...
     [A1,zeros(1,2)],b1);
 
 % compare results
-if ~isequal(cZ_,cZ_true)
-    res = false;
-end
+res(end+1,1) = isequal(cZ_,cZ_true);
 
 
 % constrained zonotope - numeric case (two orderings):
@@ -102,12 +95,14 @@ cZ__ = cartProd(num,cZ1);
 
 % true results
 cZ_true = conZonotope([c1;num],[G1;zeros(1,3)],A1,b1);
-cZ__true = conZonotope([num;c2],[zeros(1,3);G1],A1,b1);
+cZ__true = conZonotope([num;c1],[zeros(1,3);G1],A1,b1);
 
 % compare results
-if ~isequal(cZ_,cZ_true) || ~isequal(cZ__,cZ__true)
-    res = false;
-end
+res(end+1,1) = isequal(cZ_,cZ_true);
+res(end+1,1) = isequal(cZ__,cZ__true);
 
+
+% combine results
+res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

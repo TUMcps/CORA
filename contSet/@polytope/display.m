@@ -30,8 +30,6 @@ function display(P)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-V = P.V.val;
-
 % display input variable
 fprintf(newline);
 disp(inputname(1) + " =");
@@ -42,31 +40,33 @@ display@contSet(P);
 fprintf(newline);
 
 % display vertex representation
-if ~isempty(V)
+if P.isVRep.val
     disp('Vertex representation:');
-    displayMatrixVector(V, 'V');
+    displayMatrixVector(P.V_.val,'V');
+else
+    disp('Vertex representation: (not computed)');
 end
 
 % display inequality constraints
-if isempty(P.A)
+if isempty(P.A_.val)
     disp('Inequality constraints (A*x <= b): (none)');
 else
     disp('Inequality constraints (A*x <= b):');
-    displayMatrixVector(P.A,'A');
-    displayMatrixVector(P.b,'b');
+    displayMatrixVector(P.A_.val,'A');
+    displayMatrixVector(P.b_.val,'b');
 end
 
 % display equality constraints
-if isempty(P.Ae)
+if isempty(P.Ae_.val)
     disp('Equality constraints (Ae*x = be): (none)');
 else
     disp('Equality constraints (Ae*x = be):');
-    displayMatrixVector(P.Ae,'Ae');
-    displayMatrixVector(P.be,'be');
+    displayMatrixVector(P.Ae_.val,'Ae');
+    displayMatrixVector(P.be_.val,'be');
 end
 
 disp(" ");
-% display hidden properties
+% display set properties
 disp(['Bounded?                          ' aux_prop2string(P.bounded)]);
 disp(['Empty set?                        ' aux_prop2string(P.emptySet)]);
 disp(['Full-dimensional set?             ' aux_prop2string(P.fullDim)]);
@@ -80,14 +80,15 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function res = aux_prop2string(prop)
+% helper function to display three-valued logic in set properties
 
-    if isempty(prop.val)
-        res = 'Unknown';
-    elseif prop.val
-        res = 'true';
-    elseif ~prop.val
-        res = 'false';
-    end
+if isempty(prop.val)
+    res = 'Unknown';
+elseif prop.val
+    res = 'true';
+elseif ~prop.val
+    res = 'false';
+end
 
 end
 

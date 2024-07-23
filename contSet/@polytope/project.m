@@ -30,84 +30,84 @@ function P_out = project(P,dims)
 % Last update:   21-December-2020 (NK, use Fourier-Motzkin elimination)
 %                28-June-2022 (VK, Changed using the fourier toolbox)
 %                15-November-2023 (MW, bug fix for equality constraints)
+%                14-July-2024 (MW, support vertex representation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    % dimension
-    n = dim(P);
+% dimension
+n = dim(P);
 
-    % no dimensions or no projection, copy the polyhedron
-    if isempty(dims) || isequal(dims,1:n)
-        P_out = P;
-	    return;
-    end
+% no projection, copy the polyhedron
+if isequal(dims,1:n)
+    P_out = polytope(P);
+    return;
+end
 
-    if any(dims > n)
-	    throw(CORAerror('CORA:wrongValue','second',...
-            sprintf('Cannot compute projection on higher dimension than %i.',n)));
-    end
+if any(dims > n)
+    throw(CORAerror('CORA:wrongValue','second',...
+        sprintf('Cannot compute projection on higher dimension than %i.',n)));
+end
 
-    method = 'fourier_jones';
+% if vertex representation given, much simpler projection
+if P.isVRep.val
+    P_out = polytope(P.V_.val(dims,:));
+    return
+end
 
-    % remove zeros
-    P = compact_(P,'zeros',eps);
+% default method
+method = 'fourier_jones';
 
-    % check emptiness
-    if representsa_(P,'emptySet',eps)
-	    P_out = polytope.empty(n);
-	    return;
-    end
+% remove zeros
+P = compact_(P,'zeros',eps);
 
-    % use V-representation if given
-    if ~isempty(P.V.val)
-        V = P.V.val;
-        % not necessarily in minimal representation
-        P_out = polytope(V(dims,:));
+% check emptiness
+if representsa_(P,'emptySet',eps)
+    P_out = polytope.empty(n);
+    return;
+end
+
+% project the polytope
+
+% remove redundant halfspaces (override input object)
+P = compact_(P,'all',1e-9);
+% copy input object (rewrite equality constraints as pairwise
+% inequality constraints)
+P_out = polytope([P.A_.val; P.Ae_.val; -P.Ae_.val],...
+    [P.b_.val; P.be_.val; -P.be_.val]);
+
+% determine dimensions that have to be projected away
+n = dim(P_out);
+removeDims = setdiff(1:n,dims);
+
+% different methods
+switch method
+    case 'fourier_jones'
+        Ab = [P_out.A_.val(:, [dims, removeDims]), P_out.b_.val];
+        Ab_ = fourier(Ab, 1:length(dims), 1e-6, 0);
+        P_out = polytope(Ab_(:,1:end-1), Ab_(:,end));
         return
-    end
 
-    % project the polytope
-
-    % remove redundant halfspaces (override input object)
-    P = compact_(P,'all',1e-9);
-    % copy input object (rewrite equality constraints as pairwise
-    % inequality constraints)
-    P_out = polytope([P.A; P.Ae; -P.Ae],[P.b; P.be; -P.be]);
-    
-    % determine dimensions that have to be projected away
-    n = dim(P_out);
-    removeDims = setdiff(1:n,dims);
-
-    % different methods
-    switch method
-        case 'fourier_jones'
-            Ab = [P_out.A(:, [dims, removeDims]), P_out.b];
-            Ab_ = fourier(Ab, 1:length(dims), 1e-6, 0);
-            P_out = polytope(Ab_(:,1:end-1), Ab_(:,end));
-            return
-
-        case 'fourier'
-    
-            for i = 1:length(removeDims)
-               
-                % project away current dimension 
-                [A,b] = aux_fourierMotzkinElimination(P_out.A,P_out.b,removeDims(i));
-                
-                % update indices to match projected polytope
-                removeDims = removeDims - 1;
-                
-                % remove redundant halfspaces
-                P_out = compact_(polytope(A,b),'all',1e-12);
-            end
+    case 'fourier'
+        for i = 1:length(removeDims)
+           
+            % project away current dimension 
+            [A,b] = aux_fourierMotzkinElimination(P_out.A_.val,P_out.b_.val,removeDims(i));
             
-            % sort dimensions of the remaining projected polytope according to dims
-            [~,ind] = sort(dims);
-            A = P_out.A;
-            A(:,ind) = A;
-            P_out.A = A;
-            return
-    end
+            % update indices to match projected polytope
+            removeDims = removeDims - 1;
+            
+            % remove redundant halfspaces
+            P_out = compact_(polytope(A,b),'all',1e-12);
+        end
+        
+        % sort dimensions of the remaining projected polytope according to dims
+        [~,ind] = sort(dims);
+        A = P_out.A_.val;
+        A(:,ind) = A;
+        P_out.A_.val = A;
+        return
+end
 
 end
 
