@@ -48,6 +48,10 @@ function eq = aux_getEquations(S)
     elseif isa(S,'levelSet')
     
         eq = length(S.eq);
+
+    elseif isa(S,'conHyperplane')
+
+        eq = 1;
     
     else
         throw(CORAerror('CORA:specialError',...

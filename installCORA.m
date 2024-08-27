@@ -23,6 +23,7 @@ function res = installCORA(varargin)
 % Written:       23-October-2023
 % Last update:   10-January-2024 (added non-interactive mode)
 %                29-January-2024 (changes for automatic installation in docker)
+%                04-August-2024 (limit number of cpu threads)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -254,6 +255,13 @@ function aux_install_yalmip(interactive,defaultpath)
         end
         lines{end+1,1} = 'end';
         lines{end+1,1} = '';
+        if ~interactive
+            lines{end+1,1} = '%% Restrict number of CPU threads';
+            maxThreads = 4;
+            lines{end+1,1} = sprintf('disp(''Limiting the number of cpu threads to %i. Change using maxNumCompThreads(N).\n'')', maxThreads);
+            lines{end+1,1} = sprintf('maxNumCompThreads(%i);', maxThreads);
+            lines{end+1,1} = '';
+        end
         lines{end+1,1} = 'disp(''Done.'')';
 
         % write lines back to file

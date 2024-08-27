@@ -60,7 +60,7 @@ test-job:
     - matlab -batch "addpath(genpath('.')); resetCORA();"
 
     # run testSuite
-    - matlab -batch "addpath(genpath('.')); runTestSuite('$testSuite');"
+    - matlab -batch "addpath(genpath('.')); maxNumCompThreads(4); runTestSuite('$testSuite');"
 
     # check test results
     - matlab -batch "addpath(genpath('.')); writeTestResultsForCI('$testSuite');"

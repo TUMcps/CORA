@@ -46,6 +46,14 @@ try
     
     % four arguments: object, dimensions, number, linespec
     plotRandPoint(Z,[2,3],50,'.b');
+
+    % ---
+
+    % one dimensional plot
+    plotRandPoint(Z,1,50);
+
+    % three dimensional plot
+    plotRandPoint(Z,1:3,50);
     
     % close figure
     close;

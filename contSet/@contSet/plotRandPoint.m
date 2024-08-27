@@ -29,7 +29,7 @@ function han = plotRandPoint(S,varargin)
 
 % Authors:       Niklas Kochdumper, Mark Wetzlinger
 % Written:       11-December-2022
-% Last update:   ---
+% Last update:   29-July-2024 (TL, added 1d and 3d plotting)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -47,7 +47,15 @@ inputArgsCheck({{S,'att','contSet'};
 points = randPoint_(S,N,'standard');
 
 % plot the point cloud projected onto desired dimensions
-han = plot(points(dims(1),:),points(dims(2),:),type);
+if isscalar(dims)
+    han = plot(points(dims(1),:),0*points(dims(1),:),type);
+elseif numel(dims) == 2
+    han = plot(points(dims(1),:),points(dims(2),:),type);
+elseif numel(dims) == 3
+    han = plot3(points(dims(1),:),points(dims(2),:),points(dims(3),:),type);
+else
+    throw(CORAerror('CORA:wrongValue','second','Number of dimensions to plot has to be <= 3.'))
+end
 
 % only return handle if desired
 if nargout == 0

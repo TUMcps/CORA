@@ -157,7 +157,7 @@ end
 linSys = linearSys([-0.7 -2; 2 -0.7],1);
 
 R0 = zonotope(10*ones(2,1),0.5*diag(ones(2,1)));
-U = zonotope([zeros(2,1),0.1*eye(2)]);
+U = zonotope([zeros(2,1),eye(2)]);
 
 simOpts.x0 = randPoint(R0);
 simOpts.u = randPoint(U,10);
@@ -190,7 +190,7 @@ xHyb = vertcat(xHyb{:});
 % check if the two simulated trajectories are equivalent
 xCont = interp1(tCont,xCont,tHyb);
 
-if max(max(abs(xHyb-xCont))) > 0.1
+if max(max(abs(xHyb-xCont))) > 0.01
     res(end+1,1) = false;
 end
 

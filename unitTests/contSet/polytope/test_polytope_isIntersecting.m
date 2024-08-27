@@ -58,6 +58,12 @@ P1 = polytope(A,b);
 p = 1;
 res(end+1,1) = isIntersecting(P1,p);
 
+% 1D, polytope & hyperplane
+A = [1;-1]; b = [2;3];
+P1 = polytope(A,b);
+a = 1; b = 1;
+CH = conHyperplane(a,b);
+res(end+1,1) = isIntersecting(P1,CH);
 
 % 2D, fully empty & unbounded
 A = zeros(0,2); b = zeros(0,0);

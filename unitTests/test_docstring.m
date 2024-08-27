@@ -390,7 +390,7 @@ for i=1:length(files)
 
         % check error(...) -> CORAerror(...)
         probCall = 'error(';
-        allowedCalls = {'CORAerror(','.error(','_error('};
+        allowedCalls = {'CORAerror(','.error(','_error(','yalmiperror('};
         if ~ismember(filename,{'CORAerror','test_docstring'}) && ...
                 ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
             issues{end+1} = "Please replace error(...) calls with CORAerror(id, ...)";

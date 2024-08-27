@@ -63,8 +63,10 @@ n = dim(P);
 
 % 1D case: convert to intervals (fast) and check those
 if n == 1
-    res = isIntersecting_(interval(P),interval(S),type,tol);
-    return
+    try
+        res = isIntersecting_(interval(P),interval(S),type,tol);
+        return
+    end
 end
 
 

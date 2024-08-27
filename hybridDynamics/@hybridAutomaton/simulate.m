@@ -95,7 +95,7 @@ function [x,t,loc] = aux_simulateTimeVaryingInput(HA,params)
         params.tFinal = params.tStart + dt;
 
         for j = 1:length(params.uLoc)
-            params.uLoc{j} = uLoc{j}(:,i);
+            params.u{j} = uLoc{j}(:,i);
         end
 
         % simulate the system

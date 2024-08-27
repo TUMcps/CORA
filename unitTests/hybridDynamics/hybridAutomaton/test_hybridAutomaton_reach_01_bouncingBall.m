@@ -86,8 +86,8 @@ params = rmfield(params,'R0');
  
 % extract hitting times and states; remove artificial breaks due to guard
 % detection
-tHit_sim = cellfun(@(x) x(1),t(2:6),'UniformOutput',true);
-xHit_sim = cell2mat(cellfun(@(y) y(1,:),x(2:6),'UniformOutput',false));
+tHit_sim = cellfun(@(x) x(1),t(2:end),'UniformOutput',true);
+xHit_sim = cell2mat(cellfun(@(y) y(1,:),x(2:end),'UniformOutput',false));
 tHit_sim = tHit_sim(xHit_sim(:,1) < 0.1);
 xHit_sim = xHit_sim(xHit_sim(:,1) < 0.1,:);
 hitCounter = length(tHit_sim);
