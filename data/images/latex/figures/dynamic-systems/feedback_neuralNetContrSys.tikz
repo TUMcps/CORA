@@ -14,7 +14,7 @@
     ]
 
     \draw (0,0) node[box] (sys) {Open-Loop System \\ $\dot{x}=f(x,u)$};
-    \draw (8,0) node[box] (sampler) {Sampler \\ $t = \Delta t$};
+    \draw (8,0) node[box] (sampler) {Sampler \\ $t_{i+1} = t_{i} + \Delta t$};
     \draw (4,-3) node[box] (nn) {Neural Network Controller \\ $u = \Phi(x)$ };
 
     \draw [arrow] (sys) -- (sampler);
